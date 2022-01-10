@@ -1,0 +1,681 @@
+{
+    "action": {
+        "cancel": "Annuler",
+        "delete": "Supprimer",
+        "download": "Télécharger",
+        "edit_as_draft": "Modifier",
+        "edit_as_new": "Modifier comme nouveau",
+        "edit_share": "Modifier Partager",
+        "flag": "Ajouter marqueur",
+        "forward": "Transférer",
+        "hide_details": "Cacher les détails",
+        "mark_as_non_spam": "Non spam",
+        "mark_as_read": "Marqué comme lu",
+        "mark_as_spam": "Marqué comme spam",
+        "move": "Déplacer",
+        "ok": "Ok",
+        "preview": "Aperçu",
+        "print": "Imprimer",
+        "redirect": "Rediriger",
+        "reply": "Répondre",
+        "reply_all": "Répondre à tous",
+        "restore": "Restaurer",
+        "send_anyway": "Envoyer quand même",
+        "send": "Envoyer",
+        "share_folder": "Partager le dossier",
+        "unflag": "Retirer le marqueur",
+        "show_details": "Afficher les détails",
+        "show_original": "Afficher l'original",
+        "back": "Retour",
+        "delete_permanently": "Supprimer de manière permanente",
+        "mark_as_unread": "Marqué comme non lu",
+        "reset": "Réinitialiser",
+        "goto_drafts": "Aller aux brouillons",
+        "goto_folder": "ALLER AU DOSSIER",
+        "search": "Recherche",
+        "preview_new_tab": "Cliquez pour afficher un aperçu dans un autre onglet"
+    },
+    "add": "Ajouter",
+    "administer": "Administrer",
+    "allowed_actions": "Actions autorisées",
+    "composer": {
+        "attachment": {
+            "contactsMod": "Ajouter une carte de contact",
+            "draganddrop": {
+                "content": "Déposez vos pièces jointes ici pour les ajouter rapidement à cet e-mail",
+                "title": "Mode glisser déposer"
+            },
+            "drive": "Ajouter depuis le Drive",
+            "local": "Ajouter un fichier depuis le disque local",
+            "contacts_mod": "Ajouter une fiche de contact",
+            "drag_and_drop": {
+                "content": "Déposez ici vos pièces jointes pour les ajouter rapidement à cet email",
+                "title": "Mode Glisser-Déposer"
+            }
+        }
+    },
+    "create": "Création",
+    "delete": "Suppression",
+    "find_mail_shares": "Trouver les dossiers partagés",
+    "find_shares": "Rechercher les partages",
+    "folder": {
+        "action": {
+            "delete": "Supprimer le dossier",
+            "delete_permanently": "Supprimer définitivement le dossier",
+            "edit": "Modifier les propriétés du dossier",
+            "new": "Nouveau dossier",
+            "restore": "Restaurer le dossier",
+            "wipe": {
+                "folder": "Nettoyer le dossier"
+            },
+            "empty": {
+                "trash": "Vider la corbeille"
+            },
+            "edit_properties": "Modifier les propriétés",
+            "move": "Déplacer le dossier"
+        },
+        "item": {
+            "root": "/Root"
+        },
+        "modal": {
+            "delete": {
+                "body": {
+                    "message2": "Voulez-vous définitivement supprimer le dossier sélectionné ?",
+                    "message4": "Si vous le supprimez, tous les contenus associés seront définitivement supprimés et le dossier ne sera plus restaurable.",
+                    "message1": "Voulez-vous supprimer le dossier sélectionné ?",
+                    "message3": "Si vous le supprimez, tous les contenus associés seront déplacés dans la Corbeille et le dossier ne sera plus visible."
+                },
+                "footer": "Ok",
+                "title": "Supprimer"
+            },
+            "edit": {
+                "folder_type": "Dossier Mail",
+                "footer": "Modifier",
+                "messages": "Messages",
+                "rename_warning": "Vous ne pouvez pas renommer un dossier en tant que dossier système.",
+                "retention_properties": "Propriétés de sauvegarde",
+                "retention_msg": "Les messages de ce dossier qui tombent dans la période de sauvegarde nécessiteront une confirmation explicite avant d'être supprimés",
+                "rtn_dur_warning": "La durée de sauvegarde doit être un nombre positif",
+                "size": "Taille",
+                "threshold_msg": "Dans ce dossier, les messages qui sont plus anciens que le seuil de suppression seront sujets à un nettoyage et une suppression automatique.",
+                "type": "Type",
+                "retention_message": "Les messages de ce dossier qui se situent dans la plage de rétention devront être confirmés explicitement avant d'être supprimés",
+                "add_share": "Ajouter un Partage",
+                "retention_duration_warning": "La durée de rétention doit être un nombre positif",
+                "threshold_message": "Les messages de ce dossier qui sont plus anciens que le seuil d'élimination seront soumis à un nettoyage et une suppression automatiques."
+            },
+            "empty": {
+                "body": {
+                    "message2": "Si vous le supprimez, tous les contenus associés seront définitivement supprimés.",
+                    "message1": "Voulez-vous vider le dossier sélectionné ?"
+                },
+                "footer": "Vide",
+                "title": "Vide"
+            },
+            "move": {
+                "body": {
+                    "message_restore": "Sélectionnez un dossier pour restaurer le dossier concerné :",
+                    "message1": "Sélectionnez un dossier pour y déplacer le dossier concerné :",
+                    "message2": "Sélectionnez un dossier de destination"
+                },
+                "footer": "Déplacer",
+                "input": {
+                    "filter": "Filtrer les dossiers"
+                },
+                "new": "Nouveau Dossier",
+                "title": "Déplacer",
+                "title_modal": "Déplacer la conversation"
+            },
+            "new": {
+                "create_footer": "Créer et Déplacer",
+                "footer": "Créer",
+                "go_back": "Retour en arrière",
+                "input": {
+                    "name": "Nom du dossier",
+                    "position": "Position du dossier"
+                },
+                "name_exist_warning": "Ce nom existe déjà",
+                "title": "Créer un nouveau dossier",
+                "restore_create_footer": "Créer et Restaurer"
+            },
+            "restore": {
+                "footer": "Restaurer",
+                "title_modal": "Restaurer"
+            },
+            "wipe": {
+                "body": {
+                    "message1": "Souhaitez-vous nettoyer le dossier sélectionné ?",
+                    "message2": "Si vous le nettoyez, tous les contenus associés seront définitivement supprimés."
+                },
+                "footer": "Nettoyer",
+                "title": "Nettoyer"
+            }
+        }
+    },
+    "folders": {
+        "drafts": "Brouillons",
+        "inbox": "Réception",
+        "sent": "Envoyés",
+        "trash": "Corbeille",
+        "junk": "Spam"
+    },
+    "freebusy": "Disponibilité",
+    "header": {
+        "delete_email": "Supprimer l'email",
+        "edit_draft": "Modifier le brouillon",
+        "message_not_sent": "Erreur - Message non envoyé",
+        "no_subject": "Pas d'objet",
+        "redirect_email": "Rediriger l'e-mail",
+        "warning": "Attention"
+    },
+    "insert": "Insérer",
+    "label": {
+        "add_custom_message": "Ajouter un message personnalisé",
+        "allowed_actions": "Actions autorisées",
+        "attachment": "Pièce jointe",
+        "attachment_plural": "pièces jointes",
+        "bcc": "CCI",
+        "calendar_color": "Couleur de l'élément",
+        "cancel": "Annuler",
+        "cc": "CC",
+        "download": "Télécharger",
+        "download_plural": "Télécharger",
+        "draft_folder": "[BROUILLON]",
+        "edit": "Modifier",
+        "edit_access": "Modifier les accès de {{name}}",
+        "edit_folder_properties": "Modifier les propriétés de {{name}}",
+        "filter_user": "Utilisateurs du filtre",
+        "find_shares": "Trouver les partages",
+        "flash_browser_title": "Flasher le titre du navigateur",
+        "from": "De",
+        "grantee": "Bénéficiaire : ",
+        "highlight_tab": "Surligner l'onglet des Mails",
+        "mailSelected": "1 e-mail sélectionné",
+        "mailSelected_plural": "{{count}} e-mails sélectionnés",
+        "mail_setting": "Propriétés des e-mails",
+        "me": "Moi",
+        "no_subject": "Pas d'objet",
+        "owner": "Propriétaire : ",
+        "receive_message": "Réception de messages",
+        "remove": "Supprimer",
+        "remove_plural": "Supprimer",
+        "resend": "Renvoyer",
+        "retention_policy": "Politique de rétention",
+        "revoke": "Révoquer",
+        "revoke_access_tooltip": "Révoquer les accès en envoyant une notification",
+        "revoke_share": "Révoquer le partage de {{title}}",
+        "role": "Rôle : ",
+        "save": "Enregistrer",
+        "select_2": "ou cliquez sur le bouton \"Nouveau\"",
+        "select_3": "pour écrire un nouvel e-mail.",
+        "select_folder": "Sélectionner le dossier",
+        "send": "Envoyer",
+        "send_notification": "Envoyer un message de notification à",
+        "sent": "Envoyé",
+        "share": "Partager",
+        "shared_item": "Elément partagé",
+        "shares_folder_edit": "Partage du dossier",
+        "shares_items": "Dossiers partagés de {{value}}",
+        "show_popup": "Afficher une notification popup",
+        "show": "Afficher",
+        "show_plural": "Tout afficher",
+        "subject": "Objet",
+        "to": "À",
+        "type": "Type",
+        "type_name_here": "Nom de l'élément",
+        "with_you": "avec vous",
+        "would_like_to_share": "a partagé son",
+        "automatically_delete_duplicates": "Supprimer automatiquement les doublons du même message lorsqu'il est reçu",
+        "select_1": "Sélectionnez un e-mail pour le lire",
+        "advance_filters": "1 filtre avancé",
+        "advance_filters_plural": "{{count}} filtres avancés",
+        "keywords": "Mots clés",
+        "search_hint": "Recherche d'indices !",
+        "revoke_access_without_notification": "Révoquer les accès sans envoyer de notification",
+        "revoke_send_standard_msg": "Révoquer les accès en envoyant une notification personnalisée",
+        "search_subject": "Sujet",
+        "single_advance_fillter": "Filtres avancés",
+        "error_try_again": "Quelque chose s'est mal passé, veuillez recommencer",
+        "restore": "Restaurer",
+        "delete_permanently": "Supprimer définitivement",
+        "find_mail_shares": "Trouver les dossiers partagés",
+        "no_search_results_found": "Aucun résultat trouvé",
+        "results_for_error": "Impossible d'analyser la requête de recherche, effacez-la et réessayez : ",
+        "create": "Créer",
+        "move": "Déplacer",
+        "activate_selection_mode": "Activer le mode de sélection",
+        "add": "Ajouter",
+        "administer": "Administrer",
+        "all": "tout",
+        "any": "tout",
+        "attachment_status": "Statut de l'élément de l'email",
+        "attachment_type": "Type de pièce jointe",
+        "back": "Retour",
+        "choose_folder": "Choisir le dossier",
+        "delete": "Supprimer",
+        "email_perm_deleted": "Email supprimé définitivement",
+        "error_address": "Un email valide est requis",
+        "expand": "Développer",
+        "filter_folders": "Filtrer les dossiers",
+        "flagged": "Marqué",
+        "freebusy": "Disponibilité",
+        "hide": "Cacher",
+        "insert": "Insérer",
+        "loading_results": "Chargement des résultats...",
+        "mail_folder": "Dossier courrier",
+        "mail_selected": "{{count}} email sélectionné",
+        "mail_selected_plural": "{{count}} emails sélectionnés",
+        "mail_settings": "Paramètres des mails",
+        "new_folder": "Nouveau Dossier",
+        "of": "de",
+        "on_behalf_of": "au nom de",
+        "private": "Privé",
+        "read": "Lire",
+        "received_from_address": "Reçu de (adresse)",
+        "remove_from_this_list": "Supprimer de cette liste",
+        "results_for": "Résultats pour : ",
+        "revoke_with_custom_message": "Révoquer l'accès en envoyant une notification personnalisée",
+        "select_signature": "Sélectionner une signature",
+        "sent_to_address": "Envoyé à (adresse)",
+        "shared_folders": "Dossiers partagés",
+        "shares_info": "Informations sur le dossier partagé",
+        "show_all": "Afficher tout",
+        "signature_required": "Les informations relatives à la signature sont requises.",
+        "single_advanced_filter": "Filtres avancés",
+        "size": "Taille",
+        "size_larger": "Taille supérieure à (MB)",
+        "size_smaller": "Taille inférieure à (MB)",
+        "tag": "Étiquette",
+        "workflow": "Flux de travail",
+        "write": "Ecrire"
+    },
+    "mail_folder": "dossier Mail",
+    "message": {
+        "snackbar": {
+            "share": {
+                "accepted": "Vous avez accepté la demande de partage",
+                "error": "Quelque chose s'est mal passé, veuillez réessayer",
+                "declined": "Vous avez décliné la demande de partage"
+            },
+            "settings_saved": "Modifications sauvées correctement"
+        },
+        "sending_mail_to_self": "Il semblerait que vous soyez sur le point de vous envoyer un email",
+        "search_hints": "Les indices de recherche dont nous devons discuter",
+        "invalid_search_message": "Il semble que vous ayez utilisé une mauvaise requête, nous n'avons pas trouvé de correspondance"
+    },
+    "messages": {
+        "invalid_address": "L'adresse suivante semble être invalide",
+        "invalid_address_plural": "Les adresses suivantes semblent être invalides",
+        "modal": {
+            "delete": {
+                "if_delete_lost_forever": "Si vous supprimez cet email, il sera perdu pour toujours.",
+                "sure_delete_email": "Êtes-vous sûr de vouloir supprimer l'email sélectionné ?"
+            },
+            "redirect": {
+                "first": "Cet email sera envoyé à un nouveau destinataire en préservant l'adresse email de l'expéditeur d'origine.",
+                "second": "L'email apparaîtra tel qu'il était prévu à l'origine pour le nouveau destinataire"
+            }
+        },
+        "new_email": "Nouvel email",
+        "no_content": "Ce message ne contient pas de corps de texte",
+        "no_subject": "Pas d'objet.",
+        "permanent_delete_body": "En supprimant cet élément de façon définitive, vous ne pourrez plus le récupérer. Continuer ?",
+        "permanent_delete_confirm": "Supprimer définitivement",
+        "permanent_delete_title": "Êtes-vous sûr de vouloir définitivement supprimer cet élément ?",
+        "snackbar": {
+            "conversation_delete_error": "Quelque chose s'est mal passé, cette conversation n'a pas été supprimée, recommencez s'il vous plaît.",
+            "conversation_deleted": "Conversation supprimée avec succès",
+            "conversation_deleted_permanently_error": "Quelque chose s'est mal passé, veuillez recommencer",
+            "conversation_move": "La conversation a été déplacée avec succès",
+            "conversation_move_error": "Quelque chose s'est mal passé, le déplacement de la conversation a échoué. Veuillez recommencer.",
+            "conversation_restored": "Cette conversation a été restaurée avec succès dans {{folderName}}",
+            "conversation_will_be_deleted_in_time": "Cette conversation sera supprimée dans {{remainingTime}} secondes.",
+            "folder_created": "Nouveau dossier créé",
+            "folder_delete_error": "Quelque chose s'est mal passé, ce dossier n'a pas été supprimé, recommencez s'il vous plaît.",
+            "folder_deleted": "Dossier supprimé avec succès.",
+            "folder_edited": "Modifications sauvegardées avec succès",
+            "folder_empty": "Corbeille vidée avec succès",
+            "folder_edited_error": "Quelque chose s'est mal passé, les changements n'ont pas été appliqués, veuillez recommencer.",
+            "folder_empty_error": "Quelque chose s'est mal passé, les changements n'ont pas été appliqués. Veuillez recommencer.",
+            "folder_move_error": "Quelque chose s'est mal passé, ce dossier n'a pas été déplacé. Veuillez recommencer.",
+            "folder_moved": "Dossier déplacé avec succès",
+            "folder_will_be_deleted_in_time": "Ce dossier sera supprimé dans {{remainingTime}} secondes.",
+            "folder_will_be_moved_in_time": "Ce dossier sera déplacé dans {{remainingTime}}",
+            "folder_will_be_wiped_in_time": "Ce message sera nettoyé dans {{remainingTime}} secondes.",
+            "folder_wiped": "Dossier nettoyé avec succès",
+            "message_delete_error": "Quelque chose s'est mal passé, ce message n'a pas été supprimé. Veuillez recommencer.",
+            "message_deleted": "Message supprimé",
+            "message_move": "Message déplacé avec succès",
+            "message_move_error": "Quelque chose s'est mal passé, ce message n'a pas été déplacé, veuillez recommencer.",
+            "message_redirected": "Le message a été redirigé",
+            "message_restore": "Ce message a été restauré avec succès dans {{folderName}}",
+            "message_restore_error": "Quelque chose s'est mal passé, la restauration du message n'est pas complète, recommencez s'il vous plaît.",
+            "message_will_be_deleted_in_time": "Ce message sera supprimé dans {{remainingTime}} secondes.",
+            "message_will_be_send_in_time": "Ce message sera envoyé dans {{remainingTime}} secondes.",
+            "conversation_deleted_permanently": "Email supprimé définitivement",
+            "conversation_restore_error": "Quelque chose s'est mal passé, la restauration de la conversation n'est pas complète, recommencez s'il vous plaît.",
+            "folder_created_error": "Quelque chose s'est mal passé, veuillez recommencer.",
+            "folder_wiped_error": "Quelque chose s'est mal passé, veuillez recommencer",
+            "mail_sent": "Message envoyé",
+            "marked_as_non_spam": "Vous avez marqué cet email comme n'étant pas un spam",
+            "email_move_error": "Quelque chose s'est mal passé, veuillez recommencer",
+            "email_moved_to_trash": "Email déplacé dans la Corbeille",
+            "email_restore_error": "Quelque chose s'est mal passé, veuillez recommencer",
+            "email_restored": "Email restauré dans le dossier de destination",
+            "folder_moved_to_trash": "Dossier déplacé dans la corbeille",
+            "marked_as_spam": "Vous avez marqué cet email comme étant un spam",
+            "message_deleted_permanently": "Email supprimé définitivement",
+            "message_deleted_permanently_error": "Quelque chose s'est mal passé, veuillez recommencer",
+            "mail_saved_to_drafts": "Email enregistré dans les brouillons"
+        }
+    },
+    "of": "de",
+    "owner": "Propriétaire",
+    "placeholder": {
+        "add_new_recipients": "Ajouter de nouveaux destinataires",
+        "bcc": "CCI",
+        "cc": "CC",
+        "subject": "Objet",
+        "to": "À",
+        "from": "De"
+    },
+    "private": "Privé",
+    "read": "Lire",
+    "remove_from_this_list": "Retirer de cette liste",
+    "search": {
+        "results_for": "Résultats pour :",
+        "attachment": "Pièce jointe",
+        "unread": "Non lu",
+        "flagged": "Marqué",
+        "flagged_note": "Recherchez tous les éléments d'email qui sont marqués.",
+        "unread_note": "Recherche de tous les éléments d'emails non lus.",
+        "attachment_note": "Recherchez tous les éléments de courrier électronique qui ont une pièce jointe.",
+        "sent_after": "Envoyé après",
+        "sent_before": "Envoyé avant",
+        "sent_on": "Envoyé le",
+        "size_error": "Seuls les chiffres sont autorisés"
+    },
+    "select_signature": "Sélectionner la signature",
+    "set_default_signatures": "Mettre la signature par défaut",
+    "settings": {
+        "conv_sort_optn": {
+            "asc": "Depuis l'ancien au nouveau",
+            "desc": "Depuis le nouveau à l'ancien"
+        },
+        "dspl_mail_optn": {
+            "html": "comme HTML (quand possible)",
+            "text": "Comme texte"
+        },
+        "label": {
+            "always_dsp_received_time": "Toujours afficher l'heure de réception dans la liste des e-mails",
+            "check_new_mail": "Vérifier les nouveaux emails",
+            "conv_sorting": "Ordre des conversations",
+            "dbl_click_opens_msg": "Double cliquer ouvre le message dans une nouvelle fenêtre",
+            "dflt_mail_search": "Recherche d'e-mails par défaut",
+            "disp_messages": "Affichage des messages",
+            "display_mail": "Affichage de l'email",
+            "dsp_external_imgs": "Afficher automatiquement les images externes dans les e-mails HTML",
+            "dsp_msg_snpt": "Afficher des fragments des messages dans la liste des e-mails",
+            "msg_color": "Couleur du message",
+            "msg_prv_title": "Aperçu du message et images",
+            "msg_selection": "Sélection du message",
+            "search_query": "Requête par défaut",
+            "set_msg_color_acc_tag": "Mettre la couleur des messages et des conversations en fonction de la couleur de l'étiquette.",
+            "always_display_received_time": "Toujours afficher l'heure de réception dans la liste des emails",
+            "default_mail_search": "Recherche de courrier par défaut",
+            "display_external_images": "Afficher automatiquement les images externes dans les emails HTML",
+            "set_message_color": "Définir la couleur des messages et des conversations en fonction de la couleur de l'étiquette.",
+            "conversation_ordering": "Ordre de conversation",
+            "display_message_snippet": "Afficher des extraits de messages dans la liste de diffusion",
+            "display_messages": "Affichage des Messages",
+            "double_click": "Un double-clic ouvre le message dans une nouvelle fenêtre",
+            "message_color": "Couleur du message",
+            "message_preview_title": "Aperçu du message et images",
+            "message_selection": "Sélection du message"
+        },
+        "msg_from_optn": {
+            "discard": "Rejeter le message automatiquement",
+            "inbox": "Placer dans la Boîte de Réception",
+            "inbox_if_cc": "Placer dans la Boîte de Réception si je suis dans À : ou Cc :"
+        },
+        "msg_selection_optn": {
+            "above_deleted": "Sélectionner les messages au-dessus des messages supprimés ou déplacés",
+            "based_on_previous": "Sélectionner le prochain message basé sur les sélections précédentes",
+            "below_deleted": "Sélectionner les messages en-dessous des messages supprimés ou déplacés"
+        },
+        "new_mail_optn": {
+            "when_arrive": "Pendant que de nouveaux emails arrivent",
+            "manually": "Manuellement",
+            "minute": "{{count}} minute",
+            "minute_plural": "{{count}} minutes"
+        },
+        "notify_folder_optn": {
+            "new_message_inbox": "Afficher les notifications pour les nouveaux messages dans la Boîte de Réception",
+            "new_message_folder": "Afficher les notifications pour les nouveaux messages dans n'importe quel dossier"
+        },
+        "read_rcpt_optn": {
+            "always": "Toujours envoyer un accusé de réception",
+            "ask_me": "Demande moi",
+            "never": "Ne jamais envoyer d'accusé de réception"
+        },
+        "conv_sort_option": {
+            "desc": "Du nouveau à l'ancien",
+            "asc": "De l'ancien au nouveau"
+        },
+        "do_not_process_additional_filters": "Ne pas traiter les filtres supplémentaires",
+        "filter_folder_message": "Sélectionner un dossier pour appliquer votre filtre :",
+        "invite_replied": "l'invitation a été répondue",
+        "actions": "Actions",
+        "active_filter": "Filtre actif",
+        "add_condition": "Ajouter une nouvelle condition",
+        "address_in": "Adresse en",
+        "after": "après",
+        "b": "B",
+        "before": "avant",
+        "body": "Corps",
+        "browse": "Parcourir",
+        "calendar": "Calendrier",
+        "choose": "Choisir",
+        "choose_date": "Choisir une Date",
+        "conditions": "Conditions",
+        "contacts": "contacts",
+        "contains": "contient",
+        "conv_is_participated": "dans les conversations auxquelles j'ai participé",
+        "create_new_filter": "Créer un nouveau filtre",
+        "date": "Date",
+        "delete_filter": "Suppression du filtre",
+        "delete_filter_text": "Vous êtes sûr de vouloir supprimer le filtre ",
+        "discard": "Rejeter",
+        "display_mail_options": {
+            "html": "En HTML (si possible)",
+            "text": "En tant que texte"
+        },
+        "does_not_contain": "ne contient pas",
+        "does_not_exists": "n'existe pas",
+        "does_not_match_exactly": "ne correspond pas exactement",
+        "does_not_match_wildcard_condition": "ne correspond pas à la condition",
+        "domain": "domaine",
+        "exists": "existe",
+        "facebook_notification": "Notification Facebook",
+        "field": "Champ",
+        "filter_deleted": "Filtre supprimé avec succès",
+        "filter_name": "Nom du Filtre",
+        "from_distribution_list": "de la liste de distribution",
+        "gb": "GB",
+        "header_name": "Intitulé de l'en-tête",
+        "if": "Si",
+        "in": "dans",
+        "invite_not_replied": "l'invitation n'a pas été répondue ",
+        "invite_not_requested": "l'invitation n'est pas requise",
+        "invite_requested": "l'invitation est requise",
+        "is": "est",
+        "is_me": "est moi",
+        "is_not": "n'est pas",
+        "is_not_me": "n'est pas moi",
+        "kb": "KB",
+        "keep_in_inbox": "Garder dans la boîte de réception",
+        "keep_in_sent": "Garder dans Envoyés",
+        "keyword": "Mot clé",
+        "linkedin_msg": "Messages et connexions sur LinkedIn",
+        "localpart": "partie locale",
+        "mark_as": "Marquer comme",
+        "mass_marketing": "marketing de masse (bulk)",
+        "matches_exactly": "correspond exactement",
+        "matches_wildcard_condition": "correspond à une condition",
+        "mb": "MB",
+        "message": "Message",
+        "move_into_folder": "Déplacer dans le dossier",
+        "my_frequent_emails": "mes emails fréquents",
+        "not_after": "pas après",
+        "not_before": "pas avant",
+        "not_in": "pas dans",
+        "not_over": "pas plus que",
+        "not_under": "pas moins que",
+        "over": "sur",
+        "perform_following_action": "Effectuez les actions suivantes :",
+        "read_receipt": "Lire le reçu",
+        "redirect_to_address": "Rediriger vers l'adresse",
+        "remove_condition": "Supprimer cette condition",
+        "social": "Social",
+        "tag_with": "Marquer avec",
+        "to_cc": "A ou CC",
+        "twitter_notification": "Notifications Twitter",
+        "under": "sous"
+    },
+    "share": {
+        "options": {
+            "share_calendar_role": {
+                "admin": "Admin",
+                "manager": "Manager",
+                "none": "Aucun",
+                "viewer": "Visualisateur"
+            },
+            "share_calendar_with": {
+                "external_guests": "Invité(e)s externes (vue seulement)",
+                "internal_users_groups": "Utilisateurs ou Groupes internes",
+                "public": "Public (affichage uniquement, pas de mot de passe requis)"
+            }
+        },
+        "recipients_address": "Adresses email des destinataires",
+        "send_notification": "Envoyer une notification de ce partage",
+        "standard_message": "Ajouter une note au message standard",
+        "share_note": "Le message standard affiche votre nom, le nom de l'élément partagé, les autorisations accordées aux destinataires, et les informations de connexion, si nécessaire.",
+        "filter_folder_message": "Sélectionnez un dossier dans lequel vous souhaitez lancer votre recherche avancée",
+        "is_contained_in": "Est contenu dans"
+    },
+    "shared_folders": "Dossiers partagés",
+    "shared_item": "Objet partagé",
+    "shares_info": "Information du dossier partagé",
+    "snackbar": {
+        "folder_shared": "Dossier partagé",
+        "folder_shared_error": "Quelque chose s'est mal passé, veuillez réessayer",
+        "share_resend": "Invitation à partager renvoyée",
+        "share_revoke": "Accès au partage révoqué",
+        "share_updated": "\"Droits d'accès mis à jour\"",
+        "error": "Quelque chose s'est mal passé, veuillez réessayer"
+    },
+    "title": {
+        "new_messages": "Nouveaux messages",
+        "replies_forwards": "Réponses & Transferts",
+        "advanced_filters": "Filtres avancés"
+    },
+    "tooltip": {
+        "add_attachments": "Ajouter des pièces jointes",
+        "disable_rich_text": "Désactiver l'éditeur de texte riche",
+        "disable_urgent": "Désactiver urgent",
+        "edit": "Modifier les propriétés du partage",
+        "enable_urgent": "Activer urgent",
+        "resend": "Renvoyez la notification d'e-mail de ce partage",
+        "revoke": "Révoquer les accès",
+        "enable_rich_text": "Activer l'éditeur de texte riche"
+    },
+    "type": "Type",
+    "workflow": "Flux de travail",
+    "write": "Écrire",
+    "displayer": {
+        "archive_title1": "Sauvegarder un email dans les archives afin de pouvoir le consulter plus tard.",
+        "description5": "Vérifier ce dont les autres utilisateurs veulent parler avec vous.",
+        "draft_title1": "L'enregistrement d'un e-mail en tant que brouillon vous permet de conserver les messages que vous souhaitez envoyer ultérieurement.",
+        "list_sent_title": "Vous n'avez pas encore envoyé d'email",
+        "search_description3": "Vérifier l'orthographe et les options de filtres ou essayer avec un autre mot-clé.",
+        "search_title2": "Nous sommes désolés mais il n'y a pas de résultats pour votre recherche",
+        "title1": "Composer un nouvel email en cliquant sur le bouton \"NOUVEAU\".",
+        "title2": "Cliquer sur le bouton \"NOUVEAU\"",
+        "trash_title1": "Cliquer sur l'icône de la corbeille pour supprimer un courriel.",
+        "archive_title2": "Sélectionner un email archivé pour le consulter.",
+        "description2": "Envoyer des documents, des images et bien plus encore en composant un nouvel email.",
+        "description3": "Rédiger un nouvel e-mail en cliquant sur le bouton \"NOUVEAU\", puis l'envoyer.",
+        "description4": "Vous pouvez le signaler, y répondre ou le transmettre à d'autres utilisateurs.",
+        "description6": "Répondre à cet e-mail ou le transmettre à d'autres utilisateurs.",
+        "description7": "Sélectionner un email à répondre.",
+        "draft_title2": "Sélectionner et modifier un email pour l'envoyer à d'autres utilisateurs.",
+        "junk_title1": "Quelle chance ! Vous n'avez pas à vous soucier de spams.",
+        "junk_title2": "Cliquer sur l'icône de la corbeille pour supprimer un email indésirable.",
+        "list_draft_title": "Il n'y a pas de brouillons enregistrés",
+        "list_folder_title": "Il semble qu'il n'y ait pas encore d'emails",
+        "list_junk_title": "Il n'y a pas de spams",
+        "list_trash_title": "La corbeille est vide",
+        "search_description1": "Ou sélectionner \"Filtres avancés\" pour affiner votre recherche.",
+        "search_description2": "Essayer de lancer une autre recherche.",
+        "search_list_title1": "Il semble qu'il n'y ait pas de résultats. Continuez à chercher !",
+        "search_list_title2": "Aucun de vos éléments ne correspond à votre recherche.",
+        "search_title1": "Lancer une autre recherche",
+        "search_title3": "Il n'y a pas de résultats pour votre recherche.",
+        "search_title4": "Sélectionner un ou plusieurs résultats pour effectuer des actions ou afficher des détails.",
+        "sent_description1": "Rédiger un nouvel email en cliquant sur le bouton \"NOUVEAU\".",
+        "sent_title2": "Sélectionner un email pour afficher ce que vous avez envoyé.",
+        "title3": "Rester en contact avec les autres utilisateurs.",
+        "title4": "Sélectionner un courriel pour le lire",
+        "title8": "Sélectionner un email pour le lire ou le supprimer.",
+        "trash_title2": "Sélectionner et restaurer les emails de la corbeille."
+    },
+    "filters": {
+        "activity_stream_msg": "Des règles peuvent être définies pour que, lorsque vous recevez des messages moins importants, ils soient retirés de votre boîte de réception et placés dans un dossier du flux d'activité que vous pouvez consulter à votre convenance.",
+        "active_filters": "Filtres actifs",
+        "activity_stream_filters": "Filtres de flux d'activité",
+        "activity_stream_settings": "PARAMÈTRES DU FLUX D'ACTIVITÉS",
+        "available_filters": "Filtres disponibles",
+        "filter_note": "Remarque : les modifications apportées aux règles de filtrage sont enregistrées immédiatement",
+        "filters": "Filtres",
+        "incoming_msg_filters": "Filtres de messages entrants",
+        "outgoing_message_filters": "Filtres de messages sortants",
+        "run": "Exécuter"
+    },
+    "board": {
+        "show": "Panneau d'affichage"
+    },
+    "filter_folders": "Filtrer les dossiers",
+    "folder_panel": {
+        "action": {
+            "edit_properties": "Modifier les propriétés",
+            "empty": {
+                "trash": "Vider la Corbeille"
+            },
+            "new": "Nouveau Dossier",
+            "wipe": {
+                "folder_panel": "Effacer le dossier"
+            }
+        },
+        "modal": {
+            "move": {
+                "title_modal": "Déplacer la Conversation"
+            },
+            "new": {
+                "input": {
+                    "name": "Entrer le Nom du Dossier",
+                    "name_exist": "Le nom existe déjà dans ce chemin",
+                    "position": "Dossier parent"
+                }
+            }
+        }
+    },
+    "notification": {
+        "new_message": "Nouveau Message",
+        "no_content": "Message sans contenu"
+    },
+    "signatures": {
+        "add_signature": "Ajouter une signature",
+        "name": "Nom",
+        "signature_heading": "Signatures"
+    }
+}
