@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 module.exports = {
-	extends: ['./node_modules/@zextras/zapp-configs/rules/eslint.js'],
+	extends: ['./node_modules/@zextras/carbonio-ui-configs/rules/eslint.js'],
 	plugins: ['notice'],
 	rules: {
 		'notice/notice': [
