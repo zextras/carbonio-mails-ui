@@ -78,12 +78,11 @@ export default function ConversationPreviewPanel() {
 			{conversation && (
 				<>
 					<PreviewPanelHeader item={conversation} folderId={folderId} />
-					<PreviewPanelActions item={conversation} folderId={folderId} />
 					<Container
 						style={{ overflowY: 'auto' }}
 						height="fill"
 						background="gray5"
-						padding={{ horizontal: 'large', bottom: 'small' }}
+						padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
 						mainAlignment="flex-start"
 					>
 						<Container height="fit" mainAlignment="flex-start" background="gray5">

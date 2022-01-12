@@ -89,7 +89,7 @@ function MessageContactsList({ message }) {
 const fallbackContact = { address: '', displayName: '' };
 const HoverContainer = styled(Container)`
 	cursor: pointer;
-	border-radius: 4px;
+	border-radius: ${({ isExpanded }) => (isExpanded ? '4px 4px 0 0' : '4px')};
 	&:hover {
 		background: ${({ theme, background }) => theme.palette[background].hover};
 	}
@@ -177,6 +177,7 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 				mainAlignment="flex-start"
 				crossAlignment="flex-start"
 				background="gray6"
+				isExpanded={open}
 			>
 				<Container
 					orientation="vertical"
