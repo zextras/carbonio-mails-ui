@@ -241,7 +241,7 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 	const body = isHtml(msg.parts);
 	return {
 		id: msg.id === 'new' ? undefined : msg.id,
-		did: msg.did ?? undefined,
+		did: msg.isDraft ? msg.did ?? msg.id : undefined,
 		attach: { mp: retrieveAttachmentsType(msg, 'attachment') },
 		su: { _content: msg.subject ?? '' },
 		e: map(msg.participants, (c) => ({
