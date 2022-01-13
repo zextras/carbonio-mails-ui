@@ -101,7 +101,7 @@ const EditorWrapper = styled.div`
 		width: 100%;
 		border: none;
 		.tox-editor-container {
-			height: 300px;
+			min-height: 300px;
 		}
 		.tox-editor-header {
 			padding: ${(props) => props.theme.sizes.padding.large};
