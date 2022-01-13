@@ -89,6 +89,31 @@ export default function SettingsView() {
 		() => Object.keys(settingsToUpdate).length === 0 && disabled,
 		[settingsToUpdate, disabled]
 	);
+	const setNewOrForwardSignatureId = (ItemsAdd, resp, oldSignatureId, isFowardSignature) => {
+		const newOrForwardSignatureToSet = ItemsAdd.find((item) => item.id === oldSignatureId);
+		if (
+			!!newOrForwardSignatureToSet &&
+			!!resp &&
+			resp.payload &&
+			resp.payload.response &&
+			resp.payload.response.Body &&
+			resp.payload.response.Body.BatchResponse.CreateSignatureResponse
+		) {
+			const createdSignature =
+				resp.payload.response.Body.BatchResponse.CreateSignatureResponse[0].signature;
+			const realSignatureId = createdSignature.find(
+				(item) => item.name === newOrForwardSignatureToSet.label
+			).id;
+			const signatureKey = isFowardSignature
+				? 'zimbraPrefForwardReplySignatureId'
+				: 'zimbraPrefDefaultSignatureId';
+			editSettings({
+				prefs: { [signatureKey]: realSignatureId }
+			}).then((res) => {
+				setUpdatedSettings({});
+			});
+		}
+	};
 
 	// eslint-disable-next-line consistent-return
 	const saveChanges = useCallback(() => {
@@ -128,7 +153,43 @@ export default function SettingsView() {
 					(c) => item.id === c.id && (item.label !== c.label || item.description !== c.description)
 				)
 			);
+
+			const isReplySignaturePrefisNew =
+				settingsToUpdate.zimbraPrefForwardReplySignatureId &&
+				!settingsToUpdate.zimbraPrefForwardReplySignatureId.includes('-');
+			let setForwardReplySignatureId = '';
+			if (
+				isReplySignaturePrefisNew &&
+				ItemsAdd.length > 0 &&
+				ItemsAdd.findIndex(
+					(item) => item.id === settingsToUpdate.zimbraPrefForwardReplySignatureId
+				) !== -1
+			) {
+				setForwardReplySignatureId = settingsToUpdate.zimbraPrefForwardReplySignatureId;
+				delete settingsToUpdate.zimbraPrefForwardReplySignatureId;
+			}
+
+			const isDefaultSignaturePref =
+				settingsToUpdate.zimbraPrefDefaultSignatureId &&
+				!settingsToUpdate.zimbraPrefDefaultSignatureId.includes('-');
+			let setDefaultSignatureId = '';
+			if (
+				isDefaultSignaturePref &&
+				ItemsAdd.length > 0 &&
+				ItemsAdd.findIndex((item) => item.id === settingsToUpdate.zimbraPrefDefaultSignatureId) !==
+					-1
+			) {
+				setDefaultSignatureId = settingsToUpdate.zimbraPrefDefaultSignatureId;
+				delete settingsToUpdate.zimbraPrefDefaultSignatureId;
+			}
+
 			dispatch(SignatureRequest({ ItemsAdd, ItemsEdit, ItemsDelete, account })).then((resp) => {
+				if (setForwardReplySignatureId !== '') {
+					setNewOrForwardSignatureId(ItemsAdd, resp, setForwardReplySignatureId, true);
+				}
+				if (setDefaultSignatureId !== '') {
+					setNewOrForwardSignatureId(ItemsAdd, resp, setDefaultSignatureId, false);
+				}
 				if (resp.type.includes('fulfilled')) {
 					createSnackbar({
 						key: `new`,
@@ -152,6 +213,7 @@ export default function SettingsView() {
 				}
 			});
 		}
+
 		if (Object.keys(settingsToUpdate).length > 0) {
 			editSettings({ prefs: settingsToUpdate }).then((res) => {
 				if (res.type.includes('fulfilled')) {
