@@ -20,7 +20,7 @@ import {
 	AccordionItem,
 	Padding,
 	Divider
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import CollapsedSideBarItems from './collapsed-sidebar-items';
 import { FolderActionsType } from '../../types/folder';
 import { selectFolders } from '../../store/folders-slice';

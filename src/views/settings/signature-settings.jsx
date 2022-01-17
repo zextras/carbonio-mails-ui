@@ -15,7 +15,7 @@ import {
 	Button,
 	RichTextEditor,
 	Padding
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
 import { useUserAccounts } from '@zextras/zapp-shell';

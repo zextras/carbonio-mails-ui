@@ -5,7 +5,7 @@
  */
 /* eslint-disable import/extensions */
 import React, { FC, ReactElement, useCallback, useState } from 'react';
-import { Padding, Button, Divider, Row, Checkbox, Input } from '@zextras/zapp-ui';
+import { Padding, Button, Divider, Row, Checkbox, Input } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/zapp-shell';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

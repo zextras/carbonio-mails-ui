@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Avatar, Container, Tooltip } from '@zextras/zapp-ui';
+import { Avatar, Container, Tooltip } from '@zextras/carbonio-design-system';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ParticipantRole } from '../../../../types/participant';

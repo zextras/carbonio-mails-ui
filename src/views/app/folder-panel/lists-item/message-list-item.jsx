@@ -17,7 +17,7 @@ import {
 	Tooltip,
 	Shimmer,
 	Divider
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';

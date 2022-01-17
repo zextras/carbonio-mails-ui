@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo, useEffect } from 'react';
-import { Container, Padding } from '@zextras/zapp-ui';
+import { Container, Padding } from '@zextras/carbonio-design-system';
 import { FOLDERS, useUserSettings } from '@zextras/zapp-shell';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';

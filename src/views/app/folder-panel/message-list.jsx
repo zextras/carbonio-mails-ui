@@ -6,7 +6,7 @@
 import { map, reduce, find } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { List } from '@zextras/zapp-ui';
+import { List } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useAppContext } from '@zextras/zapp-shell';

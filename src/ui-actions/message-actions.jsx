@@ -6,7 +6,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { map } from 'lodash';
-import { Container, Text, ChipInput, Divider, Button } from '@zextras/zapp-ui';
+import { Container, Text, ChipInput, Divider, Button } from '@zextras/carbonio-design-system';
 import { soapFetch, FOLDERS } from '@zextras/zapp-shell';
 import { msgAction } from '../store/actions';
 import { ActionsType } from '../types/participant';

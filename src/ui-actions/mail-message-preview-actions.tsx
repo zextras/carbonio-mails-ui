@@ -7,7 +7,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable import/no-unresolved */
 import React, { useContext, useMemo, FC, ReactElement } from 'react';
-import { Row, Dropdown, IconButton, SnackbarManagerContext, useModal } from '@zextras/zapp-ui';
+import {
+	Row,
+	Dropdown,
+	IconButton,
+	SnackbarManagerContext,
+	useModal
+} from '@zextras/carbonio-design-system';
 import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';

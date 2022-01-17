@@ -9,7 +9,7 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { FOLDERS, useAppContext } from '@zextras/zapp-shell';
-import { Container } from '@zextras/zapp-ui';
+import { Container } from '@zextras/carbonio-design-system';
 import { ActionsContextProvider } from '../../commons/actions-context';
 import ConversationList from './folder-panel/conversation-list';
 import MessageList from './folder-panel/message-list';

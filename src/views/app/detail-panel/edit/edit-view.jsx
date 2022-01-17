@@ -21,7 +21,7 @@ import {
 	Text,
 	Tooltip,
 	Select
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import { map, reduce, throttle, filter, find, flatten, findIndex, concat, some } from 'lodash';
 import {

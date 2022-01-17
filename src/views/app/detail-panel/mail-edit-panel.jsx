@@ -5,7 +5,15 @@
  */
 import React, { useCallback, useState } from 'react';
 import { useReplaceHistoryCallback } from '@zextras/zapp-shell';
-import { Container, Divider, Icon, IconButton, Row, Text, Tooltip } from '@zextras/zapp-ui';
+import {
+	Container,
+	Divider,
+	Icon,
+	IconButton,
+	Row,
+	Text,
+	Tooltip
+} from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import EditView from './edit/edit-view';

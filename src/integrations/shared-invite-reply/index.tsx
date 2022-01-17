@@ -13,7 +13,7 @@ import {
 	Icon,
 	Text,
 	SnackbarManagerContext
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/zapp-shell';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';

@@ -21,7 +21,7 @@ import {
 	Divider,
 	FormSection,
 	SnackbarManagerContext
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { differenceObject } from './components/utils';
 import DisplayMessagesSettings from './displaying-messages-settings';

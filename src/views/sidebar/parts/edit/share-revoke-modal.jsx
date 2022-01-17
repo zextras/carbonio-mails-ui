@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useMemo, useState } from 'react';
-import { Checkbox, Container, Input, Row, Text } from '@zextras/zapp-ui';
+import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useUserAccounts } from '@zextras/zapp-shell';

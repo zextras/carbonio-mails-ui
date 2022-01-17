@@ -13,7 +13,7 @@ import {
 	Row,
 	ChipInput,
 	Padding
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserAccounts } from '@zextras/zapp-shell';
 import { map, replace, split } from 'lodash';
 import {

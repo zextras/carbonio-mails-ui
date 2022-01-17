@@ -4,7 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useContext, useMemo } from 'react';
-import { Container, Dropdown, IconButton, Padding, SnackbarManagerContext } from '@zextras/zapp-ui';
+import {
+	Container,
+	Dropdown,
+	IconButton,
+	Padding,
+	SnackbarManagerContext
+} from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';

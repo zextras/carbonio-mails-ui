@@ -26,7 +26,7 @@ import {
 	Padding,
 	Button,
 	Row
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { createSelector } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';

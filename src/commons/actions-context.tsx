@@ -13,7 +13,7 @@ import {
 } from '@zextras/zapp-shell';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { SnackbarManagerContext, ModalManagerContext } from '@zextras/zapp-ui';
+import { SnackbarManagerContext, ModalManagerContext } from '@zextras/carbonio-design-system';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { getActions as conversationActions } from '../ui-actions/conversation-actions';

@@ -5,7 +5,7 @@
  */
 import React, { useCallback } from 'react';
 import { report } from '@zextras/zapp-shell';
-import { Container, CustomModal, Text, Divider } from '@zextras/zapp-ui';
+import { Container, CustomModal, Text, Divider } from '@zextras/carbonio-design-system';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 // eslint-disable-next-line import/extensions

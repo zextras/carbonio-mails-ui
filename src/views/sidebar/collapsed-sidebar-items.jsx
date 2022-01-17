@@ -5,7 +5,7 @@
  */
 import React, { useMemo } from 'react';
 import { AppLink } from '@zextras/zapp-shell';
-import { Row, Padding, Tooltip, IconButton } from '@zextras/zapp-ui';
+import { Row, Padding, Tooltip, IconButton } from '@zextras/carbonio-design-system';
 import { getFolderIconColor, getFolderIconName } from './accordion-custom-components';
 
 const CollapsedSideBarItems = ({ folder }) => {

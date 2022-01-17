@@ -5,7 +5,14 @@
  */
 import React, { useCallback, useMemo, useRef, useState, useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { List, SnackbarManagerContext, Divider, Container, Padding, Text } from '@zextras/zapp-ui';
+import {
+	List,
+	SnackbarManagerContext,
+	Divider,
+	Container,
+	Padding,
+	Text
+} from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { find, map, reduce } from 'lodash';

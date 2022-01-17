@@ -15,7 +15,7 @@ import {
 	Drag,
 	Drop,
 	Container
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { actionsRetriever } from './commons/folder-actions';
 import { FolderActionsType } from '../../types/folder';
 import { CORRESPONDING_COLORS } from '../../constants';

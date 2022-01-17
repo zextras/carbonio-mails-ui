@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Input, Container, Checkbox, Padding, Divider } from '@zextras/zapp-ui';
+import { Input, Container, Checkbox, Padding, Divider } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { map, reduce } from 'lodash';
 import ModalFooter from './create-filter-modal-footer';

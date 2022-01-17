@@ -19,7 +19,7 @@ import {
 	Padding,
 	Divider,
 	SnackbarManagerContext
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { findIndex, forEach, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
