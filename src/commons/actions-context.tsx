@@ -10,7 +10,7 @@ import {
 	useReplaceHistoryCallback,
 	useIntegratedComponent,
 	useUserSettings
-} from '@zextras/zapp-shell';
+} from '@zextras/carbonio-shell-ui';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { SnackbarManagerContext, ModalManagerContext } from '@zextras/carbonio-design-system';

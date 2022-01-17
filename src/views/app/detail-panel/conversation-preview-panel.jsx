@@ -5,7 +5,7 @@
  */
 import React, { useMemo, useEffect } from 'react';
 import { Container, Padding } from '@zextras/carbonio-design-system';
-import { FOLDERS, useUserSettings } from '@zextras/zapp-shell';
+import { FOLDERS, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { map, sortBy, find, filter } from 'lodash';

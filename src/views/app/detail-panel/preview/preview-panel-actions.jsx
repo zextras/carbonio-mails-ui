@@ -19,7 +19,7 @@ import {
 	useUserSettings,
 	FOLDERS,
 	useAppContext
-} from '@zextras/zapp-shell';
+} from '@zextras/carbonio-shell-ui';
 import {
 	moveConversationToTrash,
 	printConversation,

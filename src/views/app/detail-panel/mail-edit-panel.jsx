@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useState } from 'react';
-import { useReplaceHistoryCallback } from '@zextras/zapp-shell';
+import { useReplaceHistoryCallback } from '@zextras/carbonio-shell-ui';
 import {
 	Container,
 	Divider,

@@ -5,7 +5,7 @@
  */
 import React, { useMemo } from 'react';
 import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
-import { ZIMBRA_STANDARD_COLORS } from '@zextras/zapp-shell';
+import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import { ColorContainer, Square, TextUpperCase } from './styled-components';
 // import { ZIMBRA_STANDARD_COLORS } from './zimbra-standard-colors';
 const LabelFactory = ({ selected, label, open, focus }) => (

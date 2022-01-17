@@ -11,7 +11,7 @@ import {
 	SnackbarManagerContext,
 	ModalManagerContext
 } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/zapp-shell';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { map, every, filter, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';

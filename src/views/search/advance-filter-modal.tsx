@@ -7,7 +7,7 @@ import React, { FC, ReactElement, useState, useCallback, useMemo, useEffect } fr
 import { CustomModal, Container, Icon, Row, Text, Padding } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { concat, filter, includes, map } from 'lodash';
-import { getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/zapp-shell';
+import { getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../sidebar/commons/modal-footer';
 import { ModalHeader } from '../sidebar/commons/modal-header';
 import ToggleFilters from './parts/toggle-filters';

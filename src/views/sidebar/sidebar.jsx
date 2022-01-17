@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { filter, map, remove, sortBy, reduce, uniqWith, isEqual } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { useReplaceHistoryCallback, FOLDERS } from '@zextras/zapp-shell';
+import { useReplaceHistoryCallback, FOLDERS } from '@zextras/carbonio-shell-ui';
 import {
 	SnackbarManagerContext,
 	Accordion,

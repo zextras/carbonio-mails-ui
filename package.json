@@ -54,7 +54,7 @@
 	},
 	"dependencies": {
 		"@reduxjs/toolkit": "1.6.2",
-		"@zextras/zapp-shell": "0.2.7-rc.5",
+		"@zextras/carbonio-shell-ui": "^0.3.0-rc.1",
 		"core-js": "3.19.1",
 		"i18next": "^21.5.4",
 		"immer": "7.0.14",

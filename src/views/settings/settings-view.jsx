@@ -9,7 +9,7 @@ import {
 	useUserAccount,
 	useReplaceHistoryCallback,
 	editSettings
-} from '@zextras/zapp-shell';
+} from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep } from 'lodash';
 import {

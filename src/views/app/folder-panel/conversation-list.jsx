@@ -16,7 +16,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { find, map, reduce } from 'lodash';
-import { useAppContext } from '@zextras/zapp-shell';
+import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { selectConversationStatus, selectFolder } from '../../../store/conversations-slice';
 import ConversationListItem from './lists-item/conversation-list-item';

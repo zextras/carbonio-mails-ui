@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/zapp-shell';
+import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { MailMessage } from '../../types/mail-message';

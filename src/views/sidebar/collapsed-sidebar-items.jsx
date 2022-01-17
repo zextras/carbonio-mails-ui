@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo } from 'react';
-import { AppLink } from '@zextras/zapp-shell';
+import { AppLink } from '@zextras/carbonio-shell-ui';
 import { Row, Padding, Tooltip, IconButton } from '@zextras/carbonio-design-system';
 import { getFolderIconColor, getFolderIconName } from './accordion-custom-components';
 

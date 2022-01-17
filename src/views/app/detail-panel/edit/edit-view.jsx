@@ -35,7 +35,7 @@ import {
 	useAddBoardCallback,
 	useUpdateCurrentBoard,
 	getBridgedFunctions
-} from '@zextras/zapp-shell';
+} from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';

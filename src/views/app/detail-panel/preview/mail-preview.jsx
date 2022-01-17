@@ -14,7 +14,7 @@ import {
 	useAppContext,
 	useIntegratedComponent,
 	useUserSettings
-} from '@zextras/zapp-shell';
+} from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import {
 	Container,

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { soapFetch } from '@zextras/zapp-shell';
+import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { normalizeFilterRulesFromSoap } from '../../normalizations/normalize-filter-rules';
 
 export const getIncomingFilters = async (): Promise<any> => {

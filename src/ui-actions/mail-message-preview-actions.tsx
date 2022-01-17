@@ -22,7 +22,7 @@ import {
 	useReplaceHistoryCallback,
 	useAppContext,
 	FOLDERS
-} from '@zextras/zapp-shell';
+} from '@zextras/carbonio-shell-ui';
 
 import {
 	deleteMsg,

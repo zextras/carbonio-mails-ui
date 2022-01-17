@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import { List } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { useAppContext } from '@zextras/zapp-shell';
+import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { selectConversationStatus, selectFolder } from '../../../store/conversations-slice';
 import MessageListItem from './lists-item/message-list-item';
 import SelectMessagesPanelActions from '../../../ui-actions/select-panel-action-message';

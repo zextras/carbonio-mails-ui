@@ -12,7 +12,7 @@ import {
 	useUserAccount,
 	useUserAccounts,
 	FOLDERS
-} from '@zextras/zapp-shell';
+} from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Button,

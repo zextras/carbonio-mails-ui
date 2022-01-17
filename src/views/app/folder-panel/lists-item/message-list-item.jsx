@@ -5,7 +5,11 @@
  */
 import React, { useMemo, useCallback, useEffect } from 'react';
 import { find, isEmpty } from 'lodash';
-import { useUserAccounts, useReplaceHistoryCallback, useAppContext } from '@zextras/zapp-shell';
+import {
+	useUserAccounts,
+	useReplaceHistoryCallback,
+	useAppContext
+} from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Container,

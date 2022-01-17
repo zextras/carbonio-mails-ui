@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo } from 'react';
-import { AppLink, FOLDERS } from '@zextras/zapp-shell';
+import { AppLink, FOLDERS } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import {
 	AccordionItem,

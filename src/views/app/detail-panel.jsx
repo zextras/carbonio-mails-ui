@@ -6,7 +6,7 @@
 import React from 'react';
 import { useRouteMatch, Switch, Route } from 'react-router-dom';
 import { Container } from '@zextras/carbonio-design-system';
-import { useAppContext } from '@zextras/zapp-shell';
+import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { SelectionInteractive } from './detail-panel/selection-interactive';
 import ConversationPreviewPanel from './detail-panel/conversation-preview-panel';
 import MessagePreviewPanel from './detail-panel/message-preview-panel';

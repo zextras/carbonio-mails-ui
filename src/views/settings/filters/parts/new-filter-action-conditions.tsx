@@ -7,7 +7,7 @@ import React, { FC, ReactElement, useMemo, useCallback, useState } from 'react';
 import { Container, Text, Icon, Row, Padding } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 import styled from 'styled-components';
-import { getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/zapp-shell';
+import { getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import Heading from '../../components/settings-heading';
 import MoveToFolderModal from './move-to-folder-modal';
 import { Folder as FolderType } from '../../../../types/folder';
