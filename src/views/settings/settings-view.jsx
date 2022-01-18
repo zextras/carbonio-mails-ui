@@ -89,15 +89,11 @@ export default function SettingsView() {
 		() => Object.keys(settingsToUpdate).length === 0 && disabled,
 		[settingsToUpdate, disabled]
 	);
-	const setNewOrForwardSignatureId = (ItemsAdd, resp, oldSignatureId, isFowardSignature) => {
-		const newOrForwardSignatureToSet = ItemsAdd.find((item) => item.id === oldSignatureId);
+	const setNewOrForwardSignatureId = (itemsAdd, resp, oldSignatureId, isFowardSignature) => {
+		const newOrForwardSignatureToSet = itemsAdd.find((item) => item.id === oldSignatureId);
 		if (
 			!!newOrForwardSignatureToSet &&
-			!!resp &&
-			resp.payload &&
-			resp.payload.response &&
-			resp.payload.response.Body &&
-			resp.payload.response.Body.BatchResponse.CreateSignatureResponse
+			resp?.payload?.response?.Body?.BatchResponse?.CreateSignatureResponse
 		) {
 			const createdSignature =
 				resp.payload.response.Body.BatchResponse.CreateSignatureResponse[0].signature;
@@ -134,7 +130,7 @@ export default function SettingsView() {
 				});
 				return false;
 			}
-			const ItemsDelete = filter(signItemsUpdated, (x) => {
+			const itemsDelete = filter(signItemsUpdated, (x) => {
 				let toogle = false;
 				map(signItems, (ele) => {
 					if (x.id === ele?.id) toogle = true;
@@ -145,9 +141,8 @@ export default function SettingsView() {
 			const findItems = (arr1, arr2) =>
 				filter(arr1, (o1) => arr2.map((o2) => o2.id).indexOf(o1.id) === -1);
 
-			const ItemsAdd = findItems(signItems, signItemsUpdated);
-
-			const ItemsEdit = filter(signItems, (item) =>
+			const itemsAdd = findItems(signItems, signItemsUpdated);
+			const itemsEdit = filter(signItems, (item) =>
 				find(
 					signItemsUpdated,
 					(c) => item.id === c.id && (item.label !== c.label || item.description !== c.description)
@@ -160,8 +155,8 @@ export default function SettingsView() {
 			let setForwardReplySignatureId = '';
 			if (
 				isReplySignaturePrefisNew &&
-				ItemsAdd.length > 0 &&
-				ItemsAdd.findIndex(
+				itemsAdd.length > 0 &&
+				itemsAdd.findIndex(
 					(item) => item.id === settingsToUpdate.zimbraPrefForwardReplySignatureId
 				) !== -1
 			) {
@@ -175,20 +170,19 @@ export default function SettingsView() {
 			let setDefaultSignatureId = '';
 			if (
 				isDefaultSignaturePref &&
-				ItemsAdd.length > 0 &&
-				ItemsAdd.findIndex((item) => item.id === settingsToUpdate.zimbraPrefDefaultSignatureId) !==
+				itemsAdd.length > 0 &&
+				itemsAdd.findIndex((item) => item.id === settingsToUpdate.zimbraPrefDefaultSignatureId) !==
 					-1
 			) {
 				setDefaultSignatureId = settingsToUpdate.zimbraPrefDefaultSignatureId;
 				delete settingsToUpdate.zimbraPrefDefaultSignatureId;
 			}
-
-			dispatch(SignatureRequest({ ItemsAdd, ItemsEdit, ItemsDelete, account })).then((resp) => {
+			dispatch(SignatureRequest({ itemsAdd, itemsEdit, itemsDelete, account })).then((resp) => {
 				if (setForwardReplySignatureId !== '') {
-					setNewOrForwardSignatureId(ItemsAdd, resp, setForwardReplySignatureId, true);
+					setNewOrForwardSignatureId(itemsAdd, resp, setForwardReplySignatureId, true);
 				}
 				if (setDefaultSignatureId !== '') {
-					setNewOrForwardSignatureId(ItemsAdd, resp, setDefaultSignatureId, false);
+					setNewOrForwardSignatureId(itemsAdd, resp, setDefaultSignatureId, false);
 				}
 				if (resp.type.includes('fulfilled')) {
 					createSnackbar({
