@@ -134,21 +134,33 @@ export const SetDropdownActions = (
 export const getFolderIconColor = (f) =>
 	f.color < 10 ? CORRESPONDING_COLORS[f.color].uiRgb : f?.rgb ?? CORRESPONDING_COLORS[0].uiRgb;
 
-const folderIconName = {
-	2: 'InboxOutline',
-	3: 'Trash2Outline',
-	4: 'SlashOutline',
-	5: 'PaperPlaneOutline',
-	6: 'FileOutline'
+const systemFolders = [FOLDERS.INBOX, FOLDERS.TRASH, FOLDERS.DRAFTS, FOLDERS.SPAM, FOLDERS.SENT];
+
+export const getFolderIconName = (folder) => {
+	if (systemFolders.includes(folder.id)) {
+		switch (folder.id) {
+			case FOLDERS.INBOX:
+				return folder.color ? 'Inbox' : 'InboxOutline';
+			case FOLDERS.DRAFTS:
+				return folder.color ? 'File' : 'FileOutline';
+			case FOLDERS.SENT:
+				return folder.color ? 'PaperPlane' : 'PaperPlaneOutline';
+			case FOLDERS.SPAM:
+				return folder.color ? 'Slash' : 'SlashOutline';
+			case FOLDERS.TRASH:
+				return folder.color ? 'Trash2' : 'Trash2Outline';
+			default:
+				return 'Folder';
+		}
+	}
+	if (folder.id === 'share' || folder.isSharedFolder) {
+		return 'Share';
+	}
+	if (!folder.color) {
+		return 'FolderOutline';
+	}
+	return 'Folder';
 };
-export const getFolderIconName = (f) =>
-	// eslint-disable-next-line no-unused-expressions
-	// eslint-disable-next-line no-nested-ternary
-	Object.keys(folderIconName).includes(f.id)
-		? folderIconName[Number(f.id)]
-		: f.id === 'share' || f.isSharedFolder
-		? 'Share'
-		: 'Folder';
 
 const setAccordionCustomComponent = ({
 	accordions,
