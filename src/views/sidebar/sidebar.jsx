@@ -45,7 +45,7 @@ const nest = (items, id, newFolder, setNewFolder, expanded, level) =>
 				items: nest(items, item.id, newFolder, setNewFolder, expanded, level + 1),
 				to: `/folder/${item.id}`,
 				open,
-				divider: expanded
+				divider: false
 			};
 		}
 	);
@@ -55,7 +55,7 @@ const SharesItem = ({ item }) => (
 		width="fill"
 		mainAlignment="center"
 		orientation="horizontal"
-		style={{ padding: '14px 16px' }}
+		style={{ padding: '8px 16px' }}
 	>
 		<Button
 			type="outlined"
@@ -159,8 +159,8 @@ const Sidebar = ({ expanded }) => {
 
 		const ShareLabel = (item) => (
 			<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
-				<Icon size="large" icon="ShareOutline" /> <Padding right="large" />
-				<AccordionItem {...item} />
+				<Icon size="large" icon="Share" /> <Padding right="large" />
+				<AccordionItem {...item} height={40} />
 			</Row>
 		);
 		return [
@@ -200,10 +200,7 @@ const Sidebar = ({ expanded }) => {
 	return currentFolder ? (
 		<>
 			{expanded ? (
-				<>
-					<Accordion ref={sidebarRef} items={sidebarAccordions} />
-					<Divider color="gray2" />
-				</>
+				<Accordion ref={sidebarRef} items={sidebarAccordions} />
 			) : (
 				sidebarAccordions.map((folder, index) =>
 					folder.id !== 'shares' ? <CollapsedSideBarItems key={index} folder={folder} /> : null

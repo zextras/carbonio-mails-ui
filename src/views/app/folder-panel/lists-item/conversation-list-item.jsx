@@ -17,7 +17,6 @@ import {
 	Badge,
 	Button,
 	Container,
-	Divider,
 	Icon,
 	IconButton,
 	Padding,
@@ -374,7 +373,6 @@ export default function ConversationListItem({
 						padding={{ left: 'extralarge' }}
 						height="auto"
 					>
-						<Divider />
 						<ConversationMessagesList
 							messages={messagesToRender}
 							conversationStatus={conversationStatus}
@@ -382,7 +380,6 @@ export default function ConversationListItem({
 						/>
 					</CollapseElement>
 				)}
-				<Divider style={{ minHeight: '1px' }} />
 			</Container>
 		</Drag>
 	) : (

@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isEmpty, split, head } from 'lodash';
-import { Badge, Container, Divider, Icon, Padding, Row, Text, Tooltip } from '@zextras/zapp-ui';
+import { Badge, Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/zapp-ui';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import ListItemActionWrapper from '../app/folder-panel/lists-item/list-item-actions-wrapper';
@@ -113,7 +113,6 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 					</Container>
 				</Row>
 			</ListItemActionWrapper>
-			<Divider style={{ minHeight: '1px' }} />
 		</Container>
 	);
 };

@@ -6,8 +6,18 @@
 import { Avatar, Container, Tooltip } from '@zextras/zapp-ui';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
 import { ParticipantRole } from '../../../../types/participant';
 
+const AvatarElement = styled(Avatar)`
+	width: 42px !important;
+	height: 42px !important;
+	min-width: 42px !important;
+	min-height: 42px !important;
+	p {
+		font-size: 14px;
+	}
+`;
 export const ItemAvatar = ({ item, selected, selecting, toggle, folderId, isSearch = false }) => {
 	const targetParticipants = folderId === '5' ? ParticipantRole.TO : ParticipantRole.FROM;
 	const [t] = useTranslation();
@@ -43,7 +53,7 @@ export const ItemAvatar = ({ item, selected, selecting, toggle, folderId, isSear
 			padding={{ all: 'small' }}
 		>
 			<Tooltip label={activateSelectionMode} disabled={selecting} maxWidth="100%">
-				<Avatar
+				<AvatarElement
 					selecting={selecting}
 					selected={selected}
 					label={avatarLabel}

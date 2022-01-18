@@ -15,8 +15,7 @@ import {
 	Text,
 	Drag,
 	Tooltip,
-	Shimmer,
-	Divider
+	Shimmer
 } from '@zextras/zapp-ui';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -242,7 +241,6 @@ export default function MessageListItem({
 							</Container>
 						</Row>
 					</ListItemActionWrapper>
-					<Divider />
 				</Container>
 			</DraggableItem>
 		</Drag>

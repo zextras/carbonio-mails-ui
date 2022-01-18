@@ -182,7 +182,7 @@ const setAccordionCustomComponent = ({
 					folder.id === data.data.id || // same folder not allowed
 					folder.level + data.data.depth > 3 || // rules for maximum 3 folder depth
 					folder.isSharedFolder || //  shared folder not allowed
-					[4, 6].includes(Number(folder.id)) // cannot be moved inside Draft and Spam
+					[FOLDERS.DRAFTS, FOLDERS.SPAM].includes(folder.id) // cannot be moved inside Draft and Spam
 				)
 					return { succss: false };
 			}
@@ -290,7 +290,10 @@ const setAccordionCustomComponent = ({
 
 		const Component = (props) => {
 			const dragFolderDisable = useMemo(
-				() => [2, 3, 4, 5, 6].includes(Number(folder.id)) || folder.isSharedFolder, // Default folders and shared folders not allowed to drag
+				() =>
+					[FOLDERS.INBOX, FOLDERS.TRASH, FOLDERS.SPAM, FOLDERS.SENT, FOLDERS.DRAFTS].includes(
+						folder.id
+					) || folder.isSharedFolder, // Default folders and shared folders not allowed to drag
 				[]
 			);
 			return (
@@ -325,10 +328,15 @@ const setAccordionCustomComponent = ({
 								display="block"
 								width="100%"
 							>
-								<Row mainAlignment="flex-start" padding={{ left: 'large' }} takeAvailableSpace>
+								<Row
+									mainAlignment="flex-start"
+									height="fit"
+									padding={{ left: 'large' }}
+									takeAvailableSpace
+								>
 									<Icon size="large" icon={folderIconLabel} customColor={folderIconColor} />
 									<Padding right="large" />
-									<AccordionItem {...props} />
+									<AccordionItem {...props} height={40} />
 								</Row>
 							</Dropdown>
 						</AppLink>
