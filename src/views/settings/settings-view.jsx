@@ -4,12 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useState, useMemo, useCallback, useContext } from 'react';
-import {
-	useUserSettings,
-	useUserAccount,
-	useReplaceHistoryCallback,
-	editSettings
-} from '@zextras/zapp-shell';
+import { useUserSettings, useUserAccount, editSettings } from '@zextras/zapp-shell';
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep } from 'lodash';
 import {
@@ -51,7 +46,6 @@ export default function SettingsView() {
 	const account = useUserAccount();
 	const [settingsObj, setSettingsObj] = useState({ ...settings });
 	const [updatedSettings, setUpdatedSettings] = useState({});
-	const replaceHistory = useReplaceHistoryCallback();
 	const [signItems, setSignItems] = useState([]);
 	const [signItemsUpdated, setSignItemsUpdated] = useState([]);
 	const [disabled, setDisabled] = useState(true);
@@ -89,8 +83,8 @@ export default function SettingsView() {
 		() => Object.keys(settingsToUpdate).length === 0 && disabled,
 		[settingsToUpdate, disabled]
 	);
-	const setNewOrForwardSignatureId = (ItemsAdd, resp, oldSignatureId, isFowardSignature) => {
-		const newOrForwardSignatureToSet = ItemsAdd.find((item) => item.id === oldSignatureId);
+	const setNewOrForwardSignatureId = (itemsAdd, resp, oldSignatureId, isFowardSignature) => {
+		const newOrForwardSignatureToSet = itemsAdd.find((item) => item.id === oldSignatureId);
 		if (
 			!!newOrForwardSignatureToSet &&
 			!!resp &&
@@ -134,20 +128,20 @@ export default function SettingsView() {
 				});
 				return false;
 			}
-			const ItemsDelete = filter(signItemsUpdated, (x) => {
-				let toogle = false;
+			const itemsDelete = filter(signItemsUpdated, (x) => {
+				let toggle = false;
 				map(signItems, (ele) => {
-					if (x.id === ele?.id) toogle = true;
+					if (x.id === ele?.id) toggle = true;
 				});
-				return !toogle;
+				return !toggle;
 			});
 
 			const findItems = (arr1, arr2) =>
 				filter(arr1, (o1) => arr2.map((o2) => o2.id).indexOf(o1.id) === -1);
 
-			const ItemsAdd = findItems(signItems, signItemsUpdated);
+			const itemsAdd = findItems(signItems, signItemsUpdated);
 
-			const ItemsEdit = filter(signItems, (item) =>
+			const itemsEdit = filter(signItems, (item) =>
 				find(
 					signItemsUpdated,
 					(c) => item.id === c.id && (item.label !== c.label || item.description !== c.description)
@@ -160,8 +154,8 @@ export default function SettingsView() {
 			let setForwardReplySignatureId = '';
 			if (
 				isReplySignaturePrefisNew &&
-				ItemsAdd.length > 0 &&
-				ItemsAdd.findIndex(
+				itemsAdd.length > 0 &&
+				itemsAdd.findIndex(
 					(item) => item.id === settingsToUpdate.zimbraPrefForwardReplySignatureId
 				) !== -1
 			) {
@@ -175,20 +169,22 @@ export default function SettingsView() {
 			let setDefaultSignatureId = '';
 			if (
 				isDefaultSignaturePref &&
-				ItemsAdd.length > 0 &&
-				ItemsAdd.findIndex((item) => item.id === settingsToUpdate.zimbraPrefDefaultSignatureId) !==
+				itemsAdd.length > 0 &&
+				itemsAdd.findIndex((item) => item.id === settingsToUpdate.zimbraPrefDefaultSignatureId) !==
 					-1
 			) {
 				setDefaultSignatureId = settingsToUpdate.zimbraPrefDefaultSignatureId;
 				delete settingsToUpdate.zimbraPrefDefaultSignatureId;
 			}
 
-			dispatch(SignatureRequest({ ItemsAdd, ItemsEdit, ItemsDelete, account })).then((resp) => {
+			dispatch(
+				SignatureRequest({ itemsAdd, ItemsEdit: itemsEdit, ItemsDelete: itemsDelete, account })
+			).then((resp) => {
 				if (setForwardReplySignatureId !== '') {
-					setNewOrForwardSignatureId(ItemsAdd, resp, setForwardReplySignatureId, true);
+					setNewOrForwardSignatureId(itemsAdd, resp, setForwardReplySignatureId, true);
 				}
 				if (setDefaultSignatureId !== '') {
-					setNewOrForwardSignatureId(ItemsAdd, resp, setDefaultSignatureId, false);
+					setNewOrForwardSignatureId(itemsAdd, resp, setDefaultSignatureId, false);
 				}
 				if (resp.type.includes('fulfilled')) {
 					createSnackbar({
