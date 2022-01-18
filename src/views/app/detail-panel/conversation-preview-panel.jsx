@@ -78,6 +78,8 @@ export default function ConversationPreviewPanel() {
 			{conversation && (
 				<>
 					<PreviewPanelHeader item={conversation} folderId={folderId} />
+					{/* commented to hide the panel actions */}
+					{/* <PreviewPanelActions item={conversation} folderId={folderId} /> */}
 					<Container
 						style={{ overflowY: 'auto' }}
 						height="fill"

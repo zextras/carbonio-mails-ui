@@ -28,6 +28,8 @@ export default function MessagePreviewPanel() {
 			{message && (
 				<>
 					<PreviewPanelHeader item={message} folderId={folderId} />
+					{/* commented to hide the panel actions */}
+					{/* <PreviewPanelActions item={message} folderId={folderId} isMessageView /> */}
 					<Container
 						style={{ overflowY: 'auto' }}
 						height="fill"
