@@ -4,12 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useState, useMemo, useCallback, useContext } from 'react';
-import {
-	useUserSettings,
-	useUserAccount,
-	useReplaceHistoryCallback,
-	editSettings
-} from '@zextras/zapp-shell';
+import { useUserSettings, useUserAccount, editSettings } from '@zextras/zapp-shell';
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep } from 'lodash';
 import {
@@ -51,7 +46,6 @@ export default function SettingsView() {
 	const account = useUserAccount();
 	const [settingsObj, setSettingsObj] = useState({ ...settings });
 	const [updatedSettings, setUpdatedSettings] = useState({});
-	const replaceHistory = useReplaceHistoryCallback();
 	const [signItems, setSignItems] = useState([]);
 	const [signItemsUpdated, setSignItemsUpdated] = useState([]);
 	const [disabled, setDisabled] = useState(true);
@@ -131,11 +125,11 @@ export default function SettingsView() {
 				return false;
 			}
 			const itemsDelete = filter(signItemsUpdated, (x) => {
-				let toogle = false;
+				let toggle = false;
 				map(signItems, (ele) => {
-					if (x.id === ele?.id) toogle = true;
+					if (x.id === ele?.id) toggle = true;
 				});
-				return !toogle;
+				return !toggle;
 			});
 
 			const findItems = (arr1, arr2) =>
