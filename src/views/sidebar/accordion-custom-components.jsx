@@ -134,21 +134,32 @@ export const SetDropdownActions = (
 export const getFolderIconColor = (f) =>
 	f.color < 10 ? CORRESPONDING_COLORS[f.color].uiRgb : f?.rgb ?? CORRESPONDING_COLORS[0].uiRgb;
 
-const folderIconName = {
-	2: 'InboxOutline',
-	3: 'Trash2Outline',
-	4: 'SlashOutline',
-	5: 'PaperPlaneOutline',
-	6: 'FileOutline'
+const systemFolders = [FOLDERS.INBOX, FOLDERS.TRASH, FOLDERS.DRAFTS, FOLDERS.SPAM, FOLDERS.SENT];
+
+export const getFolderIconName = (folder) => {
+	if (systemFolders.includes(folder.id)) {
+		switch (folder.id) {
+			case FOLDERS.INBOX:
+				return 'InboxOutline';
+			case FOLDERS.DRAFTS:
+				return 'FileOutline';
+			case FOLDERS.SENT:
+				return 'PaperPlaneOutline';
+			case FOLDERS.SPAM:
+				return 'SlashOutline';
+			case FOLDERS.TRASH:
+				return 'Trash2Outline';
+			case 'share':
+				return 'ShareOutline';
+			default:
+				return 'FolderOutline';
+		}
+	}
+	if (folder.isSharedFolder) {
+		return 'ShareOutline';
+	}
+	return 'FolderOutline';
 };
-export const getFolderIconName = (f) =>
-	// eslint-disable-next-line no-unused-expressions
-	// eslint-disable-next-line no-nested-ternary
-	Object.keys(folderIconName).includes(f.id)
-		? folderIconName[Number(f.id)]
-		: f.id === 'share' || f.isSharedFolder
-		? 'Share'
-		: 'Folder';
 
 const setAccordionCustomComponent = ({
 	accordions,
@@ -182,7 +193,7 @@ const setAccordionCustomComponent = ({
 					folder.id === data.data.id || // same folder not allowed
 					folder.level + data.data.depth > 3 || // rules for maximum 3 folder depth
 					folder.isSharedFolder || //  shared folder not allowed
-					[4, 6].includes(Number(folder.id)) // cannot be moved inside Draft and Spam
+					[FOLDERS.DRAFTS, FOLDERS.SPAM].includes(folder.id) // cannot be moved inside Draft and Spam
 				)
 					return { succss: false };
 			}
@@ -290,7 +301,10 @@ const setAccordionCustomComponent = ({
 
 		const Component = (props) => {
 			const dragFolderDisable = useMemo(
-				() => [2, 3, 4, 5, 6].includes(Number(folder.id)) || folder.isSharedFolder, // Default folders and shared folders not allowed to drag
+				() =>
+					[FOLDERS.INBOX, FOLDERS.TRASH, FOLDERS.SPAM, FOLDERS.SENT, FOLDERS.DRAFTS].includes(
+						folder.id
+					) || folder.isSharedFolder, // Default folders and shared folders not allowed to drag
 				[]
 			);
 			return (
@@ -325,10 +339,15 @@ const setAccordionCustomComponent = ({
 								display="block"
 								width="100%"
 							>
-								<Row mainAlignment="flex-start" padding={{ left: 'large' }} takeAvailableSpace>
+								<Row
+									mainAlignment="flex-start"
+									height="fit"
+									padding={{ left: 'large' }}
+									takeAvailableSpace
+								>
 									<Icon size="large" icon={folderIconLabel} customColor={folderIconColor} />
 									<Padding right="large" />
-									<AccordionItem {...props} />
+									<AccordionItem {...props} height={40} />
 								</Row>
 							</Dropdown>
 						</AppLink>
