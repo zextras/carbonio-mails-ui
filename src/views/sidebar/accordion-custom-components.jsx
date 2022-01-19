@@ -140,26 +140,25 @@ export const getFolderIconName = (folder) => {
 	if (systemFolders.includes(folder.id)) {
 		switch (folder.id) {
 			case FOLDERS.INBOX:
-				return folder.color ? 'Inbox' : 'InboxOutline';
+				return 'InboxOutline';
 			case FOLDERS.DRAFTS:
-				return folder.color ? 'File' : 'FileOutline';
+				return 'FileOutline';
 			case FOLDERS.SENT:
-				return folder.color ? 'PaperPlane' : 'PaperPlaneOutline';
+				return 'PaperPlaneOutline';
 			case FOLDERS.SPAM:
-				return folder.color ? 'Slash' : 'SlashOutline';
+				return 'SlashOutline';
 			case FOLDERS.TRASH:
-				return folder.color ? 'Trash2' : 'Trash2Outline';
+				return 'Trash2Outline';
+			case 'share':
+				return 'Share';
 			default:
-				return 'Folder';
+				return 'FolderOutline';
 		}
 	}
-	if (folder.id === 'share' || folder.isSharedFolder) {
+	if (folder.isSharedFolder) {
 		return 'Share';
 	}
-	if (!folder.color) {
-		return 'FolderOutline';
-	}
-	return 'Folder';
+	return 'FolderOutline';
 };
 
 const setAccordionCustomComponent = ({
