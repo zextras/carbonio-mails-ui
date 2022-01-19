@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	Button,
 	Catcher,
@@ -100,7 +100,9 @@ const EditorWrapper = styled.div`
 	> .tox:not(.tox-tinymce-inline) {
 		width: 100%;
 		border: none;
-
+		.tox-editor-container {
+			min-height: 300px;
+		}
 		.tox-editor-header {
 			padding: ${(props) => props.theme.sizes.padding.large};
 			background-color: ${(props) => props.theme.palette.gray6.regular};
@@ -193,16 +195,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		[mailId, boardContext?.mailId]
 	);
 
-	const oldEditorId = useMemo(
-		() =>
-			find(
-				map(Object.keys(editors), (key) => ({ ...editors[key] })),
-				{ oldId: activeMailId }
-			)?.editorId,
-		[activeMailId, editors]
-	);
-
-	const editorId = useMemo(() => oldEditorId ?? generateId(), [oldEditorId]);
+	const editorId = useMemo(() => activeMailId ?? generateId(), [activeMailId]);
 
 	const getItems = (items) =>
 		items.map((el) => ({
@@ -291,49 +284,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			dispatch(getMsg({ msgId: activeMailId }));
 		}
 	}, [activeMailId, dispatch]);
-
-	useEffect(() => {
-		if (!activeMailId) {
-			return;
-		}
-		if (!editors[editorId] && messages[activeMailId] && !oldEditorId) {
-			dispatch(
-				createEditor({
-					settings,
-					editorId,
-					id: action === ActionsType.EDIT_AS_DRAFT ? activeMailId : undefined,
-					original: messages[activeMailId] ?? undefined,
-					boardContext,
-					action,
-					change,
-					accounts,
-					labels: {
-						to: `${t('label.to', 'To')}:`,
-						from: `${t('label.from', 'From')}:`,
-						cc: `${t('label.cc', 'CC')}:`,
-						subject: `${t('label.subject', 'Subject')}:`,
-						sent: `${t('label.sent', 'Sent')}:`
-					}
-				})
-			);
-		} else {
-			setEditor(editors[oldEditorId || editorId]);
-		}
-	}, [
-		folderId,
-		dispatch,
-		activeMailId,
-		messages,
-		editors,
-		editorId,
-		action,
-		change,
-		accounts,
-		t,
-		boardContext,
-		settings,
-		oldEditorId
-	]);
 
 	const sendMailCb = useCallback(() => {
 		setBtnSendLabel(t('label.sending', 'Sending'));
@@ -516,30 +466,28 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [editor?.subject, setHeader, updateBoard, action, t]);
 
 	useEffect(() => {
-		if (!activeMailId) {
-			if (!editors[editorId]) {
-				dispatch(
-					createEditor({
-						settings,
-						editorId,
-						id: action === ActionsType.EDIT_AS_DRAFT ? activeMailId : undefined,
-						boardContext,
-						original: messages[activeMailId] ?? undefined,
-						action,
-						change,
-						accounts,
-						labels: {
-							to: `${t('label.to', 'To')}:`,
-							from: `${t('label.from', 'From')}:`,
-							cc: `${t('label.cc', 'CC')}:`,
-							subject: `${t('label.subject', 'Subject')}:`,
-							sent: `${t('label.sent', 'Sent')}:`
-						}
-					})
-				);
-			} else {
-				setEditor(editors[editorId]);
-			}
+		if (!editors[editorId]) {
+			dispatch(
+				createEditor({
+					settings,
+					editorId,
+					id: action === ActionsType.EDIT_AS_DRAFT ? activeMailId : undefined,
+					original: messages[activeMailId ?? editorId],
+					boardContext,
+					action,
+					change,
+					accounts,
+					labels: {
+						to: `${t('label.to', 'To')}:`,
+						from: `${t('label.from', 'From')}:`,
+						cc: `${t('label.cc', 'CC')}:`,
+						subject: `${t('label.subject', 'Subject')}:`,
+						sent: `${t('label.sent', 'Sent')}:`
+					}
+				})
+			);
+		} else {
+			setEditor(editors[editorId]);
 		}
 	}, [
 		editors,
@@ -553,7 +501,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		change,
 		boardContext,
 		settings,
-		activeMailId
+		activeMailId,
+		editor
 	]);
 
 	useEffect(() => {
@@ -623,8 +572,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			<Container onDragOver={(event) => onDragOverEvent(event)}>
 				<Container
 					mainAlignment="flex-start"
-					height="100%"
-					style={{ position: 'relative', maxHeight: '100%' }}
+					height="fill"
+					style={{ position: 'relative', maxHeight: '100%', overflowY: 'auto' }}
 					background="gray5"
 					padding={{ top: 'small', bottom: 'medium', horizontal: 'large' }}
 				>
