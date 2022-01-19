@@ -4,10 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo, useCallback, useState, useEffect } from 'react';
-import { Container, Button, Row, Icon, Padding, ChipInput, Input, Tooltip } from '@zextras/zapp-ui';
+import {
+	Container,
+	Button,
+	Row,
+	Icon,
+	Padding,
+	ChipInput,
+	Input,
+	Tooltip
+} from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { filter, omit } from 'lodash';
-import { ZIMBRA_STANDARD_COLORS } from '@zextras/zapp-shell';
+import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import { v4 as uuidv4 } from 'uuid';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import CustomSelect from './custom-select';

@@ -7,7 +7,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 // import * as faker from 'faker';
-// import { testUtils, useAppContext, setAppContext } from '@zextras/zapp-shell';
+// import { testUtils, useAppContext, setAppContext } from '@zextras/carbonio-shell-ui';
 // import { findByTestId, screen } from '@testing-library/react';
 // import React from 'react';
 // import { Route } from 'react-router-dom';

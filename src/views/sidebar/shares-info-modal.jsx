@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Container, Icon, Row, Text } from '@zextras/zapp-ui';
+import { Container, Icon, Row, Text } from '@zextras/carbonio-design-system';
 import { ModalHeader } from './commons/modal-header';
 
 export const ShareInfoRow = ({ icon, label, text }) => (

@@ -10,8 +10,8 @@ import {
 	IconButton,
 	SnackbarManagerContext,
 	ModalManagerContext
-} from '@zextras/zapp-ui';
-import { FOLDERS } from '@zextras/zapp-shell';
+} from '@zextras/carbonio-design-system';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { map, every, filter, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';

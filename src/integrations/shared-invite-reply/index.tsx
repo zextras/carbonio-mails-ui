@@ -13,8 +13,8 @@ import {
 	Icon,
 	Text,
 	SnackbarManagerContext
-} from '@zextras/zapp-ui';
-import { FOLDERS } from '@zextras/zapp-shell';
+} from '@zextras/carbonio-design-system';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';

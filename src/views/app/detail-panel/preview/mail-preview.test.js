@@ -5,7 +5,7 @@
  */
 /* eslint-disable react/jsx-filename-extension */
 // import React from 'react';
-// import { testUtils, useAppContext } from '@zextras/zapp-shell';
+// import { testUtils, useAppContext } from '@zextras/carbonio-shell-ui';
 // import { Route } from 'react-router-dom';
 // import { screen } from '@testing-library/react';
 // import { filter, find } from 'lodash';

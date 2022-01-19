@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { Container, Input, Text } from '@zextras/zapp-ui';
+import { Container, Input, Text } from '@zextras/carbonio-design-system';
 import FolderItem from '../../views/sidebar/commons/folder-item';
 import ModalFooter from '../../views/sidebar/commons/modal-footer';
 import { ModalHeader } from '../../views/sidebar/commons/modal-header';

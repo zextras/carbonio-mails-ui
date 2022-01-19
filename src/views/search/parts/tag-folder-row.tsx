@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Container, ChipInput } from '@zextras/zapp-ui';
+import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { filter } from 'lodash';
-import { ZIMBRA_STANDARD_COLORS } from '@zextras/zapp-shell';
+import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import FolderSelectModal from './folder-modal';
 
 type ComponentProps = {

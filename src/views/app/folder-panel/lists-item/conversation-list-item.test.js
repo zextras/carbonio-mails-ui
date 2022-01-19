@@ -6,7 +6,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/jsx-filename-extension */
 // import React from 'react';
-// import { testUtils } from '@zextras/zapp-shell';
+// import { testUtils } from '@zextras/carbonio-shell-ui';
 // import { queryByTestId, screen } from '@testing-library/react';
 // import { fireEvent, getByTestId } from '@testing-library/dom';
 // import reducers from '../../../../store/reducers';

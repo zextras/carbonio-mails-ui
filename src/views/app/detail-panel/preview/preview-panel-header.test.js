@@ -6,7 +6,7 @@
 /* eslint-disable react/jsx-filename-extension */
 // import React from 'react';
 // import { screen } from '@testing-library/react';
-// import { testUtils } from '@zextras/zapp-shell';
+// import { testUtils } from '@zextras/carbonio-shell-ui';
 // import reducers from '../../../../store/reducers';
 // import PreviewPanelHeader from './preview-panel-header';
 // import { generateConversation } from '../../../../mocks/generators';
