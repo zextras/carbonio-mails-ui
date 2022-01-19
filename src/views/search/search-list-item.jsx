@@ -9,7 +9,6 @@ import { isEmpty, split, head } from 'lodash';
 import {
 	Badge,
 	Container,
-	Divider,
 	Icon,
 	Padding,
 	Row,
@@ -122,7 +121,6 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 					</Container>
 				</Row>
 			</ListItemActionWrapper>
-			<Divider style={{ minHeight: '1px' }} />
 		</Container>
 	);
 };
