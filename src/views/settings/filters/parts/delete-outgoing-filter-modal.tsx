@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
-import { Text, Container, SnackbarManagerContext } from '@zextras/zapp-ui';
+import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { FilterListType } from './filter-item';
 import { deleteOutgoingFilter } from './actions';

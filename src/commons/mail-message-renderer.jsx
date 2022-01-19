@@ -6,7 +6,7 @@
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { forEach, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Container, Text } from '@zextras/zapp-ui';
+import { Container, Text } from '@zextras/carbonio-design-system';
 
 const _CI_REGEX = /^<(.*)>$/;
 const _CI_SRC_REGEX = /^cid:(.*)$/;

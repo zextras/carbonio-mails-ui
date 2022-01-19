@@ -17,7 +17,7 @@ import {
 	Text,
 	Tooltip,
 	useTheme
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
 import { updateEditor } from '../../../../store/editor-slice';
 

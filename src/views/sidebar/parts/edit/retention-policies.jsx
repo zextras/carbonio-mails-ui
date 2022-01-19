@@ -14,7 +14,7 @@ import {
 	Collapse,
 	Input,
 	Select
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 
 const RetentionPolicies = ({
 	t,

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 // import React from 'react';
-// import { testUtils, useUserAccounts } from '@zextras/zapp-shell';
+// import { testUtils, useUserAccounts } from '@zextras/carbonio-shell-ui';
 // import { screen } from '@testing-library/react';
 // import { map } from 'lodash';
 // import faker from 'faker';

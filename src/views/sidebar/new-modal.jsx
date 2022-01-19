@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Container, CustomModal, Input, Text, Padding } from '@zextras/zapp-ui';
+import { Container, CustomModal, Input, Text, Padding } from '@zextras/carbonio-design-system';
 import { filter, map, includes } from 'lodash';
 import { nanoid } from '@reduxjs/toolkit';
 import FolderItem from './commons/folder-item';

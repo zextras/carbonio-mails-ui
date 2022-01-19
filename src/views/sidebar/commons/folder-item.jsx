@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { Container, Text, Accordion } from '@zextras/zapp-ui';
+import { Container, Text, Accordion } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 

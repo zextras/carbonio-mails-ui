@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useMemo, useState } from 'react';
-import { Input, Text, Container, CustomModal, Padding, Button } from '@zextras/zapp-ui';
+import {
+	Input,
+	Text,
+	Container,
+	CustomModal,
+	Padding,
+	Button
+} from '@zextras/carbonio-design-system';
 import { filter, startsWith, reduce, isEmpty } from 'lodash';
 import FolderItem from './commons/folder-item';
 import { folderAction } from '../../store/actions/folder-action';

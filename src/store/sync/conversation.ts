@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { cloneDeep, filter, find, forEach, map, merge, omit, reduce, some, uniqBy } from 'lodash';
-import { FOLDERS } from '@zextras/zapp-shell';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { ConversationsStateType } from '../../types/state';
 
 type Payload = {

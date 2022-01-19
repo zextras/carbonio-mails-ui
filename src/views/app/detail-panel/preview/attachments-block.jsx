@@ -17,7 +17,7 @@ import {
 	Text,
 	Tooltip,
 	useTheme
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { MailMessagePart } from '../../../../types/mail-message';
 import { EditorAttachmentFiles } from '../../../../types/mails-editor';
 
