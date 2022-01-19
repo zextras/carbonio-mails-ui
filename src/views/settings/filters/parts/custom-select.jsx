@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo } from 'react';
-import { Row, Select, Text, Padding, Icon, Container } from '@zextras/zapp-ui';
+import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
 import {
 	ColorContainer,
 	TextUpperCase

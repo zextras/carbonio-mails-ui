@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { CustomModal } from '@zextras/zapp-ui';
+import { CustomModal } from '@zextras/carbonio-design-system';
 
 const ModalWrapper = ({ open, onClose, children }) => (
 	<CustomModal open={open} onClose={onClose}>

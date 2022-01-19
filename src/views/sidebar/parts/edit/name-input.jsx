@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Input, Padding, Text } from '@zextras/zapp-ui';
+import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import React from 'react';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
 

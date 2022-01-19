@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useState } from 'react';
-import { Container, CustomModal } from '@zextras/zapp-ui';
+import { Container, CustomModal } from '@zextras/carbonio-design-system';
 import EditDefaultModal from './parts/edit/edit-default-modal';
 import ShareFolderModal from './share-folder-modal';
 import ShareRevokeModal from './parts/edit/share-revoke-modal';

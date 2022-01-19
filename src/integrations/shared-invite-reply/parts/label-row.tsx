@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement } from 'react';
-import { Row, Icon, Text } from '@zextras/zapp-ui';
+import { Row, Icon, Text } from '@zextras/carbonio-design-system';
 
 type LabelRowProps = {
 	label: string;

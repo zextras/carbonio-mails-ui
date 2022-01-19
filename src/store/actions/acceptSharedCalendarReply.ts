@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/zapp-shell';
+import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { SaveDraftRequest, SaveDraftResponse } from '../../types/soap/';
 import { generateRequest } from '../editor-slice-utils';
 

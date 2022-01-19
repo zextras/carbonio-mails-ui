@@ -21,7 +21,7 @@ import {
 	Text,
 	Tooltip,
 	Select
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import { map, reduce, throttle, filter, find, flatten, findIndex, concat, some } from 'lodash';
 import {
@@ -35,7 +35,7 @@ import {
 	useAddBoardCallback,
 	useUpdateCurrentBoard,
 	getBridgedFunctions
-} from '@zextras/zapp-shell';
+} from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';

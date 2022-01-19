@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo } from 'react';
-import { Container, FormSubSection, Select, Input, Checkbox, Padding } from '@zextras/zapp-ui';
+import {
+	Container,
+	FormSubSection,
+	Select,
+	Input,
+	Checkbox,
+	Padding
+} from '@zextras/carbonio-design-system';
 import Heading from './components/settings-heading';
 import { NotifyFolderOpts, ReadReceiptOpts, MsgsFromMeOpts, findLabel } from './components/utils';
 

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { FOLDERS } from '@zextras/zapp-shell';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { convAction } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';

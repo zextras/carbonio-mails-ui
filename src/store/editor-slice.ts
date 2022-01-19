@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createSlice } from '@reduxjs/toolkit';
-import { Account, AccountSettings } from '@zextras/zapp-shell';
+import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { drop, map } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
