@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo, useCallback } from 'react';
-import { Container, Padding, Icon, Tooltip } from '@zextras/zapp-ui';
+import { Container, Padding, Icon, Tooltip } from '@zextras/carbonio-design-system';
 
 import styled from 'styled-components';
 import { filter, indexOf } from 'lodash';

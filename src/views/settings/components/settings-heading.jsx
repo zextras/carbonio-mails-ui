@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { Padding, Row, Text } from '@zextras/zapp-ui';
+import { Padding, Row, Text } from '@zextras/carbonio-design-system';
 
 export default function Heading({ title, size = 'large' }) {
 	return (

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useContext, useMemo } from 'react';
-import { List, Container } from '@zextras/zapp-ui';
+import { List, Container } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { filter, map } from 'lodash';
 import FilterItem from './filter-item';

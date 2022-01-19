@@ -12,7 +12,7 @@ import {
 	useUserAccount,
 	useUserAccounts,
 	FOLDERS
-} from '@zextras/zapp-shell';
+} from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Button,
@@ -24,7 +24,7 @@ import {
 	Text,
 	Drag,
 	Tooltip
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { selectCurrentFolderExpandedStatus } from '../../../../store/conversations-slice';

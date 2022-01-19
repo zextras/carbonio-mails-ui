@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useState, useEffect, FC, ReactElement } from 'react';
-import { Container, Switch, Text, Padding } from '@zextras/zapp-ui';
+import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
 import { filter } from 'lodash';
 import { TFunction } from 'i18next';
 

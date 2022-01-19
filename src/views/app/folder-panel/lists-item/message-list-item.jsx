@@ -5,7 +5,11 @@
  */
 import React, { useMemo, useCallback, useEffect } from 'react';
 import { find, isEmpty } from 'lodash';
-import { useUserAccounts, useReplaceHistoryCallback, useAppContext } from '@zextras/zapp-shell';
+import {
+	useUserAccounts,
+	useReplaceHistoryCallback,
+	useAppContext
+} from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Container,
@@ -16,7 +20,7 @@ import {
 	Drag,
 	Tooltip,
 	Shimmer
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';

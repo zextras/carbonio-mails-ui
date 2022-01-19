@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
 import { TFunction } from 'i18next';
-import { Button, Padding, ModalManagerContext } from '@zextras/zapp-ui';
+import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { find } from 'lodash';
 import { removeFilter, addFilter } from './actions';
 import {

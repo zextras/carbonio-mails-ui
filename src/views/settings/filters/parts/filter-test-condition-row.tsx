@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo } from 'react';
-import { Container, Padding, Row, Text } from '@zextras/zapp-ui';
+import { Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 import Heading from '../../components/settings-heading';
 import CustomSelect from './custom-select';

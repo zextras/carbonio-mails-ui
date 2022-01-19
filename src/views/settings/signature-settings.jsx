@@ -15,10 +15,10 @@ import {
 	Button,
 	RichTextEditor,
 	Padding
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
-import { useUserAccounts } from '@zextras/zapp-shell';
+import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map, find, isEqual, findIndex, merge, escape, unescape } from 'lodash';
 import Heading from './components/settings-heading';
 import { getSignatures } from '../../store/editor-slice';

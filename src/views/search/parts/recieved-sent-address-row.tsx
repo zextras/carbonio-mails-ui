@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
-import { Container, ChipInput } from '@zextras/zapp-ui';
+import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
-import { useIntegratedComponent } from '@zextras/zapp-shell';
+import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { isValidEmail } from './utils';
 

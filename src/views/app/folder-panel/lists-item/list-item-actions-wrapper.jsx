@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useContext, useMemo } from 'react';
-import { Container, Tooltip, Dropdown, IconButton } from '@zextras/zapp-ui';
+import { Container, Tooltip, Dropdown, IconButton } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { ActionsContext } from '../../../../commons/actions-context';
 
@@ -15,6 +15,7 @@ const HoverBarContainer = styled(Container)`
 	position: absolute;
 	background: linear-gradient(to right, transparent, ${({ theme }) => theme.palette.gray6.hover});
 	height: 45%;
+	width: calc(100% - 64px);
 	& > * {
 		margin-top: ${({ theme }) => theme.sizes.padding.small};
 		margin-right: ${({ theme }) => theme.sizes.padding.small};

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { Shimmer } from '@zextras/zapp-ui';
+import { Shimmer } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 
 const ShimmerList = () => (

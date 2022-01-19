@@ -6,7 +6,7 @@
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable import/no-extraneous-dependencies */
 // import React from 'react';
-// import { testUtils } from '@zextras/zapp-shell';
+// import { testUtils } from '@zextras/carbonio-shell-ui';
 // import { screen } from '@testing-library/react';
 // import { find } from 'lodash';
 // import { fireEvent } from '@testing-library/dom';

@@ -12,7 +12,7 @@ import React, {
 	useCallback,
 	useEffect
 } from 'react';
-import { Input, Container } from '@zextras/zapp-ui';
+import { Input, Container } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import CustomSelect from '../custom-select';
 import { getBodyOptions } from '../utils';

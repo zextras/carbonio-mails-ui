@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Button, Container, List, Padding, Text, Tooltip } from '@zextras/zapp-ui';
+import { Button, Container, List, Padding, Text, Tooltip } from '@zextras/carbonio-design-system';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
