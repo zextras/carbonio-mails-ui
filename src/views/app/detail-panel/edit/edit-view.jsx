@@ -345,7 +345,13 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [action, boardContext, editor, t, dispatch, editorId, folderId, replaceHistory, closeBoard]);
 
 	const autoSaveToDraft = useMemo(
-		() => (isBlocking && !isFirstTime) || editor?.attachmentFiles?.length > 0,
+		() =>
+			(isBlocking && !isFirstTime) ||
+			editor?.attachmentFiles?.length > 0 ||
+			editor?.subject.length > 0 ||
+			editor?.to?.length > 0 ||
+			editor?.cc?.length > 0 ||
+			editor?.bcc?.length > 0,
 		[isBlocking, isFirstTime, editor]
 	);
 
@@ -358,6 +364,15 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			} else if (editor.id && editor.id !== 'undefined') {
 				saveDraftCb(editor);
 			}
+		}, 500);
+
+		setTimer(newTimer);
+	};
+	const throttledSaveToDraft = (key, value) => {
+		clearTimeout(timer);
+		const newTimer = setTimeout(() => {
+			const newData = { ...editor, [key]: value };
+			saveDraftCb(newData);
 		}, 500);
 
 		setTimer(newTimer);
@@ -796,6 +811,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 															);
 															updateEditorCb({ to: data });
 															onChange(data);
+															throttledSaveToDraft('to', data);
 														}}
 														defaultValue={value}
 													/>
@@ -827,6 +843,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 															);
 															updateEditorCb({ to: data });
 															onChange(data);
+															throttledSaveToDraft('to', data);
 														}}
 														defaultValue={map(value, (v) => ({ ...v, label: v.name }))}
 														background="gray5"
@@ -859,6 +876,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 																);
 																updateEditorCb({ cc: data });
 																onChange(data);
+																throttledSaveToDraft('cc', data);
 															}}
 															defaultValue={value}
 														/>
@@ -891,6 +909,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 																);
 																updateEditorCb({ cc: data });
 																onChange(data);
+																throttledSaveToDraft('cc', data);
 															}}
 															defaultValue={map(value, (v) => ({
 																...v,
@@ -928,6 +947,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 																);
 																updateEditorCb({ bcc: data });
 																onChange(data);
+																throttledSaveToDraft('bcc', data);
 															}}
 															defaultValue={value}
 														/>
@@ -960,6 +980,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 																);
 																updateEditorCb({ bcc: data });
 																onChange(data);
+																throttledSaveToDraft('bcc', data);
 															}}
 															background="gray5"
 															defaultValue={map(value, (v) => ({ ...v, label: v.name }))}
@@ -988,6 +1009,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 											onChange={(ev) => {
 												updateSubjectField({ subject: ev.target.value });
 												onChange(ev.target.value);
+												throttledSaveToDraft('subject', ev.target.value);
 											}}
 											placeholder={t('label.subject', 'Subject')}
 											placeholderType="default"
@@ -1053,6 +1075,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 													editor?.text[1] ? `${editor.text[1]}${ev.target.value}` : ev.target.value
 												}`
 											];
+											saveToDraft();
 											updateSubjectField({ text: data });
 											onChange(data);
 										}}
