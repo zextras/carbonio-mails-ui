@@ -10,12 +10,12 @@ import {
 	IconButton,
 	SnackbarManagerContext,
 	ModalManagerContext
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { map, every, filter, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { useUserSettings, useReplaceHistoryCallback, FOLDERS } from '@zextras/zapp-shell';
+import { useUserSettings, useReplaceHistoryCallback, FOLDERS } from '@zextras/carbonio-shell-ui';
 import {
 	moveConversationToTrash,
 	setConversationsFlag,

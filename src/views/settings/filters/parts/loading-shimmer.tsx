@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement } from 'react';
-import { Container, Shimmer } from '@zextras/zapp-ui';
+import { Container, Shimmer } from '@zextras/carbonio-design-system';
 
 const LoadingShimmer: FC = (): ReactElement => (
 	<Container

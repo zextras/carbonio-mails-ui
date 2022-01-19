@@ -10,7 +10,7 @@ import {
 	registerActions,
 	registerFunctions,
 	getBridgedFunctions
-} from '@zextras/zapp-shell';
+} from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 import { mailToSharedFunction, openComposerSharedFunction } from './integrations/shared-functions';

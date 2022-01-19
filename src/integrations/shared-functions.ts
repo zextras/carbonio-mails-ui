@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getBridgedFunctions } from '@zextras/zapp-shell';
+import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import { Participant } from '../types/participant';
 import { MAIL_APP_ID } from '../constants';
 

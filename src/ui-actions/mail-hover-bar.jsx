@@ -3,11 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { IconButton, Row, SnackbarManagerContext, Tooltip, useModal } from '@zextras/zapp-ui';
+import {
+	IconButton,
+	Row,
+	SnackbarManagerContext,
+	Tooltip,
+	useModal
+} from '@zextras/carbonio-design-system';
 import React, { useContext, useMemo } from 'react';
 import { map } from 'lodash';
 import styled from 'styled-components';
-import { useReplaceHistoryCallback, FOLDERS } from '@zextras/zapp-shell';
+import { useReplaceHistoryCallback, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import {

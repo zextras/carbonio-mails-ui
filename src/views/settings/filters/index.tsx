@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement } from 'react';
-import { Container, Text, Divider } from '@zextras/zapp-ui';
+import { Container, Text, Divider } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import FilterTabs from './parts/filter-tabs';
 import Heading from '../components/settings-heading';

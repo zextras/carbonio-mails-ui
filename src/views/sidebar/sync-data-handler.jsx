@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { store, useNotify, useRefresh } from '@zextras/zapp-shell';
+import { store, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { combineReducers } from '@reduxjs/toolkit';

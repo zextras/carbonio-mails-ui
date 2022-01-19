@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState, useRef, useEffect } from 'react';
-import { Container, ChipInput } from '@zextras/zapp-ui';
+import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { filter, find, map } from 'lodash';
 import { TFunction } from 'i18next';
 import { attachmentTypeItemsConstant, emailStatusItemsConstant } from '../../../constants';

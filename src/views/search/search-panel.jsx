@@ -5,7 +5,7 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useRouteMatch, Switch, Route } from 'react-router-dom';
-import { Container, Padding, Text } from '@zextras/zapp-ui';
+import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import ConversationPreviewPanel from '../app/detail-panel/conversation-preview-panel';
 import MailEditPanel from '../app/detail-panel/mail-edit-panel';

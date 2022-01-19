@@ -14,7 +14,7 @@ import {
 	Input,
 	Icon,
 	Row
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import {
 	groupBy,
 	map,

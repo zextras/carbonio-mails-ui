@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { map, filter, reduce, concat, isEmpty } from 'lodash';
-import { Account, FOLDERS } from '@zextras/zapp-shell';
+import { Account, FOLDERS } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import { EditorAttachmentFiles, MailsEditor } from '../types/mails-editor';
 import { MailMessage, MailMessagePart } from '../types/mail-message';

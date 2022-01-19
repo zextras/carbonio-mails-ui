@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Divider, Row, Text, Padding } from '@zextras/zapp-ui';
+import { Container, Divider, Row, Text, Padding } from '@zextras/carbonio-design-system';
 import React from 'react';
 
 export function Breadcrumbs({ folderPath, itemsCount }) {

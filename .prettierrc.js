@@ -4,5 +4,5 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 module.exports = {
-	...require('@zextras/zapp-configs/rules/prettier')
+	...require('@zextras/carbonio-ui-configs/rules/prettier')
 }

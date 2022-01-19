@@ -12,7 +12,13 @@ import React, {
 	useEffect,
 	useContext
 } from 'react';
-import { Container, Padding, Divider, TabBar, SnackbarManagerContext } from '@zextras/zapp-ui';
+import {
+	Container,
+	Padding,
+	Divider,
+	TabBar,
+	SnackbarManagerContext
+} from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { useDispatch } from 'react-redux';
 import IncomingMessageFilterTab from './incoming-message-filter-tab';

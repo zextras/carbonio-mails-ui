@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useEffect, useMemo, useState, useContext } from 'react';
-import { SnackbarManagerContext } from '@zextras/zapp-ui';
+import { SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { filter, map, isEmpty, reduce, startsWith } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { nanoid } from '@reduxjs/toolkit';
-import { useReplaceHistoryCallback, FOLDERS } from '@zextras/zapp-shell';
+import { useReplaceHistoryCallback, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { NewFolderConvoMsgMove } from './new-folder-conv-msg-move';
 import { MoveConvMsgModal } from './move-conv-msg-modal';
 import { selectFolders } from '../../store/folders-slice';

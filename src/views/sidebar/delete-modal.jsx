@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback } from 'react';
-import { report } from '@zextras/zapp-shell';
-import { Container, CustomModal, Text, Divider } from '@zextras/zapp-ui';
+import { report } from '@zextras/carbonio-shell-ui';
+import { Container, CustomModal, Text, Divider } from '@zextras/carbonio-design-system';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 // eslint-disable-next-line import/extensions

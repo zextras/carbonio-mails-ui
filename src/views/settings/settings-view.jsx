@@ -4,7 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useState, useMemo, useCallback, useContext } from 'react';
-import { useUserSettings, useUserAccount, editSettings } from '@zextras/zapp-shell';
+import {
+	useUserSettings,
+	useUserAccount,
+	useReplaceHistoryCallback,
+	editSettings
+} from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep } from 'lodash';
 import {
@@ -16,7 +21,7 @@ import {
 	Divider,
 	FormSection,
 	SnackbarManagerContext
-} from '@zextras/zapp-ui';
+} from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { differenceObject } from './components/utils';
 import DisplayMessagesSettings from './displaying-messages-settings';
