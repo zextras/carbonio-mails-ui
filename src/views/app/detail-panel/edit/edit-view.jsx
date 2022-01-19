@@ -372,7 +372,12 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		clearTimeout(timer);
 		const newTimer = setTimeout(() => {
 			const newData = { ...editor, [key]: value };
-			saveDraftCb(newData);
+			if (saveFirstDraft) {
+				saveDraftCb(newData);
+				setSaveFirstDraft(false);
+			} else if (editor.id && editor.id !== 'undefined') {
+				saveDraftCb(newData);
+			}
 		}, 500);
 
 		setTimer(newTimer);
@@ -1010,6 +1015,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 												updateSubjectField({ subject: ev.target.value });
 												onChange(ev.target.value);
 												throttledSaveToDraft('subject', ev.target.value);
+												if (!isFirstTime) setIsBlocking(true);
+												setIsFirstTime(false);
 											}}
 											placeholder={t('label.subject', 'Subject')}
 											placeholderType="default"
