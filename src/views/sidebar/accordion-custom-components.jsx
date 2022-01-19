@@ -150,13 +150,13 @@ export const getFolderIconName = (folder) => {
 			case FOLDERS.TRASH:
 				return 'Trash2Outline';
 			case 'share':
-				return 'Share';
+				return 'ShareOutline';
 			default:
 				return 'FolderOutline';
 		}
 	}
 	if (folder.isSharedFolder) {
-		return 'Share';
+		return 'ShareOutline';
 	}
 	return 'FolderOutline';
 };
