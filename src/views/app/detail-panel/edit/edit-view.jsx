@@ -344,34 +344,10 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		}
 	}, [action, boardContext, editor, t, dispatch, editorId, folderId, replaceHistory, closeBoard]);
 
-	const autoSaveToDraft = useMemo(
-		() =>
-			(isBlocking && !isFirstTime) ||
-			editor?.attachmentFiles?.length > 0 ||
-			editor?.subject.length > 0 ||
-			editor?.to?.length > 0 ||
-			editor?.cc?.length > 0 ||
-			editor?.bcc?.length > 0,
-		[isBlocking, isFirstTime, editor]
-	);
-
-	const saveToDraft = (e) => {
+	const throttledSaveToDraft = (data) => {
 		clearTimeout(timer);
 		const newTimer = setTimeout(() => {
-			if (autoSaveToDraft && saveFirstDraft) {
-				saveDraftCb(editor);
-				setSaveFirstDraft(false);
-			} else if (editor.id && editor.id !== 'undefined') {
-				saveDraftCb(editor);
-			}
-		}, 500);
-
-		setTimer(newTimer);
-	};
-	const throttledSaveToDraft = (key, value) => {
-		clearTimeout(timer);
-		const newTimer = setTimeout(() => {
-			const newData = { ...editor, [key]: value };
+			const newData = { ...editor, ...data };
 			if (saveFirstDraft) {
 				saveDraftCb(newData);
 				setSaveFirstDraft(false);
@@ -586,7 +562,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		const participants = concat(editor?.to, editor?.bcc, editor?.cc);
 		return btnSendDisabled || participants.length === 0 || some(participants, { error: true });
 	}, [btnSendDisabled, editor]);
-
 	return editor ? (
 		<Catcher>
 			<Container onDragOver={(event) => onDragOverEvent(event)}>
@@ -816,7 +791,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 															);
 															updateEditorCb({ to: data });
 															onChange(data);
-															throttledSaveToDraft('to', data);
+															throttledSaveToDraft({ to: data });
 														}}
 														defaultValue={value}
 													/>
@@ -848,7 +823,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 															);
 															updateEditorCb({ to: data });
 															onChange(data);
-															throttledSaveToDraft('to', data);
+															throttledSaveToDraft({ to: data });
 														}}
 														defaultValue={map(value, (v) => ({ ...v, label: v.name }))}
 														background="gray5"
@@ -881,7 +856,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 																);
 																updateEditorCb({ cc: data });
 																onChange(data);
-																throttledSaveToDraft('cc', data);
+																throttledSaveToDraft({ cc: data });
 															}}
 															defaultValue={value}
 														/>
@@ -914,7 +889,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 																);
 																updateEditorCb({ cc: data });
 																onChange(data);
-																throttledSaveToDraft('cc', data);
+																throttledSaveToDraft({ cc: data });
 															}}
 															defaultValue={map(value, (v) => ({
 																...v,
@@ -952,7 +927,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 																);
 																updateEditorCb({ bcc: data });
 																onChange(data);
-																throttledSaveToDraft('bcc', data);
+																throttledSaveToDraft({ bcc: data });
 															}}
 															defaultValue={value}
 														/>
@@ -985,7 +960,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 																);
 																updateEditorCb({ bcc: data });
 																onChange(data);
-																throttledSaveToDraft('bcc', data);
+																throttledSaveToDraft({ bcc: data });
 															}}
 															background="gray5"
 															defaultValue={map(value, (v) => ({ ...v, label: v.name }))}
@@ -1014,7 +989,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 											onChange={(ev) => {
 												updateSubjectField({ subject: ev.target.value });
 												onChange(ev.target.value);
-												throttledSaveToDraft('subject', ev.target.value);
+												throttledSaveToDraft({ subject: ev.target.value });
 												if (!isFirstTime) setIsBlocking(true);
 												setIsFirstTime(false);
 											}}
@@ -1031,7 +1006,10 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 							<>
 								<Container width="fill" background="gray6" padding={{ top: 'large' }}>
 									<Row width="fill">
-										<EditAttachmentsBlock editor={editor} />
+										<EditAttachmentsBlock
+											editor={editor}
+											throttledSaveToDraft={throttledSaveToDraft}
+										/>
 									</Row>
 								</Container>
 							</>
@@ -1049,8 +1027,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 											value={value[1]}
 											onEditorChange={(ev) => {
 												updateSubjectField({ text: [ev[0], ev[1]] });
-												saveToDraft();
-
+												throttledSaveToDraft({ text: [ev[0], ev[1]] });
 												onChange([ev[0], ev[1]]);
 												if (!isFirstTime) setIsBlocking(true);
 												setIsFirstTime(false);
@@ -1082,7 +1059,9 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 													editor?.text[1] ? `${editor.text[1]}${ev.target.value}` : ev.target.value
 												}`
 											];
-											saveToDraft();
+
+											throttledSaveToDraft({ text: data });
+
 											updateSubjectField({ text: data });
 											onChange(data);
 										}}
