@@ -159,7 +159,7 @@ function Attachment({ filename, size, link, editor, part, iconColors }) {
 	);
 }
 
-export default function EditAttachmentsBlock({ editor }) {
+export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 	const dispatch = useDispatch();
@@ -175,7 +175,11 @@ export default function EditAttachmentsBlock({ editor }) {
 				}
 			})
 		);
-	}, [editor.editorId, dispatch]);
+		throttledSaveToDraft({
+			attach: { mp: [] },
+			attachmentFiles: []
+		});
+	}, [editor.editorId, dispatch, throttledSaveToDraft]);
 
 	const iconColors = useMemo(
 		() =>
