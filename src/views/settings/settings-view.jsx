@@ -51,7 +51,6 @@ export default function SettingsView() {
 	const account = useUserAccount();
 	const [settingsObj, setSettingsObj] = useState({ ...settings });
 	const [updatedSettings, setUpdatedSettings] = useState({});
-	const replaceHistory = useReplaceHistoryCallback();
 	const [signItems, setSignItems] = useState([]);
 	const [signItemsUpdated, setSignItemsUpdated] = useState([]);
 	const [disabled, setDisabled] = useState(true);
@@ -89,6 +88,27 @@ export default function SettingsView() {
 		() => Object.keys(settingsToUpdate).length === 0 && disabled,
 		[settingsToUpdate, disabled]
 	);
+	const setNewOrForwardSignatureId = (itemsAdd, resp, oldSignatureId, isFowardSignature) => {
+		const newOrForwardSignatureToSet = itemsAdd.find((item) => item.id === oldSignatureId);
+		if (
+			!!newOrForwardSignatureToSet &&
+			resp?.payload?.response?.Body?.BatchResponse?.CreateSignatureResponse
+		) {
+			const createdSignature =
+				resp.payload.response.Body.BatchResponse.CreateSignatureResponse[0].signature;
+			const realSignatureId = createdSignature.find(
+				(item) => item.name === newOrForwardSignatureToSet.label
+			).id;
+			const signatureKey = isFowardSignature
+				? 'zimbraPrefForwardReplySignatureId'
+				: 'zimbraPrefDefaultSignatureId';
+			editSettings({
+				prefs: { [signatureKey]: realSignatureId }
+			}).then((res) => {
+				setUpdatedSettings({});
+			});
+		}
+	};
 
 	// eslint-disable-next-line consistent-return
 	const saveChanges = useCallback(() => {
@@ -109,26 +129,60 @@ export default function SettingsView() {
 				});
 				return false;
 			}
-			const ItemsDelete = filter(signItemsUpdated, (x) => {
-				let toogle = false;
+			const itemsDelete = filter(signItemsUpdated, (x) => {
+				let toggle = false;
 				map(signItems, (ele) => {
-					if (x.id === ele?.id) toogle = true;
+					if (x.id === ele?.id) toggle = true;
 				});
-				return !toogle;
+				return !toggle;
 			});
 
 			const findItems = (arr1, arr2) =>
 				filter(arr1, (o1) => arr2.map((o2) => o2.id).indexOf(o1.id) === -1);
 
-			const ItemsAdd = findItems(signItems, signItemsUpdated);
-
-			const ItemsEdit = filter(signItems, (item) =>
+			const itemsAdd = findItems(signItems, signItemsUpdated);
+			const itemsEdit = filter(signItems, (item) =>
 				find(
 					signItemsUpdated,
 					(c) => item.id === c.id && (item.label !== c.label || item.description !== c.description)
 				)
 			);
-			dispatch(SignatureRequest({ ItemsAdd, ItemsEdit, ItemsDelete, account })).then((resp) => {
+
+			const isReplySignaturePrefisNew =
+				settingsToUpdate.zimbraPrefForwardReplySignatureId &&
+				!settingsToUpdate.zimbraPrefForwardReplySignatureId.includes('-');
+			let setForwardReplySignatureId = '';
+			if (
+				isReplySignaturePrefisNew &&
+				itemsAdd.length > 0 &&
+				itemsAdd.findIndex(
+					(item) => item.id === settingsToUpdate.zimbraPrefForwardReplySignatureId
+				) !== -1
+			) {
+				setForwardReplySignatureId = settingsToUpdate.zimbraPrefForwardReplySignatureId;
+				delete settingsToUpdate.zimbraPrefForwardReplySignatureId;
+			}
+
+			const isDefaultSignaturePref =
+				settingsToUpdate.zimbraPrefDefaultSignatureId &&
+				!settingsToUpdate.zimbraPrefDefaultSignatureId.includes('-');
+			let setDefaultSignatureId = '';
+			if (
+				isDefaultSignaturePref &&
+				itemsAdd.length > 0 &&
+				itemsAdd.findIndex((item) => item.id === settingsToUpdate.zimbraPrefDefaultSignatureId) !==
+					-1
+			) {
+				setDefaultSignatureId = settingsToUpdate.zimbraPrefDefaultSignatureId;
+				delete settingsToUpdate.zimbraPrefDefaultSignatureId;
+			}
+			dispatch(SignatureRequest({ itemsAdd, itemsEdit, itemsDelete, account })).then((resp) => {
+				if (setForwardReplySignatureId !== '') {
+					setNewOrForwardSignatureId(itemsAdd, resp, setForwardReplySignatureId, true);
+				}
+				if (setDefaultSignatureId !== '') {
+					setNewOrForwardSignatureId(itemsAdd, resp, setDefaultSignatureId, false);
+				}
 				if (resp.type.includes('fulfilled')) {
 					createSnackbar({
 						key: `new`,
@@ -152,6 +206,7 @@ export default function SettingsView() {
 				}
 			});
 		}
+
 		if (Object.keys(settingsToUpdate).length > 0) {
 			editSettings({ prefs: settingsToUpdate }).then((res) => {
 				if (res.type.includes('fulfilled')) {

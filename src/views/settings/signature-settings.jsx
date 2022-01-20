@@ -50,7 +50,7 @@ export default function SignatureSettings({
 	setSignItemsUpdated
 }) {
 	const accounts = useUserAccounts();
-	const signatures = getSignatures(accounts, t);
+	const [signatures, setSignatures] = useState(getSignatures(accounts, t));
 	const [signs, setSigns] = useState([]);
 	const [selected, setSelected] = useState({});
 
@@ -138,6 +138,16 @@ export default function SignatureSettings({
 		]
 	);
 
+	const updateAllSignatures = (updatedSign) => {
+		const allSignatures = updatedSign.map((item) => ({
+			label: item.label,
+			value: {
+				description: unescape(item.description),
+				id: item.id
+			}
+		}));
+		setSignatures(allSignatures);
+	};
 	const ListItem = ({ item }) => {
 		const [hovered, setHovered] = useState(false);
 		const onMouseEnter = useCallback(() => setHovered(true), []);
@@ -241,6 +251,7 @@ export default function SignatureSettings({
 									updatedSign[index].label = ev.target.value;
 									setDisabled(false);
 									setSignItems(updatedSign);
+									updateAllSignatures(updatedSign);
 								}}
 							/>
 						</Container>
@@ -257,6 +268,7 @@ export default function SignatureSettings({
 										}
 										setEditorFlag(true);
 										setSignItems(updatedSign);
+										updateAllSignatures(updatedSign);
 									}
 								}}
 							/>

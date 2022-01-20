@@ -24,27 +24,27 @@ export const GetAllSignatures = async (): Promise<any> => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data: any) => {
 	const requests: any = {};
-	const { ItemsAdd, ItemsEdit, ItemsDelete, account } = data;
+	const { itemsAdd, itemsEdit, itemsDelete, account } = data;
 	let ItemsDeleteRequest = '';
 	let ItemsAddRequest = '';
 	let ItemsEditRequest = '';
-	if (ItemsDelete?.length) {
+	if (itemsDelete?.length) {
 		ItemsDeleteRequest = map(
-			ItemsDelete,
+			itemsDelete,
 			(sign) =>
 				`<DeleteSignatureRequest xmlns="urn:zimbraAccount" requestId='${sign.index}'><signature id='${sign.id}'/></DeleteSignatureRequest>`
 		).join('');
 	}
-	if (ItemsAdd?.length) {
+	if (itemsAdd?.length) {
 		ItemsAddRequest = map(
-			ItemsAdd,
+			itemsAdd,
 			(sign) =>
 				`<CreateSignatureRequest  xmlns="urn:zimbraAccount"><signature name='${sign.label}'><content type="text/html">${sign.description}</content></signature></CreateSignatureRequest>`
 		).join('');
 	}
-	if (ItemsEdit?.length) {
+	if (itemsEdit?.length) {
 		ItemsEditRequest = map(
-			ItemsEdit,
+			itemsEdit,
 			(sign) => `<ModifySignatureRequest  xmlns="urn:zimbraAccount"> 
 			<signature id='${sign.id}' name='${sign.label}'> 
 				<content type="text/html">${sign.description}</content>
