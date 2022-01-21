@@ -69,10 +69,28 @@ export default function SignatureSettings({
 		[signatures]
 	);
 
+	const removeDarkThemeAttributeFromSignature = () => {
+		const editorIframe = document.querySelector('.tox-edit-area__iframe');
+		if (editorIframe !== null) {
+			editorIframe.classList.add('force-white-bg');
+		}
+		setTimeout(() => {
+			const signatureRender = document.querySelectorAll('.signature-render');
+			if (signatureRender !== null && signatureRender.length > 0) {
+				signatureRender.forEach((item) => {
+					if (item.hasAttribute('data-darkreader-inline-color')) {
+						item.removeAttribute('data-darkreader-inline-color');
+					}
+				});
+			}
+		}, 0);
+	};
+
 	useEffect(() => {
 		GetAllSignatures().then((res) => {
 			setSigns(res.signature);
 		});
+		removeDarkThemeAttributeFromSignature();
 	}, []);
 
 	setSignItemsUpdated(
@@ -291,6 +309,7 @@ export default function SignatureSettings({
 									value: find(signatures, (signature) => signature.value.id === e.id).value.id
 								}
 							});
+							removeDarkThemeAttributeFromSignature();
 						}}
 					/>
 					{signatureNewMessage.description && (
@@ -298,6 +317,8 @@ export default function SignatureSettings({
 							crossAlignment="baseline"
 							padding={{ all: 'large' }}
 							background="gray5"
+							style={{ color: 'initial' }}
+							className="force-white-bg signature-render"
 							dangerouslySetInnerHTML={{ __html: signatureNewMessage.description }}
 						/>
 					)}
@@ -316,6 +337,7 @@ export default function SignatureSettings({
 									value: find(signatures, (signature) => signature.value.id === e.id).value.id
 								}
 							});
+							removeDarkThemeAttributeFromSignature();
 						}}
 					/>
 					{signatureRepliesForwards.description && (
@@ -323,6 +345,8 @@ export default function SignatureSettings({
 							crossAlignment="baseline"
 							padding={{ all: 'large' }}
 							background="gray5"
+							style={{ color: 'initial' }}
+							className="force-white-bg signature-render"
 							dangerouslySetInnerHTML={{ __html: signatureRepliesForwards.description }}
 						/>
 					)}
