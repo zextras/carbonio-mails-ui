@@ -317,7 +317,8 @@
         "create": "创建",
         "delete": "删除",
         "delete_permanently": "永久删除",
-        "freebusy": "FreeBusy"
+        "freebusy": "FreeBusy",
+        "undo": "撤消"
     },
     "owner": "所有者",
     "read": "已读",
