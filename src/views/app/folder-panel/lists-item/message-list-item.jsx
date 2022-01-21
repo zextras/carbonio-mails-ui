@@ -178,7 +178,6 @@ export default function MessageListItem({
 									<Text
 										data-testid="SenderText"
 										color={textReadValues.color}
-										size={item.read ? 'small' : 'medium'}
 										weight={textReadValues.weight}
 									>
 										{participantsString}
@@ -207,16 +206,62 @@ export default function MessageListItem({
 									wrap="nowrap"
 									takeAvailableSpace
 									mainAlignment="flex-start"
-									crossAlignment="baseline"
+									crossAlignment="center"
 								>
+									{item.isSentByMe && !item.isDraft && (
+										<Tooltip label={t('label.sent', 'Sent')} placement="bottom">
+											<Padding right="extrasmall">
+												<Icon data-testid="SentIcon" icon="PaperPlaneOutline" color="secondary" />
+											</Padding>
+										</Tooltip>
+									)}
+									{item.isDraft && (
+										<Tooltip label={t('label.draft', 'Draft')} placement="bottom">
+											<Padding right="extrasmall">
+												<Icon data-testid="SentIcon" icon="FileOutline" color="secondary" />
+											</Padding>
+										</Tooltip>
+									)}
+									{item.isReplied && (
+										<Tooltip label={t('label.replied', 'Replied')} placement="bottom">
+											<Padding right="extrasmall">
+												<Icon data-testid="SentIcon" icon="UndoOutline" color="secondary" />
+											</Padding>
+										</Tooltip>
+									)}
+									{item.read === false &&
+										!item.isReplied &&
+										!item.isDraft &&
+										!item.isSentByMe &&
+										!item.isForwarded && (
+											<Tooltip label={t('search.unread', 'Unread')} placement="bottom">
+												<Padding right="extrasmall">
+													<Icon data-testid="SentIcon" icon="EmailOutline" color="secondary" />
+												</Padding>
+											</Tooltip>
+										)}
+									{item.read !== false &&
+										!item.isReplied &&
+										!item.isDraft &&
+										!item.isSentByMe &&
+										!item.isForwarded && (
+											<Tooltip label={t('label.read', 'Read')} placement="bottom">
+												<Padding right="extrasmall">
+													<Icon data-testid="SentIcon" icon="EmailReadOutline" color="secondary" />
+												</Padding>
+											</Tooltip>
+										)}
+									{item.isForwarded && (
+										<Tooltip label={t('label.forwarded', 'Forwarded')} placement="bottom">
+											<Padding right="extrasmall">
+												<Icon data-testid="SentIcon" icon="Forward" color="secondary" />
+											</Padding>
+										</Tooltip>
+									)}
 									{!isEmpty(item.fragment) && (
 										<Tooltip label={fragmentLabel} overflow="break-word" maxWidth="60vw">
 											<Row takeAvailableSpace mainAlignment="flex-start">
-												<Text
-													data-testid="Fragment"
-													size={item.read ? 'small' : 'medium'}
-													weight={textReadValues.weight}
-												>
+												<Text data-testid="Fragment" weight={textReadValues.weight}>
 													{fragmentLabel}
 												</Text>
 											</Row>

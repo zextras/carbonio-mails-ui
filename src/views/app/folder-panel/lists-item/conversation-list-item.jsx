@@ -94,12 +94,7 @@ export const SenderName = ({ item, textValues }) => {
 				</Padding>
 			)}
 			<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
-				<Text
-					data-testid="ParticipantLabel"
-					color={textValues?.color}
-					size={item.read ? 'small' : 'medium'}
-					weight={textValues?.weight}
-				>
+				<Text data-testid="ParticipantLabel" color={textValues?.color} weight={textValues?.weight}>
 					{participantsString}
 				</Text>
 			</Tooltip>
@@ -218,7 +213,7 @@ export default function ConversationListItem({
 		[item.subject, t]
 	);
 	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(item.fragment) ? `${subject} - ${item.fragment}` : subject),
+		() => (!isEmpty(item.fragment) ? `${item.fragment}` : subject),
 		[subject, item.fragment]
 	);
 
@@ -327,12 +322,7 @@ export default function ConversationListItem({
 									mainAlignment="flex-start"
 									crossAlignment="baseline"
 								>
-									<Text
-										data-testid="Subject"
-										weight={textReadValues.weight}
-										color="text"
-										size={item.read ? 'small' : 'medium'}
-									>
+									<Text data-testid="Subject" weight={textReadValues.weight} color="text">
 										{subject}
 									</Text>
 
