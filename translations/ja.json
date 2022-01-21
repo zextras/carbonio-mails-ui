@@ -1,410 +1,522 @@
 {
-	"add": "追加する",
-	"create": "作成する",
-	"folder": {
-		"modal": {
-			"edit": {
-				"size": "サイズ",
-				"type": "タイプ",
-				"footer": "編集する",
-				"folder_type": "メールフォルダ",
-				"messages": "メッセージ",
-				"rename_warning": "フォルダの名前をシステムの名前に変更することはできません",
-				"retention_properties": "保持プロパティ",
-				"rtn_dur_warning": "保持期間は正の数でなければなりません",
-				"threshold_msg": "このフォルダでは、破棄のしきい値より古いメッセージは、自動クリーンアップと削除の対象になります。",
-				"retention_msg": "保存範囲内にあるこのフォルダ内のメッセージは、削除する前に明示的に確認する必要があります"
-			},
-			"delete": {
-				"footer": "Ok",
-				"title": "削除する",
-				"body": {
-					"message1": "本当に選択したフォルダを削除しますか？",
-					"message2": "選択したフォルダを完全に削除しますか？",
-					"message3": "削除すると、関連するコンテンツがすべてゴミ箱に移動され、フォルダが表示されなくなります。",
-					"message4": "削除すると、関連するコンテンツがすべて完全に削除され、フォルダを復元できなくなります。"
-				}
-			},
-			"move": {
-				"footer": "移動",
-				"new": "新規フォルダ",
-				"title": "移動",
-				"body": {
-					"message1": "検討対象のフォルダを次の場所に移動するフォルダを選択します:",
-					"message2": "宛先フォルダを選択します",
-					"message_restore": "検討対象のフォルダを次の場所に復元するフォルダを選択します:"
-				},
-				"title_modal": "会話を移動する",
-				"input": {
-					"filter": "フォルダをフィルタリングする"
-				}
-			},
-			"new": {
-				"footer": "作成する",
-				"create_footer": "作成して移動する",
-				"go_back": "戻る",
-				"input": {
-					"name": "フォルダ名",
-					"position": "フォルダの位置"
-				},
-				"name_exist_warning": "名前がすでに存在しています",
-				"restore_create_footer": "作成と復元",
-				"title": "新しいフォルダを作成する"
-			},
-			"restore": {
-				"footer": "復元する",
-				"title_modal": "復元する"
-			},
-			"empty": {
-				"body": {
-					"message1": "選択したフォルダを空にしますか？",
-					"message2": "空にすると、関連するコンテンツがすべて完全に削除されます。"
-				},
-				"footer": "空にする",
-				"title": "空にする"
-			},
-			"wipe": {
-				"body": {
-					"message2": "一層すると、関連するコンテンツがすべて完全に削除されます。",
-					"message1": "選択したフォルダを一掃しますか？"
-				},
-				"footer": "一掃する",
-				"title": "一掃する"
-			}
-		},
-		"action": {
-			"new": "新規フォルダ",
-			"delete": "フォルダを削除する",
-			"empty": {
-				"trash": "ゴミ箱を空にする"
-			},
-			"delete_permanently": "フォルダを完全に削除する",
-			"edit": "フォルダのプロパティを編集する",
-			"edit_properties": "プロパティを編集する",
-			"move": "フォルダを移動する",
-			"wipe": {
-				"folder": "フォルダを一掃する"
-			},
-			"restore": "フォルダを復元する"
-		},
-		"item": {
-			"root": "/ルート"
-		}
-	},
-	"header": {
-		"warning": "警告",
-		"edit_draft": "下書きを編集する",
-		"message_not_sent": "エラー - メッセージが送信されませんでした",
-		"no_subject": "件名なし",
-		"redirect_email": "メールをリダイレクトする",
-		"delete_email": "メールを削除する"
-	},
-	"title": {
-		"new_messages": "新しいメッセージ",
-		"advanced_filters": "高度なフィルター",
-		"replies_forwards": "返信と転送"
-	},
-	"type": "タイプ",
-	"action": {
-		"back": "戻る",
-		"cancel": "キャンセル",
-		"delete": "削除する",
-		"download": "ダウンロード",
-		"edit_as_draft": "編集する",
-		"forward": "転送する",
-		"mark_as_read": "既読にする",
-		"mark_as_unread": "未読にする",
-		"move": "移動",
-		"ok": "Ok",
-		"reply": "返信する",
-		"restore": "復元する",
-		"search": "検索する",
-		"send": "送信",
-		"delete_permanently": "完全に削除する",
-		"edit_share": "アクセスを編集する",
-		"edit_as_new": "新規として編集する",
-		"flag": "フラグを追加する",
-		"goto_drafts": "下書きに移動する",
-		"goto_folder": "フォルダに移動する",
-		"mark_as_non_spam": "迷惑メールではない",
-		"mark_as_spam": "迷惑メールとしてマークする",
-		"print": "印刷",
-		"redirect": "リダイレクトする",
-		"reply_all": "全員に返信する",
-		"reset": "フィルターをリセットする",
-		"share_folder": "フォルダを共有する",
-		"send_anyway": "とにかく送信する",
-		"show_details": "詳細を表示する",
-		"unflag": "フラグを削除する",
-		"preview": "クリックして別のタブでプレビューする",
-		"hide_details": "詳細を非表示にする",
-		"show_original": "オリジナルを表示する"
-	},
-	"delete": "削除する",
-	"folders": {
-		"trash": "ゴミ箱",
-		"drafts": "下書き",
-		"inbox": "受信トレイ",
-		"spam": "迷惑メール",
-		"sent": "送信されました"
-	},
-	"label": {
-		"attachment": "{{count}}添付ファイル",
-		"cancel": "キャンセル",
-		"download": "ダウンロード",
-		"edit": "編集する",
-		"me": "私",
-		"remove": "削除する",
-		"save": "保存する",
-		"search_subject": "件名",
-		"send": "送信",
-		"share": "シェアする",
-		"advance_filters": "{{count}}高度なフィルター",
-		"edit_access": "{{name}}のアクセスを編集する",
-		"edit_folder_properties": "{{name}}のプロパティを編集する",
-		"add_custom_message": "カスタムメッセージを追加する",
-		"allowed_actions": "許可された操作: ",
-		"automatically_delete_duplicates": "受信時に同じメッセージの重複コピーを自動的に削除します",
-		"bcc": "BCC:",
-		"calendar_color": "アイテムの色",
-		"cc": "CC:",
-		"draft_folder": "[下書き]",
-		"filter_user": "ユーザーをフィルタリングする",
-		"find_shares": "フォルダツリーに表示するフォルダを選択します",
-		"flash_browser_title": "ブラウザのタイトルをフラッシュする",
-		"from": "送信者:",
-		"grantee": "被付与者:",
-		"highlight_tab": "[メール]タブを強調表示する",
-		"keywords": "キーワード",
-		"resend": "再送信する",
-		"revoke": "取り消す",
-		"revoke_access_tooltip": "標準通知の送信へのアクセスを取り消す",
-		"revoke_access_without_notification": "通知を送信せずにアクセスを取り消す",
-		"revoke_send_standard_msg": "カスタム通知の送信へのアクセスを取り消す",
-		"revoke_share": "{{title}}の共有を取り消す",
-		"search_hint": "検索のヒント！",
-		"single_advance_fillter": "高度なフィルター",
-		"mailSelected": "{{count}}メールが選択されました",
-		"mail_setting": "メールの設定",
-		"no_subject": "(件名なし)",
-		"owner": "所有者:",
-		"receive_message": "メッセージの受信",
-		"retention_policy": "保持プロパティ",
-		"role": "役割: ",
-		"select_1": "メールを選択して読む",
-		"select_2": "または[新規]ボタンをクリックします",
-		"select_3": "新しいメールを書くために。",
-		"select_folder": "フォルダーを選択します",
-		"send_notification": "通知メッセージを送信する",
-		"show": "すべて表示する",
-		"sent": "送信されました",
-		"shared_item": "共有アイテム: ",
-		"shares_folder_edit": "このフォルダの共有",
-		"show_popup": "ポップアップ通知を表示する",
-		"subject": "件名:",
-		"type": "種類:",
-		"to": "宛先:",
-		"type_name_here": "アイテム名",
-		"with_you": "あなたと",
-		"would_like_to_share": "共有しました",
-		"shares_items": "{{value}}の共有フォルダ"
-	},
-	"messages": {
-		"permanent_delete_confirm": "完全に削除する",
-		"modal": {
-			"delete": {
-				"sure_delete_email": "本当に選択したメールを削除しますか？",
-				"if_delete_lost_forever": "メールを削除すると、完全に失われます。"
-			},
-			"redirect": {
-				"first": "このメールは、元の送信者のメールアドレスを保持したまま、新しい受信者に送信されます。",
-				"second": "つまり、新しい受信者には、メールが最初にその人に送信されたように見えます。"
-			}
-		},
-		"invalid_address": "次のアドレスは無効のようです",
-		"new_email": "新規メール",
-		"no_content": "このメッセージにはテキストコンテンツがありません",
-		"no_subject": "件名がありません。",
-		"permanent_delete_body": "この要素を完全に削除すると、回復できなくなります。続行しますか？",
-		"permanent_delete_title": "本当にこの要素を完全に削除しますか？",
-		"snackbar": {
-			"conversation_delete_error": "エラーが発生しました。この会話は削除されませんでした。再度お試しください。",
-			"conversation_deleted": "会話が削除されました。",
-			"conversation_deleted_permanently": "メールが完全に削除されました",
-			"conversation_deleted_permanently_error": "エラーが発生しました。再度お試しください",
-			"conversation_move": "会話が移動しました",
-			"conversation_move_error": "エラーが発生しました。会話が移動されませんでした。再度お試しください。",
-			"email_move_error": "エラーが発生しました。再度お試しください",
-			"email_moved_to_trash": "メールがゴミ箱に移動しました",
-			"email_restored": "メールが宛先フォルダに復元されました",
-			"folder_created": "新しいフォルダが作成されました",
-			"folder_created_error": "エラーが発生しました。再度お試しください。",
-			"folder_edited": "フォルダが編集されました",
-			"folder_edited_error": "エラーが発生しました。変更されませんでした。再度お試しください。",
-			"folder_empty": "ゴミ箱がクリーンアップされました",
-			"folder_move_error": "エラーが発生しました。このフォルダが移動されませんでした。再度お試しください。",
-			"folder_moved": "フォルダが移動しました",
-			"folder_moved_to_trash": "フォルダがゴミ箱に移動しました",
-			"folder_wiped": "フォルダが一掃されました",
-			"folder_wiped_error": "エラーが発生しました。再度お試しください",
-			"mail_sent": "メッセージが送信されました",
-			"marked_as_non_spam": "このメールを迷惑メールではないとしてマークしました",
-			"marked_as_spam": "このメールを迷惑メールとしてマークしました",
-			"message_delete_error": "エラーが発生しました。このメッセージは削除されませんでした。再度お試しください。",
-			"message_deleted": "メッセージが削除されました。",
-			"message_deleted_permanently": "メールが完全に削除されました",
-			"message_deleted_permanently_error": "エラーが発生しました。再度お試しください",
-			"message_move": "メッセージが移動されました",
-			"message_move_error": "エラーが発生しました。メッセージが移動されませんでした。再度お試しください。",
-			"email_restore_error": "エラーが発生しました。再度お試しください",
-			"folder_deleted": "フォルダが削除されました。",
-			"folder_empty_error": "エラーが発生しました。変更されませんでした。再度お試しください。",
-			"folder_will_be_moved_in_time": "このフォルダは{{remainingTime}}に移動されます",
-			"message_redirected": "メッセージがリダイレクトされました"
-		}
-	},
-	"of": "の",
-	"owner": "オーナ",
-	"placeholder": {
-		"subject": "件名",
-		"add_new_recipients": "新しい受信者を追加する",
-		"bcc": "BCC",
-		"cc": "CC",
-		"to": "宛先"
-	},
-	"read": "既読",
-	"search": {
-		"attachment": "添付ファイル",
-		"unread": "未読",
-		"attachment_note": "添付ファイルのあるメールアイテムをすべて検索します。",
-		"flagged": "フラグを付けました",
-		"unread_note": "未読のメールアイテムをすべて検索します。",
-		"flagged_note": "フラグが付いているメールアイテムをすべて検索します。"
-	},
-	"share": {
-		"options": {
-			"share_calendar_role": {
-				"admin": "管理者",
-				"none": "なし",
-				"manager": "管理者",
-				"viewer": "ビューア"
-			},
-			"share_calendar_with": {
-				"external_guests": "外部ゲスト（表示のみ）",
-				"internal_users_groups": "内部ユーザーまたはグループ",
-				"public": "公開（表示のみ、パスワード不要）"
-			}
-		},
-		"recipients_address": "受信者のメールアドレス",
-		"send_notification": "この共有に関する通知を送信する",
-		"standard_message": "標準メッセージにメモを追加する",
-		"share_note": "標準メッセージには、名前、共有アイテムの名前、受信者に付与されたアクセス許可、および必要に応じてサインイン情報が表示されます。"
-	},
-	"administer": "管理する",
-	"composer": {
-		"attachment": {
-			"contactsMod": "連絡先カードを追加する",
-			"draganddrop": {
-				"title": "ドラッグ＆ドロップモード",
-				"content": "添付ファイルをここにドロップして、このメールに素早く追加できます"
-			},
-			"drive": "ドライブから追加する",
-			"local": "ローカルから追加する"
-		}
-	},
-	"find_shares": "共有を探す",
-	"find_mail_shares": "共有フォルダを探す",
-	"freebusy": "空き時間",
-	"insert": "挿入する",
-	"message": {
-		"snackbar": {
-			"settings_saved": "編集が保存されました",
-			"share": {
-				"accepted": "共有を承認済みとして返信しました",
-				"declined": "共有を拒否したと返信しました",
-				"error": "エラーが発生しました。再度お試しください"
-			}
-		},
-		"sending_mail_to_self": "自分にメールを送信しようとしているようです",
-		"search_hints": "話し合う必要のある検索のヒント"
-	},
-	"mail_folder": "メールフォルダ",
-	"private": "プライベート",
-	"remove_from_this_list": "リストから削除する",
-	"select_signature": "署名を選択する",
-	"set_default_signatures": "デフォルトの署名を設定する",
-	"settings": {
-		"conv_sort_optn": {
-			"asc": "古いものから新しいものへ",
-			"desc": "新しいものから古いものへ"
-		},
-		"dspl_mail_optn": {
-			"text": "テキストとして",
-			"html": "HTMLとして（可能な場合）"
-		},
-		"label": {
-			"always_dsp_received_time": "常に受信時間をメーリングリストに表示する",
-			"check_new_mail": "新規メールを確認する",
-			"conv_sorting": "会話の順序",
-			"dflt_mail_search": "デフォルトのメール検索",
-			"disp_messages": "メッセージの表示",
-			"display_mail": "メールを表示する",
-			"dsp_external_imgs": "HTMLメールで外部画像を自動的に表示する",
-			"dsp_msg_snpt": "メールリストにメッセージのスニペットを表示する",
-			"msg_color": "メッセージの色",
-			"msg_prv_title": "メッセージのプレビューと画像",
-			"msg_selection": "メッセージの選択",
-			"set_msg_color_acc_tag": "タグの色に応じてメッセージや会話の色を設定します。",
-			"dbl_click_opens_msg": "ダブルクリックすると、新しいウィンドウでメッセージが開きます",
-			"search_query": "デフォルトのクエリ"
-		},
-		"msg_from_optn": {
-			"discard": "メッセージを自動的に破棄する",
-			"inbox": "受信トレイに配置する",
-			"inbox_if_cc": "宛先: またはCc: にいる場合は、受信トレイに配置します:"
-		},
-		"msg_selection_optn": {
-			"based_on_previous": "以前の選択に基づいて次のメッセージを選択します",
-			"below_deleted": "削除または移動したメッセージの下にあるメッセージを選択します",
-			"above_deleted": "削除または移動したメッセージの上にあるメッセージを選択します"
-		},
-		"new_mail_optn": {
-			"manually": "手動",
-			"minute": "{{count}}分",
-			"when_arrive": "新着メールが届いた時"
-		},
-		"notify_folder_optn": {
-			"new_message_inbox": "受信トレイに新規メッセージの通知を表示する",
-			"new_message_folder": "任意のフォルダに新しいメッセージの通知を表示する"
-		},
-		"read_rcpt_optn": {
-			"always": "常に開封確認を送信する",
-			"ask_me": "表示する",
-			"never": "開封確認メッセージを送信しない"
-		}
-	},
-	"snackbar": {
-		"error": "エラーが発生しました。再度お試しください",
-		"folder_shared_error": "エラーが発生しました。再度お試しください",
-		"share_resend": "送信された招待を共有する",
-		"share_revoke": "共有アクセスが取り消されました",
-		"share_updated": "アクセス権が更新されました",
-		"folder_shared": "フォルダが共有されました"
-	},
-	"tooltip": {
-		"resend": "この共有に関するメール通知を再送信します",
-		"revoke": "アクセス権を取り消す",
-		"add_attachments": "添付ファイルを追加する",
-		"disable_rich_text": "リッチテキストエディタを無効にする",
-		"disable_urgent": "緊急を無効にする",
-		"edit": "共有プロパティを編集する",
-		"enable_rich_text": "リッチテキストエディタを有効にする",
-		"enable_urgent": "緊急を有効にする"
-	},
-	"shared_folders": "共有フォルダ",
-	"shared_item": "共有アイテム",
-	"shares_info": "共有フォルダの情報",
-	"workflow": "ワークフロー",
-	"write": "書く",
-	"allowed_actions": "許可された操作"
+    "add": "追加する",
+    "create": "作成する",
+    "folder": {
+        "modal": {
+            "edit": {
+                "size": "サイズ",
+                "type": "タイプ",
+                "footer": "編集する",
+                "folder_type": "メールフォルダ",
+                "messages": "メッセージ",
+                "rename_warning": "フォルダの名前をシステムの名前に変更することはできません",
+                "retention_properties": "保持プロパティ",
+                "rtn_dur_warning": "保持期間は正の数でなければなりません",
+                "threshold_msg": "このフォルダでは、破棄のしきい値より古いメッセージは、自動クリーンアップと削除の対象になります。",
+                "retention_msg": "保存範囲内にあるこのフォルダ内のメッセージは、削除する前に明示的に確認する必要があります",
+                "retention_message": "保存範囲内にあるこのフォルダ内のメッセージは、削除する前に明示的に確認する必要があります",
+                "retention_duration_warning": "保持期間は正の数でなければなりません"
+            },
+            "delete": {
+                "footer": "Ok",
+                "title": "削除する",
+                "body": {
+                    "message1": "本当に選択したフォルダを削除しますか？",
+                    "message2": "選択したフォルダを完全に削除しますか？",
+                    "message3": "削除すると、関連するコンテンツがすべてゴミ箱に移動され、フォルダが表示されなくなります。",
+                    "message4": "削除すると、関連するコンテンツがすべて完全に削除され、フォルダを復元できなくなります。"
+                }
+            },
+            "move": {
+                "footer": "移動",
+                "new": "新規フォルダ",
+                "title": "移動",
+                "body": {
+                    "message1": "検討対象のフォルダを次の場所に移動するフォルダを選択します:",
+                    "message2": "宛先フォルダを選択します",
+                    "message_restore": "検討対象のフォルダを次の場所に復元するフォルダを選択します:"
+                },
+                "title_modal": "会話を移動する",
+                "input": {
+                    "filter": "フォルダをフィルタリングする"
+                }
+            },
+            "new": {
+                "footer": "作成する",
+                "create_footer": "作成して移動する",
+                "go_back": "戻る",
+                "input": {
+                    "name": "フォルダ名",
+                    "position": "フォルダの位置"
+                },
+                "name_exist_warning": "名前がすでに存在しています",
+                "restore_create_footer": "作成と復元",
+                "title": "新しいフォルダを作成する"
+            },
+            "restore": {
+                "footer": "復元する",
+                "title_modal": "復元する"
+            },
+            "empty": {
+                "body": {
+                    "message1": "選択したフォルダを空にしますか？",
+                    "message2": "空にすると、関連するコンテンツがすべて完全に削除されます。"
+                },
+                "footer": "空にする",
+                "title": "空にする"
+            },
+            "wipe": {
+                "body": {
+                    "message2": "一層すると、関連するコンテンツがすべて完全に削除されます。",
+                    "message1": "選択したフォルダを一掃しますか？"
+                },
+                "footer": "一掃する",
+                "title": "一掃する"
+            }
+        },
+        "action": {
+            "new": "新規フォルダ",
+            "delete": "フォルダを削除する",
+            "empty": {
+                "trash": "ゴミ箱を空にする"
+            },
+            "delete_permanently": "フォルダを完全に削除する",
+            "edit": "フォルダのプロパティを編集する",
+            "edit_properties": "プロパティを編集する",
+            "move": "フォルダを移動する",
+            "wipe": {
+                "folder": "フォルダを一掃する"
+            },
+            "restore": "フォルダを復元する"
+        },
+        "item": {
+            "root": "/ルート"
+        }
+    },
+    "header": {
+        "warning": "警告",
+        "edit_draft": "下書きを編集する",
+        "message_not_sent": "エラー - メッセージが送信されませんでした",
+        "no_subject": "件名なし",
+        "redirect_email": "メールをリダイレクトする",
+        "delete_email": "メールを削除する"
+    },
+    "title": {
+        "new_messages": "新しいメッセージ",
+        "advanced_filters": "高度なフィルター",
+        "replies_forwards": "返信と転送"
+    },
+    "type": "タイプ",
+    "action": {
+        "back": "戻る",
+        "cancel": "キャンセル",
+        "delete": "削除する",
+        "download": "ダウンロード",
+        "edit_as_draft": "編集する",
+        "forward": "転送する",
+        "mark_as_read": "既読にする",
+        "mark_as_unread": "未読にする",
+        "move": "移動",
+        "ok": "Ok",
+        "reply": "返信する",
+        "restore": "復元する",
+        "search": "検索する",
+        "send": "送信",
+        "delete_permanently": "完全に削除する",
+        "edit_share": "アクセスを編集する",
+        "edit_as_new": "新規として編集する",
+        "flag": "フラグを追加する",
+        "goto_drafts": "下書きに移動する",
+        "goto_folder": "フォルダに移動する",
+        "mark_as_non_spam": "迷惑メールではない",
+        "mark_as_spam": "迷惑メールとしてマークする",
+        "print": "印刷",
+        "redirect": "リダイレクトする",
+        "reply_all": "全員に返信する",
+        "reset": "フィルターをリセットする",
+        "share_folder": "フォルダを共有する",
+        "send_anyway": "とにかく送信する",
+        "show_details": "詳細を表示する",
+        "unflag": "フラグを削除する",
+        "preview": "クリックして別のタブでプレビューする",
+        "hide_details": "詳細を非表示にする",
+        "show_original": "オリジナルを表示する",
+        "preview_new_tab": "クリックして別のタブでプレビューする"
+    },
+    "delete": "削除する",
+    "folders": {
+        "trash": "ゴミ箱",
+        "drafts": "下書き",
+        "inbox": "受信トレイ",
+        "spam": "迷惑メール",
+        "sent": "送信されました",
+        "junk": "迷惑メール"
+    },
+    "label": {
+        "attachment": "{{count}}添付ファイル",
+        "cancel": "キャンセル",
+        "download": "ダウンロード",
+        "edit": "編集する",
+        "me": "私",
+        "remove": "削除する",
+        "save": "保存する",
+        "search_subject": "件名",
+        "send": "送信",
+        "share": "シェアする",
+        "advance_filters": "{{count}}高度なフィルター",
+        "edit_access": "{{name}}のアクセスを編集する",
+        "edit_folder_properties": "{{name}}のプロパティを編集する",
+        "add_custom_message": "カスタムメッセージを追加する",
+        "allowed_actions": "許可された操作: ",
+        "automatically_delete_duplicates": "受信時に同じメッセージの重複コピーを自動的に削除します",
+        "bcc": "BCC:",
+        "calendar_color": "アイテムの色",
+        "cc": "CC:",
+        "draft_folder": "[下書き]",
+        "filter_user": "ユーザーをフィルタリングする",
+        "find_shares": "フォルダツリーに表示するフォルダを選択します",
+        "flash_browser_title": "ブラウザのタイトルをフラッシュする",
+        "from": "送信者:",
+        "grantee": "被付与者:",
+        "highlight_tab": "[メール]タブを強調表示する",
+        "keywords": "キーワード",
+        "resend": "再送信する",
+        "revoke": "取り消す",
+        "revoke_access_tooltip": "標準通知の送信へのアクセスを取り消す",
+        "revoke_access_without_notification": "通知を送信せずにアクセスを取り消す",
+        "revoke_send_standard_msg": "カスタム通知の送信へのアクセスを取り消す",
+        "revoke_share": "{{title}}の共有を取り消す",
+        "search_hint": "検索のヒント！",
+        "single_advance_fillter": "高度なフィルター",
+        "mailSelected": "{{count}}メールが選択されました",
+        "mail_setting": "メールの設定",
+        "no_subject": "(件名なし)",
+        "owner": "所有者:",
+        "receive_message": "メッセージの受信",
+        "retention_policy": "保持プロパティ",
+        "role": "役割: ",
+        "select_1": "メールを選択して読む",
+        "select_2": "または[新規]ボタンをクリックします",
+        "select_3": "新しいメールを書くために。",
+        "select_folder": "フォルダーを選択します",
+        "send_notification": "通知メッセージを送信する",
+        "show": "すべて表示する",
+        "sent": "送信されました",
+        "shared_item": "共有アイテム: ",
+        "shares_folder_edit": "このフォルダの共有",
+        "show_popup": "ポップアップ通知を表示する",
+        "subject": "件名:",
+        "type": "種類:",
+        "to": "宛先:",
+        "type_name_here": "アイテム名",
+        "with_you": "あなたと",
+        "would_like_to_share": "共有しました",
+        "shares_items": "{{value}}の共有フォルダ",
+        "no_search_results_found": "該当なし",
+        "of": "の",
+        "private": "プライベート",
+        "read": "読出し",
+        "remove_from_this_list": "リストから削除する",
+        "revoke_with_custom_message": "カスタム通知を送信してアクセス権を取り消す",
+        "shared_folders": "共有フォルダ",
+        "shares_info": "共有フォルダの情報",
+        "single_advanced_filter": "高度なフィルター",
+        "size": "サイズ",
+        "wipe": "一掃する",
+        "delete_permanently": "完全に削除する",
+        "restore": "戻す",
+        "tag": "タグ",
+        "workflow": "ワークフロー",
+        "delete": "削除する",
+        "empty": "空にする",
+        "expand": "拡張する",
+        "filter_folders": "フォルダをフィルタリングする",
+        "find_mail_shares": "共有フォルダを探す",
+        "flagged": "フラグを付けました",
+        "insert": "挿入する",
+        "messages": "メッセージ",
+        "move": "移動",
+        "add": "追加する",
+        "administer": "管理者",
+        "advanced_filters": "高度なフィルタ",
+        "back": "戻る",
+        "create": "作成する",
+        "email_perm_deleted": "メールが完全に削除されました",
+        "error_try_again": "エラーが発生しました。再度お試しください",
+        "write": "書く",
+        "freebusy": "空き時間",
+        "go_back": "戻る",
+        "new_folder": "新規フォルダ",
+        "undo": "元に戻す"
+    },
+    "messages": {
+        "permanent_delete_confirm": "完全に削除する",
+        "modal": {
+            "delete": {
+                "sure_delete_email": "本当に選択したメールを削除しますか？",
+                "if_delete_lost_forever": "メールを削除すると、完全に失われます。"
+            },
+            "redirect": {
+                "first": "このメールは、元の送信者のメールアドレスを保持したまま、新しい受信者に送信されます。",
+                "second": "つまり、新しい受信者には、メールが最初にその人に送信されたように見えます。"
+            }
+        },
+        "invalid_address": "次のアドレスは無効のようです",
+        "new_email": "新規メール",
+        "no_content": "このメッセージにはテキストコンテンツがありません",
+        "no_subject": "件名がありません。",
+        "permanent_delete_body": "この要素を完全に削除すると、回復できなくなります。続行しますか？",
+        "permanent_delete_title": "本当にこの要素を完全に削除しますか？",
+        "snackbar": {
+            "conversation_delete_error": "エラーが発生しました。この会話は削除されませんでした。再度お試しください。",
+            "conversation_deleted": "会話が削除されました。",
+            "conversation_deleted_permanently": "メールが完全に削除されました",
+            "conversation_deleted_permanently_error": "エラーが発生しました。再度お試しください",
+            "conversation_move": "会話が移動しました",
+            "conversation_move_error": "エラーが発生しました。会話が移動されませんでした。再度お試しください。",
+            "email_move_error": "エラーが発生しました。再度お試しください",
+            "email_moved_to_trash": "メールがゴミ箱に移動しました",
+            "email_restored": "メールが宛先フォルダに復元されました",
+            "folder_created": "新しいフォルダが作成されました",
+            "folder_created_error": "エラーが発生しました。再度お試しください。",
+            "folder_edited": "フォルダが編集されました",
+            "folder_edited_error": "エラーが発生しました。変更されませんでした。再度お試しください。",
+            "folder_empty": "ゴミ箱がクリーンアップされました",
+            "folder_move_error": "エラーが発生しました。このフォルダが移動されませんでした。再度お試しください。",
+            "folder_moved": "フォルダが移動しました",
+            "folder_moved_to_trash": "フォルダがゴミ箱に移動しました",
+            "folder_wiped": "フォルダが一掃されました",
+            "folder_wiped_error": "エラーが発生しました。再度お試しください",
+            "mail_sent": "メッセージが送信されました",
+            "marked_as_non_spam": "このメールを迷惑メールではないとしてマークしました",
+            "marked_as_spam": "このメールを迷惑メールとしてマークしました",
+            "message_delete_error": "エラーが発生しました。このメッセージは削除されませんでした。再度お試しください。",
+            "message_deleted": "メッセージが削除されました。",
+            "message_deleted_permanently": "メールが完全に削除されました",
+            "message_deleted_permanently_error": "エラーが発生しました。再度お試しください",
+            "message_move": "メッセージが移動されました",
+            "message_move_error": "エラーが発生しました。メッセージが移動されませんでした。再度お試しください。",
+            "email_restore_error": "エラーが発生しました。再度お試しください",
+            "folder_deleted": "フォルダが削除されました。",
+            "folder_empty_error": "エラーが発生しました。変更されませんでした。再度お試しください。",
+            "folder_will_be_moved_in_time": "このフォルダは{{remainingTime}}に移動されます",
+            "message_redirected": "メッセージがリダイレクトされました"
+        }
+    },
+    "of": "の",
+    "owner": "オーナ",
+    "placeholder": {
+        "subject": "件名",
+        "add_new_recipients": "新しい受信者を追加する",
+        "bcc": "BCC",
+        "cc": "CC",
+        "to": "宛先"
+    },
+    "read": "既読",
+    "search": {
+        "attachment": "添付ファイル",
+        "unread": "未読",
+        "attachment_note": "添付ファイルのあるメールアイテムをすべて検索します。",
+        "flagged": "フラグを付けました",
+        "unread_note": "未読のメールアイテムをすべて検索します。",
+        "flagged_note": "フラグが付いているメールアイテムをすべて検索します。"
+    },
+    "share": {
+        "options": {
+            "share_calendar_role": {
+                "admin": "管理者",
+                "none": "なし",
+                "manager": "管理者",
+                "viewer": "ビューア"
+            },
+            "share_calendar_with": {
+                "external_guests": "外部ゲスト（表示のみ）",
+                "internal_users_groups": "内部ユーザーまたはグループ",
+                "public": "公開（表示のみ、パスワード不要）"
+            }
+        },
+        "recipients_address": "受信者のメールアドレス",
+        "send_notification": "この共有に関する通知を送信する",
+        "standard_message": "標準メッセージにメモを追加する",
+        "share_note": "標準メッセージには、名前、共有アイテムの名前、受信者に付与されたアクセス許可、および必要に応じてサインイン情報が表示されます。"
+    },
+    "administer": "管理する",
+    "composer": {
+        "attachment": {
+            "contactsMod": "連絡先カードを追加する",
+            "draganddrop": {
+                "title": "ドラッグ＆ドロップモード",
+                "content": "添付ファイルをここにドロップして、このメールに素早く追加できます"
+            },
+            "drive": "ドライブから追加する",
+            "local": "ローカルから追加する",
+            "contacts_mod": "連絡先カードを追加する",
+            "drag_and_drop": {
+                "title": "ドラッグ＆ドロップモード"
+            }
+        }
+    },
+    "find_shares": "共有を探す",
+    "find_mail_shares": "共有フォルダを探す",
+    "freebusy": "空き時間",
+    "insert": "挿入する",
+    "message": {
+        "snackbar": {
+            "settings_saved": "編集が保存されました",
+            "share": {
+                "accepted": "共有を承認済みとして返信しました",
+                "declined": "共有を拒否したと返信しました",
+                "error": "エラーが発生しました。再度お試しください"
+            }
+        },
+        "sending_mail_to_self": "自分にメールを送信しようとしているようです",
+        "search_hints": "話し合う必要のある検索のヒント"
+    },
+    "mail_folder": "メールフォルダ",
+    "private": "プライベート",
+    "remove_from_this_list": "リストから削除する",
+    "select_signature": "署名を選択する",
+    "set_default_signatures": "デフォルトの署名を設定する",
+    "settings": {
+        "conv_sort_optn": {
+            "asc": "古いものから新しいものへ",
+            "desc": "新しいものから古いものへ"
+        },
+        "dspl_mail_optn": {
+            "text": "テキストとして",
+            "html": "HTMLとして（可能な場合）"
+        },
+        "label": {
+            "always_dsp_received_time": "常に受信時間をメーリングリストに表示する",
+            "check_new_mail": "新規メールを確認する",
+            "conv_sorting": "会話の順序",
+            "dflt_mail_search": "デフォルトのメール検索",
+            "disp_messages": "メッセージの表示",
+            "display_mail": "メールを表示する",
+            "dsp_external_imgs": "HTMLメールで外部画像を自動的に表示する",
+            "dsp_msg_snpt": "メールリストにメッセージのスニペットを表示する",
+            "msg_color": "メッセージの色",
+            "msg_prv_title": "メッセージのプレビューと画像",
+            "msg_selection": "メッセージの選択",
+            "set_msg_color_acc_tag": "タグの色に応じてメッセージや会話の色を設定します。",
+            "dbl_click_opens_msg": "ダブルクリックすると、新しいウィンドウでメッセージが開きます",
+            "search_query": "デフォルトのクエリ",
+            "conversation_ordering": "会話の順序",
+            "default_mail_search": "デフォルトのメール検索",
+            "display_messages": "メッセージの表示",
+            "message_color": "メッセージの色",
+            "message_selection": "メッセージの選択"
+        },
+        "msg_from_optn": {
+            "discard": "メッセージを自動的に破棄する",
+            "inbox": "受信トレイに配置する",
+            "inbox_if_cc": "宛先: またはCc: にいる場合は、受信トレイに配置します:"
+        },
+        "msg_selection_optn": {
+            "based_on_previous": "以前の選択に基づいて次のメッセージを選択します",
+            "below_deleted": "削除または移動したメッセージの下にあるメッセージを選択します",
+            "above_deleted": "削除または移動したメッセージの上にあるメッセージを選択します"
+        },
+        "new_mail_optn": {
+            "manually": "手動",
+            "minute": "{{count}}分",
+            "when_arrive": "新着メールが届いた時"
+        },
+        "notify_folder_optn": {
+            "new_message_inbox": "受信トレイに新規メッセージの通知を表示する",
+            "new_message_folder": "任意のフォルダに新しいメッセージの通知を表示する"
+        },
+        "read_rcpt_optn": {
+            "always": "常に開封確認を送信する",
+            "ask_me": "表示する",
+            "never": "開封確認メッセージを送信しない"
+        },
+        "actions": "操作",
+        "browse": "閲覧する",
+        "calendar": "カレンダー",
+        "message": "メッセージ",
+        "after": "後",
+        "contacts": "連絡先",
+        "conv_sort_option": {
+            "asc": "古いものから新しいものへ",
+            "desc": "新しいものから古いものへ"
+        },
+        "date": "日",
+        "discard": "削除する",
+        "display_mail_options": {
+            "text": "テキストとして"
+        }
+    },
+    "snackbar": {
+        "error": "エラーが発生しました。再度お試しください",
+        "folder_shared_error": "エラーが発生しました。再度お試しください",
+        "share_resend": "送信された招待を共有する",
+        "share_revoke": "共有アクセスが取り消されました",
+        "share_updated": "アクセス権が更新されました",
+        "folder_shared": "フォルダが共有されました"
+    },
+    "tooltip": {
+        "resend": "この共有に関するメール通知を再送信します",
+        "revoke": "アクセス権を取り消す",
+        "add_attachments": "添付ファイルを追加する",
+        "disable_rich_text": "リッチテキストエディタを無効にする",
+        "disable_urgent": "緊急を無効にする",
+        "edit": "共有プロパティを編集する",
+        "enable_rich_text": "リッチテキストエディタを有効にする",
+        "enable_urgent": "緊急を有効にする"
+    },
+    "shared_folders": "共有フォルダ",
+    "shared_item": "共有アイテム",
+    "shares_info": "共有フォルダの情報",
+    "workflow": "ワークフロー",
+    "write": "書く",
+    "allowed_actions": "許可された操作",
+    "folder_panel": {
+        "modal": {
+            "delete": {
+                "body": {
+                    "message3": "削除すると、関連するコンテンツがすべてゴミ箱に移動され、フォルダが表示されなくなります。",
+                    "message4": "削除すると、関連するコンテンツがすべて完全に削除され、フォルダを復元できなくなります。",
+                    "message1": "選択したフォルダを空にしますか？",
+                    "message2": "選択したフォルダを完全に削除しますか？"
+                }
+            },
+            "move": {
+                "title_modal": "会話を移動する",
+                "body": {
+                    "message1": "検討対象のフォルダを次の場所に移動するフォルダを選択します:"
+                }
+            },
+            "new": {
+                "restore_create_footer": "作成と復元",
+                "create_footer": "作成して移動する",
+                "title": "新しいフォルダを作成する"
+            },
+            "empty": {
+                "body": {
+                    "message1": "選択したフォルダを空にしますか？",
+                    "message2": "空にすると、関連するコンテンツがすべて完全に削除されます。"
+                }
+            },
+            "wipe": {
+                "body": {
+                    "message2": "一層すると、関連するコンテンツがすべて完全に削除されます。"
+                }
+            }
+        },
+        "action": {
+            "empty": {
+                "trash": "ゴミ箱を空にする"
+            }
+        },
+        "lists_item": {
+            "root": "/ルート"
+        }
+    },
+    "signatures": {
+        "name": "名前"
+    },
+    "filters": {
+        "filters": "フィルター"
+    }
 }

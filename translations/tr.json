@@ -224,12 +224,12 @@
         "send": "Gönder",
         "grantee": "Paylaşan: ",
         "retention_policy": "Koruma dönemi ilkesi",
-        "automatically_delete_duplicates": "Aynı mesajın duplike kopyalarını otomatik olarak sil",
+        "automatically_delete_duplicates": "Aynı mesajın birebir kopyalarını otomatik olarak sil",
         "filter_user": "Kullanıcıları filtrele",
         "highlight_tab": "E-posta sekmesini vurgula",
         "mailSelected": "1 e-posta seçildi",
         "mailSelected_plural": "{{count}} e-posta seçildi",
-        "receive_message": "Mesajlar alınıyor",
+        "receive_message": "Mesajlar Alınırken",
         "send_notification": "Bildirim mesajı gönder:",
         "sent": "Gönderildi",
         "shared_item": "Paylaşılan öğe",
@@ -328,20 +328,20 @@
         },
         "recipients_address": "Alıcıların e-posta adresleri",
         "send_notification": "Bu paylaşım hakkında bildirim gönder",
-        "share_note": "Standart mesajda adınız, paylaşılan öğenin adı, alıcıya verilen izinler ve eğer gerekirse giriş bilgisi gösterilir.",
+        "share_note": "Standart mesajda adınız, paylaşılan öğenin adı, alıcıya verilen izinler ve giriş bilgisi gösterilir.",
         "standard_message": "Standart mesaja bir not ekle",
         "filter_folder_message": "Gelişmiş arama yapacağınız bir klasör seçin",
-        "is_contained_in": "içinde bulunan"
+        "is_contained_in": "Bulunduğu klasör"
     },
     "tooltip": {
         "add_attachments": "Eklenti ekle",
         "resend": "Bu paylaşım hakkında e-posta bildirimini yeniden gönder",
         "revoke": "Erişimi iptal et",
         "disable_rich_text": "Gelişmiş metin düzenleyici kullanma",
-        "disable_urgent": "Acil kullanım dışı",
+        "disable_urgent": "Acil simgesi kaldır",
         "edit": "Paylaşım özelliklerini düzenle",
         "enable_rich_text": "Gelişmiş metin düzenleyici kullan",
-        "enable_urgent": "Acil kullanılabilir"
+        "enable_urgent": "Acil simgesi ekle"
     },
     "type": "Tür",
     "workflow": "İş Akışı",
@@ -437,9 +437,9 @@
         "flagged_note": "Bayrak işaretli olan tüm e-postaları ara.",
         "unread": "Okunmamış",
         "unread_note": "Okunmamış tüm e-posta öğelerini ara.",
-        "sent_after": "Sonra gönder",
-        "sent_before": "Önce gönder",
-        "sent_on": "Şu anda gönder",
+        "sent_after": "Bu tarihten sonra",
+        "sent_before": "Bu tarihten önce",
+        "sent_on": "Bu tarihte",
         "size_error": "Sadece sayı kullanılabilir"
     },
     "title": {
