@@ -208,7 +208,7 @@ export default function MessageListItem({
 									mainAlignment="flex-start"
 									crossAlignment="center"
 								>
-									{item.isSentByMe && !item.isDraft && (
+									{item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded && (
 										<Tooltip label={t('label.sent', 'Sent')} placement="bottom">
 											<Padding right="extrasmall">
 												<Icon data-testid="SentIcon" icon="PaperPlaneOutline" color="secondary" />
@@ -218,14 +218,14 @@ export default function MessageListItem({
 									{item.isDraft && (
 										<Tooltip label={t('label.draft', 'Draft')} placement="bottom">
 											<Padding right="extrasmall">
-												<Icon data-testid="SentIcon" icon="FileOutline" color="secondary" />
+												<Icon data-testid="DraftIcon" icon="FileOutline" color="secondary" />
 											</Padding>
 										</Tooltip>
 									)}
 									{item.isReplied && (
 										<Tooltip label={t('label.replied', 'Replied')} placement="bottom">
 											<Padding right="extrasmall">
-												<Icon data-testid="SentIcon" icon="UndoOutline" color="secondary" />
+												<Icon data-testid="RepliedIcon" icon="UndoOutline" color="secondary" />
 											</Padding>
 										</Tooltip>
 									)}
@@ -236,7 +236,7 @@ export default function MessageListItem({
 										!item.isForwarded && (
 											<Tooltip label={t('search.unread', 'Unread')} placement="bottom">
 												<Padding right="extrasmall">
-													<Icon data-testid="SentIcon" icon="EmailOutline" color="secondary" />
+													<Icon data-testid="UnreadIcon" icon="EmailOutline" color="secondary" />
 												</Padding>
 											</Tooltip>
 										)}
@@ -247,14 +247,14 @@ export default function MessageListItem({
 										!item.isForwarded && (
 											<Tooltip label={t('label.read', 'Read')} placement="bottom">
 												<Padding right="extrasmall">
-													<Icon data-testid="SentIcon" icon="EmailReadOutline" color="secondary" />
+													<Icon data-testid="ReadIcon" icon="EmailReadOutline" color="secondary" />
 												</Padding>
 											</Tooltip>
 										)}
 									{item.isForwarded && (
 										<Tooltip label={t('label.forwarded', 'Forwarded')} placement="bottom">
 											<Padding right="extrasmall">
-												<Icon data-testid="SentIcon" icon="Forward" color="secondary" />
+												<Icon data-testid="ForwardedIcon" icon="Forward" color="secondary" />
 											</Padding>
 										</Tooltip>
 									)}
