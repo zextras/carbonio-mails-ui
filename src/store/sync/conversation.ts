@@ -3,9 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { cloneDeep, filter, find, forEach, map, merge, omit, reduce, some, uniqBy } from 'lodash';
+import {
+	cloneDeep,
+	filter,
+	find,
+	forEach,
+	map,
+	merge,
+	omit,
+	reduce,
+	some,
+	sortBy,
+	uniqBy
+} from 'lodash';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { ConversationsStateType } from '../../types/state';
+import { ConvMessage } from '../../types/conversation';
 
 type Payload = {
 	payload: { m: any; t: any };
@@ -32,16 +45,17 @@ export const handleModifiedConversationsReducer = (
 		}
 	});
 };
-/* state.conversations = {
-				...state.conversations,
-				[msg.cid]: {
-					...state.conversations[msg.cid],
-					messages: merge(state.conversations[msg.cid].messages, {
-						id: msg.id,
-						parent: msg.l
-					})
-				}
-			}; */
+
+const getNewConversationDate = (
+	messages: Array<ConvMessage>,
+	currentFolder: string,
+	oldDate: number,
+	msg: any
+): number =>
+	msg.l === FOLDERS.DRAFTS
+		? oldDate
+		: sortBy(filter(messages, { parent: currentFolder }), 'date')[0].date;
+
 export const handleCreatedMessagesInConversationsReducer = (
 	state: ConversationsStateType,
 	{ payload }: Payload
@@ -49,24 +63,43 @@ export const handleCreatedMessagesInConversationsReducer = (
 	const { m } = payload;
 
 	forEach(m, (msg) => {
-		const oldStore = cloneDeep(state.conversations);
-		if (msg?.cid && msg?.id && msg?.l && oldStore?.[msg.cid]) {
+		const conversations = cloneDeep(state.conversations);
+		if (msg?.cid && msg?.id && msg?.l && conversations?.[msg.cid]) {
 			const conv = {
 				[msg.cid]: {
-					...oldStore[msg.cid],
+					...conversations[msg.cid],
 					messages: uniqBy(
 						[
-							...oldStore[msg.cid].messages,
+							...conversations[msg.cid].messages,
 							{
 								id: msg.id,
-								parent: msg.l
+								parent: msg.l,
+								date: msg.d
 							}
 						],
 						'id'
 					),
-					date: msg?.l === FOLDERS.SENT ? oldStore[msg.cid].date : msg.d
+					fragment: msg?.fr,
+					date: getNewConversationDate(
+						uniqBy(
+							[
+								...conversations[msg.cid].messages,
+								{
+									id: msg.id,
+									parent: msg.l,
+									date: msg.d,
+									isSentByMe: /s/.test(msg.f)
+								}
+							],
+							'id'
+						),
+						state.currentFolder,
+						conversations[msg.cid].date,
+						msg
+					)
 				}
 			};
+
 			state.conversations = { ...state.conversations, ...conv };
 		}
 	});

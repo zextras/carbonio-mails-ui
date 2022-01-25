@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { reduce, some } from 'lodash';
+import { filter, map, reduce, some } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -41,6 +41,17 @@ export const useConversationListItems = (): Array<Conversation> => {
 		}
 	}, [dispatch, folderId, folderStatus, isLoading]);
 
+	const sortedConversation = useMemo(() => {
+		const updatedConversation = map(conversations, (c) => ({
+			...c,
+			date:
+				filter(c.messages, { parent: folderId }).sort((a, b) => b.date - a.date)?.[0]?.date ||
+				c.date
+		}));
+
+		return updatedConversation?.sort((a, b) => b.date - a.date);
+	}, [conversations, folderId]);
+
 	return useMemo(() => {
 		let currentFolderId = folderId;
 		const currentFolder = allFolders[folderId];
@@ -48,9 +59,9 @@ export const useConversationListItems = (): Array<Conversation> => {
 			currentFolderId = `${currentFolder.zid}:${currentFolder.rid}`;
 		}
 		return reduce(
-			conversations,
+			sortedConversation,
 			(acc, v) => (some(v.messages, ['parent', currentFolderId]) ? [...acc, v] : acc),
 			[] as Array<Conversation>
 		);
-	}, [conversations, folderId, allFolders]);
+	}, [sortedConversation, folderId, allFolders]);
 };
