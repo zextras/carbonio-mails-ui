@@ -91,6 +91,42 @@ export default function MessageListItem({
 		}
 		return ['.', '.', '', ''];
 	}, [item, t, accounts]);
+	const [showIcon, icon, iconTooltip, iconId] = useMemo(() => {
+		if (item) {
+			if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
+				return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon'];
+			}
+			if (item.isDraft) {
+				return [true, 'FileOutline', t('label.draft', 'Draft'), 'DraftIcon'];
+			}
+			if (item.isReplied) {
+				return [true, 'UndoOutline', t('label.replied', 'Replied'), 'RepliedIcon'];
+			}
+			if (
+				item.read === false &&
+				!item.isReplied &&
+				!item.isDraft &&
+				!item.isSentByMe &&
+				!item.isForwarded
+			) {
+				return [true, 'EmailOutline', t('search.unread', 'Unread'), 'UnreadIcon'];
+			}
+			if (
+				item.read !== false &&
+				!item.isReplied &&
+				!item.isDraft &&
+				!item.isSentByMe &&
+				!item.isForwarded
+			) {
+				return [true, 'EmailReadOutline', t('label.read', 'Read'), 'ReadIcon'];
+			}
+			if (item.isForwarded) {
+				return [true, 'Forward', t('label.forwarded', 'Forwarded'), 'ForwardedIcon'];
+			}
+		}
+		return [false, '', '', ''];
+	}, [item, t]);
+
 	const replaceHistory = useReplaceHistoryCallback();
 
 	const _onClick = useCallback(
@@ -208,53 +244,10 @@ export default function MessageListItem({
 									mainAlignment="flex-start"
 									crossAlignment="center"
 								>
-									{item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded && (
-										<Tooltip label={t('label.sent', 'Sent')} placement="bottom">
+									{showIcon && (
+										<Tooltip label={iconTooltip} placement="bottom">
 											<Padding right="extrasmall">
-												<Icon data-testid="SentIcon" icon="PaperPlaneOutline" color="secondary" />
-											</Padding>
-										</Tooltip>
-									)}
-									{item.isDraft && (
-										<Tooltip label={t('label.draft', 'Draft')} placement="bottom">
-											<Padding right="extrasmall">
-												<Icon data-testid="DraftIcon" icon="FileOutline" color="secondary" />
-											</Padding>
-										</Tooltip>
-									)}
-									{item.isReplied && (
-										<Tooltip label={t('label.replied', 'Replied')} placement="bottom">
-											<Padding right="extrasmall">
-												<Icon data-testid="RepliedIcon" icon="UndoOutline" color="secondary" />
-											</Padding>
-										</Tooltip>
-									)}
-									{item.read === false &&
-										!item.isReplied &&
-										!item.isDraft &&
-										!item.isSentByMe &&
-										!item.isForwarded && (
-											<Tooltip label={t('search.unread', 'Unread')} placement="bottom">
-												<Padding right="extrasmall">
-													<Icon data-testid="UnreadIcon" icon="EmailOutline" color="secondary" />
-												</Padding>
-											</Tooltip>
-										)}
-									{item.read !== false &&
-										!item.isReplied &&
-										!item.isDraft &&
-										!item.isSentByMe &&
-										!item.isForwarded && (
-											<Tooltip label={t('label.read', 'Read')} placement="bottom">
-												<Padding right="extrasmall">
-													<Icon data-testid="ReadIcon" icon="EmailReadOutline" color="secondary" />
-												</Padding>
-											</Tooltip>
-										)}
-									{item.isForwarded && (
-										<Tooltip label={t('label.forwarded', 'Forwarded')} placement="bottom">
-											<Padding right="extrasmall">
-												<Icon data-testid="ForwardedIcon" icon="Forward" color="secondary" />
+												<Icon data-testid={iconId} icon={icon} color="secondary" />
 											</Padding>
 										</Tooltip>
 									)}
