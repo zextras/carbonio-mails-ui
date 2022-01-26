@@ -1,9 +1,0 @@
-{
-	"name": "<%- htmlWebpackPlugin.options.name %>",
-	"js_entrypoint": "<%- htmlWebpackPlugin.files.publicPath %><%- htmlWebpackPlugin.files.js[0].split('/').pop() %>",
-	"description": "<%- htmlWebpackPlugin.options.description %>",
-	"version": "<%- htmlWebpackPlugin.options.version %>",
-	"commit": "<%- htmlWebpackPlugin.options.commit %>",
-	"priority": <%- htmlWebpackPlugin.options.priority %>,
-	"type": "<%- htmlWebpackPlugin.options.type %>"
-}
