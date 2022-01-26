@@ -4,9 +4,9 @@
 	"description": "Mails module for Zextras Carbonio",
 	"main": "src/app.jsx",
 	"scripts": {
-		"build": "node sdk build",
-		"deploy": "node sdk deploy",
-		"start": "node sdk watch",
+		"build": "sdk build",
+		"deploy": "sdk deploy",
+		"start": "sdk watch",
 		"postinstall": "is-ci || husky install",
 		"prepublishOnly": "pinst --disable",
 		"postpublish": "pinst --enable",
