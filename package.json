@@ -76,11 +76,10 @@
 		"Firefox ESR",
 		"not dead"
 	],
-	"zapp": {
+	"carbonio": {
 		"translations_repository": "git@bitbucket.org:zextras/com_zextras_zapp_mails.git",
 		"name": "carbonio-mails-ui",
-		"display": "Mails",
-		"route": "mails",
-		"priority": 5
+		"priority": 5,
+		"type": "app"
 	}
 }
