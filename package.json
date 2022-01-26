@@ -7,11 +7,15 @@
     "type": "git",
     "url": "git+ssh://git@github.com:Zextras/carbonio-ui-sdk.git"
   },
-  "keywords": [
-    "Zextras",
-    "Carbonio",
-    "SDK"
-  ],
+	"engines": {
+		"node": "v16",
+		"npm": "v8"
+	},
+	"keywords": [
+		"Zextras",
+		"Carbonio",
+		"SDK"
+	],
 	"author": "Zextras DL Team <https://www.zextras.com/carbonio/>",
 	"maintainers": [
 		"Matteo Dal Zovo <matteo.dalzovo@zextras.com>",
