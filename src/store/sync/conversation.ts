@@ -19,6 +19,7 @@ import {
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { ConversationsStateType } from '../../types/state';
 import { ConvMessage } from '../../types/conversation';
+import { SyncResponseCreatedMessage } from '../../types/soap/sync';
 
 type Payload = {
 	payload: { m: any; t: any };
@@ -50,7 +51,7 @@ const getNewConversationDate = (
 	messages: Array<ConvMessage>,
 	currentFolder: string,
 	oldDate: number,
-	msg: any
+	msg: SyncResponseCreatedMessage
 ): number =>
 	msg.l === FOLDERS.DRAFTS
 		? oldDate
@@ -61,7 +62,6 @@ export const handleCreatedMessagesInConversationsReducer = (
 	{ payload }: Payload
 ): void => {
 	const { m } = payload;
-
 	forEach(m, (msg) => {
 		const conversations = cloneDeep(state.conversations);
 		if (msg?.cid && msg?.id && msg?.l && conversations?.[msg.cid]) {
