@@ -82,6 +82,7 @@
 		"translations_repository": "git@bitbucket.org:zextras/com_zextras_zapp_mails.git",
 		"name": "carbonio-mails-ui",
 		"priority": 5,
-		"type": "app"
+		"type": "app",
+		"attrKey": "zimbraFeatureMailEnabled"
 	}
 }
