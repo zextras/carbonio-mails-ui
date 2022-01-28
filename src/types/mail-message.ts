@@ -31,6 +31,7 @@ export type IncompleteMessage = {
 		content: string;
 	};
 	isComplete: boolean;
+	isReplied: boolean;
 };
 
 export type MailMessagePart = {

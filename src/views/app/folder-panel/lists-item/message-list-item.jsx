@@ -94,6 +94,42 @@ export default function MessageListItem({
 		}
 		return ['.', '.', '', ''];
 	}, [item, t, accounts]);
+	const [showIcon, icon, iconTooltip, iconId] = useMemo(() => {
+		if (item) {
+			if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
+				return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon'];
+			}
+			if (item.isDraft) {
+				return [true, 'FileOutline', t('label.draft', 'Draft'), 'DraftIcon'];
+			}
+			if (item.isReplied) {
+				return [true, 'UndoOutline', t('label.replied', 'Replied'), 'RepliedIcon'];
+			}
+			if (
+				item.read === false &&
+				!item.isReplied &&
+				!item.isDraft &&
+				!item.isSentByMe &&
+				!item.isForwarded
+			) {
+				return [true, 'EmailOutline', t('search.unread', 'Unread'), 'UnreadIcon'];
+			}
+			if (
+				item.read !== false &&
+				!item.isReplied &&
+				!item.isDraft &&
+				!item.isSentByMe &&
+				!item.isForwarded
+			) {
+				return [true, 'EmailReadOutline', t('label.read', 'Read'), 'ReadIcon'];
+			}
+			if (item.isForwarded) {
+				return [true, 'Forward', t('label.forwarded', 'Forwarded'), 'ForwardedIcon'];
+			}
+		}
+		return [false, '', '', ''];
+	}, [item, t]);
+
 	const replaceHistory = useReplaceHistoryCallback();
 
 	const _onClick = useCallback(
@@ -181,7 +217,6 @@ export default function MessageListItem({
 									<Text
 										data-testid="SenderText"
 										color={textReadValues.color}
-										size={item.read ? 'small' : 'medium'}
 										weight={textReadValues.weight}
 									>
 										{participantsString}
@@ -210,16 +245,19 @@ export default function MessageListItem({
 									wrap="nowrap"
 									takeAvailableSpace
 									mainAlignment="flex-start"
-									crossAlignment="baseline"
+									crossAlignment="center"
 								>
+									{showIcon && (
+										<Tooltip label={iconTooltip} placement="bottom">
+											<Padding right="extrasmall">
+												<Icon data-testid={iconId} icon={icon} color="secondary" />
+											</Padding>
+										</Tooltip>
+									)}
 									{!isEmpty(item.fragment) && (
 										<Tooltip label={fragmentLabel} overflow="break-word" maxWidth="60vw">
 											<Row takeAvailableSpace mainAlignment="flex-start">
-												<Text
-													data-testid="Fragment"
-													size={item.read ? 'small' : 'medium'}
-													weight={textReadValues.weight}
-												>
+												<Text data-testid="Fragment" weight={textReadValues.weight}>
 													{fragmentLabel}
 												</Text>
 											</Row>
