@@ -83,7 +83,10 @@ function createEditorReducer(
 				signature.value.id === payload.settings.prefs.zimbraPrefForwardReplySignatureId
 		)?.value.description ?? '';
 
-	const empty = emptyEditor(payload.editorId, payload.accounts);
+	const empty = {
+		...emptyEditor(payload.editorId, payload.accounts),
+		text: textWithSignatureNewMessage
+	};
 	state.editors[payload.editorId] = empty;
 
 	const textWithSignatureRepliesForwards =
