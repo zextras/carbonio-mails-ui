@@ -344,20 +344,23 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		}
 	}, [action, boardContext, editor, t, dispatch, editorId, folderId, replaceHistory, closeBoard]);
 
-	const throttledSaveToDraft = (data) => {
-		clearTimeout(timer);
-		const newTimer = setTimeout(() => {
-			const newData = { ...editor, ...data };
-			if (saveFirstDraft) {
-				saveDraftCb(newData);
-				setSaveFirstDraft(false);
-			} else if (editor.id && editor.id !== 'undefined') {
-				saveDraftCb(newData);
-			}
-		}, 500);
+	const throttledSaveToDraft = useCallback(
+		(data) => {
+			clearTimeout(timer);
+			const newTimer = setTimeout(() => {
+				const newData = { ...editor, ...data };
+				if (saveFirstDraft) {
+					saveDraftCb(newData);
+					setSaveFirstDraft(false);
+				} else if (editor.id && editor.id !== 'undefined') {
+					saveDraftCb(newData);
+				}
+			}, 500);
 
-		setTimer(newTimer);
-	};
+			setTimer(newTimer);
+		},
+		[editor, saveDraftCb, saveFirstDraft, timer]
+	);
 	const updateSubjectField = useMemo(
 		() =>
 			throttle(
