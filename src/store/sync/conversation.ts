@@ -8,6 +8,8 @@ import {
 	filter,
 	find,
 	forEach,
+	head,
+	isNil,
 	map,
 	merge,
 	omit,
@@ -52,11 +54,10 @@ const getNewConversationDate = (
 	currentFolder: string,
 	oldDate: number,
 	msg: SyncResponseCreatedMessage
-): number =>
+): number | undefined =>
 	msg.l === FOLDERS.DRAFTS
 		? oldDate
-		: sortBy(filter(messages, { parent: currentFolder }), 'date')[0].date;
-
+		: head(sortBy(filter(messages, { parent: currentFolder }), 'date'))?.date;
 export const handleCreatedMessagesInConversationsReducer = (
 	state: ConversationsStateType,
 	{ payload }: Payload
@@ -88,7 +89,7 @@ export const handleCreatedMessagesInConversationsReducer = (
 									id: msg.id,
 									parent: msg.l,
 									date: msg.d,
-									isSentByMe: /s/.test(msg.f)
+									isSentByMe: !isNil(msg.f) ? /s/.test(msg.f) : false
 								}
 							],
 							'id'

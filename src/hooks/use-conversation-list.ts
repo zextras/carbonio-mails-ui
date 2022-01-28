@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { filter, map, reduce, some } from 'lodash';
+import { filter, head, map, reduce, some } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -45,7 +45,7 @@ export const useConversationListItems = (): Array<Conversation> => {
 		const updatedConversation = map(conversations, (c) => ({
 			...c,
 			date:
-				filter(c.messages, { parent: folderId }).sort((a, b) => b.date - a.date)?.[0]?.date ||
+				head(filter(c.messages, { parent: folderId }).sort((a, b) => b.date - a.date))?.date ??
 				c.date
 		}));
 
