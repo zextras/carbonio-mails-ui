@@ -213,7 +213,7 @@ export default function ConversationListItem({
 		[item.subject, t]
 	);
 	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(item.fragment) ? `${item.fragment}` : subject),
+		() => (!isEmpty(item.fragment) ? item.fragment : subject),
 		[subject, item.fragment]
 	);
 
