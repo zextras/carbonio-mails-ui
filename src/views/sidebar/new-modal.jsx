@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, CustomModal, Input, Text, Padding } from '@zextras/carbonio-design-system';
-import { filter, includes, reduce, startsWith } from 'lodash';
+import { filter, includes, map, reduce, reject, startsWith } from 'lodash';
 import { nanoid } from '@reduxjs/toolkit';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import FolderItem from './commons/folder-item';
@@ -61,44 +61,55 @@ export const NewModal = ({
 		setDisabled(value);
 	}, [folderDestination, inputValue, showWarning, t]);
 
-	const conditionsMatchingFolders = useMemo(
+	const normalizedFolders = useMemo(
 		() =>
-			filter(folders, (v) =>
-				v.parent === FOLDERS.TRASH || v.absParent === FOLDERS.TRASH || v.level > 2
-					? false
-					: startsWith(v.label.toLowerCase(), input.toLowerCase())
+			map(
+				// reject all mismatching condition folders
+				reject(
+					folders,
+					(v) =>
+						v.parent === FOLDERS.TRASH ||
+						v.absParent === FOLDERS.TRASH ||
+						v.level > 2 ||
+						v.id === FOLDERS.TRASH ||
+						v.id === FOLDERS.SPAM
+				),
+				(f) => ({
+					...f,
+					onClick: () => setFolderDestination(f),
+					open: !!input.length,
+					divider: true,
+					background: folderDestination.id === f.id ? 'highlight' : undefined
+				})
 			),
-		[folders, input]
+		[folderDestination.id, folders, input.length]
+	);
+
+	const filteredFromUserInput = useMemo(
+		() =>
+			filter(normalizedFolders, (item) =>
+				startsWith(item.label.toLowerCase(), input.toLowerCase())
+			),
+		[input, normalizedFolders]
 	);
 
 	const nestFilteredFolders = useCallback(
-		(items, id) => {
-			const foldersToReduce = filter(
-				items,
-				(item) => item.parent === id && item.id !== FOLDERS.SPAM && item.id !== FOLDERS.TRASH
-			);
-			return reduce(
-				foldersToReduce,
-				(acc, item) => {
-					const match = filter(items, (result) => result.id === item.id);
-					if (match && match.length) {
-						return [
-							...acc,
-							{
-								...item,
-								items: nestFilteredFolders(items, item.id),
-								onClick: () => setFolderDestination(item),
-								open: !!input.length,
-								divider: true,
-								background: folderDestination.id === item.id ? 'highlight' : undefined
-							}
-						];
+		(items, id, results) =>
+			reduce(
+				filter(items, (item) => item.parent === id),
+				(acc, item) => [
+					...acc,
+					{
+						...item,
+						items: nestFilteredFolders(items, item.id, results),
+						onClick: () => setFolderDestination(item),
+						open: !!input.length,
+						divider: true,
+						background: folderDestination.id === item.id ? 'highlight' : undefined
 					}
-					return acc;
-				},
+				],
 				[]
-			);
-		},
+			),
 		[folderDestination.id, input.length]
 	);
 
@@ -109,12 +120,15 @@ export const NewModal = ({
 				label: 'Root',
 				level: '0',
 				open: true,
-				items: nestFilteredFolders(conditionsMatchingFolders, FOLDERS.USER_ROOT),
+				items:
+					input.length > 0
+						? filteredFromUserInput
+						: nestFilteredFolders(normalizedFolders, FOLDERS.USER_ROOT),
 				background: folderDestination.id === FOLDERS.USER_ROOT ? 'highlight' : undefined,
 				onClick: () => setFolderDestination({ id: FOLDERS.USER_ROOT })
 			}
 		],
-		[conditionsMatchingFolders, folderDestination.id, nestFilteredFolders]
+		[filteredFromUserInput, folderDestination.id, input, nestFilteredFolders, normalizedFolders]
 	);
 
 	const onConfirm = useCallback(() => {
@@ -174,7 +188,7 @@ export const NewModal = ({
 					title={t('folder_panel.modal.new.title', 'Create a new folder')}
 					onClose={onClose}
 				/>
-				<Container mainAlignment="center" crossAlignment="flex-start" padding={{ top: 'small' }}>
+				<Container mainAlignment="center" crossAlignment="flex-start">
 					<Input
 						label={label}
 						backgroundColor="gray5"
@@ -192,7 +206,6 @@ export const NewModal = ({
 							</Text>
 						</Padding>
 					)}
-					<Padding top="large" />
 					<Input
 						label={t('label.filter_folders', 'Filter folders')}
 						backgroundColor="gray5"
