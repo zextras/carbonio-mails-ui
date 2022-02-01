@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { map, filter, reduce, concat, isEmpty } from 'lodash';
-import { Account, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { Account, AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import { EditorAttachmentFiles, MailsEditor } from '../types/mails-editor';
 import { MailMessage, MailMessagePart } from '../types/mail-message';
@@ -25,26 +25,60 @@ export const retrieveAttachmentsType = (
 		[] as Array<mailAttachmentParts>
 	);
 
-export const emptyEditor = (editorId: string, accounts: Array<Account>): MailsEditor => ({
-	richText: true,
-	text: ['', ''],
-	to: [],
-	cc: [],
-	bcc: [],
-	from: {
-		type: ParticipantRole.FROM,
-		address: accounts[0].name,
-		name: accounts[0].name,
-		fullName: accounts[0].displayName
-	},
-	sender: {},
-	editorId,
-	subject: '',
-	attach: { mp: [] },
-	urgent: false,
-	id: undefined,
-	attachmentFiles: []
-});
+export const getSignatures: any = (account: any, t: any) => {
+	const signatureArray = [
+		{
+			label: 'No signature',
+			value: { description: '', id: '11111111-1111-1111-1111-111111111111' }
+		}
+	];
+	map(account.signatures.signature, (item) =>
+		signatureArray.push({
+			label: item.name,
+			value: { description: item.content ? item.content[0]._content : '', id: item?.id }
+		})
+	);
+	return signatureArray;
+};
+
+export const emptyEditor = (
+	editorId: string,
+	account: Account,
+	settings: AccountSettings
+): MailsEditor => {
+	const signatures = getSignatures(account);
+
+	const signatureNewMessageValue =
+		signatures.find(
+			(signature: any) => signature.value.id === settings.prefs.zimbraPrefDefaultSignatureId
+		)?.value.description ?? '';
+
+	const textWithSignatureNewMessage = [
+		`<br>${signatureNewMessageValue}`,
+		`<br>${signatureNewMessageValue}`
+	];
+
+	return {
+		richText: true,
+		text: textWithSignatureNewMessage,
+		to: [],
+		cc: [],
+		bcc: [],
+		from: {
+			type: ParticipantRole.FROM,
+			address: account.name,
+			name: account.name,
+			fullName: account.displayName
+		},
+		sender: {},
+		editorId,
+		subject: '',
+		attach: { mp: [] },
+		urgent: false,
+		id: undefined,
+		attachmentFiles: []
+	};
+};
 
 export const retrieveFROM = (original: MailMessage): Array<Participant> =>
 	filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.FROM);

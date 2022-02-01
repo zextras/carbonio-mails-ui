@@ -21,8 +21,8 @@ import styled from 'styled-components';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map, find, isEqual, findIndex, merge, escape, unescape } from 'lodash';
 import Heading from './components/settings-heading';
-import { getSignatures } from '../../store/editor-slice';
 import { GetAllSignatures } from '../../store/actions/signatures';
+import { getSignatures } from '../../store/editor-slice-utils';
 
 const Signature = styled(Row)`
 	border-bottom: 1px solid ${({ theme }) => theme.palette.gray2.regular};
