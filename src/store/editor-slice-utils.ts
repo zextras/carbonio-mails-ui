@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { map, filter, reduce, concat, isEmpty } from 'lodash';
+import { map, filter, reduce, concat, isEmpty, find } from 'lodash';
 import { Account, AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import { EditorAttachmentFiles, MailsEditor } from '../types/mails-editor';
@@ -49,7 +49,8 @@ export const emptyEditor = (
 	const signatures = getSignatures(account);
 
 	const signatureNewMessageValue =
-		signatures.find(
+		find(
+			signatures,
 			(signature: any) => signature.value.id === settings.prefs.zimbraPrefDefaultSignatureId
 		)?.value.description ?? '';
 
