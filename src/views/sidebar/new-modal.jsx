@@ -174,7 +174,7 @@ export const NewModal = ({
 					title={t('folder_panel.modal.new.title', 'Create a new folder')}
 					onClose={onClose}
 				/>
-				<Container mainAlignment="center" crossAlignment="flex-start">
+				<Container mainAlignment="center" crossAlignment="flex-start" padding={{ top: 'small' }}>
 					<Input
 						label={label}
 						backgroundColor="gray5"
@@ -192,6 +192,7 @@ export const NewModal = ({
 							</Text>
 						</Padding>
 					)}
+					<Padding top="large" />
 					<Input
 						label={t('label.filter_folders', 'Filter folders')}
 						backgroundColor="gray5"
