@@ -84,7 +84,7 @@ const AttachmentExtension = styled(Text)`
 	margin-right: ${({ theme }) => theme.sizes.padding.small};
 `;
 
-function Attachment({ filename, size, link, editor, part, iconColors }) {
+function Attachment({ filename, size, link, editor, part, iconColors, throttledSaveToDraft }) {
 	const extension = filename.split('.').pop();
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
@@ -102,7 +102,11 @@ function Attachment({ filename, size, link, editor, part, iconColors }) {
 				}
 			})
 		);
-	}, [editor, dispatch, part]);
+		throttledSaveToDraft({
+			attach: { mp: filter(editor.attach.mp, (p) => p.part !== part) },
+			attachmentFiles: filter(editor.attachmentFiles, (p) => p.name !== part)
+		});
+	}, [dispatch, editor, throttledSaveToDraft, part]);
 
 	return (
 		<AttachmentContainer
@@ -218,6 +222,7 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 								editor={editor}
 								part={att.name}
 								iconColors={iconColors}
+								throttledSaveToDraft={throttledSaveToDraft}
 							/>
 						)
 					)}
