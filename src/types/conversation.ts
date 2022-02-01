@@ -8,6 +8,7 @@ import { Participant } from './participant';
 export type ConvMessage = {
 	id: string;
 	parent: string;
+	date: number;
 };
 
 export type Conversation = {
