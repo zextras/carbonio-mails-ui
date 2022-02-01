@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getReplaceHistoryCallback, getCurrentRoute } from '@zextras/carbonio-shell-ui';
 import { convAction } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
@@ -65,7 +65,7 @@ export function setConversationsRead(
 	t,
 	dispatch,
 	folderId,
-	replaceHistory,
+	shouldReplaceHistory,
 	deselectAll
 ) {
 	// eslint-disable-next-line react-hooks/rules-of-hooks
@@ -83,8 +83,10 @@ export function setConversationsRead(
 				})
 			).then((res) => {
 				deselectAll && deselectAll();
-				if (res.type.includes('fulfilled') && replaceHistory) {
-					replaceHistory(`/folder/${folderId}`);
+				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+					const route = getCurrentRoute();
+					const prefix = `${route.route}/folder/${folderId}`;
+					getReplaceHistoryCallback()(prefix);
 				}
 			});
 		}
@@ -323,7 +325,7 @@ export const getActions = (
 						t,
 						dispatch,
 						folderId,
-						replaceHistory,
+						true,
 						deselectAll
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
@@ -354,7 +356,7 @@ export const getActions = (
 						t,
 						dispatch,
 						folderId,
-						replaceHistory,
+						true,
 						deselectAll
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
@@ -411,7 +413,7 @@ export const getActions = (
 						t,
 						dispatch,
 						folderId,
-						replaceHistory,
+						true,
 						deselectAll
 					),
 					moveConversationToTrash(
@@ -432,7 +434,7 @@ export const getActions = (
 						t,
 						dispatch,
 						folderId,
-						replaceHistory,
+						true,
 						deselectAll
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),

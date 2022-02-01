@@ -6,16 +6,21 @@
 import React, { lazy, useEffect, Suspense } from 'react';
 import {
 	Spinner,
-	registerAppData,
+	addRoute,
+	addSettingsView,
+	addSearchView,
+	addBoardView,
 	registerActions,
 	registerFunctions,
-	getBridgedFunctions
+	setAppContext
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 import { mailToSharedFunction, openComposerSharedFunction } from './integrations/shared-functions';
 import Notifications from './views/notifications';
 import { ParticipantRole } from './types/participant';
+import { MAILS_ROUTE } from './constants';
 
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
@@ -63,36 +68,59 @@ const SidebarView = (props) => (
 	</Suspense>
 );
 
-export default function App() {
+const App = () => {
 	console.log(
 		'%c MAILS APP LOADED',
 		'color: white; background: #8bc34a;padding: 4px 8px 2px 4px; font-family: sans-serif; border-radius: 12px; width: 100%'
 	);
-
+	const [t] = useTranslation();
 	useEffect(() => {
-		registerAppData({
-			icon: 'MailModOutline',
-			views: {
-				app: AppView,
-				board: EditView,
-				sidebar: SidebarView,
-				settings: SettingsView,
-				search: SearchView
-			},
-			context: { isMessageView: false },
-			newButton: {
-				primary: {
-					id: 'create-mail',
-					icon: 'EmailOutline',
-					label: 'New Mail',
-					click: () => {
-						getBridgedFunctions().addBoard('/new?action=new');
-					}
-				},
-				secondaryItems: []
-			}
+		addRoute({
+			route: MAILS_ROUTE,
+			position: 1,
+			visible: true,
+			label: t('label.app_name', 'Mails'),
+			primaryBar: 'MailModOutline',
+			secondaryBar: SidebarView,
+			appView: AppView
 		});
-	}, []);
+		addSettingsView({
+			route: MAILS_ROUTE,
+			label: t('label.app_name', 'Mails'),
+			component: SettingsView
+		});
+		addSearchView({
+			route: MAILS_ROUTE,
+			component: SearchView
+		});
+		addBoardView({
+			route: MAILS_ROUTE,
+			component: EditView
+		});
+		setAppContext({ isMessageView: false });
+		// registerAppData({
+		// 	icon: 'MailModOutline',
+		// 	views: {
+		// 		app: AppView,
+		// 		board: EditView,
+		// 		sidebar: SidebarView,
+		// 		settings: SettingsView,
+		// 		search: SearchView
+		// 	},
+		// 	context: { isMessageView: false },
+		// 	newButton: {
+		// 		primary: {
+		// 			id: 'create-mail',
+		// 			icon: 'EmailOutline',
+		// 			label: 'New Mail',
+		// 			click: () => {
+		// 				getBridgedFunctions().addBoard('/new?action=new');
+		// 			}
+		// 		},
+		// 		secondaryItems: []
+		// 	}
+		// });
+	}, [t]);
 
 	useEffect(() => {
 		registerActions({
@@ -131,4 +159,6 @@ export default function App() {
 			<SyncDataHandler />
 		</>
 	);
-}
+};
+
+export default App;

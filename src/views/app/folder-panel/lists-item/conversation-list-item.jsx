@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { isEmpty, reduce, trimStart, map, uniqBy, find, filter, findIndex } from 'lodash';
 import styled from 'styled-components';
 import {
+	useCurrentRoute,
 	usePushHistoryCallback,
 	useUserAccount,
 	useUserAccounts,
@@ -142,7 +143,8 @@ export default function ConversationListItem({
 	dragImageRef
 }) {
 	const dispatch = useDispatch();
-	const pushHistory = usePushHistoryCallback();
+	const currentRoute = useCurrentRoute();
+	const pushHistory = usePushHistoryCallback(currentRoute.route);
 	const [open, setOpen] = useState(false);
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();

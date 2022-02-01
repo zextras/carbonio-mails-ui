@@ -7,6 +7,7 @@ import React, { createContext, FC, useCallback, useContext, useMemo } from 'reac
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
+	useCurrentRoute,
 	useReplaceHistoryCallback,
 	useIntegratedComponent,
 	useUserSettings
@@ -47,7 +48,8 @@ export const ActionsContext = createContext<{
 export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => {
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
-	const replaceHistory = useReplaceHistoryCallback();
+	const currentRoute = useCurrentRoute();
+	const replaceHistory = useReplaceHistoryCallback(currentRoute.route);
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const createModal = useContext(ModalManagerContext);
 	const settings = useUserSettings();
