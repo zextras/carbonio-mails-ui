@@ -12,6 +12,7 @@ import {
 	Dropdown,
 	IconButton,
 	SnackbarManagerContext,
+	Tooltip,
 	useModal
 } from '@zextras/carbonio-design-system';
 import { includes, map } from 'lodash';
@@ -38,7 +39,9 @@ import {
 	setMsgAsSpam,
 	printMsg,
 	showOriginalMsg,
-	setMsgRead
+	setMsgRead,
+	moveMessageToFolder,
+	deleteMessagePermanently
 	// @ts-ignore
 } from './message-actions';
 import { MailMessage } from '../types/mail-message';
@@ -92,7 +95,8 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		) {
 			// INBOX, SENT OR CREATED_FOLDER
 			arr.push(replyMsg(message.id, folderId, t, replaceHistory));
-			arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
+			arr.push(replyAllMsg(message.id, folderId, t, replaceHistory));
+			arr.push(forwardMsg(message.id, folderId, t, replaceHistory));
 			arr.push(
 				moveMsgToTrash(
 					[message.id],
@@ -105,14 +109,14 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 					message.conversation
 				)
 			);
+			arr.push(
+				setMsgRead([message.id], message.read, t, dispatch, folderId, replaceHistory, deselectAll)
+			);
 		}
 
 		if (message.parent === FOLDERS.TRASH) {
-			arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
-			arr.push(deleteMsg([message.id], t, dispatch, createSnackbar, createModal));
-			arr.push(setMsgAsSpam([message.id], false, t, dispatch, replaceHistory));
-			arr.push(printMsg(message.id, t, timezone));
-			arr.push(showOriginalMsg(message.id, t));
+			arr.push(moveMessageToFolder([message.id], t, dispatch, true, createModal, deselectAll));
+			arr.push(deleteMessagePermanently([message.id], t, dispatch, createModal, deselectAll));
 		}
 		if (message.parent === FOLDERS.SPAM) {
 			arr.push(deleteMsg([message.id], t, dispatch, createSnackbar, createModal));
@@ -145,21 +149,17 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 			!includes(systemFolders, message.parent)
 		) {
 			// INBOX, SENT OR CREATED_FOLDER
-			arr.push(replyAllMsg(message.id, folderId, t, replaceHistory));
-			arr.push(forwardMsg(message.id, folderId, t, replaceHistory));
+			arr.push(moveMessageToFolder([message.id], t, dispatch, false, createModal, deselectAll));
+			arr.push(printMsg(message.id, t, timezone));
+			arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
+			arr.push(redirectMsg(message.id, t, dispatch, createSnackbar, createModal, ContactInput));
 			arr.push(editAsNewMsg(message.id, folderId, t, replaceHistory));
 			arr.push(setMsgAsSpam([message.id], false, t, dispatch, replaceHistory));
-			arr.push(printMsg(message.id, t, timezone));
 			arr.push(showOriginalMsg(message.id, t));
-			arr.push(redirectMsg(message.id, t, dispatch, createSnackbar, createModal, ContactInput));
-			arr.push(
-				setMsgRead([message.id], message.read, t, dispatch, folderId, replaceHistory, deselectAll)
-			);
 		}
 		return arr;
 	}, [
 		message,
-		deselectAll,
 		systemFolders,
 		t,
 		dispatch,
@@ -168,19 +168,22 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		timezone,
 		createSnackbar,
 		createModal,
-		ContactInput
+		ContactInput,
+		deselectAll
 	]);
 	return (
-		<Row>
+		<Row padding={{ left: 'small' }}>
 			{map(primaryActions, (action) => (
-				<IconButton
-					size="small"
-					icon={action.icon}
-					onClick={(ev: React.MouseEvent<HTMLButtonElement>): void => {
-						if (ev) ev.preventDefault();
-						action.click();
-					}}
-				/>
+				<Tooltip key={`${message.id}-${action.icon}`} label={action.label}>
+					<IconButton
+						size="small"
+						icon={action.icon}
+						onClick={(ev: React.MouseEvent<HTMLButtonElement>): void => {
+							if (ev) ev.preventDefault();
+							action.click();
+						}}
+					/>
+				</Tooltip>
 			))}
 			{secondaryActions.length > 0 && (
 				<Dropdown placement="right-end" items={secondaryActions}>
