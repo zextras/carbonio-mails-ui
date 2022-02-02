@@ -5,11 +5,10 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, CustomModal, Input, Text, Padding } from '@zextras/carbonio-design-system';
-import { filter, map, includes } from 'lodash';
+import { filter, includes, map, reduce, reject, startsWith } from 'lodash';
 import { nanoid } from '@reduxjs/toolkit';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import FolderItem from './commons/folder-item';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 // eslint-disable-next-line import/extensions
 import ModalFooter from './commons/modal-footer.tsx';
 import { ModalHeader } from './commons/modal-header';
@@ -26,7 +25,7 @@ export const NewModal = ({
 	createSnackbar
 }) => {
 	const [inputValue, setInputValue] = useState('');
-	const [folderPosition, setFolderPosition] = useState(currentFolder.name);
+	const [input, setInput] = useState('');
 	const [folderDestination, setFolderDestination] = useState(currentFolder);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
@@ -42,61 +41,6 @@ export const NewModal = ({
 		[t]
 	);
 	const showWarning = useMemo(() => includes(folderArray, inputValue), [folderArray, inputValue]);
-	const nest = useCallback(
-		(items, id, level = 0) =>
-			map(
-				filter(
-					items,
-					(item) => item.parent === id && item.id !== '3' && item.parent === id && item.id !== '4'
-				),
-				(item) => {
-					const folder =
-						folderDestination.id === item.id
-							? {
-									...item,
-									items: nest(items, item.id, level + 1),
-									background: 'highlight', // todo: fix with right color
-									level,
-									divider: true
-							  }
-							: {
-									...item,
-									items: nest(items, item.id, level + 1),
-									level,
-									divider: true
-							  };
-
-					if (folder.level > 1) {
-						return {
-							...folder,
-							onClick: () => {
-								setFolderDestination(folder);
-								setFolderPosition(folder.label);
-							},
-							open:
-								folder.open ??
-								(currentFolder.absParent === '1'
-									? currentFolder.id === item.id
-									: currentFolder.absParent === item.id),
-							items: []
-						};
-					}
-					return {
-						...folder,
-						onClick: () => {
-							setFolderDestination(folder);
-							setFolderPosition(folder.label);
-						},
-						open:
-							folder.open ??
-							(currentFolder.absParent === '1'
-								? currentFolder.id === item.id
-								: currentFolder.absParent === item.id)
-					};
-				}
-			),
-		[currentFolder.absParent, currentFolder.id, folderDestination.id]
-	);
 
 	useEffect(() => {
 		setFolderDestination(currentFolder);
@@ -117,19 +61,75 @@ export const NewModal = ({
 		setDisabled(value);
 	}, [folderDestination, inputValue, showWarning, t]);
 
-	const rootEl = useMemo(
-		() => ({
-			id: '1',
-			label: t('folder_panel.lists_item.root', '/Root'),
-			level: 0,
-			open: true,
-			parent: '0',
-			background: folderDestination.id === '1' ? 'gray6' : undefined // todo: fix with right color
-		}),
-		[folderDestination.id, t]
+	const normalizedFolders = useMemo(
+		() =>
+			map(
+				// reject all mismatching condition folders
+				reject(
+					folders,
+					(v) =>
+						v.parent === FOLDERS.TRASH ||
+						v.absParent === FOLDERS.TRASH ||
+						v.level > 2 ||
+						v.id === FOLDERS.TRASH ||
+						v.id === FOLDERS.SPAM
+				),
+				(f) => ({
+					...f,
+					onClick: () => setFolderDestination(f),
+					open: !!input.length,
+					divider: true,
+					background: folderDestination.id === f.id ? 'highlight' : undefined
+				})
+			),
+		[folderDestination.id, folders, input.length]
 	);
 
-	const data = useMemo(() => nest([rootEl, ...folders], '0'), [folders, nest, rootEl]);
+	const filteredFromUserInput = useMemo(
+		() =>
+			filter(normalizedFolders, (item) =>
+				startsWith(item.label.toLowerCase(), input.toLowerCase())
+			),
+		[input, normalizedFolders]
+	);
+
+	const nestFilteredFolders = useCallback(
+		(items, id, results) =>
+			reduce(
+				filter(items, (item) => item.parent === id),
+				(acc, item) => [
+					...acc,
+					{
+						...item,
+						items: nestFilteredFolders(items, item.id, results),
+						onClick: () => setFolderDestination(item),
+						open: !!input.length,
+						divider: true,
+						background: folderDestination.id === item.id ? 'highlight' : undefined
+					}
+				],
+				[]
+			),
+		[folderDestination.id, input.length]
+	);
+
+	const nestedData = useMemo(
+		() => [
+			{
+				id: FOLDERS.USER_ROOT,
+				label: 'Root',
+				level: '0',
+				open: true,
+				items:
+					input.length > 0
+						? filteredFromUserInput
+						: nestFilteredFolders(normalizedFolders, FOLDERS.USER_ROOT),
+				background: folderDestination.id === FOLDERS.USER_ROOT ? 'highlight' : undefined,
+				onClick: () => setFolderDestination({ id: FOLDERS.USER_ROOT })
+			}
+		],
+		[filteredFromUserInput, folderDestination.id, input, nestFilteredFolders, normalizedFolders]
+	);
 
 	const onConfirm = useCallback(() => {
 		dispatch(
@@ -159,7 +159,7 @@ export const NewModal = ({
 				absParent: res.meta.arg.parentFolder.absParent
 			});
 		});
-
+		setInput('');
 		setInputValue('');
 		setLabel(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
 		setFolderDestination('');
@@ -168,6 +168,7 @@ export const NewModal = ({
 	}, [dispatch, folderDestination, inputValue, setModal, setNew, t, createSnackbar]);
 
 	const onClose = useCallback(() => {
+		setInput('');
 		setInputValue('');
 		setModal('');
 		setFolderDestination('');
@@ -206,13 +207,12 @@ export const NewModal = ({
 						</Padding>
 					)}
 					<Input
-						label={t('folder_panel.modal.new.input.position', 'Parent Folder')}
+						label={t('label.filter_folders', 'Filter folders')}
 						backgroundColor="gray5"
-						value={folderPosition}
-						// defaultValue={t('folder_panel.lists_item.root', "/Root")}
-						onChange={(e) => setFolderPosition(e.target.value)}
+						value={input}
+						onChange={(e) => setInput(e.target.value)}
 					/>
-					<FolderItem folders={data} />
+					<FolderItem folders={nestedData} />
 					<ModalFooter
 						onConfirm={onConfirm}
 						secondaryAction={onClose}
