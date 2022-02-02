@@ -13,7 +13,7 @@ import {
 import React, { useContext, useMemo } from 'react';
 import { map } from 'lodash';
 import styled from 'styled-components';
-import { useReplaceHistoryCallback, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { replaceHistory, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import {
@@ -38,7 +38,6 @@ export default function MailHoverBar({ messageId, read, flag, folderId, showRepl
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const createModal = useModal();
-	const replaceHistory = useReplaceHistoryCallback();
 	const ids = useMemo(() => [messageId], [messageId]);
 
 	const actions = useMemo(() => {
@@ -53,15 +52,15 @@ export default function MailHoverBar({ messageId, read, flag, folderId, showRepl
 				];
 			case FOLDERS.SENT:
 				return [
-					moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId, replaceHistory),
+					moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId),
 					// archiveMsg(),
-					forwardMsg(messageId, folderId, t, replaceHistory),
+					forwardMsg(messageId, folderId, t),
 					setMsgFlag(ids, flag, t, dispatch)
 				];
 			case FOLDERS.DRAFTS:
 				return [
-					moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId, replaceHistory),
-					editDraft(messageId, folderId, t, replaceHistory),
+					moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId),
+					editDraft(messageId, folderId, t),
 					// archiveMsg(),
 					setMsgFlag(ids, flag, t, dispatch)
 				];
@@ -71,21 +70,21 @@ export default function MailHoverBar({ messageId, read, flag, folderId, showRepl
 				return showReplyAll
 					? [
 							setMsgRead(ids, read, t, dispatch),
-							replyMsg(messageId, folderId, t, replaceHistory),
-							//	showReplyAll && replyAllMsg(messageId, folderId, t, replaceHistory),
-							replyAllMsg(messageId, folderId, t, replaceHistory),
+							replyMsg(messageId, folderId, t),
+							//	showReplyAll && replyAllMsg(messageId, folderId, t),
+							replyAllMsg(messageId, folderId, t),
 							setMsgFlag(ids, flag, t, dispatch),
-							forwardMsg(messageId, folderId, t, replaceHistory),
+							forwardMsg(messageId, folderId, t),
 							// archiveMsg(),
-							moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId, replaceHistory)
+							moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId)
 					  ]
 					: [
 							setMsgRead(ids, read, t, dispatch),
-							replyMsg(messageId, folderId, t, replaceHistory),
+							replyMsg(messageId, folderId, t),
 							setMsgFlag(ids, flag, t, dispatch),
-							forwardMsg(messageId, folderId, t, replaceHistory),
+							forwardMsg(messageId, folderId, t),
 							// archiveMsg(),
-							moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId, replaceHistory)
+							moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId)
 					  ];
 		}
 	}, [
@@ -98,7 +97,6 @@ export default function MailHoverBar({ messageId, read, flag, folderId, showRepl
 		read,
 		flag,
 		messageId,
-		replaceHistory,
 		showReplyAll
 	]);
 

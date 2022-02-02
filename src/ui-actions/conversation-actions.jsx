@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { FOLDERS, getReplaceHistoryCallback, getCurrentRoute } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
 import { convAction } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
@@ -84,9 +84,7 @@ export function setConversationsRead(
 			).then((res) => {
 				deselectAll && deselectAll();
 				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
-					const route = getCurrentRoute();
-					const prefix = `${route.route}/folder/${folderId}`;
-					getReplaceHistoryCallback()(prefix);
+					replaceHistory(`/folder/${folderId}`);
 				}
 			});
 		}
@@ -169,9 +167,7 @@ export function moveConversationToTrash(
 	dispatch,
 	createSnackbar,
 	deselectAll,
-	currentFolder,
-	replaceHistory,
-	folderId
+	currentFolder
 ) {
 	return {
 		id: 'trash-conversations',
@@ -308,7 +304,6 @@ export const getActions = (
 	folderId,
 	t,
 	dispatch,
-	replaceHistory,
 	createSnackbar,
 	createModal,
 	deselectAll,
@@ -344,8 +339,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch)
 				],
@@ -368,8 +362,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					)
 				]
 			];
@@ -383,8 +376,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch)
 				],
@@ -396,8 +388,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					),
 					printConversation([conversation.id], t, timezone)
 				]
@@ -422,8 +413,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch)
 				],
@@ -446,8 +436,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					)
 				]
 			];
