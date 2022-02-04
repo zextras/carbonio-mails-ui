@@ -127,7 +127,7 @@ export const getFileExtension = (contentType, theme) => {
 		case 'application/xhtml+xml':
 			return { ext: 'xhtml', color: theme.avatarColors.avatar_6 };
 		case 'application/zip':
-			return { ext: 'zip		', color: theme.avatarColors.avatar_43 };
+			return { ext: 'zip', color: theme.avatarColors.avatar_43 };
 		case 'audio/midi':
 			return { ext: 'midi', color: theme.avatarColors.avatar_5 };
 		case 'audio/mpeg':
@@ -156,6 +156,6 @@ export const getFileExtension = (contentType, theme) => {
 			return { ext: 'mp4', color: theme.avatarColors.avatar_5 };
 
 		default:
-			return { ext: 'mp4', color: theme.avatarColors.avatar_5 };
+			return { ext: '?', color: theme.avatarColors.avatar_21 };
 	}
 };

@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { find, includes, isNil, isUndefined, map, random, reduce, some, uniqBy } from 'lodash';
+import { find, isNil, map, reduce, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -22,6 +22,7 @@ import { getFileExtension } from '../../../../commons/utils';
 import { MailMessagePart } from '../../../../types/mail-message';
 import { EditorAttachmentFiles } from '../../../../types/mails-editor';
 
+const FileExtensionRegex = /^.+\.([^.]+)$/;
 const AttachmentsActions = styled(Row)``;
 
 function findAttachments(parts, acc) {
@@ -103,7 +104,9 @@ const AttachmentExtension = styled(Text)`
 
 function Attachment({ filename, size, link, message, part, iconColors, att }) {
 	const theme = useTheme();
-	const extension = filename?.split('.')?.pop() ?? getFileExtension(att.contentType, theme).ext;
+	const extension = isNil(FileExtensionRegex.exec(att.filename))
+		? getFileExtension(att.contentType, theme).ext
+		: FileExtensionRegex.exec(att.filename)[1];
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
 	const inputRef = useRef();
@@ -195,19 +198,20 @@ export default function AttachmentsBlock({ message }) {
 		() =>
 			uniqBy(
 				map(attachments, (att) => {
+					const fileExtn = isNil(FileExtensionRegex.exec(att.filename))
+						? getFileExtension(att.contentType, theme).ext
+						: FileExtensionRegex.exec(att.filename)[1];
 					if (iconColors) {
 						return [
 							...iconColors,
 							{
-								extension:
-									att.filename?.split('.').pop() ?? getFileExtension(att.contentType, theme).ext,
+								extension: fileExtn,
 								color: getFileExtension(att.contentType, theme).color
 							}
 						];
 					}
 					return {
-						extension:
-							att.filename?.split('.').pop() ?? getFileExtension(att.contentType, theme).ext,
+						extension: fileExtn,
 						color: getFileExtension(att.contentType, theme).color
 					};
 				}),

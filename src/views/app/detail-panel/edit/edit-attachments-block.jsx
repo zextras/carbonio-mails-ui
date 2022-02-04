@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { filter, find, map, random, uniqBy } from 'lodash';
+import { filter, find, isNil, map, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -22,6 +22,7 @@ import { useDispatch } from 'react-redux';
 import { updateEditor } from '../../../../store/editor-slice';
 import { getFileExtension } from '../../../../commons/utils';
 
+const FileExtensionRegex = /^.+\.([^.]+)$/;
 function getSizeLabel(size) {
 	let value = '';
 	if (size < 1024000) {
@@ -87,7 +88,9 @@ const AttachmentExtension = styled(Text)`
 
 function Attachment({ filename, size, link, editor, part, iconColors, throttledSaveToDraft, att }) {
 	const theme = useTheme();
-	const extension = filename?.split('.').pop() ?? getFileExtension(att.contentType, theme).ext;
+	const extension = isNil(FileExtensionRegex.exec(filename))
+		? getFileExtension(att.contentType, theme).ext
+		: FileExtensionRegex.exec(filename)[1];
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
 	const inputRef = useRef();
@@ -197,19 +200,20 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 		() =>
 			uniqBy(
 				map(editor.attachmentFiles, (att) => {
+					const fileExtn = isNil(FileExtensionRegex.exec(att.filename))
+						? getFileExtension(att.contentType, theme).ext
+						: FileExtensionRegex.exec(att.filename)[1];
 					if (iconColors) {
 						return [
 							...iconColors,
 							{
-								extension:
-									att.filename?.split('.').pop() ?? getFileExtension(att.contentType, theme).ext,
+								extension: fileExtn,
 								color: getFileExtension(att.contentType, theme).color
 							}
 						];
 					}
 					return {
-						extension:
-							att.filename?.split('.').pop() ?? getFileExtension(att.contentType, theme).ext,
+						extension: fileExtn,
 						color: getFileExtension(att.contentType, theme).color
 					};
 				}),
@@ -217,6 +221,7 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 			),
 		[editor.attachmentFiles, theme]
 	);
+
 	return (
 		editor.attachmentFiles.length > 0 && (
 			<Container crossAlignment="flex-start" padding={{ horizontal: 'large' }}>
