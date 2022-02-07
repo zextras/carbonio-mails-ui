@@ -3,19 +3,27 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-/* eslint-disable import/extensions */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable import/no-unresolved */
-import React, { useContext, useMemo, FC, ReactElement } from 'react';
+import React, {
+	useContext,
+	useMemo,
+	FC,
+	ReactElement,
+	useRef,
+	useLayoutEffect,
+	useState,
+	useCallback,
+	useEffect
+} from 'react';
 import {
 	Row,
-	Dropdown,
 	IconButton,
 	SnackbarManagerContext,
 	Tooltip,
-	useModal
+	useModal,
+	Dropdown,
+	ThemeContext
 } from '@zextras/carbonio-design-system';
-import { includes, map } from 'lodash';
+import { difference, includes, map, slice } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
@@ -42,7 +50,6 @@ import {
 	setMsgRead,
 	moveMessageToFolder,
 	deleteMessagePermanently
-	// @ts-ignore
 } from './message-actions';
 import { MailMessage } from '../types/mail-message';
 import { useSelection } from '../hooks/useSelection';
@@ -52,6 +59,33 @@ type MailMsgPreviewActionsType = {
 	message: MailMessage;
 	timezone: string;
 };
+
+function useOverflowCount(containerRef: React.RefObject<HTMLInputElement>): [number, () => void] {
+	const [visibleActionsCount, setVisibleActionsCount] = useState<number>(0);
+	const theme = useContext(ThemeContext);
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	const iconSize = parseInt(theme.sizes.icon.large, 10);
+	const calculateVisibleActionsCount = useCallback(() => {
+		if (containerRef && containerRef.current && containerRef?.current?.clientWidth > 0) {
+			const value = Math.floor(containerRef.current.clientWidth / iconSize);
+			setVisibleActionsCount(value);
+		}
+	}, [containerRef, iconSize]);
+
+	useEffect(() => {
+		window.addEventListener('resize', calculateVisibleActionsCount);
+		return (): void => window.removeEventListener('resize', calculateVisibleActionsCount);
+	}, [calculateVisibleActionsCount]);
+
+	useEffect(() => {
+		window.addEventListener('transitionend', calculateVisibleActionsCount);
+		return (): void => window.removeEventListener('transitionend', calculateVisibleActionsCount);
+	}, [calculateVisibleActionsCount]);
+
+	return [visibleActionsCount, calculateVisibleActionsCount];
+}
+
 const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	message,
 	folderId,
@@ -69,7 +103,9 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		() => [FOLDERS.INBOX, FOLDERS.SENT, FOLDERS.DRAFTS, FOLDERS.TRASH, FOLDERS.SPAM],
 		[]
 	);
-	const primaryActions = useMemo(() => {
+	const actionContainerRef = useRef<HTMLInputElement>(null);
+
+	const actions = useMemo(() => {
 		const arr = [];
 
 		if (message.parent === FOLDERS.DRAFTS) {
@@ -87,6 +123,7 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 					message.conversation
 				)
 			);
+			arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
 		}
 		if (
 			message.parent === FOLDERS.INBOX ||
@@ -112,6 +149,13 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 			arr.push(
 				setMsgRead([message.id], message.read, t, dispatch, folderId, replaceHistory, deselectAll)
 			);
+			arr.push(moveMessageToFolder([message.id], t, dispatch, false, createModal, deselectAll));
+			arr.push(printMsg(message.id, t, timezone));
+			arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
+			arr.push(redirectMsg(message.id, t, dispatch, createSnackbar, createModal, ContactInput));
+			arr.push(editAsNewMsg(message.id, folderId, t, replaceHistory));
+			arr.push(setMsgAsSpam([message.id], false, t, dispatch, replaceHistory));
+			arr.push(showOriginalMsg(message.id, t));
 		}
 
 		if (message.parent === FOLDERS.TRASH) {
@@ -135,59 +179,58 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		createSnackbar,
 		deselectAll,
 		createModal,
-		timezone
+		timezone,
+		ContactInput
 	]);
 
-	const secondaryActions = useMemo(() => {
-		const arr = [];
-		if (message.parent === FOLDERS.DRAFTS) {
-			arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
-		}
-		if (
-			message.parent === FOLDERS.INBOX ||
-			message.parent === FOLDERS.SENT ||
-			!includes(systemFolders, message.parent)
-		) {
-			// INBOX, SENT OR CREATED_FOLDER
-			arr.push(moveMessageToFolder([message.id], t, dispatch, false, createModal, deselectAll));
-			arr.push(printMsg(message.id, t, timezone));
-			arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
-			arr.push(redirectMsg(message.id, t, dispatch, createSnackbar, createModal, ContactInput));
-			arr.push(editAsNewMsg(message.id, folderId, t, replaceHistory));
-			arr.push(setMsgAsSpam([message.id], false, t, dispatch, replaceHistory));
-			arr.push(showOriginalMsg(message.id, t));
-		}
-		return arr;
-	}, [
-		message,
-		systemFolders,
-		t,
-		dispatch,
-		folderId,
-		replaceHistory,
-		timezone,
-		createSnackbar,
-		createModal,
-		ContactInput,
-		deselectAll
-	]);
+	const [visibleActionsCount, calculateVisibleActionsCount] = useOverflowCount(actionContainerRef);
+
+	useLayoutEffect(() => {
+		calculateVisibleActionsCount();
+	}, [calculateVisibleActionsCount]);
+
+	const firstActions = useMemo(
+		() => slice(actions, 0, visibleActionsCount - 1),
+		[actions, visibleActionsCount]
+	);
+	const secondActions = useMemo(() => difference(actions, firstActions), [actions, firstActions]);
+	const [open, setOpen] = useState(false);
+	const onIconClick = useCallback((ev: { stopPropagation: () => void }): void => {
+		ev.stopPropagation();
+		setOpen((o) => !o);
+	}, []);
+	const onDropdownClose = useCallback((): void => {
+		setOpen(false);
+	}, []);
 	return (
-		<Row padding={{ left: 'small' }}>
-			{map(primaryActions, (action) => (
-				<Tooltip key={`${message.id}-${action.icon}`} label={action.label}>
-					<IconButton
-						size="small"
-						icon={action.icon}
-						onClick={(ev: React.MouseEvent<HTMLButtonElement>): void => {
-							if (ev) ev.preventDefault();
-							action.click();
-						}}
-					/>
-				</Tooltip>
-			))}
-			{secondaryActions.length > 0 && (
-				<Dropdown placement="right-end" items={secondaryActions}>
-					<IconButton size="small" icon="MoreVertical" />
+		<Row
+			ref={actionContainerRef}
+			mainAlignment="flex-end"
+			takeAvailableSpace
+			wrap="nowrap"
+			style={{ overflow: 'hidden' }}
+		>
+			{actions &&
+				map(firstActions, (action) => (
+					<Tooltip key={`${message.id}-${action.icon}`} label={action.label}>
+						<IconButton
+							size="small"
+							icon={action.icon}
+							onClick={(ev: React.MouseEvent<HTMLButtonElement>): void => {
+								if (ev) ev.preventDefault();
+								action.click();
+							}}
+						/>
+					</Tooltip>
+				))}
+			{secondActions?.length > 0 && (
+				<Dropdown
+					placement="right-end"
+					items={secondActions}
+					forceOpen={open}
+					onClose={onDropdownClose}
+				>
+					<IconButton size="small" icon="MoreVertical" onClick={onIconClick} />
 				</Dropdown>
 			)}
 		</Row>

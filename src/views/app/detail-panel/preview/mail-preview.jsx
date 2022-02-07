@@ -198,18 +198,13 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 					crossAlignment="flex-start"
 					height="fit"
 					width="calc(100% - 48px)"
-					padding={{ all: 'small', bottom: 'medium' }}
+					padding={{ all: 'small' }}
 					takeAvailableSpace
 				>
 					<Container orientation="horizontal" mainAlignment="space-between" width="fill">
-						<Container
-							orientation="horizontal"
-							width="fit"
-							height="24px"
-							mainAlignment="flex-start"
-						>
+						<Row takeAvailableSpace width="fit" mainAlignment="flex-start" wrap="nowrap">
 							{isEmpty(senderContact) ? (
-								<>
+								<Row takeAvailableSpace width="fit" mainAlignment="flex-start" wrap="nowrap">
 									<Text
 										data-testid="SenderText"
 										size={message.read ? 'small' : 'medium'}
@@ -218,14 +213,13 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									>
 										{participantToString(mainContact, t, accounts)}
 									</Text>
-									<Padding left="small">
-										<Text color="gray1" size={message.read ? 'small' : 'medium'}>
-											{mainContact.address && mainContact.address}
-										</Text>
-									</Padding>
-								</>
+									<Padding left="small" />
+									<Text color="gray1" size={message.read ? 'small' : 'medium'}>
+										{mainContact.address && mainContact.address}
+									</Text>
+								</Row>
 							) : (
-								<>
+								<Text overflow="break-word">
 									<Text
 										data-testid="SenderText"
 										size={message.read ? 'small' : 'medium'}
@@ -254,10 +248,10 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 											{mainContact.address && `<${mainContact.address}>`}
 										</Text>
 									</Padding>
-								</>
+								</Text>
 							)}
-						</Container>
-						<Container orientation="horizontal" width="fit" height="24px">
+						</Row>
+						<Row takeAvailableSpace width="fill" wrap="nowrap" mainAlignment="flex-end">
 							{message.attachment && attachments.length > 0 && (
 								<Padding left="small">
 									<Icon icon="AttachOutline" />
@@ -273,19 +267,16 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									{getTimeLabel(message.date)}
 								</Text>
 							</Padding>
-
-							{isMessageView ? null : (
-								<>
-									{open && (
-										<MailMsgPreviewActions
-											message={message}
-											folderId={folderId}
-											timezone={timezone}
-										/>
-									)}
-								</>
+							{!isMessageView && open && (
+								<Row takeAvailableSpace maxWidth="35%">
+									<MailMsgPreviewActions
+										message={message}
+										folderId={folderId}
+										timezone={timezone}
+									/>
+								</Row>
 							)}
-						</Container>
+						</Row>
 					</Container>
 					{!open && (
 						<Container
@@ -301,8 +292,8 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 						orientation="horizontal"
 						mainAlignment="space-between"
 						crossAlignment="flex-end"
-						height="20px"
 						padding={{ top: open ? 'small' : '0' }}
+						height="24px"
 					>
 						<Container
 							orientation="horizontal"
@@ -465,10 +456,13 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView,
 			isAttendee
 		]
 	);
+	const onClick = () => {
+		setOpen((o) => !o);
+	};
 	return (
 		<Container ref={mailContainerRef} height="fit" data-testid={`MailPreview-${message.id}`}>
 			<MailPreviewBlock
-				onClick={() => setOpen((o) => !o)}
+				onClick={onClick}
 				message={aggregatedMessage}
 				timezone={timezone}
 				// open={isAlone ? true : open}
