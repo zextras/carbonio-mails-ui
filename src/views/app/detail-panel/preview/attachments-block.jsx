@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { find, isNil, map, reduce, uniqBy } from 'lodash';
+import { find, map, reduce, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -18,11 +18,10 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getFileExtension } from '../../../../commons/utils';
+import { getFileExtensionAndColor } from '../../../../commons/utils';
 import { MailMessagePart } from '../../../../types/mail-message';
 import { EditorAttachmentFiles } from '../../../../types/mails-editor';
 
-const FileExtensionRegex = /^.+\.([^.]+)$/;
 const AttachmentsActions = styled(Row)``;
 
 function findAttachments(parts, acc) {
@@ -104,9 +103,7 @@ const AttachmentExtension = styled(Text)`
 
 function Attachment({ filename, size, link, message, part, iconColors, att }) {
 	const theme = useTheme();
-	const extension = isNil(FileExtensionRegex.exec(att.filename))
-		? getFileExtension(att.contentType, theme).ext
-		: FileExtensionRegex.exec(att.filename)[1];
+	const extension = getFileExtensionAndColor(att, theme).ext;
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
 	const inputRef = useRef();
@@ -198,21 +195,19 @@ export default function AttachmentsBlock({ message }) {
 		() =>
 			uniqBy(
 				map(attachments, (att) => {
-					const fileExtn = isNil(FileExtensionRegex.exec(att.filename))
-						? getFileExtension(att.contentType, theme).ext
-						: FileExtensionRegex.exec(att.filename)[1];
+					const fileExtn = getFileExtensionAndColor(att, theme).ext;
 					if (iconColors) {
 						return [
 							...iconColors,
 							{
 								extension: fileExtn,
-								color: getFileExtension(att.contentType, theme).color
+								color: getFileExtensionAndColor({ contentType: att.contentType }, theme).color
 							}
 						];
 					}
 					return {
 						extension: fileExtn,
-						color: getFileExtension(att.contentType, theme).color
+						color: getFileExtensionAndColor({ contentType: att.contentType }, theme).color
 					};
 				}),
 				'extension'

@@ -20,9 +20,8 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
 import { updateEditor } from '../../../../store/editor-slice';
-import { getFileExtension } from '../../../../commons/utils';
+import { getFileExtensionAndColor } from '../../../../commons/utils';
 
-const FileExtensionRegex = /^.+\.([^.]+)$/;
 function getSizeLabel(size) {
 	let value = '';
 	if (size < 1024000) {
@@ -88,9 +87,8 @@ const AttachmentExtension = styled(Text)`
 
 function Attachment({ filename, size, link, editor, part, iconColors, throttledSaveToDraft, att }) {
 	const theme = useTheme();
-	const extension = isNil(FileExtensionRegex.exec(filename))
-		? getFileExtension(att.contentType, theme).ext
-		: FileExtensionRegex.exec(filename)[1];
+
+	const extension = getFileExtensionAndColor(att, theme).ext;
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
 	const inputRef = useRef();
@@ -200,21 +198,19 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 		() =>
 			uniqBy(
 				map(editor.attachmentFiles, (att) => {
-					const fileExtn = isNil(FileExtensionRegex.exec(att.filename))
-						? getFileExtension(att.contentType, theme).ext
-						: FileExtensionRegex.exec(att.filename)[1];
+					const fileExtn = getFileExtensionAndColor(att, theme).ext;
 					if (iconColors) {
 						return [
 							...iconColors,
 							{
 								extension: fileExtn,
-								color: getFileExtension(att.contentType, theme).color
+								color: getFileExtensionAndColor({ contentType: att.contentType }, theme).color
 							}
 						];
 					}
 					return {
 						extension: fileExtn,
-						color: getFileExtension(att.contentType, theme).color
+						color: getFileExtensionAndColor({ contentType: att.contentType }, theme).color
 					};
 				}),
 				'extension'
