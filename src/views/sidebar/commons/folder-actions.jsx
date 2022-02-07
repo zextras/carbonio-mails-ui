@@ -35,7 +35,7 @@ export const actionsRetriever = (folder, setAction, setCurrentFolder, t, dispatc
 				? t('folder_panel.action.empty.trash', 'Empty Trash')
 				: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
 		//	disabled: folder-panel.id === '3' ? false : !folder-panel.itemsCount,
-		disabled: folder.itemsCount === 0 && folder.items.length === 0,
+		disabled: folder.itemsCount === 0 && folder.items?.length === 0,
 		click: () => {
 			setAction(FolderActionsType.EMPTY);
 			setCurrentFolder(folder);

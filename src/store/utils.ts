@@ -57,15 +57,13 @@ export function updateFolders(state: FoldersStateType, folders: Folder[]): void 
 			);
 			const toRet = newFolder ? { ...item, ...newFolder } : item;
 
-			const items = calcFolderItems(state.folders, toRet, toRet.id);
 			const moreParams = calcFolderAbsParentLevelAndPath(state.folders, toRet);
 			return {
 				...acc,
 				[toRet.id]: {
 					...toRet,
 					...moreParams,
-					depth: findDepth({ ...toRet, items }),
-					items,
+					depth: moreParams?.level,
 					path: moreParams ? `/${moreParams.path}` : undefined
 				}
 			};
