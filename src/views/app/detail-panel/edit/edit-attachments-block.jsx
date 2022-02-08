@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { filter, find, isNil, map, uniqBy } from 'lodash';
+import { filter, find, map, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -20,7 +20,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
 import { updateEditor } from '../../../../store/editor-slice';
-import { getFileExtensionAndColor } from '../../../../commons/utils';
+import { getFileExtension, calcColor } from '../../../../commons/utilities';
 
 function getSizeLabel(size) {
 	let value = '';
@@ -86,9 +86,7 @@ const AttachmentExtension = styled(Text)`
 `;
 
 function Attachment({ filename, size, link, editor, part, iconColors, throttledSaveToDraft, att }) {
-	const theme = useTheme();
-
-	const extension = getFileExtensionAndColor(att, theme).ext;
+	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
 	const inputRef = useRef();
@@ -198,19 +196,21 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 		() =>
 			uniqBy(
 				map(editor.attachmentFiles, (att) => {
-					const fileExtn = getFileExtensionAndColor(att, theme).ext;
+					const fileExtn = getFileExtension(att);
+					const color = calcColor(att.contentType, theme);
+
 					if (iconColors) {
 						return [
 							...iconColors,
 							{
 								extension: fileExtn,
-								color: getFileExtensionAndColor({ contentType: att.contentType }, theme).color
+								color
 							}
 						];
 					}
 					return {
 						extension: fileExtn,
-						color: getFileExtensionAndColor({ contentType: att.contentType }, theme).color
+						color
 					};
 				}),
 				'extension'

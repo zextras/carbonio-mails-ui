@@ -18,7 +18,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getFileExtensionAndColor } from '../../../../commons/utils';
+import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { MailMessagePart } from '../../../../types/mail-message';
 import { EditorAttachmentFiles } from '../../../../types/mails-editor';
 
@@ -102,8 +102,7 @@ const AttachmentExtension = styled(Text)`
 `;
 
 function Attachment({ filename, size, link, message, part, iconColors, att }) {
-	const theme = useTheme();
-	const extension = getFileExtensionAndColor(att, theme).ext;
+	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
 	const inputRef = useRef();
@@ -195,19 +194,21 @@ export default function AttachmentsBlock({ message }) {
 		() =>
 			uniqBy(
 				map(attachments, (att) => {
-					const fileExtn = getFileExtensionAndColor(att, theme).ext;
+					const fileExtn = getFileExtension(att);
+					const color = calcColor(att.contentType, theme);
+
 					if (iconColors) {
 						return [
 							...iconColors,
 							{
 								extension: fileExtn,
-								color: getFileExtensionAndColor({ contentType: att.contentType }, theme).color
+								color
 							}
 						];
 					}
 					return {
 						extension: fileExtn,
-						color: getFileExtensionAndColor({ contentType: att.contentType }, theme).color
+						color
 					};
 				}),
 				'extension'
