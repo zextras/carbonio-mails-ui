@@ -39,6 +39,7 @@ import { selectMessages, selectMessagesStatus } from '../../../../store/messages
 import { getMsg, msgAction } from '../../../../store/actions';
 import { retrieveAttachmentsType } from '../../../../store/editor-slice-utils';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
+import { useMessageActions } from '../../../../hooks/use-message-actions';
 
 const ContactsContainer = styled.div`
 	display: grid;
@@ -100,11 +101,6 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 	const replaceHistory = useReplaceHistoryCallback();
 	const { folderId } = useParams();
 	const accounts = useUserAccounts();
-	const settings = useUserSettings();
-	const timezone = useMemo(
-		() => settings?.prefs.zimbraPrefTimeZoneId,
-		[settings?.prefs.zimbraPrefTimeZoneId]
-	);
 	const dispatch = useDispatch();
 	const { isMessageView } = useAppContext();
 	const { folderId: currentFolderId } = useParams();
@@ -121,6 +117,8 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 			? { color: 'text', weight: 'regular', badge: 'read', size: 'small' }
 			: { color: 'primary', weight: 'bold', badge: 'unread', size: 'medium' };
 	}, [message.read]);
+	const actions = useMessageActions(message);
+
 	return (
 		<>
 			{folderId === '4' && (
@@ -202,7 +200,17 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 					takeAvailableSpace
 				>
 					<Container orientation="horizontal" mainAlignment="space-between" width="fill">
-						<Row takeAvailableSpace width="fit" mainAlignment="flex-start" wrap="nowrap">
+						<Row
+							// this style replace takeAvailableSpace prop, it calculates growth depending from content (all 4 props are needed)
+							style={{
+								flexGrow: 1,
+								flexBasis: 'content',
+								overflow: 'hidden',
+								whiteSpace: 'nowrap'
+							}}
+							mainAlignment="flex-start"
+							wrap="nowrap"
+						>
 							{isEmpty(senderContact) ? (
 								<Row takeAvailableSpace width="fit" mainAlignment="flex-start" wrap="nowrap">
 									<Text
@@ -251,7 +259,17 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 								</Text>
 							)}
 						</Row>
-						<Row takeAvailableSpace width="fill" wrap="nowrap" mainAlignment="flex-end">
+						<Row
+							wrap="nowrap"
+							mainAlignment="flex-end"
+							// this style replace takeAvailableSpace prop, it calculates growth depending from content (all 4 props are needed)
+							style={{
+								flexGrow: 1,
+								flexBasis: 'content',
+								overflow: 'hidden',
+								whiteSpace: 'nowrap'
+							}}
+						>
 							{message.attachment && attachments.length > 0 && (
 								<Padding left="small">
 									<Icon icon="AttachOutline" />
@@ -267,15 +285,7 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									{getTimeLabel(message.date)}
 								</Text>
 							</Padding>
-							{!isMessageView && open && (
-								<Row takeAvailableSpace maxWidth="35%">
-									<MailMsgPreviewActions
-										message={message}
-										folderId={folderId}
-										timezone={timezone}
-									/>
-								</Row>
-							)}
+							{!isMessageView && open && <MailMsgPreviewActions actions={actions} maxActions={6} />}
 						</Row>
 					</Container>
 					{!open && (
