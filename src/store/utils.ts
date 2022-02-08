@@ -51,19 +51,15 @@ export function calcFolderAbsParentLevelAndPath(
 export function updateFolders(state: FoldersStateType, folders: Folder[]): void {
 	state.folders = Object.values(state.folders).reduce((acc, item) => {
 		const newFolder = omitBy(
-			find(folders, (c) => c.id === item.id),
+			Object.values(folders).find((c) => c.id === item.id),
 			isNil
 		);
 		const toRet = newFolder ? { ...item, ...newFolder } : item;
 
-		const moreParams = calcFolderAbsParentLevelAndPath(state.folders, toRet);
 		return {
 			...acc,
 			[toRet.id]: {
-				...toRet,
-				...moreParams,
-				depth: moreParams?.level,
-				path: moreParams ? `/${moreParams.path}` : undefined
+				...toRet
 			}
 		};
 	}, {});
