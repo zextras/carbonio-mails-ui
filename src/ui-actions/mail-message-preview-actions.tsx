@@ -22,6 +22,7 @@ type MailMsgPreviewActionsType = {
 	maxActions?: number;
 	maxWidth?: string;
 	mainAlignment?: string;
+	minWidth?: string;
 };
 
 type ThemeContextProps = {
@@ -36,6 +37,7 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	actions,
 	maxActions,
 	maxWidth = '120px',
+	minWidth,
 	mainAlignment = 'flex-end'
 }): ReactElement => {
 	const actionContainerRef = useRef<HTMLInputElement>(null);
@@ -70,6 +72,11 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		[iconSize, maxActions, maxWidth]
 	);
 
+	const _minWidth = useMemo(
+		() => minWidth ?? theme?.sizes?.icon?.large,
+		[minWidth, theme?.sizes?.icon?.large]
+	);
+
 	useLayoutEffect(() => {
 		calculateVisibleActionsCount();
 	}, [calculateVisibleActionsCount]);
@@ -79,7 +86,7 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 			ref={actionContainerRef}
 			mainAlignment={mainAlignment}
 			maxWidth={_maxWidth}
-			style={{ minWidth: '24px' }}
+			style={{ minWidth: _minWidth }}
 			wrap="nowrap"
 			takeAvailableSpace
 		>
