@@ -47,6 +47,7 @@ export function calcFolderAbsParentLevelAndPath(
 	);
 }
 
+// replaced lodash "reduce" method with vanilla JS in order to decrease iterations and improve performance
 export function updateFolders(state: FoldersStateType, folders: Folder[]): void {
 	state.folders = Object.values(state.folders).reduce((acc, item) => {
 		const newFolder = omitBy(
