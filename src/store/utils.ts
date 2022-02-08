@@ -48,28 +48,24 @@ export function calcFolderAbsParentLevelAndPath(
 }
 
 export function updateFolders(state: FoldersStateType, folders: Folder[]): void {
-	state.folders = reduce(
-		state.folders,
-		(acc, item) => {
-			const newFolder = omitBy(
-				find(folders, (c) => c.id === item.id),
-				isNil
-			);
-			const toRet = newFolder ? { ...item, ...newFolder } : item;
+	state.folders = Object.values(state.folders).reduce((acc, item) => {
+		const newFolder = omitBy(
+			find(folders, (c) => c.id === item.id),
+			isNil
+		);
+		const toRet = newFolder ? { ...item, ...newFolder } : item;
 
-			const moreParams = calcFolderAbsParentLevelAndPath(state.folders, toRet);
-			return {
-				...acc,
-				[toRet.id]: {
-					...toRet,
-					...moreParams,
-					depth: moreParams?.level,
-					path: moreParams ? `/${moreParams.path}` : undefined
-				}
-			};
-		},
-		{}
-	);
+		const moreParams = calcFolderAbsParentLevelAndPath(state.folders, toRet);
+		return {
+			...acc,
+			[toRet.id]: {
+				...toRet,
+				...moreParams,
+				depth: moreParams?.level,
+				path: moreParams ? `/${moreParams.path}` : undefined
+			}
+		};
+	}, {});
 }
 
 export function updateFolderInStore(state: FoldersStateType, folders: Folder[]): void {
