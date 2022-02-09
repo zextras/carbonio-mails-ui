@@ -279,7 +279,6 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									>
 										{mainContact.fullName && `"${mainContact.fullName}"`}
 									</Text>
-
 									<Padding left="small">
 										<Text color="gray1" size={message.read ? 'small' : 'medium'}>
 											{mainContact.address && `<${mainContact.address}>`}
@@ -310,7 +309,7 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									<Icon color="error" icon="Flag" data-testid="FlagIcon" />
 								</Padding>
 							)}
-							<Row ref={textRef} minWidth="fit">
+							<Row ref={textRef} minWidth="fit" padding={{ left: 'small' }}>
 								<Text color="gray1" data-testid="DateLabel" size="extrasmall">
 									{getTimeLabel(message.date)}
 								</Text>
