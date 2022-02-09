@@ -13,7 +13,8 @@ import {
 	useReplaceHistoryCallback,
 	useAppContext,
 	useIntegratedComponent,
-	useUserSettings
+	useUserSettings,
+	FOLDERS
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import {
@@ -121,7 +122,7 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 
 	return (
 		<>
-			{folderId === '4' && (
+			{folderId === FOLDERS.DRAFTS && (
 				<Container
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
@@ -266,7 +267,6 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 							style={{
 								flexGrow: 1,
 								flexBasis: 'content',
-								overflow: 'hidden',
 								whiteSpace: 'nowrap'
 							}}
 						>
@@ -343,7 +343,7 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 	);
 };
 
-export default function MailPreview({ message, expanded, isAlone, isMessageView, conversation }) {
+export default function MailPreview({ message, expanded, isAlone, isMessageView }) {
 	const dispatch = useDispatch();
 	const mailContainerRef = useRef(undefined);
 	const accounts = useUserAccounts();
