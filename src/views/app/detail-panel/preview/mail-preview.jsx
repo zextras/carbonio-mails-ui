@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
-import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
+import React, {
+	useMemo,
+	useState,
+	useRef,
+	useCallback,
+	useEffect,
+	useContext,
+	useLayoutEffect
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { find, map, filter, isEmpty } from 'lodash';
@@ -26,7 +34,8 @@ import {
 	Icon,
 	Padding,
 	Button,
-	Row
+	Row,
+	ThemeContext
 } from '@zextras/carbonio-design-system';
 import { createSelector } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
@@ -103,6 +112,7 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 	const { folderId } = useParams();
 	const accounts = useUserAccounts();
 	const dispatch = useDispatch();
+	const textRef = useRef();
 	const { isMessageView } = useAppContext();
 	const { folderId: currentFolderId } = useParams();
 	const folders = useSelector(selectFolders);
@@ -119,6 +129,24 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 			: { color: 'primary', weight: 'bold', badge: 'unread', size: 'medium' };
 	}, [message.read]);
 	const actions = useMessageActions(message);
+	const theme = useContext(ThemeContext);
+	const iconSize = useMemo(() => parseInt(theme.sizes.icon.large, 10), [theme?.sizes?.icon?.large]);
+	const [_minWidth, _setMinWidth] = useState();
+
+	useLayoutEffect(() => {
+		let width = iconSize;
+		if (message.attachment && attachments.length > 0) width += iconSize;
+		if (message.flagged) width += iconSize;
+		if (textRef?.current?.clientWidth) width += textRef.current.clientWidth;
+		_setMinWidth(`${width}px`);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [
+		attachments.length,
+		iconSize,
+		message.attachment,
+		message.flagged,
+		textRef?.current?.clientWidth
+	]);
 
 	return (
 		<>
@@ -205,7 +233,7 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 							// this style replace takeAvailableSpace prop, it calculates growth depending from content (all 4 props are needed)
 							style={{
 								flexGrow: 1,
-								flexBasis: 'content',
+								flexBasis: 'fit-content',
 								overflow: 'hidden',
 								whiteSpace: 'nowrap'
 							}}
@@ -266,9 +294,11 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 							// this style replace takeAvailableSpace prop, it calculates growth depending from content (all 4 props are needed)
 							style={{
 								flexGrow: 1,
-								flexBasis: 'content',
-								whiteSpace: 'nowrap'
+								flexBasis: 'fit-content',
+								whiteSpace: 'nowrap',
+								overflow: 'hidden'
 							}}
+							minWidth={_minWidth}
 						>
 							{message.attachment && attachments.length > 0 && (
 								<Padding left="small">
@@ -280,11 +310,11 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									<Icon color="error" icon="Flag" data-testid="FlagIcon" />
 								</Padding>
 							)}
-							<Padding left="small">
+							<Row ref={textRef} minWidth="fit">
 								<Text color="gray1" data-testid="DateLabel" size="extrasmall">
 									{getTimeLabel(message.date)}
 								</Text>
-							</Padding>
+							</Row>
 							{!isMessageView && open && <MailMsgPreviewActions actions={actions} maxActions={6} />}
 						</Row>
 					</Container>
