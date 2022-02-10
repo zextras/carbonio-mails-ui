@@ -5,7 +5,7 @@
         "download": "Télécharger",
         "edit_as_draft": "Modifier",
         "edit_as_new": "Modifier comme nouveau",
-        "edit_share": "Modifier Partager",
+        "edit_share": "Modifier le partage",
         "flag": "Ajouter marqueur",
         "forward": "Transférer",
         "hide_details": "Cacher les détails",
@@ -157,7 +157,8 @@
         "inbox": "Réception",
         "sent": "Envoyés",
         "trash": "Corbeille",
-        "junk": "Spam"
+        "junk": "Spam",
+        "spam": "Spam"
     },
     "freebusy": "Disponibilité",
     "header": {
@@ -173,7 +174,7 @@
         "add_custom_message": "Ajouter un message personnalisé",
         "allowed_actions": "Actions autorisées",
         "attachment": "Pièce jointe",
-        "attachment_plural": "pièces jointes",
+        "attachment_plural": "Pièces jointes",
         "bcc": "CCI",
         "calendar_color": "Couleur de l'élément",
         "cancel": "Annuler",
@@ -198,7 +199,7 @@
         "owner": "Propriétaire : ",
         "receive_message": "Réception de messages",
         "remove": "Supprimer",
-        "remove_plural": "Supprimer",
+        "remove_plural": "Tout supprimer",
         "resend": "Renvoyer",
         "retention_policy": "Politique de rétention",
         "revoke": "Révoquer",
@@ -214,7 +215,7 @@
         "sent": "Envoyé",
         "share": "Partager",
         "shared_item": "Elément partagé",
-        "shares_folder_edit": "Partage du dossier",
+        "shares_folder_edit": "Partage de ce dossier",
         "shares_items": "Dossiers partagés de {{value}}",
         "show_popup": "Afficher une notification popup",
         "show": "Afficher",
@@ -240,7 +241,7 @@
         "delete_permanently": "Supprimer définitivement",
         "find_mail_shares": "Trouver les dossiers partagés",
         "no_search_results_found": "Aucun résultat trouvé",
-        "results_for_error": "Impossible d'analyser la requête de recherche, effacez-la et réessayez : ",
+        "results_for_error": "Impossible de lancer la recherche, effacez-la et réessayez : ",
         "create": "Créer",
         "move": "Déplacer",
         "activate_selection_mode": "Activer le mode de sélection",
@@ -262,7 +263,7 @@
         "hide": "Cacher",
         "insert": "Insérer",
         "loading_results": "Chargement des résultats...",
-        "mail_folder": "Dossier courrier",
+        "mail_folder": "Dossier email",
         "mail_selected": "{{count}} email sélectionné",
         "mail_selected_plural": "{{count}} emails sélectionnés",
         "mail_settings": "Paramètres des mails",
@@ -287,7 +288,18 @@
         "size_smaller": "Taille inférieure à (MB)",
         "tag": "Étiquette",
         "workflow": "Flux de travail",
-        "write": "Ecrire"
+        "write": "Ecrire",
+        "undo": "Annuler",
+        "empty": "Vide",
+        "advanced_filters": "Filtre avancé",
+        "advanced_filters_plural": "Filtres avancés",
+        "addresses_not_accepted": "Une ou plusieurs adresses n'ont pas été acceptées. Adresses rejetées :",
+        "discard_changes": "ANNULER LES MODIFICATIONS",
+        "go_back": "Retour",
+        "messages": "Messages",
+        "search_activate_selection_mode": "Le mode sélection n'est pas encore disponible dans les résultats de la recherche",
+        "sending": "Envoi en cours",
+        "wipe": "Nettoyer"
     },
     "mail_folder": "dossier Mail",
     "message": {
@@ -297,11 +309,11 @@
                 "error": "Quelque chose s'est mal passé, veuillez réessayer",
                 "declined": "Vous avez décliné la demande de partage"
             },
-            "settings_saved": "Modifications sauvées correctement"
+            "settings_saved": "Modifications enregistrées correctement"
         },
         "sending_mail_to_self": "Il semblerait que vous soyez sur le point de vous envoyer un email",
         "search_hints": "Les indices de recherche dont nous devons discuter",
-        "invalid_search_message": "Il semble que vous ayez utilisé une mauvaise requête, nous n'avons pas trouvé de correspondance"
+        "invalid_search_message": "Nous n'avons pas trouvé de correspondance"
     },
     "messages": {
         "invalid_address": "L'adresse suivante semble être invalide",
@@ -321,7 +333,7 @@
         "no_subject": "Pas d'objet.",
         "permanent_delete_body": "En supprimant cet élément de façon définitive, vous ne pourrez plus le récupérer. Continuer ?",
         "permanent_delete_confirm": "Supprimer définitivement",
-        "permanent_delete_title": "Êtes-vous sûr de vouloir définitivement supprimer cet élément ?",
+        "permanent_delete_title": "Êtes-vous sûr de vouloir supprimer définitivement cet élément ?",
         "snackbar": {
             "conversation_delete_error": "Quelque chose s'est mal passé, cette conversation n'a pas été supprimée, recommencez s'il vous plaît.",
             "conversation_deleted": "Conversation supprimée avec succès",
@@ -366,7 +378,10 @@
             "marked_as_spam": "Vous avez marqué cet email comme étant un spam",
             "message_deleted_permanently": "Email supprimé définitivement",
             "message_deleted_permanently_error": "Quelque chose s'est mal passé, veuillez recommencer",
-            "mail_saved_to_drafts": "Email enregistré dans les brouillons"
+            "mail_saved_to_drafts": "Email enregistré dans les brouillons",
+            "folder_restored": "Le dossier est restauré",
+            "sending_mail_in_count": "Envoi de votre message dans {{count}} seconde",
+            "sending_mail_in_count_plural": "Envoi de votre message dans {{count}} secondes"
         }
     },
     "of": "de",
@@ -387,9 +402,9 @@
         "attachment": "Pièce jointe",
         "unread": "Non lu",
         "flagged": "Marqué",
-        "flagged_note": "Recherchez tous les éléments d'email qui sont marqués.",
+        "flagged_note": "Recherchez tous les emails qui ont une étiquette.",
         "unread_note": "Recherche de tous les éléments d'emails non lus.",
-        "attachment_note": "Recherchez tous les éléments de courrier électronique qui ont une pièce jointe.",
+        "attachment_note": "Recherchez tous les emails qui ont une pièce jointe.",
         "sent_after": "Envoyé après",
         "sent_before": "Envoyé avant",
         "sent_on": "Envoyé le",
@@ -444,14 +459,14 @@
             "below_deleted": "Sélectionner les messages en-dessous des messages supprimés ou déplacés"
         },
         "new_mail_optn": {
-            "when_arrive": "Pendant que de nouveaux emails arrivent",
+            "when_arrive": "Au fur et à mesure que de nouveaux emails arrivent",
             "manually": "Manuellement",
             "minute": "{{count}} minute",
             "minute_plural": "{{count}} minutes"
         },
         "notify_folder_optn": {
-            "new_message_inbox": "Afficher les notifications pour les nouveaux messages dans la Boîte de Réception",
-            "new_message_folder": "Afficher les notifications pour les nouveaux messages dans n'importe quel dossier"
+            "new_message_inbox": "Afficher les notifications pour les nouveaux messages de la Boîte de Réception",
+            "new_message_folder": "Afficher les notifications pour les nouveaux messages de n'importe quel dossier"
         },
         "read_rcpt_optn": {
             "always": "Toujours envoyer un accusé de réception",
@@ -493,7 +508,7 @@
         "does_not_contain": "ne contient pas",
         "does_not_exists": "n'existe pas",
         "does_not_match_exactly": "ne correspond pas exactement",
-        "does_not_match_wildcard_condition": "ne correspond pas à la condition",
+        "does_not_match_wildcard_condition": "ne correspond pas à la condition joker",
         "domain": "domaine",
         "exists": "existe",
         "facebook_notification": "Notification Facebook",
@@ -509,7 +524,7 @@
         "invite_not_requested": "l'invitation n'est pas requise",
         "invite_requested": "l'invitation est requise",
         "is": "est",
-        "is_me": "est moi",
+        "is_me": "c'est moi",
         "is_not": "n'est pas",
         "is_not_me": "n'est pas moi",
         "kb": "KB",
@@ -519,9 +534,9 @@
         "linkedin_msg": "Messages et connexions sur LinkedIn",
         "localpart": "partie locale",
         "mark_as": "Marquer comme",
-        "mass_marketing": "marketing de masse (bulk)",
+        "mass_marketing": "marketing de masse (multiple)",
         "matches_exactly": "correspond exactement",
-        "matches_wildcard_condition": "correspond à une condition",
+        "matches_wildcard_condition": "correspond à une condition joker",
         "mb": "MB",
         "message": "Message",
         "move_into_folder": "Déplacer dans le dossier",
@@ -540,13 +555,14 @@
         "tag_with": "Marquer avec",
         "to_cc": "A ou CC",
         "twitter_notification": "Notifications Twitter",
-        "under": "sous"
+        "under": "sous",
+        "conv_is_started": "Dans la conversation que j'ai lancé"
     },
     "share": {
         "options": {
             "share_calendar_role": {
                 "admin": "Admin",
-                "manager": "Manager",
+                "manager": "Gestionnaire",
                 "none": "Aucun",
                 "viewer": "Visualisateur"
             },
@@ -559,7 +575,7 @@
         "recipients_address": "Adresses email des destinataires",
         "send_notification": "Envoyer une notification de ce partage",
         "standard_message": "Ajouter une note au message standard",
-        "share_note": "Le message standard affiche votre nom, le nom de l'élément partagé, les autorisations accordées aux destinataires, et les informations de connexion, si nécessaire.",
+        "share_note": "Le message standard affiche votre nom, le nom de l'élément partagé, les autorisations accordées aux destinataires, et les informations de connexion.",
         "filter_folder_message": "Sélectionnez un dossier dans lequel vous souhaitez lancer votre recherche avancée",
         "is_contained_in": "Est contenu dans"
     },
@@ -572,7 +588,8 @@
         "share_resend": "Invitation à partager renvoyée",
         "share_revoke": "Accès au partage révoqué",
         "share_updated": "\"Droits d'accès mis à jour\"",
-        "error": "Quelque chose s'est mal passé, veuillez réessayer"
+        "error": "Quelque chose s'est mal passé, veuillez réessayer",
+        "email_moved_to_trash": "L'email a été déplacé dans la corbeille"
     },
     "title": {
         "new_messages": "Nouveaux messages",
@@ -585,7 +602,7 @@
         "disable_urgent": "Désactiver urgent",
         "edit": "Modifier les propriétés du partage",
         "enable_urgent": "Activer urgent",
-        "resend": "Renvoyez la notification d'e-mail de ce partage",
+        "resend": "Renvoyez la notification email de ce partage",
         "revoke": "Révoquer les accès",
         "enable_rich_text": "Activer l'éditeur de texte riche"
     },
@@ -597,23 +614,23 @@
         "description5": "Vérifier ce dont les autres utilisateurs veulent parler avec vous.",
         "draft_title1": "L'enregistrement d'un e-mail en tant que brouillon vous permet de conserver les messages que vous souhaitez envoyer ultérieurement.",
         "list_sent_title": "Vous n'avez pas encore envoyé d'email",
-        "search_description3": "Vérifier l'orthographe et les options de filtres ou essayer avec un autre mot-clé.",
+        "search_description3": "Vérifiez l'orthographe et les options des filtres ou essayez avec un autre mot-clé.",
         "search_title2": "Nous sommes désolés mais il n'y a pas de résultats pour votre recherche",
-        "title1": "Composer un nouvel email en cliquant sur le bouton \"NOUVEAU\".",
+        "title1": "Composer un nouvel email en cliquant sur le bouton \"NOUVEAU\"",
         "title2": "Cliquer sur le bouton \"NOUVEAU\"",
-        "trash_title1": "Cliquer sur l'icône de la corbeille pour supprimer un courriel.",
-        "archive_title2": "Sélectionner un email archivé pour le consulter.",
+        "trash_title1": "Cliquer sur l'icône de la corbeille pour supprimer un email",
+        "archive_title2": "Sélectionnez un email archivé pour le consulter.",
         "description2": "Envoyer des documents, des images et bien plus encore en composant un nouvel email.",
         "description3": "Rédiger un nouvel e-mail en cliquant sur le bouton \"NOUVEAU\", puis l'envoyer.",
         "description4": "Vous pouvez le signaler, y répondre ou le transmettre à d'autres utilisateurs.",
         "description6": "Répondre à cet e-mail ou le transmettre à d'autres utilisateurs.",
         "description7": "Sélectionner un email à répondre.",
         "draft_title2": "Sélectionner et modifier un email pour l'envoyer à d'autres utilisateurs.",
-        "junk_title1": "Quelle chance ! Vous n'avez pas à vous soucier de spams.",
-        "junk_title2": "Cliquer sur l'icône de la corbeille pour supprimer un email indésirable.",
+        "junk_title1": "Quelle chance ! Vous n'avez pas à vous soucier de spams",
+        "junk_title2": "Cliquez sur l'icône de la corbeille pour supprimer un email indésirable",
         "list_draft_title": "Il n'y a pas de brouillons enregistrés",
         "list_folder_title": "Il semble qu'il n'y ait pas encore d'emails",
-        "list_junk_title": "Il n'y a pas de spams",
+        "list_junk_title": "Il n'y a pas d'emails de spam",
         "list_trash_title": "La corbeille est vide",
         "search_description1": "Ou sélectionner \"Filtres avancés\" pour affiner votre recherche.",
         "search_description2": "Essayer de lancer une autre recherche.",
@@ -625,9 +642,12 @@
         "sent_description1": "Rédiger un nouvel email en cliquant sur le bouton \"NOUVEAU\".",
         "sent_title2": "Sélectionner un email pour afficher ce que vous avez envoyé.",
         "title3": "Rester en contact avec les autres utilisateurs.",
-        "title4": "Sélectionner un courriel pour le lire",
+        "title4": "Sélectionner un email pour le lire",
         "title8": "Sélectionner un email pour le lire ou le supprimer.",
-        "trash_title2": "Sélectionner et restaurer les emails de la corbeille."
+        "trash_title2": "Sélectionner et restaurer les emails de la corbeille.",
+        "list_spam_title": "Il n'y a pas d'emails de spam",
+        "spam_title1": "Quelle chance ! Il n'y a pas d'emails de spam pour lesquels s'inquiéter",
+        "spam_title2": "Cliquer sur l'icone corbeille pour supprimer un email de spam."
     },
     "filters": {
         "activity_stream_msg": "Des règles peuvent être définies pour que, lorsque vous recevez des messages moins importants, ils soient retirés de votre boîte de réception et placés dans un dossier du flux d'activité que vous pouvez consulter à votre convenance.",
@@ -658,15 +678,45 @@
         },
         "modal": {
             "move": {
-                "title_modal": "Déplacer la Conversation"
+                "title_modal": "Déplacer la Conversation",
+                "body": {
+                    "message1": "Sélectionnez un dossier dans lequel le déplacer :",
+                    "message2": "Sélectionnez un dossier à restaurer dans :"
+                }
             },
             "new": {
                 "input": {
                     "name": "Entrer le Nom du Dossier",
                     "name_exist": "Le nom existe déjà dans ce chemin",
                     "position": "Dossier parent"
+                },
+                "name_exist_warning": "Le nom existe déjà",
+                "restore_create_footer": "Créer et Restaurer",
+                "create_footer": "Créer et Déplacer",
+                "title": "Créer un nouveau dossier"
+            },
+            "delete": {
+                "body": {
+                    "message2": "Souhaitez-vous supprimer définitivement le dossier sélectionné ?",
+                    "message4": "Si vous le supprimez, tout le contenu relatif sera supprimé définitivement et il ne sera pas possible de restaurer le dossier.",
+                    "message1": "Souhaitez-vous vider le dossier sélectionné ?",
+                    "message3": "Si vous le supprimez, tout le contenu relatif sera déplacé dans la corbeille et le dossier ne sera plus visible."
+                }
+            },
+            "empty": {
+                "body": {
+                    "message1": "Souhaitez-vous vider le dossier sélectionné ?",
+                    "message2": "Si vous le videz, tout le contenu relatif sera supprimé définitivement."
+                }
+            },
+            "wipe": {
+                "body": {
+                    "message2": "Si vous l'effacez, tout le contenu associé sera définitivement supprimé."
                 }
             }
+        },
+        "lists_item": {
+            "root": "/Root"
         }
     },
     "notification": {

@@ -2,24 +2,24 @@
     "messages": {
         "snackbar": {
             "conversation_delete_error": "Qualcosa è andato storto, questa conversazione non è stata eliminata, riprova.",
-            "message_delete_error": "Qualcosa è andato storto, questo messaggio non è stato eliminato, riprova.",
+            "message_delete_error": "Qualcosa è andato storto, questo messaggio non è stato eliminato. Riprova.",
             "message_will_be_deleted_in_time": "Questo messaggio verrà eliminato in {{remainingTime}} secondi.",
-            "message_deleted": "Messaggio eliminato correttamente.",
+            "message_deleted": "Messaggio eliminato",
             "conversation_will_be_deleted_in_time": "Questa conversazione verrà eliminata in {{remainingTime}} secondi.",
-            "conversation_deleted": "Conversazione eliminata con successo.",
+            "conversation_deleted": "Conversazione eliminata",
             "conversation_move": "Conversazione spostata con successo",
-            "conversation_move_error": "Qualcosa è andato storto, questa conversazione non è stata spostata, riprova.",
+            "conversation_move_error": "Qualcosa è andato storto, questa conversazione non è stata spostata. Riprova.",
             "folder_created": "Nuova cartella creata",
             "folder_deleted": "Cartella eliminata con successo.",
-            "folder_edited": "Cartella modificata con successo",
+            "folder_edited": "Modifiche salvate correttamente",
             "folder_empty": "Pulizia cestino completata",
             "folder_delete_error": "Qualcosa è andato storto, questa cartella non è stata eliminata, riprova.",
             "message_move_error": "Qualcosa è andato storto, questo messaggio non è stato spostato, riprova.",
             "folder_created_error": "Qualcosa è andato storto, riprova.",
             "folder_edited_error": "Qualcosa è andato storto, i cambiamenti non sono stati applicati, riprova.",
             "folder_move_error": "Qualcosa è andato storto, questa cartella non è stata spostata, riprova.",
-            "folder_moved": "Cartella spostata con successo",
-            "folder_empty_error": "Qualcosa è andato storto, i cambiamenti non sono stati applicati, riprova.",
+            "folder_moved": "Cartella spostata correttamente",
+            "folder_empty_error": "Qualcosa è andato storto, le modifiche non sono stati applicate. Riprova.",
             "folder_will_be_deleted_in_time": "Questa cartella sarà eliminata in {{remainingTime}} secondi.",
             "folder_will_be_moved_in_time": "Questa cartella sarà spostata in {{remainingTime}}",
             "folder_will_be_wiped_in_time": "Questo messaggio verrà eliminato in {{remainingTime}} secondi.",
@@ -28,7 +28,7 @@
             "marked_as_non_spam": "Hai contrassegnato questa e-mail come non spam",
             "message_deleted_permanently_error": "Qualcosa è andato storto. riprova",
             "message_redirected": "Il messaggio è stato reindirizzato",
-            "email_moved_to_trash": "E-mail spostata nel cestino",
+            "email_moved_to_trash": "E-mail spostata nel Cestino",
             "email_restore_error": "Qualcosa è andato storto, riprova",
             "email_restored": "E-mail ripristinata nella cartella di destinazione",
             "folder_moved_to_trash": "Cartella spostata nel cestino",
@@ -38,43 +38,47 @@
             "email_move_error": "Qualcosa è andato storto, riprova",
             "marked_as_spam": "Hai contrassegnato questa e-mail come spam",
             "message_deleted_permanently": "E-mail eliminata definitivamente",
-            "conversation_deleted_permanently": "E-mail eliminata definitivamente"
+            "conversation_deleted_permanently": "E-mail eliminata definitivamente",
+            "folder_restored": "Cartella ripristinata",
+            "mail_saved_to_drafts": "E-mail salvata in bozze",
+            "sending_mail_in_count": "Il tuo messaggio sarà inviato tra {{count}} secondo",
+            "sending_mail_in_count_plural": "Il tuo messaggio sarà inviato tra {{count}} secondi"
         },
         "no_subject": "Nessun Oggetto.",
         "modal": {
             "delete": {
-                "if_delete_lost_forever": "Se elimini l'email, sarà persa per sempre.",
-                "sure_delete_email": "Sei sicuro di voler eliminare l'email selezionata?"
+                "if_delete_lost_forever": "Se elimini l'e-mail, questa sarà persa per sempre.",
+                "sure_delete_email": "Sei sicuro di voler eliminare l'e-mail selezionata?"
             },
             "redirect": {
-                "first": "Questa email sarà inviata ad un nuovo destinatario, conservando l'indirizzo email del mittente originale."
+                "first": "Questa e-mail sarà inviata ad un nuovo destinatario, conservando l'indirizzo e-mail del mittente originale."
             }
         },
         "invalid_address": "Il seguente indirizzo sembra essere non valido",
         "invalid_address_plural": "I seguenti indirizzi sembrano essere non validi",
-        "new_email": "Nuova email",
+        "new_email": "Nuova e-mail",
         "no_content": "Questo messaggio non ha contenuto",
-        "permanent_delete_body": "Eliminando definitivamente questo elemento non sarà possibile ripristinarlo in futuro, vuoi continuare?",
+        "permanent_delete_body": "Eliminando definitivamente questo elemento non sarà possibile ripristinarlo in futuro. Vuoi continuare?",
         "permanent_delete_confirm": "Elimina definitivamente",
         "permanent_delete_title": "Vuoi eliminare definitivamente questo elemento?"
     },
     "label": {
-        "cc": "CC:",
-        "bcc": "BCC:",
-        "to": "A:",
-        "subject": "Oggetto:",
+        "cc": "CC",
+        "bcc": "BCC",
+        "to": "A",
+        "subject": "Oggetto",
         "show": "Mostra",
         "show_plural": "Mostra tutto",
         "sent": "Inviato",
         "send": "Invia",
         "save": "Salva",
-        "no_subject": "(Nessun oggetto)",
+        "no_subject": "Nessun oggetto",
         "me": "Io",
-        "from": "Da:",
+        "from": "Da",
         "download": "Scarica",
-        "download_plural": "Scarica tutto",
+        "download_plural": "",
         "attachment": "Allegato",
-        "attachment_plural": "{{count}} Allegati",
+        "attachment_plural": "Allegati",
         "mailSelected": "1 email selezionata",
         "mailSelected_plural": "{{count}} email selezionate",
         "select_1": "Seleziona una email per leggerla",
@@ -84,13 +88,13 @@
         "draft_folder": "[BOZZA]",
         "mail_setting": "Impostazioni Posta",
         "remove": "Elimina",
-        "remove_plural": "Elimina Tutto",
+        "remove_plural": "Elimina tutto",
         "advance_filters": "1 Filtro avanzato",
         "advance_filters_plural": "{{count}} Filtri avanzati",
         "resend": "Invia di nuovo",
-        "find_shares": "Selezione le cartelle da visualizzare nella lista delle cartelle",
+        "find_shares": "Trova condivisioni",
         "add_custom_message": "Aggiungi un messaggio personalizzato",
-        "allowed_actions": "Azioni consentite: ",
+        "allowed_actions": "Azioni consentite:",
         "automatically_delete_duplicates": "Elimina automaticamente alla ricezione duplicati di uno stesso messaggio",
         "calendar_color": "Colore elemento",
         "edit": "Modifica",
@@ -98,7 +102,7 @@
         "revoke": "Revoca",
         "revoke_access_tooltip": "Revoca accesso e invia una notifica standard",
         "search_subject": "Oggetto",
-        "shared_item": "Elemento Condiviso: ",
+        "shared_item": "Elemento condiviso:",
         "edit_access": "Modifica l'accesso di {{name}}",
         "edit_folder_properties": "Modifica proprietà di {{name}}",
         "revoke_access_without_notification": "Revoca accesso e non inviare notifica",
@@ -107,20 +111,20 @@
         "search_hint": "Cerca suggerimenti!",
         "share": "Condividi",
         "single_advance_fillter": "Filtri Avanzati",
-        "grantee": "Beneficiario:",
+        "grantee": "Beneficiario ",
         "highlight_tab": "Evidenzia il pannello Email",
         "keywords": "Parole chiave",
-        "owner": "Proprietario:",
+        "owner": "Proprietario: ",
         "role": "Ruolo: ",
-        "select_folder": "Seleziona Cartella",
+        "select_folder": "Seleziona cartella",
         "send_notification": "Invia un messaggio di notifica a",
         "shares_folder_edit": "Condivisione di questa cartella",
         "show_popup": "Mostra una notifica pop up",
-        "type": "Tipo:",
-        "type_name_here": "Nome Elemento",
+        "type": "Tipo",
+        "type_name_here": "Nome elemento",
         "with_you": "con te",
         "flash_browser_title": "Alterna con il titolo del browser",
-        "retention_policy": "Proprietà di memorizzazione",
+        "retention_policy": "Regole di Ritenzione",
         "shares_items": "cartelle condivise di {{value}}",
         "would_like_to_share": "ha condiviso",
         "create": "Crea",
@@ -158,7 +162,34 @@
         "insert": "Inserisci",
         "filter_folders": "Filtra cartelle",
         "find_mail_shares": "Trova cartelle condivise",
-        "flagged": "Contrassegnato"
+        "flagged": "Contrassegnato",
+        "undo": "Annulla",
+        "mail_selected": "{{count}} e-mail selezionata",
+        "mail_selected_plural": "{{count}} e-mail selezionate",
+        "mail_settings": "Impostazioni E-mail",
+        "messages": "Messaggi",
+        "on_behalf_of": "per conto di",
+        "show_all": "Mostra tutto",
+        "signature_required": "Sono richieste le informazioni della firma.",
+        "size_larger": "Dimensione più grande di (MB)",
+        "size_smaller": "Dimensione minore di (MB)",
+        "any": "qualsiasi",
+        "attachment_type": "Tipologia di allegato",
+        "addresses_not_accepted": "Uno o più indirizzi non sono stati accettati. Indirizzi rifiutati:",
+        "error_address": "È necessario inserire una e-mail valida",
+        "go_back": "Indietro",
+        "loading_results": "Caricamento Risultati in corso...",
+        "mail_folder": "Cartella e-mail",
+        "results_for": "Risultati per: ",
+        "results_for_error": "Impossibile iniziare la ricerca, cancella e riprova: ",
+        "select_signature": "Seleziona una firma",
+        "sending": "Invio",
+        "sent_to_address": "Inviato a (indirizzo)",
+        "hide": "Nascondi",
+        "received_from_address": "Ricevuto da (address)",
+        "activate_selection_mode": "Attiva modalità selezione",
+        "all": "tutto",
+        "search_activate_selection_mode": "La Modalità Selezione non è ancora disponibile nei risultati di ricerca"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",
@@ -182,7 +213,7 @@
     "header": {
         "no_subject": "Nessun oggetto",
         "edit_draft": "Modifica bozza",
-        "delete_email": "Elimina email",
+        "delete_email": "Elimina e-mail",
         "message_not_sent": "Errore - Messaggio non inviato",
         "warning": "Attenzione",
         "redirect_email": "Reindirizza e-mail"
@@ -214,7 +245,7 @@
         "mark_as_non_spam": "Non spam",
         "mark_as_spam": "Segna come spam",
         "delete_permanently": "Elimina definitivamente",
-        "edit_share": "Modifica Accesso",
+        "edit_share": "Modifica Condivisione",
         "restore": "Ripristina",
         "share_folder": "Condividi cartella",
         "print": "Stampa",
@@ -275,9 +306,13 @@
                 "folder_type": "Cartella Posta",
                 "footer": "Modifica",
                 "type": "Tipo",
-                "rename_warning": "Non puoi rinominare una cartella come una di sistema",
+                "rename_warning": "Non puoi nominare una cartella come una di sistema.",
                 "retention_msg": "I messaggi in questa cartella che rientrano nell'intervallo di memorizzazione richiederanno una conferma esplicita prima di essere eliminati",
-                "threshold_msg": "In questa cartella, i messaggi più vecchi del periodo stabilito verranno cancellati automaticamente."
+                "threshold_msg": "In questa cartella, i messaggi più vecchi del periodo stabilito verranno cancellati automaticamente.",
+                "add_share": "Aggiungi Condivisione",
+                "retention_duration_warning": "Il periodo di ritenzione dev'essere un numero positivo",
+                "retention_message": "All'interno di questa cartella, per i messaggi che rientrano nel periodo di ritenzione, verrà chiesta conferma per la cancellazione",
+                "threshold_message": "In questa cartella, i messaggi più vecchi del limite consentito saranno soggetti a cancellazione automatica."
             },
             "footer": {
                 "cancel": "Annulla"
@@ -322,7 +357,8 @@
         "inbox": "In arrivo",
         "junk": "Spam",
         "sent": "Inviati",
-        "trash": "Cestino"
+        "trash": "Cestino",
+        "spam": "Spam"
     },
     "composer": {
         "attachment": {
@@ -335,7 +371,8 @@
             },
             "contacts_mod": "Aggiungi Scheda di contatto",
             "drag_and_drop": {
-                "title": "Modalità Drag&Drop"
+                "title": "Modalità Drag&Drop",
+                "content": "Trascina qui gli allegati per aggiungerli velocemente a questa e-mail"
             }
         }
     },
@@ -344,11 +381,12 @@
             "settings_saved": "Modifiche salvate correttamente",
             "share": {
                 "error": "Qualcosa è andato storto, riprova",
-                "accepted": "Hai accettato la condivisione",
-                "declined": "Hai rifiutato la condivisione"
+                "accepted": "Hai accettato la richiesta di condivisione",
+                "declined": "Hai rifiutato la richiesta di condivisione"
             }
         },
-        "sending_mail_to_self": "Ti stai auto inviando una e-mail"
+        "sending_mail_to_self": "Ti stai auto inviando una e-mail",
+        "invalid_search_message": "Nessuna corrispondenza trovata"
     },
     "add": "Aggiungi",
     "allowed_actions": "Azioni consentite",
@@ -362,8 +400,9 @@
         "folder_shared_error": "Qualcosa è andato storto. Riprova",
         "share_resend": "Invito condivisione inviato",
         "share_revoke": "Condivisione accesso revocata",
-        "share_updated": "Diritti di accesso aggiornati",
-        "folder_shared": "Cartella creata"
+        "share_updated": "\"Diritti di accesso aggiornati\"",
+        "folder_shared": "Cartella creata",
+        "email_moved_to_trash": "E-mail spostata nel cestino"
     },
     "insert": "Inserisci",
     "share": {
@@ -380,9 +419,11 @@
             }
         },
         "recipients_address": "Indirizzi e-mail dei destinatari",
-        "send_notification": "Invia notifica per questa condivisione",
+        "send_notification": "Invia una notifica per questa condivisione",
         "standard_message": "Aggiungi nota a messaggio predefinito",
-        "share_note": "Il messaggio predefinito mostra il tuo nome, il nome dell'elemento condiviso, i permessi dati ai destinatari e le informazioni di accesso."
+        "share_note": "Il messaggio predefinito mostra il tuo nome, il nome dell'elemento condiviso, i permessi dati ai destinatari e le informazioni di accesso.",
+        "filter_folder_message": "Seleziona la cartella in cui iniziare la ricerca avanzata",
+        "is_contained_in": "È contenuto in"
     },
     "title": {
         "advanced_filters": "Filtri Avanzati",
@@ -402,11 +443,14 @@
             "search_query": "Richiesta predefinita",
             "conv_sorting": "Ordine delle conversazioni",
             "msg_prv_title": "Anteprima messaggi e immagini",
-            "message_color": "Colore Messaggio"
+            "message_color": "Colore Messaggio",
+            "conversation_ordering": "Ordine conversazione",
+            "message_selection": "Selezione Messaggio",
+            "set_message_color": "Imposta il colore di messaggi e conversazioni selezionando il colore del tag."
         },
         "new_mail_optn": {
             "manually": "Manualmente",
-            "minute": "un minuto",
+            "minute": "{{count}} minuto",
             "minute_plural": "{{count}} minuti",
             "when_arrive": "Quando arriva una nuova e-mail"
         },
@@ -429,8 +473,8 @@
             "text": "Come testo"
         },
         "notify_folder_optn": {
-            "new_message_folder": "Mostra notifiche per ogni nuovo messaggio",
-            "new_message_inbox": "Mostra notifiche per i nuovi messaggi nella cartella posta in arrivo"
+            "new_message_folder": "Mostra notifiche per ogni nuovo messaggio che arriva in qualsiasi cartella",
+            "new_message_inbox": "Mostra notifiche per i nuovi messaggi che arrivano nella posta in arrivo"
         },
         "actions": "Azioni",
         "after": "dopo",
@@ -444,9 +488,76 @@
         "message": "Messaggio",
         "browse": "Sfoglia",
         "display_mail_options": {
-            "text": "Come testo"
+            "text": "Come testo",
+            "html": "Come HTML (Quando possibile)"
         },
-        "calendar": "Calendario"
+        "calendar": "Calendario",
+        "active_filter": "Filtro attivo",
+        "add_condition": "Aggiungi nuova condizione",
+        "choose": "Scegli",
+        "filter_deleted": "Filtro eliminato correttamente",
+        "filter_folder_message": "Seleziona una cartella a cui applicare il filtro:",
+        "filter_name": "Nome Filtro",
+        "from_distribution_list": "dalla lista di distribuzione",
+        "gb": "GB",
+        "matches_exactly": "Corrisponde esattamente",
+        "matches_wildcard_condition": "corrisponde alla condizione dei caratteri jolly",
+        "b": "B",
+        "before": "prima",
+        "is": "è",
+        "is_me": "sono io",
+        "is_not": "non è",
+        "is_not_me": "non sono io",
+        "kb": "KB",
+        "keep_in_inbox": "Mantieni in Posta in entrata",
+        "keep_in_sent": "Mantieni in Posta inviata",
+        "body": "Corpo",
+        "choose_date": "Scegli Data",
+        "conditions": "Condizioni",
+        "contains": "contiene",
+        "conv_is_participated": "nelle conversazioni a cui ho partecipato",
+        "conv_is_started": "in conversazioni che ho iniziato",
+        "create_new_filter": "Crea nuovo filtro",
+        "delete_filter": "Elimina filtro",
+        "delete_filter_text": "Vuoi eliminare il filtro? ",
+        "do_not_process_additional_filters": "Non processare ulteriori filtri",
+        "does_not_contain": "non contiene",
+        "does_not_exists": "non esiste",
+        "does_not_match_exactly": "non corrisponde esattamente",
+        "domain": "dominio",
+        "exists": "esiste",
+        "facebook_notification": "Notica Facebook",
+        "field": "Campo",
+        "header_name": "Nome Intestazione",
+        "if": "Se",
+        "in": "nel",
+        "invite_not_replied": "l'invito non ha risposta ",
+        "invite_not_requested": "l'invito non è richiesto",
+        "invite_replied": "l'invito ha risposta",
+        "keyword": "Parola chiave",
+        "linkedin_msg": "Messaggi e connessioni LinkedIn",
+        "mark_as": "Segna come",
+        "mass_marketing": "mass marketing (bulk)",
+        "mb": "MB",
+        "move_into_folder": "Sposta nella Cartella",
+        "not_after": "non dopo",
+        "not_before": "non prima",
+        "not_in": "non in",
+        "not_over": "non sopra",
+        "not_under": "non sotto",
+        "over": "sopra",
+        "perform_following_action": "Esegui le seguenti azioni:",
+        "read_receipt": "Conferma di lettura",
+        "redirect_to_address": "Reindirizza a indirizzo",
+        "remove_condition": "Rimuovi questa condizione",
+        "to_cc": "A o CC",
+        "twitter_notification": "Notifiche Twitter",
+        "under": "sotto",
+        "invite_requested": "l'invito è richiesto",
+        "my_frequent_emails": "le mie e-mail frequenti",
+        "address_in": "Indirizzo in",
+        "tag_with": "Contrassegna con",
+        "does_not_match_wildcard_condition": "non corrisponde alle condizioni dei caratteri jolly"
     },
     "mail_folder": "Cartella Posta",
     "of": "di",
@@ -462,7 +573,12 @@
         "attachment_note": "Cerca tutte le e-mail che hanno un allegato.",
         "flagged": "Marcato",
         "unread": "Non letto",
-        "unread_note": "Cerca tutte le e-mail non lette."
+        "unread_note": "Cerca tutte le e-mail non lette.",
+        "flagged_note": "Cerca tutte le e-mail contrassegnate.",
+        "size_error": "Sono permessi solo numeri",
+        "sent_after": "Invia più tardi",
+        "sent_on": "Inviata il",
+        "sent_before": "Inviato prima"
     },
     "select_signature": "Seleziona firma",
     "set_default_signatures": "Imposta firma predefinita",
@@ -484,7 +600,7 @@
         "description6": "Rispondi a questa e-mail o inoltrala ad altri utenti.",
         "description7": "Seleziona una e-mail per rispondere.",
         "draft_title2": "Seleziona e modifica una e-mail per inviarla ad altri utenti.",
-        "junk_title1": "Che fortuna! Non ci sono e-mail in spam.",
+        "junk_title1": "Che fortuna! Non ci sono e-mail in spam",
         "junk_title2": "Seleziona l'icona del cestino per eliminare un messaggio spam.",
         "list_draft_title": "Non ci sono bozze salvate",
         "list_folder_title": "Sembra che non ci sia ancora alcuna e-mail",
@@ -503,8 +619,12 @@
         "title2": "Clicca il pulsante \"NUOVO\"",
         "title3": "Rimani in contatto con gli altri utenti.",
         "title4": "Seleziona una e-mail per leggerla",
-        "trash_title1": "Seleziona l'icona del cestino per eliminare un messaggio.",
-        "trash_title2": "Seleziona e ripristina messaggi dal cestino."
+        "trash_title1": "Seleziona l'icona del cestino per eliminare una e-mail.",
+        "trash_title2": "Seleziona e ripristina e-mail dal cestino.",
+        "description5": "Guarda di che cosa vogliono parlare gli altri utenti.",
+        "list_spam_title": "Non ci sono messaggi spam",
+        "spam_title1": "Che fortuna! Non ci sono e-mail in spam",
+        "spam_title2": "Seleziona l'icona del cestino per eliminare un messaggio spam."
     },
     "board": {
         "show": "Mostra finestra"
@@ -512,7 +632,12 @@
     "filter_folders": "Filtra cartelle",
     "filters": {
         "active_filters": "Filtri Attivi",
-        "filters": "Filtri"
+        "filters": "Filtri",
+        "incoming_msg_filters": "Filtri Messaggi in entrata",
+        "outgoing_message_filters": "Filtri Messaggi in uscita",
+        "run": "Corri",
+        "available_filters": "Filtri Disponibili",
+        "filter_note": "Nota: le modifiche effettuate alle regole dei filtri vengono salvate immediatamente"
     },
     "folder_panel": {
         "modal": {
@@ -520,8 +645,12 @@
                 "create_footer": "Crea e Sposta",
                 "restore_create_footer": "Crea e Ripristina",
                 "input": {
-                    "name_exist": "Il nome esiste già in questo percorso"
-                }
+                    "name_exist": "Il nome esiste già in questo percorso",
+                    "name": "Inserisci Nome Cartella",
+                    "position": "Cartella Genitore"
+                },
+                "name_exist_warning": "Nome già esistente",
+                "title": "Crea nuova cartella"
             },
             "wipe": {
                 "body": {
@@ -532,7 +661,8 @@
                 "body": {
                     "message4": "Eliminando l'oggetto, i relativi contenuti saranno saranno eliminati definitivamente e non sarà. possibile ripristinare la cartella.",
                     "message1": "Vuoi svoutare la cartella selezionata?",
-                    "message3": "Eliminando l'oggetto, i relativi contenuti saranno spostati nel cestino e la cartella non sarà più visibile."
+                    "message3": "Eliminando l'oggetto, i relativi contenuti saranno spostati nel cestino e la cartella non sarà più visibile.",
+                    "message2": "Vuoi eliminare la cartella in modo definitivo?"
                 }
             },
             "empty": {
@@ -544,17 +674,31 @@
             "move": {
                 "title_modal": "Sposta Conversazione",
                 "body": {
-                    "message1": "Seleziona una cartella in cui spostare quella selezionata:"
+                    "message1": "Seleziona una cartella in cui spostare quella selezionata:",
+                    "message2": "Seleziona la cartella da ripristinare in:"
                 }
             }
         },
         "action": {
             "empty": {
                 "trash": "Svuota cestino"
+            },
+            "edit_properties": "Modifica Proprietà",
+            "wipe": {
+                "folder_panel": "Pulisci Cartella"
             }
+        },
+        "lists_item": {
+            "root": "/Root"
         }
     },
     "signatures": {
-        "name": "Nome"
+        "name": "Nome",
+        "add_signature": "Aggiungi firma",
+        "signature_heading": "Firme"
+    },
+    "notification": {
+        "new_message": "Nuovo Messaggio",
+        "no_content": "Il messaggio non ha contenuto"
     }
 }
