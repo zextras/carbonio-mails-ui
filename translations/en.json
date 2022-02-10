@@ -180,6 +180,7 @@
         "all": "all",
         "allowed_actions": "Allowed actions",
         "any": "any",
+        "attachement_unknown": "Unknown <{{mimeType}}>",
         "attachment": "Attachment",
         "attachment_plural": "Attachments",
         "attachment_status": "Status of e-mail item",

@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { filter, find, map, random, uniqBy } from 'lodash';
+import { filter, find, map, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -20,6 +20,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
 import { updateEditor } from '../../../../store/editor-slice';
+import { getFileExtension, calcColor } from '../../../../commons/utilities';
 
 function getSizeLabel(size) {
 	let value = '';
@@ -84,8 +85,8 @@ const AttachmentExtension = styled(Text)`
 	margin-right: ${({ theme }) => theme.sizes.padding.small};
 `;
 
-function Attachment({ filename, size, link, editor, part, iconColors, throttledSaveToDraft }) {
-	const extension = filename.split('.').pop();
+function Attachment({ filename, size, link, editor, part, iconColors, throttledSaveToDraft, att }) {
+	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
 	const inputRef = useRef();
@@ -134,7 +135,13 @@ function Attachment({ filename, size, link, editor, part, iconColors, throttledS
 					</AttachmentExtension>
 					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
 						<Padding style={{ width: '100%' }} bottom="extrasmall">
-							<Text>{filename}</Text>
+							<Text>
+								{filename ||
+									t('label.attachement_unknown', {
+										mimeType: att?.contentType,
+										defaultValue: 'Unknown <{{mimeType}}>'
+									})}
+							</Text>
 						</Padding>
 						<Text color="gray1" size="small">
 							{sizeLabel}
@@ -189,24 +196,28 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 		() =>
 			uniqBy(
 				map(editor.attachmentFiles, (att) => {
+					const fileExtn = getFileExtension(att);
+					const color = calcColor(att.contentType, theme);
+
 					if (iconColors) {
 						return [
 							...iconColors,
 							{
-								extension: att.filename.split('.').pop(),
-								color: theme.avatarColors[`avatar_${random(1, 10)}`]
+								extension: fileExtn,
+								color
 							}
 						];
 					}
 					return {
-						extension: att.filename.split('.').pop(),
-						color: theme.avatarColors[`avatar_${random(1, 10)}`]
+						extension: fileExtn,
+						color
 					};
 				}),
 				'extension'
 			),
-		[editor.attachmentFiles, theme.avatarColors]
+		[editor.attachmentFiles, theme]
 	);
+
 	return (
 		editor.attachmentFiles.length > 0 && (
 			<Container crossAlignment="flex-start" padding={{ horizontal: 'large' }}>
@@ -223,6 +234,7 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 								part={att.name}
 								iconColors={iconColors}
 								throttledSaveToDraft={throttledSaveToDraft}
+								att={att}
 							/>
 						)
 					)}
