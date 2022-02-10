@@ -246,7 +246,8 @@
         "shares_info": "Info over gedeelde map",
         "single_advanced_filter": "Geavanceerde Filters",
         "size": "Grootte",
-        "email_perm_deleted": "E-mail permanent verwijderd"
+        "email_perm_deleted": "E-mail permanent verwijderd",
+        "undo": "Ongedaan maken"
     },
     "messages": {
         "permanent_delete_confirm": "Permanent verwijderen",
