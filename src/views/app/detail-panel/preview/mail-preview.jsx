@@ -134,13 +134,13 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 	const [_minWidth, _setMinWidth] = useState();
 
 	useLayoutEffect(() => {
-		let width = iconSize;
+		let width = actions.length > 2 ? iconSize : 2 * iconSize;
 		if (message.attachment && attachments.length > 0) width += iconSize;
 		if (message.flagged) width += iconSize;
 		if (textRef?.current?.clientWidth) width += textRef.current.clientWidth;
 		_setMinWidth(`${width}px`);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
+		actions.length,
 		attachments.length,
 		iconSize,
 		message.attachment,
@@ -309,12 +309,12 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									<Icon color="error" icon="Flag" data-testid="FlagIcon" />
 								</Padding>
 							)}
-							<Row ref={textRef} minWidth="fit" padding={{ left: 'small' }}>
+							<Row ref={textRef} minWidth="fit" padding={{ right: 'small' }}>
 								<Text color="gray1" data-testid="DateLabel" size="extrasmall">
 									{getTimeLabel(message.date)}
 								</Text>
 							</Row>
-							{!isMessageView && open && <MailMsgPreviewActions actions={actions} maxActions={6} />}
+							{!isMessageView && open && <MailMsgPreviewActions actions={actions} />}
 						</Row>
 					</Container>
 					{!open && (

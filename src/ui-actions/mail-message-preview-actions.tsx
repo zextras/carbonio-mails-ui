@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import React, {
 	useMemo,
 	FC,
@@ -15,6 +16,7 @@ import React, {
 } from 'react';
 import { Row, IconButton, Tooltip, Dropdown, ThemeContext } from '@zextras/carbonio-design-system';
 import { difference, map, slice } from 'lodash';
+import { useParams } from 'react-router-dom';
 import { useVisibleActionsCount } from '../hooks/use-visible-actions-count';
 
 type MailMsgPreviewActionsType = {
@@ -22,7 +24,6 @@ type MailMsgPreviewActionsType = {
 	maxActions?: number;
 	maxWidth?: string;
 	mainAlignment?: string;
-	minWidth?: string;
 };
 
 type ThemeContextProps = {
@@ -35,14 +36,19 @@ type ThemeContextProps = {
 
 const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	actions,
-	maxActions,
 	maxWidth = '120px',
-	minWidth,
 	mainAlignment = 'flex-end'
 }): ReactElement => {
+	const { folderId }: { folderId: string } = useParams();
 	const actionContainerRef = useRef<HTMLInputElement>(null);
 	const [open, setOpen] = useState(false);
 	const theme = useContext<ThemeContextProps>(ThemeContext);
+
+	const maxActions = useMemo(() => {
+		if (folderId === FOLDERS.TRASH) return 2;
+		if (folderId === FOLDERS.DRAFTS) return 4;
+		return 6;
+	}, [folderId]);
 
 	const [visibleActionsCount, calculateVisibleActionsCount] = useVisibleActionsCount(
 		actionContainerRef,
@@ -51,7 +57,13 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 
 	const firstActions = useMemo(
 		() =>
-			slice(actions, 0, visibleActionsCount > 0 ? visibleActionsCount - 1 : visibleActionsCount),
+			slice(
+				actions,
+				0,
+				visibleActionsCount > 0 && actions?.length > 2
+					? visibleActionsCount - 1
+					: visibleActionsCount
+			),
 		[actions, visibleActionsCount]
 	);
 
@@ -73,8 +85,8 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	);
 
 	const _minWidth = useMemo(
-		() => minWidth ?? theme?.sizes?.icon?.large,
-		[minWidth, theme?.sizes?.icon?.large]
+		() => (folderId === FOLDERS.TRASH ? `${iconSize * maxActions}px` : theme.sizes.icon.large),
+		[folderId, iconSize, maxActions, theme?.sizes?.icon?.large]
 	);
 
 	useLayoutEffect(() => {
@@ -86,9 +98,14 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 			ref={actionContainerRef}
 			mainAlignment={mainAlignment}
 			maxWidth={_maxWidth}
-			style={{ minWidth: _minWidth }}
 			wrap="nowrap"
-			takeAvailableSpace
+			style={{
+				flexGrow: 1,
+				flexBasis: 'fit-content',
+				whiteSpace: 'nowrap',
+				overflow: 'hidden',
+				minWidth: _minWidth
+			}}
 		>
 			{firstActions?.length > 0 &&
 				map(firstActions, (action) => (
