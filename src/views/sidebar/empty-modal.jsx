@@ -85,10 +85,9 @@ export const EmptyModal = ({ currentFolder, openModal, setModal, dispatch, t, cr
 						</Text>
 					)}
 				</Container>
-				<Divider />
+
 				<ModalFooter
 					onConfirm={onConfirm}
-					secondaryAction={onClose}
 					label={currentFolder.id === '3' ? t('label.empty', 'Empty') : t('label.wipe', 'Wipe')}
 					t={t}
 					color="error"

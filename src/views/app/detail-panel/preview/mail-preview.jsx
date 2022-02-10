@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
-import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
+import React, {
+	useMemo,
+	useState,
+	useRef,
+	useCallback,
+	useEffect,
+	useContext,
+	useLayoutEffect
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { find, map, filter, isEmpty } from 'lodash';
@@ -13,7 +21,8 @@ import {
 	useReplaceHistoryCallback,
 	useAppContext,
 	useIntegratedComponent,
-	useUserSettings
+	useUserSettings,
+	FOLDERS
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import {
@@ -25,7 +34,8 @@ import {
 	Icon,
 	Padding,
 	Button,
-	Row
+	Row,
+	ThemeContext
 } from '@zextras/carbonio-design-system';
 import { createSelector } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,6 +49,7 @@ import { selectMessages, selectMessagesStatus } from '../../../../store/messages
 import { getMsg, msgAction } from '../../../../store/actions';
 import { retrieveAttachmentsType } from '../../../../store/editor-slice-utils';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
+import { useMessageActions } from '../../../../hooks/use-message-actions';
 
 const ContactsContainer = styled.div`
 	display: grid;
@@ -100,12 +111,8 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 	const replaceHistory = useReplaceHistoryCallback();
 	const { folderId } = useParams();
 	const accounts = useUserAccounts();
-	const settings = useUserSettings();
-	const timezone = useMemo(
-		() => settings?.prefs.zimbraPrefTimeZoneId,
-		[settings?.prefs.zimbraPrefTimeZoneId]
-	);
 	const dispatch = useDispatch();
+	const textRef = useRef();
 	const { isMessageView } = useAppContext();
 	const { folderId: currentFolderId } = useParams();
 	const folders = useSelector(selectFolders);
@@ -121,9 +128,29 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 			? { color: 'text', weight: 'regular', badge: 'read', size: 'small' }
 			: { color: 'primary', weight: 'bold', badge: 'unread', size: 'medium' };
 	}, [message.read]);
+	const actions = useMessageActions(message);
+	const theme = useContext(ThemeContext);
+	const iconSize = useMemo(() => parseInt(theme.sizes.icon.large, 10), [theme?.sizes?.icon?.large]);
+	const [_minWidth, _setMinWidth] = useState();
+
+	useLayoutEffect(() => {
+		let width = actions.length > 2 ? iconSize : 2 * iconSize;
+		if (message.attachment && attachments.length > 0) width += iconSize;
+		if (message.flagged) width += iconSize;
+		if (textRef?.current?.clientWidth) width += textRef.current.clientWidth;
+		_setMinWidth(`${width}px`);
+	}, [
+		actions.length,
+		attachments.length,
+		iconSize,
+		message.attachment,
+		message.flagged,
+		textRef?.current?.clientWidth
+	]);
+
 	return (
 		<>
-			{folderId === '4' && (
+			{folderId === FOLDERS.DRAFTS && (
 				<Container
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
@@ -198,18 +225,23 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 					crossAlignment="flex-start"
 					height="fit"
 					width="calc(100% - 48px)"
-					padding={{ all: 'small', bottom: 'medium' }}
+					padding={{ all: 'small' }}
 					takeAvailableSpace
 				>
 					<Container orientation="horizontal" mainAlignment="space-between" width="fill">
-						<Container
-							orientation="horizontal"
-							width="fit"
-							height="24px"
+						<Row
+							// this style replace takeAvailableSpace prop, it calculates growth depending from content (all 4 props are needed)
+							style={{
+								flexGrow: 1,
+								flexBasis: 'fit-content',
+								overflow: 'hidden',
+								whiteSpace: 'nowrap'
+							}}
 							mainAlignment="flex-start"
+							wrap="nowrap"
 						>
 							{isEmpty(senderContact) ? (
-								<>
+								<Row takeAvailableSpace width="fit" mainAlignment="flex-start" wrap="nowrap">
 									<Text
 										data-testid="SenderText"
 										size={message.read ? 'small' : 'medium'}
@@ -218,14 +250,13 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									>
 										{participantToString(mainContact, t, accounts)}
 									</Text>
-									<Padding left="small">
-										<Text color="gray1" size={message.read ? 'small' : 'medium'}>
-											{mainContact.address && mainContact.address}
-										</Text>
-									</Padding>
-								</>
+									<Padding left="small" />
+									<Text color="gray1" size={message.read ? 'small' : 'medium'}>
+										{mainContact.address && mainContact.address}
+									</Text>
+								</Row>
 							) : (
-								<>
+								<Text overflow="break-word">
 									<Text
 										data-testid="SenderText"
 										size={message.read ? 'small' : 'medium'}
@@ -248,16 +279,26 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									>
 										{mainContact.fullName && `"${mainContact.fullName}"`}
 									</Text>
-
 									<Padding left="small">
 										<Text color="gray1" size={message.read ? 'small' : 'medium'}>
 											{mainContact.address && `<${mainContact.address}>`}
 										</Text>
 									</Padding>
-								</>
+								</Text>
 							)}
-						</Container>
-						<Container orientation="horizontal" width="fit" height="24px">
+						</Row>
+						<Row
+							wrap="nowrap"
+							mainAlignment="flex-end"
+							// this style replace takeAvailableSpace prop, it calculates growth depending from content (all 4 props are needed)
+							style={{
+								flexGrow: 1,
+								flexBasis: 'fit-content',
+								whiteSpace: 'nowrap',
+								overflow: 'hidden'
+							}}
+							minWidth={_minWidth}
+						>
 							{message.attachment && attachments.length > 0 && (
 								<Padding left="small">
 									<Icon icon="AttachOutline" />
@@ -268,24 +309,13 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									<Icon color="error" icon="Flag" data-testid="FlagIcon" />
 								</Padding>
 							)}
-							<Padding left="small">
+							<Row ref={textRef} minWidth="fit" padding={{ right: 'small' }}>
 								<Text color="gray1" data-testid="DateLabel" size="extrasmall">
 									{getTimeLabel(message.date)}
 								</Text>
-							</Padding>
-
-							{isMessageView ? null : (
-								<>
-									{open && (
-										<MailMsgPreviewActions
-											message={message}
-											folderId={folderId}
-											timezone={timezone}
-										/>
-									)}
-								</>
-							)}
-						</Container>
+							</Row>
+							{!isMessageView && open && <MailMsgPreviewActions actions={actions} />}
+						</Row>
 					</Container>
 					{!open && (
 						<Container
@@ -301,8 +331,8 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 						orientation="horizontal"
 						mainAlignment="space-between"
 						crossAlignment="flex-end"
-						height="20px"
 						padding={{ top: open ? 'small' : '0' }}
+						height="24px"
 					>
 						<Container
 							orientation="horizontal"
@@ -342,7 +372,7 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 	);
 };
 
-export default function MailPreview({ message, expanded, isAlone, isMessageView, conversation }) {
+export default function MailPreview({ message, expanded, isAlone, isMessageView }) {
 	const dispatch = useDispatch();
 	const mailContainerRef = useRef(undefined);
 	const accounts = useUserAccounts();
@@ -465,10 +495,13 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView,
 			isAttendee
 		]
 	);
+	const onClick = () => {
+		setOpen((o) => !o);
+	};
 	return (
 		<Container ref={mailContainerRef} height="fit" data-testid={`MailPreview-${message.id}`}>
 			<MailPreviewBlock
-				onClick={() => setOpen((o) => !o)}
+				onClick={onClick}
 				message={aggregatedMessage}
 				timezone={timezone}
 				// open={isAlone ? true : open}

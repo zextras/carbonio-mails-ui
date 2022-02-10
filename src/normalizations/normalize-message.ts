@@ -111,9 +111,10 @@ export const normalizeMailMessageFromSoap = (
 			urgent: !isNil(m.f) ? /!/.test(m.f) : undefined,
 			isDeleted: !isNil(m.f) ? /x/.test(m.f) : undefined,
 			isDraft: !isNil(m.f) ? /d/.test(m.f) : undefined,
-			isForwarded: !isNil(m.f) ? /f/.test(m.f) : undefined,
+			isForwarded: !isNil(m.f) ? /w/.test(m.f) : undefined,
 			isSentByMe: !isNil(m.f) ? /s/.test(m.f) : undefined,
-			isInvite: !isNil(m.f) ? /v/.test(m.f) : undefined
+			isInvite: !isNil(m.f) ? /v/.test(m.f) : undefined,
+			isReplied: !isNil(m.f) ? /r/.test(m.f) : undefined
 		},
 		isNil
 	);

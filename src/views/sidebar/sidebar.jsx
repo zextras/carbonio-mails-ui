@@ -18,8 +18,7 @@ import {
 	Row,
 	Icon,
 	AccordionItem,
-	Padding,
-	Divider
+	Padding
 } from '@zextras/carbonio-design-system';
 import CollapsedSideBarItems from './collapsed-sidebar-items';
 import { FolderActionsType } from '../../types/folder';

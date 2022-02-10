@@ -6,11 +6,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { drop, map } from 'lodash';
+import { drop, find } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import { MailMessage } from '../types/mail-message';
 import { MailsEditor } from '../types/mails-editor';
-import { ActionsType, Participant, ParticipantRole } from '../types/participant';
+import { ActionsType, Participant } from '../types/participant';
 import { EditorsStateType, MailsEditorMap, StateType } from '../types/state';
 import { deleteAllAttachments } from './actions/delete-all-attachments';
 import { saveDraft, SaveDraftNewParameters, saveDraftNewResult } from './actions/save-draft';
@@ -25,7 +25,8 @@ import {
 	retrieveTO,
 	retrieveALL,
 	retrieveReplyTo,
-	retrieveCCForEditNew
+	retrieveCCForEditNew,
+	getSignatures
 } from './editor-slice-utils';
 
 type CreateEditorPayload = {
@@ -45,46 +46,21 @@ type CreateEditorPayload = {
 	};
 };
 
-export const getSignatures: any = (accounts: any, t: any) => {
-	const signatureArray = [
-		{
-			label: 'No signature',
-			value: { description: '', id: '11111111-1111-1111-1111-111111111111' }
-		}
-	];
-	map(accounts[0].signatures.signature, (item) =>
-		signatureArray.push({
-			label: item.name,
-			value: { description: item.content ? item.content[0]._content : '', id: item?.id }
-		})
-	);
-	return signatureArray;
-};
-
 function createEditorReducer(
 	state: EditorsStateType,
 	{ payload }: { payload: CreateEditorPayload }
 ): void {
-	const signatures = getSignatures(payload.accounts);
+	const signatures = getSignatures(payload.accounts[0]);
+	const empty = emptyEditor(payload.editorId, payload.accounts[0], payload.settings);
 
-	const signatureNewMessageValue =
-		signatures.find(
-			(signature: any) => signature.value.id === payload.settings.prefs.zimbraPrefDefaultSignatureId
-		)?.value.description ?? '';
-
-	const textWithSignatureNewMessage = [
-		`<br>${signatureNewMessageValue}`,
-		`<br>${signatureNewMessageValue}`
-	];
+	state.editors[payload.editorId] = empty;
 
 	const signatureRepliesForwardsValue =
-		signatures.find(
+		find(
+			signatures,
 			(signature: any) =>
 				signature.value.id === payload.settings.prefs.zimbraPrefForwardReplySignatureId
-		)?.value.description ?? '';
-
-	const empty = emptyEditor(payload.editorId, payload.accounts);
-	state.editors[payload.editorId] = empty;
+		)?.value?.description ?? '';
 
 	const textWithSignatureRepliesForwards =
 		payload.labels && payload.original
@@ -165,7 +141,7 @@ function createEditorReducer(
 
 				break;
 			case ActionsType.REPLY_ALL:
-				if ((payload.original, payload.accounts)) {
+				if (payload.original && payload.accounts) {
 					state.editors[payload.editorId] = {
 						...empty,
 						text: generateReplyText(payload.original, payload.labels),
@@ -196,15 +172,14 @@ function createEditorReducer(
 			case ActionsType.COMPOSE:
 				state.editors[payload.editorId] = {
 					...empty,
-					...(payload.boardContext?.compositionData ?? {}),
-					text: textWithSignatureNewMessage
+					...(payload.boardContext?.compositionData ?? {})
 				};
 				break;
 			default:
 				console.warn('operation not handled!');
 				break;
 		}
-	} else state.editors[payload.editorId].text = textWithSignatureNewMessage;
+	}
 }
 
 function closeEditorReducer(state: EditorsStateType, { payload }: { payload: string }): void {
@@ -246,10 +221,11 @@ type saveDraftAction = {
 
 function saveDraftFulfilled(state: EditorsStateType, action: saveDraftAction): void {
 	const message = normalizeMailMessageFromSoap(action.payload.resp.m[0], true);
-
+	const mp = retrieveAttachmentsType(message, 'attachment');
 	state.editors[action.meta.arg.data.editorId] = {
 		...state.editors[action.meta.arg.data.editorId],
 		id: message.id,
+		attach: { mp },
 		oldId:
 			state.editors[action.meta.arg.data.editorId]?.oldId ??
 			state.editors[action.meta.arg.data.editorId]?.original?.id,

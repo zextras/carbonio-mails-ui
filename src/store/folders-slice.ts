@@ -22,7 +22,12 @@ import {
 	handleDeletedFoldersReducer,
 	handleRefreshReducer
 } from './sync/folder';
-import { addFoldersToStore, removeFoldersFromStore, updateFolderInStore } from './utils';
+import {
+	addFoldersToStore,
+	removeFoldersFromStore,
+	updateFolderInStore,
+	updateFolders
+} from './utils';
 
 function addFolderPending(state: FoldersStateType, { meta }: any): void {
 	const { parentFolder, name, id } = meta.arg;
@@ -81,6 +86,7 @@ function addFolderFulFilled(state: FoldersStateType, { meta, payload }: AddFolde
 	};
 	removeFoldersFromStore(state, [meta.arg.id]);
 	addFoldersToStore(state, newFolder);
+	updateFolders(state, []);
 	state.status = 'idle';
 }
 

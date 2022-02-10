@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { find, includes, isUndefined, map, random, reduce, some, uniqBy } from 'lodash';
+import { find, map, reduce, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -18,6 +18,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
+import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { MailMessagePart } from '../../../../types/mail-message';
 import { EditorAttachmentFiles } from '../../../../types/mails-editor';
 
@@ -100,8 +101,8 @@ const AttachmentExtension = styled(Text)`
 	margin-right: ${({ theme }) => theme.sizes.padding.small};
 `;
 
-function Attachment({ filename, size, link, message, part, iconColors }) {
-	const extension = filename.split('.').pop();
+function Attachment({ filename, size, link, message, part, iconColors, att }) {
+	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
 	const inputRef = useRef();
@@ -144,7 +145,13 @@ function Attachment({ filename, size, link, message, part, iconColors }) {
 					</AttachmentExtension>
 					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
 						<Padding style={{ width: '100%' }} bottom="extrasmall">
-							<Text>{filename}</Text>
+							<Text>
+								{filename ||
+									t('label.attachement_unknown', {
+										mimeType: att?.contentType,
+										defaultValue: 'Unknown <{{mimeType}}>'
+									})}
+							</Text>
 						</Padding>
 						<Text color="gray1" size="small">
 							{sizeLabel}
@@ -187,23 +194,26 @@ export default function AttachmentsBlock({ message }) {
 		() =>
 			uniqBy(
 				map(attachments, (att) => {
+					const fileExtn = getFileExtension(att);
+					const color = calcColor(att.contentType, theme);
+
 					if (iconColors) {
 						return [
 							...iconColors,
 							{
-								extension: att.filename.split('.').pop(),
-								color: theme.avatarColors[`avatar_${random(1, 10)}`]
+								extension: fileExtn,
+								color
 							}
 						];
 					}
 					return {
-						extension: att.filename.split('.').pop(),
-						color: theme.avatarColors[`avatar_${random(1, 10)}`]
+						extension: fileExtn,
+						color
 					};
 				}),
 				'extension'
 			),
-		[attachments, theme.avatarColors]
+		[attachments, theme]
 	);
 
 	return (
@@ -219,6 +229,7 @@ export default function AttachmentsBlock({ message }) {
 							message={message}
 							part={att.name}
 							iconColors={iconColors}
+							att={att}
 						/>
 					))}
 				</Container>
