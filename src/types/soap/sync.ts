@@ -46,6 +46,23 @@ export type SyncResponseMail = {
 	fr: undefined;
 };
 
+export type Participant = { a: string; d: string; p: string; t: string };
+
+export type SyncResponseCreatedMessage = {
+	cid: string;
+	d: number;
+	e: Array<Participant>;
+	f?: string;
+	fr?: string;
+	id: string;
+	rev: number;
+	s: number;
+	l: string;
+	su?: string;
+	md?: number;
+	ms?: number;
+	tn?: string;
+};
 type SyncResponseDeletedMapRow = {
 	ids: string;
 };

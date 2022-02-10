@@ -58,7 +58,11 @@ function searchConvFulfilled(state: ConversationsStateType, { payload, meta }: a
 		conversation.messages = uniqBy(
 			[
 				...(conversation?.messages ?? []),
-				...map(payload?.messages ?? [], (obj) => ({ id: obj.id, parent: obj.parent }))
+				...map(payload?.messages ?? [], (obj) => ({
+					id: obj.id,
+					parent: obj.parent,
+					date: obj.date
+				}))
 			],
 			'id'
 		);
