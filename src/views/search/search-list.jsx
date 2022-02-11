@@ -66,7 +66,7 @@ const SearchList = ({
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
 			<BorderContainer
-				padding="small"
+				padding={{ all: 'small' }}
 				height="fit"
 				mainAlignment="flex-start"
 				crossAlignment="flex-start"

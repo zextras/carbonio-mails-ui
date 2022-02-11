@@ -5,11 +5,7 @@
  */
 import React, { useMemo, useCallback, useEffect } from 'react';
 import { find, isEmpty } from 'lodash';
-import {
-	useUserAccounts,
-	useReplaceHistoryCallback,
-	useAppContext
-} from '@zextras/carbonio-shell-ui';
+import { useUserAccounts, useAppContext, replaceHistory } from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Container,
@@ -94,7 +90,6 @@ export default function MessageListItem({
 		}
 		return ['.', '.', '', ''];
 	}, [item, t, accounts]);
-	const replaceHistory = useReplaceHistoryCallback();
 
 	const _onClick = useCallback(
 		(e) => {
@@ -103,7 +98,7 @@ export default function MessageListItem({
 				setMsgRead([item.id], false, t, dispatch).click();
 			}
 		},
-		[dispatch, folderId, replaceHistory, t, item.id]
+		[dispatch, folderId, t, item.id]
 	);
 	const _onDoubleClick = useCallback(
 		(e) => {
@@ -112,7 +107,7 @@ export default function MessageListItem({
 				if (isDraft) replaceHistory(`/folder/${folderId}/edit/${id}?action=editAsDraft`);
 			}
 		},
-		[folderId, item, replaceHistory]
+		[folderId, item]
 	);
 
 	const dragCheck = useCallback(

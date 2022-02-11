@@ -12,7 +12,9 @@ import {
 	addBoardView,
 	registerActions,
 	registerFunctions,
-	setAppContext
+	setAppContext,
+	ACTION_TYPES,
+	getBridgedFunctions
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +22,7 @@ import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 import { mailToSharedFunction, openComposerSharedFunction } from './integrations/shared-functions';
 import Notifications from './views/notifications';
 import { ParticipantRole } from './types/participant';
-import { MAILS_ROUTE } from './constants';
+import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
@@ -69,10 +71,6 @@ const SidebarView = (props) => (
 );
 
 const App = () => {
-	console.log(
-		'%c MAILS APP LOADED',
-		'color: white; background: #8bc34a;padding: 4px 8px 2px 4px; font-family: sans-serif; border-radius: 12px; width: 100%'
-	);
 	const [t] = useTranslation();
 	useEffect(() => {
 		addRoute({
@@ -123,30 +121,48 @@ const App = () => {
 	}, [t]);
 
 	useEffect(() => {
-		registerActions({
-			action: (contacts) => ({
+		registerActions(
+			{
+				action: (contacts) => ({
+					id: 'mail-to',
+					label: 'Send Mail',
+					icon: 'MailModOutline',
+					click: (ev) => {
+						ev?.preventDefault?.();
+						const participant =
+							!!contacts[0].email && Object.keys(contacts[0].email).length !== 0
+								? [
+										{
+											type: ParticipantRole.TO,
+											address: contacts[0].email.email.mail,
+											fullName: `${contacts[0].firstName} ${contacts[0].middleName}`.trim()
+										}
+								  ]
+								: [];
+						mailToSharedFunction(participant);
+					},
+					disabled: some(contacts, (contact) => !contact.address)
+				}),
 				id: 'mail-to',
-				label: 'Send Mail',
-				icon: 'MailModOutline',
-				click: (ev) => {
-					ev?.preventDefault?.();
-					const participant =
-						!!contacts[0].email && Object.keys(contacts[0].email).length !== 0
-							? [
-									{
-										type: ParticipantRole.TO,
-										address: contacts[0].email.email.mail,
-										fullName: `${contacts[0].firstName} ${contacts[0].middleName}`.trim()
-									}
-							  ]
-							: [];
-					mailToSharedFunction(participant);
-				},
-				disabled: some(contacts, (contact) => !contact.address)
-			}),
-			id: 'mail-to',
-			type: 'contact-list'
-		});
+				type: 'contact-list'
+			},
+			{
+				action: () => ({
+					id: 'new-email',
+					label: 'New E-mail',
+					icon: 'MailModOutline',
+					click: (ev) => {
+						ev?.preventDefault?.();
+						getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=new`);
+					},
+					disabled: false,
+					group: MAIL_APP_ID,
+					primary: true
+				}),
+				id: 'new-email',
+				type: ACTION_TYPES.NEW
+			}
+		);
 		registerFunctions({
 			id: 'compose',
 			fn: openComposerSharedFunction

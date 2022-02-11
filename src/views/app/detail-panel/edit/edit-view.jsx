@@ -16,7 +16,6 @@ import {
 	IconButton,
 	IconCheckbox,
 	Padding,
-	RichTextEditor,
 	Row,
 	Text,
 	Tooltip,
@@ -29,8 +28,8 @@ import {
 	useBoardConfig,
 	useUserAccount,
 	useUserAccounts,
+	replaceHistory,
 	useIntegratedComponent,
-	useReplaceHistoryCallback,
 	useRemoveCurrentBoard,
 	useAddBoardCallback,
 	useUpdateCurrentBoard,
@@ -51,7 +50,7 @@ import { retrieveAttachmentsType } from '../../../../store/editor-slice-utils';
 import { uploadAttachments } from '../../../../store/actions/upload-attachments';
 import { getMsg } from '../../../../store/actions';
 import DropZoneAttachment from './dropzone-attachment';
-import { MAIL_APP_ID } from '../../../../constants';
+import { MAILS_ROUTE, MAIL_APP_ID } from '../../../../constants';
 
 const FileInput = styled.input`
 	display: none;
@@ -175,7 +174,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const inputRef = useRef();
 	const { handleSubmit, control } = useForm();
-	const replaceHistory = useReplaceHistoryCallback();
 	const closeBoard = useRemoveCurrentBoard();
 	const addBoard = useAddBoardCallback();
 	const [dropZoneEnable, setDropZoneEnable] = useState(false);
@@ -342,7 +340,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				}
 			}, 3000);
 		}
-	}, [action, boardContext, editor, t, dispatch, editorId, folderId, replaceHistory, closeBoard]);
+	}, [action, boardContext, editor, t, dispatch, editorId, folderId, closeBoard]);
 
 	const throttledSaveToDraft = (data) => {
 		clearTimeout(timer);
@@ -388,7 +386,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				closeBoard();
 			}
 		});
-	}, [closeBoard, editor, replaceHistory, saveDraftCb, t]);
+	}, [closeBoard, editor, saveDraftCb, t]);
 
 	const onFileClick = useCallback(() => {
 		if (inputRef.current) {
@@ -504,19 +502,19 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	useEffect(() => {
 		if (toggleAppBoard) {
 			if (activeMailId) {
-				addBoard(`/edit/${activeMailId}?action=${action}`, {
+				addBoard(`${MAILS_ROUTE}/edit/${activeMailId}?action=${action}`, {
 					app: MAIL_APP_ID,
 					mailId: activeMailId,
 					title: editor?.subject
 				});
 			} else {
-				addBoard(`/new`, {
+				addBoard(`${MAILS_ROUTE}/new`, {
 					app: MAIL_APP_ID
 				});
 			}
 			replaceHistory(`/folder/${folderId}`);
 		}
-	}, [addBoard, folderId, activeMailId, replaceHistory, toggleAppBoard, action, editor?.subject]);
+	}, [addBoard, folderId, activeMailId, toggleAppBoard, action, editor?.subject]);
 
 	const onDragOverEvent = (event) => {
 		event.preventDefault();
@@ -562,6 +560,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		const participants = concat(editor?.to, editor?.bcc, editor?.cc);
 		return btnSendDisabled || participants.length === 0 || some(participants, { error: true });
 	}, [btnSendDisabled, editor]);
+
+	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	return editor ? (
 		<Catcher>
 			<Container onDragOver={(event) => onDragOverEvent(event)}>
@@ -1015,15 +1015,20 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 							</>
 						)}
 					</Container>
-					{editor?.richText ? (
+					{editor?.richText && composerIsAvailable ? (
 						<Controller
 							name="text"
 							control={control}
 							defaultValue={editor?.text}
 							render={({ onChange, value }) => (
-								<Container background="gray6">
+								<Container
+									background="gray6"
+									padding={{
+										all: 'medium'
+									}}
+								>
 									<EditorWrapper>
-										<RichTextEditor
+										<Composer
 											value={value[1]}
 											onEditorChange={(ev) => {
 												updateSubjectField({ text: [ev[0], ev[1]] });

@@ -641,7 +641,7 @@ export function redirectMsg(id, t, dispatch, createSnackbar, createModal, Contac
 							<em>
 								{t(
 									'messages.modal.redirect.second',
-									'The e-mail will appear as originally intended for the new recepient'
+									'The e-mail will appear as originally intended for the new recipient'
 								)}
 							</em>
 						</Text>

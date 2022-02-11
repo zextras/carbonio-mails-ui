@@ -9,7 +9,7 @@ import { filter, map, isEmpty, reduce, startsWith } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { nanoid } from '@reduxjs/toolkit';
-import { useReplaceHistoryCallback, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
 import { NewFolderConvoMsgMove } from './new-folder-conv-msg-move';
 import { MoveConvMsgModal } from './move-conv-msg-modal';
 import { selectFolders } from '../../store/folders-slice';
@@ -31,7 +31,6 @@ const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, o
 	const [folderPosition, setFolderPosition] = useState(currentFolder.name);
 	const allFolders = useSelector(selectFolders);
 	const [input, setInput] = useState('');
-	const replaceHistory = useReplaceHistoryCallback();
 
 	const folders = useMemo(
 		() =>
@@ -174,17 +173,7 @@ const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, o
 				onCloseModal();
 			});
 		},
-		[
-			dispatch,
-			selectedIDs,
-			currentFolder,
-			onCloseModal,
-			deselectAll,
-			createSnackbar,
-			isRestore,
-			t,
-			replaceHistory
-		]
+		[dispatch, selectedIDs, currentFolder, onCloseModal, deselectAll, createSnackbar, isRestore, t]
 	);
 
 	const onConfirmMessageMove = useCallback(

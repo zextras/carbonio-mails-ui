@@ -82,9 +82,10 @@
 		"translations_repository": "git@bitbucket.org:zextras/com_zextras_zapp_mails.git",
 		"name": "carbonio-mails-ui",
 		"priority": 5,
-		"type": "app",
+		"type": "carbonio",
 		"attrKey": "zimbraFeatureMailEnabled",
 		"display": "Mails",
-		"icon": "MailModOutline"
+		"icon": "MailModOutline",
+		"sentryDsn": "https://90672cc95a43460485b50717c4be69ab@feedback.zextras.tools/7"
 	}
 }

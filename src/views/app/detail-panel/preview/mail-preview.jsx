@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
-import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
+import React, { useMemo, useState, useRef, useCallback, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { find, map, filter, isEmpty } from 'lodash';
 import {
 	useUserAccounts,
-	useReplaceHistoryCallback,
 	useAppContext,
 	useIntegratedComponent,
 	useUserSettings
@@ -25,7 +24,8 @@ import {
 	Icon,
 	Padding,
 	Button,
-	Row
+	Row,
+	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
 import { createSelector } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
@@ -97,7 +97,6 @@ const HoverContainer = styled(Container)`
 
 const MailPreviewBlock = ({ message, open, onClick }) => {
 	const [t] = useTranslation();
-	const replaceHistory = useReplaceHistoryCallback();
 	const { folderId } = useParams();
 	const accounts = useUserAccounts();
 	const settings = useUserSettings();
@@ -105,6 +104,7 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 		() => settings?.prefs.zimbraPrefTimeZoneId,
 		[settings?.prefs.zimbraPrefTimeZoneId]
 	);
+	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const { isMessageView } = useAppContext();
 	const { folderId: currentFolderId } = useParams();
@@ -142,9 +142,7 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 								type="ghost"
 								label="Not Spam"
 								color="primary"
-								onClick={() =>
-									setMsgAsSpam([message.id], true, t, dispatch, replaceHistory).click()
-								}
+								onClick={() => setMsgAsSpam([message.id], true, t, dispatch).click()}
 							/>
 						</Row>
 					</Container>

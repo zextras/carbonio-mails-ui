@@ -17,12 +17,7 @@ import {
 import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import {
-	useIntegratedComponent,
-	useReplaceHistoryCallback,
-	useAppContext,
-	FOLDERS
-} from '@zextras/carbonio-shell-ui';
+import { useIntegratedComponent, useAppContext, FOLDERS } from '@zextras/carbonio-shell-ui';
 
 import {
 	deleteMsg,
@@ -55,7 +50,6 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	timezone
 }): ReactElement => {
 	const [t] = useTranslation();
-	const replaceHistory = useReplaceHistoryCallback();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const createModal = useModal();
@@ -70,9 +64,9 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		const arr = [];
 
 		if (message.parent === FOLDERS.DRAFTS) {
-			arr.push(sendDraft(message.id, message, t, dispatch));
-			arr.push(editDraft(message.id, folderId, t, replaceHistory));
 			arr.push(
+				sendDraft(message.id, message, t, dispatch),
+				editDraft(message.id, folderId, t),
 				moveMsgToTrash(
 					[message.id],
 					t,
@@ -80,7 +74,6 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 					createSnackbar,
 					deselectAll,
 					folderId,
-					replaceHistory,
 					message.conversation
 				)
 			);
@@ -91,9 +84,9 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 			!includes(systemFolders, message.parent)
 		) {
 			// INBOX, SENT OR CREATED_FOLDER
-			arr.push(replyMsg(message.id, folderId, t, replaceHistory));
-			arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
 			arr.push(
+				replyMsg(message.id, folderId, t),
+				setMsgFlag([message.id], message.flagged, t, dispatch),
 				moveMsgToTrash(
 					[message.id],
 					t,
@@ -101,24 +94,27 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 					createSnackbar,
 					deselectAll,
 					folderId,
-					replaceHistory,
 					message.conversation
 				)
 			);
 		}
 
 		if (message.parent === FOLDERS.TRASH) {
-			arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
-			arr.push(deleteMsg([message.id], t, dispatch, createSnackbar, createModal));
-			arr.push(setMsgAsSpam([message.id], false, t, dispatch, replaceHistory));
-			arr.push(printMsg(message.id, t, timezone));
-			arr.push(showOriginalMsg(message.id, t));
+			arr.push(
+				setMsgFlag([message.id], message.flagged, t, dispatch),
+				deleteMsg([message.id], t, dispatch, createSnackbar, createModal),
+				setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
+				printMsg(message.id, t, timezone),
+				showOriginalMsg(message.id, t)
+			);
 		}
 		if (message.parent === FOLDERS.SPAM) {
-			arr.push(deleteMsg([message.id], t, dispatch, createSnackbar, createModal));
-			arr.push(setMsgAsSpam([message.id], true, t, dispatch, replaceHistory));
-			arr.push(printMsg(message.id, t, timezone));
-			arr.push(showOriginalMsg(message.id, t));
+			arr.push(
+				deleteMsg([message.id], t, dispatch, createSnackbar, createModal),
+				setMsgAsSpam([message.id], true, t, dispatch, createSnackbar),
+				printMsg(message.id, t, timezone),
+				showOriginalMsg(message.id, t)
+			);
 		}
 		return arr;
 	}, [
@@ -127,7 +123,6 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		t,
 		dispatch,
 		folderId,
-		replaceHistory,
 		createSnackbar,
 		deselectAll,
 		createModal,
@@ -145,15 +140,15 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 			!includes(systemFolders, message.parent)
 		) {
 			// INBOX, SENT OR CREATED_FOLDER
-			arr.push(replyAllMsg(message.id, folderId, t, replaceHistory));
-			arr.push(forwardMsg(message.id, folderId, t, replaceHistory));
-			arr.push(editAsNewMsg(message.id, folderId, t, replaceHistory));
-			arr.push(setMsgAsSpam([message.id], false, t, dispatch, replaceHistory));
-			arr.push(printMsg(message.id, t, timezone));
-			arr.push(showOriginalMsg(message.id, t));
-			arr.push(redirectMsg(message.id, t, dispatch, createSnackbar, createModal, ContactInput));
 			arr.push(
-				setMsgRead([message.id], message.read, t, dispatch, folderId, replaceHistory, deselectAll)
+				replyAllMsg(message.id, folderId, t),
+				forwardMsg(message.id, folderId, t),
+				editAsNewMsg(message.id, folderId, t),
+				setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
+				printMsg(message.id, t, timezone),
+				showOriginalMsg(message.id, t),
+				redirectMsg(message.id, t, dispatch, createSnackbar, createModal, ContactInput),
+				setMsgRead([message.id], message.read, t, dispatch, folderId, deselectAll)
 			);
 		}
 		return arr;
@@ -164,7 +159,6 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		t,
 		dispatch,
 		folderId,
-		replaceHistory,
 		timezone,
 		createSnackbar,
 		createModal,

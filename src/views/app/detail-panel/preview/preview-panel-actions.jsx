@@ -14,12 +14,7 @@ import {
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import {
-	useReplaceHistoryCallback,
-	useUserSettings,
-	FOLDERS,
-	useAppContext
-} from '@zextras/carbonio-shell-ui';
+import { useUserSettings, FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
 import {
 	moveConversationToTrash,
 	printConversation,
@@ -33,7 +28,6 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
-	const replaceHistory = useReplaceHistoryCallback();
 	const settings = useUserSettings();
 	const timezone = useMemo(
 		() => settings?.prefs.zimbraPrefTimeZoneId,
@@ -47,17 +41,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 	const primaryActions = useMemo(() => {
 		switch (folderId) {
 			case FOLDERS.SENT:
-				return [
-					moveConversationToTrash(
-						ids,
-						t,
-						dispatch,
-						createSnackbar,
-						deselectAll,
-						folderId,
-						replaceHistory
-					)
-				];
+				return [moveConversationToTrash(ids, t, dispatch, createSnackbar, deselectAll, folderId)];
 			case FOLDERS.TRASH:
 			case FOLDERS.SPAM:
 				return [
@@ -66,21 +50,13 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 			case FOLDERS.INBOX:
 			default:
 				return [
-					replyMsg(item?.messages?.[0]?.id ?? item?.id, folderId, t, replaceHistory),
-					moveConversationToTrash(
-						ids,
-						t,
-						dispatch,
-						createSnackbar,
-						deselectAll,
-						folderId,
-						replaceHistory
-					)
+					replyMsg(item?.messages?.[0]?.id ?? item?.id, folderId, t),
+					moveConversationToTrash(ids, t, dispatch, createSnackbar, deselectAll, folderId)
 					// archiveMsg
 					// editTagsMsg
 				];
 		}
-	}, [createSnackbar, dispatch, folderId, ids, item, replaceHistory, deselectAll, t]);
+	}, [createSnackbar, dispatch, folderId, ids, item, deselectAll, t]);
 
 	const secondaryActions = useMemo(() => {
 		switch (folderId) {
@@ -90,18 +66,18 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 			case FOLDERS.SPAM:
 				return [
 					isMessageView
-						? setMsgRead(ids, item.read, t, dispatch, folderId, replaceHistory)
-						: setConversationsRead(ids, item.read, t, dispatch, folderId, replaceHistory),
+						? setMsgRead(ids, item.read, t, dispatch, folderId)
+						: setConversationsRead(ids, item.read, t, dispatch, folderId, true),
 					setConversationsFlag(ids, item.flagged, t, dispatch)
 					// setConversationsSpam(ids, true, t, dispatch)
 				];
 			case FOLDERS.INBOX:
 			default:
 				return [
-					replyAllMsg(item?.messages?.[0]?.id ?? item?.id, folderId, t, replaceHistory),
+					replyAllMsg(item?.messages?.[0]?.id ?? item?.id, folderId, t),
 					isMessageView
-						? setMsgRead(ids, item.read, t, dispatch, folderId, replaceHistory)
-						: setConversationsRead(ids, item.read, t, dispatch, folderId, replaceHistory),
+						? setMsgRead(ids, item.read, t, dispatch, folderId)
+						: setConversationsRead(ids, item.read, t, dispatch, folderId),
 					setConversationsFlag(ids, item.flagged, t, dispatch),
 					printConversation(ids, t, timezone)
 					// setConversationsSpam(ids, false, t, dispatch)
@@ -118,7 +94,6 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 		item?.id,
 		item?.messages,
 		item.read,
-		replaceHistory,
 		t,
 		timezone
 	]);

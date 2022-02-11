@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo } from 'react';
-import { AppLink, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { AppLink, FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import {
 	AccordionItem,
@@ -169,7 +169,6 @@ const setAccordionCustomComponent = ({
 	dispatch,
 	createModal,
 	nestedFolders = accordions,
-	replaceHistory,
 	createSnackbar,
 	activeFolder
 }) => {
@@ -185,7 +184,7 @@ const setAccordionCustomComponent = ({
 					(folder.id === FOLDERS.DRAFTS && data.data.parentFolderId !== FOLDERS.TRASH) || // only from Trash can move in Draft
 					(folder.isSharedFolder && folder.perm.indexOf('w') === -1) // only if shared folder have write permission
 				) {
-					return { succss: false };
+					return { success: false };
 				}
 			}
 			if (data.type === 'folder') {
@@ -195,14 +194,14 @@ const setAccordionCustomComponent = ({
 					folder.isSharedFolder || //  shared folder not allowed
 					[FOLDERS.DRAFTS, FOLDERS.SPAM].includes(folder.id) // cannot be moved inside Draft and Spam
 				)
-					return { succss: false };
+					return { success: false };
 			}
 			return undefined;
 		};
 
 		const onDropAction = (data) => {
 			const dragEnterResponse = onDragEnterAction(data);
-			if (dragEnterResponse && dragEnterResponse?.succss === false) return;
+			if (dragEnterResponse && dragEnterResponse?.success === false) return;
 			let convMsgsIds = [data.data.id];
 			if (
 				data.type !== 'folder' &&

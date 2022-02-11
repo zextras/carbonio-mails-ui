@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { filter, map, remove, sortBy, reduce, uniqWith, isEqual } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { useReplaceHistoryCallback, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import {
 	SnackbarManagerContext,
 	Accordion,
@@ -18,8 +18,7 @@ import {
 	Row,
 	Icon,
 	AccordionItem,
-	Padding,
-	Divider
+	Padding
 } from '@zextras/carbonio-design-system';
 import CollapsedSideBarItems from './collapsed-sidebar-items';
 import { FolderActionsType } from '../../types/folder';
@@ -99,7 +98,6 @@ const Sidebar = ({ expanded }) => {
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const createModal = useContext(ModalManagerContext);
 	const sidebarRef = useRef(null);
-	const replaceHistory = useReplaceHistoryCallback();
 	const history = useHistory();
 
 	const folders = useMemo(
@@ -150,7 +148,6 @@ const Sidebar = ({ expanded }) => {
 			dispatch,
 			createModal,
 			nestedFolders,
-			replaceHistory,
 			createSnackbar,
 			activeFolder: history?.location?.pathname?.split?.('/')?.[3] // Sorry, it's a quick fix
 		});
@@ -186,7 +183,6 @@ const Sidebar = ({ expanded }) => {
 		t,
 		dispatch,
 		createModal,
-		replaceHistory,
 		createSnackbar,
 		history?.location?.pathname
 	]);
