@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import { forEach, pick, merge, omit, reduce, map, filter, sortBy, reverse } from 'lodash';
 import sound from '../../assets/notification.mp3';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
@@ -25,16 +26,23 @@ function playSound(): void {
 	audio.play();
 }
 
-const triggerNotification = (m: SoapIncompleteMessage, t: any): void => {
+const triggerNotification = (m: SoapIncompleteMessage): void => {
+	const { t } = getBridgedFunctions();
 	const messages = map(m, (item) => {
 		let norm = normalizeMailMessageFromSoap(item, false);
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		if (norm?.fragment?.length < 1) {
-			norm = { ...norm, fragment: t('notification.no_content', 'Message without content') };
+			norm = {
+				...norm,
+				fragment: t('notification.no_content', 'Message without content')
+			};
 		}
 		if (norm?.subject?.length < 1) {
-			norm = { ...norm, subject: t('notification.new_message', 'New Message') };
+			norm = {
+				...norm,
+				subject: t('notification.new_message', 'New Message')
+			};
 		}
 		return pick(norm, ['subject', 'fragment', 'date', 'parent', 'isSentByMe']);
 	});
@@ -58,7 +66,7 @@ const triggerNotification = (m: SoapIncompleteMessage, t: any): void => {
 };
 
 export const handleCreatedMessagesReducer = (state: MsgStateType, { payload }: Payload): void => {
-	const { m, t } = payload;
+	const { m } = payload;
 	const mappedMsgs = <IncompleteMessage>reduce(
 		m,
 		(acc, v) => {
@@ -67,7 +75,7 @@ export const handleCreatedMessagesReducer = (state: MsgStateType, { payload }: P
 		},
 		{}
 	);
-	triggerNotification(m, t);
+	triggerNotification(m);
 	state.messages = merge(state.messages, mappedMsgs);
 };
 

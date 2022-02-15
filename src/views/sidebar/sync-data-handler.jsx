@@ -88,8 +88,8 @@ export const SyncDataHandler = () => {
 					dispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));
 				}
 				if (notify.created.m) {
-					dispatch(handleCreatedMessages({ m: notify.created.m, t }));
-					dispatch(handleCreatedMessagesInConversation({ m: notify.created.m, t }));
+					dispatch(handleCreatedMessages({ m: notify.created.m }));
+					dispatch(handleCreatedMessagesInConversation({ m: notify.created.m }));
 				}
 			}
 			if (notify.modified) {
