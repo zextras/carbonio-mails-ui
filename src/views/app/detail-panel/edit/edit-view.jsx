@@ -509,12 +509,13 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				});
 			} else {
 				addBoard(`${MAILS_ROUTE}/new`, {
-					app: MAIL_APP_ID
+					app: MAIL_APP_ID,
+					title: t('label.new_email', 'New E-mail')
 				});
 			}
 			replaceHistory(`/folder/${folderId}`);
 		}
-	}, [addBoard, folderId, activeMailId, toggleAppBoard, action, editor?.subject]);
+	}, [addBoard, folderId, activeMailId, toggleAppBoard, action, editor?.subject, t]);
 
 	const onDragOverEvent = (event) => {
 		event.preventDefault();

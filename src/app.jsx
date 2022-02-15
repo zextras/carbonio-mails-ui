@@ -96,28 +96,6 @@ const App = () => {
 			component: EditView
 		});
 		setAppContext({ isMessageView: false });
-		// registerAppData({
-		// 	icon: 'MailModOutline',
-		// 	views: {
-		// 		app: AppView,
-		// 		board: EditView,
-		// 		sidebar: SidebarView,
-		// 		settings: SettingsView,
-		// 		search: SearchView
-		// 	},
-		// 	context: { isMessageView: false },
-		// 	newButton: {
-		// 		primary: {
-		// 			id: 'create-mail',
-		// 			icon: 'EmailOutline',
-		// 			label: 'New Mail',
-		// 			click: () => {
-		// 				getBridgedFunctions().addBoard('/new?action=new');
-		// 			}
-		// 		},
-		// 		secondaryItems: []
-		// 	}
-		// });
 	}, [t]);
 
 	useEffect(() => {
@@ -149,11 +127,13 @@ const App = () => {
 			{
 				action: () => ({
 					id: 'new-email',
-					label: 'New E-mail',
+					label: t('label.new_email', 'New E-mail'),
 					icon: 'MailModOutline',
 					click: (ev) => {
 						ev?.preventDefault?.();
-						getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=new`);
+						getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=new`, {
+							title: t('label.new_email', 'New E-mail')
+						});
 					},
 					disabled: false,
 					group: MAIL_APP_ID,
@@ -167,7 +147,7 @@ const App = () => {
 			id: 'compose',
 			fn: openComposerSharedFunction
 		});
-	}, []);
+	}, [t]);
 
 	return (
 		<>
