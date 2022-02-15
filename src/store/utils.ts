@@ -47,31 +47,22 @@ export function calcFolderAbsParentLevelAndPath(
 	);
 }
 
+// replaced lodash "reduce" method with vanilla JS in order to decrease iterations and improve performance
 export function updateFolders(state: FoldersStateType, folders: Folder[]): void {
-	state.folders = reduce(
-		state.folders,
-		(acc, item) => {
-			const newFolder = omitBy(
-				find(folders, (c) => c.id === item.id),
-				isNil
-			);
-			const toRet = newFolder ? { ...item, ...newFolder } : item;
+	state.folders = Object.values(state.folders).reduce((acc, item) => {
+		const newFolder = omitBy(
+			Object.values(folders).find((c) => c.id === item.id),
+			isNil
+		);
+		const toRet = newFolder ? { ...item, ...newFolder } : item;
 
-			const items = calcFolderItems(state.folders, toRet, toRet.id);
-			const moreParams = calcFolderAbsParentLevelAndPath(state.folders, toRet);
-			return {
-				...acc,
-				[toRet.id]: {
-					...toRet,
-					...moreParams,
-					depth: findDepth({ ...toRet, items }),
-					items,
-					path: moreParams ? `/${moreParams.path}` : undefined
-				}
-			};
-		},
-		{}
-	);
+		return {
+			...acc,
+			[toRet.id]: {
+				...toRet
+			}
+		};
+	}, {});
 }
 
 export function updateFolderInStore(state: FoldersStateType, folders: Folder[]): void {

@@ -11,3 +11,4 @@
 .idea/jsLibraryMappings.xml
 /junit.xml
 /coverage/cobertura-coverage.xml
+.DS_Store

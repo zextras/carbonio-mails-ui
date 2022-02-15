@@ -17,11 +17,11 @@ import {
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
-import { useIntegratedComponent, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { useIntegratedComponent, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { map, find, findIndex, merge, escape, unescape } from 'lodash';
 import Heading from './components/settings-heading';
-import { getSignatures } from '../../store/editor-slice';
 import { GetAllSignatures } from '../../store/actions/signatures';
+import { getSignatures } from '../../store/editor-slice-utils';
 
 const Signature = styled(Row)`
 	border-bottom: 1px solid ${({ theme }) => theme.palette.gray2.regular};
@@ -48,8 +48,8 @@ export default function SignatureSettings({
 	signItemsUpdated,
 	setSignItemsUpdated
 }) {
-	const accounts = useUserAccounts();
-	const [signatures, setSignatures] = useState(getSignatures(accounts, t));
+	const account = useUserAccount();
+	const [signatures, setSignatures] = useState(getSignatures(account, t));
 	const [signs, setSigns] = useState([]);
 	const [selected, setSelected] = useState({});
 

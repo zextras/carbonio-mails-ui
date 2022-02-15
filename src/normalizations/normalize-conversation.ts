@@ -17,7 +17,8 @@ export const normalizeConversation = (
 	const messages = filteredMsgs?.length
 		? map(filteredMsgs, (msg) => ({
 				id: msg.id,
-				parent: msg.l
+				parent: msg.l,
+				date: Number(msg?.d)
 		  }))
 		: undefined;
 

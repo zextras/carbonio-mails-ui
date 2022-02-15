@@ -22,7 +22,18 @@ import {
 	Select
 } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
-import { map, reduce, throttle, filter, find, flatten, findIndex, concat, some } from 'lodash';
+import {
+	map,
+	reduce,
+	throttle,
+	filter,
+	find,
+	flatten,
+	findIndex,
+	concat,
+	some,
+	isNil
+} from 'lodash';
 import {
 	useUserSettings,
 	useBoardConfig,
@@ -183,8 +194,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [btnSendlabel, setBtnSendLabel] = useState(t('label.send', 'Send'));
 	const [btnSendDisabled, setBtnSendDisabled] = useState(false);
 
-	const [isBlocking, setIsBlocking] = useState(false);
-	const [isFirstTime, setIsFirstTime] = useState(true);
 	const [saveFirstDraft, setSaveFirstDraft] = useState(true);
 	const [timer, setTimer] = useState(null);
 
@@ -342,20 +351,23 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		}
 	}, [action, boardContext, editor, t, dispatch, editorId, folderId, closeBoard]);
 
-	const throttledSaveToDraft = (data) => {
-		clearTimeout(timer);
-		const newTimer = setTimeout(() => {
-			const newData = { ...editor, ...data };
-			if (saveFirstDraft) {
-				saveDraftCb(newData);
-				setSaveFirstDraft(false);
-			} else if (editor.id && editor.id !== 'undefined') {
-				saveDraftCb(newData);
-			}
-		}, 500);
+	const throttledSaveToDraft = useCallback(
+		(data) => {
+			clearTimeout(timer);
+			const newTimer = setTimeout(() => {
+				const newData = { ...editor, ...data };
+				if (saveFirstDraft) {
+					saveDraftCb(newData);
+					setSaveFirstDraft(false);
+				} else if (!isNil(editor.id)) {
+					saveDraftCb(newData);
+				}
+			}, 500);
 
-		setTimer(newTimer);
-	};
+			setTimer(newTimer);
+		},
+		[editor, saveDraftCb, saveFirstDraft, timer]
+	);
 	const updateSubjectField = useMemo(
 		() =>
 			throttle(
@@ -991,8 +1003,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 												updateSubjectField({ subject: ev.target.value });
 												onChange(ev.target.value);
 												throttledSaveToDraft({ subject: ev.target.value });
-												if (!isFirstTime) setIsBlocking(true);
-												setIsFirstTime(false);
 											}}
 											placeholder={t('label.subject', 'Subject')}
 											placeholderType="default"
@@ -1035,8 +1045,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 												updateSubjectField({ text: [ev[0], ev[1]] });
 												throttledSaveToDraft({ text: [ev[0], ev[1]] });
 												onChange([ev[0], ev[1]]);
-												if (!isFirstTime) setIsBlocking(true);
-												setIsFirstTime(false);
 											}}
 											minHeight={150}
 											onDragOver={onDragOverEvent}

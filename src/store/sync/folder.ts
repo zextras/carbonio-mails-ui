@@ -19,6 +19,7 @@ export const handleCreatedFoldersReducer = (
 ): void => {
 	const foldersToAdd = extractFolders(payload) as Record<string, Folder>;
 	addFoldersToStore(state, Object.values(foldersToAdd));
+	updateFolders(state, Object.values(foldersToAdd));
 };
 
 export const handleModifiedFoldersReducer = (
@@ -38,4 +39,5 @@ export const handleDeletedFoldersReducer = (
 
 export const handleRefreshReducer = (state: FoldersStateType, { payload }: Payload): void => {
 	addFoldersToStore(state, payload);
+	updateFolders(state, payload);
 };
