@@ -255,7 +255,7 @@ export const editorsSlice = createSlice({
 
 export const { createEditor, closeEditor, updateEditor } = editorsSlice.actions;
 
-export const editorSliceRecucer = editorsSlice.reducer;
+export const editorSliceReducer = editorsSlice.reducer;
 
 export function selectEditors({ editors }: StateType): MailsEditorMap {
 	return editors ? editors.editors : {};

@@ -277,6 +277,11 @@ export function selectFolders({ folders }: StateType): MailsFolderMap {
 	return folders ? folders.folders : {};
 }
 
+export const selectFolder =
+	(id: string) =>
+	({ folders }: StateType): Folder =>
+		folders?.folders?.[id] ?? {};
+
 export function selectFoldersStatus({ folders }: StateType): string {
 	return folders.status;
 }

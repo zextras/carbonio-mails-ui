@@ -3,20 +3,27 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { store, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
-import { useEffect, useState } from 'react';
+import {
+	FOLDERS,
+	store,
+	useNotify,
+	useRefresh,
+	updatePrimaryBadge
+} from '@zextras/carbonio-shell-ui';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { combineReducers } from '@reduxjs/toolkit';
-import { isEmpty, map, keyBy, find, filter } from 'lodash';
+import { isEmpty, map, keyBy, find, filter, forEach, sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import {
 	handleCreatedFolders,
 	handleModifiedFolders,
 	handleDeletedFolders,
 	folderSliceReducer,
-	handleRefresh
+	handleRefresh,
+	selectFolder
 } from '../../store/folders-slice';
-import { editorSliceRecucer } from '../../store/editor-slice';
+import { editorSliceReducer } from '../../store/editor-slice';
 import {
 	conversationsSliceReducer,
 	handleNotifyCreatedConversations,
@@ -37,11 +44,28 @@ import {
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { extractFolders } from './utils';
+import { MAILS_ROUTE } from '../../constants';
+
+const InboxBadgeUpdater = () => {
+	const folder = useSelector(selectFolder(FOLDERS.INBOX));
+	useEffect(() => {
+		updatePrimaryBadge(
+			{
+				show: folder.unreadCount > 0,
+				count: folder.unreadCount,
+				showCount: true
+			},
+			MAILS_ROUTE
+		);
+	}, [folder.unreadCount]);
+	return null;
+};
 
 export const SyncDataHandler = () => {
 	const [t] = useTranslation();
 	const refresh = useRefresh();
-	const notify = useNotify();
+	const notifyList = useNotify();
+	const [seq, setSeq] = useState(-1);
 	const dispatch = useDispatch();
 	const [initialized, setInitialized] = useState(false);
 	const currentFolder = useSelector(selectCurrentFolder);
@@ -52,7 +76,7 @@ export const SyncDataHandler = () => {
 				combineReducers({
 					folders: folderSliceReducer,
 					conversations: conversationsSliceReducer,
-					editors: editorSliceRecucer,
+					editors: editorSliceReducer,
 					messages: messageSliceReducer
 				})
 			);
@@ -67,66 +91,77 @@ export const SyncDataHandler = () => {
 	}, [dispatch, initialized, refresh]);
 
 	useEffect(() => {
-		// this intercept all changes made from different folders towards the current one, it triggers a search request if it finds at least one item which affect currentFolder
-		if (find(notify?.modified?.m, ['l', currentFolder])) {
-			dispatch(setSearchedInFolder({ [currentFolder]: 'incomplete' }));
-		}
-	}, [currentFolder, dispatch, notify?.modified?.m]);
+		forEach(notifyList, (notify) => {
+			// this intercept all changes made from different folders towards the current one, it triggers a search request if it finds at least one item which affect currentFolder
+			if (find(notify?.modified?.m, ['l', currentFolder])) {
+				dispatch(setSearchedInFolder({ [currentFolder]: 'incomplete' }));
+			}
+		});
+	}, [currentFolder, dispatch, notifyList]);
 
 	useEffect(() => {
 		if (initialized) {
-			if (notify.created) {
-				if (notify.created.folder || notify.created.link) {
-					dispatch(
-						handleCreatedFolders([...(notify.created.folder ?? []), ...(notify.created.link ?? [])])
-					);
-				}
-				if (notify.created.c && notify.created.m) {
-					const conversations = map(notify.created.c, (i) =>
-						normalizeConversation(i, notify.created.m)
-					);
-					dispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));
-				}
-				if (notify.created.m) {
-					dispatch(handleCreatedMessages({ m: notify.created.m }));
-					dispatch(handleCreatedMessagesInConversation({ m: notify.created.m }));
-				}
-			}
-			if (notify.modified) {
-				if (notify.modified.folder || notify.modified.link) {
-					dispatch(
-						handleModifiedFolders([
-							...(notify.modified.folder ?? []),
-							...(notify.modified.link ?? [])
-						])
-					);
-				}
-				if (notify.modified.c) {
-					const conversations = map(notify.modified.c, normalizeConversation);
-					dispatch(handleNotifyModifiedConversations(keyBy(conversations, 'id')));
-				}
-				if (notify.modified.m) {
-					const messages = map(notify.modified.m, (obj) =>
-						normalizeMailMessageFromSoap(obj, false)
-					);
-					dispatch(handleModifiedMessages(messages));
+			if (notifyList.length > 0) {
+				forEach(sortBy(notifyList, 'seq'), (notify) => {
+					if (!isEmpty(notify) && notify.seq > seq) {
+						if (notify.created) {
+							if (notify.created.folder || notify.created.link) {
+								dispatch(
+									handleCreatedFolders([
+										...(notify.created.folder ?? []),
+										...(notify.created.link ?? [])
+									])
+								);
+							}
+							if (notify.created.c && notify.created.m) {
+								const conversations = map(notify.created.c, (i) =>
+									normalizeConversation(i, notify.created.m)
+								);
+								dispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));
+							}
+							if (notify.created.m) {
+								dispatch(handleCreatedMessages({ m: notify.created.m }));
+								dispatch(handleCreatedMessagesInConversation({ m: notify.created.m }));
+							}
+						}
+						if (notify.modified) {
+							if (notify.modified.folder || notify.modified.link) {
+								dispatch(
+									handleModifiedFolders([
+										...(notify.modified.folder ?? []),
+										...(notify.modified.link ?? [])
+									])
+								);
+							}
+							if (notify.modified.c) {
+								const conversations = map(notify.modified.c, normalizeConversation);
+								dispatch(handleNotifyModifiedConversations(keyBy(conversations, 'id')));
+							}
+							if (notify.modified.m) {
+								const messages = map(notify.modified.m, (obj) =>
+									normalizeMailMessageFromSoap(obj, false)
+								);
+								dispatch(handleModifiedMessages(messages));
 
-					// the condition filters message with parent property (the only ones we need to update)
-					const toUpdate = filter(messages, 'parent');
-					if (toUpdate?.length > 0) {
-						// this function updates messages' parent in conversations. If parent never changes it does not need to be called
-						dispatch(handleModifiedMessagesInConversation(toUpdate));
+								// the condition filters message with parent property (the only ones we need to update)
+								const toUpdate = filter(messages, 'parent');
+								if (toUpdate?.length > 0) {
+									// this function updates messages' parent in conversations. If parent never changes it does not need to be called
+									dispatch(handleModifiedMessagesInConversation(toUpdate));
+								}
+							}
+						}
+						if (notify.deleted) {
+							dispatch(handleDeletedFolders(notify.deleted?.id?.split?.(',')));
+							dispatch(handleNotifyDeletedConversations(notify.deleted?.id?.split?.(',')));
+							dispatch(handleDeletedMessages(notify.deleted?.id?.split?.(',')));
+							dispatch(handleDeletedMessagesInConversation(notify.deleted?.id?.split?.(',')));
+						}
+						setSeq(notify.seq);
 					}
-				}
-			}
-			if (notify.deleted) {
-				dispatch(handleDeletedFolders(notify.deleted?.id?.split?.(',')));
-				dispatch(handleNotifyDeletedConversations(notify.deleted?.id?.split?.(',')));
-				dispatch(handleDeletedMessages(notify.deleted?.id?.split?.(',')));
-				dispatch(handleDeletedMessagesInConversation(notify.deleted?.id?.split?.(',')));
+				});
 			}
 		}
-	}, [dispatch, initialized, notify.created, notify.deleted, notify.modified, t]);
-
-	return null;
+	}, [dispatch, initialized, notifyList, seq, t]);
+	return <InboxBadgeUpdater />;
 };
