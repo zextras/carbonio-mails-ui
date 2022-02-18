@@ -51,9 +51,9 @@ const ListItemActionWrapper = ({
 
 	const [hoverActions, dropdownActions] = useMemo(() => {
 		if (isConversation) {
-			return messagesToRender?.length > 1
-				? getConversationActions(item)
-				: getMessageActions({ ...item, ...messagesToRender[0] });
+			return messagesToRender && messagesToRender?.length === 1
+				? getMessageActions({ ...item, ...messagesToRender?.[0] })
+				: getConversationActions(item);
 		}
 		return getMessageActions(item);
 	}, [isConversation, getMessageActions, item, messagesToRender, getConversationActions]);

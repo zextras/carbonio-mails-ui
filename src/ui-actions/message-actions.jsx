@@ -796,9 +796,9 @@ export const getActions = (
 					),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
 					setMsgAsSpam([message.id], true, t, dispatch, replaceHistory, createSnackbar),
-					printMsg(message.id, t, timezone),
-					showOriginalMsg(message.id, t),
 					deleteMsg([message.id], t, dispatch, createSnackbar, createModal)
+					// printMsg(message.id, t, timezone),
+					// showOriginalMsg(message.id, t)
 				],
 				[
 					setMsgRead(
@@ -837,7 +837,8 @@ export const getActions = (
 		case FOLDERS.DRAFTS:
 			return (message) => [
 				[
-					setMsgFlag([message.id], message.flagged, t, dispatch),
+					editDraft(message.id, folderId, t, replaceHistory),
+					sendDraft(message.id, message, t, dispatch),
 					moveMsgToTrash(
 						[message.id],
 						t,
@@ -848,9 +849,8 @@ export const getActions = (
 						replaceHistory,
 						message.conversation
 					),
-					editDraft(message.id, folderId, t, replaceHistory),
-					sendDraft(message.id, message, t, dispatch),
-					printMsg(message.id, t, timezone)
+					setMsgFlag([message.id], message.flagged, t, dispatch)
+					// printMsg(message.id, t, timezone)
 				],
 				[
 					setMsgFlag([message.id], message.flagged, t, dispatch),
@@ -874,20 +874,9 @@ export const getActions = (
 		default:
 			return (message) => [
 				[
-					setMsgRead(
-						[message.id],
-						message.read,
-						t,
-						dispatch,
-						folderId,
-						replaceHistory,
-						deselectAll
-					),
-					setMsgFlag([message.id], message.flagged, t, dispatch),
 					replyMsg(message.id, folderId, t, replaceHistory),
 					replyAllMsg(message.id, folderId, t, replaceHistory),
 					forwardMsg(message.id, folderId, t, replaceHistory),
-					showOriginalMsg(message.id, t),
 					moveMsgToTrash(
 						[message.id],
 						t,
@@ -897,7 +886,18 @@ export const getActions = (
 						folderId,
 						replaceHistory,
 						message.conversation
-					)
+					),
+					setMsgRead(
+						[message.id],
+						message.read,
+						t,
+						dispatch,
+						folderId,
+						replaceHistory,
+						deselectAll
+					),
+					setMsgFlag([message.id], message.flagged, t, dispatch)
+					// showOriginalMsg(message.id, t)
 				],
 				[
 					setMsgRead(
