@@ -187,7 +187,9 @@
         "sent_to_address": "Inviato a (indirizzo)",
         "hide": "Nascondi",
         "received_from_address": "Ricevuto da (address)",
-        "activate_selection_mode": "Attiva modalità selezione"
+        "activate_selection_mode": "Attiva modalità selezione",
+        "all": "tutto",
+        "search_activate_selection_mode": "La Modalità Selezione non è ancora disponibile nei risultati di ricerca"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",
@@ -308,7 +310,9 @@
                 "retention_msg": "I messaggi in questa cartella che rientrano nell'intervallo di memorizzazione richiederanno una conferma esplicita prima di essere eliminati",
                 "threshold_msg": "In questa cartella, i messaggi più vecchi del periodo stabilito verranno cancellati automaticamente.",
                 "add_share": "Aggiungi Condivisione",
-                "retention_duration_warning": "Il periodo di ritenzione dev'essere un numero positivo"
+                "retention_duration_warning": "Il periodo di ritenzione dev'essere un numero positivo",
+                "retention_message": "All'interno di questa cartella, per i messaggi che rientrano nel periodo di ritenzione, verrà chiesta conferma per la cancellazione",
+                "threshold_message": "In questa cartella, i messaggi più vecchi del limite consentito saranno soggetti a cancellazione automatica."
             },
             "footer": {
                 "cancel": "Annulla"
@@ -440,7 +444,9 @@
             "conv_sorting": "Ordine delle conversazioni",
             "msg_prv_title": "Anteprima messaggi e immagini",
             "message_color": "Colore Messaggio",
-            "conversation_ordering": "Ordine conversazione"
+            "conversation_ordering": "Ordine conversazione",
+            "message_selection": "Selezione Messaggio",
+            "set_message_color": "Imposta il colore di messaggi e conversazioni selezionando il colore del tag."
         },
         "new_mail_optn": {
             "manually": "Manualmente",
@@ -522,7 +528,7 @@
         "exists": "esiste",
         "facebook_notification": "Notica Facebook",
         "field": "Campo",
-        "header_name": "",
+        "header_name": "Nome Intestazione",
         "if": "Se",
         "in": "nel",
         "invite_not_replied": "l'invito non ha risposta ",
@@ -548,7 +554,10 @@
         "twitter_notification": "Notifiche Twitter",
         "under": "sotto",
         "invite_requested": "l'invito è richiesto",
-        "my_frequent_emails": "le mie e-mail frequenti"
+        "my_frequent_emails": "le mie e-mail frequenti",
+        "address_in": "Indirizzo in",
+        "tag_with": "Contrassegna con",
+        "does_not_match_wildcard_condition": "non corrisponde alle condizioni dei caratteri jolly"
     },
     "mail_folder": "Cartella Posta",
     "of": "di",
@@ -568,7 +577,8 @@
         "flagged_note": "Cerca tutte le e-mail contrassegnate.",
         "size_error": "Sono permessi solo numeri",
         "sent_after": "Invia più tardi",
-        "sent_on": "Inviata il"
+        "sent_on": "Inviata il",
+        "sent_before": "Inviato prima"
     },
     "select_signature": "Seleziona firma",
     "set_default_signatures": "Imposta firma predefinita",
@@ -673,7 +683,10 @@
             "empty": {
                 "trash": "Svuota cestino"
             },
-            "edit_properties": "Modifica Proprietà"
+            "edit_properties": "Modifica Proprietà",
+            "wipe": {
+                "folder_panel": "Pulisci Cartella"
+            }
         },
         "lists_item": {
             "root": "/Root"
