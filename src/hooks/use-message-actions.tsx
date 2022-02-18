@@ -7,7 +7,6 @@ import { SnackbarManagerContext, useModal } from '@zextras/carbonio-design-syste
 import {
 	FOLDERS,
 	useAppContext,
-	useIntegratedComponent,
 	useReplaceHistoryCallback,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
@@ -44,7 +43,6 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const createModal = useModal();
-	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const { setCount } = useAppContext();
 	const { deselectAll } = useSelection(folderId, setCount);
 	const settings = useUserSettings();
