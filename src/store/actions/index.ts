@@ -9,3 +9,4 @@ export * from './get-conv';
 export * from './get-msg';
 export * from './msg-action';
 export * from './search-conv';
+export * from './redirect-action';
