@@ -224,6 +224,7 @@ export default function ConversationListItem({
 					item.messages,
 					(acc, v) => {
 						const msg = find(messages, ['id', v.id]);
+
 						if (msg) {
 							// in trash we show all messages of the conversation even if only one is deleted
 							if (folderId === FOLDERS.TRASH) {
@@ -284,6 +285,7 @@ export default function ConversationListItem({
 					onDoubleClick={_onDoubleClick}
 					hoverTooltipLabel={participantsString}
 					isConversation
+					messagesToRender={messagesToRender}
 				>
 					<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
 						<ItemAvatar

@@ -289,10 +289,10 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [account, accounts, defaultIdentity?.address, defaultIdentity?.fullname, t, updateEditorCb]);
 
 	useEffect(() => {
-		if (activeMailId) {
+		if (activeMailId && !messages[activeMailId]?.isComplete) {
 			dispatch(getMsg({ msgId: activeMailId }));
 		}
-	}, [activeMailId, dispatch]);
+	}, [activeMailId, dispatch, messages, updateEditorCb]);
 
 	const sendMailCb = useCallback(() => {
 		setBtnSendLabel(t('label.sending', 'Sending'));
@@ -474,28 +474,30 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [editor?.subject, setHeader, updateBoard, action, t]);
 
 	useEffect(() => {
-		if (!editors[editorId]) {
-			dispatch(
-				createEditor({
-					settings,
-					editorId,
-					id: action === ActionsType.EDIT_AS_DRAFT ? activeMailId : undefined,
-					original: messages[activeMailId ?? editorId],
-					boardContext,
-					action,
-					change,
-					accounts,
-					labels: {
-						to: `${t('label.to', 'To')}:`,
-						from: `${t('label.from', 'From')}:`,
-						cc: `${t('label.cc', 'CC')}:`,
-						subject: `${t('label.subject', 'Subject')}:`,
-						sent: `${t('label.sent', 'Sent')}:`
-					}
-				})
-			);
-		} else {
-			setEditor(editors[editorId]);
+		if (activeMailId && messages[activeMailId]?.isComplete) {
+			if (!editors[editorId]) {
+				dispatch(
+					createEditor({
+						settings,
+						editorId,
+						id: action === ActionsType.EDIT_AS_DRAFT ? activeMailId : undefined,
+						original: messages[activeMailId ?? editorId],
+						boardContext,
+						action,
+						change,
+						accounts,
+						labels: {
+							to: `${t('label.to', 'To')}:`,
+							from: `${t('label.from', 'From')}:`,
+							cc: `${t('label.cc', 'CC')}:`,
+							subject: `${t('label.subject', 'Subject')}:`,
+							sent: `${t('label.sent', 'Sent')}:`
+						}
+					})
+				);
+			} else {
+				setEditor(editors[editorId]);
+			}
 		}
 	}, [
 		editors,
@@ -574,6 +576,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		const participants = concat(editor?.to, editor?.bcc, editor?.cc);
 		return btnSendDisabled || participants.length === 0 || some(participants, { error: true });
 	}, [btnSendDisabled, editor]);
+
 	return editor ? (
 		<Catcher>
 			<Container onDragOver={(event) => onDragOverEvent(event)}>

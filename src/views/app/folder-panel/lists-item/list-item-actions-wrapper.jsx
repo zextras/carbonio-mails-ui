@@ -44,13 +44,19 @@ const ListItemActionWrapper = ({
 	onDoubleClick,
 	item,
 	isConversation,
-	hoverTooltipLabel
+	hoverTooltipLabel,
+	messagesToRender
 }) => {
 	const { getMessageActions, getConversationActions } = useContext(ActionsContext);
-	const [hoverActions, dropdownActions] = useMemo(
-		() => (isConversation ? getConversationActions(item) : getMessageActions(item)),
-		[isConversation, getConversationActions, item, getMessageActions]
-	);
+
+	const [hoverActions, dropdownActions] = useMemo(() => {
+		if (isConversation) {
+			return messagesToRender && messagesToRender?.length === 1
+				? getMessageActions({ ...item, ...messagesToRender?.[0] })
+				: getConversationActions(item);
+		}
+		return getMessageActions(item);
+	}, [isConversation, getMessageActions, item, messagesToRender, getConversationActions]);
 	return (
 		<Dropdown
 			contextMenu
