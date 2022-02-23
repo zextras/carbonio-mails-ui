@@ -474,7 +474,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [editor?.subject, setHeader, updateBoard, action, t]);
 
 	useEffect(() => {
-		if (activeMailId && messages[activeMailId]?.isComplete) {
+		if ((activeMailId && messages[activeMailId]?.isComplete) || action === ActionsType.NEW) {
 			if (!editors[editorId]) {
 				dispatch(
 					createEditor({
