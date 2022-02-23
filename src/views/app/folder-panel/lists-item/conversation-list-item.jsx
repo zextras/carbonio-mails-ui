@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isEmpty, reduce, trimStart, map, uniqBy, find, filter, findIndex } from 'lodash';
+import { isEmpty, reduce, trimStart, map, uniqBy, find, filter, findIndex, some } from 'lodash';
 import styled from 'styled-components';
 import {
 	usePushHistoryCallback,
@@ -64,7 +64,8 @@ export const SenderName = ({ item, textValues }) => {
 	const [t] = useTranslation();
 	const account = useUserAccount();
 	const { folderId } = useParams();
-
+	console.log('zz item:', item);
+	const isDraftIncluded = useMemo(() => some(item.messages, { parent: FOLDERS.DRAFTS }), [item]);
 	const participantsString = useMemo(() => {
 		const participants = filter(item.participants, (p) => {
 			if (folderId === FOLDERS.INBOX) return p.type === 'f'; // inbox
@@ -87,7 +88,7 @@ export const SenderName = ({ item, textValues }) => {
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
-			{folderId === FOLDERS.DRAFTS && (
+			{isDraftIncluded && folderId === FOLDERS.DRAFTS && (
 				<Padding right="small">
 					<Text color="error">{t('label.draft_folder', '[DRAFT]')}</Text>
 				</Padding>

@@ -3,59 +3,75 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { forEach, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Container, Text } from '@zextras/carbonio-design-system';
+import { Container, Text, Button, Row } from '@zextras/carbonio-design-system';
+import { getOriginalContent, getQuotedText, getQuotedTextOnly } from './get-quoted-text-util';
 
 const _CI_REGEX = /^<(.*)>$/;
 const _CI_SRC_REGEX = /^cid:(.*)$/;
 
-export function _getParentPath(path) {
-	const p = path.split('.');
-	p.pop();
-	return p.join('.');
-}
-
-function findAttachments(parts, acc) {
-	return reduce(
-		parts,
-		(found, part) => {
-			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
-				found.push(part);
-			}
-			if (part.parts) return findAttachments(part.parts, found);
-			return acc;
-		},
-		acc
-	);
-}
-
-const _TextMessageRenderer = ({ body }) => {
+const _TextMessageRenderer = ({ body, t }) => {
+	const [showQuotedText, setShowQuotedText] = useState(false);
 	const containerRef = useRef();
-
+	const orignalText = getOriginalContent(body.content, false);
+	const quoted = getQuotedTextOnly(body.content);
+	const contentToDisplay = useMemo(
+		() => (showQuotedText ? body.content : orignalText),
+		[showQuotedText, body.content, orignalText]
+	);
 	useLayoutEffect(() => {
-		containerRef.current.innerText = body.content;
-	}, [body]);
+		containerRef.current.innerText = contentToDisplay;
+	}, [contentToDisplay]);
 
 	return (
-		<Text
-			overflow="break-word"
-			color="text"
-			style={{ fontFamily: 'monospace' }}
-			ref={containerRef}
-		/>
+		<>
+			<Text
+				overflow="break-word"
+				color="text"
+				style={{ fontFamily: 'monospace' }}
+				ref={containerRef}
+			/>
+			{!showQuotedText && quoted.length > 0 && (
+				<Row mainAlignment="center" crossAlignment="center" padding={{ top: 'medium' }}>
+					<Button
+						label={t('label.show_quoted_text', 'Show quoted text')}
+						icon="EyeOutline"
+						type="outlined"
+						onClick={() => setShowQuotedText(true)}
+						size="fill"
+					/>
+				</Row>
+			)}
+		</>
 	);
 };
 
-const _HtmlMessageRenderer = ({ msgId, body, parts }) => {
+const _HtmlMessageRenderer = ({ msgId, body, parts, t }) => {
+	// console.log('vvvv bodyv:', body.content);
+	console.log('vv f:', getQuotedTextOnly(body.content));
 	const divRef = useRef();
 	const iframeRef = useRef();
+	const [showQuotedText, setShowQuotedText] = useState(false);
 	// const settings = useUserSettings();
 	// const darkMode = useMemo(
 	// 	() => find(settings.props, ['name', 'zappDarkreaderMode'])?._content,
 	// 	[settings]
 	// );
+
+	const orignalText = getOriginalContent(body.content, true);
+	const quoted = getQuotedTextOnly(body.content, true);
+	// console.log('vvvv nonQuotedText:', nonQuotedText);
+	// const quotedText = body?.content?.slice(
+	// 	body.content.indexOf('<blockquote'),
+	// 	body.content.lastIndexOf('</blockquote>')
+	// );
+	// console.log('vvvv converted:', quotedText);
+	const contentToDisplay = useMemo(
+		() => (showQuotedText ? body.content : orignalText),
+		[showQuotedText, body.content, orignalText]
+	);
 	const calculateHeight = () => {
 		iframeRef.current.style.height = '0px';
 		iframeRef.current.style.height = `${iframeRef.current.contentDocument.body.scrollHeight}px`;
@@ -63,7 +79,8 @@ const _HtmlMessageRenderer = ({ msgId, body, parts }) => {
 
 	useLayoutEffect(() => {
 		iframeRef.current.contentDocument.open();
-		iframeRef.current.contentDocument.write(body.content);
+		// iframeRef.current.contentDocument.write(body.content);
+		iframeRef.current.contentDocument.write(contentToDisplay);
 		iframeRef.current.contentDocument.close();
 
 		const styleTag = document.createElement('style');
@@ -138,7 +155,7 @@ const _HtmlMessageRenderer = ({ msgId, body, parts }) => {
 		resizeObserver.observe(divRef.current);
 
 		return () => resizeObserver.disconnect();
-	}, [body, parts, msgId]);
+	}, [body, parts, msgId, contentToDisplay]);
 
 	return (
 		<div ref={divRef} className="force-white-bg">
@@ -153,6 +170,17 @@ const _HtmlMessageRenderer = ({ msgId, body, parts }) => {
 					maxWidth: '100%'
 				}}
 			/>
+			{!showQuotedText && quoted.length > 0 && (
+				<Row mainAlignment="center" crossAlignment="center">
+					<Button
+						label={t('label.show_quoted_text', 'Show quoted text')}
+						icon="EyeOutline"
+						type="outlined"
+						onClick={() => setShowQuotedText(true)}
+						size="fill"
+					/>
+				</Row>
+			)}
 		</div>
 	);
 };
@@ -166,8 +194,21 @@ const EmptyBody = () => {
 		</Container>
 	);
 };
-
+function findAttachments(parts, acc) {
+	return reduce(
+		parts,
+		(found, part) => {
+			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
+				found.push(part);
+			}
+			if (part.parts) return findAttachments(part.parts, found);
+			return acc;
+		},
+		acc
+	);
+}
 const MailMessageRenderer = ({ mailMsg, onLoadChange }) => {
+	const [t] = useTranslation();
 	const parts = findAttachments(mailMsg.parts ?? [], []);
 	useEffect(() => {
 		if (!mailMsg.read) {
@@ -177,11 +218,13 @@ const MailMessageRenderer = ({ mailMsg, onLoadChange }) => {
 	if (!mailMsg.body?.content?.length && !mailMsg.fragment) {
 		return <EmptyBody />;
 	}
+	console.log('vv mailMSg:', mailMsg);
+
 	if (mailMsg.body?.contentType === 'text/html') {
-		return <_HtmlMessageRenderer msgId={mailMsg.id} body={mailMsg.body} parts={parts} />;
+		return <_HtmlMessageRenderer msgId={mailMsg.id} body={mailMsg.body} parts={parts} t={t} />;
 	}
 	if (mailMsg.body?.contentType === 'text/plain') {
-		return <_TextMessageRenderer body={mailMsg.body} />;
+		return <_TextMessageRenderer body={mailMsg.body} t={t} />;
 	}
 	return <EmptyBody />;
 };
