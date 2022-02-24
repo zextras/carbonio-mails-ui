@@ -51,7 +51,8 @@
                 "sure_delete_email": "Sei sicuro di voler eliminare l'e-mail selezionata?"
             },
             "redirect": {
-                "first": "Questa e-mail sarà inviata ad un nuovo destinatario, conservando l'indirizzo e-mail del mittente originale."
+                "first": "Questa e-mail sarà inviata ad un nuovo destinatario, conservando l'indirizzo e-mail del mittente originale.",
+                "second": "Questa e-mail viene visualizzata avente come ricevente il nuovo destinatario"
             }
         },
         "invalid_address": "Il seguente indirizzo sembra essere non valido",
@@ -189,7 +190,11 @@
         "received_from_address": "Ricevuto da (address)",
         "activate_selection_mode": "Attiva modalità selezione",
         "all": "tutto",
-        "search_activate_selection_mode": "La Modalità Selezione non è ancora disponibile nei risultati di ricerca"
+        "search_activate_selection_mode": "La Modalità Selezione non è ancora disponibile nei risultati di ricerca",
+        "receive_message": "Messaggi Ricevuti",
+        "replied": "Risposto",
+        "draft": "Bozza",
+        "forwarded": "Inoltrato"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",
@@ -415,7 +420,8 @@
             "share_calendar_role": {
                 "admin": "Amministratore",
                 "manager": "Manager",
-                "none": "Nessuno"
+                "none": "Nessuno",
+                "viewer": "Vista"
             }
         },
         "recipients_address": "Indirizzi e-mail dei destinatari",
@@ -446,7 +452,9 @@
             "message_color": "Colore Messaggio",
             "conversation_ordering": "Ordine conversazione",
             "message_selection": "Selezione Messaggio",
-            "set_message_color": "Imposta il colore di messaggi e conversazioni selezionando il colore del tag."
+            "set_message_color": "Imposta il colore di messaggi e conversazioni selezionando il colore del tag.",
+            "display_messages": "Visualizza Messaggi",
+            "default_mail_search": "Ricerca Predefinita dei messaggi"
         },
         "new_mail_optn": {
             "manually": "Manualmente",
@@ -557,7 +565,8 @@
         "my_frequent_emails": "le mie e-mail frequenti",
         "address_in": "Indirizzo in",
         "tag_with": "Contrassegna con",
-        "does_not_match_wildcard_condition": "non corrisponde alle condizioni dei caratteri jolly"
+        "does_not_match_wildcard_condition": "non corrisponde alle condizioni dei caratteri jolly",
+        "social": "Social"
     },
     "mail_folder": "Cartella Posta",
     "of": "di",
