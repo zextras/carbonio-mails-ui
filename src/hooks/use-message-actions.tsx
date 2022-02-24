@@ -42,7 +42,7 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const createModal = useModal();
-	const { setCount } = useAppContext();
+	const { setCount } = useAppContext() as { setCount: () => void };
 	const { deselectAll } = useSelection(folderId, setCount);
 	const settings = useUserSettings();
 	const timezone = useMemo(
