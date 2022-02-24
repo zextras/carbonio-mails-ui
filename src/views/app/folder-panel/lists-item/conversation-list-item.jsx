@@ -55,11 +55,10 @@ const CollapseElement = styled(Container)`
 	display: ${({ open }) => (open ? 'block' : 'none')};
 `;
 
-export const SenderName = ({ item, textValues }) => {
+export const SenderName = ({ item, textValues, isFromSearch }) => {
 	const [t] = useTranslation();
 	const account = useUserAccount();
 	const { folderId } = useParams();
-
 	const participantsString = useMemo(() => {
 		const participants = filter(item.participants, (p) => {
 			if (folderId === FOLDERS.INBOX) return p.type === 'f'; // inbox
@@ -82,7 +81,7 @@ export const SenderName = ({ item, textValues }) => {
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
-			{folderId === FOLDERS.DRAFTS && (
+			{!isFromSearch && folderId === FOLDERS.DRAFTS && (
 				<Padding right="small">
 					<Text color="error">{t('label.draft_folder', '[DRAFT]')}</Text>
 				</Padding>
@@ -218,6 +217,7 @@ export default function ConversationListItem({
 					item.messages,
 					(acc, v) => {
 						const msg = find(messages, ['id', v.id]);
+
 						if (msg) {
 							// in trash we show all messages of the conversation even if only one is deleted
 							if (folderId === FOLDERS.TRASH) {
@@ -278,6 +278,7 @@ export default function ConversationListItem({
 					onDoubleClick={_onDoubleClick}
 					hoverTooltipLabel={participantsString}
 					isConversation
+					messagesToRender={messagesToRender}
 				>
 					<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
 						<ItemAvatar
@@ -296,7 +297,7 @@ export default function ConversationListItem({
 						padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 					>
 						<Container orientation="horizontal" height="fit" width="fill">
-							<SenderName item={item} textValues={textReadValues} />
+							<SenderName item={item} textValues={textReadValues} isFromSearch={false} />
 							<RowInfo item={item} />
 						</Container>
 						<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">

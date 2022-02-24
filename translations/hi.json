@@ -193,7 +193,8 @@
         "restore": "वापस लाएँ",
         "shared_folders": "शेयर किए फोल्डर",
         "shares_info": "शेयर किए फोल्डर की जानकारी",
-        "workflow": "वर्कफ़्लो"
+        "workflow": "वर्कफ़्लो",
+        "undo": "अनडू करें"
     },
     "messages": {
         "permanent_delete_confirm": "हमेशा के लिए डिलीट करें",

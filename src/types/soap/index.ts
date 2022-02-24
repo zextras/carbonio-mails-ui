@@ -15,3 +15,4 @@ export * from './soap-mail-participant';
 export * from './sync';
 export * from './zimbra-request';
 export * from './save-draft';
+export * from './redirect-message-action';
