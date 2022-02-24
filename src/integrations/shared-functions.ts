@@ -5,10 +5,10 @@
  */
 import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import { Participant } from '../types/participant';
-import { MAIL_APP_ID } from '../constants';
+import { MAIL_APP_ID, MAILS_ROUTE } from '../constants';
 
 export const mailToSharedFunction: (contacts: Array<Partial<Participant>>) => void = (contacts) => {
-	getBridgedFunctions().addBoard(`/new?action=mailTo`, {
+	getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=mailTo`, {
 		app: MAIL_APP_ID,
 		contacts
 	});
@@ -19,7 +19,7 @@ export const openComposerSharedFunction: (
 	compositionData: any,
 	...rest: any[]
 ) => void = (onConfirm, compositionData, ...rest) => {
-	getBridgedFunctions().addBoard('/new?action=compose', {
+	getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=compose`, {
 		app: MAIL_APP_ID,
 		onConfirm,
 		compositionData,

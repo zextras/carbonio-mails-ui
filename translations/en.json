@@ -180,6 +180,7 @@
         "all": "all",
         "allowed_actions": "Allowed actions",
         "any": "any",
+        "app_name": "Mails",
         "attachement_unknown": "Unknown <{{mimeType}}>",
         "attachment": "Attachment",
         "attachment_plural": "Attachments",
@@ -231,6 +232,7 @@
         "me": "Me",
         "messages": "Messages",
         "move": "Move",
+        "new_email": "New E-mail",
         "new_folder": "New Folder",
         "no_search_results_found": "No results found",
         "no_subject": "No subject",
@@ -262,6 +264,7 @@
         "select_folder": "Select folder",
         "select_signature": "Select a signature",
         "send": "Send",
+        "send_email": "Send e-mail",
         "send_notification": "Send a notification message to",
         "sending": "Sending",
         "sent": "Sent",
@@ -311,7 +314,7 @@
             },
             "redirect": {
                 "first": "This e-mail will be sent on to a new recipient while preserving the e-mail address of the original sender.",
-                "second": "The e-mail will appear as originally intended for the new recepient"
+                "second": "The e-mail will appear as originally intended for the new recipient"
             }
         },
         "new_email": "New e-mail",

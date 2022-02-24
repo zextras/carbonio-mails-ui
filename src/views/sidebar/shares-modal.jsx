@@ -149,7 +149,13 @@ export const SharesModal = ({ folders, onClose }) => {
 			<ContainerEl orientation="vertical" mainAlignment="flex-start" maxHeight="40vh">
 				<Accordion items={nestedData} background="gray6" />
 			</ContainerEl>
-			<Row padding="small" width="fill" mainAlignment="flex-end">
+			<Row
+				padding={{
+					all: 'small'
+				}}
+				width="fill"
+				mainAlignment="flex-end"
+			>
 				<ModalFooter
 					onConfirm={onConfirm}
 					label={t('label.add', 'Add')}

@@ -13,12 +13,11 @@ import {
 	List,
 	Row,
 	Button,
-	RichTextEditor,
 	Padding
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
-import { useUserAccount } from '@zextras/carbonio-shell-ui';
+import { useIntegratedComponent, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { map, find, findIndex, merge, escape, unescape } from 'lodash';
 import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';
@@ -174,6 +173,7 @@ export default function SignatureSettings({
 			}
 			setSignItems(updatedSign);
 		};
+
 		return (
 			<Signature
 				height="fit"
@@ -212,6 +212,7 @@ export default function SignatureSettings({
 			</Signature>
 		);
 	};
+	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 
 	return (
 		<>
@@ -256,23 +257,25 @@ export default function SignatureSettings({
 							/>
 						</Container>
 						<Padding all="small" />
-						<EditorWrapper>
-							<RichTextEditor
-								value={unescape(description)}
-								onEditorChange={(ev) => {
-									const updatedSign = signItems;
-									if (index >= 0 && updatedSign[index].description !== ev[1]) {
-										updatedSign[index].description = escape(ev[1]);
-										if (editorFlag) {
-											setDisabled(false);
+						{composerIsAvailable && (
+							<EditorWrapper>
+								<Composer
+									value={unescape(description)}
+									onEditorChange={(ev) => {
+										const updatedSign = signItems;
+										if (index >= 0 && updatedSign[index].description !== ev[1]) {
+											updatedSign[index].description = escape(ev[1]);
+											if (editorFlag) {
+												setDisabled(false);
+											}
+											setEditorFlag(true);
+											setSignItems(updatedSign);
+											updateAllSignatures(updatedSign);
 										}
-										setEditorFlag(true);
-										setSignItems(updatedSign);
-										updateAllSignatures(updatedSign);
-									}
-								}}
-							/>
-						</EditorWrapper>
+									}}
+								/>
+							</EditorWrapper>
+						)}
 					</Container>
 				</Container>
 			</FormSubSection>

@@ -7,12 +7,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isEmpty, reduce, trimStart, map, uniqBy, find, filter, findIndex } from 'lodash';
 import styled from 'styled-components';
-import {
-	usePushHistoryCallback,
-	useUserAccount,
-	useUserAccounts,
-	FOLDERS
-} from '@zextras/carbonio-shell-ui';
+import { pushHistory, useUserAccount, useUserAccounts, FOLDERS } from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Button,
@@ -136,7 +131,6 @@ export default function ConversationListItem({
 	dragImageRef
 }) {
 	const dispatch = useDispatch();
-	const pushHistory = usePushHistoryCallback();
 	const [open, setOpen] = useState(false);
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
@@ -174,7 +168,7 @@ export default function ConversationListItem({
 				pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 			}
 		},
-		[item.id, t, dispatch, pushHistory, folderId]
+		[item.id, t, dispatch, folderId]
 	);
 
 	const _onDoubleClick = useCallback(
@@ -186,7 +180,7 @@ export default function ConversationListItem({
 			}
 		},
 
-		[folderId, item.messages, pushHistory]
+		[folderId, item.messages]
 	);
 
 	const dragCheck = useCallback(

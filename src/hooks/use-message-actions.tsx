@@ -6,8 +6,8 @@
 import { SnackbarManagerContext, useModal } from '@zextras/carbonio-design-system';
 import {
 	FOLDERS,
+	replaceHistory,
 	useAppContext,
-	useReplaceHistoryCallback,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
@@ -39,11 +39,10 @@ import {
 export const useMessageActions = (message: MailMessage): Array<any> => {
 	const [t] = useTranslation();
 	const { folderId }: { folderId: string } = useParams();
-	const replaceHistory = useReplaceHistoryCallback();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const createModal = useModal();
-	const { setCount } = useAppContext();
+	const { setCount } = useAppContext() as { setCount: () => void };
 	const { deselectAll } = useSelection(folderId, setCount);
 	const settings = useUserSettings();
 	const timezone = useMemo(

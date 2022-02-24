@@ -5,7 +5,7 @@
  */
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useReplaceHistoryCallback } from '@zextras/carbonio-shell-ui';
+import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import {
 	Container,
 	Divider,
@@ -18,10 +18,9 @@ import {
 
 function PreviewPanelHeader({ item, folderId }) {
 	const [t] = useTranslation();
-	const replaceHistory = useReplaceHistoryCallback();
 	const replaceHistoryCallback = useCallback(
 		() => replaceHistory(`/folder/${folderId}`),
-		[folderId, replaceHistory]
+		[folderId]
 	);
 	return (
 		<>

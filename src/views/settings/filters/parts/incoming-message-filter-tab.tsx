@@ -79,7 +79,7 @@ const IncomingMsgFilterTab: FC<ComponentProps> = ({ t, selectedFilterType }): Re
 					)}
 				</Container>
 			</Container>
-			<Container width="14%" padding="large" mainAlignment="space-between">
+			<Container width="14%" padding={{ all: 'large' }} mainAlignment="space-between">
 				<IncomingFilterActions compProps={actionButtonsProps} />
 			</Container>
 			<Container width="43%" mainAlignment="flex-start">
