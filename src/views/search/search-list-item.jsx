@@ -68,7 +68,7 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 				>
 					<Container orientation="horizontal" height="fit" width="fill">
-						<SenderName item={item} />
+						<SenderName item={item} isFromSearch />
 						<RowInfo item={item} />
 					</Container>
 					<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
