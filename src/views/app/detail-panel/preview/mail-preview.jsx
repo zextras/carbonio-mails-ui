@@ -18,7 +18,6 @@ import styled from 'styled-components';
 import { find, map, filter, isEmpty } from 'lodash';
 import {
 	useUserAccounts,
-	useReplaceHistoryCallback,
 	useAppContext,
 	useIntegratedComponent,
 	useUserSettings,
@@ -35,6 +34,7 @@ import {
 	Padding,
 	Button,
 	Row,
+	SnackbarManagerContext,
 	ThemeContext
 } from '@zextras/carbonio-design-system';
 import { createSelector } from '@reduxjs/toolkit';
@@ -108,9 +108,14 @@ const HoverContainer = styled(Container)`
 
 const MailPreviewBlock = ({ message, open, onClick }) => {
 	const [t] = useTranslation();
-	const replaceHistory = useReplaceHistoryCallback();
 	const { folderId } = useParams();
 	const accounts = useUserAccounts();
+	const settings = useUserSettings();
+	const timezone = useMemo(
+		() => settings?.prefs.zimbraPrefTimeZoneId,
+		[settings?.prefs.zimbraPrefTimeZoneId]
+	);
+	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const textRef = useRef();
 	const { isMessageView } = useAppContext();
@@ -169,9 +174,7 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 								type="ghost"
 								label="Not Spam"
 								color="primary"
-								onClick={() =>
-									setMsgAsSpam([message.id], true, t, dispatch, replaceHistory).click()
-								}
+								onClick={() => setMsgAsSpam([message.id], true, t, dispatch).click()}
 							/>
 						</Row>
 					</Container>

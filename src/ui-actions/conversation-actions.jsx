@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
 import { convAction } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
@@ -65,7 +65,7 @@ export function setConversationsRead(
 	t,
 	dispatch,
 	folderId,
-	replaceHistory,
+	shouldReplaceHistory,
 	deselectAll
 ) {
 	// eslint-disable-next-line react-hooks/rules-of-hooks
@@ -83,7 +83,7 @@ export function setConversationsRead(
 				})
 			).then((res) => {
 				deselectAll && deselectAll();
-				if (res.type.includes('fulfilled') && replaceHistory) {
+				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
 					replaceHistory(`/folder/${folderId}`);
 				}
 			});
@@ -167,9 +167,7 @@ export function moveConversationToTrash(
 	dispatch,
 	createSnackbar,
 	deselectAll,
-	currentFolder,
-	replaceHistory,
-	folderId
+	currentFolder
 ) {
 	return {
 		id: 'trash-conversations',
@@ -306,7 +304,6 @@ export const getActions = (
 	folderId,
 	t,
 	dispatch,
-	replaceHistory,
 	createSnackbar,
 	createModal,
 	deselectAll,
@@ -323,7 +320,7 @@ export const getActions = (
 						t,
 						dispatch,
 						folderId,
-						replaceHistory,
+						true,
 						deselectAll
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
@@ -342,8 +339,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch)
 				],
@@ -354,7 +350,7 @@ export const getActions = (
 						t,
 						dispatch,
 						folderId,
-						replaceHistory,
+						true,
 						deselectAll
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
@@ -366,8 +362,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					)
 				]
 			];
@@ -381,8 +376,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch)
 				],
@@ -394,8 +388,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					),
 					printConversation([conversation.id], t, timezone)
 				]
@@ -411,7 +404,7 @@ export const getActions = (
 						t,
 						dispatch,
 						folderId,
-						replaceHistory,
+						true,
 						deselectAll
 					),
 					moveConversationToTrash(
@@ -420,8 +413,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch)
 				],
@@ -432,7 +424,7 @@ export const getActions = (
 						t,
 						dispatch,
 						folderId,
-						replaceHistory,
+						true,
 						deselectAll
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
@@ -444,8 +436,7 @@ export const getActions = (
 						dispatch,
 						createSnackbar,
 						deselectAll,
-						folderId,
-						replaceHistory
+						folderId
 					)
 				]
 			];

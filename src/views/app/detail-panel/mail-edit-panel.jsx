@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useState } from 'react';
-import { useReplaceHistoryCallback } from '@zextras/carbonio-shell-ui';
+import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import {
 	Container,
 	Divider,
@@ -20,10 +20,9 @@ import EditView from './edit/edit-view';
 
 const MailEditHeader = ({ folderId, header, toggleAppBoard, setToggleAppBoard }) => {
 	const [t] = useTranslation();
-	const replaceHistory = useReplaceHistoryCallback();
 	const onClose = useCallback(() => {
 		replaceHistory(`/folder/${folderId}`);
-	}, [folderId, replaceHistory]);
+	}, [folderId]);
 
 	return (
 		<Container height={49} background="gray5">

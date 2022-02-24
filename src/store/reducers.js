@@ -7,11 +7,11 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { folderSliceReducer } from './folders-slice';
 import { conversationsSliceReducer } from './conversations-slice';
 import { messageSliceReducer } from './messages-slice';
-import { editorSliceRecucer } from './editor-slice';
+import { editorSliceReducer } from './editor-slice';
 
 export default combineReducers({
 	folders: folderSliceReducer,
 	conversations: conversationsSliceReducer,
 	messages: messageSliceReducer,
-	editors: editorSliceRecucer
+	editors: editorSliceReducer
 });

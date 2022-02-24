@@ -305,7 +305,11 @@
         "advanced_filters_plural": "Gelişmiş Filtreler",
         "search_activate_selection_mode": "Arama sonuçlarında seçme modu henüz kullanılamıyor",
         "addresses_not_accepted": "Bir veya daha fazla adres kabul edilmedi. Reddedilen adresler:",
-        "undo": "Geri Al"
+        "undo": "Geri Al",
+        "attachement_unknown": "Bilinmeyen <{{mimeType}}>",
+        "draft": "Taslak",
+        "forwarded": "İletildi",
+        "replied": "Yanıtlandı"
     },
     "of": "—",
     "owner": "Sahibi",
@@ -378,7 +382,7 @@
         "no_content": "Bu mesajda metin içeriği yok",
         "no_subject": "Konu Yok.",
         "permanent_delete_confirm": "Kalıcı olarak sil",
-        "permanent_delete_title": "Bu öğeyi kalıcı olarak silmek istediğinizden emin misiniz?",
+        "permanent_delete_title": "Bu öğeyi tamamen silmek istiyor musunuz?",
         "snackbar": {
             "conversation_delete_error": "Bir hata oluştu, bu görüşme silinmedi, lütfen tekrar deneyin.",
             "conversation_deleted": "Görüşme silindi",
@@ -486,7 +490,7 @@
             "set_message_color": "Mesajların ve görüşmelerin rengini etiket rengine göre belirle."
         },
         "msg_from_optn": {
-            "discard": "Mesajı otomatik olarak at",
+            "discard": "Mesajı otomatik olarak çöpe at",
             "inbox": "Gelen kutusuna gönder",
             "inbox_if_cc": "Eğer Kime: veya Cc: bölümündeysem gelen kutusuna gönder"
         },
@@ -532,7 +536,7 @@
         "create_new_filter": "Yeni Filtre oluştur",
         "date": "Tarih",
         "delete_filter": "Filtreyi sil",
-        "discard": "At",
+        "discard": "Çöpe At",
         "display_mail_options": {
             "html": "HTML olarak (mümkün olduğunda)",
             "text": "Metin olarak"

@@ -4,12 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useState, useMemo, useCallback, useContext } from 'react';
-import {
-	useUserSettings,
-	useUserAccount,
-	useReplaceHistoryCallback,
-	editSettings
-} from '@zextras/carbonio-shell-ui';
+import { useUserSettings, useUserAccount, editSettings } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep } from 'lodash';
 import {

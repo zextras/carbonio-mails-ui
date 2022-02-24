@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
+// TODO: update the shell constants with this and update the usages in other modules
 export const CORRESPONDING_COLORS = [
 	{ zValue: 0, uiRgb: '#000000', zLabel: 'black' },
 	{ zValue: 1, uiRgb: '#2b73d2', zLabel: 'blue' },
@@ -19,6 +21,8 @@ export const CORRESPONDING_COLORS = [
 /*
 reference: https://zextras.atlassian.net/wiki/spaces/IRIS/pages/223215854/UI+Guidelines+and+theming
 */
+
+export const MAILS_ROUTE = 'mails';
 
 export const attachmentTypeItemsConstant = [
 	{

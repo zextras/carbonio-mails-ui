@@ -53,9 +53,9 @@
             "email_restored": "письмо восстановлено в папке назначения",
             "marked_as_non_spam": "Вы отметили это письмо как Не Спам",
             "mail_saved_to_drafts": "Письмо сохранено в черновиках",
-            "sending_mail_in_count_0": "Отправка сообщения через {{count}} сек.",
-            "sending_mail_in_count_1": "Отправка сообщения через {{count}} сек.",
-            "sending_mail_in_count_2": "Отправка сообщения через {{count}} сек.",
+            "sending_mail_in_count_0": "Отправка сообщения через {{count}} секунду",
+            "sending_mail_in_count_1": "Отправка сообщения через {{count}} секунды",
+            "sending_mail_in_count_2": "Отправка сообщения через {{count}} секунд",
             "folder_restored": "Папка восстановлена"
         },
         "no_subject": "Без Темы.",
@@ -114,7 +114,7 @@
         "edit": "Редактировать",
         "edit_access": "Изменить права доступа {{name}}",
         "edit_folder_properties": "Изменить свойства {{name}}",
-        "filter_user": "Фильтровать пользователей",
+        "filter_user": "Фильтрация пользователей",
         "find_shares": "Найти общие ресурсы",
         "flash_browser_title": "Мигающий заголовок браузера",
         "highlight_tab": "Выделите вкладку Почта",
@@ -184,7 +184,7 @@
         "mail_settings": "Настройки почты",
         "new_folder": "Новая папка",
         "no_search_results_found": "результаты не найдены",
-        "private": "Приватный",
+        "private": "Личные",
         "read": "Читать",
         "received_from_address": "Получено от (адрес)",
         "remove_from_this_list": "Удалить из этого списка",
@@ -215,7 +215,9 @@
         "undo": "Отменить",
         "search_activate_selection_mode": "Режим выбора пока недоступен в результатах поиска",
         "addresses_not_accepted": "Один или несколько адресов были отклонены:",
-        "of": "из"
+        "of": "из",
+        "attachement_unknown": "Неизвестно <{{mimeType}}>",
+        "draft": "Черновик"
     },
     "header": {
         "warning": "Предупреждение",
