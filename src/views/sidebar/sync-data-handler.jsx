@@ -13,7 +13,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { combineReducers } from '@reduxjs/toolkit';
-import { isEmpty, map, keyBy, find, filter, forEach, sortBy } from 'lodash';
+import { isEmpty, map, keyBy, find, filter, forEach, sortBy, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import {
 	handleCreatedFolders,
@@ -33,13 +33,16 @@ import {
 	handleDeletedMessagesInConversation,
 	setSearchedInFolder,
 	selectCurrentFolder,
-	handleCreatedMessagesInConversation
+	handleCreatedMessagesInConversation,
+	selectConversations,
+	handleAddMessagesInConversation
 } from '../../store/conversations-slice';
 import {
 	messageSliceReducer,
 	handleCreatedMessages,
 	handleModifiedMessages,
-	handleDeletedMessages
+	handleDeletedMessages,
+	selectMessages
 } from '../../store/messages-slice';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
@@ -69,6 +72,8 @@ export const SyncDataHandler = () => {
 	const dispatch = useDispatch();
 	const [initialized, setInitialized] = useState(false);
 	const currentFolder = useSelector(selectCurrentFolder);
+	const conversationState = useSelector(selectConversations);
+	const messagesState = useSelector(selectMessages);
 
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
@@ -143,11 +148,35 @@ export const SyncDataHandler = () => {
 								);
 								dispatch(handleModifiedMessages(messages));
 
-								// the condition filters message with parent property (the only ones we need to update)
+								// the condition filters messages with parent property (the only ones we need to update)
 								const toUpdate = filter(messages, 'parent');
 								if (toUpdate?.length > 0) {
 									// this function updates messages' parent in conversations. If parent never changes it does not need to be called
 									dispatch(handleModifiedMessagesInConversation(toUpdate));
+								}
+								// the condition filters messages with conversation property (the only ones we need to add to conversation)
+								const conversationToUpdate = filter(messages, 'conversation');
+								if (conversationToUpdate?.length > 0) {
+									const msgsReference = reduce(
+										conversationToUpdate,
+										(acc, msg) => {
+											if (messagesState?.[msg?.id]) {
+												return [
+													...acc,
+													{
+														id: messagesState?.[msg?.id].id,
+														parent: messagesState?.[msg?.id].parent,
+														date: messagesState?.[msg?.id].date,
+														conversation: msg.conversation
+													}
+												];
+											}
+											return acc;
+										},
+										[]
+									);
+									// this function add messages' in conversations. If conversation never changes it does not need to be called
+									dispatch(handleAddMessagesInConversation(msgsReference));
 								}
 							}
 						}
@@ -162,6 +191,6 @@ export const SyncDataHandler = () => {
 				});
 			}
 		}
-	}, [dispatch, initialized, notifyList, seq, t]);
+	}, [dispatch, initialized, messagesState, notifyList, seq, t]);
 	return <InboxBadgeUpdater />;
 };

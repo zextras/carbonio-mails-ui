@@ -23,6 +23,7 @@ import {
 	searchConv
 } from './actions';
 import {
+	handleAddMessagesInConversationReducer,
 	handleCreatedConversationsReducer,
 	handleCreatedMessagesInConversationsReducer,
 	handleDeletedConversationsReducer,
@@ -183,6 +184,7 @@ export const conversationsSlice = createSlice({
 		handleCreatedMessagesInConversation: produce(handleCreatedMessagesInConversationsReducer),
 		handleModifiedMessagesInConversation: produce(handleModifiedMessagesInConversationReducer),
 		handleDeletedMessagesInConversation: produce(handleDeletedMessagesInConversationReducer),
+		handleAddMessagesInConversation: produce(handleAddMessagesInConversationReducer),
 		setCurrentFolder: produce(setCurrentFolderReducer),
 		setSearchedInFolder: produce(setSearchedInFolderReducer)
 	},
@@ -208,6 +210,7 @@ export const {
 	handleNotifyDeletedConversations,
 	handleCreatedMessagesInConversation,
 	handleModifiedMessagesInConversation,
+	handleAddMessagesInConversation,
 	handleDeletedMessagesInConversation,
 	setSearchedInFolder
 } = conversationsSlice.actions;
