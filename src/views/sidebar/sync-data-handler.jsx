@@ -72,7 +72,6 @@ export const SyncDataHandler = () => {
 	const dispatch = useDispatch();
 	const [initialized, setInitialized] = useState(false);
 	const currentFolder = useSelector(selectCurrentFolder);
-	const conversationState = useSelector(selectConversations);
 	const messagesState = useSelector(selectMessages);
 
 	useEffect(() => {
