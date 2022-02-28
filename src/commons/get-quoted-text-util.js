@@ -41,13 +41,8 @@ const HTML_SEP_ID = 'zwchr';
 const NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*';
 
 // Regexes for finding stuff in msg content
-const SIG_RE = /^(- ?-+)|(__+)\r?$/;
 
 const SPLIT_RE = /\r\n|\r|\n/;
-
-const HDR_RE = /^\s*\w+:/;
-
-const COLON_RE = /\S+:$/;
 
 // regexes for finding a delimiter such as "On DATE, NAME (EMAIL) wrote:"
 const ORIG_EMAIL_RE = /[^@\s]+@[A-Za-z0-9-]{2,}(\.[A-Za-z0-9-]{2,})+/;
@@ -58,40 +53,6 @@ const ORIG_DATE_RE = /\d+\s*(\/|-|, )20\d\d/; // matches "03/07/2014" or "March 
 const ORIG_INTRO_DE_RE = new RegExp('^(-{2,}|' + 'auf' + '\\s+)', 'i');
 // eslint-disable-next-line no-useless-concat
 const ORIG_INTRO_RE = new RegExp('^(-{2,}|' + 'on' + '\\s+)', 'i');
-
-const MSG_SEP_RE = new RegExp(
-	'\\s*--+\\s*(' +
-		'Original Message' +
-		'|' +
-		'Originalnachricht' +
-		'|' +
-		'Weitergeleitete Nachricht' +
-		'|' +
-		'Forwarded Message' +
-		'|' +
-		'Original Appointment' +
-		')\\s*--+\\s*',
-	'i'
-);
-
-const MSG_ORIGINAL_RE = new RegExp(
-	'\\s*--+\\s*(' +
-		'Original Message' +
-		'|' +
-		'Originalnachricht' +
-		'|' +
-		'Original Appointment' +
-		')\\s*--+\\s*',
-	'i'
-);
-
-const MSG_FORWARD_RE = new RegExp(
-	// eslint-disable-next-line no-useless-concat
-	'\\s*--+\\s*(' + 'Weitergeleitete Nachricht' + '|' + 'Forwarded Message' + ')\\s*--+\\s*',
-	'i'
-);
-
-const IMG_SRC_CID_REGEX = /<img([^>]*)\ssrc=["']cid:/gi;
 
 const MSG_REGEXES = [
 	{
