@@ -14,7 +14,8 @@ import {
 	Padding,
 	Drag,
 	Drop,
-	Container
+	Container,
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { actionsRetriever } from './commons/folder-actions';
 import { FolderActionsType } from '../../types/folder';
@@ -346,7 +347,9 @@ const setAccordionCustomComponent = ({
 								>
 									<Icon size="large" icon={folderIconLabel} customColor={folderIconColor} />
 									<Padding right="large" />
-									<AccordionItem {...props} height={40} />
+									<Tooltip label={folder.label} placement="right" maxWidth="100%">
+										<AccordionItem {...props} height={40} />
+									</Tooltip>
 								</Row>
 							</Dropdown>
 						</AppLink>
