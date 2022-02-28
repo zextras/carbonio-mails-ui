@@ -215,7 +215,7 @@
         "sent": "Envoyé",
         "share": "Partager",
         "shared_item": "Elément partagé",
-        "shares_folder_edit": "Partage du dossier",
+        "shares_folder_edit": "Partage de ce dossier",
         "shares_items": "Dossiers partagés de {{value}}",
         "show_popup": "Afficher une notification popup",
         "show": "Afficher",
@@ -562,7 +562,7 @@
         "options": {
             "share_calendar_role": {
                 "admin": "Admin",
-                "manager": "Manager",
+                "manager": "Gestionnaire",
                 "none": "Aucun",
                 "viewer": "Visualisateur"
             },
@@ -576,7 +576,7 @@
         "send_notification": "Envoyer une notification de ce partage",
         "standard_message": "Ajouter une note au message standard",
         "share_note": "Le message standard affiche votre nom, le nom de l'élément partagé, les autorisations accordées aux destinataires, et les informations de connexion.",
-        "filter_folder_message": "Sélectionnez un dossier dans lequel vous souhaitez lancer votre recherche avancée.",
+        "filter_folder_message": "Sélectionnez un dossier dans lequel vous souhaitez lancer votre recherche avancée",
         "is_contained_in": "Est contenu dans"
     },
     "shared_folders": "Dossiers partagés",
@@ -614,11 +614,11 @@
         "description5": "Vérifier ce dont les autres utilisateurs veulent parler avec vous.",
         "draft_title1": "L'enregistrement d'un e-mail en tant que brouillon vous permet de conserver les messages que vous souhaitez envoyer ultérieurement.",
         "list_sent_title": "Vous n'avez pas encore envoyé d'email",
-        "search_description3": "Vérifier l'orthographe et les options de filtres ou essayer avec un autre mot-clé.",
+        "search_description3": "Vérifiez l'orthographe et les options des filtres ou essayez avec un autre mot-clé.",
         "search_title2": "Nous sommes désolés mais il n'y a pas de résultats pour votre recherche",
-        "title1": "Composer un nouvel email en cliquant sur le bouton \"NOUVEAU\".",
+        "title1": "Composer un nouvel email en cliquant sur le bouton \"NOUVEAU\"",
         "title2": "Cliquer sur le bouton \"NOUVEAU\"",
-        "trash_title1": "Cliquer sur l'icône de la corbeille pour supprimer un email.",
+        "trash_title1": "Cliquer sur l'icône de la corbeille pour supprimer un email",
         "archive_title2": "Sélectionnez un email archivé pour le consulter.",
         "description2": "Envoyer des documents, des images et bien plus encore en composant un nouvel email.",
         "description3": "Rédiger un nouvel e-mail en cliquant sur le bouton \"NOUVEAU\", puis l'envoyer.",
@@ -626,8 +626,8 @@
         "description6": "Répondre à cet e-mail ou le transmettre à d'autres utilisateurs.",
         "description7": "Sélectionner un email à répondre.",
         "draft_title2": "Sélectionner et modifier un email pour l'envoyer à d'autres utilisateurs.",
-        "junk_title1": "Quelle chance ! Vous n'avez pas à vous soucier de spams.",
-        "junk_title2": "Cliquez sur l'icône de la corbeille pour supprimer un email indésirable.",
+        "junk_title1": "Quelle chance ! Vous n'avez pas à vous soucier de spams",
+        "junk_title2": "Cliquez sur l'icône de la corbeille pour supprimer un email indésirable",
         "list_draft_title": "Il n'y a pas de brouillons enregistrés",
         "list_folder_title": "Il semble qu'il n'y ait pas encore d'emails",
         "list_junk_title": "Il n'y a pas d'emails de spam",
@@ -697,8 +697,8 @@
             },
             "delete": {
                 "body": {
-                    "message2": "Souhaitez-vous supprimer de manière permanente le dossier sélectionné ?",
-                    "message4": "Si vous le supprimez, tout le contenu relatif sera supprimé de manière permanente et il ne sera pas possible de restaurer le dossier.",
+                    "message2": "Souhaitez-vous supprimer définitivement le dossier sélectionné ?",
+                    "message4": "Si vous le supprimez, tout le contenu relatif sera supprimé définitivement et il ne sera pas possible de restaurer le dossier.",
                     "message1": "Souhaitez-vous vider le dossier sélectionné ?",
                     "message3": "Si vous le supprimez, tout le contenu relatif sera déplacé dans la corbeille et le dossier ne sera plus visible."
                 }
@@ -706,7 +706,7 @@
             "empty": {
                 "body": {
                     "message1": "Souhaitez-vous vider le dossier sélectionné ?",
-                    "message2": "Si vous le videz, tout le contenu relatif sera supprimé de manière permanente."
+                    "message2": "Si vous le videz, tout le contenu relatif sera supprimé définitivement."
                 }
             },
             "wipe": {

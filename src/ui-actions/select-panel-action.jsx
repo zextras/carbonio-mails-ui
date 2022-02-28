@@ -14,8 +14,7 @@ import {
 import { map, every, filter, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import { useUserSettings, useReplaceHistoryCallback, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { useUserSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import {
 	moveConversationToTrash,
 	setConversationsFlag,
@@ -51,7 +50,6 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 		const selectedConversations = filter(conversation, (convo) => ids.indexOf(convo.id) !== -1);
 		return some(selectedConversations, ['read', false]);
 	}, [conversation, ids]);
-	const replaceHistory = useReplaceHistoryCallback();
 	const primaryActions = useMemo(() => {
 		switch (folderId) {
 			case FOLDERS.SPAM:
@@ -61,15 +59,7 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						setConversationsRead(ids, true, t, dispatch, folderId, null, deselectAll),
 					showUnreadConvo &&
 						setConversationsRead(ids, false, t, dispatch, folderId, null, deselectAll),
-					moveConversationToTrash(
-						ids,
-						t,
-						dispatch,
-						createSnackbar,
-						deselectAll,
-						replaceHistory,
-						folderId
-					)
+					moveConversationToTrash(ids, t, dispatch, createSnackbar, deselectAll, folderId)
 
 					// archiveMsg
 					// editTagsMsg
@@ -80,30 +70,14 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						setConversationsRead(ids, true, t, dispatch, folderId, null, deselectAll),
 					showUnreadConvo &&
 						setConversationsRead(ids, false, t, dispatch, folderId, null, deselectAll),
-					moveConversationToTrash(
-						ids,
-						t,
-						dispatch,
-						createSnackbar,
-						deselectAll,
-						replaceHistory,
-						folderId
-					)
+					moveConversationToTrash(ids, t, dispatch, createSnackbar, deselectAll, folderId)
 					// archiveMsg
 					// editTagsMsg
 				];
 
 			case FOLDERS.DRAFTS:
 				return [
-					moveConversationToTrash(
-						ids,
-						t,
-						dispatch,
-						createSnackbar,
-						deselectAll,
-						replaceHistory,
-						folderId
-					)
+					moveConversationToTrash(ids, t, dispatch, createSnackbar, deselectAll, folderId)
 
 					// archiveMsg
 					// editTagsMsg
@@ -118,15 +92,7 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 
 			default:
 				return [
-					moveConversationToTrash(
-						ids,
-						t,
-						dispatch,
-						createSnackbar,
-						deselectAll,
-						replaceHistory,
-						folderId
-					)
+					moveConversationToTrash(ids, t, dispatch, createSnackbar, deselectAll, folderId)
 					// archiveMsg
 					// editTagsMsg
 				];
@@ -140,7 +106,6 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 		deselectAll,
 		showUnreadConvo,
 		createSnackbar,
-		replaceHistory,
 		createModal
 	]);
 

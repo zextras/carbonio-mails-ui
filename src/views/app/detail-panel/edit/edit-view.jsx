@@ -16,7 +16,6 @@ import {
 	IconButton,
 	IconCheckbox,
 	Padding,
-	RichTextEditor,
 	Row,
 	Text,
 	Tooltip,
@@ -40,8 +39,8 @@ import {
 	useBoardConfig,
 	useUserAccount,
 	useUserAccounts,
+	replaceHistory,
 	useIntegratedComponent,
-	useReplaceHistoryCallback,
 	useRemoveCurrentBoard,
 	useAddBoardCallback,
 	useUpdateCurrentBoard,
@@ -62,7 +61,7 @@ import { retrieveAttachmentsType } from '../../../../store/editor-slice-utils';
 import { uploadAttachments } from '../../../../store/actions/upload-attachments';
 import { getMsg } from '../../../../store/actions';
 import DropZoneAttachment from './dropzone-attachment';
-import { MAIL_APP_ID } from '../../../../constants';
+import { MAILS_ROUTE, MAIL_APP_ID } from '../../../../constants';
 
 const FileInput = styled.input`
 	display: none;
@@ -186,7 +185,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const inputRef = useRef();
 	const { handleSubmit, control } = useForm();
-	const replaceHistory = useReplaceHistoryCallback();
 	const closeBoard = useRemoveCurrentBoard();
 	const addBoard = useAddBoardCallback();
 	const [dropZoneEnable, setDropZoneEnable] = useState(false);
@@ -289,10 +287,10 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [account, accounts, defaultIdentity?.address, defaultIdentity?.fullname, t, updateEditorCb]);
 
 	useEffect(() => {
-		if (activeMailId) {
+		if (activeMailId && !messages[activeMailId]?.isComplete) {
 			dispatch(getMsg({ msgId: activeMailId }));
 		}
-	}, [activeMailId, dispatch]);
+	}, [activeMailId, dispatch, messages, updateEditorCb]);
 
 	const sendMailCb = useCallback(() => {
 		setBtnSendLabel(t('label.sending', 'Sending'));
@@ -351,7 +349,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				}
 			}, 3000);
 		}
-	}, [action, boardContext, editor, t, dispatch, editorId, folderId, replaceHistory, closeBoard]);
+	}, [action, boardContext, editor, t, dispatch, editorId, folderId, closeBoard]);
 
 	const throttledSaveToDraft = useCallback(
 		(data) => {
@@ -400,7 +398,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				closeBoard();
 			}
 		});
-	}, [closeBoard, editor, replaceHistory, saveDraftCb, t]);
+	}, [closeBoard, editor, saveDraftCb, t]);
 
 	const onFileClick = useCallback(() => {
 		if (inputRef.current) {
@@ -474,28 +472,30 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [editor?.subject, setHeader, updateBoard, action, t]);
 
 	useEffect(() => {
-		if (!editors[editorId]) {
-			dispatch(
-				createEditor({
-					settings,
-					editorId,
-					id: action === ActionsType.EDIT_AS_DRAFT ? activeMailId : undefined,
-					original: messages[activeMailId ?? editorId],
-					boardContext,
-					action,
-					change,
-					accounts,
-					labels: {
-						to: `${t('label.to', 'To')}:`,
-						from: `${t('label.from', 'From')}:`,
-						cc: `${t('label.cc', 'CC')}:`,
-						subject: `${t('label.subject', 'Subject')}:`,
-						sent: `${t('label.sent', 'Sent')}:`
-					}
-				})
-			);
-		} else {
-			setEditor(editors[editorId]);
+		if ((activeMailId && messages[activeMailId]?.isComplete) || action === ActionsType.NEW) {
+			if (!editors[editorId]) {
+				dispatch(
+					createEditor({
+						settings,
+						editorId,
+						id: action === ActionsType.EDIT_AS_DRAFT ? activeMailId : undefined,
+						original: messages[activeMailId ?? editorId],
+						boardContext,
+						action,
+						change,
+						accounts,
+						labels: {
+							to: `${t('label.to', 'To')}:`,
+							from: `${t('label.from', 'From')}:`,
+							cc: `${t('label.cc', 'CC')}:`,
+							subject: `${t('label.subject', 'Subject')}:`,
+							sent: `${t('label.sent', 'Sent')}:`
+						}
+					})
+				);
+			} else {
+				setEditor(editors[editorId]);
+			}
 		}
 	}, [
 		editors,
@@ -516,19 +516,20 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	useEffect(() => {
 		if (toggleAppBoard) {
 			if (activeMailId) {
-				addBoard(`/edit/${activeMailId}?action=${action}`, {
+				addBoard(`${MAILS_ROUTE}/edit/${activeMailId}?action=${action}`, {
 					app: MAIL_APP_ID,
 					mailId: activeMailId,
 					title: editor?.subject
 				});
 			} else {
-				addBoard(`/new`, {
-					app: MAIL_APP_ID
+				addBoard(`${MAILS_ROUTE}/new`, {
+					app: MAIL_APP_ID,
+					title: t('label.new_email', 'New E-mail')
 				});
 			}
 			replaceHistory(`/folder/${folderId}`);
 		}
-	}, [addBoard, folderId, activeMailId, replaceHistory, toggleAppBoard, action, editor?.subject]);
+	}, [addBoard, folderId, activeMailId, toggleAppBoard, action, editor?.subject, t]);
 
 	const onDragOverEvent = (event) => {
 		event.preventDefault();
@@ -574,6 +575,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		const participants = concat(editor?.to, editor?.bcc, editor?.cc);
 		return btnSendDisabled || participants.length === 0 || some(participants, { error: true });
 	}, [btnSendDisabled, editor]);
+
+	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	return editor ? (
 		<Catcher>
 			<Container onDragOver={(event) => onDragOverEvent(event)}>
@@ -1025,15 +1028,20 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 							</>
 						)}
 					</Container>
-					{editor?.richText ? (
+					{editor?.richText && composerIsAvailable ? (
 						<Controller
 							name="text"
 							control={control}
 							defaultValue={editor?.text}
 							render={({ onChange, value }) => (
-								<Container background="gray6">
+								<Container
+									background="gray6"
+									padding={{
+										all: 'medium'
+									}}
+								>
 									<EditorWrapper>
-										<RichTextEditor
+										<Composer
 											value={value[1]}
 											onEditorChange={(ev) => {
 												updateSubjectField({ text: [ev[0], ev[1]] });

@@ -6,9 +6,8 @@
 import { SnackbarManagerContext, useModal } from '@zextras/carbonio-design-system';
 import {
 	FOLDERS,
+	replaceHistory,
 	useAppContext,
-	useIntegratedComponent,
-	useReplaceHistoryCallback,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
@@ -40,12 +39,10 @@ import {
 export const useMessageActions = (message: MailMessage): Array<any> => {
 	const [t] = useTranslation();
 	const { folderId }: { folderId: string } = useParams();
-	const replaceHistory = useReplaceHistoryCallback();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const createModal = useModal();
-	const ContactInput = useIntegratedComponent('contact-input');
-	const { setCount } = useAppContext();
+	const { setCount } = useAppContext() as { setCount: () => void };
 	const { deselectAll } = useSelection(folderId, setCount);
 	const settings = useUserSettings();
 	const timezone = useMemo(
@@ -104,7 +101,7 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 		arr.push(moveMessageToFolder([message.id], t, dispatch, false, createModal, deselectAll));
 		arr.push(printMsg(message.id, t, timezone));
 		arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
-		arr.push(redirectMsg(message.id, t, dispatch, createSnackbar, createModal, ContactInput));
+		arr.push(redirectMsg({ id: message.id, t, createModal }));
 		arr.push(editAsNewMsg(message.id, folderId, t, replaceHistory));
 		arr.push(setMsgAsSpam([message.id], false, t, dispatch, replaceHistory));
 		arr.push(showOriginalMsg(message.id, t));

@@ -4,17 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import styled from 'styled-components';
-import { map } from 'lodash';
-import { Container, Text, ChipInput, Divider, Button } from '@zextras/carbonio-design-system';
-import { soapFetch, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { Text } from '@zextras/carbonio-design-system';
+import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
 import { msgAction } from '../store/actions';
 import { ActionsType } from '../types/participant';
 import { sendMsg } from '../store/actions/send-msg';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';
+import RedirectAction from './redirect-message-action';
 
-export function setMsgRead(ids, value, t, dispatch, folderId, replaceHistory, deselectAll) {
+export function setMsgRead(ids, value, t, dispatch, folderId, shouldReplaceHistory, deselectAll) {
 	return {
 		id: 'message-mark_as_read',
 		icon: value ? 'EmailOutline' : 'EmailReadOutline',
@@ -30,7 +29,7 @@ export function setMsgRead(ids, value, t, dispatch, folderId, replaceHistory, de
 				})
 			).then((res) => {
 				deselectAll && deselectAll();
-				if (res.type.includes('fulfilled') && replaceHistory) {
+				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
 					replaceHistory(`/folder/${folderId}`);
 				}
 			});
@@ -55,7 +54,7 @@ export function setMsgFlag(ids, value, t, dispatch) {
 	};
 }
 
-export function setMsgAsSpam(ids, value, t, dispatch, replaceHistory, createSnackbar) {
+export function setMsgAsSpam(ids, value, t, dispatch, createSnackbar) {
 	return {
 		id: 'message-mark_as_spam',
 		icon: value ? 'AlertCircleOutline' : 'AlertCircle',
@@ -139,7 +138,6 @@ export function moveMsgToTrash(
 	createSnackbar,
 	deselectAll,
 	parent,
-	replaceHistory,
 	conversationId
 ) {
 	const restoreMessage = () => {
@@ -282,7 +280,7 @@ export function deleteMsg(ids, t, dispatch, createSnackbar, createModal) {
 	};
 }
 
-export function replyMsg(messageId, folderId, t, replaceHistory) {
+export function replyMsg(messageId, folderId, t) {
 	return {
 		id: 'message-reply',
 		icon: 'UndoOutline',
@@ -294,7 +292,7 @@ export function replyMsg(messageId, folderId, t, replaceHistory) {
 	};
 }
 
-export function replyAllMsg(messageId, folderId, t, replaceHistory) {
+export function replyAllMsg(messageId, folderId, t) {
 	return {
 		id: 'message-reply_all',
 		icon: 'ReplyAll',
@@ -306,7 +304,7 @@ export function replyAllMsg(messageId, folderId, t, replaceHistory) {
 	};
 }
 
-export function forwardMsg(messageId, folderId, t, replaceHistory) {
+export function forwardMsg(messageId, folderId, t) {
 	return {
 		id: 'message-forward',
 		icon: 'Forward',
@@ -318,7 +316,7 @@ export function forwardMsg(messageId, folderId, t, replaceHistory) {
 	};
 }
 
-export function editAsNewMsg(messageId, folderId, t, replaceHistory) {
+export function editAsNewMsg(messageId, folderId, t) {
 	return {
 		id: 'message-edit_as_new',
 		icon: 'Edit2Outline',
@@ -330,7 +328,7 @@ export function editAsNewMsg(messageId, folderId, t, replaceHistory) {
 	};
 }
 
-export function editDraft(messageId, folderId, t, replaceHistory) {
+export function editDraft(messageId, folderId, t) {
 	return {
 		id: 'message-edit_as_draft',
 		icon: 'Edit2Outline',
@@ -359,320 +357,25 @@ export function sendDraft(id, msg, t, dispatch) {
 	};
 }
 
-const getChipLabel = (participant) =>
-	participant.fullName ?? participant.name ?? participant.address;
-
-const emailValidator =
-	// eslint-disable-next-line no-control-regex,max-len
-	/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
-
-const ChipAddressRedirect = styled(Container)`
-	height: 28px;
-	border: 1px solid ${({ theme }) => theme.palette.gray2.regular};
-	border-radius: 14px;
-	margin: ${({ theme }) => theme.sizes.padding.extrasmall};
-`;
-
-function doRedirectRequest(id, participants, createSnackbar, t, createModal) {
-	let createExpandedModal = null;
-	const createCollapsedModal = (error) => {
-		const notEmails = error.details?.a?.map((a) => a._content);
-
-		const closeCollapsedModal = createModal({
-			size: 'medium',
-			title: t('header.message_not_sent', 'Error - Message not sent'),
-			confirmLabel: t('action.ok', 'Ok'),
-			onclose: () => {
-				closeCollapsedModal();
-			},
-			onConfirm: () => {
-				closeCollapsedModal();
-			},
-			optionalFooter: (
-				<Button
-					type="outlined"
-					label={t('action.show_details', 'Show details')}
-					color="primary"
-					onClick={() => {
-						closeCollapsedModal();
-						createExpandedModal(error);
-					}}
-				/>
-			),
-			children: (
-				<Container
-					width="fill"
-					orientation="vertical"
-					mainAlignment="flex-start"
-					crossAlignment="flex-start"
-					padding={{ all: 'small' }}
-				>
-					<Text color="secondary">
-						One or more addresses were not accepted. Rejected addresses:
-					</Text>
-					<Container
-						width="fit"
-						height="fit"
-						orientation="horizontal"
-						mainAlignment="flex-start"
-						wrap="wrap"
-						padding={{ top: 'small' }}
-					>
-						{notEmails.map((e) => (
-							<ChipAddressRedirect
-								key={e}
-								width="fit"
-								height="fit"
-								mainAlignment="center"
-								crossAlignment="center"
-								padding={{ horizontal: 'large', vertical: 'extrasmall' }}
-							>
-								<Text color="text"> {e} </Text>
-							</ChipAddressRedirect>
-						))}
-					</Container>
-				</Container>
-			)
-		});
-	};
-	createExpandedModal = (error) => {
-		const notEmails = error.details?.a?.map((a) => a._content);
-
-		const closeExpandedModal = createModal({
-			size: 'medium',
-			title: t('header.message_not_sent', 'Error - Message not sent'),
-			confirmLabel: t('action.ok', 'Ok'),
-			onclose: () => {
-				closeExpandedModal();
-			},
-			onConfirm: () => {
-				closeExpandedModal();
-			},
-			optionalFooter: (
-				<Button
-					type="outlined"
-					label={t('action.hide_details', 'Hide details')}
-					color="primary"
-					onClick={() => {
-						closeExpandedModal();
-						createCollapsedModal(error);
-					}}
-				/>
-			),
-			children: (
-				<Container
-					height="fill"
-					orientation="vertical"
-					mainAlignment="flex-start"
-					crossAlignment="flex-start"
-					padding={{ all: 'small' }}
-					style={{ scroll: 'no' }}
-				>
-					<Text color="secondary">
-						{t(
-							'label.addresses_not_accepted',
-							'One or more addresses were not accepted. Rejected addresses:'
-						)}
-					</Text>
-					<Container
-						width="fit"
-						height="fit"
-						orientation="horizontal"
-						mainAlignment="flex-start"
-						wrap="wrap"
-						padding={{ vertical: 'small' }}
-					>
-						{notEmails.map((e) => (
-							<ChipAddressRedirect
-								key={e}
-								width="fit"
-								height="fit"
-								mainAlignment="center"
-								crossAlignment="center"
-								padding={{ horizontal: 'large', vertical: 'extrasmall' }}
-							>
-								<Text color="text"> {e} </Text>
-							</ChipAddressRedirect>
-						))}
-					</Container>
-					<Container
-						maxHeight="250px"
-						height="fit"
-						mainAlignment="flex-start"
-						background="gray4"
-						style={{ overflow: 'auto' }}
-						padding={{ all: 'small' }}
-					>
-						<p style={{ fontFamily: 'Courier New', size: '14px', width: '554px', margin: '0px' }}>
-							{error.message}
-						</p>
-					</Container>
-				</Container>
-			)
-		});
-	};
-	soapFetch
-		.soapFetch('BounceMsg', {
-			_jsns: 'urn:zimbraMail',
-			m: {
-				id,
-				e: map(participants, (p) => ({
-					a: p.email,
-					t: 't'
-				}))
-			}
-		})
-		.then(() => {
-			createSnackbar({
-				key: `redirect-${id}`,
-				replace: true,
-				type: 'success',
-				label: t('messages.snackbar.message_redirected', 'The message has been redirected'),
-				autoHideTimeout: 3000
-			});
-		})
-		.catch((err) => {
-			createCollapsedModal(err);
-		});
-}
-
-export function redirectMsg(id, t, dispatch, createSnackbar, createModal, ContactInput) {
-	const participants = [];
-
-	const updateParticipants = (newParticipants) => {
-		while (participants.length) {
-			participants.pop();
-		}
-		participants.push(...newParticipants);
-	};
-
+export function redirectMsg({ id, t, createModal }) {
 	return {
 		id: 'message-redirect',
 		icon: 'CornerUpRight',
 		label: t('action.redirect', 'Redirect'),
 		click: (ev) => {
 			if (ev) ev.preventDefault();
-			const closeRedirectModal = createModal({
-				disablePortal: true,
-				title: t('header.redirect_email', 'Redirect e-mail'),
-				confirmLabel: t('action.redirect', 'Redirect'),
-				onConfirm: () => {
-					if (participants.length === 0) return;
-
-					const notEmails = participants
-						.map((p) => p.email)
-						.filter((email) => !email.match(emailValidator));
-					if (notEmails.length > 0) {
-						const closeWarningModal = createModal({
-							disablePortal: true,
-							title: t('header.warning', 'Warning'),
-							confirmLabel: t('action.send_anyway', 'Send anyway'),
-							onclose: () => {
-								closeWarningModal();
-							},
-							onConfirm: () => {
-								closeWarningModal();
-								closeRedirectModal();
-								doRedirectRequest(id, participants, createSnackbar, t, createModal);
-							},
-							onSecondaryAction: () => {
-								closeWarningModal();
-							},
-							secondaryActionLabel: t('label.back', 'Back'),
-							children: (
-								<Container
-									width="fill"
-									orientation="vertical"
-									mainAlignment="flex-start"
-									crossAlignment="flex-start"
-									padding={{ all: 'small' }}
-								>
-									<Text color="secondary">
-										{t('messages.invalid_address', 'The following address appears to be invalid')}
-									</Text>
-									<Container
-										width="fit"
-										height="fit"
-										orientation="horizontal"
-										mainAlignment="flex-start"
-										crossAlignment="flex-start"
-										wrap="wrap"
-										padding={{ top: 'small' }}
-									>
-										{notEmails.map((e) => (
-											<ChipAddressRedirect
-												key={e}
-												width="fit"
-												height="fit"
-												mainAlignment="center"
-												crossAlignment="center"
-												padding={{ horizontal: 'large', vertical: 'extrasmall' }}
-											>
-												<Text color="text"> {e} </Text>
-											</ChipAddressRedirect>
-										))}
-									</Container>
-								</Container>
-							)
-						});
-					} else {
-						closeRedirectModal();
-						doRedirectRequest(id, participants, createSnackbar, t);
-					}
-				},
-				secondaryActionLabel: t('label.cancel', 'Cancel'),
-				onSecondaryAction: () => {
-					closeRedirectModal();
-				},
-				onClose: () => {
-					closeRedirectModal();
-				},
+			const closeModal = createModal({
+				maxHeight: '90vh',
 				children: (
-					<Container padding={{ all: 'small' }}>
-						<Text overflow="break-word">
-							<em>
-								{t(
-									'messages.modal.redirect.first',
-									'This e-mail will be sent on to a new recipient while preserving the e-mail address of the original sender.'
-								)}
-							</em>
-						</Text>
-						<br />
-						<Text overflow="break-word">
-							<em>
-								{t(
-									'messages.modal.redirect.second',
-									'The e-mail will appear as originally intended for the new recepient'
-								)}
-							</em>
-						</Text>
-						<Container padding={{ vertical: 'large' }}>
-							<Container height="fit" background="gray5">
-								{ContactInput ? (
-									<ContactInput
-										placeholder={t('placeholder.add_new_recipients', 'Add new recipients')}
-										onChange={updateParticipants}
-										defaultValue={[]}
-										disablePortal
-									/>
-								) : (
-									<ChipInput
-										placeholder={t('label.to', 'To')}
-										onChange={updateParticipants}
-										defaultValue={[]}
-										valueKey="address"
-										getChipLabel={getChipLabel}
-									/>
-								)}
-							</Container>
-							<Divider color="primary" />
-						</Container>
-					</Container>
+					<>
+						<RedirectAction onClose={() => closeModal()} id={id} />
+					</>
 				)
 			});
 		}
 	};
 }
+
 export function moveMessageToFolder(selectedIDs, t, dispatch, isRestore, createModal, deselectAll) {
 	return {
 		id: 'message-restore',
@@ -731,7 +434,6 @@ export const getActions = (
 	folderId,
 	t,
 	dispatch,
-	replaceHistory,
 	createSnackbar,
 	createModal,
 	ContactInput,
@@ -742,76 +444,44 @@ export const getActions = (
 		case FOLDERS.TRASH:
 			return (message) => [
 				[
-					setMsgRead(
-						[message.id],
-						message.read,
-						t,
-						dispatch,
-						folderId,
-						replaceHistory,
-						deselectAll
-					),
+					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
-					replyMsg(message.id, folderId, t, replaceHistory),
-					forwardMsg(message.id, folderId, t, replaceHistory),
+					replyMsg(message.id, folderId, t),
+					forwardMsg(message.id, folderId, t),
 					deleteMessagePermanently([message.id], t, dispatch, createModal, deselectAll),
 					moveMessageToFolder([message.id], t, dispatch, true, createModal, deselectAll)
 				],
 				[
-					setMsgRead(
-						[message.id],
-						message.read,
-						t,
-						dispatch,
-						folderId,
-						replaceHistory,
-						deselectAll
-					),
+					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
-					setMsgAsSpam([message.id], false, t, dispatch, replaceHistory, createSnackbar),
+					setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
 					printMsg(message.id, t, timezone),
 					// moveMsgToTrash([message.id], t, dispatch, createSnackbar),
 					deleteMessagePermanently([message.id], t, dispatch, createModal, deselectAll),
 					moveMessageToFolder([message.id], t, dispatch, true, createModal, deselectAll),
-					replyMsg(message.id, folderId, t, replaceHistory),
-					replyAllMsg(message.id, folderId, t, replaceHistory),
-					forwardMsg(message.id, folderId, t, replaceHistory),
-					editAsNewMsg(message.id, folderId, t, replaceHistory),
-					// editDraft(message.id, folderId, t, replaceHistory),
+					replyMsg(message.id, folderId, t),
+					replyAllMsg(message.id, folderId, t),
+					forwardMsg(message.id, folderId, t),
+					editAsNewMsg(message.id, folderId, t),
+					// editDraft(message.id, folderId, t),
 					sendDraft(message.id, message, t, dispatch),
-					redirectMsg(message.id, t, dispatch, createSnackbar, createModal, ContactInput)
+					redirectMsg({ id: message.id, t, createModal })
 				]
 			];
 		case FOLDERS.SPAM:
 			return (message) => [
 				[
-					setMsgRead(
-						[message.id],
-						message.read,
-						t,
-						dispatch,
-						folderId,
-						replaceHistory,
-						deselectAll
-					),
+					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
-					setMsgAsSpam([message.id], true, t, dispatch, replaceHistory, createSnackbar),
-					printMsg(message.id, t, timezone),
-					showOriginalMsg(message.id, t),
+					setMsgAsSpam([message.id], true, t, dispatch, createSnackbar),
 					deleteMsg([message.id], t, dispatch, createSnackbar, createModal)
+					// printMsg(message.id, t, timezone),
+					// showOriginalMsg(message.id, t)
 				],
 				[
-					setMsgRead(
-						[message.id],
-						message.read,
-						t,
-						dispatch,
-						folderId,
-						replaceHistory,
-						deselectAll
-					),
+					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
-					setMsgAsSpam([message.id], true, t, dispatch, replaceHistory, createSnackbar),
+					setMsgAsSpam([message.id], true, t, dispatch, createSnackbar),
 					printMsg(message.id, t, timezone),
 					showOriginalMsg(message.id, t),
 					moveMsgToTrash(
@@ -821,23 +491,23 @@ export const getActions = (
 						createSnackbar,
 						deselectAll,
 						folderId,
-						replaceHistory,
 						message.conversation
 					),
 					// deleteMsg([message.id], t, dispatch, createSnackbar, createModal),
-					replyMsg(message.id, folderId, t, replaceHistory),
-					replyAllMsg(message.id, folderId, t, replaceHistory),
-					forwardMsg(message.id, folderId, t, replaceHistory),
-					editAsNewMsg(message.id, folderId, t, replaceHistory),
-					// editDraft(message.id, folderId, t, replaceHistory),
+					replyMsg(message.id, folderId, t),
+					replyAllMsg(message.id, folderId, t),
+					forwardMsg(message.id, folderId, t),
+					editAsNewMsg(message.id, folderId, t),
+					// editDraft(message.id, folderId, t),
 					sendDraft(message.id, message, t, dispatch),
-					redirectMsg(message.id, t, dispatch, createSnackbar, createModal, ContactInput)
+					redirectMsg({ id: message.id, t, createModal })
 				]
 			];
 		case FOLDERS.DRAFTS:
 			return (message) => [
 				[
-					setMsgFlag([message.id], message.flagged, t, dispatch),
+					editDraft(message.id, folderId, t, replaceHistory),
+					sendDraft(message.id, message, t, dispatch),
 					moveMsgToTrash(
 						[message.id],
 						t,
@@ -845,12 +515,10 @@ export const getActions = (
 						createSnackbar,
 						deselectAll,
 						folderId,
-						replaceHistory,
 						message.conversation
 					),
-					editDraft(message.id, folderId, t, replaceHistory),
-					sendDraft(message.id, message, t, dispatch),
-					printMsg(message.id, t, timezone)
+					setMsgFlag([message.id], message.flagged, t, dispatch)
+					// printMsg(message.id, t, timezone)
 				],
 				[
 					setMsgFlag([message.id], message.flagged, t, dispatch),
@@ -861,10 +529,9 @@ export const getActions = (
 						createSnackbar,
 						deselectAll,
 						folderId,
-						replaceHistory,
 						message.conversation
 					),
-					editDraft(message.id, folderId, t, replaceHistory),
+					editDraft(message.id, folderId, t),
 					sendDraft(message.id, message, t, dispatch),
 					printMsg(message.id, t, timezone)
 				]
@@ -874,20 +541,9 @@ export const getActions = (
 		default:
 			return (message) => [
 				[
-					setMsgRead(
-						[message.id],
-						message.read,
-						t,
-						dispatch,
-						folderId,
-						replaceHistory,
-						deselectAll
-					),
-					setMsgFlag([message.id], message.flagged, t, dispatch),
-					replyMsg(message.id, folderId, t, replaceHistory),
-					replyAllMsg(message.id, folderId, t, replaceHistory),
-					forwardMsg(message.id, folderId, t, replaceHistory),
-					showOriginalMsg(message.id, t),
+					replyMsg(message.id, folderId, t),
+					replyAllMsg(message.id, folderId, t),
+					forwardMsg(message.id, folderId, t),
 					moveMsgToTrash(
 						[message.id],
 						t,
@@ -895,11 +551,8 @@ export const getActions = (
 						createSnackbar,
 						deselectAll,
 						folderId,
-						replaceHistory,
 						message.conversation
-					)
-				],
-				[
+					),
 					setMsgRead(
 						[message.id],
 						message.read,
@@ -909,8 +562,13 @@ export const getActions = (
 						replaceHistory,
 						deselectAll
 					),
+					setMsgFlag([message.id], message.flagged, t, dispatch)
+					// showOriginalMsg(message.id, t)
+				],
+				[
+					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
-					setMsgAsSpam([message.id], false, t, dispatch, replaceHistory, createSnackbar),
+					setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
 					printMsg(message.id, t, timezone),
 					showOriginalMsg(message.id, t),
 					moveMsgToTrash(
@@ -920,17 +578,16 @@ export const getActions = (
 						createSnackbar,
 						deselectAll,
 						folderId,
-						replaceHistory,
 						message.conversation
 					),
 					// deleteMsg([message.id], t, dispatch, createSnackbar, createModal),
-					replyMsg(message.id, folderId, t, replaceHistory),
-					replyAllMsg(message.id, folderId, t, replaceHistory),
-					forwardMsg(message.id, folderId, t, replaceHistory),
-					editAsNewMsg(message.id, folderId, t, replaceHistory),
-					// editDraft(message.id, folderId, t, replaceHistory),
+					replyMsg(message.id, folderId, t),
+					replyAllMsg(message.id, folderId, t),
+					forwardMsg(message.id, folderId, t),
+					editAsNewMsg(message.id, folderId, t),
+					// editDraft(message.id, folderId, t),
 					sendDraft(message.id, message, t, dispatch),
-					redirectMsg(message.id, t, dispatch, createSnackbar, createModal, ContactInput)
+					redirectMsg({ id: message.id, t, createModal })
 				]
 			];
 	}

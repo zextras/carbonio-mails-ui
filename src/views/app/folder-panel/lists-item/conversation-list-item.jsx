@@ -7,12 +7,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isEmpty, reduce, trimStart, map, uniqBy, find, filter, findIndex, some } from 'lodash';
 import styled from 'styled-components';
-import {
-	usePushHistoryCallback,
-	useUserAccount,
-	useUserAccounts,
-	FOLDERS
-} from '@zextras/carbonio-shell-ui';
+import { pushHistory, useUserAccount, useUserAccounts, FOLDERS } from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Button,
@@ -60,12 +55,10 @@ const CollapseElement = styled(Container)`
 	display: ${({ open }) => (open ? 'block' : 'none')};
 `;
 
-export const SenderName = ({ item, textValues }) => {
+export const SenderName = ({ item, textValues, isFromSearch }) => {
 	const [t] = useTranslation();
 	const account = useUserAccount();
 	const { folderId } = useParams();
-	console.log('zz item:', item);
-	const isDraftIncluded = useMemo(() => some(item.messages, { parent: FOLDERS.DRAFTS }), [item]);
 	const participantsString = useMemo(() => {
 		const participants = filter(item.participants, (p) => {
 			if (folderId === FOLDERS.INBOX) return p.type === 'f'; // inbox
@@ -88,7 +81,7 @@ export const SenderName = ({ item, textValues }) => {
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
-			{isDraftIncluded && folderId === FOLDERS.DRAFTS && (
+			{!isFromSearch && folderId === FOLDERS.DRAFTS && (
 				<Padding right="small">
 					<Text color="error">{t('label.draft_folder', '[DRAFT]')}</Text>
 				</Padding>
@@ -138,7 +131,6 @@ export default function ConversationListItem({
 	dragImageRef
 }) {
 	const dispatch = useDispatch();
-	const pushHistory = usePushHistoryCallback();
 	const [open, setOpen] = useState(false);
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
@@ -176,7 +168,7 @@ export default function ConversationListItem({
 				pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 			}
 		},
-		[item.id, t, dispatch, pushHistory, folderId]
+		[item.id, t, dispatch, folderId]
 	);
 
 	const _onDoubleClick = useCallback(
@@ -188,7 +180,7 @@ export default function ConversationListItem({
 			}
 		},
 
-		[folderId, item.messages, pushHistory]
+		[folderId, item.messages]
 	);
 
 	const dragCheck = useCallback(
@@ -225,6 +217,7 @@ export default function ConversationListItem({
 					item.messages,
 					(acc, v) => {
 						const msg = find(messages, ['id', v.id]);
+
 						if (msg) {
 							// in trash we show all messages of the conversation even if only one is deleted
 							if (folderId === FOLDERS.TRASH) {
@@ -285,6 +278,7 @@ export default function ConversationListItem({
 					onDoubleClick={_onDoubleClick}
 					hoverTooltipLabel={participantsString}
 					isConversation
+					messagesToRender={messagesToRender}
 				>
 					<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
 						<ItemAvatar
@@ -303,7 +297,7 @@ export default function ConversationListItem({
 						padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 					>
 						<Container orientation="horizontal" height="fit" width="fill">
-							<SenderName item={item} textValues={textReadValues} />
+							<SenderName item={item} textValues={textReadValues} isFromSearch={false} />
 							<RowInfo item={item} />
 						</Container>
 						<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
