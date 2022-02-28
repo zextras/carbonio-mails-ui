@@ -50,8 +50,6 @@ const _TextMessageRenderer = ({ body, t }) => {
 };
 
 const _HtmlMessageRenderer = ({ msgId, body, parts, t }) => {
-	// console.log('vvvv bodyv:', body.content);
-	console.log('vv f:', getQuotedTextOnly(body.content));
 	const divRef = useRef();
 	const iframeRef = useRef();
 	const [showQuotedText, setShowQuotedText] = useState(false);
@@ -63,12 +61,7 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t }) => {
 
 	const orignalText = getOriginalContent(body.content, true);
 	const quoted = getQuotedTextOnly(body.content, true);
-	// console.log('vvvv nonQuotedText:', nonQuotedText);
-	// const quotedText = body?.content?.slice(
-	// 	body.content.indexOf('<blockquote'),
-	// 	body.content.lastIndexOf('</blockquote>')
-	// );
-	// console.log('vvvv converted:', quotedText);
+
 	const contentToDisplay = useMemo(
 		() => (showQuotedText ? body.content : orignalText),
 		[showQuotedText, body.content, orignalText]
@@ -80,7 +73,6 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t }) => {
 
 	useLayoutEffect(() => {
 		iframeRef.current.contentDocument.open();
-		// iframeRef.current.contentDocument.write(body.content);
 		iframeRef.current.contentDocument.write(contentToDisplay);
 		iframeRef.current.contentDocument.close();
 
@@ -219,7 +211,6 @@ const MailMessageRenderer = ({ mailMsg, onLoadChange }) => {
 	if (!mailMsg.body?.content?.length && !mailMsg.fragment) {
 		return <EmptyBody />;
 	}
-	console.log('vv mailMSg:', mailMsg);
 
 	if (mailMsg.body?.contentType === 'text/html') {
 		return <_HtmlMessageRenderer msgId={mailMsg.id} body={mailMsg.body} parts={parts} t={t} />;

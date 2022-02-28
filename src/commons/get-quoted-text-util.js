@@ -4,64 +4,40 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-/* eslint-disable no-empty */
-/* eslint-disable no-cond-assign */
-/* eslint-disable no-case-declarations */
-/* eslint-disable consistent-return */
-/* eslint-disable no-continue */
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable no-plusplus */
+/* eslint-disable no-case-declarations */
 import { orderBy } from 'lodash';
+import { LineType } from '../types/quoted-message';
 
 const contentType = 'text/html';
-
-const _NON_WHITESPACE = /\S+/;
-
-const TRIM_RE = /^\s+|\s+$/g;
-
-const COMPRESS_RE = /\s+/g;
-
-const ORIG_UNKNOWN = 'UNKNOWN';
-
-const ORIG_QUOTED = 'QUOTED';
-
-const ORIG_SEP_STRONG = 'SEP_STRONG';
-
-const ORIG_WROTE_STRONG = 'WROTE_STRONG';
-
-const ORIG_WROTE_WEAK = 'WROTE_WEAK';
-
-const ORIG_HEADER = 'HEADER';
-
-const ORIG_LINE = 'LINE';
-
-const HTML_SEP_ID = 'zwchr';
-
-const NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*';
+const NON_WHITESPACE_REGEX = /\S+/;
+const TRIM_REGEX = /^\s+|\s+$/g;
+const COMPRESS_REGEX = /\s+/g;
 
 // Regexes for finding stuff in msg content
-
-const SPLIT_RE = /\r\n|\r|\n/;
+const SPLIT_REGEX = /\r\n|\r|\n/;
 
 // regexes for finding a delimiter such as "On DATE, NAME (EMAIL) wrote:"
-const ORIG_EMAIL_RE = /[^@\s]+@[A-Za-z0-9-]{2,}(\.[A-Za-z0-9-]{2,})+/;
+const ORIG_EMAIL_REGEX = /[^@\s]+@[A-Za-z0-9-]{2,}(\.[A-Za-z0-9-]{2,})+/;
 
-const ORIG_DATE_RE = /\d+\s*(\/|-|, )20\d\d/; // matches "03/07/2014" or "March 3, 2014" by looking for year 20xx
+// matches "03/07/2014" or "March 3, 2014" by looking for year 20xx
+const ORIG_DATE_REGEX = /\d+\s*(\/|-|, )20\d\d/;
 
 // eslint-disable-next-line no-useless-concat
-const ORIG_INTRO_DE_RE = new RegExp('^(-{2,}|' + 'auf' + '\\s+)', 'i');
+const ORIG_INTRO_DE_REGEX = new RegExp('^(-{2,}|' + 'auf' + '\\s+)', 'i');
+
 // eslint-disable-next-line no-useless-concat
-const ORIG_INTRO_RE = new RegExp('^(-{2,}|' + 'on' + '\\s+)', 'i');
+const ORIG_INTRO_REGEX = new RegExp('^(-{2,}|' + 'on' + '\\s+)', 'i');
 
 const MSG_REGEXES = [
 	{
-		type: ORIG_QUOTED,
+		type: LineType.ORIG_QUOTED,
 		// regex: /^\s*(>|\|)/
 		regex: /^[>|].*/
 	},
 	{
-		type: ORIG_SEP_STRONG,
+		type: LineType.ORIG_SEP_STRONG,
 		regex: new RegExp(
 			'^\\s*--+\\s*(' +
 				'Original Message' +
@@ -78,16 +54,16 @@ const MSG_REGEXES = [
 		)
 	},
 	{
-		type: ORIG_SEP_STRONG,
+		type: LineType.ORIG_SEP_STRONG,
 		// eslint-disable-next-line no-useless-concat
 		regex: new RegExp('^' + 'Begin forwarded message:' + '$', 'i')
 	},
 	{
-		type: ORIG_HEADER,
+		type: LineType.ORIG_HEADER,
 		regex: new RegExp(`^\\s*(${['from:', 'to:', 'subject:', 'date:', 'sent:', 'cc:'].join('|')}).*`)
 	},
 	{
-		type: ORIG_LINE,
+		type: LineType.ORIG_LINE,
 		regex: /^\\s*_{5,}\\s*$/
 	}
 ];
@@ -96,29 +72,91 @@ const SCRIPT_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
 
 const IGNORE_NODE = { '#comment': true, br: true, script: true, select: true, style: true };
 
-const _flatten = (node, list) => {
+const flatten = (node, list) => {
 	const nodeName = node && node.nodeName.toLowerCase();
 	if (IGNORE_NODE[nodeName]) {
 		return;
 	}
 	list.push(node);
 	const children = node.childNodes || [];
-	for (let i = 0; i < children.length; i++) {
-		_flatten(children[i], list);
+	for (let i = 0; i < children.length; i += 1) {
+		flatten(children[i], list);
 	}
 };
 
-export function _checkNodeContent(node) {
-	const content = node.textContent || '';
-	if (!_NON_WHITESPACE.test(content) || content.length > 200) {
-		return null;
+export function getOriginalHtmlContent(text) {
+	const htmlNode = document.createElement('div');
+	htmlNode.innerHTML = text;
+	while (SCRIPT_REGEX.test(text)) {
+		text = text.replace(SCRIPT_REGEX, '');
 	}
-
-	const type = _getLineType(content);
-	return type === ORIG_SEP_STRONG || type === ORIG_WROTE_STRONG ? type : null;
+	let done = false;
+	const nodeList = [];
+	flatten(htmlNode, nodeList);
+	const ln = nodeList.length;
+	let i;
+	const results = [];
+	const count = {};
+	let el;
+	let prevEl;
+	let nodeName;
+	let type;
+	let prevType;
+	let sepNode;
+	for (i = 0; i < ln; i += 1) {
+		el = nodeList[i];
+		if (el.nodeType === 1) {
+			el.normalize();
+		}
+		nodeName = el.nodeName.toLowerCase();
+		type = checkNode(nodeList[i]);
+		if (
+			type === LineType.ORIG_UNKNOWN &&
+			el.nodeName === '#text' &&
+			(ORIG_DATE_REGEX.test(el.nodeValue) ||
+				ORIG_INTRO_REGEX.test(el.nodeValue) ||
+				ORIG_INTRO_DE_REGEX.test(el.nodeValue))
+		) {
+			let str = el.nodeValue;
+			for (let j = 1; j < 10; j += 1) {
+				const el1 = nodeList[i + j];
+				if (el1 && el1.nodeName === '#text') {
+					str += el1.nodeValue;
+					if (/:$/.test(str)) {
+						type = getLineType(trim(str));
+						if (type === LineType.ORIG_WROTE_STRONG) {
+							i += j;
+							break;
+						}
+					}
+				}
+			}
+		}
+		if (type !== null) {
+			results.push({ type, node: el, nodeName });
+			count[type] = count[type] ? count[type] + 1 : 1;
+			if (type === LineType.ORIG_SEP_STRONG || type === LineType.ORIG_WROTE_STRONG) {
+				sepNode = el;
+				done = true;
+				break;
+			}
+			if (type === LineType.ORIG_HEADER && prevType === LineType.ORIG_LINE) {
+				sepNode = prevEl;
+				done = true;
+				break;
+			}
+			prevEl = el;
+			prevType = type;
+		}
+	}
+	if (sepNode) {
+		prune(sepNode, true);
+	}
+	const result = done && htmlNode.textContent ? htmlNode.innerHTML : text;
+	return result;
 }
 
-export function _checkNode(el) {
+export function checkNode(el) {
 	if (!el) {
 		return null;
 	}
@@ -126,60 +164,84 @@ export function _checkNode(el) {
 	let type = null;
 	if (nodeName === '#text') {
 		const content = trim(el.nodeValue);
-		if (_NON_WHITESPACE.test(content)) {
-			type = _getLineType(content);
+		if (NON_WHITESPACE_REGEX.test(content)) {
+			type = getLineType(content);
 		}
 	} else if (nodeName === 'hr') {
 		if (
-			el.id === HTML_SEP_ID ||
+			el.id === LineType.HTML_SEP_ID ||
 			(el.size === '2' && el.width === '100%' && el.align === 'center')
 		) {
-			type = ORIG_SEP_STRONG;
+			type = LineType.ORIG_SEP_STRONG;
 		} else {
-			type = ORIG_LINE;
+			type = LineType.ORIG_LINE;
 		}
 	} else if (nodeName === 'pre') {
-		type = _checkNodeContent(el);
+		type = checkNodeContent(el);
 	} else if (nodeName === 'div') {
 		if (el.className === 'OutlookMessageHeader' || el.className === 'gmail_quote') {
-			type = ORIG_SEP_STRONG;
+			type = LineType.ORIG_SEP_STRONG;
 		}
-		type = type || _checkNodeContent(el);
+		type = type || checkNodeContent(el);
 	} else if (nodeName === 'span') {
-		type = type || _checkNodeContent(el);
+		type = type || checkNodeContent(el);
 	} else if (nodeName === 'img') {
-		type = ORIG_UNKNOWN;
+		type = LineType.ORIG_UNKNOWN;
 	} else if (nodeName === 'blockquote') {
-		type = ORIG_QUOTED;
+		type = LineType.ORIG_QUOTED;
 	}
 	return type;
 }
 
-export function _prune(node, clipNode) {
-	const p = node && node.parentNode;
-	while (p && p.lastChild && p.lastChild !== node) {
-		p.removeChild(p.lastChild);
+export function getLineType(testLine) {
+	let type = LineType.ORIG_UNKNOWN;
+	for (let j = 0; j < MSG_REGEXES.length; j += 1) {
+		const msgTest = MSG_REGEXES[j];
+		const { regex } = msgTest;
+		if (msgTest.type !== LineType.ORIG_HEADER) {
+			if (regex.test(testLine.toLowerCase())) {
+				if (msgTest.type === LineType.ORIG_QUOTED && /^\s*\|.*\|\s*$/.test(testLine)) {
+					// eslint-disable-next-line no-continue
+					continue;
+				}
+				type = msgTest.type;
+				break;
+			}
+		}
 	}
-	if (clipNode && p && p.lastChild === node) {
-		p.removeChild(p.lastChild);
+	if (type === LineType.ORIG_UNKNOWN) {
+		const m = testLine.match(/(\w+):$/);
+		const verb = m && m[1] && m[1].toLowerCase();
+		if (verb) {
+			let points = 0;
+			// eslint-disable-next-line no-nested-ternary
+			points = points ? 5 : verb === 'changed' ? 0 : 2;
+			if (ORIG_EMAIL_REGEX.test(testLine)) {
+				points += 4;
+			}
+			if (ORIG_DATE_REGEX.test(testLine)) {
+				points += 3;
+			}
+			if (points >= 7) {
+				type = LineType.ORIG_WROTE_STRONG;
+			}
+			if (points >= 5) {
+				type = LineType.ORIG_WROTE_WEAK;
+			}
+		}
 	}
-	const nodeName = p && p.nodeName.toLowerCase();
-	if (p && nodeName !== 'body' && nodeName !== 'html') {
-		_prune(p, false);
-	}
+	return type;
 }
-
 export function trim(str, compress, space) {
 	if (!str) {
 		return '';
 	}
-	let trimRe = TRIM_RE;
-	let compressRe = COMPRESS_RE;
+	let trimRe = TRIM_REGEX;
+	let compressRe = COMPRESS_REGEX;
 	if (space) {
 		trimRe = new RegExp(`^${space}+|${space}+$`, 'g');
 		compressRe = new RegExp(`${space}+`, 'g');
 	} else {
-		// eslint-disable-next-line no-param-reassign
 		space = ' ';
 	}
 	str = str.replace(trimRe, '');
@@ -189,44 +251,28 @@ export function trim(str, compress, space) {
 	return str;
 }
 
-export function _getLineType(testLine) {
-	let type = ORIG_UNKNOWN;
-	for (let j = 0; j < MSG_REGEXES.length; j++) {
-		const msgTest = MSG_REGEXES[j];
-		const { regex } = msgTest;
-		if (msgTest.type !== ORIG_HEADER) {
-			if (regex.test(testLine.toLowerCase())) {
-				if (msgTest.type === ORIG_QUOTED && /^\s*\|.*\|\s*$/.test(testLine)) {
-					// eslint-disable-next-line no-continue
-					continue;
-				}
-				type = msgTest.type;
-				break;
-			}
-		}
+export function checkNodeContent(node) {
+	const content = node.textContent || '';
+	if (!NON_WHITESPACE_REGEX.test(content) || content.length > 200) {
+		return null;
 	}
-	if (type === ORIG_UNKNOWN) {
-		const m = testLine.match(/(\w+):$/);
-		const verb = m && m[1] && m[1].toLowerCase();
-		if (verb) {
-			let points = 0;
-			// eslint-disable-next-line no-nested-ternary
-			points = points ? 5 : verb === 'changed' ? 0 : 2;
-			if (ORIG_EMAIL_RE.test(testLine)) {
-				points += 4;
-			}
-			if (ORIG_DATE_RE.test(testLine)) {
-				points += 3;
-			}
-			if (points >= 7) {
-				type = ORIG_WROTE_STRONG;
-			}
-			if (points >= 5) {
-				type = ORIG_WROTE_WEAK;
-			}
-		}
+
+	const type = getLineType(content);
+	return type === LineType.ORIG_SEP_STRONG || type === LineType.ORIG_WROTE_STRONG ? type : null;
+}
+
+export function prune(node, clipNode) {
+	const p = node && node.parentNode;
+	while (p && p.lastChild && p.lastChild !== node) {
+		p.removeChild(p.lastChild);
 	}
-	return type;
+	if (clipNode && p && p.lastChild === node) {
+		p.removeChild(p.lastChild);
+	}
+	const nodeName = p && p.nodeName.toLowerCase();
+	if (p && nodeName !== 'body' && nodeName !== 'html') {
+		prune(p, false);
+	}
 }
 
 const DOC_TAG_REGEX = /<\/?(html|head|body)>/gi;
@@ -281,11 +327,11 @@ export function getOriginalContent(text, isHtml) {
 		return '';
 	}
 	if (isHtml) {
-		return _getOriginalHtmlContent(text);
+		return getOriginalHtmlContent(text);
 	}
 
 	const results = [];
-	const lines = text.split(SPLIT_RE);
+	const lines = text.split(SPLIT_REGEX);
 
 	let curType;
 	let curBlock = [];
@@ -293,14 +339,15 @@ export function getOriginalContent(text, isHtml) {
 	let isMerged;
 	let unknownBlock;
 	let isBugzilla = false;
-	for (let i = 0; i < lines.length; i++) {
+	for (let i = 0; i < lines.length; i += 1) {
 		const line = lines[i];
 		let testLine = trim(line);
 
 		// blank lines are just added to the current block
-		if (!_NON_WHITESPACE.test(testLine)) {
+		if (!NON_WHITESPACE_REGEX.test(testLine)) {
 			curBlock.push(line);
-			continue;
+			// <--->
+			// continue;
 		}
 
 		// Bugzilla summary looks like QUOTED; it should be treated as UNKNOWN
@@ -308,9 +355,9 @@ export function getOriginalContent(text, isHtml) {
 			isBugzilla = true;
 		}
 
-		let type = _getLineType(testLine);
-		if (type === ORIG_QUOTED) {
-			type = isBugzilla ? ORIG_UNKNOWN : type;
+		let type = getLineType(testLine);
+		if (type === LineType.ORIG_QUOTED) {
+			type = isBugzilla ? LineType.ORIG_UNKNOWN : type;
 		} else {
 			isBugzilla = false;
 		}
@@ -319,33 +366,30 @@ export function getOriginalContent(text, isHtml) {
 		let nextLine = lines[i + 1];
 		isMerged = false;
 
-		// if (nextLine && (type === ORIG_UNKNOWN) && (ORIG_INTRO_RE.test(testLine) || ORIG_INTRO_DE_RE.test(testLine))) {
-		//     return getBodyOnly(lines, i);
-		// }
-
 		if (
 			nextLine &&
-			type === ORIG_UNKNOWN &&
-			(ORIG_INTRO_RE.test(testLine) || ORIG_INTRO_DE_RE.test(testLine)) &&
+			type === LineType.ORIG_UNKNOWN &&
+			(ORIG_INTRO_REGEX.test(testLine) || ORIG_INTRO_DE_REGEX.test(testLine)) &&
 			nextLine.match(/\w+:$/)
 		) {
 			testLine = [testLine, nextLine].join(' ');
-			type = _getLineType(testLine);
+			type = getLineType(testLine);
 			isMerged = true;
 		}
 
 		// LINE sometimes used as delimiter; if HEADER follows, lump it in with them
-		if (type === ORIG_LINE) {
+		if (type === LineType.ORIG_LINE) {
 			let j = i + 1;
 			nextLine = lines[j];
-			while (!_NON_WHITESPACE.test(nextLine) && j < lines.length) {
+			while (!NON_WHITESPACE_REGEX.test(nextLine) && j < lines.length) {
+				// eslint-disable-next-line no-plusplus
 				nextLine = lines[++j];
 			}
-			const nextType = nextLine && _getLineType(nextLine);
-			if (nextType === ORIG_HEADER) {
-				type = ORIG_HEADER;
+			const nextType = nextLine && getLineType(nextLine);
+			if (nextType === LineType.ORIG_HEADER) {
+				type = LineType.ORIG_HEADER;
 			} else {
-				type = ORIG_UNKNOWN;
+				type = LineType.ORIG_UNKNOWN;
 			}
 		}
 
@@ -353,7 +397,7 @@ export function getOriginalContent(text, isHtml) {
 		if (curType) {
 			if (curType !== type) {
 				results.push({ type: curType, block: curBlock });
-				unknownBlock = curType === ORIG_UNKNOWN ? curBlock : unknownBlock;
+				unknownBlock = curType === LineType.ORIG_UNKNOWN ? curBlock : unknownBlock;
 				count[curType] = count[curType] ? count[curType] + 1 : 1;
 				curBlock = [];
 				curType = type;
@@ -362,10 +406,10 @@ export function getOriginalContent(text, isHtml) {
 			curType = type;
 		}
 
-		if (isMerged && (type === ORIG_WROTE_WEAK || type === ORIG_WROTE_STRONG)) {
+		if (isMerged && (type === LineType.ORIG_WROTE_WEAK || type === LineType.ORIG_WROTE_STRONG)) {
 			curBlock.push(line);
 			curBlock.push(nextLine);
-			i++;
+			i += 1;
 			isMerged = false;
 		} else {
 			curBlock.push(line);
@@ -375,7 +419,7 @@ export function getOriginalContent(text, isHtml) {
 	// Handle remaining content
 	if (curBlock.length) {
 		results.push({ type: curType, block: curBlock });
-		unknownBlock = curType === ORIG_UNKNOWN ? curBlock : unknownBlock;
+		unknownBlock = curType === LineType.ORIG_UNKNOWN ? curBlock : unknownBlock;
 		count[curType] = count[curType] ? count[curType] + 1 : 1;
 	}
 
@@ -386,18 +430,16 @@ export function getOriginalContent(text, isHtml) {
 	const second = results[1];
 	if (
 		first &&
-		first.type === ORIG_UNKNOWN &&
+		first.type === LineType.ORIG_UNKNOWN &&
 		second &&
-		(second.type === ORIG_HEADER || second.type === ORIG_WROTE_STRONG)
+		(second.type === LineType.ORIG_HEADER || second.type === LineType.ORIG_WROTE_STRONG)
 	) {
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-		const originalText = _getTextFromBlock(first.block);
+		const originalText = getTextFromBlock(first.block);
 		if (originalText) {
 			const third = results[2];
-			if (third && third.type === ORIG_UNKNOWN) {
-				// eslint-disable-next-line @typescript-eslint/no-use-before-define
-				const originalThirdText = _getTextFromBlock(third.block);
-				if (originalThirdText && originalThirdText.indexOf(NOTES_SEPARATOR) !== -1) {
+			if (third && third.type === LineType.ORIG_UNKNOWN) {
+				const originalThirdText = getTextFromBlock(third.block);
+				if (originalThirdText && originalThirdText.indexOf(LineType.NOTES_SEPARATOR) !== -1) {
 					return originalText + originalThirdText;
 				}
 			}
@@ -406,33 +448,32 @@ export function getOriginalContent(text, isHtml) {
 	}
 
 	// check for special case of WROTE preceded by UNKNOWN, followed by mix of UNKNOWN and QUOTED (inline reply)
-	// eslint-disable-next-line @typescript-eslint/no-use-before-define
-	let originalText = _checkInlineWrote(count, results);
+
+	let originalText = checkInlineWrote(count, results);
 	if (originalText) {
 		return originalText;
 	}
 
 	// If we found quoted content and there's exactly one UNKNOWN block, return it.
-	if (count[ORIG_UNKNOWN] === 1 && count[ORIG_QUOTED] > 0) {
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-		originalText = _getTextFromBlock(unknownBlock);
+	if (count[LineType.ORIG_UNKNOWN] === 1 && count[LineType.ORIG_QUOTED] > 0) {
+		originalText = getTextFromBlock(unknownBlock);
 		if (originalText) {
 			return originalText;
 		}
 	}
 
 	// If we have a STRONG separator (eg "--- Original Message ---"), consider it authoritative and return the text that precedes it
-	if (count[ORIG_SEP_STRONG] > 0) {
+	if (count[LineType.ORIG_SEP_STRONG] > 0) {
 		let block = [];
-		for (let i = 0; i < results.length; i++) {
+		for (let i = 0; i < results.length; i += 1) {
 			const result = results[i];
-			if (result.type === ORIG_SEP_STRONG) {
+			if (result.type === LineType.ORIG_SEP_STRONG) {
 				break;
 			}
 			block = block.concat(result.block);
 		}
 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-		originalText = _getTextFromBlock(block);
+		originalText = getTextFromBlock(block);
 		if (originalText) {
 			return originalText;
 		}
@@ -441,17 +482,17 @@ export function getOriginalContent(text, isHtml) {
 	return text;
 }
 
-export function _checkInlineWrote(count, results) {
-	if (count[ORIG_WROTE_STRONG] > 0) {
+export function checkInlineWrote(count, results) {
+	if (count[LineType.ORIG_WROTE_STRONG] > 0) {
 		let unknownBlock;
 		let foundSep = false;
 		const afterSep = {};
-		for (let i = 0; i < results.length; i++) {
+		for (let i = 0; i < results.length; i += 1) {
 			const result = results[i];
 			const { type } = result;
-			if (type === ORIG_WROTE_STRONG) {
+			if (type === LineType.ORIG_WROTE_STRONG) {
 				foundSep = true;
-			} else if (type === ORIG_UNKNOWN && !foundSep) {
+			} else if (type === LineType.ORIG_UNKNOWN && !foundSep) {
 				if (unknownBlock) {
 					return null;
 				}
@@ -462,98 +503,27 @@ export function _checkInlineWrote(count, results) {
 			}
 		}
 
-		const mixed = afterSep[ORIG_UNKNOWN] && afterSep[ORIG_QUOTED];
+		const mixed = afterSep[LineType.ORIG_UNKNOWN] && afterSep[LineType.ORIG_QUOTED];
 		const endsWithUnknown =
-			count[ORIG_UNKNOWN] === 2 && results[results.length - 1].type === ORIG_UNKNOWN;
+			count[LineType.ORIG_UNKNOWN] === 2 &&
+			results[results.length - 1].type === LineType.ORIG_UNKNOWN;
 		if (unknownBlock && (!mixed || endsWithUnknown)) {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			const originalText = _getTextFromBlock(unknownBlock);
+			const originalText = getTextFromBlock(unknownBlock);
 			if (originalText) {
 				return originalText;
 			}
 		}
 	}
+	return null;
 }
 
-export function _getTextFromBlock(block) {
+export function getTextFromBlock(block) {
 	if (!(block && block.length)) {
 		return null;
 	}
 	let originalText = `${block.join('\n')}\n`;
 	originalText = originalText.replace(/\s+$/, '\n');
-	return _NON_WHITESPACE.test(originalText) ? originalText : null;
-}
-
-export function _getOriginalHtmlContent(text) {
-	const htmlNode = document.createElement('div');
-	htmlNode.innerHTML = text;
-	while (SCRIPT_REGEX.test(text)) {
-		text = text.replace(SCRIPT_REGEX, '');
-	}
-	let done = false;
-	const nodeList = [];
-	_flatten(htmlNode, nodeList);
-	const ln = nodeList.length;
-	let i;
-	const results = [];
-	const count = {};
-	let el;
-	let prevEl;
-	let nodeName;
-	let type;
-	let prevType;
-	let sepNode;
-	for (i = 0; i < ln; i++) {
-		el = nodeList[i];
-		if (el.nodeType === 1) {
-			el.normalize();
-		}
-		nodeName = el.nodeName.toLowerCase();
-		type = _checkNode(nodeList[i]);
-		if (
-			type === ORIG_UNKNOWN &&
-			el.nodeName === '#text' &&
-			(ORIG_DATE_RE.test(el.nodeValue) ||
-				ORIG_INTRO_RE.test(el.nodeValue) ||
-				ORIG_INTRO_DE_RE.test(el.nodeValue))
-		) {
-			let str = el.nodeValue;
-			for (let j = 1; j < 10; j++) {
-				const el1 = nodeList[i + j];
-				if (el1 && el1.nodeName === '#text') {
-					str += el1.nodeValue;
-					if (/:$/.test(str)) {
-						type = _getLineType(trim(str));
-						if (type === ORIG_WROTE_STRONG) {
-							i += j;
-							break;
-						}
-					}
-				}
-			}
-		}
-		if (type !== null) {
-			results.push({ type, node: el, nodeName });
-			count[type] = count[type] ? count[type] + 1 : 1;
-			if (type === ORIG_SEP_STRONG || type === ORIG_WROTE_STRONG) {
-				sepNode = el;
-				done = true;
-				break;
-			}
-			if (type === ORIG_HEADER && prevType === ORIG_LINE) {
-				sepNode = prevEl;
-				done = true;
-				break;
-			}
-			prevEl = el;
-			prevType = type;
-		}
-	}
-	if (sepNode) {
-		_prune(sepNode, true);
-	}
-	const result = done && htmlNode.textContent ? htmlNode.innerHTML : text;
-	return result;
+	return NON_WHITESPACE_REGEX.test(originalText) ? originalText : null;
 }
 
 export function replaceDuplicateDiv(text) {
@@ -817,7 +787,7 @@ export function getQuotedText(body) {
 			});
 			return `---- Weitergeleitete Nachricht ----${htmlDoc.body.innerHTML}`;
 		}
-		const originalMsg = parser.parseFromString(_getOriginalHtmlContent(body), 'text/html');
+		const originalMsg = parser.parseFromString(getOriginalHtmlContent(body), 'text/html');
 		const quotedText = htmlDoc.body.innerHTML.split(originalMsg.body.innerHTML)[1];
 		if (quotedText === '' || quotedText === undefined) {
 			return '';
@@ -909,7 +879,7 @@ export function getOriginalQuotedText(body) {
 			});
 			return htmlDoc.body.innerHTML;
 		}
-		const originalMsg = parser.parseFromString(_getOriginalHtmlContent(body), 'text/html');
+		const originalMsg = parser.parseFromString(getOriginalHtmlContent(body), 'text/html');
 		const quotedText = htmlDoc.body.innerHTML.split(originalMsg.body.innerHTML)[1];
 		if (quotedText === '' || quotedText === undefined) {
 			return '';
@@ -954,6 +924,7 @@ export function getPlainText(str) {
 export function spellCheck(node, regexp) {
 	switch (node.nodeType) {
 		case 1:
+			// eslint-disable-next-line no-empty
 			for (let i = node.firstChild; i; i = spellCheck(i, regexp)) {}
 			node = node.nextSibling;
 			break;
@@ -974,7 +945,7 @@ export function spellCheck(node, regexp) {
 				b = node.splitText(node.data.length - result[0].length);
 			}
 
-			let text = hightLightWord(node.data, false, regexp);
+			let text = highLightWord(node.data, false, regexp);
 			text = text.replace(/^ +/, '&nbsp;').replace(/ +$/, '&nbsp;');
 			let div = document.createElement('div');
 			div.innerHTML = text;
@@ -1001,13 +972,14 @@ export function spellCheck(node, regexp) {
 	return node;
 }
 
-export function hightLightWord(text, textWhiteSpace, regexp) {
+export function highLightWord(text, textWhiteSpace, regexp) {
 	const wordIds = {};
 	const spanIds = {};
 	text = textWhiteSpace ? convertToHtml(text) : htmlEncode(text);
-	let m;
+	const m = regexp.exec(text);
 	regexp.lastIndex = 0;
-	while ((m = regexp.exec(text))) {
+	// <--->
+	while (m) {
 		const str = m[0];
 		const prefix = m[1];
 		const word = m[2];
@@ -1045,28 +1017,28 @@ export function convertToHtml(str, quotePrefix, openTag, closeTag) {
 		const prefixRe = /^(>|&gt;|\|\s+)/;
 		const lines = str.split(/\r?\n/);
 		let level = 0;
-		for (let i = 0; i < lines.length; i++) {
+		for (let i = 0; i < lines.length; i += 1) {
 			let line = lines[i];
 			if (line.length > 0) {
 				let lineLevel = 0;
 				while (line.match(prefixRe)) {
 					line = line.replace(prefixRe, '');
-					lineLevel++;
+					lineLevel += 1;
 				}
 				while (lineLevel > level) {
 					line = openTag + line;
-					level++;
+					level += 1;
 				}
 				while (lineLevel < level) {
 					lines[i - 1] = lines[i - 1] + closeTag;
-					level--;
+					level -= 1;
 				}
 			}
 			lines[i] = line;
 		}
 		while (level > 0) {
 			lines.push(closeTag);
-			level--;
+			level -= 1;
 		}
 		str = lines.join('\n');
 	}
