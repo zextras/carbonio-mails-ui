@@ -123,11 +123,11 @@ const MSG_REGEXES = [
 	},
 	{
 		type: ORIG_HEADER,
-		regex: new RegExp(`^\\s*(${['from:', 'to:', 'subject:', 'date:', 'sent:', 'cc:'].join('|')})`)
+		regex: new RegExp(`^\\s*(${['from:', 'to:', 'subject:', 'date:', 'sent:', 'cc:'].join('|')}).*`)
 	},
 	{
 		type: ORIG_LINE,
-		regex: /^\s*_{5,}\s*$/
+		regex: /^\\s*_{5,}\\s*$/
 	}
 ];
 
