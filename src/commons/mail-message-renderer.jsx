@@ -7,7 +7,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 're
 import { forEach, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Container, Text, Button, Row } from '@zextras/carbonio-design-system';
-import { getOriginalContent, getQuotedText, getQuotedTextOnly } from './get-quoted-text-util';
+import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 
 const _CI_REGEX = /^<(.*)>$/;
 const _CI_SRC_REGEX = /^cid:(.*)$/;
@@ -16,7 +16,8 @@ const _TextMessageRenderer = ({ body, t }) => {
 	const [showQuotedText, setShowQuotedText] = useState(false);
 	const containerRef = useRef();
 	const orignalText = getOriginalContent(body.content, false);
-	const quoted = getQuotedTextOnly(body.content);
+	const quoted = getQuotedTextOnly(body.content, false);
+
 	const contentToDisplay = useMemo(
 		() => (showQuotedText ? body.content : orignalText),
 		[showQuotedText, body.content, orignalText]

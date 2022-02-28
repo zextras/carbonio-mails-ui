@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 /* eslint-disable no-empty */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-case-declarations */
@@ -6,24 +12,9 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-plusplus */
-/*
- * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
- *
- * SPDX-License-Identifier: AGPL-3.0-only
- */
-import { isArray, orderBy } from 'lodash';
-
-const mailBody = '';
+import { orderBy } from 'lodash';
 
 const contentType = 'text/html';
-
-const messageId = '';
-
-const inlineMailBody = '';
-
-const hexcase = 0; /* hex output format. 0 - lowercase; 1 - uppercase        */
-
-const chrsz = 8; /* bits per input character. 8 - ASCII; 16 - Unicode      */
 
 const _NON_WHITESPACE = /\S+/;
 
@@ -105,7 +96,8 @@ const IMG_SRC_CID_REGEX = /<img([^>]*)\ssrc=["']cid:/gi;
 const MSG_REGEXES = [
 	{
 		type: ORIG_QUOTED,
-		regex: /^\s*(>|\|)/
+		// regex: /^\s*(>|\|)/
+		regex: /^[>|].*/
 	},
 	{
 		type: ORIG_SEP_STRONG,
@@ -142,16 +134,6 @@ const MSG_REGEXES = [
 const SCRIPT_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
 
 const IGNORE_NODE = { '#comment': true, br: true, script: true, select: true, style: true };
-
-const YOUTUBE_REGEX =
-	// eslint-disable-next-line max-len
-	/(\b(((http | https):\/\/)?(www\.)?((youtube\.com\/watch\?v=)|(youtube\.com\/watch\?.*&v=)|(youtube\.com\/v\/)|(youtu\.be\/))((-)?[0-9a-zA-Z_-]+)?(&\w+=\w+)*)\b)/gi;
-
-const YOUTUBE_LINK_PATTERN1 = 'youtube.com/watch?';
-
-const YOUTUBE_LINK_PATTERN2 = 'youtube.com/v/';
-
-const YOUTUBE_LINK_PATTERN3 = 'youtu.be/';
 
 const _flatten = (node, list) => {
 	const nodeName = node && node.nodeName.toLowerCase();
@@ -626,13 +608,10 @@ function plainTextToHTML(str) {
 	}
 	return '';
 }
-export function getQuotedTextOnly(message) {
+export function getQuotedTextOnly(message, isHtmlContent) {
 	const body = message;
 
-	const originalContent = getOriginalContent(body, true);
-
-	// console.log("[getQuotedTextOnly] body", body, body.length);
-	// console.log("[getQuotedTextOnly] originalContent", originalContent, originalContent.length);
+	const originalContent = getOriginalContent(body, isHtmlContent);
 
 	if (originalContent.length >= body.length - 5) {
 		return '';
@@ -640,8 +619,8 @@ export function getQuotedTextOnly(message) {
 	if (body !== undefined && body !== null && body !== '') {
 		const parser = new DOMParser();
 		const htmlDoc = parser.parseFromString(body, 'text/html');
-		console.log('vv htmlDoc:', htmlDoc);
-		htmlDoc.getElementsByTagName('body')[0];
+
+		// htmlDoc.getElementsByTagName('body')[0];
 		const htmlBody = htmlDoc.body.innerHTML;
 		const indexList = [
 			{
@@ -807,7 +786,7 @@ export function getQuotedText(body) {
 		const parser = new DOMParser();
 		const htmlDoc = parser.parseFromString(body, 'text/html');
 
-		htmlDoc.getElementsByTagName('body')[0];
+		//	htmlDoc.getElementsByTagName('body')[0];
 		const htmlBody = htmlDoc.body.innerHTML;
 
 		if (htmlBody.indexOf('id="zwchr">') !== -1) {
