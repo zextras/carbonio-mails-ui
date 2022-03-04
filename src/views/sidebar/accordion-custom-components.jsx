@@ -85,8 +85,7 @@ export const SetDropdownActions = (
 				.map((action) =>
 					action.id === FolderActionsType.NEW ||
 					action.id === FolderActionsType.MOVE ||
-					action.id === FolderActionsType.DELETE ||
-					action.id === FolderActionsType.EMPTY
+					action.id === FolderActionsType.DELETE
 						? { ...action, disabled: true }
 						: action
 				);
