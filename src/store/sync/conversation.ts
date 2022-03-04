@@ -121,7 +121,7 @@ export const handleModifiedMessagesInConversationReducer = (
 					return messageToUpdate
 						? {
 								...msg,
-								parent: messageToUpdate.parent
+								...messageToUpdate
 						  }
 						: msg;
 				})
@@ -129,6 +129,21 @@ export const handleModifiedMessagesInConversationReducer = (
 		}),
 		{}
 	);
+};
+
+export const handleAddMessagesInConversationReducer = (
+	state: ConversationsStateType,
+	{ payload }: Payload
+): void => {
+	forEach(payload, (msg) => {
+		const addMsg = omit(msg, ['conversation']) as ConvMessage;
+		if (msg?.conversation && state?.conversations?.[msg?.conversation]) {
+			state.conversations[msg.conversation] = {
+				...state.conversations[msg.conversation],
+				messages: [...state.conversations[msg.conversation].messages, addMsg]
+			};
+		}
+	});
 };
 
 export const handleDeletedConversationsReducer = (
