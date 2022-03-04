@@ -52,7 +52,7 @@ function fetchConversationsRejected(state: ConversationsStateType): void {
 	state.status = 'error';
 }
 
-function searchConvFulfilled(state: ConversationsStateType, { payload, meta }: any): void {
+/* function searchConvFulfilled(state: ConversationsStateType, { payload, meta }: any): void {
 	state.expandedStatus[meta.arg.conversationId] = 'complete';
 	const conversation = state.conversations[meta.arg.conversationId];
 	if (conversation) {
@@ -64,6 +64,20 @@ function searchConvFulfilled(state: ConversationsStateType, { payload, meta }: a
 					parent: obj.parent,
 					date: obj.date
 				}))
+			],
+			'id'
+		);
+	}
+} */ // TODO: reintroduce after test and delete the below one
+
+function searchConvFulfilled(state: ConversationsStateType, { payload, meta }: any): void {
+	state.expandedStatus[meta.arg.conversationId] = 'complete';
+	const conversation = state.conversations[meta.arg.conversationId];
+	if (conversation) {
+		conversation.messages = uniqBy(
+			[
+				...(conversation?.messages ?? []),
+				...map(payload?.messages ?? [], (obj) => ({ id: obj.id, parent: obj.parent }))
 			],
 			'id'
 		);

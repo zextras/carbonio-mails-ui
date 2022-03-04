@@ -49,7 +49,7 @@ export const handleModifiedConversationsReducer = (
 	});
 };
 
-const getNewConversationDate = (
+/* const getNewConversationDate = (
 	messages: Array<ConvMessage>,
 	currentFolder: string,
 	oldDate: number,
@@ -57,7 +57,7 @@ const getNewConversationDate = (
 ): number | undefined =>
 	msg.l === FOLDERS.DRAFTS
 		? oldDate
-		: head(sortBy(filter(messages, { parent: currentFolder }), 'date'))?.date;
+		: head(sortBy(filter(messages, { parent: currentFolder }), 'date'))?.date; */ // TODO: reintroduce after test
 export const handleCreatedMessagesInConversationsReducer = (
 	state: ConversationsStateType,
 	{ payload }: Payload
@@ -74,7 +74,13 @@ export const handleCreatedMessagesInConversationsReducer = (
 							...conversations[msg.cid].messages,
 							{
 								id: msg.id,
-								parent: msg.l,
+								parent: msg.l
+							}
+						],
+						'id'
+					),
+					date: msg?.l === FOLDERS.SENT ? conversations[msg.cid].date : msg.d
+					/* parent: msg.l,
 								date: msg.d
 							}
 						],
@@ -97,7 +103,7 @@ export const handleCreatedMessagesInConversationsReducer = (
 						state.currentFolder,
 						conversations[msg.cid].date,
 						msg
-					)
+					) */ // TODO: reintroduce after test deleting from 77 to 82
 				}
 			};
 

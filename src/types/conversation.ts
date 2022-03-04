@@ -8,7 +8,7 @@ import { Participant } from './participant';
 export type ConvMessage = {
 	id: string;
 	parent: string;
-	date: number;
+	// date: number; TODO: reintroduce after test
 };
 
 export type Conversation = {

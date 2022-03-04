@@ -41,7 +41,7 @@ export const useConversationListItems = (): Array<Conversation> => {
 		}
 	}, [dispatch, folderId, folderStatus, isLoading]);
 
-	const sortedConversation = useMemo(() => {
+	/*	const sortedConversation = useMemo(() => {
 		const updatedConversation = map(conversations, (c) => ({
 			...c,
 			date:
@@ -50,7 +50,7 @@ export const useConversationListItems = (): Array<Conversation> => {
 		}));
 
 		return updatedConversation?.sort((a, b) => b.date - a.date);
-	}, [conversations, folderId]);
+	}, [conversations, folderId]); */ // TODO: reintroduce after test
 
 	return useMemo(() => {
 		let currentFolderId = folderId;
@@ -59,9 +59,10 @@ export const useConversationListItems = (): Array<Conversation> => {
 			currentFolderId = `${currentFolder.zid}:${currentFolder.rid}`;
 		}
 		return reduce(
-			sortedConversation,
+			/* sortedConversation, */ // TODO: reintroduce after test
+			conversations,
 			(acc, v) => (some(v.messages, ['parent', currentFolderId]) ? [...acc, v] : acc),
 			[] as Array<Conversation>
 		);
-	}, [sortedConversation, folderId, allFolders]);
+	}, [/* sortedConversation */ conversations, folderId, allFolders]);
 };
