@@ -155,12 +155,12 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 
 	return (
 		<>
-			{folderId === FOLDERS.DRAFTS && (
+			{folderId === FOLDERS.SPAM && (
 				<Container
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
 					height="fit"
-					padding={{ vertical: 'medium' }}
+					padding={{ bottom: 'medium' }}
 				>
 					<Container background="gray6" orientation="horizontal" padding={{ all: 'small' }}>
 						<Row width="50%" display="flex" crossAlignment="center" mainAlignment="baseline">
