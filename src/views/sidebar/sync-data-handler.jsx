@@ -107,7 +107,7 @@ export const SyncDataHandler = () => {
 		if (initialized) {
 			if (notifyList.length > 0) {
 				forEach(sortBy(notifyList, 'seq'), (notify) => {
-					if (!isEmpty(notify) && (notify.seq > seq || notify.seq === '1')) {
+					if (!isEmpty(notify) && (notify.seq > seq || notify.seq === 1)) {
 						if (notify.created) {
 							if (notify.created.folder || notify.created.link) {
 								dispatch(
