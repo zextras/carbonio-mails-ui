@@ -211,7 +211,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				onClick={openFilterModifyModal}
 			/>
 			<Padding bottom="medium" />
-			<Button label={t('filters.run', 'Run')} type="outlined" disabled={disableRun} size="fill" />
+			{/* <Button label={t('filters.run', 'Run')} type="outlined" disabled={disableRun} size="fill" /> */}
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.delete', 'Delete')}

@@ -3,14 +3,41 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { forEach, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Container, Text } from '@zextras/carbonio-design-system';
 
 const _CI_REGEX = /^<(.*)>$/;
 const _CI_SRC_REGEX = /^cid:(.*)$/;
+const LINK_REGEX =
+	/(?:https?:\/\/|www\.)+(?![^\s]*?")([\w.,@?!^=%&amp;:()/~+#-]*[\w@?!^=%&amp;()/~+#-])?/gi;
+const LINE_BREAK_REGEX = /(?:\r\n|\r|\n)/g;
+const replaceLinkToAnchor = (content) => {
+	if (content === '' || content === undefined) {
+		return '';
+	}
+	return content.replace(LINK_REGEX, (url) => {
+		const wrap = document.createElement('div');
+		const anchor = document.createElement('a');
+		let href = url.replace(/&amp;/g, '&');
+		if (!url.startsWith('http') && !url.startsWith('https')) {
+			href = `http://${url}`;
+		}
+		anchor.href = href.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
+		anchor.target = '_blank';
+		anchor.innerHTML = url;
+		wrap.appendChild(anchor);
+		return wrap.innerHTML;
+	});
+};
 
+const plainTextToHTML = (str) => {
+	if (str !== undefined && str !== null) {
+		return str?.replace(LINE_BREAK_REGEX, '<br />');
+	}
+	return '';
+};
 export function _getParentPath(path) {
 	const p = path.split('.');
 	p.pop();
@@ -21,7 +48,7 @@ function findAttachments(parts, acc) {
 	return reduce(
 		parts,
 		(found, part) => {
-			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
+			if (part && (part.disposition === 'attachment' || part.disposition === 'inline')) {
 				found.push(part);
 			}
 			if (part.parts) return findAttachments(part.parts, found);
@@ -32,18 +59,18 @@ function findAttachments(parts, acc) {
 }
 
 const _TextMessageRenderer = ({ body }) => {
-	const containerRef = useRef();
-
-	useLayoutEffect(() => {
-		containerRef.current.innerText = body.content;
-	}, [body]);
-
+	const convertedHTML = useMemo(
+		() => replaceLinkToAnchor(plainTextToHTML(body.content)),
+		[body.content]
+	);
 	return (
 		<Text
-			overflow="break-word"
+			dangerouslySetInnerHTML={{
+				__html: convertedHTML
+			}}
 			color="text"
 			style={{ fontFamily: 'monospace' }}
-			ref={containerRef}
+			overflow="breakword"
 		/>
 	);
 };

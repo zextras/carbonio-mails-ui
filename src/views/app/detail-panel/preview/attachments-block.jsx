@@ -28,7 +28,7 @@ function findAttachments(parts, acc) {
 	return reduce(
 		parts,
 		(found, part) => {
-			if (part && part.disposition === 'attachment' && !part.ci) {
+			if (part && part.disposition === 'attachment') {
 				found.push(part);
 			}
 			if (part.parts) return findAttachments(part.parts, found);
