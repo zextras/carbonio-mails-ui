@@ -7,7 +7,7 @@ import { SoapConversation } from './soap-conversation';
 import { ZimbraRequest } from './zimbra-request';
 
 export type SearchRequest = ZimbraRequest & {
-	sortBy?: 'dateDesc';
+	sortBy: 'dateDesc' | 'dateAsc';
 	types: 'conversation';
 	fullConversation: 0 | 1;
 	needExp: 0 | 1;
