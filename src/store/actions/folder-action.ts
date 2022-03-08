@@ -5,12 +5,12 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import { identity, isNil, omitBy, pickBy } from 'lodash';
+import { identity, isEmpty, isNil, omitBy, pickBy } from 'lodash';
 
 export const folderAction = createAsyncThunk(
 	'contacts/folderAction',
 	async ({ folder, color, zid, op, name, l, recursive, retentionPolicy }: any) => {
-		const result = retentionPolicy
+		const result = !isEmpty(retentionPolicy)
 			? await soapFetch('Batch', {
 					FolderActionRequest: [
 						{
