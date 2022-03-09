@@ -220,7 +220,7 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 
 	return (
 		editor.attachmentFiles.length > 0 && (
-			<Container crossAlignment="flex-start" padding={{ horizontal: 'large' }}>
+			<Container crossAlignment="flex-start">
 				<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
 					{map(
 						expanded ? editor.attachmentFiles : editor.attachmentFiles.slice(0, 2),
@@ -239,7 +239,7 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 						)
 					)}
 				</Container>
-				<Row mainAlignment="flex-start" padding={{ top: 'extrasmall', bottom: 'medium' }}>
+				<Row mainAlignment="flex-start" padding={{ vertical: 'extrasmall' }}>
 					<Padding right="small">
 						{editor.attachmentFiles.length === 1 && (
 							<Text color="gray1">{`1 ${t('label.attachment', 'Attachment')}`}</Text>

@@ -34,7 +34,7 @@ export default function MessagePreviewPanel() {
 						style={{ overflowY: 'auto' }}
 						height="fill"
 						background="gray5"
-						padding={{ horizontal: 'large', bottom: 'small' }}
+						padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
 						mainAlignment="flex-start"
 					>
 						<Container height="fit" mainAlignment="flex-start" background="gray5">

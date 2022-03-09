@@ -14,7 +14,8 @@ import {
 	Padding,
 	Drag,
 	Drop,
-	Container
+	Container,
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { actionsRetriever } from './commons/folder-actions';
 import { FolderActionsType } from '../../types/folder';
@@ -84,8 +85,7 @@ export const SetDropdownActions = (
 				.map((action) =>
 					action.id === FolderActionsType.NEW ||
 					action.id === FolderActionsType.MOVE ||
-					action.id === FolderActionsType.DELETE ||
-					action.id === FolderActionsType.EMPTY
+					action.id === FolderActionsType.DELETE
 						? { ...action, disabled: true }
 						: action
 				);
@@ -346,7 +346,9 @@ const setAccordionCustomComponent = ({
 								>
 									<Icon size="large" icon={folderIconLabel} customColor={folderIconColor} />
 									<Padding right="large" />
-									<AccordionItem {...props} height={40} />
+									<Tooltip label={folder.label} placement="right" maxWidth="100%">
+										<AccordionItem {...props} height={40} />
+									</Tooltip>
 								</Row>
 							</Dropdown>
 						</AppLink>
