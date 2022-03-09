@@ -9,7 +9,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
-import { cloneDeep, forEach, map, merge, uniqBy } from 'lodash';
+import { forEach, map, merge, uniqBy } from 'lodash';
 import { Conversation } from '../types/conversation';
 import { Folder } from '../types/folder';
 import { ConversationsFolderStatus, ConversationsStateType, StateType } from '../types/state';
