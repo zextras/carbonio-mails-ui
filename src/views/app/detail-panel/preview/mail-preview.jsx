@@ -386,10 +386,6 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 	);
 	const [open, setOpen] = useState(expanded);
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
-	const messageStatus = useSelector(selectMessagesStatus)[message.id];
-	// const msg = useSelector(createSelector([selectMessages], (msgs) => msgs[message.id] ?? {}));
-
-	// const aggregatedMessage = useMemo(() => ({ ...message, ...msg }), [message, msg]);
 
 	const moveToTrash = useCallback(() => {
 		dispatch(
@@ -515,7 +511,7 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 					disableTransition
 					data-testid="MailMessageRendererCollapse"
 				>
-					{messageStatus === 'complete' && collapsedContent}
+					{message.isComplete && collapsedContent}
 				</Collapse>
 			</Container>
 		</Container>

@@ -25,7 +25,7 @@ export type SearchConvReturn = {
 
 export const searchConv = createAsyncThunk<SearchConvReturn, SearchConvParameters>(
 	'conversations/searchConv',
-	async ({ conversationId, folderId, fetch = '0' }) => {
+	async ({ conversationId, folderId, fetch = 'all' }) => {
 		const result = (await soapFetch<SearchConvRequest, SearchConvResponse>('SearchConv', {
 			_jsns: 'urn:zimbraMail',
 			cid: conversationId,

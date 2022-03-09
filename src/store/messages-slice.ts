@@ -70,8 +70,7 @@ function searchConvFulfilled(
 ): void {
 	forEach(payload.messages, (m) => {
 		// eslint-disable-next-line no-param-reassign
-		messages[m.id] = { ...m, isComplete: false };
-		status[m.id] = 'complete';
+		messages[m.id] = { ...m, isComplete: true };
 	});
 }
 

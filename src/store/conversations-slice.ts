@@ -9,7 +9,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
-import { forEach, map, merge, uniqBy } from 'lodash';
+import { cloneDeep, forEach, map, merge, uniqBy } from 'lodash';
 import { Conversation } from '../types/conversation';
 import { Folder } from '../types/folder';
 import { ConversationsFolderStatus, ConversationsStateType, StateType } from '../types/state';
@@ -230,6 +230,13 @@ export function selectCurrentFolderExpandedStatus({
 	conversations
 }: StateType): Record<string, string> {
 	return conversations.expandedStatus;
+}
+
+export function selectConversationExpandedStatus(
+	{ conversations }: StateType,
+	id: string
+): 'pending' | 'error' | 'complete' | undefined {
+	return conversations?.expandedStatus?.[id];
 }
 
 export function selectFolder({ folders }: StateType, id: string): Folder {

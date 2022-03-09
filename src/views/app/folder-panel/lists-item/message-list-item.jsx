@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo, useCallback, useEffect } from 'react';
-import { find, isEmpty } from 'lodash';
+import { find, isEmpty, isNil } from 'lodash';
 import { useUserAccounts, useAppContext, replaceHistory } from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
@@ -14,8 +14,7 @@ import {
 	Row,
 	Text,
 	Drag,
-	Tooltip,
-	Shimmer
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -25,7 +24,6 @@ import { selectFolder } from '../../../../store/conversations-slice';
 import { ItemAvatar } from './item-avatar';
 import ListItemActionWrapper from './list-item-actions-wrapper';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
-import { searchConv } from '../../../../store/actions';
 
 function previewFile(file) {
 	const preview = document.querySelector('img');
@@ -128,7 +126,7 @@ export default function MessageListItem({
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				replaceHistory(`/folder/${folderId}/message/${item.id}`);
-				if (!item.read) {
+				if (item.read === 'false') {
 					setMsgRead([item.id], false, t, dispatch).click();
 				}
 			}

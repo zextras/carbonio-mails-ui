@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import { map, sortBy, find, filter } from 'lodash';
 import PreviewPanelHeader from './preview/preview-panel-header';
 import {
+	selectConversationExpandedStatus,
 	selectConversationsArray,
 	selectCurrentFolderExpandedStatus
 } from '../../../store/conversations-slice';
@@ -65,15 +66,19 @@ export default function ConversationPreviewPanel() {
 	const dispatch = useDispatch();
 
 	const conversations = useSelector(selectConversationsArray);
-
+	const conversationsStatus = useSelector((state) =>
+		selectConversationExpandedStatus(state, conversationId)
+	);
 	const conversation = useMemo(
 		() => find(conversations, ['id', conversationId]),
 		[conversationId, conversations]
 	);
 
 	useEffect(() => {
-		dispatch(searchConv({ conversationId, fetch: 'all', folderId }));
-	}, [conversation, conversationId, dispatch, folderId]);
+		if (conversationsStatus !== 'complete' && conversationsStatus !== 'pending') {
+			dispatch(searchConv({ conversationId, fetch: 'all', folderId }));
+		}
+	}, [conversationId, conversationsStatus, dispatch, folderId]);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">

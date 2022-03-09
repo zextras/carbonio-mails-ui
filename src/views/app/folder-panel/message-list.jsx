@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import { Container, List, Padding, Shimmer, Text } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { useAppContext } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { selectConversationStatus, selectFolder } from '../../../store/conversations-slice';
 import MessageListItem from './lists-item/message-list-item';
@@ -83,16 +83,16 @@ const MessageList = () => {
 
 	const displayerTitle = useMemo(() => {
 		if (messages?.length === 0) {
-			if (folderId === '4') {
+			if (folderId === FOLDERS.SPAM) {
 				return t('displayer.list_spam_title', 'There are no spam e-mails');
 			}
-			if (folderId === '5') {
+			if (folderId === FOLDERS.SENT) {
 				return t('displayer.list_sent_title', 'You haven’t sent any e-mail yet');
 			}
-			if (folderId === '6') {
+			if (folderId === FOLDERS.DRAFTS) {
 				return t('displayer.list_draft_title', 'There are no saved drafts');
 			}
-			if (folderId === '3') {
+			if (folderId === FOLDERS.TRASH) {
 				return t('displayer.list_trash_title', 'The trash is empty');
 			}
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');

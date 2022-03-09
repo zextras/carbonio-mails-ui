@@ -13,8 +13,7 @@ import {
 	registerActions,
 	registerFunctions,
 	ACTION_TYPES,
-	getBridgedFunctions,
-	useUserSettings
+	getBridgedFunctions
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -72,7 +71,6 @@ const SidebarView = (props) => (
 
 const App = () => {
 	const [t] = useTranslation();
-	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
 	useEffect(() => {
 		addRoute({
 			route: MAILS_ROUTE,
@@ -96,7 +94,7 @@ const App = () => {
 			route: MAILS_ROUTE,
 			component: EditView
 		});
-	}, [t, zimbraPrefGroupMailBy]);
+	}, [t]);
 
 	useEffect(() => {
 		registerActions(

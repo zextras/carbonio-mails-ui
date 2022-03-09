@@ -28,7 +28,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { selectCurrentFolderExpandedStatus } from '../../../../store/conversations-slice';
+import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
 import MessageListItem from './message-list-item';
 import { searchConv } from '../../../../store/actions';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
@@ -146,7 +146,9 @@ export default function ConversationListItem({
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 	const messages = useSelector(selectMessages);
-	const conversationStatus = useSelector(selectCurrentFolderExpandedStatus)[item.id];
+	const conversationStatus = useSelector((state) =>
+		selectConversationExpandedStatus(state, item.id)
+	);
 	const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 
 	const participantsString = useMemo(
@@ -164,13 +166,17 @@ export default function ConversationListItem({
 		(e) => {
 			e.preventDefault();
 			setOpen((currentlyOpen) => {
-				if (!currentlyOpen) {
+				if (
+					!currentlyOpen &&
+					conversationStatus !== 'complete' &&
+					conversationStatus !== 'pending'
+				) {
 					dispatch(searchConv({ folderId, conversationId: item.id, fetch: 'all' }));
 				}
 				return !currentlyOpen;
 			});
 		},
-		[dispatch, folderId, item.id]
+		[conversationStatus, dispatch, folderId, item.id]
 	);
 
 	const _onClick = useCallback(
