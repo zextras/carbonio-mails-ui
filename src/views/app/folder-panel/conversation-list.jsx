@@ -20,7 +20,7 @@ import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { selectConversationStatus, selectFolder } from '../../../store/conversations-slice';
 import ConversationListItem from './lists-item/conversation-list-item';
-import { fetchConversations } from '../../../store/actions';
+import { search } from '../../../store/actions';
 import SelectPanelActions from '../../../ui-actions/select-panel-action';
 import { Breadcrumbs } from './breadcrumbs';
 import { useSelection } from '../../../hooks/useSelection';
@@ -81,7 +81,7 @@ const ConversationList = () => {
 			if (hasMore && !isLoading) {
 				setIsLoading(true);
 				const dateOrNull = date ? new Date(date) : null;
-				dispatch(fetchConversations({ folderId, before: dateOrNull, limit: 50 })).then(() => {
+				dispatch(search({ folderId, before: dateOrNull, limit: 50 })).then(() => {
 					setIsLoading(false);
 				});
 			}

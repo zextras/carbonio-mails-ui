@@ -39,6 +39,7 @@ export type FoldersStateType = {
 };
 
 export type MsgStateType = {
+	searchedInFolder: Record<string, string>;
 	messages: MsgMap;
 	status: Record<string, Status>;
 };

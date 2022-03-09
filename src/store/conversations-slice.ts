@@ -17,7 +17,7 @@ import {
 	convAction,
 	ConvActionParameters,
 	ConvActionResult,
-	fetchConversations,
+	search,
 	FetchConversationsReturn,
 	getConv,
 	searchConv
@@ -40,12 +40,14 @@ function fetchConversationsFulfilled(
 	state: ConversationsStateType,
 	{ payload, meta }: { payload: FetchConversationsReturn; meta: any }
 ): void {
-	state.conversations = { ...state.conversations, ...payload.conversations };
-	state.status = payload.hasMore ? 'hasMore' : 'complete';
-	state.searchedInFolder = {
-		...state.searchedInFolder,
-		[meta.arg.folderId]: 'complete'
-	};
+	if (payload?.types === 'conversation' && payload?.conversations) {
+		state.conversations = { ...state.conversations, ...payload.conversations };
+		state.searchedInFolder = {
+			...state.searchedInFolder,
+			[meta.arg.folderId]: 'complete'
+		};
+	}
+	state.status = payload?.hasMore ? 'hasMore' : 'complete';
 }
 
 function fetchConversationsRejected(state: ConversationsStateType): void {
@@ -189,9 +191,9 @@ export const conversationsSlice = createSlice({
 		setSearchedInFolder: produce(setSearchedInFolderReducer)
 	},
 	extraReducers: (builder) => {
-		builder.addCase(fetchConversations.pending, produce(fetchConversationsPending));
-		builder.addCase(fetchConversations.fulfilled, produce(fetchConversationsFulfilled));
-		builder.addCase(fetchConversations.rejected, produce(fetchConversationsRejected));
+		builder.addCase(search.pending, produce(fetchConversationsPending));
+		builder.addCase(search.fulfilled, produce(fetchConversationsFulfilled));
+		builder.addCase(search.rejected, produce(fetchConversationsRejected));
 		builder.addCase(searchConv.pending, produce(searchConvPending));
 		builder.addCase(searchConv.fulfilled, produce(searchConvFulfilled));
 		builder.addCase(searchConv.rejected, produce(searchConvRejected));

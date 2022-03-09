@@ -5,19 +5,21 @@
  */
 /* eslint-disable no-nested-ternary */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
 import { Container } from '@zextras/carbonio-design-system';
+import { isNil } from 'lodash';
 import { ActionsContextProvider } from '../../commons/actions-context';
 import ConversationList from './folder-panel/conversation-list';
 import MessageList from './folder-panel/message-list';
+import ShimmerList from '../search/shimmer-list';
 
 export default function FolderPanel() {
 	const { folderId } = useParams();
-	const { isMessageView } = useAppContext();
 	const dispatch = useDispatch();
+	const { isMessageView } = useAppContext();
 
 	useEffect(() => {
 		if (folderId) {
@@ -28,7 +30,9 @@ export default function FolderPanel() {
 		}
 	}, [folderId, dispatch]);
 
-	return (
+	return isNil(isMessageView) ? (
+		<ShimmerList />
+	) : (
 		<ActionsContextProvider isConversation={!isMessageView} folderId={folderId}>
 			<Container
 				orientation="row"

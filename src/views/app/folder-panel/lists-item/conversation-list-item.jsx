@@ -171,11 +171,13 @@ export default function ConversationListItem({
 	const _onClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
-				setConversationsRead([item.id], false, t, dispatch).click();
+				if (item?.read === false) {
+					setConversationsRead([item.id], false, t, dispatch).click();
+				}
 				pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 			}
 		},
-		[item.id, t, dispatch, folderId]
+		[item?.read, item.id, t, dispatch, folderId]
 	);
 
 	const _onDoubleClick = useCallback(

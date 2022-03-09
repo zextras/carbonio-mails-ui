@@ -14,23 +14,16 @@ import {
 	selectConversationsArray,
 	selectCurrentFolderExpandedStatus
 } from '../../../store/conversations-slice';
-import { getConv } from '../../../store/actions';
+import { searchConv } from '../../../store/actions';
 import MailPreview from './preview/mail-preview';
-import PreviewPanelActions from './preview/preview-panel-actions';
 import { selectMessages } from '../../../store/messages-slice';
 
-export default function ConversationPreviewPanel() {
+const MessagesComponent = ({ conversation }) => {
 	const { conversationId, folderId } = useParams();
 	const settings = useUserSettings();
-
-	const dispatch = useDispatch();
-
-	const conversations = useSelector(selectConversationsArray);
-	const conversation = useMemo(
-		() => find(conversations, ['id', conversationId]),
-		[conversationId, conversations]
-	);
 	const messages = useSelector(selectMessages);
+	const conversationStatus = useSelector(selectCurrentFolderExpandedStatus)[conversationId];
+
 	const convMessages = useMemo(() => {
 		const msgs =
 			folderId !== FOLDERS.TRASH
@@ -44,34 +37,43 @@ export default function ConversationPreviewPanel() {
 		}
 		return msgs;
 	}, [conversation?.messages, messages, settings.prefs.zimbraPrefConversationOrder, folderId]);
-	const conversationStatus = useSelector(selectCurrentFolderExpandedStatus)[conversationId];
+
+	const expand = (message, index) => {
+		if (settings.prefs.zimbraPrefConversationOrder === 'dateAsc') {
+			return index === convMessages.length - 1;
+		}
+		return index === 0;
+	};
+	if (conversation && conversationStatus === 'complete') {
+		return map(convMessages, (message, index) => (
+			<Padding key={`mail-pre-${index}`} bottom="medium" width="100%">
+				<MailPreview
+					key={`${message.id}-${message.id}`}
+					message={message}
+					expanded={expand(message, index)}
+					isAlone={conversation.messages.length === 1}
+					isMessageView={false}
+				/>
+			</Padding>
+		));
+	}
+	return null;
+};
+
+export default function ConversationPreviewPanel() {
+	const { conversationId, folderId } = useParams();
+	const dispatch = useDispatch();
+
+	const conversations = useSelector(selectConversationsArray);
+
+	const conversation = useMemo(
+		() => find(conversations, ['id', conversationId]),
+		[conversationId, conversations]
+	);
 
 	useEffect(() => {
-		dispatch(getConv({ conversationId, fetch: conversation?.messages?.[0]?.id ?? '1', folderId }));
+		dispatch(searchConv({ conversationId, fetch: 'all', folderId }));
 	}, [conversation, conversationId, dispatch, folderId]);
-
-	const messagesComponent = useMemo(() => {
-		const expand = (message, index) => {
-			if (settings.prefs.zimbraPrefConversationOrder === 'dateAsc') {
-				return index === convMessages.length - 1;
-			}
-			return index === 0;
-		};
-		if (conversation && conversationStatus === 'complete') {
-			return map(convMessages, (message, index) => (
-				<Padding key={`mail-pre-${index}`} bottom="medium" width="100%">
-					<MailPreview
-						key={`${message.id}-${message.id}`}
-						message={message}
-						expanded={expand(message, index)}
-						isAlone={conversation.messages.length === 1}
-						isMessageView={false}
-					/>
-				</Padding>
-			));
-		}
-		return [];
-	}, [conversation, conversationStatus, settings.prefs.zimbraPrefConversationOrder, convMessages]);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
@@ -88,7 +90,7 @@ export default function ConversationPreviewPanel() {
 						mainAlignment="flex-start"
 					>
 						<Container height="fit" mainAlignment="flex-start" background="gray5">
-							{messagesComponent}
+							<MessagesComponent conversation={conversation} />
 						</Container>
 					</Container>
 				</>

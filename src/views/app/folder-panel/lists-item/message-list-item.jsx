@@ -78,11 +78,7 @@ export default function MessageListItem({
 	const messageFolder = useSelector((state) => selectFolder(state, item.parent));
 	const ids = useMemo(() => Object.keys(selectedItems ?? []), [selectedItems]);
 	const dispatch = useDispatch();
-	useEffect(() => {
-		if (!item.participants) {
-			dispatch(searchConv({ folderId, conversationId: item.convId, fetch: '0' }));
-		}
-	}, [dispatch, folderId, item.convId, item.participants]);
+
 	const [date, participantsString] = useMemo(() => {
 		if (item) {
 			const sender = find(item.participants, ['type', 'f']);
@@ -90,6 +86,7 @@ export default function MessageListItem({
 		}
 		return ['.', '.', '', ''];
 	}, [item, t, accounts]);
+
 	const [showIcon, icon, iconTooltip, iconId] = useMemo(() => {
 		if (item) {
 			if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
@@ -166,10 +163,7 @@ export default function MessageListItem({
 			: { color: 'primary', weight: 'bold', badge: 'unread' };
 	}, [item.read]);
 
-	// eslint-disable-next-line no-nested-ternary
-	return !item.participants ? (
-		<Shimmer.ListItem type={1} />
-	) : draggedIds?.[item?.id] || visible || !isMessageView ? (
+	return draggedIds?.[item?.id] || visible || !isMessageView ? (
 		<Drag
 			type="message"
 			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}

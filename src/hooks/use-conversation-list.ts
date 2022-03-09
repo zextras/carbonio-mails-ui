@@ -8,12 +8,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { fetchConversations } from '../store/actions';
-import {
-	selectConversationsArray,
-	selectCurrentFolder,
-	selectFolderSearchStatus
-} from '../store/conversations-slice';
+import { search } from '../store/actions';
+import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import { Conversation } from '../types/conversation';
 import { StateType } from '../types/state';
 import { selectFolders } from '../store/folders-slice';
@@ -37,7 +33,7 @@ export const useConversationListItems = (): Array<Conversation> => {
 			// todo: to fix this error the dispatcher in shell must be fixed
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			dispatch(fetchConversations({ folderId, limit: 101, sortBy })).then(() => {
+			dispatch(search({ folderId, limit: 101, sortBy })).then(() => {
 				setIsLoading(false);
 			});
 		}

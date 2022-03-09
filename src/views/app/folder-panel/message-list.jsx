@@ -6,7 +6,7 @@
 import { map, reduce, find } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { List } from '@zextras/carbonio-design-system';
+import { List, Shimmer } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
@@ -14,7 +14,7 @@ import { selectConversationStatus, selectFolder } from '../../../store/conversat
 import MessageListItem from './lists-item/message-list-item';
 import SelectMessagesPanelActions from '../../../ui-actions/select-panel-action-message';
 import { Breadcrumbs } from './breadcrumbs';
-import { fetchConversations } from '../../../store/actions';
+import { search } from '../../../store/actions';
 import { useSelection } from '../../../hooks/useSelection';
 import { useMessageList } from '../../../hooks/use-message-list';
 
@@ -67,13 +67,14 @@ const MessageList = () => {
 			if (hasMore && !isLoading) {
 				setIsLoading(true);
 				const dateOrNull = date ? new Date(date) : null;
-				dispatch(fetchConversations({ folderId, before: dateOrNull, limit: 50 })).then(() => {
+				dispatch(search({ folderId, before: dateOrNull, limit: 50, types: 'message' })).then(() => {
 					setIsLoading(false);
 				});
 			}
 		},
 		[hasMore, isLoading, dispatch, folderId]
 	);
+
 	useEffect(() => {
 		setDraggedIds(selected);
 	}, [selected]);
@@ -90,22 +91,26 @@ const MessageList = () => {
 			) : (
 				<Breadcrumbs folderPath={folder?.path} itemsCount={folder?.itemsCount} />
 			)}
-			<List
-				style={{ paddingBottom: '4px' }}
-				selected={selected}
-				active={itemId}
-				items={messages}
-				itemProps={{
-					toggle,
-					folderId,
-					setDraggedIds,
-					setIsDragging,
-					selectedItems: selected,
-					dragImageRef
-				}}
-				ItemComponent={MessageListItem}
-				onListBottom={() => loadMore(messages?.[messages.length - 1]?.date)}
-			/>
+			{messages?.length > 0 ? (
+				<List
+					style={{ paddingBottom: '4px' }}
+					selected={selected}
+					active={itemId}
+					items={messages}
+					itemProps={{
+						toggle,
+						folderId,
+						setDraggedIds,
+						setIsDragging,
+						selectedItems: selected,
+						dragImageRef
+					}}
+					ItemComponent={MessageListItem}
+					onListBottom={() => loadMore(messages?.[messages.length - 1]?.date)}
+				/>
+			) : (
+				<Shimmer.ListItem type={1} />
+			)}
 			<DragImageContainer ref={dragImageRef}>
 				{isDragging && <DragItems messages={messages} draggedIds={draggedIds} />}
 			</DragImageContainer>

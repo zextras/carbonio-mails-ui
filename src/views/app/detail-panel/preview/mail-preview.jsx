@@ -387,18 +387,18 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 	const [open, setOpen] = useState(expanded);
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
 	const messageStatus = useSelector(selectMessagesStatus)[message.id];
-	const msg = useSelector(createSelector([selectMessages], (msgs) => msgs[message.id] ?? {}));
+	// const msg = useSelector(createSelector([selectMessages], (msgs) => msgs[message.id] ?? {}));
 
-	const aggregatedMessage = useMemo(() => ({ ...message, ...msg }), [message, msg]);
+	// const aggregatedMessage = useMemo(() => ({ ...message, ...msg }), [message, msg]);
 
 	const moveToTrash = useCallback(() => {
 		dispatch(
 			msgAction({
 				operation: `trash`,
-				ids: [msg.id]
+				ids: [message.id]
 			})
 		);
-	}, [msg, dispatch]);
+	}, [message, dispatch]);
 
 	// this is necessary because if somebody click a message in the same conversation
 	// already open that message will not be expanded
@@ -428,11 +428,6 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 		[message]
 	);
 
-	useEffect(() => {
-		if (!message.isComplete) {
-			dispatch(getMsg({ msgId: message.id }));
-		}
-	}, [message, open, dispatch]);
 	const loggedInUser = useMemo(() => accounts[0]?.name, [accounts]);
 	const isAttendee = useMemo(
 		() => message.invite?.[0]?.comp?.[0]?.or?.a !== loggedInUser,
@@ -450,7 +445,7 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 				background="gray6"
 			>
 				<Row>
-					<AttachmentsBlock message={aggregatedMessage} />
+					<AttachmentsBlock message={message} />
 				</Row>
 				<Padding style={{ width: '100%' }} vertical="medium">
 					{showAppointmentInvite ? (
@@ -458,7 +453,7 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 							<InviteResponse
 								// eslint-disable-next-line @typescript-eslint/no-empty-function
 								onLoadChange={() => {}}
-								mailMsg={aggregatedMessage}
+								mailMsg={message}
 								inviteId={`${message.invite[0].comp[0].apptId}-${message.id}`}
 								participationStatus={
 									message.invite[0].replies ? message.invite[0].replies[0].reply[0].ptst : ''
@@ -475,12 +470,12 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 						<SharedInviteReply
 							title={message.fragment.split('Shared item:')[0]}
 							sharedContent={message.shr[0].content}
-							mailMsg={aggregatedMessage}
+							mailMsg={message}
 						/>
 					) : (
 						<MailMessageRenderer
 							key={message.id}
-							mailMsg={aggregatedMessage}
+							mailMsg={message}
 							// eslint-disable-next-line @typescript-eslint/no-empty-function
 							onLoadChange={() => {}}
 						/>
@@ -488,15 +483,7 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 				</Padding>
 			</Container>
 		),
-		[
-			aggregatedMessage,
-			InviteResponse,
-			message,
-			moveToTrash,
-			showShareInvite,
-			showAppointmentInvite,
-			isAttendee
-		]
+		[message, InviteResponse, moveToTrash, showShareInvite, showAppointmentInvite, isAttendee]
 	);
 	const onClick = () => {
 		setOpen((o) => !o);
@@ -505,7 +492,7 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 		<Container ref={mailContainerRef} height="fit" data-testid={`MailPreview-${message.id}`}>
 			<MailPreviewBlock
 				onClick={onClick}
-				message={aggregatedMessage}
+				message={message}
 				timezone={timezone}
 				// open={isAlone ? true : open}
 				// eslint-disable-next-line no-nested-ternary
