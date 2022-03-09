@@ -8,9 +8,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { search } from '../store/actions';
+import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
 import { MailMessage } from '../types/mail-message';
 import { StateType } from '../types/state';
-import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
 
 type RouteParams = {
 	folderId: string;
@@ -38,7 +38,5 @@ export const useMessageList = (): Array<Partial<MailMessage>> => {
 		}
 	}, [dispatch, folderId, folderMsgStatus, isLoading]);
 
-	const currentList = useMemo(() => filter(messages, ['parent', folderId]), [folderId, messages]);
-
-	return currentList;
+	return useMemo(() => filter(messages, ['parent', folderId]), [folderId, messages]);
 };

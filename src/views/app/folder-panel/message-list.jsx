@@ -6,10 +6,11 @@
 import { map, reduce, find } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { List, Shimmer } from '@zextras/carbonio-design-system';
+import { Container, List, Padding, Shimmer, Text } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 import { selectConversationStatus, selectFolder } from '../../../store/conversations-slice';
 import MessageListItem from './lists-item/message-list-item';
 import SelectMessagesPanelActions from '../../../ui-actions/select-panel-action-message';
@@ -17,6 +18,8 @@ import { Breadcrumbs } from './breadcrumbs';
 import { search } from '../../../store/actions';
 import { useSelection } from '../../../hooks/useSelection';
 import { useMessageList } from '../../../hooks/use-message-list';
+import { selectFolderMsgSearchStatus } from '../../../store/messages-slice';
+import ShimmerList from '../../search/shimmer-list';
 
 const DragImageContainer = styled.div`
 	position: absolute;
@@ -60,6 +63,9 @@ const MessageList = () => {
 	const status = useSelector(selectConversationStatus);
 	const { selected, isSelecting, toggle, deselectAll } = useSelection(folderId, setCount);
 	const messages = useMessageList();
+	const [t] = useTranslation();
+
+	const messageListStatus = useSelector((store) => selectFolderMsgSearchStatus(store, folderId));
 
 	const hasMore = useMemo(() => status === 'hasMore', [status]);
 	const loadMore = useCallback(
@@ -74,6 +80,25 @@ const MessageList = () => {
 		},
 		[hasMore, isLoading, dispatch, folderId]
 	);
+
+	const displayerTitle = useMemo(() => {
+		if (messages?.length === 0) {
+			if (folderId === '4') {
+				return t('displayer.list_spam_title', 'There are no spam e-mails');
+			}
+			if (folderId === '5') {
+				return t('displayer.list_sent_title', 'You haven’t sent any e-mail yet');
+			}
+			if (folderId === '6') {
+				return t('displayer.list_draft_title', 'There are no saved drafts');
+			}
+			if (folderId === '3') {
+				return t('displayer.list_trash_title', 'The trash is empty');
+			}
+			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
+		}
+		return null;
+	}, [t, messages, folderId]);
 
 	useEffect(() => {
 		setDraggedIds(selected);
@@ -91,29 +116,46 @@ const MessageList = () => {
 			) : (
 				<Breadcrumbs folderPath={folder?.path} itemsCount={folder?.itemsCount} />
 			)}
-			{messages?.length > 0 ? (
-				<List
-					style={{ paddingBottom: '4px' }}
-					selected={selected}
-					active={itemId}
-					items={messages}
-					itemProps={{
-						toggle,
-						folderId,
-						setDraggedIds,
-						setIsDragging,
-						selectedItems: selected,
-						dragImageRef
-					}}
-					ItemComponent={MessageListItem}
-					onListBottom={() => loadMore(messages?.[messages.length - 1]?.date)}
-				/>
+			{messageListStatus === 'complete' ? (
+				<>
+					{messages?.length > 0 ? (
+						<List
+							style={{ paddingBottom: '4px' }}
+							selected={selected}
+							active={itemId}
+							items={messages}
+							itemProps={{
+								toggle,
+								folderId,
+								setDraggedIds,
+								setIsDragging,
+								selectedItems: selected,
+								dragImageRef
+							}}
+							ItemComponent={MessageListItem}
+							onListBottom={() => loadMore(messages?.[messages.length - 1]?.date)}
+						/>
+					) : (
+						<Container>
+							<Padding top="medium">
+								<Text
+									color="gray1"
+									overflow="break-word"
+									size="small"
+									style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '32px' }}
+								>
+									{displayerTitle}
+								</Text>
+							</Padding>
+						</Container>
+					)}
+					<DragImageContainer ref={dragImageRef}>
+						{isDragging && <DragItems messages={messages} draggedIds={draggedIds} />}
+					</DragImageContainer>
+				</>
 			) : (
-				<Shimmer.ListItem type={1} />
+				<ShimmerList count={folder.itemsCount} />
 			)}
-			<DragImageContainer ref={dragImageRef}>
-				{isDragging && <DragItems messages={messages} draggedIds={draggedIds} />}
-			</DragImageContainer>
 		</>
 	);
 };

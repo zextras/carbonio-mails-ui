@@ -5,8 +5,10 @@
  */
 import React, { Suspense, lazy, useState, useEffect, useMemo } from 'react';
 import { Redirect, Switch, Route, useRouteMatch } from 'react-router-dom';
-import { setAppContext, Spinner, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, setAppContext, Spinner, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Container } from '@zextras/carbonio-design-system';
+import { useSelector } from 'react-redux';
+import { selectCurrentFolder } from '../store/conversations-slice';
 
 const LazyFolderView = lazy(() =>
 	import(/* webpackChunkName: "folder-panel-view" */ './app/folder-panel')
@@ -20,10 +22,13 @@ const AppView = () => {
 	const { path } = useRouteMatch();
 	const [count, setCount] = useState(0);
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
-
+	const currentFolderId = useSelector(selectCurrentFolder);
 	const isMessageView = useMemo(
-		() => (zimbraPrefGroupMailBy ? zimbraPrefGroupMailBy === 'message' : undefined),
-		[zimbraPrefGroupMailBy]
+		() =>
+			zimbraPrefGroupMailBy
+				? zimbraPrefGroupMailBy === 'message' || currentFolderId === FOLDERS.DRAFTS
+				: undefined,
+		[currentFolderId, zimbraPrefGroupMailBy]
 	);
 
 	useEffect(() => {

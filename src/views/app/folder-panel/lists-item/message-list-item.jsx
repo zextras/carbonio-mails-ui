@@ -70,7 +70,8 @@ export default function MessageListItem({
 	setIsDragging,
 	selectedItems,
 	dragImageRef,
-	visible
+	visible,
+	isConvChildren
 }) {
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
@@ -127,10 +128,12 @@ export default function MessageListItem({
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				replaceHistory(`/folder/${folderId}/message/${item.id}`);
-				setMsgRead([item.id], false, t, dispatch).click();
+				if (!item.read) {
+					setMsgRead([item.id], false, t, dispatch).click();
+				}
 			}
 		},
-		[dispatch, folderId, t, item.id]
+		[folderId, item.id, item.read, t, dispatch]
 	);
 	const _onDoubleClick = useCallback(
 		(e) => {
@@ -163,7 +166,7 @@ export default function MessageListItem({
 			: { color: 'primary', weight: 'bold', badge: 'unread' };
 	}, [item.read]);
 
-	return draggedIds?.[item?.id] || visible || !isMessageView ? (
+	return draggedIds?.[item?.id] || visible || isConvChildren ? (
 		<Drag
 			type="message"
 			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}

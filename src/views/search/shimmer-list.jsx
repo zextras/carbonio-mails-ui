@@ -3,16 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Shimmer } from '@zextras/carbonio-design-system';
-import { map } from 'lodash';
+import { isNil, map } from 'lodash';
 
-const ShimmerList = () => (
-	<>
-		{map(Array.from(Array(15).keys()), (item, index) => (
-			<Shimmer.ListItem type={1} key={`${item}${index}`} />
-		))}
-	</>
-);
+const ShimmerList = ({ count }) => {
+	const arr = useMemo(
+		() => Array.from(Array(!isNil(count) && count < 13 ? count : 13).keys()),
+		[count]
+	);
+	return (
+		<>
+			{map(arr, (item, index) => (
+				<Shimmer.ListItem type={1} key={`${item}${index}`} />
+			))}
+		</>
+	);
+};
 
 export default ShimmerList;

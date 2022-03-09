@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { search } from '../store/actions';
+import { search } from '../store/actions/search';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import { Conversation } from '../types/conversation';
 import { StateType } from '../types/state';

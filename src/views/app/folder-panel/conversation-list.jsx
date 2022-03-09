@@ -18,7 +18,11 @@ import styled from 'styled-components';
 import { find, map, reduce } from 'lodash';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
-import { selectConversationStatus, selectFolder } from '../../../store/conversations-slice';
+import {
+	selectConversationStatus,
+	selectFolder,
+	selectFolderSearchStatus
+} from '../../../store/conversations-slice';
 import ConversationListItem from './lists-item/conversation-list-item';
 import { search } from '../../../store/actions';
 import SelectPanelActions from '../../../ui-actions/select-panel-action';
@@ -26,6 +30,7 @@ import { Breadcrumbs } from './breadcrumbs';
 import { useSelection } from '../../../hooks/useSelection';
 import { handleKeyboardShortcuts } from '../../../hooks/keyboard-shortcuts';
 import { useConversationListItems } from '../../../hooks/use-conversation-list';
+import ShimmerList from '../../search/shimmer-list';
 
 const DragImageContainer = styled.div`
 	position: absolute;
@@ -70,6 +75,7 @@ const ConversationList = () => {
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const status = useSelector(selectConversationStatus);
+	const conversationListStatus = useSelector((store) => selectFolderSearchStatus(store, folderId));
 
 	const { selected, isSelecting, toggle, deselectAll } = useSelection(folderId, setCount);
 	const folder = useSelector((state) => selectFolder(state, folderId));
@@ -136,42 +142,48 @@ const ConversationList = () => {
 			) : (
 				<Breadcrumbs folderPath={folder?.path.substring(1)} itemsCount={folder?.itemsCount} />
 			)}
-			<Divider color="gray2" />
-			{conversations?.length === 0 ? (
-				<Container>
-					<Padding top="medium">
-						<Text
-							color="gray1"
-							overflow="break-word"
-							size="small"
-							style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '32px' }}
-						>
-							{displayerTitle}
-						</Text>
-					</Padding>
-				</Container>
+			{conversationListStatus === 'complete' ? (
+				<>
+					<Divider color="gray2" />
+					{conversations?.length === 0 ? (
+						<Container>
+							<Padding top="medium">
+								<Text
+									color="gray1"
+									overflow="break-word"
+									size="small"
+									style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '32px' }}
+								>
+									{displayerTitle}
+								</Text>
+							</Padding>
+						</Container>
+					) : (
+						<List
+							style={{ paddingBottom: '4px' }}
+							selected={selected}
+							active={itemId}
+							items={conversations}
+							itemProps={{
+								toggle,
+								// messages,
+								folderId,
+								setDraggedIds,
+								setIsDragging,
+								selectedItems: selected,
+								dragImageRef
+							}}
+							ItemComponent={ConversationListItem}
+							onListBottom={() => loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)}
+						/>
+					)}
+					<DragImageContainer ref={dragImageRef}>
+						{isDragging && <DragItems conversations={conversations} draggedIds={draggedIds} />}
+					</DragImageContainer>
+				</>
 			) : (
-				<List
-					style={{ paddingBottom: '4px' }}
-					selected={selected}
-					active={itemId}
-					items={conversations}
-					itemProps={{
-						toggle,
-						// messages,
-						folderId,
-						setDraggedIds,
-						setIsDragging,
-						selectedItems: selected,
-						dragImageRef
-					}}
-					ItemComponent={ConversationListItem}
-					onListBottom={() => loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)}
-				/>
+				<ShimmerList count={folder.itemsCount} />
 			)}
-			<DragImageContainer ref={dragImageRef}>
-				{isDragging && <DragItems conversations={conversations} draggedIds={draggedIds} />}
-			</DragImageContainer>
 		</>
 	);
 };

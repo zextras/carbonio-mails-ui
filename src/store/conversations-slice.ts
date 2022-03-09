@@ -17,10 +17,10 @@ import {
 	convAction,
 	ConvActionParameters,
 	ConvActionResult,
-	search,
-	FetchConversationsReturn,
 	getConv,
-	searchConv
+	searchConv,
+	search,
+	FetchConversationsReturn
 } from './actions';
 import {
 	handleAddMessagesInConversationReducer,
@@ -50,8 +50,12 @@ function fetchConversationsFulfilled(
 	state.status = payload?.hasMore ? 'hasMore' : 'complete';
 }
 
-function fetchConversationsRejected(state: ConversationsStateType): void {
+function fetchConversationsRejected(state: ConversationsStateType, { meta }: { meta: any }): void {
 	state.status = 'error';
+	state.searchedInFolder = {
+		...state.searchedInFolder,
+		[meta.arg.folderId]: 'incomplete'
+	};
 }
 
 function searchConvFulfilled(state: ConversationsStateType, { payload, meta }: any): void {

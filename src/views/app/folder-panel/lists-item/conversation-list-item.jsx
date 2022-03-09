@@ -50,7 +50,12 @@ function ConversationMessagesList({ conversationStatus, messages, folderId }) {
 		<>
 			{map(messages, (msg, index) => (
 				<React.Fragment key={msg.id}>
-					<MessageListItem item={msg} conversationId={msg.parent} folderId={folderId} />
+					<MessageListItem
+						item={msg}
+						conversationId={msg.parent}
+						folderId={folderId}
+						isConvChildren
+					/>
 				</React.Fragment>
 			))}
 		</>
@@ -160,7 +165,7 @@ export default function ConversationListItem({
 			e.preventDefault();
 			setOpen((currentlyOpen) => {
 				if (!currentlyOpen) {
-					dispatch(searchConv({ folderId, conversationId: item.id, fetch: '0' }));
+					dispatch(searchConv({ folderId, conversationId: item.id, fetch: 'all' }));
 				}
 				return !currentlyOpen;
 			});

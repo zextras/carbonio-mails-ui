@@ -48,7 +48,7 @@ export const search = createAsyncThunk<FetchConversationsReturn, FetchConversati
 			query: queryPart.join(' ')
 		})) as SearchResponse;
 
-		if (types === 'conversation' && result.c) {
+		if (types === 'conversation') {
 			const conversations = map(result?.c ?? [], (obj) =>
 				normalizeConversation(obj)
 			) as unknown as Array<Conversation>;
@@ -77,7 +77,7 @@ export const search = createAsyncThunk<FetchConversationsReturn, FetchConversati
 				types
 			};
 		}
-		if (types === 'message' && result.m) {
+		if (types === 'message') {
 			return {
 				messages: reduce(
 					result.m ?? [],

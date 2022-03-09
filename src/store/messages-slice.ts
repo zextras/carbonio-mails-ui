@@ -9,15 +9,12 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
-import { cloneDeep, filter, forEach, map, merge, uniqBy, valuesIn } from 'lodash';
+import { cloneDeep, forEach, merge } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
-import { Conversation, ConvMessage } from '../types/conversation';
-import { IncompleteMessage, MailMessage } from '../types/mail-message';
+import { Conversation } from '../types/conversation';
+import { MailMessage } from '../types/mail-message';
 import { MsgMap, MsgStateType, StateType } from '../types/state';
-import { showNotification } from '../views/notifications';
 import {
-	convAction,
-	ConvActionResult,
 	search,
 	FetchConversationsReturn,
 	getConv,
@@ -39,11 +36,9 @@ function getMsgFulfilled(
 	{ payload }: { payload: MailMessage }
 ): void {
 	status[payload.id] = 'complete';
-	console.log('getMsg Fulfilled Before: ', cloneDeep(messages?.[payload.id]));
 	if (payload?.id) {
 		merge(messages?.[payload.id] ?? {}, { ...payload, isComplete: true });
 	}
-	console.log('getMsg Fulfilled After: ', cloneDeep(messages?.[payload.id]));
 }
 
 function fetchConversationsFulfilled(
@@ -75,7 +70,7 @@ function searchConvFulfilled(
 ): void {
 	forEach(payload.messages, (m) => {
 		// eslint-disable-next-line no-param-reassign
-		messages[m.id] = { ...m, isComplete: true };
+		messages[m.id] = { ...m, isComplete: false };
 		status[m.id] = 'complete';
 	});
 }

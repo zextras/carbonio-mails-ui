@@ -5,7 +5,7 @@
  */
 /* eslint-disable no-nested-ternary */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
