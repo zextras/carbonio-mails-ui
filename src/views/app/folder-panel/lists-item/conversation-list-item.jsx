@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isEmpty, reduce, trimStart, map, uniqBy, find, filter, findIndex } from 'lodash';
+import { isEmpty, reduce, trimStart, map, uniqBy, find, filter, findIndex, some } from 'lodash';
 import styled from 'styled-components';
 import {
 	pushHistory,

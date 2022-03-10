@@ -254,7 +254,7 @@ export function generateReplyText(
 
 	const textToRetArray = [
 		`\n\n---------------------------\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`,
-		`<br /><br /><hr><b>${labels.from}</b> ${headingFrom} <br /> <b>${labels.to}</b> ${headingTo} <br />`
+		`<br /><br /><hr id="zwchr" ><b>${labels.from}</b> ${headingFrom} <br /> <b>${labels.to}</b> ${headingTo} <br />`
 	];
 
 	if (headingCc.length > 0) {
@@ -262,7 +262,7 @@ export function generateReplyText(
 		textToRetArray[0] += `${labels.cc} ${headingCc}\n`;
 	}
 
-	textToRetArray[1] += `<b>${labels.sent}:</b> ${date} <br /> <b>${labels.subject}</b> ${
+	textToRetArray[1] += `<b>${labels.sent}</b> ${date} <br /> <b>${labels.subject}</b> ${
 		mail.subject
 	} <br /><br />${extractBody(mail)[1]}`;
 
