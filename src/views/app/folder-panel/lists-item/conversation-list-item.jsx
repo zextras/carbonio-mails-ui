@@ -5,9 +5,15 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isEmpty, reduce, trimStart, map, uniqBy, find, filter, findIndex } from 'lodash';
+import { isEmpty, reduce, trimStart, map, uniqBy, find, filter, findIndex, some } from 'lodash';
 import styled from 'styled-components';
-import { pushHistory, useUserAccount, useUserAccounts, FOLDERS } from '@zextras/carbonio-shell-ui';
+import {
+	pushHistory,
+	useUserAccount,
+	useUserAccounts,
+	FOLDERS,
+	useUserSettings
+} from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Button,
@@ -136,6 +142,7 @@ export default function ConversationListItem({
 	const accounts = useUserAccounts();
 	const messages = useSelector(selectMessages);
 	const conversationStatus = useSelector(selectCurrentFolderExpandedStatus)[item.id];
+	const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 
 	const participantsString = useMemo(
 		() =>
@@ -208,7 +215,7 @@ export default function ConversationListItem({
 		() => (!isEmpty(item.fragment) ? item.fragment : subject),
 		[subject, item.fragment]
 	);
-
+	const sortSign = useMemo(() => (sortBy === 'dateDesc' ? -1 : 1), [sortBy]);
 	// this is the array of all the messages of this conversation to render in this folder
 	const messagesToRender = useMemo(
 		() =>
@@ -236,10 +243,10 @@ export default function ConversationListItem({
 						return acc;
 					},
 					[]
-				),
+				).sort((a, b) => sortSign * (a.date - b.date)),
 				'id'
 			),
-		[item?.messages, folderId, messages]
+		[item?.messages, folderId, messages, sortSign]
 	);
 
 	const textReadValues = useMemo(() => {

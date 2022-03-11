@@ -7,6 +7,7 @@ import { filter, head, map, reduce, some } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { fetchConversations } from '../store/actions';
 import {
 	selectConversationsArray,
@@ -28,6 +29,7 @@ export const useConversationListItems = (): Array<Conversation> => {
 	const conversations = useSelector(selectConversationsArray);
 	const dispatch = useDispatch();
 	const allFolders = useSelector(selectFolders);
+	const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 
 	useEffect(() => {
 		if (folderStatus !== 'complete' && !isLoading) {
@@ -35,11 +37,11 @@ export const useConversationListItems = (): Array<Conversation> => {
 			// todo: to fix this error the dispatcher in shell must be fixed
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			dispatch(fetchConversations({ folderId, limit: 101 })).then(() => {
+			dispatch(fetchConversations({ folderId, limit: 101, sortBy })).then(() => {
 				setIsLoading(false);
 			});
 		}
-	}, [dispatch, folderId, folderStatus, isLoading]);
+	}, [dispatch, folderId, folderStatus, isLoading, sortBy]);
 
 	/*	const sortedConversation = useMemo(() => {
 		const updatedConversation = map(conversations, (c) => ({

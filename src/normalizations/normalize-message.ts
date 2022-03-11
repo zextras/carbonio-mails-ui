@@ -29,15 +29,31 @@ export function normalizeMailPartMapFn(v: SoapMailMessagePart): MailMessagePart 
 
 function findBodyPart(
 	mp: Array<SoapMailMessagePart>,
-	acc: { contentType: string; content: string }
+	acc: { contentType: string; content: string },
+	id: string
 ): { contentType: string; content: string } {
-	return reduce(
+	const bodyPart = reduce(
 		mp,
 		(found, part) => {
-			if (part.mp) return findBodyPart(part.mp, found);
+			if (part.mp) return findBodyPart(part.mp, found, id);
 			if (part && part.body) {
 				if (!found.contentType.length) {
 					return { contentType: part.ct, content: part.content ?? '' };
+				}
+				if (
+					part.part &&
+					part.part.indexOf('.') === -1 &&
+					part.cd &&
+					part.cd === 'inline' &&
+					!part.ci &&
+					!(part.ct && part.ct === 'text/plain')
+				) {
+					return {
+						...found,
+						content: found.content.concat(
+							`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part?.part}'>` ?? ''
+						)
+					};
 				}
 				return { ...found, content: found.content.concat(part.content ?? '') };
 			}
@@ -45,13 +61,18 @@ function findBodyPart(
 		},
 		acc
 	);
+
+	return bodyPart;
 }
 
-export function generateBody(mp: Array<SoapMailMessagePart>): {
+export function generateBody(
+	mp: Array<SoapMailMessagePart>,
+	id: string
+): {
 	contentType: string;
 	content: string;
 } {
-	return findBodyPart(mp, { contentType: '', content: '' });
+	return findBodyPart(mp, { contentType: '', content: '' }, id);
 }
 
 function participantTypeFromSoap(t: SoapEmailParticipantRole): ParticipantRole {
@@ -103,7 +124,7 @@ export const normalizeMailMessageFromSoap = (
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
 			invite: m.inv,
 			shr: m.shr,
-			body: m.mp ? generateBody(m.mp || []) : undefined,
+			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
 			isComplete,
 			read: !isNil(m.f) ? !/u/.test(m.f) : undefined,
 			attachment: !isNil(m.f) ? /a/.test(m.f) : undefined,

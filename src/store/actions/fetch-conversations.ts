@@ -18,6 +18,7 @@ export type FetchConversationsParameters = {
 	folderId: string;
 	limit: number;
 	before?: Date;
+	sortBy: 'dateDesc' | 'dateAsc';
 };
 
 export type FetchConversationsReturn = {
@@ -29,7 +30,7 @@ export type FetchConversationsReturn = {
 export const fetchConversations = createAsyncThunk<
 	FetchConversationsReturn,
 	FetchConversationsParameters
->('fetchConversations', async ({ folderId, limit = 100, before }) => {
+>('fetchConversations', async ({ folderId, limit = 100, before, sortBy = 'dateDesc' }) => {
 	const queryPart = [`inId:${folderId}`];
 	if (before) queryPart.push(`before:${before.getTime()}`);
 	const result = (await soapFetch<SearchRequest, SearchResponse>('Search', {
@@ -40,12 +41,13 @@ export const fetchConversations = createAsyncThunk<
 		recip: '2',
 		fullConversation: 1,
 		wantContent: 'full',
-		sortBy: 'dateDesc',
+		sortBy,
 		query: queryPart.join(' ')
 	})) as SearchResponse;
 	const conversations = map(result?.c ?? [], (obj) =>
 		normalizeConversation(obj)
 	) as unknown as Array<Conversation>;
+
 	const messages = reduce(
 		result?.c ?? [],
 		(acc, v) =>
@@ -64,6 +66,7 @@ export const fetchConversations = createAsyncThunk<
 				: acc,
 		[] as Array<IncompleteMessage>
 	);
+
 	return {
 		conversations: keyBy(conversations, 'id'),
 		messages: keyBy(messages, 'id'),
