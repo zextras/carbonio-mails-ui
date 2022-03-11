@@ -8,18 +8,15 @@ import {
 	Button,
 	Catcher,
 	ChipInput,
-	Collapse,
 	Container,
 	Dropdown,
 	EmailComposerInput,
 	Icon,
-	IconButton,
 	IconCheckbox,
 	Padding,
 	Row,
 	Text,
-	Tooltip,
-	Select
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -49,6 +46,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
+import moment from 'moment';
 import { useQueryParam } from '../../../../hooks/useQueryParam';
 import { createEditor, selectEditors, updateEditor } from '../../../../store/editor-slice';
 import { ActionsType, ParticipantRole } from '../../../../types/participant';
@@ -151,8 +149,14 @@ const RowContainer = styled(Container)`
 	grid-template-columns: repeat(12, 1fr);
 	grid-gap: 8px;
 `;
+
 const ColContainer = styled.div`
 	grid-column: ${({ occupyFull }) => `span  ${occupyFull ? 12 : 6}`};
+`;
+
+const StickyTime = styled(Row)`
+	position: sticky;
+	bottom: 10px;
 `;
 let counter = 0;
 
@@ -160,6 +164,9 @@ const generateId = () => {
 	counter += 1;
 	return `new-${counter}`;
 };
+const emailRegex =
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars, max-len, no-control-regex
+	/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
 export const addAttachments = async (saveDraftCb, uploadAttachmentsCb, compositionData, files) => {
 	const { payload } = await saveDraftCb(compositionData);
@@ -203,9 +210,16 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [btnSendDisabled, setBtnSendDisabled] = useState(false);
 
 	const [saveFirstDraft, setSaveFirstDraft] = useState(true);
+	const [draftSavedAt, setDraftSavedAt] = useState('');
 	const [timer, setTimer] = useState(null);
-	const [showCcBcc, setShowCcBcc] = useState(false);
+	const [open, setOpen] = useState(false);
+	const [showCc, setShowCc] = useState(false);
+	const [showBcc, setShowBcc] = useState(false);
 
+	const [from, setFrom] = useState({
+		label: defaultIdentity?.label,
+		value: defaultIdentity?.value
+	});
 	const activeMailId = useMemo(
 		() => boardContext?.mailId || mailId,
 		[mailId, boardContext?.mailId]
@@ -213,31 +227,58 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 
 	const editorId = useMemo(() => activeMailId ?? generateId(), [activeMailId]);
 
-	const toggleCcBcc = useCallback(() => setShowCcBcc((show) => !show), []);
-
-	const getItems = (items) =>
-		items.map((el) => ({
-			label: el.label,
-			value: el.value,
-			address: el.address,
-			fullname: el.fullName,
-			type: el.type,
-			identityName: el.identityName,
-			customComponent: (
-				<Container width="100%" crossAlignment="flex-start" height="fit">
-					<Text weight="bold">{el.identityName}</Text>
-					<Text>{`${el.fullname} <${el.address}>`}</Text>
-				</Container>
-			)
-		}));
-
-	const newItems = useMemo(() => getItems(list), [list]);
+	const toggleOpen = useCallback(() => setOpen((show) => !show), []);
+	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
+	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
 	const updateEditorCb = useCallback(
 		(data) => {
 			dispatch(updateEditor({ editorId, data }));
 		},
 		[dispatch, editorId]
 	);
+	const newItems = useMemo(
+		() =>
+			list.map((el) => ({
+				label: el.label,
+				value: el.value,
+				address: el.address,
+				fullname: el.fullName,
+				type: el.type,
+				identityName: el.identityName,
+				onClick: () => {
+					const data = {
+						address: el.address,
+						fullName: el.fullname,
+						name: el.address,
+						type: ParticipantRole.FROM
+					};
+
+					updateEditorCb({ from: data });
+
+					if (el.type === 'sendOnBehalfOf') {
+						updateEditorCb({
+							sender: {
+								address: accounts[0].name,
+								fullName: accounts[0].displayName,
+								name: accounts[0].name,
+								type: ParticipantRole.SENDER
+							}
+						});
+					}
+					setFrom(data);
+					setOpen(false);
+				},
+				customComponent: (
+					<Container width="100%" crossAlignment="flex-start" height="fit">
+						<Text weight="bold">{el.identityName}</Text>
+						<Text>{`${el.fullname} <${el.address}>`}</Text>
+					</Container>
+				)
+			})),
+
+		[accounts, list, updateEditorCb]
+	);
+
 	useEffect(() => {
 		const identityList = map(account.identities.identity, (item, idx) => ({
 			value: idx,
@@ -248,6 +289,12 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			identityName: item.name
 		}));
 		setDefaultIdentity(find(identityList, (item) => item?.identityName === 'DEFAULT'));
+		setFrom({
+			address: find(identityList, (item) => item?.identityName === 'DEFAULT')?.address,
+			fullName: find(identityList, (item) => item?.identityName === 'DEFAULT')?.fullname,
+			name: find(identityList, (item) => item?.identityName === 'DEFAULT')?.address,
+			type: ParticipantRole.FROM
+		});
 		updateEditorCb({
 			from: {
 				address: defaultIdentity.address,
@@ -362,9 +409,11 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				const newData = { ...editor, ...data };
 				if (saveFirstDraft) {
 					saveDraftCb(newData);
+					setDraftSavedAt(moment().format('HH:mm'));
 					setSaveFirstDraft(false);
 				} else if (!isNil(editor.id)) {
 					saveDraftCb(newData);
+					setDraftSavedAt(moment().format('HH:mm'));
 				}
 			}, 500);
 
@@ -372,6 +421,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		},
 		[editor, saveDraftCb, saveFirstDraft, timer]
 	);
+
 	const updateSubjectField = useMemo(
 		() =>
 			throttle(
@@ -460,8 +510,11 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const updateBoard = useUpdateCurrentBoard();
 
 	useEffect(() => {
-		if (editor?.cc?.length || editor?.bcc?.length) {
-			setShowCcBcc(true);
+		if (editor?.cc?.length) {
+			setShowCc(true);
+		}
+		if (editor?.bcc?.length) {
+			setShowBcc(true);
 		}
 	}, [editor?.bcc?.length, editor?.cc?.length]);
 
@@ -598,118 +651,135 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 							onDragLeaveEvent={onDragLeaveEvent}
 						/>
 					)}
-					<Container crossAlignment="unset" height="fit">
+					<Container crossAlignment="flex-end" height="fit" background="gray6">
 						<Row
-							padding={{ bottom: 'medium' }}
+							padding={{ all: 'small' }}
 							orientation="horizontal"
-							mainAlignment="flex-end"
+							mainAlignment="space-between"
 							width="100%"
 						>
-							<Controller
-								name="richText"
-								control={control}
-								defaultValue={editor?.richText ?? false}
-								render={({ onChange, value }) => (
-									<Tooltip
-										label={
-											value
-												? t('tooltip.disable_rich_text', 'Disable rich text editor')
-												: t('tooltip.enable_rich_text', 'Enable rich text editor')
-										}
-									>
-										<ResizedIconCheckbox
-											icon="Text"
-											value={value}
-											onClick={() => {
-												updateEditorCb({
-													richText: !value
-												});
-												onChange(!value);
-											}}
-											onChange={() => null}
-										/>
-									</Tooltip>
-								)}
-							/>
-							<Controller
-								name="urgent"
-								control={control}
-								defaultValue={editor?.urgent ?? false}
-								render={({ onChange, value }) => (
-									<Tooltip
-										label={
-											value
-												? t('tooltip.disable_urgent', 'Disable urgent')
-												: t('tooltip.enable_urgent', 'Enable urgent')
-										}
-									>
-										<ResizedIconCheckbox
-											icon="ArrowUpward"
-											value={value}
-											onClick={() => {
-												updateEditorCb({
-													urgent: !value
-												});
-												onChange(!value);
-											}}
-											onChange={() => null}
-										/>
-									</Tooltip>
-								)}
-							/>
-							<Controller
-								name="attach"
-								control={control}
-								defaultValue={editor.attach || {}}
-								render={({ onChange, value }) => (
-									<FileInput
-										type="file"
-										ref={inputRef}
-										onChange={() =>
-											addAttachments(
-												saveDraftCb,
-												uploadAttachmentsCb,
-												editor,
-												inputRef.current.files
-											).then((data) => {
-												updateEditorCb({
-													attach: { ...value, mp: data }
-												});
-												onChange({ ...value, mp: data });
-											})
-										}
-										multiple
-									/>
-								)}
-							/>
-							{action !== ActionsType.COMPOSE && (
-								<Tooltip label={t('tooltip.add_attachments', 'Add attachments')}>
-									<Dropdown
-										items={attachmentsItems}
-										display="inline-block"
-										width="fit"
-										forceOpen={openDD}
-									>
-										<ResizedIconCheckbox
-											onChange={() => null}
-											icon="AttachOutline"
-											onClick={onClick}
+							{haveIdentity && (
+								<Row>
+									<Dropdown items={newItems} forceOpen={open} onClose={toggleOpen}>
+										<Button
+											label={t('label.from_identity', {
+												identity: from?.fullName || from?.address,
+												defaultValue: 'From: {{identity}}'
+											})}
+											icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+											onClick={toggleOpen}
+											type="outlined"
 										/>
 									</Dropdown>
-								</Tooltip>
+								</Row>
 							)}
-							{action !== ActionsType.COMPOSE && (
+							<Row>
+								<Controller
+									name="richText"
+									control={control}
+									defaultValue={editor?.richText ?? false}
+									render={({ onChange, value }) => (
+										<Tooltip
+											label={
+												value
+													? t('tooltip.disable_rich_text', 'Disable rich text editor')
+													: t('tooltip.enable_rich_text', 'Enable rich text editor')
+											}
+										>
+											<ResizedIconCheckbox
+												icon="Text"
+												value={value}
+												onClick={() => {
+													updateEditorCb({
+														richText: !value
+													});
+													onChange(!value);
+												}}
+												onChange={() => null}
+											/>
+										</Tooltip>
+									)}
+								/>
+								<Controller
+									name="urgent"
+									control={control}
+									defaultValue={editor?.urgent ?? false}
+									render={({ onChange, value }) => (
+										<Tooltip
+											label={
+												value
+													? t('tooltip.disable_urgent', 'Disable urgent')
+													: t('tooltip.enable_urgent', 'Enable urgent')
+											}
+										>
+											<ResizedIconCheckbox
+												icon="ArrowUpward"
+												value={value}
+												onClick={() => {
+													updateEditorCb({
+														urgent: !value
+													});
+													onChange(!value);
+												}}
+												onChange={() => null}
+											/>
+										</Tooltip>
+									)}
+								/>
+								<Controller
+									name="attach"
+									control={control}
+									defaultValue={editor.attach || {}}
+									render={({ onChange, value }) => (
+										<FileInput
+											type="file"
+											ref={inputRef}
+											onChange={() =>
+												addAttachments(
+													saveDraftCb,
+													uploadAttachmentsCb,
+													editor,
+													inputRef.current.files
+												).then((data) => {
+													updateEditorCb({
+														attach: { ...value, mp: data }
+													});
+													onChange({ ...value, mp: data });
+												})
+											}
+											multiple
+										/>
+									)}
+								/>
+								{action !== ActionsType.COMPOSE && (
+									<Tooltip label={t('tooltip.add_attachments', 'Add attachments')}>
+										<Dropdown
+											items={attachmentsItems}
+											display="inline-block"
+											width="fit"
+											forceOpen={openDD}
+										>
+											<ResizedIconCheckbox
+												onChange={() => null}
+												icon="AttachOutline"
+												onClick={onClick}
+											/>
+										</Dropdown>
+									</Tooltip>
+								)}
+								{action !== ActionsType.COMPOSE && (
+									<Padding left="large">
+										<Button
+											type="outlined"
+											onClick={handleSubmit(onSave)}
+											label={`${t('label.save', 'Save')}`}
+										/>
+									</Padding>
+								)}
 								<Padding left="large">
-									<Button
-										type="outlined"
-										onClick={handleSubmit(onSave)}
-										label={`${t('label.save', 'Save')}`}
-									/>
+									<Button onClick={sendMailCb} label={btnSendlabel} disabled={isSendDisabled} />
 								</Padding>
-							)}
-							<Padding left="large">
-								<Button onClick={sendMailCb} label={btnSendlabel} disabled={isSendDisabled} />
-							</Padding>
+							</Row>
 						</Row>
 						{isSendingToYourself && (
 							<>
@@ -735,43 +805,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 							</>
 						)}
 						<RowContainer background="gray6" padding={{ all: 'small' }}>
-							{haveIdentity && (
-								<ColContainer>
-									<Select
-										style={{ height: '52px' }}
-										items={newItems}
-										label={t('label.from', 'From')}
-										defaultSelection={{
-											label: defaultIdentity?.label,
-											value: defaultIdentity?.value
-										}}
-										dropdownWidth="450px"
-										dropdownMaxWidth="450px"
-										onChange={(val) => {
-											const r = find(list, { value: val });
-											const data = {
-												address: r.address,
-												fullName: r.fullname,
-												name: r.address,
-												type: ParticipantRole.FROM
-											};
-											updateEditorCb({ from: data });
-
-											if (r.type === 'sendOnBehalfOf') {
-												updateEditorCb({
-													sender: {
-														address: accounts[0].name,
-														fullName: accounts[0].displayName,
-														name: accounts[0].name,
-														type: ParticipantRole.SENDER
-													}
-												});
-											}
-										}}
-									/>
-								</ColContainer>
-							)}
-							<ColContainer>
+							<ColContainer occupyFull>
 								{integrationAvailable ? (
 									<Controller
 										name="to"
@@ -782,13 +816,9 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 												orientation="horizontal"
 												background="gray5"
 												style={{ overflow: 'hidden' }}
+												padding={{ all: 'none' }}
 											>
-												<Container
-													maxWidth="80%"
-													background="gray5"
-													padding={{ top: '3px', bottom: '4px' }}
-													style={{ overflow: 'hidden' }}
-												>
+												<Container background="gray5" style={{ overflow: 'hidden' }}>
 													<ContactInput
 														placeholder={t('label.to', 'To')}
 														onChange={(ev) => {
@@ -817,12 +847,19 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 													width="fit"
 													background="gray5"
 													padding={{ right: 'medium', left: 'extrasmall' }}
+													orientation="horizontal"
 												>
 													<Button
-														label={t('label.cc_bcc', 'Cc Bcc')}
+														label={t('label.cc', 'Cc')}
 														type="ghost"
-														style={{ color: '#282828' }}
-														onClick={toggleCcBcc}
+														style={{ color: '#282828', padding: 0 }}
+														onClick={toggleCc}
+													/>
+													<Button
+														label={t('label.bcc', 'Bcc')}
+														type="ghost"
+														style={{ color: '#282828', padding: 0 }}
+														onClick={toggleBcc}
 													/>
 												</Container>
 											</Container>
@@ -845,13 +882,15 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 																			type: ParticipantRole.TO,
 																			address: r.email,
 																			name: r.firstName,
-																			fullName: r.fullName
+																			fullName: r.fullName,
+																			error: !emailRegex.test(r.email)
 																	  }
 																	: {
 																			...r,
 																			email: r.label,
 																			address: r.label,
-																			type: ParticipantRole.TO
+																			type: ParticipantRole.TO,
+																			error: !emailRegex.test(r.email)
 																	  }
 															);
 															updateEditorCb({ to: data });
@@ -860,18 +899,27 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 														}}
 														defaultValue={map(value, (v) => ({ ...v, label: v.name }))}
 														background="gray5"
+														hasError={some(editor?.to || [], { error: true })}
+														errorLabel=""
 													/>
 												</Container>
 												<Container
 													width="fit"
 													background="gray5"
 													padding={{ right: 'medium', left: 'extrasmall' }}
+													orientation="horizontal"
 												>
 													<Button
-														label={t('label.cc_bcc', 'Cc Bcc')}
+														label={t('label.cc', 'Cc')}
 														type="ghost"
-														style={{ color: '#282828' }}
-														onClick={toggleCcBcc}
+														style={{ color: '#282828', padding: 0 }}
+														onClick={toggleCc}
+													/>
+													<Button
+														label={t('label.bcc', 'Bcc')}
+														type="ghost"
+														style={{ color: '#282828', padding: 0 }}
+														onClick={toggleBcc}
 													/>
 												</Container>
 											</Container>
@@ -879,199 +927,182 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 									/>
 								)}
 							</ColContainer>
-							{!haveIdentity && (
-								<ColContainer>
-									<Controller
-										name="subject"
-										control={control}
-										defaultValue={editor?.subject ?? ''}
-										render={({ onChange, value }) => (
-											<Container background="gray5">
-												<EmailComposerInput
-													onChange={(ev) => {
-														updateSubjectField({ subject: ev.target.value });
-														onChange(ev.target.value);
-														throttledSaveToDraft({ subject: ev.target.value });
-													}}
-													placeholder={t('label.subject', 'Subject')}
-													placeholderType="default"
-													value={value}
-												/>
-											</Container>
-										)}
-									/>
-								</ColContainer>
-							)}
-							{showCcBcc && (
-								<>
-									<ColContainer height="fit">
-										{integrationAvailable ? (
-											<Controller
-												name="cc"
-												control={control}
-												defaultValue={editor.cc ?? []}
-												render={({ onChange, value }) => (
-													<ContactInput
-														placeholder={t('label.cc', 'Cc')}
-														onChange={(ev) => {
-															const data = map(ev, (r) =>
-																r.email
-																	? {
-																			...r,
-																			type: ParticipantRole.CARBON_COPY,
-																			address: r.email,
-																			name: r.firstName,
-																			fullName: r.fullName
-																	  }
-																	: { ...r, type: ParticipantRole.CARBON_COPY }
-															);
-															updateEditorCb({ cc: data });
-															onChange(data);
-															throttledSaveToDraft({ cc: data });
-														}}
-														defaultValue={value}
-														errorLabel=""
-														hasError={some(editor?.cc || [], { error: true })}
-													/>
-												)}
-											/>
-										) : (
-											<Controller
-												name="cc"
-												control={control}
-												defaultValue={editor.cc ?? []}
-												render={({ onChange, value }) => (
-													<ChipInput
-														placeholderType="inline"
-														placeholder={t('label.cc', 'Cc')}
-														onChange={(ev) => {
-															const data = map(ev, (r) =>
-																r.email
-																	? {
-																			...r,
-																			type: ParticipantRole.CARBON_COPY,
-																			address: r.email,
-																			name: r.firstName,
-																			fullName: r.fullName
-																	  }
-																	: {
-																			...r,
-																			email: r.label,
-																			address: r.label,
-																			type: ParticipantRole.CARBON_COPY
-																	  }
-															);
-															updateEditorCb({ cc: data });
-															onChange(data);
-															throttledSaveToDraft({ cc: data });
-														}}
-														defaultValue={map(value, (v) => ({
-															...v,
-															label: v.name,
-															type: ParticipantRole.CARBON_COPY
-														}))}
-														background="gray5"
-													/>
-												)}
-											/>
-										)}
-									</ColContainer>
 
-									<ColContainer>
-										{integrationAvailable ? (
-											<Controller
-												name="bcc"
-												control={control}
-												defaultValue={editor.bcc ?? []}
-												render={({ onChange, value }) => (
-													<ContactInput
-														placeholder={t('label.bcc', 'Bcc')}
-														onChange={(ev) => {
-															const data = map(ev, (r) =>
-																r.email
-																	? {
-																			...r,
-																			type: ParticipantRole.BLIND_CARBON_COPY,
-																			address: r.email,
-																			name: r.firstName,
-																			fullName: r.fullName
-																	  }
-																	: // prettier-ignore
-																	  // eslint-disable-next-line max-len
-																	  { ...r, type: ParticipantRole.BLIND_CARBON_COPY }
-															);
-															updateEditorCb({ bcc: data });
-															onChange(data);
-															throttledSaveToDraft({ bcc: data });
-														}}
-														errorLabel=""
-														hasError={some(editor?.bcc || [], { error: true })}
-														defaultValue={value}
-													/>
-												)}
-											/>
-										) : (
-											<Controller
-												name="bcc"
-												control={control}
-												defaultValue={editor.bcc ?? []}
-												render={({ onChange, value }) => (
-													<ChipInput
-														placeholderType="inline"
-														placeholder={t('label.bcc', 'Bcc')}
-														onChange={(ev) => {
-															const data = map(ev, (r) =>
-																r.email
-																	? {
-																			...r,
-																			type: ParticipantRole.BLIND_CARBON_COPY,
-																			address: r.email,
-																			name: r.firstName,
-																			fullName: r.fullName
-																	  }
-																	: {
-																			...r,
-																			email: r.label,
-																			address: r.label,
-																			type: ParticipantRole.BLIND_CARBON_COPY
-																	  }
-															);
-															updateEditorCb({ bcc: data });
-															onChange(data);
-															throttledSaveToDraft({ bcc: data });
-														}}
-														background="gray5"
-														defaultValue={map(value, (v) => ({ ...v, label: v.name }))}
-													/>
-												)}
-											/>
-										)}
-									</ColContainer>
-								</>
-							)}
-							{haveIdentity && (
-								<ColContainer occupyFull>
-									<Controller
-										name="subject"
-										control={control}
-										defaultValue={editor?.subject ?? ''}
-										render={({ onChange, value }) => (
-											<Container background="gray5">
-												<EmailComposerInput
+							{showCc && (
+								<ColContainer height="fit" occupyFull>
+									{integrationAvailable ? (
+										<Controller
+											name="cc"
+											control={control}
+											defaultValue={editor.cc ?? []}
+											render={({ onChange, value }) => (
+												<ContactInput
+													placeholder={t('label.cc', 'Cc')}
 													onChange={(ev) => {
-														updateSubjectField({ subject: ev.target.value });
-														onChange(ev.target.value);
-														throttledSaveToDraft({ subject: ev.target.value });
+														const data = map(ev, (r) =>
+															r.email
+																? {
+																		...r,
+																		type: ParticipantRole.CARBON_COPY,
+																		address: r.email,
+																		name: r.firstName,
+																		fullName: r.fullName
+																  }
+																: { ...r, type: ParticipantRole.CARBON_COPY }
+														);
+														updateEditorCb({ cc: data });
+														onChange(data);
+														throttledSaveToDraft({ cc: data });
 													}}
-													placeholder={t('label.subject', 'Subject')}
-													placeholderType="default"
-													value={value}
+													defaultValue={value}
+													errorLabel=""
+													hasError={some(editor?.cc || [], { error: true })}
 												/>
-											</Container>
-										)}
-									/>
+											)}
+										/>
+									) : (
+										<Controller
+											name="cc"
+											control={control}
+											defaultValue={editor.cc ?? []}
+											render={({ onChange, value }) => (
+												<ChipInput
+													placeholderType="inline"
+													placeholder={t('label.cc', 'Cc')}
+													onChange={(ev) => {
+														const data = map(ev, (r) =>
+															r.email
+																? {
+																		...r,
+																		type: ParticipantRole.CARBON_COPY,
+																		address: r.email,
+																		name: r.firstName,
+																		fullName: r.fullName,
+																		error: !emailRegex.test(r.email)
+																  }
+																: {
+																		...r,
+																		email: r.label,
+																		address: r.label,
+																		type: ParticipantRole.CARBON_COPY,
+																		error: !emailRegex.test(r.email)
+																  }
+														);
+														updateEditorCb({ cc: data });
+														onChange(data);
+														throttledSaveToDraft({ cc: data });
+													}}
+													defaultValue={map(value, (v) => ({
+														...v,
+														label: v.name,
+														type: ParticipantRole.CARBON_COPY
+													}))}
+													background="gray5"
+													errorLabel=""
+													hasError={some(editor?.cc || [], { error: true })}
+												/>
+											)}
+										/>
+									)}
 								</ColContainer>
 							)}
+							{showBcc && (
+								<ColContainer occupyFull>
+									{integrationAvailable ? (
+										<Controller
+											name="bcc"
+											control={control}
+											defaultValue={editor.bcc ?? []}
+											render={({ onChange, value }) => (
+												<ContactInput
+													placeholder={t('label.bcc', 'Bcc')}
+													onChange={(ev) => {
+														const data = map(ev, (r) =>
+															r.email
+																? {
+																		...r,
+																		type: ParticipantRole.BLIND_CARBON_COPY,
+																		address: r.email,
+																		name: r.firstName,
+																		fullName: r.fullName
+																  }
+																: { ...r, type: ParticipantRole.BLIND_CARBON_COPY }
+														);
+														updateEditorCb({ bcc: data });
+														onChange(data);
+														throttledSaveToDraft({ bcc: data });
+													}}
+													errorLabel=""
+													hasError={some(editor?.bcc || [], { error: true })}
+													defaultValue={value}
+												/>
+											)}
+										/>
+									) : (
+										<Controller
+											name="bcc"
+											control={control}
+											defaultValue={editor.bcc ?? []}
+											render={({ onChange, value }) => (
+												<ChipInput
+													placeholderType="inline"
+													placeholder={t('label.bcc', 'Bcc')}
+													onChange={(ev) => {
+														const data = map(ev, (r) =>
+															r.email
+																? {
+																		...r,
+																		type: ParticipantRole.BLIND_CARBON_COPY,
+																		address: r.email,
+																		name: r.firstName,
+																		fullName: r.fullName,
+																		error: !emailRegex.test(r.email)
+																  }
+																: {
+																		...r,
+																		email: r.label,
+																		address: r.label,
+																		type: ParticipantRole.BLIND_CARBON_COPY,
+																		error: !emailRegex.test(r.email)
+																  }
+														);
+														updateEditorCb({ bcc: data });
+														onChange(data);
+														throttledSaveToDraft({ bcc: data });
+													}}
+													background="gray5"
+													defaultValue={map(value, (v) => ({ ...v, label: v.name }))}
+													errorLabel=""
+													hasError={some(editor?.bcc || [], { error: true })}
+												/>
+											)}
+										/>
+									)}
+								</ColContainer>
+							)}
+
+							<ColContainer occupyFull>
+								<Controller
+									name="subject"
+									control={control}
+									defaultValue={editor?.subject ?? ''}
+									render={({ onChange, value }) => (
+										<Container background="gray5">
+											<EmailComposerInput
+												onChange={(ev) => {
+													updateSubjectField({ subject: ev.target.value });
+													onChange(ev.target.value);
+													throttledSaveToDraft({ subject: ev.target.value });
+												}}
+												placeholder={t('label.subject', 'Subject')}
+												placeholderType="default"
+												value={value}
+											/>
+										</Container>
+									)}
+								/>
+							</ColContainer>
+
 							{editor.original && editor.attach?.mp?.length > 0 && action !== ActionsType.COMPOSE && (
 								<ColContainer occupyFull>
 									<EditAttachmentsBlock
@@ -1138,6 +1169,20 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 								)}
 							</ColContainer>
 						</RowContainer>
+
+						{draftSavedAt && (
+							<StickyTime>
+								<Row crossAlignment="flex-end" background="gray6" padding={{ horizontal: 'small' }}>
+									<Text size="extrasmall" color="secondary">
+										{t('message.email_saved_at', {
+											time: draftSavedAt,
+											defaultValue: 'Email saved as draft at {{time}}'
+										})}
+									</Text>
+								</Row>
+							</StickyTime>
+						)}
+
 						<Divider />
 					</Container>
 				</Container>
