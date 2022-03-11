@@ -1172,7 +1172,11 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 
 						{draftSavedAt && (
 							<StickyTime>
-								<Row crossAlignment="flex-end" background="gray6" padding={{ horizontal: 'small' }}>
+								<Row
+									crossAlignment="flex-end"
+									background="gray6"
+									padding={{ vertical: 'medium', horizontal: 'large' }}
+								>
 									<Text size="extrasmall" color="secondary">
 										{t('message.email_saved_at', {
 											time: draftSavedAt,
