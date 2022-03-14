@@ -8,7 +8,6 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import PreviewPanelHeader from './preview/preview-panel-header';
-import PreviewPanelActions from './preview/preview-panel-actions';
 import MailPreview from './preview/mail-preview';
 import { getMsg } from '../../../store/actions';
 import { selectMessage } from '../../../store/messages-slice';
@@ -20,8 +19,10 @@ export default function MessagePreviewPanel() {
 	const message = useSelector((state) => selectMessage(state, messageId));
 
 	useEffect(() => {
-		dispatch(getMsg({ msgId: messageId }));
-	}, [dispatch, folderId, messageId]);
+		if (!message?.isComplete) {
+			dispatch(getMsg({ msgId: messageId }));
+		}
+	}, [dispatch, folderId, message, messageId]);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">

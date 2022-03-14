@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 export * from './conv-action';
-export * from './fetch-conversations';
+export * from './search';
 export * from './get-conv';
 export * from './get-msg';
 export * from './msg-action';

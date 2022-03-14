@@ -9,16 +9,13 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
-import { cloneDeep, filter, forEach, map, merge, uniqBy, valuesIn } from 'lodash';
+import { forEach, merge } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
-import { Conversation, ConvMessage } from '../types/conversation';
-import { IncompleteMessage, MailMessage } from '../types/mail-message';
+import { Conversation } from '../types/conversation';
+import { MailMessage } from '../types/mail-message';
 import { MsgMap, MsgStateType, StateType } from '../types/state';
-import { showNotification } from '../views/notifications';
 import {
-	convAction,
-	ConvActionResult,
-	fetchConversations,
+	search,
 	FetchConversationsReturn,
 	getConv,
 	getMsg,
@@ -40,16 +37,30 @@ function getMsgFulfilled(
 ): void {
 	status[payload.id] = 'complete';
 	if (payload?.id) {
-		// eslint-disable-next-line no-param-reassign
-		messages[payload.id] = merge(messages?.[payload.id] ?? {}, { ...payload, isComplete: true });
+		merge(messages?.[payload.id] ?? {}, { ...payload, isComplete: true });
 	}
 }
 
 function fetchConversationsFulfilled(
-	{ messages, status }: MsgStateType,
-	{ payload }: { payload: FetchConversationsReturn }
+	state: MsgStateType,
+	{ payload, meta }: { payload: FetchConversationsReturn | undefined; meta: any }
 ): void {
-	merge(messages, payload.messages);
+	if (payload?.messages) {
+		if (payload?.types === 'message') {
+			merge(state?.messages, payload.messages);
+		}
+		forEach(payload?.messages, (msg) => {
+			if (!state?.messages?.[msg.id] || !state?.messages?.[msg.id]?.isComplete) {
+				state.messages = { ...state.messages, [msg.id]: msg };
+			}
+		});
+	}
+	if (payload?.types === 'message') {
+		state.searchedInFolder = {
+			...state.searchedInFolder,
+			[meta.arg.folderId]: 'complete'
+		};
+	}
 }
 function saveDraftFulfilled(
 	{ messages, status }: MsgStateType,
@@ -66,7 +77,7 @@ function searchConvFulfilled(
 ): void {
 	forEach(payload.messages, (m) => {
 		// eslint-disable-next-line no-param-reassign
-		messages[m.id] = { ...m, isComplete: false };
+		messages[m.id] = { ...m, isComplete: true };
 	});
 }
 
@@ -143,7 +154,7 @@ export const messagesSlice = createSlice({
 		builder.addCase(msgAction.rejected, produce(msgActionRejected));
 		builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
 		builder.addCase(saveDraft.fulfilled, produce(saveDraftFulfilled));
-		builder.addCase(fetchConversations.fulfilled, produce(fetchConversationsFulfilled));
+		builder.addCase(search.fulfilled, produce(fetchConversationsFulfilled));
 	}
 });
 
@@ -159,6 +170,17 @@ export function selectMessages(state: StateType): MsgMap {
 	return state?.messages?.messages;
 }
 
+export function selectMessagesArray(state: StateType): Array<Partial<MailMessage>> {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	return Object.values(state?.messages?.messages ?? []);
+}
+
 export function selectMessagesStatus(state: StateType): Record<string, string> {
 	return state?.messages?.status;
 }
+
+export const selectFolderMsgSearchStatus =
+	(id: string): (({ messages }: StateType) => string | undefined) =>
+	({ messages }: StateType): string | undefined =>
+		messages?.searchedInFolder?.[id];

@@ -12,7 +12,6 @@ import {
 	addBoardView,
 	registerActions,
 	registerFunctions,
-	setAppContext,
 	ACTION_TYPES,
 	getBridgedFunctions
 } from '@zextras/carbonio-shell-ui';
@@ -95,7 +94,6 @@ const App = () => {
 			route: MAILS_ROUTE,
 			component: EditView
 		});
-		setAppContext({ isMessageView: false });
 	}, [t]);
 
 	useEffect(() => {

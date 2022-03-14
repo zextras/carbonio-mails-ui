@@ -9,18 +9,18 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
-import { forEach, map, merge, uniqBy } from 'lodash';
-import { Conversation } from '../types/conversation';
+import { find, forEach, map, merge, reduce, some, uniqBy } from 'lodash';
+import { Conversation, ConvMessage } from '../types/conversation';
 import { Folder } from '../types/folder';
 import { ConversationsFolderStatus, ConversationsStateType, StateType } from '../types/state';
 import {
 	convAction,
 	ConvActionParameters,
 	ConvActionResult,
-	fetchConversations,
-	FetchConversationsReturn,
 	getConv,
-	searchConv
+	searchConv,
+	search,
+	FetchConversationsReturn
 } from './actions';
 import {
 	handleAddMessagesInConversationReducer,
@@ -38,34 +38,37 @@ function fetchConversationsPending(state: ConversationsStateType): void {
 
 function fetchConversationsFulfilled(
 	state: ConversationsStateType,
-	{ payload, meta }: { payload: FetchConversationsReturn; meta: any }
+	{ payload, meta }: { payload: FetchConversationsReturn | undefined; meta: any }
 ): void {
-	state.conversations = { ...state.conversations, ...payload.conversations };
-	state.status = payload.hasMore ? 'hasMore' : 'complete';
-	state.searchedInFolder = {
-		...state.searchedInFolder,
-		[meta.arg.folderId]: 'complete'
-	};
+	if (payload?.types === 'conversation' && payload?.conversations) {
+		state.conversations = { ...state.conversations, ...payload.conversations };
+		state.searchedInFolder = {
+			...state.searchedInFolder,
+			[meta.arg.folderId]: 'complete'
+		};
+	}
+	state.status = payload?.hasMore ? 'hasMore' : 'complete';
 }
 
-function fetchConversationsRejected(state: ConversationsStateType): void {
+function fetchConversationsRejected(state: ConversationsStateType, { meta }: { meta: any }): void {
 	state.status = 'error';
+	state.searchedInFolder = {
+		...state.searchedInFolder,
+		[meta.arg.folderId]: 'incomplete'
+	};
 }
 
 function searchConvFulfilled(state: ConversationsStateType, { payload, meta }: any): void {
 	state.expandedStatus[meta.arg.conversationId] = 'complete';
 	const conversation = state.conversations[meta.arg.conversationId];
 	if (conversation) {
-		conversation.messages = uniqBy(
-			[
-				...(conversation?.messages ?? []),
-				...map(payload?.messages ?? [], (obj) => ({
-					id: obj.id,
-					parent: obj.parent,
-					date: obj.date
-				}))
-			],
-			'id'
+		conversation.messages = reduce(
+			conversation.messages,
+			(acc, v) => {
+				const msg = find(payload.messages, ['id', v.id]);
+				return msg ? [...acc, { id: v.id, parent: v.parent, date: Number(v.date) }] : [...acc, v];
+			},
+			[] as Array<ConvMessage>
 		);
 	}
 }
@@ -189,9 +192,9 @@ export const conversationsSlice = createSlice({
 		setSearchedInFolder: produce(setSearchedInFolderReducer)
 	},
 	extraReducers: (builder) => {
-		builder.addCase(fetchConversations.pending, produce(fetchConversationsPending));
-		builder.addCase(fetchConversations.fulfilled, produce(fetchConversationsFulfilled));
-		builder.addCase(fetchConversations.rejected, produce(fetchConversationsRejected));
+		builder.addCase(search.pending, produce(fetchConversationsPending));
+		builder.addCase(search.fulfilled, produce(fetchConversationsFulfilled));
+		builder.addCase(search.rejected, produce(fetchConversationsRejected));
 		builder.addCase(searchConv.pending, produce(searchConvPending));
 		builder.addCase(searchConv.fulfilled, produce(searchConvFulfilled));
 		builder.addCase(searchConv.rejected, produce(searchConvRejected));
@@ -226,6 +229,13 @@ export function selectCurrentFolderExpandedStatus({
 	return conversations.expandedStatus;
 }
 
+export function selectConversationExpandedStatus(
+	{ conversations }: StateType,
+	id: string
+): 'pending' | 'error' | 'complete' | undefined {
+	return conversations?.expandedStatus?.[id];
+}
+
 export function selectFolder({ folders }: StateType, id: string): Folder {
 	return folders?.folders?.[id];
 }
@@ -242,7 +252,7 @@ export function selectSearchedFolder({ conversations }: StateType, id: string): 
 	return conversations?.searchedInFolder?.[id];
 }
 export function selectConversationsArray({ conversations }: StateType): Array<Conversation> {
-	return Object.values(conversations?.conversations ?? []).sort((a, b) => b.date - a.date);
+	return Object.values(conversations?.conversations ?? []);
 }
 
 export function selectFolderSearchStatus(

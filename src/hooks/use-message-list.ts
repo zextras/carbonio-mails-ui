@@ -3,82 +3,51 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { find, reduce, some, uniqBy } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { filter, find, orderBy } from 'lodash';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { fetchConversations } from '../store/actions';
-import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
-import { Conversation } from '../types/conversation';
-import { StateType } from '../types/state';
-import { selectFolders } from '../store/folders-slice';
-import { selectMessages } from '../store/messages-slice';
+import { search } from '../store/actions';
+import { selectFolder } from '../store/folders-slice';
+import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
+import { MailMessage } from '../types/mail-message';
 
 type RouteParams = {
 	folderId: string;
 };
 
-export const useMessageList = (): Array<Conversation> => {
-	const [isLoading, setIsLoading] = useState(false);
+export const useMessageList = (): Array<Partial<MailMessage>> => {
 	const { folderId } = <RouteParams>useParams();
-	const folderStatus = useSelector((state) => selectFolderSearchStatus(<StateType>state, folderId));
-	const conversations = useSelector(selectConversationsArray);
-
 	const dispatch = useDispatch();
-	const allFolders = useSelector(selectFolders);
+	const { zimbraPrefSortOrder } = useUserSettings()?.prefs as Record<string, string>;
+
+	const folderMsgStatus = useSelector(selectFolderMsgSearchStatus(folderId));
+	const messages = useSelector(selectMessagesArray);
+	const folder = useSelector(selectFolder(folderId));
+
+	const sorting = useMemo(
+		() =>
+			(find(zimbraPrefSortOrder.split(','), (f) => f.split(':')?.[0] === folderId)?.split(
+				':'
+			)?.[1] as 'dateAsc' | 'dateDesc' | undefined) ?? 'dateDesc',
+		[folderId, zimbraPrefSortOrder]
+	);
+
+	const sortedMessages = useMemo(
+		() => orderBy(messages, 'date', sorting === 'dateDesc' ? 'desc' : 'asc'),
+		[messages, sorting]
+	);
 
 	useEffect(() => {
-		if (folderStatus !== 'complete' && !isLoading) {
-			setIsLoading(true);
-			// todo: to fix this error the dispatcher in shell must be fixed
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			dispatch(fetchConversations({ folderId, limit: 101 })).then(() => {
-				setIsLoading(false);
-			});
+		if (folderMsgStatus !== 'complete' && folderMsgStatus !== 'pending') {
+			dispatch(search({ folderId, limit: 101, sortBy: sorting, types: 'message' }));
 		}
-	}, [dispatch, folderId, folderStatus, isLoading]);
-	const messages = useSelector(selectMessages);
+	}, [dispatch, folderId, folderMsgStatus, sorting]);
 
-	return useMemo(() => {
-		let currentFolderId = folderId;
-		const currentFolder = allFolders[folderId];
-		if (!!currentFolder && currentFolder.rid) {
-			currentFolderId = `${currentFolder.zid}:${currentFolder.rid}`;
-		}
-
-		const reducedConversations = reduce(
-			conversations,
-			(acc2, v2) => (some(v2.messages, ['parent', currentFolderId]) ? [...acc2, v2] : acc2),
-			[] as Array<Conversation>
-		);
-
-		const messageList = reduce(
-			reducedConversations,
-			(accumulator, item) => [
-				...accumulator,
-				...uniqBy(
-					reduce(
-						item.messages,
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						(acc, v) => {
-							const msg = find(messages, ['id', v.id]);
-							if (msg) {
-								if (folderId === msg.parent) {
-									return [...acc, { ...msg, convId: item.id }];
-								}
-							}
-							return acc;
-						},
-						[]
-					),
-					'id'
-				)
-			],
-			[]
-		);
-
-		return messageList;
-	}, [folderId, allFolders, conversations, messages]);
+	return useMemo(
+		() =>
+			filter(sortedMessages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id]),
+		[folder?.id, folder?.rid, folder?.zid, sortedMessages]
+	);
 };
