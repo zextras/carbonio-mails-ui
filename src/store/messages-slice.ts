@@ -9,10 +9,9 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
-import { cloneDeep, forEach, merge } from 'lodash';
+import { forEach, merge } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import { Conversation } from '../types/conversation';
-import { Folder } from '../types/folder';
 import { MailMessage } from '../types/mail-message';
 import { MsgMap, MsgStateType, StateType } from '../types/state';
 import {
@@ -44,7 +43,7 @@ function getMsgFulfilled(
 
 function fetchConversationsFulfilled(
 	state: MsgStateType,
-	{ payload, meta }: { payload: FetchConversationsReturn; meta: any }
+	{ payload, meta }: { payload: FetchConversationsReturn | undefined; meta: any }
 ): void {
 	if (payload?.messages) {
 		if (payload?.types === 'message') {

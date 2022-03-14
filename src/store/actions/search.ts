@@ -22,16 +22,17 @@ export type FetchConversationsParameters = {
 	sortBy: 'dateDesc' | 'dateAsc';
 };
 
-export type FetchConversationsReturn =
-	| {
-			conversations?: Record<string, Conversation>;
-			messages?: Record<string, IncompleteMessage>;
-			hasMore: boolean;
-			types: string;
-	  }
-	| undefined;
+export type FetchConversationsReturn = {
+	conversations?: Record<string, Conversation>;
+	messages?: Record<string, IncompleteMessage>;
+	hasMore: boolean;
+	types: string;
+};
 
-export const search = createAsyncThunk<FetchConversationsReturn, FetchConversationsParameters>(
+export const search = createAsyncThunk<
+	FetchConversationsReturn | undefined,
+	FetchConversationsParameters
+>(
 	'fetchConversations',
 	async ({ folderId, limit = 100, before, types = 'conversation', sortBy = 'dateDesc' }) => {
 		const queryPart = [`inId:${folderId}`];
@@ -82,7 +83,7 @@ export const search = createAsyncThunk<FetchConversationsReturn, FetchConversati
 				messages: reduce(
 					result.m ?? [],
 					(acc, msg) => {
-						const normalized = normalizeMailMessageFromSoap(msg, true);
+						const normalized = normalizeMailMessageFromSoap(msg, false);
 						return { ...acc, [normalized.id]: normalized };
 					},
 					{}

@@ -307,8 +307,7 @@ const setAccordionCustomComponent = ({
 					) || folder.isSharedFolder, // Default folders and shared folders not allowed to drag
 				[]
 			);
-			const { zimbraPrefSortOrder } = useUserSettings().prefs;
-
+			const { zimbraPrefSortOrder, zimbraPrefGroupMailBy } = useUserSettings().prefs;
 			const sorting = useMemo(
 				() =>
 					find(zimbraPrefSortOrder.split(','), (f) => f.split(':')?.[0] === folder.id)?.split(
@@ -339,7 +338,7 @@ const setAccordionCustomComponent = ({
 										folderId: folder.id,
 										limit: 101,
 										sortBy: sorting,
-										types: 'conversation'
+										types: zimbraPrefGroupMailBy
 									})
 								);
 							}}

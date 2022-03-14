@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useCallback, useEffect } from 'react';
-import { find, isEmpty, isNil } from 'lodash';
+import React, { useMemo, useCallback } from 'react';
+import { find, isEmpty } from 'lodash';
 import { useUserAccounts, useAppContext, replaceHistory } from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
@@ -24,6 +24,7 @@ import { selectFolder } from '../../../../store/conversations-slice';
 import { ItemAvatar } from './item-avatar';
 import ListItemActionWrapper from './list-item-actions-wrapper';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
+import { SenderName } from './sender-name';
 
 function previewFile(file) {
 	const preview = document.querySelector('img');
@@ -126,7 +127,7 @@ export default function MessageListItem({
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				replaceHistory(`/folder/${folderId}/message/${item.id}`);
-				if (item.read === 'false') {
+				if (item.read === false) {
 					setMsgRead([item.id], false, t, dispatch).click();
 				}
 			}
@@ -202,15 +203,7 @@ export default function MessageListItem({
 							padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 						>
 							<Container orientation="horizontal" height="fit" width="fill">
-								<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
-									<Text
-										data-testid="SenderText"
-										color={textReadValues.color}
-										weight={textReadValues.weight}
-									>
-										{participantsString}
-									</Text>
-								</Row>
+								<SenderName item={item} textValues={textReadValues} isFromSearch={false} />
 								<Row>
 									{item.attachment && (
 										<Padding left="small">

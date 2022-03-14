@@ -38,7 +38,7 @@ function fetchConversationsPending(state: ConversationsStateType): void {
 
 function fetchConversationsFulfilled(
 	state: ConversationsStateType,
-	{ payload, meta }: { payload: FetchConversationsReturn; meta: any }
+	{ payload, meta }: { payload: FetchConversationsReturn | undefined; meta: any }
 ): void {
 	if (payload?.types === 'conversation' && payload?.conversations) {
 		state.conversations = { ...state.conversations, ...payload.conversations };
