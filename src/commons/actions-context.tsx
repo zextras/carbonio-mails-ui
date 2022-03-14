@@ -6,7 +6,11 @@
 import React, { createContext, FC, useCallback, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import {
+	useIntegratedComponent,
+	useUserAccount,
+	useUserSettings
+} from '@zextras/carbonio-shell-ui';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { SnackbarManagerContext, ModalManagerContext } from '@zextras/carbonio-design-system';
@@ -46,6 +50,7 @@ export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => 
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const createModal = useContext(ModalManagerContext);
 	const settings = useUserSettings();
+	const account = useUserAccount();
 	const timezone = useMemo(() => settings?.prefs.zimbraPrefTimeZoneId, [settings]);
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
@@ -60,11 +65,21 @@ export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => 
 				createSnackbar,
 				createModal,
 				ContactInput,
-				timezone
+				timezone,
+				account
 			),
-			messageActions(folderId, t, dispatch, createSnackbar, createModal, ContactInput, timezone)
+			messageActions(
+				folderId,
+				t,
+				dispatch,
+				createSnackbar,
+				createModal,
+				ContactInput,
+				timezone,
+				account
+			)
 		],
-		[ContactInput, createModal, createSnackbar, dispatch, folderId, t, timezone]
+		[ContactInput, createModal, createSnackbar, dispatch, folderId, t, timezone, account]
 	);
 	const getMessageActions = useCallback<GetActionsFunction>(
 		(item: any): [ActionList, ActionList] => messageActionsCallback(item),
