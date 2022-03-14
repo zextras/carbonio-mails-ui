@@ -84,13 +84,12 @@ const ResizedIconCheckbox = styled(IconCheckbox)`
 
 const TextArea = styled.textarea`
 	box-sizing: border-box;
-	height: 100% !important;
 	min-height: 250px;
-	overflow-y: auto;
+
 	flex-grow: 1;
 	width: 100%;
 	border: none;
-	resize: none;
+	resize: vertical;
 	& :focus,
 	:active {
 		box-shadow: none;
@@ -804,6 +803,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 								<Padding bottom="small" />
 							</>
 						)}
+
 						<RowContainer background="gray6" padding={{ all: 'small' }}>
 							<ColContainer occupyFull>
 								{integrationAvailable ? (
@@ -1111,70 +1111,75 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 									/>
 								</ColContainer>
 							)}
-							<ColContainer occupyFull>
-								{editor?.richText && composerIsAvailable ? (
-									<Controller
-										name="text"
-										control={control}
-										defaultValue={editor?.text}
-										render={({ onChange, value }) => (
-											<Container background="gray6">
-												<EditorWrapper>
-													<Composer
-														value={value[1]}
-														onEditorChange={(ev) => {
-															updateSubjectField({ text: [ev[0], ev[1]] });
-															throttledSaveToDraft({ text: [ev[0], ev[1]] });
-															onChange([ev[0], ev[1]]);
-														}}
-														minHeight={150}
-														onDragOver={onDragOverEvent}
-													/>
-												</EditorWrapper>
-											</Container>
-										)}
-									/>
-								) : (
-									<Controller
-										name="text"
-										control={control}
-										defaultValue={editor?.text}
-										render={({ onChange, value }) => (
-											<Container background="gray6">
-												<TextArea
-													value={value[0]}
-													onChange={(ev) => {
-														// eslint-disable-next-line no-param-reassign
-														ev.target.style.height = 'auto';
-														// eslint-disable-next-line no-param-reassign
-														ev.target.style.height = `${25 + ev.target.scrollHeight}px`;
-														const data = [
-															ev.target.value,
-															`${
-																editor?.text[1]
-																	? `${editor.text[1]}${ev.target.value}`
-																	: ev.target.value
-															}`
-														];
-
-														throttledSaveToDraft({ text: data });
-
-														updateSubjectField({ text: data });
-														onChange(data);
-													}}
-												/>
-											</Container>
-										)}
-									/>
-								)}
-							</ColContainer>
 						</RowContainer>
+					</Container>
+
+					<Container
+						height="100%"
+						padding={{ all: 'small' }}
+						background="gray6"
+						crossAlignment="flex-end"
+					>
+						{editor?.richText && composerIsAvailable ? (
+							<Controller
+								name="text"
+								control={control}
+								defaultValue={editor?.text}
+								render={({ onChange, value }) => (
+									<Container background="gray6">
+										<EditorWrapper>
+											<Composer
+												value={value[1]}
+												onEditorChange={(ev) => {
+													updateSubjectField({ text: [ev[0], ev[1]] });
+													throttledSaveToDraft({ text: [ev[0], ev[1]] });
+													onChange([ev[0], ev[1]]);
+												}}
+												onDragOver={onDragOverEvent}
+											/>
+										</EditorWrapper>
+									</Container>
+								)}
+							/>
+						) : (
+							<Controller
+								name="text"
+								control={control}
+								defaultValue={editor?.text}
+								render={({ onChange, value }) => (
+									<Container background="gray6" height="100%">
+										<TextArea
+											value={value[0]}
+											onChange={(ev) => {
+												// eslint-disable-next-line no-param-reassign
+												ev.target.style.height = 'auto';
+												// eslint-disable-next-line no-param-reassign
+												ev.target.style.height = `${25 + ev.target.scrollHeight}px`;
+												const data = [
+													ev.target.value,
+													`${
+														editor?.text[1]
+															? `${editor.text[1]}${ev.target.value}`
+															: ev.target.value
+													}`
+												];
+
+												throttledSaveToDraft({ text: data });
+
+												updateSubjectField({ text: data });
+												onChange(data);
+											}}
+										/>
+									</Container>
+								)}
+							/>
+						)}
 
 						{draftSavedAt && (
 							<StickyTime>
 								<Row
 									crossAlignment="flex-end"
-									background="gray6"
+									background="gray5"
 									padding={{ vertical: 'medium', horizontal: 'large' }}
 								>
 									<Text size="extrasmall" color="secondary">
@@ -1186,7 +1191,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 								</Row>
 							</StickyTime>
 						)}
-
 						<Divider />
 					</Container>
 				</Container>
