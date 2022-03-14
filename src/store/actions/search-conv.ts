@@ -39,7 +39,7 @@ export const searchConv = createAsyncThunk<SearchConvReturn, SearchConvParameter
 			html: 1,
 			max: 250000
 		})) as SearchConvResponse;
-		const messages = map(result?.m ?? [], (msg) => normalizeMailMessageFromSoap(msg, false));
+		const messages = map(result?.m ?? [], (msg) => normalizeMailMessageFromSoap(msg, true));
 
 		return {
 			messages,

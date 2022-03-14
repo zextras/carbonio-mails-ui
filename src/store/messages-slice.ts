@@ -12,6 +12,7 @@ import produce from 'immer';
 import { cloneDeep, forEach, merge } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import { Conversation } from '../types/conversation';
+import { Folder } from '../types/folder';
 import { MailMessage } from '../types/mail-message';
 import { MsgMap, MsgStateType, StateType } from '../types/state';
 import {
@@ -46,7 +47,14 @@ function fetchConversationsFulfilled(
 	{ payload, meta }: { payload: FetchConversationsReturn; meta: any }
 ): void {
 	if (payload?.messages) {
-		merge(state.messages, payload.messages);
+		if (payload?.types === 'message') {
+			merge(state?.messages, payload.messages);
+		}
+		forEach(payload?.messages, (msg) => {
+			if (!state?.messages?.[msg.id] || !state?.messages?.[msg.id]?.isComplete) {
+				state.messages = { ...state.messages, [msg.id]: msg };
+			}
+		});
 	}
 	if (payload?.types === 'message') {
 		state.searchedInFolder = {
@@ -166,16 +174,14 @@ export function selectMessages(state: StateType): MsgMap {
 export function selectMessagesArray(state: StateType): Array<Partial<MailMessage>> {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	return Object.values(state?.messages?.messages ?? []).sort((a, b) => b.date - a.date);
+	return Object.values(state?.messages?.messages ?? []);
 }
 
 export function selectMessagesStatus(state: StateType): Record<string, string> {
 	return state?.messages?.status;
 }
 
-export function selectFolderMsgSearchStatus(
-	{ messages }: StateType,
-	folderId: string
-): string | undefined {
-	return messages?.searchedInFolder?.[folderId] ?? undefined;
-}
+export const selectFolderMsgSearchStatus =
+	(id: string): (({ messages }: StateType) => string | undefined) =>
+	({ messages }: StateType): string | undefined =>
+		messages?.searchedInFolder?.[id];

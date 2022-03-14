@@ -65,7 +65,7 @@ const MessageList = () => {
 	const messages = useMessageList();
 	const [t] = useTranslation();
 
-	const messageListStatus = useSelector((store) => selectFolderMsgSearchStatus(store, folderId));
+	const messageListStatus = useSelector(selectFolderMsgSearchStatus(folderId));
 
 	const hasMore = useMemo(() => status === 'hasMore', [status]);
 	const loadMore = useCallback(

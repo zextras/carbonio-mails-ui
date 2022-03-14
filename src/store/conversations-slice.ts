@@ -9,8 +9,8 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
-import { forEach, map, merge, uniqBy } from 'lodash';
-import { Conversation } from '../types/conversation';
+import { find, forEach, map, merge, reduce, some, uniqBy } from 'lodash';
+import { Conversation, ConvMessage } from '../types/conversation';
 import { Folder } from '../types/folder';
 import { ConversationsFolderStatus, ConversationsStateType, StateType } from '../types/state';
 import {
@@ -62,16 +62,13 @@ function searchConvFulfilled(state: ConversationsStateType, { payload, meta }: a
 	state.expandedStatus[meta.arg.conversationId] = 'complete';
 	const conversation = state.conversations[meta.arg.conversationId];
 	if (conversation) {
-		conversation.messages = uniqBy(
-			[
-				...(conversation?.messages ?? []),
-				...map(payload?.messages ?? [], (obj) => ({
-					id: obj.id,
-					parent: obj.parent,
-					date: obj.date
-				}))
-			],
-			'id'
+		conversation.messages = reduce(
+			conversation.messages,
+			(acc, v) => {
+				const msg = find(payload.messages, ['id', v.id]);
+				return msg ? [...acc, { id: v.id, parent: v.parent, date: Number(v.date) }] : [...acc, v];
+			},
+			[] as Array<ConvMessage>
 		);
 	}
 }
@@ -255,7 +252,7 @@ export function selectSearchedFolder({ conversations }: StateType, id: string): 
 	return conversations?.searchedInFolder?.[id];
 }
 export function selectConversationsArray({ conversations }: StateType): Array<Conversation> {
-	return Object.values(conversations?.conversations ?? []).sort((a, b) => b.date - a.date);
+	return Object.values(conversations?.conversations ?? []);
 }
 
 export function selectFolderSearchStatus(

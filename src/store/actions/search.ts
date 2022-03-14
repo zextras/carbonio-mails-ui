@@ -82,7 +82,7 @@ export const search = createAsyncThunk<FetchConversationsReturn, FetchConversati
 				messages: reduce(
 					result.m ?? [],
 					(acc, msg) => {
-						const normalized = normalizeMailMessageFromSoap(msg, false);
+						const normalized = normalizeMailMessageFromSoap(msg, true);
 						return { ...acc, [normalized.id]: normalized };
 					},
 					{}
