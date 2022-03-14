@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { filter, find, forEach, max, map, merge, omit, reduce, some } from 'lodash';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { filter, find, forEach, max, map, merge, omit, reduce, some, sortBy, head } from 'lodash';
 import { ConversationsStateType } from '../../types/state';
 import { ConvMessage } from '../../types/conversation';
 import { SyncResponseCreatedMessage } from '../../types/soap/sync';
@@ -44,14 +45,6 @@ export const handleModifiedConversationsReducer = (
 		? oldDate
 		: head(sortBy(filter(messages, { parent: currentFolder }), 'date'))?.date; */
 
-const getNewConversationDate = (
-	messages: Array<ConvMessage>,
-	currentFolder: string,
-	oldDate: number,
-	msg: SyncResponseCreatedMessage
-): number | undefined =>
-	msg.l === currentFolder ? max(map(filter(messages, ['parent', currentFolder]), 'date')) : oldDate;
-
 export const handleCreatedMessagesInConversationsReducer = (
 	state: ConversationsStateType,
 	{ payload }: Payload
@@ -62,12 +55,12 @@ export const handleCreatedMessagesInConversationsReducer = (
 		if (msg?.cid && msg?.id && msg?.l && conversation) {
 			const messages = find(conversation.messages, ['id', msg.id])
 				? conversation.messages
-				: [...conversation.messages, { id: msg.id, parent: msg.l, date: Number(msg.date) }];
+				: [...conversation.messages, { id: msg.id, parent: msg.l, date: Number(msg.d) }];
 
 			const date =
-				msg.l === state.currentFolder
-					? max(map(filter(messages, ['parent', state.currentFolder]), 'date'))
-					: conversation.date;
+				msg.l === FOLDERS.DRAFTS
+					? conversation.date
+					: head(sortBy(filter(messages, { parent: state.currentFolder }), 'date'))?.date;
 
 			const conv = {
 				[msg.cid]: {
