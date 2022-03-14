@@ -278,6 +278,7 @@
         "shares_items": "{{value}}'s shared folders",
         "show_all": "Show all",
         "show_popup": "Show a popup notification",
+        "show_quoted_text": "Show quoted text",
         "signature_required": "Signature information is required.",
         "single_advanced_filter": "Advanced Filters",
         "size": "Size",

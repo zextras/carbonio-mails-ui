@@ -32,7 +32,7 @@ const retentionPeriod = [
 		value: 'y'
 	}
 ];
-const numberRegex = /^[0-9]+$'/;
+const numberRegex = /^\d+$/;
 
 const EditDefaultModal = ({
 	t,
@@ -193,26 +193,29 @@ const EditDefaultModal = ({
 				folderAction({
 					folder: currentFolder,
 					name: inputValue,
-					op: dsblMsgRet || dsblMsgDis ? 'retentionpolicy' : 'update',
+					op: 'update',
 					color: folderColor,
-					retentionPolicy: {
-						keep: dsblMsgRet
+					retentionPolicy:
+						dsblMsgRet || dsblMsgDis || currentFolder?.retentionPolicy
 							? {
-									policy: {
-										lifetime: `${lt}d`,
-										type: 'user'
-									}
-							  }
-							: {},
-						purge: dsblMsgDis
-							? {
-									policy: {
-										lifetime: `${pr}d`,
-										type: 'user'
-									}
+									keep: dsblMsgRet
+										? {
+												policy: {
+													lifetime: `${lt}d`,
+													type: 'user'
+												}
+										  }
+										: {},
+									purge: dsblMsgDis
+										? {
+												policy: {
+													lifetime: `${pr}d`,
+													type: 'user'
+												}
+										  }
+										: {}
 							  }
 							: {}
-					}
 				})
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
