@@ -14,14 +14,19 @@ import {
 } from '@zextras/carbonio-design-system';
 import Heading from './components/settings-heading';
 import { NotifyFolderOpts, ReadReceiptOpts, MsgsFromMeOpts, findLabel } from './components/utils';
+import { settingsSubSections } from '../../constants';
 
 export default function ReceivingMessagesSettings({ t, settingsObj, updateSettings }) {
 	const notifyFolderOptn = useMemo(() => NotifyFolderOpts(t), [t]);
 	const readReceiptOptn = useMemo(() => ReadReceiptOpts(t), [t]);
 	const msgsFromMeOpts = useMemo(() => MsgsFromMeOpts(t), [t]);
+	const sectionTitle = useMemo(
+		() => t(settingsSubSections[1].label, settingsSubSections[1].fallback),
+		[t]
+	);
 
 	return (
-		<FormSubSection label={t('label.receive_message', 'Receiving Messages')}>
+		<FormSubSection label={sectionTitle} id={sectionTitle.replace(/\s/g, '')}>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 				<Heading title="Message Arrival" />
 				<Input
@@ -114,7 +119,9 @@ export default function ReceivingMessagesSettings({ t, settingsObj, updateSettin
 					items={msgsFromMeOpts}
 					name="zimbraPrefDedupeMessagesSentToSelf"
 					onChange={(view) =>
-						updateSettings({ target: { name: 'zimbraPrefDedupeMessagesSentToSelf', value: view } })
+						updateSettings({
+							target: { name: 'zimbraPrefDedupeMessagesSentToSelf', value: view }
+						})
 					}
 					defaultSelection={{
 						label: findLabel(msgsFromMeOpts, settingsObj.zimbraPrefDedupeMessagesSentToSelf),

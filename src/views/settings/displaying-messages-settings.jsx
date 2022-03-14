@@ -10,8 +10,7 @@ import {
 	FormSubSection,
 	Select,
 	Input,
-	Checkbox,
-	Padding
+	Checkbox
 } from '@zextras/carbonio-design-system';
 import Heading from './components/settings-heading';
 import {
@@ -21,6 +20,7 @@ import {
 	findLabel,
 	ConversationSortingSettings
 } from './components/utils';
+import { settingsSubSections } from '../../constants';
 
 export default function DisplayingMessagesSettings({ t, settingsObj, updateSettings }) {
 	const checkNewMailOptions = useMemo(
@@ -35,11 +35,15 @@ export default function DisplayingMessagesSettings({ t, settingsObj, updateSetti
 	const displayMailOptions = useMemo(() => DisplayMailOptions(t), [t]);
 	const messageSelectionOptions = useMemo(() => MessageSelectionOptions(t), [t]);
 	const conversationSortingSettings = useMemo(() => ConversationSortingSettings(t), [t]);
-
+	const sectionTitle = useMemo(
+		() => t(settingsSubSections[0].label, settingsSubSections[0].fallback),
+		[t]
+	);
 	return (
 		<FormSubSection
-			label={t('settings.label.display_messages', 'Displaying Messages')}
+			label={sectionTitle}
 			padding={{ all: 'medium' }}
+			id={sectionTitle.replace(/\s/g, '')}
 		>
 			<Row width="100%" padding={{ horizontal: 'small', vertical: 'small' }}>
 				<Select
@@ -73,7 +77,9 @@ export default function DisplayingMessagesSettings({ t, settingsObj, updateSetti
 					label={t('settings.label.display_mail', 'Display mail')}
 					items={displayMailOptions}
 					onChange={(view) =>
-						updateSettings({ target: { name: 'zimbraPrefMessageViewHtmlPreferred', value: view } })
+						updateSettings({
+							target: { name: 'zimbraPrefMessageViewHtmlPreferred', value: view }
+						})
 					}
 					defaultSelection={{
 						label: findLabel(displayMailOptions, settingsObj.zimbraPrefMessageViewHtmlPreferred),

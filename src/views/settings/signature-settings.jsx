@@ -19,6 +19,7 @@ import styled from 'styled-components';
 
 import { useIntegratedComponent, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { map, find, findIndex, merge, escape, unescape } from 'lodash';
+import { settingsSubSections } from '../../constants';
 import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import { getSignatures } from '../../store/editor-slice-utils';
@@ -213,12 +214,21 @@ export default function SignatureSettings({
 		);
 	};
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
+	const sectionTitleSignatures = useMemo(
+		() => t(settingsSubSections[2].label, settingsSubSections[2].fallback),
+		[t]
+	);
+	const sectionTitleSetSignatures = useMemo(
+		() => t(settingsSubSections[3].label, settingsSubSections[3].fallback),
+		[t]
+	);
 
 	return (
 		<>
 			<FormSubSection
-				label={t('signatures.signature_heading', 'Signatures')}
+				label={sectionTitleSignatures}
 				padding={{ all: 'large' }}
+				id={sectionTitleSignatures.replace(/\s/g, '')}
 			>
 				<Container crossAlignment="flex-start" orientation="horizontal" padding={{ all: 'medium' }}>
 					<Container width="25%" padding={{ right: 'medium' }}>
@@ -279,7 +289,10 @@ export default function SignatureSettings({
 					</Container>
 				</Container>
 			</FormSubSection>
-			<FormSubSection label="Set Default Signatures">
+			<FormSubSection
+				label={sectionTitleSetSignatures}
+				id={sectionTitleSetSignatures.replace(/\s/g, '')}
+			>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 					<Heading title={t('title.new_messages', 'New Messages')} />
 					<Select
