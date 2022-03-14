@@ -8,6 +8,7 @@ import {
 	FOLDERS,
 	replaceHistory,
 	useAppContext,
+	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
@@ -45,6 +46,7 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 	const { setCount } = useAppContext() as { setCount: () => void };
 	const { deselectAll } = useSelection(folderId, setCount);
 	const settings = useUserSettings();
+	const account = useUserAccount();
 	const timezone = useMemo(
 		() => settings?.prefs.zimbraPrefTimeZoneId,
 		[settings?.prefs.zimbraPrefTimeZoneId]
@@ -99,7 +101,7 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 			setMsgRead([message.id], message.read, t, dispatch, folderId, replaceHistory, deselectAll)
 		);
 		arr.push(moveMessageToFolder([message.id], t, dispatch, false, createModal, deselectAll));
-		arr.push(printMsg(message.id, t, timezone));
+		arr.push(printMsg(message.id, t, message, dispatch, account));
 		arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
 		arr.push(redirectMsg({ id: message.id, t, createModal }));
 		arr.push(editAsNewMsg(message.id, folderId, t, replaceHistory));
@@ -114,7 +116,7 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 	if (message.parent === FOLDERS.SPAM) {
 		arr.push(deleteMsg([message.id], t, dispatch, createSnackbar, createModal));
 		arr.push(setMsgAsSpam([message.id], true, t, dispatch, replaceHistory));
-		arr.push(printMsg(message.id, t, timezone));
+		arr.push(printMsg(message.id, t, message, dispatch, account));
 		arr.push(showOriginalMsg(message.id, t));
 	}
 	return arr;

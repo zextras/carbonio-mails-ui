@@ -14,7 +14,12 @@ import {
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { useUserSettings, FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
+import {
+	useUserSettings,
+	FOLDERS,
+	useAppContext,
+	useUserAccount
+} from '@zextras/carbonio-shell-ui';
 import {
 	moveConversationToTrash,
 	printConversation,
@@ -29,6 +34,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const settings = useUserSettings();
+	const account = useUserAccount();
 	const timezone = useMemo(
 		() => settings?.prefs.zimbraPrefTimeZoneId,
 		[settings?.prefs.zimbraPrefTimeZoneId]
@@ -79,7 +85,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 						? setMsgRead(ids, item.read, t, dispatch, folderId)
 						: setConversationsRead(ids, item.read, t, dispatch, folderId),
 					setConversationsFlag(ids, item.flagged, t, dispatch),
-					printConversation(ids, t, timezone)
+					printConversation(t, conversation, dispatch, account)
 					// setConversationsSpam(ids, false, t, dispatch)
 					// archiveMsg
 					// editTagsMsg
@@ -95,7 +101,8 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 		item?.messages,
 		item.read,
 		t,
-		timezone
+		account,
+		conversation
 	]);
 
 	return (

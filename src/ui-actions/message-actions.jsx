@@ -6,12 +6,13 @@
 import React from 'react';
 import { Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
-import { msgAction } from '../store/actions';
+import { getMsgsForPrint, msgAction } from '../store/actions';
 import { ActionsType } from '../types/participant';
 import { sendMsg } from '../store/actions/send-msg';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
+import { getContentForPrint } from '../commons/print-conversation';
 
 export function setMsgRead(ids, value, t, dispatch, folderId, shouldReplaceHistory, deselectAll) {
 	return {
@@ -107,14 +108,22 @@ export function setMsgAsSpam(ids, value, t, dispatch, createSnackbar) {
 	};
 }
 
-export function printMsg(id, t, timezone) {
+export function printMsg(id, t, message, dispatch, account) {
 	return {
 		id: 'message-print',
 		icon: 'PrinterOutline',
 		label: t('action.print', 'Print'),
-		click: (ev) => {
-			if (ev) ev.preventDefault();
-			window.open(`/h/printmessage?id=${id}&tz=${timezone}`, '_blank');
+		click: () => {
+			const printWindow = window.open('', '_blank');
+			dispatch(getMsgsForPrint({ ids: [id] })).then((res) => {
+				const content = getContentForPrint({
+					messages: res.payload,
+					subject: message.subject,
+					account
+				});
+				printWindow.top.document.title = 'Carbonio';
+				printWindow.document.write(content);
+			});
 		}
 	};
 }
@@ -436,9 +445,9 @@ export const getActions = (
 	dispatch,
 	createSnackbar,
 	createModal,
-	ContactInput,
 	deselectAll,
-	timezone
+	timezone,
+	account
 ) => {
 	switch (folderId) {
 		case FOLDERS.TRASH:
@@ -455,7 +464,7 @@ export const getActions = (
 					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
 					setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
-					printMsg(message.id, t, timezone),
+					printMsg(message.id, t, message, dispatch, account),
 					// moveMsgToTrash([message.id], t, dispatch, createSnackbar),
 					deleteMessagePermanently([message.id], t, dispatch, createModal, deselectAll),
 					moveMessageToFolder([message.id], t, dispatch, true, createModal, deselectAll),
@@ -482,7 +491,7 @@ export const getActions = (
 					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
 					setMsgAsSpam([message.id], true, t, dispatch, createSnackbar),
-					printMsg(message.id, t, timezone),
+					printMsg(message.id, t, message, dispatch, account),
 					showOriginalMsg(message.id, t),
 					moveMsgToTrash(
 						[message.id],
@@ -533,7 +542,7 @@ export const getActions = (
 					),
 					editDraft(message.id, folderId, t),
 					sendDraft(message.id, message, t, dispatch),
-					printMsg(message.id, t, timezone)
+					printMsg(message.id, t, message, dispatch, account)
 				]
 			];
 		case FOLDERS.SENT:
@@ -569,7 +578,7 @@ export const getActions = (
 					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
 					setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
-					printMsg(message.id, t, timezone),
+					printMsg(message.id, t, message, dispatch, account),
 					showOriginalMsg(message.id, t),
 					moveMsgToTrash(
 						[message.id],
