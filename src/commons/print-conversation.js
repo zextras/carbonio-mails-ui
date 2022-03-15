@@ -4,15 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-import { forEach, reduce, map, filter } from 'lodash';
+import { forEach, reduce, map, filter, isEmpty } from 'lodash';
 import moment from 'moment';
 
 const _CI_REGEX = /^<(.*)>$/;
 const _CI_SRC_REGEX = /^cid:(.*)$/;
-const LINK_REGEX =
-	/(?:https?:\/\/|www\.)+(?![^\s]*?")([\w.,@?!^=%&amp;:()/~+#-]*[\w@?!^=%&amp;()/~+#-])?/gi;
-const LINE_BREAK_REGEX = /(?:\r\n|\r|\n)/g;
 
 const plainTextToHTML = (str) => {
 	if (str !== undefined && str !== null) {
@@ -151,49 +147,70 @@ const getHeader = (msg, content) => {
     </tr>
 </table>`;
 };
-export const getContentForPrint = ({ messages, subject, account }) => {
-	let content = '';
-	map(messages, (msg) => {
-		const { body } = msg;
-		switch (body.contentType) {
-			case 'text/html': {
-				const parts = findAttachments(msg.parts ?? [], []);
-				const parser = new DOMParser();
-				const htmlDoc = parser.parseFromString(body.content, 'text/html');
-				const imgMap = reduce(
-					parts,
-					(r, v) => {
-						if (!_CI_REGEX.test(v.ci)) return r;
-						r[_CI_REGEX.exec(v.ci)[1]] = v;
-						return r;
-					},
-					{}
-				);
 
-				const images = htmlDoc.getElementsByTagName('img');
-				forEach(images, (p) => {
-					if (p.hasAttribute('dfsrc')) {
-						p.setAttribute('src', p.getAttribute('dfsrc'));
-					}
-					if (!_CI_SRC_REGEX.test(p.src)) return;
-					const ci = _CI_SRC_REGEX.exec(p.getAttribute('src'))[1];
-					if (imgMap[ci]) {
-						const part = imgMap[ci];
-						p.setAttribute('pnsrc', p.getAttribute('src'));
-						p.setAttribute('src', `/service/home/~/?auth=co&id=${msg.id}&part=${part.name}`);
-					}
-				});
-				content += getHeader(msg, htmlDoc.body.innerHTML);
-				break;
+export const getBodyWrapper = ({ content, subject }) => `<div className="ZhCallListPrintView">
+			<table cellPadding="0" cellSpacing="5" width="100%">
+				<tr style="background:rgba(176, 195, 231, 0.8)">
+					<td>
+						<div className="ZhPrintSubject">
+							<b>${subject}</b>
+						</div>
+						<hr />
+					</td>
+				</tr>
+				<tr>
+					<td>${content}</td>
+				</tr>
+			</table>
+		</div>`;
+
+export const getContentForPrint = ({ messages, account, conversations, isMsg = false }) => {
+	let content = '';
+	map(conversations, (conv) => {
+		const conversationMessage = isMsg ? messages : filter(messages, { conversation: conv.id });
+		const ss = map(conversationMessage, (msg) => {
+			const { body } = msg;
+			switch (body.contentType) {
+				case 'text/html': {
+					const parts = findAttachments(msg.parts ?? [], []);
+					const parser = new DOMParser();
+					const htmlDoc = parser.parseFromString(body.content, 'text/html');
+					const imgMap = reduce(
+						parts,
+						(r, v) => {
+							if (!_CI_REGEX.test(v.ci)) return r;
+							r[_CI_REGEX.exec(v.ci)[1]] = v;
+							return r;
+						},
+						{}
+					);
+
+					const images = htmlDoc.getElementsByTagName('img');
+					forEach(images, (p) => {
+						if (p.hasAttribute('dfsrc')) {
+							p.setAttribute('src', p.getAttribute('dfsrc'));
+						}
+						if (!_CI_SRC_REGEX.test(p.src)) return;
+						const ci = _CI_SRC_REGEX.exec(p.getAttribute('src'))[1];
+						if (imgMap[ci]) {
+							const part = imgMap[ci];
+							p.setAttribute('pnsrc', p.getAttribute('src'));
+							p.setAttribute('src', `/service/home/~/?auth=co&id=${msg.id}&part=${part.name}`);
+						}
+					});
+
+					return getHeader(msg, htmlDoc.body.innerHTML);
+				}
+				case 'text/plain': {
+					return !isEmpty(body.content)
+						? getHeader(msg, `<p>${plainTextToHTML(body.content)}</p>`)
+						: getHeader(msg, '<p>No Content</p>');
+				}
+				default:
+					return getHeader(msg, '<p>No Content</p>');
 			}
-			case 'text/plain': {
-				content += `<p>${plainTextToHTML(body.content)}</p><hr />`;
-				break;
-			}
-			default:
-				content += '<p>NO COntent</p><hr />';
-				break;
-		}
+		});
+		content += getBodyWrapper({ content: ss.join('<br/>'), subject: conv.subject });
 	});
 
 	const finalContent = `<html>
@@ -295,25 +312,13 @@ export const getContentForPrint = ({ messages, subject, account }) => {
 	</tr>
 </table>
 <hr />
-<div class='ZhCallListPrintView'>
-    <table cellpadding="0" cellspacing="5"  width="100%">
-        <tr>
-            <td>
-                <div class="ZhPrintSubject"><b>${subject}</b></div><hr/>
-            </td>
-        </tr>
-        <tr>
-            <td>
-            ${content}
-            </td>
-        </tr>
-    </table>
- </div>
-    <div class="footer">${window.location.href} </div>
+${content}
+
+    <div class="footer">${window.location.hostname} </div>
     <script type="text/javascript">
             setTimeout('window.print()', 3000);
     </script>
-</body>
+    </body>
 </html>`;
 
 	return finalContent;

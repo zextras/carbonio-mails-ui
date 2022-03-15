@@ -97,16 +97,15 @@ export function printConversation({ t, conversation, dispatch, account }) {
 	let messageIds = [];
 	let subject;
 	if (isArray(conversation) && conversation.length > 0) {
-		subject = conversation[0]?.subject;
 		map(conversation, (conv) => {
 			map(conv.messages, (m) => {
 				messageIds.push(m.id);
 			});
 		});
 	} else {
-		subject = conversation.subject;
 		messageIds = map(conversation.messages, (m) => m.id);
 	}
+
 	return {
 		id: 'print-conversations',
 		icon: 'PrinterOutline',
@@ -114,7 +113,12 @@ export function printConversation({ t, conversation, dispatch, account }) {
 		click: () => {
 			const printWindow = window.open('', '_blank');
 			dispatch(getMsgsForPrint({ ids: messageIds })).then((res) => {
-				const content = getContentForPrint({ messages: res.payload, subject, account });
+				const content = getContentForPrint({
+					messages: res.payload,
+					subject,
+					account,
+					conversations: conversation
+				});
 				printWindow.top.document.title = 'Carbonio';
 				printWindow.document.write(content);
 			});
@@ -343,7 +347,7 @@ export const getActions = (
 					setConversationsSpam([conversation.id], false, t, dispatch, createSnackbar, deselectAll),
 					printConversation({
 						t,
-						conversation,
+						conversation: [conversation],
 						dispatch,
 						account
 					}),
@@ -379,7 +383,7 @@ export const getActions = (
 
 					printConversation({
 						t,
-						conversation,
+						conversation: [conversation],
 						dispatch,
 						account
 					}),
@@ -419,7 +423,7 @@ export const getActions = (
 					),
 					printConversation({
 						t,
-						conversation,
+						conversation: [conversation],
 						dispatch,
 						account
 					})
@@ -463,7 +467,7 @@ export const getActions = (
 					setConversationsSpam([conversation.id], false, t, dispatch, createSnackbar, deselectAll),
 					printConversation({
 						t,
-						conversation,
+						conversation: [conversation],
 						dispatch,
 						account
 					}),

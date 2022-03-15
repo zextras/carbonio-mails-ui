@@ -6,6 +6,7 @@
 import React from 'react';
 import { Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { ActionsType } from '../types/participant';
 import { sendMsg } from '../store/actions/send-msg';
@@ -109,6 +110,10 @@ export function setMsgAsSpam(ids, value, t, dispatch, createSnackbar) {
 }
 
 export function printMsg(id, t, message, dispatch, account) {
+	const conversations = map([message], (msg) => ({
+		conversation: msg.conversation,
+		subject: msg.subject
+	}));
 	return {
 		id: 'message-print',
 		icon: 'PrinterOutline',
@@ -119,7 +124,9 @@ export function printMsg(id, t, message, dispatch, account) {
 				const content = getContentForPrint({
 					messages: res.payload,
 					subject: message.subject,
-					account
+					account,
+					conversations,
+					isMsg: true
 				});
 				printWindow.top.document.title = 'Carbonio';
 				printWindow.document.write(content);
