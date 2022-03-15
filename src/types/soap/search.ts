@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { SoapConversation } from './soap-conversation';
+import { SoapIncompleteMessage } from './soap-mail-message';
 import { ZimbraRequest } from './zimbra-request';
 
 export type SearchRequest = ZimbraRequest & {
 	sortBy: 'dateDesc' | 'dateAsc';
-	types: 'conversation';
+	types: string;
 	fullConversation: 0 | 1;
 	needExp: 0 | 1;
 	recip: '0' | '1' | '2';
@@ -20,7 +21,8 @@ export type SearchRequest = ZimbraRequest & {
 };
 
 export type SearchResponse = {
-	c: SoapConversation[];
+	c?: SoapConversation[];
+	m?: SoapIncompleteMessage[];
 	more: boolean;
 	offset?: number;
 	sortBy?: string;

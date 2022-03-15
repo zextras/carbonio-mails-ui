@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { Suspense, lazy, useState, useEffect, useCallback } from 'react';
+import React, { Suspense, lazy, useState, useEffect, useMemo } from 'react';
 import { Redirect, Switch, Route, useRouteMatch } from 'react-router-dom';
-import { setAppContext, Spinner } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, setAppContext, Spinner, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Container } from '@zextras/carbonio-design-system';
+import { useSelector } from 'react-redux';
+import { selectCurrentFolder } from '../store/conversations-slice';
 
 const LazyFolderView = lazy(() =>
 	import(/* webpackChunkName: "folder-panel-view" */ './app/folder-panel')
@@ -19,15 +21,19 @@ const LazyDetailPanel = lazy(() =>
 const AppView = () => {
 	const { path } = useRouteMatch();
 	const [count, setCount] = useState(0);
-	const [isMessageView, setIsMessageView] = useState(false);
-
-	const toggleView = useCallback(() => {
-		setIsMessageView(!isMessageView);
-	}, [isMessageView]);
+	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
+	const currentFolderId = useSelector(selectCurrentFolder);
+	const isMessageView = useMemo(
+		() =>
+			zimbraPrefGroupMailBy
+				? zimbraPrefGroupMailBy === 'message' || currentFolderId === FOLDERS.DRAFTS
+				: undefined,
+		[currentFolderId, zimbraPrefGroupMailBy]
+	);
 
 	useEffect(() => {
-		setAppContext({ isMessageView, setIsMessageView, toggleView, count, setCount });
-	}, [count, isMessageView, toggleView]);
+		setAppContext({ isMessageView, count, setCount });
+	}, [count, isMessageView]);
 
 	return (
 		<Container orientation="horizontal" mainAlignment="flex-start">

@@ -219,6 +219,7 @@
         "forwarded": "Forwarded",
         "freebusy": "FreeBusy",
         "from": "From",
+        "from_identity": "From: {{identity}}",
         "go_back": "Go Back",
         "grantee": "Grantee: ",
         "hide": "Hide",
@@ -297,6 +298,7 @@
         "write": "Write"
     },
     "message": {
+        "email_saved_at": "Email saved as draft at {{time}}",
         "invalid_search_message": "We didn't find any match",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {

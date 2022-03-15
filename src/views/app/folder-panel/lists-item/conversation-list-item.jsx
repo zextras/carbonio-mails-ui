@@ -27,15 +27,15 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { selectCurrentFolderExpandedStatus } from '../../../../store/conversations-slice';
-import MessageListItem from './message-list-item';
+import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
 import { searchConv } from '../../../../store/actions';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { ItemAvatar } from './item-avatar';
 import ListItemActionWrapper from './list-item-actions-wrapper';
 import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
 import { selectMessages } from '../../../../store/messages-slice';
+import { SenderName } from './sender-name';
+import MessageListItem from './message-list-item';
 
 function ConversationMessagesList({ conversationStatus, messages, folderId }) {
 	if (conversationStatus !== 'complete') {
@@ -50,7 +50,12 @@ function ConversationMessagesList({ conversationStatus, messages, folderId }) {
 		<>
 			{map(messages, (msg, index) => (
 				<React.Fragment key={msg.id}>
-					<MessageListItem item={msg} conversationId={msg.parent} folderId={folderId} />
+					<MessageListItem
+						item={msg}
+						conversationId={msg.parent}
+						folderId={folderId}
+						isConvChildren
+					/>
 				</React.Fragment>
 			))}
 		</>
@@ -60,46 +65,6 @@ function ConversationMessagesList({ conversationStatus, messages, folderId }) {
 const CollapseElement = styled(Container)`
 	display: ${({ open }) => (open ? 'block' : 'none')};
 `;
-
-export const SenderName = ({ item, textValues, isFromSearch }) => {
-	const [t] = useTranslation();
-	const account = useUserAccount();
-	const { folderId } = useParams();
-	const participantsString = useMemo(() => {
-		const participants = filter(item.participants, (p) => {
-			if (folderId === FOLDERS.INBOX) return p.type === 'f'; // inbox
-			if (folderId === FOLDERS.SENT) return p.type === 't'; // sent
-			return true; // keep all
-		});
-		const meIndex = findIndex(participants, ['address', account?.name]);
-		if (meIndex >= 0) {
-			// swap index me will be at first
-			const activeParticipant = participants[0];
-			participants[0] = participants[meIndex];
-			participants[meIndex] = activeParticipant;
-		}
-		return reduce(
-			uniqBy(participants, (em) => em.address),
-			(acc, part) => trimStart(`${acc}, ${participantToString(part, t, [account])}`, ', '),
-			''
-		);
-	}, [account, folderId, item.participants, t]);
-
-	return (
-		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
-			{!isFromSearch && folderId === FOLDERS.DRAFTS && (
-				<Padding right="small">
-					<Text color="error">{t('label.draft_folder', '[DRAFT]')}</Text>
-				</Padding>
-			)}
-			<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
-				<Text data-testid="ParticipantLabel" color={textValues?.color} weight={textValues?.weight}>
-					{participantsString}
-				</Text>
-			</Tooltip>
-		</Row>
-	);
-};
 
 export const RowInfo = ({ item }) => {
 	const date = useMemo(() => getTimeLabel(item.date), [item.date]);
@@ -141,7 +106,9 @@ export default function ConversationListItem({
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 	const messages = useSelector(selectMessages);
-	const conversationStatus = useSelector(selectCurrentFolderExpandedStatus)[item.id];
+	const conversationStatus = useSelector((state) =>
+		selectConversationExpandedStatus(state, item.id)
+	);
 	const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 
 	const participantsString = useMemo(
@@ -159,23 +126,29 @@ export default function ConversationListItem({
 		(e) => {
 			e.preventDefault();
 			setOpen((currentlyOpen) => {
-				if (!currentlyOpen) {
-					dispatch(searchConv({ folderId, conversationId: item.id, fetch: '0' }));
+				if (
+					!currentlyOpen &&
+					conversationStatus !== 'complete' &&
+					conversationStatus !== 'pending'
+				) {
+					dispatch(searchConv({ folderId, conversationId: item.id, fetch: 'all' }));
 				}
 				return !currentlyOpen;
 			});
 		},
-		[dispatch, folderId, item.id]
+		[conversationStatus, dispatch, folderId, item.id]
 	);
 
 	const _onClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
-				setConversationsRead([item.id], false, t, dispatch).click();
+				if (item?.read === false) {
+					setConversationsRead([item.id], false, t, dispatch).click();
+				}
 				pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 			}
 		},
-		[item.id, t, dispatch, folderId]
+		[item?.read, item.id, t, dispatch, folderId]
 	);
 
 	const _onDoubleClick = useCallback(
