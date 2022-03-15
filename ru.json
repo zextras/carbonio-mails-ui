@@ -179,7 +179,7 @@
         "freebusy": "Свободно/Занято",
         "hide": "Скрыть",
         "insert": "Вставить",
-        "loading_results": "Загрузка результатов...",
+        "loading_results": "Загрузка результатов…",
         "mail_folder": "Папка почты",
         "mail_settings": "Настройки почты",
         "new_folder": "Новая папка",
@@ -217,7 +217,8 @@
         "addresses_not_accepted": "Один или несколько адресов были отклонены:",
         "of": "из",
         "attachement_unknown": "Неизвестно <{{mimeType}}>",
-        "draft": "Черновик"
+        "draft": "Черновик",
+        "forwarded": "Переадресовано"
     },
     "header": {
         "warning": "Предупреждение",

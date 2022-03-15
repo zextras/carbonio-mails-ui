@@ -179,7 +179,7 @@
         "addresses_not_accepted": "Uno o più indirizzi non sono stati accettati. Indirizzi rifiutati:",
         "error_address": "È necessario inserire una e-mail valida",
         "go_back": "Indietro",
-        "loading_results": "Caricamento Risultati in corso...",
+        "loading_results": "Caricamento Risultati in corso …",
         "mail_folder": "Cartella e-mail",
         "results_for": "Risultati per: ",
         "results_for_error": "Impossibile iniziare la ricerca, cancella e riprova: ",
@@ -194,7 +194,8 @@
         "receive_message": "Messaggi Ricevuti",
         "replied": "Risposto",
         "draft": "Bozza",
-        "forwarded": "Inoltrato"
+        "forwarded": "Inoltrato",
+        "attachement_unknown": "Sconosciuto <{{mimeType}}>"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",
