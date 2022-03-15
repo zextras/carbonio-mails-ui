@@ -4,19 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useState, useMemo, useCallback, useContext } from 'react';
-import { useUserSettings, useUserAccount, editSettings } from '@zextras/carbonio-shell-ui';
+import {
+	useUserSettings,
+	useUserAccount,
+	editSettings,
+	SettingsHeader
+} from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep } from 'lodash';
-import {
-	Container,
-	Padding,
-	Text,
-	Button,
-	Row,
-	Divider,
-	FormSection,
-	SnackbarManagerContext
-} from '@zextras/carbonio-design-system';
+import { Container, FormSection, SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { differenceObject } from './components/utils';
 import DisplayMessagesSettings from './displaying-messages-settings';
@@ -226,49 +222,13 @@ export default function SettingsView() {
 			});
 		}
 	}, [signItems, signItemsUpdated, settingsToUpdate, dispatch, account, createSnackbar, t, flag]);
+
+	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), [t]);
 	return loading ? (
 		<LoadingShimmer />
 	) : (
-		<Container
-			orientation="vertical"
-			mainAlignment="space-around"
-			background="gray5"
-			style={{ overflowY: 'auto' }}
-		>
-			<Row orientation="horizontal" width="100%">
-				<Row
-					padding={{ all: 'small' }}
-					mainAlignment="flex-start"
-					width="50%"
-					crossAlignment="flex-start"
-				>
-					<Text size="large" weight="regular">
-						{t('label.mail_settings', 'Mails settings')}
-					</Text>
-				</Row>
-				<Row
-					padding={{ all: 'small' }}
-					width="50%"
-					mainAlignment="flex-end"
-					crossAlignment="flex-end"
-				>
-					<Padding right="small">
-						<Button
-							label={t('label.discard_changes', 'DISCARD CHANGES')}
-							onClick={onClose}
-							color="secondary"
-							disabled={isDisabled}
-						/>
-					</Padding>
-					<Button
-						label={t('label.save', 'Save')}
-						color="primary"
-						onClick={saveChanges}
-						disabled={isDisabled}
-					/>
-				</Row>
-			</Row>
-			<Divider />
+		<>
+			<SettingsHeader onSave={saveChanges} onCancel={onClose} isDirty={!isDisabled} title={title} />
 			<Container
 				orientation="vertical"
 				mainAlignment="baseline"
@@ -302,6 +262,6 @@ export default function SettingsView() {
 					<FilterModule t={t} />
 				</FormSection>
 			</Container>
-		</Container>
+		</>
 	);
 }

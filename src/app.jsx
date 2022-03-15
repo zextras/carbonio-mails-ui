@@ -22,6 +22,7 @@ import { mailToSharedFunction, openComposerSharedFunction } from './integrations
 import Notifications from './views/notifications';
 import { ParticipantRole } from './types/participant';
 import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
+import { getSettingsSubSections } from './views/settings/subsections';
 
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
@@ -84,6 +85,7 @@ const App = () => {
 		addSettingsView({
 			route: MAILS_ROUTE,
 			label: t('label.app_name', 'Mails'),
+			subSections: getSettingsSubSections(t),
 			component: SettingsView
 		});
 		addSearchView({
