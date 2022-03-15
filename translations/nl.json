@@ -24,11 +24,11 @@
         "hide_details": "Details verbergen",
         "mark_as_non_spam": "Geen spam",
         "mark_as_spam": "Als spam markeren",
-        "preview": "Klik om te bekijken in een ander tabblad",
+        "preview": "Voorbeeld",
         "print": "Afdrukken",
         "redirect": "Doorsturen",
         "reply_all": "Alle beantwoorden",
-        "reset": "Filters resetten",
+        "reset": "Resetten",
         "send_anyway": "Toch sturen",
         "show_details": "Details weergeven",
         "show_original": "Origineel weergeven",
@@ -77,7 +77,9 @@
                 "rtn_dur_warning": "De retentietijd moet een positief getal zijn",
                 "threshold_msg": "In deze map zullen berichten die ouder zijn dan de verwijderingsdrempel automatisch worden opgeruimd en verwijderd.",
                 "retention_duration_warning": "De retentietijd moet een positief getal zijn",
-                "retention_message": "Berichten in deze map die binnen het retentiebereik vallen, vereisen een uitdrukkelijke bevestiging voordat ze worden verwijderd"
+                "retention_message": "Berichten in deze map die binnen het retentiebereik vallen, vereisen een uitdrukkelijke bevestiging voordat ze worden verwijderd",
+                "add_share": "Delen toevoegen",
+                "threshold_message": "Berichten in deze map die ouder zijn dan de verwijderingsdrempel zullen automatisch worden opgeschoond en verwijderd."
             },
             "move": {
                 "footer": "Verplaatsen",
@@ -150,17 +152,17 @@
         "attachment": "Bijlage",
         "attachment_plural": "Bijlagen",
         "cancel": "Annuleren",
-        "download": "Downloaden",
-        "download_plural": "Alles downloaden",
+        "download": "Download",
+        "download_plural": "Downloads",
         "edit": "Bewerken",
         "me": "Me",
-        "remove": "Openen met",
-        "remove_plural": "Openen met",
+        "remove": "Verwijderen",
+        "remove_plural": "Alles verwijderen",
         "save": "Opslaan",
         "search_subject": "Onderwerp",
         "send": "Versturen",
         "share": "Delen",
-        "allowed_actions": "Toegelaten acties:",
+        "allowed_actions": "Toegestane acties",
         "bcc": "BCC",
         "calendar_color": "Kleur item",
         "cc": "CC",
@@ -168,14 +170,14 @@
         "edit_folder_properties": "Eigenschappen van {{name}} bewerken",
         "draft_folder": "[CONCEPT]",
         "filter_user": "Gebruikers filteren",
-        "find_shares": "Selecteer welke mappen u wilt zien in de mappenstructuur",
+        "find_shares": "Delen zoeken",
         "flash_browser_title": "Flash de titel van de browser",
         "from": "Van",
         "highlight_tab": "Het tabblad Mail markeren",
         "keywords": "Zoekwoorden",
         "resend": "Opnieuw verzenden",
         "mail_setting": "Mailinstellingen",
-        "no_subject": "(Geen onderwerp)",
+        "no_subject": "Geen onderwerp",
         "owner": "Eigenaar: ",
         "receive_message": "Berichten ontvangen",
         "mailSelected": "1 e-mail geselecteerd",
@@ -184,7 +186,7 @@
         "revoke_access_tooltip": "Toegang intrekken met een standaardkennisgeving",
         "revoke_access_without_notification": "Toegang intrekken zonder een melding te sturen",
         "revoke_send_standard_msg": "Toegang intrekken door een aangepaste melding te verzenden",
-        "revoke_share": "Aandeel van {{title}} intrekken",
+        "revoke_share": "Delen van {{title}} intrekken",
         "search_hint": "Hints zoeken!",
         "role": "Rol: ",
         "select_1": "Selecteer een e-mail om deze te lezen",
@@ -194,7 +196,7 @@
         "single_advance_fillter": "Geavanceerde filters",
         "send_notification": "Een kennisgeving sturen naar",
         "sent": "Verstuurd",
-        "shared_item": "Gedeeld item:",
+        "shared_item": "Gedeeld item",
         "shares_folder_edit": "Delen van deze map",
         "shares_items": "gedeelde mappen van {{value}}",
         "subject": "Onderwerp",
@@ -208,7 +210,7 @@
         "grantee": "Begunstigde: ",
         "add_custom_message": "Een aangepast bericht toevoegen",
         "automatically_delete_duplicates": "Automatisch verwijderen van dubbele kopieën van hetzelfde bericht bij ontvangst",
-        "retention_policy": "Retentie-eigenschappen",
+        "retention_policy": "Retentiebeleid",
         "show_popup": "Een popup-melding weergeven",
         "advance_filters": "1 Geavanceerde filter",
         "advance_filters_plural": "{{count}} Geavanceerde filters",
@@ -247,7 +249,35 @@
         "single_advanced_filter": "Geavanceerde Filters",
         "size": "Grootte",
         "email_perm_deleted": "E-mail permanent verwijderd",
-        "undo": "Ongedaan maken"
+        "undo": "Ongedaan maken",
+        "size_larger": "Grootte groter dan (MB)",
+        "search_activate_selection_mode": "Selectiemodus is nog niet beschikbaar bij zoekresultaten",
+        "discard_changes": "WIJZIGINGEN VERWIJDEREN",
+        "loading_results": "Resultaten laden...",
+        "mail_folder": "E-mailmap",
+        "mail_settings": "Mailinstellingen",
+        "on_behalf_of": "namens",
+        "size_smaller": "Grootte kleiner dan (MB)",
+        "all": "alle",
+        "any": "alle",
+        "activate_selection_mode": "Keuzemodus activeren",
+        "attachment_type": "Type bijlage",
+        "choose_folder": "Map kiezen",
+        "attachment_status": "Status van e-mail-item",
+        "error_address": "Een geldig e-mailadres is vereist",
+        "hide": "Verbergen",
+        "addresses_not_accepted": "Een of meer adressen werden niet aanvaard. Afgewezen adressen:",
+        "received_from_address": "Ontvangen van (adres)",
+        "sending": "Wordt verstuurd",
+        "results_for_error": "Kan de zoekactie niet starten, wissen en opnieuw proberen: ",
+        "results_for": "Resultaten voor: ",
+        "shared_folders": "Gedeelde mappen",
+        "show_all": "Alles weergeven",
+        "select_signature": "Een handtekening selecteren",
+        "sent_to_address": "Verzonden naar (adres)",
+        "signature_required": "Informatie over handtekening is vereist.",
+        "mail_selected": "{{count}} e-mail geselecteerd",
+        "mail_selected_plural": "{{count}} e-mails geselecteerd"
     },
     "messages": {
         "permanent_delete_confirm": "Permanent verwijderen",
@@ -260,7 +290,7 @@
             },
             "redirect": {
                 "first": "Deze e-mail wordt doorgestuurd naar een nieuwe ontvanger met behoud van het e-mailadres van de oorspronkelijke afzender.",
-                "second": "Dit betekent dat het er voor de nieuwe ontvanger uitziet alsof de e-mail oorspronkelijk aan hem of haar was verzonden."
+                "second": "Dit betekent dat het er voor de nieuwe ontvanger uitziet alsof de e-mail oorspronkelijk aan hem of haar was verzonden.,"
             }
         },
         "new_email": "Nieuwe e-mail",
@@ -270,7 +300,7 @@
             "conversation_delete_error": "Er is iets fout gegaan, dit gesprek is niet verwijderd, probeer het opnieuw.",
             "conversation_deleted": "Gesprek met succes verwijderd",
             "conversation_deleted_permanently": "E-mail permanent verwijderd",
-            "conversation_move_error": "Er is iets fout gegaan, de verplaatsing van het gesprek is niet voltooid, probeer het opnieuw.",
+            "conversation_move_error": "Er is iets fout gegaan, de verplaatsing van het gesprek is niet voltooid. Probeer het opnieuw.",
             "conversation_move": "Conversatie met succes verplaatst",
             "conversation_deleted_permanently_error": "Er ging iets mis, probeer het nog eens",
             "email_moved_to_trash": "E-mail verplaatst naar prullenbak",
@@ -278,13 +308,13 @@
             "folder_created": "Nieuwe map gecreëerd",
             "folder_created_error": "Er is iets misgegaan, probeer het opnieuw.",
             "folder_deleted": "Map met succes verwijderd.",
-            "folder_edited": "Map met succes bewerkt",
+            "folder_edited": "Wijzigingen met succes bewerkt",
             "folder_edited_error": "Er is iets fout gegaan, wijzigingen zijn niet gebeurd, probeer het opnieuw.",
-            "folder_empty": "Prullenbak met succes opgeruimd",
-            "folder_empty_error": "Er is iets fout gegaan, wijzigingen zijn niet gebeurd, probeer het opnieuw.",
+            "folder_empty": "Prullenbak met succes leeggemaakt",
+            "folder_empty_error": "Er is iets fout gegaan, wijzigingen zijn niet gebeurd,. Probeer het opnieuw.",
             "email_move_error": "Er ging iets mis, probeer het opnieuw",
             "email_restore_error": "Er ging iets mis, probeer het nog eens",
-            "folder_move_error": "Er is iets fout gegaan, deze map is niet verplaatst, probeer het opnieuw.",
+            "folder_move_error": "Er is iets fout gegaan, deze map is niet verplaatst. Probeer het opnieuw.",
             "folder_moved": "Map met succes verplaatst",
             "folder_moved_to_trash": "Map verplaatst naar prullenmand",
             "folder_will_be_moved_in_time": "Deze map wordt verplaatst in {{remainingTime}}",
@@ -293,16 +323,20 @@
             "message_move_error": "Er is iets fout gegaan, bericht verplaatsen niet voltooid, probeer het opnieuw.",
             "marked_as_non_spam": "U heeft deze e-mail gemarkeerd als Geen Spam",
             "marked_as_spam": "U heeft deze e-mail gemarkeerd als Spam",
-            "message_delete_error": "Er is iets fout gegaan, dit bericht is niet verwijderd, probeer het opnieuw.",
+            "message_delete_error": "Er is iets fout gegaan, dit bericht is niet verwijderd. Probeer het opnieuw.",
             "message_deleted": "Bericht verwijderd",
             "message_deleted_permanently": "E-mail permanent verwijderd",
             "message_deleted_permanently_error": "Er ging iets mis, probeer het opnieuw",
             "message_move": "Bericht met succes verplaatst",
             "message_redirected": "Het bericht is doorgestuurd",
-            "folder_wiped_error": "Er ging iets mis, probeer het nog eens"
+            "folder_wiped_error": "Er ging iets mis, probeer het nog eens",
+            "mail_saved_to_drafts": "Mail opgeslagen in concepten",
+            "folder_restored": "Map hersteld",
+            "sending_mail_in_count": "Uw bericht verzenden in {{count}} seconde",
+            "sending_mail_in_count_plural": "Uw bericht verzenden in {{count}} seconden"
         },
         "no_subject": "Geen onderwerp.",
-        "permanent_delete_body": "Door dit element permanent te verwijderen zult u niet meer in staat zijn om het te herstellen, verdergaan?"
+        "permanent_delete_body": "Door dit element permanent te verwijderen zult u niet meer in staat zijn om het te herstellen. Verdergaan?"
     },
     "of": "van",
     "owner": "Eigenaar",
@@ -319,8 +353,12 @@
         "unread": "Ongelezen",
         "attachment_note": "Zoek naar alle e-mailberichten die een bijlage bevatten.",
         "flagged": "Gevlagd",
-        "flagged_note": "Zoek naar alle e-mailberichten die zijn gevlagd.",
-        "unread_note": "Zoeken naar alle ongelezen e-mailberichten."
+        "flagged_note": "Zoek naar alle gemarkeerde e-mailberichten.",
+        "unread_note": "Zoeken naar alle ongelezen e-mailberichten.",
+        "sent_on": "Verstuurd op",
+        "sent_after": "Verstuurd na",
+        "sent_before": "Verstuurd voor",
+        "size_error": "Alleen cijfers zijn toegestaan"
     },
     "share": {
         "options": {
@@ -337,9 +375,11 @@
             }
         },
         "recipients_address": "E-mailadressen van de ontvangers",
-        "send_notification": "Bericht over dit aandeel verzenden",
-        "standard_message": "Een opmerking aan een standaardbericht toevoegen",
-        "share_note": "Het standaardbericht toont uw naam, de naam van het gedeelde item, de machtigingen die aan de ontvangers zijn verleend en, indien nodig."
+        "send_notification": "Een bericht over dit aandeel verzenden",
+        "standard_message": "Een opmerking aan de standaardbericht toevoegen",
+        "share_note": "Het standaardbericht toont uw naam, de naam van het gedeelde item, de machtigingen die aan de ontvangers zijn verleend en, indien nodig.",
+        "filter_folder_message": "Selecteer een map waar u uw geavanceerde zoekopdracht wilt starten",
+        "is_contained_in": "Is opgenomen in"
     },
     "title": {
         "new_messages": "Nieuwe Berichten",
@@ -350,22 +390,24 @@
     "snackbar": {
         "error": "Er ging iets mis, probeer het opnieuw",
         "share_resend": "Delen uitnodigen opnieuw versturen",
-        "share_updated": "Toegangsrechten bijgewerkt",
+        "share_updated": "\"Toegangsrechten bijgewerkt\"",
         "share_revoke": "Delen toegang ingetrokken",
         "folder_shared": "Gedeelde map",
-        "folder_shared_error": "Er is iets misgegaan, probeer het opnieuw"
+        "folder_shared_error": "Er is iets misgegaan, probeer het opnieuw",
+        "email_moved_to_trash": "E-mail verplaatst naar prullenbak"
     },
     "message": {
         "snackbar": {
             "settings_saved": "Bewerkingen correct opgeslagen",
             "share": {
-                "accepted": "U hebt geantwoord als Geaccepteerd voor het deel",
-                "declined": "U hebt geantwoord als Geweigerd voor het deel",
+                "accepted": "U heeft het verzoek tot delen geaccepteerd",
+                "declined": "U heeft het verzoek tot delen afgewezen",
                 "error": "Er is iets misgegaan, probeer het opnieuw"
             }
         },
         "search_hints": "Hints zoeken waar we het over moeten hebben",
-        "sending_mail_to_self": "Het lijkt erop dat je op het punt staat een e-mail naar uzelf te sturen"
+        "sending_mail_to_self": "Het lijkt erop dat je op het punt staat een e-mail naar uzelf te sturen",
+        "invalid_search_message": "We hebben geen match gevonden"
     },
     "administer": "Beheren",
     "allowed_actions": "Toegelaten acties",
@@ -379,7 +421,8 @@
             "drive": "Toevoegen vanaf Drive",
             "local": "Toevoegen van lokaal",
             "drag_and_drop": {
-                "title": "Drag&Drop-modus"
+                "title": "Drag&Drop-modus",
+                "content": "Drop hier uw bijlagen om ze snel aan deze e-mail toe te voegen"
             },
             "contacts_mod": "Contactfiche toevoegen"
         }
@@ -421,7 +464,8 @@
             "default_mail_search": "Standaard mail zoeken",
             "display_messages": "Berichten weergeven",
             "message_color": "Bericht kleur",
-            "message_selection": "Berichtselectie"
+            "message_selection": "Berichtselectie",
+            "set_message_color": "De setkleur van berichten en gesprekken instellen volgens de kleur van de tag."
         },
         "msg_from_optn": {
             "discard": "Bericht automatisch verwijderen",
@@ -429,8 +473,8 @@
             "inbox_if_cc": "In inbox plaatsen als ik in Aan: of Cc. sta:"
         },
         "notify_folder_optn": {
-            "new_message_folder": "Meldingen weergeven voor nieuwe berichten in elke map",
-            "new_message_inbox": "Meldingen voor nieuwe berichten in inbox weergeven"
+            "new_message_folder": "Meldingen weergeven voor nieuwe berichten die aankomen in een map",
+            "new_message_inbox": "Meldingen weergeven voor nieuwe berichten die aankomen in inbox"
         },
         "msg_selection_optn": {
             "above_deleted": "Berichten selecteren boven de verwijderde of verplaatste berichten",
@@ -440,7 +484,7 @@
         "new_mail_optn": {
             "manually": "Handmatig",
             "when_arrive": "Als er nieuwe mail binnenkomt",
-            "minute": "1 minuut",
+            "minute": "{{count}} minuut",
             "minute_plural": "{{count}} minuten"
         },
         "read_rcpt_optn": {
@@ -460,9 +504,78 @@
         "date": "Datum",
         "discard": "Verwijderen",
         "display_mail_options": {
-            "text": "Als tekst"
+            "text": "Als tekst",
+            "html": "Als HTML (Indien mogelijk)"
         },
-        "message": "Bericht"
+        "message": "Bericht",
+        "does_not_match_exactly": "komt niet precies overeen",
+        "linkedin_msg": "LinkedIn-berichten en -verbindings",
+        "exists": "bestaat",
+        "field": "Veld",
+        "b": "B",
+        "before": "voor",
+        "body": "Body",
+        "choose": "Kiezen",
+        "conditions": "Voorwaarden",
+        "choose_date": "Datum kiezen",
+        "contains": "bevat",
+        "create_new_filter": "Nieuwe filter creëren",
+        "conv_is_participated": "in gesprekken waaraan ik deelnam",
+        "conv_is_started": "in een gesprek dat ik begon",
+        "is": "is",
+        "kb": "KB",
+        "keyword": "Zoekwoord",
+        "is_me": "ben ik",
+        "is_not": "is niet",
+        "invite_replied": "uitnodiging is beantwoord",
+        "invite_requested": "uitnodiging is gevraagd",
+        "is_not_me": "ben ik niet",
+        "keep_in_inbox": "In Inbox houden",
+        "keep_in_sent": "In Verzonden houden",
+        "mb": "MB",
+        "mark_as": "Markeren als",
+        "matches_exactly": "komt precies overeen",
+        "mass_marketing": "massamarketing (bulk)",
+        "matches_wildcard_condition": "komt overeen met wildcardvoorwaarde",
+        "localpart": "localpart",
+        "move_into_folder": "Verplaats naar map",
+        "domain": "domein",
+        "my_frequent_emails": "mijn frequente e-mails",
+        "address_in": "Adres in",
+        "twitter_notification": "Twitter-berichten",
+        "active_filter": "Actieve filter",
+        "delete_filter": "Filter verwijderen",
+        "add_condition": "Nieuwe voorwaarde toevoegen",
+        "delete_filter_text": "Weet u zeker dat u filter wilt verwijderen ",
+        "do_not_process_additional_filters": "Verwerk geen extra filters",
+        "gb": "GB",
+        "if": "Als",
+        "in": "in",
+        "facebook_notification": "Facebook-bericht",
+        "filter_name": "Filternaam",
+        "header_name": "Koptekst benoemd",
+        "not_after": "niet na",
+        "not_before": "niet voor",
+        "not_in": "niet in",
+        "not_over": "niet over",
+        "does_not_contain": "bevat niet",
+        "does_not_exists": "bestaat niet",
+        "filter_deleted": "Filter met succes verwijderd",
+        "from_distribution_list": "van distributielijst",
+        "does_not_match_wildcard_condition": "komt niet overeen met wildcard-voorwaarde",
+        "filter_folder_message": "Selecteer een map om uw filter toe te passen:",
+        "invite_not_replied": "uitnodiging is niet beantwoord ",
+        "invite_not_requested": "uitnodiging is niet gevraagd",
+        "over": "over",
+        "social": "Sociaal",
+        "under": "onder",
+        "not_under": "niet onder",
+        "read_receipt": "Ontvangst lezen",
+        "tag_with": "Taggen met",
+        "perform_following_action": "Voer de volgende acties uit:",
+        "redirect_to_address": "Doorsturen naar adres",
+        "remove_condition": "Deze voorwaarde verwijderen",
+        "to_cc": "Aan of CC"
     },
     "shared_folders": "Gedeelde mappen",
     "shared_item": "Gedeeld item",
@@ -498,12 +611,19 @@
             "new": {
                 "create_footer": "Creëren en verplaatsen",
                 "restore_create_footer": "Aanmaken en herstellen",
-                "title": "Een nieuwe map creëren"
+                "title": "Een nieuwe map creëren",
+                "input": {
+                    "position": "Oudermap",
+                    "name": "Mapnaam invullen",
+                    "name_exist": "Naam bestaat al in dit pad"
+                },
+                "name_exist_warning": "Naam bestaat al"
             },
             "move": {
                 "title_modal": "Gesprek verplaatsen",
                 "body": {
-                    "message1": "Selecteer een map om de overwogene naar te verplaatsen:"
+                    "message1": "Selecteer een map om de overwogene naar te verplaatsen:",
+                    "message2": "Selecteer een map om naar te herstellen:"
                 }
             },
             "wipe": {
@@ -515,6 +635,10 @@
         "action": {
             "empty": {
                 "trash": "Prullenbak leegmaken"
+            },
+            "edit_properties": "Eigenschappen bewerken",
+            "wipe": {
+                "folder_panel": "Map wissen"
             }
         },
         "lists_item": {
@@ -522,9 +646,62 @@
         }
     },
     "filters": {
-        "filters": "Filters"
+        "filters": "Filters",
+        "available_filters": "Beschikbare filters",
+        "incoming_msg_filters": "Filters inkomende berichten",
+        "outgoing_message_filters": "Filters uitgaande berichten",
+        "run": "Run",
+        "active_filters": "Actieve filters",
+        "filter_note": "Opmerking: wijzigingen aan filterregels worden onmiddellijk opgeslagen"
     },
     "signatures": {
-        "name": "Naam"
+        "name": "Naam",
+        "signature_heading": "Handtekeningen",
+        "add_signature": "Handtekening toevoegen"
+    },
+    "displayer": {
+        "search_description1": "Of selecteer \"Geavanceerde filters\" om uw zoekopdracht te verfijnen.",
+        "search_description2": "Probeer een andere zoekopdracht te starten.",
+        "search_list_title2": "Geen van uw items komt overeen met uw zoekopdracht.",
+        "list_draft_title": "Er zijn geen bewaarde ontwerpen",
+        "list_junk_title": "Er zijn geen spam e-mails",
+        "list_sent_title": "U heeft nog geen e-mail gestuurd",
+        "list_trash_title": "De prullenbak is leeg",
+        "title1": "Maak een nieuwe e-mail door op de knop \"NIEUW\" te klikken",
+        "title2": "Klik op de knop \"NIEUW",
+        "title3": "Blijf in contact met andere gebruikers.",
+        "title4": "Selecteer een e-mail om deze te lezen",
+        "title8": "Selecteer een e-mail om deze te lezen of te wissen.",
+        "trash_title1": "Klik op het prullenbakicoon om een e-mail te verwijderen",
+        "trash_title2": "Selecteer en herstel e-mails uit de prullenbak.",
+        "search_title1": "Start een andere zoekopdracht",
+        "search_title2": "Het spijt ons maar er zijn geen resultaten voor uw zoekopdracht",
+        "search_title3": "Er zijn geen resultaten voor uw zoekopdracht.",
+        "search_title4": "Selecteer een of meer resultaten om acties uit te voeren of details weer te geven.",
+        "sent_title2": "Selecteer een e-mail om te tonen wat u hebt verzonden.",
+        "archive_title1": "Bewaar een e-mail in een archief zodat u hem later kunt bekijken.",
+        "archive_title2": "Selecteer een gearchiveerde e-mail om deze te bekijken.",
+        "description2": "Verstuur documenten, afbeeldingen en meer door een nieuwe e-mail samen te stellen.",
+        "description4": "U kunt het markeren, beantwoorden of doorsturen naar andere gebruikers.",
+        "description5": "Kijk waar andere gebruikers met u over willen praten.",
+        "description6": "Beantwoord deze e-mail of stuur hem door naar andere gebruikers.",
+        "description7": "Selecteer een e-mail om deze te beantwoorden.",
+        "draft_title1": "Door een e-mail als concept op te slaan, kunt u de berichten bewaren die u later wilt verzenden.",
+        "draft_title2": "Selecteer en bewerk een e-mail om deze naar andere gebruikers te sturen.",
+        "junk_title1": "Wat een geluk! Er zijn geen spam e-mails waar u zich zorgen over hoeft te maken",
+        "junk_title2": "Klik op het prullenbak icoon om een spam-e-mail te verwijderen",
+        "search_list_title1": "Het lijkt erop dat er geen resultaten zijn. Blijf zoeken!",
+        "list_folder_title": "Het lijkt erop dat er nog geen e-mails zijn",
+        "list_spam_title": "Er zijn geen spam e-mails",
+        "search_description3": "Controleer de spelling en de opties van de filters of probeer het met een ander trefwoord.",
+        "spam_title2": "Klik op het prullenbakicoon om een spam-e-mail te verwijderen.",
+        "spam_title1": "Wat een geluk! Er zijn geen spam e-mails waar u zich zorgen over hoeft te maken"
+    },
+    "board": {
+        "show": "Bord tonen"
+    },
+    "notification": {
+        "new_message": "Nieuwe bericht",
+        "no_content": "Bericht zonder inhoud"
     }
 }
