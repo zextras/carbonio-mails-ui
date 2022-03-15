@@ -14,19 +14,16 @@ import {
 } from '@zextras/carbonio-design-system';
 import Heading from './components/settings-heading';
 import { NotifyFolderOpts, ReadReceiptOpts, MsgsFromMeOpts, findLabel } from './components/utils';
-import { settingsSubSections } from '../../constants';
+import { receivingMessagesSubSection } from './subsections';
 
 export default function ReceivingMessagesSettings({ t, settingsObj, updateSettings }) {
 	const notifyFolderOptn = useMemo(() => NotifyFolderOpts(t), [t]);
 	const readReceiptOptn = useMemo(() => ReadReceiptOpts(t), [t]);
 	const msgsFromMeOpts = useMemo(() => MsgsFromMeOpts(t), [t]);
-	const sectionTitle = useMemo(
-		() => t(settingsSubSections[1].label, settingsSubSections[1].fallback),
-		[t]
-	);
+	const sectionTitle = useMemo(() => receivingMessagesSubSection(t), [t]);
 
 	return (
-		<FormSubSection label={sectionTitle} id={sectionTitle.replace(/\s/g, '')}>
+		<FormSubSection label={sectionTitle.label} id={sectionTitle.id}>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 				<Heading title="Message Arrival" />
 				<Input

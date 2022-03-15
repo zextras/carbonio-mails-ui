@@ -212,24 +212,3 @@ export const emailStatusItemsConstant = [
 ];
 
 export const MAIL_APP_ID = 'carbonio-mails-ui';
-
-export const settingsSubSections = [
-	{
-		label: 'settings.label.display_messages',
-		fallback: 'Displaying Messages'
-	},
-	{
-		label: 'label.receive_message',
-		fallback: 'Receiving Messages'
-	},
-	{
-		label: 'signatures.signature_heading',
-		fallback: 'Signatures'
-	},
-	{
-		label: 'label.set_default_signatures',
-		fallback: 'Set Default Signatures'
-	},
-
-	{ label: 'filters.filters', fallback: 'Filters' }
-];

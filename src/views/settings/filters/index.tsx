@@ -8,17 +8,14 @@ import { Container, Text, Divider } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import FilterTabs from './parts/filter-tabs';
 import Heading from '../components/settings-heading';
-import { settingsSubSections } from '../../../constants';
+import { filtersSubSection } from '../subsections';
 
 type ComponentProps = {
 	t: TFunction;
 };
 
 const FilterModule: FC<ComponentProps> = ({ t }): ReactElement => {
-	const sectionTitle = useMemo(
-		() => t(settingsSubSections[4].label, settingsSubSections[4].fallback),
-		[t]
-	);
+	const sectionTitle = useMemo(() => filtersSubSection(t), [t]);
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
 			<Container
@@ -26,8 +23,8 @@ const FilterModule: FC<ComponentProps> = ({ t }): ReactElement => {
 				padding={{ horizontal: 'medium', top: 'medium' }}
 				mainAllignment="space-between"
 			>
-				<Container width="50%" id={sectionTitle}>
-					<Heading title={sectionTitle} size="medium" />
+				<Container width="50%" id={sectionTitle.id}>
+					<Heading title={sectionTitle.label} size="medium" />
 				</Container>
 				<Container width="50%" crossAlignment="flex-end">
 					<Text size="extrasmall">
@@ -42,4 +39,5 @@ const FilterModule: FC<ComponentProps> = ({ t }): ReactElement => {
 		</Container>
 	);
 };
+
 export default FilterModule;

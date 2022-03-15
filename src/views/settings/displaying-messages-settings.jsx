@@ -20,7 +20,7 @@ import {
 	findLabel,
 	ConversationSortingSettings
 } from './components/utils';
-import { settingsSubSections } from '../../constants';
+import { displayingMessagesSubSection } from './subsections';
 
 export default function DisplayingMessagesSettings({ t, settingsObj, updateSettings }) {
 	const checkNewMailOptions = useMemo(
@@ -35,16 +35,10 @@ export default function DisplayingMessagesSettings({ t, settingsObj, updateSetti
 	const displayMailOptions = useMemo(() => DisplayMailOptions(t), [t]);
 	const messageSelectionOptions = useMemo(() => MessageSelectionOptions(t), [t]);
 	const conversationSortingSettings = useMemo(() => ConversationSortingSettings(t), [t]);
-	const sectionTitle = useMemo(
-		() => t(settingsSubSections[0].label, settingsSubSections[0].fallback),
-		[t]
-	);
+	const sectionTitle = useMemo(() => displayingMessagesSubSection(t), [t]);
+
 	return (
-		<FormSubSection
-			label={sectionTitle}
-			padding={{ all: 'medium' }}
-			id={sectionTitle.replace(/\s/g, '')}
-		>
+		<FormSubSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
 			<Row width="100%" padding={{ horizontal: 'small', vertical: 'small' }}>
 				<Select
 					label={t('settings.label.conversation_ordering', 'Conversation ordering')}
