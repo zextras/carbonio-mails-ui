@@ -9,7 +9,7 @@ import { forEach, isArray, map } from 'lodash';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
-import { getContentForPrint } from '../commons/print-conversation';
+import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 
 export function setConversationsFlag(ids, value, t, dispatch) {
 	return {
@@ -123,8 +123,8 @@ export function printConversation({ t, conversation, account }) {
 					printWindow.document.write(content);
 				})
 				.catch((err) => {
-					printWindow.top.document.title = 'Carbonio';
-					printWindow.document.write(`<p style="color:red;"> ${err.message}</>`);
+					const errorContent = getErrorPage(err.message);
+					printWindow.document.write(errorContent);
 				});
 		}
 	};

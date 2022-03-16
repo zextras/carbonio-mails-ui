@@ -13,7 +13,7 @@ import { sendMsg } from '../store/actions/send-msg';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
-import { getContentForPrint } from '../commons/print-conversation';
+import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 
 export function setMsgRead(ids, value, t, dispatch, folderId, shouldReplaceHistory, deselectAll) {
 	return {
@@ -132,8 +132,8 @@ export function printMsg({ t, message, account }) {
 					printWindow.document.write(content);
 				})
 				.catch((err) => {
-					printWindow.top.document.title = 'Carbonio';
-					printWindow.document.write(`<p style="color:red;"> ${err.message}</>`);
+					const errorContent = getErrorPage(err.message);
+					printWindow.document.write(errorContent);
 				});
 		}
 	};
