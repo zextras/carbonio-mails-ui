@@ -150,9 +150,13 @@ const getHeader = (msg, content) => {
 
 export const getBodyWrapper = ({ content, subject }) => `<div className="ZhCallListPrintView">
 			<table cellPadding="0" cellSpacing="5" width="100%">
-				<tr style="background:rgba(176, 195, 231, 0.8)">
+				<tr>
 					<td>
-						<div className="ZhPrintSubject">
+						<div className="ZhPrintSubject" style="background: rgba(176, 195, 231, 0.8);
+                        height: 28px;
+                        padding-left: 4px;
+                        display: flex;
+                        align-items: center;">
 							<b>${subject}</b>
 						</div>
 						<hr />
