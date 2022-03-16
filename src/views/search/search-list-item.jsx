@@ -19,7 +19,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import ListItemActionWrapper from '../app/folder-panel/lists-item/list-item-actions-wrapper';
 import { ItemAvatar } from '../app/folder-panel/lists-item/item-avatar';
-import { RowInfo, SenderName } from '../app/folder-panel/lists-item/conversation-list-item';
+import { RowInfo } from '../app/folder-panel/lists-item/conversation-list-item';
+import { SenderName } from '../app/folder-panel/lists-item/sender-name';
 
 const SearchListItem = ({ item, folderId, selected, selecting, toggle, active }) => {
 	const [t] = useTranslation();
