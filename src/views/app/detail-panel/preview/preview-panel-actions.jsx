@@ -85,7 +85,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 						? setMsgRead(ids, item.read, t, dispatch, folderId)
 						: setConversationsRead(ids, item.read, t, dispatch, folderId),
 					setConversationsFlag(ids, item.flagged, t, dispatch),
-					printConversation(t, conversation, dispatch, account)
+					printConversation(t, conversation, account)
 					// setConversationsSpam(ids, false, t, dispatch)
 					// archiveMsg
 					// editTagsMsg

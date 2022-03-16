@@ -14,7 +14,7 @@ import {
 import { map, every, filter, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { useUserSettings, FOLDERS, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useUserAccount } from '@zextras/carbonio-shell-ui';
 import {
 	moveConversationToTrash,
 	setConversationsFlag,
@@ -28,12 +28,7 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
-	const settings = useUserSettings();
 	const account = useUserAccount();
-	const timezone = useMemo(
-		() => settings?.prefs.zimbraPrefTimeZoneId,
-		[settings?.prefs.zimbraPrefTimeZoneId]
-	);
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);
 	const selectedConversation = filter(conversation, (convo) => ids.indexOf(convo.id) !== -1);
 	const createModal = useContext(ModalManagerContext);
@@ -123,7 +118,7 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						setConversationsRead(ids, false, t, dispatch, folderId, null, deselectAll),
 					setConversationsFlag(ids, showAddFlag, t, dispatch),
 					moveConversationToFolder(ids, t, dispatch, false, createModal, deselectAll),
-					printConversation({ t, conversation: selectedConversation, dispatch, account })
+					printConversation({ t, conversation: selectedConversation, account })
 					// markSpam
 					// reply
 					// replyAll

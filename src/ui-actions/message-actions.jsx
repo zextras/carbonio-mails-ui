@@ -109,7 +109,7 @@ export function setMsgAsSpam(ids, value, t, dispatch, createSnackbar) {
 	};
 }
 
-export function printMsg({ t, message, dispatch, account }) {
+export function printMsg({ t, message, account }) {
 	const conversations = map([message], (msg) => ({
 		conversation: msg.conversation,
 		subject: msg.subject
@@ -120,17 +120,21 @@ export function printMsg({ t, message, dispatch, account }) {
 		label: t('action.print', 'Print'),
 		click: () => {
 			const printWindow = window.open('', '_blank');
-			dispatch(getMsgsForPrint({ ids: [message.id] })).then((res) => {
-				const content = getContentForPrint({
-					messages: res.payload,
-					subject: message.subject,
-					account,
-					conversations,
-					isMsg: true
+			getMsgsForPrint({ ids: [message.id] })
+				.then((res) => {
+					const content = getContentForPrint({
+						messages: res,
+						account,
+						conversations,
+						isMsg: true
+					});
+					printWindow.top.document.title = 'Carbonio';
+					printWindow.document.write(content);
+				})
+				.catch((err) => {
+					printWindow.top.document.title = 'Carbonio';
+					printWindow.document.write(`<p style="color:red;"> ${err.message}</>`);
 				});
-				printWindow.top.document.title = 'Carbonio';
-				printWindow.document.write(content);
-			});
 		}
 	};
 }
@@ -471,7 +475,7 @@ export const getActions = (
 					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
 					setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
-					printMsg({ t, message, dispatch, account }),
+					printMsg({ t, message, account }),
 					// moveMsgToTrash([message.id], t, dispatch, createSnackbar),
 					deleteMessagePermanently([message.id], t, dispatch, createModal, deselectAll),
 					moveMessageToFolder([message.id], t, dispatch, true, createModal, deselectAll),
@@ -491,14 +495,12 @@ export const getActions = (
 					setMsgFlag([message.id], message.flagged, t, dispatch),
 					setMsgAsSpam([message.id], true, t, dispatch, createSnackbar),
 					deleteMsg([message.id], t, dispatch, createSnackbar, createModal)
-					// printMsg(message.id, t, timezone),
-					// showOriginalMsg(message.id, t)
 				],
 				[
 					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
 					setMsgAsSpam([message.id], true, t, dispatch, createSnackbar),
-					printMsg({ t, message, dispatch, account }),
+					printMsg({ t, message, account }),
 					showOriginalMsg(message.id, t),
 					moveMsgToTrash(
 						[message.id],
@@ -534,7 +536,6 @@ export const getActions = (
 						message.conversation
 					),
 					setMsgFlag([message.id], message.flagged, t, dispatch)
-					// printMsg(message.id, t, timezone)
 				],
 				[
 					setMsgFlag([message.id], message.flagged, t, dispatch),
@@ -549,7 +550,7 @@ export const getActions = (
 					),
 					editDraft(message.id, folderId, t),
 					sendDraft(message.id, message, t, dispatch),
-					printMsg({ t, message, dispatch, account })
+					printMsg({ t, message, account })
 				]
 			];
 		case FOLDERS.SENT:
@@ -585,7 +586,7 @@ export const getActions = (
 					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
 					setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
-					printMsg({ t, message, dispatch, account }),
+					printMsg({ t, message, account }),
 					showOriginalMsg(message.id, t),
 					moveMsgToTrash(
 						[message.id],

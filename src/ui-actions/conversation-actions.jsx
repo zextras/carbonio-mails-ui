@@ -93,7 +93,7 @@ export function setConversationsRead(
 	};
 }
 
-export function printConversation({ t, conversation, dispatch, account }) {
+export function printConversation({ t, conversation, account }) {
 	let messageIds = [];
 
 	if (isArray(conversation) && conversation.length > 0) {
@@ -112,15 +112,20 @@ export function printConversation({ t, conversation, dispatch, account }) {
 		label: t('action.print', 'Print'),
 		click: () => {
 			const printWindow = window.open('', '_blank');
-			dispatch(getMsgsForPrint({ ids: messageIds })).then((res) => {
-				const content = getContentForPrint({
-					messages: res.payload,
-					account,
-					conversations: conversation
+			getMsgsForPrint({ ids: messageIds })
+				.then((res) => {
+					const content = getContentForPrint({
+						messages: res,
+						account,
+						conversations: conversation
+					});
+					printWindow.top.document.title = 'Carbonio';
+					printWindow.document.write(content);
+				})
+				.catch((err) => {
+					printWindow.top.document.title = 'Carbonio';
+					printWindow.document.write(`<p style="color:red;"> ${err.message}</>`);
 				});
-				printWindow.top.document.title = 'Carbonio';
-				printWindow.document.write(content);
-			});
 		}
 	};
 }
@@ -347,7 +352,6 @@ export const getActions = (
 					printConversation({
 						t,
 						conversation: [conversation],
-						dispatch,
 						account
 					}),
 					moveConversationToFolder([conversation.id], t, dispatch, true, createModal, deselectAll),
@@ -383,7 +387,6 @@ export const getActions = (
 					printConversation({
 						t,
 						conversation: [conversation],
-						dispatch,
 						account
 					}),
 					moveConversationToTrash(
@@ -423,7 +426,6 @@ export const getActions = (
 					printConversation({
 						t,
 						conversation: [conversation],
-						dispatch,
 						account
 					})
 				]
@@ -467,7 +469,6 @@ export const getActions = (
 					printConversation({
 						t,
 						conversation: [conversation],
-						dispatch,
 						account
 					}),
 					moveConversationToTrash(
