@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
-import { isArray, map } from 'lodash';
+import { forEach, isArray, map } from 'lodash';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
@@ -95,10 +95,10 @@ export function setConversationsRead(
 
 export function printConversation({ t, conversation, dispatch, account }) {
 	let messageIds = [];
-	let subject;
+
 	if (isArray(conversation) && conversation.length > 0) {
-		map(conversation, (conv) => {
-			map(conv.messages, (m) => {
+		forEach(conversation, (conv) => {
+			forEach(conv.messages, (m) => {
 				messageIds.push(m.id);
 			});
 		});
@@ -115,7 +115,6 @@ export function printConversation({ t, conversation, dispatch, account }) {
 			dispatch(getMsgsForPrint({ ids: messageIds })).then((res) => {
 				const content = getContentForPrint({
 					messages: res.payload,
-					subject,
 					account,
 					conversations: conversation
 				});

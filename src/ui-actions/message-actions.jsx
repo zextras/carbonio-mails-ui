@@ -109,7 +109,7 @@ export function setMsgAsSpam(ids, value, t, dispatch, createSnackbar) {
 	};
 }
 
-export function printMsg(id, t, message, dispatch, account) {
+export function printMsg({ t, message, dispatch, account }) {
 	const conversations = map([message], (msg) => ({
 		conversation: msg.conversation,
 		subject: msg.subject
@@ -120,7 +120,7 @@ export function printMsg(id, t, message, dispatch, account) {
 		label: t('action.print', 'Print'),
 		click: () => {
 			const printWindow = window.open('', '_blank');
-			dispatch(getMsgsForPrint({ ids: [id] })).then((res) => {
+			dispatch(getMsgsForPrint({ ids: [message.id] })).then((res) => {
 				const content = getContentForPrint({
 					messages: res.payload,
 					subject: message.subject,
@@ -471,7 +471,7 @@ export const getActions = (
 					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
 					setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
-					printMsg(message.id, t, message, dispatch, account),
+					printMsg({ t, message, dispatch, account }),
 					// moveMsgToTrash([message.id], t, dispatch, createSnackbar),
 					deleteMessagePermanently([message.id], t, dispatch, createModal, deselectAll),
 					moveMessageToFolder([message.id], t, dispatch, true, createModal, deselectAll),
@@ -498,7 +498,7 @@ export const getActions = (
 					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
 					setMsgAsSpam([message.id], true, t, dispatch, createSnackbar),
-					printMsg(message.id, t, message, dispatch, account),
+					printMsg({ t, message, dispatch, account }),
 					showOriginalMsg(message.id, t),
 					moveMsgToTrash(
 						[message.id],
@@ -549,7 +549,7 @@ export const getActions = (
 					),
 					editDraft(message.id, folderId, t),
 					sendDraft(message.id, message, t, dispatch),
-					printMsg(message.id, t, message, dispatch, account)
+					printMsg({ t, message, dispatch, account })
 				]
 			];
 		case FOLDERS.SENT:
@@ -585,7 +585,7 @@ export const getActions = (
 					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
 					setMsgFlag([message.id], message.flagged, t, dispatch),
 					setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
-					printMsg(message.id, t, message, dispatch, account),
+					printMsg({ t, message, dispatch, account }),
 					showOriginalMsg(message.id, t),
 					moveMsgToTrash(
 						[message.id],
