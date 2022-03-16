@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { find, isEmpty } from 'lodash';
 import { useUserAccounts, useAppContext, replaceHistory } from '@zextras/carbonio-shell-ui';
 import {
@@ -14,8 +14,7 @@ import {
 	Row,
 	Text,
 	Drag,
-	Tooltip,
-	Shimmer
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -25,7 +24,7 @@ import { selectFolder } from '../../../../store/conversations-slice';
 import { ItemAvatar } from './item-avatar';
 import ListItemActionWrapper from './list-item-actions-wrapper';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
-import { searchConv } from '../../../../store/actions';
+import { SenderName } from './sender-name';
 
 function previewFile(file) {
 	const preview = document.querySelector('img');
@@ -70,7 +69,8 @@ export default function MessageListItem({
 	setIsDragging,
 	selectedItems,
 	dragImageRef,
-	visible
+	visible,
+	isConvChildren
 }) {
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
@@ -78,11 +78,7 @@ export default function MessageListItem({
 	const messageFolder = useSelector((state) => selectFolder(state, item.parent));
 	const ids = useMemo(() => Object.keys(selectedItems ?? []), [selectedItems]);
 	const dispatch = useDispatch();
-	useEffect(() => {
-		if (!item.participants) {
-			dispatch(searchConv({ folderId, conversationId: item.convId, fetch: '0' }));
-		}
-	}, [dispatch, folderId, item.convId, item.participants]);
+
 	const [date, participantsString] = useMemo(() => {
 		if (item) {
 			const sender = find(item.participants, ['type', 'f']);
@@ -90,6 +86,7 @@ export default function MessageListItem({
 		}
 		return ['.', '.', '', ''];
 	}, [item, t, accounts]);
+
 	const [showIcon, icon, iconTooltip, iconId] = useMemo(() => {
 		if (item) {
 			if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
@@ -130,10 +127,12 @@ export default function MessageListItem({
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				replaceHistory(`/folder/${folderId}/message/${item.id}`);
-				setMsgRead([item.id], false, t, dispatch).click();
+				if (item.read === false) {
+					setMsgRead([item.id], false, t, dispatch).click();
+				}
 			}
 		},
-		[dispatch, folderId, t, item.id]
+		[folderId, item.id, item.read, t, dispatch]
 	);
 	const _onDoubleClick = useCallback(
 		(e) => {
@@ -166,10 +165,7 @@ export default function MessageListItem({
 			: { color: 'primary', weight: 'bold', badge: 'unread' };
 	}, [item.read]);
 
-	// eslint-disable-next-line no-nested-ternary
-	return !item.participants ? (
-		<Shimmer.ListItem type={1} />
-	) : draggedIds?.[item?.id] || visible || !isMessageView ? (
+	return draggedIds?.[item?.id] || visible || isConvChildren ? (
 		<Drag
 			type="message"
 			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
@@ -207,15 +203,7 @@ export default function MessageListItem({
 							padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 						>
 							<Container orientation="horizontal" height="fit" width="fill">
-								<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
-									<Text
-										data-testid="SenderText"
-										color={textReadValues.color}
-										weight={textReadValues.weight}
-									>
-										{participantsString}
-									</Text>
-								</Row>
+								<SenderName item={item} textValues={textReadValues} isFromSearch={false} />
 								<Row>
 									{item.attachment && (
 										<Padding left="small">

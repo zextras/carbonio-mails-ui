@@ -3,67 +3,59 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { filter, head, map, reduce, some } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { find, orderBy, reduce, some } from 'lodash';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { fetchConversations } from '../store/actions';
-import {
-	selectConversationsArray,
-	selectCurrentFolder,
-	selectFolderSearchStatus
-} from '../store/conversations-slice';
+import { search } from '../store/actions';
+import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import { Conversation } from '../types/conversation';
 import { StateType } from '../types/state';
-import { selectFolders } from '../store/folders-slice';
+import { selectFolder } from '../store/folders-slice';
 
 type RouteParams = {
 	folderId: string;
 };
 
 export const useConversationListItems = (): Array<Conversation> => {
-	const [isLoading, setIsLoading] = useState(false);
 	const { folderId } = <RouteParams>useParams();
+	const dispatch = useDispatch();
+	const { zimbraPrefSortOrder } = useUserSettings()?.prefs as Record<string, string>;
+
 	const folderStatus = useSelector((state) => selectFolderSearchStatus(<StateType>state, folderId));
 	const conversations = useSelector(selectConversationsArray);
-	const dispatch = useDispatch();
-	const allFolders = useSelector(selectFolders);
-	const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
+	const folder = useSelector(selectFolder(folderId));
+
+	const sorting = useMemo(
+		() =>
+			(find(zimbraPrefSortOrder.split(','), (f) => f.split(':')?.[0] === folderId)?.split(
+				':'
+			)?.[1] as 'dateAsc' | 'dateDesc' | undefined) ?? 'dateDesc',
+		[folderId, zimbraPrefSortOrder]
+	);
+
+	const sortedConversations = useMemo(
+		() => orderBy(conversations, 'date', sorting === 'dateDesc' ? 'desc' : 'asc'),
+		[conversations, sorting]
+	);
 
 	useEffect(() => {
-		if (folderStatus !== 'complete' && !isLoading) {
-			setIsLoading(true);
-			// todo: to fix this error the dispatcher in shell must be fixed
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			dispatch(fetchConversations({ folderId, limit: 101, sortBy })).then(() => {
-				setIsLoading(false);
-			});
+		if (folderStatus !== 'complete' && folderStatus !== 'pending') {
+			dispatch(search({ folderId, limit: 101, sortBy: sorting, types: 'conversation' }));
 		}
-	}, [dispatch, folderId, folderStatus, isLoading, sortBy]);
+	}, [dispatch, folderId, folderStatus, sorting]);
 
-	const sortedConversation = useMemo(() => {
-		const updatedConversation = map(conversations, (c) => ({
-			...c,
-			date:
-				head(filter(c.messages, { parent: folderId }).sort((a, b) => b.date - a.date))?.date ??
-				c.date
-		}));
-
-		return updatedConversation?.sort((a, b) => b.date - a.date);
-	}, [conversations, folderId]);
-
-	return useMemo(() => {
-		let currentFolderId = folderId;
-		const currentFolder = allFolders[folderId];
-		if (!!currentFolder && currentFolder.rid) {
-			currentFolderId = `${currentFolder.zid}:${currentFolder.rid}`;
-		}
-		return reduce(
-			sortedConversation,
-			(acc, v) => (some(v.messages, ['parent', currentFolderId]) ? [...acc, v] : acc),
-			[] as Array<Conversation>
-		);
-	}, [sortedConversation, folderId, allFolders]);
+	return useMemo(
+		() =>
+			reduce(
+				sortedConversations,
+				(acc, v) =>
+					some(v.messages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id])
+						? [...acc, v]
+						: acc,
+				[] as Array<Conversation>
+			),
+		[sortedConversations, folder?.rid, folder?.zid, folder?.id]
+	);
 };

@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.9-rc.5](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.9-rc.4...v0.1.9-rc.5) (2022-02-24)
+
+
+### Features
+
+* applied shell breaking changes ([f72ab4c](https://github.com/zextras/carbonio-mails-ui/commit/f72ab4c284a2ff5452a3c5cc79deaf7e61a0506e))
+* message action on conversations with single messages only ([0f692e2](https://github.com/zextras/carbonio-mails-ui/commit/0f692e22b06823cd4de086f11f297951b4bdf587))
+
+
+### Bug Fixes
+
+* broken new mail action fixed ([13e3add](https://github.com/zextras/carbonio-mails-ui/commit/13e3addab9284f2e4e70376cf4284b999386e08a))
+* redirect of e-mail is not working issue ([58293f0](https://github.com/zextras/carbonio-mails-ui/commit/58293f041376af7afe64ea6daf13cfb77aadf850))
+* select a conversation on search result that contains draft ([415f857](https://github.com/zextras/carbonio-mails-ui/commit/415f857b1c7bb401408c85a79a7deded8b58291e))
+
 ### [0.1.9-rc.4](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.9-rc.3...v0.1.9-rc.4) (2022-02-10)
 
 

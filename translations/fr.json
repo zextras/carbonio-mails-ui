@@ -299,7 +299,11 @@
         "messages": "Messages",
         "search_activate_selection_mode": "Le mode sélection n'est pas encore disponible dans les résultats de la recherche",
         "sending": "Envoi en cours",
-        "wipe": "Nettoyer"
+        "wipe": "Nettoyer",
+        "attachement_unknown": "<{{mimeType}}> inconnu",
+        "draft": "Brouillon",
+        "forwarded": "Transféré",
+        "replied": "Répondu"
     },
     "mail_folder": "dossier Mail",
     "message": {

@@ -219,13 +219,14 @@
         "forwarded": "Forwarded",
         "freebusy": "FreeBusy",
         "from": "From",
+        "from_identity": "From: {{identity}}",
         "go_back": "Go Back",
         "grantee": "Grantee: ",
         "hide": "Hide",
         "highlight_tab": "Highlight the Mail tab",
         "insert": "Insert",
         "keywords": "Keywords",
-        "loading_results": "Loading Results...",
+        "loading_results": "Loading Results…",
         "mail_folder": "E-mail folder",
         "mail_selected": "{{count}} e-mail selected",
         "mail_selected_plural": "{{count}} e-mails selected",
@@ -269,6 +270,7 @@
         "sending": "Sending",
         "sent": "Sent",
         "sent_to_address": "Sent to (address)",
+        "set_default_signatures": "Set Default Signatures",
         "share": "Share",
         "shared_folders": "Shared Folders",
         "shared_item": "Shared item",
@@ -296,6 +298,7 @@
         "write": "Write"
     },
     "message": {
+        "email_saved_at": "Email saved as draft at {{time}}",
         "invalid_search_message": "We didn't find any match",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {

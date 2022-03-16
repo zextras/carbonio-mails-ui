@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo } from 'react';
-import { AppLink, FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { AppLink, FOLDERS, replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import {
 	AccordionItem,
@@ -17,10 +17,11 @@ import {
 	Container,
 	Tooltip
 } from '@zextras/carbonio-design-system';
+import { find, orderBy } from 'lodash';
 import { actionsRetriever } from './commons/folder-actions';
 import { FolderActionsType } from '../../types/folder';
 import { CORRESPONDING_COLORS } from '../../constants';
-import { convAction, msgAction } from '../../store/actions';
+import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
 
 const DropOverlayContainer = styled(Container)`
@@ -306,6 +307,15 @@ const setAccordionCustomComponent = ({
 					) || folder.isSharedFolder, // Default folders and shared folders not allowed to drag
 				[]
 			);
+			const { zimbraPrefSortOrder, zimbraPrefGroupMailBy } = useUserSettings().prefs;
+			const sorting = useMemo(
+				() =>
+					find(zimbraPrefSortOrder.split(','), (f) => f.split(':')?.[0] === folder.id)?.split(
+						':'
+					)?.[1] ?? 'dateDesc',
+				[zimbraPrefSortOrder]
+			);
+
 			return (
 				<Drop
 					acceptType={['message', 'conversation', 'folder']}
@@ -321,7 +331,17 @@ const setAccordionCustomComponent = ({
 						style={{ display: 'block' }}
 					>
 						<AppLink
-							onClick={(e) => e.stopPropagation()}
+							onClick={(e) => {
+								e.stopPropagation();
+								dispatch(
+									search({
+										folderId: folder.id,
+										limit: 101,
+										sortBy: sorting,
+										types: zimbraPrefGroupMailBy
+									})
+								);
+							}}
 							to={`/folder/${folder.id}`}
 							style={{ width: '100%', height: '100%', textDecoration: 'none' }}
 						>

@@ -22,6 +22,7 @@ import { map, find, findIndex, merge, escape, unescape } from 'lodash';
 import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import { getSignatures } from '../../store/editor-slice-utils';
+import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
 
 const Signature = styled(Row)`
 	border-bottom: 1px solid ${({ theme }) => theme.palette.gray2.regular};
@@ -213,11 +214,14 @@ export default function SignatureSettings({
 		);
 	};
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
+	const sectionTitleSignatures = useMemo(() => signaturesSubSection(t), [t]);
+	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(t), [t]);
 
 	return (
 		<>
 			<FormSubSection
-				label={t('signatures.signature_heading', 'Signatures')}
+				label={sectionTitleSignatures.label}
+				id={sectionTitleSignatures.id}
 				padding={{ all: 'large' }}
 			>
 				<Container crossAlignment="flex-start" orientation="horizontal" padding={{ all: 'medium' }}>
@@ -279,7 +283,7 @@ export default function SignatureSettings({
 					</Container>
 				</Container>
 			</FormSubSection>
-			<FormSubSection label="Set Default Signatures">
+			<FormSubSection label={sectionTitleSetSignatures.label} id={sectionTitleSetSignatures.id}>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 					<Heading title={t('title.new_messages', 'New Messages')} />
 					<Select
