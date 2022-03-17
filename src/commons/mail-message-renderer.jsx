@@ -9,11 +9,18 @@ import { useTranslation } from 'react-i18next';
 import { Container, Text, Button, Row } from '@zextras/carbonio-design-system';
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 
-const _CI_REGEX = /^<(.*)>$/;
-const _CI_SRC_REGEX = /^cid:(.*)$/;
+export const _CI_REGEX = /^<(.*)>$/;
+export const _CI_SRC_REGEX = /^cid:(.*)$/;
 const LINK_REGEX =
 	/(?:https?:\/\/|www\.)+(?![^\s]*?")([\w.,@?!^=%&amp;:()/~+#-]*[\w@?!^=%&amp;()/~+#-])?/gi;
 const LINE_BREAK_REGEX = /(?:\r\n|\r|\n)/g;
+
+export const plainTextToHTML = (str) => {
+	if (str !== undefined && str !== null) {
+		return str.replace(LINE_BREAK_REGEX, '<br />');
+	}
+	return '';
+};
 const replaceLinkToAnchor = (content) => {
 	if (content === '' || content === undefined) {
 		return '';
@@ -35,7 +42,6 @@ const replaceLinkToAnchor = (content) => {
 
 const _TextMessageRenderer = ({ body, t }) => {
 	const [showQuotedText, setShowQuotedText] = useState(false);
-	const containerRef = useRef();
 	const orignalText = getOriginalContent(body.content, false);
 	const quoted = getQuotedTextOnly(body.content, false);
 
@@ -43,17 +49,20 @@ const _TextMessageRenderer = ({ body, t }) => {
 		() => (showQuotedText ? body.content : orignalText),
 		[showQuotedText, body.content, orignalText]
 	);
-	useLayoutEffect(() => {
-		containerRef.current.innerText = contentToDisplay;
-	}, [contentToDisplay]);
 
+	const convertedHTML = useMemo(
+		() => replaceLinkToAnchor(plainTextToHTML(contentToDisplay)),
+		[contentToDisplay]
+	);
 	return (
 		<>
 			<Text
 				overflow="break-word"
 				color="text"
 				style={{ fontFamily: 'monospace' }}
-				ref={containerRef}
+				dangerouslySetInnerHTML={{
+					__html: convertedHTML
+				}}
 			/>
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center" padding={{ top: 'medium' }}>
@@ -208,7 +217,7 @@ const EmptyBody = () => {
 		</Container>
 	);
 };
-function findAttachments(parts, acc) {
+export function findAttachments(parts, acc) {
 	return reduce(
 		parts,
 		(found, part) => {

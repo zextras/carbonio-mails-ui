@@ -5,9 +5,11 @@
  */
 import React from 'react';
 import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
-import { convAction } from '../store/actions';
+import { forEach, isArray, map } from 'lodash';
+import { convAction, getMsgsForPrint } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
+import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 
 export function setConversationsFlag(ids, value, t, dispatch) {
 	return {
@@ -91,18 +93,39 @@ export function setConversationsRead(
 	};
 }
 
-export function printConversation(ids, t, timezone) {
+export function printConversation({ t, conversation, account }) {
+	let messageIds = [];
+
+	if (isArray(conversation) && conversation.length > 0) {
+		forEach(conversation, (conv) => {
+			forEach(conv.messages, (m) => {
+				messageIds.push(m.id);
+			});
+		});
+	} else {
+		messageIds = map(conversation.messages, (m) => m.id);
+	}
+
 	return {
 		id: 'print-conversations',
 		icon: 'PrinterOutline',
 		label: t('action.print', 'Print'),
 		click: () => {
-			const messagesIds = ids.map((item) => `C:${item}`).join(',');
-			window.open(
-				`/h/printmessage?id=${messagesIds}
-				&tz=${timezone}`,
-				'_blank'
-			);
+			const printWindow = window.open('', '_blank');
+			getMsgsForPrint({ ids: messageIds })
+				.then((res) => {
+					const content = getContentForPrint({
+						messages: res,
+						account,
+						conversations: conversation
+					});
+					printWindow.top.document.title = 'Carbonio';
+					printWindow.document.write(content);
+				})
+				.catch((err) => {
+					const errorContent = getErrorPage(err.message);
+					printWindow.document.write(errorContent);
+				});
 		}
 	};
 }
@@ -307,7 +330,8 @@ export const getActions = (
 	createSnackbar,
 	createModal,
 	deselectAll,
-	timezone
+	timezone,
+	account
 ) => {
 	switch (folderId) {
 		case FOLDERS.TRASH:
@@ -325,7 +349,11 @@ export const getActions = (
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
 					setConversationsSpam([conversation.id], false, t, dispatch, createSnackbar, deselectAll),
-					printConversation([conversation.id], t, timezone),
+					printConversation({
+						t,
+						conversation: [conversation],
+						account
+					}),
 					moveConversationToFolder([conversation.id], t, dispatch, true, createModal, deselectAll),
 					deleteConversationPermanently([conversation.id], t, dispatch, createModal, deselectAll)
 				]
@@ -355,7 +383,12 @@ export const getActions = (
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
 					setConversationsSpam([conversation.id], true, t, dispatch, createSnackbar, deselectAll),
-					printConversation([conversation.id], t, timezone),
+
+					printConversation({
+						t,
+						conversation: [conversation],
+						account
+					}),
 					moveConversationToTrash(
 						[conversation.id],
 						t,
@@ -390,7 +423,11 @@ export const getActions = (
 						deselectAll,
 						folderId
 					),
-					printConversation([conversation.id], t, timezone)
+					printConversation({
+						t,
+						conversation: [conversation],
+						account
+					})
 				]
 			];
 		case FOLDERS.INBOX:
@@ -429,7 +466,11 @@ export const getActions = (
 					),
 					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
 					setConversationsSpam([conversation.id], false, t, dispatch, createSnackbar, deselectAll),
-					printConversation([conversation.id], t, timezone),
+					printConversation({
+						t,
+						conversation: [conversation],
+						account
+					}),
 					moveConversationToTrash(
 						[conversation.id],
 						t,
