@@ -17,8 +17,8 @@
         "delete_permanently": "Borrar permanentemente",
         "preview": "Vista previa",
         "edit_as_new": "Editar como nuevo",
-        "edit_share": "Editar Compartición",
-        "flag": "Añadir marcador",
+        "edit_share": "Editar compartición",
+        "flag": "Añadir marca de seguimiento",
         "goto_drafts": "Ir a borradores",
         "goto_folder": "IR A CARPETA",
         "hide_details": "Ocultar detalles",
@@ -32,7 +32,7 @@
         "share_folder": "Compartir carpeta",
         "show_details": "Mostrar detalles",
         "show_original": "Mostrar original",
-        "unflag": "Quitar marcador",
+        "unflag": "Quitar marca de seguimiento",
         "preview_new_tab": "Clic para previsualizar en otra pestaña"
     },
     "folder": {
@@ -60,8 +60,8 @@
                 "threshold_msg": "En esta carpeta, los mensajes más antiguos del umbral de eliminación estarán sujetos a limpieza y borrado automático.",
                 "add_share": "Añadir Compartición",
                 "retention_duration_warning": "La duración de la retención debe ser un número positivo",
-                "retention_message": "Los mensajes de esta carpeta que estén dentro del rango de retención requerirán una confirmación explícita antes de ser borrados",
-                "threshold_message": "Los mensajes de esta carpeta más antiguos de lo establecido en el umbral de eliminación serán limpiados y borrados automáticamente."
+                "retention_message": "Los mensajes dentro de esta carpeta que excedan el umbral de retención requerirán de una confirmación explícita antes de ser borrados",
+                "threshold_message": "Los mensajes de esta carpeta que sobrepasen el umbral establecido serán eliminados automáticamente."
             },
             "move": {
                 "footer": "Mover",
@@ -154,7 +154,7 @@
         "attachment_plural": "Adjuntos",
         "cancel": "Cancelar",
         "download": "Download",
-        "download_plural": "",
+        "download_plural": "Descargar",
         "edit": "Editar",
         "me": "Yo",
         "remove": "Eliminar",
@@ -191,7 +191,7 @@
         "revoke_access_tooltip": "Revocar acceso enviando una notificación estándar",
         "revoke_access_without_notification": "Revocar acceso sin enviar una notificación",
         "revoke_send_standard_msg": "Revocar acceso enviando una notificación personalizada",
-        "revoke_share": "Revocar el uso compartido de {{title}}",
+        "revoke_share": "Revocar compartición de {{title}}",
         "role": "Rol: ",
         "select_1": "Selecciona un correo electrónico para leerlo",
         "select_2": "o haz clic en el botón \"Nuevo\"",
@@ -199,7 +199,7 @@
         "select_folder": "Elegir carpeta",
         "send_notification": "Enviar un mensaje de notificación a",
         "sent": "Enviado",
-        "shared_item": "Elemento compartido:",
+        "shared_item": "Elemento compartido",
         "shares_folder_edit": "Compartición de esta carpeta",
         "shares_items": "Carpetas compartidas de {{value}}",
         "show_popup": "Mostrar una notificación emergente",
@@ -216,7 +216,7 @@
         "mailSelected_plural": "{{count}} correos electrónicos seleccionados",
         "search_hint": "¡Sugerencias de búsqueda!",
         "advanced_filters": "Filtro avanzado",
-        "advanced_filters_plural": "",
+        "advanced_filters_plural": "Filtros avanzados",
         "back": "Volver",
         "create": "Crear",
         "delete": "Borrar",
@@ -226,8 +226,8 @@
         "expand": "Expandir",
         "filter_folders": "Filtrar carpetas",
         "find_mail_shares": "Encontrar las carpetas compartidas",
-        "flagged": "Marcado",
-        "freebusy": "FreeBusy",
+        "flagged": "Marca de seguimiento añadida",
+        "freebusy": "Libre/Ocupado",
         "go_back": "Regresar",
         "insert": "Insertar",
         "messages": "Mensajes",
@@ -259,7 +259,7 @@
         "choose_folder": "Elegir carpeta",
         "error_address": "Se necesita un e-mail válido",
         "hide": "Ocultar",
-        "loading_results": "Cargando resultados...",
+        "loading_results": "Cargando resultados…",
         "mail_selected": "{{count}} e-mail seleccionado",
         "mail_selected_plural": "{{count}} e-mails seleccionados",
         "mail_settings": "Ajustes de los correos",
@@ -278,7 +278,11 @@
         "search_activate_selection_mode": "El modo selección aún no está disponible en los resultados de búsqueda",
         "addresses_not_accepted": "Una o más direcciones no fueron aceptadas. Direcciones rechazadas:",
         "received_from_address": "Recibido de (address)",
-        "results_for_error": "No se puede iniciar la búsqueda, límpiala y vuelve a intentarlo: "
+        "results_for_error": "No se puede iniciar la búsqueda, límpiala y vuelve a intentarlo: ",
+        "attachement_unknown": "Desconocido <{{mimeType}}>",
+        "draft": "Borrador",
+        "forwarded": "Reenviado",
+        "replied": "Respondido"
     },
     "messages": {
         "permanent_delete_confirm": "Eliminar permanentemente",
@@ -354,7 +358,7 @@
         "unread": "No leido",
         "attachment_note": "Buscar todos los correos electrónicos que tienen archivos adjuntos.",
         "flagged": "Marcado",
-        "flagged_note": "Buscar todos los e-mails marcados.",
+        "flagged_note": "Buscar todos los e-mails con marca de seguimiento.",
         "unread_note": "Buscar todos los correos electrónicos no leídos.",
         "sent_after": "Enviar después de",
         "sent_before": "Enviado antes de",
@@ -378,7 +382,7 @@
         "recipients_address": "Direcciones de correo electrónico de los destinatarios",
         "send_notification": "Enviar una notificación sobre este compartición",
         "share_note": "El mensaje estándar muestra tu nombre, el nombre del elemento compartido, los permisos otorgados a los destinatarios y la información de registro.",
-        "standard_message": "Añadir una nota al mensaje estándar",
+        "standard_message": "Añadir una nota al mensaje predefinido",
         "filter_folder_message": "Elige una carpeta en la que iniciar tu búsqueda avanzada",
         "is_contained_in": "Está dentro de"
     },
@@ -610,13 +614,13 @@
             },
             "new": {
                 "create_footer": "Crear y mover",
-                "name_exist_warning": "El nombre todavía existe",
+                "name_exist_warning": "El nombre ya existe",
                 "restore_create_footer": "Crear y restaurar",
                 "title": "Crear una nueva carpeta",
                 "input": {
                     "position": "Carpeta Anterior",
                     "name_exist": "El nombre ya existe en esta ruta",
-                    "name": "Introduce nombre de la carpeta"
+                    "name": "Introduce el nombre de la carpeta"
                 }
             },
             "move": {
@@ -678,7 +682,7 @@
         "search_title1": "Iniciar otra búsqueda",
         "search_title2": "Lo sentimos pero no hay resultados para tu búsqueda",
         "list_trash_title": "La papelera está vacía",
-        "search_description3": "Comprueba la ortografía y las opciones de los filtros o prueba con otra palabra clave",
+        "search_description3": "Comprueba la ortografía y las opciones de los filtros, o intenta con otra palabra clave.",
         "search_title4": "Elige uno o más resultados para realizar acciones o para mostrar los detalles.",
         "title1": "Crea un nuevo e-mail haciendo clic en el botón \"NUEVO\"",
         "title2": "Haz clic en el botón \"NUEVO\"",
@@ -691,7 +695,7 @@
         "archive_title1": "Guardar un e-mail a un archivo para poder verlo después.",
         "archive_title2": "Elige un e-mail archivado para revisarlo.",
         "description2": "Enviar documentos, imágenes y más creando un e-mail nuevo.",
-        "description4": "Puedes marcarlo, contestarlo o reenviarlo a otros usuarios.",
+        "description4": "Puedes agregar una marca de seguimiento, responderlo o reenviarlo a otros usuarios.",
         "description5": "Comprueba sobre qué quieren hablarte los otros usuarios.",
         "description6": "Contesta este e-mail o reenvíalo a otros usuarios.",
         "description7": "Elige un e-mail para contestarlo.",
