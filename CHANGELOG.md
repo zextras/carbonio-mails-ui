@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.9-rc.6](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.9-rc.5...v0.1.9-rc.6) (2022-03-18)
+
+
+### Features
+
+* added searc request on folder click ([bf54e98](https://github.com/zextras/carbonio-mails-ui/commit/bf54e9837ad192d6102372aeda2ee70df341e0b5))
+* conversation sort order implemented ([786c3d8](https://github.com/zextras/carbonio-mails-ui/commit/786c3d85393515e36a9dd991062224ef60effa9c))
+* print message feature ([9761a54](https://github.com/zextras/carbonio-mails-ui/commit/9761a543f8c9936b6e2a8261ba8496b5fc3b0fd9))
+* settings enhancement ([73c69d5](https://github.com/zextras/carbonio-mails-ui/commit/73c69d551c0f88b6aaccec6383cdffa75b28116d))
+* show quoted text functionality added ([30dcbb9](https://github.com/zextras/carbonio-mails-ui/commit/30dcbb9fd5c2fea364978460c21b39c7733e577e))
+
+
+### Bug Fixes
+
+* added missing tooltip on mail folders ([04b06ab](https://github.com/zextras/carbonio-mails-ui/commit/04b06abc362dee453420d83712ec64bdb1a9c810))
+* broken search fixed ([9881852](https://github.com/zextras/carbonio-mails-ui/commit/9881852409bf5b4435897bd16f2b5cf70a27a1f4))
+* clean code ([66df553](https://github.com/zextras/carbonio-mails-ui/commit/66df553160cf55c1c9107265375d31cba279568c))
+* drafts diplayer is showing spam's banner ([0c07723](https://github.com/zextras/carbonio-mails-ui/commit/0c07723657c34892ed6c0f568f1d39cda5311a97))
+* fixed data normalization in conversation ([1cedd98](https://github.com/zextras/carbonio-mails-ui/commit/1cedd986250f67dd913d0ae771d97e57efa96ba9))
+* implemented review feedback ([4e57d95](https://github.com/zextras/carbonio-mails-ui/commit/4e57d951d107830300aeb8fa89390eece9391975))
+* major fixes around lists and request ([12c196a](https://github.com/zextras/carbonio-mails-ui/commit/12c196ac40b3b164dc1c60bc5a339fffc91bd44a))
+* message list view ([17c41e3](https://github.com/zextras/carbonio-mails-ui/commit/17c41e3f267faa8bb978cfb53dfa5d93c7c587a4))
+* minor fixes around the project ([fd6ecc9](https://github.com/zextras/carbonio-mails-ui/commit/fd6ecc9e8b4e372d2fcf33c64da0707433966080))
+* missing attachments from external domain ([e739a03](https://github.com/zextras/carbonio-mails-ui/commit/e739a03ab41fb984270d914b71c740de869fe400))
+* reply to messages does not make the message disappear from list ([efe4cb5](https://github.com/zextras/carbonio-mails-ui/commit/efe4cb53a420bf7208f36d80960295e56bd60e04))
+* shared folder changing retention values ([3ba1ed9](https://github.com/zextras/carbonio-mails-ui/commit/3ba1ed9d1a1ea0d015ea81f96993aaa45cf9b3ef))
+* wipe folder action is not disabled by default inside spam ([d2fb95b](https://github.com/zextras/carbonio-mails-ui/commit/d2fb95be934db44370585d100d6c01f3f76335f5))
+
 ### [0.1.9-rc.5](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.9-rc.4...v0.1.9-rc.5) (2022-02-24)
 
 
