@@ -218,7 +218,8 @@
         "of": "из",
         "attachement_unknown": "Неизвестно <{{mimeType}}>",
         "draft": "Черновик",
-        "forwarded": "Переадресовано"
+        "forwarded": "Переадресовано",
+        "replied": "Ответил"
     },
     "header": {
         "warning": "Предупреждение",
