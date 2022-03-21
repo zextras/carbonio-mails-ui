@@ -45,11 +45,12 @@ const MessagesComponent = ({ conversation }) => {
 		}
 		return index === 0;
 	};
+
 	if (conversation && conversationStatus === 'complete') {
 		return map(convMessages, (message, index) => (
 			<Padding key={`mail-pre-${index}`} bottom="medium" width="100%">
 				<MailPreview
-					key={`${message.id}-${message.id}`}
+					key={`${conversationId}-${message.id}`}
 					message={message}
 					expanded={expand(message, index)}
 					isAlone={conversation.messages.length === 1}

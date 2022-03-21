@@ -57,29 +57,36 @@ export default function SelectMessagesPanelActions({
 			case FOLDERS.SPAM:
 			case FOLDERS.INBOX:
 				return [
-					showReadConvo && setMsgRead(ids, true, t, dispatch, folderId, null, deselectAll),
-					showUnreadConvo && setMsgRead(ids, false, t, dispatch, folderId, null, deselectAll),
-					moveMsgToTrash(ids, t, dispatch, createSnackbar, deselectAll, folderId)
+					showReadConvo && setMsgRead({ ids, value: true, t, dispatch, folderId, deselectAll }),
+					showUnreadConvo && setMsgRead({ ids, value: false, t, dispatch, folderId, deselectAll }),
+					moveMsgToTrash({
+						ids,
+						t,
+						dispatch,
+						createSnackbar,
+						deselectAll,
+						folderId
+					})
 					// archiveMsg
 					// editTagsMsg
 				];
 			case FOLDERS.SENT:
 				return [
-					moveMsgToTrash(ids, t, dispatch, createSnackbar, deselectAll, folderId)
+					moveMsgToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
 					// archiveMsg
 					// editTagsMsg
 				];
 
 			case FOLDERS.DRAFTS:
 				return [
-					moveMsgToTrash(ids, t, dispatch, createSnackbar, deselectAll, folderId)
+					moveMsgToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
 					// archiveMsg
 					// editTagsMsg
 				];
 
 			case FOLDERS.TRASH:
 				return [
-					deleteMessagePermanently(ids, t, dispatch, createModal, deselectAll)
+					deleteMessagePermanently({ ids, t, dispatch, createModal, deselectAll })
 
 					// archiveMsg
 					// editTagsMsg
@@ -87,7 +94,7 @@ export default function SelectMessagesPanelActions({
 
 			default:
 				return [
-					moveMsgToTrash(ids, t, dispatch, createSnackbar, deselectAll, folderId)
+					moveMsgToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
 					// archiveMsg
 					// editTagsMsg
 				];
@@ -110,10 +117,17 @@ export default function SelectMessagesPanelActions({
 			case FOLDERS.SPAM:
 			case FOLDERS.INBOX:
 				return [
-					showReadConvo && setMsgRead(ids, true, t, dispatch, folderId, null, deselectAll),
-					showUnreadConvo && setMsgRead(ids, false, t, dispatch, folderId, null, deselectAll),
-					setMsgFlag(ids, showAddFlag, t, dispatch),
-					moveMessageToFolder(ids, t, dispatch, false, createModal, deselectAll)
+					showReadConvo && setMsgRead({ ids, value: true, t, dispatch, folderId, deselectAll }),
+					showUnreadConvo && setMsgRead({ ids, value: false, t, dispatch, folderId, deselectAll }),
+					setMsgFlag({ ids, value: showAddFlag, t, dispatch }),
+					moveMessageToFolder({
+						id: ids,
+						t,
+						dispatch,
+						isRestore: false,
+						createModal,
+						deselectAll
+					})
 					// move
 					// markSpam
 					// reply
@@ -132,15 +146,29 @@ export default function SelectMessagesPanelActions({
 				return [
 					// setConversationsRead(selectedIDs, conversation.read, t, dispatch),
 					// setConversationsFlag(selectedIDs, allRead, t, dispatch),
-					setMsgFlag(ids, showAddFlag, t, dispatch),
-					deleteMessagePermanently(ids, t, dispatch, createModal, deselectAll),
-					moveMessageToFolder(ids, t, dispatch, true, createModal, deselectAll)
+					setMsgFlag({ ids, value: showAddFlag, t, dispatch }),
+					deleteMessagePermanently({ ids, t, dispatch, createModal, deselectAll }),
+					moveMessageToFolder({
+						id: ids,
+						t,
+						dispatch,
+						isRestore: true,
+						createModal,
+						deselectAll
+					})
 				];
 			case FOLDERS.DRAFTS:
 			default:
 				return [
-					setMsgFlag(ids, showAddFlag, t, dispatch),
-					moveMessageToFolder(ids, t, dispatch, false, createModal, deselectAll)
+					setMsgFlag({ ids, value: showAddFlag, t, dispatch }),
+					moveMessageToFolder({
+						id: ids,
+						t,
+						dispatch,
+						isRestore: false,
+						createModal,
+						deselectAll
+					})
 					// move
 					// archiveConversation
 					// editTagsConversation

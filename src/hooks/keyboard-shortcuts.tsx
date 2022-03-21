@@ -47,43 +47,56 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 			case 'mr': // Mark read
 				if (isGlobalContext) {
 					eventActions();
-					setConversationsRead([itemId], false, t, dispatch).click();
+					setConversationsRead({ ids: [itemId], value: false, t, dispatch }).click();
 				}
 				break;
 			case 'z': // Mark read
 				if (isGlobalContext) {
 					eventActions();
-					setConversationsRead([itemId], false, t, dispatch).click();
+					setConversationsRead({ ids: [itemId], value: false, t, dispatch }).click();
 				}
 				break;
 			case 'mu': // Mark unread
 				if (isGlobalContext) {
 					eventActions();
-					setConversationsRead([itemId], true, t, dispatch).click();
+					setConversationsRead({ ids: [itemId], value: true, t, dispatch }).click();
 				}
 				break;
 			case 'x': // Mark unread
 				if (isGlobalContext && itemId) {
 					eventActions();
-					setConversationsRead([itemId], true, t, dispatch).click();
+					setConversationsRead({ ids: [itemId], value: true, t, dispatch }).click();
 				}
 				break;
 			case 'mf': // Flag/Unflag messages
 				if (isGlobalContext && itemId) {
 					eventActions();
-					setConversationsFlag([itemId], conversationFlag, t, dispatch).click();
+					setConversationsFlag({ ids: [itemId], value: conversationFlag, t, dispatch }).click();
 				}
 				break;
 			case 'ms': // Report (mark as) spam
 				if (isGlobalContext && itemId) {
 					eventActions();
-					setConversationsSpam([itemId], false, t, dispatch, createSnackbar, deselectAll).click();
+					setConversationsSpam({
+						ids: [itemId],
+						value: false,
+						t,
+						dispatch,
+						createSnackbar,
+						deselectAll
+					}).click();
 				}
 				break;
 			case '.t': // Move to Trash
 				if (isGlobalContext && itemId) {
 					eventActions();
-					moveConversationToTrash([itemId], t, dispatch, createSnackbar, deselectAll).click();
+					moveConversationToTrash({
+						ids: [itemId],
+						t,
+						dispatch,
+						createSnackbar,
+						deselectAll
+					}).click();
 				}
 				break;
 			case '.i': // Move to Inbox

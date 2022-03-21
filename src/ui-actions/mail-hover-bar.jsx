@@ -45,44 +45,44 @@ export default function MailHoverBar({ messageId, read, flag, folderId, showRepl
 			case FOLDERS.TRASH:
 			case FOLDERS.SPAM:
 				return [
-					deleteMsg(ids, t, dispatch, createSnackbar, createModal),
-					setMsgRead(ids, read, t, dispatch),
+					deleteMsg({ ids, t, dispatch, createSnackbar, createModal }),
+					setMsgRead({ ids, value: read, t, dispatch }),
 					// archiveMsg(),
-					setMsgFlag(ids, flag, t, dispatch)
+					setMsgFlag({ ids, value: flag, t, dispatch })
 				];
 			case FOLDERS.SENT:
 				return [
 					moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId),
 					// archiveMsg(),
-					forwardMsg(messageId, folderId, t),
-					setMsgFlag(ids, flag, t, dispatch)
+					forwardMsg({ id: messageId, folderId, t }),
+					setMsgFlag({ ids, value: flag, t, dispatch })
 				];
 			case FOLDERS.DRAFTS:
 				return [
 					moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId),
-					editDraft(messageId, folderId, t),
+					editDraft({ id: messageId, folderId, t }),
 					// archiveMsg(),
-					setMsgFlag(ids, flag, t, dispatch)
+					setMsgFlag({ ids, value: flag, t, dispatch })
 				];
 			// TODO: discuss about Outbox and Archive folder-panel
 			case FOLDERS.INBOX:
 			default:
 				return showReplyAll
 					? [
-							setMsgRead(ids, read, t, dispatch),
-							replyMsg(messageId, folderId, t),
+							setMsgRead({ ids, value: read, t, dispatch }),
+							replyMsg({ id: messageId, folderId, t }),
 							//	showReplyAll && replyAllMsg(messageId, folderId, t),
-							replyAllMsg(messageId, folderId, t),
-							setMsgFlag(ids, flag, t, dispatch),
-							forwardMsg(messageId, folderId, t),
+							replyAllMsg({ id: messageId, folderId, t }),
+							setMsgFlag({ ids, value: flag, t, dispatch }),
+							forwardMsg({ id: messageId, folderId, t }),
 							// archiveMsg(),
 							moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId)
 					  ]
 					: [
-							setMsgRead(ids, read, t, dispatch),
-							replyMsg(messageId, folderId, t),
-							setMsgFlag(ids, flag, t, dispatch),
-							forwardMsg(messageId, folderId, t),
+							setMsgRead({ ids, value: read, t, dispatch }),
+							replyMsg({ id: messageId, folderId, t }),
+							setMsgFlag({ ids, value: flag, t, dispatch }),
+							forwardMsg({ id: messageId, folderId, t }),
 							// archiveMsg(),
 							moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId)
 					  ];

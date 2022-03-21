@@ -235,6 +235,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		},
 		[dispatch, editorId]
 	);
+	const [activeFrom, setActiveFrom] = useState(list[0]);
+
 	const newItems = useMemo(
 		() =>
 			list.map((el) => ({
@@ -244,7 +246,9 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				fullname: el.fullName,
 				type: el.type,
 				identityName: el.identityName,
+
 				onClick: () => {
+					setActiveFrom(el);
 					const data = {
 						address: el.address,
 						fullName: el.fullname,
@@ -267,6 +271,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 					setFrom(data);
 					setOpen(false);
 				},
+				selected: el === activeFrom,
 				customComponent: (
 					<Container width="100%" crossAlignment="flex-start" height="fit">
 						<Text weight="bold">{el.identityName}</Text>
@@ -275,7 +280,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				)
 			})),
 
-		[accounts, list, updateEditorCb]
+		[accounts, activeFrom, list, updateEditorCb]
 	);
 
 	useEffect(() => {
@@ -294,6 +299,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			name: find(identityList, (item) => item?.identityName === 'DEFAULT')?.address,
 			type: ParticipantRole.FROM
 		});
+		setActiveFrom(find(identityList, (item) => item?.identityName === 'DEFAULT'));
 		updateEditorCb({
 			from: {
 				address: defaultIdentity.address,
@@ -654,22 +660,32 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 						<Row
 							padding={{ all: 'small' }}
 							orientation="horizontal"
-							mainAlignment="space-between"
+							mainAlignment={haveIdentity ? 'space-between' : 'flex-end'}
 							width="100%"
 						>
 							{haveIdentity && (
 								<Row>
-									<Dropdown items={newItems} forceOpen={open} onClose={toggleOpen}>
-										<Button
-											label={t('label.from_identity', {
-												identity: from?.fullName || from?.address,
-												defaultValue: 'From: {{identity}}'
-											})}
-											icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
-											onClick={toggleOpen}
-											type="outlined"
-										/>
-									</Dropdown>
+									<Tooltip label={activeFrom.label} maxWidth="100%" placement="top-start">
+										<Dropdown
+											items={newItems}
+											width="fit"
+											maxWidth="500px"
+											forceOpen={open}
+											onClose={toggleOpen}
+											selectedBackgroundColor="highlight"
+										>
+											<Button
+												label={t('label.from_identity', {
+													identity: from?.fullName || from?.address,
+													defaultValue: 'From: {{identity}}'
+												})}
+												icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+												onClick={toggleOpen}
+												type="outlined"
+												style={{ maxWidth: '280px' }}
+											/>
+										</Dropdown>
+									</Tooltip>
 								</Row>
 							)}
 							<Row>

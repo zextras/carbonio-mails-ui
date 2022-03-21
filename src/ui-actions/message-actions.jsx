@@ -15,7 +15,15 @@ import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 
-export function setMsgRead(ids, value, t, dispatch, folderId, shouldReplaceHistory, deselectAll) {
+export function setMsgRead({
+	ids,
+	value,
+	t,
+	dispatch,
+	folderId,
+	shouldReplaceHistory = false,
+	deselectAll
+}) {
 	return {
 		id: 'message-mark_as_read',
 		icon: value ? 'EmailOutline' : 'EmailReadOutline',
@@ -39,7 +47,7 @@ export function setMsgRead(ids, value, t, dispatch, folderId, shouldReplaceHisto
 	};
 }
 
-export function setMsgFlag(ids, value, t, dispatch) {
+export function setMsgFlag({ ids, value, t, dispatch }) {
 	return {
 		id: 'message-flag',
 		icon: value ? 'FlagOutline' : 'Flag',
@@ -56,7 +64,15 @@ export function setMsgFlag(ids, value, t, dispatch) {
 	};
 }
 
-export function setMsgAsSpam(ids, value, t, dispatch, createSnackbar) {
+export function setMsgAsSpam({
+	ids,
+	value,
+	t,
+	dispatch,
+	createSnackbar,
+	shouldReplaceHistory = true,
+	folderId
+}) {
 	return {
 		id: 'message-mark_as_spam',
 		icon: value ? 'AlertCircleOutline' : 'AlertCircle',
@@ -93,6 +109,9 @@ export function setMsgAsSpam(ids, value, t, dispatch, createSnackbar) {
 							ids
 						})
 					).then((res) => {
+						if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+							replaceHistory(`/folder/${folderId}`);
+						}
 						if (!res.type.includes('fulfilled')) {
 							createSnackbar({
 								key: `trash-${ids}`,
@@ -139,7 +158,7 @@ export function printMsg({ t, message, account }) {
 	};
 }
 
-export function showOriginalMsg(id, t) {
+export function showOriginalMsg({ id, t }) {
 	return {
 		id: 'message-show_original',
 		icon: 'CodeOutline',
@@ -151,28 +170,28 @@ export function showOriginalMsg(id, t) {
 	};
 }
 
-export function moveMsgToTrash(
+export function moveMsgToTrash({
 	ids,
 	t,
 	dispatch,
 	createSnackbar,
 	deselectAll,
-	parent,
+	folderId,
 	conversationId
-) {
+}) {
 	const restoreMessage = () => {
 		dispatch(
 			msgAction({
 				operation: 'move',
 				ids,
-				parent
+				folderId
 			})
 		).then((res) => {
 			if (res.type.includes('fulfilled')) {
 				replaceHistory(
 					conversationId
-						? `/folder/${parent}/conversation/${conversationId}`
-						: `/folder/${parent}/conversation/-${ids[0]}`
+						? `/folder/${folderId}/conversation/${conversationId}`
+						: `/folder/${folderId}/conversation/-${ids[0]}`
 				);
 				createSnackbar({
 					key: `move-${ids}`,
@@ -209,7 +228,7 @@ export function moveMsgToTrash(
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll();
-					replaceHistory(`/folder/${parent}`);
+					replaceHistory(`/folder/${folderId}`);
 					createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
@@ -235,7 +254,7 @@ export function moveMsgToTrash(
 	};
 }
 
-export function deleteMsg(ids, t, dispatch, createSnackbar, createModal) {
+export function deleteMsg({ ids, t, dispatch, createSnackbar, createModal }) {
 	return {
 		id: 'message-delete',
 		icon: 'Trash2Outline',
@@ -300,67 +319,67 @@ export function deleteMsg(ids, t, dispatch, createSnackbar, createModal) {
 	};
 }
 
-export function replyMsg(messageId, folderId, t) {
+export function replyMsg({ id, folderId, t }) {
 	return {
 		id: 'message-reply',
 		icon: 'UndoOutline',
 		label: t('action.reply', 'Reply'),
 		click: (ev) => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${messageId}?action=${ActionsType.REPLY}`);
+			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.REPLY}`);
 		}
 	};
 }
 
-export function replyAllMsg(messageId, folderId, t) {
+export function replyAllMsg({ id, folderId, t }) {
 	return {
 		id: 'message-reply_all',
 		icon: 'ReplyAll',
 		label: t('action.reply_all', 'Reply all'),
 		click: (ev) => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${messageId}?action=${ActionsType.REPLY_ALL}`);
+			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.REPLY_ALL}`);
 		}
 	};
 }
 
-export function forwardMsg(messageId, folderId, t) {
+export function forwardMsg({ id, folderId, t }) {
 	return {
 		id: 'message-forward',
 		icon: 'Forward',
 		label: t('action.forward', 'Forward'),
 		click: (ev) => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${messageId}?action=${ActionsType.FORWARD}`);
+			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.FORWARD}`);
 		}
 	};
 }
 
-export function editAsNewMsg(messageId, folderId, t) {
+export function editAsNewMsg({ id, folderId, t }) {
 	return {
 		id: 'message-edit_as_new',
 		icon: 'Edit2Outline',
 		label: t('action.edit_as_new', 'Edit as new'),
 		click: (ev) => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${messageId}?action=${ActionsType.EDIT_AS_NEW}`);
+			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_NEW}`);
 		}
 	};
 }
 
-export function editDraft(messageId, folderId, t) {
+export function editDraft({ id, folderId, t }) {
 	return {
 		id: 'message-edit_as_draft',
 		icon: 'Edit2Outline',
 		label: t('label.edit', 'Edit'),
 		click: (ev) => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${messageId}?action=${ActionsType.EDIT_AS_DRAFT}`);
+			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
 		}
 	};
 }
 
-export function sendDraft(id, msg, t, dispatch) {
+export function sendDraft({ id, message, t, dispatch }) {
 	return {
 		id: 'message-send',
 		icon: 'PaperPlaneOutline',
@@ -370,7 +389,7 @@ export function sendDraft(id, msg, t, dispatch) {
 			dispatch(
 				sendMsg({
 					editorId: id,
-					msg
+					message
 				})
 			);
 		}
@@ -396,7 +415,7 @@ export function redirectMsg({ id, t, createModal }) {
 	};
 }
 
-export function moveMessageToFolder(selectedIDs, t, dispatch, isRestore, createModal, deselectAll) {
+export function moveMessageToFolder({ id, t, dispatch, isRestore, createModal, deselectAll }) {
 	return {
 		id: 'message-restore',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
@@ -408,7 +427,7 @@ export function moveMessageToFolder(selectedIDs, t, dispatch, isRestore, createM
 					children: (
 						<>
 							<MoveConvMessage
-								selectedIDs={selectedIDs}
+								selectedIDs={id}
 								onClose={() => closeModal()}
 								dispatch={dispatch}
 								isMessageView
@@ -424,7 +443,7 @@ export function moveMessageToFolder(selectedIDs, t, dispatch, isRestore, createM
 	};
 }
 
-export function deleteMessagePermanently(selectedIDs, t, dispatch, createModal, deselectAll) {
+export function deleteMessagePermanently({ ids, t, dispatch, createModal, deselectAll }) {
 	return {
 		id: 'message-delete-permanently',
 		icon: 'DeletePermanentlyOutline',
@@ -435,7 +454,7 @@ export function deleteMessagePermanently(selectedIDs, t, dispatch, createModal, 
 					children: (
 						<>
 							<DeleteConvConfirm
-								selectedIDs={selectedIDs}
+								selectedIDs={ids}
 								dispatch={dispatch}
 								isMessageView
 								onClose={() => closeModal()}
@@ -464,92 +483,151 @@ export const getActions = (
 		case FOLDERS.TRASH:
 			return (message) => [
 				[
-					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
-					setMsgFlag([message.id], message.flagged, t, dispatch),
-					replyMsg(message.id, folderId, t),
-					forwardMsg(message.id, folderId, t),
-					deleteMessagePermanently([message.id], t, dispatch, createModal, deselectAll),
-					moveMessageToFolder([message.id], t, dispatch, true, createModal, deselectAll)
+					setMsgRead({
+						ids: [message.id],
+						value: message.read,
+						t,
+						dispatch,
+						folderId,
+						shouldReplaceHistory: true,
+						deselectAll
+					}),
+					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					replyMsg({ id: message.id, folderId, t }),
+					forwardMsg({ id: message.id, folderId, t }),
+					deleteMessagePermanently({ ids: [message.id], t, dispatch, createModal, deselectAll }),
+
+					moveMessageToFolder({
+						id: [message.id],
+						t,
+						dispatch,
+						isRestore: true,
+						createModal,
+						deselectAll
+					})
 				],
 				[
-					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
-					setMsgFlag([message.id], message.flagged, t, dispatch),
-					setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
+					setMsgRead({
+						ids: [message.id],
+						value: message.read,
+						t,
+						dispatch,
+						folderId,
+						shouldReplaceHistory: true,
+						deselectAll
+					}),
+					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					setMsgAsSpam({ ids: [message.id], value: false, t, dispatch, createSnackbar, folderId }),
 					printMsg({ t, message, account }),
-					// moveMsgToTrash([message.id], t, dispatch, createSnackbar),
-					deleteMessagePermanently([message.id], t, dispatch, createModal, deselectAll),
-					moveMessageToFolder([message.id], t, dispatch, true, createModal, deselectAll),
-					replyMsg(message.id, folderId, t),
-					replyAllMsg(message.id, folderId, t),
-					forwardMsg(message.id, folderId, t),
-					editAsNewMsg(message.id, folderId, t),
-					// editDraft(message.id, folderId, t),
-					sendDraft(message.id, message, t, dispatch),
+					deleteMessagePermanently({ ids: [message.id], t, dispatch, createModal, deselectAll }),
+					moveMessageToFolder({
+						id: [message.id],
+						t,
+						dispatch,
+						isRestore: true,
+						createModal,
+						deselectAll
+					}),
+					replyMsg({ id: message.id, folderId, t }),
+					replyAllMsg({ id: message.id, folderId, t }),
+					forwardMsg({ id: message.id, folderId, t }),
+					editAsNewMsg({ id: message.id, folderId, t }),
+					sendDraft({ id: message.id, message, t, dispatch }),
 					redirectMsg({ id: message.id, t, createModal })
 				]
 			];
 		case FOLDERS.SPAM:
 			return (message) => [
 				[
-					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
-					setMsgFlag([message.id], message.flagged, t, dispatch),
-					setMsgAsSpam([message.id], true, t, dispatch, createSnackbar),
-					deleteMsg([message.id], t, dispatch, createSnackbar, createModal)
+					setMsgRead({
+						ids: [message.id],
+						value: message.read,
+						t,
+						dispatch,
+						folderId,
+						shouldReplaceHistory: true,
+						deselectAll
+					}),
+					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					setMsgAsSpam({
+						ids: [message.id],
+						value: true,
+						t,
+						dispatch,
+						createSnackbar,
+						folderId,
+						shouldReplaceHistory: true
+					}),
+					deleteMsg({ ids: [message.id], t, dispatch, createSnackbar, createModal })
 				],
 				[
-					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
-					setMsgFlag([message.id], message.flagged, t, dispatch),
-					setMsgAsSpam([message.id], true, t, dispatch, createSnackbar),
+					setMsgRead({
+						ids: [message.id],
+						value: message.read,
+						t,
+						dispatch,
+						folderId,
+						shouldReplaceHistory: true,
+						deselectAll
+					}),
+					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					setMsgAsSpam({
+						ids: [message.id],
+						value: true,
+						t,
+						dispatch,
+						createSnackbar,
+						folderId,
+						shouldReplaceHistory: true
+					}),
 					printMsg({ t, message, account }),
-					showOriginalMsg(message.id, t),
-					moveMsgToTrash(
-						[message.id],
+					showOriginalMsg({ id: message.id, t }),
+					moveMsgToTrash({
+						ids: [message.id],
 						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
 						folderId,
-						message.conversation
-					),
-					// deleteMsg([message.id], t, dispatch, createSnackbar, createModal),
-					replyMsg(message.id, folderId, t),
-					replyAllMsg(message.id, folderId, t),
-					forwardMsg(message.id, folderId, t),
-					editAsNewMsg(message.id, folderId, t),
-					// editDraft(message.id, folderId, t),
-					sendDraft(message.id, message, t, dispatch),
+						conversationId: message.conversation
+					}),
+					replyMsg({ id: message.id, folderId, t }),
+					replyAllMsg({ id: message.id, folderId, t }),
+					forwardMsg({ id: message.id, folderId, t }),
+					editAsNewMsg({ id: message.id, folderId, t }),
+					sendDraft({ id: message.id, message, t, dispatch }),
 					redirectMsg({ id: message.id, t, createModal })
 				]
 			];
 		case FOLDERS.DRAFTS:
 			return (message) => [
 				[
-					editDraft(message.id, folderId, t, replaceHistory),
-					sendDraft(message.id, message, t, dispatch),
-					moveMsgToTrash(
-						[message.id],
+					editDraft({ id: message.id, folderId, t }),
+					sendDraft({ id: message.id, message, t, dispatch }),
+					moveMsgToTrash({
+						ids: [message.id],
 						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
 						folderId,
-						message.conversation
-					),
-					setMsgFlag([message.id], message.flagged, t, dispatch)
+						conversationId: message.conversation
+					}),
+					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch })
 				],
 				[
-					setMsgFlag([message.id], message.flagged, t, dispatch),
-					moveMsgToTrash(
-						[message.id],
+					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					moveMsgToTrash({
+						ids: [message.id],
 						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
 						folderId,
-						message.conversation
-					),
-					editDraft(message.id, folderId, t),
-					sendDraft(message.id, message, t, dispatch),
+						conversationId: message.conversation
+					}),
+					editDraft({ id: message.id, folderId, t }),
+					sendDraft({ id: message.id, message, t, dispatch }),
 					printMsg({ t, message, account })
 				]
 			];
@@ -558,52 +636,65 @@ export const getActions = (
 		default:
 			return (message) => [
 				[
-					replyMsg(message.id, folderId, t),
-					replyAllMsg(message.id, folderId, t),
-					forwardMsg(message.id, folderId, t),
-					moveMsgToTrash(
-						[message.id],
+					replyMsg({ id: message.id, folderId, t }),
+					replyAllMsg({ id: message.id, folderId, t }),
+					forwardMsg({ id: message.id, folderId, t }),
+					moveMsgToTrash({
+						ids: [message.id],
 						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
 						folderId,
-						message.conversation
-					),
-					setMsgRead(
-						[message.id],
-						message.read,
+						conversationId: message.conversation
+					}),
+					setMsgRead({
+						ids: [message.id],
+						value: message.read,
 						t,
 						dispatch,
 						folderId,
-						replaceHistory,
+						shouldReplaceHistory: true,
 						deselectAll
-					),
-					setMsgFlag([message.id], message.flagged, t, dispatch)
-					// showOriginalMsg(message.id, t)
+					}),
+					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch })
 				],
 				[
-					setMsgRead([message.id], message.read, t, dispatch, folderId, true, deselectAll),
-					setMsgFlag([message.id], message.flagged, t, dispatch),
-					setMsgAsSpam([message.id], false, t, dispatch, createSnackbar),
+					setMsgRead({
+						ids: [message.id],
+						value: message.read,
+						t,
+						dispatch,
+						folderId,
+						shouldReplaceHistory: true,
+						deselectAll
+					}),
+					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					setMsgAsSpam({
+						ids: [message.id],
+						value: false,
+						t,
+						dispatch,
+						createSnackbar,
+						folderId,
+						shouldReplaceHistory: true
+					}),
 					printMsg({ t, message, account }),
-					showOriginalMsg(message.id, t),
-					moveMsgToTrash(
-						[message.id],
+					showOriginalMsg({ id: message.id, t }),
+					moveMsgToTrash({
+						ids: [message.id],
 						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
 						folderId,
-						message.conversation
-					),
-					// deleteMsg([message.id], t, dispatch, createSnackbar, createModal),
-					replyMsg(message.id, folderId, t),
-					replyAllMsg(message.id, folderId, t),
-					forwardMsg(message.id, folderId, t),
-					editAsNewMsg(message.id, folderId, t),
-					// editDraft(message.id, folderId, t),
-					sendDraft(message.id, message, t, dispatch),
+						conversationId: message.conversation
+					}),
+					replyMsg({ id: message.id, folderId, t }),
+					replyAllMsg({ id: message.id, folderId, t }),
+					forwardMsg({ id: message.id, folderId, t }),
+					editAsNewMsg({ id: message.id, folderId, t }),
+					sendDraft({ id: message.id, message, t, dispatch }),
 					redirectMsg({ id: message.id, t, createModal })
 				]
 			];

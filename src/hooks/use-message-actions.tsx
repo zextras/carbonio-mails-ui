@@ -56,21 +56,20 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 	const arr = [];
 
 	if (message.parent === FOLDERS.DRAFTS) {
-		arr.push(sendDraft(message.id, message, t, dispatch));
-		arr.push(editDraft(message.id, folderId, t, replaceHistory));
+		arr.push(sendDraft({ id: message.id, message, t, dispatch }));
+		arr.push(editDraft({ id: message.id, folderId, t }));
 		arr.push(
-			moveMsgToTrash(
-				[message.id],
+			moveMsgToTrash({
+				ids: [message.id],
 				t,
 				dispatch,
 				createSnackbar,
 				deselectAll,
 				folderId,
-				replaceHistory,
-				message.conversation
-			)
+				conversationId: message.conversation
+			})
 		);
-		arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
+		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }));
 	}
 	if (
 		message.parent === FOLDERS.INBOX ||
@@ -78,42 +77,73 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 		!includes(systemFolders, message.parent)
 	) {
 		// INBOX, SENT OR CREATED_FOLDER
-		arr.push(replyMsg(message.id, folderId, t, replaceHistory));
-		arr.push(replyAllMsg(message.id, folderId, t, replaceHistory));
-		arr.push(forwardMsg(message.id, folderId, t, replaceHistory));
+		arr.push(replyMsg({ id: message.id, folderId, t }));
+		arr.push(replyAllMsg({ id: message.id, folderId, t }));
+		arr.push(forwardMsg({ id: message.id, folderId, t }));
 		arr.push(
-			moveMsgToTrash(
-				[message.id],
+			moveMsgToTrash({
+				ids: [message.id],
 				t,
 				dispatch,
 				createSnackbar,
 				deselectAll,
 				folderId,
-				replaceHistory,
-				message.conversation
-			)
+				conversationId: message.conversation
+			})
 		);
 		arr.push(
-			setMsgRead([message.id], message.read, t, dispatch, folderId, replaceHistory, deselectAll)
+			setMsgRead({
+				ids: [message.id],
+				value: message.read,
+				t,
+				dispatch,
+				folderId,
+				shouldReplaceHistory: true,
+				deselectAll
+			})
 		);
-		arr.push(moveMessageToFolder([message.id], t, dispatch, false, createModal, deselectAll));
+		arr.push(
+			moveMessageToFolder({
+				id: [message.id],
+				t,
+				dispatch,
+				isRestore: false,
+				createModal,
+				deselectAll
+			})
+		);
 		arr.push(printMsg({ t, message, account }));
-		arr.push(setMsgFlag([message.id], message.flagged, t, dispatch));
+		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }));
 		arr.push(redirectMsg({ id: message.id, t, createModal }));
-		arr.push(editAsNewMsg(message.id, folderId, t, replaceHistory));
-		arr.push(setMsgAsSpam([message.id], false, t, dispatch, replaceHistory));
-		arr.push(showOriginalMsg(message.id, t));
+		arr.push(editAsNewMsg({ id: message.id, folderId, t }));
+		arr.push(
+			setMsgAsSpam({ ids: [message.id], value: false, t, dispatch, createSnackbar, folderId })
+		);
+		arr.push(showOriginalMsg({ id: message.id, t }));
 	}
 
 	if (message.parent === FOLDERS.TRASH) {
-		arr.push(moveMessageToFolder([message.id], t, dispatch, true, createModal, deselectAll));
-		arr.push(deleteMessagePermanently([message.id], t, dispatch, createModal, deselectAll));
+		arr.push(
+			moveMessageToFolder({
+				id: [message.id],
+				t,
+				dispatch,
+				isRestore: true,
+				createModal,
+				deselectAll
+			})
+		);
+		arr.push(
+			deleteMessagePermanently({ ids: [message.id], t, dispatch, createModal, deselectAll })
+		);
 	}
 	if (message.parent === FOLDERS.SPAM) {
-		arr.push(deleteMsg([message.id], t, dispatch, createSnackbar, createModal));
-		arr.push(setMsgAsSpam([message.id], true, t, dispatch, replaceHistory));
+		arr.push(deleteMsg({ ids: [message.id], t, dispatch, createSnackbar, createModal }));
+		arr.push(
+			setMsgAsSpam({ ids: [message.id], value: true, t, dispatch, createSnackbar, folderId })
+		);
 		arr.push(printMsg({ t, message, account }));
-		arr.push(showOriginalMsg(message.id, t));
+		arr.push(showOriginalMsg({ id: message.id, t }));
 	}
 	return arr;
 };
