@@ -28,7 +28,7 @@ export const useMessageList = (): Array<Partial<MailMessage>> => {
 
 	const sorting = useMemo(
 		() =>
-			(find(zimbraPrefSortOrder.split(','), (f) => f.split(':')?.[0] === folderId)?.split(
+			(find(zimbraPrefSortOrder?.split(','), (f) => f.split(':')?.[0] === folderId)?.split(
 				':'
 			)?.[1] as 'dateAsc' | 'dateDesc' | undefined) ?? 'dateDesc',
 		[folderId, zimbraPrefSortOrder]
