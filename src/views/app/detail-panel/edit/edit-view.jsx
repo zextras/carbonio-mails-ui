@@ -286,11 +286,13 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	useEffect(() => {
 		const identityList = map(account.identities.identity, (item, idx) => ({
 			value: idx,
-			label: `${item.name}(${item._attrs?.zimbraPrefFromDisplay}  <${item._attrs?.zimbraPrefFromAddress}>)`,
+			label: `${item.name ?? ''}(${item._attrs?.zimbraPrefFromDisplay ?? ''}  <${
+				item._attrs?.zimbraPrefFromAddress
+			}>)`,
 			address: item._attrs?.zimbraPrefFromAddress,
-			fullname: item._attrs?.zimbraPrefFromDisplay,
+			fullname: item._attrs?.zimbraPrefFromDisplay ?? '',
 			type: item._attrs.zimbraPrefFromAddressType,
-			identityName: item.name
+			identityName: item.name ?? ''
 		}));
 		setDefaultIdentity(find(identityList, (item) => item?.identityName === 'DEFAULT'));
 		setFrom({

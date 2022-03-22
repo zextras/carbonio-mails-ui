@@ -327,7 +327,8 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									{getTimeLabel(message.date)}
 								</Text>
 							</Row>
-							{!isMessageView && open && <MailMsgPreviewActions actions={actions} />}
+
+							{open && <MailMsgPreviewActions actions={actions} />}
 						</Row>
 					</Container>
 					{!open && (
