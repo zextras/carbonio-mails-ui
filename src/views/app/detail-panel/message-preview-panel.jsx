@@ -39,14 +39,8 @@ export default function MessagePreviewPanel() {
 						mainAlignment="flex-start"
 					>
 						<Container height="fit" mainAlignment="flex-start" background="gray5">
-							<Padding key={`mail-pre-${messageId}`} bottom="medium" width="100%">
-								<MailPreview
-									key={`${message.id}-${message.id}`}
-									message={message}
-									expanded
-									isAlone
-									isMessageView
-								/>
+							<Padding bottom="medium" width="100%">
+								<MailPreview message={message} expanded isAlone isMessageView />
 							</Padding>
 						</Container>
 					</Container>

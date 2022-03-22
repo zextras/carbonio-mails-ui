@@ -11,7 +11,7 @@ import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 
-export function setConversationsFlag(ids, value, t, dispatch) {
+export function setConversationsFlag({ ids, value, t, dispatch }) {
 	return {
 		id: 'flag-conversation',
 		icon: value ? 'FlagOutline' : 'Flag',
@@ -27,7 +27,7 @@ export function setConversationsFlag(ids, value, t, dispatch) {
 	};
 }
 
-export function setMultipleConversationsFlag(ids, disabled, t, dispatch) {
+export function setMultipleConversationsFlag({ ids, disabled, t, dispatch }) {
 	return {
 		id: 'flag--multiple-conversations',
 		icon: 'Flag',
@@ -44,7 +44,7 @@ export function setMultipleConversationsFlag(ids, disabled, t, dispatch) {
 	};
 }
 
-export function unSetMultipleConversationsFlag(ids, disabled, t, dispatch) {
+export function unSetMultipleConversationsFlag({ ids, disabled, t, dispatch }) {
 	return {
 		id: 'unflag-multiple-conversations',
 		icon: 'FlagOutline',
@@ -61,7 +61,7 @@ export function unSetMultipleConversationsFlag(ids, disabled, t, dispatch) {
 	};
 }
 
-export function setConversationsRead(
+export function setConversationsRead({
 	ids,
 	value,
 	t,
@@ -69,7 +69,7 @@ export function setConversationsRead(
 	folderId,
 	shouldReplaceHistory,
 	deselectAll
-) {
+}) {
 	// eslint-disable-next-line react-hooks/rules-of-hooks
 	return {
 		id: `read-conversations-${value}`,
@@ -130,7 +130,7 @@ export function printConversation({ t, conversation, account }) {
 	};
 }
 
-export function setConversationsSpam(ids, value, t, dispatch, createSnackbar, deselectAll) {
+export function setConversationsSpam({ ids, value, t, dispatch, createSnackbar, deselectAll }) {
 	return {
 		id: 'spam-conversations',
 		icon: value ? 'AlertCircleOutline' : 'AlertCircle',
@@ -184,14 +184,14 @@ export function setConversationsSpam(ids, value, t, dispatch, createSnackbar, de
 	};
 }
 
-export function moveConversationToTrash(
+export function moveConversationToTrash({
 	ids,
 	t,
 	dispatch,
 	createSnackbar,
 	deselectAll,
-	currentFolder
-) {
+	folderId
+}) {
 	return {
 		id: 'trash-conversations',
 		icon: 'Trash2Outline',
@@ -203,12 +203,12 @@ export function moveConversationToTrash(
 					convAction({
 						operation: `move`,
 						ids,
-						parent: currentFolder
+						parent: folderId
 					})
 				).then((res) => {
 					if (res.type.includes('fulfilled')) {
 						deselectAll();
-						replaceHistory(`/folder/${currentFolder}/conversation/${ids[0]}`);
+						replaceHistory(`/folder/${folderId}/conversation/${ids[0]}`);
 						createSnackbar({
 							key: `edit`,
 							replace: true,
@@ -237,7 +237,7 @@ export function moveConversationToTrash(
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll();
-					replaceHistory(`/folder/${currentFolder}/`);
+					replaceHistory(`/folder/${folderId}/`);
 					createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
@@ -262,14 +262,14 @@ export function moveConversationToTrash(
 	};
 }
 
-export function moveConversationToFolder(
-	selectedIDs,
+export function moveConversationToFolder({
+	ids,
 	t,
 	dispatch,
 	isRestore,
 	createModal,
 	deselectAll
-) {
+}) {
 	return {
 		id: 'move-conversations',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
@@ -281,7 +281,7 @@ export function moveConversationToFolder(
 					children: (
 						<>
 							<MoveConvMessage
-								selectedIDs={selectedIDs}
+								selectedIDs={ids}
 								onClose={() => closeModal()}
 								dispatch={dispatch}
 								isMessageView={false}
@@ -297,7 +297,7 @@ export function moveConversationToFolder(
 	};
 }
 
-export function deleteConversationPermanently(selectedIDs, t, dispatch, createModal, deselectAll) {
+export function deleteConversationPermanently(ids, t, dispatch, createModal, deselectAll) {
 	return {
 		id: 'delete-conversations',
 		icon: 'DeletePermanentlyOutline',
@@ -308,7 +308,7 @@ export function deleteConversationPermanently(selectedIDs, t, dispatch, createMo
 					children: (
 						<>
 							<DeleteConvConfirm
-								selectedIDs={selectedIDs}
+								selectedIDs={ids}
 								dispatch={dispatch}
 								isMessageView={false}
 								onClose={() => closeModal()}
@@ -336,93 +336,138 @@ export const getActions = (
 	switch (folderId) {
 		case FOLDERS.TRASH:
 			return (conversation) => [
-				[setConversationsFlag([conversation.id], conversation.flagged, t, dispatch)],
 				[
-					setConversationsRead(
-						[conversation.id],
-						conversation.read,
+					setConversationsFlag({ ids: [conversation.id], value: conversation.flagged, t, dispatch })
+				],
+				[
+					setConversationsRead({
+						ids: [conversation.id],
+						value: conversation.read,
 						t,
 						dispatch,
 						folderId,
-						true,
+						shouldReplaceHistory: true,
 						deselectAll
-					),
-					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
-					setConversationsSpam([conversation.id], false, t, dispatch, createSnackbar, deselectAll),
+					}),
+					setConversationsFlag({
+						ids: [conversation.id],
+						value: conversation.flagged,
+						t,
+						dispatch
+					}),
+
+					setConversationsSpam({
+						ids: [conversation.id],
+						value: false,
+						t,
+						dispatch,
+						createSnackbar,
+						deselectAll
+					}),
 					printConversation({
 						t,
 						conversation: [conversation],
 						account
 					}),
-					moveConversationToFolder([conversation.id], t, dispatch, true, createModal, deselectAll),
-					deleteConversationPermanently([conversation.id], t, dispatch, createModal, deselectAll)
+					moveConversationToFolder({
+						ids: [conversation.id],
+						t,
+						dispatch,
+						isRestore: true,
+						createModal,
+						deselectAll
+					}),
+					deleteConversationPermanently({
+						ids: [conversation.id],
+						t,
+						dispatch,
+						createModal,
+						deselectAll
+					})
 				]
 			];
 		case FOLDERS.SPAM:
 			return (conversation) => [
 				[
-					moveConversationToTrash(
-						[conversation.id],
+					moveConversationToTrash({
+						ids: [conversation.id],
 						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
 						folderId
-					),
-					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch)
+					}),
+					setConversationsFlag({ ids: [conversation.id], value: conversation.flagged, t, dispatch })
 				],
 				[
-					setConversationsRead(
-						[conversation.id],
-						conversation.read,
+					setConversationsRead({
+						ids: [conversation.id],
+						value: conversation.read,
 						t,
 						dispatch,
 						folderId,
-						true,
+						shouldReplaceHistory: true,
 						deselectAll
-					),
-					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
-					setConversationsSpam([conversation.id], true, t, dispatch, createSnackbar, deselectAll),
+					}),
+					setConversationsFlag({
+						ids: [conversation.id],
+						value: conversation.flagged,
+						t,
+						dispatch
+					}),
+					setConversationsSpam({
+						ids: [conversation.id],
+						value: true,
+						t,
+						dispatch,
+						createSnackbar,
+						deselectAll
+					}),
 
 					printConversation({
 						t,
 						conversation: [conversation],
 						account
 					}),
-					moveConversationToTrash(
-						[conversation.id],
+					moveConversationToTrash({
+						ids: [conversation.id],
 						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
 						folderId
-					)
+					})
 				]
 			];
 
 		case FOLDERS.DRAFTS:
 			return (conversation) => [
 				[
-					moveConversationToTrash(
-						[conversation.id],
+					moveConversationToTrash({
+						ids: [conversation.id],
 						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
 						folderId
-					),
-					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch)
+					}),
+					setConversationsFlag({ ids: [conversation.id], value: conversation.flagged, t, dispatch })
 				],
 				[
-					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
-					moveConversationToTrash(
-						[conversation.id],
+					setConversationsFlag({
+						ids: [conversation.id],
+						value: conversation.flagged,
+						t,
+						dispatch
+					}),
+					moveConversationToTrash({
+						ids: [conversation.id],
 						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
 						folderId
-					),
+					}),
 					printConversation({
 						t,
 						conversation: [conversation],
@@ -435,50 +480,62 @@ export const getActions = (
 		default:
 			return (conversation) => [
 				[
-					setConversationsRead(
-						[conversation.id],
-						conversation.read,
+					setConversationsRead({
+						ids: [conversation.id],
+						value: conversation.read,
 						t,
 						dispatch,
 						folderId,
-						true,
+						shouldReplaceHistory: true,
 						deselectAll
-					),
-					moveConversationToTrash(
-						[conversation.id],
+					}),
+					moveConversationToTrash({
+						ids: [conversation.id],
 						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
 						folderId
-					),
-					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch)
+					}),
+					setConversationsFlag({ ids: [conversation.id], value: conversation.flagged, t, dispatch })
 				],
 				[
-					setConversationsRead(
-						[conversation.id],
-						conversation.read,
+					setConversationsRead({
+						ids: [conversation.id],
+						value: conversation.read,
 						t,
 						dispatch,
 						folderId,
-						true,
+						shouldReplaceHistory: true,
 						deselectAll
-					),
-					setConversationsFlag([conversation.id], conversation.flagged, t, dispatch),
-					setConversationsSpam([conversation.id], false, t, dispatch, createSnackbar, deselectAll),
+					}),
+					setConversationsFlag({
+						ids: [conversation.id],
+						value: conversation.flagged,
+						t,
+						dispatch
+					}),
+					setConversationsSpam({
+						ids: [conversation.id],
+						value: false,
+						t,
+						dispatch,
+						createSnackbar,
+						deselectAll
+					}),
 					printConversation({
 						t,
 						conversation: [conversation],
 						account
 					}),
-					moveConversationToTrash(
-						[conversation.id],
+					moveConversationToTrash({
+						ids: [conversation.id],
 						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
 						folderId
-					)
+					})
 				]
 			];
 	}

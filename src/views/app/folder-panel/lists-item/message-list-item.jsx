@@ -87,16 +87,16 @@ export default function MessageListItem({
 		return ['.', '.', '', ''];
 	}, [item, t, accounts]);
 
-	const [showIcon, icon, iconTooltip, iconId] = useMemo(() => {
+	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
 		if (item) {
 			if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
-				return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon'];
+				return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon', 'secondary'];
 			}
 			if (item.isDraft) {
-				return [true, 'FileOutline', t('label.draft', 'Draft'), 'DraftIcon'];
+				return [true, 'FileOutline', t('label.draft', 'Draft'), 'DraftIcon', 'secondary'];
 			}
 			if (item.isReplied) {
-				return [true, 'UndoOutline', t('label.replied', 'Replied'), 'RepliedIcon'];
+				return [true, 'UndoOutline', t('label.replied', 'Replied'), 'RepliedIcon', 'secondary'];
 			}
 			if (
 				item.read === false &&
@@ -105,7 +105,7 @@ export default function MessageListItem({
 				!item.isSentByMe &&
 				!item.isForwarded
 			) {
-				return [true, 'EmailOutline', t('search.unread', 'Unread'), 'UnreadIcon'];
+				return [true, 'EmailOutline', t('search.unread', 'Unread'), 'UnreadIcon', 'primary'];
 			}
 			if (
 				item.read !== false &&
@@ -114,13 +114,13 @@ export default function MessageListItem({
 				!item.isSentByMe &&
 				!item.isForwarded
 			) {
-				return [true, 'EmailReadOutline', t('label.read', 'Read'), 'ReadIcon'];
+				return [true, 'EmailReadOutline', t('label.read', 'Read'), 'ReadIcon', 'secondary'];
 			}
 			if (item.isForwarded) {
-				return [true, 'Forward', t('label.forwarded', 'Forwarded'), 'ForwardedIcon'];
+				return [true, 'Forward', t('label.forwarded', 'Forwarded'), 'ForwardedIcon', 'secondary'];
 			}
 		}
-		return [false, '', '', ''];
+		return [false, '', '', '', ''];
 	}, [item, t]);
 
 	const _onClick = useCallback(
@@ -128,7 +128,7 @@ export default function MessageListItem({
 			if (!e.isDefaultPrevented()) {
 				replaceHistory(`/folder/${folderId}/message/${item.id}`);
 				if (item.read === false) {
-					setMsgRead([item.id], false, t, dispatch).click();
+					setMsgRead({ ids: [item.id], value: false, t, dispatch }).click();
 				}
 			}
 		},
@@ -232,7 +232,7 @@ export default function MessageListItem({
 									{showIcon && (
 										<Tooltip label={iconTooltip} placement="bottom">
 											<Padding right="extrasmall">
-												<Icon data-testid={iconId} icon={icon} color="secondary" />
+												<Icon data-testid={iconId} icon={icon} color={color} />
 											</Padding>
 										</Tooltip>
 									)}
