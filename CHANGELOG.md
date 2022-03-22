@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.11-rc.1](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.11-rc.0...v0.1.11-rc.1) (2022-03-21)
+
+
+### Bug Fixes
+
+* solved "Cannot read properties of undefined (reading 'split')" crash ([9fc3144](https://github.com/zextras/carbonio-mails-ui/commit/9fc3144ed742b9ace2e357777f513622f7681676))
+
+### [0.1.11-rc.0](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.9-rc.6...v0.1.11-rc.0) (2022-03-18)
+
 ### [0.1.9-rc.6](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.9-rc.5...v0.1.9-rc.6) (2022-03-18)
 
 

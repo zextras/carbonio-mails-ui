@@ -310,7 +310,7 @@ const setAccordionCustomComponent = ({
 			const { zimbraPrefSortOrder, zimbraPrefGroupMailBy } = useUserSettings().prefs;
 			const sorting = useMemo(
 				() =>
-					find(zimbraPrefSortOrder?.split(','), (f) => f.split(':')?.[0] === folder.id)?.split(
+					find(zimbraPrefSortOrder?.split(','), (f) => f?.split(':')?.[0] === folder.id)?.split(
 						':'
 					)?.[1] ?? 'dateDesc',
 				[zimbraPrefSortOrder]
