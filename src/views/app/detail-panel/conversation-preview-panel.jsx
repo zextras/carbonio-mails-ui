@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo, useEffect } from 'react';
-import { Container, Padding } from '@zextras/carbonio-design-system';
+import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
 import { FOLDERS, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -45,18 +45,26 @@ const MessagesComponent = ({ conversation }) => {
 		}
 		return index === 0;
 	};
+
 	if (conversation && conversationStatus === 'complete') {
-		return map(convMessages, (message, index) => (
-			<Padding key={`mail-pre-${index}`} bottom="medium" width="100%">
-				<MailPreview
-					key={`${message.id}-${message.id}`}
-					message={message}
-					expanded={expand(message, index)}
-					isAlone={conversation.messages.length === 1}
-					isMessageView={false}
-				/>
-			</Padding>
-		));
+		return map(convMessages, (message, index) =>
+			message ? (
+				<Padding
+					key={`${conversationId}-${message.id}-${message.date}`}
+					bottom="medium"
+					width="100%"
+				>
+					<MailPreview
+						message={message}
+						expanded={expand(message, index)}
+						isAlone={conversation.messages.length === 1}
+						isMessageView={false}
+					/>
+				</Padding>
+			) : (
+				<Shimmer.Logo size="large" />
+			)
+		);
 	}
 	return null;
 };

@@ -174,7 +174,17 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 								type="ghost"
 								label="Not Spam"
 								color="primary"
-								onClick={() => setMsgAsSpam([message.id], true, t, dispatch).click()}
+								onClick={() =>
+									setMsgAsSpam({
+										ids: [message.id],
+										value: true,
+										t,
+										dispatch,
+										createSnackbar,
+										shouldReplaceHistory: true,
+										folderId
+									}).click()
+								}
 							/>
 						</Row>
 					</Container>
@@ -317,7 +327,8 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 									{getTimeLabel(message.date)}
 								</Text>
 							</Row>
-							{!isMessageView && open && <MailMsgPreviewActions actions={actions} />}
+
+							{open && <MailMsgPreviewActions actions={actions} />}
 						</Row>
 					</Container>
 					{!open && (

@@ -112,13 +112,8 @@ function msgActionPending({ messages }: MsgStateType, { meta }: { meta: any }): 
 				message.parent = meta.arg.parent;
 			} else if (operation === 'spam') {
 				message.parent = '4';
-				// eslint-disable-next-line no-param-reassign
-				delete messages[id];
 			} else if (operation === '!spam') {
 				message.parent = '2';
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				delete message[id];
 			}
 		}
 	});

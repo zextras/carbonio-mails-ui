@@ -143,7 +143,12 @@ export default function ConversationListItem({
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (item?.read === false) {
-					setConversationsRead([item.id], false, t, dispatch).click();
+					setConversationsRead({
+						ids: [item.id],
+						value: false,
+						t,
+						dispatch
+					}).click();
 				}
 				pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 			}
