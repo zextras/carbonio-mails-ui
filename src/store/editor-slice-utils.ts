@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { map, filter, reduce, concat, isEmpty, find } from 'lodash';
+import { map, filter, reduce, concat, isEmpty, find, some } from 'lodash';
 import { Account, AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import { EditorAttachmentFiles, MailsEditor } from '../types/mails-editor';
@@ -123,7 +123,7 @@ export const retrieveTO = (original: MailMessage): Array<Participant> =>
 export function retrieveALL(original: MailMessage, accounts: Array<Account>): Array<Participant> {
 	const toEmails = filter(
 		original.participants,
-		(c: Participant): boolean => c.type === ParticipantRole.TO && c.address !== accounts[0].name
+		(c: Participant): boolean => c.type === ParticipantRole.TO
 	);
 	const fromEmails = filter(
 		original.participants,
@@ -133,9 +133,16 @@ export function retrieveALL(original: MailMessage, accounts: Array<Account>): Ar
 		original.participants,
 		(c: Participant): boolean => c.type === ParticipantRole.REPLY_TO
 	);
-	if (!!replyToParticipants && replyToParticipants.length === 0) {
-		if (original.parent === FOLDERS.SENT) {
-			return toEmails;
+
+	const isSentByMe = some(
+		filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.FROM),
+		{ address: accounts[0].name }
+	);
+	if (replyToParticipants.length === 0) {
+		if (original.parent === FOLDERS.SENT || original.isSentByMe || isSentByMe) {
+			return filter(toEmails, (c) => c.address !== accounts[0].name).length === 0
+				? toEmails
+				: filter(toEmails, (c) => c.address !== accounts[0].name);
 		}
 		return changeTypeOfParticipants(fromEmails, ParticipantRole.TO);
 	}
@@ -162,19 +169,35 @@ export function retrieveCC(
 			c.type === ParticipantRole.CARBON_COPY && c.address !== accounts[0]?.name
 	);
 	const finalTo = retrieveALL(original, accounts);
-	ccEmails.map((item: Participant) => {
-		if (toEmails.filter((x) => x.address === item.address).length > 0) {
-			ccEmails.splice(ccEmails.indexOf(item), 1);
-		}
-		if (finalTo.filter((x) => x.address === item.address).length > 0) {
-			ccEmails.splice(ccEmails.indexOf(item), 1);
-		}
-		return changeTypeOfParticipants(ccEmails, ParticipantRole.CARBON_COPY);
-	});
-	if (original.parent !== FOLDERS.SENT) {
-		return changeTypeOfParticipants(concat(toEmails, ccEmails), ParticipantRole.CARBON_COPY);
+
+	const reducedCcEmails = reduce(
+		ccEmails,
+		(acc: Array<Participant>, v: Participant) => {
+			if (
+				!(toEmails.filter((x) => x.address === v.address).length > 0) &&
+				!(finalTo.filter((x) => x.address === v.address).length > 0)
+			) {
+				acc.push({ ...v, type: ParticipantRole.CARBON_COPY });
+			}
+			return acc;
+		},
+		[]
+	);
+
+	if (original.parent !== FOLDERS.SENT && !original.isSentByMe) {
+		const uniqueParticipants = reduce(
+			concat(toEmails, reducedCcEmails),
+			(acc: Participant[], v: Participant) => {
+				if (!(finalTo.filter((x) => x.address === v.address).length > 0))
+					acc.push({ ...v, type: ParticipantRole.CARBON_COPY });
+				return acc;
+			},
+			[]
+		);
+		return uniqueParticipants;
 	}
-	return changeTypeOfParticipants(ccEmails, ParticipantRole.CARBON_COPY);
+
+	return changeTypeOfParticipants(reducedCcEmails, ParticipantRole.CARBON_COPY);
 }
 
 export const retrieveBCC = (original: MailMessage): Array<Participant> =>

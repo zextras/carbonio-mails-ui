@@ -214,7 +214,9 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [open, setOpen] = useState(false);
 	const [showCc, setShowCc] = useState(false);
 	const [showBcc, setShowBcc] = useState(false);
-
+	const [loading, setLoading] = useState(false);
+	const [initialAction, setInitialAction] = useState(action);
+	const [actionChanged, setActionChanged] = useState(false);
 	const [from, setFrom] = useState({
 		label: defaultIdentity?.label,
 		value: defaultIdentity?.value
@@ -526,8 +528,26 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [editor?.subject, setHeader, updateBoard, action, t]);
 
 	useEffect(() => {
-		if ((activeMailId && messages[activeMailId]?.isComplete) || action === ActionsType.NEW) {
-			if (!editors[editorId]) {
+		if (action !== initialAction) {
+			setActionChanged(true);
+			setInitialAction(action);
+		}
+	}, [action, initialAction]);
+
+	useEffect(() => {
+		if (editors[editorId] && actionChanged) {
+			setActionChanged(false);
+		}
+	}, [action, actionChanged, activeMailId, dispatch, editorId, editors, messages]);
+
+	useEffect(() => {
+		if (
+			(activeMailId && messages[activeMailId]?.isComplete) ||
+			action === ActionsType.NEW ||
+			actionChanged
+		) {
+			if (!editors[editorId] || actionChanged) {
+				setLoading(true);
 				dispatch(
 					createEditor({
 						settings,
@@ -547,6 +567,9 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 						}
 					})
 				);
+				setTimeout(() => {
+					setLoading(false);
+				}, 10);
 			} else {
 				setEditor(editors[editorId]);
 			}
@@ -564,7 +587,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		boardContext,
 		settings,
 		activeMailId,
-		editor
+		editor,
+		actionChanged
 	]);
 
 	useEffect(() => {
@@ -633,7 +657,13 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 
 	const haveIdentity = useMemo(() => defaultIdentity && list.length > 1, [defaultIdentity, list]);
-	return editor ? (
+	if (loading || !editor)
+		return (
+			<Container height="50%" mainAlignment="center" crossAlignment="center">
+				<Button loading disabled label="" type="ghost" />
+			</Container>
+		);
+	return (
 		<Catcher>
 			<Container onDragOver={(event) => onDragOverEvent(event)}>
 				<Container
@@ -1196,9 +1226,5 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				</Container>
 			</Container>
 		</Catcher>
-	) : (
-		<Container height="50%" mainAlignment="center" crossAlignment="center">
-			<Button loading disabled label="" type="ghost" />
-		</Container>
 	);
 }
