@@ -10,7 +10,9 @@ import {
 	FormSubSection,
 	Select,
 	Input,
-	Checkbox
+	Checkbox,
+	RadioGroup,
+	Radio
 } from '@zextras/carbonio-design-system';
 import Heading from './components/settings-heading';
 import {
@@ -131,6 +133,24 @@ export default function DisplayingMessagesSettings({ t, settingsObj, updateSetti
 						})
 					}
 				/>
+			</Container>
+			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
+				<Heading title={t('settings.label.visualization_options', 'Visualization Options')} />
+				<RadioGroup
+					style={{ width: '100%' }}
+					value={settingsObj.zimbraPrefGroupMailBy}
+					mainAlignment="flex-start"
+					onChange={(newValue) => {
+						updateSettings({ target: { name: 'zimbraPrefGroupMailBy', value: newValue } });
+					}}
+				>
+					<Radio
+						width="100%"
+						label={t('label.by_conversation', 'By Conversation')}
+						value="conversation"
+					/>
+					<Radio width="100%" label={t('label.by_message', 'By Message')} value="message" />
+				</RadioGroup>
 			</Container>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 				<Heading title={t('settings.label.default_mail_search', 'Default Mail Search')} />

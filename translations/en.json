@@ -189,6 +189,8 @@
         "automatically_delete_duplicates": "Automatically delete duplicate copies of the same message when received",
         "back": "Back",
         "bcc": "Bcc",
+        "by_conversation": "By Conversation",
+        "by_message": "By Message",
         "calendar_color": "Item color",
         "cancel": "Cancel",
         "cc": "Cc",
@@ -441,7 +443,8 @@
             "message_color": "Message Color",
             "message_selection": "Message Selection",
             "search_query": "Default query",
-            "set_message_color": "Set color of messages and conversations according to tag color."
+            "set_message_color": "Set color of messages and conversations according to tag color.",
+            "visualization_options": "Visualization Options"
         },
         "linkedin_msg": "LinkedIn messages and connections",
         "localpart": "localpart",
