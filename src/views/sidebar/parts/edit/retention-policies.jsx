@@ -61,7 +61,7 @@ const RetentionPolicies = ({
 						emptyRtnValue && setEmptyRtnValue(false);
 						setDsblMsgRet(!dsblMsgRet);
 					}}
-					label="Enable Message Retention"
+					label={t('label.enable_message_retention', 'Enable Message Retention')}
 				/>
 				<Container padding={{ all: 'small' }}>
 					<Text overflow="break-word">
@@ -86,7 +86,7 @@ const RetentionPolicies = ({
 								emptyRtnValue && setEmptyRtnValue(false);
 								setRtnValue(e.target.value);
 							}}
-							label="Retention Range"
+							label={t('label.retention_range', 'Retention Range')}
 							background="gray5"
 							value={rtnValue}
 						/>
@@ -107,7 +107,7 @@ const RetentionPolicies = ({
 								disabled={!dsblMsgRet}
 								items={retentionPeriod}
 								background="gray5"
-								label="Select"
+								label={t('label.select', 'Select')}
 								onChange={setRtnYear}
 								disablePortal
 								defaultSelection={{ label: rtnRange, value: rtnYear }}
@@ -124,7 +124,7 @@ const RetentionPolicies = ({
 							emptyDisValue && setEmptyDisValue(false);
 							setDsblMsgDis(!dsblMsgDis);
 						}}
-						label="Enable Message Disposal"
+						label={t('label.enable_message_disposal', 'Enable Message Disposal')}
 					/>
 					<Container padding={{ all: 'small' }}>
 						<Text overflow="break-word">
@@ -144,7 +144,7 @@ const RetentionPolicies = ({
 					>
 						<Row orientation="vertical" width="48%" crossAlignment="flex-start">
 							<Input
-								label="Disposal Threshold"
+								label={t('label.disposal_threshold', 'Disposal Threshold')}
 								onChange={(e) => {
 									emptyDisValue && setEmptyDisValue(false);
 									setPurgeValue(e.target.value);
@@ -170,7 +170,7 @@ const RetentionPolicies = ({
 									disabled={!dsblMsgDis}
 									items={retentionPeriod}
 									background="gray5"
-									label="Select"
+									label={t('label.select', 'Select')}
 									disablePortal
 									onChange={setDspYear}
 									defaultSelection={{ value: dspYear, label: dspRange }}
