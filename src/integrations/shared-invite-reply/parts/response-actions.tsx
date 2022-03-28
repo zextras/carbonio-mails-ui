@@ -115,7 +115,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 						<Checkbox
 							value={notifyOrganizer}
 							onClick={(): void => setNotifyOrganizer(!notifyOrganizer)}
-							label={t('label.notify_organizer', 'Notify Organizer')}
+							label="Notify Organizer"
 						/>
 					</Padding>
 				</Row>
@@ -161,17 +161,12 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				height="fit"
 				padding={{ all: 'large' }}
 			>
-				<Button
-					type="outlined"
-					label={t('label.accept', 'Accept')}
-					icon="Checkmark"
-					onClick={acceptShare}
-				/>
+				<Button type="outlined" label="Accept" icon="Checkmark" onClick={acceptShare} />
 				<Padding horizontal="small" />
 				<Button
 					color="error"
 					type="outlined"
-					label={t('label.decline', 'Decline')}
+					label="Decline"
 					icon="CloseOutline"
 					onClick={declined}
 				/>
