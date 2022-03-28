@@ -18,7 +18,7 @@ const NameInputRow = ({
 }) => (
 	<Container>
 		<Input
-			label={t('label.folder_name', 'Folder name')}
+			label="Folder name"
 			onChange={(e) => setInputValue(e.target.value)}
 			disabled={inpDisable}
 			value={inputValue}
@@ -37,7 +37,7 @@ const NameInputRow = ({
 		<ColorPicker
 			onChange={(color) => setFolderColor(color)}
 			t={t}
-			label={t('label.select_color', 'Select Color')}
+			label="Select Color"
 			defaultColor={folderColor}
 		/>
 	</Container>

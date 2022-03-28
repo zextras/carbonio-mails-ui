@@ -250,7 +250,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 						{folder && Object.keys(folder).length > 0 && (
 							<Row padding={{ right: 'small' }}>
 								<Input
-									label={t('label.destination_folder', 'Destination Folder')}
+									label="Destination Folder"
 									backgroundColor="gray5"
 									value={folder?.name}
 									disabled
