@@ -167,12 +167,14 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 							<Padding right="small">
 								<Icon icon="AlertCircleOutline" size="medium" />
 							</Padding>
-							<Text>You marked this email as spam.</Text>
+							<Text>
+								{t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam')}
+							</Text>
 						</Row>
 						<Row width="50%" mainAlignment="flex-end">
 							<Button
 								type="ghost"
-								label="Not Spam"
+								label={t('action.mark_as_non_spam', 'Not Spam')}
 								color="primary"
 								onClick={() =>
 									setMsgAsSpam({
@@ -202,10 +204,19 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 							<Padding right="small">
 								<Icon icon="AlertCircleOutline" size="medium" />
 							</Padding>
-							<Text>If you need to take a note, you can add a task to your TODO LIST</Text>
+							<Text>
+								{t(
+									'label.add_task',
+									'If you need to take a note, you can add a task to your TODO LIST'
+								)}
+							</Text>
 						</Row>
 						<Row width="50%" mainAlignment="flex-end">
-							<Button type="ghost" label="Create New Task" color="primary" />
+							<Button
+								type="ghost"
+								label={t('label.create_new_task', 'Create New Task')}
+								color="primary"
+							/>
 						</Row>
 					</Container>
 				</Container>
