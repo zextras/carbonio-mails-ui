@@ -277,7 +277,10 @@
         "sent_to_address": "Verzonden naar (adres)",
         "signature_required": "Informatie over handtekening is vereist.",
         "mail_selected": "{{count}} e-mail geselecteerd",
-        "mail_selected_plural": "{{count}} e-mails geselecteerd"
+        "mail_selected_plural": "{{count}} e-mails geselecteerd",
+        "forwarded": "Doorgestuurd",
+        "send_email": "E-mail sturen",
+        "draft": "Concept"
     },
     "messages": {
         "permanent_delete_confirm": "Permanent verwijderen",

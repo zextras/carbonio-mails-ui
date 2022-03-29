@@ -267,7 +267,10 @@
         "size_smaller": "Größe kleiner als (MB)",
         "addresses_not_accepted": "Eine oder mehrere Adressen wurden nicht akzeptiert. Abgelehnte Adressen:",
         "on_behalf_of": "im Namen von",
-        "sent_to_address": "Gesendet an (Adresse)"
+        "sent_to_address": "Gesendet an (Adresse)",
+        "forwarded": "Weitergeleitet",
+        "send_email": "E-Mail senden",
+        "draft": "Entwurf"
     },
     "share": {
         "options": {
