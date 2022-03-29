@@ -314,7 +314,7 @@
         "write": "Write"
     },
     "message": {
-        "email_saved_at": "Email saved as draft at {{time}}",
+        "email_saved_at": "E-mail saved as a draft at {{time}}",
         "invalid_search_message": "We didn't find any match",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
