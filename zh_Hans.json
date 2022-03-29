@@ -361,7 +361,10 @@
         "any": "任意",
         "hide": "隐藏",
         "mail_selected": "{{count}}邮件已选择",
-        "on_behalf_of": "代表"
+        "on_behalf_of": "代表",
+        "send_email": "发送邮件",
+        "draft": "草稿",
+        "forwarded": "已转发"
     },
     "owner": "所有者",
     "read": "已读",
