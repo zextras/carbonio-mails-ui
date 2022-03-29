@@ -43,7 +43,7 @@
                 "retention_message": "Wiadomości z tego folderu, zawierające się w czasie zachowywania wymagają wyraźnego potwierdzenia, zanim zostaną usunięte",
                 "add_share": "Dodaj udostępnienie",
                 "rename_warning": "Nie możesz zmienić nazwy folderu na nazwę znajdującą się już w systemie.",
-                "retention_duration_warning": "Czas zachowywania musi być liczbą większą od zera.",
+                "retention_duration_warning": "Czas przechowywania musi być liczbą większą od zera",
                 "threshold_message": "Wiadomości z tego folderu, wykraczające poza czas zachowywania będą poddawane automatycznemu usunięciu."
             }
         }
@@ -143,7 +143,7 @@
         "allowed_actions": "Dozwolone czynności",
         "any": "jakiekolwiek",
         "attachment_type": "Typ załącznika",
-        "bcc": "BCC",
+        "bcc": "Bcc",
         "remove_0": "Usuń",
         "remove_1": "Usuń wszystkie",
         "remove_2": "Usuń wszystkie",
@@ -154,7 +154,7 @@
         "attachment_status": "Status załącznika",
         "back": "Powrót",
         "calendar_color": "Kolor elementu",
-        "cc": "CC",
+        "cc": "Cc",
         "choose_folder": "Wybierz folder",
         "delete": "Usuń",
         "delete_permanently": "Trwale usuń",
@@ -231,7 +231,14 @@
         "workflow": "Organizacja Pracy",
         "would_like_to_share": "udostępniono jego",
         "write": "Pisanie",
-        "signature_required": "Informacje dot. podpisu są wymagane."
+        "signature_required": "Informacje dot. podpisu są wymagane.",
+        "cc_bcc": "Cc Bcc",
+        "from_identity": "Od: {{identity}}",
+        "new_email": "Nowy E-mail",
+        "send_email": "Wyślij e-maila",
+        "app_name": "E-maile",
+        "set_default_signatures": "Ustaw Domyślne Podpisy",
+        "show_quoted_text": "Pokaż zacytowany tekst"
     },
     "message": {
         "snackbar": {
@@ -242,7 +249,8 @@
             }
         },
         "invalid_search_message": "Nie znaleźliśmy niczego pasującego do kryteriów wyszukiwania",
-        "sending_mail_to_self": "Wygląda na to, że wysyłasz e-maila do siebie"
+        "sending_mail_to_self": "Wygląda na to, że wysyłasz e-maila do siebie",
+        "email_saved_at": "E-mail został zapisany jako wersja robocza o {{time}}"
     },
     "search": {
         "flagged_note": "Wyszukaj wszystkie oflagowane e-maile.",
@@ -257,8 +265,8 @@
     "share": {
         "options": {
             "share_calendar_with": {
-                "external_guests": "Goście spoza mojej domeny (mogą tylko wyświetlać)",
-                "internal_users_groups": "Użytkownicy lub Grupy z mojej domeny",
+                "external_guests": "Goście spoza mojej organizacji (mogą tylko wyświetlać)",
+                "internal_users_groups": "Użytkownicy lub Grupy z mojej organizacji",
                 "public": "Publiczny (można tylko wyświetlać, hasło niewymagane)"
             },
             "share_calendar_role": {
@@ -400,7 +408,7 @@
             "message_selection": "Wybór Wiadomości",
             "search_query": "Domyślne kryterium"
         },
-        "actions": "Akcje",
+        "actions": "Czynności",
         "active_filter": "Aktywny filtr",
         "add_condition": "Dodaj nowy warunek",
         "address_in": "Adres w",
@@ -448,7 +456,7 @@
         "filter_deleted": "Filtr został usunięty",
         "filter_folder_message": "Wybierz folder, do którego zastosujesz ten filtr:",
         "filter_name": "Nazwa Filtra",
-        "from_distribution_list": "z listy podziału",
+        "from_distribution_list": "z listy dystrybucyjnej",
         "gb": "GB",
         "header_name": "Nagłowek nazwany",
         "if": "Jeśli",

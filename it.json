@@ -64,8 +64,8 @@
         "permanent_delete_title": "Vuoi eliminare definitivamente questo elemento?"
     },
     "label": {
-        "cc": "CC",
-        "bcc": "BCC",
+        "cc": "Cc",
+        "bcc": "Bcc",
         "to": "A",
         "subject": "Oggetto",
         "show": "Mostra",
@@ -195,7 +195,12 @@
         "replied": "Risposto",
         "draft": "Bozza",
         "forwarded": "Inoltrato",
-        "attachement_unknown": "Sconosciuto <{{mimeType}}>"
+        "attachement_unknown": "Sconosciuto <{{mimeType}}>",
+        "cc_bcc": "Cc Bcc",
+        "from_identity": "Da: {{identity}}",
+        "new_email": "Nuova E-mail",
+        "send_email": "Invia e-mail",
+        "show_quoted_text": "Mostra testo citato"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",
@@ -392,7 +397,8 @@
             }
         },
         "sending_mail_to_self": "Ti stai auto inviando una e-mail",
-        "invalid_search_message": "Nessuna corrispondenza trovata"
+        "invalid_search_message": "Nessuna corrispondenza trovata",
+        "email_saved_at": "E-mail salvata come bozza alle {{time}}"
     },
     "add": "Aggiungi",
     "allowed_actions": "Azioni consentite",

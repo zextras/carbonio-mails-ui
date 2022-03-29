@@ -163,7 +163,8 @@
         },
         "search_hints": "Search hints we need to discuss about",
         "sending_mail_to_self": "Kendinize e-posta göndermek üzeresiniz",
-        "invalid_search_message": "Eşleşen hiçbir öğe bulunamadı"
+        "invalid_search_message": "Eşleşen hiçbir öğe bulunamadı",
+        "email_saved_at": "E-postanın taslak olarak kaydedildiği saat {{time}}"
     },
     "snackbar": {
         "error": "Bir hata oluştu, lütfen tekrar deneyin",
@@ -202,9 +203,9 @@
         "single_advance_fillter": "Gelişmiş Filtreler",
         "add_custom_message": "Özel mesaj ekle",
         "allowed_actions": "İzin verilen eylemler",
-        "bcc": "BCC",
+        "bcc": "Bcc",
         "calendar_color": "Öğe rengi",
-        "cc": "CC",
+        "cc": "Cc",
         "draft_folder": "[TASLAK]",
         "find_shares": "Paylaşımları bul",
         "from": "Kimden",
@@ -309,7 +310,14 @@
         "attachement_unknown": "Bilinmeyen <{{mimeType}}>",
         "draft": "Taslak",
         "forwarded": "İletildi",
-        "replied": "Yanıtlandı"
+        "replied": "Yanıtlandı",
+        "cc_bcc": "Cc Bcc",
+        "from_identity": "Kimden: {{identity}}",
+        "new_email": "Yeni E-posta",
+        "send_email": "E-posta gönder",
+        "set_default_signatures": "Varsayılan İmzaları Belirle",
+        "app_name": "E-Postalar",
+        "show_quoted_text": "Alıntı metni göster"
     },
     "of": "—",
     "owner": "Sahibi",

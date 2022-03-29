@@ -180,6 +180,7 @@
         "all": "all",
         "allowed_actions": "Allowed actions",
         "any": "any",
+        "app_name": "Mails",
         "attachement_unknown": "Unknown <{{mimeType}}>",
         "attachment": "Attachment",
         "attachment_plural": "Attachments",
@@ -187,10 +188,11 @@
         "attachment_type": "Attachment type",
         "automatically_delete_duplicates": "Automatically delete duplicate copies of the same message when received",
         "back": "Back",
-        "bcc": "BCC",
+        "bcc": "Bcc",
         "calendar_color": "Item color",
         "cancel": "Cancel",
-        "cc": "CC",
+        "cc": "Cc",
+        "cc_bcc": "Cc Bcc",
         "choose_folder": "Choose folder",
         "create": "Create",
         "delete": "Delete",
@@ -217,6 +219,7 @@
         "forwarded": "Forwarded",
         "freebusy": "FreeBusy",
         "from": "From",
+        "from_identity": "From: {{identity}}",
         "go_back": "Go Back",
         "grantee": "Grantee: ",
         "hide": "Hide",
@@ -231,6 +234,7 @@
         "me": "Me",
         "messages": "Messages",
         "move": "Move",
+        "new_email": "New E-mail",
         "new_folder": "New Folder",
         "no_search_results_found": "No results found",
         "no_subject": "No subject",
@@ -261,10 +265,12 @@
         "select_folder": "Select folder",
         "select_signature": "Select a signature",
         "send": "Send",
+        "send_email": "Send e-mail",
         "send_notification": "Send a notification message to",
         "sending": "Sending",
         "sent": "Sent",
         "sent_to_address": "Sent to (address)",
+        "set_default_signatures": "Set Default Signatures",
         "share": "Share",
         "shared_folders": "Shared Folders",
         "shared_item": "Shared item",
@@ -273,6 +279,7 @@
         "shares_items": "{{value}}'s shared folders",
         "show_all": "Show all",
         "show_popup": "Show a popup notification",
+        "show_quoted_text": "Show quoted text",
         "signature_required": "Signature information is required.",
         "single_advanced_filter": "Advanced Filters",
         "size": "Size",
@@ -291,6 +298,7 @@
         "write": "Write"
     },
     "message": {
+        "email_saved_at": "E-mail saved as a draft at {{time}}",
         "invalid_search_message": "We didn't find any match",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
@@ -310,7 +318,7 @@
             },
             "redirect": {
                 "first": "This e-mail will be sent on to a new recipient while preserving the e-mail address of the original sender.",
-                "second": "The e-mail will appear as originally intended for the new recepient"
+                "second": "The e-mail will appear as originally intended for the new recipient"
             }
         },
         "new_email": "New e-mail",
