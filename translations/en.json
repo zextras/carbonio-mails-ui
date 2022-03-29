@@ -189,6 +189,7 @@
         "automatically_delete_duplicates": "Automatically delete duplicate copies of the same message when received",
         "back": "Back",
         "bcc": "Bcc",
+        "behalf_of": "<Row> <PrimaryText> {{fullName}} </PrimaryText>  <GrayText> {{address}} </GrayText> <NormalText> on behalf of </NormalText> <PrimaryText> {{mainContactFullName}} </PrimaryText> <GrayText> {{mainContactAddress}} </GrayText> </Row>",
         "calendar_color": "Item color",
         "cancel": "Cancel",
         "cc": "Cc",
