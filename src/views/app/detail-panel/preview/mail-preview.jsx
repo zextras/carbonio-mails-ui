@@ -72,7 +72,12 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 							</Text>
 						</Row>
 						<Row width="50%" mainAlignment="flex-end">
-							<Button type="ghost" label="Not Spam" color="primary" onClick={markAsNotSpam} />
+							<Button
+								type="ghost"
+								label={t('action.mark_as_non_spam', 'Not Spam')}
+								color="primary"
+								onClick={markAsNotSpam}
+							/>
 						</Row>
 					</Container>
 				</Container>
