@@ -30,15 +30,7 @@ const ContactText = styled.span`
 		}
 	}
 `;
-const TextP = styled.p`
-	font-family: 'Roboto';
-	font-style: normal;
-	font-weight: 300;
-	font-size: 12px;
-	line-height: 18px;
-	display: flex;
-	align-items: center;
-`;
+
 const ContactName: FC<{ contacts: Participant[]; label: string }> = ({
 	contacts,
 	label
