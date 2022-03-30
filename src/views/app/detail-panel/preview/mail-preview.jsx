@@ -40,7 +40,19 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const compProps = useMemo(() => ({ message, onClick, open }), [message, onClick, open]);
-
+	const markAsNotSpam = useCallback(
+		() =>
+			setMsgAsSpam({
+				ids: [message.id],
+				value: true,
+				t,
+				dispatch,
+				createSnackbar,
+				shouldReplaceHistory: true,
+				folderId
+			}).click(),
+		[createSnackbar, dispatch, folderId, message.id, t]
+	);
 	return (
 		<>
 			{folderId === FOLDERS.SPAM && (
@@ -55,25 +67,12 @@ const MailPreviewBlock = ({ message, open, onClick }) => {
 							<Padding right="small">
 								<Icon icon="AlertCircleOutline" size="medium" />
 							</Padding>
-							<Text>You marked this email as spam.</Text>
+							<Text>
+								{t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam')}
+							</Text>
 						</Row>
 						<Row width="50%" mainAlignment="flex-end">
-							<Button
-								type="ghost"
-								label="Not Spam"
-								color="primary"
-								onClick={() =>
-									setMsgAsSpam({
-										ids: [message.id],
-										value: true,
-										t,
-										dispatch,
-										createSnackbar,
-										shouldReplaceHistory: true,
-										folderId
-									}).click()
-								}
-							/>
+							<Button type="ghost" label="Not Spam" color="primary" onClick={markAsNotSpam} />
 						</Row>
 					</Container>
 				</Container>

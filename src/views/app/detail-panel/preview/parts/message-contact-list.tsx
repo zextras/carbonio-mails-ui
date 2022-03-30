@@ -3,34 +3,26 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { capitalize, filter, map } from 'lodash';
+
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import { filter } from 'lodash';
 import {
 	Container,
 	Collapse,
 	Row,
 	IconButton,
-	Text,
 	Icon,
 	Padding,
 	Badge
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { useSelector } from 'react-redux';
-import { participantToString } from '../../../../../commons/utils';
-import { selectFolders } from '../../../../../store/folders-slice';
 
-const ContactText = styled(Text)`
-	&:not(:first-child) {
-		&:before {
-			content: '|';
-			padding: 0 4px;
-		}
-	}
-`;
-const MessageContactList: FC<{ message: any; folderId: string }> = ({
+import { useSelector } from 'react-redux';
+import { selectFolders } from '../../../../../store/folders-slice';
+import ContactNames from './contact-names';
+import { MailMessage } from '../../../../../types/mail-message';
+
+const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 	message,
 	folderId
 }): ReactElement => {
@@ -41,16 +33,25 @@ const MessageContactList: FC<{ message: any; folderId: string }> = ({
 		e.preventDefault();
 		setOpen((o) => !o);
 	}, []);
+	const folders = useSelector(selectFolders);
 
-	const accounts = useUserAccounts();
-	const toContacts = filter(message.participants, ['type', 't']);
-	const ccContacts = filter(message.participants, ['type', 'c']);
-	const bccContacts = filter(message.participants, ['type', 'b']);
+	const toContacts = useMemo(
+		() => filter(message.participants, ['type', 't']),
+		[message.participants]
+	);
+	const ccContacts = useMemo(
+		() => filter(message.participants, ['type', 'c']),
+		[message.participants]
+	);
+	const bccContacts = useMemo(
+		() => filter(message.participants, ['type', 'b']),
+		[message.participants]
+	);
 	const showCcBccContacts = useMemo(
 		() => ccContacts.length > 0 || bccContacts.length > 0,
 		[bccContacts.length, ccContacts.length]
 	);
-	const folders = useSelector(selectFolders);
+
 	const textReadValues = useMemo(() => {
 		if (typeof message.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read', size: 'small' };
@@ -58,7 +59,19 @@ const MessageContactList: FC<{ message: any; folderId: string }> = ({
 			? { color: 'text', weight: 'regular', badge: 'read', size: 'small' }
 			: { color: 'primary', weight: 'bold', badge: 'unread', size: 'medium' };
 	}, [message.read]);
-	const messageFolder = folders[message.parent.includes(':') ? folderId : message.parent];
+
+	const messageFolder = useMemo(
+		() => folders[message.parent.includes(':') ? folderId : message.parent],
+		[folderId, folders, message.parent]
+	);
+	const labelTo = useMemo(() => `${t('label.to', 'To')}: `, [t]);
+	const labelCc = useMemo(() => `${t('label.cc', 'CC')}: `, [t]);
+	const labelBcc = useMemo(() => `${t('label.bcc', 'BCC')}: `, [t]);
+
+	const showBadge = useMemo(
+		() => messageFolder?.name && messageFolder.id !== folderId,
+		[folderId, messageFolder]
+	);
 	return (
 		<Container crossAlignment="flex-start" mainAlignment="flex-start" padding={{ bottom: 'small' }}>
 			<Row
@@ -84,19 +97,17 @@ const MessageContactList: FC<{ message: any; folderId: string }> = ({
 					crossAlignment="center"
 					width={'calc(100% - 32px)'}
 				>
-					<Row>
-						{toContacts.length > 0 && (
-							<ContactText color="gray1" size="extrasmall" data-testid="ToParticipants">
-								{`${t('label.to', 'To')}: `}
-								{map(toContacts, (contact) =>
-									capitalize(participantToString(contact, t, accounts))
-								).join(', ')}
-							</ContactText>
-						)}
+					<Row
+						height="fit"
+						width={showBadge ? 'calc(100% - 60px)' : '100%'}
+						crossAlignment="flex-start"
+						mainAlignment="flex-start"
+					>
+						{toContacts.length > 0 && <ContactNames contacts={toContacts} label={labelTo} />}
 					</Row>
 					<Row>
 						{message.urgent && <Icon data-testid="UrgentIcon" color="error" icon="ArrowUpward" />}
-						{messageFolder?.name && messageFolder.id !== folderId && (
+						{showBadge && (
 							<Padding left="small">
 								<Badge
 									data-testid="FolderBadge"
@@ -113,26 +124,12 @@ const MessageContactList: FC<{ message: any; folderId: string }> = ({
 				<Container width="calc(100% - 24px)" crossAlignment="flex-start">
 					<Collapse orientation="vertical" crossSize="100%" open={open}>
 						<Container width="100%" padding={{ left: 'extrasmall' }}>
-							<Container height="fit" width="100%" crossAlignment="flex-start">
-								{ccContacts.length > 0 && (
-									<ContactText color="gray1" size="extrasmall" data-testid="CcParticipants">
-										{`${t('label.cc', 'CC')}: `}
-										{map(ccContacts, (contact) =>
-											capitalize(participantToString(contact, t, accounts))
-										).join(', ')}
-									</ContactText>
-								)}
-							</Container>
-							<Container height="fit" crossAlignment="flex-start" padding={{ top: 'extrasmall' }}>
-								{bccContacts.length > 0 && (
-									<ContactText color="gray1" size="extrasmall">
-										{`${t('label.bcc', 'BCC')}: `}
-										{map(bccContacts, (contact) =>
-											capitalize(participantToString(contact, t, accounts))
-										).join(', ')}
-									</ContactText>
-								)}
-							</Container>
+							<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
+								{ccContacts.length > 0 && <ContactNames contacts={ccContacts} label={labelCc} />}
+							</Row>
+							<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
+								{bccContacts.length > 0 && <ContactNames contacts={bccContacts} label={labelBcc} />}
+							</Row>
 						</Container>
 					</Collapse>
 				</Container>
