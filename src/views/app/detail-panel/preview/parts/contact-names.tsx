@@ -7,7 +7,7 @@
 import { capitalize, map } from 'lodash';
 import React, { FC, ReactElement } from 'react';
 import styled from 'styled-components';
-import { Tooltip } from '@zextras/carbonio-design-system';
+import { Tooltip, Row, Text } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
@@ -29,6 +29,15 @@ const ContactText = styled.span`
 			padding: 0 2px;
 		}
 	}
+`;
+const TextP = styled.p`
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 300;
+	font-size: 12px;
+	line-height: 18px;
+	display: flex;
+	align-items: center;
 `;
 const ContactName: FC<{ contacts: Participant[]; label: string }> = ({
 	contacts,

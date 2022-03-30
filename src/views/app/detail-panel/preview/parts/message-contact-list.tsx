@@ -13,7 +13,8 @@ import {
 	IconButton,
 	Icon,
 	Padding,
-	Badge
+	Badge,
+	Text
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
@@ -98,7 +99,6 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 					width={'calc(100% - 32px)'}
 				>
 					<Row
-						height="fit"
 						width={showBadge ? 'calc(100% - 60px)' : '100%'}
 						crossAlignment="flex-start"
 						mainAlignment="flex-start"
