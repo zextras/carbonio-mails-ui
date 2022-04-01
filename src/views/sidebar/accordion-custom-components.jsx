@@ -243,6 +243,7 @@ const setAccordionCustomComponent = ({
 					})
 				).then((res) => {
 					if (res.type.includes('fulfilled')) {
+						replaceHistory(`/folder/${activeFolder}`);
 						createSnackbar({
 							key: `edit`,
 							replace: true,
