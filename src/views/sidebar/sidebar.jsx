@@ -55,6 +55,7 @@ const SharesItem = ({ item }) => (
 		mainAlignment="center"
 		orientation="horizontal"
 		style={{ padding: '8px 16px' }}
+		data-testid="find-shares-button"
 	>
 		<Button
 			type="outlined"
@@ -155,7 +156,12 @@ const Sidebar = ({ expanded }) => {
 		const sharedItems = remove(accordionItems, 'owner');
 
 		const ShareLabel = (item) => (
-			<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
+			<Row
+				mainAlignment="flex-start"
+				padding={{ horizontal: 'large' }}
+				takeAvailableSpace
+				data-testid="share-label"
+			>
 				<Icon size="large" icon="ShareOutline" /> <Padding right="large" />
 				<AccordionItem {...item} height={40} />
 			</Row>

@@ -16,7 +16,7 @@ const DetailPanel = () => {
 	const { path } = useRouteMatch();
 	const { count } = useAppContext();
 	return (
-		<Container width="60%">
+		<Container width="60%" data-testid="third-panel">
 			<Switch>
 				<Route exact path={`${path}/folder/:folderId`}>
 					<SelectionInteractive count={count} />

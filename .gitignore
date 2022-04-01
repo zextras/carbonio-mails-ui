@@ -4,6 +4,7 @@
 /node_modules/
 /pkg/
 /build/
+/sdk/
 /dist/
 /.idea/workspace.xml
 /.idea/compiler.xml

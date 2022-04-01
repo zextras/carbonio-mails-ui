@@ -180,10 +180,10 @@ export const SyncDataHandler = () => {
 							}
 						}
 						if (notify.deleted) {
-							dispatch(handleDeletedFolders(notify.deleted?.id?.split?.(',')));
-							dispatch(handleNotifyDeletedConversations(notify.deleted?.id?.split?.(',')));
-							dispatch(handleDeletedMessages(notify.deleted?.id?.split?.(',')));
-							dispatch(handleDeletedMessagesInConversation(notify.deleted?.id?.split?.(',')));
+							dispatch(handleDeletedFolders(notify.deleted));
+							dispatch(handleNotifyDeletedConversations(notify.deleted));
+							dispatch(handleDeletedMessages(notify.deleted));
+							dispatch(handleDeletedMessagesInConversation(notify.deleted));
 						}
 						setSeq(notify.seq);
 					}
