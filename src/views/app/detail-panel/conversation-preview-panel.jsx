@@ -50,7 +50,7 @@ const MessagesComponent = ({ conversation }) => {
 		return map(convMessages, (message, index) =>
 			message ? (
 				<Padding
-					key={`${conversationId}-${message.id}-${message.date}`}
+					key={`${conversationId}-${message.id}-${message.date}-${index}`}
 					bottom="medium"
 					width="100%"
 				>
