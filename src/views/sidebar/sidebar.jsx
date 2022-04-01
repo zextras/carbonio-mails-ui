@@ -5,10 +5,10 @@
  */
 import React, { useState, useMemo, useContext, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { filter, map, remove, sortBy, reduce, uniqWith, isEqual } from 'lodash';
+import { filter, map, remove, sortBy, reduce, uniqWith, isEqual, includes } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import {
 	SnackbarManagerContext,
 	Accordion,
@@ -33,6 +33,7 @@ import { SharesModal } from './shares-modal';
 import ShareFolderModal from './share-folder-modal';
 import ModalWrapper from './commons/modal-wrapper';
 import setAccordionCustomComponent from './accordion-custom-components';
+import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
 
 const nest = (items, id, newFolder, setNewFolder, expanded, level) =>
 	map(
@@ -85,6 +86,7 @@ const SharesItem = ({ item }) => (
 const Sidebar = ({ expanded }) => {
 	const dispatch = useDispatch();
 	const allFoldersWithJunk = useSelector(selectFolders);
+
 	const allFolders = useMemo(() => {
 		const folders = map(allFoldersWithJunk, (folder) => {
 			if (folder.name === 'Junk') {
@@ -136,6 +138,7 @@ const Sidebar = ({ expanded }) => {
 	const [newFolder, setNewFolder] = useState();
 	const [t] = useTranslation();
 
+	const tagsAccordionItems = useGetTagsAccordion();
 	const [sidebarAccordions, modalAccordions] = useMemo(() => {
 		const nestedFolders = nest(folders, '1', newFolder, setNewFolder, expanded, 1);
 		const trashFolder = remove(nestedFolders, (c) => c.id === '3');
@@ -160,8 +163,25 @@ const Sidebar = ({ expanded }) => {
 				<AccordionItem {...item} height={40} />
 			</Row>
 		);
-		return [
-			accordionItems.concat({
+
+		const TagLabel = (item) => (
+			<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
+				<Icon size="large" icon="TagsMoreOutline" /> <Padding right="large" />
+				<AccordionItem {...item} height={40} />
+			</Row>
+		);
+
+		const requiredAccordions = accordionItems
+			.concat({
+				id: 'Tags',
+				label: t('label.tags', 'Tags'),
+				divider: true,
+				open: false,
+				onClick: (e) => e.stopPropagation(),
+				CustomComponent: TagLabel,
+				items: tagsAccordionItems
+			})
+			.concat({
 				id: 'shares',
 				label: t('label.shared_folders', 'Shared Folders'),
 				divider: true,
@@ -173,9 +193,9 @@ const Sidebar = ({ expanded }) => {
 					context: { dispatch, t, createModal },
 					CustomComponent: SharesItem
 				})
-			}),
-			accordions
-		];
+			});
+
+		return [requiredAccordions, accordions];
 	}, [
 		folders,
 		newFolder,
@@ -184,7 +204,8 @@ const Sidebar = ({ expanded }) => {
 		dispatch,
 		createModal,
 		createSnackbar,
-		history?.location?.pathname
+		history?.location?.pathname,
+		tagsAccordionItems
 	]);
 
 	const modalFolders = useMemo(() => sortBy(folders, (item) => Number(item.id)), [folders]);

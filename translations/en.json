@@ -201,9 +201,11 @@
         "choose_folder": "Choose folder",
         "create": "Create",
         "create_new_task": "Create New Task",
+        "create_tag": "Create Tag",
         "decline": "Decline",
         "delete": "Delete",
         "delete_permanently": "Delete Permanently",
+        "delete_tag": "Delete Tag",
         "destination_folder": "Destination Folder",
         "discard_changes": "DISCARD CHANGES",
         "disposal_threshold": "Disposal Threshold",
@@ -214,6 +216,9 @@
         "edit": "Edit",
         "edit_access": "Edit {{name}}'s access",
         "edit_folder_properties": "",
+        "edit_tag": "Edit Tag",
+        "edit_tag1": "Edit \"{{name}}\" tag",
+        "edit_tag_name": "Edit \"{{name}}\" tag",
         "email_perm_deleted": "E-mail permanently deleted",
         "empty": "Empty",
         "enable_message_disposal": "Enable Message Disposal",
@@ -304,6 +309,8 @@
         "size_smaller": "Size smaller than (MB)",
         "subject": "Subject",
         "tag": "Tag",
+        "tag_name": "Tag name",
+        "tags": "Tags",
         "to": "To",
         "type": "Type",
         "type_name_here": "Item name",
@@ -315,6 +322,9 @@
         "write": "Write"
     },
     "message": {
+        "delete_tag_message": "Are you sure to delete \"{{name}}\" Tag?\nDeleting it will be removed from every item affected by.",
+        "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
+        "delete_tag_message2": "Deleting it will be removed from every item affected by.",
         "email_saved_at": "E-mail saved as a draft at {{time}}",
         "invalid_search_message": "We didn't find any match",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
@@ -368,7 +378,10 @@
             "message_move": "Message successfully moved",
             "message_redirected": "The message has been redirected",
             "sending_mail_in_count": "Sending your message in {{count}} second",
-            "sending_mail_in_count_plural": "Sending your message in {{count}} seconds"
+            "sending_mail_in_count_plural": "Sending your message in {{count}} seconds",
+            "success": "Tag created succesfully",
+            "tag_created": "Tag {{name}} successfully created",
+            "tag_updated": "Tag successfully updated"
         }
     },
     "notification": {

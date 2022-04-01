@@ -4,8 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo, useCallback } from 'react';
-import { find, isEmpty } from 'lodash';
-import { useUserAccounts, useAppContext, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { find, isEmpty, reduce, includes } from 'lodash';
+import {
+	useUserAccounts,
+	useAppContext,
+	replaceHistory,
+	getTags,
+	ZIMBRA_STANDARD_COLORS
+} from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Container,
@@ -19,6 +25,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { selectFolder } from '../../../../store/conversations-slice';
 import { ItemAvatar } from './item-avatar';
@@ -78,7 +85,22 @@ export default function MessageListItem({
 	const messageFolder = useSelector((state) => selectFolder(state, item.parent));
 	const ids = useMemo(() => Object.keys(selectedItems ?? []), [selectedItems]);
 	const dispatch = useDispatch();
-
+	const tagsFromStore = getTags();
+	const tags = useMemo(
+		() =>
+			reduce(
+				tagsFromStore,
+				(acc, v) => {
+					if (includes(item.tags, v.name))
+						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[parseInt(v.color ?? '0', 10)].hex });
+					return acc;
+				},
+				[]
+			),
+		[item.tags, tagsFromStore]
+	);
+	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
+	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
 	const [date, participantsString] = useMemo(() => {
 		if (item) {
 			const sender = find(item.participants, ['type', 'f']);
@@ -205,6 +227,11 @@ export default function MessageListItem({
 							<Container orientation="horizontal" height="fit" width="fill">
 								<SenderName item={item} textValues={textReadValues} isFromSearch={false} />
 								<Row>
+									{item.tags && (
+										<Padding left="small">
+											<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+										</Padding>
+									)}
 									{item.attachment && (
 										<Padding left="small">
 											<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
