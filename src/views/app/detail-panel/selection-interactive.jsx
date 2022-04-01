@@ -90,7 +90,7 @@ export const SelectionInteractive = ({ count }) => {
 	);
 
 	return (
-		<Container background="gray5">
+		<Container background="gray5" data-testid="selection-interactive">
 			<Padding all="medium">
 				<Text
 					color="gray1"

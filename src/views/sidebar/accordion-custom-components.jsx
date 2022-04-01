@@ -363,6 +363,7 @@ const setAccordionCustomComponent = ({
 									height="fit"
 									padding={{ left: 'large' }}
 									takeAvailableSpace
+									data-testid={`folder-${folder.id}`}
 								>
 									<Icon size="large" icon={folderIconLabel} customColor={folderIconColor} />
 									<Padding right="large" />

@@ -134,6 +134,7 @@ const MessageList = () => {
 							}}
 							ItemComponent={MessageListItem}
 							onListBottom={() => loadMore(messages?.[messages.length - 1]?.date)}
+							data-testid={`message-list-${folderId}`}
 						/>
 					) : (
 						<Container>
