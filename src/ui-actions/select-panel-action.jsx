@@ -11,10 +11,11 @@ import {
 	SnackbarManagerContext,
 	ModalManagerContext
 } from '@zextras/carbonio-design-system';
-import { map, every, filter, some } from 'lodash';
+import { map, every, filter, some, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { FOLDERS, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
+
 import {
 	moveConversationToTrash,
 	setConversationsFlag,
@@ -31,6 +32,16 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 	const account = useUserAccount();
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);
 	const selectedConversation = filter(conversation, (convo) => ids.indexOf(convo.id) !== -1);
+	const tags = useTags();
+	const tagsToShow = reduce(
+		selectedConversation,
+		(acc, v) => {
+			console.log('vv acc:', acc);
+			console.log('vv v:', v);
+		},
+		[]
+	);
+	console.log('xxx selectedConversation:', selectedConversation);
 	const createModal = useContext(ModalManagerContext);
 
 	const showAddFlag = useMemo(() => {

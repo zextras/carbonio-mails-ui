@@ -9,7 +9,7 @@ import {
 	useUserAccounts,
 	useAppContext,
 	replaceHistory,
-	getTags,
+	useTags,
 	ZIMBRA_STANDARD_COLORS
 } from '@zextras/carbonio-shell-ui';
 import {
@@ -85,7 +85,7 @@ export default function MessageListItem({
 	const messageFolder = useSelector((state) => selectFolder(state, item.parent));
 	const ids = useMemo(() => Object.keys(selectedItems ?? []), [selectedItems]);
 	const dispatch = useDispatch();
-	const tagsFromStore = getTags();
+	const tagsFromStore = useTags();
 	const tags = useMemo(
 		() =>
 			reduce(

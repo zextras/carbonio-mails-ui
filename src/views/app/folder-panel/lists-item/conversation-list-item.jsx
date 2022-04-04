@@ -12,7 +12,7 @@ import {
 	useUserAccounts,
 	FOLDERS,
 	useUserSettings,
-	getTags,
+	useTags,
 	ZIMBRA_STANDARD_COLORS
 } from '@zextras/carbonio-shell-ui';
 import {
@@ -70,8 +70,8 @@ const CollapseElement = styled(Container)`
 
 export const RowInfo = ({ item, tags }) => {
 	const date = useMemo(() => getTimeLabel(item.date), [item.date]);
-	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
-	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
+	const tagIcon = useMemo(() => (tags?.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
+	const tagIconColor = useMemo(() => (tags?.length === 1 ? tags?.[0]?.color : undefined), [tags]);
 	return (
 		<Row>
 			{item.tags && (
@@ -118,7 +118,7 @@ export default function ConversationListItem({
 	const conversationStatus = useSelector((state) =>
 		selectConversationExpandedStatus(state, item.id)
 	);
-	const tagsFromStore = getTags();
+	const tagsFromStore = useTags();
 	const tags = useMemo(
 		() =>
 			reduce(

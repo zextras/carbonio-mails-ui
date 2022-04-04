@@ -469,16 +469,15 @@ export function deleteMessagePermanently({ ids, t, dispatch, createModal, desele
 	};
 }
 
-export const getActions = (
+export const getActions = ({
 	folderId,
 	t,
 	dispatch,
 	createSnackbar,
 	createModal,
 	deselectAll,
-	timezone,
 	account
-) => {
+}) => {
 	switch (folderId) {
 		case FOLDERS.TRASH:
 			return (message) => [

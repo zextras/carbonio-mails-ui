@@ -10,6 +10,7 @@ import { convAction, getMsgsForPrint } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
+import { applyTag, createTag } from './tag-actions';
 
 export function setConversationsFlag({ ids, value, t, dispatch }) {
 	return {
@@ -297,7 +298,7 @@ export function moveConversationToFolder({
 	};
 }
 
-export function deleteConversationPermanently(ids, t, dispatch, createModal, deselectAll) {
+export function deleteConversationPermanently({ ids, t, dispatch, createModal, deselectAll }) {
 	return {
 		id: 'delete-conversations',
 		icon: 'DeletePermanentlyOutline',
@@ -323,16 +324,16 @@ export function deleteConversationPermanently(ids, t, dispatch, createModal, des
 	};
 }
 
-export const getActions = (
+export const getActions = ({
 	folderId,
 	t,
 	dispatch,
 	createSnackbar,
 	createModal,
 	deselectAll,
-	timezone,
-	account
-) => {
+	account,
+	tags
+}) => {
 	switch (folderId) {
 		case FOLDERS.TRASH:
 			return (conversation) => [
@@ -500,6 +501,7 @@ export const getActions = (
 					setConversationsFlag({ ids: [conversation.id], value: conversation.flagged, t, dispatch })
 				],
 				[
+					applyTag({ t, createModal, tags, conversation, dispatch, folderId, deselectAll }),
 					setConversationsRead({
 						ids: [conversation.id],
 						value: conversation.read,

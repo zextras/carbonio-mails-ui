@@ -8,5 +8,6 @@
 export enum TagsActionsType {
 	NEW = 'new',
 	DELETE = 'delete',
-	EDIT = 'edit'
+	EDIT = 'edit',
+	Apply = 'apply'
 }

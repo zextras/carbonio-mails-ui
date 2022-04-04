@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { filter, map, remove, sortBy, reduce, uniqWith, isEqual, includes } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { FOLDERS, getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import {
 	SnackbarManagerContext,
 	Accordion,
@@ -18,7 +18,8 @@ import {
 	Row,
 	Icon,
 	AccordionItem,
-	Padding
+	Padding,
+	Dropdown
 } from '@zextras/carbonio-design-system';
 import CollapsedSideBarItems from './collapsed-sidebar-items';
 import { FolderActionsType } from '../../types/folder';
@@ -34,6 +35,9 @@ import ShareFolderModal from './share-folder-modal';
 import ModalWrapper from './commons/modal-wrapper';
 import setAccordionCustomComponent from './accordion-custom-components';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
+import { TagsActionsType } from '../../types/tags';
+import CreateUpdateTagModal from './parts/tags/create-update-tag-modal';
+import { createTag } from '../../ui-actions/tag-actions';
 
 const nest = (items, id, newFolder, setNewFolder, expanded, level) =>
 	map(
@@ -165,10 +169,12 @@ const Sidebar = ({ expanded }) => {
 		);
 
 		const TagLabel = (item) => (
-			<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
-				<Icon size="large" icon="TagsMoreOutline" /> <Padding right="large" />
-				<AccordionItem {...item} height={40} />
-			</Row>
+			<Dropdown contextMenu display="block" width="100%" items={[createTag({ t, createModal })]}>
+				<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
+					<Icon size="large" icon="TagsMoreOutline" /> <Padding right="large" />
+					<AccordionItem {...item} height={40} />
+				</Row>
+			</Dropdown>
 		);
 
 		const requiredAccordions = accordionItems
@@ -176,7 +182,7 @@ const Sidebar = ({ expanded }) => {
 				id: 'Tags',
 				label: t('label.tags', 'Tags'),
 				divider: true,
-				open: false,
+				open: tagsAccordionItems.length > 0,
 				onClick: (e) => e.stopPropagation(),
 				CustomComponent: TagLabel,
 				items: tagsAccordionItems

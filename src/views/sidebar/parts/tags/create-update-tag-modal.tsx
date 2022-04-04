@@ -7,13 +7,30 @@
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Padding, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { createTag, updateTag, renameTag } from '@zextras/carbonio-shell-ui';
+import { createTag, renameTag, changeTagColor } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../../commons/modal-footer';
 import { ModalHeader } from '../../commons/modal-header';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
 
-const CreateTagModal: FC<any> = ({ onClose, editMode = false, tag }): ReactElement => {
-	console.log('xxx tag:', tag);
+type ComponentProps = {
+	onClose: () => void;
+	editMode?: boolean;
+	tag?: {
+		CustomComponent: ReactElement;
+		active: boolean;
+		color: number;
+		divider: boolean;
+		id: string;
+		label: string;
+		name: string;
+		open: boolean;
+	};
+};
+const CreateUpdateTagModal: FC<ComponentProps> = ({
+	onClose,
+	editMode = false,
+	tag
+}): ReactElement => {
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const [t] = useTranslation();
 	const [name, setName] = useState(tag?.name || '');
@@ -31,8 +48,7 @@ const CreateTagModal: FC<any> = ({ onClose, editMode = false, tag }): ReactEleme
 	const disabled = useMemo(() => name === '', [name]);
 	const onCreate = useCallback(
 		() =>
-			createTag({ name, color }).then((res) => {
-				onClose();
+			createTag({ name, color }).then((res: any) => {
 				if (res.tag) {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
@@ -48,30 +64,42 @@ const CreateTagModal: FC<any> = ({ onClose, editMode = false, tag }): ReactEleme
 						hideButton: true
 					});
 				}
+				onClose();
 			}),
 		[name, color, onClose, createSnackbar, t]
 	);
 	const onUpdate = useCallback(() => {
-		updateTag({ id: `${tag.id}`, name, color: Number(color) }).then((res) => {
-			console.log('xxxx res:', res);
-			onClose();
-			if (res.action) {
+		Promise.all([renameTag(`${tag?.id}`, name), changeTagColor(`${tag?.id}`, Number(color))])
+			.then(() => {
+				onClose();
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				createSnackbar({
 					key: `update-tag`,
 					replace: true,
 					type: 'info',
-					label: t('messages.snackbar.tag_updated', {
-						name,
-						defaultValue: 'Tag successfully updated'
-					}),
+					label: t('messages.snackbar.tag_updated', 'Tag successfully updated'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
-			}
-		});
-	}, [color, createSnackbar, name, onClose, t, tag.id]);
+			})
+			.catch(() => {
+				onClose();
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				createSnackbar({
+					key: `update-tag-error`,
+					replace: true,
+					type: 'error',
+					label: t(
+						'messages.snackbar.tag_not_updated',
+						'Something went wrong, tag not updated. Please try again.'
+					),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			});
+	}, [color, createSnackbar, name, onClose, t, tag]);
 	return (
 		<>
 			<ModalHeader onClose={onClose} title={title} />
@@ -85,11 +113,11 @@ const CreateTagModal: FC<any> = ({ onClose, editMode = false, tag }): ReactEleme
 			/>
 			<ModalFooter
 				onConfirm={editMode ? onUpdate : onCreate}
-				label={editMode ? t('label.create', 'Create') : t('label.create', 'Create')}
+				label={editMode ? t('label.edit', 'edit') : t('label.create', 'Create')}
 				disabled={disabled}
 			/>
 		</>
 	);
 };
 
-export default CreateTagModal;
+export default CreateUpdateTagModal;
