@@ -7,7 +7,7 @@
 import { capitalize, map } from 'lodash';
 import React, { FC, ReactElement } from 'react';
 import styled from 'styled-components';
-import { Tooltip, Row, Text } from '@zextras/carbonio-design-system';
+import { Tooltip } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
@@ -30,6 +30,22 @@ const ContactText = styled.span`
 		}
 	}
 `;
+const ContactSubText = styled.span`
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 300;
+	font-size: 12px;
+	line-height: 18px;
+	display: flex;
+	align-items: center;
+	color: #828282;
+	&:not(:last-child) {
+		&:after {
+			content: ',';
+			padding: 0 2px;
+		}
+	}
+`;
 
 const ContactName: FC<{ contacts: Participant[]; label: string }> = ({
 	contacts,
@@ -40,13 +56,9 @@ const ContactName: FC<{ contacts: Participant[]; label: string }> = ({
 	return (
 		<>
 			<ContactText> {label} </ContactText>
-			{map(contacts, (contact, index) => (
-				<Tooltip label={contact.address}>
-					{Number(index) !== contacts.length - 1 ? (
-						<ContactText>{capitalize(participantToString(contact, t, accounts))},</ContactText>
-					) : (
-						<ContactText>{capitalize(participantToString(contact, t, accounts))}</ContactText>
-					)}
+			{map(contacts, (contact) => (
+				<Tooltip label={contact.address} key={contact.address}>
+					<ContactSubText>{capitalize(participantToString(contact, t, accounts))}</ContactSubText>
 				</Tooltip>
 			))}
 		</>
