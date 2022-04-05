@@ -266,7 +266,15 @@
         "show_all": "Tampilkan semua",
         "signature_required": "Informasi tanda tangan dibutuhkan.",
         "size_larger": "Ukuran lebih besar dari (MB)",
-        "size_smaller": "Ukuran lebih kecil dari (MB)"
+        "size_smaller": "Ukuran lebih kecil dari (MB)",
+        "draft": "Draf",
+        "send_email": "Kirim email",
+        "accept": "Terima",
+        "decline": "Tolak",
+        "folder_name": "Nama folder",
+        "select": "Pilih",
+        "share_with": "Bagikan dengan",
+        "forwarded": "Diteruskan"
     },
     "messages": {
         "permanent_delete_confirm": "Hapus secara permanen",

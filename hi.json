@@ -222,7 +222,15 @@
         "received_from_address": "इनसे प्राप्त (एड्रेस)",
         "select_signature": "कोई सिग्नेचर चुनें",
         "sent_to_address": "(एड्रेस) को भेजा गया",
-        "size_larger": "साइज़ (MB) से ज़्यादा है"
+        "size_larger": "साइज़ (MB) से ज़्यादा है",
+        "accept": "स्वीकार करें",
+        "decline": "अस्वीकृत",
+        "folder_name": "फोल्डर नाम",
+        "select": "सिलेक्ट करें",
+        "send_email": "ई-मेल भेजें",
+        "share_with": "इनके साथ शेयर",
+        "draft": "प्रालेख",
+        "forwarded": "फॉरवर्ड किया"
     },
     "messages": {
         "permanent_delete_confirm": "हमेशा के लिए डिलीट करें",

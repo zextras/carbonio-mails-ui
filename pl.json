@@ -396,7 +396,7 @@
         "permanent_delete_title": "Czy na pewno chcesz trwale usunąć ten element?"
     },
     "settings": {
-        "conv_is_participated": "w konwersacjach, w których uczestniczyłem/am",
+        "conv_is_participated": "w konwersacjach, w których uczestniczyłem",
         "label": {
             "conversation_ordering": "Kolejność konwersacji",
             "set_message_color": "Ustaw kolor wiadomości i konwersacji w zależności od koloru tagu.",
@@ -431,7 +431,7 @@
         "conditions": "Warunki",
         "contacts": "kontakty",
         "contains": "zawiera",
-        "conv_is_started": "w konwersacjach, które rozpocząłem/am",
+        "conv_is_started": "w konwersacjach, które rozpocząłem",
         "conv_sort_option": {
             "asc": "Od najstarszych",
             "desc": "Od najmłodszych"
