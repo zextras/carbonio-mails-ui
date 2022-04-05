@@ -14,6 +14,7 @@ import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
+import { applyTag } from './tag-actions';
 
 export function setMsgRead({
 	ids,
@@ -476,7 +477,8 @@ export const getActions = ({
 	createSnackbar,
 	createModal,
 	deselectAll,
-	account
+	account,
+	tags
 }) => {
 	switch (folderId) {
 		case FOLDERS.TRASH:
@@ -694,7 +696,8 @@ export const getActions = ({
 					forwardMsg({ id: message.id, folderId, t }),
 					editAsNewMsg({ id: message.id, folderId, t }),
 					sendDraft({ id: message.id, message, t, dispatch }),
-					redirectMsg({ id: message.id, t, createModal })
+					redirectMsg({ id: message.id, t, createModal }),
+					applyTag({ t, tags, conversation: message, folderId, deselectAll })
 				]
 			];
 	}

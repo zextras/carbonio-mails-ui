@@ -21,11 +21,14 @@ import {
 	Icon,
 	Padding,
 	Row,
-	ThemeContext
+	ThemeContext,
+	Tooltip,
+	Chip,
+	Dropdown
 } from '@zextras/carbonio-design-system';
-import { capitalize, find, isEmpty } from 'lodash';
+import { capitalize, find, includes, isEmpty, map, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { useTags, useUserAccounts, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import MailMsgPreviewActions from '../../../../../ui-actions/mail-message-preview-actions';
@@ -41,6 +44,11 @@ const HoverContainer = styled(Container)`
 	&:hover {
 		background: ${({ theme, background }): string => theme.palette[background].hover};
 	}
+`;
+
+const TagChip = styled(Chip)`
+	margin-left: ${({ theme }): string => theme.sizes.padding.extrasmall};
+	padding: 1px 8px !important;
 `;
 
 type PreviewHeaderProps = {
@@ -92,6 +100,53 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		textRef?.current?.clientWidth
 	]);
 
+	const tagsFromStore = useTags();
+	const tags = useMemo(
+		() =>
+			reduce(
+				tagsFromStore,
+				(acc: any, v) => {
+					if (includes(message.tags, v.name))
+						acc.push({
+							...v,
+							color: ZIMBRA_STANDARD_COLORS[parseInt(v.color ?? '0', 10)].hex,
+							label: v.name,
+							customComponent: (
+								<Container
+									orientation="horizontal"
+									mainAlignment="flext-start"
+									style={{ minWidth: '100px' }}
+								>
+									<Icon
+										icon="Tag"
+										color={ZIMBRA_STANDARD_COLORS[parseInt(v.color ?? '0', 10)].hex}
+									/>
+									<Padding left="small">
+										<Text>{v.name}</Text>
+									</Padding>
+								</Container>
+							)
+						});
+					return acc;
+				},
+				[]
+			),
+		[message.tags, tagsFromStore]
+	);
+	console.log('vvmm tags:', tags);
+	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
+	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
+	const tagLabel = useMemo(() => t('label.tags', 'Tags'), [t]);
+	const showMultiTagIcon = useMemo(() => message.tags?.length > 1, [message]);
+	const [showDropdown, setShowDropdown] = useState(false);
+	const onIconClick = useCallback((ev: { stopPropagation: () => void }): void => {
+		ev.stopPropagation();
+		setShowDropdown((o) => !o);
+	}, []);
+
+	const onDropdownClose = useCallback((): void => {
+		setShowDropdown(false);
+	}, []);
 	return (
 		<HoverContainer
 			height="fit"
@@ -166,6 +221,25 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 								}}
 								minWidth={_minWidth}
 							>
+								{message.tags && message.tags?.length === 1 && (
+									<Padding left="small">
+										<Tooltip label={message?.tags?.[0]} disabled={showMultiTagIcon}>
+											<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+										</Tooltip>
+									</Padding>
+								)}
+								{showMultiTagIcon && (
+									<Dropdown items={tags} forceOpen={showDropdown} onClose={onDropdownClose}>
+										<Padding left="small">
+											<Icon
+												data-testid="TagIcon"
+												icon={tagIcon}
+												onClick={onIconClick}
+												color={tagIconColor}
+											/>
+										</Padding>
+									</Dropdown>
+								)}
 								{message.attachment && attachments.length > 0 && (
 									<Padding left="small">
 										<Icon icon="AttachOutline" />
@@ -187,6 +261,27 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						</Container>
 					</Row>
 				</Container>
+				{message.tags && open && (
+					<Container
+						orientation="horizontal"
+						crossAlignment="flex-start"
+						mainAlignment="flex-start"
+						padding={{ left: 'large' }}
+					>
+						<Text color="secondary" size="extrasmall">
+							{tagLabel} :
+							{map(tags, (tag) => (
+								<TagChip
+									label={tag.name}
+									avatarBackground={tag.color}
+									background="gray2"
+									hasAvatar
+									avatarIcon="Tag"
+								/>
+							))}
+						</Text>
+					</Container>
+				)}
 			</Container>
 			<Container
 				orientation="horizontal"

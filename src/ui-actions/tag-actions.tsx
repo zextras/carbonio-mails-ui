@@ -316,7 +316,7 @@ export const applyTag = ({
 	t: TFunction;
 	conversation: any;
 	tags: TagsFromStoreType;
-}): ReturnType => {
+}): { id: string; items: TagType[]; customComponent: ReactElement } => {
 	const tagItem = reduce(
 		tags,
 		(acc, v) => {
@@ -336,9 +336,19 @@ export const applyTag = ({
 
 	return {
 		id: TagsActionsType.Apply,
-		icon: 'TagsMoreOutline',
-		label: t('label.edit_tags', 'Edit Tags'),
-		items: tagItem
+		items: tagItem,
+		customComponent: (
+			<Row takeAvailableSpace mainAlignment="flex-start">
+				<Padding right="small">
+					<Icon icon="TagsMoreOutline" />
+				</Padding>
+				<Row takeAvailableSpace mainAlignment="space-between">
+					<Padding right="small">
+						<Text size="small">{t('label.tags', 'Tags')}</Text>
+					</Padding>
+				</Row>
+			</Row>
+		)
 	};
 };
 
