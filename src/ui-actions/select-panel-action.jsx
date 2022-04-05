@@ -11,7 +11,7 @@ import {
 	SnackbarManagerContext,
 	ModalManagerContext
 } from '@zextras/carbonio-design-system';
-import { map, every, filter, some, reduce } from 'lodash';
+import { map, every, filter, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { FOLDERS, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
@@ -24,6 +24,7 @@ import {
 	deleteConversationPermanently,
 	printConversation
 } from './conversation-actions';
+import { applyMultiTag } from './tag-actions';
 
 export default function SelectPanelActions({ conversation, folderId, selectedIds, deselectAll }) {
 	const [t] = useTranslation();
@@ -33,15 +34,7 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);
 	const selectedConversation = filter(conversation, (convo) => ids.indexOf(convo.id) !== -1);
 	const tags = useTags();
-	const tagsToShow = reduce(
-		selectedConversation,
-		(acc, v) => {
-			console.log('vv acc:', acc);
-			console.log('vv v:', v);
-		},
-		[]
-	);
-	console.log('xxx selectedConversation:', selectedConversation);
+
 	const createModal = useContext(ModalManagerContext);
 
 	const showAddFlag = useMemo(() => {
@@ -138,7 +131,8 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						createModal,
 						deselectAll
 					}),
-					printConversation({ t, conversation: selectedConversation, account })
+					printConversation({ t, conversation: selectedConversation, account }),
+					applyMultiTag({ ids, tags, conversations: selectedConversation, t })
 					// markSpam
 					// reply
 					// replyAll
@@ -197,7 +191,8 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 		showAddFlag,
 		createModal,
 		selectedConversation,
-		account
+		account,
+		tags
 	]);
 
 	return (
@@ -243,7 +238,8 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 					click: (ev) => {
 						if (ev) ev.preventDefault();
 						action.click();
-					}
+					},
+					items: action.items
 				}))}
 			>
 				<IconButton

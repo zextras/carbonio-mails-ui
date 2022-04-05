@@ -10,7 +10,7 @@ import { convAction, getMsgsForPrint } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
-import { applyTag, createTag } from './tag-actions';
+import { applyTag } from './tag-actions';
 
 export function setConversationsFlag({ ids, value, t, dispatch }) {
 	return {
