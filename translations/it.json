@@ -200,7 +200,18 @@
         "from_identity": "Da: {{identity}}",
         "new_email": "Nuova E-mail",
         "send_email": "Invia e-mail",
-        "show_quoted_text": "Mostra testo citato"
+        "show_quoted_text": "Mostra testo citato",
+        "accept": "Accetta",
+        "decline": "Rifiuta",
+        "folder_name": "Nome cartella",
+        "select": "Seleziona",
+        "share_with": "Condividi con",
+        "by_conversation": "Per Conversazione",
+        "by_message": "Per Messaggio",
+        "destination_folder": "Cartella di Destinazione",
+        "notify_organizer": "Notifica l'Organizzatore",
+        "select_color": "Seleziona Colore",
+        "set_default_signatures": "Imposta Firma Predefinita"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",
@@ -461,7 +472,8 @@
             "message_selection": "Selezione Messaggio",
             "set_message_color": "Imposta il colore di messaggi e conversazioni selezionando il colore del tag.",
             "display_messages": "Visualizza Messaggi",
-            "default_mail_search": "Ricerca Predefinita dei messaggi"
+            "default_mail_search": "Ricerca Predefinita dei messaggi",
+            "visualization_options": "Opzioni di Visualizzazione"
         },
         "new_mail_optn": {
             "manually": "Manualmente",

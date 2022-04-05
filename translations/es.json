@@ -282,7 +282,13 @@
         "attachement_unknown": "Desconocido <{{mimeType}}>",
         "draft": "Borrador",
         "forwarded": "Reenviado",
-        "replied": "Respondido"
+        "replied": "Respondido",
+        "send_email": "Enviar correo",
+        "decline": "Rechazar",
+        "folder_name": "Nombre de la carpeta",
+        "select": "Seleccionar",
+        "share_with": "Compartir con",
+        "accept": "Aceptar"
     },
     "messages": {
         "permanent_delete_confirm": "Eliminar permanentemente",

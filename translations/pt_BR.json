@@ -258,7 +258,15 @@
         "show_all": "Mostrar tudo",
         "size_larger": "Tamanho maior que (MB)",
         "size_smaller": "Tamanho menor que (MB)",
-        "activate_selection_mode": "Ativar modo de seleção"
+        "activate_selection_mode": "Ativar modo de seleção",
+        "draft": "Rascunho",
+        "folder_name": "Nome da pasta",
+        "select": "Selecionar",
+        "send_email": "Enviar e-mail",
+        "share_with": "Compartilhar com",
+        "forwarded": "Encaminhado",
+        "accept": "Aceitar",
+        "decline": "Recusar"
     },
     "of": "de",
     "owner": "Proprietário",

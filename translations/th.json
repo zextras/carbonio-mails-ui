@@ -269,7 +269,16 @@
         "signature_required": "จำเป็นต้องมีข้อมูลลายเซ็น",
         "size_larger": "ขนาดใหญ่กว่า (MB)",
         "size_smaller": "ขนาดเล็กกว่า (MB)",
-        "addresses_not_accepted": "ปฏิเสธที่อยู่อย่างน้อยหนึ่งที่อยู่ ที่อยู่ที่ถูกปฏิเสธ:"
+        "addresses_not_accepted": "ปฏิเสธที่อยู่อย่างน้อยหนึ่งที่อยู่ ที่อยู่ที่ถูกปฏิเสธ:",
+        "decline": "ปฏิเสธ",
+        "folder_name": "ชื่อโฟลเดอร์",
+        "select": "เลือก",
+        "send_email": "ส่งอีเมล",
+        "share_with": "แชร์กับ",
+        "draft": "ร่างจดหมาย",
+        "forwarded": "ส่งต่อแล้ว",
+        "accept": "ยอมรับ",
+        "select_color": "เลือกสี"
     },
     "messages": {
         "permanent_delete_confirm": "ลบอย่างถาวร",
