@@ -15,7 +15,7 @@ import {
 	selectConversationsArray,
 	selectCurrentFolderExpandedStatus
 } from '../../../store/conversations-slice';
-import { searchConv } from '../../../store/actions';
+import { getConv, searchConv } from '../../../store/actions';
 import MailPreview from './preview/mail-preview';
 import { selectMessages } from '../../../store/messages-slice';
 
@@ -82,6 +82,11 @@ export default function ConversationPreviewPanel() {
 		[conversationId, conversations]
 	);
 
+	useEffect(() => {
+		if (!conversation) {
+			dispatch(getConv({ conversationId }));
+		}
+	}, [conversation, dispatch, conversationId]);
 	useEffect(() => {
 		if (conversationsStatus !== 'complete' && conversationsStatus !== 'pending') {
 			dispatch(searchConv({ conversationId, fetch: 'all', folderId }));
