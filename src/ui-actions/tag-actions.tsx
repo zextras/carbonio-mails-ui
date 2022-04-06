@@ -344,7 +344,7 @@ export const applyTag = ({
 				</Padding>
 				<Row takeAvailableSpace mainAlignment="space-between">
 					<Padding right="small">
-						<Text size="small">{t('label.tags', 'Tags')}</Text>
+						<Text>{t('label.tags', 'Tags')}</Text>
 					</Padding>
 				</Row>
 			</Row>
