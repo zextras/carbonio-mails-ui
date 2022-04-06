@@ -7,7 +7,7 @@
 import { capitalize, map } from 'lodash';
 import React, { FC, ReactElement } from 'react';
 import styled from 'styled-components';
-import { Tooltip, Text, Padding } from '@zextras/carbonio-design-system';
+import { Tooltip, Text } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
