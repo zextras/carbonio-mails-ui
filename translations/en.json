@@ -309,6 +309,7 @@
         "size": "Size",
         "size_larger": "Size larger than (MB)",
         "size_smaller": "Size smaller than (MB)",
+        "spam": "Spam",
         "subject": "Subject",
         "tag": "Tag",
         "tag_name": "Tag name",

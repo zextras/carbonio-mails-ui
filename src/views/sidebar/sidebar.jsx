@@ -93,7 +93,7 @@ const Sidebar = ({ expanded }) => {
 
 	const allFolders = useMemo(() => {
 		const folders = map(allFoldersWithJunk, (folder) => {
-			if (folder.name === 'Junk') {
+			if (folder.id === FOLDERS.SPAM) {
 				return { ...folder, name: 'Spam' };
 			}
 			return folder;

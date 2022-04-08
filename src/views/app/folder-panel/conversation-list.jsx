@@ -140,7 +140,11 @@ const ConversationList = () => {
 					deselectAll={deselectAll}
 				/>
 			) : (
-				<Breadcrumbs folderPath={folder?.path.substring(1)} itemsCount={folder?.itemsCount} />
+				<Breadcrumbs
+					folderPath={folder?.path.substring(1)}
+					folderId={folderId}
+					itemsCount={folder?.itemsCount}
+				/>
 			)}
 			{conversationListStatus === 'complete' ? (
 				<>
