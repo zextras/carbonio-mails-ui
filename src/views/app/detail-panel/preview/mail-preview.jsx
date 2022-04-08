@@ -422,7 +422,10 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 	// already open that message will not be expanded
 	useEffect(() => {
 		setOpen(expanded);
-	}, [expanded]);
+		if (!message.isComplete) {
+			dispatch(getMsg({ msgId: message.id }));
+		}
+	}, [dispatch, expanded, message.id, message.isComplete]);
 
 	const showAppointmentInvite = useMemo(
 		() =>
