@@ -270,7 +270,13 @@
         "sent_to_address": "Gesendet an (Adresse)",
         "forwarded": "Weitergeleitet",
         "send_email": "E-Mail senden",
-        "draft": "Entwurf"
+        "draft": "Entwurf",
+        "app_name": "Mails",
+        "folder_name": "Ordnernname",
+        "add_task": "Wenn Sie eine Notiz machen müssen, können Sie eine Aufgabe zu Ihrer TO DO LIST hinzufügen",
+        "accept": "Akzeptieren",
+        "select_color": "Farbe auswählen",
+        "share_with": "Teilen mit"
     },
     "share": {
         "options": {
