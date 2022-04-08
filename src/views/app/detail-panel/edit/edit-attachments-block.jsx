@@ -280,7 +280,7 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 						{t('label.remove', {
 							count: editor.attachmentFiles.length,
 							defaultValue: 'Remove',
-							defaultValue_plural: 'Remove all'
+							defaultValuePlural: 'Remove all {{count}}'
 						})}
 					</Link>
 				</Row>

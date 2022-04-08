@@ -18,6 +18,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
+import { getAction } from '@zextras/carbonio-shell-ui';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { MailMessagePart } from '../../../../types/mail-message';
 import { EditorAttachmentFiles } from '../../../../types/mails-editor';
@@ -101,7 +102,17 @@ const AttachmentExtension = styled(Text)`
 	margin-right: ${({ theme }) => theme.sizes.padding.small};
 `;
 
-function Attachment({ filename, size, link, message, part, iconColors, att }) {
+function Attachment({
+	filename,
+	size,
+	link,
+	message,
+	part,
+	iconColors,
+	att,
+	uploadIntegration,
+	isUploadIntegrationAvailable
+}) {
 	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
@@ -160,7 +171,21 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 				</Row>
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
-				<AttachmentHoverBarContainer>
+				<AttachmentHoverBarContainer orientation="horizontal">
+					{isUploadIntegrationAvailable && (
+						<Tooltip
+							key={uploadIntegration.id}
+							label={t('label.upload_to_files', {
+								defaultValue: 'Upload to Files'
+							})}
+						>
+							<IconButton
+								size="medium"
+								icon={uploadIntegration.icon}
+								onClick={uploadIntegration.click}
+							/>
+						</Tooltip>
+					)}
 					<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
 						<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
 					</Tooltip>
@@ -216,6 +241,31 @@ export default function AttachmentsBlock({ message }) {
 		[attachments, theme]
 	);
 
+	const confirmAction = (nodes) => {
+		console.clear();
+		console.log(nodes[0]);
+	};
+
+	const isAValidDestination = (node) => node.permissions?.can_write_file;
+
+	const actionTarget = {
+		title: 'Select destination folder',
+		confirmAction,
+		confirmLabel: 'Select',
+		disabledTooltip: 'This node is not a valid destination',
+		allowFiles: false,
+		allowFolders: true,
+		isValidSelection: isAValidDestination,
+		canSelectOpenedFolder: true,
+		maxSelection: 1
+	};
+
+	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
+		'carbonio_files_action',
+		'files-select-nodes',
+		actionTarget
+	);
+
 	return (
 		attachmentsCount > 0 && (
 			<Container crossAlignment="flex-start" padding={{ horizontal: 'medium' }}>
@@ -230,6 +280,8 @@ export default function AttachmentsBlock({ message }) {
 							part={att.name}
 							iconColors={iconColors}
 							att={att}
+							isUploadIntegrationAvailable={isUploadIntegrationAvailable}
+							uploadIntegration={uploadIntegration}
 						/>
 					))}
 				</Container>
@@ -277,6 +329,13 @@ export default function AttachmentsBlock({ message }) {
 							defaultValue_plural: 'Downloads'
 						})}
 					</Link>
+					{isUploadIntegrationAvailable && (
+						<Link size="medium" onClick={uploadIntegration.click} style={{ paddingLeft: '8px' }}>
+							{t('label.upload_to_files', {
+								defaultValue: 'Upload to Files'
+							})}
+						</Link>
+					)}
 				</AttachmentsActions>
 			</Container>
 		)
