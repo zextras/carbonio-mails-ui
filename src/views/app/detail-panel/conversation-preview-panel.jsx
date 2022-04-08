@@ -49,11 +49,7 @@ const MessagesComponent = ({ conversation }) => {
 	if (conversation && conversationStatus === 'complete') {
 		return map(convMessages, (message, index) =>
 			message ? (
-				<Padding
-					key={`${conversationId}-${message.id}-${message.date}`}
-					bottom="medium"
-					width="100%"
-				>
+				<Padding key={`${conversationId}-${message.id}`} bottom="medium" width="100%">
 					<MailPreview
 						message={message}
 						expanded={expand(message, index)}

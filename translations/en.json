@@ -191,6 +191,7 @@
         "automatically_delete_duplicates": "Automatically delete duplicate copies of the same message when received",
         "back": "Back",
         "bcc": "Bcc",
+        "behalf_of": "behalf of",
         "by_conversation": "By Conversation",
         "by_message": "By Message",
         "calendar_color": "Item color",
