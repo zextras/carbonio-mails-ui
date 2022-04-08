@@ -211,7 +211,11 @@
         "destination_folder": "Cartella di Destinazione",
         "notify_organizer": "Notifica l'Organizzatore",
         "select_color": "Seleziona Colore",
-        "set_default_signatures": "Imposta Firma Predefinita"
+        "set_default_signatures": "Imposta Firma Predefinita",
+        "app_name": "Mail",
+        "add_task": "Se devi prendere degli appunti, puoi aggiungere l'attività alle tua LISTA DELLE ATTIVITÀ",
+        "create_new_task": "Crea Nuova Attività",
+        "retention_range": "Periodo di Retention"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",
@@ -439,7 +443,7 @@
                 "admin": "Amministratore",
                 "manager": "Manager",
                 "none": "Nessuno",
-                "viewer": "Vista"
+                "viewer": "Visualizzatore"
             }
         },
         "recipients_address": "Indirizzi e-mail dei destinatari",

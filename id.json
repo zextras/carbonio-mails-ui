@@ -159,9 +159,9 @@
         "advance_filters": "{{count}} Filter tingkat lanjut",
         "add_custom_message": "Tambahkan pesan kustom",
         "allowed_actions": "Tindakan yang diperbolehkan",
-        "bcc": "BCC",
+        "bcc": "Bcc",
         "calendar_color": "Warna item",
-        "cc": "CC",
+        "cc": "Cc",
         "edit_access": "Edit akses {{name}}",
         "edit_folder_properties": "Edit properti {{name}}",
         "draft_folder": "[DRAF]",
@@ -244,7 +244,7 @@
         "discard_changes": "HAPUS PERUBAHAN",
         "activate_selection_mode": "Aktifkan mode pemilihan",
         "hide": "Sembunyikan",
-        "loading_results": "Memuat Hasil...",
+        "loading_results": "Memuat Hasil…",
         "mail_folder": "Folder email",
         "received_from_address": "Diterima dari (alamat)",
         "results_for": "Hasil untuk: ",
@@ -274,7 +274,26 @@
         "folder_name": "Nama folder",
         "select": "Pilih",
         "share_with": "Bagikan dengan",
-        "forwarded": "Diteruskan"
+        "forwarded": "Diteruskan",
+        "cc_bcc": "Cc Bcc",
+        "app_name": "Email",
+        "notify_organizer": "Beri Tahu Penyelenggara",
+        "attachement_unknown": "Tidak diketahui <{{mimeType}}>",
+        "replied": "Dibalas",
+        "add_task": "Jika perlu mencatat, Anda bisa menambahkan tugas ke DAFTAR TUGAS",
+        "by_conversation": "Berdasarkan Percakapan",
+        "by_message": "Berdasarkan Pesan",
+        "create_new_task": "Buat Tugas Baru",
+        "destination_folder": "Folder Tujuan",
+        "disposal_threshold": "Ambang Pembuangan",
+        "enable_message_disposal": "Aktifkan Pembuangan Pesan",
+        "enable_message_retention": "Aktifkan Penyimpanan Pesan",
+        "from_identity": "Dari: {{identity}}",
+        "new_email": "Email Baru",
+        "select_color": "Pilih Warna",
+        "retention_range": "Rentang Penyimpanan",
+        "set_default_signatures": "Atur Tanda Tangan Default",
+        "show_quoted_text": "Tampilkan teks kutipan"
     },
     "messages": {
         "permanent_delete_confirm": "Hapus secara permanen",
@@ -418,7 +437,8 @@
             "display_messages": "Menampilkan Pesan",
             "message_color": "Warna Pesan",
             "message_selection": "Pilihan Pesan",
-            "set_message_color": "Atur warna pesan dan percakapan menurut warna tag."
+            "set_message_color": "Atur warna pesan dan percakapan menurut warna tag.",
+            "visualization_options": "Opsi Visualisasi"
         },
         "msg_from_optn": {
             "discard": "Hapus pesan secara otomatis",
@@ -559,7 +579,8 @@
             },
             "settings_saved": "Hasil edit disimpan dengan benar"
         },
-        "invalid_search_message": "Kami tidak menemukan kecocokan"
+        "invalid_search_message": "Kami tidak menemukan kecocokan",
+        "email_saved_at": "Email disimpan sebagai draf pada {{time}}"
     },
     "private": "Pribadi",
     "remove_from_this_list": "Hapus dari daftar ini",

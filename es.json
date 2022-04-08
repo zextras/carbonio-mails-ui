@@ -173,9 +173,9 @@
         "advance_filters_plural": "{{count}} filtros avanzados",
         "allowed_actions": "Acciones permitidas",
         "automatically_delete_duplicates": "Borrar copias duplicadas de un mismo mensaje cuando se reciban",
-        "bcc": "BCC",
+        "bcc": "Bcc",
         "calendar_color": "Color del elemento",
-        "cc": "CC",
+        "cc": "Cc",
         "draft_folder": "[BORRADOR]",
         "edit_folder_properties": "Editar propiedades del {{name}}",
         "filter_user": "Filtrar usuarios",
@@ -288,7 +288,24 @@
         "folder_name": "Nombre de la carpeta",
         "select": "Seleccionar",
         "share_with": "Compartir con",
-        "accept": "Aceptar"
+        "accept": "Aceptar",
+        "cc_bcc": "Cc Bcc",
+        "app_name": "Correos",
+        "from_identity": "De: {{identity}}",
+        "new_email": "Nuevo E-mail",
+        "show_quoted_text": "Mostrar texto citado",
+        "select_color": "Seleccionar color",
+        "add_task": "Si necesitas tomar una nota, puedes añadirla a tu LISTA DE QUEHACERES",
+        "by_conversation": "Por conversación",
+        "by_message": "Por mensaje",
+        "create_new_task": "Crear nueva tarea",
+        "destination_folder": "Carpeta de destino",
+        "disposal_threshold": "Umbral de eliminación",
+        "enable_message_disposal": "Activar eliminación del mensaje",
+        "enable_message_retention": "Activar retención del mensaje",
+        "notify_organizer": "Notificar al organizador",
+        "retention_range": "Rango de retención",
+        "set_default_signatures": "Establecer firmas por defecto"
     },
     "messages": {
         "permanent_delete_confirm": "Eliminar permanentemente",
@@ -431,7 +448,8 @@
         },
         "sending_mail_to_self": "parece que vas a enviarte un correo a ti mismo",
         "search_hints": "Sugerencias de búsqueda sobre las que tenemos que discutir",
-        "invalid_search_message": "No encontramos ninguna coincidencia"
+        "invalid_search_message": "No encontramos ninguna coincidencia",
+        "email_saved_at": "E-mail guardado como borrador a las {{time}}"
     },
     "snackbar": {
         "error": "Algo fue mal, por favor, prueba de nuevo",
@@ -487,7 +505,8 @@
             "display_messages": "Mostrando mensajes",
             "message_color": "Color del mensaje",
             "message_selection": "Selección de mensajes",
-            "set_message_color": "Establecer el color de los mensajes y las conversaciones según el color de la etiqueta."
+            "set_message_color": "Establecer el color de los mensajes y las conversaciones según el color de la etiqueta.",
+            "visualization_options": "Opciones de visualización"
         },
         "msg_from_optn": {
             "discard": "Descartar mensaje automáticamente",

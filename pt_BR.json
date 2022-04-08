@@ -266,7 +266,8 @@
         "share_with": "Compartilhar com",
         "forwarded": "Encaminhado",
         "accept": "Aceitar",
-        "decline": "Recusar"
+        "decline": "Recusar",
+        "select_color": "Selecionar Cor"
     },
     "of": "de",
     "owner": "Proprietário",
@@ -703,7 +704,7 @@
         "search_description1": "Ou selecione \"Filtros Avançados\" para refinar sua busca.",
         "search_list_title1": "Parece que não existem resultados. Continue buscando!",
         "search_title4": "Selecione um ou mais resultados para realizar ações ou exibir os detalhes.",
-        "draft_title1": "Salvar um e-mail como rascunho te permite guardar as mensagens que você gostaria de enviar depois."
+        "draft_title1": "Salvar um e-mail como rascunho te permite guardar as mensagens que você gostaria de enviar mais tarde."
     },
     "board": {
         "show": "Exibir painel"
