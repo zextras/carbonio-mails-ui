@@ -226,7 +226,23 @@
         "set_default_signatures": "Установить подписи по умолчанию",
         "show_quoted_text": "Показать цитируемый текст",
         "from_identity": "От:{{identity}}",
-        "cc_bcc": "Cc Bcc"
+        "cc_bcc": "Cc Bcc",
+        "folder_name": "Имя папки",
+        "select_color": "Выбрать Цвет",
+        "add_task": "Если вам нужно сделать заметку, вы можете добавить задачу в свой TODO LIST.",
+        "enable_message_retention": "Включить хранение сообщения",
+        "share_with": "Поделиться с",
+        "accept": "Принять",
+        "by_conversation": "По разговорам",
+        "by_message": "По сообщениям",
+        "create_new_task": "Создать новую задачу",
+        "decline": "Отклонить",
+        "destination_folder": "Папка назначения",
+        "disposal_threshold": "Порог утилизации",
+        "enable_message_disposal": "Включить удаление сообщений",
+        "notify_organizer": "Уведомить организатора",
+        "select": "Выбрать",
+        "retention_range": "Диапазон хранения"
     },
     "header": {
         "warning": "Предупреждение",
@@ -438,7 +454,8 @@
             "message_color": "Цвет сообщения",
             "message_selection": "Выбор Сообщения",
             "set_message_color": "Установите цвет сообщений и разговоров в соответствии с цветом тега.",
-            "conversation_ordering": "Упорядочивание разговора"
+            "conversation_ordering": "Упорядочивание разговора",
+            "visualization_options": "Параметры визуализации"
         },
         "msg_from_optn": {
             "discard": "Отменить сообщение автоматически",

@@ -15,7 +15,7 @@ import {
 	selectConversationsArray,
 	selectCurrentFolderExpandedStatus
 } from '../../../store/conversations-slice';
-import { searchConv } from '../../../store/actions';
+import { getConv, searchConv } from '../../../store/actions';
 import MailPreview from './preview/mail-preview';
 import { selectMessages } from '../../../store/messages-slice';
 
@@ -49,11 +49,7 @@ const MessagesComponent = ({ conversation }) => {
 	if (conversation && conversationStatus === 'complete') {
 		return map(convMessages, (message, index) =>
 			message ? (
-				<Padding
-					key={`${conversationId}-${message.id}-${message.date}-${index}`}
-					bottom="medium"
-					width="100%"
-				>
+				<Padding key={`${conversationId}-${message.id}`} bottom="medium" width="100%">
 					<MailPreview
 						message={message}
 						expanded={expand(message, index)}
@@ -82,6 +78,11 @@ export default function ConversationPreviewPanel() {
 		[conversationId, conversations]
 	);
 
+	useEffect(() => {
+		if (!conversation) {
+			dispatch(getConv({ conversationId }));
+		}
+	}, [conversation, dispatch, conversationId]);
 	useEffect(() => {
 		if (conversationsStatus !== 'complete' && conversationsStatus !== 'pending') {
 			dispatch(searchConv({ conversationId, fetch: 'all', folderId }));

@@ -7,30 +7,21 @@
 import { capitalize, map } from 'lodash';
 import React, { FC, ReactElement } from 'react';
 import styled from 'styled-components';
-import { Tooltip, Row, Text } from '@zextras/carbonio-design-system';
+import { Tooltip, Text } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { participantToString } from '../../../../../commons/utils';
 import { Participant } from '../../../../../types/participant';
 
-const ContactText = styled.span`
-	font-family: 'Roboto';
-	font-style: normal;
-	font-weight: 300;
-	font-size: 12px;
-	line-height: 18px;
-	display: flex;
-	align-items: center;
-	color: #828282;
-	&:not(:first-child) {
-		&:before {
-			content: '';
-			padding: 0 2px;
+const ContactSubText = styled(Text)`
+	padding: 0 2px;
+	&:not(:last-child) {
+		&:after {
+			content: ',';
 		}
 	}
 `;
-
 const ContactName: FC<{ contacts: Participant[]; label: string }> = ({
 	contacts,
 	label
@@ -39,14 +30,14 @@ const ContactName: FC<{ contacts: Participant[]; label: string }> = ({
 	const [t] = useTranslation();
 	return (
 		<>
-			<ContactText> {label} </ContactText>
-			{map(contacts, (contact, index) => (
-				<Tooltip label={contact.address}>
-					{Number(index) !== contacts.length - 1 ? (
-						<ContactText>{capitalize(participantToString(contact, t, accounts))},</ContactText>
-					) : (
-						<ContactText>{capitalize(participantToString(contact, t, accounts))}</ContactText>
-					)}
+			<Text color="secondary" size="small">
+				{label}
+			</Text>
+			{map(contacts, (contact) => (
+				<Tooltip label={contact.address} key={contact.address}>
+					<ContactSubText color="secondary" size="small">
+						{capitalize(participantToString(contact, t, accounts))}
+					</ContactSubText>
 				</Tooltip>
 			))}
 		</>
