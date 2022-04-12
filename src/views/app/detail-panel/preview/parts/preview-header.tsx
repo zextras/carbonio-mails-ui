@@ -109,7 +109,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 					if (includes(message.tags, v.name))
 						acc.push({
 							...v,
-							color: ZIMBRA_STANDARD_COLORS[parseInt(v.color ?? '0', 10)].hex,
+							color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex,
 							label: v.name,
 							customComponent: (
 								<Container
@@ -117,10 +117,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 									mainAlignment="flext-start"
 									style={{ minWidth: '100px' }}
 								>
-									<Icon
-										icon="Tag"
-										color={ZIMBRA_STANDARD_COLORS[parseInt(v.color ?? '0', 10)].hex}
-									/>
+									<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex} />
 									<Padding left="small">
 										<Text>{v.name}</Text>
 									</Padding>
