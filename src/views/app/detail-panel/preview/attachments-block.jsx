@@ -21,9 +21,9 @@ import {
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { MailMessagePart } from '../../../../types/mail-message';
 import { EditorAttachmentFiles } from '../../../../types/mails-editor';
+import { FilePreview } from './file-preview';
 
 const AttachmentsActions = styled(Row)``;
-
 function findAttachments(parts, acc) {
 	return reduce(
 		parts,
@@ -107,7 +107,6 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 	const [t] = useTranslation();
 	const inputRef = useRef();
 	const inputRef2 = useRef();
-
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
 			// eslint-disable-next-line no-param-reassign
@@ -160,7 +159,8 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 				</Row>
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
-				<AttachmentHoverBarContainer>
+				<AttachmentHoverBarContainer orientation="horizontal">
+					<FilePreview att={att} link={link} />
 					<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
 						<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
 					</Tooltip>
