@@ -38,6 +38,7 @@ import { setConversationsRead } from '../../../../ui-actions/conversation-action
 import { selectMessages } from '../../../../store/messages-slice';
 import { SenderName } from './sender-name';
 import MessageListItem from './message-list-item';
+import { useTagExist } from '../../../../ui-actions/tag-actions';
 
 function ConversationMessagesList({ conversationStatus, messages, folderId }) {
 	if (conversationStatus !== 'complete') {
@@ -73,34 +74,8 @@ export const RowInfo = ({ item, tags }) => {
 
 	const tagIcon = useMemo(() => (tags?.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags?.length === 1 ? tags?.[0]?.color : undefined), [tags]);
-	const tagsFromStore = useTags();
 
-	const tagsArrayFromStore = useMemo(
-		() =>
-			reduce(
-				tagsFromStore,
-				(acc, v) => {
-					acc.push(v.name);
-					return acc;
-				},
-				[]
-			),
-		[tagsFromStore]
-	);
-	const isTagInStore = useMemo(
-		() =>
-			reduce(
-				tags,
-				(acc, v) => {
-					let tmp = false;
-					if (includes(tagsArrayFromStore, v.name)) tmp = true;
-					return tmp;
-				},
-				false
-			),
-		[tags, tagsArrayFromStore]
-	);
-
+	const isTagInStore = useTagExist(tags);
 	const showTagIcon = useMemo(
 		() => item.tags && item.tags.length !== 0 && item.tags?.[0] !== '' && isTagInStore,
 		[isTagInStore, item.tags]

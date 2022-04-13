@@ -32,6 +32,7 @@ import { ItemAvatar } from './item-avatar';
 import ListItemActionWrapper from './list-item-actions-wrapper';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { SenderName } from './sender-name';
+import { useTagExist } from '../../../../ui-actions/tag-actions';
 
 function previewFile(file) {
 	const preview = document.querySelector('img');
@@ -185,31 +186,8 @@ export default function MessageListItem({
 			? { color: 'text', weight: 'regular', badge: 'read' }
 			: { color: 'primary', weight: 'bold', badge: 'unread' };
 	}, [item.read]);
-	const tagsArrayFromStore = useMemo(
-		() =>
-			reduce(
-				tagsFromStore,
-				(acc, v) => {
-					acc.push(v.name);
-					return acc;
-				},
-				[]
-			),
-		[tagsFromStore]
-	);
-	const isTagInStore = useMemo(
-		() =>
-			reduce(
-				tags,
-				(acc, v) => {
-					let tmp = false;
-					if (includes(tagsArrayFromStore, v.name)) tmp = true;
-					return tmp;
-				},
-				false
-			),
-		[tags, tagsArrayFromStore]
-	);
+
+	const isTagInStore = useTagExist(tags);
 	const showTagIcon = useMemo(
 		() => item.tags && item.tags.length !== 0 && item.tags?.[0] !== '' && isTagInStore,
 		[isTagInStore, item.tags]

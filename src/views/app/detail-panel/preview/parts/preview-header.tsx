@@ -37,6 +37,7 @@ import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import MessageContactsList from './message-contact-list';
 import { MailMessage } from '../../../../../types/mail-message';
+import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)`
 	cursor: pointer;
@@ -145,33 +146,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		setShowDropdown(false);
 	}, []);
 
-	const tagsArrayFromStore = useMemo(
-		() =>
-			reduce(
-				tagsFromStore,
-				(acc, v) => {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					acc.push(v.name);
-					return acc;
-				},
-				[]
-			),
-		[tagsFromStore]
-	);
-	const isTagInStore = useMemo(
-		() =>
-			reduce(
-				tags,
-				(acc, v) => {
-					let tmp = false;
-					if (includes(tagsArrayFromStore, v.name)) tmp = true;
-					return tmp;
-				},
-				false
-			),
-		[tags, tagsArrayFromStore]
-	);
+	const isTagInStore = useTagExist(tags);
 	const showMultiTagIcon = useMemo(() => message.tags?.length > 1, [message]);
 	const showTagIcon = useMemo(
 		() =>

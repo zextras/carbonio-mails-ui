@@ -15,8 +15,8 @@ import {
 	Checkbox
 } from '@zextras/carbonio-design-system';
 
-import { every, includes, map, reduce } from 'lodash';
-import { ZIMBRA_STANDARD_COLORS, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { every, find, includes, map, reduce } from 'lodash';
+import { ZIMBRA_STANDARD_COLORS, replaceHistory, useTags, Tag } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { TagsActionsType } from '../types/tags';
@@ -404,5 +404,38 @@ export const useGetTagsActions = ({ tag, t }: ArgumentType): Array<ReturnType> =
 			deleteTag({ t, tag, createSnackbar, createModal })
 		],
 		[createModal, createSnackbar, t, tag]
+	);
+};
+
+export const useTagsArrayFromStore = (): Array<TagType> => {
+	const tagsFromStore = useTags();
+	return useMemo(
+		() =>
+			reduce(
+				tagsFromStore,
+				(acc: Array<TagType>, v: any) => {
+					acc.push(v);
+					return acc;
+				},
+				[]
+			),
+		[tagsFromStore]
+	);
+};
+
+export const useTagExist = (tags: Array<TagType>): boolean => {
+	const tagsArrayFromStore = useTagsArrayFromStore();
+	return useMemo(
+		() =>
+			reduce(
+				tags,
+				(acc: boolean, v: Tag) => {
+					let tmp = false;
+					if (find(tagsArrayFromStore, { name: v.name })) tmp = true;
+					return tmp;
+				},
+				false
+			),
+		[tags, tagsArrayFromStore]
 	);
 };
