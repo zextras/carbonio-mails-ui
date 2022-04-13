@@ -518,6 +518,7 @@ export const getActions = ({
 						deselectAll
 					}),
 					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
 					setMsgAsSpam({ ids: [message.id], value: false, t, dispatch, createSnackbar, folderId }),
 					printMsg({ t, message, account }),
 					deleteMessagePermanently({ ids: [message.id], t, dispatch, createModal, deselectAll }),
@@ -572,6 +573,7 @@ export const getActions = ({
 						deselectAll
 					}),
 					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
 					setMsgAsSpam({
 						ids: [message.id],
 						value: true,
@@ -618,6 +620,7 @@ export const getActions = ({
 				],
 				[
 					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
 					moveMsgToTrash({
 						ids: [message.id],
 						t,
@@ -671,6 +674,8 @@ export const getActions = ({
 						deselectAll
 					}),
 					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+
+					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
 					setMsgAsSpam({
 						ids: [message.id],
 						value: false,
@@ -696,8 +701,7 @@ export const getActions = ({
 					forwardMsg({ id: message.id, folderId, t }),
 					editAsNewMsg({ id: message.id, folderId, t }),
 					sendDraft({ id: message.id, message, t, dispatch }),
-					redirectMsg({ id: message.id, t, createModal }),
-					applyTag({ t, tags, conversation: message, folderId, deselectAll })
+					redirectMsg({ id: message.id, t, createModal })
 				]
 			];
 	}

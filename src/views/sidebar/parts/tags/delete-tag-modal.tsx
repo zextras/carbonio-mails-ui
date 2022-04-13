@@ -52,7 +52,7 @@ const DeleteTagModal: FC<ComponentProps> = ({ onClose, tag }): ReactElement => {
 				createSnackbar({
 					key: `delete-tag`,
 					replace: true,
-					type: 'error',
+					type: 'success',
 					label: t('messages.snackbar.tag_deleted', {
 						name: tag?.name,
 						defaultValue: '{{name}} Tag deleted successfully'

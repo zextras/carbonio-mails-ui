@@ -25,11 +25,7 @@ export const convAction = createAsyncThunk<ConvActionResult, ConvActionParameter
 	async ({ ids, operation, parent, tagName }) => {
 		const { action } = (await soapFetch<ConvActionRequest, ConvActionResponse>('ConvAction', {
 			_jsns: 'urn:zimbraMail',
-			// action: {
-			// 	id: ids.join(','),
-			// 	op: operation,
-			// 	l: parent
-			// }
+
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			action: omitBy(

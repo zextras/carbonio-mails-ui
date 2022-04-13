@@ -356,7 +356,7 @@ export const getActions = ({
 						t,
 						dispatch
 					}),
-
+					applyTag({ t, createModal, tags, conversation, dispatch, folderId, deselectAll }),
 					setConversationsSpam({
 						ids: [conversation.id],
 						value: false,
@@ -416,6 +416,7 @@ export const getActions = ({
 						t,
 						dispatch
 					}),
+					applyTag({ t, createModal, tags, conversation, dispatch, folderId, deselectAll }),
 					setConversationsSpam({
 						ids: [conversation.id],
 						value: true,
@@ -461,6 +462,7 @@ export const getActions = ({
 						t,
 						dispatch
 					}),
+					applyTag({ t, createModal, tags, conversation, dispatch, folderId, deselectAll }),
 					moveConversationToTrash({
 						ids: [conversation.id],
 						t,

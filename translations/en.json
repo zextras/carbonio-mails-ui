@@ -561,7 +561,9 @@
         "folder_shared": "Folder shared",
         "share_resend": "Share invite resent",
         "share_revoke": "Share access revoked",
-        "share_updated": "\"Access rights updated\""
+        "share_updated": "\"Access rights updated\"",
+        "tag_applied": "Tag Applied",
+        "tag_removed": "Tag Removed"
     },
     "title": {
         "new_messages": "New Messages",

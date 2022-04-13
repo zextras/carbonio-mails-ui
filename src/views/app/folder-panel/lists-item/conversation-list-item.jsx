@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isEmpty, reduce, trimStart, map, uniqBy, find, includes } from 'lodash';
+import { isEmpty, reduce, trimStart, map, uniqBy, find, includes, every } from 'lodash';
 import styled from 'styled-components';
 import {
 	pushHistory,
@@ -70,11 +70,45 @@ const CollapseElement = styled(Container)`
 
 export const RowInfo = ({ item, tags }) => {
 	const date = useMemo(() => getTimeLabel(item.date), [item.date]);
+
 	const tagIcon = useMemo(() => (tags?.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags?.length === 1 ? tags?.[0]?.color : undefined), [tags]);
+	const tagsFromStore = useTags();
+
+	const tagsArrayFromStore = useMemo(
+		() =>
+			reduce(
+				tagsFromStore,
+				(acc, v) => {
+					acc.push(v.name);
+					return acc;
+				},
+				[]
+			),
+		[tagsFromStore]
+	);
+	const isTagInStore = useMemo(
+		() =>
+			reduce(
+				tags,
+				(acc, v) => {
+					let tmp = false;
+					if (includes(tagsArrayFromStore, v.name)) tmp = true;
+					return tmp;
+				},
+				false
+			),
+		[tags, tagsArrayFromStore]
+	);
+
+	const showTagIcon = useMemo(
+		() => item.tags && item.tags.length !== 0 && item.tags?.[0] !== '' && isTagInStore,
+		[isTagInStore, item.tags]
+	);
+
 	return (
 		<Row>
-			{item.tags && (
+			{showTagIcon && (
 				<Padding left="small">
 					<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
 				</Padding>

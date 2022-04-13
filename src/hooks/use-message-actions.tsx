@@ -65,6 +65,9 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 			})
 		);
 		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }));
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
 	}
 	if (
 		message.parent === FOLDERS.INBOX ||
@@ -109,7 +112,7 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 		);
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		arr.push(applyTag({ t, tags, conversation: message }));
+		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
 		arr.push(printMsg({ t, message, account }));
 		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }));
 		arr.push(redirectMsg({ id: message.id, t, createModal }));
@@ -134,6 +137,9 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 		arr.push(
 			deleteMessagePermanently({ ids: [message.id], t, dispatch, createModal, deselectAll })
 		);
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
 	}
 	if (message.parent === FOLDERS.SPAM) {
 		arr.push(deleteMsg({ ids: [message.id], t, dispatch, createSnackbar, createModal }));
@@ -142,6 +148,9 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 		);
 		arr.push(printMsg({ t, message, account }));
 		arr.push(showOriginalMsg({ id: message.id, t }));
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
 	}
 	return arr;
 };

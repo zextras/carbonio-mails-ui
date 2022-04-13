@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { filter, map, remove, sortBy, reduce, uniqWith, isEqual, includes } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useTags } from '@zextras/carbonio-shell-ui';
 import {
 	SnackbarManagerContext,
 	Accordion,
@@ -35,8 +35,6 @@ import ShareFolderModal from './share-folder-modal';
 import ModalWrapper from './commons/modal-wrapper';
 import setAccordionCustomComponent from './accordion-custom-components';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
-import { TagsActionsType } from '../../types/tags';
-import CreateUpdateTagModal from './parts/tags/create-update-tag-modal';
 import { createTag } from '../../ui-actions/tag-actions';
 
 const nest = (items, id, newFolder, setNewFolder, expanded, level) =>

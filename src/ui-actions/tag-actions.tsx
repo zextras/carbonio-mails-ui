@@ -16,13 +16,13 @@ import {
 } from '@zextras/carbonio-design-system';
 
 import { every, includes, map, reduce } from 'lodash';
-import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { ZIMBRA_STANDARD_COLORS, replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { TagsActionsType } from '../types/tags';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 import DeleteTagModal from '../views/sidebar/parts/tags/delete-tag-modal';
-import { convAction } from '../store/actions';
+import { convAction, msgAction } from '../store/actions';
 
 export type ReturnType = {
 	id: string;
@@ -115,25 +115,33 @@ export const deleteTag = ({ t, createModal, tag }: ArgumentType): ReturnType => 
 
 export const TagsDropdownItem = ({
 	tag,
-	conversation
+	conversation,
+	isMessage
 }: {
 	tag: { id: string; name: string; color: number };
 	conversation: any;
+	isMessage?: boolean;
 }): ReactElement => {
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const [checked, setChecked] = useState(includes(conversation.tags, tag.name));
+
 	const toggleCheck = useCallback(
-		(e) => {
-			e.preventDefault();
+		(value) => {
 			setChecked((c) => !c);
 			dispatch(
-				convAction({
-					operation: checked ? 'tag' : '!tag',
-					ids: conversation.id,
-					tagName: tag.name
-				})
+				isMessage
+					? msgAction({
+							operation: value ? '!tag' : 'tag',
+							ids: [conversation.id],
+							tagName: tag.name
+					  })
+					: convAction({
+							operation: value ? '!tag' : 'tag',
+							ids: [conversation.id],
+							tagName: tag.name
+					  })
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 			).then((res: any) => {
@@ -145,7 +153,9 @@ export const TagsDropdownItem = ({
 						replace: true,
 						hideButton: true,
 						type: 'info',
-						label: t('snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
+						label: value
+							? t('snackbar.tag_removed', 'Tag Removed')
+							: t('snackbar.tag_applied', 'Tag Applied'),
 						autoHideTimeout: 3000
 					});
 				} else {
@@ -162,19 +172,16 @@ export const TagsDropdownItem = ({
 				}
 			});
 		},
-		[checked, conversation.id, createSnackbar, dispatch, t, tag.name]
+		[conversation.id, createSnackbar, dispatch, isMessage, t, tag.name]
 	);
 	const tagIcon = useMemo(() => (checked ? 'Untag' : 'TagOutline'), [checked]);
 	const tagColor = useMemo(() => ZIMBRA_STANDARD_COLORS[tag.color || 0].hex, [tag.color]);
 	return (
 		<Row takeAvailableSpace mainAlignment="flex-start">
 			<Padding right="small">
-				<Checkbox value={checked} onClick={toggleCheck} />
+				<Checkbox value={checked} onClick={(): void => toggleCheck(checked)} label={tag.name} />
 			</Padding>
 			<Row takeAvailableSpace mainAlignment="space-between">
-				<Padding right="small">
-					<Text size="small">{tag.name}</Text>
-				</Padding>
 				<Icon icon={tagIcon} color={tagColor} />
 			</Row>
 		</Row>
@@ -185,13 +192,19 @@ export const MultiSelectTagsDropdownItem = ({
 	tag,
 	ids,
 	tags,
-	conversations
+	conversations,
+	deselectAll,
+	folderId,
+	isMessage
 }: {
 	tag: TagType;
 	conversations: any;
 	ids: string[];
 	tags: TagFromStoreType;
 	multiSelect?: boolean;
+	deselectAll?: () => void;
+	folderId?: string;
+	isMessage?: boolean;
 }): ReactElement => {
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
@@ -208,21 +221,26 @@ export const MultiSelectTagsDropdownItem = ({
 
 	const [checked, setChecked] = useState(includes(tagsToShow, tag.name));
 	const toggleCheck = useCallback(
-		(e) => {
-			e.preventDefault();
+		(value) => {
 			setChecked((c) => !c);
 			dispatch(
-				convAction({
-					operation: checked ? 'tag' : '!tag',
-					ids,
-					tagName: tag.name
-				})
+				isMessage
+					? msgAction({
+							operation: value ? '!tag' : 'tag',
+							ids,
+							tagName: tag.name
+					  })
+					: convAction({
+							operation: value ? '!tag' : 'tag',
+							ids,
+							tagName: tag.name
+					  })
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 			).then((res: any) => {
 				if (res.type.includes('fulfilled')) {
-					// deselectAll();
-					// replaceHistory(`/folder/${folderId}/`);
+					deselectAll && deselectAll();
+					replaceHistory(`/folder/${folderId}/`);
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					createSnackbar({
@@ -230,7 +248,9 @@ export const MultiSelectTagsDropdownItem = ({
 						replace: true,
 						hideButton: true,
 						type: 'info',
-						label: t('snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
+						label: value
+							? t('snackbar.tag_removed', 'Tag Removed')
+							: t('snackbar.tag_applied', 'Tag Applied'),
 						autoHideTimeout: 3000
 					});
 				} else {
@@ -247,19 +267,16 @@ export const MultiSelectTagsDropdownItem = ({
 				}
 			});
 		},
-		[checked, ids, createSnackbar, dispatch, t, tag.name]
+		[dispatch, isMessage, ids, tag.name, deselectAll, folderId, createSnackbar, t]
 	);
 	const tagIcon = useMemo(() => (checked ? 'Untag' : 'TagOutline'), [checked]);
 	const tagColor = useMemo(() => ZIMBRA_STANDARD_COLORS[tag.color || 0].hex, [tag.color]);
 	return (
 		<Row takeAvailableSpace mainAlignment="flex-start">
 			<Padding right="small">
-				<Checkbox value={checked} onClick={toggleCheck} />
+				<Checkbox value={checked} onClick={(): void => toggleCheck(checked)} label={tag.name} />
 			</Padding>
 			<Row takeAvailableSpace mainAlignment="space-between">
-				<Padding right="small">
-					<Text size="small">{tag.name}</Text>
-				</Padding>
 				<Icon icon={tagIcon} color={tagColor} />
 			</Row>
 		</Row>
@@ -270,13 +287,19 @@ export const applyMultiTag = ({
 	t,
 	tags,
 	ids,
-	conversations
+	conversations,
+	deselectAll,
+	folderId,
+	isMessage
 }: {
 	t: TFunction;
 	conversations: any;
 	tags: any;
 	ids: string[];
-}): ReturnType => {
+	deselectAll?: () => void;
+	folderId?: string;
+	isMessage?: boolean;
+}): { id: string; items: TagType[]; customComponent: ReactElement } => {
 	const tagItem = reduce(
 		tags,
 		(acc, v) => {
@@ -284,12 +307,16 @@ export const applyMultiTag = ({
 				id: v.id,
 				label: v.name,
 				icon: 'TagOutline',
+				keepOpen: true,
 				customComponent: (
 					<MultiSelectTagsDropdownItem
 						tag={v}
 						tags={tags}
 						ids={ids}
 						conversations={conversations}
+						deselectAll={deselectAll}
+						folderId={folderId}
+						isMessage={isMessage ?? false}
 					/>
 				)
 			};
@@ -303,19 +330,31 @@ export const applyMultiTag = ({
 
 	return {
 		id: TagsActionsType.Apply,
-		icon: 'TagsMoreOutline',
-		label: t('label.edit_tags', 'Edit Tags'),
-		items: tagItem
+		items: tagItem,
+		customComponent: (
+			<Row takeAvailableSpace mainAlignment="flex-start">
+				<Padding right="small">
+					<Icon icon="TagsMoreOutline" />
+				</Padding>
+				<Row takeAvailableSpace mainAlignment="space-between">
+					<Padding right="small">
+						<Text>{t('label.tags', 'Tags')}</Text>
+					</Padding>
+				</Row>
+			</Row>
+		)
 	};
 };
 export const applyTag = ({
 	t,
 	conversation,
-	tags
+	tags,
+	isMessage
 }: {
 	t: TFunction;
 	conversation: any;
 	tags: TagsFromStoreType;
+	isMessage?: boolean;
 }): { id: string; items: TagType[]; customComponent: ReactElement } => {
 	const tagItem = reduce(
 		tags,
@@ -324,7 +363,10 @@ export const applyTag = ({
 				id: v.id,
 				label: v.name,
 				icon: 'TagOutline',
-				customComponent: <TagsDropdownItem tag={v} conversation={conversation} />
+				keepOpen: true,
+				customComponent: (
+					<TagsDropdownItem tag={v} conversation={conversation} isMessage={isMessage ?? false} />
+				)
 			};
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore

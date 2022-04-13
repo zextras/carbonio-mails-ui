@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useContext, useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import {
 	AccordionItem,
@@ -62,7 +62,7 @@ const useGetTagsAccordion = (): ItemProps[] => {
 					const item = {
 						id: v.id,
 						active: false,
-						color: v.color,
+						color: v.color || 0,
 						divider: false,
 						label: v.name,
 						name: v.name,

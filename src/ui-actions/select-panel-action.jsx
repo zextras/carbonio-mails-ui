@@ -132,7 +132,14 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						deselectAll
 					}),
 					printConversation({ t, conversation: selectedConversation, account }),
-					applyMultiTag({ ids, tags, conversations: selectedConversation, t })
+					applyMultiTag({
+						ids,
+						tags,
+						conversations: selectedConversation,
+						t,
+						folderId,
+						deselectAll
+					})
 					// markSpam
 					// reply
 					// replyAll
@@ -159,6 +166,14 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						isRestore: true,
 						createModal,
 						deselectAll
+					}),
+					applyMultiTag({
+						ids,
+						tags,
+						conversations: selectedConversation,
+						t,
+						folderId,
+						deselectAll
 					})
 				];
 			case FOLDERS.DRAFTS:
@@ -171,6 +186,14 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						dispatch,
 						isRestore: false,
 						createModal,
+						deselectAll
+					}),
+					applyMultiTag({
+						ids,
+						tags,
+						conversations: selectedConversation,
+						t,
+						folderId,
 						deselectAll
 					})
 					// move
@@ -239,6 +262,7 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						if (ev) ev.preventDefault();
 						action.click();
 					},
+					customComponent: action.customComponent,
 					items: action.items
 				}))}
 			>

@@ -99,8 +99,7 @@ export default function MessageListItem({
 			),
 		[item.tags, tagsFromStore]
 	);
-	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
-	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
+
 	const [date, participantsString] = useMemo(() => {
 		if (item) {
 			const sender = find(item.participants, ['type', 'f']);
@@ -186,6 +185,37 @@ export default function MessageListItem({
 			? { color: 'text', weight: 'regular', badge: 'read' }
 			: { color: 'primary', weight: 'bold', badge: 'unread' };
 	}, [item.read]);
+	const tagsArrayFromStore = useMemo(
+		() =>
+			reduce(
+				tagsFromStore,
+				(acc, v) => {
+					acc.push(v.name);
+					return acc;
+				},
+				[]
+			),
+		[tagsFromStore]
+	);
+	const isTagInStore = useMemo(
+		() =>
+			reduce(
+				tags,
+				(acc, v) => {
+					let tmp = false;
+					if (includes(tagsArrayFromStore, v.name)) tmp = true;
+					return tmp;
+				},
+				false
+			),
+		[tags, tagsArrayFromStore]
+	);
+	const showTagIcon = useMemo(
+		() => item.tags && item.tags.length !== 0 && item.tags?.[0] !== '' && isTagInStore,
+		[isTagInStore, item.tags]
+	);
+	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
+	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
 
 	return draggedIds?.[item?.id] || visible || isConvChildren ? (
 		<Drag
@@ -227,7 +257,7 @@ export default function MessageListItem({
 							<Container orientation="horizontal" height="fit" width="fill">
 								<SenderName item={item} textValues={textReadValues} isFromSearch={false} />
 								<Row>
-									{item.tags && (
+									{showTagIcon && (
 										<Padding left="small">
 											<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
 										</Padding>

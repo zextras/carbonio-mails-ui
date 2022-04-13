@@ -24,7 +24,7 @@ export const normalizeConversation = (
 
 	return omitBy(
 		{
-			tags: c.tn ? c.tn.split(',') : undefined,
+			tags: !isNil(c.tn) ? filter(c.tn.split(','), (tn) => tn !== '') : [],
 			id: c.id,
 			date: c.d,
 			msgCount: c.n,

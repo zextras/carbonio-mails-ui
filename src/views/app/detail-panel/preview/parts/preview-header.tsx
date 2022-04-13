@@ -26,7 +26,7 @@ import {
 	Chip,
 	Dropdown
 } from '@zextras/carbonio-design-system';
-import { capitalize, find, includes, isEmpty, map, reduce } from 'lodash';
+import { capitalize, every, find, includes, isEmpty, map, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useTags, useUserAccounts, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
@@ -130,11 +130,11 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			),
 		[message.tags, tagsFromStore]
 	);
-	console.log('vvmm tags:', tags);
+
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
 	const tagLabel = useMemo(() => t('label.tags', 'Tags'), [t]);
-	const showMultiTagIcon = useMemo(() => message.tags?.length > 1, [message]);
+
 	const [showDropdown, setShowDropdown] = useState(false);
 	const onIconClick = useCallback((ev: { stopPropagation: () => void }): void => {
 		ev.stopPropagation();
@@ -144,6 +144,45 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	const onDropdownClose = useCallback((): void => {
 		setShowDropdown(false);
 	}, []);
+
+	const tagsArrayFromStore = useMemo(
+		() =>
+			reduce(
+				tagsFromStore,
+				(acc, v) => {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					acc.push(v.name);
+					return acc;
+				},
+				[]
+			),
+		[tagsFromStore]
+	);
+	const isTagInStore = useMemo(
+		() =>
+			reduce(
+				tags,
+				(acc, v) => {
+					let tmp = false;
+					if (includes(tagsArrayFromStore, v.name)) tmp = true;
+					return tmp;
+				},
+				false
+			),
+		[tags, tagsArrayFromStore]
+	);
+	const showMultiTagIcon = useMemo(() => message.tags?.length > 1, [message]);
+	const showTagIcon = useMemo(
+		() =>
+			message.tags &&
+			message.tags?.length !== 0 &&
+			!showMultiTagIcon &&
+			isTagInStore &&
+			every(message.tags, (tn) => tn !== ''),
+		[isTagInStore, message.tags, showMultiTagIcon]
+	);
+
 	return (
 		<HoverContainer
 			height="fit"
@@ -218,7 +257,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 								}}
 								minWidth={_minWidth}
 							>
-								{message.tags && message.tags?.length === 1 && (
+								{showTagIcon && (
 									<Padding left="small">
 										<Tooltip label={message?.tags?.[0]} disabled={showMultiTagIcon}>
 											<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
