@@ -58,7 +58,7 @@ const useGetTagsAccordion = (): ItemProps[] => {
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc, v) => {
+				(acc: Array<ItemProps>, v) => {
 					const item = {
 						id: v.id,
 						active: false,

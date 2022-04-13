@@ -47,8 +47,8 @@ export type TagType = {
 	name: string;
 	open: boolean;
 };
-export type TagFromStoreType = { color: number; id: string; name: string };
-export type TagsFromStoreType = Record<string, TagFromStoreType>;
+
+export type TagsFromStoreType = Record<string, Tag>;
 
 export type ArgumentType = {
 	t: TFunction;
@@ -118,7 +118,7 @@ export const TagsDropdownItem = ({
 	conversation,
 	isMessage
 }: {
-	tag: { id: string; name: string; color: number };
+	tag: Tag;
 	conversation: any;
 	isMessage?: boolean;
 }): ReactElement => {
@@ -200,7 +200,7 @@ export const MultiSelectTagsDropdownItem = ({
 	tag: TagType;
 	conversations: any;
 	ids: string[];
-	tags: TagFromStoreType;
+	tags: Tag;
 	multiSelect?: boolean;
 	deselectAll?: () => void;
 	folderId?: string;
