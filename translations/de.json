@@ -154,7 +154,7 @@
         "share": "Teilen",
         "add_custom_message": "Eine benutzerdefinierte Nachricht hinzufügen",
         "allowed_actions": "Erlaubte aktionen",
-        "bcc": "BCC",
+        "bcc": "Bcc",
         "calendar_color": "Farbe des Elements",
         "edit_access": "{{name}}'s Zugriff bearbeiten",
         "cc": "CC",
@@ -255,7 +255,7 @@
         "attachment_status": "Status des E-Mail-Elements",
         "attachment_type": "Art des Anhangs",
         "choose_folder": "Ordner auswählen",
-        "loading_results": "Ergebnisse laden...",
+        "loading_results": "Ergebnisse laden…",
         "mail_folder": "E-Mail-Ordner",
         "mail_selected": "{{count}} E-Mail ausgewählt",
         "mail_selected_plural": "{{count}} ausgewählte E-Mails",
@@ -276,7 +276,25 @@
         "add_task": "Wenn Sie eine Notiz machen müssen, können Sie eine Aufgabe zu Ihrer TO DO LIST hinzufügen",
         "accept": "Akzeptieren",
         "select_color": "Farbe auswählen",
-        "share_with": "Teilen mit"
+        "share_with": "Teilen mit",
+        "cc_bcc": "Cc Bcc",
+        "from_identity": "Von: {{identity}}",
+        "attachement_unknown": "Unbekannt{{mimeType}}",
+        "show_quoted_text": "Zitierten Text anzeigen",
+        "by_conversation": "Nach Konversation",
+        "by_message": "Nach Nachricht",
+        "create_new_task": "Neue Aufgabe erstellen",
+        "decline": "Ablehnen",
+        "destination_folder": "Zielordner",
+        "disposal_threshold": "Grenzwert für die Beseitigung",
+        "enable_message_disposal": "Aktivieren der Nachrichtenentsorgung",
+        "enable_message_retention": "Aktivieren der Nachrichtenaufbewahrung",
+        "new_email": "Neue E-Mail",
+        "notify_organizer": "Organizer benachrichtigen",
+        "replied": "Repliziert",
+        "retention_range": "Retentionsbereich",
+        "select": "Auwählen",
+        "set_default_signatures": "Standardsignaturen festlegen"
     },
     "share": {
         "options": {
@@ -429,7 +447,8 @@
             }
         },
         "search_hints": "Suchhinweise, über die wir sprechen müssen",
-        "invalid_search_message": "Wir haben keine Übereinstimmung gefunden"
+        "invalid_search_message": "Wir haben keine Übereinstimmung gefunden",
+        "email_saved_at": "E-Mail gespeichert als Entwurf um {{time}}"
     },
     "remove_from_this_list": "Aus der Liste entfernen",
     "tooltip": {
@@ -484,7 +503,8 @@
             "display_messages": "Nachrichtenanzeige",
             "message_color": "Nachrichtenfarbe",
             "message_selection": "Nachrichtenauswahl",
-            "set_message_color": "Legen Sie die Farbe von Nachrichten und Unterhaltungen entsprechend der Tag-Farbe fest."
+            "set_message_color": "Legen Sie die Farbe von Nachrichten und Unterhaltungen entsprechend der Tag-Farbe fest.",
+            "visualization_options": "Visualisierungsoptionen"
         },
         "msg_from_optn": {
             "discard": "Nachricht automatisch verwerfen",

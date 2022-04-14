@@ -100,7 +100,7 @@
     },
     "tooltip": {
         "add_attachments": "Dodaj załączniki",
-        "edit": "Edytuj ustawienia udostępniania",
+        "edit": "Edytuj właściwości udostępniania",
         "enable_urgent": "Włącz pilne",
         "disable_rich_text": "Wyłącz rozbudowany edytor tekstu",
         "enable_rich_text": "Włącz rozbudowany edytor tekstu",
@@ -181,7 +181,7 @@
         "insert": "Wstaw",
         "keywords": "Słowa kluczowe",
         "loading_results": "Ładowanie Wyników. . .",
-        "mail_folder": "Folder e-mail",
+        "mail_folder": "Folder E-maile",
         "mail_settings": "Ustawienia skrzynki odbiorczej",
         "me": "Ja",
         "messages": "Wiadomości",
@@ -238,7 +238,8 @@
         "send_email": "Wyślij e-maila",
         "app_name": "E-maile",
         "set_default_signatures": "Ustaw Domyślne Podpisy",
-        "show_quoted_text": "Pokaż zacytowany tekst"
+        "show_quoted_text": "Pokaż zacytowany tekst",
+        "share_with": "Udostępnij"
     },
     "message": {
         "snackbar": {
