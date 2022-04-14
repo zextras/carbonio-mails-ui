@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.13](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.11-rc.1...v0.1.13) (2022-04-14)
+
+
+### Features
+
+* added settings to swap between conversation and message visualization ([3d9d11a](https://github.com/zextras/carbonio-mails-ui/commit/3d9d11a0716d44006d93a4d4b5683e813a7b45e2))
+
+
+### Bug Fixes
+
+* boken trash action fixed ([47d7985](https://github.com/zextras/carbonio-mails-ui/commit/47d7985cd5a2d44d8e76dc64d8ecfea1c2cc756e))
+* changed sync deletion handlers ([96e72f9](https://github.com/zextras/carbonio-mails-ui/commit/96e72f9c9815b64bb542f67c6215dc71a1a25381))
+* fixed indentation on en.json ([9ae2071](https://github.com/zextras/carbonio-mails-ui/commit/9ae20712b60f233698c3def1cf39139dd0ad348f))
+* folders visible in search filter as per search settings ([#64](https://github.com/zextras/carbonio-mails-ui/issues/64)) ([94d7186](https://github.com/zextras/carbonio-mails-ui/commit/94d7186b28a1d8e58c0f974a377e6e0145c6a251))
+* missing actions on mail preview and UI fixes for identity ([55b8292](https://github.com/zextras/carbonio-mails-ui/commit/55b829299e86e195be62a1b8862db6a7064a50d1))
+* optional chaining on item avatar ([a63d411](https://github.com/zextras/carbonio-mails-ui/commit/a63d411b790a1c5ce1633128dff38ae9392d7099))
+* removed hardcoded labels ([936cd1b](https://github.com/zextras/carbonio-mails-ui/commit/936cd1bde88453044265aa983679c64142c7f37d))
+* removed hardcoded labels ([#52](https://github.com/zextras/carbonio-mails-ui/issues/52)) ([50d8853](https://github.com/zextras/carbonio-mails-ui/commit/50d8853d30c4e00f587248dc1a11116ceba7cb40))
+* removed hardcoded labels ([#52](https://github.com/zextras/carbonio-mails-ui/issues/52)) ([2bb5d32](https://github.com/zextras/carbonio-mails-ui/commit/2bb5d3249e4dfd8b2ca4ed902dba90c0d26a2dd1))
+* replyAll action fixed for sent emails ([ebbbfb2](https://github.com/zextras/carbonio-mails-ui/commit/ebbbfb2d5eddccc0e918e6c396ded25597f0d5b1))
+* reset history when moving items away from current folder ([b946d82](https://github.com/zextras/carbonio-mails-ui/commit/b946d824a76ff1b86ca9196048ae007222b6d211))
+* some conversations not opening in search result ([82ada6b](https://github.com/zextras/carbonio-mails-ui/commit/82ada6b294a1563274f07ac48fee4a3cdd975050))
+
 ### [0.1.11-rc.1](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.11-rc.0...v0.1.11-rc.1) (2022-03-21)
 
 
