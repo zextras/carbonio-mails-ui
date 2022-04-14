@@ -100,7 +100,7 @@
     },
     "tooltip": {
         "add_attachments": "Dodaj załączniki",
-        "edit": "Edytuj ustawienia udostępniania",
+        "edit": "Edytuj właściwości udostępniania",
         "enable_urgent": "Włącz pilne",
         "disable_rich_text": "Wyłącz rozbudowany edytor tekstu",
         "enable_rich_text": "Włącz rozbudowany edytor tekstu",
@@ -181,7 +181,7 @@
         "insert": "Wstaw",
         "keywords": "Słowa kluczowe",
         "loading_results": "Ładowanie Wyników. . .",
-        "mail_folder": "Folder e-mail",
+        "mail_folder": "Folder E-maile",
         "mail_settings": "Ustawienia skrzynki odbiorczej",
         "me": "Ja",
         "messages": "Wiadomości",
@@ -238,7 +238,8 @@
         "send_email": "Wyślij e-maila",
         "app_name": "E-maile",
         "set_default_signatures": "Ustaw Domyślne Podpisy",
-        "show_quoted_text": "Pokaż zacytowany tekst"
+        "show_quoted_text": "Pokaż zacytowany tekst",
+        "share_with": "Udostępnij"
     },
     "message": {
         "snackbar": {
@@ -396,7 +397,7 @@
         "permanent_delete_title": "Czy na pewno chcesz trwale usunąć ten element?"
     },
     "settings": {
-        "conv_is_participated": "w konwersacjach, w których uczestniczyłem/am",
+        "conv_is_participated": "w konwersacjach, w których uczestniczyłem",
         "label": {
             "conversation_ordering": "Kolejność konwersacji",
             "set_message_color": "Ustaw kolor wiadomości i konwersacji w zależności od koloru tagu.",
@@ -431,7 +432,7 @@
         "conditions": "Warunki",
         "contacts": "kontakty",
         "contains": "zawiera",
-        "conv_is_started": "w konwersacjach, które rozpocząłem/am",
+        "conv_is_started": "w konwersacjach, które rozpocząłem",
         "conv_sort_option": {
             "asc": "Od najstarszych",
             "desc": "Od najmłodszych"

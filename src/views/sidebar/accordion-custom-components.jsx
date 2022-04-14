@@ -243,6 +243,7 @@ const setAccordionCustomComponent = ({
 					})
 				).then((res) => {
 					if (res.type.includes('fulfilled')) {
+						replaceHistory(`/folder/${activeFolder}`);
 						createSnackbar({
 							key: `edit`,
 							replace: true,
@@ -363,6 +364,7 @@ const setAccordionCustomComponent = ({
 									height="fit"
 									padding={{ left: 'large' }}
 									takeAvailableSpace
+									data-testid={`folder-${folder.id}`}
 								>
 									<Icon size="large" icon={folderIconLabel} customColor={folderIconColor} />
 									<Padding right="large" />

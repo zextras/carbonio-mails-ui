@@ -175,6 +175,7 @@ const ConversationList = () => {
 							}}
 							ItemComponent={ConversationListItem}
 							onListBottom={() => loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)}
+							data-testid={`conversation-list-${folderId}`}
 						/>
 					)}
 					<DragImageContainer ref={dragImageRef}>

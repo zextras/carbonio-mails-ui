@@ -297,7 +297,7 @@ export function moveConversationToFolder({
 	};
 }
 
-export function deleteConversationPermanently(ids, t, dispatch, createModal, deselectAll) {
+export function deleteConversationPermanently({ ids, t, dispatch, createModal, deselectAll }) {
 	return {
 		id: 'delete-conversations',
 		icon: 'DeletePermanentlyOutline',
