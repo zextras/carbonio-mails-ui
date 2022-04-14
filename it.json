@@ -215,7 +215,10 @@
         "app_name": "Mail",
         "add_task": "Se devi prendere degli appunti, puoi aggiungere l'attività alle tua LISTA DELLE ATTIVITÀ",
         "create_new_task": "Crea Nuova Attività",
-        "retention_range": "Periodo di Retention"
+        "retention_range": "Periodo di Retention",
+        "attachment_status": "Stato e-mail",
+        "enable_message_disposal": "Abilita la cancellazione dei messaggi",
+        "enable_message_retention": "Abilita la ritenzione dei messaggi"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",
@@ -589,7 +592,8 @@
         "address_in": "Indirizzo in",
         "tag_with": "Contrassegna con",
         "does_not_match_wildcard_condition": "non corrisponde alle condizioni dei caratteri jolly",
-        "social": "Social"
+        "social": "Social",
+        "localpart": "localpart"
     },
     "mail_folder": "Cartella Posta",
     "of": "di",
