@@ -46,7 +46,8 @@ export default function SignatureSettings({
 	setDisabled,
 	signItems,
 	setSignItems,
-	signItemsUpdated,
+	/* setFetchSigns,
+	fetchSigns, */
 	setSignItemsUpdated
 }) {
 	const account = useUserAccount();
@@ -59,20 +60,14 @@ export default function SignatureSettings({
 	const [description, setDescription] = useState('');
 	const [index, setIndex] = useState();
 	const [editorFlag, setEditorFlag] = useState(false);
-	const signatureItems = useMemo(
-		() =>
-			map(signatures, ({ label, value }) => ({
-				label,
-				id: value.id,
-				description: value.description
-			})),
-		[signatures]
-	);
 
 	useEffect(() => {
+		// if (fetchSigns) {
 		GetAllSignatures().then((res) => {
 			setSigns(res.signature);
+			// setFetchSigns(false);
 		});
+		// }
 	}, []);
 
 	setSignItemsUpdated(
@@ -118,26 +113,27 @@ export default function SignatureSettings({
 			index: signItems.length
 		});
 		setSignItems(updatedSign);
+		console.log(updatedSign);
 	};
+	console.log(signatures);
+
 	const [signatureNewMessage, signatureRepliesForwards] = useMemo(
 		() => [
 			find(
-				signatureItems,
-				(signature) => signature.id === settingsObj.zimbraPrefDefaultSignatureId
+				signatures,
+				(signature) => signature.value.id === settingsObj.zimbraPrefDefaultSignatureId
 			) ?? signatures[0],
 			find(
-				signatureItems,
-				(signature) => signature.id === settingsObj.zimbraPrefForwardReplySignatureId
+				signatures,
+				(signature) => signature.value.id === settingsObj.zimbraPrefForwardReplySignatureId
 			) ?? signatures[0]
 		],
 		[
 			settingsObj.zimbraPrefDefaultSignatureId,
 			settingsObj.zimbraPrefForwardReplySignatureId,
-			signatureItems,
 			signatures
 		]
 	);
-	console.log('vv ', signatureNewMessage, signatureRepliesForwards);
 	const updateAllSignatures = (updatedSign) => {
 		const allSignatures = updatedSign.map((item) => ({
 			label: item.label,
@@ -216,7 +212,6 @@ export default function SignatureSettings({
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(t), [t]);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(t), [t]);
-
 	return (
 		<>
 			<FormSubSection

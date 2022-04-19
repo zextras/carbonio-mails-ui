@@ -48,6 +48,7 @@ export default function SettingsView() {
 	const [flag, setFlag] = useState(false);
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
+	// const [fetchSigns, setFetchSigns] = useState(true);
 
 	const onClose = useCallback(() => {
 		setSettingsObj({ ...settings });
@@ -160,6 +161,7 @@ export default function SettingsView() {
 				delete settingsToUpdate.zimbraPrefDefaultSignatureId;
 			}
 			dispatch(SignatureRequest({ itemsAdd, itemsEdit, itemsDelete, account })).then((resp) => {
+				// setFetchSigns(true);
 				if (setForwardReplySignatureId !== '') {
 					setNewOrForwardSignatureId(itemsAdd, resp, setForwardReplySignatureId, true);
 				}
@@ -247,6 +249,8 @@ export default function SettingsView() {
 						setSignItems={setSignItems}
 						signItemsUpdated={signItemsUpdated}
 						setSignItemsUpdated={setSignItemsUpdated}
+						/* setFetchSigns={setFetchSigns}
+						fetchSigns={fetchSigns} */
 						flag={flag}
 					/>
 					<FilterModule t={t} />
