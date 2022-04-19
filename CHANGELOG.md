@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.14](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.13...v0.1.14) (2022-04-19)
+
+
+### Bug Fixes
+
+* crash on mail settings view ([0f53d3d](https://github.com/zextras/carbonio-mails-ui/commit/0f53d3d6a945e6d667468c293a62d57fcb4bd0a6))
+
 ### [0.1.13](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.11-rc.1...v0.1.13) (2022-04-14)
 
 
