@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { find, map, reduce, uniqBy } from 'lodash';
+import { find, forEach, map, reduce, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -18,7 +18,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getAction } from '@zextras/carbonio-shell-ui';
+import { getAction, soapFetch } from '@zextras/carbonio-shell-ui';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { MailMessagePart } from '../../../../types/mail-message';
 import { EditorAttachmentFiles } from '../../../../types/mails-editor';
@@ -241,9 +241,30 @@ export default function AttachmentsBlock({ message }) {
 		[attachments, theme]
 	);
 
-	const confirmAction = (nodes) => {
+	const confirmAction = (nodes, multiple) => {
 		console.clear();
 		console.log(nodes[0]);
+		if (multiple) {
+			soapFetch('Batch', {
+				CreateMountpointRequest: map(links, (link) => ({
+					link: {
+						l: 1,
+						name: `${link.name} ${link.of} ${link.ownerName}`,
+						rid: link.folderId,
+						view: 'message',
+						zid: link.ownerId
+					},
+					_jsns: 'urn:zimbraMail'
+				})),
+				_jsns: 'urn:zimbra'
+			});
+		}
+		soapFetch('CopyToFiles', {
+			_jsns: 'urn:zimbraMail',
+			mid: message.id,
+			part: attachments[0].name,
+			destinationFolderId: nodes[0].id
+		});
 	};
 
 	const isAValidDestination = (node) => node.permissions?.can_write_file;
