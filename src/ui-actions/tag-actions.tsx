@@ -177,12 +177,17 @@ export const TagsDropdownItem = ({
 	const tagIcon = useMemo(() => (checked ? 'Untag' : 'TagOutline'), [checked]);
 	const tagColor = useMemo(() => ZIMBRA_STANDARD_COLORS[tag.color || 0].hex, [tag.color]);
 	return (
-		<Row takeAvailableSpace mainAlignment="flex-start">
+		<Row takeAvailableSpace mainAlignment="flex-start" onClick={(): void => toggleCheck(checked)}>
 			<Padding right="small">
-				<Checkbox value={checked} onClick={(): void => toggleCheck(checked)} label={tag.name} />
+				<Checkbox value={checked} />
 			</Padding>
 			<Row takeAvailableSpace mainAlignment="space-between">
-				<Icon icon={tagIcon} color={tagColor} />
+				<Row takeAvailableSpace mainAlignment="flex-start">
+					<Text>{tag.name}</Text>
+				</Row>
+				<Row mainAlignment="flex-end">
+					<Icon icon={tagIcon} color={tagColor} />
+				</Row>
 			</Row>
 		</Row>
 	);
@@ -272,12 +277,17 @@ export const MultiSelectTagsDropdownItem = ({
 	const tagIcon = useMemo(() => (checked ? 'Untag' : 'TagOutline'), [checked]);
 	const tagColor = useMemo(() => ZIMBRA_STANDARD_COLORS[tag.color || 0].hex, [tag.color]);
 	return (
-		<Row takeAvailableSpace mainAlignment="flex-start">
+		<Row takeAvailableSpace mainAlignment="flex-start" onClick={(): void => toggleCheck(checked)}>
 			<Padding right="small">
-				<Checkbox value={checked} onClick={(): void => toggleCheck(checked)} label={tag.name} />
+				<Checkbox value={checked} />
 			</Padding>
 			<Row takeAvailableSpace mainAlignment="space-between">
-				<Icon icon={tagIcon} color={tagColor} />
+				<Row takeAvailableSpace mainAlignment="flex-start">
+					<Text>{tag.name}</Text>
+				</Row>
+				<Row mainAlignment="flex-end">
+					<Icon icon={tagIcon} color={tagColor} />
+				</Row>
 			</Row>
 		</Row>
 	);
@@ -431,7 +441,7 @@ export const useTagExist = (tags: Array<TagType>): boolean => {
 				tags,
 				(acc: boolean, v: Tag) => {
 					let tmp = false;
-					if (find(tagsArrayFromStore, { name: v.name })) tmp = true;
+					if (find(tagsArrayFromStore, { id: v?.id })) tmp = true;
 					return tmp;
 				},
 				false

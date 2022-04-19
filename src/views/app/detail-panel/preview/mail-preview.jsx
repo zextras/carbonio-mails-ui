@@ -6,12 +6,13 @@
 /* eslint-disable no-nested-ternary */
 import React, { useMemo, useState, useRef, useCallback, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { filter } from 'lodash';
+import { filter, isEqual } from 'lodash';
 import {
 	useUserAccounts,
 	useIntegratedComponent,
 	useUserSettings,
-	FOLDERS
+	FOLDERS,
+	useTags
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import {
@@ -98,6 +99,9 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 	);
 	const [open, setOpen] = useState(expanded);
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
+	const [tagsOnFirstLoad, setTagsOnFirstLoad] = useState(useTags());
+	const tags = useTags();
+	const reload = useMemo(() => !isEqual(tagsOnFirstLoad, tags), [tagsOnFirstLoad, tags]);
 
 	const moveToTrash = useCallback(() => {
 		dispatch(
@@ -112,10 +116,10 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 	// already open that message will not be expanded
 	useEffect(() => {
 		setOpen(expanded);
-		if (!message.isComplete) {
-			dispatch(getMsg({ msgId: message.id }));
+		if (!message.isComplete || reload) {
+			dispatch(getMsg({ msgId: message.id })).then(() => setTagsOnFirstLoad(tags));
 		}
-	}, [dispatch, expanded, message.id, message.isComplete]);
+	}, [dispatch, expanded, message.id, message.isComplete, reload, tags]);
 
 	const showAppointmentInvite = useMemo(
 		() =>

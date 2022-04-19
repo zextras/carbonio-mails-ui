@@ -72,6 +72,19 @@ const CollapseElement = styled(Container)`
 export const RowInfo = ({ item, tags }) => {
 	const date = useMemo(() => getTimeLabel(item.date), [item.date]);
 
+	// const tagIcon = useMemo(
+	// 	() => (item.tagsWithId?.length > 1 ? 'TagsMoreOutline' : 'Tag'),
+	// 	[item.tagsWithId]
+	// );
+	// const tagIconColor = useMemo(
+	// 	() =>
+	// 		item.tagsWithId?.length === 1
+	// 			? ZIMBRA_STANDARD_COLORS[parseInt(item.tagsWithId?.[0]?.color ?? '0', 10)].hex
+	// 			: undefined,
+	// 	[item.tagsWithId]
+	// );
+
+	// const isTagInStore = useTagExist(item.tagsWithId);
 	const tagIcon = useMemo(() => (tags?.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags?.length === 1 ? tags?.[0]?.color : undefined), [tags]);
 
@@ -317,6 +330,7 @@ export default function ConversationListItem({
 						<Container orientation="horizontal" height="fit" width="fill">
 							<SenderName item={item} textValues={textReadValues} isFromSearch={false} />
 							<RowInfo item={item} tags={tags} />
+							{/* <RowInfo item={item} /> */}
 						</Container>
 						<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
 							{renderBadge && (

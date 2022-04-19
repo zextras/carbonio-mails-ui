@@ -134,6 +134,19 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
+	// const tagIcon = useMemo(
+	// 	() => (message.tagsWithId?.length > 1 ? 'TagsMoreOutline' : 'Tag'),
+	// 	[message.tagsWithId]
+	// );
+	// const tagIconColor = useMemo(
+	// 	() =>
+	// 		message.tagsWithId?.length === 1
+	// 			? ZIMBRA_STANDARD_COLORS[parseInt(message.tagsWithId?.[0]?.color ?? '0', 10)].hex
+	// 			: undefined,
+	// 	[message.tagsWithId]
+	// );
+
+	// const isTagInStore = useTagExist(message.tagsWithId);
 	const tagLabel = useMemo(() => t('label.tags', 'Tags'), [t]);
 
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -157,7 +170,8 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			every(message.tags, (tn) => tn !== ''),
 		[isTagInStore, message.tags, showMultiTagIcon]
 	);
-
+	console.log('hola showTagIcon:', showTagIcon);
+	console.log('vv tagefrom msg:', message.tags);
 	return (
 		<HoverContainer
 			height="fit"
@@ -272,25 +286,27 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						</Container>
 					</Row>
 				</Container>
-				{message.tags && open && (
+				{message.tags?.length > 0 && open && (
 					<Container
 						orientation="horizontal"
 						crossAlignment="flex-start"
 						mainAlignment="flex-start"
 						padding={{ left: 'large' }}
 					>
-						<Text color="secondary" size="extrasmall">
-							{tagLabel} :
-							{map(tags, (tag) => (
-								<TagChip
-									label={tag.name}
-									avatarBackground={tag.color}
-									background="gray2"
-									hasAvatar
-									avatarIcon="Tag"
-								/>
-							))}
-						</Text>
+						<Padding left="extrasmall">
+							<Text color="secondary" size="small">
+								{tagLabel}:
+								{map(tags, (tag) => (
+									<TagChip
+										label={tag.name}
+										avatarBackground={tag.color}
+										background="gray2"
+										hasAvatar
+										avatarIcon="Tag"
+									/>
+								))}
+							</Text>
+						</Padding>
 					</Container>
 				)}
 			</Container>
