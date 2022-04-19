@@ -137,7 +137,7 @@ export default function SignatureSettings({
 			signatures
 		]
 	);
-
+	console.log('vv ', signatureNewMessage, signatureRepliesForwards);
 	const updateAllSignatures = (updatedSign) => {
 		const allSignatures = updatedSign.map((item) => ({
 			label: item.label,
@@ -290,12 +290,12 @@ export default function SignatureSettings({
 						valueKey="id"
 						items={signatures}
 						label={t('label.select_signature', 'Select a signature')}
-						defaultSelection={signatureNewMessage}
+						selection={signatureNewMessage}
 						onChange={(e) => {
 							updateSettings({
 								target: {
 									name: 'zimbraPrefDefaultSignatureId',
-									value: find(signatures, (signature) => signature.value.id === e.id).value.id
+									value: find(signatures, (signature) => signature?.value?.id === e?.id)?.value?.id
 								}
 							});
 						}}
@@ -315,12 +315,12 @@ export default function SignatureSettings({
 						valueKey="id"
 						items={signatures}
 						label={t('label.select_signature', 'Select a signature')}
-						defaultSelection={signatureRepliesForwards}
+						selection={signatureRepliesForwards}
 						onChange={(e) => {
 							updateSettings({
 								target: {
 									name: 'zimbraPrefForwardReplySignatureId',
-									value: find(signatures, (signature) => signature.value.id === e.id).value.id
+									value: find(signatures, (signature) => signature?.value?.id === e?.id)?.value?.id
 								}
 							});
 						}}
