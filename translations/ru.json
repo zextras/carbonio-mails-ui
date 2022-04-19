@@ -229,7 +229,7 @@
         "cc_bcc": "Cc Bcc",
         "folder_name": "Имя папки",
         "select_color": "Выбрать Цвет",
-        "add_task": "Если вам нужно сделать заметку, вы можете добавить задачу в свой TODO LIST.",
+        "add_task": "Если вам нужно сделать заметку, вы можете добавить задачу в свой TODO LIST",
         "enable_message_retention": "Включить хранение сообщения",
         "share_with": "Поделиться с",
         "accept": "Принять",
@@ -242,7 +242,8 @@
         "enable_message_disposal": "Включить удаление сообщений",
         "notify_organizer": "Уведомить организатора",
         "select": "Выбрать",
-        "retention_range": "Диапазон хранения"
+        "retention_range": "Диапазон хранения",
+        "behalf_of": "от имени"
     },
     "header": {
         "warning": "Предупреждение",
