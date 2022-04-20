@@ -372,7 +372,23 @@
         "decline": "拒绝",
         "destination_folder": "目标文件夹",
         "share_with": "分享给",
-        "select": "选择"
+        "select": "选择",
+        "app_name": "邮件",
+        "cc_bcc": "抄送，密送",
+        "from_identity": "自：{{identity}}",
+        "set_default_signatures": "设置默认签名",
+        "replied": "回复",
+        "attachement_unknown": "未知 <{{mimeType}}>",
+        "add_task": "如果您需要记录笔记，可在您的待办事项列表中添加任务",
+        "create_new_task": "新建任务",
+        "disposal_threshold": "处置阈值",
+        "enable_message_disposal": "启用消息chuzhi",
+        "enable_message_retention": "启用消息保留",
+        "accept": "接受",
+        "by_conversation": "按对话",
+        "by_message": "按消息",
+        "retention_range": "保留范围",
+        "show_quoted_text": "显示引用文本"
     },
     "owner": "所有者",
     "read": "已读",
@@ -400,7 +416,8 @@
         },
         "search_hints": "搜索我们需要讨论的提示",
         "sending_mail_to_self": "似乎您即将向自己发送邮件",
-        "invalid_search_message": "我们没有找到任何匹配"
+        "invalid_search_message": "我们没有找到任何匹配",
+        "email_saved_at": "邮件已于 {{time}} 保存为草稿"
     },
     "settings": {
         "label": {
@@ -423,7 +440,8 @@
             "display_messages": "显示消息",
             "message_color": "消息颜色",
             "message_selection": "消息选择",
-            "set_message_color": "根据标签颜色设置消息和对话的颜色。"
+            "set_message_color": "根据标签颜色设置消息和对话的颜色。",
+            "visualization_options": "可视化选项"
         },
         "msg_from_optn": {
             "discard": "自动丢弃消息",
