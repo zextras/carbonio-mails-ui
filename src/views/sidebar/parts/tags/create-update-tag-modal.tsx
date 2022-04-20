@@ -26,6 +26,7 @@ type ComponentProps = {
 		open: boolean;
 	};
 };
+const NonSupportedCharacters = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
 const CreateUpdateTagModal: FC<ComponentProps> = ({
 	onClose,
 	editMode = false,
@@ -46,7 +47,14 @@ const CreateUpdateTagModal: FC<ComponentProps> = ({
 	const handleColorChange = useCallback((c: number) => setColor(c), []);
 	const handleNameChange = useCallback((ev) => setName(ev.target.value), []);
 
-	const showWarning = useMemo(() => name.includes(',') || name.length >= 128, [name]);
+	// const showWarning = useMemo(
+	// 	() => name.includes(',') || name.includes('/') || name.includes('\\') || name.length >= 128,
+	// 	[name]
+	// );
+	const showWarning = useMemo(
+		() => NonSupportedCharacters.test(name) || name.length >= 128,
+		[name]
+	);
 	const disabled = useMemo(() => name === '' || showWarning, [name, showWarning]);
 
 	const onCreate = useCallback(
@@ -112,15 +120,15 @@ const CreateUpdateTagModal: FC<ComponentProps> = ({
 				value={name}
 				onChange={handleNameChange}
 				backgroundColor="gray5"
-				borderColor={showWarning ? 'error' : 'gray2'}
 				textColor={showWarning ? 'error' : 'text'}
+				hasError={showWarning}
 			/>
 			{showWarning && (
 				<Padding all="small">
-					<Text size="small" color="error">
+					<Text size="small" color="error" overflow="break-word">
 						{t(
 							'label.invalid_tag_name',
-							'Max 128 characters are allowed and name should not contain ","'
+							'Max 128 characters are allowed and it should not contain any special character'
 						)}
 					</Text>
 				</Padding>

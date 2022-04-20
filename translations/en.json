@@ -244,7 +244,7 @@
         "hide": "Hide",
         "highlight_tab": "Highlight the Mail tab",
         "insert": "Insert",
-        "invalid_tag_name": "Max 128 characters are allowed and name should not contain \",\"",
+        "invalid_tag_name": "Max 128 characters are allowed and it should not contain any special character",
         "keywords": "Keywords",
         "loading_results": "Loading Results…",
         "mail_folder": "E-mail folder",
