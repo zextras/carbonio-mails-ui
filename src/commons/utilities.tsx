@@ -220,8 +220,7 @@ export const getFileExtension = (file: FileType): string => {
 
 export const convertToDecimal = (source: string): string => {
 	let result = '';
-	// eslint-disable-next-line no-plusplus
-	for (let i = 0; i < source.length; i++) {
+	for (let i = 0; i < source.length; i += 1) {
 		const charCode = source.charCodeAt(i);
 		// Encode non-ascii or double quotes
 		if (charCode > 127 || charCode === 34) {
