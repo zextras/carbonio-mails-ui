@@ -6,7 +6,7 @@
 
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Padding, SnackbarManagerContext } from '@zextras/carbonio-design-system';
+import { Input, Padding, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
 import { createTag, renameTag, changeTagColor } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../../commons/modal-footer';
 import { ModalHeader } from '../../commons/modal-header';
@@ -45,7 +45,10 @@ const CreateUpdateTagModal: FC<ComponentProps> = ({
 	const label = useMemo(() => t('label.tag_name', 'Tag name'), [t]);
 	const handleColorChange = useCallback((c: number) => setColor(c), []);
 	const handleNameChange = useCallback((ev) => setName(ev.target.value), []);
-	const disabled = useMemo(() => name === '', [name]);
+
+	const showWarning = useMemo(() => name.includes(',') || name.length >= 128, [name]);
+	const disabled = useMemo(() => name === '' || showWarning, [name, showWarning]);
+
 	const onCreate = useCallback(
 		() =>
 			createTag({ name, color }).then((res: any) => {
@@ -100,10 +103,28 @@ const CreateUpdateTagModal: FC<ComponentProps> = ({
 				});
 			});
 	}, [color, createSnackbar, name, onClose, t, tag]);
+
 	return (
 		<>
 			<ModalHeader onClose={onClose} title={title} />
-			<Input label={label} value={name} onChange={handleNameChange} backgroundColor="gray6" />
+			<Input
+				label={label}
+				value={name}
+				onChange={handleNameChange}
+				backgroundColor="gray5"
+				borderColor={showWarning ? 'error' : 'gray2'}
+				textColor={showWarning ? 'error' : 'text'}
+			/>
+			{showWarning && (
+				<Padding all="small">
+					<Text size="small" color="error">
+						{t(
+							'label.invalid_tag_name',
+							'Max 128 characters are allowed and name should not contain ","'
+						)}
+					</Text>
+				</Padding>
+			)}
 			<Padding top="small" />
 			<ColorPicker
 				onChange={handleColorChange}

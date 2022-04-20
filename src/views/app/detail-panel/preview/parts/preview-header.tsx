@@ -50,6 +50,7 @@ const HoverContainer = styled(Container)`
 const TagChip = styled(Chip)`
 	margin-left: ${({ theme }): string => theme.sizes.padding.extrasmall};
 	padding: 1px 8px !important;
+	margin-bottom: 4px;
 `;
 
 type PreviewHeaderProps = {
@@ -113,16 +114,18 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 							color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex,
 							label: v.name,
 							customComponent: (
-								<Container
-									orientation="horizontal"
-									mainAlignment="flext-start"
-									style={{ minWidth: '100px' }}
-								>
-									<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex} />
-									<Padding left="small">
-										<Text>{v.name}</Text>
-									</Padding>
-								</Container>
+								<Row takeAvailableSpace mainAlignment="flex-start">
+									<Row takeAvailableSpace mainAlignment="space-between">
+										<Row mainAlignment="flex-end">
+											<Padding right="small">
+												<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex} />
+											</Padding>
+										</Row>
+										<Row takeAvailableSpace mainAlignment="flex-start">
+											<Text>{v.name}</Text>
+										</Row>
+									</Row>
+								</Row>
 							)
 						});
 					return acc;
@@ -134,19 +137,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
-	// const tagIcon = useMemo(
-	// 	() => (message.tagsWithId?.length > 1 ? 'TagsMoreOutline' : 'Tag'),
-	// 	[message.tagsWithId]
-	// );
-	// const tagIconColor = useMemo(
-	// 	() =>
-	// 		message.tagsWithId?.length === 1
-	// 			? ZIMBRA_STANDARD_COLORS[parseInt(message.tagsWithId?.[0]?.color ?? '0', 10)].hex
-	// 			: undefined,
-	// 	[message.tagsWithId]
-	// );
 
-	// const isTagInStore = useTagExist(message.tagsWithId);
 	const tagLabel = useMemo(() => t('label.tags', 'Tags'), [t]);
 
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -170,8 +161,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			every(message.tags, (tn) => tn !== ''),
 		[isTagInStore, message.tags, showMultiTagIcon]
 	);
-	console.log('hola showTagIcon:', showTagIcon);
-	console.log('vv tagefrom msg:', message.tags);
+
 	return (
 		<HoverContainer
 			height="fit"
@@ -286,7 +276,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						</Container>
 					</Row>
 				</Container>
-				{message.tags?.length > 0 && open && (
+				{tags?.length > 0 && open && (
 					<Container
 						orientation="horizontal"
 						crossAlignment="flex-start"
@@ -294,7 +284,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						padding={{ left: 'large' }}
 					>
 						<Padding left="extrasmall">
-							<Text color="secondary" size="small">
+							<Text color="secondary" size="small" overflow="break-word">
 								{tagLabel}:
 								{map(tags, (tag) => (
 									<TagChip

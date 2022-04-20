@@ -76,11 +76,17 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 				...item,
 				label: item.name,
 				customComponent: (
-					<Row>
-						<Icon icon="Tag" customColor={ZIMBRA_STANDARD_COLORS[item.color ?? 0].hex} />
-						<Padding left="small">
-							<Text>{item.name}</Text>
-						</Padding>
+					<Row takeAvailableSpace mainAlignment="flex-start">
+						<Row takeAvailableSpace mainAlignment="space-between">
+							<Row mainAlignment="flex-end">
+								<Padding right="small">
+									<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[item.color ?? 0].hex} />
+								</Padding>
+							</Row>
+							<Row takeAvailableSpace mainAlignment="flex-start">
+								<Text>{item.name}</Text>
+							</Row>
+						</Row>
 					</Row>
 				)
 			})),

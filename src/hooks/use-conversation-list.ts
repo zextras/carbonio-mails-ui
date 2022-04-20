@@ -44,10 +44,11 @@ export const useConversationListItems = (): Array<Conversation> => {
 	const reload = useMemo(() => !isEqual(tagsOnFirstLoad, tags), [tagsOnFirstLoad, tags]);
 	useEffect(() => {
 		if ((folderStatus !== 'complete' && folderStatus !== 'pending') || reload) {
-			dispatch(search({ folderId, limit: 101, sortBy: sorting, types: 'conversation', tags })).then(
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			dispatch(search({ folderId, limit: 101, sortBy: sorting, types: 'conversation' })).then(
 				() => {
 					setTagsOnFirstLoad(tags);
-					//	replaceHistory(`/folder/${folderId}`);
 				}
 			);
 		}

@@ -173,7 +173,7 @@ const Sidebar = ({ expanded }) => {
 		);
 
 		const TagLabel = (item) => (
-			<Dropdown contextMenu display="block" width="100%" items={[createTag({ t, createModal })]}>
+			<Dropdown contextMenu display="block" width="fit" items={[createTag({ t, createModal })]}>
 				<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
 					<Icon size="large" icon="TagsMoreOutline" /> <Padding right="large" />
 					<AccordionItem {...item} height={40} />
@@ -186,7 +186,7 @@ const Sidebar = ({ expanded }) => {
 				id: 'Tags',
 				label: t('label.tags', 'Tags'),
 				divider: true,
-				open: tagsAccordionItems.length > 0,
+				open: false,
 				onClick: (e) => e.stopPropagation(),
 				CustomComponent: TagLabel,
 				items: tagsAccordionItems

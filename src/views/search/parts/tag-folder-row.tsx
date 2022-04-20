@@ -37,7 +37,7 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			background: 'gray2',
 			avatarBackground: avatarBackground || 'gray2',
 			isQueryFilter,
-			value: `${preText}:${label}`
+			value: `${preText}:"${label}"`
 		}),
 		[]
 	);

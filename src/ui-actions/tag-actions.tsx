@@ -126,7 +126,7 @@ export const TagsDropdownItem = ({
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const [checked, setChecked] = useState(includes(conversation.tags, tag.name));
-
+	const [isHovering, setIsHovering] = useState(false);
 	const toggleCheck = useCallback(
 		(value) => {
 			setChecked((c) => !c);
@@ -154,8 +154,11 @@ export const TagsDropdownItem = ({
 						hideButton: true,
 						type: 'info',
 						label: value
-							? t('snackbar.tag_removed', 'Tag Removed')
-							: t('snackbar.tag_applied', 'Tag Applied'),
+							? t('snackbar.tag_removed', { tag: tag.name, defaultValue: '"{{tag}}" tag removed' })
+							: t('snackbar.tag_applied', {
+									tag: tag.name,
+									defaultValue: '"{{tag}}" tag applied'
+							  }),
 						autoHideTimeout: 3000
 					});
 				} else {
@@ -174,10 +177,18 @@ export const TagsDropdownItem = ({
 		},
 		[conversation.id, createSnackbar, dispatch, isMessage, t, tag.name]
 	);
-	const tagIcon = useMemo(() => (checked ? 'Untag' : 'TagOutline'), [checked]);
 	const tagColor = useMemo(() => ZIMBRA_STANDARD_COLORS[tag.color || 0].hex, [tag.color]);
+	const tagIcon = useMemo(() => (checked ? 'Tag' : 'TagOutline'), [checked]);
+	const tagIconOnHovered = useMemo(() => (checked ? 'Untag' : 'Tag'), [checked]);
+
 	return (
-		<Row takeAvailableSpace mainAlignment="flex-start" onClick={(): void => toggleCheck(checked)}>
+		<Row
+			takeAvailableSpace
+			mainAlignment="flex-start"
+			onClick={(): void => toggleCheck(checked)}
+			onMouseEnter={(): void => setIsHovering(true)}
+			onMouseLeave={(): void => setIsHovering(false)}
+		>
 			<Padding right="small">
 				<Checkbox value={checked} />
 			</Padding>
@@ -186,7 +197,7 @@ export const TagsDropdownItem = ({
 					<Text>{tag.name}</Text>
 				</Row>
 				<Row mainAlignment="flex-end">
-					<Icon icon={tagIcon} color={tagColor} />
+					<Icon icon={isHovering ? tagIconOnHovered : tagIcon} color={tagColor} />
 				</Row>
 			</Row>
 		</Row>
@@ -214,6 +225,7 @@ export const MultiSelectTagsDropdownItem = ({
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
+	const [isHovering, setIsHovering] = useState(false);
 	const tagsToShow = reduce(
 		tags,
 		(acc: any, v: any) => {
@@ -254,8 +266,11 @@ export const MultiSelectTagsDropdownItem = ({
 						hideButton: true,
 						type: 'info',
 						label: value
-							? t('snackbar.tag_removed', 'Tag Removed')
-							: t('snackbar.tag_applied', 'Tag Applied'),
+							? t('snackbar.tag_removed', { tag: tag.name, defaultValue: '"{{tag}}" tag removed' })
+							: t('snackbar.tag_applied', {
+									tag: tag.name,
+									defaultValue: '"{{tag}}" tag applied'
+							  }),
 						autoHideTimeout: 3000
 					});
 				} else {
@@ -274,10 +289,18 @@ export const MultiSelectTagsDropdownItem = ({
 		},
 		[dispatch, isMessage, ids, tag.name, deselectAll, folderId, createSnackbar, t]
 	);
-	const tagIcon = useMemo(() => (checked ? 'Untag' : 'TagOutline'), [checked]);
+
+	const tagIcon = useMemo(() => (checked ? 'Tag' : 'TagOutline'), [checked]);
+	const tagIconOnHovered = useMemo(() => (checked ? 'Untag' : 'Tag'), [checked]);
 	const tagColor = useMemo(() => ZIMBRA_STANDARD_COLORS[tag.color || 0].hex, [tag.color]);
 	return (
-		<Row takeAvailableSpace mainAlignment="flex-start" onClick={(): void => toggleCheck(checked)}>
+		<Row
+			takeAvailableSpace
+			mainAlignment="flex-start"
+			onMouseEnter={(): void => setIsHovering(true)}
+			onMouseLeave={(): void => setIsHovering(false)}
+			onClick={(): void => toggleCheck(checked)}
+		>
 			<Padding right="small">
 				<Checkbox value={checked} />
 			</Padding>
@@ -286,7 +309,7 @@ export const MultiSelectTagsDropdownItem = ({
 					<Text>{tag.name}</Text>
 				</Row>
 				<Row mainAlignment="flex-end">
-					<Icon icon={tagIcon} color={tagColor} />
+					<Icon icon={isHovering ? tagIconOnHovered : tagIcon} color={tagColor} />
 				</Row>
 			</Row>
 		</Row>

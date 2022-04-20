@@ -36,7 +36,7 @@ const CustomComp = (props: ItemProps): ReactElement => {
 	const actions = useGetTagsActions({ tag: props?.item, t });
 
 	return (
-		<Dropdown contextMenu items={actions} display="block" width="100%">
+		<Dropdown contextMenu items={actions} display="block" width="fit">
 			<Row mainAlignment="flex-start" height="fit" padding={{ left: 'large' }} takeAvailableSpace>
 				<Icon
 					size="large"
