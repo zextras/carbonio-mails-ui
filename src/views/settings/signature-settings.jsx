@@ -291,14 +291,14 @@ export default function SignatureSettings({
 						items={signatures}
 						label={t('label.select_signature', 'Select a signature')}
 						defaultSelection={signatureNewMessage}
-						onChange={(e) => {
-							updateSettings({
-								target: {
-									name: 'zimbraPrefDefaultSignatureId',
-									value: find(signatures, (signature) => signature.value.id === e.id).value.id
-								}
-							});
-						}}
+						// onChange={(e) => {
+						// 	updateSettings({
+						// 		target: {
+						// 			name: 'zimbraPrefDefaultSignatureId',
+						// 			value: find(signatures, (signature) => signature.value?.id === e.id)?.value?.id
+						// 		}
+						// 	});
+						// }}
 					/>
 					{signatureNewMessage.description && (
 						<Container
@@ -316,14 +316,14 @@ export default function SignatureSettings({
 						items={signatures}
 						label={t('label.select_signature', 'Select a signature')}
 						defaultSelection={signatureRepliesForwards}
-						onChange={(e) => {
-							updateSettings({
-								target: {
-									name: 'zimbraPrefForwardReplySignatureId',
-									value: find(signatures, (signature) => signature.value.id === e.id).value.id
-								}
-							});
-						}}
+						// onChange={(e) => {
+						// 	updateSettings({
+						// 		target: {
+						// 			name: 'zimbraPrefForwardReplySignatureId',
+						// 			value: find(signatures, (signature) => signature.value?.id === e.id)?.value?.id
+						// 		}
+						// 	});
+						// }}
 					/>
 					{signatureRepliesForwards.description && (
 						<Container

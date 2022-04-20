@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { ZIMBRA_STANDARD_COLORS, FOLDERS, ROOT_NAME } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
 
 export const normalizeFolder = (folder) =>
@@ -63,3 +64,45 @@ export function capitalise(word) {
 	const newChar = String.fromCharCode(newAsciiRef);
 	return newChar + word.substr(1);
 }
+
+export const getFolderIconColor = (f) =>
+	f.folder.color < 10
+		? ZIMBRA_STANDARD_COLORS[f.folder.color].hex
+		: f?.folder.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex;
+
+export const getFolderIconName = (folder) => {
+	const systemFolders = [
+		FOLDERS.USER_ROOT,
+		FOLDERS.INBOX,
+		FOLDERS.TRASH,
+		FOLDERS.DRAFTS,
+		FOLDERS.SPAM,
+		FOLDERS.SENTa
+	];
+
+	if (folder.id === FOLDERS.USER_ROOT || folder.oname === ROOT_NAME) {
+		return null;
+	}
+	if (folder.folder.isLink) {
+		return 'ShareOutline';
+	}
+	if (systemFolders.includes(folder.id)) {
+		switch (folder.id) {
+			case FOLDERS.INBOX:
+				return 'InboxOutline';
+			case FOLDERS.USER_ROOT:
+				return 'PersonOutline';
+			case FOLDERS.DRAFTS:
+				return 'FileOutline';
+			case FOLDERS.SENT:
+				return 'PaperPlaneOutline';
+			case FOLDERS.SPAM:
+				return 'SlashOutline';
+			case FOLDERS.TRASH:
+				return 'Trash2Outline';
+			default:
+				return 'FolderOutline';
+		}
+	}
+	return 'FolderOutline';
+};

@@ -3,30 +3,38 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Container, CustomModal, Input, Text, Padding } from '@zextras/carbonio-design-system';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+	Accordion,
+	Container,
+	CustomModal,
+	Input,
+	Text,
+	Padding,
+	SnackbarManagerContext
+} from '@zextras/carbonio-design-system';
 import { filter, includes, map, reduce, reject, startsWith } from 'lodash';
 import { nanoid } from '@reduxjs/toolkit';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import FolderItem from './commons/folder-item';
-// eslint-disable-next-line import/extensions
-import ModalFooter from './commons/modal-footer.tsx';
+import { Folder, FOLDERS, useFoldersAccordionByView } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import ModalFooter from './commons/modal-footer';
 import { ModalHeader } from './commons/modal-header';
 import { createFolder } from '../../store/actions/create-folder';
+import FolderAccordionItem from './commons/folder-accordion-item';
 
-export const NewModal = ({
-	folders,
-	currentFolder,
-	openModal,
-	setModal,
-	dispatch,
-	setNew,
-	t,
-	createSnackbar
-}) => {
+type NewModalProps = {
+	folder: Folder;
+	onClose: () => void;
+};
+export const NewModal = ({ folder, onClose }: NewModalProps): void => {
+	const [t] = useTranslation();
+	const dispatch = useDispatch();
+	const createSnackbar = useContext(SnackbarManagerContext);
+	const folders = useFoldersAccordionByView(FOLDERS.message, FolderAccordionItem);
 	const [inputValue, setInputValue] = useState('');
 	const [input, setInput] = useState('');
-	const [folderDestination, setFolderDestination] = useState(currentFolder);
+	const [folderDestination, setFolderDestination] = useState(folder);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
 	const [label, setLabel] = useState(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
@@ -42,16 +50,35 @@ export const NewModal = ({
 	);
 	const showWarning = useMemo(() => includes(folderArray, inputValue), [folderArray, inputValue]);
 
-	useEffect(() => {
-		setFolderDestination(currentFolder);
-	}, [currentFolder]);
+const filteredAccordionFolders = useMemo(()=>{
+const filterFolders = reduce(folders.items, (acc, val)=>{ 
+	if (startsWith(val.label, inputValue) {return [...acc, val]} )
+
+
+
+
+
+
+
+}, [])
+
+
+
+
+
+
+})
+
+	// useEffect(() => {
+	// 	setFolderDestination(folder);
+	// }, [folder]);
 
 	useEffect(() => {
 		if (!folderDestination || !inputValue.length || showWarning) {
 			setDisabled(true);
 			return;
 		}
-		const value = !!filter(folderDestination.items, (item) => item.label === inputValue).length;
+		const value = !!filter(folderDestination.children, (item) => item.name === inputValue).length;
 		if (value) {
 			setLabel(t('folder_panel.modal.new.input.name_exist', 'Name already exists in this path'));
 		} else {
@@ -61,35 +88,25 @@ export const NewModal = ({
 		setDisabled(value);
 	}, [folderDestination, inputValue, showWarning, t]);
 
-	const normalizedFolders = useMemo(
-		() =>
-			map(
-				// reject all mismatching condition folders
-				reject(
-					folders,
-					(v) =>
-						v.parent === FOLDERS.TRASH ||
-						v.absParent === FOLDERS.TRASH ||
-						v.level > 2 ||
-						v.id === FOLDERS.TRASH ||
-						v.id === FOLDERS.SPAM
-				),
-				(f) => ({
-					...f,
-					onClick: () => setFolderDestination(f),
-					open: !!input.length,
-					divider: true,
-					background: folderDestination.id === f.id ? 'highlight' : undefined
-				})
-			),
-		[folderDestination.id, folders, input.length]
-	);
+	// const normalizedFolders = useMemo(
+	// 	() =>
+	// 			reject(folders, (v) => startsWith(v.absFolderPath, '/Trash') || v.id === FOLDERS.SPAM),
+	// 			(f) => ({
+	// 				...f,
+	// 				onClick: () => setFolderDestination(f),
+	// 				open: !!input.length,
+	// 				divider: true,
+	// 				background: folderDestination.id === f.id ? 'highlight' : undefined
+	// 			})
+	// 		),
+	// 	[folderDestination.id, folders, input.length]
+	// );
+
+
+
 
 	const filteredFromUserInput = useMemo(
-		() =>
-			filter(normalizedFolders, (item) =>
-				startsWith(item.label.toLowerCase(), input.toLowerCase())
-			),
+		() => filter(folders, (item) => startsWith(item.name.toLowerCase(), input.toLowerCase())),
 		[input, normalizedFolders]
 	);
 
@@ -167,16 +184,16 @@ export const NewModal = ({
 		setHasError(false);
 	}, [dispatch, folderDestination, inputValue, setModal, setNew, t, createSnackbar]);
 
-	const onClose = useCallback(() => {
-		setInput('');
-		setInputValue('');
-		setModal('');
-		setFolderDestination('');
-		setLabel(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
-		setHasError(false);
-	}, [setModal, t]);
+	// const onClose = useCallback(() => {
+	// 	setInput('');
+	// 	setInputValue('');
+	// 	setModal('');
+	// 	setFolderDestination('');
+	// 	setLabel(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
+	// 	setHasError(false);
+	// }, [setModal, t]);
 
-	return currentFolder ? (
+	return folder ? (
 		<CustomModal open={openModal} onClose={onClose} maxHeight="90vh">
 			<Container
 				padding={{ all: 'large' }}
@@ -212,7 +229,7 @@ export const NewModal = ({
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 					/>
-					<FolderItem folders={nestedData} />
+					<Accordion folders={nestedData} />
 					<ModalFooter
 						onConfirm={onConfirm}
 						secondaryAction={onClose}

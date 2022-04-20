@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { TFunction } from 'react-i18next';
+
 export type ModalFooterProps = {
 	mainAlignment?: string | undefined;
 	crossAlignment?: string | undefined;
@@ -24,4 +26,15 @@ export type ModalFooterProps = {
 	tooltip?: string;
 	secondaryTooltip?: string;
 	paddingTop?: string;
+};
+
+export type SnackbarArgumentType = {
+	key: string;
+	replace: boolean;
+	type: string;
+	label: string;
+	autoHideTimeout: number;
+	hideButton?: boolean;
+	actionLabel?: string;
+	onActionClick?: TFunction;
 };

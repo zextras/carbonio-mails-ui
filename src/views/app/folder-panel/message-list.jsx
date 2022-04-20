@@ -5,11 +5,11 @@
  */
 import { map, reduce, find } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { Container, List, Padding, Shimmer, Text } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { selectConversationStatus, selectFolder } from '../../../store/conversations-slice';
 import MessageListItem from './lists-item/message-list-item';
@@ -52,8 +52,10 @@ const DragItems = ({ messages, draggedIds }) => {
 };
 
 const MessageList = () => {
+	const history = useHistory();
+	const activeFolder = history?.location?.pathname?.split?.('/')?.[3];
 	const { itemId, folderId } = useParams();
-	const folder = useSelector((state) => selectFolder(state, folderId));
+	const folder = useFolder(activeFolder);
 	const dispatch = useDispatch();
 	const { setCount } = useAppContext();
 	const [isDragging, setIsDragging] = useState(false);

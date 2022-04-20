@@ -8,7 +8,14 @@ import { FolderActionsType } from '../../../types/folder';
 import { folderAction } from '../../../store/actions/folder-action';
 import { SharesInfoModal } from '../shares-info-modal';
 
-export const actionsRetriever = (folder, setAction, setCurrentFolder, t, dispatch, createModal) => [
+export const actionsRetriever = ({
+	folder,
+	setAction,
+	setCurrentFolder,
+	t,
+	dispatch,
+	createModal
+}) => [
 	{
 		id: FolderActionsType.NEW,
 		icon: 'FolderAddOutline',

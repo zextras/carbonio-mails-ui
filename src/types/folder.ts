@@ -1,33 +1,11 @@
+import { Folder } from '@zextras/carbonio-shell-ui';
+import { ReactElement } from 'react';
+
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-export type Folder = {
-	id: string;
-	uuid: string;
-	name: string;
-	path: string | undefined;
-	parent: string;
-	parentUuid: string;
-	unreadCount: number;
-	size: number;
-	itemsCount: number;
-	synced: boolean;
-	absParent: string;
-	items: Folder[];
-	level: number;
-	to: string;
-	color: string;
-	rgb: string;
-	rid?: string;
-	isSharedFolder?: boolean;
-	owner?: string;
-	zid?: string;
-	acl?: unknown;
-	perm?: string;
-	retentionPolicy?: unknown;
-};
 
 // eslint-disable-next-line no-shadow
 export enum FolderActionsType {
@@ -40,3 +18,7 @@ export enum FolderActionsType {
 	SHARES_INFO = 'sharesInfo',
 	SHARE = 'share'
 }
+
+export type AccordionComponent = Folder & {
+	CustomComponent: ReactElement;
+};
