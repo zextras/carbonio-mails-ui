@@ -45,7 +45,6 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 		() => (!isEmpty(item.fragment) ? `${subject} - ${item.fragment}` : subject),
 		[subject, item.fragment]
 	);
-	console.log('vv item in searchL', item);
 
 	const tagsFromStore = useTags();
 	const tags = useMemo(
