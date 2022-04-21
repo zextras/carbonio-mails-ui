@@ -47,13 +47,12 @@ const CreateUpdateTagModal: FC<ComponentProps> = ({
 	const handleColorChange = useCallback((c: number) => setColor(c), []);
 	const handleNameChange = useCallback((ev) => setName(ev.target.value), []);
 
-	// const showWarning = useMemo(
-	// 	() => name.includes(',') || name.includes('/') || name.includes('\\') || name.length >= 128,
-	// 	[name]
-	// );
+	const showMaxLengthWarning = useMemo(() => name.length >= 128, [name]);
+	const showSpecialCharWarning = useMemo(() => NonSupportedCharacters.test(name), [name]);
+
 	const showWarning = useMemo(
-		() => NonSupportedCharacters.test(name) || name.length >= 128,
-		[name]
+		() => showMaxLengthWarning || showSpecialCharWarning,
+		[showMaxLengthWarning, showSpecialCharWarning]
 	);
 	const disabled = useMemo(() => name === '' || showWarning, [name, showWarning]);
 
@@ -123,16 +122,22 @@ const CreateUpdateTagModal: FC<ComponentProps> = ({
 				textColor={showWarning ? 'error' : 'text'}
 				hasError={showWarning}
 			/>
+
 			{showWarning && (
 				<Padding all="small">
-					<Text size="small" color="error" overflow="break-word">
-						{t(
-							'label.invalid_tag_name',
-							'Max 128 characters are allowed and it should not contain any special character'
-						)}
-					</Text>
+					{showMaxLengthWarning && (
+						<Text size="extrasmall" color="error" overflow="break-word">
+							{t('label.tag_max_length', 'Max 128 characters are allowed')}
+						</Text>
+					)}
+					{showSpecialCharWarning && (
+						<Text size="extrasmall" color="error" overflow="break-word">
+							{t('label.no_special_char_allowed', 'Name should not contain any special character')}
+						</Text>
+					)}
 				</Padding>
 			)}
+
 			<Padding top="small" />
 			<ColorPicker
 				onChange={handleColorChange}
