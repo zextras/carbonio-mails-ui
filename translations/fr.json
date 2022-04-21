@@ -175,10 +175,10 @@
         "allowed_actions": "Actions autorisées",
         "attachment": "Pièce jointe",
         "attachment_plural": "Pièces jointes",
-        "bcc": "CCI",
+        "bcc": "Cci",
         "calendar_color": "Couleur de l'élément",
         "cancel": "Annuler",
-        "cc": "CC",
+        "cc": "Cc",
         "download": "Télécharger",
         "download_plural": "Télécharger",
         "draft_folder": "[BROUILLON]",
@@ -262,7 +262,7 @@
         "freebusy": "Disponibilité",
         "hide": "Cacher",
         "insert": "Insérer",
-        "loading_results": "Chargement des résultats...",
+        "loading_results": "Chargement des résultats…",
         "mail_folder": "Dossier email",
         "mail_selected": "{{count}} email sélectionné",
         "mail_selected_plural": "{{count}} emails sélectionnés",
@@ -303,7 +303,30 @@
         "attachement_unknown": "<{{mimeType}}> inconnu",
         "draft": "Brouillon",
         "forwarded": "Transféré",
-        "replied": "Répondu"
+        "replied": "Répondu",
+        "app_name": "Emails",
+        "cc_bcc": "Cc Cci",
+        "add_task": "Si vous avez besoin de prendre des notes, vous pouvez ajouter une tâche à votre LISTE À FAIRE",
+        "by_conversation": "Par Conversation",
+        "by_message": "Par Message",
+        "create_new_task": "Créer une nouvelle tâche",
+        "destination_folder": "Dossier de destination",
+        "enable_message_disposal": "Activer la suppression des messages",
+        "disposal_threshold": "Seuil de suppression",
+        "enable_message_retention": "Activer la rétention des messages",
+        "from_identity": "De : {{identity}}",
+        "new_email": "Nouvel Email",
+        "select_color": "Sélectionner une couleur",
+        "notify_organizer": "Notifier l'organisateur",
+        "retention_range": "Plage de rétention",
+        "set_default_signatures": "Définir les signatures par défaut",
+        "show_quoted_text": "Afficher le texte cité",
+        "folder_name": "Nom du dossier",
+        "select": "Sélectionner",
+        "send_email": "Envoyer un email",
+        "share_with": "Partager avec",
+        "accept": "Accepter",
+        "decline": "Refuser"
     },
     "mail_folder": "dossier Mail",
     "message": {
@@ -317,7 +340,8 @@
         },
         "sending_mail_to_self": "Il semblerait que vous soyez sur le point de vous envoyer un email",
         "search_hints": "Les indices de recherche dont nous devons discuter",
-        "invalid_search_message": "Nous n'avons pas trouvé de correspondance"
+        "invalid_search_message": "Nous n'avons pas trouvé de correspondance",
+        "email_saved_at": "L'email a été sauvé dans les brouillons à {{time}}"
     },
     "messages": {
         "invalid_address": "L'adresse suivante semble être invalide",
@@ -450,7 +474,8 @@
             "double_click": "Un double-clic ouvre le message dans une nouvelle fenêtre",
             "message_color": "Couleur du message",
             "message_preview_title": "Aperçu du message et images",
-            "message_selection": "Sélection du message"
+            "message_selection": "Sélection du message",
+            "visualization_options": "Options d'affichage"
         },
         "msg_from_optn": {
             "discard": "Rejeter le message automatiquement",

@@ -5,6 +5,7 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { map } from 'lodash';
+import { convertToDecimal } from '../../commons/utilities';
 
 export const uploadAttachments = createAsyncThunk<any, any>(
 	'uploadAttachments',
@@ -16,7 +17,7 @@ export const uploadAttachments = createAsyncThunk<any, any>(
 						'Cache-Control': 'no-cache',
 						'X-Requested-With': 'XMLHttpRequest',
 						'Content-Type': `${file.type || 'application/octet-stream'};`,
-						'Content-Disposition': `attachment; filename="${file.name}"`
+						'Content-Disposition': `attachment; filename="${convertToDecimal(file.name)}"`
 					},
 					method: 'POST',
 					body: file

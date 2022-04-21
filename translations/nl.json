@@ -163,9 +163,9 @@
         "send": "Versturen",
         "share": "Delen",
         "allowed_actions": "Toegestane acties",
-        "bcc": "BCC",
+        "bcc": "Bcc",
         "calendar_color": "Kleur item",
-        "cc": "CC",
+        "cc": "Cc",
         "edit_access": "Toegang van {{name}} bewerken",
         "edit_folder_properties": "Eigenschappen van {{name}} bewerken",
         "draft_folder": "[CONCEPT]",
@@ -253,7 +253,7 @@
         "size_larger": "Grootte groter dan (MB)",
         "search_activate_selection_mode": "Selectiemodus is nog niet beschikbaar bij zoekresultaten",
         "discard_changes": "WIJZIGINGEN VERWIJDEREN",
-        "loading_results": "Resultaten laden...",
+        "loading_results": "Resultaten worden geladen…",
         "mail_folder": "E-mailmap",
         "mail_settings": "Mailinstellingen",
         "on_behalf_of": "namens",
@@ -280,7 +280,31 @@
         "mail_selected_plural": "{{count}} e-mails geselecteerd",
         "forwarded": "Doorgestuurd",
         "send_email": "E-mail sturen",
-        "draft": "Concept"
+        "draft": "Concept",
+        "cc_bcc": "Cc Bcc",
+        "new_email": "Nieuwe e-mail",
+        "set_default_signatures": "Standaard handtekeningen instellen",
+        "attachement_unknown": "Onbekend <{{mimeType}}>",
+        "replied": "Berantwoord",
+        "folder_name": "Naam map",
+        "add_task": "Als u een notitie moet maken, kunt u een taak toevoegen aan uw TAKENLIJST",
+        "app_name": "Mails",
+        "decline": "Weigeren",
+        "destination_folder": "Bestemmingsmap",
+        "show_quoted_text": "Geciteerde tekst weergeven",
+        "accept": "Aanvaarden",
+        "by_conversation": "Op Gesprek",
+        "by_message": "Op Bericht",
+        "create_new_task": "Nieuwe Taak creëren",
+        "select_color": "Kleur selecteren",
+        "share_with": "Delen met",
+        "disposal_threshold": "Verwijderingsdrempel",
+        "enable_message_disposal": "Berichtverwijdering inschakelen",
+        "enable_message_retention": "Berichtbehoud inschakelen",
+        "from_identity": "Van: {{identity}}",
+        "notify_organizer": "Organisator verwittigen",
+        "retention_range": "Retentiebereik",
+        "select": "Selecteren"
     },
     "messages": {
         "permanent_delete_confirm": "Permanent verwijderen",
@@ -293,7 +317,7 @@
             },
             "redirect": {
                 "first": "Deze e-mail wordt doorgestuurd naar een nieuwe ontvanger met behoud van het e-mailadres van de oorspronkelijke afzender.",
-                "second": "Dit betekent dat het er voor de nieuwe ontvanger uitziet alsof de e-mail oorspronkelijk aan hem of haar was verzonden.,"
+                "second": "De e-mail zal verschijnen zoals hij oorspronkelijk bedoeld was voor de nieuwe ontvanger"
             }
         },
         "new_email": "Nieuwe e-mail",
@@ -410,7 +434,8 @@
         },
         "search_hints": "Hints zoeken waar we het over moeten hebben",
         "sending_mail_to_self": "Het lijkt erop dat je op het punt staat een e-mail naar uzelf te sturen",
-        "invalid_search_message": "We hebben geen match gevonden"
+        "invalid_search_message": "We hebben geen match gevonden",
+        "email_saved_at": "E-mail opgeslagen als concept om {{time}}"
     },
     "administer": "Beheren",
     "allowed_actions": "Toegelaten acties",
@@ -468,7 +493,8 @@
             "display_messages": "Berichten weergeven",
             "message_color": "Bericht kleur",
             "message_selection": "Berichtselectie",
-            "set_message_color": "De setkleur van berichten en gesprekken instellen volgens de kleur van de tag."
+            "set_message_color": "De setkleur van berichten en gesprekken instellen volgens de kleur van de tag.",
+            "visualization_options": "Visualisatie-opties"
         },
         "msg_from_optn": {
             "discard": "Bericht automatisch verwijderen",
