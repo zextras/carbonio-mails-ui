@@ -379,6 +379,9 @@
     "placeholder": {
         "add_new_recipients": "Add new recipients"
     },
+    "preview": {
+        "close": "Close Preview"
+    },
     "search": {
         "attachment_note": "Search for all e-mails that have an attachment.",
         "flagged_note": "Search for all flagged e-mails.",

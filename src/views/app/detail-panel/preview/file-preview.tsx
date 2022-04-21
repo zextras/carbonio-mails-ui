@@ -4,35 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useContext, useMemo } from 'react';
-import { IconButton, Tooltip } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
-import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
-
-export const FilePreview: FC<any> = ({ att, link }) => {
-	const [t] = useTranslation();
-	const { createPreview } = useContext(PreviewsManagerContext);
-	const previewType = useMemo(
-		() =>
-			// eslint-disable-next-line no-nested-ternary
-			att.contentType?.startsWith('image')
-				? 'image'
-				: att.contentType?.endsWith('pdf')
-				? 'pdf'
-				: undefined,
-		[att.contentType]
-	);
-	const preview = useCallback(() => {
-		if (previewType) {
-			createPreview({
-				src: link,
-				previewType
-			});
-		}
-	}, [createPreview, link, previewType]);
-	return previewType ? (
-		<Tooltip label={t('label.preview', 'Preview')}>
-			<IconButton size="medium" icon="SearchOutline" onClick={preview} />
-		</Tooltip>
-	) : null;
+/**
+ * Format a size in byte as human readable
+ */
+export const humanFileSize = (inputSize: number): string => {
+	if (inputSize === 0) {
+		return '0 B';
+	}
+	const i = Math.floor(Math.log(inputSize) / Math.log(1024));
+	return `${(inputSize / 1024 ** i).toFixed(2).toString()} ${['B', 'KB', 'MB', 'GB', 'TB'][i]}`;
 };
+
+export const previewType = (contentType: string): string | undefined =>
+	// eslint-disable-next-line no-nested-ternary
+	contentType?.startsWith('image') ? 'image' : contentType?.endsWith('pdf') ? 'pdf' : undefined;
