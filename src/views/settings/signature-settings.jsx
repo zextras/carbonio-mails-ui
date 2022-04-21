@@ -113,9 +113,7 @@ export default function SignatureSettings({
 			index: signItems.length
 		});
 		setSignItems(updatedSign);
-		console.log(updatedSign);
 	};
-	console.log(signatures);
 
 	const [signatureNewMessage, signatureRepliesForwards] = useMemo(
 		() => [
