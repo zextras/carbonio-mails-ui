@@ -54,8 +54,7 @@ export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => 
 	const account = useUserAccount();
 	const timezone = useMemo(() => settings?.prefs.zimbraPrefTimeZoneId, [settings]);
 	const tags = useTags();
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
+
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 
 	const [conversationActionsCallback, messageActionsCallback] = useMemo(

@@ -17,18 +17,19 @@ import { reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useGetTagsActions } from '../ui-actions/tag-actions';
 
+type ItemType = {
+	CustomComponent: ReactElement | any;
+	active: boolean;
+	color: number;
+	divider: boolean;
+	id: string;
+	label: string;
+	name: string;
+	open: boolean;
+	actions?: Array<unknown>;
+};
 type ItemProps = {
-	item: {
-		CustomComponent: ReactElement;
-		active: boolean;
-		color: number;
-		divider: boolean;
-		id: string;
-		label: string;
-		name: string;
-		open: boolean;
-		actions: Array<unknown>;
-	};
+	item: ItemType;
 };
 
 const CustomComp = (props: ItemProps): ReactElement => {
@@ -51,14 +52,13 @@ const CustomComp = (props: ItemProps): ReactElement => {
 		</Dropdown>
 	);
 };
-const useGetTagsAccordion = (): ItemProps[] => {
+const useGetTagsAccordion = (): ItemType[] => {
 	const tagsFromStore = useTags();
-
 	return useMemo(
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc: Array<ItemProps>, v) => {
+				(acc: Array<ItemType>, v) => {
 					const item = {
 						id: v.id,
 						active: false,
@@ -69,8 +69,6 @@ const useGetTagsAccordion = (): ItemProps[] => {
 						open: false,
 						CustomComponent: CustomComp
 					};
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
 					acc.push(item);
 					return acc;
 				},

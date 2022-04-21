@@ -25,8 +25,7 @@ export const msgAction = createAsyncThunk<MsgActionResult, MsgActionParameters>(
 	async ({ ids, operation, parent, tagName }) => {
 		const { action } = (await soapFetch<MsgActionRequest, MsgActionResponse>('MsgAction', {
 			_jsns: 'urn:zimbraMail',
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
+
 			action: omitBy(
 				{
 					id: ids.join(','),

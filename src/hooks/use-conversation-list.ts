@@ -7,7 +7,7 @@ import { find, isEqual, orderBy, reduce, some } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { replaceHistory, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import { Conversation } from '../types/conversation';

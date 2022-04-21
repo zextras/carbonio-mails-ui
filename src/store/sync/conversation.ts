@@ -7,7 +7,6 @@ import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, map, merge, omit, reduce, some, sortBy, head } from 'lodash';
 import { ConversationsStateType } from '../../types/state';
 import { ConvMessage } from '../../types/conversation';
-import { SyncResponseCreatedMessage } from '../../types/soap/sync';
 
 type Payload = {
 	payload: { m: any; t: any };
