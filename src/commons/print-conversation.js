@@ -12,6 +12,8 @@ import {
 	_CI_REGEX,
 	_CI_SRC_REGEX
 } from './mail-message-renderer';
+import logo from '../assets/zextras-logo-gray.png';
+import productLogo from '../assets/logo-product-grey.png';
 
 export const getCompleteHTML = ({ content, account }) =>
 	`	<html>
@@ -263,91 +265,98 @@ export const getContentForPrint = ({ messages, account, conversations, isMsg = f
 	return getCompleteHTML({ content, account });
 };
 
-export const getErrorPage = (error) =>
-	`<html>
-        <head>
-        <title>Carbonio</title>
-            <style>
-                #full-screen {
-                    background-color: rgb(51, 51, 51);
-                    width: 100vw;
-                    height: 100vh;
-                    color: white;
-                    font-family: 'Arial Black';
-                    text-align: center;
-                }
-                .container {
-                    padding-top: 4em;
-                    width: 50%;
-                    display: block;
-                    margin: 0 auto;
-                }
-                .error-num {
-                    font-size: 8em;
-                }
-                #eye_right ,#eye_left {
-                    background: #fff;
-                    border-radius: 50%;
-                    display: inline-block;
-                    height: 100px;
-                    position: relative;
-                    width: 100px;
-                }
-                #eye_right::after,#eye_left::after {
-                    background:#000;
-                    border-radius: 50%;
-                    bottom: 56.1px;
-                    content: ' ';
-                    height: 33px;
-                    position: absolute;
-                    right: 33px;
-                    width: 33px;
-                }
-                .italic {
-                    font-style: italic;
-                    color:red;
-                    font-weight:bold;
-                }
-                p {
-                    margin-bottom: 4em;
-                }
-                a {
-                    color: white;
-                    text-decoration: none;
-                    text-transform: uppercase;
-                    &:hover {
-                        color: lightgray;
-                    }
-                }
-            </style>
-        </head>
-        <body>
-            <div id="full-screen">
-                <div class='container'>
-                    <div class='eye' id='eye_right'></div>
-                    <div class='eye' id='eye_left'></div>
-                    <span class="error-num">P</span>
-                    <span class="error-num">S</span>
-                    <p class="sub-text">Oh eyeballs! Something went wrong. <span class="italic">${error}</span> .</p>
-                    <a href="">Go back</a>
+export const getErrorPage = () =>
+	`<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Error</title>
+        <style>
+            html, body, .container {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
+            body {
+                background-color: #ffffff;
+                color: #4d4d4d;
+                font-size: 13px;
+                font-family: Roboto, sans-serif;
+            }
+            .container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            .mainTextWrapper {
+                color: #2b73d2;
+                font-weight: 900;
+                font-size: 26px;
+                line-height: 24px;
+                margin-top: 30px;
+            }
+            .errorWrapper {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                margin: 23px 0 10px;
+            }
+            .line {
+                height: 1px;
+                width: 100px;
+                background-color: gray;
+            }
+            .errorCode {
+                color: #4d4d4d;
+                font-weight: 300;
+                font-size: 14px;
+                line-height: 21px;
+                padding: 0 50px;
+                text-transform: uppercase;
+            }
+            .customText {
+                margin: 0 5px 0 0;
+                color: #414141;
+            }
+            .needSupportText {
+                color: #414141;
+                font-size: 15px;
+            }
+            .poweredByZextras {
+                display: flex;
+                margin: 30px 0 0 0;
+            }
+            .zextrasLogo {
+                top: 3px;
+                position: relative;
+            }
+            .productLogo {
+                height: 75px;
+                width: 564px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="productLogo" >
+                <img src=${productLogo} width="564" height="75"/>
+            </div>
+            <div class="mainTextWrapper">
+                Sorry, we couldn’t find anything to show
+            </div>
+            <div class="errorWrapper">
+                <div class="line"></div>
+                <div class="errorCode"><p>SOMETHING WENT WRONG</p></div>
+                <div class="line"></div>
+            </div>
+            <p class="needSupportText">Please, check Carbonio and try again</p>
+            <div class="poweredByZextras">
+                <p class="customText">powered by</p>
+                <div class="zextrasLogo">
+                    <img src=${logo} height="10" width="63"/>
                 </div>
             </div>
-            <script type="text/javascript">
-                let div_ref= document.getElementById("full-screen");
-                console.log(div_ref)
-                var eye_right = document.getElementById("eye_right") ;
-                var eye_left = document.getElementById("eye_left") ;
-
-                div_ref.addEventListener('mousemove',(event)=>{
-                    var x = eye_right.offsetLeft + eye_right.offsetWidth / 2;
-                    var y = eye_right.offsetTop + eye_right.offsetHeight / 2;
-                    var rad = Math.atan2(event.pageX - x, event.pageY - y);
-                    var rot = rad * (180 / Math.PI) * -1 + 180;
-                    console.log("vvv:","rotate("+ rot +"deg)");
-                    eye_right.style.transform= "rotate("+ rot +"deg)"
-                    eye_left.style.transform= "rotate("+ rot +"deg)"
-                })
-
-            </script>
-        </body>
-    </html>`;
+        </div>
+    </body>
+</html>`;
