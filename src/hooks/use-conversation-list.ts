@@ -7,7 +7,7 @@ import { find, isEqual, orderBy, reduce, some } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { getTags, Tag, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import { Conversation } from '../types/conversation';
@@ -22,7 +22,7 @@ export const useConversationListItems = (): Array<Conversation> => {
 	const { folderId } = <RouteParams>useParams();
 	const dispatch = useDispatch();
 	const { zimbraPrefSortOrder } = useUserSettings()?.prefs as Record<string, string>;
-	const [tagsOnFirstLoad, setTagsOnFirstLoad] = useState(useTags());
+	const [tagsOnFirstLoad, setTagsOnFirstLoad] = useState<Tag | any>();
 	const folderStatus = useSelector((state) => selectFolderSearchStatus(<StateType>state, folderId));
 	const conversations = useSelector(selectConversationsArray);
 	const folder = useSelector(selectFolder(folderId));
@@ -34,6 +34,8 @@ export const useConversationListItems = (): Array<Conversation> => {
 			)?.[1] as 'dateAsc' | 'dateDesc' | undefined) ?? 'dateDesc',
 		[folderId, zimbraPrefSortOrder]
 	);
+
+	useEffect(() => setTagsOnFirstLoad(getTags()), []);
 
 	const sortedConversations = useMemo(
 		() => orderBy(conversations, 'date', sorting === 'dateDesc' ? 'desc' : 'asc'),
