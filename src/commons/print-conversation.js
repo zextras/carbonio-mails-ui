@@ -265,9 +265,9 @@ export const getContentForPrint = ({ messages, account, conversations, isMsg = f
 	return getCompleteHTML({ content, account });
 };
 
-export const getErrorPage = () =>
+export const getErrorPage = (t) =>
 	`<!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
         <meta charset="UTF-8">
         <title>Error</title>
@@ -343,16 +343,22 @@ export const getErrorPage = () =>
                 <img src=${productLogo} width="564" height="75"/>
             </div>
             <div class="mainTextWrapper">
-                Sorry, we couldn’t find anything to show
+            ${t('messages.could_not_find_to_show', 'Sorry, we couldn’t find anything to show')}
             </div>
             <div class="errorWrapper">
                 <div class="line"></div>
-                <div class="errorCode"><p>SOMETHING WENT WRONG</p></div>
+                <div class="errorCode"><p>${t(
+									'messages.something_went_wrong',
+									'SOMETHING WENT WRONG'
+								)}</p></div>
                 <div class="line"></div>
             </div>
-            <p class="needSupportText">Please, check Carbonio and try again</p>
+            <p class="needSupportText">${t(
+							'messages.check_and_try_again',
+							'Please, check Carbonio and try again'
+						)}</p>
             <div class="poweredByZextras">
-                <p class="customText">powered by</p>
+                <p class="customText">${t('messages.powered_by', 'powered by')}</p>
                 <div class="zextrasLogo">
                     <img src=${logo} height="10" width="63"/>
                 </div>

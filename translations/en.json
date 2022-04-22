@@ -327,6 +327,8 @@
         }
     },
     "messages": {
+        "check_and_try_again": "Please, check Carbonio and try again",
+        "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
         "invalid_address": "The following address appears to be invalid",
         "modal": {
             "delete": {
@@ -342,6 +344,7 @@
         "no_content": "This message has no text content",
         "permanent_delete_body": "If you permanently delete this element you will not be able to recover it. Continue?",
         "permanent_delete_title": "Are you sure to permanently delete this element?",
+        "powered_by": "powered by",
         "snackbar": {
             "conversation_deleted": "Conversation deleted",
             "conversation_move": "Conversation successfully moved",
@@ -369,7 +372,8 @@
             "message_redirected": "The message has been redirected",
             "sending_mail_in_count": "Sending your message in {{count}} second",
             "sending_mail_in_count_plural": "Sending your message in {{count}} seconds"
-        }
+        },
+        "something_went_wrong": "SOMETHING WENT WRONG"
     },
     "notification": {
         "new_message": "New Message",

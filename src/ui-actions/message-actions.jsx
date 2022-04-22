@@ -151,7 +151,7 @@ export function printMsg({ t, message, account }) {
 					printWindow.document.write(content);
 				})
 				.catch((err) => {
-					const errorContent = getErrorPage();
+					const errorContent = getErrorPage(t);
 					printWindow.document.write(errorContent);
 				});
 		}
