@@ -82,7 +82,7 @@ export const handleCreatedMessagesReducer = (state: MsgStateType, { payload }: P
 export const handleModifiedMessagesReducer = (state: MsgStateType, { payload }: Payload): void => {
 	forEach(payload, (msg) => {
 		if (msg?.id && state?.messages?.[msg.id]) {
-			state.messages[msg.id] = merge(state.messages[msg.id], msg);
+			state.messages[msg.id] = { ...merge(state.messages[msg.id], msg), tags: msg.tags };
 		}
 	});
 };

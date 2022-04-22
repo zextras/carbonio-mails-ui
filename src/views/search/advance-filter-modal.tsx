@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useState, useCallback, useMemo, useEffect } from 'react';
-import { CustomModal, Container, Icon, Row, Text, Padding } from '@zextras/carbonio-design-system';
+import {
+	CustomModal,
+	Container,
+	Icon,
+	Row,
+	TextWithTooltip,
+	Padding
+} from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { concat, filter, includes, map } from 'lodash';
 import { getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
@@ -76,11 +83,17 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 				...item,
 				label: item.name,
 				customComponent: (
-					<Row>
-						<Icon icon="Tag" customColor={ZIMBRA_STANDARD_COLORS[item.color ?? 0].hex} />
-						<Padding left="small">
-							<Text>{item.name}</Text>
-						</Padding>
+					<Row takeAvailableSpace mainAlignment="flex-start">
+						<Row takeAvailableSpace mainAlignment="space-between">
+							<Row mainAlignment="flex-end">
+								<Padding right="small">
+									<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[item.color ?? 0].hex} />
+								</Padding>
+							</Row>
+							<Row takeAvailableSpace mainAlignment="flex-start">
+								<TextWithTooltip>{item.name}</TextWithTooltip>
+							</Row>
+						</Row>
 					</Row>
 				)
 			})),
