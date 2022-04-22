@@ -241,24 +241,9 @@ export default function AttachmentsBlock({ message }) {
 		[attachments, theme]
 	);
 
-	const confirmAction = (nodes, multiple) => {
+	const confirmAction = (nodes) => {
 		console.clear();
 		console.log(nodes[0]);
-		if (multiple) {
-			soapFetch('Batch', {
-				CreateMountpointRequest: map(links, (link) => ({
-					link: {
-						l: 1,
-						name: `${link.name} ${link.of} ${link.ownerName}`,
-						rid: link.folderId,
-						view: 'message',
-						zid: link.ownerId
-					},
-					_jsns: 'urn:zimbraMail'
-				})),
-				_jsns: 'urn:zimbra'
-			});
-		}
 		soapFetch('CopyToFiles', {
 			_jsns: 'urn:zimbraMail',
 			mid: message.id,
@@ -270,10 +255,10 @@ export default function AttachmentsBlock({ message }) {
 	const isAValidDestination = (node) => node.permissions?.can_write_file;
 
 	const actionTarget = {
-		title: 'Select destination folder',
+		title: t('label.select_folder', 'Select folder'),
 		confirmAction,
-		confirmLabel: 'Select',
-		disabledTooltip: 'This node is not a valid destination',
+		confirmLabel: t('label.select', 'Select'),
+		disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
 		allowFiles: false,
 		allowFolders: true,
 		isValidSelection: isAValidDestination,
