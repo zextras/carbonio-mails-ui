@@ -70,10 +70,10 @@ const DeleteTagModal: FC<ComponentProps> = ({ onClose, tag }): ReactElement => {
 						defaultValue: `Are you sure to delete "{{name}}" Tag?`
 					})}
 				</Text>
-				<Text overflow="break-word">
+				<Text overflow="break-word" style={{ textAlign: 'center' }}>
 					{t(
 						'message.delete_tag_message2',
-						'Deleting it will be removed from every item affected by.'
+						'Once deleted, it will be removed from every item marked with it.'
 					)}
 				</Text>
 			</Container>
