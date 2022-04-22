@@ -254,6 +254,7 @@
         "of": "of",
         "on_behalf_of": "on behalf of",
         "owner": "Owner: ",
+        "preview": "Preview",
         "private": "Private",
         "read": "Read",
         "receive_message": "Receiving Messages",
@@ -377,6 +378,9 @@
     },
     "placeholder": {
         "add_new_recipients": "Add new recipients"
+    },
+    "preview": {
+        "close": "Close Preview"
     },
     "search": {
         "attachment_note": "Search for all e-mails that have an attachment.",
