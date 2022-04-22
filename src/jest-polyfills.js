@@ -3,5 +3,5 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import/no-extraneous-dependencies, import/no-unresolved
 window.fetch = require('node-fetch');
