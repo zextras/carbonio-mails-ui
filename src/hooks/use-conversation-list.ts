@@ -22,7 +22,6 @@ export const useConversationListItems = (): Array<Conversation> => {
 	const { folderId } = <RouteParams>useParams();
 	const dispatch = useDispatch();
 	const { zimbraPrefSortOrder } = useUserSettings()?.prefs as Record<string, string>;
-	const [tagsOnFirstLoad, setTagsOnFirstLoad] = useState<Tag | any>();
 	const folderStatus = useSelector((state) => selectFolderSearchStatus(<StateType>state, folderId));
 	const conversations = useSelector(selectConversationsArray);
 	const folder = useSelector(selectFolder(folderId));
@@ -35,26 +34,16 @@ export const useConversationListItems = (): Array<Conversation> => {
 		[folderId, zimbraPrefSortOrder]
 	);
 
-	useEffect(() => setTagsOnFirstLoad(getTags()), []);
-
 	const sortedConversations = useMemo(
 		() => orderBy(conversations, 'date', sorting === 'dateDesc' ? 'desc' : 'asc'),
 		[conversations, sorting]
 	);
 
-	const tags = useTags();
-	const reload = useMemo(() => !isEqual(tagsOnFirstLoad, tags), [tagsOnFirstLoad, tags]);
 	useEffect(() => {
-		if ((folderStatus !== 'complete' && folderStatus !== 'pending') || reload) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			dispatch(search({ folderId, limit: 101, sortBy: sorting, types: 'conversation' })).then(
-				() => {
-					setTagsOnFirstLoad(tags);
-				}
-			);
+		if (folderStatus !== 'complete' && folderStatus !== 'pending') {
+			dispatch(search({ folderId, limit: 101, sortBy: sorting, types: 'conversation' }));
 		}
-	}, [dispatch, folderId, folderStatus, reload, sorting, tags]);
+	}, [dispatch, folderId, folderStatus, sorting]);
 
 	return useMemo(
 		() =>

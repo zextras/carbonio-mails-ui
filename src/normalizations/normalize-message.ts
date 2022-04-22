@@ -120,7 +120,7 @@ export const normalizeMailMessageFromSoap = (
 			fragment: m.fr,
 			subject: m.su,
 			participants: m.e ? map(m.e || [], normalizeParticipantsFromSoap) : undefined,
-			tags: !isNil(m.tn) ? filter(m.tn.split(','), (tn) => tn !== '') : [],
+			tags: !isNil(m.t) ? filter(m.t.split(','), (t) => t !== '') : [],
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
 			invite: m.inv,
 			shr: m.shr,

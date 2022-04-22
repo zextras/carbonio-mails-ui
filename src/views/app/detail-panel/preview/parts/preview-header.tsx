@@ -108,7 +108,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			reduce(
 				tagsFromStore,
 				(acc: any, v) => {
-					if (includes(message.tags, v.name))
+					if (includes(message.tags, v.id))
 						acc.push({
 							...v,
 							color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex,
@@ -151,6 +151,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	}, []);
 
 	const isTagInStore = useTagExist(tags);
+
 	const showMultiTagIcon = useMemo(() => message.tags?.length > 1, [message]);
 	const showTagIcon = useMemo(
 		() =>
