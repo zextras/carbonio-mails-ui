@@ -125,7 +125,7 @@ export const TagsDropdownItem = ({
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
-	const [checked, setChecked] = useState(includes(conversation.tags, tag.name));
+	const [checked, setChecked] = useState(includes(conversation.tags, tag.id));
 	const [isHovering, setIsHovering] = useState(false);
 	const toggleCheck = useCallback(
 		(value) => {
@@ -229,14 +229,14 @@ export const MultiSelectTagsDropdownItem = ({
 	const tagsToShow = reduce(
 		tags,
 		(acc: any, v: any) => {
-			const values = map(conversations, (c) => includes(c.tags, v.name));
-			if (every(values)) acc.push(v.name);
+			const values = map(conversations, (c) => includes(c.tags, v.id));
+			if (every(values)) acc.push(v.id);
 			return acc;
 		},
 		[]
 	);
 
-	const [checked, setChecked] = useState(includes(tagsToShow, tag.name));
+	const [checked, setChecked] = useState(includes(tagsToShow, tag.id));
 	const toggleCheck = useCallback(
 		(value) => {
 			setChecked((c) => !c);

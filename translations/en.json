@@ -327,7 +327,7 @@
     },
     "message": {
         "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
-        "delete_tag_message2": "Deleting it will be removed from every item affected by.",
+        "delete_tag_message2": "Once deleted, it will be removed from every item marked with it.",
         "email_saved_at": "E-mail saved as a draft at {{time}}",
         "invalid_search_message": "We didn't find any match",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
