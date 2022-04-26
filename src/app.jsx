@@ -18,7 +18,11 @@ import {
 import { some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
-import { mailToSharedFunction, openComposerSharedFunction } from './integrations/shared-functions';
+import {
+	mailToSharedFunction,
+	openComposerSharedFunction,
+	openPrefilledComposerSharedFunction
+} from './integrations/shared-functions';
 import Notifications from './views/notifications';
 import { ParticipantRole } from './types/participant';
 import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
@@ -143,10 +147,16 @@ const App = () => {
 				type: ACTION_TYPES.NEW
 			}
 		);
-		registerFunctions({
-			id: 'compose',
-			fn: openComposerSharedFunction
-		});
+		registerFunctions(
+			{
+				id: 'compose',
+				fn: openComposerSharedFunction
+			},
+			{
+				id: 'prefillCompose',
+				fn: openPrefilledComposerSharedFunction
+			}
+		);
 	}, [t]);
 
 	return (
