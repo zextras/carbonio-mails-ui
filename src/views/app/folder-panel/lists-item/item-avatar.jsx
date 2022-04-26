@@ -23,7 +23,7 @@ export const ItemAvatar = ({ item, selected, selecting, toggle, folderId, isSear
 	const [t] = useTranslation();
 	const [avatarLabel, avatarEmail] = useMemo(() => {
 		let sender = item?.participants?.find((p) => p.type === targetParticipants);
-		if (!sender) [sender] = item.participants;
+		if (!sender) [sender] = item.participants ?? [];
 		return [sender.fullName || sender.name || sender.address || '.', sender.address];
 	}, [item.participants, targetParticipants]);
 

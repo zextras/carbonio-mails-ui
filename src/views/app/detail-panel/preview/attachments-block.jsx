@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { find, map, reduce, uniqBy } from 'lodash';
@@ -18,12 +18,11 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
+import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
-import { MailMessagePart } from '../../../../types/mail-message';
-import { EditorAttachmentFiles } from '../../../../types/mails-editor';
+import { humanFileSize, previewType } from './file-preview';
 
 const AttachmentsActions = styled(Row)``;
-
 function findAttachments(parts, acc) {
 	return reduce(
 		parts,
@@ -36,18 +35,6 @@ function findAttachments(parts, acc) {
 		},
 		acc
 	);
-}
-
-function getSizeLabel(size) {
-	let value = '';
-	if (size < 1024000) {
-		value = `${Math.round((size / 1024) * 100) / 100} KB`;
-	} else if (size < 1024000000) {
-		value = `${Math.round((size / 1024 / 1024) * 100) / 100} MB`;
-	} else {
-		value = `${Math.round((size / 1024 / 1024 / 1024) * 100) / 100} GB`;
-	}
-	return value;
 }
 
 function getAttachmentsLink(messageId, messageSubject, attachments) {
@@ -102,12 +89,12 @@ const AttachmentExtension = styled(Text)`
 `;
 
 function Attachment({ filename, size, link, message, part, iconColors, att }) {
+	const { createPreview } = useContext(PreviewsManagerContext);
 	const extension = getFileExtension(att);
-	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
+	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const [t] = useTranslation();
 	const inputRef = useRef();
 	const inputRef2 = useRef();
-
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
 			// eslint-disable-next-line no-param-reassign
@@ -116,6 +103,37 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 		}
 	}, [inputRef]);
 
+	const preview = useCallback(
+		(ev) => {
+			ev.preventDefault();
+			const pType = previewType(att.contentType);
+			if (pType) {
+				createPreview({
+					src: link,
+					previewType: pType,
+					/** Left Action for the preview */
+					closeAction: {
+						id: 'close',
+						icon: 'ArrowBack',
+						tooltipLabel: t('preview.close', 'Close Preview')
+					},
+					/** Actions for the preview */
+					// actions: HeaderAction[],
+					/** Extension of the file, shown as info */
+					extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
+					/** Name of the file, shown as info */
+					filename: att.filename,
+					/** Size of the file, shown as info */
+					size: humanFileSize(att.size)
+				});
+			} else if (inputRef2.current) {
+				// eslint-disable-next-line no-param-reassign
+				inputRef2.current.value = null;
+				inputRef2.current.click();
+			}
+		},
+		[att, createPreview, link, t]
+	);
 	return (
 		<AttachmentContainer
 			orientation="horizontal"
@@ -130,14 +148,7 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 				<Row
 					padding={{ all: 'small' }}
 					mainAlignment="flex-start"
-					onClick={(ev) => {
-						ev.preventDefault();
-						if (inputRef2.current) {
-							// eslint-disable-next-line no-param-reassign
-							inputRef2.current.value = null;
-							inputRef2.current.click();
-						}
-					}}
+					onClick={preview}
 					takeAvailableSpace
 				>
 					<AttachmentExtension background={find(iconColors, (ic) => ic.extension === extension)}>
@@ -160,7 +171,8 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 				</Row>
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
-				<AttachmentHoverBarContainer>
+				<AttachmentHoverBarContainer orientation="horizontal">
+					{/* <FilePreview att={att} link={link} /> */}
 					<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
 						<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
 					</Tooltip>

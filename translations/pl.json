@@ -165,7 +165,7 @@
         "draft_folder": "[WERSJA ROBOCZA]",
         "email_perm_deleted": "E-mail został trwale usunięty",
         "error_address": "Wymagany jest prawidłowy adres e-mail",
-        "expand": "Powiększ",
+        "expand": "Rozwiń",
         "filter_folders": "Filtruj foldery",
         "filter_user": "Filtruj użytkowników",
         "find_mail_shares": "Znajdź udostępnione foldery",
@@ -289,7 +289,7 @@
         "delete_email": "Usuń e-mail",
         "edit_draft": "Edytuj wersję roboczą",
         "redirect_email": "Przekieruj e-mail",
-        "warning": "Uwaga!"
+        "warning": "Uwaga"
     },
     "folder_panel": {
         "lists_item": {

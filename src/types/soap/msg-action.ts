@@ -20,8 +20,8 @@ export type MsgActionOperation =
 
 export type MsgActionRequest = ZimbraRequest & {
 	action: {
-		id: string;
-		op: MsgActionOperation;
+		id?: string;
+		op?: MsgActionOperation;
 		tn?: string;
 		l?: string;
 	};
