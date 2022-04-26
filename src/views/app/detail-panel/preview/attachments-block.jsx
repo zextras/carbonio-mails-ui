@@ -20,8 +20,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { getAction, soapFetch } from '@zextras/carbonio-shell-ui';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
-import { MailMessagePart } from '../../../../types/mail-message';
-import { EditorAttachmentFiles } from '../../../../types/mails-editor';
 
 const AttachmentsActions = styled(Row)``;
 
@@ -102,17 +100,7 @@ const AttachmentExtension = styled(Text)`
 	margin-right: ${({ theme }) => theme.sizes.padding.small};
 `;
 
-function Attachment({
-	filename,
-	size,
-	link,
-	message,
-	part,
-	iconColors,
-	att,
-	uploadIntegration,
-	isUploadIntegrationAvailable
-}) {
+function Attachment({ filename, size, link, message, part, iconColors, att }) {
 	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
@@ -126,6 +114,35 @@ function Attachment({
 			inputRef.current.click();
 		}
 	}, [inputRef]);
+
+	const confirmAction = (nodes) => {
+		soapFetch('CopyToFiles', {
+			_jsns: 'urn:zimbraMail',
+			mid: message.id,
+			part: att.name,
+			destinationFolderId: nodes[0].id
+		});
+	};
+
+	const isAValidDestination = (node) => node.permissions?.can_write_file;
+
+	const actionTarget = {
+		title: t('label.select_folder', 'Select folder'),
+		confirmAction,
+		confirmLabel: t('label.select', 'Select'),
+		disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
+		allowFiles: false,
+		allowFolders: true,
+		isValidSelection: isAValidDestination,
+		canSelectOpenedFolder: true,
+		maxSelection: 1
+	};
+
+	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
+		'carbonio_files_action',
+		'files-select-nodes',
+		actionTarget
+	);
 
 	return (
 		<AttachmentContainer
@@ -242,13 +259,13 @@ export default function AttachmentsBlock({ message }) {
 	);
 
 	const confirmAction = (nodes) => {
-		console.clear();
-		console.log(nodes[0]);
-		soapFetch('CopyToFiles', {
-			_jsns: 'urn:zimbraMail',
-			mid: message.id,
-			part: attachments[0].name,
-			destinationFolderId: nodes[0].id
+		forEach(attachments, (att) => {
+			soapFetch('CopyToFiles', {
+				_jsns: 'urn:zimbraMail',
+				mid: message.id,
+				part: att.name,
+				destinationFolderId: nodes[0].id
+			});
 		});
 	};
 
@@ -286,8 +303,6 @@ export default function AttachmentsBlock({ message }) {
 							part={att.name}
 							iconColors={iconColors}
 							att={att}
-							isUploadIntegrationAvailable={isUploadIntegrationAvailable}
-							uploadIntegration={uploadIntegration}
 						/>
 					))}
 				</Container>
