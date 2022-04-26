@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { SnackbarManagerContext, useModal } from '@zextras/carbonio-design-system';
-import { FOLDERS, useAppContext, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useAppContext, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +30,7 @@ import {
 	moveMessageToFolder,
 	deleteMessagePermanently
 } from '../ui-actions/message-actions';
+import { applyTag } from '../ui-actions/tag-actions';
 
 export const useMessageActions = (message: MailMessage): Array<any> => {
 	const [t] = useTranslation();
@@ -46,7 +47,7 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 		() => [FOLDERS.INBOX, FOLDERS.SENT, FOLDERS.DRAFTS, FOLDERS.TRASH, FOLDERS.SPAM],
 		[]
 	);
-
+	const tags = useTags();
 	const arr = [];
 
 	if (message.parent === FOLDERS.DRAFTS) {
@@ -64,6 +65,7 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 			})
 		);
 		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }));
+		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
 	}
 	if (
 		message.parent === FOLDERS.INBOX ||
@@ -106,6 +108,8 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 				deselectAll
 			})
 		);
+
+		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
 		arr.push(printMsg({ t, message, account }));
 		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }));
 		arr.push(redirectMsg({ id: message.id, t, createModal }));
@@ -130,6 +134,7 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 		arr.push(
 			deleteMessagePermanently({ ids: [message.id], t, dispatch, createModal, deselectAll })
 		);
+		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
 	}
 	if (message.parent === FOLDERS.SPAM) {
 		arr.push(deleteMsg({ ids: [message.id], t, dispatch, createSnackbar, createModal }));
@@ -138,6 +143,7 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 		);
 		arr.push(printMsg({ t, message, account }));
 		arr.push(showOriginalMsg({ id: message.id, t }));
+		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
 	}
 	return arr;
 };

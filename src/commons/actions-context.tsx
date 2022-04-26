@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
 	useIntegratedComponent,
+	useTags,
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
@@ -52,13 +53,23 @@ export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => 
 	const settings = useUserSettings();
 	const account = useUserAccount();
 	const timezone = useMemo(() => settings?.prefs.zimbraPrefTimeZoneId, [settings]);
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
+	const tags = useTags();
+
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 
 	const [conversationActionsCallback, messageActionsCallback] = useMemo(
 		() => [
-			conversationActions(
+			conversationActions({
+				folderId,
+				t,
+				dispatch,
+				createSnackbar,
+				createModal,
+				ContactInput,
+				tags,
+				account
+			}),
+			messageActions({
 				folderId,
 				t,
 				dispatch,
@@ -66,20 +77,11 @@ export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => 
 				createModal,
 				ContactInput,
 				timezone,
-				account
-			),
-			messageActions(
-				folderId,
-				t,
-				dispatch,
-				createSnackbar,
-				createModal,
-				ContactInput,
-				timezone,
-				account
-			)
+				account,
+				tags
+			})
 		],
-		[ContactInput, createModal, createSnackbar, dispatch, folderId, t, timezone, account]
+		[folderId, t, dispatch, createSnackbar, createModal, ContactInput, tags, account, timezone]
 	);
 	const getMessageActions = useCallback<GetActionsFunction>(
 		(item: any): [ActionList, ActionList] => messageActionsCallback(item),

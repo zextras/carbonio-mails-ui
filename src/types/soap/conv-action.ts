@@ -20,8 +20,8 @@ export type ConvActionOperation =
 
 export type ConvActionRequest = ZimbraRequest & {
 	action: {
-		id: string;
-		op: ConvActionOperation;
+		id?: string;
+		op?: ConvActionOperation;
 		tn?: string;
 		l?: string;
 	};

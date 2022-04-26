@@ -333,8 +333,7 @@ export const getErrorPage = (error) =>
                 </div>
             </div>
             <script type="text/javascript">
-                let div_ref= document.getElementById("full-screen");
-                console.log(div_ref)
+                let div_ref= document.getElementById("full-screen");              
                 var eye_right = document.getElementById("eye_right") ;
                 var eye_left = document.getElementById("eye_left") ;
 
@@ -342,8 +341,7 @@ export const getErrorPage = (error) =>
                     var x = eye_right.offsetLeft + eye_right.offsetWidth / 2;
                     var y = eye_right.offsetTop + eye_right.offsetHeight / 2;
                     var rad = Math.atan2(event.pageX - x, event.pageY - y);
-                    var rot = rad * (180 / Math.PI) * -1 + 180;
-                    console.log("vvv:","rotate("+ rot +"deg)");
+                    var rot = rad * (180 / Math.PI) * -1 + 180;                  
                     eye_right.style.transform= "rotate("+ rot +"deg)"
                     eye_left.style.transform= "rotate("+ rot +"deg)"
                 })

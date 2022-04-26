@@ -16,6 +16,7 @@ export type SoapIncompleteMessage = {
 	// urgent (!), low-priority (?), priority (+)
 	/** Flags */ f?: string;
 	/** TagNames */ tn?: string;
+	/** TagIds */ t?: string;
 	/** Subject */ su?: string;
 	/** Fragment */ fr?: string;
 	/** Contacts */ e?: Array<SoapMailParticipant>;

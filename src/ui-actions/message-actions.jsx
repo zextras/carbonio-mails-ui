@@ -14,6 +14,7 @@ import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
+import { applyTag } from './tag-actions';
 
 export function setMsgRead({
 	ids,
@@ -469,16 +470,16 @@ export function deleteMessagePermanently({ ids, t, dispatch, createModal, desele
 	};
 }
 
-export const getActions = (
+export const getActions = ({
 	folderId,
 	t,
 	dispatch,
 	createSnackbar,
 	createModal,
 	deselectAll,
-	timezone,
-	account
-) => {
+	account,
+	tags
+}) => {
 	switch (folderId) {
 		case FOLDERS.TRASH:
 			return (message) => [
@@ -517,6 +518,7 @@ export const getActions = (
 						deselectAll
 					}),
 					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
 					setMsgAsSpam({ ids: [message.id], value: false, t, dispatch, createSnackbar, folderId }),
 					printMsg({ t, message, account }),
 					deleteMessagePermanently({ ids: [message.id], t, dispatch, createModal, deselectAll }),
@@ -571,6 +573,7 @@ export const getActions = (
 						deselectAll
 					}),
 					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
 					setMsgAsSpam({
 						ids: [message.id],
 						value: true,
@@ -617,6 +620,7 @@ export const getActions = (
 				],
 				[
 					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
 					moveMsgToTrash({
 						ids: [message.id],
 						t,
@@ -670,6 +674,8 @@ export const getActions = (
 						deselectAll
 					}),
 					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+
+					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
 					setMsgAsSpam({
 						ids: [message.id],
 						value: false,

@@ -48,18 +48,11 @@ export default function SettingsView() {
 	const [flag, setFlag] = useState(false);
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
-	const [loading, setLoading] = useState(false);
-	function callLoader() {
-		setLoading(true);
-		setTimeout(() => setLoading(false), 10);
-	}
+	// const [fetchSigns, setFetchSigns] = useState(true);
 
 	const onClose = useCallback(() => {
 		setSettingsObj({ ...settings });
 		setUpdatedSettings({});
-		/* added loading to update the layout without refreshing the page.
-		As the select cannot be used in controlled mode and defaultValue renders for first time only. */
-		callLoader();
 	}, [settings]);
 
 	const updateSettings = useCallback(
@@ -168,6 +161,7 @@ export default function SettingsView() {
 				delete settingsToUpdate.zimbraPrefDefaultSignatureId;
 			}
 			dispatch(SignatureRequest({ itemsAdd, itemsEdit, itemsDelete, account })).then((resp) => {
+				// setFetchSigns(true);
 				if (setForwardReplySignatureId !== '') {
 					setNewOrForwardSignatureId(itemsAdd, resp, setForwardReplySignatureId, true);
 				}
@@ -224,9 +218,7 @@ export default function SettingsView() {
 	}, [signItems, signItemsUpdated, settingsToUpdate, dispatch, account, createSnackbar, t, flag]);
 
 	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), [t]);
-	return loading ? (
-		<LoadingShimmer />
-	) : (
+	return (
 		<>
 			<SettingsHeader onSave={saveChanges} onCancel={onClose} isDirty={!isDisabled} title={title} />
 			<Container
@@ -257,6 +249,8 @@ export default function SettingsView() {
 						setSignItems={setSignItems}
 						signItemsUpdated={signItemsUpdated}
 						setSignItemsUpdated={setSignItemsUpdated}
+						/* setFetchSigns={setFetchSigns}
+						fetchSigns={fetchSigns} */
 						flag={flag}
 					/>
 					<FilterModule t={t} />
