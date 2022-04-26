@@ -24,7 +24,7 @@ export const ItemAvatar = ({ item, selected, selecting, toggle, folderId, isSear
 	const [avatarLabel, avatarEmail] = useMemo(() => {
 		let sender = item?.participants?.find((p) => p.type === targetParticipants);
 		if (!sender) [sender] = item.participants ?? [];
-		return [sender.fullName || sender.name || sender.address || '.', sender.address];
+		return [sender?.fullName || sender?.name || sender?.address || '.', sender?.address];
 	}, [item.participants, targetParticipants]);
 
 	const conversationSelect = useCallback(
