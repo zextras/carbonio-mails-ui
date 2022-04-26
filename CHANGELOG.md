@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.15](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.14...v0.1.15) (2022-04-26)
+
+
+### Features
+
+* tag management in Mails ([2bc2e70](https://github.com/zextras/carbonio-mails-ui/commit/2bc2e70ae69bbb9b4d546b924d89f11507df8d74))
+
+
+### Bug Fixes
+
+* updated the checked referecne with id instead of names ([#71](https://github.com/zextras/carbonio-mails-ui/issues/71)) ([6f2b911](https://github.com/zextras/carbonio-mails-ui/commit/6f2b91170db5c4309ee1be0879f7d4596c469672))
+* uploading attachments issue ([77329f1](https://github.com/zextras/carbonio-mails-ui/commit/77329f1371efc87fc5f85bb10d21cd2e0ed7124f))
+
 ### [0.1.14](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.13...v0.1.14) (2022-04-19)
 
 
