@@ -29,7 +29,8 @@ import {
 	findIndex,
 	concat,
 	some,
-	isNil
+	isNil,
+	compact
 } from 'lodash';
 import {
 	useUserSettings,
@@ -41,7 +42,8 @@ import {
 	useRemoveCurrentBoard,
 	useAddBoardCallback,
 	useUpdateCurrentBoard,
-	getBridgedFunctions
+	getBridgedFunctions,
+	getAction
 } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
@@ -475,41 +477,53 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		[dispatch]
 	);
 
+	const confirmAction = (nodes) => {
+		console.log(nodes);
+	};
+
+	const actionTarget = {
+		title: t('composer.attachment.drive', 'Add from Drive'),
+		confirmAction,
+		confirmLabel: t('label.select', 'Select'),
+		allowFiles: true,
+		allowFolders: false
+	};
+
+	const [filesSelectFilesAction, filesSelectFilesActionAvailable] = getAction(
+		'carbonio_files_action',
+		'files-select-nodes',
+		actionTarget
+	);
+
 	const attachmentsItems = useMemo(
-		() => [
-			{
-				id: 'localAttachment',
-				icon: 'MonitorOutline',
-				label: t('composer.attachment.local', 'Add from local'),
-				click: onFileClick,
-				customComponent: (
-					<>
-						<Icon icon="MonitorOutline" size="medium" />
-						<Padding horizontal="extrasmall" />
-						<Text>{t('composer.attachment.local', 'Add from local')}</Text>
-					</>
-				)
-			},
-			{
-				id: 'driveAttachment',
-				icon: 'DriveOutline',
-				label: t('composer.attachment.drive', 'Add from Drive'),
-				click: () => {
-					setOpenDD(false);
-				},
-				disabled: true
-			},
-			{
-				id: 'contactsModAttachment',
-				icon: 'ContactsModOutline',
-				label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
-				click: () => {
-					setOpenDD(false);
-				},
-				disabled: true
-			}
-		],
-		[onFileClick, t]
+		() =>
+			compact(
+				[
+					{
+						id: 'localAttachment',
+						icon: 'MonitorOutline',
+						label: t('composer.attachment.local', 'Add from local'),
+						click: onFileClick,
+						customComponent: (
+							<>
+								<Icon icon="MonitorOutline" size="medium" />
+								<Padding horizontal="extrasmall" />
+								<Text>{t('composer.attachment.local', 'Add from local')}</Text>
+							</>
+						)
+					},
+					{
+						id: 'contactsModAttachment',
+						icon: 'ContactsModOutline',
+						label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
+						click: () => {
+							setOpenDD(false);
+						},
+						disabled: true
+					}
+				].concat(filesSelectFilesAction)
+			),
+		[filesSelectFilesAction, onFileClick, t]
 	);
 
 	const onClick = () => {
