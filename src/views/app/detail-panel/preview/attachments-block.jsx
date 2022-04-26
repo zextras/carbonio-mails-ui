@@ -190,12 +190,7 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
 					{isUploadIntegrationAvailable && (
-						<Tooltip
-							key={uploadIntegration.id}
-							label={t('label.upload_to_files', {
-								defaultValue: 'Upload to Files'
-							})}
-						>
+						<Tooltip key={uploadIntegration.id} label={t('label.save_to_files', 'Save to Files')}>
 							<IconButton
 								size="medium"
 								icon={uploadIntegration.icon}
@@ -352,9 +347,7 @@ export default function AttachmentsBlock({ message }) {
 					</Link>
 					{isUploadIntegrationAvailable && (
 						<Link size="medium" onClick={uploadIntegration.click} style={{ paddingLeft: '8px' }}>
-							{t('label.upload_to_files', {
-								defaultValue: 'Upload to Files'
-							})}
+							{t('label.save_to_files', 'Save to Files')}
 						</Link>
 					)}
 				</AttachmentsActions>
