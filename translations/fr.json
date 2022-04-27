@@ -326,7 +326,8 @@
         "send_email": "Envoyer un email",
         "share_with": "Partager avec",
         "accept": "Accepter",
-        "decline": "Refuser"
+        "decline": "Refuser",
+        "behalf_of": "de la part de"
     },
     "mail_folder": "dossier Mail",
     "message": {
