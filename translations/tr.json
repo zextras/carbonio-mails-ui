@@ -333,7 +333,8 @@
         "enable_message_disposal": "Mesajı Çöpe At özelliğini etkinleştir",
         "notify_organizer": "Organize edeni bilgilendir",
         "retention_range": "Koruma dönemi süresi",
-        "select": "Seç"
+        "select": "Seç",
+        "behalf_of": "yerine"
     },
     "of": "—",
     "owner": "Sahibi",
