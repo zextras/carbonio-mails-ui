@@ -336,8 +336,7 @@
         "invalid_search_message": "We didn't find any match",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
-            "all_att_fails": "There seems to be a problem when saving, please try again",
-            "all_att_saved": "All files saved correctly",
+            "all_att_saved": "Attachments successfully saved in the selected folder",
             "att_err": "There seems to be a problem when saving, please try again",
             "att_saved": "Attachment saved in the selected folder",
             "calendar_edits_saved": "Edits saved correctly",
