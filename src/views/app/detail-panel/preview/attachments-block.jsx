@@ -141,10 +141,7 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 			height="fit"
 			background="gray3"
 		>
-			<Tooltip
-				key={`${message.id}-Preview`}
-				label={t('action.preview_new_tab', 'Click to preview in another tab')}
-			>
+			<Tooltip key={`${message.id}-Preview`} label={t('action.click_preview', 'Click to preview')}>
 				<Row
 					padding={{ all: 'small' }}
 					mainAlignment="flex-start"

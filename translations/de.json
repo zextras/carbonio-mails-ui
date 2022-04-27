@@ -157,7 +157,7 @@
         "bcc": "Bcc",
         "calendar_color": "Farbe des Elements",
         "edit_access": "{{name}}'s Zugriff bearbeiten",
-        "cc": "CC",
+        "cc": "Cc",
         "draft_folder": "[ENTWURF]",
         "filter_user": "Benutzer filtern",
         "find_shares": "Geteilte Elemente finden",
@@ -294,7 +294,8 @@
         "replied": "Repliziert",
         "retention_range": "Retentionsbereich",
         "select": "Auwählen",
-        "set_default_signatures": "Standardsignaturen festlegen"
+        "set_default_signatures": "Standardsignaturen festlegen",
+        "behalf_of": "im namen von"
     },
     "share": {
         "options": {
