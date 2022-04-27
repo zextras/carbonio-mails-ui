@@ -5,13 +5,14 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { isNil, omitBy } from 'lodash';
 import { MsgActionRequest, MsgActionResponse, MsgActionOperation } from '../../types/soap/';
 
 export type MsgActionParameters = {
 	ids: string[];
 	operation: MsgActionOperation;
 	parent?: string;
-	tag?: string;
+	tagName: string;
 };
 
 export type MsgActionResult = {
@@ -21,15 +22,19 @@ export type MsgActionResult = {
 
 export const msgAction = createAsyncThunk<MsgActionResult, MsgActionParameters>(
 	'msgAction',
-	async ({ ids, operation, parent, tag }) => {
+	async ({ ids, operation, parent, tagName }) => {
 		const { action } = (await soapFetch<MsgActionRequest, MsgActionResponse>('MsgAction', {
 			_jsns: 'urn:zimbraMail',
-			action: {
-				id: ids.join(','),
-				op: operation,
-				l: parent,
-				tn: tag
-			}
+
+			action: omitBy(
+				{
+					id: ids.join(','),
+					op: operation,
+					l: parent,
+					tn: tagName
+				},
+				isNil
+			)
 		})) as MsgActionResponse;
 		return {
 			ids: action.id.split(','),

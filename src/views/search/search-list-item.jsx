@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isEmpty, split, head } from 'lodash';
+import { isEmpty, split, head, includes, reduce } from 'lodash';
 import {
 	Badge,
 	Container,
@@ -17,6 +17,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import ListItemActionWrapper from '../app/folder-panel/lists-item/list-item-actions-wrapper';
 import { ItemAvatar } from '../app/folder-panel/lists-item/item-avatar';
 import { RowInfo } from '../app/folder-panel/lists-item/conversation-list-item';
@@ -44,6 +45,22 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 		() => (!isEmpty(item.fragment) ? `${subject} - ${item.fragment}` : subject),
 		[subject, item.fragment]
 	);
+
+	const tagsFromStore = useTags();
+	const tags = useMemo(
+		() =>
+			reduce(
+				tagsFromStore,
+				(acc, v) => {
+					if (includes(item.tags, v.name))
+						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[parseInt(v.color ?? '0', 10)].hex });
+					return acc;
+				},
+				[]
+			),
+		[item.tags, tagsFromStore]
+	);
+
 	return (
 		<Container
 			background={active ? 'highlight' : 'gray6'}
@@ -70,7 +87,7 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 				>
 					<Container orientation="horizontal" height="fit" width="fill">
 						<SenderName item={item} isFromSearch />
-						<RowInfo item={item} />
+						<RowInfo item={item} tags={tags} />
 					</Container>
 					<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
 						{item.msgCount > 1 && (

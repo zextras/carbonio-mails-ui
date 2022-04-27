@@ -5,7 +5,7 @@
  */
 import React, { useMemo, useEffect } from 'react';
 import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
-import { FOLDERS, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { map, sortBy, find, filter } from 'lodash';
@@ -83,11 +83,12 @@ export default function ConversationPreviewPanel() {
 			dispatch(getConv({ conversationId }));
 		}
 	}, [conversation, dispatch, conversationId]);
+	const tagsFromStore = useTags();
 	useEffect(() => {
 		if (conversationsStatus !== 'complete' && conversationsStatus !== 'pending') {
-			dispatch(searchConv({ conversationId, fetch: 'all', folderId }));
+			dispatch(searchConv({ conversationId, fetch: 'all', folderId, tags: tagsFromStore }));
 		}
-	}, [conversationId, conversationsStatus, dispatch, folderId]);
+	}, [conversationId, conversationsStatus, dispatch, folderId, tagsFromStore]);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">

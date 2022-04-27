@@ -37,7 +37,7 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			background: 'gray2',
 			avatarBackground: avatarBackground || 'gray2',
 			isQueryFilter,
-			value: `${preText}:${label}`
+			value: `${preText}:"${label}"`
 		}),
 		[]
 	);
@@ -92,6 +92,7 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 					onAdd={tagChipOnAdd}
 					disableOptions={false}
 					disabled
+					requireUniqueChips
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
@@ -104,6 +105,7 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 					onAdd={folderChipOnAdd}
 					disabled
 					iconAction={openFolderModal}
+					requireUniqueChips
 				/>
 				<FolderSelectModal compProps={modalProps} />
 			</Container>

@@ -14,7 +14,8 @@ import {
 import { map, every, filter, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { FOLDERS, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
+
 import {
 	moveConversationToTrash,
 	setConversationsFlag,
@@ -23,6 +24,7 @@ import {
 	deleteConversationPermanently,
 	printConversation
 } from './conversation-actions';
+import { applyMultiTag } from './tag-actions';
 
 export default function SelectPanelActions({ conversation, folderId, selectedIds, deselectAll }) {
 	const [t] = useTranslation();
@@ -31,6 +33,8 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 	const account = useUserAccount();
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);
 	const selectedConversation = filter(conversation, (convo) => ids.indexOf(convo.id) !== -1);
+	const tags = useTags();
+
 	const createModal = useContext(ModalManagerContext);
 
 	const showAddFlag = useMemo(() => {
@@ -127,7 +131,15 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						createModal,
 						deselectAll
 					}),
-					printConversation({ t, conversation: selectedConversation, account })
+					printConversation({ t, conversation: selectedConversation, account }),
+					applyMultiTag({
+						ids,
+						tags,
+						conversations: selectedConversation,
+						t,
+						folderId,
+						deselectAll
+					})
 					// markSpam
 					// reply
 					// replyAll
@@ -154,6 +166,14 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						isRestore: true,
 						createModal,
 						deselectAll
+					}),
+					applyMultiTag({
+						ids,
+						tags,
+						conversations: selectedConversation,
+						t,
+						folderId,
+						deselectAll
 					})
 				];
 			case FOLDERS.DRAFTS:
@@ -166,6 +186,14 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						dispatch,
 						isRestore: false,
 						createModal,
+						deselectAll
+					}),
+					applyMultiTag({
+						ids,
+						tags,
+						conversations: selectedConversation,
+						t,
+						folderId,
 						deselectAll
 					})
 					// move
@@ -186,7 +214,8 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 		showAddFlag,
 		createModal,
 		selectedConversation,
-		account
+		account,
+		tags
 	]);
 
 	return (
@@ -232,7 +261,9 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 					click: (ev) => {
 						if (ev) ev.preventDefault();
 						action.click();
-					}
+					},
+					customComponent: action.customComponent,
+					items: action.items
 				}))}
 			>
 				<IconButton

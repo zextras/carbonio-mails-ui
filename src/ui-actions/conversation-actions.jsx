@@ -10,6 +10,7 @@ import { convAction, getMsgsForPrint } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
+import { applyTag } from './tag-actions';
 
 export function setConversationsFlag({ ids, value, t, dispatch }) {
 	return {
@@ -323,16 +324,16 @@ export function deleteConversationPermanently({ ids, t, dispatch, createModal, d
 	};
 }
 
-export const getActions = (
+export const getActions = ({
 	folderId,
 	t,
 	dispatch,
 	createSnackbar,
 	createModal,
 	deselectAll,
-	timezone,
-	account
-) => {
+	account,
+	tags
+}) => {
 	switch (folderId) {
 		case FOLDERS.TRASH:
 			return (conversation) => [
@@ -355,7 +356,7 @@ export const getActions = (
 						t,
 						dispatch
 					}),
-
+					applyTag({ t, createModal, tags, conversation, dispatch, folderId, deselectAll }),
 					setConversationsSpam({
 						ids: [conversation.id],
 						value: false,
@@ -415,6 +416,7 @@ export const getActions = (
 						t,
 						dispatch
 					}),
+					applyTag({ t, createModal, tags, conversation, dispatch, folderId, deselectAll }),
 					setConversationsSpam({
 						ids: [conversation.id],
 						value: true,
@@ -460,6 +462,7 @@ export const getActions = (
 						t,
 						dispatch
 					}),
+					applyTag({ t, createModal, tags, conversation, dispatch, folderId, deselectAll }),
 					moveConversationToTrash({
 						ids: [conversation.id],
 						t,
@@ -500,6 +503,7 @@ export const getActions = (
 					setConversationsFlag({ ids: [conversation.id], value: conversation.flagged, t, dispatch })
 				],
 				[
+					applyTag({ t, createModal, tags, conversation, dispatch, folderId, deselectAll }),
 					setConversationsRead({
 						ids: [conversation.id],
 						value: conversation.read,

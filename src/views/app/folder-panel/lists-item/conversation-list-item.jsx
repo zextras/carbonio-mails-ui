@@ -5,14 +5,15 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isEmpty, reduce, trimStart, map, uniqBy, find, filter, findIndex, some } from 'lodash';
+import { isEmpty, reduce, trimStart, map, uniqBy, find, includes, every } from 'lodash';
 import styled from 'styled-components';
 import {
 	pushHistory,
-	useUserAccount,
 	useUserAccounts,
 	FOLDERS,
-	useUserSettings
+	useUserSettings,
+	useTags,
+	ZIMBRA_STANDARD_COLORS
 } from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
@@ -27,6 +28,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
 import { searchConv } from '../../../../store/actions';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
@@ -36,6 +38,7 @@ import { setConversationsRead } from '../../../../ui-actions/conversation-action
 import { selectMessages } from '../../../../store/messages-slice';
 import { SenderName } from './sender-name';
 import MessageListItem from './message-list-item';
+import { useTagExist } from '../../../../ui-actions/tag-actions';
 
 function ConversationMessagesList({ conversationStatus, messages, folderId }) {
 	if (conversationStatus !== 'complete') {
@@ -66,10 +69,25 @@ const CollapseElement = styled(Container)`
 	display: ${({ open }) => (open ? 'block' : 'none')};
 `;
 
-export const RowInfo = ({ item }) => {
+export const RowInfo = ({ item, tags }) => {
 	const date = useMemo(() => getTimeLabel(item.date), [item.date]);
+
+	const tagIcon = useMemo(() => (tags?.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
+	const tagIconColor = useMemo(() => (tags?.length === 1 ? tags?.[0]?.color : undefined), [tags]);
+
+	const isTagInStore = useTagExist(tags);
+	const showTagIcon = useMemo(
+		() => item.tags && item.tags.length !== 0 && item.tags?.[0] !== '' && isTagInStore,
+		[isTagInStore, item.tags]
+	);
+
 	return (
 		<Row>
+			{showTagIcon && (
+				<Padding left="small">
+					<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+				</Padding>
+			)}
 			{item.attachment && (
 				<Padding left="small">
 					<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
@@ -109,6 +127,21 @@ export default function ConversationListItem({
 	const conversationStatus = useSelector((state) =>
 		selectConversationExpandedStatus(state, item.id)
 	);
+	const tagsFromStore = useTags();
+	const tags = useMemo(
+		() =>
+			reduce(
+				tagsFromStore,
+				(acc, v) => {
+					if (includes(item.tags, v.id))
+						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[parseInt(v.color ?? '0', 10)].hex });
+					return acc;
+				},
+				[]
+			),
+		[item.tags, tagsFromStore]
+	);
+
 	const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 
 	const participantsString = useMemo(
@@ -283,7 +316,7 @@ export default function ConversationListItem({
 					>
 						<Container orientation="horizontal" height="fit" width="fill">
 							<SenderName item={item} textValues={textReadValues} isFromSearch={false} />
-							<RowInfo item={item} />
+							<RowInfo item={item} tags={tags} />
 						</Container>
 						<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
 							{renderBadge && (

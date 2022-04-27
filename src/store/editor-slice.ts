@@ -175,6 +175,12 @@ function createEditorReducer(
 					...(payload.boardContext?.compositionData ?? {})
 				};
 				break;
+			case ActionsType.PREFILL_COMPOSE:
+				state.editors[payload.editorId] = {
+					...empty,
+					...(payload.boardContext?.compositionData ?? {})
+				};
+				break;
 			default:
 				console.warn('operation not handled!');
 				break;

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { isNil, map, omitBy, reduce } from 'lodash';
+import { filter, isNil, map, omitBy, reduce } from 'lodash';
 import { IncompleteMessage, MailMessagePart } from '../types/mail-message';
 
 import { Participant, ParticipantRole } from '../types/participant';
@@ -120,7 +120,7 @@ export const normalizeMailMessageFromSoap = (
 			fragment: m.fr,
 			subject: m.su,
 			participants: m.e ? map(m.e || [], normalizeParticipantsFromSoap) : undefined,
-			tags: m.tn ? m.tn.split(',') : undefined,
+			tags: !isNil(m.t) ? filter(m.t.split(','), (t) => t !== '') : [],
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
 			invite: m.inv,
 			shr: m.shr,

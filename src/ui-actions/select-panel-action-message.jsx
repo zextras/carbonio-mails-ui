@@ -11,7 +11,7 @@ import {
 	SnackbarManagerContext,
 	ModalManagerContext
 } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useTags } from '@zextras/carbonio-shell-ui';
 import { map, every, filter, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -23,6 +23,7 @@ import {
 	moveMessageToFolder,
 	deleteMessagePermanently
 } from './message-actions';
+import { applyMultiTag } from './tag-actions';
 
 export default function SelectMessagesPanelActions({
 	messages,
@@ -36,6 +37,8 @@ export default function SelectMessagesPanelActions({
 	const dispatch = useDispatch();
 	const createModal = useContext(ModalManagerContext);
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);
+	const selectedConversation = filter(messages, (convo) => ids.indexOf(convo.id) !== -1);
+	const tags = useTags();
 
 	const showAddFlag = useMemo(() => {
 		const selectMessages = filter(messages, (convo) => ids.indexOf(convo.id) !== -1);
@@ -67,6 +70,7 @@ export default function SelectMessagesPanelActions({
 						deselectAll,
 						folderId
 					})
+
 					// archiveMsg
 					// editTagsMsg
 				];
@@ -95,6 +99,7 @@ export default function SelectMessagesPanelActions({
 			default:
 				return [
 					moveMsgToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+
 					// archiveMsg
 					// editTagsMsg
 				];
@@ -127,6 +132,15 @@ export default function SelectMessagesPanelActions({
 						isRestore: false,
 						createModal,
 						deselectAll
+					}),
+					applyMultiTag({
+						ids,
+						tags,
+						conversations: selectedConversation,
+						t,
+						folderId,
+						deselectAll,
+						isMessage: true
 					})
 					// move
 					// markSpam
@@ -185,7 +199,9 @@ export default function SelectMessagesPanelActions({
 		deselectAll,
 		showUnreadConvo,
 		showAddFlag,
-		createModal
+		createModal,
+		tags,
+		selectedConversation
 	]);
 	return (
 		<Container
@@ -230,7 +246,9 @@ export default function SelectMessagesPanelActions({
 					click: (ev) => {
 						if (ev) ev.preventDefault();
 						action.click();
-					}
+					},
+					customComponent: action.customComponent,
+					items: action.items
 				}))}
 			>
 				<IconButton
