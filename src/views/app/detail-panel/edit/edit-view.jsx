@@ -43,7 +43,8 @@ import {
 	useAddBoardCallback,
 	useUpdateCurrentBoard,
 	getBridgedFunctions,
-	getAction
+	getAction,
+	useIntegratedFunction
 } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
@@ -476,13 +477,19 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		(files) => dispatch(uploadAttachments({ files })),
 		[dispatch]
 	);
-
+	const [uploadTo, functionCheck] = useIntegratedFunction('upload-to-target-and-get-target-id');
 	const confirmAction = (nodes) => {
-		console.log(nodes);
+		if (functionCheck) {
+			uploadTo({ nodeId: nodes[0].id, targetModule: 'MAILS' }).then((response) => {
+				const data = { attach: { ...editor.attach, aid: response.attachmentId } };
+				const newEditor = { ...editor, ...data };
+				updateEditorCb(newEditor);
+				saveDraftCb(newEditor);
+			});
+		}
 	};
 
 	const actionTarget = {
-		title: t('composer.attachment.drive', 'Add from Drive'),
 		confirmAction,
 		confirmLabel: t('label.select', 'Select'),
 		allowFiles: true,
@@ -495,36 +502,40 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		actionTarget
 	);
 
-	const attachmentsItems = useMemo(
-		() =>
-			compact(
-				[
-					{
-						id: 'localAttachment',
-						icon: 'MonitorOutline',
-						label: t('composer.attachment.local', 'Add from local'),
-						click: onFileClick,
-						customComponent: (
-							<>
-								<Icon icon="MonitorOutline" size="medium" />
-								<Padding horizontal="extrasmall" />
-								<Text>{t('composer.attachment.local', 'Add from local')}</Text>
-							</>
-						)
-					},
-					{
-						id: 'contactsModAttachment',
-						icon: 'ContactsModOutline',
-						label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
-						click: () => {
-							setOpenDD(false);
-						},
-						disabled: true
-					}
-				].concat(filesSelectFilesAction)
-			),
-		[filesSelectFilesAction, onFileClick, t]
-	);
+	const attachmentsItems = useMemo(() => {
+		const items = [
+			{
+				id: 'localAttachment',
+				icon: 'MonitorOutline',
+				label: t('composer.attachment.local', 'Add from local'),
+				click: onFileClick,
+				customComponent: (
+					<>
+						<Icon icon="MonitorOutline" size="medium" />
+						<Padding horizontal="extrasmall" />
+						<Text>{t('composer.attachment.local', 'Add from local')}</Text>
+					</>
+				)
+			},
+			{
+				id: 'contactsModAttachment',
+				icon: 'ContactsModOutline',
+				label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
+				click: () => {
+					setOpenDD(false);
+				},
+				disabled: true
+			}
+		];
+		return filesSelectFilesActionAvailable
+			? compact(
+					items.concat({
+						...filesSelectFilesAction,
+						label: t('composer.attachment.drive', 'Add from Drive')
+					})
+			  )
+			: items;
+	}, [filesSelectFilesAction, filesSelectFilesActionAvailable, onFileClick, t]);
 
 	const onClick = () => {
 		setOpenDD(!openDD);
