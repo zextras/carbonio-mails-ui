@@ -266,8 +266,8 @@
     "share": {
         "options": {
             "share_calendar_with": {
-                "external_guests": "Goście spoza mojej organizacji (mogą tylko wyświetlać)",
-                "internal_users_groups": "Użytkownicy lub Grupy z mojej organizacji",
+                "external_guests": "Goście spoza mojej domeny (mogą tylko wyświetlać)",
+                "internal_users_groups": "Użytkownicy lub Grupy z mojej domeny",
                 "public": "Publiczny (można tylko wyświetlać, hasło niewymagane)"
             },
             "share_calendar_role": {
