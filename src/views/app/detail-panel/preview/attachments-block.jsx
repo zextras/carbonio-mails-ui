@@ -113,17 +113,13 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 			part: att.name,
 			destinationFolderId: nodes[0].id
 		})
-			.then((res) => {
+			.then(() => {
 				createSnackbar({
 					key: `calendar-moved-root`,
 					replace: true,
 					type: 'info',
 					hideButton: true,
-					label: t('message.snackbar.att_saved', {
-						defaultValue: '{{fileName}} saved in the {{folderName}} folder',
-						fileName: att.filename,
-						folderName: nodes[0].name
-					}),
+					label: t('message.snackbar.att_saved', 'Attachment saved in the selected folder'),
 					autoHideTimeout: 3000
 				});
 			})
@@ -134,8 +130,8 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 					type: 'warning',
 					hideButton: true,
 					label: t(
-						'label.snackbar.att_err',
-						'There seem to be problems saving the attachment, please try again'
+						'message.snackbar.att_err',
+						'There seems to be a problem when saving, please try again'
 					),
 					autoHideTimeout: 3000
 				});
@@ -264,14 +260,6 @@ const copyToFiles = (att, message, nodes) =>
 		destinationFolderId: nodes[0].id
 	});
 
-const copyToFiles2 = (att, message, nodes) =>
-	soapFetch('CopyToFiles', {
-		_jsns: 'urn:zimbraMail',
-		mid: message.id,
-		part: att,
-		destinationFolderId: 'ciccio'
-	});
-
 export default function AttachmentsBlock({ message }) {
 	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
@@ -321,15 +309,18 @@ export default function AttachmentsBlock({ message }) {
 				const type = allSuccess ? 'info' : 'warning';
 				// eslint-disable-next-line no-nested-ternary
 				const label = allSuccess
-					? t('message.snackbar.all_att_saved', 'All files saved correctly')
+					? t(
+							'message.snackbar.all_att_saved',
+							'Attachments successfully saved in the selected folder'
+					  )
 					: allFails
 					? t(
 							'message.snackbar.all_att_fails',
-							'There seem to be problems saving all the attachments, please try again'
+							'There seems to be a problem when saving, please try again'
 					  )
 					: t(
 							'message.snackbar.some_att_fails',
-							'There seem to be problems saving one or more attachments, check which ones have failed and try to save them individually'
+							'There seems to be a problem when saving some files, please try again'
 					  );
 				createSnackbar({
 					key: `calendar-moved-root`,
