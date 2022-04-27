@@ -1,5 +1,6 @@
 {
     "action": {
+        "click_preview": "Click to preview",
         "edit_as_new": "Edit as new",
         "edit_share": "Edit Share",
         "flag": "Add flag",
