@@ -18,7 +18,8 @@ import {
 	Row,
 	Icon,
 	AccordionItem,
-	Padding
+	Padding,
+	Dropdown
 } from '@zextras/carbonio-design-system';
 import CollapsedSideBarItems from './collapsed-sidebar-items';
 import { FolderActionsType } from '../../types/folder';
@@ -33,6 +34,8 @@ import { SharesModal } from './shares-modal';
 import ShareFolderModal from './share-folder-modal';
 import ModalWrapper from './commons/modal-wrapper';
 import setAccordionCustomComponent from './accordion-custom-components';
+import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
+import { createTag } from '../../ui-actions/tag-actions';
 
 const nest = (items, id, newFolder, setNewFolder, expanded, level) =>
 	map(
@@ -86,9 +89,10 @@ const SharesItem = ({ item }) => (
 const Sidebar = ({ expanded }) => {
 	const dispatch = useDispatch();
 	const allFoldersWithJunk = useSelector(selectFolders);
+
 	const allFolders = useMemo(() => {
 		const folders = map(allFoldersWithJunk, (folder) => {
-			if (folder.name === 'Junk') {
+			if (folder.id === FOLDERS.SPAM) {
 				return { ...folder, name: 'Spam' };
 			}
 			return folder;
@@ -137,6 +141,7 @@ const Sidebar = ({ expanded }) => {
 	const [newFolder, setNewFolder] = useState();
 	const [t] = useTranslation();
 
+	const tagsAccordionItems = useGetTagsAccordion();
 	const [sidebarAccordions, modalAccordions] = useMemo(() => {
 		const nestedFolders = nest(folders, '1', newFolder, setNewFolder, expanded, 1);
 		const trashFolder = remove(nestedFolders, (c) => c.id === '3');
@@ -166,8 +171,27 @@ const Sidebar = ({ expanded }) => {
 				<AccordionItem {...item} height={40} />
 			</Row>
 		);
-		return [
-			accordionItems.concat({
+
+		const TagLabel = (item) => (
+			<Dropdown contextMenu display="block" width="fit" items={[createTag({ t, createModal })]}>
+				<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
+					<Icon size="large" icon="TagsMoreOutline" /> <Padding right="large" />
+					<AccordionItem {...item} height={40} />
+				</Row>
+			</Dropdown>
+		);
+
+		const requiredAccordions = accordionItems
+			.concat({
+				id: 'Tags',
+				label: t('label.tags', 'Tags'),
+				divider: true,
+				open: false,
+				onClick: (e) => e.stopPropagation(),
+				CustomComponent: TagLabel,
+				items: tagsAccordionItems
+			})
+			.concat({
 				id: 'shares',
 				label: t('label.shared_folders', 'Shared Folders'),
 				divider: true,
@@ -179,9 +203,9 @@ const Sidebar = ({ expanded }) => {
 					context: { dispatch, t, createModal },
 					CustomComponent: SharesItem
 				})
-			}),
-			accordions
-		];
+			});
+
+		return [requiredAccordions, accordions];
 	}, [
 		folders,
 		newFolder,
@@ -190,7 +214,8 @@ const Sidebar = ({ expanded }) => {
 		dispatch,
 		createModal,
 		createSnackbar,
-		history?.location?.pathname
+		history?.location?.pathname,
+		tagsAccordionItems
 	]);
 
 	const modalFolders = useMemo(() => sortBy(folders, (item) => Number(item.id)), [folders]);

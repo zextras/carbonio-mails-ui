@@ -74,7 +74,11 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 		[folderId, messageFolder]
 	);
 	return (
-		<Container crossAlignment="flex-start" mainAlignment="flex-start" padding={{ bottom: 'small' }}>
+		<Container
+			crossAlignment="flex-start"
+			mainAlignment="flex-start"
+			padding={{ bottom: 'small', left: 'small' }}
+		>
 			<Row
 				takeAvailableSpace
 				style={{ width: '100%', padding: 0 }}
@@ -90,7 +94,7 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 						/>
 					</Row>
 				) : (
-					<Row padding={{ right: 'extrasmall' }} background="error" style={{ width: '24px' }}></Row>
+					<Row padding={{ right: 'extrasmall' }} background="error"></Row>
 				)}
 				<Row
 					height="fit"

@@ -1,5 +1,6 @@
 {
     "action": {
+        "click_preview": "Click to preview",
         "edit_as_new": "Edit as new",
         "edit_share": "Edit Share",
         "flag": "Add flag",
@@ -191,7 +192,7 @@
         "automatically_delete_duplicates": "Automatically delete duplicate copies of the same message when received",
         "back": "Back",
         "bcc": "Bcc",
-        "behalf_of": "behalf of",
+        "behalf_of": "on behalf of",
         "by_conversation": "By Conversation",
         "by_message": "By Message",
         "calendar_color": "Item color",
@@ -201,9 +202,12 @@
         "choose_folder": "Choose folder",
         "create": "Create",
         "create_new_task": "Create New Task",
+        "create_tag": "Create Tag",
         "decline": "Decline",
         "delete": "Delete",
         "delete_permanently": "Delete Permanently",
+        "delete_tag": "Delete Tag",
+        "delete_tag_name": "Delete \"{{name}}\" tag",
         "destination_folder": "Destination Folder",
         "discard_changes": "DISCARD CHANGES",
         "disposal_threshold": "Disposal Threshold",
@@ -214,6 +218,8 @@
         "edit": "Edit",
         "edit_access": "Edit {{name}}'s access",
         "edit_folder_properties": "",
+        "edit_tag": "Edit Tag",
+        "edit_tag_name": "Edit \"{{name}}\" tag",
         "email_perm_deleted": "E-mail permanently deleted",
         "empty": "Empty",
         "enable_message_disposal": "Enable Message Disposal",
@@ -249,18 +255,20 @@
         "new_email": "New E-mail",
         "new_folder": "New Folder",
         "no_search_results_found": "No results found",
+        "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",
         "notify_organizer": "Notify Organizer",
         "of": "of",
         "on_behalf_of": "on behalf of",
         "owner": "Owner: ",
+        "preview": "Preview",
         "private": "Private",
         "read": "Read",
         "receive_message": "Receiving Messages",
         "received_from_address": "Received from (address)",
         "remove": "Remove",
-        "remove_from_this_list": "Remove from this list",
         "remove_plural": "Remove all",
+        "remove_from_this_list": "Remove from this list",
         "replied": "Replied",
         "resend": "Resend",
         "restore": "Restore",
@@ -302,8 +310,12 @@
         "size": "Size",
         "size_larger": "Size larger than (MB)",
         "size_smaller": "Size smaller than (MB)",
+        "spam": "Spam",
         "subject": "Subject",
         "tag": "Tag",
+        "tag_max_length": "Max 128 characters are allowed",
+        "tag_name": "Tag name",
+        "tags": "Tags",
         "to": "To",
         "type": "Type",
         "type_name_here": "Item name",
@@ -315,6 +327,8 @@
         "write": "Write"
     },
     "message": {
+        "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
+        "delete_tag_message2": "Once deleted, it will be removed from every item marked with it.",
         "email_saved_at": "E-mail saved as a draft at {{time}}",
         "invalid_search_message": "We didn't find any match",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
@@ -371,9 +385,13 @@
             "message_move": "Message successfully moved",
             "message_redirected": "The message has been redirected",
             "sending_mail_in_count": "Sending your message in {{count}} second",
-            "sending_mail_in_count_plural": "Sending your message in {{count}} seconds"
+            "sending_mail_in_count_plural": "Sending your message in {{count}} seconds",
+            "tag_created": "Tag {{name}} successfully created",
+            "tag_deleted": "{{name}} Tag deleted successfully",
+            "tag_not_updated": "Something went wrong, tag not updated. Please try again.",
+            "tag_updated": "Tag successfully updated"
         },
-        "something_went_wrong": "SOMETHING WENT WRONG"
+    "something_went_wrong": "SOMETHING WENT WRONG"
     },
     "notification": {
         "new_message": "New Message",
@@ -381,6 +399,9 @@
     },
     "placeholder": {
         "add_new_recipients": "Add new recipients"
+    },
+    "preview": {
+        "close": "Close Preview"
     },
     "search": {
         "attachment_note": "Search for all e-mails that have an attachment.",
@@ -547,7 +568,9 @@
         "folder_shared": "Folder shared",
         "share_resend": "Share invite resent",
         "share_revoke": "Share access revoked",
-        "share_updated": "\"Access rights updated\""
+        "share_updated": "\"Access rights updated\"",
+        "tag_applied": "\"{{tag}}\" tag applied",
+        "tag_removed": "\"{{tag}}\" tag removed"
     },
     "title": {
         "new_messages": "New Messages",

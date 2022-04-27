@@ -218,7 +218,8 @@
         "retention_range": "Periodo di Retention",
         "attachment_status": "Stato e-mail",
         "enable_message_disposal": "Abilita la cancellazione dei messaggi",
-        "enable_message_retention": "Abilita la ritenzione dei messaggi"
+        "enable_message_retention": "Abilita la ritenzione dei messaggi",
+        "behalf_of": "per conto di"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",

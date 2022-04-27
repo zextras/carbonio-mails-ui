@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { filter, find, forEach, max, map, merge, omit, reduce, some, sortBy, head } from 'lodash';
+import { filter, find, forEach, map, merge, omit, reduce, some, sortBy, head } from 'lodash';
 import { ConversationsStateType } from '../../types/state';
 import { ConvMessage } from '../../types/conversation';
-import { SyncResponseCreatedMessage } from '../../types/soap/sync';
 
 type Payload = {
 	payload: { m: any; t: any };
@@ -30,7 +29,10 @@ export const handleModifiedConversationsReducer = (
 ): void => {
 	forEach(payload, (conv) => {
 		if (conv?.id && state?.conversations?.[conv.id]) {
-			state.conversations[conv.id] = merge(state.conversations[conv.id], conv);
+			state.conversations[conv.id] = {
+				...merge(state.conversations[conv.id], conv),
+				tags: conv.tags
+			};
 		}
 	});
 };

@@ -16,6 +16,8 @@ export type SoapConversation = {
 	f: string;
 	/** Tag names (comma separated) */
 	tn: string;
+	/** Tag ids (comma separated) */
+	t?: string;
 	/** Date (of the most recent message) */
 	d: number;
 	/** Messages */
