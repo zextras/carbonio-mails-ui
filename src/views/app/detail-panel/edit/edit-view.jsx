@@ -577,6 +577,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		if (
 			(activeMailId && messages[activeMailId]?.isComplete) ||
 			action === ActionsType.NEW ||
+			action === ActionsType.PREFILL_COMPOSE ||
 			actionChanged
 		) {
 			if (!editors[editorId] || actionChanged) {
@@ -605,23 +606,24 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				}, 10);
 			} else {
 				setEditor(editors[editorId]);
+				throttledSaveToDraft(editor);
 			}
 		}
 	}, [
-		editors,
-		editorId,
-		dispatch,
-		action,
-		messages,
 		accounts,
-		t,
-		mailId,
-		change,
-		boardContext,
-		settings,
+		action,
+		actionChanged,
 		activeMailId,
+		boardContext,
+		change,
+		dispatch,
 		editor,
-		actionChanged
+		editorId,
+		editors,
+		messages,
+		settings,
+		t,
+		throttledSaveToDraft
 	]);
 
 	useEffect(() => {
