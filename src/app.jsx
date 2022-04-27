@@ -153,7 +153,7 @@ const App = () => {
 				fn: openComposerSharedFunction
 			},
 			{
-				id: 'prefillCompose',
+				id: 'composePrefillMessage',
 				fn: openPrefilledComposerSharedFunction
 			}
 		);
