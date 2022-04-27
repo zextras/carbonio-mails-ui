@@ -311,6 +311,9 @@
         "size": "Size",
         "size_larger": "Size larger than (MB)",
         "size_smaller": "Size smaller than (MB)",
+        "snackbar": {
+            "att_err": "There seem to be problems saving the attachment, please try again"
+        },
         "spam": "Spam",
         "subject": "Subject",
         "tag": "Tag",
@@ -335,11 +338,16 @@
         "invalid_search_message": "We didn't find any match",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
+            "all_att_fails": "There seem to be problems saving all the attachments, please try again",
+            "all_att_saved": "All files saved correctly",
+            "att_saved": "{{fileName}} saved in the {{folderName}} folder",
+            "calendar_edits_saved": "Edits saved correctly",
             "settings_saved": "Edits saved correctly",
             "share": {
                 "accepted": "You have accepted the share request",
                 "declined": "You have declined the share request"
-            }
+            },
+            "some_att_fails": "There seem to be problems saving one or more attachments, check which ones have failed and try to save them individually"
         }
     },
     "messages": {

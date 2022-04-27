@@ -151,12 +151,18 @@ function Attachment({ filename, size, link, editor, part, iconColors, throttledS
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer>
-					<Tooltip
-						key={`${editor.id}-DeletePermanentlyOutline`}
-						label={t('label.delete', 'Delete')}
-					>
-						<IconButton size="medium" icon="DeletePermanentlyOutline" onClick={removeAttachment} />
-					</Tooltip>
+					<Padding right="small">
+						<Tooltip
+							key={`${editor.id}-DeletePermanentlyOutline`}
+							label={t('label.delete', 'Delete')}
+						>
+							<IconButton
+								size="medium"
+								icon="DeletePermanentlyOutline"
+								onClick={removeAttachment}
+							/>
+						</Tooltip>
+					</Padding>
 				</AttachmentHoverBarContainer>
 			</Row>
 			<AttachmentLink

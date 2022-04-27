@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo, useRef, useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { find, forEach, map, reduce, uniqBy } from 'lodash';
+import { filter, find, map, reduce, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -14,6 +14,7 @@ import {
 	Link,
 	Padding,
 	Row,
+	SnackbarManagerContext,
 	Text,
 	Tooltip,
 	useTheme
@@ -93,6 +94,7 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
+	const createSnackbar = useContext(SnackbarManagerContext);
 	const [t] = useTranslation();
 	const inputRef = useRef();
 	const inputRef2 = useRef();
@@ -110,7 +112,34 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 			mid: message.id,
 			part: att.name,
 			destinationFolderId: nodes[0].id
-		});
+		})
+			.then((res) => {
+				createSnackbar({
+					key: `calendar-moved-root`,
+					replace: true,
+					type: 'info',
+					hideButton: true,
+					label: t('message.snackbar.att_saved', {
+						defaultValue: '{{fileName}} saved in the {{folderName}} folder',
+						fileName: att.filename,
+						folderName: nodes[0].name
+					}),
+					autoHideTimeout: 3000
+				});
+			})
+			.catch(() => {
+				createSnackbar({
+					key: `calendar-moved-root`,
+					replace: true,
+					type: 'warning',
+					hideButton: true,
+					label: t(
+						'label.snackbar.att_err',
+						'There seem to be problems saving the attachment, please try again'
+					),
+					autoHideTimeout: 3000
+				});
+			});
 	};
 
 	const isAValidDestination = (node) => node.permissions?.can_write_file;
@@ -118,7 +147,7 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 	const actionTarget = {
 		title: t('label.select_folder', 'Select folder'),
 		confirmAction,
-		confirmLabel: t('label.select', 'Select'),
+		confirmLabel: t('label.save', 'Save'),
 		disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
 		allowFiles: false,
 		allowFolders: true,
@@ -212,9 +241,11 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 						</Tooltip>
 					)}
 					{/* <FilePreview att={att} link={link} /> */}
-					<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
-						<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
-					</Tooltip>
+					<Padding right="small">
+						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
+							<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
+						</Tooltip>
+					</Padding>
 				</AttachmentHoverBarContainer>
 			</Row>
 			<AttachmentLink
@@ -228,6 +259,22 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 	);
 }
 
+const copyToFiles = (att, message, nodes) =>
+	soapFetch('CopyToFiles', {
+		_jsns: 'urn:zimbraMail',
+		mid: message.id,
+		part: att.name,
+		destinationFolderId: nodes[0].id
+	});
+
+const copyToFiles2 = (att, message, nodes) =>
+	soapFetch('CopyToFiles', {
+		_jsns: 'urn:zimbraMail',
+		mid: message.id,
+		part: att,
+		destinationFolderId: 'ciccio'
+	});
+
 export default function AttachmentsBlock({ message }) {
 	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
@@ -240,6 +287,7 @@ export default function AttachmentsBlock({ message }) {
 		[message, attachmentsParts]
 	);
 	const removeAttachments = useCallback(() => removeAttachments(), []);
+	const createSnackbar = useContext(SnackbarManagerContext);
 
 	const iconColors = useMemo(
 		() =>
@@ -267,23 +315,44 @@ export default function AttachmentsBlock({ message }) {
 		[attachments, theme]
 	);
 
-	const confirmAction = (nodes) => {
-		forEach(attachments, (att) => {
-			soapFetch('CopyToFiles', {
-				_jsns: 'urn:zimbraMail',
-				mid: message.id,
-				part: att.name,
-				destinationFolderId: nodes[0].id
+	const confirmAction = useCallback(
+		(nodes) => {
+			const promises = map(attachments, (att) => copyToFiles(att, message, nodes));
+			Promise.allSettled(promises).then((res) => {
+				const allSuccess = res.length === filter(res, ['status', 'fulfilled'])?.length;
+				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
+				const type = allSuccess ? 'info' : 'warning';
+				// eslint-disable-next-line no-nested-ternary
+				const label = allSuccess
+					? t('message.snackbar.all_att_saved', 'All files saved correctly')
+					: allFails
+					? t(
+							'message.snackbar.all_att_fails',
+							'There seem to be problems saving all the attachments, please try again'
+					  )
+					: t(
+							'message.snackbar.some_att_fails',
+							'There seem to be problems saving one or more attachments, check which ones have failed and try to save them individually'
+					  );
+				createSnackbar({
+					key: `calendar-moved-root`,
+					replace: true,
+					type,
+					hideButton: true,
+					label,
+					autoHideTimeout: 4000
+				});
 			});
-		});
-	};
+		},
+		[attachments, createSnackbar, message, t]
+	);
 
 	const isAValidDestination = (node) => node.permissions?.can_write_file;
 
 	const actionTarget = {
 		title: t('label.select_folder', 'Select folder'),
 		confirmAction,
-		confirmLabel: t('label.select', 'Select'),
+		confirmLabel: t('label.save', 'Save'),
 		disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
 		allowFiles: false,
 		allowFolders: true,
