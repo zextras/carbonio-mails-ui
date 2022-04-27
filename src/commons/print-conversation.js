@@ -270,7 +270,7 @@ export const getErrorPage = (t) =>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Error</title>
+        <title>${t('label.error', 'Error')}</title>
         <style>
             html, body, .container {
                 width: 100%;

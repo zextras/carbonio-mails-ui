@@ -218,6 +218,7 @@
         "empty": "Empty",
         "enable_message_disposal": "Enable Message Disposal",
         "enable_message_retention": "Enable Message Retention",
+        "error": "Error",
         "error_address": "A valid e-mail is required",
         "error_try_again": "Something went wrong, please try again",
         "expand": "Expand",
