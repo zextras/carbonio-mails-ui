@@ -315,7 +315,7 @@ export default function AttachmentsBlock({ message }) {
 					  )
 					: allFails
 					? t(
-							'message.snackbar.all_att_fails',
+							'message.snackbar.att_err',
 							'There seems to be a problem when saving, please try again'
 					  )
 					: t(
