@@ -24,7 +24,8 @@ export enum ActionsType {
 	REPLY_ALL = 'replyAll',
 	FORWARD = 'forward',
 	MAIL_TO = 'mailTo',
-	COMPOSE = 'compose'
+	COMPOSE = 'compose',
+	PREFILL_COMPOSE = 'prefillCompose'
 }
 
 export type Participant = {
