@@ -333,11 +333,14 @@
         "invalid_search_message": "We didn't find any match",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
+            "all_att_added": "Attachments added successfully",
+            "att_err_adding": "There seems to be a problem when adding attachments, please try again",
             "settings_saved": "Edits saved correctly",
             "share": {
                 "accepted": "You have accepted the share request",
                 "declined": "You have declined the share request"
-            }
+            },
+            "some_att_add_fails": "There seems to be a problem when adding some attachments, please try again"
         }
     },
     "messages": {
