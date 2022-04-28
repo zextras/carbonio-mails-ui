@@ -525,12 +525,15 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		[createSnackbar, editor, functionCheck, saveDraftCb, t, updateEditorCb, uploadTo]
 	);
 
-	const actionTarget = {
-		confirmAction,
-		confirmLabel: t('label.select', 'Select'),
-		allowFiles: true,
-		allowFolders: false
-	};
+	const actionTarget = useMemo(
+		() => ({
+			confirmAction,
+			confirmLabel: t('label.select', 'Select'),
+			allowFiles: true,
+			allowFolders: false
+		}),
+		[confirmAction, t]
+	);
 
 	const [filesSelectFilesAction, filesSelectFilesActionAvailable] = getAction(
 		'carbonio_files_action',
