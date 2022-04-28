@@ -503,39 +503,37 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	);
 
 	const attachmentsItems = useMemo(() => {
-		const items = [
-			{
-				id: 'localAttachment',
-				icon: 'MonitorOutline',
-				label: t('composer.attachment.local', 'Add from local'),
-				click: onFileClick,
-				customComponent: (
-					<>
-						<Icon icon="MonitorOutline" size="medium" />
-						<Padding horizontal="extrasmall" />
-						<Text>{t('composer.attachment.local', 'Add from local')}</Text>
-					</>
-				)
+		const localItem = {
+			id: 'localAttachment',
+			icon: 'MonitorOutline',
+			label: t('composer.attachment.local', 'Add from local'),
+			click: onFileClick,
+			customComponent: (
+				<>
+					<Icon icon="MonitorOutline" size="medium" />
+					<Padding horizontal="extrasmall" />
+					<Text>{t('composer.attachment.local', 'Add from local')}</Text>
+				</>
+			)
+		};
+		const contactItem = {
+			id: 'contactsModAttachment',
+			icon: 'ContactsModOutline',
+			label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
+			click: () => {
+				setOpenDD(false);
 			},
-			{
-				id: 'contactsModAttachment',
-				icon: 'ContactsModOutline',
-				label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
-				click: () => {
-					setOpenDD(false);
-				},
-				disabled: true
-			}
-		];
-		return filesSelectFilesActionAvailable
-			? compact(
-					items.concat({
-						...filesSelectFilesAction,
-						label: t('composer.attachment.drive', 'Add from Drive')
-					})
-			  )
-			: items;
-	}, [filesSelectFilesAction, filesSelectFilesActionAvailable, onFileClick, t]);
+			disabled: true
+		};
+		const driveItem = filesSelectFilesAction
+			? {
+					...filesSelectFilesAction,
+					label: t('composer.attachment.files', 'Add from Files')
+			  }
+			: undefined;
+
+		return compact([localItem, driveItem, contactItem]);
+	}, [filesSelectFilesAction, onFileClick, t]);
 
 	const onClick = () => {
 		setOpenDD(!openDD);
