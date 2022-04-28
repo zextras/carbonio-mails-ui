@@ -52,7 +52,7 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 			reduce(
 				tagsFromStore,
 				(acc, v) => {
-					if (includes(item.tags, v.name))
+					if (includes(item.tags, v.id))
 						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[parseInt(v.color ?? '0', 10)].hex });
 					return acc;
 				},
