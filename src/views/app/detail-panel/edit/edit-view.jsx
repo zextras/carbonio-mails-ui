@@ -484,78 +484,46 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	);
 	const [uploadTo, functionCheck] = useIntegratedFunction('upload-to-target-and-get-target-id');
 
-	const confirmAction = (nodes) => {
-		const promises = map(nodes, (node) => uploadToFiles(node, uploadTo));
-		if (functionCheck) {
-			Promise.allSettled(promises).then((res) => {
-				const success = filter(res, ['status', 'fulfilled']);
-				const allSuccess = res.length === success?.length;
-				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
-				const type = allSuccess ? 'info' : 'warning';
-				// eslint-disable-next-line no-nested-ternary
-				const label = allSuccess
-					? t('message.snackbar.all_att_added', 'Attachments added successfully')
-					: allFails
-					? t(
-							'message.snackbar.att_err_adding',
-							'There seems to be a problem when adding attachments, please try again'
-					  )
-					: t(
-							'message.snackbar.some_att_add_fails',
-							'There seems to be a problem when adding some attachments, please try again'
-					  );
-				createSnackbar({
-					key: `calendar-moved-root`,
-					replace: true,
-					type,
-					hideButton: true,
-					label,
-					autoHideTimeout: 4000
-				});
-				const data = {
-					attach: { ...editor.attach, aid: map(success, (i) => i.value.attachmentId).join(',') }
-				};
-				const newEditor = { ...editor, ...data };
-				updateEditorCb(newEditor);
-				saveDraftCb(newEditor);
-			});
-		}
-	};
-
-	/*	const confirmAction = useCallback(
+	const confirmAction = useCallback(
 		(nodes) => {
-			const promises = map(attachments, (att) => copyToFiles(att, message, nodes));
-			Promise.allSettled(promises).then((res) => {
-				const allSuccess = res.length === filter(res, ['status', 'fulfilled'])?.length;
-				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
-				const type = allSuccess ? 'info' : 'warning';
-				// eslint-disable-next-line no-nested-ternary
-				const label = allSuccess
-					? t(
-						'message.snackbar.all_att_saved',
-						'Attachments successfully saved in the selected folder'
-					)
-					: allFails
+			const promises = map(nodes, (node) => uploadToFiles(node, uploadTo));
+			if (functionCheck) {
+				Promise.allSettled(promises).then((res) => {
+					const success = filter(res, ['status', 'fulfilled']);
+					const allSuccess = res.length === success?.length;
+					const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
+					const type = allSuccess ? 'info' : 'warning';
+					// eslint-disable-next-line no-nested-ternary
+					const label = allSuccess
+						? t('message.snackbar.all_att_added', 'Attachments added successfully')
+						: allFails
 						? t(
-							'mes sage.snackbar.att_err',
-							'There seems to be a problem when saving, please try again'
-						)
+								'message.snackbar.att_err_adding',
+								'There seems to be a problem when adding attachments, please try again'
+						  )
 						: t(
-							'message.snackbar.some_att_fails',
-							'There seems to be a problem when saving some files, please try again'
-						);
-				createSnackbar({
-					key: `calendar-moved-root`,
-					replace: true,
-					type,
-					hideButton: true,
-					label,
-					autoHideTimeout: 4000
+								'message.snackbar.some_att_add_fails',
+								'There seems to be a problem when adding some attachments, please try again'
+						  );
+					createSnackbar({
+						key: `calendar-moved-root`,
+						replace: true,
+						type,
+						hideButton: true,
+						label,
+						autoHideTimeout: 4000
+					});
+					const data = {
+						attach: { ...editor.attach, aid: map(success, (i) => i.value.attachmentId).join(',') }
+					};
+					const newEditor = { ...editor, ...data };
+					updateEditorCb(newEditor);
+					saveDraftCb(newEditor);
 				});
-			});
+			}
 		},
-		[attachments, createSnackbar, message, t]
-	); */
+		[createSnackbar, editor, functionCheck, saveDraftCb, t, updateEditorCb, uploadTo]
+	);
 
 	const actionTarget = {
 		confirmAction,
@@ -593,7 +561,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			},
 			disabled: true
 		};
-		const driveItem = filesSelectFilesAction
+		const driveItem = filesSelectFilesActionAvailable
 			? {
 					...filesSelectFilesAction,
 					label: t('composer.attachment.files', 'Add from Files')
@@ -601,7 +569,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			: undefined;
 
 		return compact([localItem, driveItem, contactItem]);
-	}, [filesSelectFilesAction, onFileClick, t]);
+	}, [filesSelectFilesAction, filesSelectFilesActionAvailable, onFileClick, t]);
 
 	const onClick = () => {
 		setOpenDD(!openDD);
