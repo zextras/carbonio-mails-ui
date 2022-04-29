@@ -28,17 +28,25 @@ export const openComposerSharedFunction: (
 	});
 };
 
+type prefilledEditor = {
+	aid?: Array<string>;
+	subject?: string;
+	urgent?: boolean;
+};
+
 // function used to open a new mail editor board with prefilled fields set by other modules
-export const openPrefilledComposerSharedFunction: (compositionData: any, ...rest: any) => void = (
-	compositionData,
-	...rest
-) => {
+export const openPrefilledComposerSharedFunction: (
+	compositionData?: prefilledEditor,
+	...rest: never[]
+) => void = (compositionData, ...rest) => {
 	// removing values from item which needs normalization
 	const normalizedValues = omit(compositionData, ['aid']);
 
 	// normalize values
 	const attach =
-		compositionData?.aid?.length > 0 ? { aid: compositionData?.aid?.join(',') } : undefined;
+		compositionData?.aid && compositionData?.aid?.length > 0
+			? { aid: compositionData.aid.join(',') }
+			: undefined;
 
 	// removing nil values
 	const editor = omitBy({ ...normalizedValues, attach }, isNil);
