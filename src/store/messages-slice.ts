@@ -37,7 +37,11 @@ function getMsgFulfilled(
 ): void {
 	status[payload.id] = 'complete';
 	if (payload?.id) {
-		merge(messages?.[payload.id] ?? {}, { ...payload, isComplete: true });
+		// eslint-disable-next-line no-param-reassign
+		messages[payload.id] = {
+			...merge(messages?.[payload.id] ?? {}, { ...payload, isComplete: true }),
+			participants: payload.participants
+		};
 	}
 }
 
