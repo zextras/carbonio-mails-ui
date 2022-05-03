@@ -388,7 +388,13 @@ export const applyTag = ({
 	conversation: any;
 	tags: TagsFromStoreType;
 	isMessage?: boolean;
-}): { id: string; items: TagType[]; customComponent: ReactElement } => {
+}): {
+	id: string;
+	items: TagType[];
+	customComponent: ReactElement;
+	label?: 'string';
+	icon?: string;
+} => {
 	const tagItem = reduce(
 		tags,
 		(acc, v) => {
@@ -412,6 +418,8 @@ export const applyTag = ({
 	return {
 		id: TagsActionsType.Apply,
 		items: tagItem,
+		label: t('label.tag', 'Tag'),
+		icon: 'TagsMoreOutline',
 		customComponent: (
 			<Row takeAvailableSpace mainAlignment="flex-start">
 				<Padding right="small">

@@ -128,6 +128,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 			{map(primaryActions, (action) => (
 				<Padding left="extrasmall" key={action.label}>
 					<IconButton
+						key={action.id}
 						size="medium"
 						icon={action.icon}
 						onClick={(ev) => {
@@ -137,6 +138,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 					/>
 				</Padding>
 			))}
+
 			<Padding left="extrasmall">
 				<Dropdown
 					placement="right-end"
