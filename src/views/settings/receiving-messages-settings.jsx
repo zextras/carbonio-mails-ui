@@ -12,15 +12,32 @@ import {
 	Checkbox,
 	Padding
 } from '@zextras/carbonio-design-system';
+import { useTranslation } from 'react-i18next';
+import { isNil } from 'lodash';
 import Heading from './components/settings-heading';
 import { NotifyFolderOpts, ReadReceiptOpts, MsgsFromMeOpts, findLabel } from './components/utils';
 import { receivingMessagesSubSection } from './subsections';
+import { MAIL_APP_ID } from '../../constants';
 
-export default function ReceivingMessagesSettings({ t, settingsObj, updateSettings }) {
+export default function ReceivingMessagesSettings({
+	settingsObj,
+	updateSettings,
+	updatedProps,
+	updateProps
+}) {
+	const [t] = useTranslation();
 	const notifyFolderOptn = useMemo(() => NotifyFolderOpts(t), [t]);
 	const readReceiptOptn = useMemo(() => ReadReceiptOpts(t), [t]);
 	const msgsFromMeOpts = useMemo(() => MsgsFromMeOpts(t), [t]);
 	const sectionTitle = useMemo(() => receivingMessagesSubSection(t), [t]);
+
+	const mailNotificationSoundDefault = useMemo(
+		() =>
+			isNil(updatedProps?.mailNotificationSound?.value)
+				? true
+				: updatedProps?.mailNotificationSound?.value === 'TRUE',
+		[updatedProps?.mailNotificationSound?.value]
+	);
 
 	return (
 		<FormSubSection label={sectionTitle.label} id={sectionTitle.id}>
@@ -94,6 +111,22 @@ export default function ReceivingMessagesSettings({ t, settingsObj, updateSettin
 					defaultSelection={{
 						label: findLabel(notifyFolderOptn, settingsObj.zimbraPrefShowAllNewMailNotifications),
 						value: settingsObj.zimbraPrefShowAllNewMailNotifications
+					}}
+				/>
+				<Padding bottom="small" />
+				<Checkbox
+					label={t('label.notification_audio', 'Play audio hint when new notification appears')}
+					value={mailNotificationSoundDefault}
+					onClick={() => {
+						updateProps({
+							target: {
+								name: 'mailNotificationSound',
+								value: {
+									app: MAIL_APP_ID,
+									value: mailNotificationSoundDefault ? 'FALSE' : 'TRUE'
+								}
+							}
+						});
 					}}
 				/>
 			</Container>
