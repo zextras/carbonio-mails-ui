@@ -195,11 +195,13 @@
         "behalf_of": "on behalf of",
         "by_conversation": "By Conversation",
         "by_message": "By Message",
+        "calendar": "Calendar",
         "calendar_color": "Item color",
         "cancel": "Cancel",
         "cc": "Cc",
         "cc_bcc": "Cc Bcc",
         "choose_folder": "Choose folder",
+        "contact_folder": "Contact Folder",
         "create": "Create",
         "create_new_task": "Create New Task",
         "create_tag": "Create Tag",
@@ -328,10 +330,12 @@
         "write": "Write"
     },
     "message": {
+        "admin_rights": "View,Edit,Add,Remove,Administer",
         "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
         "delete_tag_message2": "Once deleted, it will be removed from every item marked with it.",
         "email_saved_at": "E-mail saved as a draft at {{time}}",
         "invalid_search_message": "We didn't find any match",
+        "manager_rights": "View,Edit,Add,Remove",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
             "settings_saved": "Edits saved correctly",
@@ -339,7 +343,8 @@
                 "accepted": "You have accepted the share request",
                 "declined": "You have declined the share request"
             }
-        }
+        },
+        "view_rights": "View"
     },
     "messages": {
         "invalid_address": "The following address appears to be invalid",
