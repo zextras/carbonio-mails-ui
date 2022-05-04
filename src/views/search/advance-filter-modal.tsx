@@ -194,24 +194,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 		() => filter(otherKeywords, (q) => q.isGeneric === true || q.isQueryFilter === true).length,
 		[otherKeywords]
 	);
-	const disabled = useDisabled({
-		sizeSmaller,
-		sizeLarger,
-		totalKeywords,
-		subject,
-		unreadFilter,
-		attachmentFilter,
-		flaggedFilter,
-		receivedFromAddress,
-		sentFromAddress,
-		emailStatus,
-		folder,
-		sentBefore,
-		sentOn,
-		sentAfter,
-		tag,
-		attachmentType
-	});
+
 	const secondaryDisabled = useSecondaryDisabled({
 		attachmentFilter,
 		attachmentType,
@@ -248,52 +231,55 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 		setTag([]);
 	}, [updateQuery]);
 
-	const onConfirm = useCallback(() => {
-		const tmp = concat(
-			otherKeywords,
-			unreadFilter,
-			flaggedFilter,
+	const queryToBe = useMemo(
+		() =>
+			concat(
+				otherKeywords,
+				unreadFilter,
+				flaggedFilter,
+				attachmentFilter,
+				folder,
+				sentBefore,
+				sentAfter,
+				sentOn,
+				tag,
+				map(subject, (q) => ({
+					...q,
+					hasAvatar: true,
+					icon: 'EmailOutline',
+					iconBackground: 'gray1'
+				})),
+				attachmentType,
+				emailStatus,
+				sizeLarger,
+				sizeSmaller,
+				receivedFromAddress,
+				sentFromAddress
+			),
+		[
 			attachmentFilter,
-			folder,
-			sentBefore,
-			sentAfter,
-			sentOn,
-			tag,
-			map(subject, (q) => ({
-				...q,
-				hasAvatar: true,
-				icon: 'EmailOutline',
-				iconBackground: 'gray1'
-			})),
 			attachmentType,
 			emailStatus,
+			flaggedFilter,
+			folder,
+			otherKeywords,
+			receivedFromAddress,
+			sentAfter,
+			sentBefore,
+			sentFromAddress,
+			sentOn,
 			sizeLarger,
 			sizeSmaller,
-			receivedFromAddress,
-			sentFromAddress
-		);
-		updateQuery(tmp);
+			subject,
+			tag,
+			unreadFilter
+		]
+	);
+
+	const onConfirm = useCallback(() => {
+		updateQuery(queryToBe);
 		onClose();
-	}, [
-		receivedFromAddress,
-		sentFromAddress,
-		updateQuery,
-		attachmentType,
-		emailStatus,
-		sizeSmaller,
-		sizeLarger,
-		folder,
-		tag,
-		sentBefore,
-		subject,
-		onClose,
-		otherKeywords,
-		unreadFilter,
-		flaggedFilter,
-		attachmentFilter,
-		sentAfter,
-		sentOn
-	]);
+	}, [updateQuery, queryToBe, onClose]);
 
 	const subjectKeywordRowProps = useMemo(
 		() => ({
@@ -373,6 +359,8 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 		}),
 		[t, query, setUnreadFilter, setFlaggedFilter, setAttachmentFilter]
 	);
+
+	const disabled = useDisabled({ query, queryToBe });
 
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
