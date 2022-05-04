@@ -84,24 +84,26 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 	const [folderType, folderIcon] = useMemo(() => {
 		switch (view) {
 			case 'message':
-				return ['Mail Folder', 'MailModOutline'];
+				return [t('label.mail_folder', 'Mail Folder'), 'MailModOutline'];
+			case 'appointment':
+				return [t('label.calendar', 'Calendar'), 'CalendarOutline'];
 			default:
-				return ['Contact Folder', 'ContactsModOutline'];
+				return [t('label.contact_folder', 'Contact Folder'), 'ContactsModOutline'];
 		}
-	}, [view]);
+	}, [view, t]);
 
 	const allowedActions = useMemo((): string => {
 		if (rights === 'rwidx' || rights === 'rwidxp') {
-			return 'View,Edit,Add,Remove';
+			return t('message.manager_rights', 'View,Edit,Add,Remove');
 		}
 		if (rights === 'r' || rights === 'rp') {
-			return 'View';
+			return t('message.view_rights', 'View');
 		}
 		if (rights === 'rwidxa' || rights === 'rwidxap') {
-			return 'View,Edit,Add,Remove,Administer';
+			return t('message.admin_rights', 'View,Edit,Add,Remove,Administer');
 		}
 		return 'None';
-	}, [rights]);
+	}, [rights, t]);
 
 	const owner = useMemo(
 		() => sharedContent?.split('<grantor ')[1]?.split('name="')[1]?.split('"')[0],
@@ -130,6 +132,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 						<Text size="large" weight="bold">
 							{`${owner} ${t('label.would_like_to_share', 'shared its')}  ${folderType}`}
 						</Text>
+
 						<Padding left="small">
 							<Text size="large" weight="bold" color="primary">{`"${sharedContentItem}"`}</Text>
 						</Padding>

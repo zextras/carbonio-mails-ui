@@ -178,7 +178,10 @@ export default function MessageListItem({
 		},
 		[setIsDragging, dragImageRef, selectedItems, setDraggedIds]
 	);
-	const fragmentLabel = useMemo(() => item.fragment, [item.fragment]);
+	const fragmentLabel = useMemo(
+		() => (isConvChildren ? item.fragment : ` - ${item.fragment}`),
+		[item.fragment, isConvChildren]
+	);
 	const textReadValues = useMemo(() => {
 		if (typeof item.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read' };
@@ -194,7 +197,14 @@ export default function MessageListItem({
 	);
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
-
+	const subject = useMemo(
+		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
+		[item.subject, t]
+	);
+	const subFragmentTooltipLabel = useMemo(
+		() => (!isEmpty(item.fragment) ? item.fragment : subject),
+		[subject, item.fragment]
+	);
 	return draggedIds?.[item?.id] || visible || isConvChildren ? (
 		<Drag
 			type="message"
@@ -271,15 +281,41 @@ export default function MessageListItem({
 											</Padding>
 										</Tooltip>
 									)}
-									{!isEmpty(item.fragment) && (
-										<Tooltip label={fragmentLabel} overflow="break-word" maxWidth="60vw">
-											<Row takeAvailableSpace mainAlignment="flex-start">
-												<Text data-testid="Fragment" weight={textReadValues.weight}>
-													{fragmentLabel}
+									<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
+										<Row
+											wrap="nowrap"
+											takeAvailableSpace
+											mainAlignment="flex-start"
+											crossAlignment="baseline"
+										>
+											{!isConvChildren && (
+												<Text
+													data-testid="Subject"
+													weight={textReadValues.weight}
+													color={item.subject ? 'text' : 'secondary'}
+												>
+													{subject}
 												</Text>
-											</Row>
-										</Tooltip>
-									)}
+											)}
+
+											{!isEmpty(item.fragment) && (
+												<Row
+													takeAvailableSpace
+													mainAlignment="flex-start"
+													padding={{ left: 'extrasmall' }}
+												>
+													<Text
+														data-testid="Fragment"
+														size="small"
+														color="secondary"
+														weight={textReadValues.weight}
+													>
+														{fragmentLabel}
+													</Text>
+												</Row>
+											)}
+										</Row>
+									</Tooltip>
 								</Row>
 								<Row>
 									{item.urgent && (
