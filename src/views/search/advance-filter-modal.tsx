@@ -107,77 +107,77 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 				query,
 				(v) =>
 					!includes(queryArray, v.label) &&
-					!/^Subject:*/.test(v.label) &&
-					!/^Attachment:*/.test(v.label) &&
-					!/^Is:*/.test(v.label) &&
-					!/^Smaller:*/.test(v.label) &&
-					!/^Larger:*/.test(v.label) &&
-					!/^subject:*/.test(v.label) &&
-					!/^in:*/.test(v.label) &&
-					!/^before:*/.test(v.label) &&
-					!/^after:*/.test(v.label) &&
-					!/^date:*/.test(v.label) &&
-					!/^tag:*/.test(v.label) &&
+					!/^Subject:/.test(v.label) &&
+					!/^Attachment:/.test(v.label) &&
+					!/^Is:/.test(v.label) &&
+					!/^Smaller:/.test(v.label) &&
+					!/^Larger:/.test(v.label) &&
+					!/^subject:/.test(v.label) &&
+					!/^in:/.test(v.label) &&
+					!/^before:/.test(v.label) &&
+					!/^after:/.test(v.label) &&
+					!/^date:/.test(v.label) &&
+					!/^tag:/.test(v.label) &&
 					!v.isQueryFilter
 			),
 			(q) => ({ ...q, hasAvatar: false })
 		);
 
 		const subjectsFromQuery = map(
-			filter(query, (v) => /^Subject:*/.test(v.label)),
+			filter(query, (v) => /^Subject:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: false })
 		);
 		setSubject(subjectsFromQuery);
 
 		const attachmentTypeFromQuery = map(
-			filter(query, (v) => /^Attachment:*/.test(v.label)),
+			filter(query, (v) => /^Attachment:/.test(v.label)),
 			(q) => ({ ...q })
 		);
 		setAttachmentType(attachmentTypeFromQuery);
 
 		const emailStatusFromQuery = map(
-			filter(query, (v) => /^Is:*/.test(v.label)),
+			filter(query, (v) => /^Is:/.test(v.label)),
 			(q) => ({ ...q })
 		);
 		setEmailStatus(emailStatusFromQuery);
 
 		const sizeSmallerFromQuery = map(
-			filter(query, (v) => /^Smaller:*/.test(v.label)),
+			filter(query, (v) => /^Smaller:/.test(v.label)),
 			(q) => ({ ...q })
 		);
 		setSizeSmaller(sizeSmallerFromQuery);
 
 		const sizeLargerFromQuery = map(
-			filter(query, (v) => /^Larger:*/.test(v.label)),
+			filter(query, (v) => /^Larger:/.test(v.label)),
 			(q) => ({ ...q })
 		);
 		setSizeLarger(sizeLargerFromQuery);
 		const sentBeforeFromQuery = map(
-			filter(query, (v) => /^before:*/.test(v.label)),
+			filter(query, (v) => /^before:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: true, icon: 'CalendarOutline' })
 		);
 		setSentBefore(sentBeforeFromQuery);
 
 		const sentAfterFromQuery = map(
-			filter(query, (v) => /^after:*/.test(v.label)),
+			filter(query, (v) => /^after:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: true, icon: 'CalendarOutline' })
 		);
 		setSentAfter(sentAfterFromQuery);
 
 		const tagFromQuery = map(
-			filter(query, (v) => /^tag:*/.test(v.label)),
+			filter(query, (v) => /^tag:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: true, icon: 'TagOutline' })
 		);
 		setTag(tagFromQuery);
 
 		const sentOnFromQuery = map(
-			filter(query, (v) => /^date:*/.test(v.label)),
+			filter(query, (v) => /^date:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: true, icon: 'CalendarOutline' })
 		);
 		setSentOn(sentOnFromQuery);
 
 		const folderFromQuery = map(
-			filter(query, (v) => /^in:*/.test(v.label)),
+			filter(query, (v) => /^in:/.test(v.label)),
 			(q) => ({
 				...q,
 				hasAvatar: true,
