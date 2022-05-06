@@ -32,6 +32,8 @@ import {
 	useTags,
 	useUserAccounts,
 	ZIMBRA_STANDARD_COLORS,
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	runSearch
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
