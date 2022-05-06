@@ -246,6 +246,7 @@
         "hide": "Hide",
         "highlight_tab": "Highlight the Mail tab",
         "insert": "Insert",
+        "invalid_destination": "This node is not a valid destination",
         "keywords": "Keywords",
         "loading_results": "Loading Results…",
         "mail_folder": "E-mail folder",
@@ -287,6 +288,7 @@
         "revoke_with_custom_message": "Revoke access sending a custom notification",
         "role": "Role: ",
         "save": "Save",
+        "save_to_files": "Save to Files",
         "search_activate_selection_mode": "Selection mode isn’t available yet on search results",
         "select": "Select",
         "select_color": "Select Color",
@@ -324,6 +326,7 @@
         "type": "Type",
         "type_name_here": "Item name",
         "undo": "Undo",
+        "upload_from_files": "Upload from Files",
         "wipe": "Wipe",
         "with_you": "with you",
         "workflow": "WorkFlow",
@@ -339,11 +342,16 @@
         "manager_rights": "View,Edit,Add,Remove",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
+            "all_att_saved": "Attachments successfully saved in the selected folder",
+            "att_err": "There seems to be a problem when saving, please try again",
+            "att_saved": "Attachment saved in the selected folder",
+            "calendar_edits_saved": "Edits saved correctly",
             "settings_saved": "Edits saved correctly",
             "share": {
                 "accepted": "You have accepted the share request",
                 "declined": "You have declined the share request"
-            }
+            },
+            "some_att_fails": "There seems to be a problem when saving some files, please try again"
         },
         "view_rights": "View"
     },

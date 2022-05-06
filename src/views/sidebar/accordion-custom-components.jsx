@@ -339,7 +339,7 @@ const setAccordionCustomComponent = ({
 										folderId: folder.id,
 										limit: 101,
 										sortBy: sorting,
-										types: zimbraPrefGroupMailBy
+										types: folder.id === FOLDERS.DRAFTS ? 'message' : zimbraPrefGroupMailBy
 									})
 								);
 							}}
