@@ -37,7 +37,7 @@
                 "content": "Drop here your attachments to quickly add them to this e-mail",
                 "title": "Drag&Drop Mode"
             },
-            "drive": "Add from Drive",
+            "files": "Add from Files",
             "local": "Add from local"
         }
     },
@@ -342,6 +342,8 @@
         "manager_rights": "View,Edit,Add,Remove",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
+            "all_att_added": "Attachments added successfully",
+            "att_err_adding": "There seems to be a problem when adding attachments, please try again",
             "all_att_saved": "Attachments successfully saved in the selected folder",
             "att_err": "There seems to be a problem when saving, please try again",
             "att_saved": "Attachment saved in the selected folder",
@@ -351,6 +353,7 @@
                 "accepted": "You have accepted the share request",
                 "declined": "You have declined the share request"
             },
+            "some_att_add_fails": "There seems to be a problem when adding some attachments, please try again",
             "some_att_fails": "There seems to be a problem when saving some files, please try again"
         },
         "view_rights": "View"

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	Button,
 	Catcher,
@@ -15,6 +15,7 @@ import {
 	IconCheckbox,
 	Padding,
 	Row,
+	SnackbarManagerContext,
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
@@ -29,7 +30,8 @@ import {
 	findIndex,
 	concat,
 	some,
-	isNil
+	isNil,
+	compact
 } from 'lodash';
 import {
 	useUserSettings,
@@ -41,7 +43,9 @@ import {
 	useRemoveCurrentBoard,
 	useAddBoardCallback,
 	useUpdateCurrentBoard,
-	getBridgedFunctions
+	getBridgedFunctions,
+	getAction,
+	useIntegratedFunction
 } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
@@ -181,6 +185,9 @@ export const addAttachments = async (saveDraftCb, uploadAttachmentsCb, compositi
 	return retrieveAttachmentsType(normalizeMailMessageFromSoap(res.payload.resp.m[0]), 'attachment');
 };
 
+const uploadToFiles = async (node, uploadTo) =>
+	uploadTo({ nodeId: node.id, targetModule: 'MAILS' });
+
 export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }) {
 	const settings = useUserSettings();
 	const boardContext = useBoardConfig();
@@ -207,6 +214,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [list, setList] = useState([]);
 	const [btnSendlabel, setBtnSendLabel] = useState(t('label.send', 'Send'));
 	const [btnSendDisabled, setBtnSendDisabled] = useState(false);
+	const createSnackbar = useContext(SnackbarManagerContext);
 
 	const [saveFirstDraft, setSaveFirstDraft] = useState(true);
 	const [draftSavedAt, setDraftSavedAt] = useState('');
@@ -476,43 +484,97 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		(files) => dispatch(uploadAttachments({ files })),
 		[dispatch]
 	);
+	const [uploadTo, functionCheck] = useIntegratedFunction('upload-to-target-and-get-target-id');
 
-	const attachmentsItems = useMemo(
-		() => [
-			{
-				id: 'localAttachment',
-				icon: 'MonitorOutline',
-				label: t('composer.attachment.local', 'Add from local'),
-				click: onFileClick,
-				customComponent: (
-					<>
-						<Icon icon="MonitorOutline" size="medium" />
-						<Padding horizontal="extrasmall" />
-						<Text>{t('composer.attachment.local', 'Add from local')}</Text>
-					</>
-				)
-			},
-			{
-				id: 'driveAttachment',
-				icon: 'DriveOutline',
-				label: t('composer.attachment.drive', 'Add from Drive'),
-				click: () => {
-					setOpenDD(false);
-				},
-				disabled: true
-			},
-			{
-				id: 'contactsModAttachment',
-				icon: 'ContactsModOutline',
-				label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
-				click: () => {
-					setOpenDD(false);
-				},
-				disabled: true
+	const confirmAction = useCallback(
+		(nodes) => {
+			const promises = map(nodes, (node) => uploadToFiles(node, uploadTo));
+			if (functionCheck) {
+				Promise.allSettled(promises).then((res) => {
+					const success = filter(res, ['status', 'fulfilled']);
+					const allSuccess = res.length === success?.length;
+					const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
+					const type = allSuccess ? 'info' : 'warning';
+					// eslint-disable-next-line no-nested-ternary
+					const label = allSuccess
+						? t('message.snackbar.all_att_added', 'Attachments added successfully')
+						: allFails
+						? t(
+								'message.snackbar.att_err_adding',
+								'There seems to be a problem when adding attachments, please try again'
+						  )
+						: t(
+								'message.snackbar.some_att_add_fails',
+								'There seems to be a problem when adding some attachments, please try again'
+						  );
+					createSnackbar({
+						key: `calendar-moved-root`,
+						replace: true,
+						type,
+						hideButton: true,
+						label,
+						autoHideTimeout: 4000
+					});
+					const data = {
+						attach: { ...editor.attach, aid: map(success, (i) => i.value.attachmentId).join(',') }
+					};
+					const newEditor = { ...editor, ...data };
+					updateEditorCb(newEditor);
+					saveDraftCb(newEditor);
+				});
 			}
-		],
-		[onFileClick, t]
+		},
+		[createSnackbar, editor, functionCheck, saveDraftCb, t, updateEditorCb, uploadTo]
 	);
+
+	const actionTarget = useMemo(
+		() => ({
+			confirmAction,
+			confirmLabel: t('label.select', 'Select'),
+			allowFiles: true,
+			allowFolders: false
+		}),
+		[confirmAction, t]
+	);
+
+	const [filesSelectFilesAction, filesSelectFilesActionAvailable] = getAction(
+		'carbonio_files_action',
+		'files-select-nodes',
+		actionTarget
+	);
+
+	const attachmentsItems = useMemo(() => {
+		const localItem = {
+			id: 'localAttachment',
+			icon: 'MonitorOutline',
+			label: t('composer.attachment.local', 'Add from local'),
+			click: onFileClick,
+			customComponent: (
+				<>
+					<Icon icon="MonitorOutline" size="medium" />
+					<Padding horizontal="extrasmall" />
+					<Text>{t('composer.attachment.local', 'Add from local')}</Text>
+				</>
+			)
+		};
+		const contactItem = {
+			id: 'contactsModAttachment',
+			icon: 'ContactsModOutline',
+			label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
+			click: () => {
+				setOpenDD(false);
+			},
+			disabled: true
+		};
+		const driveItem = filesSelectFilesActionAvailable
+			? {
+					...filesSelectFilesAction,
+					label: t('composer.attachment.files', 'Add from Files')
+			  }
+			: undefined;
+
+		return compact([localItem, driveItem, contactItem]);
+	}, [filesSelectFilesAction, filesSelectFilesActionAvailable, onFileClick, t]);
 
 	const onClick = () => {
 		setOpenDD(!openDD);

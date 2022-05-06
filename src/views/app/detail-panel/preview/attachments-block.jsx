@@ -98,6 +98,7 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 	const [t] = useTranslation();
 	const inputRef = useRef();
 	const inputRef2 = useRef();
+
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
 			// eslint-disable-next-line no-param-reassign
@@ -106,51 +107,57 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 		}
 	}, [inputRef]);
 
-	const confirmAction = (nodes) => {
-		soapFetch('CopyToFiles', {
-			_jsns: 'urn:zimbraMail',
-			mid: message.id,
-			part: att.name,
-			destinationFolderId: nodes[0].id
-		})
-			.then(() => {
-				createSnackbar({
-					key: `calendar-moved-root`,
-					replace: true,
-					type: 'info',
-					hideButton: true,
-					label: t('message.snackbar.att_saved', 'Attachment saved in the selected folder'),
-					autoHideTimeout: 3000
-				});
+	const confirmAction = useCallback(
+		(nodes) => {
+			soapFetch('CopyToFiles', {
+				_jsns: 'urn:zimbraMail',
+				mid: message.id,
+				part: att.name,
+				destinationFolderId: nodes[0].id
 			})
-			.catch(() => {
-				createSnackbar({
-					key: `calendar-moved-root`,
-					replace: true,
-					type: 'warning',
-					hideButton: true,
-					label: t(
-						'message.snackbar.att_err',
-						'There seems to be a problem when saving, please try again'
-					),
-					autoHideTimeout: 3000
+				.then(() => {
+					createSnackbar({
+						key: `calendar-moved-root`,
+						replace: true,
+						type: 'info',
+						hideButton: true,
+						label: t('message.snackbar.att_saved', 'Attachment saved in the selected folder'),
+						autoHideTimeout: 3000
+					});
+				})
+				.catch(() => {
+					createSnackbar({
+						key: `calendar-moved-root`,
+						replace: true,
+						type: 'warning',
+						hideButton: true,
+						label: t(
+							'message.snackbar.att_err',
+							'There seems to be a problem when saving, please try again'
+						),
+						autoHideTimeout: 3000
+					});
 				});
-			});
-	};
+		},
+		[att.name, createSnackbar, message.id, t]
+	);
 
-	const isAValidDestination = (node) => node.permissions?.can_write_file;
+	const isAValidDestination = useMemo((node) => node.permissions?.can_write_file, []);
 
-	const actionTarget = {
-		title: t('label.select_folder', 'Select folder'),
-		confirmAction,
-		confirmLabel: t('label.save', 'Save'),
-		disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
-		allowFiles: false,
-		allowFolders: true,
-		isValidSelection: isAValidDestination,
-		canSelectOpenedFolder: true,
-		maxSelection: 1
-	};
+	const actionTarget = useMemo(
+		() => ({
+			title: t('label.select_folder', 'Select folder'),
+			confirmAction,
+			confirmLabel: t('label.save', 'Save'),
+			disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
+			allowFiles: false,
+			allowFolders: true,
+			isValidSelection: isAValidDestination,
+			canSelectOpenedFolder: true,
+			maxSelection: 1
+		}),
+		[confirmAction, isAValidDestination, t]
+	);
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
 		'carbonio_files_action',
@@ -189,6 +196,7 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 		},
 		[att, createPreview, link, t]
 	);
+
 	return (
 		<AttachmentContainer
 			orientation="horizontal"
@@ -335,19 +343,22 @@ export default function AttachmentsBlock({ message }) {
 		[attachments, createSnackbar, message, t]
 	);
 
-	const isAValidDestination = (node) => node.permissions?.can_write_file;
+	const isAValidDestination = useMemo((node) => node.permissions?.can_write_file, []);
 
-	const actionTarget = {
-		title: t('label.select_folder', 'Select folder'),
-		confirmAction,
-		confirmLabel: t('label.save', 'Save'),
-		disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
-		allowFiles: false,
-		allowFolders: true,
-		isValidSelection: isAValidDestination,
-		canSelectOpenedFolder: true,
-		maxSelection: 1
-	};
+	const actionTarget = useMemo(
+		() => ({
+			title: t('label.select_folder', 'Select folder'),
+			confirmAction,
+			confirmLabel: t('label.save', 'Save'),
+			disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
+			allowFiles: false,
+			allowFolders: true,
+			isValidSelection: isAValidDestination,
+			canSelectOpenedFolder: true,
+			maxSelection: 1
+		}),
+		[confirmAction, isAValidDestination, t]
+	);
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
 		'carbonio_files_action',
