@@ -4,7 +4,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { FOLDERS, getBridgedFunctions, getUserSettings } from '@zextras/carbonio-shell-ui';
-import { forEach, pick, merge, omit, reduce, map, filter, sortBy, reverse, find } from 'lodash';
+import {
+	forEach,
+	pick,
+	merge,
+	omit,
+	reduce,
+	map,
+	filter,
+	sortBy,
+	reverse,
+	find,
+	includes,
+	reject
+} from 'lodash';
 import sound from '../../assets/notification.mp3';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { IncompleteMessage } from '../../types/mail-message';
@@ -53,7 +66,7 @@ const triggerNotification = (m: SoapIncompleteMessage): void => {
 	});
 	const messagesToNotify = reverse(
 		sortBy(
-			filter(messages, (item) =>
+			filter(reject(messages, 'read'), (item) =>
 				showAllNotifications === 'TRUE'
 					? !(item.isSentByMe === true) && item.parent === FOLDERS.SENT
 					: !(item.isSentByMe === true) && item.parent === FOLDERS.INBOX
