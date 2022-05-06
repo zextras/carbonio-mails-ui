@@ -195,11 +195,13 @@
         "behalf_of": "on behalf of",
         "by_conversation": "By Conversation",
         "by_message": "By Message",
+        "calendar": "Calendar",
         "calendar_color": "Item color",
         "cancel": "Cancel",
         "cc": "Cc",
         "cc_bcc": "Cc Bcc",
         "choose_folder": "Choose folder",
+        "contact_folder": "Contact Folder",
         "create": "Create",
         "create_new_task": "Create New Task",
         "create_tag": "Create Tag",
@@ -224,6 +226,7 @@
         "empty": "Empty",
         "enable_message_disposal": "Enable Message Disposal",
         "enable_message_retention": "Enable Message Retention",
+        "error": "Error",
         "error_address": "A valid e-mail is required",
         "error_try_again": "Something went wrong, please try again",
         "expand": "Expand",
@@ -258,6 +261,7 @@
         "no_search_results_found": "No results found",
         "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",
+        "no_subject_with_tags": "<No Subject>",
         "notify_organizer": "Notify Organizer",
         "of": "of",
         "on_behalf_of": "on behalf of",
@@ -330,10 +334,12 @@
         "write": "Write"
     },
     "message": {
+        "admin_rights": "View,Edit,Add,Remove,Administer",
         "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
         "delete_tag_message2": "Once deleted, it will be removed from every item marked with it.",
         "email_saved_at": "E-mail saved as a draft at {{time}}",
         "invalid_search_message": "We didn't find any match",
+        "manager_rights": "View,Edit,Add,Remove",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
             "all_att_saved": "Attachments successfully saved in the selected folder",
@@ -346,9 +352,12 @@
                 "declined": "You have declined the share request"
             },
             "some_att_fails": "There seems to be a problem when saving some files, please try again"
-        }
+        },
+        "view_rights": "View"
     },
     "messages": {
+        "check_and_try_again": "Please, check Carbonio and try again",
+        "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
         "invalid_address": "The following address appears to be invalid",
         "modal": {
             "delete": {
@@ -364,6 +373,7 @@
         "no_content": "This message has no text content",
         "permanent_delete_body": "If you permanently delete this element you will not be able to recover it. Continue?",
         "permanent_delete_title": "Are you sure to permanently delete this element?",
+        "powered_by": "powered by",
         "snackbar": {
             "conversation_deleted": "Conversation deleted",
             "conversation_move": "Conversation successfully moved",
@@ -395,7 +405,8 @@
             "tag_deleted": "{{name}} Tag deleted successfully",
             "tag_not_updated": "Something went wrong, tag not updated. Please try again.",
             "tag_updated": "Tag successfully updated"
-        }
+        },
+    "something_went_wrong": "SOMETHING WENT WRONG"
     },
     "notification": {
         "new_message": "New Message",

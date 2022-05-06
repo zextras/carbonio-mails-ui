@@ -219,7 +219,7 @@ export default function ConversationListItem({
 		[t, open]
 	);
 	const subject = useMemo(
-		() => item.subject || t('label.no_subject', 'No subject'),
+		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
 		[item.subject, t]
 	);
 	const subFragmentTooltipLabel = useMemo(
@@ -334,23 +334,13 @@ export default function ConversationListItem({
 									mainAlignment="flex-start"
 									crossAlignment="baseline"
 								>
-									<Text data-testid="Subject" weight={textReadValues.weight} color="text">
+									<Text
+										data-testid="Subject"
+										weight={textReadValues.weight}
+										color={item.subject ? 'text' : 'secondary'}
+									>
 										{subject}
 									</Text>
-
-									{!isEmpty(item.fragment) && (
-										<Row
-											takeAvailableSpace
-											mainAlignment="flex-start"
-											padding={{ left: 'extrasmall' }}
-										>
-											<Text
-												data-testid="Fragment"
-												size="small"
-												color="secondary"
-											>{` - ${item.fragment}`}</Text>
-										</Row>
-									)}
 								</Row>
 							</Tooltip>
 							<Row>

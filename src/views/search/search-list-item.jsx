@@ -38,7 +38,7 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 		history.push(`${path}/folder/${parent}/conversation/${item.id}`);
 	}, [dispatch, history, item, parent, pathname]);
 	const subject = useMemo(
-		() => item.subject || t('label.no_subject', 'No subject'),
+		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
 		[item.subject, t]
 	);
 	const subFragmentTooltipLabel = useMemo(
@@ -52,7 +52,7 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 			reduce(
 				tagsFromStore,
 				(acc, v) => {
-					if (includes(item.tags, v.name))
+					if (includes(item.tags, v.id))
 						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[parseInt(v.color ?? '0', 10)].hex });
 					return acc;
 				},
@@ -115,7 +115,7 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 										size="small"
 										color="secondary"
 									>
-										{t('label.no_subject', 'No subject')}
+										{t('label.no_subject_with_tags', '<No Subject>')}
 									</Text>
 								)}
 								{!isEmpty(item.fragment) && (
