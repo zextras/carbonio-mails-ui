@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo, useRef, useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { find, map, reduce, uniqBy } from 'lodash';
+import { filter, find, map, reduce, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -14,10 +14,12 @@ import {
 	Link,
 	Padding,
 	Row,
+	SnackbarManagerContext,
 	Text,
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
+import { getAction, soapFetch } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { humanFileSize, previewType } from './file-preview';
@@ -92,9 +94,11 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
+	const createSnackbar = useContext(SnackbarManagerContext);
 	const [t] = useTranslation();
 	const inputRef = useRef();
 	const inputRef2 = useRef();
+
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
 			// eslint-disable-next-line no-param-reassign
@@ -102,6 +106,64 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 			inputRef.current.click();
 		}
 	}, [inputRef]);
+
+	const confirmAction = useCallback(
+		(nodes) => {
+			soapFetch('CopyToFiles', {
+				_jsns: 'urn:zimbraMail',
+				mid: message.id,
+				part: att.name,
+				destinationFolderId: nodes[0].id
+			})
+				.then(() => {
+					createSnackbar({
+						key: `calendar-moved-root`,
+						replace: true,
+						type: 'info',
+						hideButton: true,
+						label: t('message.snackbar.att_saved', 'Attachment saved in the selected folder'),
+						autoHideTimeout: 3000
+					});
+				})
+				.catch(() => {
+					createSnackbar({
+						key: `calendar-moved-root`,
+						replace: true,
+						type: 'warning',
+						hideButton: true,
+						label: t(
+							'message.snackbar.att_err',
+							'There seems to be a problem when saving, please try again'
+						),
+						autoHideTimeout: 3000
+					});
+				});
+		},
+		[att.name, createSnackbar, message.id, t]
+	);
+
+	const isAValidDestination = useCallback((node) => node.permissions?.can_write_file, []);
+
+	const actionTarget = useMemo(
+		() => ({
+			title: t('label.select_folder', 'Select folder'),
+			confirmAction,
+			confirmLabel: t('label.save', 'Save'),
+			disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
+			allowFiles: false,
+			allowFolders: true,
+			isValidSelection: isAValidDestination,
+			canSelectOpenedFolder: true,
+			maxSelection: 1
+		}),
+		[confirmAction, isAValidDestination, t]
+	);
+
+	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
+		'carbonio_files_action',
+		'files-select-nodes',
+		actionTarget
+	);
 
 	const preview = useCallback(
 		(ev) => {
@@ -134,6 +196,7 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 		},
 		[att, createPreview, link, t]
 	);
+
 	return (
 		<AttachmentContainer
 			orientation="horizontal"
@@ -169,10 +232,21 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
+					{isUploadIntegrationAvailable && (
+						<Tooltip key={uploadIntegration.id} label={t('label.save_to_files', 'Save to Files')}>
+							<IconButton
+								size="medium"
+								icon={uploadIntegration.icon}
+								onClick={uploadIntegration.click}
+							/>
+						</Tooltip>
+					)}
 					{/* <FilePreview att={att} link={link} /> */}
-					<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
-						<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
-					</Tooltip>
+					<Padding right="small">
+						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
+							<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
+						</Tooltip>
+					</Padding>
 				</AttachmentHoverBarContainer>
 			</Row>
 			<AttachmentLink
@@ -186,6 +260,14 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 	);
 }
 
+const copyToFiles = (att, message, nodes) =>
+	soapFetch('CopyToFiles', {
+		_jsns: 'urn:zimbraMail',
+		mid: message.id,
+		part: att.name,
+		destinationFolderId: nodes[0].id
+	});
+
 export default function AttachmentsBlock({ message }) {
 	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
@@ -198,6 +280,7 @@ export default function AttachmentsBlock({ message }) {
 		[message, attachmentsParts]
 	);
 	const removeAttachments = useCallback(() => removeAttachments(), []);
+	const createSnackbar = useContext(SnackbarManagerContext);
 
 	const iconColors = useMemo(
 		() =>
@@ -223,6 +306,64 @@ export default function AttachmentsBlock({ message }) {
 				'extension'
 			),
 		[attachments, theme]
+	);
+
+	const confirmAction = useCallback(
+		(nodes) => {
+			const promises = map(attachments, (att) => copyToFiles(att, message, nodes));
+			Promise.allSettled(promises).then((res) => {
+				const allSuccess = res.length === filter(res, ['status', 'fulfilled'])?.length;
+				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
+				const type = allSuccess ? 'info' : 'warning';
+				// eslint-disable-next-line no-nested-ternary
+				const label = allSuccess
+					? t(
+							'message.snackbar.all_att_saved',
+							'Attachments successfully saved in the selected folder'
+					  )
+					: allFails
+					? t(
+							'message.snackbar.att_err',
+							'There seems to be a problem when saving, please try again'
+					  )
+					: t(
+							'message.snackbar.some_att_fails',
+							'There seems to be a problem when saving some files, please try again'
+					  );
+				createSnackbar({
+					key: `calendar-moved-root`,
+					replace: true,
+					type,
+					hideButton: true,
+					label,
+					autoHideTimeout: 4000
+				});
+			});
+		},
+		[attachments, createSnackbar, message, t]
+	);
+
+	const isAValidDestination = useCallback((node) => node.permissions?.can_write_file, []);
+
+	const actionTarget = useMemo(
+		() => ({
+			title: t('label.select_folder', 'Select folder'),
+			confirmAction,
+			confirmLabel: t('label.save', 'Save'),
+			disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
+			allowFiles: false,
+			allowFolders: true,
+			isValidSelection: isAValidDestination,
+			canSelectOpenedFolder: true,
+			maxSelection: 1
+		}),
+		[confirmAction, isAValidDestination, t]
+	);
+
+	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
+		'carbonio_files_action',
+		'files-select-nodes',
+		actionTarget
 	);
 
 	return (
@@ -286,6 +427,11 @@ export default function AttachmentsBlock({ message }) {
 							defaultValue_plural: 'Downloads'
 						})}
 					</Link>
+					{isUploadIntegrationAvailable && (
+						<Link size="medium" onClick={uploadIntegration.click} style={{ paddingLeft: '8px' }}>
+							{t('label.save_to_files', 'Save to Files')}
+						</Link>
+					)}
 				</AttachmentsActions>
 			</Container>
 		)

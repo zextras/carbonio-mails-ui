@@ -225,6 +225,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [loading, setLoading] = useState(false);
 	const [initialAction, setInitialAction] = useState(action);
 	const [actionChanged, setActionChanged] = useState(false);
+	const [isUploading, setIsUploading] = useState(false);
+
 	const [from, setFrom] = useState({
 		label: defaultIdentity?.label,
 		value: defaultIdentity?.value
@@ -615,6 +617,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			(activeMailId && messages[activeMailId]?.isComplete) ||
 			action === ActionsType.NEW ||
 			action === ActionsType.PREFILL_COMPOSE ||
+			action === ActionsType.COMPOSE ||
+			action === ActionsType.MAIL_TO ||
 			actionChanged
 		) {
 			if (!editors[editorId] || actionChanged) {
@@ -643,7 +647,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				}, 10);
 			} else {
 				setEditor(editors[editorId]);
-				throttledSaveToDraft(editor);
 			}
 		}
 	}, [
@@ -658,10 +661,28 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		editorId,
 		editors,
 		messages,
+		saveDraftCb,
 		settings,
 		t,
 		throttledSaveToDraft
 	]);
+
+	useEffect(() => {
+		if (editor) {
+			if (
+				action === ActionsType.PREFILL_COMPOSE &&
+				!isUploading &&
+				editor?.attach?.aid &&
+				!saveFirstDraft
+			) {
+				setIsUploading(true);
+				throttledSaveToDraft(editor);
+				setTimeout(() => {
+					setIsUploading(false);
+				}, 10);
+			}
+		}
+	}, [action, editor, isUploading, saveFirstDraft, throttledSaveToDraft]);
 
 	useEffect(() => {
 		if (toggleAppBoard) {
