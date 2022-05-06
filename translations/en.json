@@ -258,6 +258,7 @@
         "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",
         "notification_audio": "Play audio hint when new notification appears",
+        "notification_folders": "Notification Folders",
         "notify_organizer": "Notify Organizer",
         "of": "of",
         "on_behalf_of": "on behalf of",

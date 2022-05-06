@@ -96,23 +96,6 @@ export default function ReceivingMessagesSettings({
 						})
 					}
 				/>
-			</Container>
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title="Notification Folders" />
-				<Select
-					label={t('label.select_folder', 'Select folder')}
-					name="zimbraPrefShowAllNewMailNotifications"
-					items={notifyFolderOptn}
-					onChange={(view) =>
-						updateSettings({
-							target: { name: 'zimbraPrefShowAllNewMailNotifications', value: view }
-						})
-					}
-					defaultSelection={{
-						label: findLabel(notifyFolderOptn, settingsObj.zimbraPrefShowAllNewMailNotifications),
-						value: settingsObj.zimbraPrefShowAllNewMailNotifications
-					}}
-				/>
 				<Padding bottom="small" />
 				<Checkbox
 					label={t('label.notification_audio', 'Play audio hint when new notification appears')}
@@ -127,6 +110,23 @@ export default function ReceivingMessagesSettings({
 								}
 							}
 						});
+					}}
+				/>
+			</Container>
+			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
+				<Heading title={t('label.notification_folders', 'Notification Folders')} />
+				<Select
+					label={t('label.select_folder', 'Select folder')}
+					name="zimbraPrefShowAllNewMailNotifications"
+					items={notifyFolderOptn}
+					onChange={(view) =>
+						updateSettings({
+							target: { name: 'zimbraPrefShowAllNewMailNotifications', value: view }
+						})
+					}
+					defaultSelection={{
+						label: findLabel(notifyFolderOptn, settingsObj.zimbraPrefShowAllNewMailNotifications),
+						value: settingsObj.zimbraPrefShowAllNewMailNotifications
 					}}
 				/>
 			</Container>
