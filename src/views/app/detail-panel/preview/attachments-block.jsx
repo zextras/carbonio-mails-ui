@@ -142,7 +142,7 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 		[att.name, createSnackbar, message.id, t]
 	);
 
-	const isAValidDestination = useCallback((node) => node.permissions?.can_write_file, []);
+	const isAValidDestination = useMemo((node) => node.permissions?.can_write_file, []);
 
 	const actionTarget = useMemo(
 		() => ({
@@ -343,7 +343,7 @@ export default function AttachmentsBlock({ message }) {
 		[attachments, createSnackbar, message, t]
 	);
 
-	const isAValidDestination = useCallback((node) => node.permissions?.can_write_file, []);
+	const isAValidDestination = useMemo((node) => node.permissions?.can_write_file, []);
 
 	const actionTarget = useMemo(
 		() => ({
