@@ -3,70 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { isEqualWith } from 'lodash';
 import { useMemo } from 'react';
 
-export const useDisabled = ({
-	sizeSmaller,
-	sizeLarger,
-	totalKeywords,
-	subject,
-	unreadFilter,
-	attachmentFilter,
-	flaggedFilter,
-	receivedFromAddress,
-	sentFromAddress,
-	emailStatus,
-	folder,
-	sentBefore,
-	sentOn,
-	sentAfter,
-	tag,
-	attachmentType
-}) =>
+export const useDisabled = ({ queryToBe, query }) =>
 	useMemo(
 		() =>
-			(totalKeywords === 0 &&
-				subject.length === 0 &&
-				unreadFilter.length === 0 &&
-				attachmentFilter.length === 0 &&
-				flaggedFilter.length === 0 &&
-				attachmentType.length === 0 &&
-				emailStatus.length === 0 &&
-				sizeSmaller.length === 0 &&
-				sizeLarger.length === 0 &&
-				receivedFromAddress.length === 0 &&
-				sentFromAddress.length === 0 &&
-				emailStatus.length === 0 &&
-				sizeSmaller.length === 0 &&
-				sizeLarger.length === 0 &&
-				folder.length === 0 &&
-				sentBefore.length === 0 &&
-				sentOn.length === 0 &&
-				sentAfter.length === 0 &&
-				tag.length === 0 &&
-				attachmentType.length === 0) ||
-			(receivedFromAddress && receivedFromAddress[0]?.hasError === true) ||
-			(sentFromAddress && sentFromAddress[0]?.hasError === true) ||
-			(sizeSmaller && sizeSmaller[0]?.error === true) ||
-			(sizeLarger && sizeLarger[0]?.error === true),
-		[
-			sizeSmaller,
-			sizeLarger,
-			totalKeywords,
-			subject.length,
-			unreadFilter.length,
-			attachmentFilter.length,
-			flaggedFilter.length,
-			receivedFromAddress,
-			sentFromAddress,
-			emailStatus.length,
-			folder.length,
-			sentBefore.length,
-			sentOn.length,
-			sentAfter.length,
-			tag.length,
-			attachmentType.length
-		]
+			isEqualWith(queryToBe, query, (newQuery, currentQuery) => {
+				if (newQuery.length === 0 && currentQuery.length === 0) return true;
+				if (newQuery.length !== currentQuery.length) return false;
+				return newQuery[0].value === currentQuery[0].value;
+			}),
+		[query, queryToBe]
 	);
 
 export const useSecondaryDisabled = ({
