@@ -663,8 +663,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		messages,
 		saveDraftCb,
 		settings,
-		t,
-		throttledSaveToDraft
+		t
 	]);
 
 	useEffect(() => {
