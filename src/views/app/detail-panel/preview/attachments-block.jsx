@@ -142,7 +142,7 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 		[att.name, createSnackbar, message.id, t]
 	);
 
-	const isAValidDestination = useMemo((node) => node.permissions?.can_write_file, []);
+	const isAValidDestination = useMemo((node) => node?.permissions?.can_write_file, []);
 
 	const actionTarget = useMemo(
 		() => ({
@@ -265,7 +265,7 @@ const copyToFiles = (att, message, nodes) =>
 		_jsns: 'urn:zimbraMail',
 		mid: message.id,
 		part: att.name,
-		destinationFolderId: nodes[0].id
+		destinationFolderId: nodes?.[0]?.id
 	});
 
 export default function AttachmentsBlock({ message }) {
@@ -343,7 +343,7 @@ export default function AttachmentsBlock({ message }) {
 		[attachments, createSnackbar, message, t]
 	);
 
-	const isAValidDestination = useMemo((node) => node.permissions?.can_write_file, []);
+	const isAValidDestination = useMemo((node) => node?.permissions?.can_write_file, []);
 
 	const actionTarget = useMemo(
 		() => ({

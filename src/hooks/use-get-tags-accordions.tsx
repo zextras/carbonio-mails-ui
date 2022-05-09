@@ -3,8 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useMemo } from 'react';
-import { useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import React, { ReactElement, useCallback, useMemo } from 'react';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { useTags, ZIMBRA_STANDARD_COLORS, runSearch } from '@zextras/carbonio-shell-ui';
 import {
 	AccordionItem,
 	Dropdown,
@@ -36,14 +38,35 @@ const CustomComp = (props: ItemProps): ReactElement => {
 	const [t] = useTranslation();
 	const actions = useGetTagsActions({ tag: props?.item, t });
 
+	const triggerSearch = useCallback(
+		() =>
+			runSearch(
+				[
+					{
+						avatarBackground: ZIMBRA_STANDARD_COLORS[props?.item?.color || 0].hex,
+						avatarIcon: 'Tag',
+						background: 'gray2',
+						hasAvatar: true,
+						isGeneric: false,
+						isQueryFilter: true,
+						label: `tag:${props?.item?.name}`,
+						value: `tag:"${props?.item?.name}"`
+					}
+				],
+				'mails'
+			),
+		[props?.item?.color, props?.item?.name]
+	);
+
 	return (
-		<Dropdown contextMenu items={actions} display="block" width="fit">
+		<Dropdown contextMenu items={actions} display="block" width="fit" onClick={triggerSearch}>
 			<Row mainAlignment="flex-start" height="fit" padding={{ left: 'large' }} takeAvailableSpace>
 				<Icon
 					size="large"
 					icon="Tag"
 					customColor={ZIMBRA_STANDARD_COLORS[props?.item?.color].hex}
 				/>
+
 				<Padding right="large" />
 				<Tooltip label={props?.item?.name} placement="right" maxWidth="100%">
 					<AccordionItem {...props} height={40} />

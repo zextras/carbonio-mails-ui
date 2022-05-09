@@ -28,7 +28,14 @@ import {
 } from '@zextras/carbonio-design-system';
 import { capitalize, every, find, includes, isEmpty, map, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useTags, useUserAccounts, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import {
+	useTags,
+	useUserAccounts,
+	ZIMBRA_STANDARD_COLORS,
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	runSearch
+} from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import MailMsgPreviewActions from '../../../../../ui-actions/mail-message-preview-actions';
@@ -162,6 +169,25 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			every(message.tags, (tn) => tn !== ''),
 		[isTagInStore, message.tags, showMultiTagIcon]
 	);
+	const triggerSearch = useCallback(
+		(tagToSearch) =>
+			runSearch(
+				[
+					{
+						avatarBackground: tagToSearch?.color,
+						avatarIcon: 'Tag',
+						background: 'gray2',
+						hasAvatar: true,
+						isGeneric: false,
+						isQueryFilter: true,
+						label: `tag:${tagToSearch?.name}`,
+						value: `tag:"${tagToSearch?.name}"`
+					}
+				],
+				'mails'
+			),
+		[]
+	);
 
 	return (
 		<HoverContainer
@@ -294,6 +320,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										background="gray2"
 										hasAvatar
 										avatarIcon="Tag"
+										onClick={(): void => triggerSearch(tag)}
 									/>
 								))}
 							</Text>
