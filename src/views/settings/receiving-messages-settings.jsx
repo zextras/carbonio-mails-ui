@@ -70,6 +70,7 @@ export default function ReceivingMessagesSettings({
 						})
 					}
 				/>
+				{/* todo: disabled because unsupported yet
 				<Padding bottom="small" />
 				<Checkbox
 					label={t('label.highlight_tab', 'Highlight the Mail tab')}
@@ -95,7 +96,7 @@ export default function ReceivingMessagesSettings({
 							}
 						})
 					}
-				/>
+				/> */}
 				<Padding bottom="small" />
 				<Checkbox
 					label={t('label.notification_audio', 'Play audio hint when new notification appears')}
