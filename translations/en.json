@@ -262,6 +262,8 @@
         "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",
         "no_subject_with_tags": "<No Subject>",
+        "notification_audio": "Play audio hint when new notification appears",
+        "notification_folders": "Notification Folders",
         "notify_organizer": "Notify Organizer",
         "of": "of",
         "on_behalf_of": "on behalf of",
@@ -343,9 +345,9 @@
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
             "all_att_added": "Attachments added successfully",
-            "att_err_adding": "There seems to be a problem when adding attachments, please try again",
             "all_att_saved": "Attachments successfully saved in the selected folder",
             "att_err": "There seems to be a problem when saving, please try again",
+            "att_err_adding": "There seems to be a problem when adding attachments, please try again",
             "att_saved": "Attachment saved in the selected folder",
             "calendar_edits_saved": "Edits saved correctly",
             "settings_saved": "Edits saved correctly",
@@ -409,7 +411,7 @@
             "tag_not_updated": "Something went wrong, tag not updated. Please try again.",
             "tag_updated": "Tag successfully updated"
         },
-    "something_went_wrong": "SOMETHING WENT WRONG"
+        "something_went_wrong": "SOMETHING WENT WRONG"
     },
     "notification": {
         "new_message": "New Message",
