@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { AccordionFolder } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'react-i18next';
 
 export type ModalFooterProps = {
@@ -38,3 +39,29 @@ export type SnackbarArgumentType = {
 	actionLabel?: string;
 	onActionClick?: TFunction;
 };
+
+export type ModalProps = {
+	folder: AccordionFolder;
+	onClose: () => void;
+};
+
+export type Crumb = {
+	label: string;
+	tooltip: string;
+};
+
+export type ResFolder = AccordionFolder &
+	Partial<{
+		folderId: number;
+		folderPath: string;
+		folderUuid: string;
+		granteeId: string;
+		granteeName: string;
+		granteeType: string;
+		mid: string;
+		ownerEmail: string;
+		ownerId: string;
+		ownerName: string;
+		rights: string;
+		view: string;
+	}>;

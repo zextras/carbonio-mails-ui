@@ -77,10 +77,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 				label: item.name,
 				customComponent: (
 					<Row>
-						<Icon
-							icon="Tag"
-							customColor={ZIMBRA_STANDARD_COLORS[parseInt(item.color ?? '0', 10)].hex}
-						/>
+						<Icon icon="Tag" customColor={ZIMBRA_STANDARD_COLORS[(item.color ?? '0', 10)].hex} />
 						<Padding left="small">
 							<Text>{item.name}</Text>
 						</Padding>

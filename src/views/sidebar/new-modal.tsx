@@ -3,82 +3,142 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+	ChangeEvent,
+	FC,
+	useCallback,
+	useContext,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 import {
-	Accordion,
 	Container,
-	CustomModal,
 	Input,
 	Text,
 	Padding,
+	Accordion,
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
-import { filter, includes, map, reduce, reject, startsWith } from 'lodash';
+
+import { cloneDeep, filter, includes, startsWith } from 'lodash';
 import { nanoid } from '@reduxjs/toolkit';
-import { Folder, FOLDERS, useFoldersAccordionByView } from '@zextras/carbonio-shell-ui';
+import {
+	AccordionFolder,
+	Folder,
+	FOLDERS,
+	useFoldersAccordionByView,
+	useUserAccount
+} from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 import ModalFooter from './commons/modal-footer';
 import { ModalHeader } from './commons/modal-header';
 import { createFolder } from '../../store/actions/create-folder';
-import FolderAccordionItem from './commons/folder-accordion-item';
+import { FOLDER_VIEW } from '../../constants';
+import ModalAccordionCustomComponent from './parts/edit/modal-accordion-custom-component';
+import { ModalProps } from '../../types/commons';
+import { translatedSystemFolders } from './utils';
 
-type NewModalProps = {
-	folder: Folder;
-	onClose: () => void;
-};
-export const NewModal = ({ folder, onClose }: NewModalProps): void => {
+const ContainerEl = styled(Container)`
+	overflow-y: auto;
+	display: block;
+`;
+
+export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
-	const createSnackbar = useContext(SnackbarManagerContext);
-	const folders = useFoldersAccordionByView(FOLDERS.message, FolderAccordionItem);
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	const createSnackbar = useContext(SnackbarManagerContext) as Function;
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	const folders = useFoldersAccordionByView(FOLDER_VIEW.message, null);
 	const [inputValue, setInputValue] = useState('');
-	const [input, setInput] = useState('');
-	const [folderDestination, setFolderDestination] = useState(folder);
+	const [searchString, setSearchString] = useState('');
+	const [folderDestination, setFolderDestination] = useState<AccordionFolder | undefined>(folder);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
 	const [label, setLabel] = useState(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
-	const folderArray = useMemo(
-		() => [
-			t('folders.inbox', 'Inbox'),
-			t('label.sent', 'Sent'),
-			t('folders.drafts', 'Drafts'),
-			t('folders.trash', 'Trash'),
-			t('folders.spam', 'Spam')
-		],
-		[t]
+	const history = useHistory();
+	const activeFolder = history?.location?.pathname?.split?.('/')?.[3];
+	const accountName = useUserAccount().name;
+	const accordionRef = useRef<HTMLDivElement>();
+	const [accordionWidth, setAccordionWidth] = useState<number>();
+
+	useLayoutEffect(() => {
+		const calculateAvailableWidth = (): void => {
+			if (accordionRef && accordionRef.current) {
+				setAccordionWidth(accordionRef?.current?.clientWidth);
+			}
+		};
+		window.addEventListener('resize', calculateAvailableWidth);
+		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
+	}, [accordionRef]);
+
+	const showWarning = useMemo(
+		() => includes(translatedSystemFolders(t), inputValue),
+		[t, inputValue]
 	);
-	const showWarning = useMemo(() => includes(folderArray, inputValue), [folderArray, inputValue]);
 
-const filteredAccordionFolders = useMemo(()=>{
-const filterFolders = reduce(folders.items, (acc, val)=>{ 
-	if (startsWith(val.label, inputValue) {return [...acc, val]} )
+	const flattenFolders = useCallback(
+		(arr: Array<AccordionFolder>): Array<AccordionFolder> => {
+			const result: Array<AccordionFolder> = [];
+			arr.forEach((item) => {
+				const { items } = item;
+				if (
+					item.folder.id !== FOLDERS.TRASH &&
+					item.folder.id !== FOLDERS.SPAM &&
+					!startsWith(item.folder.absFolderPath, '/Trash')
+				)
+					result.push({
+						...item,
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						CustomComponent: ModalAccordionCustomComponent,
+						onClick: () => {
+							setFolderDestination(item.folder);
+						},
+						background:
+							typeof folderDestination !== 'undefined' && folderDestination.id === item.folder.id
+								? 'highlight'
+								: undefined,
+						label: item.folder.id === FOLDERS.USER_ROOT ? accountName : item.folder.name,
+						activeId: item.folder.id === activeFolder,
+						accordionWidth
+					});
+				if (items) result.push(...flattenFolders(items));
+			});
+			return result;
+		},
+		[accordionWidth, accountName, activeFolder, folderDestination]
+	);
 
+	const getFolderRootName = (_folder: AccordionFolder): string => {
+		let result = cloneDeep(_folder);
+		while (result.folder?.parent?.parent) {
+			result = result.folder.parent;
+		}
+		return result.folder.owner || result.folder.parent.name || result.folder.name;
+	};
 
+	const filteredFolders = folders.filter((item) => item.label === getFolderRootName(folder));
 
-
-
-
-
-}, [])
-
-
-
-
-
-
-})
-
-	// useEffect(() => {
-	// 	setFolderDestination(folder);
-	// }, [folder]);
+	const flattenedFolders = useMemo(
+		() => flattenFolders(filteredFolders),
+		[filteredFolders, flattenFolders]
+	);
 
 	useEffect(() => {
 		if (!folderDestination || !inputValue.length || showWarning) {
 			setDisabled(true);
 			return;
 		}
-		const value = !!filter(folderDestination.children, (item) => item.name === inputValue).length;
+		const value = !!filter(folderDestination.folder.children, (item) => item.name === inputValue)
+			.length;
 		if (value) {
 			setLabel(t('folder_panel.modal.new.input.name_exist', 'Name already exists in this path'));
 		} else {
@@ -88,158 +148,103 @@ const filterFolders = reduce(folders.items, (acc, val)=>{
 		setDisabled(value);
 	}, [folderDestination, inputValue, showWarning, t]);
 
-	// const normalizedFolders = useMemo(
-	// 	() =>
-	// 			reject(folders, (v) => startsWith(v.absFolderPath, '/Trash') || v.id === FOLDERS.SPAM),
-	// 			(f) => ({
-	// 				...f,
-	// 				onClick: () => setFolderDestination(f),
-	// 				open: !!input.length,
-	// 				divider: true,
-	// 				background: folderDestination.id === f.id ? 'highlight' : undefined
-	// 			})
-	// 		),
-	// 	[folderDestination.id, folders, input.length]
-	// );
-
-
-
-
 	const filteredFromUserInput = useMemo(
-		() => filter(folders, (item) => startsWith(item.name.toLowerCase(), input.toLowerCase())),
-		[input, normalizedFolders]
-	);
-
-	const nestFilteredFolders = useCallback(
-		(items, id, results) =>
-			reduce(
-				filter(items, (item) => item.parent === id),
-				(acc, item) => [
-					...acc,
-					{
-						...item,
-						items: nestFilteredFolders(items, item.id, results),
-						onClick: () => setFolderDestination(item),
-						open: !!input.length,
-						divider: true,
-						background: folderDestination.id === item.id ? 'highlight' : undefined
-					}
-				],
-				[]
+		() =>
+			filter(flattenedFolders, (item) =>
+				startsWith(item.folder.name.toLowerCase(), searchString.toLowerCase())
 			),
-		[folderDestination.id, input.length]
-	);
-
-	const nestedData = useMemo(
-		() => [
-			{
-				id: FOLDERS.USER_ROOT,
-				label: 'Root',
-				level: '0',
-				open: true,
-				items:
-					input.length > 0
-						? filteredFromUserInput
-						: nestFilteredFolders(normalizedFolders, FOLDERS.USER_ROOT),
-				background: folderDestination.id === FOLDERS.USER_ROOT ? 'highlight' : undefined,
-				onClick: () => setFolderDestination({ id: FOLDERS.USER_ROOT })
-			}
-		],
-		[filteredFromUserInput, folderDestination.id, input, nestFilteredFolders, normalizedFolders]
+		[flattenedFolders, searchString]
 	);
 
 	const onConfirm = useCallback(() => {
-		dispatch(
-			createFolder({ parentFolder: folderDestination, name: inputValue, id: nanoid() })
-		).then((res) => {
-			if (res.type.includes('fulfilled')) {
-				createSnackbar({
-					key: `edit`,
-					replace: true,
-					type: 'success',
-					label: t('messages.snackbar.folder_created', 'New folder created'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			} else {
-				createSnackbar({
-					key: `edit`,
-					replace: true,
-					type: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			}
-			setNew({
-				id: res.meta.arg.parentFolder.id,
-				absParent: res.meta.arg.parentFolder.absParent
+		dispatch(createFolder({ parentFolder: folderDestination, name: inputValue, id: nanoid() }))
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			.then((res: unknown & { type: string }) => {
+				if (res.type.includes('fulfilled')) {
+					createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'success',
+						label: t('messages.snackbar.folder_created', 'New folder created'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				} else {
+					createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
 			});
-		});
-		setInput('');
+		setSearchString('');
 		setInputValue('');
 		setLabel(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
-		setFolderDestination('');
-		setModal('');
+		setFolderDestination(undefined);
 		setHasError(false);
-	}, [dispatch, folderDestination, inputValue, setModal, setNew, t, createSnackbar]);
-
-	// const onClose = useCallback(() => {
-	// 	setInput('');
-	// 	setInputValue('');
-	// 	setModal('');
-	// 	setFolderDestination('');
-	// 	setLabel(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
-	// 	setHasError(false);
-	// }, [setModal, t]);
+		onClose();
+	}, [dispatch, folderDestination, inputValue, t, onClose, createSnackbar]);
 
 	return folder ? (
-		<CustomModal open={openModal} onClose={onClose} maxHeight="90vh">
-			<Container
-				padding={{ all: 'large' }}
-				mainAlignment="center"
-				crossAlignment="flex-start"
-				height="fit"
-			>
-				<ModalHeader
-					title={t('folder_panel.modal.new.title', 'Create a new folder')}
-					onClose={onClose}
+		<Container
+			padding={{ all: 'large' }}
+			mainAlignment="center"
+			crossAlignment="flex-start"
+			height="fit"
+		>
+			<ModalHeader
+				title={t('folder_panel.modal.new.title', 'Create a new folder')}
+				onClose={onClose}
+			/>
+			<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
+				<Input
+					label={label}
+					backgroundColor="gray5"
+					hasError={hasError}
+					defaultValue={inputValue}
+					onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
 				/>
-				<Container mainAlignment="center" crossAlignment="flex-start">
-					<Input
-						label={label}
-						backgroundColor="gray5"
-						hasError={hasError}
-						defaultValue={inputValue}
-						onChange={(e) => setInputValue(e.target.value)}
+				{showWarning && (
+					<Padding all="small">
+						<Text size="small" color="error">
+							{`${t(
+								'folder.modal.edit.rename_warning',
+								'You cannot rename a folder as a system one.'
+							)}`}
+						</Text>
+					</Padding>
+				)}
+				<Input
+					label={t('label.filter_folders', 'Filter folders')}
+					backgroundColor="gray5"
+					value={searchString}
+					onChange={(e: ChangeEvent<HTMLInputElement>): void => setSearchString(e.target.value)}
+				/>
+				<ContainerEl
+					orientation="vertical"
+					mainAlignment="flex-start"
+					minHeight="30vh"
+					maxHeight="60vh"
+				>
+					<Accordion
+						ref={accordionRef}
+						background="gray6"
+						items={filteredFromUserInput}
+						style={{ overflowY: 'hidden' }}
 					/>
-					{showWarning && (
-						<Padding all="small">
-							<Text size="small" color="error">
-								{`${t(
-									'folder.modal.edit.rename_warning',
-									'You cannot rename a folder as a system one.'
-								)}`}
-							</Text>
-						</Padding>
-					)}
-					<Input
-						label={t('label.filter_folders', 'Filter folders')}
-						backgroundColor="gray5"
-						value={input}
-						onChange={(e) => setInput(e.target.value)}
-					/>
-					<Accordion folders={nestedData} />
-					<ModalFooter
-						onConfirm={onConfirm}
-						secondaryAction={onClose}
-						label={t('label.create', 'Create')}
-						t={t}
-						disabled={disabled}
-					/>
-				</Container>
+				</ContainerEl>
+				<ModalFooter
+					onConfirm={onConfirm}
+					secondaryAction={onClose}
+					label={t('label.create_and_move', 'Create and move')}
+					disabled={disabled}
+				/>
 			</Container>
-		</CustomModal>
+		</Container>
 	) : (
 		<></>
 	);

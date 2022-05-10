@@ -4,27 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import {
-	Container,
-	CustomModal,
-	Input,
-	Text,
-	Icon,
-	Accordion,
-	AccordionItem
-} from '@zextras/carbonio-design-system';
+import { Container, CustomModal, Input, Text, Icon } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { filter, isEmpty, reduce, startsWith } from 'lodash';
-import {
-	Folder,
-	FOLDERS,
-	getUserAccount,
-	useFoldersAccordionByView
-} from '@zextras/carbonio-shell-ui';
+import { useSelector } from 'react-redux';
 import ModalFooter from '../../../sidebar/commons/modal-footer';
 import { ModalHeader } from '../../../sidebar/commons/modal-header';
-import { FOLDER_VIEW } from '../../../../constants';
-import FolderModalAccordionItem from './folder-modal-accordion-item';
+import FolderItem from '../../../sidebar/commons/folder-item';
+import { selectFolders } from '../../../../store/folders-slice';
+import { Folder as FolderType } from '../../../../types/folder';
+import { getFolderIconColor, getFolderIconName } from '../../../sidebar/utils';
 
 type ComponentProps = {
 	compProps: {
@@ -35,9 +24,9 @@ type ComponentProps = {
 		activeIndex: number;
 		tempActions: any;
 		setTempActions: (arg: any) => void;
-		folderDestination: Folder;
+		folderDestination: FolderType;
 		setFolderDestination: (arg: any) => void;
-		folder: Folder;
+		folder: FolderType;
 		setFolder: (arg: any) => void;
 	};
 };
@@ -55,9 +44,9 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		setFolderDestination,
 		setFolder
 	} = compProps;
-
+	const folders = useSelector(selectFolders);
 	const [input, setInput] = useState('');
-	const folders = useFoldersAccordionByView(FOLDER_VIEW.message, FolderModalAccordionItem);
+
 	const filterFromInput = useMemo(
 		() =>
 			filter(folders, (v) => {
@@ -106,11 +95,26 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		[folderDestination.id, input.length, setFolderDestination]
 	);
 
+	const shareFolders = useMemo(
+		() => [
+			{
+				id: '1',
+				label: 'Shared Folders',
+				level: '0',
+				icon: 'Share',
+				divider: true,
+				items: nestFilteredFolders(folders, '1', filterFromInput, true),
+				background: folderDestination.id === '1' ? 'highlight' : undefined,
+				onClick: (): void => setFolderDestination({ id: '1' })
+			}
+		],
+		[filterFromInput, folderDestination.id, folders, nestFilteredFolders, setFolderDestination]
+	);
 	const nestedData = useMemo(
-		() => nestFilteredFolders(folders, filterFromInput, false),
+		() => nestFilteredFolders(folders, '1', filterFromInput, false),
 		[nestFilteredFolders, folders, filterFromInput]
 	);
-
+	const requiredData = useMemo(() => nestedData.concat(shareFolders), [nestedData, shareFolders]);
 	const onConfirm = useCallback(() => {
 		const previous = tempActions.slice();
 		previous[activeIndex] = {
@@ -158,11 +162,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 							)}
 							onChange={(e: any): void => setInput(e.target.value)}
 						/>
-						<Accordion
-							items={nestedData}
-							setFolderDestination={setFolderDestination}
-							input={input}
-						/>
+						<FolderItem folders={requiredData} />
 					</Container>
 					<ModalFooter
 						onConfirm={onConfirm}

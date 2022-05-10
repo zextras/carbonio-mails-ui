@@ -1000,7 +1000,7 @@ export function highLightWord(text, textWhiteSpace, regexp) {
 			'</span>',
 			suffix
 		].join('');
-		text = [text.substr(0, m.index), repl, text.substr(m.index + str.length)].join('');
+		text = [text.substring(0, m.index), repl, text.substring(m.index + str.length)].join('');
 		regexp.lastIndex = m.index + repl.length - suffix.length;
 	}
 	return text;

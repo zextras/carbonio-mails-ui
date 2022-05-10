@@ -217,3 +217,16 @@ export const getFileExtension = (file: FileType): string => {
 	// @ts-ignore
 	return FileExtensionRegex.exec(file.filename)[1];
 };
+
+// eslint-disable-next-line no-shadow
+export enum FOLDER_ACTIONS {
+	MOVE = 'move',
+	EMPTY_TRASH = 'emptyTrash',
+	REMOVE_FROM_LIST = 'removeFromList',
+	SHARES_INFO = 'sharesInfo',
+	EDIT = 'edit',
+	NEW = 'new',
+	DELETE = 'delete',
+	SHARE = 'share',
+	SHARE_URL = 'share_url'
+}
