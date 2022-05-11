@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useRef, FC, useContext } from 'react';
-import { AccordionFolder, Folder, useFoldersAccordionByView } from '@zextras/carbonio-shell-ui';
+import {
+	AccordionFolder,
+	Folder,
+	useFoldersAccordionByView,
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	useLocalStorage
+} from '@zextras/carbonio-shell-ui';
 import { Accordion, Container, Button, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { Route, Switch, useRouteMatch, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -30,10 +37,14 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions }) => {
 	const createModal = useContext(ModalManagerContext) as Function;
 	const { folderId } = useParams<{ folderId: string }>();
 	const tagsAccordionItems = useGetTagsAccordion();
+	const [openIds] = useLocalStorage(
+		'open_mails_folders',
+		window.localStorage.getItem('open_mails_folders') ?? []
+	);
 
 	return (
 		<Container orientation="vertical" height="fit">
-			<Accordion ref={sidebarRef} items={accordions} activeId={folderId} />
+			<Accordion openIds={openIds} ref={sidebarRef} items={accordions} activeId={folderId} />
 			<Container style={{ padding: '8px 16px' }}>
 				<Button
 					type="outlined"

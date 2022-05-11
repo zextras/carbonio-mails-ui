@@ -339,7 +339,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
-	const [openIds, setOpenIds] = useLocalStorage(
+	const [_, setOpenIds] = useLocalStorage(
 		'open_mails_folders',
 		window.localStorage.getItem('open_mails_folders') ?? []
 	);
@@ -519,12 +519,12 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			label: item.id === FOLDERS.USER_ROOT ? accountName : item.label,
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
-			open: openIds ? openIds.includes(folder.id) : false,
+			// open: openIds ? openIds.includes(folder.id) : false,
 			badgeCounter: badgeCount(item.id === FOLDERS.DRAFTS ? item?.folder.n : item?.folder?.u),
 			badgeType: item.id === FOLDERS.DRAFTS ? 'read' : 'unread',
 			to: `/folder/${item.id}`
 		}),
-		[item, accountName, openIds, folder.id]
+		[item, accountName]
 	);
 
 	const dropdownItems = useFolderActions(item);
