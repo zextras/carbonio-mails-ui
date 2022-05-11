@@ -6,8 +6,10 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Container, CustomModal, Input, Text, Icon } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
-import { filter, isEmpty, reduce, startsWith } from 'lodash';
+import { filter, includes, isEmpty, reduce, remove, sortBy, startsWith } from 'lodash';
 import { useSelector } from 'react-redux';
+import { FOLDERS, useUserSettings } from '@zextras/carbonio-shell-ui';
+
 import ModalFooter from '../../sidebar/commons/modal-footer';
 import { ModalHeader } from '../../sidebar/commons/modal-header';
 import FolderItem from '../../sidebar/commons/folder-item';
@@ -22,8 +24,18 @@ type ComponentProps = {
 const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { open, onClose, setFolder, t } = compProps;
 	const folders = useSelector(selectFolders);
+	const settings = useUserSettings()?.prefs;
 	const [input, setInput] = useState('');
 	const [folderDestination, setFolderDestination] = useState<FolderType | any>({});
+
+	const [includeSpam, includeTrash, includeSharedFolders] = useMemo(
+		() => [
+			settings?.zimbraPrefIncludeSpamInSearch === 'TRUE',
+			settings?.zimbraPrefIncludeTrashInSearch === 'TRUE',
+			settings?.zimbraPrefIncludeSharedItemsInSearch === 'TRUE'
+		],
+		[settings]
+	);
 
 	const filterFromInput = useMemo(
 		() =>
@@ -36,6 +48,10 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			}),
 		[folders, input]
 	);
+	const foldersToFilterOut = useMemo(
+		() => [...(includeTrash ? [] : FOLDERS.TRASH), ...(includeSpam ? [] : FOLDERS.SPAM)],
+		[includeSpam, includeTrash]
+	);
 
 	const nestFilteredFolders: any = useCallback(
 		(items: Array<FolderType>, id: string, results: Array<FolderType>, getSharedFolder: boolean) =>
@@ -43,7 +59,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				filter(items, (item) =>
 					getSharedFolder
 						? item.parent === id && item.isSharedFolder
-						: item.parent === id && item.id !== '4' && item.id !== '3' && !item.isSharedFolder
+						: item.parent === id && !includes(foldersToFilterOut, item.id) && !item.isSharedFolder
 				),
 				(acc: Array<FolderType>, item: any) => {
 					const match = filter(results, (result) => result.id === item.id);
@@ -52,7 +68,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 							...acc,
 							{
 								...item,
-								label: item.name,
+								label: item.id === FOLDERS.SPAM ? 'Spam' : item.name,
 								icon: getFolderIconName(item),
 								iconCustomColor: getFolderIconColor(item),
 								items: nestFilteredFolders(items, item.id, results, getSharedFolder),
@@ -70,7 +86,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				},
 				[]
 			),
-		[folderDestination.id, input.length]
+		[foldersToFilterOut, input.length, folderDestination.id]
 	);
 
 	const shareFolders = useMemo(
@@ -88,11 +104,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		],
 		[filterFromInput, folderDestination.id, folders, nestFilteredFolders]
 	);
-	const nestedData = useMemo(
-		() => nestFilteredFolders(folders, '1', filterFromInput, false),
-		[nestFilteredFolders, folders, filterFromInput]
-	);
-	const requiredData = useMemo(() => nestedData.concat(shareFolders), [nestedData, shareFolders]);
+
 	const onConfirm = useCallback(() => {
 		setFolder([
 			{
@@ -110,6 +122,14 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	}, [setFolder, folderDestination, onClose]);
 
 	const disabled = useMemo(() => isEmpty(folderDestination), [folderDestination]);
+
+	const accordionData = useMemo(() => {
+		const ownFolders = nestFilteredFolders(folders, '1', filterFromInput, false);
+		const trashFolder = remove(ownFolders, (c: any) => c.id === FOLDERS.TRASH);
+		const foldersWithTrash = sortBy(ownFolders, (item) => Number(item.id)).concat(trashFolder);
+		return includeSharedFolders ? foldersWithTrash.concat(shareFolders) : foldersWithTrash;
+	}, [filterFromInput, folders, includeSharedFolders, nestFilteredFolders, shareFolders]);
+
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
 			<Container
@@ -149,7 +169,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 							onChange={(e: any): void => setInput(e.target.value)}
 						/>
 
-						<FolderItem folders={requiredData} />
+						<FolderItem folders={accordionData} />
 					</Container>
 					<ModalFooter
 						onConfirm={onConfirm}

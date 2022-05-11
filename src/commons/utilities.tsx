@@ -230,3 +230,20 @@ export enum FOLDER_ACTIONS {
 	SHARE = 'share',
 	SHARE_URL = 'share_url'
 }
+export const convertToDecimal = (source: string): string => {
+	let result = '';
+	for (let i = 0; i < source.length; i += 1) {
+		const charCode = source.charCodeAt(i);
+		// Encode non-ascii or double quotes
+		if (charCode > 127 || charCode === 34) {
+			let temp = charCode.toString(10);
+			while (temp.length < 4) {
+				temp = `0${temp}`;
+			}
+			result += `&#${temp};`;
+		} else {
+			result += source.charAt(i);
+		}
+	}
+	return result;
+};

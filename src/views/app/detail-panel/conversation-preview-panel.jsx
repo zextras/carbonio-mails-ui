@@ -5,7 +5,7 @@
  */
 import React, { useMemo, useEffect } from 'react';
 import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
-import { FOLDERS, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { map, sortBy, find, filter } from 'lodash';
@@ -15,7 +15,7 @@ import {
 	selectConversationsArray,
 	selectCurrentFolderExpandedStatus
 } from '../../../store/conversations-slice';
-import { searchConv } from '../../../store/actions';
+import { getConv, searchConv } from '../../../store/actions';
 import MailPreview from './preview/mail-preview';
 import { selectMessages } from '../../../store/messages-slice';
 
@@ -49,11 +49,7 @@ const MessagesComponent = ({ conversation }) => {
 	if (conversation && conversationStatus === 'complete') {
 		return map(convMessages, (message, index) =>
 			message ? (
-				<Padding
-					key={`${conversationId}-${message.id}-${message.date}`}
-					bottom="medium"
-					width="100%"
-				>
+				<Padding key={`${conversationId}-${message.id}`} bottom="medium" width="100%">
 					<MailPreview
 						message={message}
 						expanded={expand(message, index)}
@@ -83,10 +79,16 @@ export default function ConversationPreviewPanel() {
 	);
 
 	useEffect(() => {
-		if (conversationsStatus !== 'complete' && conversationsStatus !== 'pending') {
-			dispatch(searchConv({ conversationId, fetch: 'all', folderId }));
+		if (!conversation) {
+			dispatch(getConv({ conversationId }));
 		}
-	}, [conversationId, conversationsStatus, dispatch, folderId]);
+	}, [conversation, dispatch, conversationId]);
+	const tagsFromStore = useTags();
+	useEffect(() => {
+		if (conversationsStatus !== 'complete' && conversationsStatus !== 'pending') {
+			dispatch(searchConv({ conversationId, fetch: 'all', folderId, tags: tagsFromStore }));
+		}
+	}, [conversationId, conversationsStatus, dispatch, folderId, tagsFromStore]);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">

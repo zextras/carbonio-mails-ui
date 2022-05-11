@@ -163,10 +163,10 @@
         "edit_access": "แก้ไขการเข้าถึงของ {{name}}",
         "edit_folder_properties": "แก้ไขคุณสมบัติของ {{name}}",
         "add_custom_message": "เพิ่มข้อความที่กำหนดเอง",
-        "allowed_actions": "การกระทำที่ได้รับอนุญาต",
-        "bcc": "BCC:",
+        "allowed_actions": "การดำเนินการที่ได้รับอนุญาต",
+        "bcc": "Bcc",
         "calendar_color": "สีของรายการ",
-        "cc": "CC",
+        "cc": "Cc",
         "draft_folder": "[ร่าง]",
         "resend": "ส่งซ้ำ",
         "revoke": "เพิกถอน",
@@ -253,7 +253,7 @@
         "attachment_type": "ประเภทไฟล์แนบ",
         "choose_folder": "เลือกโฟลเดอร์",
         "hide": "ซ่อน",
-        "loading_results": "กำลังโหลดผลลัพธ์...",
+        "loading_results": "กำลังโหลดผลลัพธ์…",
         "mail_folder": "โฟลเดอร์อีเมล",
         "mail_selected": "{{count}} อีเมลที่เลือก",
         "mail_settings": "การตั้งค่าอีเมล",
@@ -278,7 +278,25 @@
         "draft": "ร่างจดหมาย",
         "forwarded": "ส่งต่อแล้ว",
         "accept": "ยอมรับ",
-        "select_color": "เลือกสี"
+        "select_color": "เลือกสี",
+        "add_task": "หากคุณต้องการจดบันทึก คุณสามารถเพิ่มงานไปยัง TO DO LIST ของคุณได้",
+        "by_conversation": "โดยการสนทนา",
+        "by_message": "โดยข้อความ",
+        "retention_range": "ช่วงเวลาการเก็บรักษา",
+        "set_default_signatures": "ตั้งค่าลายเซ็นเริ่มต้น",
+        "app_name": "อีเมล",
+        "cc_bcc": "Cc Bcc",
+        "from_identity": "จาก: {{identity}}",
+        "attachement_unknown": "ไม่รู้จัก <{{mimeType}}>",
+        "create_new_task": "สร้างงานใหม่",
+        "destination_folder": "โฟลเดอร์ปลายทาง",
+        "disposal_threshold": "เกณฑ์การกำจัด",
+        "enable_message_disposal": "เปิดใช้งานการกำจัดข้อความ",
+        "enable_message_retention": "เปิดใช้งานการเก็บรักษาข้อความ",
+        "new_email": "อีเมลใหม่",
+        "notify_organizer": "แจ้งผู้จัดงาน",
+        "replied": "ตอบกลับแล้ว",
+        "show_quoted_text": "แสดงข้อความที่ยกมา"
     },
     "messages": {
         "permanent_delete_confirm": "ลบอย่างถาวร",
@@ -419,7 +437,8 @@
         },
         "search_hints": "ค้นหาคำใบ้ที่เราต้องหารือเกี่ยวกับ",
         "sending_mail_to_self": "ดูเหมือนว่าคุณกำลังจะส่งอีเมลถึงตัวเอง",
-        "invalid_search_message": "เราไม่พบรายการที่ตรงกันเลย"
+        "invalid_search_message": "เราไม่พบรายการที่ตรงกันเลย",
+        "email_saved_at": "บันทึกอีเมลเป็นฉบับร่างเมื่อ {{time}}"
     },
     "private": "ส่วนตัว",
     "remove_from_this_list": "ลบออกจากรายการนี้",
@@ -454,7 +473,8 @@
             "conversation_ordering": "ลำดับการสนทนา",
             "message_color": "สีข้อความ",
             "message_selection": "การเลือกข้อความ",
-            "set_message_color": "กำหนดสีของข้อความและการสนทนาตามสีแท็ก"
+            "set_message_color": "กำหนดสีของข้อความและการสนทนาตามสีแท็ก",
+            "visualization_options": "ตัวเลือกการแสดงภาพ"
         },
         "msg_from_optn": {
             "discard": "ยกเลิกข้อความโดยอัตโนมัติ",
@@ -481,7 +501,7 @@
             "new_message_inbox": "แสดงการแจ้งเตือนเมื่อมีข้อความใหม่เข้ามาในกล่องจดหมาย"
         },
         "after": "หลังจาก",
-        "actions": "การกระทำ",
+        "actions": "การดำเนินการ",
         "browse": "ดูข้อมูล",
         "calendar": "ปฏิทิน",
         "contacts": "การติดต่อ",

@@ -3,11 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { find, orderBy, reduce, some } from 'lodash';
-import { useEffect, useMemo } from 'react';
+import { find, isEqual, orderBy, reduce, some } from 'lodash';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { getTags, Tag, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import { Conversation } from '../types/conversation';
@@ -22,7 +22,6 @@ export const useConversationListItems = (): Array<Conversation> => {
 	const { folderId } = <RouteParams>useParams();
 	const dispatch = useDispatch();
 	const { zimbraPrefSortOrder } = useUserSettings()?.prefs as Record<string, string>;
-
 	const folderStatus = useSelector((state) => selectFolderSearchStatus(<StateType>state, folderId));
 	const conversations = useSelector(selectConversationsArray);
 	const folder = useSelector(selectFolder(folderId));

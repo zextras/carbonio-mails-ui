@@ -126,9 +126,9 @@
         "add_custom_message": "कोई कस्टम मैसेज जोड़ें",
         "allowed_actions": "अनुमत्त क्रियाएँ",
         "automatically_delete_duplicates": "जब किसी मैसेज की डुप्लीकेट कॉपी मिले तो उसे अपने-आप डिलीट कर दें",
-        "bcc": "BCC",
+        "bcc": "Bcc",
         "calendar_color": "आइटम कलर",
-        "cc": "CC",
+        "cc": "Cc",
         "draft_folder": "[ड्राफ्ट]",
         "flash_browser_title": "ब्राउज़र का शीर्षक फ्लैश करें",
         "from": "भेजने वाला",
@@ -200,7 +200,7 @@
         "discard_changes": "बदलाव रद्द करें",
         "error_address": "एक मान्य ई-मेल जरूरी है",
         "hide": "छिपाएँ",
-        "loading_results": "रिज़ल्ट लोड कर रहा है...",
+        "loading_results": "रिज़ल्ट लोड कर रहा है…",
         "mail_folder": "ई-मेल फोल्डर",
         "mail_selected": "{{count}} ई-मेल चुनी गई",
         "mail_selected_plural": "{{count}} ई-मेल चुनी गईं",
@@ -230,7 +230,26 @@
         "send_email": "ई-मेल भेजें",
         "share_with": "इनके साथ शेयर",
         "draft": "प्रालेख",
-        "forwarded": "फॉरवर्ड किया"
+        "forwarded": "फॉरवर्ड किया",
+        "app_name": "मेल्स",
+        "cc_bcc": "Cc Bcc",
+        "from_identity": "इनकी ओर से: {{identity}}",
+        "create_new_task": "नया काम बनाएँ",
+        "enable_message_disposal": "मैसेज निस्तारण चालू करें",
+        "show_quoted_text": "संबन्धित टेक्स्ट दिखाएँ",
+        "attachement_unknown": "अज्ञात <{{mimeType}}>",
+        "add_task": "यदि आपको कुछ नोट करना हो तो अपनी टू-डू-लिस्ट में कोई काम जोड़ सकते हैं",
+        "by_conversation": "बात-चीत से",
+        "by_message": "मैसेज से",
+        "destination_folder": "गंतव्य फोल्डर",
+        "disposal_threshold": "निस्तारण सीमा",
+        "enable_message_retention": "मैसेज सहेजना चालू करें",
+        "select_color": "रंग चुनें",
+        "new_email": "नई ई-मेल",
+        "notify_organizer": "ऑर्गनाइज़र को सूचित करें",
+        "replied": "जबाब दे दिया है",
+        "retention_range": "सेव करने की रेंज",
+        "set_default_signatures": "डिफ़ाल्ट सिग्नेचर सेट करें"
     },
     "messages": {
         "permanent_delete_confirm": "हमेशा के लिए डिलीट करें",
@@ -448,7 +467,8 @@
             "message_color": "मैसेज कलर",
             "message_selection": "मैसेज सिलेक्शन",
             "conversation_ordering": "बात-चीत क्रम में लगाना",
-            "set_message_color": "अपने मैसेज और बात-चीतों के कलर टैग कलर के अनुसार सेट करें।"
+            "set_message_color": "अपने मैसेज और बात-चीतों के कलर टैग कलर के अनुसार सेट करें।",
+            "visualization_options": "दिखने के ऑप्शन"
         },
         "msg_from_optn": {
             "discard": "मैसेज ऑटोमैटिक हटाएँ",
@@ -574,7 +594,8 @@
         },
         "search_hints": "सर्च हिंट जिनकी हमने चर्चा की थी",
         "sending_mail_to_self": "ऐसा लगता है आप खुद को ई-मेल भेजने जा रहे हैं",
-        "invalid_search_message": "हमें कोई मेल नहीं मिला"
+        "invalid_search_message": "हमें कोई मेल नहीं मिला",
+        "email_saved_at": "ई-मेल {{time}} बजे ड्राफ्ट के रूप में सेव करें"
     },
     "find_mail_shares": "शेयर किए फोल्डर ढूँढे",
     "snackbar": {

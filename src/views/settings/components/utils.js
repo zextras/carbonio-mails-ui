@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
-import { isEqual, transform, isObject, filter } from 'lodash';
+import { isEqual, transform, isObject, filter, reduce } from 'lodash';
 
 export const differenceObject = (object, base) => {
 	// eslint-disable-next-line no-shadow
@@ -18,6 +18,18 @@ export const differenceObject = (object, base) => {
 	}
 	return changes(object, base);
 };
+
+export const getPropsDiff = (original, modified) =>
+	reduce(
+		Object.keys(modified),
+		(acc, v) => {
+			if (original?.[v]?.value === modified?.[v]?.value) {
+				return acc;
+			}
+			return { ...acc, [v]: modified[v] };
+		},
+		{}
+	);
 
 export const CheckNewMailOptions = (t, isSecondsFormat, isMinutesFormat) => [
 	{

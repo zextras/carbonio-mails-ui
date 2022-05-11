@@ -5,7 +5,17 @@
  */
 import React, { useRef, FC, useContext } from 'react';
 import { Folder, useFoldersAccordionByView, useFoldersByView } from '@zextras/carbonio-shell-ui';
-import { Accordion, Container, Button, ModalManagerContext } from '@zextras/carbonio-design-system';
+import {
+	Accordion,
+	Container,
+	Button,
+	ModalManagerContext,
+	Dropdown,
+	Row,
+	Icon,
+	AccordionItem,
+	Padding
+} from '@zextras/carbonio-design-system';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { filter, isEqual, uniqWith } from 'lodash';
@@ -16,6 +26,8 @@ import { AccordionCustomComponent } from './accordion-custom-component';
 import { getShareInfo } from '../../store/actions/get-share-info';
 import { SharesModal } from './shares-modal';
 import { ResFolder } from '../../types/commons';
+import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
+import { createTag } from '../../ui-actions/tag-actions';
 
 type SidebarProps = {
 	expanded: boolean;
@@ -25,7 +37,6 @@ const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 	const sidebarRef = useRef(null);
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
-	const testFolders = useFoldersByView('message');
 
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createModal = useContext(ModalManagerContext) as Function;
@@ -33,6 +44,8 @@ const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 	// @ts-ignore
 	const accordions = useFoldersAccordionByView(FOLDER_VIEW.message, AccordionCustomComponent);
 	const { path } = useRouteMatch();
+
+	const tagsAccordionItems = useGetTagsAccordion();
 
 	return (
 		<>
@@ -75,6 +88,7 @@ const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 										}}
 									/>
 								</Container>
+								<Accordion items={tagsAccordionItems} />
 							</Container>
 						</Route>
 					</Switch>

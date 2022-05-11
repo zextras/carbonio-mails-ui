@@ -151,12 +151,18 @@ function Attachment({ filename, size, link, editor, part, iconColors, throttledS
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer>
-					<Tooltip
-						key={`${editor.id}-DeletePermanentlyOutline`}
-						label={t('label.delete', 'Delete')}
-					>
-						<IconButton size="medium" icon="DeletePermanentlyOutline" onClick={removeAttachment} />
-					</Tooltip>
+					<Padding right="small">
+						<Tooltip
+							key={`${editor.id}-DeletePermanentlyOutline`}
+							label={t('label.delete', 'Delete')}
+						>
+							<IconButton
+								size="medium"
+								icon="DeletePermanentlyOutline"
+								onClick={removeAttachment}
+							/>
+						</Tooltip>
+					</Padding>
 				</AttachmentHoverBarContainer>
 			</Row>
 			<AttachmentLink
@@ -280,7 +286,7 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 						{t('label.remove', {
 							count: editor.attachmentFiles.length,
 							defaultValue: 'Remove',
-							defaultValue_plural: 'Remove all'
+							defaultValuePlural: 'Remove all {{count}}'
 						})}
 					</Link>
 				</Row>

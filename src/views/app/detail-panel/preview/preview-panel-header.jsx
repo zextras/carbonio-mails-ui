@@ -40,8 +40,8 @@ function PreviewPanelHeader({ item, folderId }) {
 					<Icon style={{ width: '18px' }} icon="EmailReadOutline" data-testid="EmailUnreadIcon" />
 				)}
 				<Row mainAlignment="flex-start" padding={{ left: 'large' }} takeAvailableSpace>
-					<Text size="medium" data-testid="Subject">
-						{item.subject || `(${t('label.no_subject', 'No subject')})`}
+					<Text size="medium" data-testid="Subject" color={item.subject ? 'text' : 'secondary'}>
+						{item.subject || t('label.no_subject_with_tags', '<No Subject>')}
 					</Text>
 				</Row>
 				<Tooltip label={t('board.show', 'Show board')} placement="bottom">

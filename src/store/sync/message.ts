@@ -3,8 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
-import { forEach, pick, merge, omit, reduce, map, filter, sortBy, reverse } from 'lodash';
+import { FOLDERS, getBridgedFunctions, getUserSettings } from '@zextras/carbonio-shell-ui';
+import {
+	forEach,
+	pick,
+	merge,
+	omit,
+	reduce,
+	map,
+	filter,
+	sortBy,
+	reverse,
+	find,
+	includes,
+	reject
+} from 'lodash';
 import sound from '../../assets/notification.mp3';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { IncompleteMessage } from '../../types/mail-message';
@@ -28,6 +41,11 @@ function playSound(): void {
 
 const triggerNotification = (m: SoapIncompleteMessage): void => {
 	const { t } = getBridgedFunctions();
+	const { props, prefs } = getUserSettings();
+	const isShowNotificationEnabled = prefs?.zimbraPrefMailToasterEnabled ?? 'TRUE';
+	const isAudioEnabled = find(props, ['name', 'mailNotificationSound'])?._content ?? 'TRUE';
+	const showAllNotifications = prefs?.zimbraPrefShowAllNewMailNotifications ?? 'FALSE';
+
 	const messages = map(m, (item) => {
 		let norm = normalizeMailMessageFromSoap(item, false);
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -48,25 +66,32 @@ const triggerNotification = (m: SoapIncompleteMessage): void => {
 	});
 	const messagesToNotify = reverse(
 		sortBy(
-			filter(messages, (item) => !(item.isSentByMe === true)),
+			filter(reject(messages, 'read'), (item) =>
+				showAllNotifications === 'TRUE'
+					? !(item.isSentByMe === true) && item.parent === FOLDERS.SENT
+					: !(item.isSentByMe === true) && item.parent === FOLDERS.INBOX
+			),
 			'date'
 		)
 	);
-
-	messagesToNotify?.length > 0 && playSound();
-
-	forEach(messagesToNotify, (msg) => {
-		if (msg.parent !== '5') {
-			showNotification(
-				msg.subject,
-				msg.fragment ?? t('notification.no_content', 'Message without content')
-			);
-		}
-	});
+	if (isAudioEnabled === 'TRUE' && messagesToNotify?.length > 0) {
+		playSound();
+	}
+	if (isShowNotificationEnabled === 'TRUE') {
+		forEach(messagesToNotify, (msg) => {
+			if (showAllNotifications) {
+				showNotification(
+					msg.subject,
+					msg.fragment ?? t('notification.no_content', 'Message without content')
+				);
+			}
+		});
+	}
 };
 
 export const handleCreatedMessagesReducer = (state: MsgStateType, { payload }: Payload): void => {
 	const { m } = payload;
+
 	const mappedMsgs = <IncompleteMessage>reduce(
 		m,
 		(acc, v) => {
@@ -82,7 +107,7 @@ export const handleCreatedMessagesReducer = (state: MsgStateType, { payload }: P
 export const handleModifiedMessagesReducer = (state: MsgStateType, { payload }: Payload): void => {
 	forEach(payload, (msg) => {
 		if (msg?.id && state?.messages?.[msg.id]) {
-			state.messages[msg.id] = merge(state.messages[msg.id], msg);
+			state.messages[msg.id] = { ...merge(state.messages[msg.id], msg), tags: msg.tags };
 		}
 	});
 };

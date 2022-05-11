@@ -19,7 +19,7 @@ type ComponentProps = {
 		setSentFromAddress: (arg: any) => void;
 	};
 };
-const RecievedSentAddressRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
+const ReceivedSentAddressRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { t, receivedFromAddress, setReceivedFromAddress, sentFromAddress, setSentFromAddress } =
 		compProps;
 
@@ -154,4 +154,4 @@ const RecievedSentAddressRow: FC<ComponentProps> = ({ compProps }): ReactElement
 	);
 };
 
-export default RecievedSentAddressRow;
+export default ReceivedSentAddressRow;

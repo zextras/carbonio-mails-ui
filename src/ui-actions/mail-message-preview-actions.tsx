@@ -14,9 +14,17 @@ import React, {
 	useCallback,
 	useContext
 } from 'react';
-import { Row, IconButton, Tooltip, Dropdown, ThemeContext } from '@zextras/carbonio-design-system';
+import {
+	Row,
+	IconButton,
+	Tooltip,
+	Dropdown,
+	ThemeContext,
+	Padding
+} from '@zextras/carbonio-design-system';
 import { difference, map, slice } from 'lodash';
 import { useParams } from 'react-router-dom';
+
 import { useVisibleActionsCount } from '../hooks/use-visible-actions-count';
 
 type MailMsgPreviewActionsType = {
@@ -108,18 +116,28 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 			}}
 		>
 			{firstActions?.length > 0 &&
-				map(firstActions, (action) => (
-					<Tooltip key={`${action.icon}`} label={action.label}>
-						<IconButton
-							size="small"
-							icon={action.icon}
-							onClick={(ev: React.MouseEvent<HTMLButtonElement>): void => {
-								if (ev) ev.preventDefault();
-								action.click();
-							}}
-						/>
-					</Tooltip>
-				))}
+				map(firstActions, (action) =>
+					action.items ? (
+						<Padding right="small">
+							<Tooltip label={action.label}>
+								<Dropdown items={action.items}>
+									<IconButton icon={action.icon} size="small" />
+								</Dropdown>
+							</Tooltip>
+						</Padding>
+					) : (
+						<Tooltip key={`${action.icon}`} label={action.label}>
+							<IconButton
+								size="small"
+								icon={action.icon}
+								onClick={(ev: React.MouseEvent<HTMLButtonElement>): void => {
+									if (ev) ev.preventDefault();
+									action.click();
+								}}
+							/>
+						</Tooltip>
+					)
+				)}
 			{secondActions?.length > 0 && (
 				<Dropdown items={secondActions} forceOpen={open} onClose={onDropdownClose}>
 					<IconButton size="small" icon="MoreVertical" onClick={onIconClick} />

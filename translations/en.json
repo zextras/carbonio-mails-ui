@@ -1,5 +1,6 @@
 {
     "action": {
+        "click_preview": "Click to preview",
         "edit_as_new": "Edit as new",
         "edit_share": "Edit Share",
         "flag": "Add flag",
@@ -36,7 +37,7 @@
                 "content": "Drop here your attachments to quickly add them to this e-mail",
                 "title": "Drag&Drop Mode"
             },
-            "drive": "Add from Drive",
+            "files": "Add from Files",
             "local": "Add from local"
         }
     },
@@ -192,21 +193,26 @@
         "automatically_delete_duplicates": "Automatically delete duplicate copies of the same message when received",
         "back": "Back",
         "bcc": "Bcc",
-        "behalf_of": "behalf of",
+        "behalf_of": "on behalf of",
         "by_conversation": "By Conversation",
         "by_message": "By Message",
+        "calendar": "Calendar",
         "calendar_color": "Item color",
         "cancel": "Cancel",
         "cc": "Cc",
         "cc_bcc": "Cc Bcc",
         "choose_folder": "Choose folder",
         "confirm": "Confirm",
+        "contact_folder": "Contact Folder",
         "create": "Create",
         "create_and_move": "Create and move",
         "create_new_task": "Create New Task",
+        "create_tag": "Create Tag",
         "decline": "Decline",
         "delete": "Delete",
         "delete_permanently": "Delete Permanently",
+        "delete_tag": "Delete Tag",
+        "delete_tag_name": "Delete \"{{name}}\" tag",
         "destination_folder": "Destination Folder",
         "discard_changes": "DISCARD CHANGES",
         "disposal_threshold": "Disposal Threshold",
@@ -217,10 +223,13 @@
         "edit": "Edit",
         "edit_access": "Edit {{name}}'s access",
         "edit_folder_properties": "",
+        "edit_tag": "Edit Tag",
+        "edit_tag_name": "Edit \"{{name}}\" tag",
         "email_perm_deleted": "E-mail permanently deleted",
         "empty": "Empty",
         "enable_message_disposal": "Enable Message Disposal",
         "enable_message_retention": "Enable Message Retention",
+        "error": "Error",
         "error_address": "A valid e-mail is required",
         "error_try_again": "Something went wrong, please try again",
         "expand": "Expand",
@@ -240,6 +249,7 @@
         "hide": "Hide",
         "highlight_tab": "Highlight the Mail tab",
         "insert": "Insert",
+        "invalid_destination": "This node is not a valid destination",
         "keywords": "Keywords",
         "loading_results": "Loading Results…",
         "mail_folder": "E-mail folder",
@@ -252,11 +262,16 @@
         "new_email": "New E-mail",
         "new_folder": "New Folder",
         "no_search_results_found": "No results found",
+        "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",
+        "no_subject_with_tags": "<No Subject>",
+        "notification_audio": "Play audio hint when new notification appears",
+        "notification_folders": "Notification Folders",
         "notify_organizer": "Notify Organizer",
         "of": "of",
         "on_behalf_of": "on behalf of",
         "owner": "Owner: ",
+        "preview": "Preview",
         "private": "Private",
         "read": "Read",
         "receive_message": "Receiving Messages",
@@ -278,6 +293,7 @@
         "revoke_with_custom_message": "Revoke access sending a custom notification",
         "role": "Role: ",
         "save": "Save",
+        "save_to_files": "Save to Files",
         "search_activate_selection_mode": "Selection mode isn’t available yet on search results",
         "select": "Select",
         "select_color": "Select Color",
@@ -305,12 +321,17 @@
         "size": "Size",
         "size_larger": "Size larger than (MB)",
         "size_smaller": "Size smaller than (MB)",
+        "spam": "Spam",
         "subject": "Subject",
         "tag": "Tag",
+        "tag_max_length": "Max 128 characters are allowed",
+        "tag_name": "Tag name",
+        "tags": "Tags",
         "to": "To",
         "type": "Type",
         "type_name_here": "Item name",
         "undo": "Undo",
+        "upload_from_files": "Upload from Files",
         "wipe": "Wipe",
         "with_you": "with you",
         "workflow": "WorkFlow",
@@ -318,18 +339,33 @@
         "write": "Write"
     },
     "message": {
+        "admin_rights": "View,Edit,Add,Remove,Administer",
+        "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
+        "delete_tag_message2": "Once deleted, it will be removed from every item marked with it.",
         "email_saved_at": "E-mail saved as a draft at {{time}}",
         "invalid_search_message": "We didn't find any match",
+        "manager_rights": "View,Edit,Add,Remove",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
+            "all_att_added": "Attachments added successfully",
+            "all_att_saved": "Attachments successfully saved in the selected folder",
+            "att_err": "There seems to be a problem when saving, please try again",
+            "att_err_adding": "There seems to be a problem when adding attachments, please try again",
+            "att_saved": "Attachment saved in the selected folder",
+            "calendar_edits_saved": "Edits saved correctly",
             "settings_saved": "Edits saved correctly",
             "share": {
                 "accepted": "You have accepted the share request",
                 "declined": "You have declined the share request"
-            }
-        }
+            },
+            "some_att_add_fails": "There seems to be a problem when adding some attachments, please try again",
+            "some_att_fails": "There seems to be a problem when saving some files, please try again"
+        },
+        "view_rights": "View"
     },
     "messages": {
+        "check_and_try_again": "Please, check Carbonio and try again",
+        "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
         "invalid_address": "The following address appears to be invalid",
         "modal": {
             "delete": {
@@ -345,6 +381,7 @@
         "no_content": "This message has no text content",
         "permanent_delete_body": "If you permanently delete this element you will not be able to recover it. Continue?",
         "permanent_delete_title": "Are you sure to permanently delete this element?",
+        "powered_by": "powered by",
         "snackbar": {
             "conversation_deleted": "Conversation deleted",
             "conversation_move": "Conversation successfully moved",
@@ -371,8 +408,13 @@
             "message_move": "Message successfully moved",
             "message_redirected": "The message has been redirected",
             "sending_mail_in_count": "Sending your message in {{count}} second",
-            "sending_mail_in_count_plural": "Sending your message in {{count}} seconds"
-        }
+            "sending_mail_in_count_plural": "Sending your message in {{count}} seconds",
+            "tag_created": "Tag {{name}} successfully created",
+            "tag_deleted": "{{name}} Tag deleted successfully",
+            "tag_not_updated": "Something went wrong, tag not updated. Please try again.",
+            "tag_updated": "Tag successfully updated"
+        },
+        "something_went_wrong": "SOMETHING WENT WRONG"
     },
     "notification": {
         "new_message": "New Message",
@@ -380,6 +422,9 @@
     },
     "placeholder": {
         "add_new_recipients": "Add new recipients"
+    },
+    "preview": {
+        "close": "Close Preview"
     },
     "search": {
         "attachment_note": "Search for all e-mails that have an attachment.",
@@ -546,7 +591,9 @@
         "folder_shared": "Folder shared",
         "share_resend": "Share invite resent",
         "share_revoke": "Share access revoked",
-        "share_updated": "\"Access rights updated\""
+        "share_updated": "\"Access rights updated\"",
+        "tag_applied": "\"{{tag}}\" tag applied",
+        "tag_removed": "\"{{tag}}\" tag removed"
     },
     "title": {
         "new_messages": "New Messages",

@@ -127,12 +127,12 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			const modifiedQuery = map(query, (q) => {
 				if (
 					(includes(queryArray, q.label) ||
-						/^subject:*/.test(q.label) ||
-						/^in:*/.test(q.label) ||
-						/^before:*/.test(q.label) ||
-						/^after:*/.test(q.label) ||
-						/^tag:*/.test(q.label) ||
-						/^date:*/.test(q.label)) &&
+						/^subject:/.test(q.label) ||
+						/^in:/.test(q.label) ||
+						/^before:/.test(q.label) ||
+						/^after:/.test(q.label) ||
+						/^tag:/.test(q.label) ||
+						/^date:/.test(q.label)) &&
 					!includes(Object.keys(q), 'isGeneric') &&
 					!includes(Object.keys(q), 'isQueryFilter')
 				) {

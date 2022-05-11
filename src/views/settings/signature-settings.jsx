@@ -46,7 +46,8 @@ export default function SignatureSettings({
 	setDisabled,
 	signItems,
 	setSignItems,
-	signItemsUpdated,
+	/* setFetchSigns,
+	fetchSigns, */
 	setSignItemsUpdated
 }) {
 	const account = useUserAccount();
@@ -59,20 +60,14 @@ export default function SignatureSettings({
 	const [description, setDescription] = useState('');
 	const [index, setIndex] = useState();
 	const [editorFlag, setEditorFlag] = useState(false);
-	const signatureItems = useMemo(
-		() =>
-			map(signatures, ({ label, value }) => ({
-				label,
-				id: value.id,
-				description: value.description
-			})),
-		[signatures]
-	);
 
 	useEffect(() => {
+		// if (fetchSigns) {
 		GetAllSignatures().then((res) => {
 			setSigns(res.signature);
+			// setFetchSigns(false);
 		});
+		// }
 	}, []);
 
 	setSignItemsUpdated(
@@ -119,25 +114,24 @@ export default function SignatureSettings({
 		});
 		setSignItems(updatedSign);
 	};
+
 	const [signatureNewMessage, signatureRepliesForwards] = useMemo(
 		() => [
 			find(
-				signatureItems,
-				(signature) => signature.id === settingsObj.zimbraPrefDefaultSignatureId
+				signatures,
+				(signature) => signature.value.id === settingsObj.zimbraPrefDefaultSignatureId
 			) ?? signatures[0],
 			find(
-				signatureItems,
-				(signature) => signature.id === settingsObj.zimbraPrefForwardReplySignatureId
+				signatures,
+				(signature) => signature.value.id === settingsObj.zimbraPrefForwardReplySignatureId
 			) ?? signatures[0]
 		],
 		[
 			settingsObj.zimbraPrefDefaultSignatureId,
 			settingsObj.zimbraPrefForwardReplySignatureId,
-			signatureItems,
 			signatures
 		]
 	);
-
 	const updateAllSignatures = (updatedSign) => {
 		const allSignatures = updatedSign.map((item) => ({
 			label: item.label,
@@ -216,7 +210,6 @@ export default function SignatureSettings({
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(t), [t]);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(t), [t]);
-
 	return (
 		<>
 			<FormSubSection
@@ -290,12 +283,12 @@ export default function SignatureSettings({
 						valueKey="id"
 						items={signatures}
 						label={t('label.select_signature', 'Select a signature')}
-						defaultSelection={signatureNewMessage}
+						selection={signatureNewMessage}
 						onChange={(e) => {
 							updateSettings({
 								target: {
 									name: 'zimbraPrefDefaultSignatureId',
-									value: find(signatures, (signature) => signature.value?.id === e.id)?.value?.id
+									value: find(signatures, (signature) => signature?.value?.id === e?.id)?.value?.id
 								}
 							});
 						}}
@@ -315,15 +308,15 @@ export default function SignatureSettings({
 						valueKey="id"
 						items={signatures}
 						label={t('label.select_signature', 'Select a signature')}
-						defaultSelection={signatureRepliesForwards}
-						// onChange={(e) => {
-						// 	updateSettings({
-						// 		target: {
-						// 			name: 'zimbraPrefForwardReplySignatureId',
-						// 			value: find(signatures, (signature) => signature.value?.id === e.id)?.value?.id
-						// 		}
-						// 	});
-						// }}
+						selection={signatureRepliesForwards}
+						onChange={(e) => {
+							updateSettings({
+								target: {
+									name: 'zimbraPrefForwardReplySignatureId',
+									value: find(signatures, (signature) => signature?.value?.id === e?.id)?.value?.id
+								}
+							});
+						}}
 					/>
 					{signatureRepliesForwards.description && (
 						<Container

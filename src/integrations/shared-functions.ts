@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
-import { Participant } from '../types/participant';
+import { isNil, omit, omitBy } from 'lodash';
+import { ActionsType, Participant } from '../types/participant';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../constants';
 
 export const mailToSharedFunction: (contacts: Array<Partial<Participant>>) => void = (contacts) => {
@@ -23,6 +24,37 @@ export const openComposerSharedFunction: (
 		app: MAIL_APP_ID,
 		onConfirm,
 		compositionData,
+		...rest
+	});
+};
+
+type prefilledEditor = {
+	aid?: Array<string>;
+	subject?: string;
+	urgent?: boolean;
+};
+
+// function used to open a new mail editor board with prefilled fields set by other modules
+export const openPrefilledComposerSharedFunction: (
+	compositionData?: prefilledEditor,
+	...rest: never[]
+) => void = (compositionData, ...rest) => {
+	// removing values from item which needs normalization
+	const normalizedValues = omit(compositionData, ['aid']);
+
+	// normalize values
+	const attach =
+		compositionData?.aid && compositionData?.aid?.length > 0
+			? { aid: compositionData.aid.join(',') }
+			: undefined;
+
+	// removing nil values
+	const editor = omitBy({ ...normalizedValues, attach }, isNil);
+
+	// add board with custom editor
+	getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=${ActionsType.PREFILL_COMPOSE}`, {
+		app: MAIL_APP_ID,
+		compositionData: editor,
 		...rest
 	});
 };

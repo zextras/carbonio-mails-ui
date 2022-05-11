@@ -100,7 +100,7 @@
     },
     "tooltip": {
         "add_attachments": "Dodaj załączniki",
-        "edit": "Edytuj ustawienia udostępniania",
+        "edit": "Edytuj właściwości udostępniania",
         "enable_urgent": "Włącz pilne",
         "disable_rich_text": "Wyłącz rozbudowany edytor tekstu",
         "enable_rich_text": "Włącz rozbudowany edytor tekstu",
@@ -165,7 +165,7 @@
         "draft_folder": "[WERSJA ROBOCZA]",
         "email_perm_deleted": "E-mail został trwale usunięty",
         "error_address": "Wymagany jest prawidłowy adres e-mail",
-        "expand": "Powiększ",
+        "expand": "Rozwiń",
         "filter_folders": "Filtruj foldery",
         "filter_user": "Filtruj użytkowników",
         "find_mail_shares": "Znajdź udostępnione foldery",
@@ -181,7 +181,7 @@
         "insert": "Wstaw",
         "keywords": "Słowa kluczowe",
         "loading_results": "Ładowanie Wyników. . .",
-        "mail_folder": "Folder e-mail",
+        "mail_folder": "Folder E-maile",
         "mail_settings": "Ustawienia skrzynki odbiorczej",
         "me": "Ja",
         "messages": "Wiadomości",
@@ -238,7 +238,8 @@
         "send_email": "Wyślij e-maila",
         "app_name": "E-maile",
         "set_default_signatures": "Ustaw Domyślne Podpisy",
-        "show_quoted_text": "Pokaż zacytowany tekst"
+        "show_quoted_text": "Pokaż zacytowany tekst",
+        "share_with": "Udostępnij"
     },
     "message": {
         "snackbar": {
@@ -265,8 +266,8 @@
     "share": {
         "options": {
             "share_calendar_with": {
-                "external_guests": "Goście spoza mojej organizacji (mogą tylko wyświetlać)",
-                "internal_users_groups": "Użytkownicy lub Grupy z mojej organizacji",
+                "external_guests": "Goście spoza mojej domeny (mogą tylko wyświetlać)",
+                "internal_users_groups": "Użytkownicy lub Grupy z mojej domeny",
                 "public": "Publiczny (można tylko wyświetlać, hasło niewymagane)"
             },
             "share_calendar_role": {
@@ -288,7 +289,7 @@
         "delete_email": "Usuń e-mail",
         "edit_draft": "Edytuj wersję roboczą",
         "redirect_email": "Przekieruj e-mail",
-        "warning": "Uwaga!"
+        "warning": "Uwaga"
     },
     "folder_panel": {
         "lists_item": {

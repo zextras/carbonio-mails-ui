@@ -501,7 +501,11 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 				folderId: folder.id,
 				limit: 101,
 				sortBy: sorting,
-				types: typeof zimbraPrefGroupMailBy === 'string' ? zimbraPrefGroupMailBy : ''
+				// folder.id === FOLDERS.DRAFTS ? 'message' : zimbraPrefGroupMailBy
+				types:
+					folder.id === FOLDERS.DRAFTS || typeof zimbraPrefGroupMailBy !== 'string'
+						? 'message'
+						: zimbraPrefGroupMailBy
 			})
 		);
 	}, [dispatch, folder.id, item.id, setOpenIds, sorting, zimbraPrefGroupMailBy]);
