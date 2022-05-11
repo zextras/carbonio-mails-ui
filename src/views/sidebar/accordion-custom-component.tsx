@@ -50,6 +50,10 @@ import { SharesInfoModal } from './shares-info-modal';
 import ShareFolderModal from './share-folder-modal';
 import { DataProps } from '../../types/commons';
 
+const FittedRow = styled(Row)`
+	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
+`;
+
 const DropOverlayContainer = styled(Container)`
 	position: absolute;
 	width: calc(248px - ${(props): number => (props.folder.level - 2) * 16}px);
@@ -526,14 +530,14 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 	const dropdownItems = useFolderActions(item);
 
 	return folder.id === FOLDERS.USER_ROOT || folder.oname === ROOT_NAME ? (
-		<Row>
+		<FittedRow>
 			<Padding horizontal="small">
 				<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
 			</Padding>
 			<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
 				<AccordionItem item={accordionItem} />
 			</Tooltip>
-		</Row>
+		</FittedRow>
 	) : (
 		<>
 			<Drop
