@@ -339,10 +339,6 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
-	const [_, setOpenIds] = useLocalStorage(
-		'open_mails_folders',
-		window.localStorage.getItem('open_mails_folders') ?? []
-	);
 
 	const onDragEnterAction = (data: OnDropActionProps): DragEnterAction => {
 		if (data.type === 'conversation' || data.type === 'message') {
@@ -496,9 +492,6 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 	}, [zimbraPrefSortOrder, folder.id]) as 'dateDesc' | 'dateAsc';
 	const onClick = useCallback((): void => {
 		pushHistory(`/folder/${folder.id}`);
-		setOpenIds((state: Array<string>) =>
-			state.includes(item.id) ? state.filter((id: string) => id !== item.id) : [...state, item.id]
-		);
 		dispatch(
 			search({
 				folderId: folder.id,
@@ -511,7 +504,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 						: zimbraPrefGroupMailBy
 			})
 		);
-	}, [dispatch, folder.id, item.id, setOpenIds, sorting, zimbraPrefGroupMailBy]);
+	}, [dispatch, folder.id, sorting, zimbraPrefGroupMailBy]);
 
 	const accordionItem = useMemo(
 		() => ({

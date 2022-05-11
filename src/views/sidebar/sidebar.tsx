@@ -27,9 +27,10 @@ import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
 
 type SidebarComponentProps = {
 	accordions: Array<AccordionFolder>;
+	openIds: Array<string>;
 };
 
-const SidebarComponent: FC<SidebarComponentProps> = ({ accordions }) => {
+const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) => {
 	const sidebarRef = useRef(null);
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
@@ -37,10 +38,6 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions }) => {
 	const createModal = useContext(ModalManagerContext) as Function;
 	const { folderId } = useParams<{ folderId: string }>();
 	const tagsAccordionItems = useGetTagsAccordion();
-	const [openIds] = useLocalStorage(
-		'open_mails_folders',
-		window.localStorage.getItem('open_mails_folders') ?? []
-	);
 
 	return (
 		<Container orientation="vertical" height="fit">
@@ -86,16 +83,32 @@ type SidebarProps = {
 
 const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 	const { path } = useRouteMatch();
+	const [openIds, setOpenIds] = useLocalStorage<Array<string>>(
+		'open_mails_folders',
+		window.localStorage.getItem('open_mails_folders') ?? []
+	);
+
+	const additionalProps = (item: AccordionFolder): Record<string, any> => ({
+		onOpen: () => setOpenIds((s: Array<string>) => (s.includes(item.id) ? s : [...s, item.id])),
+		onClose: () => setOpenIds((s: Array<string>) => s.filter((id: string) => id !== item.id))
+	});
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	const accordions = useFoldersAccordionByView(FOLDER_VIEW.message, AccordionCustomComponent);
+	const accordions = useFoldersAccordionByView(
+		FOLDER_VIEW.message,
+		AccordionCustomComponent,
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		additionalProps
+	);
+
 	return (
 		<>
 			{expanded ? (
 				<>
 					<Switch>
 						<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
-							<SidebarComponent accordions={accordions} />
+							<SidebarComponent accordions={accordions} openIds={openIds} />
 						</Route>
 					</Switch>
 				</>
