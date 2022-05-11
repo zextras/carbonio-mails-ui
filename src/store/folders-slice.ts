@@ -211,7 +211,7 @@ function shareFolderFulFilled(state: FoldersStateType, { meta, payload }: any): 
 		},
 		{}
 	);
-	state.folders[updatedFolder.id] = updatedFolder;
+	// state.folders[updatedFolder.id] = updatedFolder;
 	updateFolderInStore(state, []);
 	state.status = 'updating';
 }
