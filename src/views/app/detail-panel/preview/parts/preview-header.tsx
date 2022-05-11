@@ -174,6 +174,8 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			runSearch(
 				[
 					{
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						avatarBackground: tagToSearch?.color,
 						avatarIcon: 'Tag',
 						background: 'gray2',

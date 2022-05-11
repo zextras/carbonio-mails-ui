@@ -12,7 +12,7 @@ export type MsgActionParameters = {
 	ids: string[];
 	operation: MsgActionOperation;
 	parent?: string;
-	tagName: string;
+	tagName?: string;
 };
 
 export type MsgActionResult = {

@@ -22,9 +22,9 @@ import SubjectKeywordRow from './parts/subject-keyword-row';
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
 import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
 import TagFolderRow from './parts/tag-folder-row';
-import SendRecievedDateRow from './parts/send-date-row';
-import RecievedSentAddressRow from './parts/recieved-sent-address-row';
+import SendReceivedDateRow from './parts/send-date-row';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
+import ReceivedSentAddressRow from './parts/received-sent-address-row';
 
 type AdvancedFilterModalProps = {
 	open: boolean;
@@ -292,7 +292,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 		[t, otherKeywords, subject]
 	);
 
-	const recievedSentAddressRowProps = useMemo(
+	const receivedSentAddressRowProps = useMemo(
 		() => ({
 			t,
 			receivedFromAddress,
@@ -373,10 +373,10 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 				<Container padding={{ horizontal: 'medium', vertical: 'small' }}>
 					<ToggleFilters compProps={toggleFiltersProps} />
 					<SubjectKeywordRow compProps={subjectKeywordRowProps} />
-					<RecievedSentAddressRow compProps={recievedSentAddressRowProps} />
+					<ReceivedSentAddressRow compProps={receivedSentAddressRowProps} />
 					<AttachmentTypeEmailStatusRow compProps={attachmentTypeEmailStatusRowProps} />
 					<SizeSmallerSizeLargerRow compProps={sizeSmallerSizeLargerRowProps} />
-					<SendRecievedDateRow compProps={sendDateRowProps} />
+					<SendReceivedDateRow compProps={sendDateRowProps} />
 					<TagFolderRow compProps={tagFolderRowProps} />
 				</Container>
 				<ModalFooter

@@ -19,7 +19,7 @@ type ComponentProps = {
 		setSentOn: (arg: any) => void;
 	};
 };
-const SendRecievedDateRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
+const SendReceivedDateRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { t, sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn } = compProps;
 
 	const onSentBeforeChange = useCallback(
@@ -139,4 +139,4 @@ const SendRecievedDateRow: FC<ComponentProps> = ({ compProps }): ReactElement =>
 	);
 };
 
-export default SendRecievedDateRow;
+export default SendReceivedDateRow;

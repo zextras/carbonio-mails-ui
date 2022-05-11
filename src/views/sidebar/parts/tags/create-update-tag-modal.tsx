@@ -11,20 +11,12 @@ import { createTag, renameTag, changeTagColor } from '@zextras/carbonio-shell-ui
 import ModalFooter from '../../commons/modal-footer';
 import { ModalHeader } from '../../commons/modal-header';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
+import { ItemType } from './types';
 
 type ComponentProps = {
 	onClose: () => void;
 	editMode?: boolean;
-	tag?: {
-		CustomComponent: ReactElement;
-		active: boolean;
-		color: number;
-		divider: boolean;
-		id: string;
-		label: string;
-		name: string;
-		open: boolean;
-	};
+	tag?: ItemType;
 };
 const NonSupportedCharacters = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
 const CreateUpdateTagModal: FC<ComponentProps> = ({

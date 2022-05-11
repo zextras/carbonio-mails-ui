@@ -160,6 +160,7 @@
         "drafts": "Drafts",
         "inbox": "Inbox",
         "junk": "Junk",
+        "sent": "Sent",
         "spam": "Spam",
         "trash": "Trash"
     },
@@ -201,8 +202,10 @@
         "cc": "Cc",
         "cc_bcc": "Cc Bcc",
         "choose_folder": "Choose folder",
+        "confirm": "Confirm",
         "contact_folder": "Contact Folder",
         "create": "Create",
+        "create_and_move": "Create and move",
         "create_new_task": "Create New Task",
         "create_tag": "Create Tag",
         "decline": "Decline",
@@ -521,9 +524,9 @@
             "inbox_if_cc": "Place in inbox if I'm in To: or Cc:"
         },
         "msg_selection_optn": {
-            "above_deleted": "Select messages above the deleted or moved  messages",
+            "above_deleted": "Select message above the deleted or moved  message",
             "based_on_previous": "Select next message based on previous selections",
-            "below_deleted": "Select messages below the deleted or moved  messages"
+            "below_deleted": "Select message below the deleted or moved  message"
         },
         "my_frequent_emails": "my frequent e-mails",
         "new_mail_optn": {

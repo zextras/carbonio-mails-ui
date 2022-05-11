@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
+import React, { ComponentType, FC, ReactElement, useCallback, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Text, SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { deleteTag } from '@zextras/carbonio-shell-ui';
@@ -14,9 +14,9 @@ import { ModalHeader } from '../../commons/modal-header';
 type ComponentProps = {
 	onClose: () => void;
 	tag?: {
-		CustomComponent: ReactElement;
+		CustomComponent?: ComponentType;
 		active: boolean;
-		color: number;
+		color?: number;
 		divider: boolean;
 		id: string;
 		label: string;

@@ -3,7 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback, useContext, useMemo, useState } from 'react';
+import React, {
+	ComponentType,
+	ReactElement,
+	useCallback,
+	useContext,
+	useMemo,
+	useState
+} from 'react';
 import { TFunction } from 'i18next';
 import {
 	ModalManagerContext,
@@ -23,6 +30,7 @@ import { TagsActionsType } from '../types/tags';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 import DeleteTagModal from '../views/sidebar/parts/tags/delete-tag-modal';
 import { convAction, msgAction } from '../store/actions';
+import { ItemType } from '../views/sidebar/parts/tags/types';
 
 export type ReturnType = {
 	id: string;
@@ -30,32 +38,21 @@ export type ReturnType = {
 	label: string;
 	click?: (arg: React.SyntheticEvent<EventTarget>) => void;
 	items?: Array<{
-		customComponent: ReactElement;
+		customComponent: ComponentType;
 		id: string;
 		icon: string;
 		label: string;
 	}>;
 };
 
-export type TagType = {
-	CustomComponent: ReactElement;
-	active: boolean;
-	color: number;
-	divider: boolean;
-	id: string;
-	label: string;
-	name: string;
-	open: boolean;
-};
-
 export type TagsFromStoreType = Record<string, Tag>;
 
 export type ArgumentType = {
 	t: TFunction;
-	createModal?: unknown;
-	createSnackbar?: unknown;
+	createModal?: (...args: any) => () => void;
+	createSnackbar?: (...args: any) => void;
 	items?: ReturnType;
-	tag?: TagType;
+	tag?: ItemType;
 };
 
 export const createTag = ({ t, createModal }: ArgumentType): ReturnType => ({
@@ -213,7 +210,7 @@ export const MultiSelectTagsDropdownItem = ({
 	folderId,
 	isMessage
 }: {
-	tag: TagType;
+	tag: ItemType;
 	conversations: any;
 	ids: string[];
 	tags: Tag;
@@ -332,7 +329,7 @@ export const applyMultiTag = ({
 	deselectAll?: () => void;
 	folderId?: string;
 	isMessage?: boolean;
-}): { id: string; items: TagType[]; customComponent: ReactElement } => {
+}): { id: string; items: ItemType[]; customComponent: ReactElement } => {
 	const tagItem = reduce(
 		tags,
 		(acc, v) => {
@@ -390,7 +387,7 @@ export const applyTag = ({
 	isMessage?: boolean;
 }): {
 	id: string;
-	items: TagType[];
+	items: ItemType[];
 	customComponent: ReactElement;
 	label?: 'string';
 	icon?: string;
@@ -436,8 +433,8 @@ export const applyTag = ({
 };
 
 export const useGetTagsActions = ({ tag, t }: ArgumentType): Array<ReturnType> => {
-	const createModal = useContext(ModalManagerContext);
-	const createSnackbar = useContext(SnackbarManagerContext);
+	const createModal = useContext(ModalManagerContext) as () => () => void;
+	const createSnackbar = useContext(SnackbarManagerContext) as () => void;
 	return useMemo(
 		() => [
 			createTag({ t, createModal }),
@@ -448,13 +445,13 @@ export const useGetTagsActions = ({ tag, t }: ArgumentType): Array<ReturnType> =
 	);
 };
 
-export const useTagsArrayFromStore = (): Array<TagType> => {
+export const useTagsArrayFromStore = (): Array<ItemType> => {
 	const tagsFromStore = useTags();
 	return useMemo(
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc: Array<TagType>, v: any) => {
+				(acc: Array<ItemType>, v: any) => {
 					acc.push(v);
 					return acc;
 				},
@@ -464,7 +461,7 @@ export const useTagsArrayFromStore = (): Array<TagType> => {
 	);
 };
 
-export const useTagExist = (tags: Array<TagType>): boolean => {
+export const useTagExist = (tags: Array<ItemType>): boolean => {
 	const tagsArrayFromStore = useTagsArrayFromStore();
 	return useMemo(
 		() =>

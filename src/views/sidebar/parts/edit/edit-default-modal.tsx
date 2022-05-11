@@ -3,9 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Container } from '@zextras/carbonio-design-system';
+import React, { useState, useMemo, useCallback, useEffect, FC, useContext } from 'react';
+import { Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { filter, includes, isEmpty } from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import ModalFooter from '../../commons/modal-footer';
 import { ModalHeader } from '../../commons/modal-header';
 import { folderAction } from '../../../../store/actions/folder-action';
@@ -13,6 +16,8 @@ import NameInputRow from './name-input';
 import FolderDetails from './folder-details';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
+import { translatedSystemFolders } from '../../utils';
+import { ModalProps } from '../../../../types/commons';
 
 const retentionPeriod = [
 	{
@@ -34,49 +39,39 @@ const retentionPeriod = [
 ];
 const numberRegex = /^\d+$/;
 
-const EditDefaultModal = ({
-	t,
-	currentFolder,
-	setModal,
-	dispatch,
-	createSnackbar,
-	allFolders,
-	onClose,
-	setActiveModal
-}) => {
-	const [inputValue, setInputValue] = useState(currentFolder.name);
+type EditModalProps = ModalProps & {
+	setActiveModal: (modal: string) => void;
+};
+
+const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal }) => {
+	const [t] = useTranslation();
+	const dispatch = useDispatch();
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	const createSnackbar = useContext(SnackbarManagerContext) as Function;
+
+	const [inputValue, setInputValue] = useState(folder.folder?.name);
 	const [showPolicy, setShowPolicy] = useState(false);
-	const [rtnValue, setRtnValue] = useState('');
-	const [purgeValue, setPurgeValue] = useState('');
+	const [rtnValue, setRtnValue] = useState<number | string>(0);
+	const [purgeValue, setPurgeValue] = useState<number | string>(0);
 	const [rtnYear, setRtnYear] = useState('d');
 	const [dspYear, setDspYear] = useState('d');
 	const [rtnRange, setRtnRange] = useState('');
-	const [dspRange, setDspRange] = useState('');
+	const [dspRange, setDspRange] = useState<string>('');
 	const [dsblMsgDis, setDsblMsgDis] = useState(false);
 	const [dsblMsgRet, setDsblMsgRet] = useState(false);
 	const [emptyRtnValue, setEmptyRtnValue] = useState(false);
 	const [emptyDisValue, setEmptyDisValue] = useState(false);
-	const [folderColor, setFolderColor] = useState(currentFolder.color);
-	const folderArray = useMemo(
-		() => [
-			t('folders.inbox', 'Inbox'),
-			t('label.sent', 'Sent'),
-			t('folders.drafts', 'Drafts'),
-			t('folders.trash', 'Trash'),
-			t('folders.spam', 'Spam')
-		],
-		[t]
-	);
+	const [folderColor, setFolderColor] = useState(folder.folder?.color);
 
 	useEffect(() => {
 		if (
-			currentFolder?.retentionPolicy &&
-			currentFolder?.retentionPolicy.length &&
-			currentFolder.retentionPolicy[0].keep !== undefined &&
-			currentFolder.retentionPolicy[0].keep &&
-			Object.keys(currentFolder.retentionPolicy[0].keep[0]).length !== 0
+			folder.folder?.retentionPolicy &&
+			folder.folder?.retentionPolicy?.length &&
+			folder.folder?.retentionPolicy[0].keep !== undefined &&
+			folder.folder?.retentionPolicy[0].keep &&
+			Object.keys(folder.folder?.retentionPolicy[0].keep[0]).length !== 0
 		) {
-			const lifetime = currentFolder.retentionPolicy[0]?.keep[0]?.policy[0]?.lifetime;
+			const lifetime = folder.folder?.retentionPolicy[0]?.keep[0]?.policy[0]?.lifetime;
 			// eslint-disable-next-line radix
 			const d = parseInt(lifetime);
 			setDsblMsgRet(true);
@@ -105,13 +100,13 @@ const EditDefaultModal = ({
 		}
 
 		if (
-			currentFolder?.retentionPolicy &&
-			currentFolder?.retentionPolicy.length &&
-			currentFolder.retentionPolicy[0].purge !== undefined &&
-			currentFolder.retentionPolicy[0].purge &&
-			Object.keys(currentFolder.retentionPolicy[0].purge[0]).length !== 0
+			folder.folder?.retentionPolicy &&
+			folder.folder?.retentionPolicy.length &&
+			folder.folder?.retentionPolicy[0].purge !== undefined &&
+			folder.folder?.retentionPolicy[0].purge &&
+			Object.keys(folder.folder?.retentionPolicy[0].purge[0]).length !== 0
 		) {
-			const lifetime = currentFolder.retentionPolicy[0]?.purge[0]?.policy[0]?.lifetime;
+			const lifetime = folder.folder?.retentionPolicy[0]?.purge[0]?.policy[0]?.lifetime;
 			// eslint-disable-next-line radix
 			const d = parseInt(lifetime);
 			setDsblMsgDis(true);
@@ -138,19 +133,23 @@ const EditDefaultModal = ({
 			setDspYear('d');
 			setDspRange('Days');
 		}
-	}, [currentFolder.retentionPolicy]);
+	}, [folder.folder?.retentionPolicy]);
 
 	const showWarning = useMemo(
 		() =>
 			includes(
-				filter(folderArray, (f) => f !== currentFolder.name),
+				filter(translatedSystemFolders, (f) => f !== folder.folder?.name),
 				inputValue
 			),
-		[folderArray, inputValue, currentFolder]
+		[inputValue, folder]
 	);
 	const inpDisable = useMemo(
-		() => includes(['2', '3', '4', '5', '6'], currentFolder.id),
-		[currentFolder]
+		() =>
+			includes(
+				[FOLDERS.INBOX, FOLDERS.TRASH, FOLDERS.SPAM, FOLDERS.SENT, FOLDERS.DRAFTS],
+				folder.id
+			),
+		[folder]
 	);
 	const disableSubmit = useMemo(() => showWarning || emptyRtnValue, [showWarning, emptyRtnValue]);
 
@@ -158,7 +157,7 @@ const EditDefaultModal = ({
 		let submit = true;
 		if (dsblMsgRet) {
 			submit = false;
-			if (rtnValue && numberRegex.test(rtnValue)) {
+			if (rtnValue && numberRegex.test(rtnValue.toString())) {
 				submit = true;
 			} else {
 				setEmptyRtnValue(true);
@@ -168,7 +167,7 @@ const EditDefaultModal = ({
 
 		if (dsblMsgDis) {
 			submit = false;
-			if (purgeValue && numberRegex.test(purgeValue)) {
+			if (purgeValue && numberRegex.test(purgeValue.toString())) {
 				submit = true;
 			} else {
 				setEmptyDisValue(true);
@@ -179,24 +178,30 @@ const EditDefaultModal = ({
 			let lt = 1;
 			let pr = 1;
 
-			if (rtnYear === 'w') lt = rtnValue * 7;
-			else if (rtnYear === 'm') lt = rtnValue * 31;
-			else if (rtnYear === 'y') lt = rtnValue * 365;
-			else lt = rtnValue;
+			if (rtnYear === 'w') lt = Number(rtnValue) * 7;
+			else if (rtnYear === 'm') lt = Number(rtnValue) * 31;
+			else if (rtnYear === 'y') lt = Number(rtnValue) * 365;
+			else lt = Number(rtnValue);
 
-			if (dspYear === 'w') pr = purgeValue * 7;
-			else if (dspYear === 'm') pr = purgeValue * 31;
-			else if (dspYear === 'y') pr = purgeValue * 365;
-			else pr = purgeValue;
+			if (dspYear === 'w') pr = Number(purgeValue) * 7;
+			else if (dspYear === 'm') pr = Number(purgeValue) * 31;
+			else if (dspYear === 'y') pr = Number(purgeValue) * 365;
+			else pr = Number(purgeValue);
 
 			dispatch(
 				folderAction({
-					folder: currentFolder,
+					folder: {
+						...folder.folder,
+						parent: folder.folder?.l,
+						path: folder.folder?.absFolderPath,
+						absParent: '2',
+						children: []
+					},
 					name: inputValue,
 					op: 'update',
 					color: folderColor,
 					retentionPolicy:
-						dsblMsgRet || dsblMsgDis || currentFolder?.retentionPolicy
+						dsblMsgRet || dsblMsgDis || folder?.folder.retentionPolicy
 							? {
 									keep: dsblMsgRet
 										? {
@@ -217,56 +222,60 @@ const EditDefaultModal = ({
 							  }
 							: {}
 				})
-			).then((res) => {
-				if (res.type.includes('fulfilled')) {
-					createSnackbar({
-						key: `edit`,
-						replace: true,
-						type: 'info',
-						hideButton: true,
-						label: t('messages.snackbar.folder_edited', 'Changes correctly saved'),
-						autoHideTimeout: 3000
-					});
-				} else {
-					createSnackbar({
-						key: `edit`,
-						replace: true,
-						type: 'error',
-						hideButton: true,
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 3000
-					});
-				}
-			});
+			)
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				.then((res) => {
+					if (res.type.includes('fulfilled')) {
+						createSnackbar({
+							key: `edit`,
+							replace: true,
+							type: 'info',
+							hideButton: true,
+							label: t('messages.snackbar.folder_edited', 'Changes correctly saved'),
+							autoHideTimeout: 3000
+						});
+					} else {
+						createSnackbar({
+							key: `edit`,
+							replace: true,
+							type: 'error',
+							hideButton: true,
+							label: t('label.error_try_again', 'Something went wrong, please try again'),
+							autoHideTimeout: 3000
+						});
+					}
+				});
 		}
 		setInputValue('');
-		setModal('');
+		onClose();
 	}, [
-		currentFolder,
-		dispatch,
-		setModal,
-		inputValue,
 		dsblMsgRet,
-		dspYear,
-		rtnValue,
-		rtnYear,
-		purgeValue,
 		dsblMsgDis,
+		inputValue,
+		onClose,
+		rtnValue,
+		purgeValue,
+		rtnYear,
+		dspYear,
+		dispatch,
+		folder,
+		folderColor,
 		createSnackbar,
-		t,
-		folderColor
+		t
 	]);
 
 	return (
 		<>
 			<ModalHeader
 				onClose={onClose}
-				title={`${t('label.edit_folder_properties', { name: currentFolder.label })}`}
+				title={`${t('label.edit_folder_properties', {
+					name: folder.folder?.name,
+					defaultValue: 'Edit {{name}} properties'
+				})}`}
 			/>
 
 			<NameInputRow
-				t={t}
-				currentFolder={currentFolder}
 				showWarning={showWarning}
 				setInputValue={setInputValue}
 				inputValue={inputValue}
@@ -275,22 +284,17 @@ const EditDefaultModal = ({
 				setFolderColor={setFolderColor}
 			/>
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'medium' }}>
-				<FolderDetails t={t} currentFolder={currentFolder} />
+				<FolderDetails folder={folder} />
 
-				{!isEmpty(currentFolder?.acl) && !currentFolder.owner && (
+				{!isEmpty(folder?.folder.acl) && !folder.folder?.owner && (
 					<ShareFolderProperties
-						folder={currentFolder}
-						setCurrentFolder={() => null}
-						createSnackbar={createSnackbar}
-						folders={allFolders}
-						allCalendars={allFolders}
-						setModal={setModal}
-						totalAppointments={currentFolder.itemsCount}
+						folder={folder}
+						setfolder={(): null => null}
+						totalAppointments={folder.folder?.n}
 						setActiveModal={setActiveModal}
 					/>
 				)}
 				<RetentionPolicies
-					t={t}
 					setShowPolicy={setShowPolicy}
 					emptyRtnValue={emptyRtnValue}
 					setEmptyRtnValue={setEmptyRtnValue}
@@ -318,8 +322,7 @@ const EditDefaultModal = ({
 			<ModalFooter
 				onConfirm={onConfirm}
 				label={t('label.edit', 'Edit')}
-				t={t}
-				secondaryAction={() => setActiveModal('share')}
+				secondaryAction={(): void => setActiveModal('share')}
 				secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
 				disabled={disableSubmit}
 				secondaryBtnType="outlined"

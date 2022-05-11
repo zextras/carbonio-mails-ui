@@ -6,7 +6,7 @@
 import React, { useMemo } from 'react';
 import { AppLink } from '@zextras/carbonio-shell-ui';
 import { Row, Padding, Tooltip, IconButton } from '@zextras/carbonio-design-system';
-import { getFolderIconColor, getFolderIconName } from './accordion-custom-components';
+import { getFolderIconColor, getFolderIconName } from './utils';
 
 const CollapsedSideBarItems = ({ folder }) => {
 	const folderIconColor = useMemo(() => getFolderIconColor(folder), [folder]);

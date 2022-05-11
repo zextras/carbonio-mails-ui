@@ -187,7 +187,7 @@ const ConversationList = () => {
 					</DragImageContainer>
 				</>
 			) : (
-				<ShimmerList count={folder.itemsCount} />
+				<ShimmerList count={folder?.itemsCount} />
 			)}
 		</>
 	);

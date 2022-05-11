@@ -138,14 +138,14 @@ export const MessageSelectionOptions = (t) => [
 	{
 		label: t(
 			'settings.msg_selection_optn.below_deleted',
-			'Select messages below the deleted or moved  messages'
+			'Select message below the deleted or moved message'
 		),
 		value: 'next'
 	},
 	{
 		label: t(
 			'settings.msg_selection_optn.above_deleted',
-			'Select messages above the deleted or moved  messages'
+			'Select message above the deleted or moved message'
 		),
 		value: 'previous'
 	},

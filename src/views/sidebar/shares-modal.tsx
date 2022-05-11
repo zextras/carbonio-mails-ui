@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import {
 	Container,
 	Accordion,
@@ -26,7 +26,8 @@ import {
 	filter,
 	pickBy,
 	startsWith,
-	toLower
+	toLower,
+	isEmpty
 } from 'lodash';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
@@ -34,28 +35,29 @@ import { useDispatch } from 'react-redux';
 import { ModalHeader } from './commons/modal-header';
 import ModalFooter from './commons/modal-footer';
 import { createMountpoint } from '../../store/actions/create-mountpoint';
+import { ResFolder } from '../../types/commons';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
 	display: block;
 `;
 
-const CustomItem = ({ item }) => {
+const CustomItem: FC<any> = ({ folder }) => {
 	const [checked, setChecked] = useState(false);
 	const [t] = useTranslation();
 
 	const onClick = useCallback(() => {
 		if (!checked) {
-			item.setLinks(
+			folder.setLinks(
 				uniqWith(
 					[
-						...item.links,
+						...folder.links,
 						{
-							id: item.id,
-							name: item.label,
-							folderId: item.folderId,
-							ownerId: item.ownerId,
-							ownerName: item.ownerName,
+							id: folder.id,
+							name: folder.label,
+							folderId: folder.folderId,
+							ownerId: folder.ownerId,
+							ownerName: folder.ownerName,
 							of: t('label.of', 'of')
 						}
 					],
@@ -63,24 +65,43 @@ const CustomItem = ({ item }) => {
 				)
 			);
 		} else {
-			item.setLinks(filter(item.links, (v) => v.id !== item.id));
+			folder.setLinks(filter(folder.links, (v) => v.id !== folder.id));
 		}
 		setChecked(!checked);
-	}, [checked, item, t]);
+	}, [checked, folder, t]);
 
 	return (
 		<>
 			<Padding right="medium">
 				<Checkbox value={checked} onClick={onClick} iconColor="primary" />
 			</Padding>
-			<AccordionItem item={item} />
+			<AccordionItem item={folder} />
 		</>
 	);
 };
 
-export const SharesModal = ({ folders, onClose }) => {
+type ShareModalProps = {
+	folders: Array<ResFolder>;
+	onClose: () => void;
+};
+
+type SharedObject = {
+	id: string;
+	label: string;
+	open: boolean;
+	items: [];
+	ownerName: string;
+	ownerId: string;
+	checked: boolean;
+	folderId: string;
+	setLinks: (links: Array<SharedObject>) => void;
+	links: Array<SharedObject>;
+	CustomComponent: ReactElement;
+};
+
+export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const [links, setLinks] = useState([]);
-	const [data, setData] = useState();
+	const [data, setData] = useState({});
 	const dispatch = useDispatch();
 	const [t] = useTranslation();
 
@@ -105,7 +126,7 @@ export const SharesModal = ({ folders, onClose }) => {
 	const filteredFolders = useMemo(() => groupBy(shared, 'ownerName'), [shared]);
 	const nestedData = useMemo(
 		() =>
-			map(values(data ?? filteredFolders), (v) => ({
+			map(values(!isEmpty(data) ? data : filteredFolders), (v: Array<SharedObject>) => ({
 				id: v[0].ownerId,
 				label: t('label.shares_items', {
 					value: v[0].ownerName,
@@ -113,20 +134,19 @@ export const SharesModal = ({ folders, onClose }) => {
 				}),
 				open: true,
 				items: v,
-				divider: filteredFolders?.length > 0 || data?.length > 0,
+				divider: !isEmpty(filteredFolders) || !isEmpty(data),
 				background: undefined
 			})),
 		[data, filteredFolders, t]
 	);
 
 	const filterResults = useCallback(
-		(ev) => {
+		(ev) =>
 			setData(
-				pickBy(filteredFolders, (value, key) =>
+				pickBy(filteredFolders, (_value, key) =>
 					startsWith(toLower(key), toLower(ev?.target?.value))
 				)
-			);
-		},
+			),
 		[filteredFolders]
 	);
 
@@ -140,7 +160,7 @@ export const SharesModal = ({ folders, onClose }) => {
 				<Input
 					label={t('label.filter_user', 'Filter users')}
 					backgroundColor="gray5"
-					CustomIcon={({ hasFocus }) => (
+					CustomIcon={({ hasFocus }: { hasFocus: boolean }): ReactElement => (
 						<Icon icon="FunnelOutline" size="large" color={hasFocus ? 'primary' : 'text'} />
 					)}
 					onChange={filterResults}

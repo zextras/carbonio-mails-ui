@@ -27,6 +27,8 @@ export const handleModifiedFoldersReducer = (
 	{ payload }: Payload
 ): void => {
 	const foldersToAdd = map(payload, normalizeFolder);
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	updateFolders(state, foldersToAdd);
 };
 
