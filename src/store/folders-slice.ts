@@ -119,21 +119,6 @@ function folderActionPending(state: FoldersStateType, { meta }: any): void {
 			break;
 
 		case '!grant': {
-			const newAcl = filter(folder.acl.grant, (rights) => rights.zid !== zid);
-			const updatedFolder = { ...folder, acl: newAcl.length > 0 ? { grant: newAcl } : {} };
-			state.folders = reduce(
-				state.folders,
-				(r, v, k) => {
-					if (v.id === updatedFolder.id) {
-						return r;
-					}
-					return { ...r, [k]: v };
-				},
-				{}
-			);
-			state.folders[updatedFolder.id] = updatedFolder;
-			updateFolderInStore(state, []);
-			state.status = 'updating';
 			break;
 		}
 		case 'delete':

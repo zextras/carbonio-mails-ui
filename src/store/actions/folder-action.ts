@@ -4,12 +4,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { Folder, soapFetch } from '@zextras/carbonio-shell-ui';
 import { isEmpty, isNil, omitBy } from 'lodash';
+import { DataProps } from '../../types/commons';
+
+type FolderActionProps = {
+	folder: Folder | DataProps;
+	color?: number;
+	zid?: string;
+	op: string;
+	name?: string;
+	l?: string;
+	recursive?: boolean;
+	retentionPolicy?: Folder['retentionPolicy'];
+};
 
 export const folderAction = createAsyncThunk(
 	'contacts/folderAction',
-	async ({ folder, color, zid, op, name, l, recursive, retentionPolicy }: any) => {
+	async ({ folder, color, zid, op, name, l, recursive, retentionPolicy }: FolderActionProps) => {
 		const result = !isEmpty(retentionPolicy)
 			? await soapFetch('Batch', {
 					FolderActionRequest: [

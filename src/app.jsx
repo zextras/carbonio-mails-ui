@@ -34,9 +34,9 @@ const LazyEditView = lazy(() =>
 const LazySettingsView = lazy(() =>
 	import(/* webpackChunkName: "mail-setting-view" */ './views/settings/settings-view')
 );
-// const LazySearchView = lazy(() =>
-// 	import(/* webpackChunkName: "mail-search-view" */ './views/search/search-view')
-// );
+const LazySearchView = lazy(() =>
+	import(/* webpackChunkName: "mail-search-view" */ './views/search/search-view')
+);
 
 const LazySidebarView = lazy(() =>
 	import(/* webpackChunkName: "mail-sidebar-view" */ './views/sidebar/sidebar')
@@ -58,11 +58,11 @@ const SettingsView = () => (
 	</Suspense>
 );
 
-// const SearchView = (props) => (
-// 	<Suspense fallback={<Spinner />}>
-// 		<LazySearchView {...props} />
-// 	</Suspense>
-// );
+const SearchView = (props) => (
+	<Suspense fallback={<Spinner />}>
+		<LazySearchView {...props} />
+	</Suspense>
+);
 
 const SidebarView = (props) => (
 	<Suspense fallback={<Spinner />}>
@@ -88,10 +88,10 @@ const App = () => {
 			subSections: getSettingsSubSections(t),
 			component: SettingsView
 		});
-		// addSearchView({
-		// 	route: MAILS_ROUTE,
-		// 	component: SearchView
-		// });
+		addSearchView({
+			route: MAILS_ROUTE,
+			component: SearchView
+		});
 		addBoardView({
 			route: MAILS_ROUTE,
 			component: EditView

@@ -6,10 +6,11 @@
 import React, {
 	ChangeEvent,
 	FC,
-	ReactElement,
 	useCallback,
 	useContext,
+	useLayoutEffect,
 	useMemo,
+	useRef,
 	useState
 } from 'react';
 import {
@@ -28,11 +29,10 @@ import {
 	AccordionFolder,
 	Folder,
 	FOLDERS,
-	LinkFolderFields,
 	useFoldersAccordionByView,
 	useUserAccount
 } from '@zextras/carbonio-shell-ui';
-import { useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { folderAction } from '../../store/actions/folder-action';
 import ModalFooter from './commons/modal-footer';
@@ -55,10 +55,21 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 	// @ts-ignore
 	const folders = useFoldersAccordionByView(FOLDER_VIEW.message, null);
 	const [searchString, setSearchString] = useState('');
-	const [folderDestination, setFolderDestination] = useState<AccordionFolder | undefined>(folder);
+	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder.folder);
+	const { folderId } = useParams<{ folderId: string }>();
 	const accountName = useUserAccount().name;
-	const history = useHistory();
-	const activeFolder = history?.location?.pathname?.split?.('/')?.[3];
+	const accordionRef = useRef<HTMLDivElement>();
+	const [accordionWidth, setAccordionWidth] = useState<number>();
+
+	useLayoutEffect(() => {
+		const calculateAvailableWidth = (): void => {
+			if (accordionRef && accordionRef.current) {
+				setAccordionWidth(accordionRef?.current?.clientWidth);
+			}
+		};
+		window.addEventListener('resize', calculateAvailableWidth);
+		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
+	}, [accordionRef]);
 
 	const flattenFolders = useCallback(
 		(arr: Array<AccordionFolder>): Array<AccordionFolder> => {
@@ -83,21 +94,24 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 								? 'highlight'
 								: undefined,
 						label: item.folder.id === FOLDERS.USER_ROOT ? accountName : item.folder.name,
-						activeId: item.folder.id === activeFolder
+						activeId: item.folder.id === folderId,
+						accordionWidth,
+						items: []
 					});
 				if (items) result.push(...flattenFolders(items));
 			});
 			return result;
 		},
-		[accountName, activeFolder, folderDestination]
+		[accordionWidth, accountName, folderId, folderDestination]
 	);
 	const getFolderRootName = (_folder: AccordionFolder): string => {
-		let result = cloneDeep(_folder);
-		while (result.folder?.parent?.parent) {
-			result = result.folder?.parent;
+		let result = cloneDeep(_folder.folder);
+		while (result.parent?.parent) {
+			result = result.parent;
 		}
-		return result.folder?.owner || result.folder?.parent?.name || result.folder?.name;
+		return result.owner || result.parent?.name || result.name;
 	};
+
 	const filteredFolders = folders.filter((item) => item.label === getFolderRootName(folder));
 
 	const flattenedFolders = useMemo(
@@ -115,7 +129,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 
 	const onConfirm = useCallback(() => {
 		const restoreFolder = (): void =>
-			dispatch(folderAction({ folder, l: folder.folder?.parent, op: 'move' }))
+			dispatch(folderAction({ folder: folder.folder, l: folder.folder.l, op: 'move' }))
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				.then((res) => {
@@ -141,10 +155,17 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 				});
 
 		if (
-			folderDestination?.id !== folder.id &&
-			folderDestination?.folder.parent !== folder.folder?.parent
+			folderDestination?.id !== folder.folder?.l &&
+			!startsWith(folderDestination?.absFolderPath, folder.folder?.absFolderPath)
 		) {
-			dispatch(folderAction({ folder, l: folderDestination?.id || '1', op: 'move' }))
+			// if (folderDestination?.id !== folder.id && folderDestination?.l !== folder.folder?.l) {
+			dispatch(
+				folderAction({
+					folder: folder.folder,
+					l: folderDestination?.id || FOLDERS.USER_ROOT,
+					op: 'move'
+				})
+			)
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				.then((res) => {
@@ -212,7 +233,11 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 					minHeight="30vh"
 					maxHeight="60vh"
 				>
-					<Accordion background="gray6" items={filteredFromUserInput} />
+					<Accordion
+						background="gray6"
+						items={filteredFromUserInput}
+						style={{ overflowY: 'hidden' }}
+					/>
 				</ContainerEl>
 
 				<Container

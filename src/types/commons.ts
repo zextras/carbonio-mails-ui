@@ -65,3 +65,38 @@ export type ResFolder = AccordionFolder &
 		rights: string;
 		view: string;
 	}>;
+
+export type DataProps = {
+	id: string;
+	date: number;
+	msgCount: number;
+	unreadMsgCount: number;
+	messages: [
+		{
+			id: string;
+			parent: string;
+			date: number;
+		}
+	];
+	participants: [
+		{
+			type: string;
+			address: string;
+			name: string;
+			fullName: string;
+		},
+		{
+			type: string;
+			address: string;
+			name: string;
+		}
+	];
+	subject: string;
+	fragment: string;
+	read: false;
+	attachment: false;
+	flagged: false;
+	urgent: false;
+	parentFolderId: string;
+	selectedIDs: Array<string>;
+};

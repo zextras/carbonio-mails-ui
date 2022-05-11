@@ -6,19 +6,18 @@
 import React, { FC, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Padding, Row, Icon, Container, TextWithTooltip } from '@zextras/carbonio-design-system';
 
-import { AccordionFolder, Folder, LinkFolderFields } from '@zextras/carbonio-shell-ui';
+import { AccordionFolder } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
-import { cloneDeep, indexOf, lastIndexOf, min } from 'lodash';
+import { indexOf, lastIndexOf, min } from 'lodash';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
 import { Crumb } from '../../../../types/commons';
 import { Breadcrumbs } from './breadcrumbs';
 
 const ModalAccordionCustomComponent: FC<{
-	item: AccordionFolder & { label: string };
+	item: AccordionFolder;
 }> = (folder) => {
 	const { item } = folder;
 	const [t] = useTranslation();
-	console.log('@@item_modal', item);
 	const systemFolder = useMemo(() => {
 		let result = '';
 		if (item.folder.absFolderPath) {
@@ -73,30 +72,33 @@ const ModalAccordionCustomComponent: FC<{
 	}, [containerRef?.current?.clientWidth, targetFolderWidth]);
 
 	const crumbs: Array<Crumb> | undefined = useMemo(() => {
-		let folderClone = cloneDeep(item);
-		let reachedTop = false;
 		const result = [];
+		let exitLoop = false;
 		let stringRemainingWidth = availableWidth;
-		while (folderClone.folder.parent.absFolderPath !== '/' && reachedTop === false) {
-			const value = folderClone?.folder.absFolderPath?.slice(
-				lastIndexOf(folderClone.folder.absFolderPath, '/') + 1
+		while (
+			!(
+				exitLoop !== false ||
+				item.folder.parent?.absFolderPath === '/' ||
+				(item.folder.parent?.isLink === true &&
+					item.folder.parent?.absFolderPath.lastIndexOf('/', 1) !== -1)
+			)
+		) {
+			const value = item.folder.absFolderPath.slice(
+				lastIndexOf(item.folder.absFolderPath, '/') + 1
 			);
-			stringRemainingWidth -=
-				(folderClone.label?.length || folderClone.folder.name.length) * factor + 18;
+			stringRemainingWidth -= item.folder.name.length * factor + 18;
 			if (value !== '' && stringRemainingWidth > 0) {
-				folderClone = folderClone.folder.parent;
 				result.push({
 					label: value,
 					tooltip: ''
 				});
+				item.folder = item.folder.parent;
 			} else {
 				result.push({
 					label: '...',
-					tooltip: folderClone.folder.absFolderPath.slice(
-						indexOf(folderClone.folder.absFolderPath, '/', 2) + 1
-					)
+					tooltip: item.folder.absFolderPath.slice(indexOf(item.folder.absFolderPath, '/', 2) + 1)
 				});
-				reachedTop = true;
+				exitLoop = true;
 			}
 		}
 		if (translatedSystemFolder) {
@@ -117,7 +119,7 @@ const ModalAccordionCustomComponent: FC<{
 				<Row orientation="horizontal" width="fill" crossAlignment="flex-start">
 					<Icon color={iconColor} icon={iconName || 'FolderOutline'} size="large" />
 					<Padding right="medium" />
-					{crumbs?.length && crumbs.length > 0 && <Breadcrumbs breadcrumbs={crumbs} />}
+					{crumbs?.length > 0 && <Breadcrumbs breadcrumbs={crumbs} />}
 					<Container width="fit" maxWidth={availableWidth - fullPath.length + item.label.length}>
 						<TextWithTooltip overflow="ellipsis">&nbsp;{item.label}</TextWithTooltip>
 					</Container>

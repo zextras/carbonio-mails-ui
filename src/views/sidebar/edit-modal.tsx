@@ -43,9 +43,8 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 
 				{activeModal === 'revoke' && (
 					<ShareRevokeModal
-						folder={folder}
+						folder={folder.folder}
 						goBack={goBack}
-						// onClose={() => setModal('')}
 						grant={activeGrant || folder?.folder.acl?.grant[0]}
 						createSnackbar={createSnackbar}
 					/>

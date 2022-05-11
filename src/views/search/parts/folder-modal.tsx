@@ -13,7 +13,7 @@ import { ModalHeader } from '../../sidebar/commons/modal-header';
 import FolderItem from '../../sidebar/commons/folder-item';
 import { selectFolders } from '../../../store/folders-slice';
 import { Folder as FolderType } from '../../../types/folder';
-import { getFolderIconColor, getFolderIconName } from '../../sidebar/accordion-custom-components';
+import { getFolderIconColor, getFolderIconName } from '../../sidebar/utils';
 
 type ComponentProps = {
 	compProps: { open: boolean; onClose: () => void; setFolder: (arg: any) => void; t: TFunction };

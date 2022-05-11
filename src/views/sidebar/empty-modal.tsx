@@ -20,7 +20,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 
 	const onConfirm = useCallback(() => {
-		dispatch(folderAction({ folder, recursive: true, op: 'empty' }))
+		dispatch(folderAction({ folder: folder.folder, recursive: true, op: 'empty' }))
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			.then((res) => {
@@ -30,7 +30,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 						replace: true,
 						type: 'info',
 						label:
-							folder.id === '3'
+							folder.id === FOLDERS.TRASH
 								? t('messages.snackbar.folder_empty', 'Trash successfully emptied')
 								: t('messages.snackbar.folder_wiped', 'Folder successfully wiped'),
 						autoHideTimeout: 3000,

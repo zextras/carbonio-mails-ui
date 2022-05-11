@@ -23,7 +23,9 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const onConfirm = useCallback(() => {
 		let inTrash = false;
 		const restoreFolder = (): void =>
-			dispatch(folderAction({ folder, l: folder.folder?.parent, op: FOLDER_ACTIONS.MOVE }))
+			dispatch(
+				folderAction({ folder: folder.folder, l: folder.folder?.parent, op: FOLDER_ACTIONS.MOVE })
+			)
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				.then((res) => {
@@ -54,7 +56,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 		}
 		dispatch(
 			folderAction({
-				folder,
+				folder: folder.folder,
 				l: FOLDERS.TRASH,
 				op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
 			})
@@ -90,7 +92,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 		onClose();
 	}, [folder, dispatch, onClose, createSnackbar, t]);
 
-	return folder ? (
+	return folder.folder ? (
 		<Container
 			padding={{ all: 'large' }}
 			mainAlignment="center"

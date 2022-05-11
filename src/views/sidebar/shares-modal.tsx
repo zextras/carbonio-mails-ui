@@ -29,13 +29,13 @@ import {
 	toLower,
 	isEmpty
 } from 'lodash';
-import { AccordionFolder } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { ModalHeader } from './commons/modal-header';
 import ModalFooter from './commons/modal-footer';
 import { createMountpoint } from '../../store/actions/create-mountpoint';
+import { ResFolder } from '../../types/commons';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -81,7 +81,7 @@ const CustomItem: FC<any> = ({ folder }) => {
 };
 
 type ShareModalProps = {
-	folders: Array<AccordionFolder>;
+	folders: Array<ResFolder>;
 	onClose: () => void;
 };
 
@@ -111,14 +111,14 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	}, [dispatch, links, onClose]);
 
 	const shared = map(folders, (c) => ({
-		id: `${c.folder.ownerName} - ${c.folder.folderId} - ${c.folder.granteeType} - ${c.folder.granteeName}`,
-		label: last(split(c.folder.folderPath, '/')),
+		id: `${c.ownerName} - ${c.folderId} - ${c.granteeType} - ${c.granteeName}`,
+		label: last(split(c.folderPath, '/')),
 		open: true,
 		items: [],
-		ownerName: c.folder.ownerName,
-		ownerId: c.folder.ownerId,
+		ownerName: c.ownerName,
+		ownerId: c.ownerId,
 		checked: false,
-		folderId: c.folder.folderId,
+		folderId: c.folderId,
 		setLinks,
 		links,
 		CustomComponent: CustomItem

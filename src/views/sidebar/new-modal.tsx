@@ -27,7 +27,6 @@ import { cloneDeep, filter, includes, startsWith } from 'lodash';
 import { nanoid } from '@reduxjs/toolkit';
 import {
 	AccordionFolder,
-	Folder,
 	FOLDERS,
 	useFoldersAccordionByView,
 	useUserAccount
@@ -35,7 +34,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import ModalFooter from './commons/modal-footer';
 import { ModalHeader } from './commons/modal-header';
 import { createFolder } from '../../store/actions/create-folder';
@@ -63,8 +62,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
 	const [label, setLabel] = useState(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
-	const history = useHistory();
-	const activeFolder = history?.location?.pathname?.split?.('/')?.[3];
+	const { folderId } = useParams<{ folderId: string }>();
 	const accountName = useUserAccount().name;
 	const accordionRef = useRef<HTMLDivElement>();
 	const [accordionWidth, setAccordionWidth] = useState<number>();
@@ -100,32 +98,36 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 						// @ts-ignore
 						CustomComponent: ModalAccordionCustomComponent,
 						onClick: () => {
-							setFolderDestination(item.folder);
+							setFolderDestination(item);
 						},
 						background:
 							typeof folderDestination !== 'undefined' && folderDestination.id === item.folder.id
 								? 'highlight'
 								: undefined,
 						label: item.folder.id === FOLDERS.USER_ROOT ? accountName : item.folder.name,
-						activeId: item.folder.id === activeFolder,
-						accordionWidth
+						activeId: item.folder.id === folderId,
+						accordionWidth,
+						items: []
 					});
 				if (items) result.push(...flattenFolders(items));
 			});
 			return result;
 		},
-		[accordionWidth, accountName, activeFolder, folderDestination]
+		[accordionWidth, accountName, folderId, folderDestination]
 	);
 
-	const getFolderRootName = (_folder: AccordionFolder): string => {
-		let result = cloneDeep(_folder);
-		while (result.folder?.parent?.parent) {
-			result = result.folder.parent;
+	const getFolderRootName = useCallback((_folder: AccordionFolder): string => {
+		let result = _folder.folder;
+		while (result.parent?.parent) {
+			result = result.parent;
 		}
-		return result.folder.owner || result.folder.parent.name || result.folder.name;
-	};
+		return result.owner || result.parent?.name || result.name;
+	}, []);
 
-	const filteredFolders = folders.filter((item) => item.label === getFolderRootName(folder));
+	const filteredFolders = useMemo(
+		() => folders.filter((item) => item.label === getFolderRootName(folder)),
+		[folders, getFolderRootName, folder]
+	);
 
 	const flattenedFolders = useMemo(
 		() => flattenFolders(filteredFolders),
@@ -151,7 +153,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const filteredFromUserInput = useMemo(
 		() =>
 			filter(flattenedFolders, (item) =>
-				startsWith(item.folder.name.toLowerCase(), searchString.toLowerCase())
+				startsWith(item.label.toLowerCase(), searchString.toLowerCase())
 			),
 		[flattenedFolders, searchString]
 	);

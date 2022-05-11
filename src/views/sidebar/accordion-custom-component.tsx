@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useContext, useMemo } from 'react';
+import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
 import {
 	AppLink,
 	FOLDERS,
@@ -33,10 +33,10 @@ import {
 	Padding,
 	ModalManagerContext
 } from '@zextras/carbonio-design-system';
-import { find, isEmpty, startsWith } from 'lodash';
+import { find, startsWith } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { FolderActionsType } from '../../types/folder';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
@@ -47,7 +47,8 @@ import { EmptyModal } from './empty-modal';
 import { DeleteModal } from './delete-modal';
 import { EditModal } from './edit-modal';
 import { SharesInfoModal } from './shares-info-modal';
-import { SharesModal } from './shares-modal';
+import ShareFolderModal from './share-folder-modal';
+import { DataProps } from '../../types/commons';
 
 const DropOverlayContainer = styled(Container)`
 	position: absolute;
@@ -82,6 +83,11 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 	const dispatch = useDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createModal = useContext(ModalManagerContext) as Function;
+	const [activeModal, setActiveModal] = useState('default');
+	const [activeGrant, setActiveGrant] = useState({});
+	const goBack = useCallback(() => {
+		setActiveModal('default');
+	}, [setActiveModal]);
 
 	const actions = useMemo(
 		() => [
@@ -121,7 +127,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 							maxHeight: '90vh',
 							children: (
 								<>
-									<MoveModal onClose={(): void => closeModal()} folder={folder} />
+									<MoveModal folder={folder} onClose={(): void => closeModal()} />
 								</>
 							)
 						},
@@ -210,7 +216,12 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						{
 							children: (
 								<>
-									<SharesModal onClose={(): void => closeModal()} folders={[folder]} />
+									<ShareFolderModal
+										onClose={(): void => closeModal()}
+										folder={folder}
+										activeGrant={activeGrant}
+										goBack={goBack}
+									/>
 								</>
 							)
 						},
@@ -225,7 +236,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				click: (e): void => {
 					if (e) {
 						e.stopPropagation();
-						dispatch(folderAction({ folder, op: 'delete' }));
+						dispatch(folderAction({ folder: folder.folder, op: 'delete' }));
 					}
 				}
 			},
@@ -241,7 +252,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						{
 							children: (
 								<>
-									<SharesInfoModal onClose={(): void => closeModal()} folder={folder} />
+									<SharesInfoModal onClose={(): void => closeModal()} folder={folder.folder} />
 								</>
 							)
 						},
@@ -250,7 +261,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				}
 			}
 		],
-		[createModal, dispatch, folder, t]
+		[activeGrant, createModal, dispatch, folder, goBack, t]
 	);
 
 	const defaultFolderActions = useMemo(
@@ -313,49 +324,15 @@ type DragEnterAction =
 
 type OnDropActionProps = {
 	type: string;
-	data: {
-		id: string;
-		date: number;
-		msgCount: number;
-		unreadMsgCount: number;
-		messages: [
-			{
-				id: string;
-				parent: string;
-				date: number;
-			}
-		];
-		participants: [
-			{
-				type: string;
-				address: string;
-				name: string;
-				fullName: string;
-			},
-			{
-				type: string;
-				address: string;
-				name: string;
-			}
-		];
-		subject: string;
-		fragment: string;
-		read: false;
-		attachment: false;
-		flagged: false;
-		urgent: false;
-		parentFolderId: string;
-		selectedIDs: Array<string>;
-	};
+	data: DataProps;
 };
 
 export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }) => {
 	const { folder } = item;
 	const accountName = useUserAccount().name;
-	const history = useHistory();
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
-	const activeFolder = history?.location?.pathname?.split?.('/')?.[3];
+	const { folderId } = useParams<{ folderId: string }>();
 	const [openIds, setOpenIds] = useLocalStorage(
 		'open_mails_folders',
 		window.localStorage.getItem('open_mails_folders')
@@ -433,7 +410,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 				// @ts-ignore
 				.then((res) => {
 					if (res.type.includes('fulfilled')) {
-						replaceHistory(`/folder/${activeFolder}`);
+						replaceHistory(`/folder/${folderId}`);
 						getBridgedFunctions().createSnackbar({
 							key: `edit`,
 							replace: true,
@@ -535,14 +512,15 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			label: item.id === FOLDERS.USER_ROOT ? accountName : item.label,
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
-			activeId: item.id === activeFolder,
+			active: item.id === folderId,
 			open: openIds ? openIds.includes(folder.id) : false,
 			badgeCounter: item?.folder?.n && item?.folder?.n > 0 ? item?.folder?.n : undefined,
 			badgeType: item.id === FOLDERS.DRAFTS ? 'read' : 'unread',
 			to: `/folder/${item.id}`
 		}),
-		[item, accountName, activeFolder, openIds, folder.id]
+		[item, accountName, folderId, openIds, folder.id]
 	);
+
 	const dropdownItems = useFolderActions(item);
 
 	return folder.id === FOLDERS.USER_ROOT || folder.oname === ROOT_NAME ? (

@@ -9,8 +9,6 @@ import {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	ROOT_NAME,
-	Folder,
-	LinkFolderFields,
 	AccordionFolder
 } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
@@ -79,18 +77,11 @@ export const capitalise = (word: string): string => {
 	return newChar + word.substring(1);
 };
 
-export const getFolderIconColor = (
-	f: Partial<Folder & LinkFolderFields> & { folder: Partial<Folder & LinkFolderFields> }
-): string => {
+export const getFolderIconColor = (f: AccordionFolder): string => {
 	if (f?.folder?.color) {
 		return Number(f.folder.color) < 10
 			? ZIMBRA_STANDARD_COLORS[Number(f.folder.color)].hex
 			: f?.folder.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex;
-	}
-	if (f?.color) {
-		return Number(f.color) < 10
-			? ZIMBRA_STANDARD_COLORS[Number(f.color)].hex
-			: f?.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex;
 	}
 	return ZIMBRA_STANDARD_COLORS[0].hex;
 };
