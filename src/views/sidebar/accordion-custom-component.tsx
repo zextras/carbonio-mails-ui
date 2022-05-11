@@ -336,7 +336,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 	const { folderId } = useParams<{ folderId: string }>();
 	const [openIds, setOpenIds] = useLocalStorage(
 		'open_mails_folders',
-		window.localStorage.getItem('open_mails_folders')
+		window.localStorage.getItem('open_mails_folders') ?? []
 	);
 
 	const onDragEnterAction = (data: OnDropActionProps): DragEnterAction => {
@@ -491,12 +491,9 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 	}, [zimbraPrefSortOrder, folder.id]) as 'dateDesc' | 'dateAsc';
 	const onClick = useCallback((): void => {
 		pushHistory(`/folder/${folder.id}`);
-		setOpenIds((state: Array<string>) => {
-			const result = state.includes(item.id)
-				? state.filter((id: string) => id !== item.id)
-				: [...state, item.id];
-			return result;
-		});
+		setOpenIds((state: Array<string>) =>
+			state.includes(item.id) ? state.filter((id: string) => id !== item.id) : [...state, item.id]
+		);
 		dispatch(
 			search({
 				folderId: folder.id,
