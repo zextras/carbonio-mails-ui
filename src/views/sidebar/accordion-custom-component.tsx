@@ -525,22 +525,14 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 	const dropdownItems = useFolderActions(item);
 
 	return folder.id === FOLDERS.USER_ROOT || folder.oname === ROOT_NAME ? (
-		<>
-			<AppLink
-				onClick={onClick}
-				to={`/folder/${folder.id}`}
-				style={{ width: '100%', height: '100%', textDecoration: 'none' }}
-			>
-				<Row>
-					<Padding left="small" />
-					<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
-					<Padding left="small" />
-					<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-						<AccordionItem item={accordionItem} />
-					</Tooltip>
-				</Row>
-			</AppLink>
-		</>
+		<Row>
+			<Padding horizontal="small">
+				<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
+			</Padding>
+			<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+				<AccordionItem item={accordionItem} />
+			</Tooltip>
+		</Row>
 	) : (
 		<>
 			<Drop
