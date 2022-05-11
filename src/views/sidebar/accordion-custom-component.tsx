@@ -328,6 +328,7 @@ type OnDropActionProps = {
 	data: DataProps;
 };
 
+const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);
 export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }) => {
 	const { folder } = item;
 	const accountName = useUserAccount().name;
@@ -515,7 +516,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
 			open: openIds ? openIds.includes(folder.id) : false,
-			badgeCounter: item?.folder?.n && item?.folder?.n > 0 ? item?.folder?.n : undefined,
+			badgeCounter: badgeCount(item.id === FOLDERS.DRAFTS ? item?.folder.n : item?.folder?.u),
 			badgeType: item.id === FOLDERS.DRAFTS ? 'read' : 'unread',
 			to: `/folder/${item.id}`
 		}),
