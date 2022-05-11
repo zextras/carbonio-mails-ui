@@ -273,8 +273,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 			),
 		[actions]
 	);
-
-	switch (folder.id) {
+	const id =
+		folder.id.indexOf(':') !== -1 ? folder.id.slice(folder.id.indexOf(':') + 1) : folder.id;
+	switch (id) {
 		// default folders
 		case FOLDERS.INBOX:
 		case FOLDERS.SENT:
@@ -516,13 +517,12 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			label: item.id === FOLDERS.USER_ROOT ? accountName : item.label,
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
-			active: item.id === folderId,
 			open: openIds ? openIds.includes(folder.id) : false,
 			badgeCounter: item?.folder?.n && item?.folder?.n > 0 ? item?.folder?.n : undefined,
 			badgeType: item.id === FOLDERS.DRAFTS ? 'read' : 'unread',
 			to: `/folder/${item.id}`
 		}),
-		[item, accountName, folderId, openIds, folder.id]
+		[item, accountName, openIds, folder.id]
 	);
 
 	const dropdownItems = useFolderActions(item);

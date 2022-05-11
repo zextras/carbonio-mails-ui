@@ -23,8 +23,8 @@ import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-r
 import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
 import TagFolderRow from './parts/tag-folder-row';
 import SendReceivedDateRow from './parts/send-date-row';
-import ReceivedSentAddressRow from './parts/received-sent-address-row';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
+import ReceivedSentAddressRow from './parts/received-sent-address-row';
 
 type AdvancedFilterModalProps = {
 	open: boolean;

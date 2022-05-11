@@ -16,7 +16,7 @@ type FolderActionProps = {
 	name?: string;
 	l?: string;
 	recursive?: boolean;
-	retentionPolicy?: Folder['retentionPolicy'];
+	retentionPolicy?: unknown;
 };
 
 export const folderAction = createAsyncThunk(

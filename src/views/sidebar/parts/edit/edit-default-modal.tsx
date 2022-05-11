@@ -284,11 +284,11 @@ const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal 
 				setFolderColor={setFolderColor}
 			/>
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'medium' }}>
-				<FolderDetails folder={folder.folder} />
+				<FolderDetails folder={folder} />
 
 				{!isEmpty(folder?.folder.acl) && !folder.folder?.owner && (
 					<ShareFolderProperties
-						folder={folder.folder}
+						folder={folder}
 						setfolder={(): null => null}
 						totalAppointments={folder.folder?.n}
 						setActiveModal={setActiveModal}

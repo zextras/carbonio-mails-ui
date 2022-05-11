@@ -9,12 +9,16 @@ import {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	ROOT_NAME,
-	AccordionFolder
+	AccordionFolder,
+	Folder,
+	LinkFolderFields
 } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
 import { TFunction } from 'react-i18next';
 
-export const normalizeFolder = (folder: any): any =>
+export const normalizeFolder = (
+	folder: Folder & Partial<LinkFolderFields>
+): Partial<Folder & Partial<LinkFolderFields>> =>
 	omitBy(
 		{
 			id: folder.id,
