@@ -33,7 +33,8 @@
         "show_details": "Details weergeven",
         "show_original": "Origineel weergeven",
         "unflag": "Vlag verwijderen",
-        "preview_new_tab": "Klik om te bekijken in een ander tabblad"
+        "preview_new_tab": "Klik om te bekijken in een ander tabblad",
+        "click_preview": "Klik om te bekijken"
     },
     "add": "Toevoegen",
     "create": "Creëren",
@@ -304,7 +305,19 @@
         "from_identity": "Van: {{identity}}",
         "notify_organizer": "Organisator verwittigen",
         "retention_range": "Retentiebereik",
-        "select": "Selecteren"
+        "select": "Selecteren",
+        "behalf_of": "namens",
+        "preview": "Voorbeeld",
+        "spam": "spam",
+        "tags": "Tags",
+        "create_tag": "Tag creëren",
+        "delete_tag": "Tag verwijderen",
+        "delete_tag_name": "\"{{name}}\" tag verwijderen",
+        "edit_tag": "Tag bewerken",
+        "edit_tag_name": "\"{{name}}\" tag bewerken",
+        "no_special_char_allowed": "De naam mag geen speciaal teken bevatten",
+        "tag_max_length": "Max 128 tekens zijn toegestaan",
+        "tag_name": "Tag-naam"
     },
     "messages": {
         "permanent_delete_confirm": "Permanent verwijderen",
@@ -360,7 +373,11 @@
             "mail_saved_to_drafts": "Mail opgeslagen in concepten",
             "folder_restored": "Map hersteld",
             "sending_mail_in_count": "Uw bericht verzenden in {{count}} seconde",
-            "sending_mail_in_count_plural": "Uw bericht verzenden in {{count}} seconden"
+            "sending_mail_in_count_plural": "Uw bericht verzenden in {{count}} seconden",
+            "tag_created": "Tag {{name}} met succes gecreëerd",
+            "tag_deleted": "{{name}} Tag met succes verwijderd",
+            "tag_updated": "Tag met succes bijgewerkt",
+            "tag_not_updated": "Er is iets fout gegaan, de tag is niet bijgewerkt. Probeer het opnieuw."
         },
         "no_subject": "Geen onderwerp.",
         "permanent_delete_body": "Door dit element permanent te verwijderen zult u niet meer in staat zijn om het te herstellen. Verdergaan?"
@@ -421,7 +438,9 @@
         "share_revoke": "Delen toegang ingetrokken",
         "folder_shared": "Gedeelde map",
         "folder_shared_error": "Er is iets misgegaan, probeer het opnieuw",
-        "email_moved_to_trash": "E-mail verplaatst naar prullenbak"
+        "email_moved_to_trash": "E-mail verplaatst naar prullenbak",
+        "tag_applied": "\"{{tag}}\" tag toegepast",
+        "tag_removed": "\"{{tag}}\" tag verwijderd"
     },
     "message": {
         "snackbar": {
@@ -435,7 +454,9 @@
         "search_hints": "Hints zoeken waar we het over moeten hebben",
         "sending_mail_to_self": "Het lijkt erop dat je op het punt staat een e-mail naar uzelf te sturen",
         "invalid_search_message": "We hebben geen match gevonden",
-        "email_saved_at": "E-mail opgeslagen als concept om {{time}}"
+        "email_saved_at": "E-mail opgeslagen als concept om {{time}}",
+        "delete_tag_message1": "Weet u zeker dat u de\"{{name}}\" Tag wilt verwijderen?",
+        "delete_tag_message2": "Eenmaal verwijderd, zal het verwijderd worden van elk item dat ermee gemarkeerd is."
     },
     "administer": "Beheren",
     "allowed_actions": "Toegelaten acties",
@@ -506,9 +527,9 @@
             "new_message_inbox": "Meldingen weergeven voor nieuwe berichten die aankomen in inbox"
         },
         "msg_selection_optn": {
-            "above_deleted": "Berichten selecteren boven de verwijderde of verplaatste berichten",
+            "above_deleted": "Bericht selecteren boven het verwijderde of verplaatste bericht",
             "based_on_previous": "Volgend bericht selecteren op basis van vorige selecties",
-            "below_deleted": "Berichten selecteren onder de verwijderde of verplaatste berichten"
+            "below_deleted": "Bericht selecteren onder het verwijderde of verplaatste bericht"
         },
         "new_mail_optn": {
             "manually": "Handmatig",
@@ -732,5 +753,8 @@
     "notification": {
         "new_message": "Nieuwe bericht",
         "no_content": "Bericht zonder inhoud"
+    },
+    "preview": {
+        "close": "Voorbeeld sluiten"
     }
 }

@@ -33,7 +33,8 @@
         "print": "Drucken",
         "reply_all": "Allen antworten",
         "reset": "Zurücksetzen",
-        "preview_new_tab": "Klicken zur Vorschau in einem anderen Reiter"
+        "preview_new_tab": "Klicken zur Vorschau in einem anderen Reiter",
+        "click_preview": "Klicken zur Vorschau"
     },
     "add": "Hinzufügen",
     "folder": {
@@ -295,7 +296,18 @@
         "retention_range": "Retentionsbereich",
         "select": "Auwählen",
         "set_default_signatures": "Standardsignaturen festlegen",
-        "behalf_of": "im namen von"
+        "behalf_of": "im namen von",
+        "preview": "Vorschau",
+        "tags": "Etiketten",
+        "spam": "Spam",
+        "delete_tag_name": "Tag \"{{name}}\" löschen",
+        "create_tag": "Tag erstellen",
+        "delete_tag": "Delete tag",
+        "edit_tag": "Edit Tag",
+        "edit_tag_name": "Tag \"{{name}}\" bearbeiten",
+        "no_special_char_allowed": "Der Name darf keine Sonderzeichen enthalten",
+        "tag_max_length": "Maximal 128 Zeichen sind erlaubt",
+        "tag_name": "Tag name"
     },
     "share": {
         "options": {
@@ -387,7 +399,11 @@
             "folder_restored": "Ordner restauriert",
             "mail_saved_to_drafts": "In Entwürfen gespeicherte E-Mails",
             "sending_mail_in_count": "Senden Sie Ihre Nachricht in {{count}} Sekunden",
-            "sending_mail_in_count_plural": "Senden Sie Ihre Nachricht in {{count}} Sekunden"
+            "sending_mail_in_count_plural": "Senden Sie Ihre Nachricht in {{count}} Sekunden",
+            "tag_not_updated": "Etwas ist schief gelaufen, der Tag wurde nicht aktualisiert. Bitte versuchen Sie es erneut.",
+            "tag_created": "Tag {{name}} erfolgreich erstellt",
+            "tag_deleted": "{{name}} Tag erfolgreich gelöscht",
+            "tag_updated": "Tag erfolgreich aktualisiert"
         },
         "invalid_address": "Die folgende Adresse scheint ungültig zu sein",
         "invalid_address_plural": "Die folgenden Adressen scheinen ungültig zu sein"
@@ -449,7 +465,9 @@
         },
         "search_hints": "Suchhinweise, über die wir sprechen müssen",
         "invalid_search_message": "Wir haben keine Übereinstimmung gefunden",
-        "email_saved_at": "E-Mail gespeichert als Entwurf um {{time}}"
+        "email_saved_at": "E-Mail gespeichert als Entwurf um {{time}}",
+        "delete_tag_message1": "Sind Sie sicher, dass Sie den \"{{name}}\" Tag?",
+        "delete_tag_message2": "Nach dem Löschen wird es aus allen damit gekennzeichneten Artikeln entfernt."
     },
     "remove_from_this_list": "Aus der Liste entfernen",
     "tooltip": {
@@ -470,7 +488,9 @@
         "folder_shared": "Ordner geteilt",
         "share_resend": "Einladung zum Teilen erneut gesendet",
         "share_revoke": "Gemeinsamen Zugriff widerrufen",
-        "email_moved_to_trash": "E-Mail in den Papierkorb verschoben"
+        "email_moved_to_trash": "E-Mail in den Papierkorb verschoben",
+        "tag_applied": "\"{{tag}}\" Tag angewendet",
+        "tag_removed": "\"{{tag}}\" Tag entfernt"
     },
     "private": "Privat",
     "select_signature": "Signatur auswählen",
@@ -513,9 +533,9 @@
             "inbox_if_cc": "Im Posteingang ablegen, wenn ich in An: oder Cc: stehe"
         },
         "msg_selection_optn": {
-            "above_deleted": "Nachrichten über den gelöschten oder verschobenen Nachrichten auswählen",
+            "above_deleted": "Nachricht über der gelöschten oder verschobenen Nachricht auswählen",
             "based_on_previous": "Nächste Nachricht basierend auf vorherigen Auswahlen auswählen",
-            "below_deleted": "Nachrichten unter den gelöschten oder verschobenen Nachrichten auswählen"
+            "below_deleted": "Nachricht unterhalb der gelöschten oder verschobenen Nachricht auswählen"
         },
         "new_mail_optn": {
             "manually": "Manuell",
@@ -733,5 +753,8 @@
     },
     "board": {
         "show": "Anzeigen"
+    },
+    "preview": {
+        "close": "Vorschau schließen"
     }
 }

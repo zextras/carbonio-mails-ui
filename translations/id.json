@@ -33,7 +33,8 @@
         "show_original": "Tampilkan aslinya",
         "mark_as_spam": "Tandai sebagai spam",
         "redirect": "Alihkan",
-        "preview_new_tab": "Klik untuk melihat pratinjau di tab lain"
+        "preview_new_tab": "Klik untuk melihat pratinjau di tab lain",
+        "click_preview": "Klik untuk melihat pratinjau"
     },
     "folder": {
         "action": {
@@ -293,7 +294,19 @@
         "select_color": "Pilih Warna",
         "retention_range": "Rentang Penyimpanan",
         "set_default_signatures": "Atur Tanda Tangan Default",
-        "show_quoted_text": "Tampilkan teks kutipan"
+        "show_quoted_text": "Tampilkan teks kutipan",
+        "behalf_of": "atas nama",
+        "preview": "Pratinjau",
+        "spam": "Sampah",
+        "tags": "Tag",
+        "create_tag": "Buat Tag",
+        "delete_tag": "Hapus Tag",
+        "delete_tag_name": "Hapus tag \"{{name}}\"",
+        "edit_tag": "Edit Tag",
+        "edit_tag_name": "Edit tag \"{{name}}\"",
+        "tag_max_length": "Maks 128 karakter yang diizinkan",
+        "tag_name": "Nama tag",
+        "no_special_char_allowed": "Nama tidak boleh berisi karakter spesial"
     },
     "messages": {
         "permanent_delete_confirm": "Hapus secara permanen",
@@ -333,7 +346,11 @@
             "folder_will_be_moved_in_time": "Folder ini akan dipindahkan di {{remainingTime}}",
             "sending_mail_in_count": "Mengirim pesan dalam {{count}} detik",
             "folder_restored": "Folder dipulihkan",
-            "mail_saved_to_drafts": "Email disimpan ke draf"
+            "mail_saved_to_drafts": "Email disimpan ke draf",
+            "tag_not_updated": "Terjadi kesalahan. Tag tidak diperbarui. Coba lagi nanti.",
+            "tag_created": "Tag {{name}} berhasil dibuat",
+            "tag_deleted": "Tag {{name}} berhasil dihapus",
+            "tag_updated": "Tag berhasil diperbarui"
         },
         "modal": {
             "delete": {
@@ -580,7 +597,9 @@
             "settings_saved": "Hasil edit disimpan dengan benar"
         },
         "invalid_search_message": "Kami tidak menemukan kecocokan",
-        "email_saved_at": "Email disimpan sebagai draf pada {{time}}"
+        "email_saved_at": "Email disimpan sebagai draf pada {{time}}",
+        "delete_tag_message1": "Yakin ingin menghapus Tag \"{{name}}\"?",
+        "delete_tag_message2": "Setelah dihapus, ini akan dihapus dari tiap item yang ditandai dengannya."
     },
     "private": "Pribadi",
     "remove_from_this_list": "Hapus dari daftar ini",
@@ -591,7 +610,9 @@
         "share_revoke": "Akses berbagi dibatalkan",
         "share_updated": "\"Hak akses diperbarui\"",
         "folder_shared": "Folder dibagikan",
-        "email_moved_to_trash": "Email dipindahkan ke Sampah"
+        "email_moved_to_trash": "Email dipindahkan ke Sampah",
+        "tag_applied": "Tag \"{{tag}}\" diterapkan",
+        "tag_removed": "Tag \"{{tag}}: dihapus"
     },
     "shared_folders": "Folder Bersama",
     "shared_item": "Item bersama",
@@ -721,5 +742,8 @@
     },
     "board": {
         "show": "Tampilkan papan"
+    },
+    "preview": {
+        "close": "Tutup Pratinjau"
     }
 }

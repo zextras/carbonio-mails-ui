@@ -33,7 +33,8 @@
         "show_details": "Detayları göster",
         "show_original": "Orijinal hali göster",
         "unflag": "Bayrağı kaldır",
-        "preview_new_tab": "Başka sekmede görüntülemek için tıklayın"
+        "preview_new_tab": "Başka sekmede görüntülemek için tıklayın",
+        "click_preview": "Önizleme için tıklayın"
     },
     "add": "Ekle",
     "administer": "Yönet",
@@ -164,7 +165,9 @@
         "search_hints": "Search hints we need to discuss about",
         "sending_mail_to_self": "Kendinize e-posta göndermek üzeresiniz",
         "invalid_search_message": "Eşleşen hiçbir öğe bulunamadı",
-        "email_saved_at": "E-posta taslak olarak kaydedildi {{time}}"
+        "email_saved_at": "E-posta taslak olarak kaydedildi {{time}}",
+        "delete_tag_message2": "Silinince önceden işaretlenmiş tüm öğelerden etiket kaldırılacak.",
+        "delete_tag_message1": "\"{{name}}\" etiketini silmek istediğinizden emin misiniz?"
     },
     "snackbar": {
         "error": "Bir hata oluştu, lütfen tekrar deneyin",
@@ -173,7 +176,9 @@
         "share_revoke": "Paylaşım erişimi iptal edildi",
         "share_updated": "\"Erişim hakları güncellendi\"",
         "folder_shared": "Klasör paylaşıldı",
-        "email_moved_to_trash": "E-posta Çöp Kutusuna taşındı"
+        "email_moved_to_trash": "E-posta Çöp Kutusuna taşındı",
+        "tag_applied": "\"{{tag}}\" etiketi uygulandı",
+        "tag_removed": "\"{{tag}}\" etiketi kaldırıldı"
     },
     "freebusy": "Serbest/Meşgul",
     "find_mail_shares": "Paylaşılan klasörleri bul",
@@ -334,7 +339,18 @@
         "notify_organizer": "Organize edeni bilgilendir",
         "retention_range": "Koruma dönemi süresi",
         "select": "Seç",
-        "behalf_of": "yerine"
+        "behalf_of": "yerine",
+        "create_tag": "Etiket Oluştur",
+        "spam": "Spam",
+        "delete_tag": "Etiketi Sil",
+        "delete_tag_name": "\"{{name}}\" etiketi sil",
+        "edit_tag": "Etiketi düzenle",
+        "edit_tag_name": "\"{{name}}\" etiketi düzenle",
+        "no_special_char_allowed": "Ad özel karakterler içermemelidir",
+        "preview": "Önizleme",
+        "tag_max_length": "En çok 128 karakter kullanılabilir",
+        "tag_name": "Etiket adı",
+        "tags": "Etiketler"
     },
     "of": "—",
     "owner": "Sahibi",
@@ -445,7 +461,11 @@
             "mail_saved_to_drafts": "E-posta taslaklara kaydedildi",
             "sending_mail_in_count": "Mesajınız {{count}} saniye içinde gönderiliyor",
             "sending_mail_in_count_plural": "Mesajınız {{count}} saniye içinde gönderiliyor",
-            "folder_restored": "Klasör geri alındı"
+            "folder_restored": "Klasör geri alındı",
+            "tag_updated": "Etiket başarıyla güncellendi",
+            "tag_created": "{{name}} etiketi başarıyla oluşturuldu",
+            "tag_deleted": "{{name}} etiketi başarıyla silindi",
+            "tag_not_updated": "Bir hata oluştu, bu etiket güncellenemedi. Lütfen tekrar deneyin."
         },
         "invalid_address": "Şu adres geçersiz görünüyor",
         "invalid_address_plural": "Şu adres geçersiz görünüyor",
@@ -618,7 +638,12 @@
         "tag_with": "Bayrak ile işaretle",
         "to_cc": "Kime veya CC",
         "twitter_notification": "Twitter bildirimleri",
-        "under": "altında"
+        "under": "altında",
+        "msg_selection_optn": {
+            "based_on_previous": "Önceki seçilenlerden sonraki mesajı seçin",
+            "above_deleted": "Silinmiş veya taşınmış mesajın üstündeki mesajı seçin",
+            "below_deleted": "Silinmiş veya taşınmış mesajın altındaki mesajı seçin"
+        }
     },
     "shared_folders": "Paylaşılan Klasörler",
     "shared_item": "Paylaşılan öğe",
@@ -741,5 +766,8 @@
         "add_signature": "İmza ekle",
         "name": "Ad",
         "signature_heading": "İmzalar"
+    },
+    "preview": {
+        "close": "Önizlemeyi Kapat"
     }
 }
