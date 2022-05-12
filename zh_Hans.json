@@ -145,7 +145,11 @@
             "message_move": "消息已成功移动",
             "folder_restored": "文件夹已恢复",
             "mail_saved_to_drafts": "邮件已保存至草稿",
-            "sending_mail_in_count": "{{count}}秒内将发送您的消息"
+            "sending_mail_in_count": "{{count}}秒内将发送您的消息",
+            "tag_created": "标签 {{name}} 已成功创建",
+            "tag_deleted": "{{name}} 标签已删除成功",
+            "tag_not_updated": "发生一些错误，标签未更新。请重试。",
+            "tag_updated": "标签已成功更新"
         },
         "invalid_address": "以下地址似乎无效",
         "permanent_delete_body": "永久性删除此元素将导致您无法再次将其恢复，是否继续？"
@@ -219,7 +223,8 @@
         "preview": "预览",
         "show_original": "显示原文",
         "unflag": "移除标记",
-        "preview_new_tab": "点击以在另一标签页中预览"
+        "preview_new_tab": "点击以在另一标签页中预览",
+        "click_preview": "点击预览"
     },
     "add": "添加",
     "create": "创建",
@@ -388,7 +393,19 @@
         "by_conversation": "按对话",
         "by_message": "按消息",
         "retention_range": "保留范围",
-        "show_quoted_text": "显示引用文本"
+        "show_quoted_text": "显示引用文本",
+        "create_tag": "创建标签",
+        "delete_tag": "删除标签",
+        "delete_tag_name": "删除“{{name}}”标签",
+        "edit_tag": "编辑标签",
+        "edit_tag_name": "编辑“{{name}}”标签",
+        "no_special_char_allowed": "名称中不应包含任何特殊字符",
+        "tag_max_length": "最多允许 128 个字符",
+        "tag_name": "标签名称",
+        "behalf_of": "代表",
+        "spam": "垃圾",
+        "tags": "标签",
+        "preview": "预览"
     },
     "owner": "所有者",
     "read": "已读",
@@ -417,7 +434,9 @@
         "search_hints": "搜索我们需要讨论的提示",
         "sending_mail_to_self": "似乎您即将向自己发送邮件",
         "invalid_search_message": "我们没有找到任何匹配",
-        "email_saved_at": "邮件已于 {{time}} 保存为草稿"
+        "email_saved_at": "邮件已于 {{time}} 保存为草稿",
+        "delete_tag_message1": "确定要删除“{{name}}”标签吗？",
+        "delete_tag_message2": "删除后，其将从所有已进行相关标记的项目上移除。"
     },
     "settings": {
         "label": {
@@ -569,7 +588,9 @@
         "share_resend": "共享邀请重发",
         "share_revoke": "共享访问权限已撤销",
         "share_updated": "“访问权限更新”",
-        "email_moved_to_trash": "邮件已移动至垃圾箱"
+        "email_moved_to_trash": "邮件已移动至垃圾箱",
+        "tag_applied": "“{{tag}}”标签已应用",
+        "tag_removed": "“{{tag}}”标签已移除"
     },
     "tooltip": {
         "add_attachments": "添加附件",
@@ -721,5 +742,8 @@
     },
     "board": {
         "show": "显示看板"
+    },
+    "preview": {
+        "close": "关闭预览"
     }
 }

@@ -249,7 +249,19 @@
         "notify_organizer": "ऑर्गनाइज़र को सूचित करें",
         "replied": "जबाब दे दिया है",
         "retention_range": "सेव करने की रेंज",
-        "set_default_signatures": "डिफ़ाल्ट सिग्नेचर सेट करें"
+        "set_default_signatures": "डिफ़ाल्ट सिग्नेचर सेट करें",
+        "behalf_of": "इनकी ओर से",
+        "preview": "प्रीव्यू",
+        "spam": "कबाड़",
+        "tags": "बिल्ले",
+        "create_tag": "टैग बनाएँ",
+        "delete_tag": "टैग डिलीट करें",
+        "edit_tag": "टैग बदलें",
+        "edit_tag_name": "\"{{name}}\" टैग बदलें",
+        "delete_tag_name": "\"{{name}}\" टैग डिलीट करें",
+        "no_special_char_allowed": "नाम में कोई स्पेशल कैरक्टर नहीं होना चाहिए",
+        "tag_max_length": "अधिकतम 128 कैरक्टर",
+        "tag_name": "टैग नाम"
     },
     "messages": {
         "permanent_delete_confirm": "हमेशा के लिए डिलीट करें",
@@ -306,7 +318,11 @@
             "mail_saved_to_drafts": "मेल ड्राफ्ट में सेव हो गई",
             "folder_restored": "फोल्डर वापस लाया गया",
             "sending_mail_in_count": "आपके मैसेज को {{count}} सेकंड में भेज रहा है",
-            "sending_mail_in_count_plural": "आपके मैसेज को {{count}} सेकंड में भेज रहा है"
+            "sending_mail_in_count_plural": "आपके मैसेज को {{count}} सेकंड में भेज रहा है",
+            "tag_created": "टैग {{name}} बन गया",
+            "tag_deleted": "{{name}} टैग डिलीट हो गया",
+            "tag_not_updated": "कुछ गड़बड़ हुई, टैग अपडेट नहीं हुआ। दोबारा कोशिश करें।",
+            "tag_updated": "टैग अपडेट हो गया"
         },
         "permanent_delete_body": "यदि आप इस एलीमेंट को परमानेंट डिलीट कर देंगे तो आप इसे फिर कभी वापस नहीं ला पाएंगे। जारी रखेंगे?"
     },
@@ -344,7 +360,8 @@
         "share_folder": "फोल्डर साझा करें",
         "show_details": "जानकारी दिखाएँ",
         "show_original": "ओरिजिनल दिखाएँ",
-        "preview_new_tab": "दूसरे टैब में झलक देखने के लिए क्लिक करें"
+        "preview_new_tab": "दूसरे टैब में झलक देखने के लिए क्लिक करें",
+        "click_preview": "प्रीव्यू के लिए क्लिक करें"
     },
     "add": "जोड़ें",
     "create": "बनाएँ",
@@ -569,7 +586,12 @@
         "mark_as": "ऐसे चिन्हित करें",
         "mass_marketing": "मास मार्केटिंग (बल्क)",
         "move_into_folder": "Folder के अंदर ले जाएँ",
-        "twitter_notification": "Twitter नोटिफ़िकेशन"
+        "twitter_notification": "Twitter नोटिफ़िकेशन",
+        "msg_selection_optn": {
+            "based_on_previous": "पिछले सिलेक्शन्स के आधार पर अगला मैसेज सिलेक्ट करें",
+            "below_deleted": "डिलीट किए या मूव किए जा चुके मैसेज के नीचे मैसेज सिलेक्ट करें",
+            "above_deleted": "डिलीट किए या मूव किए जा चुके मैसेज के ऊपर मैसेज सिलेक्ट करें"
+        }
     },
     "shared_item": "साझा वस्तु",
     "private": "निजी",
@@ -595,7 +617,9 @@
         "search_hints": "सर्च हिंट जिनकी हमने चर्चा की थी",
         "sending_mail_to_self": "ऐसा लगता है आप खुद को ई-मेल भेजने जा रहे हैं",
         "invalid_search_message": "हमें कोई मेल नहीं मिला",
-        "email_saved_at": "ई-मेल {{time}} बजे ड्राफ्ट के रूप में सेव करें"
+        "email_saved_at": "ई-मेल {{time}} बजे ड्राफ्ट के रूप में सेव करें",
+        "delete_tag_message2": "डिलीट हो जाने के बाद, इससे मार्क हर आइटम से इसे हटा दिया जाएगा।",
+        "delete_tag_message1": "क्या आप वाकई में \"{{name}}\" टैग डिलीट करना चाहते हैं?"
     },
     "find_mail_shares": "शेयर किए फोल्डर ढूँढे",
     "snackbar": {
@@ -605,7 +629,9 @@
         "share_resend": "शेयर इन्वाइट भेजा गया",
         "share_revoke": "शेयर एक्सेस वापस ली गई",
         "share_updated": "\"एक्सेस अधिकार अपडेट हुए\"",
-        "email_moved_to_trash": "ई-मेल रद्दी में भेजी गई"
+        "email_moved_to_trash": "ई-मेल रद्दी में भेजी गई",
+        "tag_applied": "\"{{tag}}\" टैग अप्लाई हो गया",
+        "tag_removed": "\"{{tag}}\" टैग हटाया गया"
     },
     "mail_folder": "मेल फोल्डर",
     "remove_from_this_list": "इस लिस्ट से हटाएँ",
@@ -726,5 +752,8 @@
     },
     "board": {
         "show": "बोर्ड दिखाएँ"
+    },
+    "preview": {
+        "close": "प्रीव्यू बंद करें"
     }
 }

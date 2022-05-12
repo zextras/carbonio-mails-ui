@@ -33,7 +33,8 @@
         "show_details": "Mostrar detalles",
         "show_original": "Mostrar original",
         "unflag": "Remover marca de seguimiento",
-        "preview_new_tab": "Clic para previsualizar en otra pestaña"
+        "preview_new_tab": "Clic para previsualizar en otra pestaña",
+        "click_preview": "Haz clic para previsualizar"
     },
     "folder": {
         "modal": {
@@ -306,7 +307,18 @@
         "notify_organizer": "Notificar al organizador",
         "retention_range": "Rango de retención",
         "set_default_signatures": "Firmas por defecto",
-        "behalf_of": "en nombre de"
+        "behalf_of": "en nombre de",
+        "create_tag": "Crear etiqueta",
+        "delete_tag": "Borrar etiqueta",
+        "delete_tag_name": "Borrar etiqueta \"{{name}}\"",
+        "edit_tag": "Editar etiqueta",
+        "edit_tag_name": "Editar etiqueta \"{{name}}\"",
+        "tag_max_length": "Máximo 128 caracteres permitidos",
+        "tag_name": "Nombre de etiqueta",
+        "no_special_char_allowed": "El nombre no debe contener ningún carácter especial",
+        "preview": "Vista previa",
+        "spam": "Spam",
+        "tags": "Etiquetas"
     },
     "messages": {
         "permanent_delete_confirm": "Eliminar permanentemente",
@@ -362,7 +374,11 @@
             "mail_saved_to_drafts": "Mensaje guardado en borradores",
             "folder_restored": "La carpeta ha sido restaurada",
             "sending_mail_in_count": "Enviando mensaje en {{count}} segundo",
-            "sending_mail_in_count_plural": "Enviando mensaje en {{count}} segundos"
+            "sending_mail_in_count_plural": "Enviando mensaje en {{count}} segundos",
+            "tag_not_updated": "Algo fue mal, la etiqueta no ha sido actualizada. Por favor, prueba de nuevo.",
+            "tag_created": "Etiqueta {{name}} creada con éxito",
+            "tag_deleted": "{{name}} etiqueta borrada con éxito",
+            "tag_updated": "Etiqueta actualizada con éxito"
         },
         "invalid_address": "La siguiente dirección parece ser inválida",
         "invalid_address_plural": "Las siguientes direcciones parecen ser inválidas"
@@ -450,7 +466,9 @@
         "sending_mail_to_self": "parece que vas a enviarte un mensaje a ti mismo",
         "search_hints": "Sugerencias de búsqueda sobre las que tenemos que discutir",
         "invalid_search_message": "No encontramos ninguna coincidencia",
-        "email_saved_at": "Mensaje guardado como borrador a las {{time}}"
+        "email_saved_at": "Mensaje guardado como borrador a las {{time}}",
+        "delete_tag_message1": "¿Seguro que quieres borrar la etiqueta \"{{name}}\"?",
+        "delete_tag_message2": "Una vez borrada, se quitará de cada elemento marcado con ella."
     },
     "snackbar": {
         "error": "Algo fue mal, por favor, prueba de nuevo",
@@ -459,7 +477,9 @@
         "share_resend": "Invitación para la compartición reenviada",
         "share_updated": "\"Derechos de acceso actualizados\"",
         "share_revoke": "Acceso a la compartición revocado",
-        "email_moved_to_trash": "Mensaje movido a la papelera"
+        "email_moved_to_trash": "Mensaje movido a la papelera",
+        "tag_applied": "Etiqueta \"{{tag}}\" aplicada",
+        "tag_removed": "Etiqueta \"{{tag}}\" eliminada"
     },
     "tooltip": {
         "add_attachments": "Añadir adjuntos",
@@ -516,8 +536,8 @@
         },
         "msg_selection_optn": {
             "based_on_previous": "Elegir el siguiente mensaje en función de las selecciones anteriores",
-            "below_deleted": "Elegir mensajes por debajo de los mensajes borrados o movidos",
-            "above_deleted": "Elegir los mensajes más arriba de los mensajes borrados o movidos"
+            "below_deleted": "Elegir el mensaje debajo del mensaje borrado o movido",
+            "above_deleted": "Elegir el mensaje encima del mensaje borrado o movido"
         },
         "new_mail_optn": {
             "manually": "Manualmente",
@@ -733,5 +753,8 @@
     },
     "board": {
         "show": "Mostrar ventana"
+    },
+    "preview": {
+        "close": "Cerrar vista previa"
     }
 }

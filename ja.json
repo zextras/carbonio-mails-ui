@@ -143,7 +143,8 @@
         "preview": "プレビューする",
         "hide_details": "詳細を非表示にする",
         "show_original": "オリジナルを表示する",
-        "preview_new_tab": "クリックして別のタブでプレビューする"
+        "preview_new_tab": "クリックして別のタブでプレビューする",
+        "click_preview": "クリックしてプレビューする"
     },
     "delete": "削除する",
     "folders": {
@@ -302,7 +303,19 @@
         "send_email": "メールを送信する",
         "share_with": "シェア先",
         "draft": "下書き",
-        "forwarded": "転送済み"
+        "forwarded": "転送済み",
+        "behalf_of": "代わりに",
+        "spam": "迷惑メール",
+        "tags": "タグ",
+        "preview": "プレビューする",
+        "create_tag": "タグを作成する",
+        "edit_tag_name": "\"{{name}}\" タグを編集する",
+        "delete_tag": "タグを削除する",
+        "delete_tag_name": "\"{{name}}\" タグを削除する",
+        "edit_tag": "タグを編集する",
+        "no_special_char_allowed": "名前に特殊文字を含めることはできません",
+        "tag_max_length": "最大128文字まで使用できます",
+        "tag_name": "タグの名前"
     },
     "messages": {
         "permanent_delete_confirm": "完全に削除する",
@@ -358,7 +371,11 @@
             "message_redirected": "メッセージがリダイレクトされました",
             "mail_saved_to_drafts": "下書きに保存されたメール",
             "folder_restored": "フォルダが復元されました",
-            "sending_mail_in_count": "{{count}}秒でメッセージを送信する"
+            "sending_mail_in_count": "{{count}}秒でメッセージを送信する",
+            "tag_created": "タグ{{name}}が作成されました",
+            "tag_deleted": "{{name}}タグが削除されました",
+            "tag_updated": "タグが更新されました",
+            "tag_not_updated": "問題が発生しました。タグが更新されませんでした。 もう一度やり直してください。"
         }
     },
     "of": "の",
@@ -437,7 +454,9 @@
         "sending_mail_to_self": "自分にメールを送信しようとしているようです",
         "search_hints": "話し合う必要のある検索のヒント",
         "invalid_search_message": "一致するものが見つかりませんでした",
-        "email_saved_at": "{{time}}に下書きとして保存された電子メール"
+        "email_saved_at": "{{time}}に下書きとして保存された電子メール",
+        "delete_tag_message1": "本当に\"{{name}}\" タグを削除しますか？",
+        "delete_tag_message2": "削除されると、それでマークされたすべてのアイテムから削除されます。"
     },
     "mail_folder": "メールフォルダ",
     "private": "プライベート",
@@ -592,7 +611,9 @@
         "share_revoke": "共有アクセスが取り消されました",
         "share_updated": "「アクセス権が更新されました」",
         "folder_shared": "フォルダが共有されました",
-        "email_moved_to_trash": "メールがゴミ箱に移動しました"
+        "email_moved_to_trash": "メールがゴミ箱に移動しました",
+        "tag_applied": "\"{{tag}}\" タグが適用されました",
+        "tag_removed": "\"{{tag}}\" タグが削除されました"
     },
     "tooltip": {
         "resend": "この共有に関するメール通知を再送信します",
@@ -721,5 +742,8 @@
     "notification": {
         "new_message": "新しいメッセージ",
         "no_content": "コンテンツのないメッセージ"
+    },
+    "preview": {
+        "close": "プレビューを閉じる"
     }
 }

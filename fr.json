@@ -33,7 +33,8 @@
         "goto_drafts": "Aller aux brouillons",
         "goto_folder": "ALLER AU DOSSIER",
         "search": "Recherche",
-        "preview_new_tab": "Cliquez pour afficher un aperçu dans un autre onglet"
+        "preview_new_tab": "Cliquez pour afficher un aperçu dans un autre onglet",
+        "click_preview": "Cliquer pour prévisualiser"
     },
     "add": "Ajouter",
     "administer": "Administrer",
@@ -327,7 +328,18 @@
         "share_with": "Partager avec",
         "accept": "Accepter",
         "decline": "Refuser",
-        "behalf_of": "de la part de"
+        "behalf_of": "de la part de",
+        "create_tag": "Créer une étiquette",
+        "tag_max_length": "128 caractères maximum sont autorisés",
+        "preview": "Prévisualisation",
+        "delete_tag": "Supprimer une étiquette",
+        "delete_tag_name": "Supprimer l'étiquette \"{{name}}\"",
+        "edit_tag": "Modifier l'étiquette",
+        "edit_tag_name": "Modifier l'étiquette \"{{name}}\"",
+        "spam": "Spam",
+        "tag_name": "Nom de l'étiquette",
+        "tags": "Étiquette",
+        "no_special_char_allowed": "Le nom ne doit pas contenir de caractère spécial"
     },
     "mail_folder": "dossier Mail",
     "message": {
@@ -342,7 +354,9 @@
         "sending_mail_to_self": "Il semblerait que vous soyez sur le point de vous envoyer un email",
         "search_hints": "Les indices de recherche dont nous devons discuter",
         "invalid_search_message": "Nous n'avons pas trouvé de correspondance",
-        "email_saved_at": "L'email a été sauvé dans les brouillons à {{time}}"
+        "email_saved_at": "L'email a été sauvé dans les brouillons à {{time}}",
+        "delete_tag_message1": "Êtes-vous sûr de vouloir supprimer l'étiquette \"{{name}}\" ?",
+        "delete_tag_message2": "Une fois supprimée, elle sera enlevée de l'ensemble des éléments qu'elle marquait."
     },
     "messages": {
         "invalid_address": "L'adresse suivante semble être invalide",
@@ -410,7 +424,11 @@
             "mail_saved_to_drafts": "Email enregistré dans les brouillons",
             "folder_restored": "Le dossier est restauré",
             "sending_mail_in_count": "Envoi de votre message dans {{count}} seconde",
-            "sending_mail_in_count_plural": "Envoi de votre message dans {{count}} secondes"
+            "sending_mail_in_count_plural": "Envoi de votre message dans {{count}} secondes",
+            "tag_deleted": "L'étiquette {{name}} a été supprimée avec succès",
+            "tag_created": "L'étiquette {{name}} a été créée avec succès",
+            "tag_updated": "L'étiquette a été mise à jour avec succès",
+            "tag_not_updated": "Quelque chose s'est mal passé, l'étiquette n'a pas pu être mise à jour. Merci de réessayer."
         }
     },
     "of": "de",
@@ -484,9 +502,9 @@
             "inbox_if_cc": "Placer dans la Boîte de Réception si je suis dans À : ou Cc :"
         },
         "msg_selection_optn": {
-            "above_deleted": "Sélectionner les messages au-dessus des messages supprimés ou déplacés",
+            "above_deleted": "Sélectionner le message au-dessus du message supprimé ou déplacé",
             "based_on_previous": "Sélectionner le prochain message basé sur les sélections précédentes",
-            "below_deleted": "Sélectionner les messages en-dessous des messages supprimés ou déplacés"
+            "below_deleted": "Sélectionner les messages en-dessous des messages supprimés ou déplacé"
         },
         "new_mail_optn": {
             "when_arrive": "Au fur et à mesure que de nouveaux emails arrivent",
@@ -619,7 +637,9 @@
         "share_revoke": "Accès au partage révoqué",
         "share_updated": "\"Droits d'accès mis à jour\"",
         "error": "Quelque chose s'est mal passé, veuillez réessayer",
-        "email_moved_to_trash": "L'email a été déplacé dans la corbeille"
+        "email_moved_to_trash": "L'email a été déplacé dans la corbeille",
+        "tag_applied": "L'étiquette \"{{tag}}\" a été appliquée",
+        "tag_removed": "L'étiquette \"{{tag}}\" a été retirée"
     },
     "title": {
         "new_messages": "Nouveaux messages",
@@ -757,5 +777,8 @@
         "add_signature": "Ajouter une signature",
         "name": "Nom",
         "signature_heading": "Signatures"
+    },
+    "preview": {
+        "close": "Fermer la prévisualisation"
     }
 }

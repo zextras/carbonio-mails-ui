@@ -385,7 +385,7 @@
             "sending_mail_in_count_plural": "Sending your message in {{count}} seconds",
             "tag_created": "Tag {{name}} successfully created",
             "tag_deleted": "{{name}} Tag deleted successfully",
-            "tag_not_updated": "Something went wrong, tag not updated. Please try again.",
+            "tag_not_updated": "Something went wrong, the tag was not updated. Please try again.",
             "tag_updated": "Tag successfully updated"
         }
     },
@@ -497,9 +497,9 @@
             "inbox_if_cc": "Place in inbox if I'm in To: or Cc:"
         },
         "msg_selection_optn": {
-            "above_deleted": "Select messages above the deleted or moved  messages",
+            "above_deleted": "Select message above the deleted or moved message",
             "based_on_previous": "Select next message based on previous selections",
-            "below_deleted": "Select messages below the deleted or moved  messages"
+            "below_deleted": "Select message below the deleted or moved message"
         },
         "my_frequent_emails": "my frequent e-mails",
         "new_mail_optn": {

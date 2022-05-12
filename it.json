@@ -42,7 +42,11 @@
             "folder_restored": "Cartella ripristinata",
             "mail_saved_to_drafts": "E-mail salvata in bozze",
             "sending_mail_in_count": "Il tuo messaggio sarà inviato tra {{count}} secondo",
-            "sending_mail_in_count_plural": "Il tuo messaggio sarà inviato tra {{count}} secondi"
+            "sending_mail_in_count_plural": "Il tuo messaggio sarà inviato tra {{count}} secondi",
+            "tag_created": "Etichetta {{name}} creata con successo",
+            "tag_deleted": "Etichetta {{name}} eliminata con successo",
+            "tag_not_updated": "Qualcosa è andato storto, l'etichetta non è stata aggiornata. Riprova.",
+            "tag_updated": "Etichetta aggiornata con successo"
         },
         "no_subject": "Nessun Oggetto.",
         "modal": {
@@ -219,7 +223,18 @@
         "attachment_status": "Stato e-mail",
         "enable_message_disposal": "Abilita la cancellazione dei messaggi",
         "enable_message_retention": "Abilita la ritenzione dei messaggi",
-        "behalf_of": "per conto di"
+        "behalf_of": "per conto di",
+        "preview": "Anteprima",
+        "create_tag": "Crea Etichetta",
+        "no_special_char_allowed": "Il nome non deve contenere alcun carattere speciale",
+        "delete_tag": "Elimina Etichetta",
+        "delete_tag_name": "Elimina etichetta \"{{name}}\"",
+        "edit_tag": "Modifica Etichetta",
+        "edit_tag_name": "Modifica etichetta \"{{name}}\"",
+        "spam": "Spam",
+        "tags": "Etichette",
+        "tag_max_length": "Il numero massimo di caratteri consentiti è 128",
+        "tag_name": "Nome etichetta"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",
@@ -282,7 +297,8 @@
         "show_original": "Mostra originale",
         "goto_folder": "VAI ALLA CARTELLA",
         "reset": "Ripristina",
-        "preview_new_tab": "Clicca per l'anteprima in altra scheda"
+        "preview_new_tab": "Clicca per l'anteprima in altra scheda",
+        "click_preview": "Clicca per visualizzare l'anteprima"
     },
     "folder": {
         "action": {
@@ -417,7 +433,9 @@
         },
         "sending_mail_to_self": "Ti stai auto inviando una e-mail",
         "invalid_search_message": "Nessuna corrispondenza trovata",
-        "email_saved_at": "E-mail salvata come bozza alle {{time}}"
+        "email_saved_at": "E-mail salvata come bozza alle {{time}}",
+        "delete_tag_message1": "Vuoi eliminare l'etichetta \"{{name}}\"?",
+        "delete_tag_message2": "Una volta eliminata, verrà eliminata anche da tutti gli elementi su cui è utilizzata."
     },
     "add": "Aggiungi",
     "allowed_actions": "Azioni consentite",
@@ -433,7 +451,9 @@
         "share_revoke": "Condivisione accesso revocata",
         "share_updated": "\"Diritti di accesso aggiornati\"",
         "folder_shared": "Cartella creata",
-        "email_moved_to_trash": "E-mail spostata nel cestino"
+        "email_moved_to_trash": "E-mail spostata nel cestino",
+        "tag_applied": "Etichetta \"{{tag}}\" applicata",
+        "tag_removed": "Etichetta \"{{tag}}\" rimossa"
     },
     "insert": "Inserisci",
     "share": {
@@ -594,7 +614,12 @@
         "tag_with": "Contrassegna con",
         "does_not_match_wildcard_condition": "non corrisponde alle condizioni dei caratteri jolly",
         "social": "Social",
-        "localpart": "localpart"
+        "localpart": "localpart",
+        "msg_selection_optn": {
+            "above_deleted": "Seleziona i messaggi sopra a quelli eliminati o spostati",
+            "based_on_previous": "Seleziona il messaggio successivo sulla base delle selezioni precedenti",
+            "below_deleted": "Seleziona il messaggio sotto quello spostato o eliminato"
+        }
     },
     "mail_folder": "Cartella Posta",
     "of": "di",
@@ -737,5 +762,8 @@
     "notification": {
         "new_message": "Nuovo Messaggio",
         "no_content": "Il messaggio non ha contenuto"
+    },
+    "preview": {
+        "close": "Chiudi Anteprima"
     }
 }

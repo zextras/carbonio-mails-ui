@@ -33,7 +33,8 @@
         "show_details": "Mostrar detalhes",
         "show_original": "Mostrar original",
         "unflag": "Remover sinalização",
-        "preview_new_tab": "Clique para pré-visualizar em outra aba"
+        "preview_new_tab": "Clique para pré-visualizar em outra aba",
+        "click_preview": "Clique para pré-visualizar"
     },
     "folder": {
         "modal": {
@@ -285,7 +286,19 @@
         "notify_organizer": "Notificar Organizador",
         "replied": "Respondido",
         "set_default_signatures": "Definir Assinaturas Padrão",
-        "show_quoted_text": "Exibir Texto Citado"
+        "show_quoted_text": "Exibir Texto Citado",
+        "create_tag": "Criar Etiqueta",
+        "edit_tag_name": "Editar etiqueta \"{{name}}\"",
+        "delete_tag": "Excluir Etiqueta",
+        "delete_tag_name": "Excluir etiqueta \"{{name}}\"",
+        "edit_tag": "Editar Etiqueta",
+        "no_special_char_allowed": "O nome não deve conter nenhum caractere especial",
+        "tag_max_length": "Máximo de 128 caracteres permitidos",
+        "tag_name": "Nome da etiqueta",
+        "behalf_of": "em nome de",
+        "preview": "Visualizar",
+        "spam": "Spam",
+        "tags": "Etiquetas"
     },
     "of": "de",
     "owner": "Proprietário",
@@ -353,7 +366,11 @@
             "folder_restored": "Pasta restaurada",
             "mail_saved_to_drafts": "E-mail salvo nos rascunhos",
             "sending_mail_in_count": "Enviando sua mensagem em {{count}} segundo",
-            "sending_mail_in_count_plural": "Enviando sua mensagem em {{count}} segundos"
+            "sending_mail_in_count_plural": "Enviando sua mensagem em {{count}} segundos",
+            "tag_created": "Etiqueta {{name}} criada com sucesso",
+            "tag_deleted": "Etiqueta {{name}} excluída com sucesso",
+            "tag_not_updated": "Algo deu errado, a etiqueta não foi atualizada. Tente novamente.",
+            "tag_updated": "Etiqueta atualizada com sucesso"
         },
         "invalid_address": "O seguinte endereço parece ser inválido",
         "invalid_address_plural": "Os seguintes endereços parecem ser inválidos",
@@ -456,9 +473,9 @@
             "inbox_if_cc": "Colocar na caixa de entrada quando eu estiver no Para: ou Cc:"
         },
         "msg_selection_optn": {
-            "above_deleted": "Selecionar mensagens acima das mensagens excluídas ou movidas",
+            "above_deleted": "Selecionar mensagem acima da mensagem excluída ou movida",
             "based_on_previous": "Selecionar próxima mensagem com base nas seleções anteriores",
-            "below_deleted": "Selecionar mensagens abaixo das mensagens excluídas ou movidas"
+            "below_deleted": "Selecionar mensagem abaixo da mensagem excluída ou movida"
         },
         "new_mail_optn": {
             "manually": "Manualmente",
@@ -590,7 +607,9 @@
         "sending_mail_to_self": "Parece que você vai enviar um e-mail a si mesmo",
         "search_hints": "Dicas de pesquisa que precisamos conversar",
         "invalid_search_message": "Não encontramos nenhuma correspondência",
-        "email_saved_at": "E-mail salvo como rascunho às {{time}}"
+        "email_saved_at": "E-mail salvo como rascunho às {{time}}",
+        "delete_tag_message1": "Tem certeza que deseja excluir a Etiqueta \"{{name}}\"?",
+        "delete_tag_message2": "Uma vez excluída, ela será removida de todos os itens marcados com ela."
     },
     "mail_folder": "Pasta de e-mail",
     "private": "Privado",
@@ -606,7 +625,9 @@
         "share_updated": "\"Direitos de acesso atualizados\"",
         "error": "Algo deu errado. Tente novamente",
         "folder_shared": "Pasta compartilhada",
-        "email_moved_to_trash": "E-mail movido para Lixeira"
+        "email_moved_to_trash": "E-mail movido para Lixeira",
+        "tag_removed": "Etiqueta \"{{tag}}\" removida",
+        "tag_applied": "Etiqueta \"{{tag}}\" aplicada"
     },
     "shares_info": "Informações da pasta compartilhada",
     "tooltip": {
@@ -732,5 +753,8 @@
     "notification": {
         "new_message": "Nova Mensagem",
         "no_content": "Mensagem sem conteúdo"
+    },
+    "preview": {
+        "close": "Fechar Pré-visualização"
     }
 }

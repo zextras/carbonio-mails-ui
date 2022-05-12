@@ -40,11 +40,11 @@
     "folder": {
         "modal": {
             "edit": {
-                "retention_message": "Wiadomości z tego folderu, zawierające się w czasie zachowywania wymagają wyraźnego potwierdzenia, zanim zostaną usunięte",
+                "retention_message": "Wiadomości z tego folderu, zawierające się w okresie przechowywania wymagają wyraźnego potwierdzenia, zanim zostaną usunięte",
                 "add_share": "Dodaj udostępnienie",
                 "rename_warning": "Nie możesz zmienić nazwy folderu na nazwę znajdującą się już w systemie.",
-                "retention_duration_warning": "Czas przechowywania musi być liczbą większą od zera",
-                "threshold_message": "Wiadomości z tego folderu, wykraczające poza czas zachowywania będą poddawane automatycznemu usunięciu."
+                "retention_duration_warning": "Okres przechowywania musi być liczbą większą od zera",
+                "threshold_message": "Wiadomości z tego folderu, wykraczające poza okres przechowywania będą poddawane automatycznemu usunięciu."
             }
         }
     },
@@ -117,7 +117,7 @@
         "error_try_again": "Coś poszło nie tak, spróbuj ponownie",
         "cancel": "Anuluj",
         "move": "Przenieś",
-        "flagged": "Oflagowany",
+        "flagged": "Oflagowane",
         "no_subject": "Bez tematu",
         "private": "Prywatny",
         "resend": "Wyślij ponownie",
@@ -279,7 +279,7 @@
         },
         "filter_folder_message": "Wybierz folder, w którym rozpoczniesz zaawansowane wyszukiwanie",
         "is_contained_in": "Jest zawarty w",
-        "share_note": "Domyślna wiadomość zawiera twoje imię, nazwę udostępnianiego elementu, uprawnienia przyznane odbiorcom oraz informacje dot. logowania.",
+        "share_note": "Domyślna wiadomość zawiera twoje imię, nazwę udostępnianiego elementu, uprawnienia przyznane odbiorcom oraz informacje logowania.",
         "standard_message": "Dodaj notkę do domyślnej wiadomości",
         "recipients_address": "Adresy e-mail odbiorców",
         "send_notification": "Wyślij powiadomienie o tym udostępnieniu"
@@ -289,7 +289,7 @@
         "delete_email": "Usuń e-mail",
         "edit_draft": "Edytuj wersję roboczą",
         "redirect_email": "Przekieruj e-mail",
-        "warning": "Uwaga"
+        "warning": "Ostrzeżenie"
     },
     "folder_panel": {
         "lists_item": {
