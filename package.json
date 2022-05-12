@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "0.1.16",
+	"version": "0.1.17",
 	"description": "Mails module for Zextras Carbonio",
 	"main": "src/app.jsx",
 	"scripts": {

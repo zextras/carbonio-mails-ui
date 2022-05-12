@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.17](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.16...v0.1.17) (2022-05-12)
+
+
+### Features
+
+* add from files integration ([89f0a99](https://github.com/zextras/carbonio-mails-ui/commit/89f0a994f1db69d114cf6159b01c7ca6fb70fe53))
+* added onOpen/onClose item handling ([b28a1d4](https://github.com/zextras/carbonio-mails-ui/commit/b28a1d4ce722ee25240f0e0700abe19f275c989b))
+* open-prefilled-composer ([a91b716](https://github.com/zextras/carbonio-mails-ui/commit/a91b716e3a360f2c031094f8ccc82f4e32b74483))
+* tag search by clicking on tag ([#81](https://github.com/zextras/carbonio-mails-ui/issues/81)) ([83cd3f7](https://github.com/zextras/carbonio-mails-ui/commit/83cd3f7b07709aaae5076833efdf4fdcc3c665cd))
+* upload to files integration ([3ff420b](https://github.com/zextras/carbonio-mails-ui/commit/3ff420b0eaac2c255b54bdc66253e3686b5006ce))
+
+
+### Bug Fixes
+
+* account item overflow ([3a13e7a](https://github.com/zextras/carbonio-mails-ui/commit/3a13e7a5a1e2d33eb561d903c658ab7ce8effa17))
+* changed logic behind prefill compose integration ([b56a851](https://github.com/zextras/carbonio-mails-ui/commit/b56a851c5455c23d92ab4112a1bded7f12774f1e))
+* editor subject and integrations fixed ([1a962c2](https://github.com/zextras/carbonio-mails-ui/commit/1a962c27c23d03d01c8fc6aa42261e1b9c8ee8a6))
+* openIds initial value ([d410c4f](https://github.com/zextras/carbonio-mails-ui/commit/d410c4f7e6ffb56f8eb1323f49018989b1734b38))
+* openIds usage ([f606a00](https://github.com/zextras/carbonio-mails-ui/commit/f606a002826d909ae7d3bfd71350578dec61fe51))
+* removed applink from account accordion item ([06e8d35](https://github.com/zextras/carbonio-mails-ui/commit/06e8d35fce4c1d01ee73a045fc475bd6e059e613))
+* search disable button logic fix ([c2420d6](https://github.com/zextras/carbonio-mails-ui/commit/c2420d6c032149ff6286405eb17b3f515ecfec49))
+* shared message for calendar shared ([f93c035](https://github.com/zextras/carbonio-mails-ui/commit/f93c0350b3991dc787eed91d4f973f09a1c22f6f))
+* showing tags on search list item using id instead of names ([7aed0ae](https://github.com/zextras/carbonio-mails-ui/commit/7aed0ae741f264f7bb214553757bb6beca6071c8))
+* sidebar badge counter ([900d664](https://github.com/zextras/carbonio-mails-ui/commit/900d664406043903a42c068c379ea9de27d8c10d))
+* update deps, changed integration id to avoid possible cross module conflicts ([95385a8](https://github.com/zextras/carbonio-mails-ui/commit/95385a8631df63857a341fc10a53feb993ca3566))
+* wrong particpant name in some case in mail preview ([3607bcc](https://github.com/zextras/carbonio-mails-ui/commit/3607bccb599ea0b7dcc73612a66fa1b80b48b1f0))
+
 ### [0.1.16](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.15...v0.1.16) (2022-04-27)
 
 
