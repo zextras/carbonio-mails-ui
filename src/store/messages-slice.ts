@@ -9,7 +9,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
-import { cloneDeep, forEach, merge } from 'lodash';
+import { forEach, merge } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import { Conversation } from '../types/conversation';
 import { MailMessage } from '../types/mail-message';
@@ -52,11 +52,6 @@ function fetchConversationsFulfilled(
 	if (payload?.messages) {
 		if (payload?.types === 'message') {
 			merge(state?.messages, payload.messages);
-			/*			forEach(payload?.messages, (msg) => {
-				if (!state?.messages?.[msg.id] || !state?.messages?.[msg.id]?.isComplete) {
-					state.messages[msg.id] = msg;
-				}
-			}); */
 		}
 	}
 	if (payload?.types === 'message') {

@@ -275,7 +275,6 @@ export default function ConversationListItem({
 		return item?.messages?.length > 0;
 	}, [item?.messages?.length, textReadValues.badge]);
 
-	// if (messagesToRender?.length < 1) return null;
 	return draggedIds?.[item?.id] || visible ? (
 		<Drag
 			type="conversation"
