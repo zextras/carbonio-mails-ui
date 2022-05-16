@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isEmpty, reduce, trimStart, map, uniqBy, find, includes, every } from 'lodash';
+import { isEmpty, reduce, trimStart, map, uniqBy, find, includes } from 'lodash';
 import styled from 'styled-components';
 import {
 	pushHistory,
@@ -40,10 +40,10 @@ import { SenderName } from './sender-name';
 import MessageListItem from './message-list-item';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 
-function ConversationMessagesList({ conversationStatus, messages, folderId }) {
+function ConversationMessagesList({ conversationStatus, messages, folderId, length }) {
 	if (conversationStatus !== 'complete') {
 		return (
-			<Container height={64 * messages.length}>
+			<Container height={64 * length}>
 				<Button loading disabled label="" type="ghost" />
 			</Container>
 		);
@@ -269,13 +269,13 @@ export default function ConversationListItem({
 	}, [item.read]);
 
 	const renderBadge = useMemo(() => {
-		if (messagesToRender?.length === 1) {
+		if (item?.messages?.length === 1) {
 			return textReadValues.badge === 'unread';
 		}
-		return messagesToRender?.length > 0;
-	}, [messagesToRender?.length, textReadValues.badge]);
+		return item?.messages?.length > 0;
+	}, [item?.messages?.length, textReadValues.badge]);
 
-	if (messagesToRender?.length < 1) return null;
+	// if (messagesToRender?.length < 1) return null;
 	return draggedIds?.[item?.id] || visible ? (
 		<Drag
 			type="conversation"
@@ -322,7 +322,7 @@ export default function ConversationListItem({
 							{renderBadge && (
 								<Row>
 									<Padding right="extrasmall">
-										<Badge value={messagesToRender.length} type={textReadValues.badge} />
+										<Badge value={item?.messages?.length} type={textReadValues.badge} />
 									</Padding>
 								</Row>
 							)}
@@ -345,7 +345,7 @@ export default function ConversationListItem({
 							</Tooltip>
 							<Row>
 								{item.urgent && <Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />}
-								{messagesToRender.length > 1 && (
+								{item?.messages?.length > 1 && (
 									<Tooltip label={toggleExpandButtonLabel}>
 										<IconButton
 											data-testid="ToggleExpand"
@@ -367,6 +367,7 @@ export default function ConversationListItem({
 						height="auto"
 					>
 						<ConversationMessagesList
+							length={item?.messages?.length}
 							messages={messagesToRender}
 							conversationStatus={conversationStatus}
 							folderId={folderId}

@@ -33,72 +33,10 @@ import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 
 import PreviewHeader from './parts/preview-header';
 
-const MailPreviewBlock = ({ message, open, onClick }) => {
-	const [t] = useTranslation();
-	const { folderId } = useParams();
-
-	const createSnackbar = useContext(SnackbarManagerContext);
-	const dispatch = useDispatch();
-	const compProps = useMemo(() => ({ message, onClick, open }), [message, onClick, open]);
-	const markAsNotSpam = useCallback(
-		() =>
-			setMsgAsSpam({
-				ids: [message.id],
-				value: true,
-				t,
-				dispatch,
-				createSnackbar,
-				shouldReplaceHistory: true,
-				folderId
-			}).click(),
-		[createSnackbar, dispatch, folderId, message.id, t]
-	);
-	return (
-		<>
-			{folderId === FOLDERS.SPAM && (
-				<Container
-					mainAlignment="flex-start"
-					crossAlignment="flex-start"
-					height="fit"
-					padding={{ bottom: 'medium' }}
-				>
-					<Container background="gray6" orientation="horizontal" padding={{ all: 'small' }}>
-						<Row width="50%" display="flex" crossAlignment="center" mainAlignment="baseline">
-							<Padding right="small">
-								<Icon icon="AlertCircleOutline" size="medium" />
-							</Padding>
-							<Text>
-								{t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam')}
-							</Text>
-						</Row>
-						<Row width="50%" mainAlignment="flex-end">
-							<Button
-								type="ghost"
-								label={t('action.mark_as_non_spam', 'Not Spam')}
-								color="primary"
-								onClick={markAsNotSpam}
-							/>
-						</Row>
-					</Container>
-				</Container>
-			)}
-			{message && <PreviewHeader compProps={compProps} />}
-		</>
-	);
-};
-
-export default function MailPreview({ message, expanded, isAlone, isMessageView }) {
-	const dispatch = useDispatch();
-	const mailContainerRef = useRef(undefined);
-	const accounts = useUserAccounts();
-	const settings = useUserSettings();
-	const timezone = useMemo(
-		() => settings?.prefs.zimbraPrefTimeZoneId,
-		[settings?.prefs.zimbraPrefTimeZoneId]
-	);
-	const [open, setOpen] = useState(expanded);
+const MailContent = ({ message, isMailPreviewOpen }) => {
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
-
+	const dispatch = useDispatch();
+	const accounts = useUserAccounts();
 	const moveToTrash = useCallback(() => {
 		dispatch(
 			msgAction({
@@ -111,11 +49,10 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 	// this is necessary because if somebody click a message in the same conversation
 	// already open that message will not be expanded
 	useEffect(() => {
-		setOpen(expanded);
 		if (!message.isComplete) {
 			dispatch(getMsg({ msgId: message.id }));
 		}
-	}, [dispatch, expanded, message.id, message.isComplete]);
+	}, [dispatch, message.id, message.isComplete]);
 
 	const showAppointmentInvite = useMemo(
 		() =>
@@ -196,6 +133,82 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 		),
 		[message, InviteResponse, moveToTrash, showShareInvite, showAppointmentInvite, isAttendee]
 	);
+	return (
+		<Collapse
+			open={isMailPreviewOpen}
+			crossSize="100%"
+			orientation="vertical"
+			disableTransition
+			data-testid="MailMessageRendererCollapse"
+		>
+			{message.isComplete && collapsedContent}
+		</Collapse>
+	);
+};
+
+const MailPreviewBlock = ({ message, open, onClick }) => {
+	const [t] = useTranslation();
+	const { folderId } = useParams();
+
+	const createSnackbar = useContext(SnackbarManagerContext);
+	const dispatch = useDispatch();
+	const compProps = useMemo(() => ({ message, onClick, open }), [message, onClick, open]);
+	const markAsNotSpam = useCallback(
+		() =>
+			setMsgAsSpam({
+				ids: [message.id],
+				value: true,
+				t,
+				dispatch,
+				createSnackbar,
+				shouldReplaceHistory: true,
+				folderId
+			}).click(),
+		[createSnackbar, dispatch, folderId, message.id, t]
+	);
+	return (
+		<>
+			{folderId === FOLDERS.SPAM && (
+				<Container
+					mainAlignment="flex-start"
+					crossAlignment="flex-start"
+					height="fit"
+					padding={{ bottom: 'medium' }}
+				>
+					<Container background="gray6" orientation="horizontal" padding={{ all: 'small' }}>
+						<Row width="50%" display="flex" crossAlignment="center" mainAlignment="baseline">
+							<Padding right="small">
+								<Icon icon="AlertCircleOutline" size="medium" />
+							</Padding>
+							<Text>
+								{t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam')}
+							</Text>
+						</Row>
+						<Row width="50%" mainAlignment="flex-end">
+							<Button
+								type="ghost"
+								label={t('action.mark_as_non_spam', 'Not Spam')}
+								color="primary"
+								onClick={markAsNotSpam}
+							/>
+						</Row>
+					</Container>
+				</Container>
+			)}
+			{message && <PreviewHeader compProps={compProps} />}
+		</>
+	);
+};
+
+export default function MailPreview({ message, expanded, isAlone, isMessageView }) {
+	const mailContainerRef = useRef(undefined);
+	const settings = useUserSettings();
+	const timezone = useMemo(
+		() => settings?.prefs.zimbraPrefTimeZoneId,
+		[settings?.prefs.zimbraPrefTimeZoneId]
+	);
+	const [open, setOpen] = useState(expanded);
+
 	const onClick = useCallback(() => {
 		setOpen((o) => !o);
 	}, []);
@@ -220,15 +233,7 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 					overflowY: 'auto'
 				}}
 			>
-				<Collapse
-					open={isMailPreviewOpen}
-					crossSize="100%"
-					orientation="vertical"
-					disableTransition
-					data-testid="MailMessageRendererCollapse"
-				>
-					{message.isComplete && collapsedContent}
-				</Collapse>
+				{open && <MailContent message={message} isMailPreviewOpen={isMailPreviewOpen} />}
 			</Container>
 		</Container>
 	);
