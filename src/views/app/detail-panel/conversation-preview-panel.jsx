@@ -33,6 +33,7 @@ const MessagesComponent = ({ conversation }) => {
 						(item) => messages[item.id]
 				  )
 				: map(conversation?.messages, (item) => messages[item.id]);
+
 		if (settings.prefs.zimbraPrefConversationOrder === 'dateAsc') {
 			return sortBy(msgs, [(o) => o.date]);
 		}

@@ -53,27 +53,8 @@ export const search = createAsyncThunk<
 			const conversations = map(result?.c ?? [], (obj) =>
 				normalizeConversation(obj)
 			) as unknown as Array<Conversation>;
-			const messages = reduce(
-				result?.c ?? [],
-				(acc, v) =>
-					v?.m?.length > 0
-						? [
-								...acc,
-								...map(v.m, (m) =>
-									normalizeMailMessageFromSoap(
-										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-										// @ts-ignore
-										{ ...m, d: m.d ? Number(m.d) : undefined, s: m.s ? Number(m.s) : undefined },
-										false
-									)
-								)
-						  ]
-						: acc,
-				[] as Array<IncompleteMessage>
-			);
 			return {
 				conversations: keyBy(conversations, 'id'),
-				messages: keyBy(messages, 'id'),
 				hasMore: result.more,
 				types
 			};
