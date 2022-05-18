@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import moment from 'moment';
-import { find } from 'lodash';
+import { find, isArray } from 'lodash';
 
 export function getTimeLabel(date) {
 	const momentDate = moment(date);
@@ -26,4 +26,21 @@ export function participantToString(participant, t, accounts) {
 		return t('label.me', 'Me');
 	}
 	return participant?.fullName || participant?.name || participant?.address || '';
+}
+
+export function isAvaiableInTrusteeList(trusteeList, address) {
+	let trusteeAddress = [];
+	let avaiableInTrusteeList = false;
+	if (trusteeList) {
+		trusteeAddress = isArray(trusteeList) ? trusteeList : trusteeList.split(',');
+	}
+	if (trusteeAddress.length > 0) {
+		const domain = address.split('@')[1];
+		trusteeAddress.forEach((ta) => {
+			if (ta === domain || ta === address) {
+				avaiableInTrusteeList = true;
+			}
+		});
+	}
+	return avaiableInTrusteeList;
 }
