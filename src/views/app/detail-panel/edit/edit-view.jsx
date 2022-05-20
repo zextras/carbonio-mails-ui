@@ -357,7 +357,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [account, accounts, defaultIdentity?.address, defaultIdentity?.fullname, t, updateEditorCb]);
 
 	useEffect(() => {
-		if (activeMailId && !messages[activeMailId]?.isComplete) {
+		if (activeMailId && !messages?.[activeMailId]?.isComplete) {
 			dispatch(getMsg({ msgId: activeMailId }));
 		}
 	}, [activeMailId, dispatch, messages, updateEditorCb]);
@@ -614,7 +614,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 
 	useEffect(() => {
 		if (
-			(activeMailId && messages[activeMailId]?.isComplete) ||
+			(activeMailId && messages?.[activeMailId]?.isComplete) ||
 			action === ActionsType.NEW ||
 			action === ActionsType.PREFILL_COMPOSE ||
 			action === ActionsType.COMPOSE ||
@@ -628,7 +628,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 						settings,
 						editorId,
 						id: action === ActionsType.EDIT_AS_DRAFT ? activeMailId : undefined,
-						original: messages[activeMailId ?? editorId],
+						original: messages?.[activeMailId ?? editorId],
 						boardContext,
 						action,
 						change,
