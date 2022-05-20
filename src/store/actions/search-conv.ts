@@ -29,7 +29,7 @@ export const searchConv = createAsyncThunk<SearchConvReturn, SearchConvParameter
 		const result = (await soapFetch<SearchConvRequest, SearchConvResponse>('SearchConv', {
 			_jsns: 'urn:zimbraMail',
 			cid: conversationId,
-			query: `inId: ${folderId}`,
+			query: `inId: "${folderId}"`,
 			recip: '2',
 			sortBy: 'dateDesc',
 			offset: 0,
