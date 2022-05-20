@@ -35,7 +35,7 @@ export const search = createAsyncThunk<
 >(
 	'fetchConversations',
 	async ({ folderId, limit = 100, before, types = 'conversation', sortBy = 'dateDesc' }) => {
-		const queryPart = [`inId:${folderId}`];
+		const queryPart = [`inId:"${folderId}"`];
 		if (before) queryPart.push(`before:${before.getTime()}`);
 		const result = (await soapFetch<SearchRequest, SearchResponse>('Search', {
 			_jsns: 'urn:zimbraMail',
