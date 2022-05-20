@@ -124,7 +124,7 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 
 	const settingsPref = useUserSettings()?.prefs;
 	const from = filter(participants, { type: 'f' })[0].address;
-	const domain = from.split('@')[1];
+	const domain = from.substring(from.lastIndexOf('@') + 1);
 
 	const [showExternalImage, setShowExternalImage] = useState(false);
 	const [displayBanner, setDisplayBanner] = useState(true);
@@ -166,19 +166,53 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 		iframeRef.current.style.height = `${iframeRef.current.contentDocument.body.scrollHeight}px`;
 	};
 
-	const saveTrustee = (trustee) => {
-		let trusteeAddress = [];
-		if (settingsPref.zimbraPrefMailTrustedSenderList) {
-			trusteeAddress = isArray(settingsPref.zimbraPrefMailTrustedSenderList)
-				? settingsPref.zimbraPrefMailTrustedSenderList
-				: settingsPref.zimbraPrefMailTrustedSenderList.split(',');
-		}
-		editSettings({
-			prefs: { zimbraPrefMailTrustedSenderList: [...trusteeAddress, trustee] }
-		}).then((res) => {
-			setShowExternalImage(true);
-		});
-	};
+	const saveTrustee = useCallback(
+		(trustee) => {
+			let trusteeAddress = [];
+			if (settingsPref.zimbraPrefMailTrustedSenderList) {
+				trusteeAddress = isArray(settingsPref.zimbraPrefMailTrustedSenderList)
+					? settingsPref.zimbraPrefMailTrustedSenderList
+					: settingsPref.zimbraPrefMailTrustedSenderList.split(',');
+			}
+			editSettings({
+				prefs: { zimbraPrefMailTrustedSenderList: [...trusteeAddress, trustee] }
+			}).then((res) => {
+				if (res.type?.includes('fulfilled')) {
+					setShowExternalImage(true);
+				}
+			});
+		},
+		[settingsPref.zimbraPrefMailTrustedSenderList]
+	);
+
+	const items = useMemo(
+		() => [
+			{
+				id: 'always-allow-address',
+				label: (
+					<Trans
+						i18nKey="label.always_allow_address"
+						defaults="Always allow from <strong>{{values}}</strong>"
+						values={{ from }}
+					/>
+				),
+				click: () => saveTrustee(from)
+			},
+			{
+				id: 'always-allow-domain',
+				label: (
+					<Trans
+						i18nKey="label.always_allow_domain"
+						defaults="Always allow from <strong>{{values}}</strong> domain"
+						values={{ domain }}
+					/>
+				),
+				click: () => saveTrustee(domain)
+			}
+		],
+		[from, domain, saveTrustee]
+	);
+
 	const showImage = useMemo(
 		() => showExternalImage && displayBanner,
 		[displayBanner, showExternalImage]
@@ -321,30 +355,7 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 								maxWidth: '500px',
 								width: 'fit'
 							}}
-							items={[
-								{
-									id: 'always-allow-address',
-									label: (
-										<Trans
-											i18nKey="label.always_allow_address"
-											defaults="Always allow from <strong>{{from}}</strong>"
-											values={{ from }}
-										/>
-									),
-									click: () => saveTrustee(from)
-								},
-								{
-									id: 'always-allow-domain',
-									label: (
-										<Trans
-											i18nKey="label.always_allow_domain"
-											defaults="Always allow from <strong>{{domain}}</strong> domain"
-											values={{ domain }}
-										/>
-									),
-									click: () => saveTrustee(domain)
-								}
-							]}
+							items={items}
 						/>
 						<IconButton
 							icon="CloseOutline"

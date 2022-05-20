@@ -35,7 +35,7 @@ export function isAvaiableInTrusteeList(trusteeList, address) {
 		trusteeAddress = isArray(trusteeList) ? trusteeList : trusteeList.split(',');
 	}
 	if (trusteeAddress.length > 0) {
-		const domain = address.split('@')[1];
+		const domain = address.substring(address.lastIndexOf('@') + 1);
 		trusteeAddress.forEach((ta) => {
 			if (ta === domain || ta === address) {
 				avaiableInTrusteeList = true;
