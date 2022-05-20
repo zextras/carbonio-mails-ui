@@ -30,14 +30,14 @@ const MessagesComponent = ({ conversation }) => {
 			folderId !== FOLDERS.TRASH
 				? map(
 						filter(conversation?.messages, (m) => m.parent !== FOLDERS.TRASH),
-						(item) => messages[item.id]
+						(item) => messages[item.id] ?? item
 				  )
-				: map(conversation?.messages, (item) => messages[item.id]);
+				: map(conversation?.messages, (item) => messages[item.id] ?? item);
 
-		if (settings.prefs.zimbraPrefConversationOrder === 'dateAsc') {
+		if (settings.prefs.zimbraPrefConversationOrder === 'dateAsc' && msgs?.length > 0) {
 			return sortBy(msgs, [(o) => o.date]);
 		}
-		return msgs;
+		return msgs ?? [];
 	}, [conversation?.messages, messages, settings.prefs.zimbraPrefConversationOrder, folderId]);
 
 	const expand = (message, index) => {
@@ -68,23 +68,23 @@ const MessagesComponent = ({ conversation }) => {
 
 export default function ConversationPreviewPanel() {
 	const { conversationId, folderId } = useParams();
-	const dispatch = useDispatch();
+	const tagsFromStore = useTags();
 
+	const dispatch = useDispatch();
 	const conversations = useSelector(selectConversationsArray);
 	const conversationsStatus = useSelector((state) =>
 		selectConversationExpandedStatus(state, conversationId)
 	);
+
 	const conversation = useMemo(
 		() => find(conversations, ['id', conversationId]),
 		[conversationId, conversations]
 	);
-
 	useEffect(() => {
 		if (!conversation) {
 			dispatch(getConv({ conversationId }));
 		}
 	}, [conversation, dispatch, conversationId]);
-	const tagsFromStore = useTags();
 	useEffect(() => {
 		if (conversationsStatus !== 'complete' && conversationsStatus !== 'pending') {
 			dispatch(searchConv({ conversationId, fetch: 'all', folderId, tags: tagsFromStore }));
