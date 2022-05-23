@@ -257,7 +257,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		[dispatch, editorId]
 	);
 	const [activeFrom, setActiveFrom] = useState(list[0]);
-
+	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
 	const newItems = useMemo(
 		() =>
 			list.map((el) => ({
@@ -295,17 +295,17 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				selected: el === activeFrom,
 				customComponent: (
 					<Container width="100%" crossAlignment="flex-start" height="fit">
-						<Text weight="bold">{el.identityName}</Text>
+						<Text weight="bold">{el.identityName || noName}</Text>
 						{el.type === 'sendOnBehalfOf' ? (
-							<Text> {el.label} </Text>
+							<Text color="gray1"> {el.label} </Text>
 						) : (
-							<Text>{`${el.fullname} <${el.address}>`}</Text>
+							<Text color="gray1">{`${el.fullname} <${el.address}>`}</Text>
 						)}
 					</Container>
 				)
 			})),
 
-		[accounts, activeFrom, list, updateEditorCb]
+		[accounts, activeFrom, list, updateEditorCb, noName]
 	);
 
 	useEffect(() => {
@@ -762,7 +762,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 
 	const haveIdentity = useMemo(() => defaultIdentity && list.length > 1, [defaultIdentity, list]);
-	console.log('vv editor:', editor);
+
 	if (loading || !editor)
 		return (
 			<Container height="50%" mainAlignment="center" crossAlignment="center">
@@ -799,7 +799,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 										<Dropdown
 											items={newItems}
 											width="fit"
-											maxWidth="500px"
+											maxWidth="100%"
 											forceOpen={open}
 											onClose={toggleOpen}
 											selectedBackgroundColor="highlight"
