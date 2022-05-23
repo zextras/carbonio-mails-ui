@@ -19,7 +19,7 @@ import {
 import styled from 'styled-components';
 import { editSettings, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
-import { isAvaiableInTrusteeList } from './utils';
+import { isAvailableInTrusteeList } from './utils';
 
 export const _CI_REGEX = /^<(.*)>$/;
 export const _CI_SRC_REGEX = /^cid:(.*)$/;
@@ -123,8 +123,8 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 	const [showQuotedText, setShowQuotedText] = useState(false);
 
 	const settingsPref = useUserSettings()?.prefs;
-	const from = filter(participants, { type: 'f' })[0].address;
-	const domain = from.substring(from.lastIndexOf('@') + 1);
+	const from = filter(participants, { type: 'f' })[0]?.address;
+	const domain = from?.substring(from.lastIndexOf('@') + 1);
 
 	const [showExternalImage, setShowExternalImage] = useState(false);
 	const [displayBanner, setDisplayBanner] = useState(true);
@@ -152,12 +152,12 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 	const showBanner = useMemo(
 		() =>
 			haveExternalImages &&
-			!isAvaiableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList, from) &&
+			!isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList, from) &&
 			displayBanner,
 		[from, haveExternalImages, settingsPref.zimbraPrefMailTrustedSenderList, displayBanner]
 	);
 	useEffect(() => {
-		if (isAvaiableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList, from))
+		if (isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList, from))
 			setShowExternalImage(true);
 	}, [from, settingsPref.zimbraPrefMailTrustedSenderList]);
 

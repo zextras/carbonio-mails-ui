@@ -28,7 +28,7 @@ export function participantToString(participant, t, accounts) {
 	return participant?.fullName || participant?.name || participant?.address || '';
 }
 
-export function isAvaiableInTrusteeList(trusteeList, address) {
+export function isAvailableInTrusteeList(trusteeList, address) {
 	let trusteeAddress = [];
 	let avaiableInTrusteeList = false;
 	if (trusteeList) {
