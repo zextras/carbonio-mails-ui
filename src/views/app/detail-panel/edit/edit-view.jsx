@@ -52,7 +52,12 @@ import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import moment from 'moment';
 import { useQueryParam } from '../../../../hooks/useQueryParam';
-import { createEditor, selectEditors, updateEditor } from '../../../../store/editor-slice';
+import {
+	closeAllEditors,
+	createEditor,
+	selectEditors,
+	updateEditor
+} from '../../../../store/editor-slice';
 import { ActionsType, ParticipantRole } from '../../../../types/participant';
 import { selectMessages } from '../../../../store/messages-slice';
 import EditAttachmentsBlock from './edit-attachments-block';
@@ -224,7 +229,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [showBcc, setShowBcc] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [initialAction, setInitialAction] = useState(action);
-	const [actionChanged, setActionChanged] = useState(false);
+	const [actionChanged, setActionChanged] = useState(true);
 	const [isUploading, setIsUploading] = useState(false);
 
 	const [from, setFrom] = useState({
@@ -237,6 +242,10 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	);
 
 	const editorId = useMemo(() => activeMailId ?? generateId(), [activeMailId]);
+
+	useEffect(() => {
+		if (actionChanged) dispatch(closeAllEditors());
+	}, [actionChanged, dispatch]);
 
 	const toggleOpen = useCallback(() => setOpen((show) => !show), []);
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
@@ -287,7 +296,11 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				customComponent: (
 					<Container width="100%" crossAlignment="flex-start" height="fit">
 						<Text weight="bold">{el.identityName}</Text>
-						<Text>{`${el.fullname} <${el.address}>`}</Text>
+						{el.type === 'sendOnBehalfOf' ? (
+							<Text> {el.label} </Text>
+						) : (
+							<Text>{`${el.fullname} <${el.address}>`}</Text>
+						)}
 					</Container>
 				)
 			})),
@@ -610,7 +623,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		if (editors[editorId] && actionChanged) {
 			setActionChanged(false);
 		}
-	}, [action, actionChanged, activeMailId, dispatch, editorId, editors, messages]);
+	}, [actionChanged, editorId, editors]);
 
 	useEffect(() => {
 		if (
@@ -749,6 +762,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 
 	const haveIdentity = useMemo(() => defaultIdentity && list.length > 1, [defaultIdentity, list]);
+	console.log('vv editor:', editor);
 	if (loading || !editor)
 		return (
 			<Container height="50%" mainAlignment="center" crossAlignment="center">
@@ -1245,86 +1259,87 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 							)}
 						</RowContainer>
 					</Container>
+					{editor?.text && (
+						<Container
+							height="100%"
+							padding={{ all: 'small' }}
+							background="gray6"
+							crossAlignment="flex-end"
+						>
+							{editor?.richText && composerIsAvailable ? (
+								<Controller
+									name="text"
+									control={control}
+									defaultValue={editor?.text}
+									render={({ onChange, value }) => (
+										<Container background="gray6">
+											<EditorWrapper>
+												<Composer
+													value={value[1]}
+													onEditorChange={(ev) => {
+														updateSubjectField({ text: [ev[0], ev[1]] });
+														throttledSaveToDraft({ text: [ev[0], ev[1]] });
+														onChange([ev[0], ev[1]]);
+													}}
+													onDragOver={onDragOverEvent}
+												/>
+											</EditorWrapper>
+										</Container>
+									)}
+								/>
+							) : (
+								<Controller
+									name="text"
+									control={control}
+									defaultValue={editor?.text}
+									render={({ onChange, value }) => (
+										<Container background="gray6" height="100%">
+											<TextArea
+												value={value[0]}
+												onChange={(ev) => {
+													// eslint-disable-next-line no-param-reassign
+													ev.target.style.height = 'auto';
+													// eslint-disable-next-line no-param-reassign
+													ev.target.style.height = `${25 + ev.target.scrollHeight}px`;
+													const data = [
+														ev.target.value,
+														`${
+															editor?.text[1]
+																? `${editor.text[1]}${ev.target.value}`
+																: ev.target.value
+														}`
+													];
 
-					<Container
-						height="100%"
-						padding={{ all: 'small' }}
-						background="gray6"
-						crossAlignment="flex-end"
-					>
-						{editor?.richText && composerIsAvailable ? (
-							<Controller
-								name="text"
-								control={control}
-								defaultValue={editor?.text}
-								render={({ onChange, value }) => (
-									<Container background="gray6">
-										<EditorWrapper>
-											<Composer
-												value={value[1]}
-												onEditorChange={(ev) => {
-													updateSubjectField({ text: [ev[0], ev[1]] });
-													throttledSaveToDraft({ text: [ev[0], ev[1]] });
-													onChange([ev[0], ev[1]]);
+													throttledSaveToDraft({ text: data });
+
+													updateSubjectField({ text: data });
+													onChange(data);
 												}}
-												onDragOver={onDragOverEvent}
 											/>
-										</EditorWrapper>
-									</Container>
-								)}
-							/>
-						) : (
-							<Controller
-								name="text"
-								control={control}
-								defaultValue={editor?.text}
-								render={({ onChange, value }) => (
-									<Container background="gray6" height="100%">
-										<TextArea
-											value={value[0]}
-											onChange={(ev) => {
-												// eslint-disable-next-line no-param-reassign
-												ev.target.style.height = 'auto';
-												// eslint-disable-next-line no-param-reassign
-												ev.target.style.height = `${25 + ev.target.scrollHeight}px`;
-												const data = [
-													ev.target.value,
-													`${
-														editor?.text[1]
-															? `${editor.text[1]}${ev.target.value}`
-															: ev.target.value
-													}`
-												];
+										</Container>
+									)}
+								/>
+							)}
 
-												throttledSaveToDraft({ text: data });
-
-												updateSubjectField({ text: data });
-												onChange(data);
-											}}
-										/>
-									</Container>
-								)}
-							/>
-						)}
-
-						{draftSavedAt && (
-							<StickyTime>
-								<Row
-									crossAlignment="flex-end"
-									background="gray5"
-									padding={{ vertical: 'medium', horizontal: 'large' }}
-								>
-									<Text size="extrasmall" color="secondary">
-										{t('message.email_saved_at', {
-											time: draftSavedAt,
-											defaultValue: 'Email saved as draft at {{time}}'
-										})}
-									</Text>
-								</Row>
-							</StickyTime>
-						)}
-						<Divider />
-					</Container>
+							{draftSavedAt && (
+								<StickyTime>
+									<Row
+										crossAlignment="flex-end"
+										background="gray5"
+										padding={{ vertical: 'medium', horizontal: 'large' }}
+									>
+										<Text size="extrasmall" color="secondary">
+											{t('message.email_saved_at', {
+												time: draftSavedAt,
+												defaultValue: 'Email saved as draft at {{time}}'
+											})}
+										</Text>
+									</Row>
+								</StickyTime>
+							)}
+							<Divider />
+						</Container>
+					)}
 				</Container>
 			</Container>
 		</Catcher>

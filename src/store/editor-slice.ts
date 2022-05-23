@@ -259,7 +259,7 @@ export const editorsSlice = createSlice({
 	}
 });
 
-export const { createEditor, closeEditor, updateEditor } = editorsSlice.actions;
+export const { createEditor, closeEditor, updateEditor, closeAllEditors } = editorsSlice.actions;
 
 export const editorSliceReducer = editorsSlice.reducer;
 

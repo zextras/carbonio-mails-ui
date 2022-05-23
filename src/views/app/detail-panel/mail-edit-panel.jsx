@@ -16,13 +16,18 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import EditView from './edit/edit-view';
+import { closeAllEditors } from '../../../store/editor-slice';
 
-const MailEditHeader = ({ folderId, header, toggleAppBoard, setToggleAppBoard }) => {
+const MailEditHeader = ({ folderId, header, toggleAppBoard, setToggleAppBoard, mailId }) => {
 	const [t] = useTranslation();
+	const dispatch = useDispatch();
+
 	const onClose = useCallback(() => {
 		replaceHistory(`/folder/${folderId}`);
-	}, [folderId]);
+		dispatch(closeAllEditors());
+	}, [folderId, dispatch]);
 
 	return (
 		<Container height={49} background="gray5">
