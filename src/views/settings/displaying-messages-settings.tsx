@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import React, { ChangeEvent, FC, useCallback, useMemo } from 'react';
 import {
 	Container,
 	Row,
@@ -14,6 +14,7 @@ import {
 	RadioGroup,
 	Radio
 } from '@zextras/carbonio-design-system';
+import { TFunction } from 'react-i18next';
 import Heading from './components/settings-heading';
 import {
 	CheckNewMailOptions,
@@ -24,7 +25,24 @@ import {
 } from './components/utils';
 import { displayingMessagesSubSection } from './subsections';
 
-export default function DisplayingMessagesSettings({ t, settingsObj, updateSettings }) {
+type UpdateSettingsProps = {
+	target: {
+		name: string;
+		value: string;
+	};
+};
+
+type DisplayingMessagesSettingsProps = {
+	t: TFunction;
+	settingsObj: Record<string, string>;
+	updateSettings: (arg: UpdateSettingsProps) => void;
+};
+
+const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
+	t,
+	settingsObj,
+	updateSettings
+}) => {
 	const checkNewMailOptions = useMemo(
 		() =>
 			CheckNewMailOptions(
@@ -38,27 +56,33 @@ export default function DisplayingMessagesSettings({ t, settingsObj, updateSetti
 	const messageSelectionOptions = useMemo(() => MessageSelectionOptions(t), [t]);
 	const conversationSortingSettings = useMemo(() => ConversationSortingSettings(t), [t]);
 	const sectionTitle = useMemo(() => displayingMessagesSubSection(t), [t]);
-
+	const onChangeSorting = useCallback(
+		(view: string): void =>
+			updateSettings({ target: { name: 'zimbraPrefConversationOrder', value: view } }),
+		[updateSettings]
+	);
+	const defaultSelectionSorting = useMemo(
+		() => ({
+			label: findLabel(conversationSortingSettings, settingsObj.zimbraPrefConversationOrder),
+			value: settingsObj.zimbraPrefConversationOrder
+		}),
+		[conversationSortingSettings, settingsObj.zimbraPrefConversationOrder]
+	);
 	return (
 		<FormSubSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
 			<Row width="100%" padding={{ horizontal: 'small', vertical: 'small' }}>
 				<Select
 					label={t('settings.label.conversation_ordering', 'Conversation ordering')}
 					items={conversationSortingSettings}
-					onChange={(view) =>
-						updateSettings({ target: { name: 'zimbraPrefConversationOrder', value: view } })
-					}
-					defaultSelection={{
-						label: findLabel(conversationSortingSettings, settingsObj.zimbraPrefConversationOrder),
-						value: settingsObj.zimbraPrefConversationOrder
-					}}
+					onChange={onChangeSorting}
+					defaultSelection={defaultSelectionSorting}
 				/>
 			</Row>
 			<Row width="100%" padding={{ horizontal: 'small', bottom: 'small' }}>
 				<Select
 					label={t('settings.label.check_new_mail', 'Check new e-mail')}
 					items={checkNewMailOptions}
-					onChange={(view) =>
+					onChange={(view: string): void =>
 						updateSettings({ target: { name: 'zimbraPrefMailPollingInterval', value: view } })
 					}
 					defaultSelection={{
@@ -72,7 +96,7 @@ export default function DisplayingMessagesSettings({ t, settingsObj, updateSetti
 				<Select
 					label={t('settings.label.display_mail', 'Display mail')}
 					items={displayMailOptions}
-					onChange={(view) =>
+					onChange={(view: string): void =>
 						updateSettings({
 							target: { name: 'zimbraPrefMessageViewHtmlPreferred', value: view }
 						})
@@ -107,7 +131,7 @@ export default function DisplayingMessagesSettings({ t, settingsObj, updateSetti
 				<Heading title={t('settings.label.message_selection', 'Message Selection')} />
 				<Select
 					items={messageSelectionOptions}
-					onChange={(view) =>
+					onChange={(view: string): void =>
 						updateSettings({ target: { name: 'zimbraPrefMailSelectAfterDelete', value: view } })
 					}
 					defaultSelection={{
@@ -124,7 +148,7 @@ export default function DisplayingMessagesSettings({ t, settingsObj, updateSetti
 						'Set color of messages and conversations according to tag color.'
 					)}
 					value={settingsObj.zimbraPrefColorMessagesEnabled === 'TRUE'}
-					onClick={() =>
+					onClick={(): void =>
 						updateSettings({
 							target: {
 								name: 'zimbraPrefColorMessagesEnabled',
@@ -140,7 +164,7 @@ export default function DisplayingMessagesSettings({ t, settingsObj, updateSetti
 					style={{ width: '100%' }}
 					value={settingsObj.zimbraPrefGroupMailBy}
 					mainAlignment="flex-start"
-					onChange={(newValue) => {
+					onChange={(newValue: string): void => {
 						updateSettings({ target: { name: 'zimbraPrefGroupMailBy', value: newValue } });
 					}}
 				>
@@ -157,7 +181,7 @@ export default function DisplayingMessagesSettings({ t, settingsObj, updateSetti
 				<Input
 					label={t('settings.label.search_query', 'Default query')}
 					value={settingsObj.zimbraPrefMailInitialSearch}
-					onChange={(e) =>
+					onChange={(e: ChangeEvent<HTMLInputElement>): void =>
 						updateSettings({
 							target: {
 								name: 'zimbraPrefMailInitialSearch',
@@ -169,4 +193,6 @@ export default function DisplayingMessagesSettings({ t, settingsObj, updateSetti
 			</Container>
 		</FormSubSection>
 	);
-}
+};
+
+export default DisplayingMessagesSettings;
