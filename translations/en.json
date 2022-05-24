@@ -607,6 +607,8 @@
         "edit": "Edit share properties",
         "enable_rich_text": "Enable rich text editor",
         "enable_urgent": "Enable urgent",
+        "folder_sharing_status": "Shared with {{count}} people",
+        "folder_sharing_status_one": "Shared with {{count}} person",
         "resend": "Resend mail notification about this share",
         "revoke": "Revoke access"
     }
