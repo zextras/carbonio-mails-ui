@@ -53,7 +53,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import { useQueryParam } from '../../../../hooks/useQueryParam';
 import {
-	closeAllEditors,
+	closeEditor,
 	createEditor,
 	selectEditors,
 	updateEditor
@@ -244,8 +244,10 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const editorId = useMemo(() => activeMailId ?? generateId(), [activeMailId]);
 
 	useEffect(() => {
-		if (actionChanged) dispatch(closeAllEditors());
-	}, [actionChanged, dispatch]);
+		if (actionChanged && editors[editorId]) {
+			dispatch(closeEditor(editorId));
+		}
+	}, [actionChanged, dispatch, editorId, editors]);
 
 	const toggleOpen = useCallback(() => setOpen((show) => !show), []);
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
