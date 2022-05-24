@@ -29,6 +29,7 @@ import {
 	Container,
 	Tooltip,
 	Avatar,
+	Icon,
 	Row,
 	Padding,
 	ModalManagerContext
@@ -522,6 +523,28 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 
 	const dropdownItems = useFolderActions(item);
 
+	const sharedStatusIcon = useMemo(() => {
+		if (!folder.acl?.grant) {
+			return '';
+		}
+
+		const tooltipText = t('tooltip.folder_sharing_status', {
+			count: folder.acl.grant.length,
+			defaultValue_one: 'Shared with {{count}} person',
+			defaultValue: 'Shared with {{count}} people'
+		});
+
+		return (
+			<Padding left="small">
+				<Tooltip placement="right" label={tooltipText}>
+					<div>
+						<Icon icon="ArrowCircleRight" customColor="#ffb74d" size="large" />
+					</div>
+				</Tooltip>
+			</Padding>
+		);
+	}, [folder, t]);
+
 	return folder.id === FOLDERS.USER_ROOT || folder.oname === ROOT_NAME ? (
 		<FittedRow>
 			<Padding horizontal="small">
@@ -555,7 +578,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 							<Row>
 								<Padding left="small" />
 								<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-									<AccordionItem item={accordionItem} />
+									<AccordionItem item={accordionItem}>{sharedStatusIcon}</AccordionItem>
 								</Tooltip>
 							</Row>
 						</Dropdown>
