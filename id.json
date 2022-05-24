@@ -306,7 +306,14 @@
         "edit_tag_name": "Edit tag \"{{name}}\"",
         "tag_max_length": "Maks 128 karakter yang diizinkan",
         "tag_name": "Nama tag",
-        "no_special_char_allowed": "Nama tidak boleh berisi karakter spesial"
+        "no_special_char_allowed": "Nama tidak boleh berisi karakter spesial",
+        "confirm": "Konfirmasi",
+        "contact_folder": "Folder Kontak",
+        "create_and_move": "Buat dan pindahkan",
+        "error": "Kesalahan",
+        "no_subject_with_tags": "<Tanpa Subjek>",
+        "calendar": "Kalender",
+        "save_to_files": "Simpan ke File"
     },
     "messages": {
         "permanent_delete_confirm": "Hapus secara permanen",
@@ -367,7 +374,8 @@
         "no_subject": "Tanpa Subjek.",
         "permanent_delete_title": "Anda yakin ingin menghapus elemen ini secara permanen?",
         "invalid_address": "Alamat berikut tampaknya tidak valid",
-        "permanent_delete_body": "Dengan menghapus elemen secara permanen, Anda tidak bisa memulihkannya lagi. Lanjutkan?"
+        "permanent_delete_body": "Dengan menghapus elemen secara permanen, Anda tidak bisa memulihkannya lagi. Lanjutkan?",
+        "powered_by": "didukung oleh"
     },
     "of": "dari",
     "add": "Tambahkan",
@@ -594,12 +602,16 @@
                 "declined": "Anda telah menolak permintaan berbagi",
                 "accepted": "Anda telah menerima permintaan berbagi"
             },
-            "settings_saved": "Hasil edit disimpan dengan benar"
+            "settings_saved": "Hasil edit disimpan dengan benar",
+            "calendar_edits_saved": "Hasil edit disimpan dengan benar",
+            "att_err": "Tampaknya ada masalah saat menyimpan. Harap coba lagi.",
+            "att_saved": "Lampiran disimpan di folder yang dipilih"
         },
         "invalid_search_message": "Kami tidak menemukan kecocokan",
         "email_saved_at": "Email disimpan sebagai draf pada {{time}}",
         "delete_tag_message1": "Yakin ingin menghapus Tag \"{{name}}\"?",
-        "delete_tag_message2": "Setelah dihapus, ini akan dihapus dari tiap item yang ditandai dengannya."
+        "delete_tag_message2": "Setelah dihapus, ini akan dihapus dari tiap item yang ditandai dengannya.",
+        "view_rights": "Lihat"
     },
     "private": "Pribadi",
     "remove_from_this_list": "Hapus dari daftar ini",
