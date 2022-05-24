@@ -537,9 +537,9 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 		return (
 			<Padding left="small">
 				<Tooltip placement="right" label={tooltipText}>
-					<div>
+					<Row>
 						<Icon icon="ArrowCircleRight" customColor="#ffb74d" size="large" />
-					</div>
+					</Row>
 				</Tooltip>
 			</Padding>
 		);
