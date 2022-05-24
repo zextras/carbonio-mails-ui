@@ -261,6 +261,7 @@
         "move": "Move",
         "new_email": "New E-mail",
         "new_folder": "New Folder",
+        "no_name": "<No Name>",
         "no_search_results_found": "No results found",
         "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",

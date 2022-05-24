@@ -20,6 +20,7 @@ import EditView from './edit/edit-view';
 
 const MailEditHeader = ({ folderId, header, toggleAppBoard, setToggleAppBoard }) => {
 	const [t] = useTranslation();
+
 	const onClose = useCallback(() => {
 		replaceHistory(`/folder/${folderId}`);
 	}, [folderId]);
