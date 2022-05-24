@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.21](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.20...v0.1.21) (2022-05-24)
+
+
+### Features
+
+* added folder sharing status icon ([eb087ad](https://github.com/zextras/carbonio-mails-ui/commit/eb087ad233530e84b887273ea63f43eda335b262))
+
 ### [0.1.20](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.19...v0.1.20) (2022-05-24)
 
 
