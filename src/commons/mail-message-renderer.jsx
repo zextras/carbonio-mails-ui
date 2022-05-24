@@ -141,7 +141,7 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 		[showQuotedText, body.content, orignalText]
 	);
 
-	const haveExternalImages = useMemo(() => {
+	const hasExternalImages = useMemo(() => {
 		const parser = new DOMParser();
 		const htmlDoc = parser.parseFromString(contentToDisplay, 'text/html');
 		const images = htmlDoc.body.getElementsByTagName('img');
@@ -151,10 +151,10 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 
 	const showBanner = useMemo(
 		() =>
-			haveExternalImages &&
+			hasExternalImages &&
 			!isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList, from) &&
 			displayBanner,
-		[from, haveExternalImages, settingsPref.zimbraPrefMailTrustedSenderList, displayBanner]
+		[from, hasExternalImages, settingsPref.zimbraPrefMailTrustedSenderList, displayBanner]
 	);
 	useEffect(() => {
 		if (isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList, from))
