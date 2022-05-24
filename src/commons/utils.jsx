@@ -30,7 +30,7 @@ export function participantToString(participant, t, accounts) {
 
 export function isAvailableInTrusteeList(trusteeList, address) {
 	let trusteeAddress = [];
-	let avaiableInTrusteeList = false;
+	let availableInTrusteeList = false;
 	if (trusteeList) {
 		trusteeAddress = isArray(trusteeList) ? trusteeList : trusteeList.split(',');
 	}
@@ -38,9 +38,9 @@ export function isAvailableInTrusteeList(trusteeList, address) {
 		const domain = address.substring(address.lastIndexOf('@') + 1);
 		trusteeAddress.forEach((ta) => {
 			if (ta === domain || ta === address) {
-				avaiableInTrusteeList = true;
+				availableInTrusteeList = true;
 			}
 		});
 	}
-	return avaiableInTrusteeList;
+	return availableInTrusteeList;
 }
