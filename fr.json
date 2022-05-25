@@ -52,7 +52,8 @@
             "drag_and_drop": {
                 "content": "Déposez ici vos pièces jointes pour les ajouter rapidement à cet email",
                 "title": "Mode Glisser-Déposer"
-            }
+            },
+            "files": "Ajouter depuis Files"
         }
     },
     "create": "Création",
@@ -242,7 +243,7 @@
         "delete_permanently": "Supprimer définitivement",
         "find_mail_shares": "Trouver les dossiers partagés",
         "no_search_results_found": "Aucun résultat trouvé",
-        "results_for_error": "Impossible de lancer la recherche, effacez-la et réessayez : ",
+        "results_for_error": "Il n'est pas possible de démarrer la recherche, nettoyez là et réessayez : ",
         "create": "Créer",
         "move": "Déplacer",
         "activate_selection_mode": "Activer le mode de sélection",
@@ -317,7 +318,7 @@
         "enable_message_retention": "Activer la rétention des messages",
         "from_identity": "De : {{identity}}",
         "new_email": "Nouvel Email",
-        "select_color": "Sélectionner une couleur",
+        "select_color": "Sélectionnez une couleur",
         "notify_organizer": "Notifier l'organisateur",
         "retention_range": "Plage de rétention",
         "set_default_signatures": "Définir les signatures par défaut",
@@ -330,16 +331,27 @@
         "decline": "Refuser",
         "behalf_of": "de la part de",
         "create_tag": "Créer une étiquette",
-        "tag_max_length": "128 caractères maximum sont autorisés",
+        "tag_max_length": "128 caractères maximum autorisés",
         "preview": "Prévisualisation",
-        "delete_tag": "Supprimer une étiquette",
+        "delete_tag": "Supprimer l'étiquette",
         "delete_tag_name": "Supprimer l'étiquette \"{{name}}\"",
-        "edit_tag": "Modifier l'étiquette",
-        "edit_tag_name": "Modifier l'étiquette \"{{name}}\"",
+        "edit_tag": "Éditer l'étiquette",
+        "edit_tag_name": "Éditer l'étiquette \"{{name}}\"",
         "spam": "Spam",
         "tag_name": "Nom de l'étiquette",
-        "tags": "Étiquette",
-        "no_special_char_allowed": "Le nom ne doit pas contenir de caractère spécial"
+        "tags": "Étiquettes",
+        "no_special_char_allowed": "Le nom ne doit pas contenir des caractères spéciaux",
+        "calendar": "Calendrier",
+        "confirm": "Confirmer",
+        "contact_folder": "Dossier de contact",
+        "create_and_move": "Créer et déplacer",
+        "error": "Erreur",
+        "invalid_destination": "Ce nœud n'est pas une destination valide",
+        "no_subject_with_tags": "<Sans d'objet>",
+        "notification_audio": "Jouer un signal sonore quand une nouvelle notification arrive",
+        "notification_folders": "Dossiers de notification",
+        "save_to_files": "Enregistrer dans Files",
+        "upload_from_files": "Téléverser depuis Files"
     },
     "mail_folder": "dossier Mail",
     "message": {
@@ -349,14 +361,25 @@
                 "error": "Quelque chose s'est mal passé, veuillez réessayer",
                 "declined": "Vous avez décliné la demande de partage"
             },
-            "settings_saved": "Modifications enregistrées correctement"
+            "settings_saved": "Modifications enregistrées correctement",
+            "all_att_added": "Pièces jointes ajoutées avec succès",
+            "all_att_saved": "Pièces jointes enregistrées avec succès dans le dossier sélectionné",
+            "att_err": "Il semble qu'il y ai eu un problème lors de l'enregistrement, merci de réessayer",
+            "att_err_adding": "Il semble qu'il y ai eu un problème lors de l'ajout de la pièce jointe, merci de réessayer",
+            "att_saved": "La pièce jointe a été enregistrée dans le dossier sélectionné",
+            "calendar_edits_saved": "Modifications enregistrées avec succès",
+            "some_att_add_fails": "Il semble qu'il y ai eu une erreur lors de l'ajout des pièces jointes, merci de réessayer",
+            "some_att_fails": "Il semble qu'il y ai eu une erreur lors de l'enregistrement de certaines pièces jointes, merci de réessayer"
         },
         "sending_mail_to_self": "Il semblerait que vous soyez sur le point de vous envoyer un email",
         "search_hints": "Les indices de recherche dont nous devons discuter",
         "invalid_search_message": "Nous n'avons pas trouvé de correspondance",
         "email_saved_at": "L'email a été sauvé dans les brouillons à {{time}}",
         "delete_tag_message1": "Êtes-vous sûr de vouloir supprimer l'étiquette \"{{name}}\" ?",
-        "delete_tag_message2": "Une fois supprimée, elle sera enlevée de l'ensemble des éléments qu'elle marquait."
+        "delete_tag_message2": "Une fois supprimée, elle sera supprimée de l'ensemble des éléments qu'elle marquait.",
+        "admin_rights": "Voir, Éditer, Ajouter, Supprimer, Administrer",
+        "manager_rights": "Voir, Éditer, Ajouter, Supprimer",
+        "view_rights": "Affichage"
     },
     "messages": {
         "invalid_address": "L'adresse suivante semble être invalide",
@@ -429,7 +452,11 @@
             "tag_created": "L'étiquette {{name}} a été créée avec succès",
             "tag_updated": "L'étiquette a été mise à jour avec succès",
             "tag_not_updated": "Quelque chose s'est mal passé, l'étiquette n'a pas pu être mise à jour. Merci de réessayer."
-        }
+        },
+        "check_and_try_again": "Merci de vérifier Carbonio et de réessayer",
+        "could_not_find_to_show": "Désolé, il n'est pas possible de trouver un élément à afficher",
+        "powered_by": "motorisé par",
+        "something_went_wrong": "QUELQUE CHOSE S'EST MAL PASSÉ"
     },
     "of": "de",
     "owner": "Propriétaire",
@@ -638,8 +665,8 @@
         "share_updated": "\"Droits d'accès mis à jour\"",
         "error": "Quelque chose s'est mal passé, veuillez réessayer",
         "email_moved_to_trash": "L'email a été déplacé dans la corbeille",
-        "tag_applied": "L'étiquette \"{{tag}}\" a été appliquée",
-        "tag_removed": "L'étiquette \"{{tag}}\" a été retirée"
+        "tag_applied": "Étiquette \"{{tag}}\" appliquée",
+        "tag_removed": "Étiquette \"{{tag}}\" supprimée"
     },
     "title": {
         "new_messages": "Nouveaux messages",

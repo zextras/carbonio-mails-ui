@@ -307,7 +307,14 @@
         "edit_tag_name": "Tag \"{{name}}\" bearbeiten",
         "no_special_char_allowed": "Der Name darf keine Sonderzeichen enthalten",
         "tag_max_length": "Maximal 128 Zeichen sind erlaubt",
-        "tag_name": "Tag name"
+        "tag_name": "Tag name",
+        "calendar": "Kalender",
+        "confirm": "Bestätigen",
+        "contact_folder": "Kontakteordner",
+        "create_and_move": "Erstellen und verschieben",
+        "error": "Fehler",
+        "no_subject_with_tags": "<Kein Betreff>",
+        "save_to_files": "Speichern unter Dateien"
     },
     "share": {
         "options": {
@@ -406,7 +413,8 @@
             "tag_updated": "Tag erfolgreich aktualisiert"
         },
         "invalid_address": "Die folgende Adresse scheint ungültig zu sein",
-        "invalid_address_plural": "Die folgenden Adressen scheinen ungültig zu sein"
+        "invalid_address_plural": "Die folgenden Adressen scheinen ungültig zu sein",
+        "powered_by": "powered by"
     },
     "of": "von",
     "owner": "Besitzer",
@@ -461,13 +469,17 @@
                 "error": "Etwas ist schiefgegangen, bitte versuchen Sie es erneut",
                 "accepted": "Sie haben den Antrag auf Freigabe angenommen",
                 "declined": "Sie haben die Freigabeanfrage abgelehnt"
-            }
+            },
+            "att_err": "Es scheint ein Problem beim Speichern zu geben, bitte versuchen Sie es erneut",
+            "att_saved": "Im ausgewählten Ordner gespeicherte Anhänge",
+            "calendar_edits_saved": "Änderungen korrekt gespeichert"
         },
         "search_hints": "Suchhinweise, über die wir sprechen müssen",
         "invalid_search_message": "Wir haben keine Übereinstimmung gefunden",
         "email_saved_at": "E-Mail gespeichert als Entwurf um {{time}}",
         "delete_tag_message1": "Sind Sie sicher, dass Sie den \"{{name}}\" Tag?",
-        "delete_tag_message2": "Nach dem Löschen wird es aus allen damit gekennzeichneten Artikeln entfernt."
+        "delete_tag_message2": "Nach dem Löschen wird es aus allen damit gekennzeichneten Artikeln entfernt.",
+        "view_rights": "Ansehen"
     },
     "remove_from_this_list": "Aus der Liste entfernen",
     "tooltip": {

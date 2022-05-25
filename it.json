@@ -65,7 +65,10 @@
         "no_content": "Questo messaggio non ha contenuto",
         "permanent_delete_body": "Eliminando definitivamente questo elemento non sarà possibile ripristinarlo in futuro. Vuoi continuare?",
         "permanent_delete_confirm": "Elimina definitivamente",
-        "permanent_delete_title": "Vuoi eliminare definitivamente questo elemento?"
+        "permanent_delete_title": "Vuoi eliminare definitivamente questo elemento?",
+        "powered_by": "offerto da",
+        "could_not_find_to_show": "Siamo spiacenti, non è stato trovato nulla da mostrare",
+        "something_went_wrong": "QUALCOSA È ANDATO STORTO"
     },
     "label": {
         "cc": "Cc",
@@ -234,7 +237,17 @@
         "spam": "Spam",
         "tags": "Etichette",
         "tag_max_length": "Il numero massimo di caratteri consentiti è 128",
-        "tag_name": "Nome etichetta"
+        "tag_name": "Nome etichetta",
+        "calendar": "Calendario",
+        "confirm": "Conferma",
+        "contact_folder": "Cartella Contatti",
+        "create_and_move": "Crea e sposta",
+        "error": "Errore",
+        "invalid_destination": "Questo nodo non risulta essere una destinazione valida",
+        "no_subject_with_tags": "<Nessun Oggetto>",
+        "save_to_files": "Salva su Files",
+        "upload_from_files": "Carica da Files",
+        "disposal_threshold": "Limite per l'eliminazione"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",
@@ -419,7 +432,8 @@
             "drag_and_drop": {
                 "title": "Modalità Drag&Drop",
                 "content": "Trascina qui gli allegati per aggiungerli velocemente a questa e-mail"
-            }
+            },
+            "files": "Aggiungi da Files"
         }
     },
     "message": {
@@ -429,13 +443,24 @@
                 "error": "Qualcosa è andato storto, riprova",
                 "accepted": "Hai accettato la richiesta di condivisione",
                 "declined": "Hai rifiutato la richiesta di condivisione"
-            }
+            },
+            "att_err": "Sembra esserci stato un problema durante il salvataggio, riprova",
+            "all_att_added": "Allegati aggiunti correttamente",
+            "all_att_saved": "Gli allegati sono stati salvati nella cartella selezionata",
+            "att_err_adding": "Sembra esserci stato un problema durante l'aggiunta degli allegati, riprova",
+            "calendar_edits_saved": "Modifiche salvate correttamente",
+            "some_att_add_fails": "Sembra esserci stato un problema durante l'aggiunta di alcuni allegati, riprova",
+            "some_att_fails": "Sembra esserci stato un problema durante il salvataggio di alcuni file, riprova",
+            "att_saved": "Allegato salvato nella cartella selezionata"
         },
         "sending_mail_to_self": "Ti stai auto inviando una e-mail",
         "invalid_search_message": "Nessuna corrispondenza trovata",
         "email_saved_at": "E-mail salvata come bozza alle {{time}}",
         "delete_tag_message1": "Vuoi eliminare l'etichetta \"{{name}}\"?",
-        "delete_tag_message2": "Una volta eliminata, verrà eliminata anche da tutti gli elementi su cui è utilizzata."
+        "delete_tag_message2": "Una volta eliminata, verrà eliminata anche da tutti gli elementi su cui è utilizzata.",
+        "admin_rights": "Visualizza,Modifica,Aggiungi,Rimuovi,Gestisci",
+        "manager_rights": "Visualizza,Modifica,Aggiungi,Rimuovi",
+        "view_rights": "Visualizza"
     },
     "add": "Aggiungi",
     "allowed_actions": "Azioni consentite",
