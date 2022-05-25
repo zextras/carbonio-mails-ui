@@ -83,19 +83,17 @@ type SidebarProps = {
 
 const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 	const { path } = useRouteMatch();
-	const [openIds, setOpenIds] = useLocalStorage<Array<string>>(
-		'open_mails_folders',
-		window.localStorage.getItem('open_mails_folders') ?? []
-	);
+	const [openIds, setOpenIds] = useLocalStorage<Array<string>>('open_mails_folders', []);
 
 	const additionalProps = (item: AccordionFolder): Record<string, any> => ({
 		onOpen: () => setOpenIds((s: Array<string>) => (s.includes(item.id) ? s : [...s, item.id])),
 		onClose: () => setOpenIds((s: Array<string>) => s.filter((id: string) => id !== item.id))
 	});
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
+
 	const accordions = useFoldersAccordionByView(
 		FOLDER_VIEW.message,
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		AccordionCustomComponent,
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -113,7 +111,7 @@ const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 					</Switch>
 				</>
 			) : (
-				accordions[0].items.map((folder: Folder, index: number) => (
+				accordions[0].items.map((folder, index: number) => (
 					<CollapsedSideBarItems key={index} folder={folder} />
 				))
 			)}
