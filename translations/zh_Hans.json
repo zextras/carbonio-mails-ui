@@ -152,7 +152,8 @@
             "tag_updated": "标签已成功更新"
         },
         "invalid_address": "以下地址似乎无效",
-        "permanent_delete_body": "永久性删除此元素将导致您无法再次将其恢复，是否继续？"
+        "permanent_delete_body": "永久性删除此元素将导致您无法再次将其恢复，是否继续？",
+        "powered_by": "出品"
     },
     "of": "的",
     "placeholder": {
@@ -405,7 +406,14 @@
         "behalf_of": "代表",
         "spam": "垃圾",
         "tags": "标签",
-        "preview": "预览"
+        "preview": "预览",
+        "calendar": "日历",
+        "confirm": "确认",
+        "contact_folder": "联系人文件夹",
+        "create_and_move": "创建和移动",
+        "error": "错误",
+        "no_subject_with_tags": "<无主题>",
+        "save_to_files": "保存至文件"
     },
     "owner": "所有者",
     "read": "已读",
@@ -429,14 +437,18 @@
                 "declined": "您已拒绝共享请求",
                 "error": "出现错误，请重试"
             },
-            "settings_saved": "编辑保存正确"
+            "settings_saved": "编辑保存正确",
+            "att_err": "保存时似乎出现错误，请重试",
+            "calendar_edits_saved": "编辑保存正确",
+            "att_saved": "附件已保存在所选文件夹中"
         },
         "search_hints": "搜索我们需要讨论的提示",
         "sending_mail_to_self": "似乎您即将向自己发送邮件",
         "invalid_search_message": "我们没有找到任何匹配",
         "email_saved_at": "邮件已于 {{time}} 保存为草稿",
         "delete_tag_message1": "确定要删除“{{name}}”标签吗？",
-        "delete_tag_message2": "删除后，其将从所有已进行相关标记的项目上移除。"
+        "delete_tag_message2": "删除后，其将从所有已进行相关标记的项目上移除。",
+        "view_rights": "查看"
     },
     "settings": {
         "label": {

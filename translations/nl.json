@@ -317,7 +317,18 @@
         "edit_tag_name": "\"{{name}}\" tag bewerken",
         "no_special_char_allowed": "De naam mag geen speciaal teken bevatten",
         "tag_max_length": "Max 128 tekens zijn toegestaan",
-        "tag_name": "Tag-naam"
+        "tag_name": "Tag-naam",
+        "create_and_move": "Creëren en verplaatsen",
+        "calendar": "Kalender",
+        "confirm": "Bevestigen",
+        "contact_folder": "Contactenmap",
+        "error": "Fout",
+        "no_subject_with_tags": "<Geen onderwerp>",
+        "save_to_files": "Opslaan in Bestanden",
+        "invalid_destination": "Deze node is geen geldige bestemming",
+        "notification_audio": "Audio hint afspelen wanneer nieuwe melding verschijnt",
+        "notification_folders": "Meldingsmappen",
+        "upload_from_files": "Uploaden vanuit Bestanden"
     },
     "messages": {
         "permanent_delete_confirm": "Permanent verwijderen",
@@ -380,7 +391,11 @@
             "tag_not_updated": "Er is iets fout gegaan, de tag is niet bijgewerkt. Probeer het opnieuw."
         },
         "no_subject": "Geen onderwerp.",
-        "permanent_delete_body": "Door dit element permanent te verwijderen zult u niet meer in staat zijn om het te herstellen. Verdergaan?"
+        "permanent_delete_body": "Door dit element permanent te verwijderen zult u niet meer in staat zijn om het te herstellen. Verdergaan?",
+        "powered_by": "mogelijk gemaakt door",
+        "check_and_try_again": "Controleer Carbonio en probeer het opnieuw",
+        "could_not_find_to_show": "Sorry, we konden niets vinden om te laten zien",
+        "something_went_wrong": "ER IS IETS FOUT GEGAAN"
     },
     "of": "van",
     "owner": "Eigenaar",
@@ -449,14 +464,25 @@
                 "accepted": "U heeft het verzoek tot delen geaccepteerd",
                 "declined": "U heeft het verzoek tot delen afgewezen",
                 "error": "Er is iets misgegaan, probeer het opnieuw"
-            }
+            },
+            "att_err": "Er lijkt een probleem te zijn bij het opslaan, probeer het opnieuw",
+            "att_saved": "Bijlage opgeslagen in de geselecteerde map",
+            "calendar_edits_saved": "Bewerkingen correct opgeslagen",
+            "all_att_added": "Bijlagen met succes toegevoegd",
+            "all_att_saved": "Bijlagen met succes opgeslagen in de geselecteerde map",
+            "att_err_adding": "Er lijkt een probleem te zijn bij het toevoegen van bijlagen, probeer het opnieuw",
+            "some_att_add_fails": "Er lijkt een probleem te zijn bij het toevoegen van enkele bijlagen, probeer het opnieuw",
+            "some_att_fails": "Er lijkt een probleem te zijn tijdens het opslaan van enkele bijlagen, probeer het opnieuw"
         },
         "search_hints": "Hints zoeken waar we het over moeten hebben",
         "sending_mail_to_self": "Het lijkt erop dat je op het punt staat een e-mail naar uzelf te sturen",
         "invalid_search_message": "We hebben geen match gevonden",
         "email_saved_at": "E-mail opgeslagen als concept om {{time}}",
         "delete_tag_message1": "Weet u zeker dat u de\"{{name}}\" Tag wilt verwijderen?",
-        "delete_tag_message2": "Eenmaal verwijderd, zal het verwijderd worden van elk item dat ermee gemarkeerd is."
+        "delete_tag_message2": "Eenmaal verwijderd, zal het verwijderd worden van elk item dat ermee gemarkeerd is.",
+        "view_rights": "Bekijken",
+        "admin_rights": "Bekijken, Bewerken, Toevoegen, Verwijderen, Beheren",
+        "manager_rights": "Bekijken, Bewerken, Toevoegen, Verwijderen"
     },
     "administer": "Beheren",
     "allowed_actions": "Toegelaten acties",
@@ -473,7 +499,8 @@
                 "title": "Drag&Drop-modus",
                 "content": "Drop hier uw bijlagen om ze snel aan deze e-mail toe te voegen"
             },
-            "contacts_mod": "Contactfiche toevoegen"
+            "contacts_mod": "Contactfiche toevoegen",
+            "files": "Toevoegen vanuit Bestanden"
         }
     },
     "find_mail_shares": "Gedeelde mappen zoeken",

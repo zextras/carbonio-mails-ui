@@ -298,7 +298,14 @@
         "behalf_of": "em nome de",
         "preview": "Visualizar",
         "spam": "Spam",
-        "tags": "Etiquetas"
+        "tags": "Etiquetas",
+        "calendar": "Calendário",
+        "error": "Erro",
+        "confirm": "Confirmar",
+        "contact_folder": "Pasta de contatos",
+        "create_and_move": "Criar e mover",
+        "no_subject_with_tags": "<Sem Assunto>",
+        "save_to_files": "Salvar no Files"
     },
     "of": "de",
     "owner": "Proprietário",
@@ -388,7 +395,8 @@
         "no_content": "Essa mensagem não possui conteúdo de texto",
         "no_subject": "Sem Assunto.",
         "permanent_delete_title": "Tem certeza que deseja excluir permanentemente este elemento?",
-        "permanent_delete_body": "Se você excluir permanentemente este elemento, você não poderá mais recuperá-lo. Continuar?"
+        "permanent_delete_body": "Se você excluir permanentemente este elemento, você não poderá mais recuperá-lo. Continuar?",
+        "powered_by": "powered by"
     },
     "placeholder": {
         "subject": "Assunto",
@@ -602,14 +610,18 @@
                 "accepted": "Você aceitou este pedido de compartilhamento",
                 "declined": "Você recusou este pedido compartilhamento"
             },
-            "settings_saved": "Edições salvas corretamente"
+            "settings_saved": "Edições salvas corretamente",
+            "att_saved": "Anexo salvo na pasta selecionada",
+            "att_err": "Parece que houve um problema ao salvar. Tente novamente",
+            "calendar_edits_saved": "Edições salvas corretamente"
         },
         "sending_mail_to_self": "Parece que você vai enviar um e-mail a si mesmo",
         "search_hints": "Dicas de pesquisa que precisamos conversar",
         "invalid_search_message": "Não encontramos nenhuma correspondência",
         "email_saved_at": "E-mail salvo como rascunho às {{time}}",
         "delete_tag_message1": "Tem certeza que deseja excluir a Etiqueta \"{{name}}\"?",
-        "delete_tag_message2": "Uma vez excluída, ela será removida de todos os itens marcados com ela."
+        "delete_tag_message2": "Uma vez excluída, ela será removida de todos os itens marcados com ela.",
+        "view_rights": "Ver"
     },
     "mail_folder": "Pasta de e-mail",
     "private": "Privado",
