@@ -173,7 +173,7 @@ export const ShareFolderProperties = ({
 	setActiveModal
 }) => {
 	const [t] = useTranslation();
-	const grant = folder?.acl?.grant;
+	const grant = folder?.folder?.acl?.grant;
 	const shareCalendarRoleOptions = useMemo(
 		() => ShareCalendarRoleOptions(t, grant.perm?.includes('p')),
 		[t, grant?.perm]
