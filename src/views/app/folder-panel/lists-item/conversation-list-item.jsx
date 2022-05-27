@@ -284,7 +284,7 @@ export default function ConversationListItem({
 		>
 			<Container
 				// eslint-disable-next-line no-nested-ternary
-				background={active ? 'highlight' : item.read ? 'gray6' : 'gray5'}
+				background={item.read ? 'transparent' : 'gray5'}
 				mainAlignment="flex-start"
 				data-testid={`ConversationListItem-${item.id}`}
 			>
@@ -366,6 +366,7 @@ export default function ConversationListItem({
 						height="auto"
 					>
 						<ConversationMessagesList
+							background="warning"
 							length={item?.messages?.length}
 							messages={messagesToRender}
 							conversationStatus={conversationStatus}

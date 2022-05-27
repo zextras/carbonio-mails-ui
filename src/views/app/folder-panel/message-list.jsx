@@ -123,6 +123,7 @@ const MessageList = () => {
 					{messages?.length > 0 ? (
 						<List
 							style={{ paddingBottom: '4px' }}
+							background="gray6"
 							selected={selected}
 							active={itemId}
 							items={messages}
