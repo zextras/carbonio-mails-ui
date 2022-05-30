@@ -16,7 +16,6 @@ import {
 	useUserAccount,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	useLocalStorage,
 	pushHistory,
 	AccordionFolder
 } from '@zextras/carbonio-shell-ui';
@@ -530,8 +529,8 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 
 		const tooltipText = t('tooltip.folder_sharing_status', {
 			count: folder.acl.grant.length,
-			defaultValue_one: 'Shared with {{count}} person',
-			defaultValue: 'Shared with {{count}} people'
+			defaultValue: 'Shared with {{count}} person',
+			defaultValue_plural: 'Shared with {{count}} people'
 		});
 
 		return (
