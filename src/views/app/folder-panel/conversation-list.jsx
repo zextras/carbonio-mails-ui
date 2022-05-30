@@ -146,7 +146,7 @@ const ConversationList = () => {
 					itemsCount={folder?.itemsCount}
 				/>
 			)}
-			{conversationListStatus !== 'complete' ? (
+			{conversationListStatus === 'complete' ? (
 				<>
 					<Divider color="gray2" />
 					{conversations?.length === 0 ? (
