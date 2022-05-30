@@ -4,21 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo } from 'react';
-import { Shimmer } from '@zextras/carbonio-design-system';
-import { isNil, map } from 'lodash';
+import { Shimmer, Container } from '@zextras/carbonio-design-system';
+import { isNil, map, times } from 'lodash';
+import styled from 'styled-components';
 
-const ShimmerList = ({ count }) => {
-	const arr = useMemo(
-		() => Array.from(Array(!isNil(count) && count < 13 ? count : 13).keys()),
-		[count]
-	);
-	return (
-		<>
-			{map(arr, (item, index) => (
-				<Shimmer.ListItem type={1} key={`${item}${index}`} />
-			))}
-		</>
-	);
-};
+const ShimmerList = ({ count }) => (
+	<Container mainAlignment="start" height="fill" style={{ overflow: 'hidden' }}>
+		{times(33, (index) => (
+			<Shimmer.ListItem type={1} key={`${index}`} />
+		))}
+	</Container>
+);
 
 export default ShimmerList;

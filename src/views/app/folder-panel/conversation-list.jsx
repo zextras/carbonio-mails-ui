@@ -146,7 +146,7 @@ const ConversationList = () => {
 					itemsCount={folder?.itemsCount}
 				/>
 			)}
-			{conversationListStatus === 'complete' ? (
+			{conversationListStatus !== 'complete' ? (
 				<>
 					<Divider color="gray2" />
 					{conversations?.length === 0 ? (
@@ -163,24 +163,28 @@ const ConversationList = () => {
 							</Padding>
 						</Container>
 					) : (
-						<List
-							style={{ paddingBottom: '4px' }}
-							selected={selected}
-							active={itemId}
-							items={conversations}
-							itemProps={{
-								toggle,
-								// messages,
-								folderId,
-								setDraggedIds,
-								setIsDragging,
-								selectedItems: selected,
-								dragImageRef
-							}}
-							ItemComponent={ConversationListItem}
-							onListBottom={() => loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)}
-							data-testid={`conversation-list-${folderId}`}
-						/>
+						<Container style={{ minHeight: 0 }}>
+							<List
+								style={{ flexGrow: 1, paddingBottom: '4px' }}
+								selected={selected}
+								active={itemId}
+								items={conversations}
+								itemProps={{
+									toggle,
+									// messages,
+									folderId,
+									setDraggedIds,
+									setIsDragging,
+									selectedItems: selected,
+									dragImageRef
+								}}
+								ItemComponent={ConversationListItem}
+								onListBottom={() =>
+									loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)
+								}
+								data-testid={`conversation-list-${folderId}`}
+							/>
+						</Container>
 					)}
 					<DragImageContainer ref={dragImageRef}>
 						{isDragging && <DragItems conversations={conversations} draggedIds={draggedIds} />}
