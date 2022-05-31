@@ -283,7 +283,6 @@ export default function ConversationListItem({
 			onDragStart={(e) => dragCheck(e, item.id)}
 		>
 			<Container
-				// eslint-disable-next-line no-nested-ternary
 				background={item.read ? 'transparent' : 'gray5'}
 				mainAlignment="flex-start"
 				data-testid={`ConversationListItem-${item.id}`}
@@ -366,7 +365,6 @@ export default function ConversationListItem({
 						height="auto"
 					>
 						<ConversationMessagesList
-							background="warning"
 							length={item?.messages?.length}
 							messages={messagesToRender}
 							conversationStatus={conversationStatus}
