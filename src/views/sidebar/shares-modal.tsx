@@ -42,7 +42,7 @@ const ContainerEl = styled(Container)`
 	display: block;
 `;
 
-const CustomItem: FC<any> = ({ folder }) => {
+const CustomItem: FC<any> = ({ item: folder }) => {
 	const [checked, setChecked] = useState(false);
 	const [t] = useTranslation();
 
