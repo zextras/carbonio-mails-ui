@@ -1,1 +1,598 @@
-{}
+{
+    "composer": {
+        "attachment": {
+            "files": "Thêm vào từ tệp tin",
+            "drag_and_drop": {
+                "title": "Chế độ kéo thả(Drag&Drop Mode)",
+                "content": "Kéo/thả vào đây các tệp đính kèm của bạn để nhanh chóng thêm vào thư"
+            },
+            "local": "Thêm vào từ thiết bị cục bộ",
+            "contacts_mod": "Thêm thẻ liên hệ"
+        }
+    },
+    "folders": {
+        "spam": "Thư rác",
+        "trash": "Thùng rác",
+        "sent": "Gửi",
+        "drafts": "Thư nháp",
+        "junk": "Junk(thư rác)",
+        "inbox": "Hộp thư đến"
+    },
+    "header": {
+        "edit_draft": "Chỉnh sửa thư nháp",
+        "warning": "Cảnh báo",
+        "delete_email": "Xoá thư",
+        "redirect_email": "Chuyển hướng thư",
+        "message_not_sent": "Lỗi - Tin nhắn không gửi được"
+    },
+    "label": {
+        "activate_selection_mode": "Kích hoạt chế độ lựa chọn",
+        "add": "Thêm vào",
+        "administer": "Quản trị viên",
+        "advanced_filters": "Bộ lọc nâng cao",
+        "add_custom_message": "Thêm một tin nhắn tuỳ chỉnh",
+        "allowed_actions": "Các tác vụ được phép",
+        "any": "bất cứ",
+        "calendar": "Lịch",
+        "all": "tất cả",
+        "back": "Quay lại",
+        "confirm": "Xác nhận",
+        "contact_folder": "Thư mục liên hệ",
+        "create_and_move": "Tạo và di chuyển",
+        "error": "Lỗi",
+        "filter_folders": "Lọc thư mục",
+        "filter_user": "Lọc người dùng",
+        "attachement_unknown": "Không biết <{{mimeType}}>",
+        "find_mail_shares": "Tìm thư mục chia sẻ",
+        "folder_name": "Tên thư mục",
+        "forwarded": "Đã chuyển tiếp",
+        "freebusy": "Rảnh rỗi",
+        "from": "Từ",
+        "from_identity": "Từ: {{identity}}",
+        "flagged": "Gắn cờ",
+        "grantee": "Người nhận tài trợ: ",
+        "hide": "Ẩn",
+        "insert": "Chèn",
+        "invalid_destination": "Chỗ này không phải là đích hợp lệ",
+        "mail_settings": "Cài đặt thư",
+        "move": "Di chuyển",
+        "no_special_char_allowed": "Tên không được chứa bất kỳ ký tự đặc biệt nào",
+        "me": "Tôi",
+        "new_email": "Thư mới",
+        "no_subject_with_tags": "<Không chủ đề>",
+        "messages": "Tin nhắn",
+        "preview": "Xem trước",
+        "notification_folders": "Thư mục thông báo",
+        "notify_organizer": "Thông báo cho người tổ chức",
+        "read": "Đọc",
+        "receive_message": "Đang nhận thư",
+        "received_from_address": "Nhận từ (địa chỉ)",
+        "remove_from_this_list": "Xóa từ danh sách này",
+        "replied": "Đã trả lời",
+        "results_for": "Kết quả cho: ",
+        "retention_range": "Khoảng lưu giữ",
+        "revoke_access_tooltip": "Thu hồi quyền truy cập gửi thông báo chuẩn",
+        "revoke_share": "Thu hồi chia sẻ của {{title}}",
+        "role": "Vai trò: ",
+        "save_to_files": "Lưu vào tệp",
+        "search_activate_selection_mode": "Chế độ lựa chọn chưa khả dụng trên kết quả tìm kiếm",
+        "select": "Lựa chọn",
+        "select_signature": "Chọn chữ ký",
+        "send": "Gửi",
+        "sending": "Đang gửi",
+        "sent": "Gửi",
+        "send_email": "Gửi thư",
+        "share": "Chia sẻ",
+        "sent_to_address": "Gửi tới(địa chỉ)",
+        "set_default_signatures": "Cài đặt chữ ký mặc định",
+        "share_with": "Chia sẻ với",
+        "tag_max_length": "Cho phép tối đa là 128 ký tự",
+        "shared_folders": "Thư mục đã chia sẻ",
+        "shared_item": "Mục đã chia sẻ",
+        "shares_folder_edit": "Chia sẻ thư mục này",
+        "shares_info": "Thông tin chia sẻ thư mục",
+        "shares_items": "thư mục chia sẻ {{value}}",
+        "show_popup": "Hiển thị một cửa sổ(popup) thông báo",
+        "show_quoted_text": "Hiện văn bản được trích dẫn",
+        "spam": "Thư rác",
+        "tag_name": "Tên Tag",
+        "tags": "Tags",
+        "type": "Kiểu",
+        "upload_from_files": "Tải lên từ tệp",
+        "behalf_of": "thay mặt cho",
+        "app_name": "Thư",
+        "attachment": "Đính kèm",
+        "attachment_status": "Trạng thái của thư",
+        "attachment_type": "Kiểu đính kèm",
+        "automatically_delete_duplicates": "Tự động xóa các bản sao trùng lặp của cùng một tin nhắn khi nhận được",
+        "cc_bcc": "Cc Bcc",
+        "bcc": "Bcc",
+        "calendar_color": "Màu đối tượng",
+        "cancel": "Huỷ",
+        "cc": "Cc",
+        "edit": "Chỉnh sửa",
+        "draft_folder": "[NHÁP]",
+        "edit_access": "Chỉnh sửa truy cập {{name}}",
+        "expand": "Mở rộng",
+        "keywords": "Từ khoá",
+        "loading_results": "Đang tải kết quả…",
+        "mail_folder": "Thư mục Thư",
+        "new_folder": "Thư mục mới",
+        "no_search_results_found": "Không tìm thấy kết quả",
+        "no_subject": "Không chủ đề",
+        "of": "của",
+        "on_behalf_of": "thay mặt cho",
+        "private": "Riêng tư",
+        "owner": "Chủ sở hữu: ",
+        "remove": "Xoá bỏ hết",
+        "resend": "Gửi lại",
+        "restore": "Khôi phục",
+        "revoke": "Thu hồi",
+        "retention_policy": "Chính sách lưu giữ",
+        "send_notification": "Gửi tin nhắn thông báo tới",
+        "add_task": "Nếu cần ghi chú, bạn có thể thêm công việc vào DANH SÁCH VIỆC LÀM",
+        "mail_selected": "{{count}} thư đã chọn",
+        "show_all": "Hiện tất cả",
+        "subject": "Chủ đề",
+        "tag": "Tag",
+        "delete_permanently": "Xoá vĩnh viễn",
+        "create": "Tạo",
+        "destination_folder": "Thư mục đích",
+        "choose_folder": "Chọn thư mục",
+        "create_new_task": "Tạo nhiệm vụ mới",
+        "disposal_threshold": "Ngưỡng loại bỏ",
+        "download": "Tải xuống",
+        "discard_changes": "BỎ QUA CÁC THAY ĐỔI",
+        "by_message": "Theo tin nhắn",
+        "decline": "Từ chối",
+        "delete": "Xoá",
+        "signature_required": "Yêu cầu thông tin chữ ký.",
+        "single_advanced_filter": "Bộ lọc nâng cao",
+        "size": "Cỡ",
+        "size_larger": "Kích thước lớn hơn (MB)",
+        "size_smaller": "Kích thước nhỏ hơn (MB)",
+        "to": "To(đến)",
+        "edit_tag": "Chỉnh sửa Tag",
+        "edit_tag_name": "Chỉnh sửa tag \"{{name}}",
+        "empty": "Rỗng",
+        "email_perm_deleted": "Thư bị xoá vĩnh viễn",
+        "delete_tag_name": "Xoá tag \"{{name}}\"",
+        "draft": "Thư nháp",
+        "create_tag": "Tạo Tag",
+        "delete_tag": "Xoá Tag",
+        "find_shares": "Tìm chia sẻ",
+        "flash_browser_title": "Flash tiêu đề trình duyệt",
+        "error_try_again": "Có lỗi, vui lòng thử lại",
+        "error_address": "Yêu cầu một thư hợp lệ",
+        "enable_message_disposal": "Bật tính năng hủy tin nhắn",
+        "enable_message_retention": "Bật tính năng lưu giữ tin nhắn",
+        "addresses_not_accepted": "Một hoặc nhiều địa chỉ không được chấp nhận. Địa chỉ bị từ chối:",
+        "go_back": "Quay trở lại",
+        "highlight_tab": "Đánh dấu thẻ Thư",
+        "notification_audio": "Phát gợi ý âm thanh khi thông báo mới xuất hiện",
+        "revoke_access_without_notification": "Thu hồi quyền truy cập và không gửi thông báo",
+        "revoke_with_custom_message": "Thu hồi quyền truy cập và gửi một thông báo tùy chỉnh",
+        "select_folder": "Chọn thư mục",
+        "accept": "Chấp nhận",
+        "by_conversation": "Theo cuộc trò chuyện",
+        "undo": "Hoàn tác",
+        "type_name_here": "Tên mục",
+        "wipe": "Xoá",
+        "with_you": "với bạn",
+        "workflow": "Luồng công việc(Workflow)",
+        "would_like_to_share": "đã chia sẻ nó",
+        "write": "Ghi",
+        "results_for_error": "Không thể bắt đầu tìm kiếm, hãy xóa nó và thử lại: ",
+        "save": "Lưu",
+        "select_color": "Chọn màu"
+    },
+    "message": {
+        "delete_tag_message2": "Sau khi xóa, nó sẽ bị xóa khỏi mọi mục được đánh dấu bởi nó.",
+        "admin_rights": "Xem, Chỉnh sửa, Thêm, Xoá, Quản trị",
+        "delete_tag_message1": "Bạn có chắc xoá Tag\"{{name}}\"?",
+        "email_saved_at": "Thư được lưu dưới dạng bản nháp vào lúc {{time}}",
+        "manager_rights": "Xem, Chỉnh sử, Thêm, Xoá",
+        "snackbar": {
+            "all_att_added": "Thêm đính kèm thành công",
+            "att_err": "Có vẻ như có lỗi trong quá trình lưu, vui lòng thử lại lần nữa",
+            "att_err_adding": "Có vẻ như có vấn đề khi thêm đính kèm, vui lòng thử lại lần nữa",
+            "all_att_saved": "Lưu đính kèm vào thư mục đã chọn thành công",
+            "calendar_edits_saved": "Chỉnh sửa được lưu chính xác",
+            "att_saved": "Đã lưu đính kèm trong thư mục đã chọn",
+            "settings_saved": "Chỉnh sửa được lưu chính xác",
+            "share": {
+                "accepted": "Bạn đã chấp nhận yêu cầu chia sẻ",
+                "declined": "Bạn đã từ chối yêu cầu chia sẻ"
+            },
+            "some_att_add_fails": "Có vẻ như có vấn đề khi thêm đính kèm, vui lòng thử lại lần nữa",
+            "some_att_fails": "Có vẻ có vấn đề khi lưu giữ một số tệp, vui lòng thử lại lần nữa"
+        },
+        "view_rights": "Xem",
+        "invalid_search_message": "Chúng tôi không tìm thấy bất kỳ kết quả phù hợp nào",
+        "sending_mail_to_self": "Có vẻ như bạn sắp tự gửi thư cho chính mình"
+    },
+    "messages": {
+        "could_not_find_to_show": "Xin lỗi, chúng tôi không thể tìm thấy gì để hiển thị",
+        "permanent_delete_body": "Nếu bạn xóa vĩnh viễn phần tử này, bạn sẽ không thể khôi phục nó. Tiếp tục?",
+        "permanent_delete_title": "Bạn có chắc chắn xóa vĩnh viễn phần tử này không?",
+        "powered_by": "cung cấp bởi",
+        "modal": {
+            "delete": {
+                "sure_delete_email": "Bạn chắc chắn xoá những thư đã chọn?",
+                "if_delete_lost_forever": "Nếu bạn xoá thư. nó sẽ bị mất vĩnh viễn."
+            },
+            "redirect": {
+                "first": "Thư này sẽ được gửi đến người nhận mới trong khi vẫn giữ nguyên địa chỉ thư của người gửi ban đầu.",
+                "second": "Thư sẽ xuất hiện như thư ban đầu cho người nhận mới"
+            }
+        },
+        "check_and_try_again": "Vui lòng kiểm tra Carbonio và thử lại lần nữa",
+        "snackbar": {
+            "conversation_deleted": "Cuộc hội thoại đã bị xóa",
+            "conversation_move": "Cuộc hội thoại đã bị di chuyển",
+            "folder_moved_to_trash": "Di chuyển thư mục vào thùng rác",
+            "folder_deleted": "Xoá thư mục thành công .",
+            "email_moved_to_trash": "Thư được di chuyển đến thùng rác",
+            "email_restored": "Thư đã được khôi phục vào thư mục đích",
+            "folder_empty": "Dọn sạch thùng rác thành công",
+            "conversation_move_error": "Có lỗi, quá trình di chuyển cuộc trò chuyện chưa hoàn tất. Vui lòng thử lại.",
+            "folder_restored": "Khôi phục thư mục",
+            "mail_saved_to_drafts": "Thư được lưu vào hòm thư nháp",
+            "marked_as_spam": "Bạn đã đánh dấu thư này là Spam(thư rác)",
+            "marked_as_non_spam": "Bạn đã đánh dấu thư không phải Spam(thư rác)",
+            "folder_wiped": "Xoá thư mục thành công",
+            "mail_sent": "Gửi tin nhắn",
+            "message_move": "Đã di chuyển thư thành công",
+            "message_deleted": "Đã xoá thư",
+            "message_delete_error": "Có lỗi, thư không xoá được. Vui lòng thử lại.",
+            "tag_created": "Tạo Tag {{name}} thành công",
+            "tag_deleted": "Xoá Tag {{name}} thành công",
+            "tag_updated": "Cập nhập Tag thành công",
+            "folder_edited": "Các thay đổi đã được lưu chính xác",
+            "folder_moved": "Di chuyển thư mục thành công",
+            "sending_mail_in_count": "Đang gửi thư của bạn trong {{count}} giây",
+            "folder_created": "Đã tạo thư mục mới",
+            "folder_empty_error": "Có lỗi, thay đổi không được tạo. Vui lòng thử lại.",
+            "message_redirected": "Thư đã được chuyển hướng",
+            "tag_not_updated": "Có lỗi, Tag không cập nhập được. Vui lòng thử lại.",
+            "folder_move_error": "Có lỗi, thư mục không di chuyển được. Vui lòng thử lại."
+        },
+        "something_went_wrong": "CÓ LỖI XUẤT HIỆN",
+        "invalid_address": "Địa chỉ sau không hợp lệ",
+        "new_email": "Thư mới",
+        "no_content": "Thư này không có nội dung"
+    },
+    "preview": {
+        "close": "Đóng chế độ xem trước"
+    },
+    "placeholder": {
+        "add_new_recipients": "Thêm người nhận mới"
+    },
+    "search": {
+        "sent_after": "Gửi sau",
+        "flagged_note": "Tìm kiếm tất cả các thư được gắn cờ.",
+        "sent_on": "Gửi vào",
+        "size_error": "Chỉ cho phép số",
+        "unread": "Chưa đọc",
+        "sent_before": "Gửi trước",
+        "unread_note": "Tìm kiếm tất cả thư chưa đọc.",
+        "attachment_note": "Tìm kiếm tất cả các thư có tệp đính kèm."
+    },
+    "settings": {
+        "active_filter": "Bộ lọc đang hoạt động",
+        "add_condition": "Thêm điều kiện mới",
+        "address_in": "Địa chỉ",
+        "actions": "Các tác vụ",
+        "after": "sau",
+        "b": "B",
+        "body": "Thân",
+        "browse": "Duyệt qua",
+        "conditions": "Điều kiện",
+        "contacts": "liên hệ",
+        "conv_is_started": "trong cuộc trò chuyện tôi đã bắt đầu",
+        "conv_sort_option": {
+            "asc": "Từ cũ đến mới",
+            "desc": "Từ mới đến cũ"
+        },
+        "create_new_filter": "Tạo bộ lọc mới",
+        "date": "Ngày",
+        "delete_filter": "Xoá bộ lọc",
+        "delete_filter_text": "Bạn chắc chắn xoá bộ lọc ",
+        "facebook_notification": "Cảnh báo Facebook",
+        "field": "Trường",
+        "filter_deleted": "Xoá bộ lọc thành công",
+        "filter_name": "Tên bộ lọc",
+        "is_not": "không là",
+        "label": {
+            "conversation_ordering": "Đặt hàng cuộc trò hội thoại",
+            "default_mail_search": "Tìm thư mặc định",
+            "search_query": "Truy vấn mặc định",
+            "visualization_options": "Tùy chọn trực quan hóa (Visualization )",
+            "message_selection": "Lựa chọn thư",
+            "message_color": "Màu thư",
+            "display_messages": "Hiển thị thư",
+            "set_message_color": "Đặt màu cho thư và cuộc hội thoại theo màu thẻ Tag.",
+            "check_new_mail": "Kiểm tra thư mới",
+            "display_mail": "Hiển thị thư"
+        },
+        "discard": "Bỏ qua",
+        "linkedin_msg": "Tin nhắn và kết nối LinkedIn",
+        "localpart": "địa phương",
+        "mark_as": "Đánh dấu là",
+        "mass_marketing": "tiếp thị đại chúng (số lượng lớn)",
+        "matches_exactly": "khớp chính xác",
+        "matches_wildcard_condition": "khớp với điều kiện ký tự đại diện",
+        "mb": "MB",
+        "move_into_folder": "Di chuyển vào thư mục",
+        "msg_from_optn": {
+            "inbox": "Đặt trong hộp thư đến",
+            "inbox_if_cc": "Đặt trong mục thư đến nếu tôi ở trong To: hoặc Cc:",
+            "discard": "Tự động bỏ qua thư"
+        },
+        "new_mail_optn": {
+            "manually": "Thủ công",
+            "minute": "{{count}} phút",
+            "when_arrive": "Khi có thư mới"
+        },
+        "to_cc": "To hoặc CC",
+        "my_frequent_emails": "thư thường xuyên của tôi",
+        "msg_selection_optn": {
+            "below_deleted": "Thư được chọn bên dưới đã xóa hoặc đã di chuyển",
+            "above_deleted": "Chọn thư bên dưới để xoá hoặc di chuyển thư",
+            "based_on_previous": "Chọn thư tiếp theo dựa trên các lựa chọn trước đó"
+        },
+        "message": "Tin nhắn",
+        "twitter_notification": "Thông báo Twitte",
+        "choose": "Chọn",
+        "choose_date": "Chọn ngày",
+        "conv_is_participated": "trong các cuộc trò chuyện tôi đã tham gia",
+        "contains": "chứa",
+        "filter_folder_message": "Chọn thư mục để áp dụng bộ lọc của bạn:",
+        "invite_not_replied": "lời mời không được trả lời ",
+        "if": "Nếu",
+        "in": "trong",
+        "is_me": "là tôi",
+        "is": "là",
+        "keep_in_sent": "Giữ trong hòm thư đã Gửi đi",
+        "keyword": "Từ khoá",
+        "not_in": "không ở trong",
+        "not_before": "không phải trước khi",
+        "over": "kết thúc",
+        "perform_following_action": "Thực hiện các tác vụ sau:",
+        "notify_folder_optn": {
+            "new_message_inbox": "Hiển thị thông báo cho các thư mới đến trong hộp thư đến",
+            "new_message_folder": "Hiển thị thông báo cho các thư mới đến trong bất kỳ thư mục nào"
+        },
+        "remove_condition": "Gỡ bỏ điều kiện này",
+        "before": "trước",
+        "social": "Xã hội",
+        "tag_with": "Đánh dấu với(Tag with)",
+        "does_not_contain": "không bao gồm",
+        "does_not_exists": "không tồn tại",
+        "does_not_match_exactly": "không khớp chính xác",
+        "does_not_match_wildcard_condition": "không khớp với điều kiện ký tự đại diện",
+        "domain": "miền",
+        "exists": "tồn tại",
+        "calendar": "Lịch",
+        "do_not_process_additional_filters": "Không xử lý bộ lọc bổ sung",
+        "display_mail_options": {
+            "html": "Kiểu HTML(Khi có thể)",
+            "text": "Kiểu text"
+        },
+        "kb": "KB",
+        "keep_in_inbox": "Giữ trong hòm thư đến(Inbox)",
+        "from_distribution_list": "từ danh sách phân phối",
+        "gb": "GB",
+        "header_name": "Tiêu đề được đặt tên",
+        "invite_not_requested": "lời mời không được yêu cầu",
+        "invite_replied": "lời mời được trả lời",
+        "invite_requested": "lời mời được yêu cầu",
+        "is_not_me": "không là tôi",
+        "not_after": "không phải sau khi",
+        "not_over": "chưa hết",
+        "not_under": "không dưới",
+        "read_rcpt_optn": {
+            "always": "Luôn gửi đánh dấu đã đọc",
+            "ask_me": "Hỏi tôi",
+            "never": "Không bảo giờ gửi đánh dấu đã đọc"
+        },
+        "read_receipt": "Đánh dấu đã đọc",
+        "redirect_to_address": "Chuyển hướng đến địa chỉ",
+        "under": "dưới"
+    },
+    "snackbar": {
+        "tag_applied": "đã áp dụng tag \"{{tag}}\"",
+        "folder_shared": "Chia sẻ thư mục",
+        "share_resend": "Gửi lại lời mời chia sẻ",
+        "share_revoke": "Thu hồi truy cập chia sẻ",
+        "share_updated": "\"Quyền truy cập được cập nhập\"",
+        "tag_removed": "Đã xoá tag \"{{tag}}\"",
+        "email_moved_to_trash": "Thư được di chuyển đến thùng rác"
+    },
+    "signatures": {
+        "add_signature": "Thêm chữ ký",
+        "name": "Tên",
+        "signature_heading": "Chữ ký"
+    },
+    "share": {
+        "recipients_address": "Địa chỉ thư của người nhận",
+        "options": {
+            "share_calendar_with": {
+                "public": "Người bên ngoài (chỉ được xem, không yêu cầu mật khẩu)",
+                "internal_users_groups": "Người dùng và nhóm nội bộ",
+                "external_guests": "Khách bên ngoài (chỉ được xem)"
+            },
+            "share_calendar_role": {
+                "manager": "Manager",
+                "none": "Không",
+                "viewer": "Người xem",
+                "admin": "Admin"
+            }
+        },
+        "send_notification": "Gửi một thông báo về chia sẻ này",
+        "share_note": "Thông báo chuẩn hiển thị tên của bạn, tên của mục được chia sẻ, quyền được cấp cho người nhận và thông tin đăng nhập.",
+        "standard_message": "Thêm ghi chú vào thư chuẩn",
+        "filter_folder_message": "Lựa chọn thư mục để bắt đầu tìm kiếm nâng cao",
+        "is_contained_in": "Được chứa trong"
+    },
+    "title": {
+        "new_messages": "Thư mới",
+        "replies_forwards": "Trả lời & Chuyển tiếp"
+    },
+    "tooltip": {
+        "add_attachments": "Thêm vào đính kèm",
+        "disable_rich_text": "Tắt trình chỉnh sửa văn bản dạng đa thức(rich text)",
+        "edit": "Chỉnh sửa thuộc tính chia sẻ",
+        "enable_rich_text": "Bật trình chỉnh sửa văn bản dạng đa thức(rich text)",
+        "enable_urgent": "Bật khẩn cấp",
+        "resend": "Gửi lại thông báo qua thư về chia sẻ này",
+        "revoke": "Thu hồi truy cập",
+        "disable_urgent": "Tắt khẩn cấp"
+    },
+    "action": {
+        "flag": "Thêm gắn cờ",
+        "forward": "Chuyển tiếp",
+        "click_preview": "Bấm vào để xem trước",
+        "edit_as_new": "Soạn thảo mới",
+        "edit_share": "Chỉnh sửa chia sẻ",
+        "goto_drafts": "Đi đến hòm thư nháp",
+        "goto_folder": "DI CHUYỂN ĐẾN THƯ MỤC",
+        "hide_details": "Ẩn chi tiết",
+        "mark_as_non_spam": "Đánh dấu không phải Spam",
+        "mark_as_read": "Đánh dấu đã đọc",
+        "mark_as_spam": "Đánh dấu là spam",
+        "mark_as_unread": "Đánh dấu là chưa đọc",
+        "ok": "OK",
+        "preview": "Xem trước",
+        "print": "In",
+        "redirect": "Chuyển hướng",
+        "reply": "Trả lời",
+        "reply_all": "Trả lời tất cả",
+        "reset": "Cài đặt lại",
+        "search": "Tìm",
+        "send_anyway": "Vẫn tiếp tục gửi",
+        "share_folder": "Chia sẻ thư mục",
+        "show_details": "Hiển thị chi tiết",
+        "show_original": "Hiển thị nguyên gốc",
+        "unflag": "Gỡ gắn cờ",
+        "preview_new_tab": "Bấm để xem trước trên thẻ khác"
+    },
+    "notification": {
+        "no_content": "Thư không có nội dung",
+        "new_message": "Thư mới"
+    },
+    "board": {
+        "show": "Hiển thị bảng"
+    },
+    "displayer": {
+        "archive_title2": "Chọn một thư lưu trữ để xem lại.",
+        "description2": "Gửi tài liệu, hình ảnh và nhiều hơn nữa,... bằng cách soạn một thư mới.",
+        "list_draft_title": "Không có thư nháp nào",
+        "search_description1": "Hoặc chọn \"Bộ lọc nâng cao\" để tinh chỉnh tìm kiếm của bạn.",
+        "search_list_title1": "Có vẻ như không có kết quả. Tiếp tục tìm kiếm!",
+        "search_list_title2": "Không có mục nào phù hợp với tìm kiếm của bạn.",
+        "search_title1": "Bắt đầu tìm kiếm khác",
+        "search_title3": "Không có kết quả cho tìm kiếm của bạn.",
+        "search_title4": "Chọn một hoặc nhiều kết quả để thực hiện các tác vụ hoặc hiển thị chi tiết.",
+        "title2": "Nhấp vào nút \"THƯ MỚI\"",
+        "title3": "Giữ liên lạc với những người dùng khác.",
+        "description7": "Chọn một thư để trả lời.",
+        "draft_title1": "Lưu một thư dưới dạng bản nháp cho phép bạn giữ lại nội dung mà bạn có thể gửi sau.",
+        "junk_title1": "Thật may mắn! Không có thư spam nào mà bạn phải bận tâm",
+        "junk_title2": "Bấm vào biểu tượng thùng rác để xoá một thư spam",
+        "list_folder_title": "Hiện tại có vẻ như không có thư nào",
+        "list_junk_title": "Không có thư spam",
+        "list_sent_title": "Bạn không gửi thư nào bây giờ",
+        "list_spam_title": "Không có thư spam",
+        "sent_title2": "Chọn một thư để hiển thị những gì bạn đã gửi.",
+        "title1": "Soạn thư mới bằng cách nhấp vào nút \"THƯ MỚI\"",
+        "title8": "Chọn một thư mục để đọc hoặc xoá.",
+        "trash_title1": "Bấm vào biểu tượng thùng rác để xoá một thư spam",
+        "trash_title2": "Chọn và khôi phục thư từ thùng rác.",
+        "spam_title2": "Bấm vào biểu tượng thùng rác để xoá thư spam",
+        "search_description2": "Thử với tìm kiếm khác.",
+        "archive_title1": "Lưu thư vào kho lưu trữ để bạn có thể xem lại sau.",
+        "description4": "Bạn có thể gắn cờ, trả lời hoặc chuyển tiếp nó cho những người dùng khác.",
+        "description5": "Kiểm tra những gì người dùng khác muốn nói chuyện với bạn.",
+        "description6": "Trả lời thư này hoặc chuyển tiếp nó cho những người dùng khác.",
+        "draft_title2": "Chọn và chỉnh sửa một thư để gửi nó cho người dùng khác.",
+        "list_trash_title": "Thùng rác đang rỗng",
+        "search_description3": "Kiểm tra chính tả và các tùy chọn bộ lọc hoặc thử với một từ khóa khác.",
+        "search_title2": "Rất tiếc, không có kết quả nào cho tìm kiếm của bạn",
+        "spam_title1": "Thật may mắn! Không có thư spam nào mà bạn phải bận tâm",
+        "title4": "Chọn một thư để đọc nó"
+    },
+    "filters": {
+        "active_filters": "Bộ lọc đang hoạt động",
+        "available_filters": "Bộ lọc đã sẵn sàng",
+        "filters": "Bộ lọc",
+        "incoming_msg_filters": "Bộ lọc thư đến",
+        "outgoing_message_filters": "Bộ lọc thư gửi ra",
+        "run": "Chạy",
+        "filter_note": "Lưu ý: các thay đổi đối với quy tắc lọc được lưu ngay lập tức"
+    },
+    "folder": {
+        "modal": {
+            "edit": {
+                "add_share": "Thêm chia sẻ",
+                "retention_duration_warning": "Thời lượng lưu giữ phải là một số dương",
+                "retention_message": "Tin nhắn trong thư mục này nằm trong phạm vi lưu giữ, sẽ yêu cầu xác nhận rõ ràng trước khi bị xóa",
+                "threshold_message": "Tin nhắn trong thư mục này cũ hơn ngưỡng xử lý và sẽ được tự động dọn dẹp, xóa.",
+                "rename_warning": "Bạn không thể đổi tên một thư mục làm hệ thống."
+            }
+        }
+    },
+    "folder_panel": {
+        "action": {
+            "edit_properties": "Chỉnh sửa thuộc tính",
+            "empty": {
+                "trash": "Xoá sạch thùng rác"
+            },
+            "wipe": {
+                "folder_panel": "Xoá thư mục"
+            }
+        },
+        "lists_item": {
+            "root": "/Root"
+        },
+        "modal": {
+            "delete": {
+                "body": {
+                    "message2": "Bạn muốn xoá vĩnh viễn thư mục đã chọn?",
+                    "message3": "Nếu bạn xóa nó, tất cả nội dung liên quan sẽ được chuyển vào Thùng rác và thư mục sẽ không còn hiển thị nữa.",
+                    "message1": "Bạn muốn dọn sạch thư mục đã chọn?",
+                    "message4": "Nếu bạn xóa nó, tất cả nội dung liên quan sẽ bị xóa vĩnh viễn và thư mục sẽ không thể khôi phục được nữa."
+                }
+            },
+            "move": {
+                "body": {
+                    "message1": "Chọn một thư mục mà bạn cân nhắc:",
+                    "message2": "Chọn một thư mục để khôi phục:"
+                },
+                "title_modal": "Di chuyển cuộc trò chuyện"
+            },
+            "empty": {
+                "body": {
+                    "message1": "Bạn muốn dọn sạch thư mục đã chọn?",
+                    "message2": "Nếu bạn dọn sạch nó, tất cả các nội dung liên quan sẽ bị xoá vĩnh viễn."
+                }
+            },
+            "new": {
+                "create_footer": "Tạo và di chuyển",
+                "input": {
+                    "name": "Nhập tên thư mục",
+                    "position": "Thư mục cha",
+                    "name_exist": "Tên đã tồn tại trong đường dẫn này"
+                },
+                "restore_create_footer": "Tạo và khôi phục",
+                "title": "Tạo thư mục mới",
+                "name_exist_warning": "Tên đã tồn tại"
+            },
+            "wipe": {
+                "body": {
+                    "message2": "Nếu bạn dọn sạch, tất cả các nội dung liên quan sẽ bị xoá vĩnh viễn."
+                }
+            }
+        }
+    }
+}
