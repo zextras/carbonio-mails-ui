@@ -68,7 +68,8 @@
         "permanent_delete_title": "Vuoi eliminare definitivamente questo elemento?",
         "powered_by": "offerto da",
         "could_not_find_to_show": "Siamo spiacenti, non è stato trovato nulla da mostrare",
-        "something_went_wrong": "QUALCOSA È ANDATO STORTO"
+        "something_went_wrong": "QUALCOSA È ANDATO STORTO",
+        "check_and_try_again": "Per favore, controlla Carbonio e riprova"
     },
     "label": {
         "cc": "Cc",
@@ -247,7 +248,8 @@
         "no_subject_with_tags": "<Nessun Oggetto>",
         "save_to_files": "Salva su Files",
         "upload_from_files": "Carica da Files",
-        "disposal_threshold": "Limite per l'eliminazione"
+        "disposal_threshold": "Limite per l'eliminazione",
+        "notification_audio": "Avviso sonoro quando appare una nuova notifica"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",

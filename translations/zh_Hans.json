@@ -153,7 +153,10 @@
         },
         "invalid_address": "以下地址似乎无效",
         "permanent_delete_body": "永久性删除此元素将导致您无法再次将其恢复，是否继续？",
-        "powered_by": "出品"
+        "powered_by": "出品",
+        "check_and_try_again": "请检查Carbonio并重试",
+        "could_not_find_to_show": "抱歉，我们无法找到可供展示的东西",
+        "something_went_wrong": "出了一些问题"
     },
     "of": "的",
     "placeholder": {
@@ -413,7 +416,11 @@
         "create_and_move": "创建和移动",
         "error": "错误",
         "no_subject_with_tags": "<无主题>",
-        "save_to_files": "保存至文件"
+        "save_to_files": "保存至文件",
+        "invalid_destination": "此节点不是有效的目标",
+        "notification_audio": "有新通知时播放音频提示",
+        "notification_folders": "通知文件夹",
+        "upload_from_files": "从文件上传"
     },
     "owner": "所有者",
     "read": "已读",
@@ -440,7 +447,12 @@
             "settings_saved": "编辑保存正确",
             "att_err": "保存时似乎出现错误，请重试",
             "calendar_edits_saved": "编辑保存正确",
-            "att_saved": "附件已保存在所选文件夹中"
+            "att_saved": "附件已保存在所选文件夹中",
+            "all_att_added": "附件添加成功",
+            "all_att_saved": "附件已成功保存在所选文件夹中",
+            "att_err_adding": "添加附件时似乎出现错误，请重试",
+            "some_att_add_fails": "添加一些附件时似乎出现错误，请重试",
+            "some_att_fails": "保存一些文件时似乎出现错误，请重试"
         },
         "search_hints": "搜索我们需要讨论的提示",
         "sending_mail_to_self": "似乎您即将向自己发送邮件",
@@ -448,7 +460,9 @@
         "email_saved_at": "邮件已于 {{time}} 保存为草稿",
         "delete_tag_message1": "确定要删除“{{name}}”标签吗？",
         "delete_tag_message2": "删除后，其将从所有已进行相关标记的项目上移除。",
-        "view_rights": "查看"
+        "view_rights": "查看",
+        "admin_rights": "查看、编辑、添加、移除、管理",
+        "manager_rights": "查看、编辑、添加、移除"
     },
     "settings": {
         "label": {
@@ -627,7 +641,8 @@
                 "title": "拖放模式",
                 "content": "在此处拖入您的附件以将其快速添加至此邮件"
             },
-            "contacts_mod": "添加联系人卡片"
+            "contacts_mod": "添加联系人卡片",
+            "files": "从文件添加"
         }
     },
     "administer": "管理",
