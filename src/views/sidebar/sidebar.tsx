@@ -111,7 +111,7 @@ const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 					</Switch>
 				</>
 			) : (
-				accordions[0].items.map((folder, index: number) => (
+				accordions[0].items.map((folder: Folder, index: number) => (
 					<CollapsedSideBarItems key={index} folder={folder} />
 				))
 			)}

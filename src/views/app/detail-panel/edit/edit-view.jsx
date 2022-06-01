@@ -198,7 +198,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const boardContext = useBoardConfig();
 	const [editor, setEditor] = useState();
 	const [openDD, setOpenDD] = useState(false);
-
 	const action = useQueryParam('action');
 	const change = useQueryParam('change');
 
@@ -231,6 +230,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [initialAction, setInitialAction] = useState(action);
 	const [actionChanged, setActionChanged] = useState(true);
 	const [isUploading, setIsUploading] = useState(false);
+	const [reloadComposer, setReloadComposer] = useState(true);
+	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
 
 	const [from, setFrom] = useState({
 		label: defaultIdentity?.label,
@@ -552,10 +553,78 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		[confirmAction, t]
 	);
 
+	const getPublicUrl = useCallback(
+		(nodes) => {
+			const promises = map(nodes, (node) =>
+				getLink({ node, type: 'createLink', description: node.id })
+			);
+
+			Promise.allSettled(promises).then((res) => {
+				const success = filter(res, ['status', 'fulfilled']);
+				const allSuccess = res.length === success?.length;
+				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
+				const type = allSuccess ? 'info' : 'warning';
+				// eslint-disable-next-line no-nested-ternary
+				const label = allSuccess
+					? t('message.snackbar.all_link_copied', 'Public link copied successfully')
+					: allFails
+					? t(
+							'message.snackbar.link_copying_error',
+							'There seems to be a problem while generating public link, please try again'
+					  )
+					: t(
+							'message.snackbar.some_link_copying_error',
+							'There seems to be a problem while generating public url for some files, please try again'
+					  );
+				createSnackbar({
+					key: `public-link`,
+					replace: true,
+					type,
+					hideButton: true,
+					label,
+					autoHideTimeout: 4000
+				});
+
+				const newEditor = {
+					...editor,
+					text: [
+						map(success, (i) => i.value.url)
+							.join('\n')
+							.concat(editor.text[0]),
+						` ${map(success, (i) => `<p><a href="${i.value.url}"> ${i.value.url}</a></p>`).join(
+							''
+						)}`.concat(editor.text[1])
+					]
+				};
+
+				updateEditorCb(newEditor);
+				saveDraftCb(newEditor);
+				setReloadComposer(false);
+				setTimeout(() => setReloadComposer(true), 0);
+			});
+		},
+		[createSnackbar, editor, getLink, saveDraftCb, t, updateEditorCb]
+	);
+
+	const actionURLTarget = useMemo(
+		() => ({
+			confirmAction: getPublicUrl,
+			confirmLabel: t('label.share_public_link', 'Share Public Link'),
+			allowFiles: true,
+			allowFolders: false
+		}),
+		[getPublicUrl, t]
+	);
+
 	const [filesSelectFilesAction, filesSelectFilesActionAvailable] = getAction(
 		'carbonio_files_action',
 		'files-select-nodes',
 		actionTarget
+	);
+	const [getFilesAction, getFilesActionAvailable] = getAction(
+		'carbonio_files_action',
+		'files-select-nodes',
+		actionURLTarget
 	);
 
 	const attachmentsItems = useMemo(() => {
@@ -587,9 +656,25 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 					label: t('composer.attachment.files', 'Add from Files')
 			  }
 			: undefined;
+		const fileUrl =
+			getFilesActionAvailable && getLinkAvailable
+				? {
+						...getFilesAction,
+						label: t('composer.attachment.url', 'Add public link from Files'),
+						icon: 'Link2'
+				  }
+				: undefined;
 
-		return compact([localItem, driveItem, contactItem]);
-	}, [filesSelectFilesAction, filesSelectFilesActionAvailable, onFileClick, t]);
+		return compact([localItem, driveItem, fileUrl, contactItem]);
+	}, [
+		t,
+		onFileClick,
+		filesSelectFilesActionAvailable,
+		filesSelectFilesAction,
+		getFilesActionAvailable,
+		getLinkAvailable,
+		getFilesAction
+	]);
 
 	const onClick = () => {
 		setOpenDD(!openDD);
@@ -1261,7 +1346,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 							)}
 						</RowContainer>
 					</Container>
-					{editor?.text && (
+					{editor?.text && reloadComposer && (
 						<Container
 							height="100%"
 							padding={{ all: 'small' }}
@@ -1313,7 +1398,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 													];
 
 													throttledSaveToDraft({ text: data });
-
 													updateSubjectField({ text: data });
 													onChange(data);
 												}}

@@ -67,8 +67,8 @@ function createEditorReducer(
 			? [
 					`<br>${signatureRepliesForwardsValue} ${
 						generateReplyText(payload.original, payload.labels)[0]
-					}`,
-					`<br>${signatureRepliesForwardsValue} ${
+					} `,
+					`<br> ${signatureRepliesForwardsValue} ${
 						generateReplyText(payload.original, payload.labels)[1]
 					}`
 			  ]
