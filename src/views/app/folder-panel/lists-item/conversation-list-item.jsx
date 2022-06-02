@@ -40,7 +40,7 @@ import { SenderName } from './sender-name';
 import MessageListItem from './message-list-item';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 
-function ConversationMessagesList({ conversationStatus, messages, folderId, length }) {
+export function ConversationMessagesList({ conversationStatus, messages, folderId, length }) {
 	if (conversationStatus !== 'complete') {
 		return (
 			<Container height={64 * length}>
