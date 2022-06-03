@@ -21,7 +21,7 @@ const Wrapper = styled(Container)`
 	overflow: hidden;
 `;
 
-const ShimmerList = ({ count, delay = 0, transitionDuration = 400 }) => {
+const ShimmerList = ({ count, delay = 0, transitionDuration = 800 }) => {
 	const itemCount = count > 33 ? 33 : count;
 
 	return (
