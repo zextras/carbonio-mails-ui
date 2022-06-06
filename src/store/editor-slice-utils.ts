@@ -55,8 +55,8 @@ export const emptyEditor = (
 		)?.value.description ?? '';
 
 	const textWithSignatureNewMessage = [
-		`<br><ems>${signatureNewMessageValue}</ems>`,
-		`<br><ems>${signatureNewMessageValue}</ems>`
+		`<br>${signatureNewMessageValue}`,
+		`<br>${signatureNewMessageValue}`
 	];
 
 	return {
