@@ -40,7 +40,7 @@ const CollapseElement = styled(Container)`
 	display: ${({ open }) => (open ? 'block' : 'none')};
 `;
 
-const SearchListItem = ({ item, folderId, selected, selecting, toggle, active }) => {
+const SearchListItem = ({ itemId, item, folderId, selected, selecting, toggle, active }) => {
 	const [t] = useTranslation();
 	const history = useHistory();
 	const dispatch = useDispatch();
@@ -152,7 +152,7 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 						selected={selected}
 						selecting={selecting}
 						toggle={toggle}
-						folderId={folderId}
+						folderId={parent}
 						isSearch
 					/>
 					<Padding horizontal="extrasmall" />
@@ -235,6 +235,7 @@ const SearchListItem = ({ item, folderId, selected, selecting, toggle, active })
 					height="auto"
 				>
 					<ConversationMessagesList
+						active={itemId}
 						length={item?.messages?.length}
 						messages={messagesToRender}
 						conversationStatus={conversationStatus}
