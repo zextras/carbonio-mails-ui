@@ -3,7 +3,7 @@
         "attachment": {
             "files": "Thêm vào từ tệp tin",
             "drag_and_drop": {
-                "title": "Chế độ kéo thả(Drag&Drop Mode)",
+                "title": "Chế độ kéo thả",
                 "content": "Kéo/thả vào đây các tệp đính kèm của bạn để nhanh chóng thêm vào thư"
             },
             "local": "Thêm vào từ thiết bị cục bộ",
@@ -11,11 +11,11 @@
         }
     },
     "folders": {
-        "spam": "Thư rác",
+        "spam": "Spam",
         "trash": "Thùng rác",
-        "sent": "Gửi",
+        "sent": "Gửi đi",
         "drafts": "Thư nháp",
-        "junk": "Junk(thư rác)",
+        "junk": "Junk mail",
         "inbox": "Hộp thư đến"
     },
     "header": {
@@ -179,7 +179,7 @@
         "type_name_here": "Tên mục",
         "wipe": "Xoá",
         "with_you": "với bạn",
-        "workflow": "Luồng công việc(Workflow)",
+        "workflow": "Luồng công việc",
         "would_like_to_share": "đã chia sẻ nó",
         "write": "Ghi",
         "results_for_error": "Không thể bắt đầu tìm kiếm, hãy xóa nó và thử lại: ",
@@ -307,7 +307,7 @@
             "conversation_ordering": "Đặt hàng cuộc trò hội thoại",
             "default_mail_search": "Tìm thư mặc định",
             "search_query": "Truy vấn mặc định",
-            "visualization_options": "Tùy chọn trực quan hóa (Visualization )",
+            "visualization_options": "Tùy chọn trực quan",
             "message_selection": "Lựa chọn thư",
             "message_color": "Màu thư",
             "display_messages": "Hiển thị thư",
@@ -342,7 +342,7 @@
             "based_on_previous": "Chọn thư tiếp theo dựa trên các lựa chọn trước đó"
         },
         "message": "Tin nhắn",
-        "twitter_notification": "Thông báo Twitte",
+        "twitter_notification": "Thông báo Twitter",
         "choose": "Chọn",
         "choose_date": "Chọn ngày",
         "conv_is_participated": "trong các cuộc trò chuyện tôi đã tham gia",
@@ -353,7 +353,7 @@
         "in": "trong",
         "is_me": "là tôi",
         "is": "là",
-        "keep_in_sent": "Giữ trong hòm thư đã Gửi đi",
+        "keep_in_sent": "Giữ trong hòm thư đã gửi đi",
         "keyword": "Từ khoá",
         "not_in": "không ở trong",
         "not_before": "không phải trước khi",
@@ -366,7 +366,7 @@
         "remove_condition": "Gỡ bỏ điều kiện này",
         "before": "trước",
         "social": "Xã hội",
-        "tag_with": "Đánh dấu với(Tag with)",
+        "tag_with": "Gắn thẻ với",
         "does_not_contain": "không bao gồm",
         "does_not_exists": "không tồn tại",
         "does_not_match_exactly": "không khớp chính xác",
@@ -380,7 +380,7 @@
             "text": "Kiểu text"
         },
         "kb": "KB",
-        "keep_in_inbox": "Giữ trong hòm thư đến(Inbox)",
+        "keep_in_inbox": "Giữ trong hòm thư đến",
         "from_distribution_list": "từ danh sách phân phối",
         "gb": "GB",
         "header_name": "Tiêu đề được đặt tên",
@@ -406,7 +406,7 @@
         "share_resend": "Gửi lại lời mời chia sẻ",
         "share_revoke": "Thu hồi truy cập chia sẻ",
         "share_updated": "\"Quyền truy cập được cập nhập\"",
-        "tag_removed": "Đã xoá tag \"{{tag}}\"",
+        "tag_removed": "Đã xoá thẻ \"{{tag}}\"",
         "email_moved_to_trash": "Thư được di chuyển đến thùng rác"
     },
     "signatures": {
@@ -456,7 +456,7 @@
         "edit_as_new": "Soạn thảo mới",
         "edit_share": "Chỉnh sửa chia sẻ",
         "goto_drafts": "Đi đến hòm thư nháp",
-        "goto_folder": "DI CHUYỂN ĐẾN THƯ MỤC",
+        "goto_folder": "ĐI ĐẾN THƯ MỤC",
         "hide_details": "Ẩn chi tiết",
         "mark_as_non_spam": "Đánh dấu không phải Spam",
         "mark_as_read": "Đánh dấu đã đọc",

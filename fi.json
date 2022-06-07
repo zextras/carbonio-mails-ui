@@ -1,1 +1,90 @@
-{}
+{
+    "action": {
+        "hide_details": "Piilota yksityiskohdat",
+        "preview": "Esikatselu",
+        "edit_as_new": "Muokkaa uutena",
+        "edit_share": "Muokkaa jakoa",
+        "flag": "Lisää lippu",
+        "forward": "Eteenpäin",
+        "goto_drafts": "Siirry vedoksiin",
+        "goto_folder": "SIIRRY KANSIOON",
+        "mark_as_non_spam": "Ei roskaposti",
+        "mark_as_read": "Merkitse luetuksi",
+        "mark_as_spam": "Merkitse roskapostiksi",
+        "mark_as_unread": "Merkitse lukemattomaksi",
+        "ok": "Ok",
+        "print": "Tulosta",
+        "redirect": "Uudelleenohjaa",
+        "reply": "Vastaa",
+        "reply_all": "Vastaa kaikille",
+        "reset": "Resetoi",
+        "search": "Hae",
+        "send_anyway": "Lähetä siitä huolimatta",
+        "share_folder": "Jaa kansio",
+        "show_details": "Näytä yksityiskohdat",
+        "unflag": "Poista lippu",
+        "click_preview": "Klikkaa esikatsellaksesi",
+        "preview_new_tab": "Klikkaa avataksesi esikatselun uuteen välilehteen",
+        "show_original": "Näytä alkuperäinen"
+    },
+    "label": {
+        "remove": "Poista",
+        "remove_plural": "Poista kaikki"
+    },
+    "displayer": {
+        "search_description1": "Tai valitse \"Edityneet suotimet\" tarkentaaksesi hakuasi.",
+        "search_description2": "Yritä aloittaa toinen haku.",
+        "search_description3": "Tarkista kirjoitusasu ja suotimen optiot tai koita toisella hakusanalla.",
+        "search_title2": "Olemme pahoillamme, mutta hakusi ei tuottanut tuloksia",
+        "sent_title2": "Valitse sähköposti nähdäksesi mitä olet lähettänyt.",
+        "spam_title1": "Hienoa! Roskaposteja ei näyttäisi olevan",
+        "spam_title2": "Klikkaa roskakori-ikonia poistaaksesi roskapostin.",
+        "title1": "Kirjoita uusi sähköposti klikkaamalla \"UUSI\" nappulaa",
+        "title2": "Klikkaa \"UUSI\" nappulaa",
+        "title3": "Pysy yhteyksissä toisten käyttäjien kanssa.",
+        "title4": "Valitse sähköposti lukeaksesi se",
+        "trash_title1": "Klikkaa roskakorin kuvakettaa poistaaksesi sähköposti",
+        "trash_title2": "Valitse ja palauta sähköposteja roskakorista.",
+        "archive_title2": "Valitse arkistoitu sähköposti tarkastellaksesi sitä.",
+        "description2": "Lähetä dokumentteja, kuvia ja muita kirjoittamalla uusi sähköposti.",
+        "description5": "Tarkista, mistä toiset käyttäjät haluavat keskustella kanssasi.",
+        "description6": "Vastaa tähän sähköpostiin tai edelleenlähetä se toisille käyttäjille.",
+        "draft_title2": "Valitse ja muokkaa toisille käyttäjille lähetettävä sähköposti.",
+        "junk_title1": "Hienoa! Roskaposteja ei näyttäisi olevan",
+        "list_draft_title": "Ei tallennettuja vedoksia",
+        "list_folder_title": "Näyttäisi, ettei täällä ole sähköposteja vielä",
+        "archive_title1": "Tallenna sähköposti arkistoon jotta voit katsella sitä uudelleen myöhemmin.",
+        "description4": "Voit liputtaa sen, vastata tai edelleenlähettää sen toisille käyttäjille.",
+        "description7": "Valitse sähköposti, johon vastata.",
+        "draft_title1": "Sähköpostin tallentaminen luonnokseksi mahdollistaa viestin lähettämisen myöhemmin.",
+        "junk_title2": "Klikkaa roskakori-ikonia poistaaksesi roskapostin",
+        "list_junk_title": "Roskaposteja ei ole",
+        "list_sent_title": "Et ole vielä lähettänyt sähköposteja",
+        "list_spam_title": "Roskaposteja ei ole",
+        "list_trash_title": "Roskakori on tyhjä",
+        "search_list_title1": "Näyttäisi siltä, ettei tullut tuloksia. Jatka etsimistä!",
+        "search_list_title2": "Yksikään kohteistasi ei vastannut hakuasi.",
+        "search_title1": "Aloita toinen haku",
+        "search_title3": "Hakusi ei tuottanut tuloksia.",
+        "search_title4": "Valitse tuloksista yksi tai useampi suorittaaksesi toimenpiteitä tai katsoaksesi yksityiskohtia.",
+        "title8": "Valitse sähköposti lukeaksesi tai poistaaksesi se."
+    },
+    "filters": {
+        "active_filters": "Aktiiviset suotimet",
+        "available_filters": "Saatavilla olevat suotimet"
+    },
+    "board": {
+        "show": "Näytä taulu"
+    },
+    "composer": {
+        "attachment": {
+            "drag_and_drop": {
+                "content": "Pudota liitetiedostosi tähän lisätäksesi ne nopeasti tähän sähköpostiin",
+                "title": "Vedä&Pudota -tila"
+            },
+            "local": "Lisää paikallisesta",
+            "contacts_mod": "Lisää Yhteystietokortti",
+            "files": "Lisää tiedostoista"
+        }
+    }
+}
