@@ -989,7 +989,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 														bottomBorderColor="transparent"
 														hasError={some(editor?.to || [], { error: true })}
 														errorLabel=""
-														wrap="wrap"
 													/>
 												</Container>
 												<Container
