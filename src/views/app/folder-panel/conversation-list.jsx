@@ -165,6 +165,7 @@ const ConversationList = () => {
 					) : (
 						<List
 							style={{ paddingBottom: '4px' }}
+							background="gray6"
 							selected={selected}
 							active={itemId}
 							items={conversations}

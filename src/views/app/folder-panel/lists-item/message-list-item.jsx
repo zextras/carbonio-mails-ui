@@ -221,9 +221,8 @@ export default function MessageListItem({
 			>
 				<Container
 					mainAlignment="flex-start"
-					data-testid={`ConversationListItem-${item.id}`}
-					// eslint-disable-next-line no-nested-ternary
-					background={active ? 'highlight' : item.read ? 'gray6' : 'gray5'}
+					data-testid={`MessageListItem-${item.id}`}
+					background={item.read ? 'tranparent' : 'gray5'}
 				>
 					<ListItemActionWrapper item={item} onClick={_onClick} onDoubleClick={_onDoubleClick}>
 						<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>

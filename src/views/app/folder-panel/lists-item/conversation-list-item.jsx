@@ -283,8 +283,7 @@ export default function ConversationListItem({
 			onDragStart={(e) => dragCheck(e, item.id)}
 		>
 			<Container
-				// eslint-disable-next-line no-nested-ternary
-				background={active ? 'highlight' : item.read ? 'gray6' : 'gray5'}
+				background={item.read ? 'transparent' : 'gray5'}
 				mainAlignment="flex-start"
 				data-testid={`ConversationListItem-${item.id}`}
 			>
