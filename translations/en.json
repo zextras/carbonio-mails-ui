@@ -38,7 +38,8 @@
                 "title": "Drag&Drop Mode"
             },
             "files": "Add from Files",
-            "local": "Add from local"
+            "local": "Add from local",
+            "url": "Add public link from Files"
         }
     },
     "displayer": {
@@ -310,6 +311,7 @@
         "sent_to_address": "Sent to (address)",
         "set_default_signatures": "Set Default Signatures",
         "share": "Share",
+        "share_public_link": "Share Public Link",
         "share_with": "Share with",
         "shared_folders": "Shared Folders",
         "shared_item": "Shared item",
@@ -354,17 +356,20 @@
         "snackbar": {
             "all_att_added": "Attachments added successfully",
             "all_att_saved": "Attachments successfully saved in the selected folder",
+            "all_link_copied": "Public link copied successfully",
             "att_err": "There seems to be a problem when saving, please try again",
             "att_err_adding": "There seems to be a problem when adding attachments, please try again",
             "att_saved": "Attachment saved in the selected folder",
             "calendar_edits_saved": "Edits saved correctly",
+            "link_copying_error": "There seems to be a problem while generating public link, please try again",
             "settings_saved": "Edits saved correctly",
             "share": {
                 "accepted": "You have accepted the share request",
                 "declined": "You have declined the share request"
             },
             "some_att_add_fails": "There seems to be a problem when adding some attachments, please try again",
-            "some_att_fails": "There seems to be a problem when saving some files, please try again"
+            "some_att_fails": "There seems to be a problem when saving some files, please try again",
+            "some_link_copying_error": "There seems to be a problem while generating public url for some files, please try again"
         },
         "view_rights": "View"
     },
@@ -613,6 +618,7 @@
         "enable_urgent": "Enable urgent",
         "folder_sharing_status": "Shared with {{count}} people",
         "folder_sharing_status_one": "Shared with {{count}} person",
+        "folder_sharing_status_plural": "",
         "resend": "Resend mail notification about this share",
         "revoke": "Revoke access"
     }
