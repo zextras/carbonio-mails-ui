@@ -32,17 +32,34 @@ import {
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import { Folder, Folders } from '@zextras/carbonio-shell-ui';
 import { ModalHeader } from './commons/modal-header';
 import ModalFooter from './commons/modal-footer';
 import { createMountpoint } from '../../store/actions/create-mountpoint';
 import { ResFolder } from '../../types/commons';
+
+type CustomItem = {
+	item: {
+		id: string;
+		label: string;
+		open: boolean;
+		items: Folders;
+		ownerName: string;
+		ownerId: string;
+		checked: boolean;
+		folderId: string;
+		setLinks: (arg: any) => void;
+		links: Folder[];
+		CustomComponent: ReactElement;
+	};
+};
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
 	display: block;
 `;
 
-const CustomItem: FC<any> = ({ folder }) => {
+const CustomItem: FC<CustomItem> = ({ item: folder }) => {
 	const [checked, setChecked] = useState(false);
 	const [t] = useTranslation();
 

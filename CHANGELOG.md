@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.22](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.21...v0.1.22) (2022-05-25)
+
+### [0.1.21](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.20...v0.1.21) (2022-05-24)
+
+
+### Features
+
+* added folder sharing status icon ([eb087ad](https://github.com/zextras/carbonio-mails-ui/commit/eb087ad233530e84b887273ea63f43eda335b262))
+
+### [0.1.20](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.19...v0.1.20) (2022-05-24)
+
+
+### Bug Fixes
+
+* fixed conversation sorting ([7a69662](https://github.com/zextras/carbonio-mails-ui/commit/7a696626f5bb447493868228717db92fbcd1aecc))
+* old editor opens when new action is clicked ([31bfc16](https://github.com/zextras/carbonio-mails-ui/commit/31bfc16262cc80b6f90f1cbdcdfb3a75e40df5bf))
+
 ### [0.1.19](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.18...v0.1.19) (2022-05-20)
 
 
