@@ -300,6 +300,11 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		}
 	}, [action, dispatch, editor?.editorId]);
 
+	const showAttachments = useMemo(
+		() => editor?.original && editor?.attach?.mp?.length > 0 && action !== ActionsType.COMPOSE,
+		[action, editor?.attach?.mp?.length, editor?.original]
+	);
+
 	if (loading || !editor)
 		return (
 			<Container height="50%" mainAlignment="center" crossAlignment="center">
@@ -348,16 +353,14 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 								<ParticipantsRow />
 								<SubjectRow />
 
-								{editor.original &&
-									editor.attach?.mp?.length > 0 &&
-									action !== ActionsType.COMPOSE && (
-										<StyledComp.ColContainer occupyFull>
-											<EditAttachmentsBlock
-												editor={editor}
-												throttledSaveToDraft={throttledSaveToDraft}
-											/>
-										</StyledComp.ColContainer>
-									)}
+								{showAttachments && (
+									<StyledComp.ColContainer occupyFull>
+										<EditAttachmentsBlock
+											editor={editor}
+											throttledSaveToDraft={throttledSaveToDraft}
+										/>
+									</StyledComp.ColContainer>
+								)}
 							</StyledComp.RowContainer>
 						</Container>
 						<TextEditorContainer onDragOverEvent={onDragOverEvent} draftSavedAt={draftSavedAt} />
