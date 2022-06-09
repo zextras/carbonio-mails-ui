@@ -163,32 +163,36 @@ const ConversationList = () => {
 							</Padding>
 						</Container>
 					) : (
-						<List
-							style={{ paddingBottom: '4px' }}
-							background="gray6"
-							selected={selected}
-							active={itemId}
-							items={conversations}
-							itemProps={{
-								toggle,
-								// messages,
-								folderId,
-								setDraggedIds,
-								setIsDragging,
-								selectedItems: selected,
-								dragImageRef
-							}}
-							ItemComponent={ConversationListItem}
-							onListBottom={() => loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)}
-							data-testid={`conversation-list-${folderId}`}
-						/>
+						<Container style={{ minHeight: 0 }}>
+							<List
+								style={{ flexGrow: 1, paddingBottom: '4px' }}
+								background="gray6"
+								selected={selected}
+								active={itemId}
+								items={conversations}
+								itemProps={{
+									toggle,
+									// messages,
+									folderId,
+									setDraggedIds,
+									setIsDragging,
+									selectedItems: selected,
+									dragImageRef
+								}}
+								ItemComponent={ConversationListItem}
+								onListBottom={() =>
+									loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)
+								}
+								data-testid={`conversation-list-${folderId}`}
+							/>
+						</Container>
 					)}
 					<DragImageContainer ref={dragImageRef}>
 						{isDragging && <DragItems conversations={conversations} draggedIds={draggedIds} />}
 					</DragImageContainer>
 				</>
 			) : (
-				<ShimmerList count={folder?.itemsCount} />
+				<ShimmerList count={folder?.itemsCount} delay={500} />
 			)}
 		</>
 	);
