@@ -423,7 +423,7 @@
                 "external_guests": "Khách bên ngoài (chỉ được xem)"
             },
             "share_calendar_role": {
-                "manager": "Manager",
+                "manager": "Quản lý",
                 "none": "Không",
                 "viewer": "Người xem",
                 "admin": "Admin"
