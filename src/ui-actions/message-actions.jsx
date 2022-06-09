@@ -404,14 +404,17 @@ export function redirectMsg({ id, t, createModal }) {
 		label: t('action.redirect', 'Redirect'),
 		click: (ev) => {
 			if (ev) ev.preventDefault();
-			const closeModal = createModal({
-				maxHeight: '90vh',
-				children: (
-					<>
-						<RedirectAction onClose={() => closeModal()} id={id} />
-					</>
-				)
-			});
+			const closeModal = createModal(
+				{
+					maxHeight: '90vh',
+					children: (
+						<>
+							<RedirectAction onClose={() => closeModal()} id={id} />
+						</>
+					)
+				},
+				true
+			);
 		}
 	};
 }

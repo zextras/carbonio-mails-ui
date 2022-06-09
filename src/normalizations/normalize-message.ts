@@ -126,7 +126,7 @@ export const normalizeMailMessageFromSoap = (
 			shr: m.shr,
 			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
 			isComplete,
-			read: !isNil(m.f) ? !/u/.test(m.f) : undefined,
+			read: !isNil(m.f) ? !/u/.test(m.f) : true,
 			attachment: !isNil(m.f) ? /a/.test(m.f) : undefined,
 			flagged: !isNil(m.f) ? /f/.test(m.f) : undefined,
 			urgent: !isNil(m.f) ? /!/.test(m.f) : undefined,

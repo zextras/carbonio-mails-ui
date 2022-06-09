@@ -166,6 +166,7 @@ const ConversationList = () => {
 						<Container style={{ minHeight: 0 }}>
 							<List
 								style={{ flexGrow: 1, paddingBottom: '4px' }}
+								background="gray6"
 								selected={selected}
 								active={itemId}
 								items={conversations}
