@@ -44,7 +44,7 @@
                 "add_share": "Dodaj udostępnienie",
                 "rename_warning": "Nie możesz zmienić nazwy folderu na nazwę znajdującą się już w systemie.",
                 "retention_duration_warning": "Okres przechowywania musi być liczbą większą od zera",
-                "threshold_message": "Wiadomości z tego folderu, wykraczające poza okres przechowywania będą poddawane automatycznemu usunięciu."
+                "threshold_message": "Wiadomości z tego folderu, wykraczające poza Próg pozbywania się będą poddawane automatycznemu usunięciu."
             }
         }
     },
@@ -73,7 +73,8 @@
         "send_anyway": "Wyślij mimo to",
         "share_folder": "Udostępnij folder",
         "show_details": "Pokaż szczegóły",
-        "show_original": "Pokaż oryginał"
+        "show_original": "Pokaż oryginał",
+        "click_preview": "Kliknij aby zobaczyć podgląd"
     },
     "composer": {
         "attachment": {
@@ -83,7 +84,8 @@
             "drag_and_drop": {
                 "content": "Upuść tutaj swoje załączniki, aby szybko dodać je do e-maila",
                 "title": "Tryb Drag&Drop"
-            }
+            },
+            "files": "Dodaj z Files"
         }
     },
     "board": {
@@ -239,7 +241,45 @@
         "app_name": "E-maile",
         "set_default_signatures": "Ustaw Domyślne Podpisy",
         "show_quoted_text": "Pokaż zacytowany tekst",
-        "share_with": "Udostępnij"
+        "share_with": "Udostępnij",
+        "contact_folder": "Folder Kontakty",
+        "create_and_move": "Stwórz i przenieś",
+        "error": "Błąd",
+        "no_subject_with_tags": "<Brak Tematu>",
+        "preview": "Podgląd",
+        "select": "Wybierz",
+        "decline": "Odrzuć",
+        "folder_name": "Nazwa folderu",
+        "calendar": "Kalendarz",
+        "confirm": "Potwierdź",
+        "spam": "Spam",
+        "tags": "Tagi",
+        "behalf_of": "w imieniu",
+        "accept": "Zaakceptuj",
+        "add_task": "Jeżeli chcesz zrobić notkę, możesz dodać zadanie do Twojej LISTY TO-DO",
+        "create_tag": "Stwórz Tag",
+        "delete_tag": "Usuń Tag",
+        "delete_tag_name": "Usuń Tag \"{{name}}\"",
+        "edit_tag": "Edytuj Tag",
+        "edit_tag_name": "Edytuj Tag \"{{name}}\"",
+        "no_special_char_allowed": "Nazwa nie może zawierać żadnych znaków specjalnych",
+        "select_color": "Wybierz kolor",
+        "invalid_destination": "Ten węzeł nie jest prawidłowym celem",
+        "notification_audio": "Odtwórz dźwięk kiedy pojawi się nowe powiadomienie",
+        "notification_folders": "Foldery powiadomień",
+        "save_to_files": "Zapisz do Files",
+        "tag_max_length": "Dozwolone max. 128 znaków",
+        "tag_name": "Nazwa Tagu",
+        "upload_from_files": "Prześlij z Files",
+        "notify_organizer": "Powiadom organizatora",
+        "disposal_threshold": "Próg pozbywania się",
+        "by_conversation": "Wg Konwersacji",
+        "by_message": "Wg Wiadomości",
+        "create_new_task": "Stwórz nowe Zadanie",
+        "destination_folder": "Folder docelowy",
+        "enable_message_disposal": "Włącz pozbywanie się wiadomości",
+        "enable_message_retention": "Włącz przechowywanie wiadomości",
+        "retention_range": "Okres przechowywania"
     },
     "message": {
         "snackbar": {
@@ -247,11 +287,24 @@
             "share": {
                 "accepted": "Zaakceptowano propozycję udostępnienia",
                 "declined": "Odrzucono propozycję udostępnienia"
-            }
+            },
+            "calendar_edits_saved": "Zmiany zostały zapisane pomyślnie",
+            "all_att_added": "Załączniki zostały dodane pomyślnie",
+            "all_att_saved": "Złączniki zostały zapisane w wybranym folderze",
+            "att_err": "Wystąpił problem przy zapisywaniu, spróbuj ponownie",
+            "att_err_adding": "Wystąpił błąd przy dodawaniu załączników, spróbuj ponownie",
+            "att_saved": "Załącznik został zapisany w wybranym folderze",
+            "some_att_add_fails": "Wystąpił problem podczas dodawania niektórych z załączników, spróbuj ponownie",
+            "some_att_fails": "Wystąpił problem przy zapisywaniu niektórych z plików, spróbuj ponownie"
         },
         "invalid_search_message": "Nie znaleźliśmy niczego pasującego do kryteriów wyszukiwania",
         "sending_mail_to_self": "Wygląda na to, że wysyłasz e-maila do siebie",
-        "email_saved_at": "E-mail został zapisany jako wersja robocza o {{time}}"
+        "email_saved_at": "E-mail został zapisany jako wersja robocza o {{time}}",
+        "view_rights": "Wyświetlać",
+        "delete_tag_message1": "Czy na pewno chcesz usunąć Tag \"{{name}}\"?",
+        "delete_tag_message2": "Po usunięciu Tag zostanie zdjęty z każdego elementu oznaczonego nim.",
+        "admin_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie, Zarządzanie",
+        "manager_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie"
     },
     "search": {
         "flagged_note": "Wyszukaj wszystkie oflagowane e-maile.",
@@ -349,7 +402,8 @@
         "inbox": "Skrzynka odbiorcza",
         "junk": "Spam",
         "spam": "Spam",
-        "trash": "Kosz"
+        "trash": "Kosz",
+        "sent": "Wysłane"
     },
     "messages": {
         "invalid_address": "Wygląda na to, że ten adres jest nieprawidłowy",
@@ -380,7 +434,11 @@
             "marked_as_non_spam": "Oznaczyłeś ten e-mail jako Nie-Spam",
             "message_deleted": "Wiadomość została usunięta",
             "message_move": "Wiadomość została przeniesiona pomyślnie",
-            "message_redirected": "Wiadomość została przekierowana"
+            "message_redirected": "Wiadomość została przekierowana",
+            "tag_not_updated": "Coś poszło nie tak, Tag nie został zaktualizowany. Spróbuj ponownie.",
+            "tag_created": "Tag {{name}} został pomyślnie stworzony",
+            "tag_deleted": "Tag {{name}} został usunięty pomyślnie",
+            "tag_updated": "Tag został zaktualizowany pomyślnie"
         },
         "modal": {
             "delete": {
@@ -394,7 +452,11 @@
         },
         "new_email": "Nowy e-mail",
         "no_content": "Ta wiadomość nie zawiera tekstu",
-        "permanent_delete_title": "Czy na pewno chcesz trwale usunąć ten element?"
+        "permanent_delete_title": "Czy na pewno chcesz trwale usunąć ten element?",
+        "powered_by": "oparte na",
+        "check_and_try_again": "Sprawdź Carbonio i spróbuj ponownie",
+        "could_not_find_to_show": "Nie udało się znaleźć niczego",
+        "something_went_wrong": "COŚ POSZŁO NIE TAK"
     },
     "settings": {
         "conv_is_participated": "w konwersacjach, w których uczestniczyłem",
@@ -407,7 +469,8 @@
             "display_messages": "Wyświetlanie Wiadomości",
             "message_color": "Kolor Wiadomości",
             "message_selection": "Wybór Wiadomości",
-            "search_query": "Domyślne kryterium"
+            "search_query": "Domyślne kryterium",
+            "visualization_options": "Opcje wyświetlania"
         },
         "actions": "Czynności",
         "active_filter": "Aktywny filtr",
@@ -512,7 +575,12 @@
         "linkedin_msg": "Wiadomości i kontakty z LinkedIn",
         "matches_wildcard_condition": "pasuje do niestandardowych warunków",
         "message": "Wiadomość",
-        "not_before": "nie wcześniej niż"
+        "not_before": "nie wcześniej niż",
+        "msg_selection_optn": {
+            "below_deleted": "Wybierz wiadomość poniżej usuniętej lub przeniesionej wiadomości",
+            "above_deleted": "Wybierz wiadomość powyżej usuniętej lub przeniesionej wiadomości",
+            "based_on_previous": "Wybierz następna wiadomość na podstawie poprzednich wyborów"
+        }
     },
     "signatures": {
         "signature_heading": "Podpisy",
@@ -524,7 +592,9 @@
         "folder_shared": "Folder został udostępniony",
         "share_resend": "Zaproszenie do udostępnienia zostało wysłane ponownie",
         "share_updated": "\"Uprawnienia dostępu zostały zaktualizowane\"",
-        "share_revoke": "Dostęp do udostępniania został odebrany"
+        "share_revoke": "Dostęp do udostępniania został odebrany",
+        "tag_applied": "Tag \"{{tag}}\" został zastosowany",
+        "tag_removed": "Tag \"{{tag}}\" został zdjęty"
     },
     "title": {
         "new_messages": "Nowe Wiadomości",
@@ -536,5 +606,8 @@
     },
     "placeholder": {
         "add_new_recipients": "Dodaj nowych odbiorców"
+    },
+    "preview": {
+        "close": "Zamknij Podgląd"
     }
 }
