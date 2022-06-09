@@ -31,7 +31,7 @@ const ShimmerList = ({ count, delay = 0, transitionDuration = 800 }) => {
 			style={{ animationDelay: `${delay}ms`, animationDuration: `${transitionDuration}ms` }}
 		>
 			{times(itemCount, (index) => (
-				<Shimmer.ListItem type={1} key={`${index}`} />
+				<Shimmer.ListItem type={1} key={index} />
 			))}
 		</Wrapper>
 	);

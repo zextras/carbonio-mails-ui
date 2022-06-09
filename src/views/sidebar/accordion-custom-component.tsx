@@ -14,8 +14,6 @@ import {
 	useUserSettings,
 	getBridgedFunctions,
 	useUserAccount,
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	pushHistory,
 	AccordionFolder
 } from '@zextras/carbonio-shell-ui';
