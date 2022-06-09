@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.24](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.23...v0.1.24) (2022-06-09)
+
+
+### Features
+
+* managed external images with show/hide ([449379e](https://github.com/zextras/carbonio-mails-ui/commit/449379efe20b68df0166eabd5bf0e26abc68af8d))
+
+
+### Bug Fixes
+
+* app freeze in longer conversations ([f1b9de8](https://github.com/zextras/carbonio-mails-ui/commit/f1b9de8e91660bc5827dfe143fef177e8c943d35))
+* fixed background of lists to allow keyboard navigation ([#94](https://github.com/zextras/carbonio-mails-ui/issues/94)) ([61e314e](https://github.com/zextras/carbonio-mails-ui/commit/61e314e1ff27a11a1f35eac29ef5c46d29f79408))
+* fixed teh edit props modal of shared folders ([a8d9570](https://github.com/zextras/carbonio-mails-ui/commit/a8d9570f16902f8f0bf20abb5b9605218d71d994))
+* mail preview date sorting does not crash ([a46e8ed](https://github.com/zextras/carbonio-mails-ui/commit/a46e8ed91e780485dd4d5285c1b41cc7f06bbf0e))
+* normalization corrected for read flag ([#98](https://github.com/zextras/carbonio-mails-ui/issues/98)) ([9eb19a7](https://github.com/zextras/carbonio-mails-ui/commit/9eb19a70f4f920a66264e7e8e820bf2a202c7b80))
+* redirect action does not crash ([7afc0b8](https://github.com/zextras/carbonio-mails-ui/commit/7afc0b8a1bddd791402106b5cc4fc8811c0fe21e))
+* white page opening 'find shares' functionality ([48fb37b](https://github.com/zextras/carbonio-mails-ui/commit/48fb37b2568fa5fe855cc533077547a45ff09292))
+
 ### [0.1.23](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.22...v0.1.23) (2022-05-25)
 
 
