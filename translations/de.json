@@ -314,7 +314,11 @@
         "create_and_move": "Erstellen und verschieben",
         "error": "Fehler",
         "no_subject_with_tags": "<Kein Betreff>",
-        "save_to_files": "Speichern unter Dateien"
+        "save_to_files": "Speichern unter Dateien",
+        "invalid_destination": "Dieser Knotenpunkt ist kein gültiges Ziel",
+        "notification_audio": "Audio-Hinweis abspielen, wenn eine neue Benachrichtigung erscheint",
+        "notification_folders": "Ordner Benachrichtigungen",
+        "upload_from_files": "Von Files hochladen"
     },
     "share": {
         "options": {
@@ -414,7 +418,10 @@
         },
         "invalid_address": "Die folgende Adresse scheint ungültig zu sein",
         "invalid_address_plural": "Die folgenden Adressen scheinen ungültig zu sein",
-        "powered_by": "powered by"
+        "powered_by": "powered by",
+        "check_and_try_again": "Bitte überprüfen Sie Carbonio und versuchen Sie es erneut",
+        "could_not_find_to_show": "Sorry, wir konnten nichts zum Anzeigen finden",
+        "something_went_wrong": "ETWAS IST SCHIEFGELAUFEN"
     },
     "of": "von",
     "owner": "Besitzer",
@@ -453,7 +460,8 @@
             "drag_and_drop": {
                 "title": "Drag&Drop Modus",
                 "content": "Legen Sie hier Ihre Anhänge ab, um diese Ihrer E-Mail schnell hinzuzufügen"
-            }
+            },
+            "files": "Aus Files hinzufügen"
         }
     },
     "find_mail_shares": "Geteilte Ordner finden",
@@ -472,14 +480,21 @@
             },
             "att_err": "Es scheint ein Problem beim Speichern zu geben, bitte versuchen Sie es erneut",
             "att_saved": "Im ausgewählten Ordner gespeicherte Anhänge",
-            "calendar_edits_saved": "Änderungen korrekt gespeichert"
+            "calendar_edits_saved": "Änderungen korrekt gespeichert",
+            "all_att_added": "Anlagen erfolgreich hinzugefügt",
+            "all_att_saved": "Anlagen erfolgreich im ausgewählten Ordner gespeichert",
+            "some_att_fails": "Es scheint ein Problem beim Speichern einiger Dateien zu geben, bitte versuchen Sie es erneut",
+            "some_att_add_fails": "Es scheint ein Problem beim Hinzufügen einiger Anhänge zu geben, bitte versuchen Sie es erneut",
+            "att_err_adding": "Es scheint ein Problem beim Hinzufügen von Anhängen zu geben, bitte versuchen Sie es erneut"
         },
         "search_hints": "Suchhinweise, über die wir sprechen müssen",
         "invalid_search_message": "Wir haben keine Übereinstimmung gefunden",
         "email_saved_at": "E-Mail gespeichert als Entwurf um {{time}}",
         "delete_tag_message1": "Sind Sie sicher, dass Sie den \"{{name}}\" Tag?",
         "delete_tag_message2": "Nach dem Löschen wird es aus allen damit gekennzeichneten Artikeln entfernt.",
-        "view_rights": "Ansehen"
+        "view_rights": "Ansehen",
+        "admin_rights": "Anzeigen, Bearbeiten, Hinzufügen, Entfernen, Verwalten",
+        "manager_rights": "Anzeigen, Bearbeiten, Hinzufügen, Entfernen"
     },
     "remove_from_this_list": "Aus der Liste entfernen",
     "tooltip": {

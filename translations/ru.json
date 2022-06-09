@@ -81,7 +81,7 @@
         "permanent_delete_confirm": "Удалить навсегда",
         "permanent_delete_title": "Вы уверены, что хотите навсегда удалить этот элемент?",
         "permanent_delete_body": "Удалив этот элемент навсегда вы больше не сможете его восстановить, продолжить?",
-        "could_not_find_to_show": "Извините, мы не смогли ничего показать",
+        "could_not_find_to_show": "Извините, ничего не найдено",
         "powered_by": "разработано",
         "something_went_wrong": "ЧТО-ТО ПОШЛО НЕ ТАК",
         "check_and_try_again": "Пожалуйста, проверьте Carbonio и повторите попытку"
@@ -268,9 +268,9 @@
         "contact_folder": "Папка Контакты",
         "create_and_move": "Создать и переместить",
         "error": "Ошибка",
-        "invalid_destination": "Этот узел не является допустимым местом назначения.",
+        "invalid_destination": "Этот узел не является допустимым местом назначения",
         "no_subject_with_tags": "<Без темы>",
-        "notification_audio": "Воспроизвести аудиоподсказку при появлении нового уведомления",
+        "notification_audio": "Звуковой сигнал при появлении нового уведомления",
         "notification_folders": "Папки уведомлений",
         "save_to_files": "Сохранить в Files",
         "upload_from_files": "Загрузить из Files"

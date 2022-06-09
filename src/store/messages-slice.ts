@@ -53,11 +53,6 @@ function fetchConversationsFulfilled(
 		if (payload?.types === 'message') {
 			merge(state?.messages, payload.messages);
 		}
-		forEach(payload?.messages, (msg) => {
-			if (!state?.messages?.[msg.id] || !state?.messages?.[msg.id]?.isComplete) {
-				state.messages = { ...state.messages, [msg.id]: msg };
-			}
-		});
 	}
 	if (payload?.types === 'message') {
 		state.searchedInFolder = {

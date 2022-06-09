@@ -39,19 +39,13 @@ export default function FolderPanel() {
 				crossAlignment="flex-start"
 				mainAlignment="flex-start"
 				width="fill"
-				height="fill"
 				background="gray6"
 				borderRadius="none"
 				style={{
 					maxHeight: '100%'
 				}}
 			>
-				<Container
-					mainAlignment="flex-start"
-					borderRadius="none"
-					height="calc(100% - 64px)"
-					data-testid="list-wrapper"
-				>
+				<Container mainAlignment="flex-start" borderRadius="none" data-testid="list-wrapper">
 					{isMessageView || folderId === FOLDERS.DRAFTS ? <MessageList /> : <ConversationList />}
 				</Container>
 			</Container>
