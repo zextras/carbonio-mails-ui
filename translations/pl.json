@@ -79,7 +79,7 @@
     "composer": {
         "attachment": {
             "drive": "Dodaj z Dysku",
-            "local": "Dodaj z tego komputera",
+            "local": "Dodaj z tego urządzenia",
             "contacts_mod": "Dodaj Wizytówkę",
             "drag_and_drop": {
                 "content": "Upuść tutaj swoje załączniki, aby szybko dodać je do e-maila",
