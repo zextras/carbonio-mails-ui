@@ -38,7 +38,8 @@
                 "title": "Drag&Drop Mode"
             },
             "files": "Add from Files",
-            "local": "Add from local"
+            "local": "Add from local",
+            "url": "Add public link from Files"
         }
     },
     "displayer": {
@@ -183,6 +184,8 @@
         "advanced_filters_plural": "Advanced Filters",
         "all": "all",
         "allowed_actions": "Allowed actions",
+        "always_allow_address": "Always allow from <strong>{{from}}</strong>",
+        "always_allow_domain": "Always allow from <strong>{{domain}}</strong> domain",
         "any": "any",
         "app_name": "Mails",
         "attachement_unknown": "Unknown <{{mimeType}}>",
@@ -261,6 +264,7 @@
         "move": "Move",
         "new_email": "New E-mail",
         "new_folder": "New Folder",
+        "no_name": "<No Name>",
         "no_search_results_found": "No results found",
         "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",
@@ -307,6 +311,7 @@
         "sent_to_address": "Sent to (address)",
         "set_default_signatures": "Set Default Signatures",
         "share": "Share",
+        "share_public_link": "Share Public Link",
         "share_with": "Share with",
         "shared_folders": "Shared Folders",
         "shared_item": "Shared item",
@@ -332,6 +337,7 @@
         "type_name_here": "Item name",
         "undo": "Undo",
         "upload_from_files": "Upload from Files",
+        "view_images": "VIEW IMAGES",
         "wipe": "Wipe",
         "with_you": "with you",
         "workflow": "WorkFlow",
@@ -343,23 +349,27 @@
         "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
         "delete_tag_message2": "Once deleted, it will be removed from every item marked with it.",
         "email_saved_at": "E-mail saved as a draft at {{time}}",
+        "external_images_blocked": "External images have been blocked to protect you against potential spam",
         "invalid_search_message": "We didn't find any match",
         "manager_rights": "View,Edit,Add,Remove",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
             "all_att_added": "Attachments added successfully",
             "all_att_saved": "Attachments successfully saved in the selected folder",
+            "all_link_copied": "Public link copied successfully",
             "att_err": "There seems to be a problem when saving, please try again",
             "att_err_adding": "There seems to be a problem when adding attachments, please try again",
             "att_saved": "Attachment saved in the selected folder",
             "calendar_edits_saved": "Edits saved correctly",
+            "link_copying_error": "There seems to be a problem while generating public link, please try again",
             "settings_saved": "Edits saved correctly",
             "share": {
                 "accepted": "You have accepted the share request",
                 "declined": "You have declined the share request"
             },
             "some_att_add_fails": "There seems to be a problem when adding some attachments, please try again",
-            "some_att_fails": "There seems to be a problem when saving some files, please try again"
+            "some_att_fails": "There seems to be a problem when saving some files, please try again",
+            "some_link_copying_error": "There seems to be a problem while generating public url for some files, please try again"
         },
         "view_rights": "View"
     },
@@ -606,6 +616,8 @@
         "edit": "Edit share properties",
         "enable_rich_text": "Enable rich text editor",
         "enable_urgent": "Enable urgent",
+        "folder_sharing_status": "Shared with {{count}} person",
+        "folder_sharing_status_plural": "Shared with {{count}} people",
         "resend": "Resend mail notification about this share",
         "revoke": "Revoke access"
     }
