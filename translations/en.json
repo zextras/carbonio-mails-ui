@@ -616,8 +616,9 @@
         "edit": "Edit share properties",
         "enable_rich_text": "Enable rich text editor",
         "enable_urgent": "Enable urgent",
-        "folder_sharing_status": "Shared with {{count}} person",
-        "folder_sharing_status_plural": "Shared with {{count}} people",
+        "folder_linked_status": "Linked to me",
+        "folder_sharing_status": "Shared with {{count}} user",
+        "folder_sharing_status_plural": "Shared with {{count}} users",
         "resend": "Resend mail notification about this share",
         "revoke": "Revoke access"
     }

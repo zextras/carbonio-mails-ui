@@ -92,7 +92,7 @@ const useGetTagsAccordion = (): TagsAccordionItems => {
 			label: t('label.tags', 'Tags'),
 			divider: true,
 			active: false,
-			open: true,
+			open: false,
 			onClick: (e: Event): void => {
 				e.stopPropagation();
 			},

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useRef, FC, useContext } from 'react';
+import React, { useRef, FC, useContext, useEffect, useMemo } from 'react';
 import {
 	AccordionFolder,
 	Folder,
@@ -15,7 +15,7 @@ import {
 import { Accordion, Container, Button, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { Route, Switch, useRouteMatch, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { filter, isEqual, uniqWith } from 'lodash';
+import { filter, isEqual, map, uniqWith } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import CollapsedSideBarItems from './collapsed-sidebar-items';
 import { FOLDER_VIEW } from '../../constants';
@@ -30,48 +30,76 @@ type SidebarComponentProps = {
 	openIds: Array<string>;
 };
 
-const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) => {
-	const sidebarRef = useRef(null);
+const ButtonFindShares: FC = () => {
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createModal = useContext(ModalManagerContext) as Function;
+
+	return (
+		<Container style={{ padding: '8px 16px' }}>
+			<Button
+				type="outlined"
+				label={t('label.find_shares', 'Find shares')}
+				color="primary"
+				size="fill"
+				onClick={(ev: MouseEvent): void => {
+					ev.stopPropagation();
+					dispatch(getShareInfo())
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						.then((res: any) => {
+							if (res.type.includes('fulfilled') && res.payload?.share?.length > 0) {
+								const resFolders: Array<ResFolder> = uniqWith(
+									filter(res.payload.share, ['view', 'message']),
+									isEqual
+								);
+								const closeModal = createModal(
+									{
+										children: (
+											<SharesModal folders={resFolders} onClose={(): void => closeModal()} />
+										)
+									},
+									true
+								);
+							}
+						});
+				}}
+			/>
+		</Container>
+	);
+};
+
+const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) => {
+	const sidebarRef = useRef(null);
 	const { folderId } = useParams<{ folderId: string }>();
 	const tagsAccordionItems = useGetTagsAccordion();
+	const [t] = useTranslation();
+
+	console.log(accordions);
+
+	const accordionsWithFindShare = useMemo(() => {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		accordions[0].items.push({
+			id: 'find_shares',
+			label: t('label.find_shares', 'Find shares'),
+			CustomComponent: ButtonFindShares,
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			disableHover: true
+		});
+		return map(accordions, (item) => ({ ...item, background: 'gray4' }));
+	}, [accordions, t]);
 
 	return (
 		<Container orientation="vertical" height="fit">
-			<Accordion openIds={openIds} ref={sidebarRef} items={accordions} activeId={folderId} />
-			<Container style={{ padding: '8px 16px' }}>
-				<Button
-					type="outlined"
-					label={t('label.find_shares', 'Find shares')}
-					color="primary"
-					size="fill"
-					onClick={(ev: MouseEvent): void => {
-						ev.stopPropagation();
-						dispatch(getShareInfo())
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							.then((res: any) => {
-								if (res.type.includes('fulfilled') && res.payload?.share?.length > 0) {
-									const resFolders: Array<ResFolder> = uniqWith(
-										filter(res.payload.share, ['view', 'message']),
-										isEqual
-									);
-									const closeModal = createModal(
-										{
-											children: (
-												<SharesModal folders={resFolders} onClose={(): void => closeModal()} />
-											)
-										},
-										true
-									);
-								}
-							});
-					}}
-				/>
-			</Container>
+			<Accordion
+				openIds={openIds}
+				ref={sidebarRef}
+				items={accordionsWithFindShare}
+				activeId={folderId}
+			/>
 			<Accordion items={[tagsAccordionItems]} />
 		</Container>
 	);

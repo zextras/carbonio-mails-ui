@@ -24,7 +24,7 @@ export type TagsAccordionItems = {
 	label: string;
 	divider: true;
 	active: false;
-	open: true;
+	open: boolean;
 	onClick: (e: Event) => void;
 	CustomComponent: ComponentType<any>;
 };
