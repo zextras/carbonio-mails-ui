@@ -6,6 +6,7 @@
 import React, {
 	FC,
 	ReactElement,
+	SyntheticEvent,
 	useCallback,
 	useContext,
 	useLayoutEffect,
@@ -63,8 +64,9 @@ const TagChip = styled(Chip)`
 type PreviewHeaderProps = {
 	compProps: {
 		message: MailMessage;
-		onClick: (e: any) => void;
+		onClick: (e: SyntheticEvent) => void;
 		open: boolean;
+		isAlone: boolean;
 	};
 };
 
@@ -73,14 +75,14 @@ type ThemeType = { sizes: { icon: { large: string } } };
 const fallbackContact = { address: '', displayName: '', fullName: '' };
 
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
-	const { message, onClick, open } = compProps;
+	const { message, onClick, open, isAlone } = compProps;
 
 	const textRef = useRef<HTMLInputElement>();
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 
 	const [_minWidth, _setMinWidth] = useState('');
-	const actions = useMessageActions(message);
+	const actions = useMessageActions(message, isAlone);
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
 	const _onClick = useCallback((e) => !e.isDefaultPrevented() && onClick(e), [onClick]);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
