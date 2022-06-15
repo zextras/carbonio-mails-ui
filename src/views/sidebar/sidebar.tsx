@@ -3,10 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useRef, FC, useContext, useEffect, useMemo } from 'react';
+import React, { useRef, FC, useContext, useMemo, useCallback } from 'react';
 import {
 	AccordionFolder,
-	Folder,
 	useFoldersAccordionByView,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
@@ -36,35 +35,38 @@ const ButtonFindShares: FC = () => {
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createModal = useContext(ModalManagerContext) as Function;
 
+	const openFindShares = useCallback(
+		(ev: MouseEvent): void => {
+			ev.stopPropagation();
+			dispatch(getShareInfo())
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				.then((res: any) => {
+					if (res.type.includes('fulfilled') && res.payload?.share?.length > 0) {
+						const resFolders: Array<ResFolder> = uniqWith(
+							filter(res.payload.share, ['view', 'message']),
+							isEqual
+						);
+						const closeModal = createModal(
+							{
+								children: <SharesModal folders={resFolders} onClose={(): void => closeModal()} />
+							},
+							true
+						);
+					}
+				});
+		},
+		[createModal, dispatch]
+	);
+
 	return (
-		<Container style={{ padding: '8px 16px' }}>
+		<Container padding={{ horizontal: 'medium', vertical: 'small' }}>
 			<Button
 				type="outlined"
 				label={t('label.find_shares', 'Find shares')}
 				color="primary"
 				size="fill"
-				onClick={(ev: MouseEvent): void => {
-					ev.stopPropagation();
-					dispatch(getShareInfo())
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						.then((res: any) => {
-							if (res.type.includes('fulfilled') && res.payload?.share?.length > 0) {
-								const resFolders: Array<ResFolder> = uniqWith(
-									filter(res.payload.share, ['view', 'message']),
-									isEqual
-								);
-								const closeModal = createModal(
-									{
-										children: (
-											<SharesModal folders={resFolders} onClose={(): void => closeModal()} />
-										)
-									},
-									true
-								);
-							}
-						});
-				}}
+				onClick={openFindShares}
 			/>
 		</Container>
 	);
@@ -75,9 +77,6 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) =>
 	const { folderId } = useParams<{ folderId: string }>();
 	const tagsAccordionItems = useGetTagsAccordion();
 	const [t] = useTranslation();
-
-	console.log(accordions);
-
 	const accordionsWithFindShare = useMemo(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
