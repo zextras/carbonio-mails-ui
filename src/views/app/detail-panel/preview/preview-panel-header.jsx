@@ -44,26 +44,6 @@ function PreviewPanelHeader({ item, folderId }) {
 						{item.subject || t('label.no_subject_with_tags', '<No Subject>')}
 					</Text>
 				</Row>
-				<Tooltip label={t('board.show', 'Show board')} placement="bottom">
-					<IconButton
-						data-testid="PreviewPanelMinimizeIcon"
-						icon="DiagonalArrowLeftDownOutline"
-						onClick={() => null}
-						customSize={{
-							iconSize: 'large',
-							paddingSize: 'small'
-						}}
-					/>
-				</Tooltip>
-				<IconButton
-					data-testid="PreviewPanelExpandIcon"
-					icon="ExpandOutline"
-					onClick={() => null}
-					customSize={{
-						iconSize: 'large',
-						paddingSize: 'small'
-					}}
-				/>
 				<IconButton
 					data-testid="PreviewPanelCloseIcon"
 					icon="CloseOutline"
