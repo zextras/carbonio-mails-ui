@@ -33,4 +33,6 @@ export type MailsEditor = {
 	sender?: Participant | any;
 	urgent: boolean;
 	attachmentFiles: Array<EditorAttachmentFiles>;
+	rt?: string | undefined;
+	origid?: string | undefined;
 };

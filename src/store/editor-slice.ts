@@ -135,7 +135,9 @@ function createEditorReducer(
 						original: payload.original,
 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
 						urgent: payload.original.urgent,
-						attachmentFiles: findAttachments(payload.original.parts, [])
+						attachmentFiles: findAttachments(payload.original.parts, []),
+						rt: 'r',
+						origid: payload.original.id
 					};
 				}
 
@@ -151,7 +153,9 @@ function createEditorReducer(
 						original: payload.original,
 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
 						urgent: payload.original.urgent,
-						attachmentFiles: findAttachments(payload.original.parts, [])
+						attachmentFiles: findAttachments(payload.original.parts, []),
+						rt: 'r',
+						origid: payload.original.id
 					};
 				}
 				break;
@@ -165,7 +169,9 @@ function createEditorReducer(
 						original: payload.original,
 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
 						urgent: payload.original.urgent,
-						attachmentFiles: findAttachments(payload.original.parts, [])
+						attachmentFiles: findAttachments(payload.original.parts, []),
+						rt: 'w',
+						origid: payload.original.id
 					};
 				}
 				break;
