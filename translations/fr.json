@@ -53,7 +53,8 @@
                 "content": "Déposez ici vos pièces jointes pour les ajouter rapidement à cet email",
                 "title": "Mode Glisser-Déposer"
             },
-            "files": "Ajouter depuis Files"
+            "files": "Ajouter depuis Files",
+            "url": "Ajouter un lien publique depuis Files"
         }
     },
     "create": "Création",
@@ -351,7 +352,12 @@
         "notification_audio": "Jouer un signal sonore quand une nouvelle notification arrive",
         "notification_folders": "Dossiers de notification",
         "save_to_files": "Enregistrer dans Files",
-        "upload_from_files": "Téléverser depuis Files"
+        "upload_from_files": "Téléverser depuis Files",
+        "always_allow_domain": "Toujours autorisé depuis le domaine <strong>{{domain}}</strong>",
+        "no_name": "<Pas de Nom>",
+        "view_images": "VISUALISER LES IMAGES",
+        "always_allow_address": "Toujours autoriser depuis <strong>{{from}}</strong>",
+        "share_public_link": "Partager un lien publique"
     },
     "mail_folder": "dossier Mail",
     "message": {
@@ -369,7 +375,10 @@
             "att_saved": "La pièce jointe a été enregistrée dans le dossier sélectionné",
             "calendar_edits_saved": "Modifications enregistrées avec succès",
             "some_att_add_fails": "Il semble qu'il y ai eu une erreur lors de l'ajout des pièces jointes, merci de réessayer",
-            "some_att_fails": "Il semble qu'il y ai eu une erreur lors de l'enregistrement de certaines pièces jointes, merci de réessayer"
+            "some_att_fails": "Il semble qu'il y ai eu une erreur lors de l'enregistrement de certaines pièces jointes, merci de réessayer",
+            "all_link_copied": "Le lien publique a été copié avec succèss",
+            "link_copying_error": "Une erreur est survenue lors de la génération du lien publique, merci de réessayer",
+            "some_link_copying_error": "Une erreur est survenue lors de la génération de l'url publique pour certains fichiers, merci de réessayer"
         },
         "sending_mail_to_self": "Il semblerait que vous soyez sur le point de vous envoyer un email",
         "search_hints": "Les indices de recherche dont nous devons discuter",
@@ -379,7 +388,8 @@
         "delete_tag_message2": "Une fois supprimée, elle sera supprimée de l'ensemble des éléments qu'elle marquait.",
         "admin_rights": "Voir, Éditer, Ajouter, Supprimer, Administrer",
         "manager_rights": "Voir, Éditer, Ajouter, Supprimer",
-        "view_rights": "Affichage"
+        "view_rights": "Affichage",
+        "external_images_blocked": "Les images externe ont été bloquées pour vous protéger contre des spams potentiels"
     },
     "messages": {
         "invalid_address": "L'adresse suivante semble être invalide",
@@ -681,7 +691,9 @@
         "enable_urgent": "Activer urgent",
         "resend": "Renvoyez la notification email de ce partage",
         "revoke": "Révoquer les accès",
-        "enable_rich_text": "Activer l'éditeur de texte riche"
+        "enable_rich_text": "Activer l'éditeur de texte riche",
+        "folder_sharing_status": "Partagé avec {{count}} personne",
+        "folder_sharing_status_plural": "Partagé avec {{count}} personnes"
     },
     "type": "Type",
     "workflow": "Flux de travail",

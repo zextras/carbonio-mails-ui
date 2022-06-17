@@ -85,7 +85,8 @@
                 "content": "Upuść tutaj swoje załączniki, aby szybko dodać je do e-maila",
                 "title": "Tryb Drag&Drop"
             },
-            "files": "Dodaj z Files"
+            "files": "Dodaj z Files",
+            "url": "Dodaj publiczny link z Files"
         }
     },
     "board": {
@@ -108,7 +109,10 @@
         "enable_rich_text": "Włącz rozbudowany edytor tekstu",
         "disable_urgent": "Wyłącz pilne",
         "resend": "Wyślij powiadomienie mailowe dot. tego udostępnienia",
-        "revoke": "Odbierz dostęp"
+        "revoke": "Odbierz dostęp",
+        "folder_sharing_status_0": "Udostępniono {{count}} osobie",
+        "folder_sharing_status_1": "Udostępniono {{count}} osobom",
+        "folder_sharing_status_2": "Udostępniono {{count}} osobom"
     },
     "label": {
         "create": "Stwórz",
@@ -279,7 +283,12 @@
         "destination_folder": "Folder docelowy",
         "enable_message_disposal": "Włącz pozbywanie się wiadomości",
         "enable_message_retention": "Włącz przechowywanie wiadomości",
-        "retention_range": "Okres przechowywania"
+        "retention_range": "Okres przechowywania",
+        "always_allow_address": "Zawsze zezwalaj z <strong>{{from}}</strong>",
+        "always_allow_domain": "Zawsze zezwalaj z domeny <strong>{{domain}}</strong>",
+        "no_name": "<Brak nazwy>",
+        "share_public_link": "Udostępnij Publiczny Link",
+        "view_images": "ZOBACZ OBRAZKI"
     },
     "message": {
         "snackbar": {
@@ -295,7 +304,10 @@
             "att_err_adding": "Wystąpił błąd przy dodawaniu załączników, spróbuj ponownie",
             "att_saved": "Załącznik został zapisany w wybranym folderze",
             "some_att_add_fails": "Wystąpił problem podczas dodawania niektórych z załączników, spróbuj ponownie",
-            "some_att_fails": "Wystąpił problem przy zapisywaniu niektórych z plików, spróbuj ponownie"
+            "some_att_fails": "Wystąpił problem przy zapisywaniu niektórych z plików, spróbuj ponownie",
+            "all_link_copied": "Publiczny link został skopiowany",
+            "link_copying_error": "Wygląda na to, że wystąpił problem przy generowaniu linku, spróbuj ponownie",
+            "some_link_copying_error": "Wygląda na to, że wystąpił problem przy generowaniu publicznego url dla niektórych plików, spróbuj ponownie"
         },
         "invalid_search_message": "Nie znaleźliśmy niczego pasującego do kryteriów wyszukiwania",
         "sending_mail_to_self": "Wygląda na to, że wysyłasz e-maila do siebie",
@@ -304,7 +316,8 @@
         "delete_tag_message1": "Czy na pewno chcesz usunąć Tag \"{{name}}\"?",
         "delete_tag_message2": "Po usunięciu Tag zostanie zdjęty z każdego elementu oznaczonego nim.",
         "admin_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie, Zarządzanie",
-        "manager_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie"
+        "manager_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie",
+        "external_images_blocked": "Obrazki z innych domen zostały zablokowane, aby chronić Cie przed potencjalnym spamem"
     },
     "search": {
         "flagged_note": "Wyszukaj wszystkie oflagowane e-maile.",
@@ -332,7 +345,7 @@
         },
         "filter_folder_message": "Wybierz folder, w którym rozpoczniesz zaawansowane wyszukiwanie",
         "is_contained_in": "Jest zawarty w",
-        "share_note": "Domyślna wiadomość zawiera twoje imię, nazwę udostępnianiego elementu, uprawnienia przyznane odbiorcom oraz informacje logowania.",
+        "share_note": "Domyślna wiadomość zawiera Twoje imię, nazwę udostępnianiego elementu, uprawnienia przyznane odbiorcom oraz informacje logowania.",
         "standard_message": "Dodaj notkę do domyślnej wiadomości",
         "recipients_address": "Adresy e-mail odbiorców",
         "send_notification": "Wyślij powiadomienie o tym udostępnieniu"

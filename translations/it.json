@@ -249,7 +249,12 @@
         "save_to_files": "Salva su Files",
         "upload_from_files": "Carica da Files",
         "disposal_threshold": "Limite per l'eliminazione",
-        "notification_audio": "Avviso sonoro quando appare una nuova notifica"
+        "notification_audio": "Avviso sonoro quando appare una nuova notifica",
+        "always_allow_address": "Consenti sempre da <strong>{{from}}</strong>",
+        "always_allow_domain": "Consenti sempre dal dominio <strong>{{domain}}</strong>",
+        "no_name": "<Nessun Nome>",
+        "share_public_link": "Condividi Link Pubblico",
+        "view_images": "VISUALIZZA IMMAGINI"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",
@@ -261,7 +266,9 @@
         "resend": "Invia notifica per questa condivisione",
         "revoke": "Revoca accesso",
         "disable_urgent": "Disabilita Urgente",
-        "enable_urgent": "Abilita Urgente"
+        "enable_urgent": "Abilita Urgente",
+        "folder_sharing_status": "Condiviso con {{count}} persona",
+        "folder_sharing_status_plural": "Condiviso con {{count}} persone"
     },
     "placeholder": {
         "to": "A",
@@ -435,7 +442,8 @@
                 "title": "Modalità Drag&Drop",
                 "content": "Trascina qui gli allegati per aggiungerli velocemente a questa e-mail"
             },
-            "files": "Aggiungi da Files"
+            "files": "Aggiungi da Files",
+            "url": "Aggiungi link pubblico da Files"
         }
     },
     "message": {
@@ -453,7 +461,10 @@
             "calendar_edits_saved": "Modifiche salvate correttamente",
             "some_att_add_fails": "Sembra esserci stato un problema durante l'aggiunta di alcuni allegati, riprova",
             "some_att_fails": "Sembra esserci stato un problema durante il salvataggio di alcuni file, riprova",
-            "att_saved": "Allegato salvato nella cartella selezionata"
+            "att_saved": "Allegato salvato nella cartella selezionata",
+            "all_link_copied": "Link pubblico copiato con successo",
+            "link_copying_error": "Sembra esserci stato un problema durante la generazione del link pubblico, riprova",
+            "some_link_copying_error": "Sembra esserci stato un problema durante la generazione dell'url pubblico di alcuni file, riprova"
         },
         "sending_mail_to_self": "Ti stai auto inviando una e-mail",
         "invalid_search_message": "Nessuna corrispondenza trovata",
@@ -462,7 +473,8 @@
         "delete_tag_message2": "Una volta eliminata, verrà eliminata anche da tutti gli elementi su cui è utilizzata.",
         "admin_rights": "Visualizza,Modifica,Aggiungi,Rimuovi,Gestisci",
         "manager_rights": "Visualizza,Modifica,Aggiungi,Rimuovi",
-        "view_rights": "Visualizza"
+        "view_rights": "Visualizza",
+        "external_images_blocked": "Le immagini che provengono dall'esterno sono state bloccate al fine di tutelarti da potenziale spam"
     },
     "add": "Aggiungi",
     "allowed_actions": "Azioni consentite",

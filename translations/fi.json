@@ -71,7 +71,12 @@
     },
     "filters": {
         "active_filters": "Aktiiviset suotimet",
-        "available_filters": "Saatavilla olevat suotimet"
+        "available_filters": "Saatavilla olevat suotimet",
+        "filters": "Suotimet",
+        "incoming_msg_filters": "Säätimet Saapuville Viesteille",
+        "outgoing_message_filters": "Säätimet Lähteville Viesteille",
+        "run": "Suorita",
+        "filter_note": "Huomaa: muutokset suodinsäännöissä tallennetaan välittömästi"
     },
     "board": {
         "show": "Näytä taulu"
@@ -85,6 +90,13 @@
             "local": "Lisää paikallisesta",
             "contacts_mod": "Lisää Yhteystietokortti",
             "files": "Lisää tiedostoista"
+        }
+    },
+    "folder": {
+        "modal": {
+            "edit": {
+                "add_share": "Lisää Jako"
+            }
         }
     }
 }
