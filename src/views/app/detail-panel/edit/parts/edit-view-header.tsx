@@ -29,11 +29,17 @@ import { sendMsg } from '../../../../../store/actions/send-msg';
 import { mailAttachment } from '../../../../../types/soap/save-draft';
 
 type PropType = {
+	setShowRouteGuard: (arg: boolean) => void;
 	setValue: (arg: unknown) => void;
 	handleSubmit: (arg: () => void) => void;
 	uploadAttachmentsCb: () => void;
 };
-const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachmentsCb }) => {
+const EditViewHeader: FC<PropType> = ({
+	setShowRouteGuard,
+	setValue,
+	handleSubmit,
+	uploadAttachmentsCb
+}) => {
 	const [t] = useTranslation();
 	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action } =
 		useContext(EditViewContext);
@@ -85,6 +91,7 @@ const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachment
 	const sendMailCb = useCallback(() => {
 		setBtnLabel(t('label.sending', 'Sending'));
 		setIsDisabled(true);
+		setShowRouteGuard(false);
 		if (action === ActionsType.COMPOSE && boardContext?.onConfirm) {
 			boardContext?.onConfirm(editor);
 		} else {
@@ -141,7 +148,18 @@ const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachment
 				}
 			}, 3000);
 		}
-	}, [t, action, boardContext, editor, createSnackbar, folderId, closeBoard, dispatch, editorId]);
+	}, [
+		t,
+		action,
+		boardContext,
+		editor,
+		createSnackbar,
+		folderId,
+		closeBoard,
+		dispatch,
+		editorId,
+		setShowRouteGuard
+	]);
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
