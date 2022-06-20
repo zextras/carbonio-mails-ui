@@ -18,12 +18,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-	FOLDERS,
-	useTags,
-	useUserSettings,
-	ZIMBRA_STANDARD_COLORS
-} from '@zextras/carbonio-shell-ui';
+import { useTags, useUserSettings, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import ListItemActionWrapper from '../app/folder-panel/lists-item/list-item-actions-wrapper';
 import { ItemAvatar } from '../app/folder-panel/lists-item/item-avatar';
@@ -100,17 +95,6 @@ const SearchListItem = ({ itemId, item, folderId, selected, selecting, toggle, a
 						const msg = find(messages, ['id', v.id]);
 
 						if (msg) {
-							// in trash we show all messages of the conversation even if only one is deleted
-							if (parent === FOLDERS.TRASH) {
-								return [...acc, msg];
-							}
-							// deleted and spam messages are hidden in all folders except trash and spam
-							if (
-								(msg.parent === FOLDERS.TRASH && parent !== FOLDERS.TRASH) ||
-								(msg.parent === FOLDERS.SPAM && parent !== FOLDERS.SPAM)
-							) {
-								return acc;
-							}
 							// all other messages are valid and must be showed in the conversation
 							return [...acc, msg];
 						}
@@ -120,7 +104,7 @@ const SearchListItem = ({ itemId, item, folderId, selected, selecting, toggle, a
 				).sort((a, b) => sortSign * (a.date - b.date)),
 				'id'
 			),
-		[item?.messages, parent, messages, sortSign]
+		[item?.messages, messages, sortSign]
 	);
 	const toggleOpen = useCallback(
 		(e) => {
