@@ -7,7 +7,8 @@
                 "content": "Kéo/thả vào đây các tệp đính kèm của bạn để nhanh chóng thêm vào thư"
             },
             "local": "Thêm vào từ thiết bị cục bộ",
-            "contacts_mod": "Thêm thẻ liên hệ"
+            "contacts_mod": "Thêm thẻ liên hệ",
+            "url": "Thêm một liên kết công khai từ các Tệp"
         }
     },
     "folders": {
@@ -50,7 +51,7 @@
         "from": "Từ",
         "from_identity": "Từ: {{identity}}",
         "flagged": "Gắn cờ",
-        "grantee": "Người nhận tài trợ: ",
+        "grantee": "Người được nhận: ",
         "hide": "Ẩn",
         "insert": "Chèn",
         "invalid_destination": "Chỗ này không phải là đích hợp lệ",
@@ -95,8 +96,8 @@
         "show_popup": "Hiển thị một cửa sổ(popup) thông báo",
         "show_quoted_text": "Hiện văn bản được trích dẫn",
         "spam": "Thư rác",
-        "tag_name": "Tên Tag",
-        "tags": "Tags",
+        "tag_name": "Tên thẻ",
+        "tags": "Thẻ",
         "type": "Kiểu",
         "upload_from_files": "Tải lên từ tệp",
         "behalf_of": "thay mặt cho",
@@ -134,7 +135,7 @@
         "mail_selected": "{{count}} thư đã chọn",
         "show_all": "Hiện tất cả",
         "subject": "Chủ đề",
-        "tag": "Tag",
+        "tag": "Thẻ",
         "delete_permanently": "Xoá vĩnh viễn",
         "create": "Tạo",
         "destination_folder": "Thư mục đích",
@@ -152,14 +153,14 @@
         "size_larger": "Kích thước lớn hơn (MB)",
         "size_smaller": "Kích thước nhỏ hơn (MB)",
         "to": "To(đến)",
-        "edit_tag": "Chỉnh sửa Tag",
-        "edit_tag_name": "Chỉnh sửa tag \"{{name}}",
+        "edit_tag": "Chỉnh sửa thẻ",
+        "edit_tag_name": "Chỉnh sửa thẻ \"{{name}}",
         "empty": "Rỗng",
         "email_perm_deleted": "Thư bị xoá vĩnh viễn",
-        "delete_tag_name": "Xoá tag \"{{name}}\"",
+        "delete_tag_name": "Xoá thẻ \"{{name}}\"",
         "draft": "Thư nháp",
-        "create_tag": "Tạo Tag",
-        "delete_tag": "Xoá Tag",
+        "create_tag": "Tạo thẻ",
+        "delete_tag": "Xoá thẻ",
         "find_shares": "Tìm chia sẻ",
         "flash_browser_title": "Flash tiêu đề trình duyệt",
         "error_try_again": "Có lỗi, vui lòng thử lại",
@@ -184,12 +185,17 @@
         "write": "Ghi",
         "results_for_error": "Không thể bắt đầu tìm kiếm, hãy xóa nó và thử lại: ",
         "save": "Lưu",
-        "select_color": "Chọn màu"
+        "select_color": "Chọn màu",
+        "always_allow_domain": "Luôn cho phép từ Miền <strong>{{domain}}</strong>",
+        "always_allow_address": "Luôn cho phép từ <strong>{{from}}</strong>",
+        "no_name": "<Không có Tên>",
+        "share_public_link": "Chia sẻ liên kết công khai",
+        "view_images": "XEM ẢNH"
     },
     "message": {
         "delete_tag_message2": "Sau khi xóa, nó sẽ bị xóa khỏi mọi mục được đánh dấu bởi nó.",
         "admin_rights": "Xem, Chỉnh sửa, Thêm, Xoá, Quản trị",
-        "delete_tag_message1": "Bạn có chắc xoá Tag\"{{name}}\"?",
+        "delete_tag_message1": "Bạn có chắc xoá thẻ \"{{name}}\"?",
         "email_saved_at": "Thư được lưu dưới dạng bản nháp vào lúc {{time}}",
         "manager_rights": "Xem, Chỉnh sử, Thêm, Xoá",
         "snackbar": {
@@ -205,11 +211,15 @@
                 "declined": "Bạn đã từ chối yêu cầu chia sẻ"
             },
             "some_att_add_fails": "Có vẻ như có vấn đề khi thêm đính kèm, vui lòng thử lại lần nữa",
-            "some_att_fails": "Có vẻ có vấn đề khi lưu giữ một số tệp, vui lòng thử lại lần nữa"
+            "some_att_fails": "Có vẻ có vấn đề khi lưu giữ một số tệp, vui lòng thử lại lần nữa",
+            "some_link_copying_error": "Có vẻ như có vấn đề khi tạo Url công khai cho một số Tệp, vui lòng thử lại lần nữa",
+            "all_link_copied": "Đã sao chép liên kết công khai thành công",
+            "link_copying_error": "Có vẻ như có vấn đề khi tạo liên kết công khai, vui lòng thử lại lần nữa"
         },
         "view_rights": "Xem",
         "invalid_search_message": "Chúng tôi không tìm thấy bất kỳ kết quả phù hợp nào",
-        "sending_mail_to_self": "Có vẻ như bạn sắp tự gửi thư cho chính mình"
+        "sending_mail_to_self": "Có vẻ như bạn sắp tự gửi thư cho chính mình",
+        "external_images_blocked": "Ảnh bên ngaoif sẽ bị khoá để bảo vệ bạn chống spam"
     },
     "messages": {
         "could_not_find_to_show": "Xin lỗi, chúng tôi không thể tìm thấy gì để hiển thị",
@@ -245,16 +255,16 @@
             "message_move": "Đã di chuyển thư thành công",
             "message_deleted": "Đã xoá thư",
             "message_delete_error": "Có lỗi, thư không xoá được. Vui lòng thử lại.",
-            "tag_created": "Tạo Tag {{name}} thành công",
-            "tag_deleted": "Xoá Tag {{name}} thành công",
-            "tag_updated": "Cập nhập Tag thành công",
+            "tag_created": "Tạo thẻ {{name}} thành công",
+            "tag_deleted": "Xoá thẻ {{name}} thành công",
+            "tag_updated": "Cập nhập thẻ thành công",
             "folder_edited": "Các thay đổi đã được lưu chính xác",
             "folder_moved": "Di chuyển thư mục thành công",
             "sending_mail_in_count": "Đang gửi thư của bạn trong {{count}} giây",
             "folder_created": "Đã tạo thư mục mới",
             "folder_empty_error": "Có lỗi, thay đổi không được tạo. Vui lòng thử lại.",
             "message_redirected": "Thư đã được chuyển hướng",
-            "tag_not_updated": "Có lỗi, Tag không cập nhập được. Vui lòng thử lại.",
+            "tag_not_updated": "Có lỗi, thẻ không cập nhập được. Vui lòng thử lại.",
             "folder_move_error": "Có lỗi, thư mục không di chuyển được. Vui lòng thử lại."
         },
         "something_went_wrong": "CÓ LỖI XUẤT HIỆN",
@@ -311,7 +321,7 @@
             "message_selection": "Lựa chọn thư",
             "message_color": "Màu thư",
             "display_messages": "Hiển thị thư",
-            "set_message_color": "Đặt màu cho thư và cuộc hội thoại theo màu thẻ Tag.",
+            "set_message_color": "Đặt màu cho thư và cuộc hội thoại theo màu thẻ.",
             "check_new_mail": "Kiểm tra thư mới",
             "display_mail": "Hiển thị thư"
         },
@@ -401,7 +411,7 @@
         "under": "dưới"
     },
     "snackbar": {
-        "tag_applied": "đã áp dụng tag \"{{tag}}\"",
+        "tag_applied": "đã áp dụng thẻ \"{{tag}}\"",
         "folder_shared": "Chia sẻ thư mục",
         "share_resend": "Gửi lại lời mời chia sẻ",
         "share_revoke": "Thu hồi truy cập chia sẻ",
@@ -447,7 +457,8 @@
         "enable_urgent": "Bật khẩn cấp",
         "resend": "Gửi lại thông báo qua thư về chia sẻ này",
         "revoke": "Thu hồi truy cập",
-        "disable_urgent": "Tắt khẩn cấp"
+        "disable_urgent": "Tắt khẩn cấp",
+        "folder_sharing_status": "Đã chia sẻ với {{count}} người"
     },
     "action": {
         "flag": "Thêm gắn cờ",

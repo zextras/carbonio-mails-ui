@@ -54,7 +54,8 @@
                 "title": "Sürükle ve Bırak Modu"
             },
             "contacts_mod": "Kişi Kartı Ekle",
-            "files": "Dosyalar'dan Ekle"
+            "files": "Dosyalar'dan Ekle",
+            "url": "Dosyalar'dan genel bağlantı ekle"
         }
     },
     "delete": "Sil",
@@ -169,7 +170,10 @@
             "att_err": "Kayıt sırasında bir sorun oluştu, lütfen tekrar deneyin",
             "att_saved": "Ek seçilen klasöre kaydedildi",
             "some_att_add_fails": "Bazı ekler eklenirken bir sorun oluştu, lütfen tekrar deneyin",
-            "some_att_fails": "Bazı dosyaları kaydederken bir sorun oluştu, lütfen tekrar deneyin"
+            "some_att_fails": "Bazı dosyaları kaydederken bir sorun oluştu, lütfen tekrar deneyin",
+            "all_link_copied": "Genel bağlantı başarıyla kopyalandı",
+            "link_copying_error": "Genel bağlantı oluşturulurken bir sorun oluştu, lütfen tekrar deneyin",
+            "some_link_copying_error": "Bazı dosyalar için genel bağlantı oluşturulurken bir sorun oluştu, lütfen tekrar deneyin"
         },
         "search_hints": "Search hints we need to discuss about",
         "sending_mail_to_self": "Kendinize e-posta göndermek üzeresiniz",
@@ -179,7 +183,8 @@
         "delete_tag_message1": "\"{{name}}\" etiketini silmek istediğinizden emin misiniz?",
         "view_rights": "Görüntüle",
         "admin_rights": "Görüntüle,Düzenle,Ekle,Kaldır,Yönet",
-        "manager_rights": "Görüntüle,Düzenle,Ekle,Kaldır"
+        "manager_rights": "Görüntüle,Düzenle,Ekle,Kaldır",
+        "external_images_blocked": "Potansiyel spam mesajlara karşı korumak için dışarıdan resimler engellendi"
     },
     "snackbar": {
         "error": "Bir hata oluştu, lütfen tekrar deneyin",
@@ -373,7 +378,12 @@
         "calendar": "Takvim",
         "no_subject_with_tags": "<Konu Yok>",
         "notification_audio": "Yeni bildirim geldiğinde sesli uyar",
-        "notification_folders": "Bildirim Klasörleri"
+        "notification_folders": "Bildirim Klasörleri",
+        "always_allow_address": "<strong>{{from}}</strong> gönderene her zaman izin ver",
+        "always_allow_domain": "<strong>{{domain}}</strong> alanadına her zaman izin ver",
+        "share_public_link": "Genel Bağlantı Paylaş",
+        "view_images": "RESİMLERİ GÖRÜNTÜLE",
+        "no_name": "<Ad Yok>"
     },
     "of": "—",
     "owner": "Sahibi",
@@ -409,7 +419,9 @@
         "disable_urgent": "Acil simgesi kaldır",
         "edit": "Paylaşım özelliklerini düzenle",
         "enable_rich_text": "Gelişmiş metin düzenleyici kullan",
-        "enable_urgent": "Acil simgesi ekle"
+        "enable_urgent": "Acil simgesi ekle",
+        "folder_sharing_status": "{{count}} kişi ile paylaşıldı",
+        "folder_sharing_status_plural": "{{count}} kişi ile paylaşıldı"
     },
     "type": "Tür",
     "workflow": "İş Akışı",
