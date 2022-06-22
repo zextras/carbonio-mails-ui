@@ -337,6 +337,8 @@ export const generateRequest = (data: MailsEditor): SoapDraftMessageObj => ({
 	id: data.id ?? undefined,
 	attach: data.attach,
 	su: { _content: data.subject ?? '' },
+	rt: data?.rt ?? undefined,
+	origid: data?.origid ?? undefined,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	e: map(

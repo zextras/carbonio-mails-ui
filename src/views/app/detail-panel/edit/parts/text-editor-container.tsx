@@ -25,7 +25,7 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt }) =>
 		<>
 			{editor?.text && (
 				<Container
-					height="100%"
+					height="fit"
 					padding={{ all: 'small' }}
 					background="gray6"
 					crossAlignment="flex-end"

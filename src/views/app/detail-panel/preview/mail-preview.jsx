@@ -146,13 +146,16 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 	);
 };
 
-const MailPreviewBlock = ({ message, open, onClick }) => {
+const MailPreviewBlock = ({ message, open, onClick, isAlone }) => {
 	const [t] = useTranslation();
 	const { folderId } = useParams();
 
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
-	const compProps = useMemo(() => ({ message, onClick, open }), [message, onClick, open]);
+	const compProps = useMemo(
+		() => ({ message, onClick, open, isAlone }),
+		[message, onClick, open, isAlone]
+	);
 	const markAsNotSpam = useCallback(
 		() =>
 			setMsgAsSpam({
@@ -207,7 +210,7 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 		() => settings?.prefs.zimbraPrefTimeZoneId,
 		[settings?.prefs.zimbraPrefTimeZoneId]
 	);
-	const [open, setOpen] = useState(expanded);
+	const [open, setOpen] = useState(expanded || isAlone);
 
 	const onClick = useCallback(() => {
 		setOpen((o) => !o);
@@ -224,6 +227,7 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 				message={message}
 				timezone={timezone}
 				open={isMailPreviewOpen}
+				isAlone={isAlone}
 			/>
 
 			<Container
@@ -233,7 +237,9 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 					overflowY: 'auto'
 				}}
 			>
-				{open && <MailContent message={message} isMailPreviewOpen={isMailPreviewOpen} />}
+				{(open || isAlone) && (
+					<MailContent message={message} isMailPreviewOpen={isMailPreviewOpen} />
+				)}
 			</Container>
 		</Container>
 	);

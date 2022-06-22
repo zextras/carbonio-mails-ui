@@ -178,7 +178,8 @@ export function moveMsgToTrash({
 	createSnackbar,
 	deselectAll,
 	folderId,
-	conversationId
+	conversationId,
+	closeEditor
 }) {
 	const restoreMessage = () => {
 		dispatch(
@@ -189,11 +190,12 @@ export function moveMsgToTrash({
 			})
 		).then((res) => {
 			if (res.type.includes('fulfilled')) {
-				replaceHistory(
-					conversationId
-						? `/folder/${folderId}/conversation/${conversationId}`
-						: `/folder/${folderId}/conversation/-${ids[0]}`
-				);
+				closeEditor &&
+					replaceHistory(
+						conversationId
+							? `/folder/${folderId}/conversation/${conversationId}`
+							: `/folder/${folderId}/conversation/-${ids[0]}`
+					);
 				createSnackbar({
 					key: `move-${ids}`,
 					replace: true,
@@ -229,7 +231,7 @@ export function moveMsgToTrash({
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll();
-					replaceHistory(`/folder/${folderId}`);
+					closeEditor && replaceHistory(`/folder/${folderId}`);
 					createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
@@ -542,7 +544,7 @@ export const getActions = ({
 				]
 			];
 		case FOLDERS.SPAM:
-			return (message) => [
+			return (message, closeEditor) => [
 				[
 					setMsgRead({
 						ids: [message.id],
@@ -563,7 +565,7 @@ export const getActions = ({
 						folderId,
 						shouldReplaceHistory: true
 					}),
-					deleteMsg({ ids: [message.id], t, dispatch, createSnackbar, createModal })
+					deleteMsg({ ids: [message.id], t, dispatch, createSnackbar, createModal, closeEditor })
 				],
 				[
 					setMsgRead({
@@ -595,7 +597,8 @@ export const getActions = ({
 						createSnackbar,
 						deselectAll,
 						folderId,
-						conversationId: message.conversation
+						conversationId: message.conversation,
+						closeEditor
 					}),
 					replyMsg({ id: message.id, folderId, t }),
 					replyAllMsg({ id: message.id, folderId, t }),
@@ -606,7 +609,7 @@ export const getActions = ({
 				]
 			];
 		case FOLDERS.DRAFTS:
-			return (message) => [
+			return (message, closeEditor) => [
 				[
 					editDraft({ id: message.id, folderId, t }),
 					sendDraft({ id: message.id, message, t, dispatch }),
@@ -617,7 +620,8 @@ export const getActions = ({
 						createSnackbar,
 						deselectAll,
 						folderId,
-						conversationId: message.conversation
+						conversationId: message.conversation,
+						closeEditor
 					}),
 					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch })
 				],
@@ -631,7 +635,8 @@ export const getActions = ({
 						createSnackbar,
 						deselectAll,
 						folderId,
-						conversationId: message.conversation
+						conversationId: message.conversation,
+						closeEditor
 					}),
 					editDraft({ id: message.id, folderId, t }),
 					sendDraft({ id: message.id, message, t, dispatch }),
@@ -641,7 +646,7 @@ export const getActions = ({
 		case FOLDERS.SENT:
 		case FOLDERS.INBOX:
 		default:
-			return (message) => [
+			return (message, closeEditor) => [
 				[
 					replyMsg({ id: message.id, folderId, t }),
 					replyAllMsg({ id: message.id, folderId, t }),
@@ -653,7 +658,8 @@ export const getActions = ({
 						createSnackbar,
 						deselectAll,
 						folderId,
-						conversationId: message.conversation
+						conversationId: message.conversation,
+						closeEditor
 					}),
 					setMsgRead({
 						ids: [message.id],
@@ -697,7 +703,8 @@ export const getActions = ({
 						createSnackbar,
 						deselectAll,
 						folderId,
-						conversationId: message.conversation
+						conversationId: message.conversation,
+						closeEditor
 					}),
 					replyMsg({ id: message.id, folderId, t }),
 					replyAllMsg({ id: message.id, folderId, t }),

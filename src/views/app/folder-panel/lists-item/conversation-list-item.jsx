@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isEmpty, reduce, trimStart, map, uniqBy, find, includes } from 'lodash';
+import { isEmpty, reduce, trimStart, map, uniqBy, find, includes, filter } from 'lodash';
 import styled from 'styled-components';
 import {
 	pushHistory,
@@ -67,6 +67,7 @@ export function ConversationMessagesList({
 				}}
 				ItemComponent={MessageListItem}
 			/>
+
 		</>
 	);
 }
@@ -267,6 +268,18 @@ export default function ConversationListItem({
 		[item?.messages, folderId, messages, sortSign]
 	);
 
+	const msgToDisplayCount = useMemo(
+		() =>
+			// eslint-disable-next-line no-nested-ternary
+			folderId === FOLDERS.TRASH
+				? item?.messages?.length
+				: [FOLDERS.TRASH, FOLDERS.SPAM].includes(folderId)
+				? item?.messages?.length
+				: filter(item?.messages, (msg) => ![FOLDERS.TRASH, FOLDERS.SPAM].includes(msg.parent))
+						?.length,
+		[folderId, item?.messages]
+	);
+
 	const textReadValues = useMemo(() => {
 		if (typeof item.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read' };
@@ -327,7 +340,7 @@ export default function ConversationListItem({
 							{renderBadge && (
 								<Row>
 									<Padding right="extrasmall">
-										<Badge value={item?.messages?.length} type={textReadValues.badge} />
+										<Badge value={msgToDisplayCount} type={textReadValues.badge} />
 									</Padding>
 								</Row>
 							)}
