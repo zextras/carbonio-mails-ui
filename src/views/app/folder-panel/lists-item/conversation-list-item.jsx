@@ -25,7 +25,8 @@ import {
 	Row,
 	Text,
 	Drag,
-	Tooltip
+	Tooltip,
+	List
 } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -40,7 +41,13 @@ import { SenderName } from './sender-name';
 import MessageListItem from './message-list-item';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 
-function ConversationMessagesList({ conversationStatus, messages, folderId, length }) {
+export function ConversationMessagesList({
+	active,
+	conversationStatus,
+	messages,
+	folderId,
+	length
+}) {
 	if (conversationStatus !== 'complete') {
 		return (
 			<Container height={64 * length}>
@@ -48,20 +55,17 @@ function ConversationMessagesList({ conversationStatus, messages, folderId, leng
 			</Container>
 		);
 	}
-
 	return (
-		<>
-			{map(messages, (msg) => (
-				<React.Fragment key={msg.id}>
-					<MessageListItem
-						item={msg}
-						conversationId={msg.parent}
-						folderId={folderId}
-						isConvChildren
-					/>
-				</React.Fragment>
-			))}
-		</>
+		<List
+			style={{ paddingBottom: '4px' }}
+			active={active}
+			items={messages}
+			itemProps={{
+				folderId,
+				isConvChildren: true
+			}}
+			ItemComponent={MessageListItem}
+		/>
 	);
 }
 
@@ -106,6 +110,7 @@ export const RowInfo = ({ item, tags }) => {
 };
 
 export default function ConversationListItem({
+	itemId,
 	item,
 	folderId,
 	selected,
@@ -377,6 +382,7 @@ export default function ConversationListItem({
 						height="auto"
 					>
 						<ConversationMessagesList
+							active={itemId}
 							length={item?.messages?.length}
 							messages={messagesToRender}
 							conversationStatus={conversationStatus}

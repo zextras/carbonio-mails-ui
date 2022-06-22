@@ -171,6 +171,7 @@ const ConversationList = () => {
 								active={itemId}
 								items={conversations}
 								itemProps={{
+									itemId,
 									toggle,
 									// messages,
 									folderId,

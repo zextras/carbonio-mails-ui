@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import ConversationPreviewPanel from '../app/detail-panel/conversation-preview-panel';
 import MailEditPanel from '../app/detail-panel/mail-edit-panel';
 import { EmptyFieldMessages, EmptyListMessages } from './utils';
+import MessagePreviewPanel from '../app/detail-panel/message-preview-panel';
 
 const generateRandomNumber = () => Math.floor(Math.random() * 3);
 const SearchPanel = ({ searchResults, query }) => {
@@ -40,6 +41,9 @@ const SearchPanel = ({ searchResults, query }) => {
 			</Route>
 			<Route path={`${path}/folder/:folderId/conversation/:conversationId`}>
 				<ConversationPreviewPanel />
+			</Route>
+			<Route path={`${path}/folder/:folderId/message/:messageId`}>
+				<MessagePreviewPanel />
 			</Route>
 			<Route
 				path={path}
