@@ -56,19 +56,16 @@ export function ConversationMessagesList({
 		);
 	}
 	return (
-		<>
-			<List
-				style={{ paddingBottom: '4px' }}
-				active={active}
-				items={messages}
-				itemProps={{
-					folderId,
-					isConvChildren: true
-				}}
-				ItemComponent={MessageListItem}
-			/>
-
-		</>
+		<List
+			style={{ paddingBottom: '4px' }}
+			active={active}
+			items={messages}
+			itemProps={{
+				folderId,
+				isConvChildren: true
+			}}
+			ItemComponent={MessageListItem}
+		/>
 	);
 }
 
