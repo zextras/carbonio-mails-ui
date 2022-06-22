@@ -104,9 +104,6 @@ export const getFolderIconName = (folder: AccordionFolder): string | null => {
 		return null;
 	}
 
-	if (folder.folder?.isLink) {
-		return 'ShareOutline';
-	}
 	if (folder.id && systemFolders.includes(folder.id)) {
 		switch (folder.id) {
 			case FOLDERS.INBOX:
