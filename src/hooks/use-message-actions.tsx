@@ -32,7 +32,7 @@ import {
 } from '../ui-actions/message-actions';
 import { applyTag } from '../ui-actions/tag-actions';
 
-export const useMessageActions = (message: MailMessage): Array<any> => {
+export const useMessageActions = (message: MailMessage, isAlone = false): Array<any> => {
 	const [t] = useTranslation();
 	const { folderId }: { folderId: string } = useParams();
 	const createSnackbar = useContext(SnackbarManagerContext);
@@ -61,7 +61,8 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 				createSnackbar,
 				deselectAll,
 				folderId,
-				conversationId: message.conversation
+				conversationId: message?.conversation,
+				closeEditor: isAlone
 			})
 		);
 		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }));
@@ -84,7 +85,8 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 				createSnackbar,
 				deselectAll,
 				folderId,
-				conversationId: message.conversation
+				conversationId: message?.conversation,
+				closeEditor: isAlone
 			})
 		);
 		arr.push(
@@ -137,7 +139,16 @@ export const useMessageActions = (message: MailMessage): Array<any> => {
 		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
 	}
 	if (message.parent === FOLDERS.SPAM) {
-		arr.push(deleteMsg({ ids: [message.id], t, dispatch, createSnackbar, createModal }));
+		arr.push(
+			deleteMsg({
+				ids: [message.id],
+				t,
+				dispatch,
+				createSnackbar,
+				createModal,
+				closeEditor: isAlone
+			})
+		);
 		arr.push(
 			setMsgAsSpam({ ids: [message.id], value: true, t, dispatch, createSnackbar, folderId })
 		);

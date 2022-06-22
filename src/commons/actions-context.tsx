@@ -12,15 +12,11 @@ import {
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { SnackbarManagerContext, ModalManagerContext } from '@zextras/carbonio-design-system';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { getActions as conversationActions } from '../ui-actions/conversation-actions';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { getActions as messageActions } from '../ui-actions/message-actions';
+import { MailMessage } from '../types/mail-message';
+import { Conversation } from '../types/conversation';
 
 type ACPProps = {
 	folderId: string;
@@ -35,14 +31,17 @@ type ActionObj = {
 
 type ActionList = Array<ActionObj>;
 
-type GetActionsFunction = (item: any) => [ActionList, ActionList];
-
+type GetMsgActionsFunction = (item: MailMessage, closeEditor: boolean) => [ActionList, ActionList];
+type GetConvActionsFunction = (
+	item: Conversation,
+	closeEditor: boolean
+) => [ActionList, ActionList];
 export const ActionsContext = createContext<{
-	getConversationActions: GetActionsFunction;
-	getMessageActions: GetActionsFunction;
+	getConversationActions: GetConvActionsFunction;
+	getMessageActions: GetMsgActionsFunction;
 }>({
-	getConversationActions: (i: any) => [[], []],
-	getMessageActions: (i: any) => [[], []]
+	getConversationActions: (i: Conversation) => [[], []],
+	getMessageActions: (i: MailMessage) => [[], []]
 });
 
 export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => {
@@ -83,12 +82,13 @@ export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => 
 		],
 		[folderId, t, dispatch, createSnackbar, createModal, ContactInput, tags, account, timezone]
 	);
-	const getMessageActions = useCallback<GetActionsFunction>(
-		(item: any): [ActionList, ActionList] => messageActionsCallback(item),
+	const getMessageActions = useCallback<GetMsgActionsFunction>(
+		(item: MailMessage, closeEditor: boolean): [ActionList, ActionList] =>
+			messageActionsCallback(item, closeEditor),
 		[messageActionsCallback]
 	);
-	const getConversationActions = useCallback<GetActionsFunction>(
-		(item: any): [ActionList, ActionList] => conversationActionsCallback(item),
+	const getConversationActions = useCallback<GetConvActionsFunction>(
+		(item: Conversation): [ActionList, ActionList] => conversationActionsCallback(item),
 		[conversationActionsCallback]
 	);
 	return (

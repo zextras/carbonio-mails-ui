@@ -54,7 +54,7 @@ const MessagesComponent = ({ conversation }) => {
 					<MailPreview
 						message={message}
 						expanded={expand(message, index)}
-						isAlone={conversation.messages.length === 1}
+						isAlone={convMessages?.length === 1}
 						isMessageView={false}
 					/>
 				</Padding>
@@ -91,9 +91,17 @@ export default function ConversationPreviewPanel() {
 		}
 	}, [conversationId, conversationsStatus, dispatch, folderId, tagsFromStore]);
 
+	const showPreviewPanel = useMemo(
+		() =>
+			folderId === FOLDERS.TRASH
+				? conversation?.messages?.length > 0
+				: filter(conversation?.messages, (m) => m.parent !== FOLDERS.TRASH).length > 0,
+		[conversation?.messages, folderId]
+	);
+
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-			{conversation && (
+			{showPreviewPanel && (
 				<>
 					<PreviewPanelHeader item={conversation} folderId={folderId} />
 					{/* commented to hide the panel actions */}
