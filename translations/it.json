@@ -254,7 +254,8 @@
         "always_allow_domain": "Consenti sempre dal dominio <strong>{{domain}}</strong>",
         "no_name": "<Nessun Nome>",
         "share_public_link": "Condividi Link Pubblico",
-        "view_images": "VISUALIZZA IMMAGINI"
+        "view_images": "VISUALIZZA IMMAGINI",
+        "notification_folders": "Notifiche delle Cartelle"
     },
     "tooltip": {
         "enable_disable_urgent": "Attiva/Disattiva importante",

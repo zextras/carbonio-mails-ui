@@ -350,7 +350,7 @@
         "invalid_destination": "Ce nœud n'est pas une destination valide",
         "no_subject_with_tags": "<Sans d'objet>",
         "notification_audio": "Jouer un signal sonore quand une nouvelle notification arrive",
-        "notification_folders": "Dossiers de notification",
+        "notification_folders": "Notifications de Dossiers",
         "save_to_files": "Enregistrer dans Files",
         "upload_from_files": "Téléverser depuis Files",
         "always_allow_domain": "Toujours autorisé depuis le domaine <strong>{{domain}}</strong>",

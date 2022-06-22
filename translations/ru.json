@@ -336,9 +336,9 @@
         "resend": "Отправить уведомление об этой публикации",
         "revoke": "Отозвать доступ",
         "edit": "Изменить разрешения общего ресурса",
-        "folder_sharing_status_0": "Поделиться с {{count}} человеком",
-        "folder_sharing_status_1": "Поделиться с {{count}} человеком",
-        "folder_sharing_status_2": "Поделиться с {{count}} человеком"
+        "folder_sharing_status_0": "Поделиться с {{count}}",
+        "folder_sharing_status_1": "Поделиться с {{count}}",
+        "folder_sharing_status_2": "Поделиться с {{count}}"
     },
     "composer": {
         "attachment": {

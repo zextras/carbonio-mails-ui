@@ -321,7 +321,7 @@
         "tags": "Etiquetas",
         "invalid_destination": "Este nodo no es un destino válido",
         "notification_audio": "Reproducir un aviso auditivo cuando aparezca una nueva notificación",
-        "notification_folders": "Carpetas de notificación",
+        "notification_folders": "Notificaciones de Carpetas",
         "upload_from_files": "Subir desde Files",
         "calendar": "Calendario",
         "confirm": "Confirmar",
