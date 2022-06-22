@@ -32,6 +32,7 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt }) =>
 				>
 					{editor?.richText && composerIsAvailable ? (
 						<Controller
+							height="fit"
 							name="text"
 							control={control}
 							defaultValue={editor?.text}
@@ -59,7 +60,7 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt }) =>
 							control={control}
 							defaultValue={editor?.text}
 							render={({ onChange, value }): ReactElement => (
-								<Container background="gray6" height="100%">
+								<Container background="gray6" height="fit">
 									<StyledComp.TextArea
 										value={value[0]}
 										onChange={(ev): void => {

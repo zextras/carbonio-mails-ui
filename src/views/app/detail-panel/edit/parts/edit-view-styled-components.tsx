@@ -46,8 +46,7 @@ export const TextArea = styled.textarea`
 
 export const EditorWrapper = styled.div`
 	width: 100%;
-	height: 100%;
-	overflow-y: auto;
+	height: auto;
 	position: relative;
 
 	> .tox:not(.tox-tinymce-inline) {
