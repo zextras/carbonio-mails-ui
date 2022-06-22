@@ -5,9 +5,9 @@
  */
 
 import { capitalize, map } from 'lodash';
-import React, { FC, ReactElement } from 'react';
+import React, { FC, ReactElement, useLayoutEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { Tooltip, Text } from '@zextras/carbonio-design-system';
+import { Row, Tooltip, Text } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
@@ -16,30 +16,67 @@ import { Participant } from '../../../../../types/participant';
 
 const ContactSubText = styled(Text)`
 	padding: 0 2px;
+	overflow: initial;
 	&:not(:last-child) {
 		&:after {
 			content: ',';
 		}
 	}
 `;
-const ContactName: FC<{ contacts: Participant[]; label: string }> = ({
-	contacts,
-	label
-}): ReactElement => {
+const ContactName: FC<{
+	showMoreCB?: (showMore: boolean) => void;
+	showOverflow?: boolean;
+	contacts: Participant[];
+	label: string;
+}> = ({ showMoreCB, showOverflow, contacts, label }): ReactElement => {
 	const accounts = useUserAccounts();
 	const [t] = useTranslation();
+	const toRef = useRef<HTMLInputElement>();
+	const [isOverflow, setIsOverflow] = useState(false);
+	useLayoutEffect(() => {
+		if (toRef?.current?.clientWidth) {
+			const rowOverflow = toRef?.current.scrollWidth > toRef?.current.clientWidth;
+			if (showOverflow && rowOverflow) {
+				showMoreCB && showMoreCB(true);
+			}
+			setIsOverflow(rowOverflow);
+		}
+	}, [showMoreCB, showOverflow]);
+
 	return (
 		<>
-			<Text color="secondary" size="small">
-				{label}
-			</Text>
-			{map(contacts, (contact) => (
-				<Tooltip label={contact.address} key={contact.address}>
-					<ContactSubText color="secondary" size="small">
-						{capitalize(participantToString(contact, t, accounts))}
-					</ContactSubText>
-				</Tooltip>
-			))}
+			<Row mainAlignment="flex-start">
+				<Text color="secondary" size="small" style={{ paddingRight: '4px' }}>
+					{label}
+				</Text>
+			</Row>
+			<Row
+				ref={toRef}
+				mainAlignment="flex-start"
+				takeAvailableSpace
+				height="fit"
+				orientation="vertical"
+				display="flex"
+				wrap={showOverflow ? 'nowrap' : 'wrap'}
+				style={{
+					lineHeight: '18px',
+					flexDirection: 'row',
+					overflow: 'hidden'
+				}}
+			>
+				{map(contacts, (contact) => (
+					<Tooltip label={contact.address} key={contact.address}>
+						<ContactSubText color="secondary" size="small">
+							{capitalize(participantToString(contact, t, accounts))}
+						</ContactSubText>
+					</Tooltip>
+				))}
+			</Row>
+			{isOverflow && showOverflow && (
+				<Text color="secondary" size="small" style={{ paddingLeft: '5px' }}>
+					...
+				</Text>
+			)}
 		</>
 	);
 };

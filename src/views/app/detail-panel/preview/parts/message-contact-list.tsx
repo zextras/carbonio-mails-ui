@@ -4,17 +4,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, {
+	FC,
+	ReactElement,
+	useCallback,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 import { filter } from 'lodash';
 import {
 	Container,
-	Collapse,
 	Row,
 	IconButton,
 	Icon,
 	Padding,
-	Badge,
-	Text
+	Tooltip,
+	Badge
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
@@ -48,10 +55,6 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 		() => filter(message.participants, ['type', 'b']),
 		[message.participants]
 	);
-	const showCcBccContacts = useMemo(
-		() => ccContacts.length > 0 || bccContacts.length > 0,
-		[bccContacts.length, ccContacts.length]
-	);
 
 	const textReadValues = useMemo(() => {
 		if (typeof message.read === 'undefined')
@@ -73,61 +76,94 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 		() => messageFolder?.name && messageFolder.id !== folderId,
 		[folderId, messageFolder]
 	);
+	const [isOverflow, setIsOverflow] = useState(false);
+	const showMoreCB = useCallback((showMore) => {
+		setIsOverflow(showMore);
+	}, []);
+
+	const toggleExpandButtonLabel = useMemo(
+		() =>
+			open
+				? t('label.collapse_receivers_list', "Collapse receivers' list")
+				: t('label.expand_receivers_list', "Expand receivers' list"),
+		[t, open]
+	);
+
+	const containerRef = useRef<HTMLDivElement>();
+	const [badgeWidth, setBadgeWidth] = useState('100%');
+	useLayoutEffect(() => {
+		if (containerRef?.current?.clientWidth) {
+			setBadgeWidth(`calc(100% - ${containerRef.current.clientWidth + 25}px)`);
+		}
+	}, []);
 	return (
 		<Container
 			crossAlignment="flex-start"
+			orientation="horizontal"
+			width="100%"
 			mainAlignment="flex-start"
-			padding={{ bottom: 'small', left: 'small' }}
+			padding={{ bottom: 'small' }}
 		>
-			<Row
-				takeAvailableSpace
-				style={{ width: '100%', padding: 0 }}
-				crossAlignment="center"
-				mainAlignment="flex-start"
+			<Container
+				style={{ width: '25px', padding: '0 8px 0 0' }}
+				crossAlignment="baseline"
+				mainAlignment="space-between"
+				orientation="horizontal"
 			>
-				{showCcBccContacts ? (
-					<Row padding={{ right: 'extrasmall' }}>
+				{isOverflow && (
+					<Tooltip label={toggleExpandButtonLabel}>
 						<IconButton
 							size="small"
 							icon={open ? 'ChevronUp' : 'ChevronDown'}
 							onClick={toggleOpen}
+							customSize={{
+								paddingSize: ''
+							}}
 						/>
-					</Row>
-				) : (
-					<Row padding={{ right: 'extrasmall' }} background="error"></Row>
+					</Tooltip>
 				)}
-				<Row
-					height="fit"
-					mainAlignment="space-between"
-					crossAlignment="center"
-					width={'calc(100% - 32px)'}
-				>
-					<Row
-						width={showBadge ? 'calc(100% - 60px)' : '100%'}
-						crossAlignment="flex-start"
-						mainAlignment="flex-start"
-					>
-						{toContacts.length > 0 && <ContactNames contacts={toContacts} label={labelTo} />}
-					</Row>
-					<Row>
-						{message.urgent && <Icon data-testid="UrgentIcon" color="error" icon="ArrowUpward" />}
-						{showBadge && (
-							<Padding left="small">
-								<Badge
-									data-testid="FolderBadge"
-									value={messageFolder.name}
-									type={textReadValues.badge}
+			</Container>
+			<Container mainAlignment="flex-start" crossAlignment="flex-start" width={badgeWidth}>
+				{!open && (
+					<Container width="calc(100% - 24px)" crossAlignment="flex-start">
+						<Row height="fit" crossAlignment="flex-start" mainAlignment="flex-start">
+							{toContacts.length > 0 && (
+								<ContactNames
+									showMoreCB={showMoreCB}
+									showOverflow
+									contacts={toContacts}
+									label={labelTo}
 								/>
-							</Padding>
-						)}
-					</Row>
-				</Row>
-			</Row>
-
-			<Row padding={{ left: 'medium' }} width="calc(100% - 24px)">
-				<Container width="calc(100% - 24px)" crossAlignment="flex-start">
-					<Collapse orientation="vertical" crossSize="100%" open={open}>
-						<Container width="100%" padding={{ left: 'extrasmall' }}>
+							)}
+						</Row>
+						<Row height="fit" crossAlignment="flex-start" mainAlignment="flex-start">
+							{ccContacts.length > 0 && (
+								<ContactNames
+									showMoreCB={showMoreCB}
+									showOverflow
+									contacts={ccContacts}
+									label={labelCc}
+								/>
+							)}
+						</Row>
+						<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
+							{bccContacts.length > 0 && (
+								<ContactNames
+									showMoreCB={showMoreCB}
+									showOverflow
+									contacts={bccContacts}
+									label={labelBcc}
+								/>
+							)}
+						</Row>
+					</Container>
+				)}
+				{open && (
+					<Container width="calc(100% - 24px)" crossAlignment="flex-start">
+						<Container width="100%">
+							<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
+								{toContacts.length > 0 && <ContactNames contacts={toContacts} label={labelTo} />}
+							</Row>
 							<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
 								{ccContacts.length > 0 && <ContactNames contacts={ccContacts} label={labelCc} />}
 							</Row>
@@ -135,9 +171,21 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 								{bccContacts.length > 0 && <ContactNames contacts={bccContacts} label={labelBcc} />}
 							</Row>
 						</Container>
-					</Collapse>
-				</Container>
-			</Row>
+					</Container>
+				)}
+			</Container>
+			<Container ref={containerRef} width="fit" mainAlignment="flex-start">
+				{message.urgent && <Icon data-testid="UrgentIcon" color="error" icon="ArrowUpward" />}
+				{showBadge && (
+					<Padding left="small">
+						<Badge
+							data-testid="FolderBadge"
+							value={messageFolder.name}
+							type={textReadValues.badge}
+						/>
+					</Padding>
+				)}
+			</Container>
 		</Container>
 	);
 };
