@@ -146,7 +146,7 @@ function createEditorReducer(
 				if (payload.original && payload.accounts) {
 					state.editors[payload.editorId] = {
 						...empty,
-						text: generateReplyText(payload.original, payload.labels),
+						text: textWithSignatureRepliesForwards,
 						to: retrieveALL(payload.original, payload.accounts),
 						cc: retrieveCC(payload.original, payload.accounts),
 						subject: `RE: ${payload.original.subject}`,
