@@ -378,7 +378,7 @@
         "calendar": "Takvim",
         "no_subject_with_tags": "<Konu Yok>",
         "notification_audio": "Yeni bildirim geldiğinde sesli uyar",
-        "notification_folders": "Bildirim Klasörleri",
+        "notification_folders": "Klasörler Bildirimleri",
         "always_allow_address": "<strong>{{from}}</strong> gönderene her zaman izin ver",
         "always_allow_domain": "<strong>{{domain}}</strong> alanadına her zaman izin ver",
         "share_public_link": "Genel Bağlantı Paylaş",
