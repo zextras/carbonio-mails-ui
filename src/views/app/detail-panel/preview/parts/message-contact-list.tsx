@@ -84,8 +84,8 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 	const toggleExpandButtonLabel = useMemo(
 		() =>
 			open
-				? t('label.collapse_receivers_list', "Collapse receivers' list")
-				: t('label.expand_receivers_list', "Expand receivers' list"),
+				? t('label.collapse_receivers_list', "Collapse receiver's list")
+				: t('label.expand_receivers_list', "Expand receiver's list"),
 		[t, open]
 	);
 
