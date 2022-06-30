@@ -146,7 +146,7 @@ export const getFolderIconName = (folder: AccordionFolder): string | null => {
 
 export const translatedSystemFolders = (t: TFunction): Array<string> => [
 	t('folders.inbox', 'Inbox'),
-	t('label.sent', 'Sent'),
+	t('folders.sent', 'Sent'),
 	t('folders.drafts', 'Drafts'),
 	t('folders.trash', 'Trash'),
 	t('folders.spam', 'Spam'),
@@ -165,7 +165,7 @@ export const getSystemFolderTranslatedName = ({ t, folderName }: GetSystemFolder
 			case 'Inbox':
 				return t('folders.inbox', 'Inbox');
 			case 'Sent':
-				return t('label.sent', 'Sent');
+				return t('folders.sent', 'Sent');
 			case 'Drafts':
 				return t('folders.drafts', 'Drafts');
 			case 'Trash':
