@@ -16,6 +16,8 @@ import {
 import { isNil, omitBy, reduce } from 'lodash';
 import { TFunction } from 'react-i18next';
 
+const FOLDER_ID_REGEX = /:*(\d+)$/;
+
 export const normalizeFolder = (
 	folder: Folder & Partial<LinkFolderFields>
 ): Partial<Folder & Partial<LinkFolderFields>> =>
@@ -147,11 +149,13 @@ export const translatedSystemFolders = (t: TFunction): Array<string> => [
 	t('label.sent', 'Sent'),
 	t('folders.drafts', 'Drafts'),
 	t('folders.trash', 'Trash'),
-	t('folders.spam', 'Spam')
+	t('folders.spam', 'Spam'),
+	t('folders.junk', 'Junk')
 ];
 
 type GetSystemFolderProps = {
 	t: TFunction;
+	folderId?: string;
 	folderName: string;
 };
 
@@ -168,9 +172,23 @@ export const getSystemFolderTranslatedName = ({ t, folderName }: GetSystemFolder
 				return t('folders.trash', 'Trash');
 			case 'Spam':
 				return t('folders.spam', 'Spam');
+			case 'Junk':
+				return t('folders.junk', 'Junk');
 			default:
 				return folderName;
 		}
 	}
+	return folderName;
+};
+
+export const getFolderTranslatedName = ({
+	t,
+	folderId,
+	folderName
+}: GetSystemFolderProps): string => {
+	if (folderId && Object.values(FOLDERS).includes(folderId)) {
+		return getSystemFolderTranslatedName({ t, folderName });
+	}
+
 	return folderName;
 };

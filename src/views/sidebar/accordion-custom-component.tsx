@@ -38,7 +38,7 @@ import { useParams } from 'react-router-dom';
 import { FolderActionsType } from '../../types/folder';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
-import { getFolderIconColor, getFolderIconName } from './utils';
+import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 import { NewModal } from './new-modal';
 import { MoveModal } from './move-modal';
 import { EmptyModal } from './empty-modal';
@@ -508,7 +508,10 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 	const accordionItem = useMemo(
 		() => ({
 			...item,
-			label: item.id === FOLDERS.USER_ROOT ? accountName : item.label,
+			label:
+				item.id === FOLDERS.USER_ROOT
+					? accountName
+					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
 			// open: openIds ? openIds.includes(folder.id) : false,
@@ -517,7 +520,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			to: `/folder/${item.id}`,
 			textProps: { size: 'small' }
 		}),
-		[item, accountName]
+		[item, accountName, t]
 	);
 
 	const dropdownItems = useFolderActions(item);
