@@ -41,7 +41,7 @@ import { createFolder } from '../../store/actions/create-folder';
 import { FOLDER_VIEW } from '../../constants';
 import ModalAccordionCustomComponent from './parts/edit/modal-accordion-custom-component';
 import { ModalProps } from '../../types/commons';
-import { translatedSystemFolders } from './utils';
+import { getFolderTranslatedName, translatedSystemFolders } from './utils';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -104,7 +104,14 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 							typeof folderDestination !== 'undefined' && folderDestination.id === item.folder.id
 								? 'highlight'
 								: undefined,
-						label: item.folder.id === FOLDERS.USER_ROOT ? accountName : item.folder.name,
+						label:
+							item.folder.id === FOLDERS.USER_ROOT
+								? accountName
+								: getFolderTranslatedName({
+										t,
+										folderId: item.folder.id,
+										folderName: item.folder.name
+								  }),
 						activeId: item.folder.id === folderId,
 						accordionWidth,
 						items: []
@@ -113,7 +120,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 			});
 			return result;
 		},
-		[accordionWidth, accountName, folderId, folderDestination]
+		[folderDestination, accountName, t, folderId, accordionWidth]
 	);
 
 	const getFolderRootName = useCallback((_folder: AccordionFolder): string => {
@@ -152,9 +159,10 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 
 	const filteredFromUserInput = useMemo(
 		() =>
-			filter(flattenedFolders, (item) =>
-				startsWith(item.label.toLowerCase(), searchString.toLowerCase())
-			),
+			filter(flattenedFolders, (item) => {
+				const folderName = item.label.toLowerCase();
+				return startsWith(folderName, searchString.toLowerCase());
+			}),
 		[flattenedFolders, searchString]
 	);
 
