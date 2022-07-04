@@ -16,7 +16,7 @@ import {
 import { isNil, omitBy, reduce } from 'lodash';
 import { TFunction } from 'react-i18next';
 
-const FOLDER_ID_REGEX = /:*(\d+)$/;
+const folderIdRegex = /^(.+:)*(\d+)$/;
 
 export const normalizeFolder = (
 	folder: Folder & Partial<LinkFolderFields>
@@ -186,7 +186,8 @@ export const getFolderTranslatedName = ({
 	folderId,
 	folderName
 }: GetSystemFolderProps): string => {
-	if (folderId && Object.values(FOLDERS).includes(folderId)) {
+	const id = folderIdRegex.exec(folderId ?? '')?.[2];
+	if (id && Object.values(FOLDERS).includes(id)) {
 		return getSystemFolderTranslatedName({ t, folderName });
 	}
 
