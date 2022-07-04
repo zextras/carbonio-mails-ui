@@ -13,6 +13,7 @@ export type MsgActionParameters = {
 	operation: MsgActionOperation;
 	parent?: string;
 	tagName?: string;
+	flag?: string;
 };
 
 export type MsgActionResult = {
@@ -22,7 +23,7 @@ export type MsgActionResult = {
 
 export const msgAction = createAsyncThunk<MsgActionResult, MsgActionParameters>(
 	'msgAction',
-	async ({ ids, operation, parent, tagName }) => {
+	async ({ ids, operation, parent, tagName, flag }) => {
 		const { action } = (await soapFetch<MsgActionRequest, MsgActionResponse>('MsgAction', {
 			_jsns: 'urn:zimbraMail',
 
@@ -31,7 +32,8 @@ export const msgAction = createAsyncThunk<MsgActionResult, MsgActionParameters>(
 					id: ids.join(','),
 					op: operation,
 					l: parent,
-					tn: tagName
+					tn: tagName,
+					f: flag
 				},
 				isNil
 			)
