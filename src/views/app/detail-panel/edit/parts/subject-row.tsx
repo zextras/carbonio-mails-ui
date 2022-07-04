@@ -55,12 +55,7 @@ const SubjectRow: FC = () => {
 							{editor?.requestReadReceipt && (
 								<Tooltip label={t('label.request_receipt', 'Request read receipt')}>
 									<Padding right="small">
-										<Checkbox
-											value={editor?.requestReadReceipt}
-											iconColor="secondary"
-											onClick={(): null => null}
-											style={{ cursor: 'default' }}
-										/>
+										<Icon icon="CheckmarkSquare" color="secondary" size="large" />
 									</Padding>
 								</Tooltip>
 							)}
