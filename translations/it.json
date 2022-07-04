@@ -421,14 +421,6 @@
             "root": "/Root"
         }
     },
-    "folders": {
-        "drafts": "Bozze",
-        "inbox": "In arrivo",
-        "junk": "Spam",
-        "sent": "Inviati",
-        "trash": "Cestino",
-        "spam": "Spam"
-    },
     "composer": {
         "attachment": {
             "contactsMod": "Aggiungi Scheda di contatto",
