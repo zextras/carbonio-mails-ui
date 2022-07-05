@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { Folder, soapFetch } from '@zextras/carbonio-shell-ui';
+import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isEmpty, isNil, omitBy } from 'lodash';
-import { DataProps } from '../../types/commons';
+import { DataProps, FolderType } from '../../types';
 
 type FolderActionProps = {
-	folder: Folder | DataProps;
+	folder: FolderType | DataProps;
 	color?: number;
 	zid?: string;
 	op: string;

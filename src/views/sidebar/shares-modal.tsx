@@ -36,7 +36,7 @@ import { Folder, Folders } from '@zextras/carbonio-shell-ui';
 import { ModalHeader } from './commons/modal-header';
 import ModalFooter from './commons/modal-footer';
 import { createMountpoint } from '../../store/actions/create-mountpoint';
-import { ResFolder } from '../../types/commons';
+import { ResFolder } from '../../types';
 
 type CustomItem = {
 	item: {

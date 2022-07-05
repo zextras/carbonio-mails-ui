@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { reduce, map, omit } from 'lodash';
-import { FilterRules, FilterTest } from '../types/filter-rules';
+import { FilterRules, FilterTest } from '../types';
 
 export const normalizeFilterTests = (filterTests: FilterTest): any =>
 	reduce(

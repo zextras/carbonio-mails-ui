@@ -7,7 +7,7 @@ import { Avatar, Container, Tooltip } from '@zextras/carbonio-design-system';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { ParticipantRole } from '../../../../types/participant';
+import { ParticipantRole } from '../../../../commons/utils';
 
 const AvatarElement = styled(Avatar)`
 	width: 42px !important;

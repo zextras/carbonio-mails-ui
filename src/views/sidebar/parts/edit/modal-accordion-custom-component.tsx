@@ -10,7 +10,7 @@ import { AccordionFolder } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { indexOf, lastIndexOf, min } from 'lodash';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
-import { Crumb } from '../../../../types/commons';
+import { Crumb } from '../../../../types';
 import { Breadcrumbs } from './breadcrumbs';
 
 const ModalAccordionCustomComponent: FC<{

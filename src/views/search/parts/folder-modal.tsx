@@ -14,7 +14,7 @@ import ModalFooter from '../../sidebar/commons/modal-footer';
 import { ModalHeader } from '../../sidebar/commons/modal-header';
 import FolderItem from '../../sidebar/commons/folder-item';
 import { selectFolders } from '../../../store/folders-slice';
-import { Folder as FolderType } from '../../../types/folder';
+import { FolderType } from '../../../types';
 import { getFolderIconColor, getFolderIconName } from '../../sidebar/utils';
 
 type ComponentProps = {

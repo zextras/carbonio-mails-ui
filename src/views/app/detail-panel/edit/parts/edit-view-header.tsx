@@ -23,10 +23,9 @@ import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
 import * as StyledComp from './edit-view-styled-components';
 import { addAttachments } from '../edit-utils';
-import { ActionsType } from '../../../../../types/participant';
-import { CreateSnackbar } from './edit-view-types';
+import { CreateSnackbar, mailAttachment } from '../../../../../types';
 import { sendMsg } from '../../../../../store/actions/send-msg';
-import { mailAttachment } from '../../../../../types/soap/save-draft';
+import { ActionsType } from '../../../../../commons/utils';
 
 type PropType = {
 	setValue: (arg: unknown) => void;

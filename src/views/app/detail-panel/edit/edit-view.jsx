@@ -26,7 +26,7 @@ import {
 	selectEditors,
 	updateEditor
 } from '../../../../store/editor-slice';
-import { ActionsType } from '../../../../types/participant';
+import { ActionsType } from '../../../../commons/utils';
 import { selectMessages } from '../../../../store/messages-slice';
 import EditAttachmentsBlock from './edit-attachments-block';
 import { saveDraft } from '../../../../store/actions/save-draft';

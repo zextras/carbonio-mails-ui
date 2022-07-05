@@ -5,12 +5,9 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import { SaveDraftRequest, SaveDraftResponse } from '../../types/soap/';
+import { ReplyShareParameters, SaveDraftRequest, SaveDraftResponse } from '../../types';
 import { generateRequest } from '../editor-slice-utils';
 
-export type ReplyShareParameters = {
-	data: any;
-};
 export const acceptSharedCalendarReply = createAsyncThunk<any, ReplyShareParameters>(
 	'sendMsg',
 	async ({ data }, { getState, dispatch }) => {

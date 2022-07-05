@@ -8,9 +8,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, reduce, cloneDeep, map, filter } from 'lodash';
-import { Folder } from '../types/folder';
-import { FoldersStateType, MailsFolderMap, StateType } from '../types/state';
-import { ISoapFolderObj } from '../types/soap';
+import { ISoapFolderObj, FolderType, FoldersStateType, MailsFolderMap, StateType } from '../types';
 import { createFolder } from './actions/create-folder';
 import { folderAction } from './actions/folder-action';
 import { searchFolder } from './actions/search-folders';
@@ -58,7 +56,7 @@ type AddFolderFulFilled = {
 		arg: {
 			id: string;
 			name: string;
-			parentFolder: Folder;
+			parentFolder: FolderType;
 			prevState: FoldersStateType;
 			tmpId: string;
 		};
@@ -264,7 +262,7 @@ export function selectFolders({ folders }: StateType): MailsFolderMap {
 
 export const selectFolder =
 	(id: string) =>
-	({ folders }: StateType): Folder =>
+	({ folders }: StateType): FolderType =>
 		folders?.folders?.[id] ?? {};
 
 export function selectFoldersStatus({ folders }: StateType): string {

@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { filter, isNil, map, omitBy } from 'lodash';
-import { Conversation } from '../types/conversation';
-import { SoapIncompleteMessage } from '../types/soap/soap-mail-message';
-import { SoapConversation } from '../types/soap/soap-conversation';
+import { Conversation, SoapIncompleteMessage, SoapConversation } from '../types';
 import { normalizeParticipantsFromSoap } from './normalize-message';
 
 export const normalizeConversation = (

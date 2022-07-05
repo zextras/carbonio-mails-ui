@@ -10,44 +10,44 @@ import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { keyBy, map, reduce } from 'lodash';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import { IncompleteMessage } from '../../types/mail-message';
-import { Conversation } from '../../types/conversation';
-import { SearchRequest, SearchResponse } from '../../types/soap/';
-
-export type FetchConversationsParameters = {
-	folderId: string;
-	limit: number;
-	before?: Date;
-	types?: string;
-	sortBy: 'dateDesc' | 'dateAsc';
-};
-
-export type FetchConversationsReturn = {
-	conversations?: Record<string, Conversation>;
-	messages?: Record<string, IncompleteMessage>;
-	hasMore: boolean;
-	types: string;
-};
+import {
+	Conversation,
+	SearchRequest,
+	SearchResponse,
+	FetchConversationsReturn,
+	FetchConversationsParameters
+} from '../../types';
 
 export const search = createAsyncThunk<
 	FetchConversationsReturn | undefined,
 	FetchConversationsParameters
 >(
 	'fetchConversations',
-	async ({ folderId, limit = 100, before, types = 'conversation', sortBy = 'dateDesc' }) => {
+	async ({
+		folderId,
+		limit = 100,
+		before,
+		types = 'conversation',
+		sortBy = 'dateDesc',
+		query,
+		offset,
+		recip = '2',
+		wantContent = 'full'
+	}) => {
 		const queryPart = [`inId:"${folderId}"`];
 		if (before) queryPart.push(`before:${before.getTime()}`);
-		const result = (await soapFetch<SearchRequest, SearchResponse>('Search', {
+		const result = await soapFetch<SearchRequest, SearchResponse>('Search', {
 			_jsns: 'urn:zimbraMail',
 			limit,
 			needExp: 1,
-			types,
-			recip: '2',
+			recip,
 			fullConversation: 1,
-			wantContent: 'full',
+			wantContent,
 			sortBy,
-			query: queryPart.join(' ')
-		})) as SearchResponse;
+			query: query || queryPart.join(' '),
+			offset,
+			types
+		});
 
 		if (types === 'conversation') {
 			const conversations = map(result?.c ?? [], (obj) =>

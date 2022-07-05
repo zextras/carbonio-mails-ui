@@ -5,18 +5,11 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import { MailMessage } from '../../types/mail-message';
-import { SaveDraftRequest, SaveDraftResponse } from '../../types/soap/';
-import { StateType } from '../../types/state';
+import { StateType, SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { closeEditor } from '../editor-slice';
 import { generateMailRequest, generateRequest } from '../editor-slice-utils';
 import { getConv } from './get-conv';
 import { getMsg } from './get-msg';
-
-export type SendMsgParameters = {
-	editorId: string;
-	msg?: MailMessage;
-};
 
 export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 	'sendMsg',

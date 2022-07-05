@@ -12,7 +12,7 @@ import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { participantToString } from '../../../../../commons/utils';
-import { Participant } from '../../../../../types/participant';
+import { Participant } from '../../../../../types';
 
 const ContactSubText = styled(Text)`
 	padding: 0 2px;

@@ -40,7 +40,7 @@ import { ModalHeader } from './commons/modal-header';
 import { createFolder } from '../../store/actions/create-folder';
 import { FOLDER_VIEW } from '../../constants';
 import ModalAccordionCustomComponent from './parts/edit/modal-accordion-custom-component';
-import { ModalProps } from '../../types/commons';
+import { ModalProps } from '../../types';
 import { translatedSystemFolders } from './utils';
 
 const ContainerEl = styled(Container)`

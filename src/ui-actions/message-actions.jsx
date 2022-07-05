@@ -8,7 +8,7 @@ import { Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { getMsgsForPrint, msgAction } from '../store/actions';
-import { ActionsType } from '../types/participant';
+import { ActionsType } from '../commons/utils';
 import { sendMsg } from '../store/actions/send-msg';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';

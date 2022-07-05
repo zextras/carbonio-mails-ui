@@ -5,42 +5,26 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
-import { filter, find, map } from 'lodash';
-import { TFunction } from 'i18next';
+import { filter, find } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { attachmentTypeItemsConstant, emailStatusItemsConstant } from '../../../constants';
+import { KeywordState } from '../../../types';
 
 type ComponentProps = {
 	compProps: {
-		t: TFunction;
-		attachmentType: any;
-		setAttachmentType: (arg: any) => any;
-		emailStatus: any;
-		setEmailStatus: (arg: any) => any;
+		attachmentType: KeywordState;
+		setAttachmentType: (arg: any) => void;
+		emailStatus: KeywordState;
+		setEmailStatus: (arg: any) => void;
 	};
 };
 
 const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
-	const { t, attachmentType, setAttachmentType, emailStatus, setEmailStatus } = compProps;
+	const { attachmentType, setAttachmentType, emailStatus, setEmailStatus } = compProps;
+	const [t] = useTranslation();
+	const attachmentTypeItems = attachmentTypeItemsConstant(t);
 
-	const attachmentTypeItems = useMemo(
-		() =>
-			map(attachmentTypeItemsConstant, (item: any) => ({
-				label: t(item.label, item.defaultTranslation),
-				searchString: item.searchString,
-				icon: item.icon
-			})),
-		[t]
-	);
-
-	const emailStatusItems = useMemo(
-		() =>
-			map(emailStatusItemsConstant, (item: any) => ({
-				label: t(item.label, item.defaultTranslation),
-				searchString: item.searchString,
-				icon: item.icon
-			})),
-		[t]
-	);
+	const emailStatusItems = emailStatusItemsConstant(t);
 
 	const attachmentTypeRef: any = useRef();
 	const emailStatusRef: any = useRef();
@@ -53,23 +37,34 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 		stateHandler(state);
 	}, []);
 
+	type ChipOnAddProps = {
+		items: Array<{
+			label: string;
+			icon?: string;
+			searchString: string;
+		}>;
+		label: string;
+		preText: string;
+		hasAvatar: boolean;
+		isGeneric: boolean;
+		isQueryFilter: boolean;
+	};
+
+	type ChipOnAdd = {
+		label: string;
+		hasAvatar: boolean;
+		isGeneric: boolean;
+		isQueryFilter: boolean;
+		value: string;
+		avatarIcon: string;
+		avatarColor: string;
+	};
+
 	const chipOnAdd = useCallback(
-		(
-			items: Array<{
-				label: string;
-				icon: string;
-				searchString: string;
-				defaultTranslation?: string;
-			}>,
-			label,
-			preText,
-			hasAvatar,
-			isGeneric,
-			isQueryFilter
-		) => {
+		({ items, label, preText, hasAvatar, isGeneric, isQueryFilter }: ChipOnAddProps): ChipOnAdd => {
 			const values: any = filter(items, (item: any) => item.label === label)[0];
 			return {
-				label: `${preText}:${t(label, values.defaultTranslation)}`,
+				label: `${preText}:${label}`,
 				hasAvatar,
 				isGeneric,
 				isQueryFilter,
@@ -78,7 +73,7 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 				avatarColor: 'gray6'
 			};
 		},
-		[t]
+		[]
 	);
 
 	const handlerAttachmentType = useCallback(() => {
@@ -113,7 +108,7 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 				setAttachmentTypeOptions(
 					attachmentTypeItems.filter(
 						(v: any): boolean =>
-							v.label?.toLowerCase().indexOf(target.textContent as string) !== -1 &&
+							v.label?.toLowerCase().indexOf(target.textContent) !== -1 &&
 							!find(q, (i) => i.value === v.label)
 					)
 				);
@@ -155,12 +150,28 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 	);
 
 	const attachmentTypeChipOnAdd = useCallback(
-		(label: string): any => chipOnAdd(attachmentTypeItems, label, 'Attachment', true, true, true),
+		(label: string): ChipOnAdd =>
+			chipOnAdd({
+				items: attachmentTypeItems,
+				label,
+				preText: 'Attachment',
+				hasAvatar: true,
+				isGeneric: true,
+				isQueryFilter: true
+			}),
 		[chipOnAdd, attachmentTypeItems]
 	);
 
 	const emailStatusChipOnAdd = useCallback(
-		(label: string): any => chipOnAdd(emailStatusItems, label, 'Is', false, true, true),
+		(label: string): ChipOnAdd =>
+			chipOnAdd({
+				items: emailStatusItems,
+				label,
+				preText: 'Is',
+				hasAvatar: false,
+				isGeneric: true,
+				isQueryFilter: true
+			}),
 		[chipOnAdd, emailStatusItems]
 	);
 

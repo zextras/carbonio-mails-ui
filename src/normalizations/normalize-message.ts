@@ -4,11 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { filter, isNil, map, omitBy, reduce } from 'lodash';
-import { IncompleteMessage, MailMessagePart } from '../types/mail-message';
-
-import { Participant, ParticipantRole } from '../types/participant';
-import { SoapEmailParticipantRole, SoapMailParticipant } from '../types/soap/soap-mail-participant';
-import { SoapIncompleteMessage, SoapMailMessagePart } from '../types/soap/soap-mail-message';
+import { ParticipantRole } from '../commons/utils';
+import {
+	IncompleteMessage,
+	MailMessagePart,
+	SoapEmailParticipantRole,
+	SoapMailParticipant,
+	Participant,
+	SoapIncompleteMessage,
+	SoapMailMessagePart
+} from '../types';
 
 export function normalizeMailPartMapFn(v: SoapMailMessagePart): MailMessagePart {
 	const ret: MailMessagePart = {

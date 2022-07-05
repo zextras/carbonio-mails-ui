@@ -9,7 +9,7 @@ import EditDefaultModal from './parts/edit/edit-default-modal';
 import ShareFolderModal from './share-folder-modal';
 import ShareRevokeModal from './parts/edit/share-revoke-modal';
 import { Context } from './parts/edit/edit-context';
-import { ModalProps } from '../../types/commons';
+import { ModalProps } from '../../types';
 
 export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 	// eslint-disable-next-line @typescript-eslint/ban-types

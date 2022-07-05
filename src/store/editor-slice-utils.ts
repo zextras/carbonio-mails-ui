@@ -6,10 +6,17 @@
 import { map, filter, reduce, concat, isEmpty, find, some } from 'lodash';
 import { Account, AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
-import { EditorAttachmentFiles, MailsEditor } from '../types/mails-editor';
-import { MailMessage, MailMessagePart } from '../types/mail-message';
-import { Participant, ParticipantRole, SharedParticipant } from '../types/participant';
-import { mailAttachmentParts, SoapDraftMessageObj } from '../types/soap/';
+import {
+	EditorAttachmentFiles,
+	MailsEditor,
+	MailMessage,
+	MailMessagePart,
+	Participant,
+	SharedParticipant,
+	mailAttachmentParts,
+	SoapDraftMessageObj
+} from '../types';
+import { ParticipantRole } from '../commons/utils';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const retrieveAttachmentsType = (
@@ -90,8 +97,8 @@ export const changeParticipantRole = (
 	newRole: ParticipantRole
 ): Array<Participant> =>
 	map(
-		filter(original.participants, (c: Participant): boolean => c.type === previousRole),
-		(c: Participant): Participant => ({ ...c, type: newRole })
+		filter(original.participants, (c) => c.type === previousRole),
+		(c) => ({ ...c, type: newRole })
 	);
 
 export const changeTypeOfParticipants = (

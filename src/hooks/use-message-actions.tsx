@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useSelection } from './useSelection';
-import { MailMessage } from '../types/mail-message';
+import { MailMessage } from '../types';
 import {
 	deleteMsg,
 	editAsNewMsg,

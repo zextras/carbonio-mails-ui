@@ -33,18 +33,17 @@ import {
 	useTags,
 	useUserAccounts,
 	ZIMBRA_STANDARD_COLORS,
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	runSearch
+	runSearch,
+	Tag
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import MailMsgPreviewActions from '../../../../../ui-actions/mail-message-preview-actions';
 import { useMessageActions } from '../../../../../hooks/use-message-actions';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
-import { getTimeLabel, participantToString } from '../../../../../commons/utils';
+import { getTimeLabel, ParticipantRole, participantToString } from '../../../../../commons/utils';
 import MessageContactsList from './message-contact-list';
-import { MailMessage } from '../../../../../types/mail-message';
+import { MailMessage } from '../../../../../types';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)`
@@ -72,7 +71,12 @@ type PreviewHeaderProps = {
 
 type ThemeType = { sizes: { icon: { large: string } } };
 
-const fallbackContact = { address: '', displayName: '', fullName: '' };
+const fallbackContact = {
+	type: ParticipantRole.FROM,
+	address: '',
+	displayName: '',
+	fullName: ''
+};
 
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	const { message, onClick, open, isAlone } = compProps;
@@ -116,11 +120,11 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc: any, v) => {
+				(acc: Array<Tag & { label: string; customComponent: ReactElement }>, v) => {
 					if (includes(message.tags, v.id))
 						acc.push({
 							...v,
-							color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex,
+							color: parseInt(ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex, 10),
 							label: v.name,
 							customComponent: (
 								<Row takeAvailableSpace mainAlignment="flex-start">

@@ -12,20 +12,16 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { combineReducers } from '@reduxjs/toolkit';
 import { isEmpty, map, keyBy, find, filter, forEach, sortBy, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import {
 	handleCreatedFolders,
 	handleModifiedFolders,
 	handleDeletedFolders,
-	folderSliceReducer,
 	handleRefresh,
 	selectFolder
 } from '../../store/folders-slice';
-import { editorSliceReducer } from '../../store/editor-slice';
 import {
-	conversationsSliceReducer,
 	handleNotifyCreatedConversations,
 	handleNotifyModifiedConversations,
 	handleNotifyDeletedConversations,
@@ -34,16 +30,15 @@ import {
 	setSearchedInFolder,
 	selectCurrentFolder,
 	handleCreatedMessagesInConversation,
-	selectConversations,
 	handleAddMessagesInConversation
 } from '../../store/conversations-slice';
 import {
-	messageSliceReducer,
 	handleCreatedMessages,
 	handleModifiedMessages,
 	handleDeletedMessages,
 	selectMessages
 } from '../../store/messages-slice';
+import { storeReducers } from '../../store/reducers';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { extractFolders } from './utils';
@@ -76,14 +71,7 @@ export const SyncDataHandler = () => {
 
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
-			store.setReducer(
-				combineReducers({
-					folders: folderSliceReducer,
-					conversations: conversationsSliceReducer,
-					editors: editorSliceReducer,
-					messages: messageSliceReducer
-				})
-			);
+			store.setReducer(storeReducers);
 			// this also normalize folders so no need to normalize it later
 			const extractedFolders = extractFolders([
 				...(refresh?.folder?.[0]?.folder ?? []),
