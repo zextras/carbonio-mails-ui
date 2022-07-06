@@ -8,6 +8,7 @@ import { Redirect, Switch, Route, useRouteMatch } from 'react-router-dom';
 import { FOLDERS, setAppContext, Spinner, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Container } from '@zextras/carbonio-design-system';
 import { useSelector } from 'react-redux';
+import { includes } from 'lodash';
 import { selectCurrentFolder } from '../store/conversations-slice';
 
 const LazyFolderView = lazy(() =>
@@ -26,7 +27,8 @@ const AppView = () => {
 	const isMessageView = useMemo(
 		() =>
 			zimbraPrefGroupMailBy
-				? zimbraPrefGroupMailBy === 'message' || currentFolderId === FOLDERS.DRAFTS
+				? zimbraPrefGroupMailBy === 'message' ||
+				  includes([FOLDERS.DRAFTS, FOLDERS.TRASH], currentFolderId)
 				: undefined,
 		[currentFolderId, zimbraPrefGroupMailBy]
 	);
