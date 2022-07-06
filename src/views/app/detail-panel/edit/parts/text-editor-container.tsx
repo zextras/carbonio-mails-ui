@@ -16,6 +16,7 @@ type PropType = {
 	onDragOverEvent: () => void;
 	draftSavedAt: string;
 };
+
 const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt }) => {
 	const { control, editor, throttledSaveToDraft, updateSubjectField } = useContext(EditViewContext);
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
