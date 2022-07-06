@@ -78,7 +78,7 @@ export const RouteLeavingGuard = ({ when, onDeleteDraft }) => {
 			>
 				<Padding vertical="medium">
 					<Text>
-						{t('modal.delete_draft.body.message1', 'Do you want to keep this draft or delete it?')}
+						{t('modal.delete_draft.message1', 'Do you want to keep this draft or delete it?')}
 					</Text>
 				</Padding>
 			</Modal>

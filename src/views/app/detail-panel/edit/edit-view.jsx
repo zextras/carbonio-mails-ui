@@ -324,7 +324,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	return (
 		<>
 			<RouteLeavingGuard
-				when={showRouteGuard}
+				when={showRouteGuard && !toggleAppBoard}
 				onDeleteDraft={() => {
 					moveMsgToTrash({
 						ids: [editor.id],

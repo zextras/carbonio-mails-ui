@@ -1,6 +1,5 @@
 {
     "action": {
-        "cancel": "",
         "click_preview": "Click to preview",
         "edit_as_new": "Edit as new",
         "edit_share": "Edit Share",
@@ -274,7 +273,7 @@
         "no_subject": "No subject",
         "no_subject_with_tags": "<No Subject>",
         "notification_audio": "Play audio hint when new notification appears",
-        "notification_folders": "Notification Folders",
+        "notification_folders": "Folders Notifications",
         "notify_organizer": "Notify Organizer",
         "of": "of",
         "on_behalf_of": "on behalf of",
@@ -432,9 +431,7 @@
     },
     "modal": {
         "delete_draft": {
-            "body": {
-                "message1": "Do you want to keep this draft or delete it?"
-            }
+            "message1": "Do you want to keep this draft or delete it?"
         }
     },
     "notification": {
@@ -627,8 +624,9 @@
         "edit": "Edit share properties",
         "enable_rich_text": "Enable rich text editor",
         "enable_urgent": "Enable urgent",
-        "folder_sharing_status": "Shared with {{count}} person",
-        "folder_sharing_status_plural": "Shared with {{count}} people",
+        "folder_linked_status": "Linked to me",
+        "folder_sharing_status": "Shared with {{count}} user",
+        "folder_sharing_status_plural": "Shared with {{count}} users",
         "resend": "Resend mail notification about this share",
         "revoke": "Revoke access"
     }
