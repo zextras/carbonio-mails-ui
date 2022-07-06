@@ -23,7 +23,7 @@ const SearchMessageList: FC<SearchListProps> = ({
 	setShowAdvanceFilters,
 	isInvalidQuery
 }) => {
-	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
+	const { itemId } = useParams<{ itemId: string; folderId: string }>();
 	const [t] = useTranslation();
 
 	const canLoadMore = useMemo(
@@ -74,7 +74,6 @@ const SearchMessageList: FC<SearchListProps> = ({
 					active={itemId}
 					items={searchResults.messages}
 					itemProps={{
-						folderId,
 						isConvChildren: false
 					}}
 					ItemComponent={SearchMessageListItem}

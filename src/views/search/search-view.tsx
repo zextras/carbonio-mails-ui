@@ -5,16 +5,10 @@
  */
 import React, { FC, useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
-import {
-	FOLDERS,
-	QueryChip,
-	Spinner,
-	useAppContext,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
+import { QueryChip, Spinner, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
-import { filter, includes, map } from 'lodash';
+import { includes, map } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import SearchPanel from './search-panel';
 import SearchConversationList from './search-conversation-list';
@@ -51,22 +45,19 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	);
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
-	const [resultLabel, setResultLabel] = useState<string>('');
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 	const searchResults = useSelector(selectSearches);
-	useEffect(() => {
-		switch (searchResults.status) {
-			case 'fulfilled':
-				setResultLabel(t('label.results_for', 'Results for: '));
-				break;
-			case 'pending':
-				setResultLabel(t('label.loading_results', 'Loading Results...'));
-				break;
-			default:
-				setResultLabel('');
+
+	const resultLabel = useMemo(() => {
+		if (searchResults.status === 'fulfilled') {
+			return t('label.results_for', 'Results for: ');
 		}
+		if (searchResults.status === 'pending') {
+			return t('label.loading_results', 'Loading Results...');
+		}
+		return '';
 	}, [searchResults.status, t]);
 
 	const queryToString = useMemo(
@@ -115,7 +106,6 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			});
 
 			if (count > 0) {
-				// setLoading(true);
 				updateQuery(modifiedQuery);
 			}
 		}

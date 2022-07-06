@@ -25,15 +25,10 @@ import { ListItemActionWrapper } from '../app/folder-panel/lists-item/list-item-
 
 type SearchMessageListItemProps = {
 	item: IncompleteMessage;
-	folderId: string;
 	isConvChildren: boolean;
 };
 
-export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
-	item,
-	folderId,
-	isConvChildren
-}) => {
+export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, isConvChildren }) => {
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 	const tagsFromStore = useTags();
@@ -139,7 +134,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 		>
 			<ListItemActionWrapper item={item} onClick={onClick}>
 				<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
-					<ItemAvatar item={item} folderId={folderId} />
+					<ItemAvatar item={item} folderId={item.parent} />
 					<Padding horizontal="extrasmall" />
 				</div>
 				<Row

@@ -62,7 +62,7 @@ const SearchListItem: FC<SearchConversationListItemProps> = ({
 	const history = useHistory();
 	const dispatch = useDispatch();
 	const { pathname } = useLocation();
-	const parent = item?.messages[0]?.parent;
+	const parent = useMemo(() => item?.messages[0]?.parent, [item]);
 	const messages = useSelector(selectMessages);
 	const [open, setOpen] = useState(false);
 	const settings = useUserSettings();
