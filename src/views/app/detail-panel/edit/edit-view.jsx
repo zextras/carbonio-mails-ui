@@ -334,7 +334,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 						folderId: FOLDERS.TRASH
 					}).click();
 				}}
-			></RouteLeavingGuard>
+			/>
 			<EditViewContext.Provider
 				value={{
 					updateEditorCb,
