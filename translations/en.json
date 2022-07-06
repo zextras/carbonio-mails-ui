@@ -234,6 +234,7 @@
         "automatically_delete_duplicates": "Automatically delete duplicate copies of the same message when received",
         "back": "Back",
         "bcc": "Bcc",
+        "before_you_leave": "Before you leave",
         "behalf_of": "on behalf of",
         "by_conversation": "By Conversation",
         "by_message": "By Message",
@@ -251,6 +252,7 @@
         "create_tag": "Create Tag",
         "decline": "Decline",
         "delete": "Delete",
+        "delete_draft": "Delete Draft",
         "delete_permanently": "Delete Permanently",
         "delete_tag": "Delete Tag",
         "delete_tag_name": "Delete \"{{name}}\" tag",
@@ -292,6 +294,7 @@
         "highlight_tab": "Highlight the Mail tab",
         "insert": "Insert",
         "invalid_destination": "This node is not a valid destination",
+        "keep_draft": "Keep Draft",
         "keywords": "Keywords",
         "loading_results": "Loading Results…",
         "mail_folder": "E-mail folder",
@@ -474,6 +477,11 @@
             "tag_updated": "Tag successfully updated"
         },
         "something_went_wrong": "SOMETHING WENT WRONG"
+    },
+    "modal": {
+        "delete_draft": {
+            "message1": "Do you want to keep this draft or delete it?"
+        }
     },
     "notification": {
         "new_message": "New Message",
