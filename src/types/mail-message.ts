@@ -32,6 +32,7 @@ export type IncompleteMessage = {
 	};
 	isComplete: boolean;
 	isReplied: boolean;
+	isReadReceiptRequested?: boolean;
 };
 
 export type MailMessagePart = {
