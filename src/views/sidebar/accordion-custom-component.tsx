@@ -478,24 +478,28 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			) || folder.isLink, // Default folders and shared folders not allowed to drag
 		[folder.id, folder.isLink]
 	);
-	const { zimbraPrefSortOrder, zimbraPrefGroupMailBy } = useUserSettings().prefs;
-	const sorting = useMemo(() => {
-		if (typeof zimbraPrefSortOrder === 'string') {
-			return (
-				find(zimbraPrefSortOrder?.split(','), (f) => f?.split(':')?.[0] === folder.id)?.split(
-					':'
-				)?.[1] ?? 'dateDesc'
-			);
-		}
-		return 'dateDesc';
-	}, [zimbraPrefSortOrder, folder.id]) as 'dateDesc' | 'dateAsc';
+	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
+
+	/* NOTE: Need to comment out when need to sort as per the configured sort order */
+	// const { zimbraPrefSortOrder, zimbraPrefGroupMailBy } = useUserSettings().prefs;
+	// const sorting = useMemo(() => {
+	// 	if (typeof zimbraPrefSortOrder === 'string') {
+	// 		return (
+	// 			find(zimbraPrefSortOrder?.split(','), (f) => f?.split(':')?.[0] === folder.id)?.split(
+	// 				':'
+	// 			)?.[1] ?? 'dateDesc'
+	// 		);
+	// 	}
+	// 	return 'dateDesc';
+	// }, [zimbraPrefSortOrder, folder.id]) as 'dateDesc' | 'dateAsc';
+
 	const onClick = useCallback((): void => {
 		pushHistory(`/folder/${folder.id}`);
 		dispatch(
 			search({
 				folderId: folder.id,
 				limit: 101,
-				sortBy: sorting,
+				sortBy: 'dateDesc',
 				// folder.id === FOLDERS.DRAFTS ? 'message' : zimbraPrefGroupMailBy
 				types:
 					folder.id === FOLDERS.DRAFTS || typeof zimbraPrefGroupMailBy !== 'string'
@@ -503,7 +507,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 						: zimbraPrefGroupMailBy
 			})
 		);
-	}, [dispatch, folder.id, sorting, zimbraPrefGroupMailBy]);
+	}, [dispatch, folder.id, zimbraPrefGroupMailBy]);
 
 	const accordionItem = useMemo(
 		() => ({
