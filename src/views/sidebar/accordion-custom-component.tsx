@@ -37,7 +37,7 @@ import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
-import { getFolderIconColor, getFolderIconName } from './utils';
+import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 import { NewModal } from './new-modal';
 import { MoveModal } from './move-modal';
 import { EmptyModal } from './empty-modal';
@@ -478,24 +478,28 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			) || folder.isLink, // Default folders and shared folders not allowed to drag
 		[folder.id, folder.isLink]
 	);
-	const { zimbraPrefSortOrder, zimbraPrefGroupMailBy } = useUserSettings().prefs;
-	const sorting = useMemo(() => {
-		if (typeof zimbraPrefSortOrder === 'string') {
-			return (
-				find(zimbraPrefSortOrder?.split(','), (f) => f?.split(':')?.[0] === folder.id)?.split(
-					':'
-				)?.[1] ?? 'dateDesc'
-			);
-		}
-		return 'dateDesc';
-	}, [zimbraPrefSortOrder, folder.id]) as 'dateDesc' | 'dateAsc';
+	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
+
+	/* NOTE: Need to comment out when need to sort as per the configured sort order */
+	// const { zimbraPrefSortOrder, zimbraPrefGroupMailBy } = useUserSettings().prefs;
+	// const sorting = useMemo(() => {
+	// 	if (typeof zimbraPrefSortOrder === 'string') {
+	// 		return (
+	// 			find(zimbraPrefSortOrder?.split(','), (f) => f?.split(':')?.[0] === folder.id)?.split(
+	// 				':'
+	// 			)?.[1] ?? 'dateDesc'
+	// 		);
+	// 	}
+	// 	return 'dateDesc';
+	// }, [zimbraPrefSortOrder, folder.id]) as 'dateDesc' | 'dateAsc';
+
 	const onClick = useCallback((): void => {
 		pushHistory(`/folder/${folder.id}`);
 		dispatch(
 			search({
 				folderId: folder.id,
 				limit: 101,
-				sortBy: sorting,
+				sortBy: 'dateDesc',
 				// folder.id === FOLDERS.DRAFTS ? 'message' : zimbraPrefGroupMailBy
 				types:
 					folder.id === FOLDERS.DRAFTS || typeof zimbraPrefGroupMailBy !== 'string'
@@ -503,12 +507,15 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 						: zimbraPrefGroupMailBy
 			})
 		);
-	}, [dispatch, folder.id, sorting, zimbraPrefGroupMailBy]);
+	}, [dispatch, folder.id, zimbraPrefGroupMailBy]);
 
 	const accordionItem = useMemo(
 		() => ({
 			...item,
-			label: item.id === FOLDERS.USER_ROOT ? accountName : item.label,
+			label:
+				item.id === FOLDERS.USER_ROOT
+					? accountName
+					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
 			// open: openIds ? openIds.includes(folder.id) : false,
@@ -517,7 +524,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			to: `/folder/${item.id}`,
 			textProps: { size: 'small' }
 		}),
-		[item, accountName]
+		[item, accountName, t]
 	);
 
 	const dropdownItems = useFolderActions(item);

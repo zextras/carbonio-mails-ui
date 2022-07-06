@@ -80,7 +80,8 @@ export const searchesSlice = createSlice({
 		sortBy: 'dateDesc',
 		query: '',
 		status: 'empty',
-		loadingMessage: ''
+		loadingMessage: '',
+		parent: ''
 	} as SearchesStateType,
 	reducers: {},
 	extraReducers: (builder) => {

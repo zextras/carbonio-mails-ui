@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
-import SearchListItem from './search-conversation-list-item';
+import SearchConversationListItem from './search-conversation-list-item';
 import ShimmerList from './shimmer-list';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import { SearchListProps } from '../../types';
@@ -88,7 +88,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 				<Container style={{ overflowY: 'auto' }} mainAlignment="flex-start">
 					<List
 						items={searchResults.conversations}
-						ItemComponent={SearchListItem}
+						ItemComponent={SearchConversationListItem}
 						onListBottom={canLoadMore ? loadMore : undefined}
 						active={itemId}
 					/>

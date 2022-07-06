@@ -59,6 +59,8 @@ export type SearchesStateType = {
 	sortBy: 'dateDesc' | 'dateAsc';
 	query: string;
 	status: string;
+	parent?: string;
+	tagName?: string;
 };
 
 export type MailsFolderMap = Record<string, FolderType>;

@@ -31,6 +31,7 @@ export type IncompleteMessage = {
 	};
 	isComplete: boolean;
 	isReplied: boolean;
+	isReadReceiptRequested?: boolean;
 };
 
 export type MailMessagePart = {
@@ -51,6 +52,7 @@ export type MailMessage = IncompleteMessage & {
 		content: string;
 	};
 	parent: string;
+	isReadReceiptRequested?: boolean;
 };
 
 export type SendMsgParameters = {

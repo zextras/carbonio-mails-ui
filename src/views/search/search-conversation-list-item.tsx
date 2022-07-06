@@ -50,7 +50,7 @@ type SearchConversationListItemProps = {
 const CollapseElement = styled(Container)`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
 `;
-const SearchListItem: FC<SearchConversationListItemProps> = ({
+const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 	itemId,
 	item,
 	selected,
@@ -176,7 +176,9 @@ const SearchListItem: FC<SearchConversationListItemProps> = ({
 		useMemo(() => filter(item?.messages, (msg) => msg.parent !== FOLDERS.TRASH), [item?.messages])
 			.length === 0;
 
-	return !allMessagesInTrash && !searchInTrash ? (
+	return !searchInTrash && allMessagesInTrash ? (
+		<></>
+	) : (
 		<Container
 			background={active ? 'highlight' : 'transparent'}
 			mainAlignment="flex-start"
@@ -282,9 +284,7 @@ const SearchListItem: FC<SearchConversationListItemProps> = ({
 				</CollapseElement>
 			)}
 		</Container>
-	) : (
-		<></>
 	);
 };
 
-export default SearchListItem;
+export default SearchConversationListItem;
