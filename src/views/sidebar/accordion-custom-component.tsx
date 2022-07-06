@@ -298,7 +298,14 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					: action
 			);
 		case FOLDERS.TRASH:
-			return defaultFolderActions.map((action) => action);
+			return defaultFolderActions.map((action) =>
+				action.id === FolderActionsType.MOVE ||
+				action.id === FolderActionsType.DELETE ||
+				action.id === FolderActionsType.EDIT ||
+				action.id === FolderActionsType.SHARE
+					? { ...action, disabled: true }
+					: action
+			);
 		// customizable folders
 		default:
 			return folder.folder?.isLink

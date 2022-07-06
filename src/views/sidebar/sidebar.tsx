@@ -78,7 +78,7 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) =>
 	const accordionsWithFindShare = useMemo(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		accordions[0].items.push({
+		accordions[0]?.items?.push({
 			id: 'find_shares',
 			label: t('label.find_shares', 'Find shares'),
 			CustomComponent: ButtonFindShares,
