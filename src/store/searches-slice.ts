@@ -36,7 +36,7 @@ const fetchSearchesFulfilled = (
 	if (meta.arg.query) {
 		state.status = meta.requestStatus;
 		state.conversations = sortBy(Object.values(payload?.conversations ?? []), 'date').reverse();
-		state.messages = Object.values(payload?.messages ?? []);
+		state.messages = Object.values(payload?.messages ?? []).reverse();
 		state.more = payload?.hasMore === true;
 		state.offset = (meta?.arg.offset ?? 0) + 100;
 		state.sortBy = meta?.arg.sortBy ?? 'dateDesc';

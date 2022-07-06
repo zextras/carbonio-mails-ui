@@ -187,7 +187,9 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 					if (includes(item.tags, v.id))
 						acc.push({
 							...v,
-							color: parseInt(ZIMBRA_STANDARD_COLORS[v.color ?? '0'].hex, 10)
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
 						});
 					return acc;
 				},
