@@ -11,7 +11,8 @@ import {
 	useTags,
 	ZIMBRA_STANDARD_COLORS,
 	Tag,
-	FOLDERS
+	FOLDERS,
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
@@ -44,6 +45,11 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, is
 				[]
 			),
 		[item.tags, tagsFromStore]
+	);
+	const settings = useUserSettings();
+	const searchInTrash = useMemo(
+		() => settings?.prefs?.zimbraPrefIncludeTrashInSearch === 'TRUE',
+		[settings]
 	);
 
 	const [date, participantsString] = useMemo(() => {
@@ -126,7 +132,9 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, is
 		() => (!isEmpty(item.fragment) ? item.fragment : subject),
 		[subject, item.fragment]
 	);
-	return (
+	return !searchInTrash && item.parent === FOLDERS.TRASH ? (
+		<></>
+	) : (
 		<Container
 			mainAlignment="flex-start"
 			data-testid={`SearchMessageListItem-${item.id}`}
@@ -146,6 +154,11 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, is
 					<Container orientation="horizontal" height="fit" width="fill">
 						<SenderName item={item} textValues={textReadValues} isFromSearch />
 						<Row>
+							{item.parent === FOLDERS.TRASH && (
+								<Padding left="small">
+									<Icon data-testid="DeletedIcon" icon="Trash2Outline" />
+								</Padding>
+							)}
 							{showTagIcon && (
 								<Padding left="small">
 									<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
@@ -159,11 +172,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, is
 							{item.flagged && (
 								<Padding left="small">
 									<Icon data-testid="FlagIcon" color="error" icon="Flag" />
-								</Padding>
-							)}
-							{item.parent === FOLDERS.TRASH && (
-								<Padding left="small">
-									<Icon data-testid="DeletedIcon" icon="Trash2Outline" />
 								</Padding>
 							)}
 							<Padding left="small">

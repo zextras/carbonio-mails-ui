@@ -124,7 +124,10 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 					if (includes(message.tags, v.id))
 						acc.push({
 							...v,
-							color: parseInt(ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex, 10),
+							// TODO: align the use of the property with the type exposed by the shell
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex,
 							label: v.name,
 							customComponent: (
 								<Row takeAvailableSpace mainAlignment="flex-start">

@@ -249,6 +249,11 @@ export default function MessageListItem({
 									isFromSearch={item.isFromSearch}
 								/>
 								<Row>
+									{item.isFromSearch && item.parent === FOLDERS.TRASH && (
+										<Padding left="small">
+											<Icon data-testid="deleted-in-search-icon" icon="Trash2Outline" />
+										</Padding>
+									)}
 									{showTagIcon && (
 										<Padding left="small">
 											<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
@@ -262,11 +267,6 @@ export default function MessageListItem({
 									{item.flagged && (
 										<Padding left="small">
 											<Icon data-testid="FlagIcon" color="error" icon="Flag" />
-										</Padding>
-									)}
-									{item.isFromSearch && item.parent === FOLDERS.TRASH && (
-										<Padding left="small">
-											<Icon data-testid="deleted-in-search-icon" icon="Trash2Outline" />
 										</Padding>
 									)}
 									<Padding left="small">
@@ -332,7 +332,7 @@ export default function MessageListItem({
 											<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
 										</Padding>
 									)}
-									{messageFolder && messageFolder.id !== folderId && (
+									{messageFolder && messageFolder.id !== folderId && !item.isFromSearch && (
 										<Padding left="small">
 											<Badge
 												data-testid="FolderBadge"

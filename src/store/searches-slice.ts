@@ -8,14 +8,13 @@
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
-import { sortBy, includes, replace, map, forEach, result } from 'lodash';
+import { sortBy, includes, map } from 'lodash';
 import {
 	ConvActionParameters,
 	FetchConversationsReturn,
 	SearchesStateType,
 	StateType
 } from '../types';
-
 import { msgAction, search } from './actions';
 
 const fetchSearchesPending = (state: SearchesStateType): void => {

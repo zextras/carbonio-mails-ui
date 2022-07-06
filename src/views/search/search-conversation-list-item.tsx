@@ -176,11 +176,11 @@ const SearchListItem: FC<SearchConversationListItemProps> = ({
 		useMemo(() => filter(item?.messages, (msg) => msg.parent !== FOLDERS.TRASH), [item?.messages])
 			.length === 0;
 
-	return (
+	return !allMessagesInTrash && !searchInTrash ? (
 		<Container
 			background={active ? 'highlight' : 'transparent'}
 			mainAlignment="flex-start"
-			data-testid={`ConversationListItem-${item.id}`}
+			data-testid={`SearchConversationListItem-${item.id}`}
 		>
 			<ListItemActionWrapper item={item} current={active} onClick={_onClick} isConversation>
 				<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
@@ -282,6 +282,8 @@ const SearchListItem: FC<SearchConversationListItemProps> = ({
 				</CollapseElement>
 			)}
 		</Container>
+	) : (
+		<></>
 	);
 };
 
