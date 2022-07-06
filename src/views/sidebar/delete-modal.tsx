@@ -12,7 +12,7 @@ import { startsWith } from 'lodash';
 import ModalFooter from './commons/modal-footer';
 import { ModalHeader } from './commons/modal-header';
 import { folderAction } from '../../store/actions/folder-action';
-import { ModalProps } from '../../types/commons';
+import { ModalProps } from '../../types';
 import { FOLDER_ACTIONS } from '../../commons/utilities';
 
 export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {

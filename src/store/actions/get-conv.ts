@@ -8,15 +8,13 @@ import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import { Conversation } from '../../types/conversation';
-import { IncompleteMessage } from '../../types/mail-message';
-import { GetConvRequest, GetConvResponse } from '../../types/soap/';
-
-export type GetConvParameters = {
-	conversationId: string;
-	fetch?: string;
-	folderId?: string;
-};
+import {
+	Conversation,
+	GetConvParameters,
+	GetConvRequest,
+	GetConvResponse,
+	IncompleteMessage
+} from '../../types';
 
 export const getConv = createAsyncThunk<
 	{ conversation: Partial<Conversation>; messages: Array<IncompleteMessage> },

@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { MailMessage } from '../messages';
 import { SoapMailMessage } from './soap-mail-message';
 import { ZimbraRequest } from './zimbra-request';
 
@@ -25,5 +26,18 @@ export type SearchConvResponse = {
 	more: boolean;
 	offset: string;
 	m: Array<SoapMailMessage>;
+	orderBy: string;
+};
+
+export type SearchConvParameters = {
+	conversationId: string;
+	folderId: string;
+	fetch: string;
+};
+
+export type SearchConvReturn = {
+	hasMore: boolean;
+	offset: string;
+	messages: Array<MailMessage>;
 	orderBy: string;
 };

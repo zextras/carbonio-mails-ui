@@ -15,6 +15,10 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"test": "echo jest"
 	},
+	"files": [
+		"src/types/"
+	],
+	"types": "./src/types/index.d.ts",
 	"keywords": [],
 	"author": "Zextras DL Team <https://www.zextras.com/carbonio/>",
 	"maintainers": [

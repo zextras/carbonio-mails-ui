@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 import { search } from '../store/actions';
 import { selectFolder } from '../store/folders-slice';
 import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
-import { MailMessage } from '../types/mail-message';
+import { MailMessage } from '../types';
 
 type RouteParams = {
 	folderId: string;

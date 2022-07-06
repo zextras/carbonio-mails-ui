@@ -15,10 +15,9 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import ModalFooter from '../../../sidebar/commons/modal-footer';
 import { ModalHeader } from '../../../sidebar/commons/modal-header';
-import { MailMessage } from '../../../../types/mail-message';
 import { msgAction } from '../../../../store/actions';
 import { sendDeliveryReport } from '../../../../store/actions/send-delivery-request';
-import { CreateSnackbar } from '../../../../types/commons';
+import { CreateSnackbar, MailMessage } from '../../../../types';
 
 type CompProps = {
 	open: boolean;

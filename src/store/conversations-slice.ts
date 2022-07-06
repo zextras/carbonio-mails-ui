@@ -10,18 +10,18 @@
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { find, forEach, merge, reduce } from 'lodash';
-import { Conversation, ConvMessage } from '../types/conversation';
-import { Folder } from '../types/folder';
-import { ConversationsFolderStatus, ConversationsStateType, StateType } from '../types/state';
 import {
-	convAction,
+	FolderType,
+	ConversationsFolderStatus,
+	ConversationsStateType,
+	StateType,
+	FetchConversationsReturn,
+	ConvMessage,
 	ConvActionParameters,
 	ConvActionResult,
-	getConv,
-	searchConv,
-	search,
-	FetchConversationsReturn
-} from './actions';
+	Conversation
+} from '../types';
+import { convAction, getConv, searchConv, search } from './actions';
 import {
 	handleAddMessagesInConversationReducer,
 	handleCreatedConversationsReducer,
@@ -236,7 +236,7 @@ export function selectConversationExpandedStatus(
 	return conversations?.expandedStatus?.[id];
 }
 
-export function selectFolder({ folders }: StateType, id: string): Folder {
+export function selectFolder({ folders }: StateType, id: string): FolderType {
 	return folders?.folders?.[id];
 }
 

@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { selectFolders } from '../../../../../store/folders-slice';
 import ContactNames from './contact-names';
-import { MailMessage } from '../../../../../types/mail-message';
+import { MailMessage } from '../../../../../types';
 
 const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 	message,

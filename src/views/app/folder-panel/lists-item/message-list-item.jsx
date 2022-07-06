@@ -10,7 +10,8 @@ import {
 	useAppContext,
 	replaceHistory,
 	useTags,
-	ZIMBRA_STANDARD_COLORS
+	ZIMBRA_STANDARD_COLORS,
+	FOLDERS
 } from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
@@ -29,7 +30,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { selectFolder } from '../../../../store/conversations-slice';
 import { ItemAvatar } from './item-avatar';
-import ListItemActionWrapper from './list-item-actions-wrapper';
+import { ListItemActionWrapper } from './list-item-actions-wrapper';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { SenderName } from './sender-name';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
@@ -221,7 +222,7 @@ export default function MessageListItem({
 			>
 				<Container
 					mainAlignment="flex-start"
-					data-testid={`MessageListItem-${item.id}`}
+					data-testid={`SearchMessageListItem-${item.id}`}
 					background={item.read ? 'tranparent' : 'gray5'}
 				>
 					<ListItemActionWrapper item={item} onClick={_onClick} onDoubleClick={_onDoubleClick}>
@@ -242,8 +243,17 @@ export default function MessageListItem({
 							padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 						>
 							<Container orientation="horizontal" height="fit" width="fill">
-								<SenderName item={item} textValues={textReadValues} isFromSearch={false} />
+								<SenderName
+									item={item}
+									textValues={textReadValues}
+									isFromSearch={item.isFromSearch}
+								/>
 								<Row>
+									{item.isFromSearch && item.parent === FOLDERS.TRASH && (
+										<Padding left="small">
+											<Icon data-testid="deleted-in-search-icon" icon="Trash2Outline" />
+										</Padding>
+									)}
 									{showTagIcon && (
 										<Padding left="small">
 											<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
@@ -322,7 +332,7 @@ export default function MessageListItem({
 											<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
 										</Padding>
 									)}
-									{messageFolder && messageFolder.id !== folderId && (
+									{messageFolder && messageFolder.id !== folderId && !item.isFromSearch && (
 										<Padding left="small">
 											<Badge
 												data-testid="FolderBadge"

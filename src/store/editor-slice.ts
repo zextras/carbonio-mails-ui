@@ -7,13 +7,20 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { drop, find } from 'lodash';
+import { ActionsType } from '../commons/utils';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
-import { MailMessage } from '../types/mail-message';
-import { MailsEditor } from '../types/mails-editor';
-import { ActionsType, Participant } from '../types/participant';
-import { EditorsStateType, MailsEditorMap, StateType } from '../types/state';
+import {
+	EditorsStateType,
+	MailsEditorMap,
+	StateType,
+	Participant,
+	MailsEditor,
+	MailMessage,
+	SaveDraftNewParameters,
+	saveDraftNewResult
+} from '../types';
 import { deleteAllAttachments } from './actions/delete-all-attachments';
-import { saveDraft, SaveDraftNewParameters, saveDraftNewResult } from './actions/save-draft';
+import { saveDraft } from './actions/save-draft';
 import {
 	emptyEditor,
 	extractBody,

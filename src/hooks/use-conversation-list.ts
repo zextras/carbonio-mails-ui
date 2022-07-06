@@ -10,8 +10,7 @@ import { useParams } from 'react-router-dom';
 import { getTags, Tag, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
-import { Conversation } from '../types/conversation';
-import { StateType } from '../types/state';
+import { Conversation, StateType } from '../types';
 import { selectFolder } from '../store/folders-slice';
 
 type RouteParams = {

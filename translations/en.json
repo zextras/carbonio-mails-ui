@@ -27,6 +27,19 @@
         "show_original": "Show original",
         "unflag": "Remove flag"
     },
+    "attachment_type": {
+        "application": "Application",
+        "email": "Email",
+        "excel": "Excel",
+        "html": "HTML",
+        "image": "Image",
+        "pdf": "PDF",
+        "powerpoint": "Powerpoint",
+        "text_document": "Text Document",
+        "video": "Video",
+        "word": "Word",
+        "zipped_file": "Zipped File"
+    },
     "board": {
         "show": "Show board"
     },
@@ -79,6 +92,31 @@
         "title8": "Select an e-mail to read or delete it.",
         "trash_title1": "Click the trash icon to delete an e-mail",
         "trash_title2": "Select and restore e-mails from the trash."
+    },
+    "email_status": {
+        "anywhere": "in all the folders",
+        "ccme": "in copy to me",
+        "draft": "draft",
+        "flagged": "flagged",
+        "forwarded": "forwarded",
+        "fromccme": "from me",
+        "fromme": "from me",
+        "invitations": "invitations",
+        "local": "on my folders",
+        "read": "read",
+        "received": "received by me",
+        "remote": "on a folder shared by me",
+        "replied": "answered by me",
+        "sent": "sent by me",
+        "solo": "conversations with a single message",
+        "toccme": "to me or in copy to me",
+        "tofromccme": "to me, from me or in copy to me",
+        "tofromme": "to me, from me or in copy to me",
+        "tome": "to me",
+        "unflagged": "not flagged",
+        "unforwarded": "not forwarded",
+        "unread": "unread",
+        "unreplied": "not answered by me"
     },
     "filters": {
         "active_filters": "Active Filters",
@@ -307,6 +345,7 @@
         "save": "Save",
         "save_to_files": "Save to Files",
         "search_activate_selection_mode": "Selection mode isn’t available yet on search results",
+        "searching": "Searching...",
         "select": "Select",
         "select_color": "Select Color",
         "select_folder": "Select folder",

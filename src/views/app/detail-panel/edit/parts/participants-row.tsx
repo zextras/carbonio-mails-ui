@@ -10,9 +10,9 @@ import { Button, ChipInput, Container } from '@zextras/carbonio-design-system';
 import { Controller } from 'react-hook-form';
 import { map, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { ParticipantRole } from '../../../../../types/participant';
 import * as StyledComp from './edit-view-styled-components';
 import { EditViewContext } from './edit-view-context';
+import { ParticipantRole } from '../../../../../commons/utils';
 
 const emailRegex =
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars, max-len, no-control-regex

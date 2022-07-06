@@ -46,12 +46,12 @@ export type SyncResponseMail = {
 	fr: undefined;
 };
 
-export type Participant = { a: string; d: string; p: string; t: string };
+export type SyncParticipant = { a: string; d: string; p: string; t: string };
 
 export type SyncResponseCreatedMessage = {
 	cid: string;
 	d: number;
-	e: Array<Participant>;
+	e: Array<SyncParticipant>;
 	f?: string;
 	fr?: string;
 	id: string;
@@ -71,6 +71,7 @@ export type SyncResponseDeletedMap = SyncResponseDeletedMapRow & {
 	folder?: Array<SyncResponseDeletedMapRow>;
 	m?: Array<SyncResponseDeletedMapRow>;
 	c?: Array<SyncResponseDeletedMapRow>;
+	cn?: Array<SyncResponseDeletedMapRow>;
 };
 
 type ISoapSyncFolderObj = {

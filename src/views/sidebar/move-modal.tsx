@@ -39,7 +39,7 @@ import ModalFooter from './commons/modal-footer';
 import { ModalHeader } from './commons/modal-header';
 import { FOLDER_VIEW } from '../../constants';
 import ModalAccordionCustomComponent from './parts/edit/modal-accordion-custom-component';
-import { ModalProps } from '../../types/commons';
+import { ModalProps } from '../../types';
 import { getFolderTranslatedName } from './utils';
 
 const ContainerEl = styled(Container)`

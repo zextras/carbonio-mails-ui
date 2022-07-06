@@ -35,7 +35,6 @@ import { find, startsWith } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { FolderActionsType } from '../../types/folder';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
@@ -46,7 +45,8 @@ import { DeleteModal } from './delete-modal';
 import { EditModal } from './edit-modal';
 import { SharesInfoModal } from './shares-info-modal';
 import ShareFolderModal from './share-folder-modal';
-import { DataProps } from '../../types/commons';
+import { FolderActionsType } from '../../commons/utils';
+import { DataProps } from '../../types';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));

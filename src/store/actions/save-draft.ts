@@ -5,17 +5,14 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import { MailsEditor } from '../../types/mails-editor';
-import { SaveDraftRequest, SaveDraftResponse } from '../../types/soap/';
+import {
+	MailsEditor,
+	SaveDraftNewParameters,
+	saveDraftNewResult,
+	SaveDraftRequest,
+	SaveDraftResponse
+} from '../../types';
 import { generateRequest } from '../editor-slice-utils';
-
-export type SaveDraftNewParameters = {
-	data: MailsEditor;
-};
-
-export type saveDraftNewResult = {
-	resp: SaveDraftResponse;
-};
 
 export const saveDraft = createAsyncThunk<saveDraftNewResult, SaveDraftNewParameters>(
 	'saveDraft',
