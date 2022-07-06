@@ -100,3 +100,14 @@ export type DataProps = {
 	parentFolderId: string;
 	selectedIDs: Array<string>;
 };
+
+export type CreateSnackbar = (arg: {
+	key: string;
+	replace?: boolean;
+	type: string;
+	hideButton?: boolean;
+	label: string;
+	autoHideTimeout: number;
+	actionLabel?: string;
+	onActionClick?: () => void;
+}) => void;

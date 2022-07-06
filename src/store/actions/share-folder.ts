@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { map } from 'lodash';
+import { map, trim } from 'lodash';
 
 export const shareFolder = createAsyncThunk('mail/shareFolder', async (data: any, { getState }) => {
 	const requests: any = {};
@@ -14,8 +14,12 @@ export const shareFolder = createAsyncThunk('mail/shareFolder', async (data: any
 					(
 						contact,
 						key
-					) => `<FolderActionRequest xmlns="urn:zimbraMail" requestId="${key}"><action op="grant" id="${data.folder.id}">
-        <grant gt="usr" inh="1" d="${contact.email}" perm="${data.shareWithUserRole}" pw=""/></action></FolderActionRequest>`
+					) => `<FolderActionRequest xmlns="urn:zimbraMail" requestId="${key}"><action op="grant" id="${
+						data.folder.id
+					}">
+        <grant gt="usr" inh="1" d="${trim(contact.email, '<>')}" perm="${
+						data.shareWithUserRole
+					}" pw=""/></action></FolderActionRequest>`
 				).join('')}    
         </BatchRequest>`;
 

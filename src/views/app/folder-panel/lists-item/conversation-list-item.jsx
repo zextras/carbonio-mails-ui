@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isEmpty, reduce, trimStart, map, uniqBy, find, includes } from 'lodash';
+import { isEmpty, reduce, trimStart, map, uniqBy, find, includes, filter } from 'lodash';
 import styled from 'styled-components';
 import {
 	pushHistory,
@@ -25,7 +25,8 @@ import {
 	Row,
 	Text,
 	Drag,
-	Tooltip
+	Tooltip,
+	List
 } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -40,7 +41,13 @@ import { SenderName } from './sender-name';
 import MessageListItem from './message-list-item';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 
-function ConversationMessagesList({ conversationStatus, messages, folderId, length }) {
+export function ConversationMessagesList({
+	active,
+	conversationStatus,
+	messages,
+	folderId,
+	length
+}) {
 	if (conversationStatus !== 'complete') {
 		return (
 			<Container height={64 * length}>
@@ -48,20 +55,17 @@ function ConversationMessagesList({ conversationStatus, messages, folderId, leng
 			</Container>
 		);
 	}
-
 	return (
-		<>
-			{map(messages, (msg, index) => (
-				<React.Fragment key={msg.id}>
-					<MessageListItem
-						item={msg}
-						conversationId={msg.parent}
-						folderId={folderId}
-						isConvChildren
-					/>
-				</React.Fragment>
-			))}
-		</>
+		<List
+			style={{ paddingBottom: '4px' }}
+			active={active}
+			items={messages}
+			itemProps={{
+				folderId,
+				isConvChildren: true
+			}}
+			ItemComponent={MessageListItem}
+		/>
 	);
 }
 
@@ -106,6 +110,7 @@ export const RowInfo = ({ item, tags }) => {
 };
 
 export default function ConversationListItem({
+	itemId,
 	item,
 	folderId,
 	selected,
@@ -260,6 +265,18 @@ export default function ConversationListItem({
 		[item?.messages, folderId, messages, sortSign]
 	);
 
+	const msgToDisplayCount = useMemo(
+		() =>
+			// eslint-disable-next-line no-nested-ternary
+			folderId === FOLDERS.TRASH
+				? item?.messages?.length
+				: [FOLDERS.TRASH, FOLDERS.SPAM].includes(folderId)
+				? item?.messages?.length
+				: filter(item?.messages, (msg) => ![FOLDERS.TRASH, FOLDERS.SPAM].includes(msg.parent))
+						?.length,
+		[folderId, item?.messages]
+	);
+
 	const textReadValues = useMemo(() => {
 		if (typeof item.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read' };
@@ -320,7 +337,7 @@ export default function ConversationListItem({
 							{renderBadge && (
 								<Row>
 									<Padding right="extrasmall">
-										<Badge value={item?.messages?.length} type={textReadValues.badge} />
+										<Badge value={msgToDisplayCount} type={textReadValues.badge} />
 									</Padding>
 								</Row>
 							)}
@@ -365,6 +382,7 @@ export default function ConversationListItem({
 						height="auto"
 					>
 						<ConversationMessagesList
+							active={itemId}
 							length={item?.messages?.length}
 							messages={messagesToRender}
 							conversationStatus={conversationStatus}

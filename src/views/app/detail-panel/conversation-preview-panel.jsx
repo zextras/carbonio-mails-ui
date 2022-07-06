@@ -5,7 +5,7 @@
  */
 import React, { useMemo, useEffect } from 'react';
 import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
-import { FOLDERS, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useCurrentRoute, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { map, sortBy, find, filter } from 'lodash';
@@ -24,10 +24,10 @@ const MessagesComponent = ({ conversation }) => {
 	const settings = useUserSettings();
 	const messages = useSelector(selectMessages);
 	const conversationStatus = useSelector(selectCurrentFolderExpandedStatus)[conversationId];
-
+	const activeRoute = useCurrentRoute();
 	const convMessages = useMemo(() => {
 		const msgs =
-			folderId !== FOLDERS.TRASH
+			folderId !== FOLDERS.TRASH && activeRoute.id !== 'search'
 				? map(
 						filter(conversation?.messages, (m) => m.parent !== FOLDERS.TRASH),
 						(item) => messages[item.id] ?? item
@@ -38,7 +38,13 @@ const MessagesComponent = ({ conversation }) => {
 			return sortBy(msgs, [(o) => o.date]);
 		}
 		return msgs ?? [];
-	}, [conversation?.messages, messages, settings.prefs.zimbraPrefConversationOrder, folderId]);
+	}, [
+		conversation?.messages,
+		messages,
+		settings.prefs.zimbraPrefConversationOrder,
+		folderId,
+		activeRoute.id
+	]);
 
 	const expand = (message, index) => {
 		if (settings.prefs.zimbraPrefConversationOrder === 'dateAsc') {
@@ -54,7 +60,7 @@ const MessagesComponent = ({ conversation }) => {
 					<MailPreview
 						message={message}
 						expanded={expand(message, index)}
-						isAlone={conversation.messages.length === 1}
+						isAlone={convMessages?.length === 1}
 						isMessageView={false}
 					/>
 				</Padding>
@@ -91,9 +97,17 @@ export default function ConversationPreviewPanel() {
 		}
 	}, [conversationId, conversationsStatus, dispatch, folderId, tagsFromStore]);
 
+	const showPreviewPanel = useMemo(
+		() =>
+			folderId === FOLDERS.TRASH
+				? conversation?.messages?.length > 0
+				: filter(conversation?.messages, (m) => m.parent !== FOLDERS.TRASH).length > 0,
+		[conversation?.messages, folderId]
+	);
+
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-			{conversation && (
+			{showPreviewPanel && (
 				<>
 					<PreviewPanelHeader item={conversation} folderId={folderId} />
 					{/* commented to hide the panel actions */}

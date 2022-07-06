@@ -135,7 +135,9 @@ function createEditorReducer(
 						original: payload.original,
 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
 						urgent: payload.original.urgent,
-						attachmentFiles: findAttachments(payload.original.parts, [])
+						attachmentFiles: findAttachments(payload.original.parts, []),
+						rt: 'r',
+						origid: payload.original.id
 					};
 				}
 
@@ -144,14 +146,16 @@ function createEditorReducer(
 				if (payload.original && payload.accounts) {
 					state.editors[payload.editorId] = {
 						...empty,
-						text: generateReplyText(payload.original, payload.labels),
+						text: textWithSignatureRepliesForwards,
 						to: retrieveALL(payload.original, payload.accounts),
 						cc: retrieveCC(payload.original, payload.accounts),
 						subject: `RE: ${payload.original.subject}`,
 						original: payload.original,
 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
 						urgent: payload.original.urgent,
-						attachmentFiles: findAttachments(payload.original.parts, [])
+						attachmentFiles: findAttachments(payload.original.parts, []),
+						rt: 'r',
+						origid: payload.original.id
 					};
 				}
 				break;
@@ -165,7 +169,9 @@ function createEditorReducer(
 						original: payload.original,
 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
 						urgent: payload.original.urgent,
-						attachmentFiles: findAttachments(payload.original.parts, [])
+						attachmentFiles: findAttachments(payload.original.parts, []),
+						rt: 'w',
+						origid: payload.original.id
 					};
 				}
 				break;

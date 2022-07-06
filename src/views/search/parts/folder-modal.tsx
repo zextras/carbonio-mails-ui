@@ -15,7 +15,11 @@ import { ModalHeader } from '../../sidebar/commons/modal-header';
 import FolderItem from '../../sidebar/commons/folder-item';
 import { selectFolders } from '../../../store/folders-slice';
 import { Folder as FolderType } from '../../../types/folder';
-import { getFolderIconColor, getFolderIconName } from '../../sidebar/utils';
+import {
+	getFolderIconColor,
+	getFolderIconName,
+	getFolderTranslatedName
+} from '../../sidebar/utils';
 
 type ComponentProps = {
 	compProps: { open: boolean; onClose: () => void; setFolder: (arg: any) => void; t: TFunction };
@@ -44,9 +48,15 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 					return false;
 				}
 
-				return startsWith(v?.name?.toLowerCase(), input.toLowerCase());
+				const folderName = getFolderTranslatedName({
+					t,
+					folderId: v?.id,
+					folderName: v?.name
+				})?.toLowerCase();
+
+				return startsWith(folderName, input.toLowerCase());
 			}),
-		[folders, input]
+		[folders, input, t]
 	);
 	const foldersToFilterOut = useMemo(
 		() => [...(includeTrash ? [] : FOLDERS.TRASH), ...(includeSpam ? [] : FOLDERS.SPAM)],
@@ -68,7 +78,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 							...acc,
 							{
 								...item,
-								label: item.id === FOLDERS.SPAM ? 'Spam' : item.name,
+								label: getFolderTranslatedName({ t, folderId: item.id, folderName: item.name }),
 								icon: getFolderIconName(item),
 								iconCustomColor: getFolderIconColor(item),
 								items: nestFilteredFolders(items, item.id, results, getSharedFolder),
@@ -86,7 +96,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				},
 				[]
 			),
-		[foldersToFilterOut, input.length, folderDestination.id]
+		[foldersToFilterOut, t, input.length, folderDestination.id]
 	);
 
 	const shareFolders = useMemo(

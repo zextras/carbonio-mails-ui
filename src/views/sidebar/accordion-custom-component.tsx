@@ -38,7 +38,7 @@ import { useParams } from 'react-router-dom';
 import { FolderActionsType } from '../../types/folder';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
-import { getFolderIconColor, getFolderIconName } from './utils';
+import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 import { NewModal } from './new-modal';
 import { MoveModal } from './move-modal';
 import { EmptyModal } from './empty-modal';
@@ -50,6 +50,7 @@ import { DataProps } from '../../types/commons';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
+	height: 48px;
 `;
 
 const DropOverlayContainer = styled(Container)`
@@ -477,24 +478,28 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			) || folder.isLink, // Default folders and shared folders not allowed to drag
 		[folder.id, folder.isLink]
 	);
-	const { zimbraPrefSortOrder, zimbraPrefGroupMailBy } = useUserSettings().prefs;
-	const sorting = useMemo(() => {
-		if (typeof zimbraPrefSortOrder === 'string') {
-			return (
-				find(zimbraPrefSortOrder?.split(','), (f) => f?.split(':')?.[0] === folder.id)?.split(
-					':'
-				)?.[1] ?? 'dateDesc'
-			);
-		}
-		return 'dateDesc';
-	}, [zimbraPrefSortOrder, folder.id]) as 'dateDesc' | 'dateAsc';
+	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
+
+	/* NOTE: Need to comment out when need to sort as per the configured sort order */
+	// const { zimbraPrefSortOrder, zimbraPrefGroupMailBy } = useUserSettings().prefs;
+	// const sorting = useMemo(() => {
+	// 	if (typeof zimbraPrefSortOrder === 'string') {
+	// 		return (
+	// 			find(zimbraPrefSortOrder?.split(','), (f) => f?.split(':')?.[0] === folder.id)?.split(
+	// 				':'
+	// 			)?.[1] ?? 'dateDesc'
+	// 		);
+	// 	}
+	// 	return 'dateDesc';
+	// }, [zimbraPrefSortOrder, folder.id]) as 'dateDesc' | 'dateAsc';
+
 	const onClick = useCallback((): void => {
 		pushHistory(`/folder/${folder.id}`);
 		dispatch(
 			search({
 				folderId: folder.id,
 				limit: 101,
-				sortBy: sorting,
+				sortBy: 'dateDesc',
 				// folder.id === FOLDERS.DRAFTS ? 'message' : zimbraPrefGroupMailBy
 				types:
 					folder.id === FOLDERS.DRAFTS || typeof zimbraPrefGroupMailBy !== 'string'
@@ -502,44 +507,52 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 						: zimbraPrefGroupMailBy
 			})
 		);
-	}, [dispatch, folder.id, sorting, zimbraPrefGroupMailBy]);
+	}, [dispatch, folder.id, zimbraPrefGroupMailBy]);
 
 	const accordionItem = useMemo(
 		() => ({
 			...item,
-			label: item.id === FOLDERS.USER_ROOT ? accountName : item.label,
+			label:
+				item.id === FOLDERS.USER_ROOT
+					? accountName
+					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
 			// open: openIds ? openIds.includes(folder.id) : false,
 			badgeCounter: badgeCount(item.id === FOLDERS.DRAFTS ? item?.folder.n : item?.folder?.u),
 			badgeType: item.id === FOLDERS.DRAFTS ? 'read' : 'unread',
-			to: `/folder/${item.id}`
+			to: `/folder/${item.id}`,
+			textProps: { size: 'small' }
 		}),
-		[item, accountName]
+		[item, accountName, t]
 	);
 
 	const dropdownItems = useFolderActions(item);
 
-	const sharedStatusIcon = useMemo(() => {
-		if (!folder.acl?.grant) {
-			return '';
-		}
-
-		const tooltipText = t('tooltip.folder_sharing_status', {
-			count: folder.acl.grant.length,
-			defaultValue: 'Shared with {{count}} person',
-			defaultValue_plural: 'Shared with {{count}} people'
-		});
-
-		return (
+	const statusIcon = useMemo(() => {
+		const RowWithIcon = (icon: string, color: string, tooltipText: string): JSX.Element => (
 			<Padding left="small">
 				<Tooltip placement="right" label={tooltipText}>
 					<Row>
-						<Icon icon="ArrowCircleRight" customColor="#ffb74d" size="large" />
+						<Icon icon={icon} color={color} size="medium" />
 					</Row>
 				</Tooltip>
 			</Padding>
 		);
+
+		if (folder.acl?.grant) {
+			const tooltipText = t('tooltip.folder_sharing_status', {
+				count: folder.acl.grant.length,
+				defaultValue_one: 'Shared with {{count}} person',
+				defaultValue: 'Shared with {{count}} people'
+			});
+			return RowWithIcon('Shared', 'shared', tooltipText);
+		}
+		if (folder.isLink) {
+			const tooltipText = t('tooltip.folder_linked_status', 'Linked to me');
+			return RowWithIcon('Linked', 'linked', tooltipText);
+		}
+		return '';
 	}, [folder, t]);
 
 	return folder.id === FOLDERS.USER_ROOT || folder.oname === ROOT_NAME ? (
@@ -552,36 +565,34 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			</Tooltip>
 		</FittedRow>
 	) : (
-		<>
-			<Drop
-				acceptType={['message', 'conversation', 'folder']}
-				onDrop={(data: OnDropActionProps): void => onDropAction(data)}
-				onDragEnter={(data: OnDropActionProps): unknown => onDragEnterAction(data)}
-				overlayAcceptComponent={<DropOverlayContainer folder={folder} />}
-				overlayDenyComponent={<DropDenyOverlayContainer folder={folder} />}
+		<Drop
+			acceptType={['message', 'conversation', 'folder']}
+			onDrop={(data: OnDropActionProps): void => onDropAction(data)}
+			onDragEnter={(data: OnDropActionProps): unknown => onDragEnterAction(data)}
+			overlayAcceptComponent={<DropOverlayContainer folder={folder} />}
+			overlayDenyComponent={<DropDenyOverlayContainer folder={folder} />}
+		>
+			<Drag
+				type="folder"
+				data={folder}
+				dragDisabled={dragFolderDisable}
+				style={{ display: 'block' }}
 			>
-				<Drag
-					type="folder"
-					data={folder}
-					dragDisabled={dragFolderDisable}
-					style={{ display: 'block' }}
+				<AppLink
+					onClick={onClick}
+					to={`/folder/${folder.id}`}
+					style={{ width: '100%', height: '100%', textDecoration: 'none' }}
 				>
-					<AppLink
-						onClick={onClick}
-						to={`/folder/${folder.id}`}
-						style={{ width: '100%', height: '100%', textDecoration: 'none' }}
-					>
-						<Dropdown contextMenu items={dropdownItems} display="block" width="100%">
-							<Row>
-								<Padding left="small" />
-								<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-									<AccordionItem item={accordionItem}>{sharedStatusIcon}</AccordionItem>
-								</Tooltip>
-							</Row>
-						</Dropdown>
-					</AppLink>
-				</Drag>
-			</Drop>
-		</>
+					<Dropdown contextMenu items={dropdownItems} display="block" width="100%">
+						<Row>
+							<Padding left="small" />
+							<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+								<AccordionItem item={accordionItem}>{statusIcon}</AccordionItem>
+							</Tooltip>
+						</Row>
+					</Dropdown>
+				</AppLink>
+			</Drag>
+		</Drop>
 	);
 };

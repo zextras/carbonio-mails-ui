@@ -6,7 +6,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { useMemo, useState, useRef, useCallback, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { filter } from 'lodash';
+import { filter, find } from 'lodash';
 import {
 	useUserAccounts,
 	useIntegratedComponent,
@@ -30,13 +30,15 @@ import AttachmentsBlock from './attachments-block';
 import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
 import { getMsg, msgAction } from '../../../../store/actions';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
-
+import ReadReceiptModal from './read-receipt-modal';
 import PreviewHeader from './parts/preview-header';
 
 const MailContent = ({ message, isMailPreviewOpen }) => {
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
+	const [showModal, setShowModal] = useState(true);
 	const dispatch = useDispatch();
 	const accounts = useUserAccounts();
+	const { prefs } = useUserSettings();
 	const moveToTrash = useCallback(() => {
 		dispatch(
 			msgAction({
@@ -65,6 +67,21 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 			InviteResponse,
 		[integrationAvailable, InviteResponse, message]
 	);
+	const readReceiptRequester = useMemo(
+		() => find(message?.participants, { type: 'n' }),
+		[message?.participants]
+	);
+
+	const readReceiptSetting = useMemo(() => prefs?.zimbraPrefMailSendReadReceipts, [prefs]);
+	const showReadReceiptModal = useMemo(
+		() =>
+			!!readReceiptRequester &&
+			showModal &&
+			message.isReadReceiptRequested &&
+			!message?.isSentByMe &&
+			readReceiptSetting === 'prompt',
+		[readReceiptRequester, showModal, message, readReceiptSetting]
+	);
 
 	const showShareInvite = useMemo(
 		() =>
@@ -76,6 +93,9 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 		[message]
 	);
 
+	const onModalClose = useCallback(() => {
+		setShowModal(false);
+	}, []);
 	const loggedInUser = useMemo(() => accounts[0]?.name, [accounts]);
 	const isAttendee = useMemo(
 		() => message.invite?.[0]?.comp?.[0]?.or?.a !== loggedInUser,
@@ -129,9 +149,25 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 						/>
 					)}
 				</Padding>
+				<ReadReceiptModal
+					open={showReadReceiptModal}
+					onClose={onModalClose}
+					message={message}
+					readReceiptSetting={readReceiptSetting}
+				/>
 			</Container>
 		),
-		[message, InviteResponse, moveToTrash, showShareInvite, showAppointmentInvite, isAttendee]
+		[
+			message,
+			showAppointmentInvite,
+			readReceiptSetting,
+			InviteResponse,
+			moveToTrash,
+			isAttendee,
+			showShareInvite,
+			showReadReceiptModal,
+			onModalClose
+		]
 	);
 	return (
 		<Collapse
@@ -146,13 +182,16 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 	);
 };
 
-const MailPreviewBlock = ({ message, open, onClick }) => {
+const MailPreviewBlock = ({ message, open, onClick, isAlone }) => {
 	const [t] = useTranslation();
 	const { folderId } = useParams();
 
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
-	const compProps = useMemo(() => ({ message, onClick, open }), [message, onClick, open]);
+	const compProps = useMemo(
+		() => ({ message, onClick, open, isAlone }),
+		[message, onClick, open, isAlone]
+	);
 	const markAsNotSpam = useCallback(
 		() =>
 			setMsgAsSpam({
@@ -207,7 +246,7 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 		() => settings?.prefs.zimbraPrefTimeZoneId,
 		[settings?.prefs.zimbraPrefTimeZoneId]
 	);
-	const [open, setOpen] = useState(expanded);
+	const [open, setOpen] = useState(expanded || isAlone);
 
 	const onClick = useCallback(() => {
 		setOpen((o) => !o);
@@ -224,6 +263,7 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 				message={message}
 				timezone={timezone}
 				open={isMailPreviewOpen}
+				isAlone={isAlone}
 			/>
 
 			<Container
@@ -233,7 +273,9 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 					overflowY: 'auto'
 				}}
 			>
-				{open && <MailContent message={message} isMailPreviewOpen={isMailPreviewOpen} />}
+				{(open || isAlone) && (
+					<MailContent message={message} isMailPreviewOpen={isMailPreviewOpen} />
+				)}
 			</Container>
 		</Container>
 	);

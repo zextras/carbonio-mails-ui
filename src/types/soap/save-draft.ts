@@ -45,6 +45,8 @@ export type SoapDraftMessageObj = {
 	e: Array<SoapEmailInfoObj>;
 	f?: string;
 	did?: string;
+	rt?: string;
+	origid?: string;
 };
 
 export type SaveDraftRequest = {

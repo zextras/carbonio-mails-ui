@@ -117,6 +117,9 @@ const SearchList = ({
 				<Container style={{ overflowY: 'auto' }} mainAlignment="flex-start">
 					<List
 						items={searchResults?.conversations ?? []}
+						itemProps={{
+							itemId
+						}}
 						ItemComponent={SearchListItem}
 						onListBottom={canLoadMore ? loadMore : undefined}
 						active={itemId}

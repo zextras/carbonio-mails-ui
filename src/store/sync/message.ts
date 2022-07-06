@@ -15,7 +15,6 @@ import {
 	sortBy,
 	reverse,
 	find,
-	includes,
 	reject
 } from 'lodash';
 import sound from '../../assets/notification.mp3';
@@ -68,7 +67,7 @@ const triggerNotification = (m: SoapIncompleteMessage): void => {
 		sortBy(
 			filter(reject(messages, 'read'), (item) =>
 				showAllNotifications === 'TRUE'
-					? !(item.isSentByMe === true) && item.parent === FOLDERS.SENT
+					? !(item.isSentByMe === true)
 					: !(item.isSentByMe === true) && item.parent === FOLDERS.INBOX
 			),
 			'date'
@@ -77,14 +76,13 @@ const triggerNotification = (m: SoapIncompleteMessage): void => {
 	if (isAudioEnabled === 'TRUE' && messagesToNotify?.length > 0) {
 		playSound();
 	}
+
 	if (isShowNotificationEnabled === 'TRUE') {
 		forEach(messagesToNotify, (msg) => {
-			if (showAllNotifications) {
-				showNotification(
-					msg.subject,
-					msg.fragment ?? t('notification.no_content', 'Message without content')
-				);
-			}
+			showNotification(
+				msg.subject,
+				msg.fragment ?? t('notification.no_content', 'Message without content')
+			);
 		});
 	}
 };
