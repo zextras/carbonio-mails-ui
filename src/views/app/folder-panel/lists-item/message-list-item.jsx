@@ -94,7 +94,7 @@ export default function MessageListItem({
 				tagsFromStore,
 				(acc, v) => {
 					if (includes(item.tags, v.id))
-						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[parseInt(v.color ?? '0', 10)].hex });
+						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[v.color ?? '0'].hex });
 					return acc;
 				},
 				[]

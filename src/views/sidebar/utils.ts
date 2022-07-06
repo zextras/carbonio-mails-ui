@@ -85,8 +85,8 @@ export const capitalise = (word: string): string => {
 
 export const getFolderIconColor = (f: AccordionFolder): string => {
 	if (f?.folder?.color) {
-		return Number(f.folder.color) < 10
-			? ZIMBRA_STANDARD_COLORS[Number(f.folder.color)].hex
+		return f.folder.color < 10
+			? ZIMBRA_STANDARD_COLORS[f.folder.color].hex
 			: f?.folder.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex;
 	}
 	return ZIMBRA_STANDARD_COLORS[0].hex;
