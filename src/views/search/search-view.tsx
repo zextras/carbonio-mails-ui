@@ -21,7 +21,7 @@ import SearchConversationList from './search-conversation-list';
 import AdvancedFilterModal from './advance-filter-modal';
 import { findIconFromChip } from './parts/use-find-icon';
 import { search } from '../../store/actions/search';
-import { selectSearchesConvArray } from '../../store/searches-slice';
+import { selectSearches } from '../../store/searches-slice';
 import SearchMessageList from './search-message-list';
 import { SearchResults } from '../../types';
 
@@ -55,7 +55,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
-	const searchResults = useSelector(selectSearchesConvArray);
+	const searchResults = useSelector(selectSearches);
 	useEffect(() => {
 		switch (searchResults.status) {
 			case 'fulfilled':
@@ -148,16 +148,6 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		}
 	}, [query, queryArray, t, isInvalidQuery, searchQuery, searchResults.query, queryToString]);
 
-	const filteredSearchResults = useMemo(() => {
-		const conversations = filter(searchResults.conversations, (conv) => {
-			if (conv.parent === FOLDERS.TRASH) {
-				return false;
-			}
-			return true;
-		});
-		return { ...searchResults, conversations };
-	}, [searchResults]);
-
 	const { path } = useRouteMatch();
 
 	return (
@@ -175,7 +165,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 							{isMessageView ? (
 								<SearchMessageList
 									searchDisabled={searchDisabled}
-									searchResults={filteredSearchResults}
+									searchResults={searchResults}
 									search={searchQuery}
 									query={queryToString}
 									loading={loading}
@@ -186,7 +176,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 							) : (
 								<SearchConversationList
 									searchDisabled={searchDisabled}
-									searchResults={filteredSearchResults}
+									searchResults={searchResults}
 									search={searchQuery}
 									query={queryToString}
 									loading={loading}
@@ -199,7 +189,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 					</Switch>
 					<Suspense fallback={<Spinner />}>
 						<Container mainAlignment="flex-start" width="75%">
-							<SearchPanel searchResults={filteredSearchResults} query={query} />
+							<SearchPanel searchResults={searchResults} query={query} />
 						</Container>
 					</Suspense>
 				</Container>

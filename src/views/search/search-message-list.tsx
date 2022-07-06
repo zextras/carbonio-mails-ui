@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ShimmerList from './shimmer-list';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
@@ -26,34 +26,39 @@ const SearchMessageList: FC<SearchListProps> = ({
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const [t] = useTranslation();
 
-	const hasMore = useMemo(() => searchResults.status === 'hasMore', [searchResults.status]);
-	const loadMore = useCallback(
-		(date) => {
-			if (hasMore && !loading) {
-				search(query, false);
-			}
-		},
-		[hasMore, loading, search, query]
+	const canLoadMore = useMemo(
+		() => !loading && searchResults && !isEmpty(searchResults.messages) && searchResults.more,
+		[loading, searchResults]
 	);
 
+	const loadMore = useCallback(() => {
+		if (searchResults && !isEmpty(searchResults.conversations) && searchResults.more) {
+			search(query, false);
+		}
+	}, [query, search, searchResults]);
+
+	const [randomListIndex, setRandomListIndex] = useState(0);
+	useEffect(() => {
+		if (randomListIndex === 0) {
+			setRandomListIndex(1);
+		} else {
+			setRandomListIndex(0);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [searchResults.conversations, query]);
+
 	const displayerTitle = useMemo(() => {
-		if (searchResults.messages?.length === 0) {
-			if (folderId === FOLDERS.SPAM) {
-				return t('displayer.list_spam_title', 'There are no spam e-mails');
+		if (!isInvalidQuery && isEmpty(searchResults.messages)) {
+			if (randomListIndex === 0) {
+				return t(
+					'displayer.search_list_title1',
+					'It looks like there are no results. Keep searching!'
+				);
 			}
-			if (folderId === FOLDERS.SENT) {
-				return t('displayer.list_sent_title', 'You haven’t sent any e-mail yet');
-			}
-			if (folderId === FOLDERS.DRAFTS) {
-				return t('displayer.list_draft_title', 'There are no saved drafts');
-			}
-			if (folderId === FOLDERS.TRASH) {
-				return t('displayer.list_trash_title', 'The trash is empty');
-			}
-			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
+			return t('displayer.search_list_title2', 'None of your items matches your search.');
 		}
 		return null;
-	}, [searchResults.messages?.length, folderId, t]);
+	}, [isInvalidQuery, searchResults.messages, randomListIndex, t]);
 
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
@@ -73,10 +78,8 @@ const SearchMessageList: FC<SearchListProps> = ({
 						isConvChildren: false
 					}}
 					ItemComponent={SearchMessageListItem}
-					onListBottom={(): void =>
-						loadMore(searchResults.messages?.[searchResults.messages.length - 1]?.date)
-					}
-					data-testid={`search-message-list-${folderId}`}
+					onListBottom={canLoadMore ? loadMore : undefined}
+					data-testid={`search-message-list`}
 				/>
 			) : (
 				<Container>

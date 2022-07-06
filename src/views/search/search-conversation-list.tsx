@@ -5,11 +5,10 @@
  */
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
-import { useUserSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { filter, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import SearchListItem from './search-conversation-list-item';
 import ShimmerList from './shimmer-list';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';

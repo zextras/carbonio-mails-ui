@@ -266,7 +266,7 @@ export default function MessageListItem({
 									)}
 									{item.isFromSearch && item.parent === FOLDERS.TRASH && (
 										<Padding left="small">
-											<Icon data-testid="FlagIcon" icon="Trash2Outline" />
+											<Icon data-testid="deleted-in-search-icon" icon="Trash2Outline" />
 										</Padding>
 									)}
 									<Padding left="small">

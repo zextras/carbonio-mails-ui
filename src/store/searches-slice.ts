@@ -94,8 +94,6 @@ export const searchesSlice = createSlice({
 
 export const searchesSliceReducer = searchesSlice.reducer;
 
-export const selectSearchesByMessage = ({ searches }: StateType): SearchesStateType => searches;
-
-export const selectSearchesConvArray = ({ searches }: StateType): SearchesStateType => searches;
+export const selectSearches = ({ searches }: StateType): SearchesStateType => searches;
 
 export const selectSearchesStatus = ({ searches }: StateType): string => searches.status;

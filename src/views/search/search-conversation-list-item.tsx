@@ -183,7 +183,7 @@ const SearchListItem: FC<SearchConversationListItemProps> = ({
 			data-testid={`ConversationListItem-${item.id}`}
 		>
 			<ListItemActionWrapper item={item} current={active} onClick={_onClick} isConversation>
-				<div style={{ alignSelf: 'center' }} data-testid={`AvatarContaine r`}>
+				<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
 					<ItemAvatar
 						item={item}
 						selected={selected}
@@ -205,7 +205,7 @@ const SearchListItem: FC<SearchConversationListItemProps> = ({
 						<RowInfo item={item} tags={tags} isFromSearch allMessagesInTrash={allMessagesInTrash} />
 					</Container>
 					<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-						{item.messages.length > 1 && (
+						{msgToDisplayCount > 1 && (
 							<Row>
 								<Padding right="extrasmall">
 									<Badge value={msgToDisplayCount} type={item.read ? 'read' : 'unread'} />
