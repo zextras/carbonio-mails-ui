@@ -75,12 +75,7 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 			<Container padding={{ top: 'medium' }} crossAlignment="flex-start" mainAlignment="flex-start">
 				<Heading title={t('settings.actions', 'Actions')} size="medium" />
 				<Text>{t('settings.perform_following_action', 'Perform the following actions:')}</Text>
-				<Container
-					maxHeight="180px"
-					style={{ overflow: 'auto' }}
-					padding={{ top: 'small' }}
-					mainAlignment="flex-start"
-				>
+				<Container padding={{ top: 'small' }} mainAlignment="flex-start">
 					{map(tempActions, (tempAction, index) => (
 						<FilterActionRows
 							key={tempAction.id}

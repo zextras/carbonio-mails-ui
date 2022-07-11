@@ -62,8 +62,7 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 	const removeFilterCondition = useCallback(
 		(indexToRemove) => (): void => {
 			const previousNewFilters = newFilters.slice();
-			const toRemove = filter(previousNewFilters, { index: indexToRemove })[0];
-			previousNewFilters.splice(indexOf(previousNewFilters, toRemove), 1);
+			previousNewFilters.splice(indexToRemove, 1);
 			setNewFilters(previousNewFilters);
 		},
 		[newFilters, setNewFilters]

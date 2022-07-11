@@ -143,30 +143,34 @@ const CreateFilterModal: FC<ComponentProps> = ({
 		[t, newFilters, setNewFilters, condition, setCondition, activeFilter, filterName]
 	);
 	return (
-		<Container padding={{ bottom: 'medium' }} maxHeight="fit">
-			<ModalHeader title={modalTitle} onClose={onClose} />
-			<CreateFilterContext.Provider value={{ newFilters, setNewFilters }}>
+		<CreateFilterContext.Provider value={{ newFilters, setNewFilters }}>
+			<Container
+				padding={{ bottom: 'medium' }}
+				crossAlignment="flex-start"
+				mainAlignment="flex-start"
+				maxHeight="100%"
+				style={{ overflow: 'scroll' }}
+			>
+				<ModalHeader title={modalTitle} onClose={onClose} />
+				<Input
+					label={inputLabel}
+					value={filterName}
+					onChange={onFilterNameChange}
+					backgroundColor="gray5"
+				/>
+				<Padding top="small" />
+				<Checkbox value={activeFilter} onClick={toggleActiveFilter} label={activeFilterLabel} />
 				<Container
-					padding={{ top: 'medium' }}
-					crossAlignment="flex-start"
-					mainAlignment="flex-start"
+					padding={{ vertical: 'medium' }}
+					height="fit"
+					maxHeight="100%"
+					style={{ overflow: 'scroll' }}
 				>
-					<Input
-						label={inputLabel}
-						value={filterName}
-						onChange={onFilterNameChange}
-						backgroundColor="gray5"
-					/>
-					<Padding top="small" />
-					<Checkbox value={activeFilter} onClick={toggleActiveFilter} label={activeFilterLabel} />
-					<Padding top="medium" />
-
 					<FilterTestConditionRow compProps={filterTestConditionRowProps} />
+					<Padding top="medium" />
+					<Divider />
+					<FilterActionConditions compProps={filterActionProps} />
 				</Container>
-				<Padding top="medium" />
-				<Divider />
-				<FilterActionConditions compProps={filterActionProps} />
-
 				<ModalFooter
 					label={t('label.create', 'Create')}
 					onConfirm={onConfirm}
@@ -178,8 +182,8 @@ const CreateFilterModal: FC<ComponentProps> = ({
 						'Do not process additional filters'
 					)}
 				/>
-			</CreateFilterContext.Provider>
-		</Container>
+			</Container>
+		</CreateFilterContext.Provider>
 	);
 };
 

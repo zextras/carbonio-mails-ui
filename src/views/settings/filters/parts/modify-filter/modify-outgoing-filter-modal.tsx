@@ -63,6 +63,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
 	const [tempActions, setTempActions] = useState([{ actionKeep: [{}], id: uuidv4() }]);
+	const [reFetch, setReFetch] = useState(false);
 	const [newFilters, setNewFilters] = useState([
 		{
 			filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
@@ -90,7 +91,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 		return reduce(
 			allTest,
 			(a, i) => {
-				const firstKey = Object.keys(i)[0];
+				const firstKey = Object.keys(omit(i, ['condition']))[0];
 				if (Object.keys(a).includes(firstKey)) {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
@@ -209,32 +210,37 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 
 	const modifiedNewFilters = useMemo(
 		() =>
-			map(previousFilterTests, (test, index) => ({
-				filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
-				active: false,
-				name: '',
-				key: findRowKey({ name: test.testName, test }),
-				label: capitalise(findRowKey({ name: test.testName, test })),
-				filterTests: [
-					{
-						...{ [test.testName]: [test] },
-						condition: selectedFilter?.filterTests?.[0]?.condition
-					}
-				],
-				index: 0,
-				comp: getTestComponent({
-					name: test.testName,
-					test: { [test.testName]: [test] },
-					index,
-					t
-				})
-			})),
+			map(previousFilterTests, (test, index) => {
+				if (index === previousFilterTests.length - 1) setReFetch(true);
+				return {
+					filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
+					active: false,
+					name: '',
+					key: findRowKey({ name: test.testName, test }),
+					label: capitalise(findRowKey({ name: test.testName, test })),
+					filterTests: [
+						{
+							...{ [test.testName]: [test] },
+							condition: selectedFilter?.filterTests?.[0]?.condition
+						}
+					],
+					index: 0,
+					comp: getTestComponent({
+						name: test.testName,
+						test: { [test.testName]: [test] },
+						index,
+						t
+					})
+				};
+			}),
 
 		[previousFilterTests, t, selectedFilter]
 	);
+
 	useEffect(() => {
 		setNewFilters(modifiedNewFilters);
-	}, [modifiedNewFilters]);
+		if (reFetch) setReFetch(false);
+	}, [modifiedNewFilters, reFetch]);
 
 	const onConfirm = useCallback(() => {
 		const selectedFilterIndex = findIndex(
@@ -247,6 +253,16 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 		modifyOutgoingFilterRules(toSend)
 			.then(() => {
 				setFetchOutgoingFilters(true);
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				createSnackbar({
+					key: `share`,
+					replace: true,
+					hideButton: true,
+					type: 'info',
+					label: t('label.filter_modified', 'Filter modified succesfully'),
+					autoHideTimeout: 5000
+				});
 			})
 			.catch((error) => {
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -274,29 +290,29 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	]);
 
 	return (
-		<Container padding={{ bottom: 'medium' }}>
-			<ModalHeader title={modalTitle} onClose={onClose} />
-			<CreateFilterContext.Provider value={{ newFilters, setNewFilters }}>
-				<Container
-					padding={{ top: 'medium' }}
-					crossAlignment="flex-start"
-					mainAlignment="flex-start"
-				>
-					<Input
-						label={inputLabel}
-						value={filterName}
-						onChange={onFilterNameChange}
-						backgroundColor="gray5"
-					/>
-					<Padding top="small" />
-					<Checkbox value={activeFilter} onClick={toggleActiveFilter} label={activeFilterLabel} />
-					<Padding top="medium" />
+		<CreateFilterContext.Provider value={{ newFilters, setNewFilters }}>
+			<Container
+				padding={{ bottom: 'medium' }}
+				crossAlignment="flex-start"
+				mainAlignment="flex-start"
+				style={{ overflow: 'scroll' }}
+			>
+				<ModalHeader title={modalTitle} onClose={onClose} />
+				<Input
+					label={inputLabel}
+					value={filterName}
+					onChange={onFilterNameChange}
+					backgroundColor="gray5"
+				/>
+				<Padding top="small" />
+				<Checkbox value={activeFilter} onClick={toggleActiveFilter} label={activeFilterLabel} />
 
+				<Container padding={{ vertical: 'medium' }} style={{ overflow: 'scroll' }}>
 					<FilterTestConditionRow compProps={filterTestConditionRowProps} />
+					<Padding top="medium" />
+					<Divider />
+					<FilterActionConditions compProps={filterActionProps} />
 				</Container>
-				<Padding top="medium" />
-				<Divider />
-				<FilterActionConditions compProps={filterActionProps} />
 
 				<ModalFooter
 					label={t('label.edit', 'Edit')}
@@ -309,8 +325,8 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 						'Do not process additional filters'
 					)}
 				/>
-			</CreateFilterContext.Provider>
-		</Container>
+			</Container>
+		</CreateFilterContext.Provider>
 	);
 };
 
