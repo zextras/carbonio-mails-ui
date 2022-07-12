@@ -18,7 +18,8 @@ import {
 	Checkbox,
 	Padding,
 	Divider,
-	SnackbarManagerContext
+	SnackbarManagerContext,
+	Row
 } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { findIndex, forEach, map, omit, reduce } from 'lodash';
@@ -307,12 +308,22 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 				<Padding top="small" />
 				<Checkbox value={activeFilter} onClick={toggleActiveFilter} label={activeFilterLabel} />
 
-				<Container padding={{ vertical: 'medium' }} style={{ overflow: 'scroll' }}>
+				<Row
+					padding={{ vertical: 'medium' }}
+					height="fit"
+					maxHeight="100%"
+					crossAlignment="flex-start"
+					mainAlignment="flex-start"
+					style={{ overflow: 'scroll' }}
+					display="block"
+					maxWidth="100%"
+					width="100%"
+				>
 					<FilterTestConditionRow compProps={filterTestConditionRowProps} />
 					<Padding top="medium" />
 					<Divider />
 					<FilterActionConditions compProps={filterActionProps} />
-				</Container>
+				</Row>
 
 				<ModalFooter
 					label={t('label.edit', 'Edit')}

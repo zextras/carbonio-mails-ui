@@ -6,23 +6,11 @@
 import React, { FC, ReactElement, useMemo, useCallback, useState } from 'react';
 import { Container, Text, Icon, Row, Padding } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
-import styled from 'styled-components';
+
 import { Folder, getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import Heading from '../../components/settings-heading';
 import MoveToFolderModal from './move-to-folder-modal';
 import FilterActionRows from './filter-action-rows';
-
-export const StyledIcon = styled(Icon)`
-	border: 1px solid
-		${({ theme, disabled, color }): string =>
-			disabled ? theme.palette.gray2.regular : theme.palette[color].regular};
-	border-radius: 4px;
-	width: 32px;
-	height: 32px;
-	max-width: 32px;
-	max-height: 32px;
-	padding: 4px;
-`;
 
 type ComponentProps = any;
 

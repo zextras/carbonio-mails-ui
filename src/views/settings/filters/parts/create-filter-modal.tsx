@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Input, Container, Checkbox, Padding, Divider } from '@zextras/carbonio-design-system';
+import { Input, Container, Checkbox, Padding, Divider, Row } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -160,17 +160,22 @@ const CreateFilterModal: FC<ComponentProps> = ({
 				/>
 				<Padding top="small" />
 				<Checkbox value={activeFilter} onClick={toggleActiveFilter} label={activeFilterLabel} />
-				<Container
+				<Row
 					padding={{ vertical: 'medium' }}
 					height="fit"
 					maxHeight="100%"
+					crossAlignment="flex-start"
+					mainAlignment="flex-start"
 					style={{ overflow: 'scroll' }}
+					display="block"
+					maxWidth="100%"
+					width="100%"
 				>
 					<FilterTestConditionRow compProps={filterTestConditionRowProps} />
 					<Padding top="medium" />
 					<Divider />
 					<FilterActionConditions compProps={filterActionProps} />
-				</Container>
+				</Row>
 				<ModalFooter
 					label={t('label.create', 'Create')}
 					onConfirm={onConfirm}
