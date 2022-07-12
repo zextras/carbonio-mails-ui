@@ -26,7 +26,7 @@ const ShimmerList = ({ count, delay = 0, transitionDuration = 800 }) => {
 
 	return (
 		<Wrapper
-			mainAlignment="start"
+			mainAlignment="flex-start"
 			height="fill"
 			style={{ animationDelay: `${delay}ms`, animationDuration: `${transitionDuration}ms` }}
 		>

@@ -17,7 +17,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { concat, some } from 'lodash';
 import { useDispatch } from 'react-redux';
-import { replaceHistory, useBoardConfig, useRemoveCurrentBoard } from '@zextras/carbonio-shell-ui';
+import { replaceHistory, useBoardHooks, useBoard } from '@zextras/carbonio-shell-ui';
 import { EditViewContext } from './edit-view-context';
 import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
@@ -44,10 +44,10 @@ const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachment
 	const createSnackbar: CreateSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 
-	// needs to be replace with correct type
-	const boardContext: { onConfirm: (arg: any) => void } = useBoardConfig();
+	const { closeBoard, boardId } = useBoardHooks();
 
-	const closeBoard = useRemoveCurrentBoard();
+	// needs to be replace with correct type
+	const boardContext: { onConfirm: (arg: any) => void } = useBoard(boardId).context;
 
 	const isSendDisabled = useMemo(() => {
 		const participants = concat(editor?.to, editor?.bcc, editor?.cc);

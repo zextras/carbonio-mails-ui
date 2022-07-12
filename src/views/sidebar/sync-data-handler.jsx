@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { FOLDERS, useNotify, useRefresh, updatePrimaryBadge } from '@zextras/carbonio-shell-ui';
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty, map, keyBy, find, filter, forEach, sortBy, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';

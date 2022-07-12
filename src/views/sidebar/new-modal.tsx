@@ -23,7 +23,7 @@ import {
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
 
-import { cloneDeep, filter, includes, startsWith } from 'lodash';
+import { filter, includes, startsWith } from 'lodash';
 import { nanoid } from '@reduxjs/toolkit';
 import {
 	AccordionFolder,

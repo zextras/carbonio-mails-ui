@@ -13,7 +13,7 @@ import {
 	registerActions,
 	registerFunctions,
 	ACTION_TYPES,
-	getBridgedFunctions
+	addBoard
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -146,9 +146,18 @@ const App = () => {
 					icon: 'MailModOutline',
 					click: (ev) => {
 						ev?.preventDefault?.();
-						getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=new`, {
-							title: t('label.new_email', 'New E-mail')
-						});
+						console.log(
+							'click',
+							addBoard,
+							addBoard({
+								url: `${MAILS_ROUTE}/new?action=new`,
+								title: t('label.new_email', 'New E-mail')
+							})
+						);
+						// addBoard({
+						// 	url: `${MAILS_ROUTE}/new?action=new`,
+						// 	title: t('label.new_email', 'New E-mail')
+						// });
 					},
 					disabled: false,
 					group: MAIL_APP_ID,

@@ -3,15 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
+import { addBoard } from '@zextras/carbonio-shell-ui';
 import { isNil, omit, omitBy } from 'lodash';
 import { ActionsType, Participant } from '../types/participant';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../constants';
 
 export const mailToSharedFunction: (contacts: Array<Partial<Participant>>) => void = (contacts) => {
-	getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=mailTo`, {
-		app: MAIL_APP_ID,
-		contacts
+	addBoard({
+		url: `${MAILS_ROUTE}/new?action=mailTo`,
+		context: {
+			contacts
+		}
 	});
 };
 
@@ -20,11 +22,13 @@ export const openComposerSharedFunction: (
 	compositionData: any,
 	...rest: any[]
 ) => void = (onConfirm, compositionData, ...rest) => {
-	getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=compose`, {
-		app: MAIL_APP_ID,
-		onConfirm,
-		compositionData,
-		...rest
+	addBoard({
+		url: `${MAILS_ROUTE}/new?action=compose`,
+		context: {
+			onConfirm,
+			compositionData,
+			...rest
+		}
 	});
 };
 
@@ -52,9 +56,11 @@ export const openPrefilledComposerSharedFunction: (
 	const editor = omitBy({ ...normalizedValues, attach }, isNil);
 
 	// add board with custom editor
-	getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=${ActionsType.PREFILL_COMPOSE}`, {
-		app: MAIL_APP_ID,
-		compositionData: editor,
-		...rest
+	addBoard({
+		url: `${MAILS_ROUTE}/new?action=${ActionsType.PREFILL_COMPOSE}`,
+		context: {
+			compositionData: editor,
+			...rest
+		}
 	});
 };

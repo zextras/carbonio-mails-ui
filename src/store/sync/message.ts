@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, getBridgedFunctions, getUserSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getTFunction, getUserSettings } from '@zextras/carbonio-shell-ui';
 import {
 	forEach,
 	pick,
@@ -39,7 +39,7 @@ function playSound(): void {
 }
 
 const triggerNotification = (m: SoapIncompleteMessage): void => {
-	const { t } = getBridgedFunctions();
+	const t = getTFunction();
 	const { props, prefs } = getUserSettings();
 	const isShowNotificationEnabled = prefs?.zimbraPrefMailToasterEnabled ?? 'TRUE';
 	const isAudioEnabled = find(props, ['name', 'mailNotificationSound'])?._content ?? 'TRUE';

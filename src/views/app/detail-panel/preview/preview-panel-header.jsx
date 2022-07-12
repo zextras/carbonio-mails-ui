@@ -6,15 +6,7 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
-import {
-	Container,
-	Divider,
-	Icon,
-	IconButton,
-	Row,
-	Text,
-	Tooltip
-} from '@zextras/carbonio-design-system';
+import { Container, Divider, Icon, IconButton, Row, Text } from '@zextras/carbonio-design-system';
 
 function PreviewPanelHeader({ item, folderId }) {
 	const [t] = useTranslation();
