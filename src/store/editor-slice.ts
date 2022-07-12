@@ -82,14 +82,15 @@ function createEditorReducer(
 			: ['', ''];
 
 	if (payload.action) {
+		const editorWithAction = { ...empty, action: payload.action };
 		switch (payload.action) {
 			case ActionsType.NEW:
-				state.editors[payload.editorId] = empty;
+				state.editors[payload.editorId] = editorWithAction;
 				break;
 			case ActionsType.MAIL_TO:
 				if (payload?.boardContext?.contacts && payload?.boardContext?.contacts?.length > 0) {
 					state.editors[payload.editorId] = {
-						...empty,
+						...editorWithAction,
 						to: [payload.boardContext.contacts[0]],
 						cc: drop(payload.boardContext.contacts, 1)
 					};
@@ -99,7 +100,7 @@ function createEditorReducer(
 			case ActionsType.EDIT_AS_DRAFT:
 				if (payload.original) {
 					state.editors[payload.editorId] = {
-						...empty,
+						...editorWithAction,
 						id: payload.id,
 						text: extractBody(payload.original),
 						to: retrieveTO(payload.original),
@@ -117,7 +118,7 @@ function createEditorReducer(
 			case ActionsType.EDIT_AS_NEW:
 				if (payload.original) {
 					state.editors[payload.editorId] = {
-						...empty,
+						...editorWithAction,
 						id: payload.id,
 						subject: payload.original.subject,
 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
@@ -134,7 +135,7 @@ function createEditorReducer(
 			case ActionsType.REPLY:
 				if (payload.original) {
 					state.editors[payload.editorId] = {
-						...empty,
+						...editorWithAction,
 						id: payload.id,
 						text: textWithSignatureRepliesForwards,
 						to: retrieveReplyTo(payload.original),
@@ -152,7 +153,7 @@ function createEditorReducer(
 			case ActionsType.REPLY_ALL:
 				if (payload.original && payload.accounts) {
 					state.editors[payload.editorId] = {
-						...empty,
+						...editorWithAction,
 						text: textWithSignatureRepliesForwards,
 						to: retrieveALL(payload.original, payload.accounts),
 						cc: retrieveCC(payload.original, payload.accounts),
@@ -170,7 +171,7 @@ function createEditorReducer(
 			case ActionsType.FORWARD:
 				if (payload.original) {
 					state.editors[payload.editorId] = {
-						...empty,
+						...editorWithAction,
 						text: textWithSignatureRepliesForwards,
 						subject: `Fwd: ${payload.original.subject}`,
 						original: payload.original,
@@ -184,13 +185,13 @@ function createEditorReducer(
 				break;
 			case ActionsType.COMPOSE:
 				state.editors[payload.editorId] = {
-					...empty,
+					...editorWithAction,
 					...(payload.boardContext?.compositionData ?? {})
 				};
 				break;
 			case ActionsType.PREFILL_COMPOSE:
 				state.editors[payload.editorId] = {
-					...empty,
+					...editorWithAction,
 					...(payload.boardContext?.compositionData ?? {})
 				};
 				break;
