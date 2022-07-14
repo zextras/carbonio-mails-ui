@@ -166,7 +166,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 				crossAlignment="flex-start"
 				mainAlignment="flex-start"
 				maxHeight="100%"
-				style={{ overflow: 'scroll' }}
+				style={{ overflowY: 'scroll', overflowX: 'hidden' }}
 			>
 				<ModalHeader title={modalTitle} onClose={onClose} />
 				<Input
@@ -184,7 +184,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 					maxHeight="100%"
 					crossAlignment="flex-start"
 					mainAlignment="flex-start"
-					style={{ overflow: 'scroll' }}
+					style={{ overflowY: 'scroll', overflowX: 'hidden' }}
 					display="block"
 					maxWidth="100%"
 					width="100%"
