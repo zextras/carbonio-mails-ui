@@ -7,19 +7,38 @@ import React, { useCallback, useState, useEffect, FC, ReactElement } from 'react
 import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
 import { filter } from 'lodash';
 import { TFunction } from 'i18next';
+import { QueryChip } from '@zextras/carbonio-shell-ui';
 
+type ToggleFilters = Array<{
+	avatarIcon?: string;
+	label: string;
+	value: string;
+	isQueryFilter?: boolean;
+	isGeneric?: boolean;
+	avatarBackground?: string;
+}>;
 type ToggleFiltersProps = {
 	compProps: {
 		t: TFunction;
-		query: any;
-		setUnreadFilter: (arg: any) => void;
-		setFlaggedFilter: (arg: any) => void;
-		setAttachmentFilter: (arg: any) => void;
+		query: Array<QueryChip>;
+		setUnreadFilter: (arg: ToggleFilters) => void;
+		setFlaggedFilter: (arg: ToggleFilters) => void;
+		setAttachmentFilter: (arg: ToggleFilters) => void;
+		isSharedFolderIncludedTobe: boolean;
+		setIsSharedFolderIncludedTobe: (arg: boolean) => void;
 	};
 };
 
 const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
-	const { t, query, setUnreadFilter, setFlaggedFilter, setAttachmentFilter } = compProps;
+	const {
+		t,
+		query,
+		setUnreadFilter,
+		setFlaggedFilter,
+		setAttachmentFilter,
+		isSharedFolderIncludedTobe,
+		setIsSharedFolderIncludedTobe
+	} = compProps;
 
 	const [isUnread, setIsUnread] = useState(false);
 	const [hasAttachment, setHasAttachment] = useState(false);
@@ -69,6 +88,10 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 					}
 			  ]);
 	}, [hasAttachment, setAttachmentFilter]);
+
+	const toggleSharedFolder = useCallback(() => {
+		setIsSharedFolderIncludedTobe(!isSharedFolderIncludedTobe);
+	}, [isSharedFolderIncludedTobe, setIsSharedFolderIncludedTobe]);
 
 	useEffect(() => {
 		if (filter(query, (q) => q.value === 'is:unread' || q.label === 'is:unread').length === 0) {
@@ -139,7 +162,11 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 						{t('search.attachment_note', 'Search for all e-mails that have an attachment.')}
 					</Text>
 				</Container>
-				<Container padding={{ all: 'extrasmall' }}>
+				<Container
+					padding={{ all: 'extrasmall' }}
+					mainAlignment="flex-start"
+					crossAlignment="flex-start"
+				>
 					<Container orientation="horizontal" mainAlignment="baseline" crossAlignment="center">
 						<Padding right="small">
 							<Switch onClick={toggleFlagged} value={isFlagged} />
@@ -152,8 +179,16 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 					<Text color="secondary" size="small" overflow="break-word">
 						{t('search.flagged_note', 'Search for all flagged e-mails.')}
 					</Text>
+					<Padding bottom="small" />
 				</Container>
-				<Container padding={{ all: 'extrasmall' }}>
+			</Container>
+
+			<Container orientation="horizontal" mainAlignment="center" crossAlignment="center">
+				<Container
+					padding={{ all: 'extrasmall' }}
+					mainAlignment="flex-start"
+					crossAlignment="flex-start"
+				>
 					<Container orientation="horizontal" mainAlignment="baseline" crossAlignment="center">
 						<Padding right="small">
 							<Switch onClick={toggleUnread} value={isUnread} />
@@ -164,8 +199,28 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 					</Container>
 					<Padding bottom="small" />
 					<Text color="secondary" size="small" overflow="break-word">
-						{t('search.unread_note', 'Search for all unread e-mail items.')} <br />
+						{t('search.unread_note', 'Search for all unread e-mail items.')}
 					</Text>
+					<Padding bottom="small" />
+				</Container>
+				<Container
+					padding={{ all: 'extrasmall' }}
+					mainAlignment="flex-start"
+					crossAlignment="flex-start"
+				>
+					<Container orientation="horizontal" mainAlignment="baseline" crossAlignment="center">
+						<Padding right="small">
+							<Switch onClick={toggleSharedFolder} value={isSharedFolderIncludedTobe} />
+						</Padding>
+						<Text size="large" weight="bold">
+							{t('label.include_shared_folders', 'Include Shared Folders')}
+						</Text>
+					</Container>
+					<Padding bottom="small" />
+					<Text color="secondary" size="small" overflow="break-word">
+						{t('search.shared_folders_note', 'Search inside shared folders.')}
+					</Text>
+					<Padding bottom="small" />
 				</Container>
 			</Container>
 		</>
