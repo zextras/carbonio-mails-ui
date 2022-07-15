@@ -50,7 +50,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	);
 
 	const foldersToSearchInQuery = useMemo(
-		() => `( ${map(searchInFolders, (folder) => `inid:"${folder}"`).join(' OR ')})`,
+		() => `( ${map(searchInFolders, (folder) => `inid:"${folder}"`).join(' OR ')} OR is:local) `,
 		[searchInFolders]
 	);
 

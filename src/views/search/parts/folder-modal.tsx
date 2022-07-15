@@ -159,7 +159,12 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		const absoluteParent = getFolderOwner(folderDestination.folder);
 		const relativePath = getFolderAbsPath(folderDestination?.id);
 		const folderPath =
-			absoluteParent === 'USER_ROOT' ? relativePath : `${absoluteParent}/${relativePath}`;
+			// eslint-disable-next-line no-nested-ternary
+			absoluteParent === 'USER_ROOT'
+				? relativePath
+				: relativePath
+				? `${absoluteParent}/${relativePath}`
+				: absoluteParent;
 
 		setFolder([
 			{
