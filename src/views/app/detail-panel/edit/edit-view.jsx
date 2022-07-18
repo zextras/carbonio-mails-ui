@@ -18,6 +18,7 @@ import {
 	useUserAccounts,
 	replaceHistory,
 	addBoard,
+	useBoard,
 	FOLDERS
 } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
@@ -60,7 +61,8 @@ const generateId = () => {
 
 export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }) {
 	const settings = useUserSettings();
-	const { board, updateBoard } = useBoardHooks();
+	const { updateBoard } = useBoardHooks();
+	const board = useBoard();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const [editor, setEditor] = useState();
 
@@ -91,8 +93,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [showRouteGuard, setShowRouteGuard] = useState(true);
 
 	const activeMailId = useMemo(
-		() => board.context?.mailId || mailId,
-		[mailId, board.context?.mailId]
+		() => board?.context?.mailId || mailId,
+		[mailId, board?.context?.mailId]
 	);
 
 	const editorId = useMemo(() => activeMailId ?? generateId(), [activeMailId]);
@@ -253,7 +255,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			if (activeMailId) {
 				addBoard({
 					url: `${MAILS_ROUTE}/edit/${activeMailId}?action=${action}`,
-					mailId: activeMailId,
+					context: { mailId: activeMailId },
 					title: editor?.subject
 				});
 			} else {
