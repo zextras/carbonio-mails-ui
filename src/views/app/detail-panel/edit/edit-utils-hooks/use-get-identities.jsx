@@ -4,13 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Container, Text } from '@zextras/carbonio-design-system';
-import { useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { useAppContext, useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map, find, filter, findIndex, flatten } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ParticipantRole } from '../../../../../types/participant';
 
-export const useGetIdentities = ({ updateEditorCb, setOpen }) => {
+const findDefaultIdentity = ({ list, activeAccount }) =>
+	activeAccount === 'USER_ROOT'
+		? find(list, { identityName: 'DEFAULT' })
+		: find(list, { address: activeAccount });
+
+export const useGetIdentities = ({ updateEditorCb, setOpen, editorId }) => {
 	const account = useUserAccount();
 	const accounts = useUserAccounts();
 	const [t] = useTranslation();
@@ -31,6 +36,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen }) => {
 			type: item._attrs.zimbraPrefFromAddressType,
 			identityName: item.name ?? ''
 		}));
+
 		setDefaultIdentity(find(identityList, { identityName: 'DEFAULT' }));
 		setFrom({
 			address: find(identityList, (item) => item?.identityName === 'DEFAULT')?.address,
@@ -38,6 +44,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen }) => {
 			name: find(identityList, (item) => item?.identityName === 'DEFAULT')?.address,
 			type: ParticipantRole.FROM
 		});
+
 		setActiveFrom(find(identityList, (item) => item?.identityName === 'DEFAULT'));
 		updateEditorCb({
 			from: {
@@ -72,6 +79,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen }) => {
 		);
 
 		const flattenList = flatten(rightsList);
+
 		const uniqueIdentityList = [...identityList];
 		if (flattenList?.length) {
 			map(flattenList, (ele) => {
@@ -81,6 +89,29 @@ export const useGetIdentities = ({ updateEditorCb, setOpen }) => {
 			setList(uniqueIdentityList);
 		} else setList(identityList);
 	}, [account, accounts, defaultIdentity?.address, defaultIdentity?.fullname, t, updateEditorCb]);
+
+	const { activeAccount } = useAppContext();
+	useEffect(() => {
+		if (!editorId?.includes('new-')) {
+			const active = JSON.parse(localStorage.getItem('activeAccount'));
+			const def = findDefaultIdentity({
+				list,
+				activeAccount: active
+			});
+
+			updateEditorCb({
+				from: {
+					address: def?.address,
+					fullName: def?.fullname,
+					name: def?.fullname,
+					type: ParticipantRole.FROM
+				}
+			});
+			setDefaultIdentity(def);
+			setActiveFrom(def);
+			setFrom(def);
+		}
+	}, [activeAccount, editorId, list, updateEditorCb]);
 
 	const identitiesList = useMemo(
 		() =>

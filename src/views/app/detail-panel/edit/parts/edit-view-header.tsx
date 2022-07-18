@@ -56,7 +56,8 @@ const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachment
 
 	const { from, activeFrom, identitiesList, hasIdentity } = useGetIdentities({
 		updateEditorCb,
-		setOpen
+		setOpen,
+		editorId: editor?.editorId
 	});
 
 	const inputRef = useRef<any>();

@@ -305,6 +305,32 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		[action, editor?.attach?.mp?.length, editor?.original]
 	);
 
+	const context = useMemo(
+		() => ({
+			updateEditorCb,
+			throttledSaveToDraft,
+			control,
+			editorId,
+			editor,
+			updateSubjectField,
+			action,
+			folderId,
+			saveDraftCb
+		}),
+		[
+			action,
+			control,
+			editor,
+			editorId,
+			folderId,
+
+			saveDraftCb,
+			throttledSaveToDraft,
+			updateEditorCb,
+			updateSubjectField
+		]
+	);
+
 	if (loading || !editor)
 		return (
 			<Container height="50%" mainAlignment="center" crossAlignment="center">
@@ -312,19 +338,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			</Container>
 		);
 	return (
-		<EditViewContext.Provider
-			value={{
-				updateEditorCb,
-				throttledSaveToDraft,
-				control,
-				editorId,
-				editor,
-				updateSubjectField,
-				action,
-				folderId,
-				saveDraftCb
-			}}
-		>
+		<EditViewContext.Provider value={context}>
 			<Catcher>
 				<Container onDragOver={(event) => onDragOverEvent(event)}>
 					<Container
