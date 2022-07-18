@@ -18,7 +18,13 @@ import {
 } from '@zextras/carbonio-design-system';
 import { concat, some } from 'lodash';
 import { useDispatch } from 'react-redux';
-import { replaceHistory, useBoardConfig, useRemoveCurrentBoard } from '@zextras/carbonio-shell-ui';
+import {
+	getCurrentRoute,
+	replaceHistory,
+	useBoardConfig,
+	useRemoveCurrentBoard
+} from '@zextras/carbonio-shell-ui';
+import { useHistory } from 'react-router-dom';
 import { EditViewContext } from './edit-view-context';
 import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
@@ -90,7 +96,11 @@ const EditViewHeader: FC<PropType> = ({
 	};
 
 	const toggleOpen = useCallback(() => setOpen((show) => !show), []);
-
+	const history = useHistory();
+	const undoURL = useMemo(
+		() => `${history.location.pathname?.split('/mails')?.[1]}${history.location.search}`,
+		[history]
+	);
 	const sendMailCb = useCallback(() => {
 		setBtnLabel(t('label.sending', 'Sending'));
 		setIsDisabled(true);
@@ -99,6 +109,7 @@ const EditViewHeader: FC<PropType> = ({
 			boardContext?.onConfirm(editor);
 		} else {
 			let notCanceled = true;
+			const oldEditor = { ...editor };
 			const infoSnackbar = (remainingTime: number, hideButton = false): void => {
 				createSnackbar({
 					key: 'send',
@@ -114,16 +125,30 @@ const EditViewHeader: FC<PropType> = ({
 					actionLabel: 'Undo',
 					onActionClick: () => {
 						notCanceled = false;
+						setTimeout(() => updateEditorCb({ ...oldEditor }, editorId), 10);
+						replaceHistory(undoURL);
+						setBtnLabel(t('label.send', 'Send'));
+						setIsDisabled(false);
 					}
 				});
 			};
+			setTimeout(() => {
+				if (folderId) {
+					replaceHistory(`/folder/${folderId}/`);
+				}
+			}, 10);
 
 			infoSnackbar(3);
 			setTimeout(() => notCanceled && infoSnackbar(2), 1000);
 			setTimeout(() => notCanceled && infoSnackbar(1), 2000);
 			setTimeout(() => {
 				if (notCanceled) {
-					folderId ? replaceHistory(`/folder/${folderId}/`) : closeBoard();
+					const activeRoute = getCurrentRoute();
+					if (activeRoute?.route === 'mails') {
+						folderId ? replaceHistory(`/folder/${folderId}/`) : closeBoard();
+					} else {
+						closeBoard();
+					}
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					dispatch(sendMsg({ editorId })).then((res) => {
@@ -161,7 +186,9 @@ const EditViewHeader: FC<PropType> = ({
 		closeBoard,
 		dispatch,
 		editorId,
-		setShowRouteGuard
+		setShowRouteGuard,
+		undoURL,
+		updateEditorCb
 	]);
 
 	const onSave = useCallback(() => {

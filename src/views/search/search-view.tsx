@@ -45,6 +45,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	);
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
+	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
@@ -120,11 +121,11 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		queryToString
 	]);
 
-	const loading = useMemo(() => {
+	useEffect(() => {
 		if (searchResults.status === 'pending') {
-			return true;
+			setLoading(true);
 		}
-		return false;
+		setLoading(false);
 	}, [searchResults.status]);
 
 	useEffect(() => {
