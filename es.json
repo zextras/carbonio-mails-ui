@@ -212,7 +212,7 @@
         "with_you": "contigo",
         "would_like_to_share": "compartió su",
         "grantee": "Cesionario: ",
-        "highlight_tab": "Resaltar la pestaña Mails",
+        "highlight_tab": "Resaltar la pestaña E-mails",
         "mailSelected": "1 correo electrónico seleccionado",
         "mailSelected_plural": "{{count}} correos electrónicos seleccionados",
         "search_hint": "¡Sugerencias de búsqueda!",
@@ -291,7 +291,7 @@
         "share_with": "Compartir con",
         "accept": "Aceptar",
         "cc_bcc": "Cc Cco",
-        "app_name": "Correos",
+        "app_name": "E-mails",
         "from_identity": "De: {{identity}}",
         "new_email": "Nuevo mensaje",
         "show_quoted_text": "Mostrar texto citado",
@@ -322,14 +322,14 @@
         "invalid_destination": "Este nodo no es un destino válido",
         "notification_audio": "Reproducir un aviso auditivo cuando aparezca una nueva notificación",
         "notification_folders": "Notificaciones de Carpetas",
-        "upload_from_files": "Subir desde Files",
+        "upload_from_files": "Cargar desde Files",
         "calendar": "Calendario",
         "confirm": "Confirmar",
         "contact_folder": "Carpeta de contactos",
         "create_and_move": "Crear y mover",
         "no_subject_with_tags": "<Sin asunto>",
         "error": "Error",
-        "save_to_files": "Guardar a Files",
+        "save_to_files": "Guardar en Files",
         "always_allow_address": "Permitir siempre de <strong>{{from}}</strong>",
         "always_allow_domain": "Permitir siempre del dominio <strong>{{domain}}</strong>",
         "share_public_link": "Compartir enlace público",
@@ -467,7 +467,7 @@
                 "content": "Suelta aquí tus archivos para adjuntarlos rápidamente a este mensaje",
                 "title": "Modo Arrastrar y Soltar"
             },
-            "files": "Añadir de Files",
+            "files": "Añadir desde Files",
             "url": "Agregar enlace público desde Files"
         }
     },
@@ -488,13 +488,13 @@
             "all_att_saved": "Archivos adjuntos guardados correctamente en la carpeta seleccionada",
             "att_err_adding": "Parece que hay un problema al añadir los archivos adjuntos, por favor, prueba de nuevo",
             "some_att_add_fails": "Parece que hay un problema al añadir algunos archivos adjuntos, por favor, prueba de nuevo",
-            "some_att_fails": "Parece que hay un problema al guardar algunos archivos, por favor, prueba de nuevo",
+            "some_att_fails": "Parece que hay un problema al guardar algunos archivos. Por favor intenta de nuevo",
             "att_err": "Parece que hay un problema al guardar, por favor, inténtalo de nuevo",
             "att_saved": "Anexo guardado en la carpeta seleccionada",
             "calendar_edits_saved": "Ediciones salvadas correctamente",
             "all_link_copied": "Enlace público copiado con éxito",
-            "link_copying_error": "Parece haber un problema al generar el enlace público. Por favor intente de nuevo",
-            "some_link_copying_error": "Parece haber un problema al generar el enlace público para algunos archivos. Por favor intente de nuevo"
+            "link_copying_error": "Parece haber un problema al generar el enlace público. Por favor intenta de nuevo",
+            "some_link_copying_error": "Parece que hay un problema al generar el enlace público para algunos archivos. Por favor intenta de nuevo"
         },
         "sending_mail_to_self": "parece que vas a enviarte un mensaje a ti mismo",
         "search_hints": "Sugerencias de búsqueda sobre las que tenemos que discutir",
@@ -754,11 +754,11 @@
     },
     "displayer": {
         "draft_title1": "Guardar un mensaje como borrador te permite editarlo y enviarlo más tarde.",
-        "junk_title1": "¡Qué suerte! No hay correos no deseados",
+        "junk_title1": "¡Qué suerte! No hay correo no deseado",
         "junk_title2": "Haz clic en el icono de la papelera para eliminar un correo no deseado",
         "list_draft_title": "No hay borradores guardados",
         "list_folder_title": "Parece que no hay mensajes aún",
-        "list_junk_title": "No hay correos no deseados",
+        "list_junk_title": "No hay correo no deseado",
         "list_sent_title": "Todavía no has enviado ningún e-mail",
         "search_description1": "O elige \"Filtros avanzados\" para refinar la búsqueda.",
         "search_description2": "Prueba a iniciar otra búsqueda.",
@@ -767,7 +767,7 @@
         "search_title1": "Iniciar otra búsqueda",
         "search_title2": "Lo sentimos pero no hay resultados para tu búsqueda",
         "list_trash_title": "La papelera está vacía",
-        "search_description3": "Comprueba la ortografía y las opciones de los filtros, o intenta con otra palabra clave.",
+        "search_description3": "Comprueba la ortografía y las opciones de los filtros, o intenta con otra palabra.",
         "search_title4": "Elige uno o más resultados para realizar acciones o para mostrar los detalles.",
         "title1": "Crea un nuevo e-mail haciendo clic en el botón \"NUEVO\"",
         "title2": "Haz clic en el botón \"NUEVO\"",
@@ -776,7 +776,7 @@
         "title4": "Selecciona un mensaje para leerlo",
         "title8": "Selecciona un mensaje para leerlo o eliminarlo.",
         "trash_title1": "Haz clic en el icono de la papelera para eliminar un mensaje",
-        "trash_title2": "Elegir y restaurar mensajes de la papelera.",
+        "trash_title2": "Seleccionar y restaurar mensajes de la papelera.",
         "archive_title1": "Salvar un e-mail en un archivo para poder verlo después.",
         "archive_title2": "Selecciona un e-mail archivado para visualizarlo.",
         "description2": "Enviar documentos, imágenes y más a partir de un nuevo e-mail.",
@@ -786,12 +786,12 @@
         "description7": "Selecciona un mensaje para responderlo.",
         "draft_title2": "Selecciona y edita un mensaje para enviarlo a otros usuarios.",
         "search_title3": "No hay resultados para la búsqueda.",
-        "list_spam_title": "No hay correos no deseados",
-        "spam_title1": "¡Qué suerte! No hay correos no deseados",
+        "list_spam_title": "No hay correo no deseado",
+        "spam_title1": "¡Qué suerte! No hay correo no deseado",
         "spam_title2": "Haz clic en el icono de la papelera para borrar un correo no deseado."
     },
     "board": {
-        "show": "Mostrar ventana"
+        "show": "Mostrar ventana flotante"
     },
     "preview": {
         "close": "Cerrar vista previa"
