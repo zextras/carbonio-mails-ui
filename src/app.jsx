@@ -24,7 +24,7 @@ import {
 	openPrefilledComposerSharedFunction
 } from './integrations/shared-functions';
 import Notifications from './views/notifications';
-import { ParticipantRole } from './types/participant';
+import { ParticipantRole } from './commons/utils';
 import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
 import { StoreProvider } from './store/redux';

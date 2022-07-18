@@ -16,6 +16,8 @@ import {
 import { isNil, omitBy, reduce } from 'lodash';
 import { TFunction } from 'react-i18next';
 
+const folderIdRegex = /^(.+:)*(\d+)$/;
+
 export const normalizeFolder = (
 	folder: Folder & Partial<LinkFolderFields>
 ): Partial<Folder & Partial<LinkFolderFields>> =>
@@ -83,8 +85,8 @@ export const capitalise = (word: string): string => {
 
 export const getFolderIconColor = (f: AccordionFolder): string => {
 	if (f?.folder?.color) {
-		return Number(f.folder.color) < 10
-			? ZIMBRA_STANDARD_COLORS[Number(f.folder.color)].hex
+		return f.folder.color < 10
+			? ZIMBRA_STANDARD_COLORS[f.folder.color].hex
 			: f?.folder.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex;
 	}
 	return ZIMBRA_STANDARD_COLORS[0].hex;
@@ -144,14 +146,16 @@ export const getFolderIconName = (folder: AccordionFolder): string | null => {
 
 export const translatedSystemFolders = (t: TFunction): Array<string> => [
 	t('folders.inbox', 'Inbox'),
-	t('label.sent', 'Sent'),
+	t('folders.sent', 'Sent'),
 	t('folders.drafts', 'Drafts'),
 	t('folders.trash', 'Trash'),
-	t('folders.spam', 'Spam')
+	t('folders.spam', 'Spam'),
+	t('folders.junk', 'Junk')
 ];
 
 type GetSystemFolderProps = {
 	t: TFunction;
+	folderId?: string;
 	folderName: string;
 };
 
@@ -161,16 +165,31 @@ export const getSystemFolderTranslatedName = ({ t, folderName }: GetSystemFolder
 			case 'Inbox':
 				return t('folders.inbox', 'Inbox');
 			case 'Sent':
-				return t('label.sent', 'Sent');
+				return t('folders.sent', 'Sent');
 			case 'Drafts':
 				return t('folders.drafts', 'Drafts');
 			case 'Trash':
 				return t('folders.trash', 'Trash');
 			case 'Spam':
 				return t('folders.spam', 'Spam');
+			case 'Junk':
+				return t('folders.junk', 'Junk');
 			default:
 				return folderName;
 		}
 	}
+	return folderName;
+};
+
+export const getFolderTranslatedName = ({
+	t,
+	folderId,
+	folderName
+}: GetSystemFolderProps): string => {
+	const id = folderIdRegex.exec(folderId ?? '')?.[2];
+	if (id && Object.values(FOLDERS).includes(id)) {
+		return getSystemFolderTranslatedName({ t, folderName });
+	}
+
 	return folderName;
 };

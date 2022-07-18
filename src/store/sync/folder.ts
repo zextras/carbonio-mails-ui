@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { map } from 'lodash';
-import { Folder } from '../../types/folder';
-import { FoldersStateType } from '../../types/state';
+import { FolderType, FoldersStateType } from '../../types';
 import { extractFolders, normalizeFolder } from '../../views/sidebar/utils';
 import { addFoldersToStore, removeFoldersFromStore, updateFolders } from '../utils';
 
@@ -17,7 +16,7 @@ export const handleCreatedFoldersReducer = (
 	state: FoldersStateType,
 	{ payload }: Payload
 ): void => {
-	const foldersToAdd = extractFolders(payload) as Record<string, Folder>;
+	const foldersToAdd = extractFolders(payload) as Record<string, FolderType>;
 	addFoldersToStore(state, Object.values(foldersToAdd));
 	updateFolders(state, Object.values(foldersToAdd));
 };

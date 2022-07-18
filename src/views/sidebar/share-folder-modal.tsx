@@ -30,7 +30,7 @@ import ModalFooter from './commons/modal-footer';
 import { ModalHeader } from './commons/modal-header';
 import { capitalise } from './utils';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
-import { ModalProps } from '../../types/commons';
+import { ModalProps } from '../../types';
 
 type ShareFolderModalProps = ModalProps & {
 	goBack: () => void;

@@ -5,12 +5,7 @@
  */
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, map, merge, omit, reduce, some, last, sortBy } from 'lodash';
-import { ConversationsStateType } from '../../types/state';
-import { ConvMessage } from '../../types/conversation';
-
-type Payload = {
-	payload: { m: any; t: any };
-};
+import { ConvMessage, ConversationsStateType, Payload } from '../../types';
 
 export const handleCreatedConversationsReducer = (
 	state: ConversationsStateType,

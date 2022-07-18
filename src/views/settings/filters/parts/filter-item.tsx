@@ -7,6 +7,7 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Container, Text, Row, Icon, Padding } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { indexOf } from 'lodash';
+import { ListPropsType } from '../../../../types';
 
 const ContainerEl = styled(Container)``;
 
@@ -26,23 +27,6 @@ const ButtonEl = styled(Icon)`
 		${({ theme, disabled }): string =>
 			disabled ? theme.palette.primary.disabled : theme.palette.primary.regular};
 `;
-
-export type FilterListType = {
-	active: boolean;
-	filterActions: Array<any>;
-	filterTests: Array<any>;
-	id?: string;
-	name: string;
-};
-export type ListPropsType = {
-	isSelecting: boolean;
-	list: Array<FilterListType>;
-	moveDown: (arg: number) => void;
-	moveUp: (arg: number) => void;
-	selected: Record<string, boolean>;
-	toggle: (arg: string) => void;
-	unSelect: () => void;
-};
 
 type Item = {
 	active: boolean;

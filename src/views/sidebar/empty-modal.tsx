@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux';
 import ModalFooter from './commons/modal-footer';
 import { folderAction } from '../../store/actions/folder-action';
 import { ModalHeader } from './commons/modal-header';
-import { ModalProps } from '../../types/commons';
+import { ModalProps } from '../../types';
 
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [t] = useTranslation();

@@ -5,8 +5,9 @@
  */
 import { addBoard } from '@zextras/carbonio-shell-ui';
 import { isNil, omit, omitBy } from 'lodash';
-import { ActionsType, Participant } from '../types/participant';
+import { Participant } from '../types';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../constants';
+import { ActionsType } from '../commons/utils';
 
 export const mailToSharedFunction: (contacts: Array<Partial<Participant>>) => void = (contacts) => {
 	addBoard({

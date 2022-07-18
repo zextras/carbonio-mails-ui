@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { TFunction } from 'react-i18next';
+
 // TODO: update the shell constants with this and update the usages in other modules
 export const CORRESPONDING_COLORS = [
 	{ zValue: 0, uiRgb: '#000000', zLabel: 'black' },
@@ -24,190 +26,169 @@ reference: https://zextras.atlassian.net/wiki/spaces/IRIS/pages/223215854/UI+Gui
 
 export const MAILS_ROUTE = 'mails';
 
-export const attachmentTypeItemsConstant = [
+type AttachmentTypeItemsConstantProps = {
+	label: string;
+	icon: string;
+	searchString: string;
+};
+
+export const attachmentTypeItemsConstant = (
+	t: TFunction
+): Array<AttachmentTypeItemsConstantProps> => [
 	{
-		label: 'attachment_type.application',
+		label: t('attachment_type.application', 'Application'),
 		icon: 'Code',
-		searchString: 'attachment:application/*',
-		defaultTranslation: 'Application'
+		searchString: 'attachment:application/*'
 	},
 	{
-		label: 'attachment_type.email',
+		label: t('attachment_type.email', 'Email'),
 		icon: 'Email',
-		searchString: 'attachment:message/rfc822',
-		defaultTranslation: 'Email'
+		searchString: 'attachment:message/rfc822'
 	},
 	{
-		label: 'attachment_type.excel',
+		label: t('attachment_type.excel', 'Excel'),
 		icon: 'FileCalc',
-		searchString: 'attachment:application/vnd.ms-excel',
-		defaultTranslation: 'Excel'
+		searchString: 'attachment:application/vnd.ms-excel'
 	},
 	{
-		label: 'attachment_type.html',
+		label: t('attachment_type.html', 'HTML'),
 		icon: 'FileHtml',
-		searchString: 'attachment:text/html',
-		defaultTranslation: 'HTML'
+		searchString: 'attachment:text/html'
 	},
 	{
-		label: 'attachment_type.image',
+		label: t('attachment_type.image', 'Image'),
 		icon: 'Image',
-		searchString: 'attachment:image',
-		defaultTranslation: 'Image'
+		searchString: 'attachment:image'
 	},
 	{
-		label: 'attachment_type.pdf',
+		label: t('attachment_type.pdf', 'PDF'),
 		icon: 'FilePdf',
-		searchString: 'attachment:application/pdf',
-		defaultTranslation: 'PDF'
+		searchString: 'attachment:application/pdf'
 	},
 	{
-		label: 'attachment_type.powerpoint',
+		label: t('attachment_type.powerpoint', 'Powerpoint'),
 		icon: 'FilePresentation',
-		searchString: 'attachment:application/vnd.ms-powerpoint',
-		defaultTranslation: 'Powerpoint'
+		searchString: 'attachment:application/vnd.ms-powerpoint'
 	},
 	{
-		label: 'attachment_type.text_document',
+		label: t('attachment_type.text_document', 'Text Document'),
 		icon: 'FileText',
-		searchString: 'attachment:text',
-		defaultTranslation: 'Text Document'
+		searchString: 'attachment:text'
 	},
 	{
-		label: 'attachment_type.video',
+		label: t('attachment_type.video', 'Video'),
 		icon: 'Video',
-		searchString: 'attachment:video',
-		defaultTranslation: 'Video'
+		searchString: 'attachment:video'
 	},
 	{
-		label: 'attachment_type.word',
+		label: t('attachment_type.word', 'Word'),
 		icon: 'FileText',
-		searchString: 'attachment:word',
-		defaultTranslation: 'Word'
+		searchString: 'attachment:word'
 	},
 	{
-		label: 'attachment_type.zipped_file',
+		label: t('attachment_type.zipped_file', 'Zipped File'),
 		icon: 'FileZip',
-		searchString: 'attachment:application/zip OR attachment:application/x-zip-compressed',
-		defaultTranslation: 'Zipped File'
+		searchString: 'attachment:application/zip OR attachment:application/x-zip-compressed'
 	}
 ];
 
-export const emailStatusItemsConstant = [
+type EmailStatusItemsConstantProps = {
+	label: string;
+	searchString: string;
+};
+
+export const emailStatusItemsConstant = (t: TFunction): Array<EmailStatusItemsConstantProps> => [
 	{
-		label: 'email_status.read',
-		searchString: 'is:read',
-		defaultTranslation: 'read'
+		label: t('email_status.read', 'read'),
+		searchString: 'is:read'
 	},
 	{
-		label: 'email_status.unread',
-		searchString: 'is:unread',
-		defaultTranslation: 'unread'
+		label: t('email_status.unread', 'unread'),
+		searchString: 'is:unread'
 	},
 	{
-		label: 'email_status.flagged',
-		searchString: 'is:flagged',
-		defaultTranslation: 'flagged'
+		label: t('email_status.flagged', 'flagged'),
+		searchString: 'is:flagged'
 	},
 	{
-		label: 'email_status.unflagged',
-		searchString: 'is:unflagged',
-		defaultTranslation: 'not flagged'
+		label: t('email_status.unflagged', 'not flagged'),
+		searchString: 'is:unflagged'
 	},
 	{
-		label: 'email_status.draft',
-		searchString: 'is:draft',
-		defaultTranslation: 'draft'
+		label: t('email_status.draft', 'draft'),
+		searchString: 'is:draft'
 	},
 	{
-		label: 'email_status.sent',
-		searchString: 'is:sent',
-		defaultTranslation: 'sent by me'
+		label: t('email_status.sent', 'sent by me'),
+		searchString: 'is:sent'
 	},
 	{
-		label: 'email_status.recevided',
-		searchString: 'is:recevided',
-		defaultTranslation: 'recevided by me'
+		label: t('email_status.received', 'received by me'),
+		searchString: 'is:recevided'
 	},
 	{
-		label: 'email_status.replied',
-		searchString: 'is:replied',
-		defaultTranslation: 'answered by me'
+		label: t('email_status.replied', 'answered by me'),
+		searchString: 'is:replied'
 	},
 	{
-		label: 'email_status.unreplied',
-		searchString: 'is:unreplied',
-		defaultTranslation: 'not answered by me'
+		label: t('email_status.unreplied', 'not answered by me'),
+		searchString: 'is:unreplied'
 	},
 	{
-		label: 'email_status.forwarded',
-		searchString: 'is:forwarded',
-		defaultTranslation: 'forwarded'
+		label: t('email_status.forwarded', 'forwarded'),
+		searchString: 'is:forwarded'
 	},
 	{
-		label: 'email_status.unforwarded',
-		searchString: 'is:unforwarded',
-		defaultTranslation: 'not forwarded'
+		label: t('email_status.unforwarded', 'not forwarded'),
+		searchString: 'is:unforwarded'
 	},
 	{
-		label: 'email_status.invitations',
-		searchString: 'is:invite',
-		defaultTranslation: 'invitations'
+		label: t('email_status.invitations', 'invitations'),
+		searchString: 'is:invite'
 	},
 	{
-		label: 'email_status.solo',
-		searchString: 'is:solo',
-		defaultTranslation: 'conversations with a single message'
+		label: t('email_status.solo', 'conversations with a single message'),
+		searchString: 'is:solo'
 	},
 	{
-		label: 'email_status.fromme',
-		searchString: 'is:fromme',
-		defaultTranslation: 'from me'
+		label: t('email_status.fromme', 'from me'),
+		searchString: 'is:fromme'
 	},
 	{
-		label: 'email_status.tome',
-		searchString: 'is:tome',
-		defaultTranslation: 'to me'
+		label: t('email_status.tome', 'to me'),
+		searchString: 'is:tome'
 	},
 	{
-		label: 'email_status.ccme',
-		searchString: 'is:ccme',
-		defaultTranslation: 'in copy to me'
+		label: t('email_status.ccme', 'in copy to me'),
+		searchString: 'is:ccme'
 	},
 	{
-		label: 'email_status.tofromme',
-		searchString: 'is:tofromme',
-		defaultTranslation: 'to me, from me or in copy to me'
+		label: t('email_status.tofromme', 'to me, from me or in copy to me'),
+		searchString: 'is:tofromme'
 	},
 	{
-		label: 'email_status.toccme',
-		searchString: 'is:toccme',
-		defaultTranslation: 'to me or in copy to me'
+		label: t('email_status.toccme', 'to me or in copy to me'),
+		searchString: 'is:toccme'
 	},
 	{
-		label: 'email_status.fromccme',
-		searchString: 'is:fromccme',
-		defaultTranslation: 'from me'
+		label: t('email_status.fromccme', 'from me'),
+		searchString: 'is:fromccme'
 	},
 	{
-		label: 'email_status.tofromccme',
-		searchString: 'is:tofromccme',
-		defaultTranslation: 'to me, from me or in copy to me'
+		label: t('email_status.tofromccme', 'to me, from me or in copy to me'),
+		searchString: 'is:tofromccme'
 	},
 	{
-		label: 'email_status.local',
-		searchString: 'is:local',
-		defaultTranslation: 'on my folders'
+		label: t('email_status.local', 'on my folders'),
+		searchString: 'is:local'
 	},
 	{
-		label: 'email_status.remote',
-		searchString: 'is:remote',
-		defaultTranslation: 'on a folder shared by me'
+		label: t('email_status.remote', 'on a folder shared by me'),
+		searchString: 'is:remote'
 	},
 	{
-		label: 'email_status.anywhere',
-		searchString: 'is:anywhere',
-		defaultTranslation: 'in all the folders'
+		label: t('email_status.anywhere', 'in all the folders'),
+		searchString: 'is:anywhere'
 	}
 ];
 

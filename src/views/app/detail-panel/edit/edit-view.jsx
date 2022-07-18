@@ -3,8 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Catcher, Container } from '@zextras/carbonio-design-system';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+	Button,
+	Catcher,
+	Container,
+	SnackbarManagerContext
+} from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import { throttle, filter, isNil } from 'lodash';
 import {
@@ -12,7 +17,8 @@ import {
 	useBoardHooks,
 	useUserAccounts,
 	replaceHistory,
-	addBoard
+	addBoard,
+	FOLDERS
 } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -25,7 +31,7 @@ import {
 	selectEditors,
 	updateEditor
 } from '../../../../store/editor-slice';
-import { ActionsType } from '../../../../types/participant';
+import { ActionsType } from '../../../../commons/utils';
 import { selectMessages } from '../../../../store/messages-slice';
 import EditAttachmentsBlock from './edit-attachments-block';
 import { saveDraft } from '../../../../store/actions/save-draft';
@@ -35,7 +41,7 @@ import DropZoneAttachment from './dropzone-attachment';
 import { MAILS_ROUTE } from '../../../../constants';
 
 import { addAttachments } from './edit-utils';
-
+import { RouteLeavingGuard } from './parts/nav-guard';
 import * as StyledComp from './parts/edit-view-styled-components';
 import { EditViewContext } from './parts/edit-view-context';
 import ParticipantsRow from './parts/participants-row';
@@ -43,6 +49,7 @@ import TextEditorContainer from './parts/text-editor-container';
 import EditViewHeader from './parts/edit-view-header';
 import WarningBanner from './parts/warning-banner';
 import SubjectRow from './parts/subject-row';
+import { moveMsgToTrash } from '../../../../ui-actions/message-actions';
 
 let counter = 0;
 
@@ -54,6 +61,7 @@ const generateId = () => {
 export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }) {
 	const settings = useUserSettings();
 	const { board, updateBoard } = useBoardHooks();
+	const createSnackbar = useContext(SnackbarManagerContext);
 	const [editor, setEditor] = useState();
 
 	const action = useQueryParam('action');
@@ -79,6 +87,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [initialAction, setInitialAction] = useState(action);
 	const [actionChanged, setActionChanged] = useState(true);
 	const [isUploading, setIsUploading] = useState(false);
+
+	const [showRouteGuard, setShowRouteGuard] = useState(true);
 
 	const activeMailId = useMemo(
 		() => board.context?.mailId || mailId,
@@ -305,61 +315,76 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			</Container>
 		);
 	return (
-		<EditViewContext.Provider
-			value={{
-				updateEditorCb,
-				throttledSaveToDraft,
-				control,
-				editorId,
-				editor,
-				updateSubjectField,
-				action,
-				folderId,
-				saveDraftCb
-			}}
-		>
-			<Catcher>
-				<Container onDragOver={(event) => onDragOverEvent(event)}>
-					<Container
-						mainAlignment="flex-start"
-						height="fill"
-						style={{ position: 'relative', maxHeight: '100%', overflowY: 'auto' }}
-						background="gray5"
-						padding={{ top: 'small', bottom: 'medium', horizontal: 'large' }}
-					>
-						{dropZoneEnable && (
-							<DropZoneAttachment
-								onDragOverEvent={onDragOverEvent}
-								onDropEvent={onDropEvent}
-								onDragLeaveEvent={onDragLeaveEvent}
-							/>
-						)}
-						<Container crossAlignment="flex-end" height="fit" background="gray6">
-							<EditViewHeader
-								setValue={setValue}
-								handleSubmit={handleSubmit}
-								uploadAttachmentsCb={uploadAttachmentsCb}
-							/>
-							{isSendingToYourself && <WarningBanner />}
+		<>
+			<RouteLeavingGuard
+				when={showRouteGuard && !toggleAppBoard}
+				onDeleteDraft={() => {
+					moveMsgToTrash({
+						ids: [editor.id],
+						t,
+						dispatch,
+						createSnackbar,
+						folderId: FOLDERS.TRASH
+					}).click();
+				}}
+			/>
+			<EditViewContext.Provider
+				value={{
+					updateEditorCb,
+					throttledSaveToDraft,
+					control,
+					editorId,
+					editor,
+					updateSubjectField,
+					action,
+					folderId,
+					saveDraftCb
+				}}
+			>
+				<Catcher>
+					<Container onDragOver={(event) => onDragOverEvent(event)}>
+						<Container
+							mainAlignment="flex-start"
+							height="fill"
+							style={{ position: 'relative', maxHeight: '100%', overflowY: 'auto' }}
+							background="gray5"
+							padding={{ top: 'small', bottom: 'medium', horizontal: 'large' }}
+						>
+							{dropZoneEnable && (
+								<DropZoneAttachment
+									onDragOverEvent={onDragOverEvent}
+									onDropEvent={onDropEvent}
+									onDragLeaveEvent={onDragLeaveEvent}
+								/>
+							)}
+							<Container crossAlignment="flex-end" height="fit" background="gray6">
+								<EditViewHeader
+									setShowRouteGuard={setShowRouteGuard}
+									setValue={setValue}
+									handleSubmit={handleSubmit}
+									uploadAttachmentsCb={uploadAttachmentsCb}
+								/>
+								{isSendingToYourself && <WarningBanner />}
 
-							<StyledComp.RowContainer background="gray6" padding={{ all: 'small' }}>
-								<ParticipantsRow />
-								<SubjectRow />
+								<StyledComp.RowContainer background="gray6" padding={{ all: 'small' }}>
+									<ParticipantsRow />
+									<SubjectRow />
 
-								{showAttachments && (
-									<StyledComp.ColContainer occupyFull>
-										<EditAttachmentsBlock
-											editor={editor}
-											throttledSaveToDraft={throttledSaveToDraft}
-										/>
-									</StyledComp.ColContainer>
-								)}
-							</StyledComp.RowContainer>
+									{showAttachments && (
+										<StyledComp.ColContainer occupyFull>
+											<EditAttachmentsBlock
+												editor={editor}
+												throttledSaveToDraft={throttledSaveToDraft}
+											/>
+										</StyledComp.ColContainer>
+									)}
+								</StyledComp.RowContainer>
+							</Container>
+							<TextEditorContainer onDragOverEvent={onDragOverEvent} draftSavedAt={draftSavedAt} />
 						</Container>
-						<TextEditorContainer onDragOverEvent={onDragOverEvent} draftSavedAt={draftSavedAt} />
 					</Container>
-				</Container>
-			</Catcher>
-		</EditViewContext.Provider>
+				</Catcher>
+			</EditViewContext.Provider>
+		</>
 	);
 }

@@ -3,14 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	ComponentType,
-	ReactElement,
-	useCallback,
-	useContext,
-	useMemo,
-	useState
-} from 'react';
+import React, { ReactElement, useCallback, useContext, useMemo, useState } from 'react';
 import { TFunction } from 'i18next';
 import {
 	ModalManagerContext,
@@ -26,34 +19,11 @@ import { every, find, includes, map, reduce } from 'lodash';
 import { ZIMBRA_STANDARD_COLORS, replaceHistory, useTags, Tag } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { TagsActionsType } from '../types/tags';
+import { ArgumentType, ReturnType, TagsFromStoreType, ItemType } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 import DeleteTagModal from '../views/sidebar/parts/tags/delete-tag-modal';
 import { convAction, msgAction } from '../store/actions';
-import { ItemType } from '../views/sidebar/parts/tags/types';
-
-export type ReturnType = {
-	id: string;
-	icon: string;
-	label: string;
-	click?: (arg: React.SyntheticEvent<EventTarget>) => void;
-	items?: Array<{
-		customComponent: ComponentType;
-		id: string;
-		icon: string;
-		label: string;
-	}>;
-};
-
-export type TagsFromStoreType = Record<string, Tag>;
-
-export type ArgumentType = {
-	t: TFunction;
-	createModal?: (...args: any) => () => void;
-	createSnackbar?: (...args: any) => void;
-	items?: ReturnType;
-	tag?: ItemType;
-};
+import { TagsActionsType } from '../commons/utils';
 
 export const createTag = ({ t, createModal }: ArgumentType): ReturnType => ({
 	id: TagsActionsType.NEW,
@@ -461,7 +431,7 @@ export const useTagsArrayFromStore = (): Array<ItemType> => {
 	);
 };
 
-export const useTagExist = (tags: Array<ItemType>): boolean => {
+export const useTagExist = (tags: Array<Tag>): boolean => {
 	const tagsArrayFromStore = useTagsArrayFromStore();
 	return useMemo(
 		() =>
