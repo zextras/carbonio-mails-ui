@@ -6,10 +6,17 @@
 import { map, filter, reduce, concat, isEmpty, find, some } from 'lodash';
 import { Account, AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
-import { EditorAttachmentFiles, MailsEditor } from '../types/mails-editor';
-import { MailMessage, MailMessagePart } from '../types/mail-message';
-import { Participant, ParticipantRole, SharedParticipant } from '../types/participant';
-import { mailAttachmentParts, SoapDraftMessageObj } from '../types/soap/';
+import {
+	EditorAttachmentFiles,
+	MailsEditor,
+	MailMessage,
+	MailMessagePart,
+	Participant,
+	SharedParticipant,
+	mailAttachmentParts,
+	SoapDraftMessageObj
+} from '../types';
+import { ParticipantRole } from '../commons/utils';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const retrieveAttachmentsType = (
@@ -76,6 +83,7 @@ export const emptyEditor = (
 		subject: '',
 		attach: { mp: [] },
 		urgent: false,
+		requestReadReceipt: false,
 		id: undefined,
 		attachmentFiles: []
 	};
@@ -90,8 +98,8 @@ export const changeParticipantRole = (
 	newRole: ParticipantRole
 ): Array<Participant> =>
 	map(
-		filter(original.participants, (c: Participant): boolean => c.type === previousRole),
-		(c: Participant): Participant => ({ ...c, type: newRole })
+		filter(original.participants, (c) => c.type === previousRole),
+		(c) => ({ ...c, type: newRole })
 	);
 
 export const changeTypeOfParticipants = (
@@ -332,16 +340,8 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 	};
 };
 
-export const generateRequest = (data: MailsEditor): SoapDraftMessageObj => ({
-	did: data.did ?? undefined,
-	id: data.id ?? undefined,
-	attach: data.attach,
-	su: { _content: data.subject ?? '' },
-	rt: data?.rt ?? undefined,
-	origid: data?.origid ?? undefined,
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	e: map(
+export const generateRequest = (data: MailsEditor): SoapDraftMessageObj => {
+	const participants = map(
 		// eslint-disable-next-line no-nested-ternary
 		data.participants
 			? data.participants
@@ -356,27 +356,51 @@ export const generateRequest = (data: MailsEditor): SoapDraftMessageObj => ({
 				(c as unknown as SharedParticipant).firstName ??
 				undefined
 		})
-	),
-	mp: [
-		data.richText
-			? {
-					ct: 'multipart/alternative',
-					mp: [
-						{
-							ct: 'text/html',
-							body: true,
-							content: { _content: data?.text[1] ?? '' }
-						},
-						{
-							ct: 'text/plain',
-							content: { _content: data?.text[0] ?? '' }
-						}
-					]
-			  }
-			: {
-					ct: 'text/plain',
-					body: true,
-					content: { _content: data?.text[0] ?? '' }
-			  }
-	]
-});
+	);
+	if (data.requestReadReceipt) {
+		participants.push({
+			a:
+				(data?.from as unknown as SharedParticipant)?.email ??
+				(data?.from as unknown as Participant)?.address,
+			t: ParticipantRole.READ_RECEIPT_NOTIFICATION,
+			d:
+				(data?.from as unknown as Participant).fullName ??
+				(data?.from as unknown as SharedParticipant).firstName ??
+				undefined
+		});
+	}
+
+	return {
+		did: data.did ?? undefined,
+		id: data.id ?? undefined,
+		attach: data.attach,
+		su: { _content: data.subject ?? '' },
+		rt: data?.rt ?? undefined,
+		origid: data?.origid ?? undefined,
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		e: participants,
+		mp: [
+			data.richText
+				? {
+						ct: 'multipart/alternative',
+						mp: [
+							{
+								ct: 'text/html',
+								body: true,
+								content: { _content: data?.text[1] ?? '' }
+							},
+							{
+								ct: 'text/plain',
+								content: { _content: data?.text[0] ?? '' }
+							}
+						]
+				  }
+				: {
+						ct: 'text/plain',
+						body: true,
+						content: { _content: data?.text[0] ?? '' }
+				  }
+		]
+	};
+};

@@ -21,14 +21,16 @@ export const ModalHeader = ({ title, onClose }) => (
 					{title}
 				</Text>
 			</Row>
-			<Row mainAlignment="flex-start">
-				<IconButton
-					size="medium"
-					style={{ padding: 0, margin: 0 }}
-					onClick={onClose}
-					icon="CloseOutline"
-				/>
-			</Row>
+			{onClose && (
+				<Row mainAlignment="flex-start">
+					<IconButton
+						size="medium"
+						style={{ padding: 0, margin: 0 }}
+						onClick={onClose}
+						icon="CloseOutline"
+					/>
+				</Row>
+			)}
 		</Row>
 		<Padding top="medium" />
 		<Divider />

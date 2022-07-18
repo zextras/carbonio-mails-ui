@@ -25,5 +25,5 @@ export type SearchResponse = {
 	m?: SoapIncompleteMessage[];
 	more: boolean;
 	offset?: number;
-	sortBy?: string;
+	sortBy?: 'dateDesc' | 'dateAsc';
 };

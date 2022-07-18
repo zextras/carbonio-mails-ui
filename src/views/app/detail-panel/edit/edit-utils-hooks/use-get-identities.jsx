@@ -8,7 +8,7 @@ import { useAppContext, useUserAccount, useUserAccounts } from '@zextras/carboni
 import { map, find, filter, findIndex, flatten } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ParticipantRole } from '../../../../../types/participant';
+import { ParticipantRole } from '../../../../../commons/utils';
 
 const findDefaultIdentity = ({ list, activeAccount }) =>
 	activeAccount === 'USER_ROOT'

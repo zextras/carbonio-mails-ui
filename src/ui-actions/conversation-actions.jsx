@@ -532,6 +532,14 @@ export const getActions = ({
 						conversation: [conversation],
 						account
 					}),
+					moveConversationToFolder({
+						ids: [conversation.id],
+						t,
+						dispatch,
+						isRestore: false,
+						createModal,
+						deselectAll
+					}),
 					moveConversationToTrash({
 						ids: [conversation.id],
 						t,

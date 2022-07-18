@@ -8,22 +8,22 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state", conversation", "message", "cache", "status"] }] */
 
 import { createSlice } from '@reduxjs/toolkit';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach, merge } from 'lodash';
+import { CONVACTIONS } from '../commons/utilities';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
-import { Conversation } from '../types/conversation';
-import { MailMessage } from '../types/mail-message';
-import { MsgMap, MsgStateType, StateType } from '../types/state';
 import {
-	search,
+	MsgMap,
+	MsgStateType,
+	StateType,
+	Conversation,
+	MailMessage,
 	FetchConversationsReturn,
-	getConv,
-	getMsg,
-	msgAction,
-	MsgActionResult,
-	searchConv,
-	SearchConvReturn
-} from './actions';
+	SearchConvReturn,
+	MsgActionResult
+} from '../types';
+import { search, getConv, getMsg, msgAction, searchConv } from './actions';
 import { saveDraft } from './actions/save-draft';
 import {
 	handleCreatedMessagesReducer,
@@ -97,22 +97,22 @@ function msgActionPending({ messages }: MsgStateType, { meta }: { meta: any }): 
 	forEach(ids, (id) => {
 		const message = messages[id];
 		if (message) {
-			if (operation.includes('flag')) {
+			if (operation.includes(CONVACTIONS.FLAG)) {
 				message.flagged = !operation.startsWith('!');
-			} else if (operation.includes('read')) {
+			} else if (operation.includes(CONVACTIONS.MARK_READ)) {
 				message.read = !operation.startsWith('!');
-			} else if (operation === 'trash') {
-				message.parent = '3';
-			} else if (operation === 'delete') {
+			} else if (operation === CONVACTIONS.TRASH) {
+				message.parent = FOLDERS.TRASH;
+			} else if (operation === CONVACTIONS.DELETE) {
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				delete message[id];
-			} else if (operation === 'move') {
+			} else if (operation === CONVACTIONS.MOVE) {
 				message.parent = meta.arg.parent;
-			} else if (operation === 'spam') {
-				message.parent = '4';
-			} else if (operation === '!spam') {
-				message.parent = '2';
+			} else if (operation === CONVACTIONS.MARK_SPAM) {
+				message.parent = FOLDERS.SPAM;
+			} else if (operation === CONVACTIONS.MARK_NOT_SPAM) {
+				message.parent = FOLDERS.INBOX;
 			}
 		}
 	});

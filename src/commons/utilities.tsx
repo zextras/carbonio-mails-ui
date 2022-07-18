@@ -230,6 +230,22 @@ export enum FOLDER_ACTIONS {
 	SHARE = 'share',
 	SHARE_URL = 'share_url'
 }
+
+// eslint-disable-next-line no-shadow
+export enum CONVACTIONS {
+	MOVE = 'move',
+	FLAG = 'flag',
+	UNFLAG = '!flag',
+	MARK_READ = 'read',
+	MARK_UNREAD = '!read',
+	TAG = 'tag',
+	UNTAG = '!tag',
+	TRASH = 'trash',
+	DELETE = 'delete',
+	MARK_SPAM = 'spam',
+	MARK_NOT_SPAM = '!spam'
+}
+
 export const convertToDecimal = (source: string): string => {
 	let result = '';
 	for (let i = 0; i < source.length; i += 1) {

@@ -6,7 +6,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { useMemo, useState, useRef, useCallback, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { filter } from 'lodash';
+import { filter, find } from 'lodash';
 import {
 	useUserAccounts,
 	useIntegratedComponent,
@@ -30,13 +30,15 @@ import AttachmentsBlock from './attachments-block';
 import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
 import { getMsg, msgAction } from '../../../../store/actions';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
-
+import ReadReceiptModal from './read-receipt-modal';
 import PreviewHeader from './parts/preview-header';
 
 const MailContent = ({ message, isMailPreviewOpen }) => {
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
+	const [showModal, setShowModal] = useState(true);
 	const dispatch = useDispatch();
 	const accounts = useUserAccounts();
+	const { prefs } = useUserSettings();
 	const moveToTrash = useCallback(() => {
 		dispatch(
 			msgAction({
@@ -65,6 +67,21 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 			InviteResponse,
 		[integrationAvailable, InviteResponse, message]
 	);
+	const readReceiptRequester = useMemo(
+		() => find(message?.participants, { type: 'n' }),
+		[message?.participants]
+	);
+
+	const readReceiptSetting = useMemo(() => prefs?.zimbraPrefMailSendReadReceipts, [prefs]);
+	const showReadReceiptModal = useMemo(
+		() =>
+			!!readReceiptRequester &&
+			showModal &&
+			message.isReadReceiptRequested &&
+			!message?.isSentByMe &&
+			readReceiptSetting === 'prompt',
+		[readReceiptRequester, showModal, message, readReceiptSetting]
+	);
 
 	const showShareInvite = useMemo(
 		() =>
@@ -76,6 +93,9 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 		[message]
 	);
 
+	const onModalClose = useCallback(() => {
+		setShowModal(false);
+	}, []);
 	const loggedInUser = useMemo(() => accounts[0]?.name, [accounts]);
 	const isAttendee = useMemo(
 		() => message.invite?.[0]?.comp?.[0]?.or?.a !== loggedInUser,
@@ -129,9 +149,25 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 						/>
 					)}
 				</Padding>
+				<ReadReceiptModal
+					open={showReadReceiptModal}
+					onClose={onModalClose}
+					message={message}
+					readReceiptSetting={readReceiptSetting}
+				/>
 			</Container>
 		),
-		[message, InviteResponse, moveToTrash, showShareInvite, showAppointmentInvite, isAttendee]
+		[
+			message,
+			showAppointmentInvite,
+			readReceiptSetting,
+			InviteResponse,
+			moveToTrash,
+			isAttendee,
+			showShareInvite,
+			showReadReceiptModal,
+			onModalClose
+		]
 	);
 	return (
 		<Collapse

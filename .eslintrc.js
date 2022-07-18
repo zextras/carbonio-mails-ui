@@ -13,5 +13,12 @@ module.exports = {
 				templateFile: '.reuse/template.js'
 			}
 		]
+	},
+	settings: {
+		'import/resolver': {
+			node: {
+				extensions: ['.js', '.jsx', '.d.ts', '.ts', '.tsx']
+			}
+		}
 	}
 };
