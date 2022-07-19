@@ -155,17 +155,22 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		[input, requiredAcc, t]
 	);
 
+	const getFolderPath = useCallback(
+		(folder: AccordionFolder) => {
+			const absoluteParent = getFolderOwner(folder.folder);
+			const relativePath = getFolderAbsPath(folder?.id);
+			if (absoluteParent === 'USER_ROOT') {
+				return relativePath;
+			}
+			if (relativePath) {
+				return `${absoluteParent}/${relativePath}`;
+			}
+			return absoluteParent;
+		},
+		[getFolderAbsPath]
+	);
 	const onConfirm = useCallback(() => {
-		const absoluteParent = getFolderOwner(folderDestination.folder);
-		const relativePath = getFolderAbsPath(folderDestination?.id);
-		const folderPath =
-			// eslint-disable-next-line no-nested-ternary
-			absoluteParent === 'USER_ROOT'
-				? relativePath
-				: relativePath
-				? `${absoluteParent}/${relativePath}`
-				: absoluteParent;
-
+		const folderPath = getFolderPath(folderDestination);
 		setFolder([
 			{
 				label: `in:${folderPath}`,
@@ -180,7 +185,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			}
 		]);
 		onClose();
-	}, [folderDestination, setFolder, getFolderAbsPath, onClose]);
+	}, [folderDestination, getFolderPath, setFolder, onClose]);
 
 	const disabled = useMemo(() => isEmpty(folderDestination), [folderDestination]);
 
