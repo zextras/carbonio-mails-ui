@@ -13,37 +13,52 @@ import {
 	Padding,
 	Row,
 	Tooltip,
-	SnackbarManagerContext
+	SnackbarManagerContext,
+	IconButton
 } from '@zextras/carbonio-design-system';
 import { concat, some } from 'lodash';
 import { useDispatch } from 'react-redux';
-import { replaceHistory, useBoardConfig, useRemoveCurrentBoard } from '@zextras/carbonio-shell-ui';
+import {
+	getCurrentRoute,
+	replaceHistory,
+	useBoardConfig,
+	useRemoveCurrentBoard
+} from '@zextras/carbonio-shell-ui';
+import { useHistory } from 'react-router-dom';
 import { EditViewContext } from './edit-view-context';
 import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
 import * as StyledComp from './edit-view-styled-components';
 import { addAttachments } from '../edit-utils';
-import { ActionsType } from '../../../../../types/participant';
-import { CreateSnackbar } from './edit-view-types';
+import { CreateSnackbar, mailAttachment } from '../../../../../types';
 import { sendMsg } from '../../../../../store/actions/send-msg';
-import { mailAttachment } from '../../../../../types/soap/save-draft';
+import { ActionsType } from '../../../../../commons/utils';
 
 type PropType = {
+	setShowRouteGuard: (arg: boolean) => void;
 	setValue: (arg: unknown) => void;
 	handleSubmit: (arg: () => void) => void;
 	uploadAttachmentsCb: () => void;
 };
-const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachmentsCb }) => {
+const EditViewHeader: FC<PropType> = ({
+	setShowRouteGuard,
+	setValue,
+	handleSubmit,
+	uploadAttachmentsCb
+}) => {
 	const [t] = useTranslation();
 	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action } =
 		useContext(EditViewContext);
 	const [open, setOpen] = useState(false);
+	const [showDropdown, setShowDropdown] = useState(false);
 	const [openDD, setOpenDD] = useState(false);
 	const [btnLabel, setBtnLabel] = useState(t('label.send', 'Send'));
 	const [isDisabled, setIsDisabled] = useState(false);
 	const createSnackbar: CreateSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
-
+	const [showRichText, setShowRichtext] = useState(editor?.richText ?? false);
+	const [isUrgent, setIsUrgent] = useState(editor?.urgent ?? false);
+	const [isReceiptRequested, setIsReceiptRequested] = useState(editor?.requestReadReceipt ?? false);
 	// needs to be replace with correct type
 	const boardContext: { onConfirm: (arg: any) => void } = useBoardConfig();
 
@@ -81,14 +96,20 @@ const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachment
 	};
 
 	const toggleOpen = useCallback(() => setOpen((show) => !show), []);
-
+	const history = useHistory();
+	const undoURL = useMemo(
+		() => `${history.location.pathname?.split('/mails')?.[1]}${history.location.search}`,
+		[history]
+	);
 	const sendMailCb = useCallback(() => {
 		setBtnLabel(t('label.sending', 'Sending'));
 		setIsDisabled(true);
+		setShowRouteGuard(false);
 		if (action === ActionsType.COMPOSE && boardContext?.onConfirm) {
 			boardContext?.onConfirm(editor);
 		} else {
 			let notCanceled = true;
+			const oldEditor = { ...editor };
 			const infoSnackbar = (remainingTime: number, hideButton = false): void => {
 				createSnackbar({
 					key: 'send',
@@ -104,16 +125,30 @@ const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachment
 					actionLabel: 'Undo',
 					onActionClick: () => {
 						notCanceled = false;
+						setTimeout(() => updateEditorCb({ ...oldEditor }, editorId), 10);
+						replaceHistory(undoURL);
+						setBtnLabel(t('label.send', 'Send'));
+						setIsDisabled(false);
 					}
 				});
 			};
+			setTimeout(() => {
+				if (folderId) {
+					replaceHistory(`/folder/${folderId}/`);
+				}
+			}, 10);
 
 			infoSnackbar(3);
 			setTimeout(() => notCanceled && infoSnackbar(2), 1000);
 			setTimeout(() => notCanceled && infoSnackbar(1), 2000);
 			setTimeout(() => {
 				if (notCanceled) {
-					folderId ? replaceHistory(`/folder/${folderId}/`) : closeBoard();
+					const activeRoute = getCurrentRoute();
+					if (activeRoute?.route === 'mails') {
+						folderId ? replaceHistory(`/folder/${folderId}/`) : closeBoard();
+					} else {
+						closeBoard();
+					}
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					dispatch(sendMsg({ editorId })).then((res) => {
@@ -141,7 +176,20 @@ const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachment
 				}
 			}, 3000);
 		}
-	}, [t, action, boardContext, editor, createSnackbar, folderId, closeBoard, dispatch, editorId]);
+	}, [
+		t,
+		action,
+		boardContext,
+		editor,
+		createSnackbar,
+		folderId,
+		closeBoard,
+		dispatch,
+		editorId,
+		setShowRouteGuard,
+		undoURL,
+		updateEditorCb
+	]);
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
@@ -160,6 +208,71 @@ const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachment
 			}
 		});
 	}, [closeBoard, createSnackbar, editor, saveDraftCb, t]);
+
+	const onDropdownClose = useCallback((): void => {
+		setShowDropdown(false);
+	}, []);
+	const onIconClick = useCallback((ev: { stopPropagation: () => void }): void => {
+		ev.stopPropagation();
+		setShowDropdown((o) => !o);
+	}, []);
+
+	const toggleRichTextEditor = useCallback(() => {
+		updateEditorCb({
+			richText: !showRichText
+		});
+		setShowRichtext((show: boolean) => !show);
+	}, [showRichText, updateEditorCb]);
+
+	const toggleImportant = useCallback(() => {
+		updateEditorCb({
+			urgent: !isUrgent
+		});
+		setIsUrgent((urgent: boolean) => !urgent);
+	}, [isUrgent, updateEditorCb]);
+
+	const toggleReceiptRequest = useCallback(() => {
+		updateEditorCb({
+			requestReadReceipt: !isReceiptRequested
+		});
+		setIsReceiptRequested((requested: boolean) => !requested);
+	}, [isReceiptRequested, updateEditorCb]);
+
+	const composerActions = useMemo(
+		() => [
+			{
+				id: 'richText',
+				label: showRichText
+					? t('tooltip.disable_rich_text', 'Disable rich text editor')
+					: t('tooltip.enable_rich_text', 'Enable rich text editor'),
+				click: toggleRichTextEditor
+			},
+			{
+				id: 'urgent',
+				label: isUrgent
+					? t('label.mark_as_un_important', 'Mark as unimportant')
+					: t('label.mark_as_important', 'Mark as important'),
+				click: toggleImportant
+			},
+			{
+				id: 'read_receipt',
+				label: isReceiptRequested
+					? t('label.remove_request_receipt', 'Remove read receipt request')
+					: t('label.request_receipt', 'Request read receipt'),
+				click: toggleReceiptRequest
+			}
+		],
+		[
+			showRichText,
+			t,
+			toggleRichTextEditor,
+			isUrgent,
+			toggleImportant,
+			isReceiptRequested,
+			toggleReceiptRequest
+		]
+	);
+
 	return (
 		<>
 			<Row
@@ -194,58 +307,6 @@ const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachment
 					</Row>
 				)}
 				<Row>
-					<Controller
-						name="richText"
-						control={control}
-						defaultValue={editor?.richText ?? false}
-						render={({ onChange, value }): ReactElement => (
-							<Tooltip
-								label={
-									value
-										? t('tooltip.disable_rich_text', 'Disable rich text editor')
-										: t('tooltip.enable_rich_text', 'Enable rich text editor')
-								}
-							>
-								<StyledComp.ResizedIconCheckbox
-									icon="Text"
-									value={value}
-									onClick={(): void => {
-										updateEditorCb({
-											richText: !value
-										});
-										onChange(!value);
-									}}
-									onChange={(): null => null}
-								/>
-							</Tooltip>
-						)}
-					/>
-					<Controller
-						name="urgent"
-						control={control}
-						defaultValue={editor?.urgent ?? false}
-						render={({ onChange, value }): ReactElement => (
-							<Tooltip
-								label={
-									value
-										? t('tooltip.disable_urgent', 'Disable urgent')
-										: t('tooltip.enable_urgent', 'Enable urgent')
-								}
-							>
-								<StyledComp.ResizedIconCheckbox
-									icon="ArrowUpward"
-									value={value}
-									onClick={(): void => {
-										updateEditorCb({
-											urgent: !value
-										});
-										onChange(!value);
-									}}
-									onChange={(): null => null}
-								/>
-							</Tooltip>
-						)}
-					/>
 					<Controller
 						name="attach"
 						control={control}
@@ -289,6 +350,14 @@ const EditViewHeader: FC<PropType> = ({ setValue, handleSubmit, uploadAttachment
 							</Dropdown>
 						</Tooltip>
 					)}
+					<Dropdown
+						items={composerActions}
+						forceOpen={showDropdown}
+						onClose={onDropdownClose}
+						selectedBackgroundColor="gray5"
+					>
+						<IconButton size="large" icon="MoreVertical" onClick={onIconClick} />
+					</Dropdown>
 					{action !== ActionsType.COMPOSE && (
 						<Padding left="large">
 							<Button

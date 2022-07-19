@@ -67,6 +67,7 @@ export const MoveConvMsgModal = ({
 				colorCancel={'primary'}
 				secondaryLabel={t('label.new_folder', 'New Folder')}
 				label={isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move')}
+				disabled={!currentFolder}
 				t={t}
 			/>
 		</Container>

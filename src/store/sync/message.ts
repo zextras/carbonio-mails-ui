@@ -19,37 +19,24 @@ import {
 } from 'lodash';
 import sound from '../../assets/notification.mp3';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import { IncompleteMessage } from '../../types/mail-message';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { SoapIncompleteMessage } from '../../types/soap';
-import { MsgStateType } from '../../types/state';
+import { SoapIncompleteMessage, MsgStateType, IncompleteMessage, Payload } from '../../types';
 import { showNotification } from '../../views/notifications';
-
-type Payload = {
-	payload: {
-		t: any;
-		m: SoapIncompleteMessage;
-	};
-};
 
 function playSound(): void {
 	const audio = new Audio(sound);
 	audio.play();
 }
 
-const triggerNotification = (m: SoapIncompleteMessage): void => {
+const triggerNotification = (m: Array<SoapIncompleteMessage>): void => {
 	const { t } = getBridgedFunctions();
 	const { props, prefs } = getUserSettings();
 	const isShowNotificationEnabled = prefs?.zimbraPrefMailToasterEnabled ?? 'TRUE';
 	const isAudioEnabled = find(props, ['name', 'mailNotificationSound'])?._content ?? 'TRUE';
 	const showAllNotifications = prefs?.zimbraPrefShowAllNewMailNotifications ?? 'FALSE';
 
-	const messages = map(m, (item) => {
+	const messages = map(m, (item: SoapIncompleteMessage) => {
 		let norm = normalizeMailMessageFromSoap(item, false);
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		if (norm?.fragment?.length < 1) {
+		if (norm?.fragment && norm?.fragment?.length < 1) {
 			norm = {
 				...norm,
 				fragment: t('notification.no_content', 'Message without content')

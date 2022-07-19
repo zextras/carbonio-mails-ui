@@ -7,21 +7,13 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import { MailMessage } from '../../types/mail-message';
-import { SearchConvRequest, SearchConvResponse } from '../../types/soap/';
-
-export type SearchConvParameters = {
-	conversationId: string;
-	folderId: string;
-	fetch: string;
-};
-
-export type SearchConvReturn = {
-	hasMore: boolean;
-	offset: string;
-	messages: Array<MailMessage>;
-	orderBy: string;
-};
+import {
+	MailMessage,
+	SearchConvParameters,
+	SearchConvRequest,
+	SearchConvResponse,
+	SearchConvReturn
+} from '../../types';
 
 export const searchConv = createAsyncThunk<SearchConvReturn, SearchConvParameters>(
 	'conversations/searchConv',

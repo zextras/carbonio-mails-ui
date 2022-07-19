@@ -8,7 +8,7 @@ import { useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map, find, filter, findIndex, flatten } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ParticipantRole } from '../../../../../types/participant';
+import { ParticipantRole } from '../../../../../commons/utils';
 
 export const useGetIdentities = ({ updateEditorCb, setOpen }) => {
 	const account = useUserAccount();

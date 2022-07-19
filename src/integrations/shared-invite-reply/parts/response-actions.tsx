@@ -10,7 +10,7 @@ import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import ColorSelect from './color-select';
-import { ResponseActionsProps } from '../../../types/share-calendar';
+import { ResponseActionsProps } from '../../../types';
 import { accept, decline } from './share-calendar-actions';
 
 const ResponseActions: FC<ResponseActionsProps> = ({

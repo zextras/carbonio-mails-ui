@@ -9,8 +9,7 @@ import { TextWithTooltip } from '@zextras/carbonio-design-system';
 import { capitalize } from 'lodash';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { MailMessage } from '../../../../../types/mail-message';
-import { Participant } from '../../../../../types/participant';
+import { Participant, MailMessage } from '../../../../../types';
 
 const StyledText = styled.span<{ isRead?: boolean; color?: string }>`
 	padding: 0 2px;

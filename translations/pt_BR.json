@@ -135,7 +135,7 @@
         "attachment_plural": "Anexos",
         "cancel": "Cancelar",
         "download": "Download",
-        "download_plural": "",
+        "download_plural": "Downloads",
         "send": "Enviar",
         "share": "Compartilhar",
         "edit": "Editar",
@@ -308,8 +308,13 @@
         "save_to_files": "Salvar no Files",
         "invalid_destination": "Este nó não é um destino válido",
         "notification_audio": "Reproduzir sinal sonoro quando uma nova notificação aparecer",
-        "notification_folders": "Pastas de notificação",
-        "upload_from_files": "Fazer upload a partir do Files"
+        "notification_folders": "Notificações de pastas",
+        "upload_from_files": "Fazer upload a partir do Files",
+        "view_images": "VER IMÁGENS",
+        "share_public_link": "Compartilhar link público",
+        "no_name": "<Sem nome>",
+        "always_allow_domain": "Permitir sempre do domínio <strong>{{domain}}</strong>",
+        "always_allow_address": "Permitir sempre de <strong>{{from}}</strong>"
     },
     "of": "de",
     "owner": "Proprietário",
@@ -604,7 +609,8 @@
                 "title": "Modo Arrastar e Soltar",
                 "content": "Solte aqui seus anexos para adicioná-los rapidamente a este e-mail"
             },
-            "files": "Adicionar do Files"
+            "files": "Adicionar do Files",
+            "url": "Adicionar link público a partir de Files"
         }
     },
     "find_mail_shares": "Localizar pastas compartilhadas",
@@ -626,7 +632,10 @@
             "all_att_saved": "Anexos salvos com sucesso na pasta selecionada",
             "att_err_adding": "Parece que há um problema ao adicionar os anexos. Tente novamente",
             "some_att_add_fails": "Parece que há um problema ao adicionar alguns anexos. Tente novamente",
-            "some_att_fails": "Parece que há um problema ao salvar alguns arquivos. Tente novamente"
+            "some_att_fails": "Parece que há um problema ao salvar alguns arquivos. Tente novamente",
+            "link_copying_error": "Parece que há um problema ao gerar o link público. Tente de novo",
+            "some_link_copying_error": "Parece que há um problema ao gerar o link público para alguns arquivos. Tente de novo",
+            "all_link_copied": "Link público foi copiado com êxito"
         },
         "sending_mail_to_self": "Parece que você vai enviar um e-mail a si mesmo",
         "search_hints": "Dicas de pesquisa que precisamos conversar",
@@ -636,7 +645,8 @@
         "delete_tag_message2": "Uma vez excluída, ela será removida de todos os itens marcados com a mesma.",
         "view_rights": "Ver",
         "admin_rights": "Ver,Editar,Adicionar,Remover,Administrar",
-        "manager_rights": "Ver,Editar,Adicionar,Remover"
+        "manager_rights": "Ver,Editar,Adicionar,Remover",
+        "external_images_blocked": "As imagens externas foram bloqueadas para proteger você ante potencial spam"
     },
     "mail_folder": "Pasta de e-mail",
     "private": "Privado",
@@ -665,7 +675,9 @@
         "disable_urgent": "Desativar Urgente",
         "edit": "Editar propriedades de compartilhamento",
         "enable_rich_text": "Ativar editor de texto enriquecido",
-        "enable_urgent": "Ativar Urgente"
+        "enable_urgent": "Ativar Urgente",
+        "folder_sharing_status": "Compartilhado com {{count}} persona",
+        "folder_sharing_status_plural": "Compartilhado com {{count}} personas"
     },
     "write": "Escrever",
     "workflow": "Fluxo de Trabalho",
@@ -760,7 +772,7 @@
         "search_title3": "Não existem resultados para sua busca.",
         "list_spam_title": "Não existem e-mails de spam",
         "list_trash_title": "A lixeira está vazia",
-        "search_description3": "Verifique a ortografia e as opções de filtros ou tente com uma nova palavra-chave.",
+        "search_description3": "Verifique a ortografia e as opções dos filtros ou tente com outra palavra.",
         "sent_title2": "Selecione um e-mail para exibir o que você enviou.",
         "spam_title1": "Que sorte! Não existem e-mails de spam para você se preocupar",
         "title1": "Escreva um e-mail novo clicando no botão \"NOVO\"",

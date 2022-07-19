@@ -15,8 +15,7 @@ import {
 import { SnackbarManagerContext, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { getActions as conversationActions } from '../ui-actions/conversation-actions';
 import { getActions as messageActions } from '../ui-actions/message-actions';
-import { MailMessage } from '../types/mail-message';
-import { Conversation } from '../types/conversation';
+import { Conversation, MailMessage } from '../types';
 
 type ACPProps = {
 	folderId: string;

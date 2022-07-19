@@ -26,7 +26,6 @@ const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, o
 	const dispatch = useDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const [currentFolder, setCurrentFolder] = useState('');
-	const [currentFolderName, setCurrentFolderName] = useState('');
 	const [folderDestination, setFolderDestination] = useState(currentFolder || {});
 	const [folderPosition, setFolderPosition] = useState(currentFolder.name);
 	const allFolders = useSelector(selectFolders);
@@ -96,11 +95,10 @@ const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, o
 								items: nestFilteredFolders(items, item.id, results),
 								onClick: () => {
 									setCurrentFolder(item.id);
-									setCurrentFolderName(item.name);
 								},
 								open: !!input.length,
 								divider: true,
-								background: folderDestination.id === item.id ? 'highlight' : undefined
+								active: currentFolder === item.id
 							}
 						];
 					}
@@ -111,7 +109,7 @@ const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, o
 				},
 				[]
 			),
-		[folderDestination.id, input.length]
+		[input.length, currentFolder]
 	);
 
 	const nestedData = useMemo(

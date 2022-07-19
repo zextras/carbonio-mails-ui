@@ -8,7 +8,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-case-declarations */
 import { orderBy } from 'lodash';
-import { LineType } from '../types/quoted-message';
+import { LineType } from './utils';
 
 const contentType = 'text/html';
 const NON_WHITESPACE_REGEX = /\S+/;

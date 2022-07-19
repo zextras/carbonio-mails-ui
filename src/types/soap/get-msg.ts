@@ -17,3 +17,16 @@ export type GetMsgRequest = ZimbraRequest & {
 export type GetMsgResponse = {
 	m: Array<SoapMailMessage>;
 };
+
+export type GetMsgParameters = {
+	msgId: string;
+};
+
+export type GetMsgForPrintParameter = {
+	ids: Array<string>;
+};
+
+export type GetMsgForPrintResponse = {
+	GetMsgResponse: Array<GetMsgResponse>;
+	_jsns: 'urn:zimbra';
+};

@@ -25,6 +25,7 @@ import TagFolderRow from './parts/tag-folder-row';
 import SendReceivedDateRow from './parts/send-date-row';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
 import ReceivedSentAddressRow from './parts/received-sent-address-row';
+import { KeywordState } from '../../types';
 
 type AdvancedFilterModalProps = {
 	open: boolean;
@@ -38,17 +39,6 @@ type AdvancedFilterModalProps = {
 	}>;
 	updateQuery: (arg: any) => void;
 };
-type keywordState = Array<{
-	label: string;
-	hasAvatar?: boolean;
-	value?: string;
-	isQueryFilter?: boolean;
-	isGeneric?: boolean;
-	avatarIcon?: string;
-	avatarBackground?: string;
-	hasError?: boolean;
-	error?: boolean;
-}>;
 
 const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	open,
@@ -57,22 +47,22 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	query,
 	updateQuery
 }): ReactElement => {
-	const [otherKeywords, setOtherKeywords] = useState<keywordState>([]);
-	const [attachmentFilter, setAttachmentFilter] = useState<keywordState>([]);
-	const [unreadFilter, setUnreadFilter] = useState<keywordState>([]);
-	const [flaggedFilter, setFlaggedFilter] = useState<keywordState>([]);
+	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
+	const [attachmentFilter, setAttachmentFilter] = useState<KeywordState>([]);
+	const [unreadFilter, setUnreadFilter] = useState<KeywordState>([]);
+	const [flaggedFilter, setFlaggedFilter] = useState<KeywordState>([]);
 
-	const [receivedFromAddress, setReceivedFromAddress] = useState<keywordState>([]);
-	const [sentFromAddress, setSentFromAddress] = useState<keywordState>([]);
-	const [folder, setFolder] = useState<keywordState>([]);
-	const [sentBefore, setSentBefore] = useState<keywordState>([]);
-	const [sentOn, setSentOn] = useState<keywordState>([]);
-	const [sentAfter, setSentAfter] = useState<keywordState>([]);
-	const [subject, setSubject] = useState<keywordState>([]);
-	const [attachmentType, setAttachmentType] = useState<keywordState>([]);
-	const [emailStatus, setEmailStatus] = useState<keywordState>([]);
-	const [sizeSmaller, setSizeSmaller] = useState<keywordState>([]);
-	const [sizeLarger, setSizeLarger] = useState<keywordState>([]);
+	const [receivedFromAddress, setReceivedFromAddress] = useState<KeywordState>([]);
+	const [sentFromAddress, setSentFromAddress] = useState<KeywordState>([]);
+	const [folder, setFolder] = useState<KeywordState>([]);
+	const [sentBefore, setSentBefore] = useState<KeywordState>([]);
+	const [sentOn, setSentOn] = useState<KeywordState>([]);
+	const [sentAfter, setSentAfter] = useState<KeywordState>([]);
+	const [subject, setSubject] = useState<KeywordState>([]);
+	const [attachmentType, setAttachmentType] = useState<KeywordState>([]);
+	const [emailStatus, setEmailStatus] = useState<KeywordState>([]);
+	const [sizeSmaller, setSizeSmaller] = useState<KeywordState>([]);
+	const [sizeLarger, setSizeLarger] = useState<KeywordState>([]);
 	const [sizeSmallerErrorLabel, setSizeSmallerErrorLabel] = useState('');
 	const [sizeLargerErrorLabel, setSizeLargerErrorLabel] = useState('');
 
@@ -99,7 +89,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 			})),
 		[]
 	);
-	const [tag, setTag] = useState<keywordState>([]);
+	const [tag, setTag] = useState<KeywordState>([]);
 
 	useEffect(() => {
 		const updatedQuery = map(

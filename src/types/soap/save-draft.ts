@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ParticipantRole } from '../participant';
+
+import { ParticipantRole } from '../../commons/utils';
 import { SoapMailMessage } from './soap-mail-message';
 
 export type mailAttachmentParts = {

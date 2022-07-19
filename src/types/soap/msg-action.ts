@@ -16,7 +16,8 @@ export type MsgActionOperation =
 	| 'trash'
 	| 'delete'
 	| 'spam'
-	| '!spam';
+	| '!spam'
+	| 'update';
 
 export type MsgActionRequest = ZimbraRequest & {
 	action: {
@@ -32,4 +33,17 @@ export type MsgActionResponse = {
 		id: string;
 		op: MsgActionOperation;
 	};
+};
+
+export type MsgActionParameters = {
+	ids: string[];
+	operation: MsgActionOperation;
+	parent?: string;
+	tagName?: string;
+	flag?: string;
+};
+
+export type MsgActionResult = {
+	ids: string[];
+	operation: MsgActionOperation;
 };

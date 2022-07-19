@@ -7,8 +7,6 @@ import React, { useRef, FC, useContext, useMemo, useCallback } from 'react';
 import {
 	AccordionFolder,
 	useFoldersAccordionByView,
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	useLocalStorage
 } from '@zextras/carbonio-shell-ui';
 import { Accordion, Container, Button, ModalManagerContext } from '@zextras/carbonio-design-system';
@@ -20,8 +18,8 @@ import CollapsedSideBarItems from './collapsed-sidebar-items';
 import { FOLDER_VIEW } from '../../constants';
 import { AccordionCustomComponent } from './accordion-custom-component';
 import { getShareInfo } from '../../store/actions/get-share-info';
+import { ResFolder } from '../../types';
 import { SharesModal } from './shares-modal';
-import { ResFolder } from '../../types/commons';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
 
 type SidebarComponentProps = {
@@ -80,7 +78,7 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) =>
 	const accordionsWithFindShare = useMemo(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		accordions[0].items.push({
+		accordions[0]?.items?.push({
 			id: 'find_shares',
 			label: t('label.find_shares', 'Find shares'),
 			CustomComponent: ButtonFindShares,
