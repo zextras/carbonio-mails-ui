@@ -46,6 +46,12 @@ type CreateEditorPayload = {
 	};
 };
 
+// Regex reply msg title
+const REPLY_REGEX = /(^(re:\s)+)/i;
+
+// Regex forward msg title
+const FORWARD_REGEX = /(^(fwd:\s)+)/i;
+
 function createEditorReducer(
 	state: EditorsStateType,
 	{ payload }: { payload: CreateEditorPayload }
@@ -131,7 +137,7 @@ function createEditorReducer(
 						id: payload.id,
 						text: textWithSignatureRepliesForwards,
 						to: retrieveReplyTo(payload.original),
-						subject: `RE: ${payload.original.subject.replace(/(^(re:\s)+)/i, '')}`,
+						subject: `RE: ${payload.original.subject.replace(REPLY_REGEX, '')}`,
 						original: payload.original,
 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
 						urgent: payload.original.urgent,
@@ -149,7 +155,7 @@ function createEditorReducer(
 						text: textWithSignatureRepliesForwards,
 						to: retrieveALL(payload.original, payload.accounts),
 						cc: retrieveCC(payload.original, payload.accounts),
-						subject: `RE: ${payload.original.subject.replace(/(^(re:\s)+)/i, '')}`,
+						subject: `RE: ${payload.original.subject.replace(REPLY_REGEX, '')}`,
 						original: payload.original,
 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
 						urgent: payload.original.urgent,
@@ -165,7 +171,7 @@ function createEditorReducer(
 					state.editors[payload.editorId] = {
 						...empty,
 						text: textWithSignatureRepliesForwards,
-						subject: `FWD: ${payload.original.subject.replace(/(^(fwd:\s)+)/i, '')}`,
+						subject: `FWD: ${payload.original.subject.replace(FORWARD_REGEX, '')}`,
 						original: payload.original,
 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
 						urgent: payload.original.urgent,
