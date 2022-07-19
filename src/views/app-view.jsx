@@ -5,14 +5,7 @@
  */
 import React, { Suspense, lazy, useState, useEffect, useMemo } from 'react';
 import { Redirect, Switch, Route, useRouteMatch } from 'react-router-dom';
-import {
-	FOLDERS,
-	setAppContext,
-	Spinner,
-	useLocalStorage,
-	useUserAccount,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
+import { FOLDERS, setAppContext, Spinner, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Container } from '@zextras/carbonio-design-system';
 import { useSelector } from 'react-redux';
 import { includes } from 'lodash';
@@ -31,7 +24,6 @@ const AppView = () => {
 	const [count, setCount] = useState(0);
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
 	const currentFolderId = useSelector(selectCurrentFolder);
-	const accountName = useUserAccount().name;
 
 	const isMessageView = useMemo(
 		() =>
@@ -44,7 +36,7 @@ const AppView = () => {
 
 	useEffect(() => {
 		setAppContext({ isMessageView, count, setCount });
-	}, [count, isMessageView, accountName]);
+	}, [count, isMessageView]);
 
 	return (
 		<Container orientation="horizontal" mainAlignment="flex-start">
