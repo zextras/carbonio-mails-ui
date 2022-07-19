@@ -7,8 +7,6 @@ import React, { useRef, FC, useContext, useMemo, useCallback } from 'react';
 import {
 	AccordionFolder,
 	useFoldersAccordionByView,
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	useLocalStorage
 } from '@zextras/carbonio-shell-ui';
 import { Accordion, Container, Button, ModalManagerContext } from '@zextras/carbonio-design-system';

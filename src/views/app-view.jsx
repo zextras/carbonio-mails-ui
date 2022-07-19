@@ -32,8 +32,6 @@ const AppView = () => {
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
 	const currentFolderId = useSelector(selectCurrentFolder);
 	const accountName = useUserAccount().name;
-	const [firstTime, setFirstTime] = useState(true);
-	const [activeAccount, setActiveAccount] = useLocalStorage('activeAccount', accountName);
 
 	const isMessageView = useMemo(
 		() =>
@@ -45,12 +43,8 @@ const AppView = () => {
 	);
 
 	useEffect(() => {
-		if (firstTime) {
-			setActiveAccount(accountName);
-			setAppContext({ isMessageView, count, setCount, activeAccount });
-			setFirstTime(false);
-		} else setAppContext({ isMessageView, count, setCount, activeAccount });
-	}, [count, isMessageView, accountName, activeAccount, firstTime, setActiveAccount]);
+		setAppContext({ isMessageView, count, setCount });
+	}, [count, isMessageView, accountName]);
 
 	return (
 		<Container orientation="horizontal" mainAlignment="flex-start">
