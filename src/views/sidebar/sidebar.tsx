@@ -6,13 +6,10 @@
 import React, { useRef, FC, useContext, useMemo, useCallback } from 'react';
 import {
 	AccordionFolder,
-	FOLDERS,
-	setAppContext,
 	useFoldersAccordionByView,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	useLocalStorage,
-	useUserAccount
+	useLocalStorage
 } from '@zextras/carbonio-shell-ui';
 import { Accordion, Container, Button, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { Route, Switch, useRouteMatch, useParams } from 'react-router-dom';
@@ -110,34 +107,14 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) =>
 type SidebarProps = {
 	expanded: boolean;
 };
-const getFolderOwner = (item: any): string => {
-	if (item?.owner) return item?.owner;
 
-	if (item?.parent) {
-		return getFolderOwner(item?.parent);
-	}
-	return item?.name;
-};
 const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 	const { path } = useRouteMatch();
 	const [openIds, setOpenIds] = useLocalStorage<Array<string>>('open_mails_folders', []);
-	const accountName = useUserAccount().name;
-	const [activeAccount, setActiveAccount] = useLocalStorage('activeAccount', accountName);
 
 	const additionalProps = (item: AccordionFolder): Record<string, any> => ({
 		onOpen: () => setOpenIds((s: Array<string>) => (s.includes(item.id) ? s : [...s, item.id])),
-		onClose: () => setOpenIds((s: Array<string>) => s.filter((id: string) => id !== item.id)),
-		onClick: (): void => {
-			const activeAcc = item.id === FOLDERS.USER_ROOT ? accountName : getFolderOwner(item.folder);
-
-			setActiveAccount(activeAcc);
-			setAppContext({
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				...appContext,
-				activeAccount: activeAcc
-			});
-		}
+		onClose: () => setOpenIds((s: Array<string>) => s.filter((id: string) => id !== item.id))
 	});
 
 	const accordions = useFoldersAccordionByView(

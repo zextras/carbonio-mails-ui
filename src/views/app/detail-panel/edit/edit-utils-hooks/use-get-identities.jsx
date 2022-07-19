@@ -4,16 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Container, Text } from '@zextras/carbonio-design-system';
-import { useAppContext, useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { useRoots, useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map, find, filter, findIndex, flatten } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import { ParticipantRole } from '../../../../../commons/utils';
 
-const findDefaultIdentity = ({ list, activeAccount }) =>
-	activeAccount === 'USER_ROOT'
-		? find(list, { identityName: 'DEFAULT' })
-		: find(list, { address: activeAccount });
+const findDefaultIdentity = ({ list, allAccounts, folderId }) => {
+	const activeAcc = find(allAccounts, { zid: folderId?.split?.(':')?.[0] });
+	return activeAcc
+		? find(list, { address: activeAcc?.owner })
+		: find(list, { identityName: 'DEFAULT' });
+};
 
 export const useGetIdentities = ({ updateEditorCb, setOpen, editorId }) => {
 	const account = useUserAccount();
@@ -23,6 +26,9 @@ export const useGetIdentities = ({ updateEditorCb, setOpen, editorId }) => {
 	const [list, setList] = useState([]);
 	const [activeFrom, setActiveFrom] = useState({});
 	const [defaultIdentity, setDefaultIdentity] = useState();
+	const allAccounts = useRoots();
+	const { folderId } = useParams();
+
 	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
 
 	useEffect(() => {
@@ -90,13 +96,12 @@ export const useGetIdentities = ({ updateEditorCb, setOpen, editorId }) => {
 		} else setList(identityList);
 	}, [account, accounts, defaultIdentity?.address, defaultIdentity?.fullname, t, updateEditorCb]);
 
-	const { activeAccount } = useAppContext();
 	useEffect(() => {
 		if (!editorId?.includes('new-')) {
-			const active = JSON.parse(localStorage.getItem('activeAccount'));
 			const def = findDefaultIdentity({
 				list,
-				activeAccount: active
+				allAccounts,
+				folderId
 			});
 
 			updateEditorCb({
@@ -111,7 +116,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen, editorId }) => {
 			setActiveFrom(def);
 			setFrom(def);
 		}
-	}, [activeAccount, editorId, list, updateEditorCb]);
+	}, [allAccounts, editorId, folderId, list, updateEditorCb]);
 
 	const identitiesList = useMemo(
 		() =>
