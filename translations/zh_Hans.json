@@ -420,7 +420,8 @@
         "invalid_destination": "此节点不是有效的目标",
         "notification_audio": "有新通知时播放音频提示",
         "notification_folders": "通知文件夹",
-        "upload_from_files": "从文件上传"
+        "upload_from_files": "从文件上传",
+        "no_name": "<不加姓名>"
     },
     "owner": "所有者",
     "read": "已读",
