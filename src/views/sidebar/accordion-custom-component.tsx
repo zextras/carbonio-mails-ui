@@ -562,6 +562,11 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 		return '';
 	}, [folder, t]);
 
+	// hide folders where a share was provided and subsequently removed
+	if (folder.broken) {
+		return <></>;
+	}
+
 	return folder.id === FOLDERS.USER_ROOT || folder.oname === ROOT_NAME ? (
 		<FittedRow>
 			<Padding horizontal="small">
