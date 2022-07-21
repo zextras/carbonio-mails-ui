@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useRef, FC, useContext, useMemo, useCallback } from 'react';
+import React, { useRef, FC, useContext, useMemo, useCallback, useEffect, useState } from 'react';
 import {
 	AccordionFolder,
 	useFoldersAccordionByView,
@@ -71,9 +71,10 @@ const ButtonFindShares: FC = () => {
 };
 
 const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) => {
-	const sidebarRef = useRef(null);
+	const sidebarRef = useRef<HTMLInputElement>(null);
 	const { folderId } = useParams<{ folderId: string }>();
 	const tagsAccordionItems = useGetTagsAccordion();
+	const [disableTransition, setDisableTransition] = useState(true);
 	const [t] = useTranslation();
 	const accordionsWithFindShare = useMemo(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -89,6 +90,10 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) =>
 		return map(accordions, (item) => ({ ...item, background: 'gray4' }));
 	}, [accordions, t]);
 
+	useEffect(() => {
+		setDisableTransition(false);
+	}, []);
+
 	return (
 		<Container orientation="vertical" height="fit">
 			<Accordion
@@ -96,6 +101,7 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) =>
 				ref={sidebarRef}
 				items={accordionsWithFindShare}
 				activeId={folderId}
+				disableTransition={disableTransition}
 			/>
 			<Accordion items={[tagsAccordionItems]} />
 		</Container>
