@@ -33,7 +33,7 @@ const LabelFactory = ({ selected, label, open, focus }) => (
 				<Text size="small" color={open || focus ? 'primary' : 'secondary'}>
 					{label}
 				</Text>
-				<TextUpperCase>{selected[0].label}</TextUpperCase>
+				<TextUpperCase>{selected?.[0]?.label}</TextUpperCase>
 			</Row>
 		</Row>
 		<Icon
