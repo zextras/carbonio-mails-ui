@@ -71,7 +71,8 @@ const EditViewHeader: FC<PropType> = ({
 
 	const { from, activeFrom, identitiesList, hasIdentity } = useGetIdentities({
 		updateEditorCb,
-		setOpen
+		setOpen,
+		editorId: editor?.editorId
 	});
 
 	const inputRef = useRef<any>();
