@@ -24,15 +24,14 @@ import { filter, isEmpty, reduce, startsWith } from 'lodash';
 import {
 	AccordionFolder,
 	FOLDERS,
+	useFolders,
 	useFoldersAccordionByView,
 	useUserAccount
 } from '@zextras/carbonio-shell-ui';
 
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
 import ModalFooter from '../../sidebar/commons/modal-footer';
 import { ModalHeader } from '../../sidebar/commons/modal-header';
-import { selectFolders } from '../../../store/folders-slice';
 import { FolderType } from '../../../types';
 import { getFolderIconColor, getFolderTranslatedName } from '../../sidebar/utils';
 import { FOLDER_VIEW } from '../../../constants';
@@ -81,11 +80,11 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const [input, setInput] = useState('');
 	const [folderDestination, setFolderDestination] = useState<FolderType | any>({});
 
-	const foldersFromStore = useSelector(selectFolders);
+	const foldersFromStore = useFolders();
 
 	const getFolderAbsPath = useCallback(
 		(fid: string) => {
-			const path = foldersFromStore[fid]?.path;
+			const path = foldersFromStore[fid]?.absFolderPath;
 			return filter(path?.split('/'), (p) => p !== '').join('/');
 		},
 		[foldersFromStore]
@@ -159,6 +158,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		(folder: AccordionFolder) => {
 			const absoluteParent = getFolderOwner(folder.folder);
 			const relativePath = getFolderAbsPath(folder?.id);
+
 			if (absoluteParent === 'USER_ROOT') {
 				return relativePath;
 			}
