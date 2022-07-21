@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Input, Container, Checkbox, Padding, Divider } from '@zextras/carbonio-design-system';
+import { Input, Container, Checkbox, Padding, Divider, Row } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -143,30 +143,39 @@ const CreateFilterModal: FC<ComponentProps> = ({
 		[t, newFilters, setNewFilters, condition, setCondition, activeFilter, filterName]
 	);
 	return (
-		<Container padding={{ bottom: 'medium' }} maxHeight="fit">
-			<ModalHeader title={modalTitle} onClose={onClose} />
-			<CreateFilterContext.Provider value={{ newFilters, setNewFilters }}>
-				<Container
-					padding={{ top: 'medium' }}
+		<CreateFilterContext.Provider value={{ newFilters, setNewFilters }}>
+			<Container
+				padding={{ bottom: 'medium' }}
+				crossAlignment="flex-start"
+				mainAlignment="flex-start"
+				maxHeight="100%"
+				style={{ overflowY: 'scroll', overflowX: 'hidden' }}
+			>
+				<ModalHeader title={modalTitle} onClose={onClose} />
+				<Input
+					label={inputLabel}
+					value={filterName}
+					onChange={onFilterNameChange}
+					backgroundColor="gray5"
+				/>
+				<Padding top="small" />
+				<Checkbox value={activeFilter} onClick={toggleActiveFilter} label={activeFilterLabel} />
+				<Row
+					padding={{ vertical: 'medium' }}
+					height="fit"
+					maxHeight="100%"
 					crossAlignment="flex-start"
 					mainAlignment="flex-start"
+					style={{ overflowY: 'scroll', overflowX: 'hidden' }}
+					display="block"
+					maxWidth="100%"
+					width="100%"
 				>
-					<Input
-						label={inputLabel}
-						value={filterName}
-						onChange={onFilterNameChange}
-						backgroundColor="gray5"
-					/>
-					<Padding top="small" />
-					<Checkbox value={activeFilter} onClick={toggleActiveFilter} label={activeFilterLabel} />
-					<Padding top="medium" />
-
 					<FilterTestConditionRow compProps={filterTestConditionRowProps} />
-				</Container>
-				<Padding top="medium" />
-				<Divider />
-				<FilterActionConditions compProps={filterActionProps} />
-
+					<Padding top="medium" />
+					<Divider />
+					<FilterActionConditions compProps={filterActionProps} />
+				</Row>
 				<ModalFooter
 					label={t('label.create', 'Create')}
 					onConfirm={onConfirm}
@@ -178,8 +187,8 @@ const CreateFilterModal: FC<ComponentProps> = ({
 						'Do not process additional filters'
 					)}
 				/>
-			</CreateFilterContext.Provider>
-		</Container>
+			</Container>
+		</CreateFilterContext.Provider>
 	);
 };
 

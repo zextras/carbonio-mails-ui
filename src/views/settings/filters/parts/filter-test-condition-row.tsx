@@ -25,27 +25,35 @@ const FilterTestConditionRow: FC<FilterTestConditionRowProps> = ({ compProps }):
 	);
 
 	return (
-		<>
-			<Heading title={t('settings.conditions', 'Conditions')} size="medium" />
-			<Row>
-				<Row padding={{ right: 'small' }}>
-					<Text>{t('settings.if', 'If')}</Text>
+		<Container height="fit" maxHeight="100%" crossAlignment="flex-start" mainAlignment="flex-start">
+			<Container
+				crossAlignment="flex-start"
+				mainAlignment="flex-start"
+				height="fit"
+				maxHeight="100%"
+			>
+				<Heading title={t('settings.conditions', 'Conditions')} size="medium" />
+				<Row>
+					<Row padding={{ right: 'small' }}>
+						<Text>{t('settings.if', 'If')}</Text>
+					</Row>
+					<Row padding={{ right: 'small' }} minWidth="95px">
+						<CustomSelect
+							items={fieldOptions}
+							background="gray5"
+							label={t('settings.field', 'Field')}
+							onChange={setCondition}
+							defaultSelection={defaultSelection}
+						/>
+					</Row>
+					<Row padding={{ right: 'small' }}>
+						<Text>{t('settings.condition_met')}</Text>
+					</Row>
 				</Row>
-				<Row padding={{ right: 'small' }} minWidth="95px">
-					<CustomSelect
-						items={fieldOptions}
-						background="gray5"
-						label={t('settings.field', 'Field')}
-						onChange={setCondition}
-						defaultSelection={defaultSelection}
-					/>
-				</Row>
-				<Row padding={{ right: 'small' }}>
-					<Text>{t('settings.condition_met')}</Text>
-				</Row>
-			</Row>
+			</Container>
+
 			<Padding top="small" />
-			<Container maxHeight="200px" style={{ overflow: 'auto' }} padding={{ top: 'small' }}>
+			<Container padding={{ top: 'small' }}>
 				{map(newFilters, (tmpFilter, index) => (
 					<FilterTestRows
 						key={`tmp-filter-${tmpFilter.key}-${index}`}
@@ -55,7 +63,7 @@ const FilterTestConditionRow: FC<FilterTestConditionRowProps> = ({ compProps }):
 					/>
 				))}
 			</Container>
-		</>
+		</Container>
 	);
 };
 export default FilterTestConditionRow;

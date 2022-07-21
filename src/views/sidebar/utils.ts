@@ -77,10 +77,10 @@ export const extractFolders = (accordion: Array<any>, acc = {}): any =>
 	);
 
 export const capitalise = (word: string): string => {
-	const asciiRef = word.charCodeAt(0);
+	const asciiRef = word?.charCodeAt(0);
 	const newAsciiRef = asciiRef - 32;
 	const newChar = String.fromCharCode(newAsciiRef);
-	return newChar + word.substring(1);
+	return word ? newChar + word.substring(1) : '';
 };
 
 export const getFolderIconColor = (f: AccordionFolder): string => {

@@ -3,16 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useMemo, useCallback, useState, useEffect } from 'react';
+import React, { FC, ReactElement, useMemo, useCallback, useState } from 'react';
 import {
 	Container,
 	Button,
 	Row,
-	Icon,
 	Padding,
 	ChipInput,
 	Input,
-	Tooltip
+	Tooltip,
+	IconButton
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { filter, omit } from 'lodash';
@@ -21,16 +21,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import CustomSelect from './custom-select';
 
-export const StyledIcon = styled(Icon)`
+export const StyledIconButton = styled(IconButton)`
 	border: 1px solid
-		${({ theme, disabled, color }): string =>
-			disabled ? theme.palette.gray2.regular : theme.palette[color].regular};
-	border-radius: 4px;
-	width: 32px;
-	height: 32px;
-	max-width: 32px;
-	max-height: 32px;
-	padding: 4px;
+		${({ theme, disabled, iconColor }): string =>
+			disabled ? theme.palette.gray2.regular : theme.palette[iconColor].regular};
+	svg {
+		border: none !important;
+	}
 `;
 
 type FilterActionRowProps = {
@@ -306,15 +303,15 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
 				<Tooltip label={t('settings.add_condition', 'Add new condition')} placement="top">
-					<StyledIcon onClick={addFilterCondition} icon="PlusOutline" color="primary" />
+					<StyledIconButton icon="PlusOutline" onClick={addFilterCondition} iconColor="primary" />
 				</Tooltip>
 				<Padding left="small">
 					<Tooltip label={t('settings.remove_condition', 'Remove this condition')} placement="top">
-						<StyledIcon
+						<StyledIconButton
 							icon="MinusOutline"
 							disabled={disableRemove}
 							onClick={onRemove}
-							color="secondary"
+							iconColor="secondary"
 						/>
 					</Tooltip>
 				</Padding>

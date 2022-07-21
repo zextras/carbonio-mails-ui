@@ -280,6 +280,7 @@
         "expand": "Expand",
         "expand_receivers_list": "Expand receiver's list",
         "filter_folders": "Filter folders",
+        "filter_modified": "Filter modified succesfully",
         "filter_user": "Filter users",
         "find_mail_shares": "Find shared folders",
         "find_shares": "Find shares",

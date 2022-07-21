@@ -86,8 +86,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [timer, setTimer] = useState(null);
 
 	const [loading, setLoading] = useState(false);
-	const [initialAction, setInitialAction] = useState(action);
-	const [actionChanged, setActionChanged] = useState(true);
 	const [isUploading, setIsUploading] = useState(false);
 
 	const [showRouteGuard, setShowRouteGuard] = useState(true);
@@ -99,11 +97,18 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 
 	const editorId = useMemo(() => activeMailId ?? generateId(), [activeMailId]);
 
+	const isSameAction = useMemo(() => {
+		if (editors[editorId]) {
+			return editors[editorId].action === action;
+		}
+		return undefined;
+	}, [action, editorId, editors]);
+
 	useEffect(() => {
-		if (actionChanged && editors[editorId]) {
+		if (!isSameAction && editors[editorId]) {
 			dispatch(closeEditor(editorId));
 		}
-	}, [actionChanged, dispatch, editorId, editors]);
+	}, [isSameAction, dispatch, editorId, editors]);
 
 	const updateEditorCb = useCallback(
 		(data) => {
@@ -169,28 +174,14 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [editor?.subject, setHeader, updateBoard, action, t]);
 
 	useEffect(() => {
-		if (action !== initialAction) {
-			setActionChanged(true);
-			setInitialAction(action);
-		}
-	}, [action, initialAction]);
-
-	useEffect(() => {
-		if (editors[editorId] && actionChanged) {
-			setActionChanged(false);
-		}
-	}, [actionChanged, editorId, editors]);
-
-	useEffect(() => {
 		if (
 			(activeMailId && messages?.[activeMailId]?.isComplete) ||
 			action === ActionsType.NEW ||
 			action === ActionsType.PREFILL_COMPOSE ||
 			action === ActionsType.COMPOSE ||
-			action === ActionsType.MAIL_TO ||
-			actionChanged
+			action === ActionsType.MAIL_TO
 		) {
-			if (!editors[editorId] || actionChanged) {
+			if (!editors[editorId] || isSameAction === false) {
 				setLoading(true);
 				dispatch(
 					createEditor({
@@ -221,7 +212,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [
 		accounts,
 		action,
-		actionChanged,
+		isSameAction,
 		activeMailId,
 		boardContext,
 		change,
@@ -315,6 +306,32 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		[action, editor?.attach?.mp?.length, editor?.original]
 	);
 
+	const context = useMemo(
+		() => ({
+			updateEditorCb,
+			throttledSaveToDraft,
+			control,
+			editorId,
+			editor,
+			updateSubjectField,
+			action,
+			folderId,
+			saveDraftCb
+		}),
+		[
+			action,
+			control,
+			editor,
+			editorId,
+			folderId,
+
+			saveDraftCb,
+			throttledSaveToDraft,
+			updateEditorCb,
+			updateSubjectField
+		]
+	);
+
 	if (loading || !editor)
 		return (
 			<Container height="50%" mainAlignment="center" crossAlignment="center">
@@ -333,21 +350,10 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 						createSnackbar,
 						folderId: FOLDERS.TRASH
 					}).click();
+					dispatch(closeEditor(editorId));
 				}}
 			/>
-			<EditViewContext.Provider
-				value={{
-					updateEditorCb,
-					throttledSaveToDraft,
-					control,
-					editorId,
-					editor,
-					updateSubjectField,
-					action,
-					folderId,
-					saveDraftCb
-				}}
-			>
+			<EditViewContext.Provider value={context}>
 				<Catcher>
 					<Container onDragOver={(event) => onDragOverEvent(event)}>
 						<Container
