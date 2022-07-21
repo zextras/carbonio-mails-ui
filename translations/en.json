@@ -295,6 +295,7 @@
         "grantee": "Grantee: ",
         "hide": "Hide",
         "highlight_tab": "Highlight the Mail tab",
+        "include_shared_folders": "Include shared folders",
         "insert": "Insert",
         "invalid_destination": "This node is not a valid destination",
         "keep_draft": "Keep Draft",
@@ -502,6 +503,7 @@
         "sent_after": "Sent after",
         "sent_before": "Sent before",
         "sent_on": "Sent on",
+        "shared_folders_note": "Include shared items in searches.",
         "size_error": "Only numbers are allowed",
         "unread": "Unread",
         "unread_note": "Search for all unread e-mail items."
