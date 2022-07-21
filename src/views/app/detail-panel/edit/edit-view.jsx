@@ -3,7 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+	useCallback,
+	useContext,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useState,
+	useRef
+} from 'react';
 import {
 	Button,
 	Catcher,
@@ -88,6 +96,20 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [loading, setLoading] = useState(false);
 	const [isUploading, setIsUploading] = useState(false);
 
+	const containerRef = useRef();
+	const textEditorRef = useRef();
+
+	const [avaibleMinHeight, setAvaibleMinHeight] = useState(0);
+
+	useLayoutEffect(() => {
+		const calculateAvaibleMinHeight = () => {
+			const containerHeight = containerRef?.current?.clientHeight;
+			setAvaibleMinHeight(containerHeight ? containerHeight - 235 : 0);
+		};
+		calculateAvaibleMinHeight();
+		window.addEventListener('resize', calculateAvaibleMinHeight);
+		return () => window.removeEventListener('resize', calculateAvaibleMinHeight);
+	}, [containerRef?.current?.clientHeight, textEditorRef?.current?.clientHeight]);
 	const [showRouteGuard, setShowRouteGuard] = useState(true);
 
 	const activeMailId = useMemo(
@@ -362,6 +384,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 							style={{ position: 'relative', maxHeight: '100%', overflowY: 'auto' }}
 							background="gray5"
 							padding={{ top: 'small', bottom: 'medium', horizontal: 'large' }}
+							ref={containerRef}
 						>
 							{dropZoneEnable && (
 								<DropZoneAttachment
@@ -393,7 +416,12 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 									)}
 								</StyledComp.RowContainer>
 							</Container>
-							<TextEditorContainer onDragOverEvent={onDragOverEvent} draftSavedAt={draftSavedAt} />
+							<TextEditorContainer
+								onDragOverEvent={onDragOverEvent}
+								draftSavedAt={draftSavedAt}
+								minHeight={avaibleMinHeight}
+								ref={textEditorRef}
+							/>
 						</Container>
 					</Container>
 				</Catcher>
