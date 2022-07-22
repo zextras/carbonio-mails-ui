@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.26](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.25...v0.1.26) (2022-07-22)
+
+
+### Features
+
+* added confirm dialog to delete or save draft while closing the … ([#115](https://github.com/zextras/carbonio-mails-ui/issues/115)) ([af4f7e1](https://github.com/zextras/carbonio-mails-ui/commit/af4f7e1e28bda236fe536982a3c7b9965157f41b))
+* added search filter to choose shared account ([#127](https://github.com/zextras/carbonio-mails-ui/issues/127)) ([9bf1df4](https://github.com/zextras/carbonio-mails-ui/commit/9bf1df420e07479ad7f571e75d90f6db18c1ab53))
+* mail request read receipt implemented ([73b6732](https://github.com/zextras/carbonio-mails-ui/commit/73b6732544a87f3036247fe176b98606d0c01002))
+* removed the collapser between to and cc ([#112](https://github.com/zextras/carbonio-mails-ui/issues/112)) ([a61cc60](https://github.com/zextras/carbonio-mails-ui/commit/a61cc60902c4ae13c7627832b51328da71e44389))
+
+
+### Bug Fixes
+
+* behaviour of SAVE AS DRAFT, starting editor height ([#132](https://github.com/zextras/carbonio-mails-ui/issues/132)) ([9fb3789](https://github.com/zextras/carbonio-mails-ui/commit/9fb37890556c94cb6539d75dbd76121855b7730d))
+* conversation date is now using the date of last message received ([#107](https://github.com/zextras/carbonio-mails-ui/issues/107)) ([b2be8a2](https://github.com/zextras/carbonio-mails-ui/commit/b2be8a26ae1cd410434f82762157e720a98ac632))
+* data persist on mails editor ([#126](https://github.com/zextras/carbonio-mails-ui/issues/126)) ([9ff8cca](https://github.com/zextras/carbonio-mails-ui/commit/9ff8cca4657bac81108a7fd95d82717facc0ca79))
+* displayer broken issue on sending mail fix ([826bb95](https://github.com/zextras/carbonio-mails-ui/commit/826bb954391bf171a6b6e5219fc1a78825bb241f))
+* edit filter issue resolved ([#125](https://github.com/zextras/carbonio-mails-ui/issues/125)) ([4ed61ad](https://github.com/zextras/carbonio-mails-ui/commit/4ed61adbd5e0f5ad056fd0af2bca11a3daa0c0e1))
+* fix behavior of loading in search module ([#123](https://github.com/zextras/carbonio-mails-ui/issues/123)) ([1fd33d9](https://github.com/zextras/carbonio-mails-ui/commit/1fd33d98860d845b5e23392bdff13182a191049f))
+* fix flashing of sidebar ([#128](https://github.com/zextras/carbonio-mails-ui/issues/128)) ([a848b74](https://github.com/zextras/carbonio-mails-ui/commit/a848b74fbe21f2cd5c7b9446acfc23ecdd500123))
+* fixed trash contextual menu ([#120](https://github.com/zextras/carbonio-mails-ui/issues/120)) ([b3c144f](https://github.com/zextras/carbonio-mails-ui/commit/b3c144f34f1573a50f73652f1fb5648cbd1e67b4))
+* forward icon not display in forwarded messages ([631fc85](https://github.com/zextras/carbonio-mails-ui/commit/631fc859d2eab95617ae565f6920fcf7d1e101a7))
+* hide broken links in folders sidebar ([#133](https://github.com/zextras/carbonio-mails-ui/issues/133)) ([684e726](https://github.com/zextras/carbonio-mails-ui/commit/684e72697b192962a2827668ca46288ed0113970))
+* mail notification  and close editor on delete action only for la… ([#106](https://github.com/zextras/carbonio-mails-ui/issues/106)) ([046615b](https://github.com/zextras/carbonio-mails-ui/commit/046615b1ec09d252b1a2161f60e02c78cc4d1eb1))
+* reply all addis the signature in editor ([0324103](https://github.com/zextras/carbonio-mails-ui/commit/03241030936ff68e24c1be99579fe13d5113c9b9))
+* reply to msg is no longer cropped ([fd857ed](https://github.com/zextras/carbonio-mails-ui/commit/fd857ed453a9cb9b219b176229b9e40d624390c5))
+* restore folder confirmation button is disabled until destination folder is selected ([#116](https://github.com/zextras/carbonio-mails-ui/issues/116)) ([a55d8c2](https://github.com/zextras/carbonio-mails-ui/commit/a55d8c271cf6b566b83fdc2d2a592597901f43cd))
+* set always sorted by datedesc ([7b0f15b](https://github.com/zextras/carbonio-mails-ui/commit/7b0f15bc3afbb885a1a3869dc59cd7cd75f452bb))
+* shared and liked folders, sidebar style ([#103](https://github.com/zextras/carbonio-mails-ui/issues/103)) ([539d447](https://github.com/zextras/carbonio-mails-ui/commit/539d4472079e8e15b8b985b1d71e15ead7704928))
+* stop adding RE and FWD if alrady in the msg title ([#131](https://github.com/zextras/carbonio-mails-ui/issues/131)) ([a43425b](https://github.com/zextras/carbonio-mails-ui/commit/a43425b88f7dcabcbf00ae3cf2692c3064a2afff))
+* use the folder's translated names ([bb0fd38](https://github.com/zextras/carbonio-mails-ui/commit/bb0fd3874d2560f99a6b261dc8c374360c65ed33))
+
 ### [0.1.25](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.24...v0.1.25) (2022-06-20)
 
 ### [0.1.24](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.23...v0.1.24) (2022-06-09)
