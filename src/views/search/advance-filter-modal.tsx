@@ -14,7 +14,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { concat, filter, includes, map } from 'lodash';
-import { getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../sidebar/commons/modal-footer';
 import { ModalHeader } from '../sidebar/commons/modal-header';
 import ToggleFilters from './parts/toggle-filters';
@@ -25,6 +25,7 @@ import TagFolderRow from './parts/tag-folder-row';
 import SendReceivedDateRow from './parts/send-date-row';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
 import ReceivedSentAddressRow from './parts/received-sent-address-row';
+import { KeywordState } from '../../types';
 
 type AdvancedFilterModalProps = {
 	open: boolean;
@@ -36,46 +37,40 @@ type AdvancedFilterModalProps = {
 		isGeneric?: boolean;
 		isQueryFilter?: boolean;
 	}>;
-	updateQuery: (arg: any) => void;
+	updateQuery: (arg: Array<QueryChip>) => void;
+	isSharedFolderIncluded: boolean;
+	setIsSharedFolderIncluded: (arg: boolean) => void;
 };
-type keywordState = Array<{
-	label: string;
-	hasAvatar?: boolean;
-	value?: string;
-	isQueryFilter?: boolean;
-	isGeneric?: boolean;
-	avatarIcon?: string;
-	avatarBackground?: string;
-	hasError?: boolean;
-	error?: boolean;
-}>;
 
 const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	open,
 	onClose,
 	t,
 	query,
-	updateQuery
+	updateQuery,
+	setIsSharedFolderIncluded,
+	isSharedFolderIncluded
 }): ReactElement => {
-	const [otherKeywords, setOtherKeywords] = useState<keywordState>([]);
-	const [attachmentFilter, setAttachmentFilter] = useState<keywordState>([]);
-	const [unreadFilter, setUnreadFilter] = useState<keywordState>([]);
-	const [flaggedFilter, setFlaggedFilter] = useState<keywordState>([]);
+	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
+	const [attachmentFilter, setAttachmentFilter] = useState<KeywordState>([]);
+	const [unreadFilter, setUnreadFilter] = useState<KeywordState>([]);
+	const [flaggedFilter, setFlaggedFilter] = useState<KeywordState>([]);
 
-	const [receivedFromAddress, setReceivedFromAddress] = useState<keywordState>([]);
-	const [sentFromAddress, setSentFromAddress] = useState<keywordState>([]);
-	const [folder, setFolder] = useState<keywordState>([]);
-	const [sentBefore, setSentBefore] = useState<keywordState>([]);
-	const [sentOn, setSentOn] = useState<keywordState>([]);
-	const [sentAfter, setSentAfter] = useState<keywordState>([]);
-	const [subject, setSubject] = useState<keywordState>([]);
-	const [attachmentType, setAttachmentType] = useState<keywordState>([]);
-	const [emailStatus, setEmailStatus] = useState<keywordState>([]);
-	const [sizeSmaller, setSizeSmaller] = useState<keywordState>([]);
-	const [sizeLarger, setSizeLarger] = useState<keywordState>([]);
+	const [receivedFromAddress, setReceivedFromAddress] = useState<KeywordState>([]);
+	const [sentFromAddress, setSentFromAddress] = useState<KeywordState>([]);
+	const [folder, setFolder] = useState<KeywordState>([]);
+	const [sentBefore, setSentBefore] = useState<KeywordState>([]);
+	const [sentOn, setSentOn] = useState<KeywordState>([]);
+	const [sentAfter, setSentAfter] = useState<KeywordState>([]);
+	const [subject, setSubject] = useState<KeywordState>([]);
+	const [attachmentType, setAttachmentType] = useState<KeywordState>([]);
+	const [emailStatus, setEmailStatus] = useState<KeywordState>([]);
+	const [sizeSmaller, setSizeSmaller] = useState<KeywordState>([]);
+	const [sizeLarger, setSizeLarger] = useState<KeywordState>([]);
 	const [sizeSmallerErrorLabel, setSizeSmallerErrorLabel] = useState('');
 	const [sizeLargerErrorLabel, setSizeLargerErrorLabel] = useState('');
-
+	const [isSharedFolderIncludedTobe, setIsSharedFolderIncludedTobe] =
+		useState(isSharedFolderIncluded);
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
 		() =>
@@ -99,7 +94,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 			})),
 		[]
 	);
-	const [tag, setTag] = useState<keywordState>([]);
+	const [tag, setTag] = useState<KeywordState>([]);
 
 	useEffect(() => {
 		const updatedQuery = map(
@@ -278,8 +273,9 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 
 	const onConfirm = useCallback(() => {
 		updateQuery(queryToBe);
+		setIsSharedFolderIncluded(isSharedFolderIncludedTobe);
 		onClose();
-	}, [updateQuery, queryToBe, onClose]);
+	}, [updateQuery, queryToBe, setIsSharedFolderIncluded, isSharedFolderIncludedTobe, onClose]);
 
 	const subjectKeywordRowProps = useMemo(
 		() => ({
@@ -351,16 +347,22 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	const toggleFiltersProps = useMemo(
 		() => ({
 			t,
-
 			query,
 			setUnreadFilter,
 			setFlaggedFilter,
-			setAttachmentFilter
+			setAttachmentFilter,
+			setIsSharedFolderIncludedTobe,
+			isSharedFolderIncludedTobe
 		}),
-		[t, query, setUnreadFilter, setFlaggedFilter, setAttachmentFilter]
+		[t, query, isSharedFolderIncludedTobe]
 	);
 
-	const disabled = useDisabled({ query, queryToBe });
+	const disabled = useDisabled({
+		query,
+		queryToBe,
+		isSharedFolderIncluded,
+		isSharedFolderIncludedTobe
+	});
 
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">

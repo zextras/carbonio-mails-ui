@@ -4,13 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { filter, find, forEach, map, merge, omit, reduce, some, sortBy, head } from 'lodash';
-import { ConversationsStateType } from '../../types/state';
-import { ConvMessage } from '../../types/conversation';
-
-type Payload = {
-	payload: { m: any; t: any };
-};
+import { filter, find, forEach, map, merge, omit, reduce, some, last, sortBy } from 'lodash';
+import { ConvMessage, ConversationsStateType, Payload } from '../../types';
 
 export const handleCreatedConversationsReducer = (
 	state: ConversationsStateType,
@@ -62,7 +57,7 @@ export const handleCreatedMessagesInConversationsReducer = (
 			const date =
 				msg.l === FOLDERS.DRAFTS
 					? conversation.date
-					: head(sortBy(filter(messages, { parent: state.currentFolder }), 'date'))?.date;
+					: last(sortBy(filter(messages, { parent: state.currentFolder }), 'date'))?.date;
 
 			const conv = {
 				[msg.cid]: {

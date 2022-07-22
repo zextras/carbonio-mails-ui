@@ -5,16 +5,13 @@
  */
 import React, { FC, ReactElement, useMemo } from 'react';
 import { Container, Text, Divider } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import FilterTabs from './parts/filter-tabs';
 import Heading from '../components/settings-heading';
 import { filtersSubSection } from '../subsections';
 
-type ComponentProps = {
-	t: TFunction;
-};
-
-const FilterModule: FC<ComponentProps> = ({ t }): ReactElement => {
+const FilterModule: FC = (): ReactElement => {
+	const [t] = useTranslation();
 	const sectionTitle = useMemo(() => filtersSubSection(t), [t]);
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>

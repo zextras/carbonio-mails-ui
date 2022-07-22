@@ -39,11 +39,21 @@ function findAttachments(parts, acc) {
 	);
 }
 
-function getAttachmentsLink(messageId, messageSubject, attachments) {
+function getAttachmentsLink(messageId, messageSubject, attachments, attachmentType) {
 	if (attachments.length > 1) {
 		return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
 			','
 		)}&disp=a&fmt=zip`;
+	}
+	if (
+		attachmentType === 'image/png' ||
+		attachmentType === 'image/jpeg' ||
+		attachmentType === 'image/jpg'
+	) {
+		return `/service/preview/image/${messageId}/${attachments.join(',')}/0x0/?quality=high&disp=a`;
+	}
+	if (attachmentType === 'application/pdf') {
+		return `/service/preview/pdf/${messageId}/${attachments.join(',')}/?first_page=1&disp=a`;
 	}
 	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
 }
@@ -274,10 +284,11 @@ export default function AttachmentsBlock({ message }) {
 	const attachments = useMemo(() => findAttachments(message.parts, []), [message]);
 	const attachmentsCount = useMemo(() => attachments.length, [attachments]);
 	const attachmentsParts = useMemo(() => map(attachments, 'name'), [attachments]);
+	const attachmentType = useMemo(() => map(attachments, 'contentType'), [attachments]);
 	const theme = useTheme();
 	const actionsDownloadLink = useMemo(
-		() => getAttachmentsLink(message.id, message.subject, attachmentsParts),
-		[message, attachmentsParts]
+		() => getAttachmentsLink(message.id, message.subject, attachmentsParts, attachmentType[0]),
+		[message, attachmentsParts, attachmentType]
 	);
 	const removeAttachments = useCallback(() => removeAttachments(), []);
 	const createSnackbar = useContext(SnackbarManagerContext);
@@ -375,7 +386,7 @@ export default function AttachmentsBlock({ message }) {
 							key={`att-${att.filename}-${index}`}
 							filename={att.filename}
 							size={att.size}
-							link={getAttachmentsLink(message.id, message.subject, [att.name])}
+							link={getAttachmentsLink(message.id, message.subject, [att.name], att.contentType)}
 							message={message}
 							part={att.name}
 							iconColors={iconColors}
@@ -424,7 +435,7 @@ export default function AttachmentsBlock({ message }) {
 						{t('label.download', {
 							count: attachmentsCount,
 							defaultValue: 'Download',
-							defaultValue_plural: 'Downloads'
+							defaultValue_plural: 'Download all'
 						})}
 					</Link>
 					{isUploadIntegrationAvailable && (

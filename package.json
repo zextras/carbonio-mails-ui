@@ -15,6 +15,10 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"test": "echo jest"
 	},
+	"files": [
+		"src/types/"
+	],
+	"types": "./src/types/index.d.ts",
 	"keywords": [],
 	"author": "Zextras DL Team <https://www.zextras.com/carbonio/>",
 	"maintainers": [
@@ -53,8 +57,8 @@
 	},
 	"dependencies": {
 		"@reduxjs/toolkit": "1.6.2",
-		"@zextras/carbonio-design-system": "^0.3.5",
-		"@zextras/carbonio-shell-ui": "^0.4.27",
+		"@zextras/carbonio-design-system": "^0.3.7",
+		"@zextras/carbonio-shell-ui": "^0.4.30",
 		"@zextras/carbonio-ui-preview": "^0.1.5",
 		"core-js": "3.19.1",
 		"i18next": "^21.5.4",

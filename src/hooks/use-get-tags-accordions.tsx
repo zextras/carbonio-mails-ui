@@ -19,7 +19,7 @@ import {
 import { reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { createTag, useGetTagsActions } from '../ui-actions/tag-actions';
-import { ItemType, TagsAccordionItems } from '../views/sidebar/parts/tags/types';
+import { ItemType, TagsAccordionItems } from '../types';
 
 type ItemProps = {
 	item: ItemType;
@@ -92,7 +92,7 @@ const useGetTagsAccordion = (): TagsAccordionItems => {
 			label: t('label.tags', 'Tags'),
 			divider: true,
 			active: false,
-			open: true,
+			open: false,
 			onClick: (e: Event): void => {
 				e.stopPropagation();
 			},

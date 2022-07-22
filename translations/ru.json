@@ -512,8 +512,8 @@
         "new_mail_optn": {
             "when_arrive": "По мере поступления новой почты",
             "minute_0": "1 минута",
-            "minute_1": "минуты",
-            "minute_2": "минут",
+            "minute_1": "2 минуты",
+            "minute_2": "5 минут",
             "manually": "Вручную"
         },
         "notify_folder_optn": {

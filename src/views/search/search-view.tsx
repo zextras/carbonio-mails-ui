@@ -5,125 +5,115 @@
  */
 import React, { FC, useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
-import { soapFetch, Spinner } from '@zextras/carbonio-shell-ui';
+import { QueryChip, Spinner, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
-import { includes, map } from 'lodash';
+import { includes, map, reduce } from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
 import SearchPanel from './search-panel';
-import { normalizeConversation } from '../../normalizations/normalize-conversation';
-import { SearchResponse } from '../../types/soap/search';
-import { Conversation } from '../../types/conversation';
-import SearchList from './search-list';
+import SearchConversationList from './search-conversation-list';
 import AdvancedFilterModal from './advance-filter-modal';
 import { findIconFromChip } from './parts/use-find-icon';
+import { search } from '../../store/actions/search';
+import { selectSearches } from '../../store/searches-slice';
+import SearchMessageList from './search-message-list';
+import { FolderType, SearchResults } from '../../types';
+import { selectFolders } from '../../store/folders-slice';
 
 type SearchProps = {
 	useDisableSearch: () => [boolean, (arg: any) => void];
-	useQuery: () => [Array<any>, (arg: any) => void];
+	useQuery: () => [Array<QueryChip>, (arg: any) => void];
 	ResultsHeader: FC<{ label: string }>;
-};
-
-type SearchResults = {
-	conversations: Array<Conversation>;
-	more: boolean;
-	offset: number;
-	sortBy: string;
-	query: Array<{
-		label: string;
-		value?: string;
-		isGeneric?: boolean;
-		isQueryFilter?: boolean;
-		hasAvatar?: boolean;
-	}>;
 };
 
 const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
+	const settings = useUserSettings();
+	const sortBySetting = settings.prefs.zimbraPrefConvListSortBy as 'dateDesc' | 'dateAsc';
+	const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
+	const folders = useSelector(selectFolders);
+
+	const searchInFolders = useMemo(
+		() =>
+			reduce(
+				folders,
+				(acc: Array<string>, v: FolderType, k: string) => {
+					if (v.isShared || v.perm) {
+						acc.push(k);
+					}
+					return acc;
+				},
+				[]
+			),
+		[folders]
+	);
+
+	const foldersToSearchInQuery = useMemo(
+		() => `( ${map(searchInFolders, (folder) => `inid:"${folder}"`).join(' OR ')} OR is:local) `,
+		[searchInFolders]
+	);
 
 	const emptySearchResults = useMemo(
-		() => ({
-			conversations: [],
-			more: false,
-			offset: 0,
-			sortBy: 'dateDesc',
-			query: []
-		}),
+		() =>
+			({
+				conversations: [],
+				more: false,
+				offset: 0,
+				sortBy: 'dateDesc',
+				query: []
+			} as SearchResults),
 		[]
 	);
 	const [t] = useTranslation();
-	const [resultLabel, setResultLabel] = useState<string>(t('label.results_for', 'Results for: '));
-	const [searchResults, setSearchResults] = useState<SearchResults>(emptySearchResults);
-
+	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
+	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(true);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
+	const searchResults = useSelector(selectSearches);
 
-	const search = useCallback(
-		(queryStr: Array<{ label: string; value?: string }>, reset: boolean) => {
-			setLoading(true);
-			setResultLabel(t('label.loading_results', 'Loading Results...'));
-			(
-				soapFetch<any, SearchResponse>('Search', {
-					fullConversation: 1,
-					limit: 100,
-					query: `${queryStr.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
-					offset: reset ? 0 : searchResults.offset,
-					sortBy: searchResults.sortBy,
-					types: 'conversation',
-					_jsns: 'urn:zimbraMail'
-				}) as Promise<SearchResponse>
-			)
-				.then(
-					({ c, more, offset, sortBy }): SearchResults => ({
-						query: queryStr,
-						conversations: [
-							...(reset ? [] : searchResults.conversations ?? []),
-							...(map(c ?? [], normalizeConversation) as unknown as Array<Conversation>)
-						],
-						more,
-						offset: (offset ?? 0) + 100,
-						sortBy: sortBy ?? 'dateDesc'
-					})
-				)
-				.then((r) => {
-					setIsInvalidQuery(false);
-					setSearchResults(r);
-					setLoading(false);
-					setResultLabel(t('label.results_for', 'Results for: '));
-				})
-				.catch((err) => {
-					setLoading(false);
-					const tempDestructuring = [...queryStr];
-					const newQueryStr = map(tempDestructuring, (qs) => ({
-						...qs,
-						disabled: true,
-						isQueryFilter: true
-					}));
-					setIsInvalidQuery(true);
-					setSearchDisabled(true);
-					updateQuery(newQueryStr);
-					setResultLabel(
-						t('label.results_for_error', 'Unable to start the search, clear it and retry: ')
-					);
-				});
-		},
-		[
-			searchResults.offset,
-			searchResults.sortBy,
-			searchResults.conversations,
-			t,
-			updateQuery,
-			setSearchDisabled
-		]
+	const resultLabel = useMemo(() => {
+		if (searchResults.status === 'fulfilled') {
+			return t('label.results_for', 'Results for: ');
+		}
+		if (searchResults.status === 'pending') {
+			return t('label.loading_results', 'Loading Results...');
+		}
+		return '';
+	}, [searchResults.status, t]);
+
+	const queryToString = useMemo(
+		() =>
+			isSharedFolderIncluded
+				? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
+				: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
+		[query, foldersToSearchInQuery, isSharedFolderIncluded]
 	);
+
+	const searchQuery = useCallback(
+		(queryString: string, reset: boolean) => {
+			dispatch(
+				search({
+					query: queryString,
+					limit: 100,
+					sortBy: sortBySetting,
+					types: isMessageView ? 'message' : 'conversation',
+					offset: reset ? 0 : searchResults.offset,
+					recip: '0'
+				})
+			);
+		},
+		[dispatch, isMessageView, searchResults.offset, sortBySetting]
+	);
+
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const findIcon = useCallback((chip) => findIconFromChip(chip), []);
 
 	useEffect(() => {
 		let count = 0;
-		if (query && query.length > 0 && query !== searchResults.query && !isInvalidQuery) {
+		if (query && query.length > 0 && queryToString !== searchResults.query && !isInvalidQuery) {
 			const modifiedQuery = map(query, (q) => {
 				if (
 					(includes(queryArray, q.label) ||
@@ -143,27 +133,37 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			});
 
 			if (count > 0) {
-				setLoading(true);
 				updateQuery(modifiedQuery);
 			}
 		}
-		if (query.length === 0) {
-			// setSearchResults(emptySearchResults);
-		}
-	}, [query, searchResults, queryArray, updateQuery, findIcon, isInvalidQuery, emptySearchResults]);
+	}, [
+		searchResults,
+		queryArray,
+		updateQuery,
+		findIcon,
+		isInvalidQuery,
+		emptySearchResults,
+		query,
+		queryToString
+	]);
 
 	useEffect(() => {
-		if (query && query.length > 0 && query !== searchResults.query && !isInvalidQuery) {
+		if (searchResults.status === 'pending') {
 			setLoading(true);
+		}
+		setLoading(false);
+	}, [searchResults.status]);
+
+	useEffect(() => {
+		if (query && query.length > 0 && queryToString !== searchResults.query && !isInvalidQuery) {
 			setFilterCount(query.length);
-			search(query, true);
+			searchQuery(queryToString, true);
 		}
 		if (query && query.length === 0) {
 			setFilterCount(0);
 			setIsInvalidQuery(false);
-			setResultLabel(t('label.results_for', 'Results for: '));
 		}
-	}, [query, search, searchResults.query, queryArray, t, isInvalidQuery]);
+	}, [query, queryArray, t, isInvalidQuery, searchQuery, searchResults.query, queryToString]);
 
 	const { path } = useRouteMatch();
 
@@ -179,16 +179,29 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 				>
 					<Switch>
 						<Route path={`${path}/:folder?/:folderId?/:type?/:itemId?`}>
-							<SearchList
-								searchDisabled={searchDisabled}
-								searchResults={searchResults}
-								search={search}
-								query={query}
-								loading={loading}
-								filterCount={filterCount}
-								setShowAdvanceFilters={setShowAdvanceFilters}
-								isInvalidQuery={isInvalidQuery}
-							/>
+							{isMessageView ? (
+								<SearchMessageList
+									searchDisabled={searchDisabled}
+									searchResults={searchResults}
+									search={searchQuery}
+									query={queryToString}
+									loading={loading}
+									filterCount={filterCount}
+									setShowAdvanceFilters={setShowAdvanceFilters}
+									isInvalidQuery={isInvalidQuery}
+								/>
+							) : (
+								<SearchConversationList
+									searchDisabled={searchDisabled}
+									searchResults={searchResults}
+									search={searchQuery}
+									query={queryToString}
+									loading={loading}
+									filterCount={filterCount}
+									setShowAdvanceFilters={setShowAdvanceFilters}
+									isInvalidQuery={isInvalidQuery}
+								/>
+							)}
 						</Route>
 					</Switch>
 					<Suspense fallback={<Spinner />}>
@@ -201,6 +214,8 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			<AdvancedFilterModal
 				query={query}
 				updateQuery={updateQuery}
+				isSharedFolderIncluded={isSharedFolderIncluded}
+				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
 				open={showAdvanceFilters}
 				onClose={(): void => setShowAdvanceFilters(false)}
 				t={t}

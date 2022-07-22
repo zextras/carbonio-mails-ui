@@ -135,7 +135,7 @@
         "attachment_plural": "Anexos",
         "cancel": "Cancelar",
         "download": "Baixar",
-        "download_plural": "",
+        "download_plural": "Baixar",
         "send": "Enviar",
         "share": "Partilhar",
         "edit": "Editar",
@@ -298,7 +298,23 @@
         "behalf_of": "em nome de",
         "preview": "Visualizar",
         "spam": "Spam",
-        "tags": "Etiquetas"
+        "tags": "Etiquetas",
+        "upload_from_files": "Carregar a partir de Files",
+        "save_to_files": "Salvar em Files",
+        "contact_folder": "Pasta de Contactos",
+        "view_images": "VER IMÁGENS",
+        "notification_folders": "Notificações de pastas",
+        "notification_audio": "Reproduzir dica de áudio quando aparece uma nova notificação",
+        "no_subject_with_tags": "<Sem assunto>",
+        "no_name": "<Sem nome>",
+        "invalid_destination": "Este nó não é um destino válido",
+        "error": "Erro",
+        "create_and_move": "Criar e mover",
+        "confirm": "Confirmar",
+        "calendar": "Calendário",
+        "always_allow_domain": "Permitir sempre do domínio <strong>{{domain}}</strong>",
+        "always_allow_address": "Permitir sempre de <strong>{{from}}</strong>",
+        "share_public_link": "Partilhar link público"
     },
     "of": "de",
     "owner": "Proprietário",
@@ -390,7 +406,9 @@
         "permanent_delete_title": "Tem certeza que deseja excluir permanentemente este elemento?",
         "permanent_delete_body": "Se você excluir permanentemente este elemento, você não poderá mais recuperá-lo. Continuar?",
         "check_and_try_again": "Por favor, verifique o Carbonio e tente novamente",
-        "could_not_find_to_show": "Desculpe, não encontramos nada para exibir"
+        "could_not_find_to_show": "Desculpe, não encontramos nada para exibir",
+        "something_went_wrong": "ALGO CORREU MAL",
+        "powered_by": "powered by"
     },
     "placeholder": {
         "subject": "Assunto",
@@ -590,7 +608,9 @@
             "drag_and_drop": {
                 "title": "Modo Arrastar e Soltar",
                 "content": "Solte aqui seus anexos para adicioná-los rapidamente a este e-mail"
-            }
+            },
+            "url": "Adicionar ligação pública a partir de Files",
+            "files": "Adicionar a partir de Files"
         }
     },
     "find_mail_shares": "Localizar pastas compartilhadas",
@@ -606,7 +626,16 @@
             },
             "settings_saved": "Edições salvas corretamente",
             "some_att_add_fails": "Parece que há um problema ao adicionar alguns anexos. Tente novamente",
-            "some_att_fails": "Parece que há um problema ao salvar alguns arquivos. Tente novamente"
+            "some_att_fails": "Parece que há um problema ao salvar alguns ficheiros. Tente novamente",
+            "link_copying_error": "Parece haver um problema ao gerar um link público. Por favor tente novamente",
+            "calendar_edits_saved": "Edições salvas correctamente",
+            "att_saved": "Anexo guardado na pasta seleccionada",
+            "att_err_adding": "Parece haver um problema ao adicionar anexos. Por favor tente novamente",
+            "att_err": "Parece haver um problema ao guardar. Por favor tente novamente",
+            "all_link_copied": "Link público copiado com êxito",
+            "all_att_saved": "Anexos guardados com sucesso na pasta seleccionada",
+            "all_att_added": "Anexos adicionados com êxito",
+            "some_link_copying_error": "Parece que há um problema ao gerar o link público para alguns ficheiros. Tente de novo"
         },
         "sending_mail_to_self": "Parece que você vai enviar um e-mail a si mesmo",
         "search_hints": "Dicas de pesquisa que precisamos conversar",
@@ -614,7 +643,10 @@
         "email_saved_at": "E-mail salvo como rascunho às {{time}}",
         "delete_tag_message1": "Tem certeza que deseja excluir a Etiqueta \"{{name}}\"?",
         "delete_tag_message2": "Uma vez excluída, ela será removida de todos os itens marcados com ela.",
-        "view_rights": "Ver"
+        "view_rights": "Ver",
+        "manager_rights": "Ver,Editar,Adicionar,Remover",
+        "external_images_blocked": "As imagens externas foram bloqueadas para protegê-lo de possível spam",
+        "admin_rights": "Ver,Editar,Adicionar,Remover,Administrar"
     },
     "mail_folder": "Pasta de e-mail",
     "private": "Privado",
@@ -643,7 +675,9 @@
         "disable_urgent": "Desativar Urgente",
         "edit": "Editar propriedades de partilha",
         "enable_rich_text": "Ativar editor de texto enriquecido",
-        "enable_urgent": "Ativar Urgente"
+        "enable_urgent": "Ativar Urgente",
+        "folder_sharing_status": "Partilhado com {{count}} persona",
+        "folder_sharing_status_plural": "Partilhado com {{count}} personas"
     },
     "write": "Escrever",
     "workflow": "Fluxo de Trabalho",
@@ -719,7 +753,7 @@
         "list_sent_title": "Você ainda não enviou nenhum e-mail",
         "spam_title2": "Clique no ícone da lixeira para excluir um e-mail de spam.",
         "trash_title1": "Clique no ícone da lixeira para excluir um e-mail",
-        "archive_title1": "Salve um e-mail no arquivo para revisá-lo mais tarde.",
+        "archive_title1": "Salve um e-mail como um ficheiro para revisá-lo mais tarde.",
         "archive_title2": "Selecione um e-mail arquivado para revisá-lo.",
         "description2": "Envie documentos, imagens e mais ao criar um novo e-mail.",
         "description4": "Você pode sinalizá-lo, responder ou encaminhar a outros usuários.",

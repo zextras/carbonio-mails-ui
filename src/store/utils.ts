@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { max, map, filter, find, reduce, some, merge, isNil, omitBy } from 'lodash';
-import { Folder } from '../types/folder';
-import { MailsFolderMap, FoldersStateType } from '../types/state';
+import { FolderType, MailsFolderMap, FoldersStateType } from '../types';
 
-export function findDepth(subFolder: Folder, depth = 1): number {
+export function findDepth(subFolder: FolderType, depth = 1): number {
 	if (subFolder && subFolder.items && subFolder.items.length) {
 		return <number>max(map(subFolder.items, (item) => findDepth(item, depth + 1)));
 	}
@@ -16,9 +15,9 @@ export function findDepth(subFolder: Folder, depth = 1): number {
 
 export function calcFolderItems(
 	folders: MailsFolderMap,
-	subFolders: Folder | undefined,
+	subFolders: FolderType | undefined,
 	id: string
-): Folder[] {
+): FolderType[] {
 	return map(
 		filter(folders, (item) => item.parent === id),
 		(item) => ({
@@ -31,7 +30,7 @@ export function calcFolderItems(
 
 export function calcFolderAbsParentLevelAndPath(
 	folders: MailsFolderMap,
-	subFolder: Folder | undefined,
+	subFolder: FolderType | undefined,
 	path = subFolder && subFolder.name,
 	level = 1
 ): { absParent: string; level: number; path: string | undefined } | undefined {
@@ -48,7 +47,7 @@ export function calcFolderAbsParentLevelAndPath(
 }
 
 // replaced lodash "reduce" method with vanilla JS in order to decrease iterations and improve performance
-export function updateFolders(state: FoldersStateType, folders: Folder[]): void {
+export function updateFolders(state: FoldersStateType, folders: FolderType[]): void {
 	state.folders = Object.values(state.folders).reduce((acc, item) => {
 		const newFolder = omitBy(
 			Object.values(folders).find((c) => c.id === item.id),
@@ -65,7 +64,7 @@ export function updateFolders(state: FoldersStateType, folders: Folder[]): void 
 	}, {});
 }
 
-export function updateFolderInStore(state: FoldersStateType, folders: Folder[]): void {
+export function updateFolderInStore(state: FoldersStateType, folders: FolderType[]): void {
 	state.folders = reduce(
 		state.folders,
 		(acc, item) => {
@@ -88,7 +87,7 @@ export function updateFolderInStore(state: FoldersStateType, folders: Folder[]):
 	);
 }
 
-export function updatePartialFolderInStore(state: FoldersStateType, folders: Folder[]): void {
+export function updatePartialFolderInStore(state: FoldersStateType, folders: FolderType[]): void {
 	state.folders = reduce(
 		state.folders,
 		(acc, item) => {

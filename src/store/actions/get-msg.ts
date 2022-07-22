@@ -6,12 +6,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import { MailMessage } from '../../types/mail-message';
-import { GetMsgRequest, GetMsgResponse } from '../../types/soap/';
-
-export type GetMsgParameters = {
-	msgId: string;
-};
+import { GetMsgParameters, MailMessage, GetMsgRequest, GetMsgResponse } from '../../types';
 
 export const getMsg = createAsyncThunk<MailMessage, GetMsgParameters>(
 	'messages/getMsg',

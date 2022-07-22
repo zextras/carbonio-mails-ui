@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FC, useEffect } from 'react';
+import React, { FC, ReactElement, useEffect } from 'react';
 import logo from '../../assets/carbonio_logo.png';
 
 export const showNotification = (title: string, body: string): void => {
@@ -17,7 +17,7 @@ export const showNotification = (title: string, body: string): void => {
 	});
 };
 
-const Notifications: FC = (): null => {
+const Notifications: FC = (): ReactElement => {
 	useEffect(() => {
 		if (!('Notification' in window)) {
 			// eslint-disable-next-line no-console
@@ -27,6 +27,6 @@ const Notifications: FC = (): null => {
 		}
 	}, []);
 
-	return null;
+	return <></>;
 };
 export default Notifications;

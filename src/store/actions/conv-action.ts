@@ -6,19 +6,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy } from 'lodash';
-import { ConvActionOperation, ConvActionRequest, ConvActionResponse } from '../../types/soap/';
-
-export type ConvActionParameters = {
-	ids: Array<string>;
-	operation: ConvActionOperation;
-	parent?: string;
-	tagName?: string;
-};
-
-export type ConvActionResult = {
-	ids: Array<string>;
-	operation: ConvActionOperation;
-};
+import {
+	ConvActionParameters,
+	ConvActionRequest,
+	ConvActionResponse,
+	ConvActionResult
+} from '../../types';
 
 export const convAction = createAsyncThunk<ConvActionResult, ConvActionParameters>(
 	'convAction',

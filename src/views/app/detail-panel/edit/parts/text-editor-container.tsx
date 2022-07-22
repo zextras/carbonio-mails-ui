@@ -5,7 +5,7 @@
  */
 
 import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import React, { FC, ReactElement, useContext } from 'react';
+import React, { FC, ReactElement, useCallback, useContext, useRef, useState } from 'react';
 import { Row, Container, Text } from '@zextras/carbonio-design-system';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -15,28 +15,44 @@ import * as StyledComp from './edit-view-styled-components';
 type PropType = {
 	onDragOverEvent: () => void;
 	draftSavedAt: string;
+	minHeight: number;
 };
-const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt }) => {
+const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minHeight }) => {
 	const { control, editor, throttledSaveToDraft, updateSubjectField } = useContext(EditViewContext);
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const [t] = useTranslation();
+
+	const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
+	const [showStickyTime, setStickyTime] = useState(false);
+
+	const toggleStickyTime = useCallback(() => {
+		clearTimeout(timeoutRef.current as ReturnType<typeof setTimeout>);
+		setStickyTime(false);
+		timeoutRef.current = setTimeout(() => {
+			setStickyTime(true);
+			setTimeout(() => {
+				setStickyTime(false);
+			}, 1500);
+		}, 1500);
+	}, []);
 
 	return (
 		<>
 			{editor?.text && (
 				<Container
-					height="100%"
+					height="fit"
 					padding={{ all: 'small' }}
 					background="gray6"
 					crossAlignment="flex-end"
 				>
 					{editor?.richText && composerIsAvailable ? (
 						<Controller
+							height="fit"
 							name="text"
 							control={control}
 							defaultValue={editor?.text}
 							render={({ onChange, value }): ReactElement => (
-								<Container background="gray6">
+								<Container background="gray6" mainAlignment="flex-start" style={{ minHeight }}>
 									<StyledComp.EditorWrapper>
 										<Composer
 											// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -46,6 +62,7 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt }) =>
 												updateSubjectField({ text: [ev[0], ev[1]] });
 												throttledSaveToDraft({ text: [ev[0], ev[1]] });
 												onChange([ev[0], ev[1]]);
+												toggleStickyTime();
 											}}
 											onDragOver={onDragOverEvent}
 										/>
@@ -59,7 +76,7 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt }) =>
 							control={control}
 							defaultValue={editor?.text}
 							render={({ onChange, value }): ReactElement => (
-								<Container background="gray6" height="100%">
+								<Container background="gray6" height="fit">
 									<StyledComp.TextArea
 										value={value[0]}
 										onChange={(ev): void => {
@@ -77,28 +94,30 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt }) =>
 											throttledSaveToDraft({ text: data });
 											updateSubjectField({ text: data });
 											onChange(data);
+											toggleStickyTime();
 										}}
 									/>
 								</Container>
 							)}
 						/>
 					)}
-
-					{draftSavedAt && (
-						<StyledComp.StickyTime>
-							<Row
-								crossAlignment="flex-end"
-								background="gray5"
-								padding={{ vertical: 'medium', horizontal: 'large' }}
-							>
-								<Text size="extrasmall" color="secondary">
-									{t('message.email_saved_at', {
-										time: draftSavedAt,
-										defaultValue: 'Email saved as draft at {{time}}'
-									})}
-								</Text>
-							</Row>
-						</StyledComp.StickyTime>
+					{draftSavedAt && showStickyTime && (
+						<StyledComp.StickyTimeContainer>
+							<StyledComp.StickyTime>
+								<Row
+									crossAlignment="flex-end"
+									background="gray5"
+									padding={{ vertical: 'medium', horizontal: 'large' }}
+								>
+									<Text size="extrasmall" color="secondary">
+										{t('message.email_saved_at', {
+											time: draftSavedAt,
+											defaultValue: 'Email saved as draft at {{time}}'
+										})}
+									</Text>
+								</Row>
+							</StyledComp.StickyTime>
+						</StyledComp.StickyTimeContainer>
 					)}
 					<StyledComp.Divider />
 				</Container>

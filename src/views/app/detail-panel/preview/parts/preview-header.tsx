@@ -6,6 +6,7 @@
 import React, {
 	FC,
 	ReactElement,
+	SyntheticEvent,
 	useCallback,
 	useContext,
 	useLayoutEffect,
@@ -32,18 +33,17 @@ import {
 	useTags,
 	useUserAccounts,
 	ZIMBRA_STANDARD_COLORS,
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	runSearch
+	runSearch,
+	Tag
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import MailMsgPreviewActions from '../../../../../ui-actions/mail-message-preview-actions';
 import { useMessageActions } from '../../../../../hooks/use-message-actions';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
-import { getTimeLabel, participantToString } from '../../../../../commons/utils';
+import { getTimeLabel, ParticipantRole, participantToString } from '../../../../../commons/utils';
 import MessageContactsList from './message-contact-list';
-import { MailMessage } from '../../../../../types/mail-message';
+import { MailMessage } from '../../../../../types';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)`
@@ -63,24 +63,30 @@ const TagChip = styled(Chip)`
 type PreviewHeaderProps = {
 	compProps: {
 		message: MailMessage;
-		onClick: (e: any) => void;
+		onClick: (e: SyntheticEvent) => void;
 		open: boolean;
+		isAlone: boolean;
 	};
 };
 
 type ThemeType = { sizes: { icon: { large: string } } };
 
-const fallbackContact = { address: '', displayName: '', fullName: '' };
+const fallbackContact = {
+	type: ParticipantRole.FROM,
+	address: '',
+	displayName: '',
+	fullName: ''
+};
 
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
-	const { message, onClick, open } = compProps;
+	const { message, onClick, open, isAlone } = compProps;
 
 	const textRef = useRef<HTMLInputElement>();
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 
 	const [_minWidth, _setMinWidth] = useState('');
-	const actions = useMessageActions(message);
+	const actions = useMessageActions(message, isAlone);
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
 	const _onClick = useCallback((e) => !e.isDefaultPrevented() && onClick(e), [onClick]);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
@@ -114,10 +120,13 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc: any, v) => {
+				(acc: Array<Tag & { label: string; customComponent: ReactElement }>, v) => {
 					if (includes(message.tags, v.id))
 						acc.push({
 							...v,
+							// TODO: align the use of the property with the type exposed by the shell
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
 							color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex,
 							label: v.name,
 							customComponent: (

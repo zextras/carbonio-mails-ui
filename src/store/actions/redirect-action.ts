@@ -5,16 +5,7 @@
  */
 
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import {
-	RedirectMessageActionRequest,
-	EmailAddresses,
-	MessageSpecification
-} from '../../types/soap/';
-
-export type RedirectActionParameters = {
-	id: string;
-	e: EmailAddresses[];
-};
+import { RedirectMessageActionRequest, MessageSpecification } from '../../types';
 
 export const redirectMessageAction = async ({ id, e }: MessageSpecification): Promise<any> => {
 	const res = await soapFetch<RedirectMessageActionRequest, unknown>('BounceMsg', {

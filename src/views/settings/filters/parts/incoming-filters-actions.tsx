@@ -80,7 +80,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		const closeModal = createModal(
 			{
 				size: 'large',
-				maxHeight: 'fit-content',
+				maxHeight: '80vh',
 				children: (
 					<CreateFilterModal
 						t={t}
@@ -162,7 +162,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		const closeModal = createModal(
 			{
 				size: 'large',
-				maxHeight: '70vh',
+				maxHeight: '80vh',
 				children: (
 					<ModifyFilterModal
 						t={t}

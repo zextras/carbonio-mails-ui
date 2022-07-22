@@ -46,8 +46,7 @@ export const TextArea = styled.textarea`
 
 export const EditorWrapper = styled.div`
 	width: 100%;
-	height: 100%;
-	overflow-y: auto;
+	height: auto;
 	position: relative;
 
 	> .tox:not(.tox-tinymce-inline) {
@@ -101,6 +100,14 @@ export const ColContainer = styled.div`
 `;
 
 export const StickyTime = styled(Row)`
+	position: relative;
+	bottom: 38px;
+	right: -2px;
+`;
+
+export const StickyTimeContainer = styled(Row)`
 	position: sticky;
 	bottom: 10px;
+	right: 10px;
+	height: 0px;
 `;
