@@ -5,4 +5,4 @@ npx pinst -e
 git add package.json
 npm run type-check
 npm run lint -- --quiet
-#npm test
+npm test
