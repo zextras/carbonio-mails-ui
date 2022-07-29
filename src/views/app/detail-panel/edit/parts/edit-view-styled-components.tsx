@@ -100,6 +100,14 @@ export const ColContainer = styled.div`
 `;
 
 export const StickyTime = styled(Row)`
+	position: relative;
+	bottom: 38px;
+	right: -2px;
+`;
+
+export const StickyTimeContainer = styled(Row)`
 	position: sticky;
 	bottom: 10px;
+	right: 10px;
+	height: 0px;
 `;

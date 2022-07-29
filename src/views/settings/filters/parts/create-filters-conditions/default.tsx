@@ -39,7 +39,7 @@ const DefaultCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }):
 				...tmpFilters[activeIndex],
 				filterTests: [
 					{
-						...tmpFilters[activeIndex].filterTests[0],
+						...tmpFilters?.[activeIndex]?.filterTests?.[0],
 						headerTest: [{ header: 'subject', ...selectValue, value }]
 					}
 				]

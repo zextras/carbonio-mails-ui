@@ -14,7 +14,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { concat, filter, includes, map } from 'lodash';
-import { getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../sidebar/commons/modal-footer';
 import { ModalHeader } from '../sidebar/commons/modal-header';
 import ToggleFilters from './parts/toggle-filters';
@@ -37,7 +37,9 @@ type AdvancedFilterModalProps = {
 		isGeneric?: boolean;
 		isQueryFilter?: boolean;
 	}>;
-	updateQuery: (arg: any) => void;
+	updateQuery: (arg: Array<QueryChip>) => void;
+	isSharedFolderIncluded: boolean;
+	setIsSharedFolderIncluded: (arg: boolean) => void;
 };
 
 const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
@@ -45,7 +47,9 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	onClose,
 	t,
 	query,
-	updateQuery
+	updateQuery,
+	setIsSharedFolderIncluded,
+	isSharedFolderIncluded
 }): ReactElement => {
 	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
 	const [attachmentFilter, setAttachmentFilter] = useState<KeywordState>([]);
@@ -65,7 +69,8 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	const [sizeLarger, setSizeLarger] = useState<KeywordState>([]);
 	const [sizeSmallerErrorLabel, setSizeSmallerErrorLabel] = useState('');
 	const [sizeLargerErrorLabel, setSizeLargerErrorLabel] = useState('');
-
+	const [isSharedFolderIncludedTobe, setIsSharedFolderIncludedTobe] =
+		useState(isSharedFolderIncluded);
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
 		() =>
@@ -268,8 +273,9 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 
 	const onConfirm = useCallback(() => {
 		updateQuery(queryToBe);
+		setIsSharedFolderIncluded(isSharedFolderIncludedTobe);
 		onClose();
-	}, [updateQuery, queryToBe, onClose]);
+	}, [updateQuery, queryToBe, setIsSharedFolderIncluded, isSharedFolderIncludedTobe, onClose]);
 
 	const subjectKeywordRowProps = useMemo(
 		() => ({
@@ -341,16 +347,22 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	const toggleFiltersProps = useMemo(
 		() => ({
 			t,
-
 			query,
 			setUnreadFilter,
 			setFlaggedFilter,
-			setAttachmentFilter
+			setAttachmentFilter,
+			setIsSharedFolderIncludedTobe,
+			isSharedFolderIncludedTobe
 		}),
-		[t, query, setUnreadFilter, setFlaggedFilter, setAttachmentFilter]
+		[t, query, isSharedFolderIncludedTobe]
 	);
 
-	const disabled = useDisabled({ query, queryToBe });
+	const disabled = useDisabled({
+		query,
+		queryToBe,
+		isSharedFolderIncluded,
+		isSharedFolderIncludedTobe
+	});
 
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">

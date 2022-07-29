@@ -3,7 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+	useCallback,
+	useContext,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useState,
+	useRef
+} from 'react';
 import {
 	Button,
 	Catcher,
@@ -86,10 +94,22 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [timer, setTimer] = useState(null);
 
 	const [loading, setLoading] = useState(false);
-	const [initialAction, setInitialAction] = useState(action);
-	const [actionChanged, setActionChanged] = useState(true);
 	const [isUploading, setIsUploading] = useState(false);
 
+	const containerRef = useRef();
+	const textEditorRef = useRef();
+
+	const [avaibleMinHeight, setAvaibleMinHeight] = useState(0);
+
+	useLayoutEffect(() => {
+		const calculateAvaibleMinHeight = () => {
+			const containerHeight = containerRef?.current?.clientHeight;
+			setAvaibleMinHeight(containerHeight ? containerHeight - 235 : 0);
+		};
+		calculateAvaibleMinHeight();
+		window.addEventListener('resize', calculateAvaibleMinHeight);
+		return () => window.removeEventListener('resize', calculateAvaibleMinHeight);
+	}, [containerRef?.current?.clientHeight, textEditorRef?.current?.clientHeight]);
 	const [showRouteGuard, setShowRouteGuard] = useState(true);
 
 	const activeMailId = useMemo(
@@ -99,11 +119,18 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 
 	const editorId = useMemo(() => activeMailId ?? generateId(), [activeMailId]);
 
+	const isSameAction = useMemo(() => {
+		if (editors[editorId]) {
+			return editors[editorId].action === action;
+		}
+		return undefined;
+	}, [action, editorId, editors]);
+
 	useEffect(() => {
-		if (actionChanged && editors[editorId]) {
+		if (!isSameAction && editors[editorId]) {
 			dispatch(closeEditor(editorId));
 		}
-	}, [actionChanged, dispatch, editorId, editors]);
+	}, [isSameAction, dispatch, editorId, editors]);
 
 	const updateEditorCb = useCallback(
 		(data) => {
@@ -169,28 +196,14 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [editor?.subject, setHeader, updateBoard, action, t]);
 
 	useEffect(() => {
-		if (action !== initialAction) {
-			setActionChanged(true);
-			setInitialAction(action);
-		}
-	}, [action, initialAction]);
-
-	useEffect(() => {
-		if (editors[editorId] && actionChanged) {
-			setActionChanged(false);
-		}
-	}, [actionChanged, editorId, editors]);
-
-	useEffect(() => {
 		if (
 			(activeMailId && messages?.[activeMailId]?.isComplete) ||
 			action === ActionsType.NEW ||
 			action === ActionsType.PREFILL_COMPOSE ||
 			action === ActionsType.COMPOSE ||
-			action === ActionsType.MAIL_TO ||
-			actionChanged
+			action === ActionsType.MAIL_TO
 		) {
-			if (!editors[editorId] || actionChanged) {
+			if (!editors[editorId] || isSameAction === false) {
 				setLoading(true);
 				dispatch(
 					createEditor({
@@ -221,7 +234,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	}, [
 		accounts,
 		action,
-		actionChanged,
+		isSameAction,
 		activeMailId,
 		boardContext,
 		change,
@@ -359,6 +372,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 						createSnackbar,
 						folderId: FOLDERS.TRASH
 					}).click();
+					dispatch(closeEditor(editorId));
 				}}
 			/>
 			<EditViewContext.Provider value={context}>
@@ -370,6 +384,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 							style={{ position: 'relative', maxHeight: '100%', overflowY: 'auto' }}
 							background="gray5"
 							padding={{ top: 'small', bottom: 'medium', horizontal: 'large' }}
+							ref={containerRef}
 						>
 							{dropZoneEnable && (
 								<DropZoneAttachment
@@ -401,7 +416,12 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 									)}
 								</StyledComp.RowContainer>
 							</Container>
-							<TextEditorContainer onDragOverEvent={onDragOverEvent} draftSavedAt={draftSavedAt} />
+							<TextEditorContainer
+								onDragOverEvent={onDragOverEvent}
+								draftSavedAt={draftSavedAt}
+								minHeight={avaibleMinHeight}
+								ref={textEditorRef}
+							/>
 						</Container>
 					</Container>
 				</Catcher>
