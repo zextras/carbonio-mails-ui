@@ -126,14 +126,3 @@ export type CreateSnackbarProps = {
 	autoHideTimeout: number;
 	hideButton: boolean;
 };
-
-export type CreateSnackbar = (arg: {
-	key: string;
-	replace?: boolean;
-	type: string;
-	hideButton?: boolean;
-	label: string;
-	autoHideTimeout: number;
-	actionLabel?: string;
-	onActionClick?: () => void;
-}) => void;
