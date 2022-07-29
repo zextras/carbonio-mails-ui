@@ -88,7 +88,7 @@ export default function MessageListItem({
 	const ids = useMemo(() => Object.keys(selectedItems ?? []), [selectedItems]);
 	const dispatch = useDispatch();
 	const tagsFromStore = useTags();
-	console.log('xxxyy:', { item });
+
 	const tags = useMemo(
 		() =>
 			reduce(
