@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
+import React, { FC, SyntheticEvent, useCallback, useContext, useMemo, useState } from 'react';
 import {
 	AppLink,
 	FOLDERS,
@@ -15,7 +15,8 @@ import {
 	getBridgedFunctions,
 	useUserAccount,
 	pushHistory,
-	AccordionFolder
+	AccordionFolder,
+	Folder
 } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import {
@@ -29,7 +30,9 @@ import {
 	Icon,
 	Row,
 	Padding,
-	ModalManagerContext
+	ModalManagerContext,
+	DragObj,
+	ContainerProps
 } from '@zextras/carbonio-design-system';
 import { find, startsWith } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -53,9 +56,9 @@ const FittedRow = styled(Row)`
 	height: 48px;
 `;
 
-const DropOverlayContainer = styled(Container)`
+const DropOverlayContainer = styled(Container)<ContainerProps & { folder: Folder }>`
 	position: absolute;
-	width: calc(248px - ${(props): number => (props.folder.level - 2) * 16}px);
+	width: calc(248px - ${(props): number => (props.folder.depth - 2) * 16}px);
 	height: 100%;
 	background: ${(props): string => props.theme.palette.primary.regular};
 	border-radius: 4px;
@@ -63,9 +66,9 @@ const DropOverlayContainer = styled(Container)`
 	opacity: 0.4;
 `;
 
-const DropDenyOverlayContainer = styled(Container)`
+const DropDenyOverlayContainer = styled(Container)<ContainerProps & { folder: Folder }>`
 	position: absolute;
-	width: calc(248px - ${(props): number => (props.folder.level - 2) * 16}px);
+	width: calc(248px - ${(props): number => (props.folder.depth - 2) * 16}px);
 	height: 100%;
 	background: ${(props): string => props.theme.palette.gray1.regular};
 	border-radius: 4px;
@@ -77,7 +80,7 @@ type FolderActionsProps = {
 	id: string;
 	icon: string;
 	label: string;
-	click: (e: MouseEvent) => void;
+	click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	disabled?: boolean;
 };
 
@@ -98,7 +101,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				id: FolderActionsType.NEW,
 				icon: 'FolderAddOutline',
 				label: t('label.new_folder', 'New Folder'),
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -121,7 +124,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				label: startsWith(folder.folder?.absFolderPath, '/Trash')
 					? t('label.restore', 'Restore')
 					: t('label.move', 'Move'),
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -146,7 +149,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						? t('folder_panel.action.empty.trash', 'Empty Trash')
 						: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
 				disabled: folder.folder?.n === 0 && folder.folder?.children?.length === 0,
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -168,7 +171,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				label: folder?.folder?.isLink
 					? t('folder_panel.action.edit_properties', 'Edit Properties')
 					: t('label.edit', 'Edit'),
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -191,7 +194,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				label: startsWith(folder.folder?.absFolderPath, '/Trash')
 					? t('label.delete_permanently', 'Delete Permanently')
 					: t('label.delete', 'Delete'),
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -211,7 +214,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				id: FolderActionsType.SHARE,
 				icon: 'ShareOutline',
 				label: t('action.share_folder', 'Share folder'),
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -236,7 +239,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				id: FolderActionsType.REMOVE_FROM_LIST,
 				icon: 'CloseOutline',
 				label: t('label.remove_from_this_list', 'Remove from this list'),
-				click: (e): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 						dispatch(folderAction({ folder: folder.folder, op: 'delete' }));
@@ -247,7 +250,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				id: FolderActionsType.SHARES_INFO,
 				icon: 'InfoOutline',
 				label: t('label.shares_info', `Shared folder's info`),
-				click: (e): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -334,12 +337,15 @@ type DragEnterAction =
 	  };
 
 type OnDropActionProps = {
+	event: React.DragEvent;
 	type: string;
 	data: DataProps;
 };
 
 const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);
-export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }) => {
+
+// TODO remove the "any" type after the Accordion refactor in the DS
+export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 	const { folder } = item;
 	const accountName = useUserAccount().name;
 	const [t] = useTranslation();
@@ -577,34 +583,48 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			</Tooltip>
 		</FittedRow>
 	) : (
-		<Drop
-			acceptType={['message', 'conversation', 'folder']}
-			onDrop={(data: OnDropActionProps): void => onDropAction(data)}
-			onDragEnter={(data: OnDropActionProps): unknown => onDragEnterAction(data)}
-			overlayAcceptComponent={<DropOverlayContainer folder={folder} />}
-			overlayDenyComponent={<DropDenyOverlayContainer folder={folder} />}
-		>
-			<Drag
-				type="folder"
-				data={folder}
-				dragDisabled={dragFolderDisable}
-				style={{ display: 'block' }}
+		<>
+			<Drop
+				acceptType={['message', 'conversation', 'folder']}
+				onDrop={(data: DragObj): void => {
+					onDropAction({
+						type: data.type ?? '',
+						data: data.data,
+						event: data.event
+					} as OnDropActionProps);
+				}}
+				onDragEnter={(data: DragObj): { success: boolean } | undefined =>
+					onDragEnterAction({
+						type: data.type ?? '',
+						data: data.data,
+						event: data.event
+					} as OnDropActionProps)
+				}
+				overlayAcceptComponent={<DropOverlayContainer folder={folder} />}
+				overlayDenyComponent={<DropDenyOverlayContainer folder={folder} />}
 			>
-				<AppLink
-					onClick={onClick}
-					to={`/folder/${folder.id}`}
-					style={{ width: '100%', height: '100%', textDecoration: 'none' }}
+				<Drag
+					type="folder"
+					data={folder}
+					dragDisabled={dragFolderDisable}
+					style={{ display: 'block' }}
 				>
-					<Dropdown contextMenu items={dropdownItems} display="block" width="100%">
-						<Row>
-							<Padding left="small" />
-							<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-								<AccordionItem item={accordionItem}>{statusIcon}</AccordionItem>
-							</Tooltip>
-						</Row>
-					</Dropdown>
-				</AppLink>
-			</Drag>
-		</Drop>
+					<AppLink
+						onClick={onClick}
+						to={`/folder/${folder.id}`}
+						style={{ width: '100%', height: '100%', textDecoration: 'none' }}
+					>
+						<Dropdown contextMenu items={dropdownItems} display="block" width="100%">
+							<Row>
+								<Padding left="small" />
+								<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+									<AccordionItem item={accordionItem}>{statusIcon}</AccordionItem>
+								</Tooltip>
+							</Row>
+						</Dropdown>
+					</AppLink>
+				</Drag>
+			</Drop>
+		</>
 	);
 };

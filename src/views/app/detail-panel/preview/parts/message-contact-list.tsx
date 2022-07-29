@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { selectFolders } from '../../../../../store/folders-slice';
 import ContactNames from './contact-names';
-import { MailMessage } from '../../../../../types';
+import { MailMessage, TextReadValuesProps } from '../../../../../types';
 
 const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 	message,
@@ -56,7 +56,7 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 		[message.participants]
 	);
 
-	const textReadValues = useMemo(() => {
+	const textReadValues: TextReadValuesProps = useMemo(() => {
 		if (typeof message.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read', size: 'small' };
 		return message.read
@@ -89,7 +89,7 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 		[t, open]
 	);
 
-	const containerRef = useRef<HTMLDivElement>();
+	const containerRef = useRef<HTMLDivElement>(null);
 	const [badgeWidth, setBadgeWidth] = useState('100%');
 	useLayoutEffect(() => {
 		if (containerRef?.current?.clientWidth) {
@@ -117,6 +117,7 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 							icon={open ? 'ChevronUp' : 'ChevronDown'}
 							onClick={toggleOpen}
 							customSize={{
+								iconSize: 'small',
 								paddingSize: ''
 							}}
 						/>

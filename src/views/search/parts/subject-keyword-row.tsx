@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
-import { Container, ChipInput } from '@zextras/carbonio-design-system';
+import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { isValidEmail } from './utils';
 
@@ -42,17 +42,17 @@ const SubjectKeywordRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	);
 
 	const subjectOnChange = useCallback(
-		(label: string): void => onChange(label, setSubject),
+		(value: ChipItem[]): void => onChange(value, setSubject),
 		[onChange, setSubject]
 	);
 
 	const keywordOnChange = useCallback(
-		(label: string): void => onChange(label, setOtherKeywords),
+		(value: ChipItem[]): void => onChange(value, setOtherKeywords),
 		[onChange, setOtherKeywords]
 	);
 
 	const subjectChipOnAdd = useCallback(
-		(label: string): any => chipOnAdd(label, 'Subject', false, false, true),
+		(label: unknown): any => chipOnAdd(label, 'Subject', false, false, true),
 		[chipOnAdd]
 	);
 
@@ -87,7 +87,6 @@ const SubjectKeywordRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	);
 
 	const subjectPlaceholder = useMemo(() => t('label.subject', 'Subject'), [t]);
-	const chipBackground = useMemo(() => 'gray5', []);
 
 	return (
 		<React.Fragment>
@@ -95,7 +94,7 @@ const SubjectKeywordRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 					<ChipInput
 						placeholder={t('label.keywords', 'Keywords')}
-						background={chipBackground}
+						background="gray5"
 						value={otherKeywords}
 						confirmChipOnSpace={false}
 						onChange={keywordOnChange}
@@ -105,7 +104,7 @@ const SubjectKeywordRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 					<ChipInput
 						placeholder={subjectPlaceholder}
-						background={chipBackground}
+						background="gray5"
 						value={subject}
 						confirmChipOnSpace={false}
 						onChange={subjectOnChange}

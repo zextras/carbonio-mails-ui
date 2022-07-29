@@ -6,7 +6,7 @@
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
 import { TFunction } from 'i18next';
 import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
-import { find } from 'lodash';
+import { find, noop } from 'lodash';
 import { removeFilter, addFilter } from './actions';
 import {
 	modifyFilterRules,
@@ -175,7 +175,7 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				iconPlacement="left"
 				disabled={disableAdd}
 				onClick={onAdd}
-				size="fill"
+				width="fill"
 			/>
 			<Padding bottom="medium" />
 			<Button
@@ -185,32 +185,39 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				icon="ArrowheadRightOutline"
 				disabled={disableRemove}
 				onClick={onRemove}
-				size="fill"
+				width="fill"
 			/>
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.edit', 'Edit')}
 				type="outlined"
 				disabled={disableEdit}
-				size="fill"
+				width="fill"
 				onClick={openFilterModifyModal}
 			/>
 			<Padding bottom="medium" />
-			<Button label={t('filters.run', 'RUN')} type="outlined" disabled={disableRun} size="fill" />
+			<Button
+				label={t('filters.run', 'RUN')}
+				type="outlined"
+				disabled={disableRun}
+				width="fill"
+				onClick={noop}
+			/>
 			<Padding bottom="medium" />
 			<Button
 				label={t('filters.delete', 'Delete')}
 				type="outlined"
 				color="error"
 				disabled={disableDelete}
-				size="fill"
+				width="fill"
+				onClick={noop}
 			/>
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.create', 'CREATE')}
 				type="outlined"
 				disabled={disablCreate}
-				size="fill"
+				width="fill"
 				onClick={openCreateModal}
 			/>
 		</>

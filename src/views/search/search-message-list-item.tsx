@@ -163,7 +163,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, is
 							)}
 							{showTagIcon && (
 								<Padding left="small">
-									<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+									<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
 								</Padding>
 							)}
 							{item.attachment && (

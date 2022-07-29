@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
-import { Container, ChipInput } from '@zextras/carbonio-design-system';
+import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
+import { SearchChipItem } from '../../../types';
 import { isValidEmail } from './utils';
 
 type ComponentProps = {
@@ -30,17 +31,25 @@ const ReceivedSentAddressRow: FC<ComponentProps> = ({ compProps }): ReactElement
 	}, []);
 
 	const recipOnChange = useCallback(
-		(label: string): void => onChange(label, setReceivedFromAddress),
+		(label: ChipItem[]): void => onChange(label, setReceivedFromAddress),
 		[onChange, setReceivedFromAddress]
 	);
 
 	const senderOnChange = useCallback(
-		(label: string): void => onChange(label, setSentFromAddress),
+		(label: ChipItem[]): void => onChange(label, setSentFromAddress),
 		[onChange, setSentFromAddress]
 	);
 
 	const chipOnAdded = useCallback(
-		(label, preText, hasAvatar, isGeneric, isQueryFilter, hasError, avatarIcon) => ({
+		(
+			label,
+			preText,
+			hasAvatar,
+			isGeneric,
+			isQueryFilter,
+			hasError,
+			avatarIcon
+		): SearchChipItem => ({
 			label: `${preText}:${label}`,
 			hasAvatar,
 			isGeneric,
@@ -53,18 +62,34 @@ const ReceivedSentAddressRow: FC<ComponentProps> = ({ compProps }): ReactElement
 	);
 
 	const recipChipOnAdd = useCallback(
-		(label: string): any =>
-			chipOnAdded(label, 'from', true, false, true, !isValidEmail(label), 'EmailOutline'),
+		(label: string | unknown): SearchChipItem =>
+			chipOnAdded(
+				label,
+				'from',
+				true,
+				false,
+				true,
+				!isValidEmail(typeof label === 'string' ? label : ''),
+				'EmailOutline'
+			),
 		[chipOnAdded]
 	);
 
 	const senderChipOnAdd = useCallback(
-		(label: string): any =>
-			chipOnAdded(label, 'to', true, false, true, !isValidEmail(label), 'EmailOutline'),
+		(label: string | unknown): SearchChipItem =>
+			chipOnAdded(
+				label,
+				'to',
+				true,
+				false,
+				true,
+				!isValidEmail(typeof label === 'string' ? label : ''),
+				'EmailOutline'
+			),
 		[chipOnAdded]
 	);
 
-	const chipBackground = useMemo(() => 'gray5', []);
+	const chipBackground = 'gray5';
 
 	const handleReceivedFromChange = useCallback(
 		(contacts) => {

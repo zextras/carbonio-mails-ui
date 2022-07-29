@@ -120,7 +120,6 @@ const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 									setRtnValue(e.target.value);
 								}}
 								label={t('label.retention_range', 'Retention Range')}
-								background="gray5"
 								value={rtnValue === 0 ? '' : rtnValue}
 							/>
 							{emptyRtnValue && (
@@ -182,7 +181,6 @@ const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 										setPurgeValue(e.target.value);
 									}}
 									disabled={!dsblMsgDis}
-									background="gray5"
 									value={purgeValue === 0 ? '' : purgeValue}
 								/>
 								{emptyDisValue && (

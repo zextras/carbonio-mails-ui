@@ -14,7 +14,7 @@ import { getRowFunc } from './get-row';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 1px solid
-		${({ theme, disabled, iconColor }): string =>
+		${({ theme, disabled, iconColor = 'primary' }): string =>
 			disabled ? theme.palette.gray2.regular : theme.palette[iconColor].regular};
 	svg {
 		border: none !important;

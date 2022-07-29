@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useRef, FC, useContext, useMemo, useCallback, useEffect, useState } from 'react';
+import React, { useRef, FC, useContext, useMemo, useCallback, useEffect, useState, SyntheticEvent } from 'react';
 import {
 	AccordionFolder,
 	useFoldersAccordionByView,
@@ -34,7 +34,7 @@ const ButtonFindShares: FC = () => {
 	const createModal = useContext(ModalManagerContext) as Function;
 
 	const openFindShares = useCallback(
-		(ev: MouseEvent): void => {
+		(ev: SyntheticEvent<HTMLButtonElement, Event> | KeyboardEvent): void => {
 			ev.stopPropagation();
 			dispatch(getShareInfo())
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -63,7 +63,7 @@ const ButtonFindShares: FC = () => {
 				type="outlined"
 				label={t('label.find_shares', 'Find shares')}
 				color="primary"
-				size="fill"
+				width="fill"
 				onClick={openFindShares}
 			/>
 		</Container>

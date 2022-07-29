@@ -9,6 +9,7 @@ import { isEmpty, split, head, includes, reduce, uniqBy, find, filter } from 'lo
 import {
 	Badge,
 	Container,
+	ContainerProps,
 	Icon,
 	IconButton,
 	Padding,
@@ -47,7 +48,7 @@ type SearchConversationListItemProps = {
 	active: string;
 };
 
-const CollapseElement = styled(Container)`
+const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
 `;
 const SearchConversationListItem: FC<SearchConversationListItemProps> = ({

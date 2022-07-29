@@ -64,7 +64,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [label, setLabel] = useState(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
 	const { folderId } = useParams<{ folderId: string }>();
 	const accountName = useUserAccount().name;
-	const accordionRef = useRef<HTMLDivElement>();
+	const accordionRef = useRef<HTMLDivElement>(null);
 	const [accordionWidth, setAccordionWidth] = useState<number>();
 
 	useLayoutEffect(() => {

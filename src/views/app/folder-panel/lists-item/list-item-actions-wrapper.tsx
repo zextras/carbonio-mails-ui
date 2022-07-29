@@ -3,8 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactNode, useContext, useMemo } from 'react';
-import { Container, Tooltip, Dropdown, IconButton } from '@zextras/carbonio-design-system';
+import React, {
+	FC,
+	MouseEventHandler,
+	ReactNode,
+	SyntheticEvent,
+	useContext,
+	useMemo
+} from 'react';
+import {
+	Container,
+	Tooltip,
+	Dropdown,
+	IconButton,
+	ContainerProps
+} from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { ActionsContext } from '../../../../commons/actions-context';
 import { Conversation, IncompleteMessage, MailMessage } from '../../../../types';
@@ -27,7 +40,7 @@ const HoverBarContainer = styled(Container)`
 	}
 `;
 
-const HoverContainer = styled(Container)`
+const HoverContainer = styled(Container)<ContainerProps & { current: boolean }>`
 	width: 100%;
 	position: relative;
 	cursor: pointer;
@@ -44,7 +57,7 @@ const HoverContainer = styled(Container)`
 
 type ListItemActionWrapperProps = {
 	children?: ReactNode;
-	current?: string;
+	current?: boolean;
 	onClick?: (arg: string) => void;
 	onDoubleClick?: (arg: string) => void;
 	item: Conversation | IncompleteMessage;
@@ -93,7 +106,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 				crossAlignment="unset"
 				onClick={onClick}
 				onDoubleClick={onDoubleClick}
-				current={current}
+				current={current ?? false}
 			>
 				{children}
 				{/* <Tooltip label={hoverTooltipLabel} overflow="break-word" maxWidth="50vw"> */}
@@ -107,7 +120,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 							<IconButton
 								key={action.id}
 								icon={action.icon}
-								onClick={(ev: MouseEvent): void => {
+								onClick={(ev: SyntheticEvent<HTMLButtonElement, Event> | KeyboardEvent): void => {
 									ev.stopPropagation();
 									action.click(ev);
 								}}

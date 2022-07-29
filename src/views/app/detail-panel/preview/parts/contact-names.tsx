@@ -31,7 +31,7 @@ const ContactName: FC<{
 }> = ({ showMoreCB, showOverflow, contacts, label }): ReactElement => {
 	const accounts = useUserAccounts();
 	const [t] = useTranslation();
-	const toRef = useRef<HTMLInputElement>();
+	const toRef = useRef<HTMLInputElement>(null);
 	const [isOverflow, setIsOverflow] = useState(false);
 	useLayoutEffect(() => {
 		if (toRef?.current?.clientWidth) {

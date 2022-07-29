@@ -150,15 +150,17 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 	);
 
 	const attachmentTypeChipOnAdd = useCallback(
-		(label: string): ChipOnAdd =>
-			chipOnAdd({
+		(label: string): ChipOnAdd => {
+			console.log('*** label', label);
+			return chipOnAdd({
 				items: attachmentTypeItems,
 				label,
 				preText: 'Attachment',
 				hasAvatar: true,
 				isGeneric: true,
 				isQueryFilter: true
-			}),
+			});
+		},
 		[chipOnAdd, attachmentTypeItems]
 	);
 
