@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { AccordionFolder } from '@zextras/carbonio-shell-ui';
-import { TFunction } from 'react-i18next';
 
 export type ModalFooterProps = {
 	mainAlignment?: string | undefined;
@@ -27,17 +26,6 @@ export type ModalFooterProps = {
 	tooltip?: string;
 	secondaryTooltip?: string;
 	paddingTop?: string;
-};
-
-export type SnackbarArgumentType = {
-	key: string;
-	replace: boolean;
-	type: string;
-	label: string;
-	autoHideTimeout: number;
-	hideButton?: boolean;
-	actionLabel?: string;
-	onActionClick?: TFunction;
 };
 
 export type CreateSnackbar = (arg: {
@@ -116,13 +104,4 @@ export type TextReadValuesProps = {
 	color: string;
 	weight: string;
 	badge: 'unread' | 'read';
-};
-
-export type CreateSnackbarProps = {
-	key: string;
-	replace: boolean;
-	type: string;
-	label: string;
-	autoHideTimeout: number;
-	hideButton: boolean;
 };
