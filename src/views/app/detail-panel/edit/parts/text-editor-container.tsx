@@ -54,9 +54,9 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minH
 									// @ts-ignore
 									value={inputValue[1]}
 									onEditorChange={(ev: Array<string>): void => {
-										setInputValue([ev[0], ev[1]]);
-										updateSubjectField({ text: [ev[0], ev[1]] });
-										throttledSaveToDraft({ text: [ev[0], ev[1]] });
+										setInputValue(ev);
+										updateSubjectField({ text: ev });
+										throttledSaveToDraft({ text: ev });
 										toggleStickyTime();
 									}}
 									onDragOver={onDragOverEvent}
