@@ -45,7 +45,7 @@ type SearchConversationListItemProps = {
 	selected: boolean;
 	selecting: boolean;
 	toggle: boolean;
-	active: string;
+	active: boolean;
 };
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
