@@ -106,10 +106,10 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 				padding={{ horizontal: 'medium', top: 'medium' }}
 				mainAllignment="space-between"
 			>
-				<Container width="50%" id={sectionTitle.id}>
+				<Container maxwidth="50%" id={sectionTitle.id}>
 					<Heading title={sectionTitle.label} size="medium" />
 				</Container>
-				<Container width="50%" crossAlignment="flex-end">
+				<Container width="auto" crossAlignment="flex-end">
 					<Text size="extrasmall">{message}</Text>
 				</Container>
 			</Container>
