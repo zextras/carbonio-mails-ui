@@ -13,7 +13,7 @@
         "ok": "Ok",
         "reply": "Responder",
         "restore": "Restaurar",
-        "search": "Búsqueda",
+        "search": "Buscar",
         "delete_permanently": "Borrar permanentemente",
         "preview": "Vista previa",
         "edit_as_new": "Editar como nuevo",
@@ -33,8 +33,8 @@
         "show_details": "Mostrar detalles",
         "show_original": "Mostrar original",
         "unflag": "Remover marca de seguimiento",
-        "preview_new_tab": "Clic para previsualizar en otra pestaña",
-        "click_preview": "Haz clic para previsualizar"
+        "preview_new_tab": "Clic para visualizar en otra pestaña",
+        "click_preview": "Haz clic para visualizar"
     },
     "folder": {
         "modal": {
@@ -222,7 +222,7 @@
         "create": "Crear",
         "delete": "Eliminar",
         "email_perm_deleted": "Mensaje eliminado permanentemente",
-        "empty": "Vacío",
+        "empty": "Vaciar",
         "error_try_again": "Algo ha salido mal. Por favor intenta de nuevo",
         "expand": "Expandir",
         "filter_folders": "Filtrar carpetas",
@@ -244,7 +244,7 @@
         "single_advanced_filter": "Filtros avanzados",
         "size": "Tamaño",
         "tag": "Etiqueta",
-        "wipe": "Limpiar",
+        "wipe": "Vaciar",
         "workflow": "Flujo de trabajo",
         "write": "Escribir",
         "results_for": "Resultados para: ",
@@ -299,7 +299,7 @@
         "add_task": "Si necesitas tomar una nota, puedes añadirla a tu LISTA DE QUEHACERES",
         "by_conversation": "Por conversación",
         "by_message": "Por mensaje",
-        "create_new_task": "Crear nueva tarea",
+        "create_new_task": "Crear nueva Tarea",
         "destination_folder": "Carpeta de destino",
         "disposal_threshold": "Umbral de eliminación",
         "enable_message_disposal": "Activar la eliminación de mensajes",
@@ -308,7 +308,7 @@
         "retention_range": "Rango de retención",
         "set_default_signatures": "Firmas por defecto",
         "behalf_of": "en nombre de",
-        "create_tag": "Crear etiqueta",
+        "create_tag": "Crear Etiqueta",
         "delete_tag": "Eliminar etiqueta",
         "delete_tag_name": "Eliminar etiqueta \"{{name}}\"",
         "edit_tag": "Editar etiqueta",
@@ -320,7 +320,7 @@
         "spam": "Spam",
         "tags": "Etiquetas",
         "invalid_destination": "Este nodo no es un destino válido",
-        "notification_audio": "Reproducir un aviso auditivo cuando aparezca una nueva notificación",
+        "notification_audio": "Reproducir un aviso cuando aparezca una nueva notificación",
         "notification_folders": "Notificaciones de Carpetas",
         "upload_from_files": "Cargar desde Files",
         "calendar": "Calendario",
@@ -646,7 +646,7 @@
         "contains": "contiene",
         "conv_is_participated": "en conversaciones que he participado",
         "conv_is_started": "en una conversación que he iniciado",
-        "create_new_filter": "Crear nuevo filtro",
+        "create_new_filter": "Crear nuevo Filtro",
         "delete_filter": "Eliminar filtro",
         "delete_filter_text": "¿Seguro que quieres eliminar el filtro? ",
         "does_not_match_exactly": "no corresponde exactamente",
@@ -698,7 +698,7 @@
                 }
             },
             "new": {
-                "create_footer": "Crear y mover",
+                "create_footer": "Crear",
                 "name_exist_warning": "El nombre ya existe",
                 "restore_create_footer": "Crear y restaurar",
                 "title": "Crear nueva carpeta",
@@ -717,7 +717,7 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "Si la vacías, todo su contenido se borrará de forma permanente."
+                    "message2": "Al vaciarla, todo su contenido se eliminará de forma permanente."
                 }
             }
         },
@@ -761,18 +761,18 @@
         "list_junk_title": "No hay correo no deseado",
         "list_sent_title": "Todavía no has enviado ningún e-mail",
         "search_description1": "O elige \"Filtros avanzados\" para refinar la búsqueda.",
-        "search_description2": "Prueba a iniciar otra búsqueda.",
+        "search_description2": "Intenta iniciar otra búsqueda.",
         "search_list_title1": "No hay resultados. ¡Sigue buscando!",
-        "search_list_title2": "No hay elementos coinciden con tu búsqueda.",
+        "search_list_title2": "No hay elementos que coincidan con tu búsqueda.",
         "search_title1": "Iniciar otra búsqueda",
         "search_title2": "Lo sentimos pero no hay resultados para tu búsqueda",
         "list_trash_title": "La papelera está vacía",
         "search_description3": "Comprueba la ortografía y las opciones de los filtros, o intenta con otra palabra.",
         "search_title4": "Elige uno o más resultados para realizar acciones o para mostrar los detalles.",
-        "title1": "Crea un nuevo e-mail haciendo clic en el botón \"NUEVO\"",
+        "title1": "Crea un nuevo e-mail haciendo clic en el botón \"NUEVO MENSAJE\"",
         "title2": "Haz clic en el botón \"NUEVO\"",
         "sent_title2": "Elige un mensaje para mostrar lo que has enviado.",
-        "title3": "Permanece en contacto con otros usuarios.",
+        "title3": "Selecciona un mensaje para leer su contenido",
         "title4": "Selecciona un mensaje para leerlo",
         "title8": "Selecciona un mensaje para leerlo o eliminarlo.",
         "trash_title1": "Haz clic en el icono de la papelera para eliminar un mensaje",
@@ -788,7 +788,7 @@
         "search_title3": "No hay resultados para la búsqueda.",
         "list_spam_title": "No hay correo no deseado",
         "spam_title1": "¡Qué suerte! No hay correo no deseado",
-        "spam_title2": "Haz clic en el icono de la papelera para borrar un correo no deseado."
+        "spam_title2": "Haz clic en el icono de la papelera para eliminar mensaje no deseado."
     },
     "board": {
         "show": "Mostrar ventana flotante"
