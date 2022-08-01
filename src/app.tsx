@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { lazy, useEffect, Suspense } from 'react';
+import React, { lazy, useEffect, Suspense, ReactElement } from 'react';
 import {
 	Spinner,
 	addRoute,
@@ -27,54 +27,56 @@ import Notifications from './views/notifications';
 import { ParticipantRole } from './commons/utils';
 import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
+import { SearchProps } from './views/search/search-view';
+import { SidebarComponentProps } from './views/sidebar/sidebar';
 
-const LazyAppView = lazy(() =>
-	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
+const LazyAppView = lazy(
+	() => import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
 );
-const LazyEditView = lazy(() =>
-	import(/* webpackChunkName: "mails-edit-view" */ './views/app/detail-panel/edit/edit-view')
-);
-
-const LazySettingsView = lazy(() =>
-	import(/* webpackChunkName: "mail-setting-view" */ './views/settings/settings-view')
-);
-const LazySearchView = lazy(() =>
-	import(/* webpackChunkName: "mail-search-view" */ './views/search/search-view')
+const LazyEditView = lazy(
+	() => import(/* webpackChunkName: "mails-edit-view" */ './views/app/detail-panel/edit/edit-view')
 );
 
-const LazySidebarView = lazy(() =>
-	import(/* webpackChunkName: "mail-sidebar-view" */ './views/sidebar/sidebar')
+const LazySettingsView = lazy(
+	() => import(/* webpackChunkName: "mail-setting-view" */ './views/settings/settings-view')
+);
+const LazySearchView = lazy(
+	() => import(/* webpackChunkName: "mail-search-view" */ './views/search/search-view')
 );
 
-const AppView = () => (
+const LazySidebarView = lazy(
+	() => import(/* webpackChunkName: "mail-sidebar-view" */ './views/sidebar/sidebar')
+);
+
+const AppView = (): ReactElement => (
 	<Suspense fallback={<Spinner />}>
 		<LazyAppView />
 	</Suspense>
 );
-const EditView = () => (
+const EditView = (): ReactElement => (
 	<Suspense fallback={<Spinner />}>
 		<LazyEditView />
 	</Suspense>
 );
-const SettingsView = () => (
+const SettingsView = (): ReactElement => (
 	<Suspense fallback={<Spinner />}>
 		<LazySettingsView />
 	</Suspense>
 );
 
-const SearchView = (props) => (
+const SearchView = (props: SearchProps): ReactElement => (
 	<Suspense fallback={<Spinner />}>
 		<LazySearchView {...props} />
 	</Suspense>
 );
 
-const SidebarView = (props) => (
+const SidebarView = (props: SidebarComponentProps & { expanded: boolean }): ReactElement => (
 	<Suspense fallback={<Spinner />}>
 		<LazySidebarView {...props} />
 	</Suspense>
 );
 
-const App = () => {
+const App = (): ReactElement => {
 	const [t] = useTranslation();
 	useEffect(() => {
 		addRoute({

@@ -3,7 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useRef, FC, useContext, useMemo, useCallback, useEffect, useState, SyntheticEvent } from 'react';
+import React, {
+	useRef,
+	FC,
+	useContext,
+	useMemo,
+	useCallback,
+	useEffect,
+	useState,
+	SyntheticEvent
+} from 'react';
 import {
 	AccordionFolder,
 	useFoldersAccordionByView,
@@ -22,7 +31,7 @@ import { ResFolder } from '../../types';
 import { SharesModal } from './shares-modal';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
 
-type SidebarComponentProps = {
+export type SidebarComponentProps = {
 	accordions: Array<AccordionFolder>;
 	openIds: Array<string>;
 };

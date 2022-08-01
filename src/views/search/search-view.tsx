@@ -20,7 +20,7 @@ import SearchMessageList from './search-message-list';
 import { FolderType, SearchResults } from '../../types';
 import { selectFolders } from '../../store/folders-slice';
 
-type SearchProps = {
+export type SearchProps = {
 	useDisableSearch: () => [boolean, (arg: any) => void];
 	useQuery: () => [Array<QueryChip>, (arg: any) => void];
 	ResultsHeader: FC<{ label: string }>;
