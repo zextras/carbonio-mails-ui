@@ -318,7 +318,10 @@
         "invalid_destination": "Dieser Knotenpunkt ist kein gültiges Ziel",
         "notification_audio": "Audio-Hinweis abspielen, wenn eine neue Benachrichtigung erscheint",
         "notification_folders": "Ordner Benachrichtigungen",
-        "upload_from_files": "Von Files hochladen"
+        "upload_from_files": "Von Files hochladen",
+        "no_name": "<Kein Name>",
+        "always_allow_domain": "Immer erlauben von <strong>{{domain}}</strong> Domain",
+        "always_allow_address": "Immer erlauben von <strong>{{from}}</strong>"
     },
     "share": {
         "options": {
@@ -461,7 +464,8 @@
                 "title": "Drag&Drop Modus",
                 "content": "Legen Sie hier Ihre Anhänge ab, um diese Ihrer E-Mail schnell hinzuzufügen"
             },
-            "files": "Aus Files hinzufügen"
+            "files": "Aus Files hinzufügen",
+            "url": "Öffentlichen Link von Files hinzufügen"
         }
     },
     "find_mail_shares": "Geteilte Ordner finden",
