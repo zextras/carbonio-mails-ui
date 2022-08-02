@@ -316,8 +316,13 @@
         "save_to_files": "Simpan ke File",
         "invalid_destination": "Node ini bukan tujuan yang valid",
         "notification_audio": "Putar petunjuk audio saat notifikasi baru muncul",
-        "notification_folders": "Folder Notifikasi",
-        "upload_from_files": "Unggah dari Files"
+        "notification_folders": "Notifikasi Folder",
+        "upload_from_files": "Unggah dari Files",
+        "no_name": "<Tidak Ada Nama>",
+        "view_images": "LIHAT GAMBAR",
+        "share_public_link": "Bagikan Tautan Publik",
+        "always_allow_domain": "Selalu izinkan dari domain<strong>{{domain}}</strong>",
+        "always_allow_address": "Selalu izinkan dari <strong>{{from}}</strong>"
     },
     "messages": {
         "permanent_delete_confirm": "Hapus secara permanen",
@@ -593,7 +598,8 @@
                 "title": "Mode Seret & Lepas",
                 "content": "Letakkan lampiran Anda di sini untuk menambahkannya dengan cepat ke email ini"
             },
-            "files": "Tambahkan dari Files"
+            "files": "Tambahkan dari Files",
+            "url": "Tambahkan tautan publik dari Files"
         }
     },
     "find_shares": "Temukan berbagi",
@@ -618,7 +624,10 @@
             "all_att_saved": "Lampiran berhasil disimpan di folder terpilih",
             "att_err_adding": "Tampaknya ada masalah saat menambahkan lampiran, coba lagi",
             "some_att_add_fails": "Tampaknya ada masalah saat menambahkan beberapa lampiran, coba lagi",
-            "some_att_fails": "Tampaknya ada masalah saat menambahkan beberapa file, coba lagi"
+            "some_att_fails": "Tampaknya ada masalah saat menambahkan beberapa file, coba lagi",
+            "some_link_copying_error": "Tampaknya ada masalah saat membuat url publik untuk beberapa file, coba lagi",
+            "link_copying_error": "Tampaknya ada masalah saat membuat tautan publik, coba lagi",
+            "all_link_copied": "Tautan publik berhasil disalin"
         },
         "invalid_search_message": "Kami tidak menemukan kecocokan",
         "email_saved_at": "Email disimpan sebagai draf pada {{time}}",
@@ -626,7 +635,8 @@
         "delete_tag_message2": "Setelah dihapus, ini akan dihapus dari tiap item yang ditandai dengannya.",
         "view_rights": "Lihat",
         "admin_rights": "Lihat,Edit,Tambah,Hapus,Kelola",
-        "manager_rights": "Lihat,Edit,Tambah,Hapus"
+        "manager_rights": "Lihat,Edit,Tambah,Hapus",
+        "external_images_blocked": "Gambar eksternal telah diblokir untuk melindungi Anda terhadap potensi spam"
     },
     "private": "Pribadi",
     "remove_from_this_list": "Hapus dari daftar ini",
@@ -652,7 +662,8 @@
         "resend": "Kirim ulang notifikasi email tentang berbagi ini",
         "revoke": "Batalkan akses",
         "enable_rich_text": "Aktifkan editor teks kaya",
-        "enable_urgent": "Aktifkan mendesak"
+        "enable_urgent": "Aktifkan mendesak",
+        "folder_sharing_status": "Dibagikan kepada {{count}} orang"
     },
     "workflow": "Alur Kerja",
     "write": "Tulis",
