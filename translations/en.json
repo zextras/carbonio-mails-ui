@@ -274,6 +274,7 @@
         "empty": "Empty",
         "enable_message_disposal": "Enable Message Disposal",
         "enable_message_retention": "Enable Message Retention",
+        "enter_email_address": "Enter email address or domain",
         "error": "Error",
         "error_address": "A valid e-mail is required",
         "error_try_again": "Something went wrong, please try again",
@@ -387,6 +388,7 @@
         "tag_name": "Tag name",
         "tags": "Tags",
         "to": "To",
+        "trusted_addresses": "Trusted addresses",
         "type": "Type",
         "type_name_here": "Item name",
         "undo": "Undo",
@@ -431,6 +433,7 @@
         "check_and_try_again": "Please, check Carbonio and try again",
         "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
         "invalid_address": "The following address appears to be invalid",
+        "invalid_trustee_address": "Please enter only e-mail addresses or domains",
         "modal": {
             "delete": {
                 "if_delete_lost_forever": "If you delete the e-mail, it will be lost forever.",
@@ -480,7 +483,8 @@
             "tag_not_updated": "Something went wrong, the tag was not updated. Please try again.",
             "tag_updated": "Tag successfully updated"
         },
-        "something_went_wrong": "SOMETHING WENT WRONG"
+        "something_went_wrong": "SOMETHING WENT WRONG",
+        "trustee_addresses": "Mail from these addresses or domains will be considered trusted and images will automatically be displayed."
     },
     "modal": {
         "delete_draft": {
