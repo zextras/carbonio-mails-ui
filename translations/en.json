@@ -177,6 +177,7 @@
                 "title_modal": "Move Conversation"
             },
             "new": {
+                "cal_name_exist_warning": "A calendar with the same name already exists in this path",
                 "create_footer": "Create and Move",
                 "input": {
                     "name": "Enter Folder Name",
