@@ -421,7 +421,11 @@
         "notification_audio": "有新通知时播放音频提示",
         "notification_folders": "通知文件夹",
         "upload_from_files": "从文件上传",
-        "no_name": "<不加姓名>"
+        "no_name": "<不加姓名>",
+        "view_images": "查看图像",
+        "share_public_link": "分享公开链接",
+        "always_allow_domain": "总是允许 <strong>{{domain}}</strong> 域",
+        "always_allow_address": "总是允许 <strong>{{from}}</strong>"
     },
     "owner": "所有者",
     "read": "已读",
@@ -453,7 +457,10 @@
             "all_att_saved": "附件已成功保存在所选文件夹中",
             "att_err_adding": "添加附件时似乎出现错误，请重试",
             "some_att_add_fails": "添加一些附件时似乎出现错误，请重试",
-            "some_att_fails": "保存一些文件时似乎出现错误，请重试"
+            "some_att_fails": "保存一些文件时似乎出现错误，请重试",
+            "some_link_copying_error": "为部分文件生成公开 URL 时似乎发生错误，请重试",
+            "link_copying_error": "生成公开链接时似乎发生错误，请重试",
+            "all_link_copied": "公开链接已复制成功"
         },
         "search_hints": "搜索我们需要讨论的提示",
         "sending_mail_to_self": "似乎您即将向自己发送邮件",
@@ -463,7 +470,8 @@
         "delete_tag_message2": "删除后，其将从所有已进行相关标记的项目上移除。",
         "view_rights": "查看",
         "admin_rights": "查看、编辑、添加、移除、管理",
-        "manager_rights": "查看、编辑、添加、移除"
+        "manager_rights": "查看、编辑、添加、移除",
+        "external_images_blocked": "外部图像已被阻止以保护您免受潜在垃圾信息侵扰"
     },
     "settings": {
         "label": {
@@ -627,7 +635,8 @@
         "edit": "编辑共享属性",
         "enable_rich_text": "启用富文本编辑器",
         "enable_urgent": "启用紧急程度",
-        "revoke": "撤销访问权限"
+        "revoke": "撤销访问权限",
+        "folder_sharing_status": "已与 {{count}} 人分享"
     },
     "composer": {
         "attachment": {
@@ -643,7 +652,8 @@
                 "content": "在此处拖入您的附件以将其快速添加至此邮件"
             },
             "contacts_mod": "添加联系人卡片",
-            "files": "从文件添加"
+            "files": "从文件添加",
+            "url": "从文件添加公开链接"
         }
     },
     "administer": "管理",

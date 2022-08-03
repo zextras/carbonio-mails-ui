@@ -3,10 +3,28 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { filter, isNil, map, omitBy } from 'lodash';
+import { getTags } from '@zextras/carbonio-shell-ui';
+import { filter, find, isNil, map, omitBy } from 'lodash';
 import { Conversation, SoapIncompleteMessage, SoapConversation } from '../types';
 import { normalizeParticipantsFromSoap } from './normalize-message';
 
+export const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
+	const tags = getTags();
+	return map(names?.split(','), (name) => find(tags, { name })?.id);
+};
+
+export const getTagIds = (
+	t: string | undefined,
+	tn: string | undefined
+): Array<string | undefined> => {
+	if (!isNil(t)) {
+		return filter(t.split(','), (tag) => tag !== '');
+	}
+	if (!isNil(tn)) {
+		return getTagIdsFromName(tn);
+	}
+	return [];
+};
 export const normalizeConversation = (
 	c: SoapConversation,
 	m?: Array<SoapIncompleteMessage>
@@ -22,7 +40,7 @@ export const normalizeConversation = (
 
 	return omitBy(
 		{
-			tags: !isNil(c.t) ? filter(c.t.split(','), (t) => t !== '') : [],
+			tags: getTagIds(c.t, c.tn),
 			id: c.id,
 			date: c.d,
 			msgCount: c.n,
