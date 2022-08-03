@@ -52,7 +52,7 @@ const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean 
 	cursor: pointer;
 	border-radius: ${({ isExpanded }): string => (isExpanded ? '4px 4px 0 0' : '4px')};
 	&:hover {
-		background: ${({ theme, background = 'transparent' }): string =>
+		background: ${({ theme, background = 'currentColor' }): string =>
 			theme.palette[background].hover};
 	}
 `;
@@ -123,7 +123,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc: Array<Tag & { label: string; customComponent: ReactElement }>, v) => {
+				(acc: any, v) => {
 					if (includes(message.tags, v.id))
 						acc.push({
 							...v,

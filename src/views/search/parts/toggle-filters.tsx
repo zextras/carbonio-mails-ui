@@ -11,7 +11,7 @@ import {
 	Padding,
 	AvatarPropTypes,
 	ChipItem,
-	ChipProps,
+	ChipProps
 } from '@zextras/carbonio-design-system';
 import { filter } from 'lodash';
 import { TFunction } from 'i18next';

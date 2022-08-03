@@ -20,7 +20,8 @@ import {
 	Text,
 	Padding,
 	Accordion,
-	SnackbarManagerContext
+	SnackbarManagerContext,
+	AccordionItemType
 } from '@zextras/carbonio-design-system';
 
 import { cloneDeep, filter, includes, startsWith } from 'lodash';
@@ -61,7 +62,9 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [folderDestination, setFolderDestination] = useState<AccordionFolder | undefined>(folder);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
-	const [label, setLabel] = useState<string>(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
+	const [label, setLabel] = useState<string>(
+		t('folder_panel.modal.new.input.name', 'Enter Folder Name')
+	);
 	const { folderId } = useParams<{ folderId: string }>();
 	const accountName = useUserAccount().name;
 	const accordionRef = useRef<HTMLDivElement>(null);
@@ -243,7 +246,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					<Accordion
 						ref={accordionRef}
 						background="gray6"
-						items={filteredFromUserInput}
+						items={filteredFromUserInput as any[]}
 						style={{ overflowY: 'hidden' }}
 					/>
 				</ContainerEl>

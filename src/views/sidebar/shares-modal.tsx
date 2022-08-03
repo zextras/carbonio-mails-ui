@@ -14,7 +14,9 @@ import {
 	Text,
 	Input,
 	Icon,
-	Row, AccordionItemType, AccordionDivider,
+	Row,
+	AccordionItemType,
+	AccordionDivider
 } from '@zextras/carbonio-design-system';
 import {
 	groupBy,

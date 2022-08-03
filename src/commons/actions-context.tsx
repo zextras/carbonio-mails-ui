@@ -24,7 +24,7 @@ type ACPProps = {
 type ActionObj = {
 	id: string;
 	label: string;
-	click: (event: SyntheticEvent<HTMLButtonElement, Event> | KeyboardEvent) => void;
+	click: (event: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	icon: string;
 };
 

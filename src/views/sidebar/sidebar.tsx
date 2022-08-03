@@ -3,7 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useRef, FC, useContext, useMemo, useCallback, useEffect, useState, SyntheticEvent } from 'react';
+import React, {
+	useRef,
+	FC,
+	useContext,
+	useMemo,
+	useCallback,
+	useEffect,
+	useState,
+	SyntheticEvent
+} from 'react';
 import {
 	AccordionFolder,
 	useFoldersAccordionByView,
@@ -99,7 +108,7 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) =>
 			<Accordion
 				openIds={openIds}
 				ref={sidebarRef}
-				items={accordionsWithFindShare}
+				items={accordionsWithFindShare as any[]}
 				activeId={folderId}
 				disableTransition={disableTransition}
 			/>

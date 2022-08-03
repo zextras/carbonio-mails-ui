@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { TextProps } from '@zextras/carbonio-design-system';
+import { TextProps, ButtonProps, ContainerProps } from '@zextras/carbonio-design-system';
 import { AccordionFolder } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'react-i18next';
 
