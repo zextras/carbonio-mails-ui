@@ -101,12 +101,8 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
-			<Container
-				orientation="horizontal"
-				padding={{ horizontal: 'medium', top: 'medium' }}
-				mainAllignment="space-between"
-			>
-				<Container maxwidth="50%" id={sectionTitle.id}>
+			<Container orientation="horizontal" padding={{ horizontal: 'medium', top: 'medium' }}>
+				<Container id={sectionTitle.id}>
 					<Heading title={sectionTitle.label} size="medium" />
 				</Container>
 				<Container width="auto" crossAlignment="flex-end">
@@ -121,8 +117,6 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 			>
 				<Input
 					width="80vw"
-					maxWidth="50%"
-					background="gray5"
 					label={t('label.enter_email_address', 'Enter email address or domain')}
 					value={address}
 					hasError={isInvalid}
