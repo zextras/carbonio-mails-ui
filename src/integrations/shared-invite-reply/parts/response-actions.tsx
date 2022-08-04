@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable import/extensions */
-import React, { FC, ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	Padding,
 	Button,
@@ -17,7 +17,7 @@ import {
 import { useFoldersAccordionByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { filter } from 'lodash';
+import { filter, find } from 'lodash';
 import ColorSelect from './color-select';
 import { ResponseActionsProps } from '../../../types';
 import { accept, decline } from './share-calendar-actions';
@@ -43,12 +43,17 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	const [calendarName, setCalendarName] = useState(sharedCalendarName);
 	const [selectedColor, setSelectedColor] = useState(0);
 	const accounts = useUserAccounts();
-	const [showError, setShowError] = useState(false);
-	const [disabled, setDisabled] = useState(false);
-
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	const calFolders = useFoldersAccordionByView(FOLDER_VIEW.appointment, null);
+	const showError = useMemo(
+		() => find(calFolders[0].items, (item) => item.label === calendarName.toLowerCase()),
+		[calFolders, calendarName]
+	);
+	const disabled = useMemo(
+		() => !calendarName || !calendarName.length || showError,
+		[calendarName, showError]
+	);
 	const acceptShare = useCallback(
 		() =>
 			accept({
@@ -92,19 +97,6 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 			createSnackbar
 		]
 	);
-
-	useEffect(() => {
-		if (!calendarName || !calendarName.length) {
-			setDisabled(true);
-			return;
-		}
-		const value = !!filter(
-			calFolders[0].items,
-			(item) => item.label.toLowerCase() === calendarName.toLowerCase()
-		).length;
-		setShowError(value);
-		setDisabled(value);
-	}, [calFolders, calendarName, t]);
 
 	const declined = useCallback(() => {
 		decline({
