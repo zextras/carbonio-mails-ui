@@ -17,7 +17,7 @@ import {
 import { useFoldersAccordionByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { filter, find } from 'lodash';
+import { find } from 'lodash';
 import ColorSelect from './color-select';
 import { ResponseActionsProps } from '../../../types';
 import { accept, decline } from './share-calendar-actions';
@@ -175,10 +175,10 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				<Row width="100%" height="16px" mainAlignment="flex-start" style={{ marginBottom: '8px' }}>
 					{showError && (
 						<Text size="small" color="error">
-							{`${t(
-								'folder_panel.modal.new.cal_name_exist_warning',
+							{t(
+								'messages.cal_name_exist_warning',
 								'A calendar with the same name already exists in this path'
-							)}`}
+							)}
 						</Text>
 					)}
 				</Row>
