@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable import/extensions */
-import React, { FC, ReactElement, useState, useContext, useMemo, useEffect } from 'react';
+import React, { FC, ReactElement, useContext, useMemo, useEffect } from 'react';
 import {
 	Container,
 	Padding,
@@ -24,6 +24,7 @@ import LabelRow from './parts/label-row';
 import { ShareCalendarRoleOptions, findLabel } from './parts/utils';
 
 import ResponseActions from './parts/response-actions';
+import { MailMessage } from '../../types';
 
 const InviteContainer = styled(Container)`
 	border: 1px solid ${({ theme }: any): string => theme.palette.gray2.regular};
@@ -33,8 +34,8 @@ const InviteContainer = styled(Container)`
 
 type SharedCalendarResponse = {
 	sharedContent: string;
-	mailMsg: any;
-	onLoadChange: () => void;
+	mailMsg: MailMessage;
+	onLoadChange?: () => void;
 };
 
 const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
@@ -43,8 +44,8 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 	onLoadChange
 }): ReactElement => {
 	useEffect(() => {
-		if (mailMsg.read === 'false') {
-			onLoadChange();
+		if (mailMsg?.read === 'false' || !mailMsg?.read) {
+			onLoadChange && onLoadChange();
 		}
 	}, [mailMsg.read, onLoadChange]);
 	const [t] = useTranslation();

@@ -30,3 +30,5 @@ export type FolderType = {
 	perm?: string;
 	retentionPolicy?: unknown;
 };
+
+export type GrantType = { gt: string; perm: string; zid: string; d?: string };

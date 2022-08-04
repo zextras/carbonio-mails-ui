@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -11,12 +11,13 @@ import PreviewPanelHeader from './preview/preview-panel-header';
 import MailPreview from './preview/mail-preview';
 import { getMsg } from '../../../store/actions';
 import { selectMessage } from '../../../store/messages-slice';
+import { StateType } from '../../../types';
 
-export default function MessagePreviewPanel() {
-	const { folderId, messageId } = useParams();
+const MessagePreviewPanel: FC = () => {
+	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
 	const dispatch = useDispatch();
 
-	const message = useSelector((state) => selectMessage(state, messageId));
+	const message = useSelector((state: StateType) => selectMessage(state, messageId));
 
 	useEffect(() => {
 		if (!message?.isComplete) {
@@ -48,4 +49,6 @@ export default function MessagePreviewPanel() {
 			)}
 		</Container>
 	);
-}
+};
+
+export default MessagePreviewPanel;

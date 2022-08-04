@@ -31,7 +31,7 @@ import {
 
 import styled from 'styled-components';
 import ModalFooter from '../../sidebar/commons/modal-footer';
-import { ModalHeader } from '../../sidebar/commons/modal-header';
+import ModalHeader from '../../sidebar/commons/modal-header';
 import { FolderType } from '../../../types';
 import { getFolderIconColor, getFolderTranslatedName } from '../../sidebar/utils';
 import { FOLDER_VIEW } from '../../../constants';

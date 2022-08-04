@@ -6,10 +6,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isEmpty, isNil, omitBy } from 'lodash';
-import { DataProps, FolderType } from '../../types';
+import { DataProps, EditFolderArgumentType, FolderType } from '../../types';
 
 type FolderActionProps = {
-	folder: FolderType | DataProps;
+	folder: FolderType | DataProps | EditFolderArgumentType;
 	color?: number;
 	zid?: string;
 	op: string;

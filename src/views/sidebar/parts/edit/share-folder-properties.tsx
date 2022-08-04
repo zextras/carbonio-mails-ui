@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
 import { map, replace, split } from 'lodash';
 import {
 	Button,
@@ -12,11 +12,12 @@ import {
 	Divider,
 	Padding,
 	Text,
+	Theme,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { AccordionFolder, getBridgedFunctions, useUserAccounts } from '@zextras/carbonio-shell-ui';
 
 import styled from 'styled-components';
 import {
@@ -26,12 +27,19 @@ import {
 import { Context } from './edit-context';
 import { sendShareNotification } from '../../../../store/actions/send-share-notification';
 import { capitalise } from '../../utils';
+import { GrantType } from '../../../../types';
 
 const HoverChip = styled(Chip)`
-	background-color: ${({ theme, hovered }) =>
+	background-color: ${({ theme, hovered }: { theme: Theme; hovered: boolean }): string =>
 		hovered ? theme.palette.gray3.hover : theme.palette.gray3.regular};
 `;
-export const GranteeInfo = ({ grant, shareCalendarRoleOptions, hovered }) => {
+
+type GranteeInfoType = {
+	grant: GrantType;
+	shareCalendarRoleOptions: any;
+	hovered: boolean;
+};
+export const GranteeInfo: FC<GranteeInfoType> = ({ grant, shareCalendarRoleOptions, hovered }) => {
 	const role = useMemo(
 		() => findLabel(shareCalendarRoleOptions, grant.perm || ''),
 		[shareCalendarRoleOptions, grant.perm]
@@ -50,7 +58,20 @@ export const GranteeInfo = ({ grant, shareCalendarRoleOptions, hovered }) => {
 	);
 };
 
-const Actions = ({ folder, grant, createSnackbar, setActiveModal, onMouseLeave, onMouseEnter }) => {
+type ActionsType = {
+	folder: AccordionFolder;
+	grant: GrantType;
+	setActiveModal: (arg: string) => void;
+	onMouseLeave: () => void;
+	onMouseEnter: () => void;
+};
+const Actions: FC<ActionsType> = ({
+	folder,
+	grant,
+	setActiveModal,
+	onMouseLeave,
+	onMouseEnter
+}) => {
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 	const { setActiveGrant } = useContext(Context);
@@ -68,9 +89,11 @@ const Actions = ({ folder, grant, createSnackbar, setActiveModal, onMouseLeave, 
 				folder,
 				accounts
 			})
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 		).then((res) => {
 			if (res.type.includes('fulfilled')) {
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `resend-${folder.id}`,
 					replace: true,
 					type: 'info',
@@ -80,7 +103,7 @@ const Actions = ({ folder, grant, createSnackbar, setActiveModal, onMouseLeave, 
 				});
 			}
 		});
-	}, [accounts, dispatch, folder, t, grant.d, createSnackbar]);
+	}, [accounts, dispatch, folder, t, grant.d]);
 	const onEdit = useCallback(() => {
 		setActiveGrant(grant);
 		setActiveModal('edit');
@@ -119,17 +142,28 @@ const Actions = ({ folder, grant, createSnackbar, setActiveModal, onMouseLeave, 
 	);
 };
 
-const Grantee = ({
+type GranteeType = {
+	grant: GrantType;
+	folder: AccordionFolder;
+	//	folders,
+	//	allCalendars,
+	//	setModal,
+	//	totalAppointments,
+	setActiveModal: (arg: string) => void;
+	shareCalendarRoleOptions: { label: string; value: string };
+	// setActiveGrant;
+};
+const Grantee: FC<GranteeType> = ({
 	grant,
 	folder,
-	createSnackbar,
-	folders,
-	allCalendars,
-	setModal,
-	totalAppointments,
+	// createSnackbar,
+	// folders,
+	// allCalendars,
+	// setModal,
+	// totalAppointments,
 	setActiveModal,
-	shareCalendarRoleOptions,
-	setActiveGrant
+	shareCalendarRoleOptions
+	//	setActiveGrant
 }) => {
 	const [hovered, setHovered] = useState(false);
 	const onMouseEnter = useCallback(() => {
@@ -150,26 +184,35 @@ const Grantee = ({
 				onMouseLeave={onMouseLeave}
 				onMouseEnter={onMouseEnter}
 				grant={grant}
-				createSnackbar={createSnackbar}
-				folders={folders}
-				allCalendars={allCalendars}
-				setModal={setModal}
 				setActiveModal={setActiveModal}
-				totalAppointments={totalAppointments}
-				setActiveGrant={setActiveGrant}
+				//	folders={folders}
+				// allCalendars={allCalendars}
+				//	setModal={setModal}
+				//	totalAppointments={totalAppointments}
+				//	setActiveGrant={setActiveGrant}
 			/>
 		</Container>
 	);
 };
 
-export const ShareFolderProperties = ({
+type ShareFolderPropertiesType = {
+	folder: AccordionFolder;
+	setActiveModal: (arg: string) => void;
+	// createSnackbar;
+	// folders;
+	// allCalendars;
+	// setModal;
+	// setActiveGrant;
+	// totalAppointments;
+};
+export const ShareFolderProperties: FC<ShareFolderPropertiesType> = ({
 	folder,
-	createSnackbar,
-	folders,
-	allCalendars,
-	setModal,
-	setActiveGrant,
-	totalAppointments,
+	// createSnackbar,
+	// folders,
+	// allCalendars,
+	// setModal,
+	// setActiveGrant,
+	// totalAppointments,
 	setActiveModal
 }) => {
 	const [t] = useTranslation();
@@ -178,6 +221,7 @@ export const ShareFolderProperties = ({
 		() => ShareCalendarRoleOptions(t, grant.perm?.includes('p')),
 		[t, grant?.perm]
 	);
+
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
 			<Padding vertical="small" />
@@ -186,15 +230,15 @@ export const ShareFolderProperties = ({
 			{map(grant, (item) => (
 				<Grantee
 					key={item.zid}
-					setActiveGrant={setActiveGrant}
+					//	setActiveGrant={setActiveGrant}
 					grant={item}
 					folder={folder}
-					createSnackbar={createSnackbar}
-					folders={folders}
-					allCalendars={allCalendars}
-					setModal={setModal}
+					// createSnackbar={createSnackbar}
+					// folders={folders}
+					// allCalendars={allCalendars}
+					// setModal={setModal}
 					setActiveModal={setActiveModal}
-					totalAppointments={totalAppointments}
+					// totalAppointments={totalAppointments}
 					shareCalendarRoleOptions={shareCalendarRoleOptions}
 				/>
 			))}

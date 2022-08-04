@@ -9,7 +9,7 @@ export type IncompleteMessage = {
 	did?: string;
 	parent: string;
 	conversation: string;
-	read: boolean;
+	read: boolean | string;
 	size: number;
 	attachment: boolean;
 	flagged: boolean;
@@ -29,6 +29,8 @@ export type IncompleteMessage = {
 		contentType: string;
 		content: string;
 	};
+	invite?: any;
+	shr?: any;
 	isComplete: boolean;
 	isReplied: boolean;
 	isReadReceiptRequested?: boolean;

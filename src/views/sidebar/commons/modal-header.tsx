@@ -11,9 +11,9 @@ import {
 	Padding,
 	Container
 } from '@zextras/carbonio-design-system';
-import React from 'react';
+import React, { FC } from 'react';
 
-export const ModalHeader = ({ title, onClose }) => (
+const ModalHeader: FC<{ title: string; onClose?: () => void }> = ({ title, onClose }) => (
 	<Container mainAlignment="space-between" width="100%">
 		<Row takeAvailableSpace mainAlignment="space-between" width="100%">
 			<Row width="calc(100% - 24px)" takeAvailableSpace mainAlignment="flex-start">
@@ -37,3 +37,5 @@ export const ModalHeader = ({ title, onClose }) => (
 		<Padding bottom="medium" />
 	</Container>
 );
+
+export default ModalHeader;

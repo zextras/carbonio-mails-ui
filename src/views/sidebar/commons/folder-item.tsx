@@ -3,17 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { FC } from 'react';
 import { Container, Text, Accordion } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import { AccordionFolder } from '@zextras/carbonio-shell-ui';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
 	display: block;
 `;
 
-const FolderItem = ({ folders }) => {
+const FolderItem: FC<{ folders: AccordionFolder[] }> = ({ folders }) => {
 	const [t] = useTranslation();
 	return folders.length ? (
 		<ContainerEl

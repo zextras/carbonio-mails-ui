@@ -29,6 +29,7 @@ import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
 import { SearchProps } from './views/search/search-view';
 import { SidebarComponentProps } from './views/sidebar/sidebar';
+import { Contact } from './types/sidebar';
 
 const LazyAppView = lazy(
 	() => import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
@@ -107,11 +108,11 @@ const App = (): ReactElement => {
 	useEffect(() => {
 		registerActions(
 			{
-				action: (contacts) => ({
+				action: (contacts: Contact[]): any => ({
 					id: 'mail-to',
 					label: 'Send Mail',
 					icon: 'MailModOutline',
-					click: (ev) => {
+					click: (ev: React.SyntheticEvent): void => {
 						ev?.preventDefault?.();
 						const participant =
 							!!contacts[0].email && Object.keys(contacts[0].email).length !== 0
@@ -135,7 +136,7 @@ const App = (): ReactElement => {
 					id: 'new-email',
 					label: t('label.new_email', 'New E-mail'),
 					icon: 'MailModOutline',
-					click: (ev) => {
+					click: (ev): void => {
 						ev?.preventDefault?.();
 						getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=new`, {
 							title: t('label.new_email', 'New E-mail')

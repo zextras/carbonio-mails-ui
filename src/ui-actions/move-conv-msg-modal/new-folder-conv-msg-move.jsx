@@ -7,7 +7,7 @@ import React from 'react';
 import { Container, Input, Text, Padding } from '@zextras/carbonio-design-system';
 import FolderItem from '../../views/sidebar/commons/folder-item';
 import ModalFooter from '../../views/sidebar/commons/modal-footer';
-import { ModalHeader } from '../../views/sidebar/commons/modal-header';
+import ModalHeader from '../../views/sidebar/commons/modal-header';
 
 export const NewFolderConvoMsgMove = ({
 	inputValue,

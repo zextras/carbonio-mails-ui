@@ -3,12 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Icon, Row, Text } from '@zextras/carbonio-design-system';
-import { ModalHeader } from './commons/modal-header';
+import { Folder } from '@zextras/carbonio-shell-ui';
+import ModalHeader from './commons/modal-header';
 
-export const ShareInfoRow = ({ icon, label, text }) => (
+export const ShareInfoRow: FC<{
+	icon: string;
+	label: string;
+	text: string | number | undefined;
+}> = ({ icon, label, text }) => (
 	<Row width="fill" mainAlignment="flex-start" padding={{ all: 'small' }}>
 		<Row padding={{ right: 'small' }}>
 			<Icon icon={icon} />
@@ -22,7 +27,10 @@ export const ShareInfoRow = ({ icon, label, text }) => (
 	</Row>
 );
 
-export const SharesInfoModal = ({ onClose, folder }) => {
+export const SharesInfoModal: FC<{
+	onClose: () => void;
+	folder: Folder & { owner?: string };
+}> = ({ onClose, folder }) => {
 	const [t] = useTranslation();
 
 	const text = (/r/.test(folder.perm || '') ? `${t('label.read', 'Read')}` : '')
@@ -34,6 +42,8 @@ export const SharesInfoModal = ({ onClose, folder }) => {
 		.concat(/f/.test(folder.perm || '') ? `, ${t('label.freebusy', 'FreeBusy')}` : '')
 		.concat(/c/.test(folder.perm || '') ? `, ${t('label.create', 'Create')}` : '')
 		.concat(/x/.test(folder.perm || '') ? `, ${t('label.workflow', 'WorkFlow')}` : '');
+
+	const mailFolderLabel = useMemo(() => t('label.mail_folder', 'E-mail folder'), [t]);
 	return (
 		<Container
 			padding={{ bottom: 'large' }}
@@ -55,7 +65,7 @@ export const SharesInfoModal = ({ onClose, folder }) => {
 			<ShareInfoRow
 				icon="MailModOutline"
 				label={`${t('label.type', 'Type')}`}
-				text={t('label.mail_folder', 'E-mail folder')}
+				text={mailFolderLabel}
 			/>
 			<ShareInfoRow
 				icon="UnlockOutline"

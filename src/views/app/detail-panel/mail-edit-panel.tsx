@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import {
 	Container,
@@ -18,7 +18,18 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import EditView from './edit/edit-view';
 
-const MailEditHeader = ({ folderId, header, toggleAppBoard, setToggleAppBoard }) => {
+type MailEditHeaderType = {
+	folderId: string | number;
+	header: string | undefined;
+	toggleAppBoard: boolean;
+	setToggleAppBoard: (arg: boolean) => void;
+};
+const MailEditHeader: FC<MailEditHeaderType> = ({
+	folderId,
+	header,
+	toggleAppBoard,
+	setToggleAppBoard
+}) => {
 	const [t] = useTranslation();
 
 	const onClose = useCallback(() => {
@@ -40,7 +51,7 @@ const MailEditHeader = ({ folderId, header, toggleAppBoard, setToggleAppBoard })
 				<Tooltip label={t('board.show', 'Show board')} placement="bottom">
 					<IconButton
 						icon={toggleAppBoard ? 'DiagonalArrowRightUpOutline' : 'DiagonalArrowLeftDownOutline'}
-						onClick={() => setToggleAppBoard(!toggleAppBoard)}
+						onClick={(): void => setToggleAppBoard(!toggleAppBoard)}
 					/>
 				</Tooltip>
 				<IconButton icon="Close" onClick={onClose} />
@@ -51,10 +62,10 @@ const MailEditHeader = ({ folderId, header, toggleAppBoard, setToggleAppBoard })
 	);
 };
 
-export default function MailEditPanel() {
-	const [header, setHeader] = useState(undefined);
+const MailEditPanel: FC = () => {
+	const [header, setHeader] = useState();
 	const [toggleAppBoard, setToggleAppBoard] = useState(false);
-	const { folderId, editId } = useParams();
+	const { folderId, editId } = useParams<{ folderId: string; editId: string }>();
 
 	return (
 		<>
@@ -82,4 +93,5 @@ export default function MailEditPanel() {
 			</Container>
 		</>
 	);
-}
+};
+export default MailEditPanel;

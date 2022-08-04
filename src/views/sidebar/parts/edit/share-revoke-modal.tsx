@@ -3,20 +3,27 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { ModalHeader } from '../../commons/modal-header';
+import { Folder, getBridgedFunctions, store, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import ModalHeader from '../../commons/modal-header';
 import ModalFooter from '../../commons/modal-footer';
 
 import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite-reply/parts/utils';
 import { GranteeInfo } from './share-folder-properties';
 import { sendShareNotification } from '../../../../store/actions/send-share-notification';
 import { folderAction } from '../../../../store/actions/folder-action';
+import { EditFolderArgumentType, GrantType } from '../../../../types';
 
-const ShareRevokeModal = ({ folder, onClose, grant, createSnackbar, goBack }) => {
+type ShareRevokeModalType = {
+	folder: EditFolderArgumentType;
+	onClose?: () => void;
+	grant: GrantType;
+	goBack: () => void;
+};
+const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, goBack }) => {
 	const [t] = useTranslation();
 	const [sendNotification, setSendNotification] = useState(false);
 	const [standardMessage, setStandardMessage] = useState('');
@@ -30,14 +37,18 @@ const ShareRevokeModal = ({ folder, onClose, grant, createSnackbar, goBack }) =>
 				sendShareNotification({
 					sendNotification,
 					standardMessage,
-					contacts: [{ email: grant.d }],
+					contacts: [{ email: grant?.d }],
 					folder,
 					accounts
 				})
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 			).then(() => {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				dispatch(folderAction({ folder, zid: grant.zid, op: '!grant' })).then((res) => {
 					if (res.type.includes('fulfilled')) {
-						createSnackbar({
+						getBridgedFunctions()?.createSnackbar({
 							key: `remove-share-${folder.id}`,
 							replace: true,
 							type: 'info',
@@ -50,9 +61,11 @@ const ShareRevokeModal = ({ folder, onClose, grant, createSnackbar, goBack }) =>
 				});
 			});
 		} else {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			dispatch(folderAction({ folder, zid: grant.zid, op: '!grant' })).then((res) => {
 				if (res.type.includes('fulfilled')) {
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `remove-share-${folder.id}`,
 						replace: true,
 						type: 'info',
@@ -72,7 +85,6 @@ const ShareRevokeModal = ({ folder, onClose, grant, createSnackbar, goBack }) =>
 		sendNotification,
 		standardMessage,
 		folder,
-		createSnackbar,
 		t,
 		goBack
 	]);
@@ -116,7 +128,7 @@ const ShareRevokeModal = ({ folder, onClose, grant, createSnackbar, goBack }) =>
 				iconSize="medium"
 				value={sendNotification}
 				defaultChecked={sendNotification}
-				onClick={() => setSendNotification(!sendNotification)}
+				onClick={(): void => setSendNotification(!sendNotification)}
 				label={t('label.send_notification', 'Send a notification message to')}
 			/>
 			<Container
@@ -128,7 +140,7 @@ const ShareRevokeModal = ({ folder, onClose, grant, createSnackbar, goBack }) =>
 				<Input
 					label={t('share.standard_message', 'Add a note to the standard message')}
 					value={standardMessage}
-					onChange={(ev) => {
+					onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => {
 						setStandardMessage(ev.target.value);
 					}}
 					disabled={!sendNotification}
@@ -162,7 +174,6 @@ const ShareRevokeModal = ({ folder, onClose, grant, createSnackbar, goBack }) =>
 					secondaryAction={goBack}
 					secondaryLabel={t('label.go_back', 'Go Back')}
 					label={t('label.revoke', 'Revoke')}
-					t={t}
 					tooltip={toolTip}
 				/>
 			</Container>

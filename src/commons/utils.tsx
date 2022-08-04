@@ -36,7 +36,7 @@ export const participantToString = (
 };
 
 export const isAvailableInTrusteeList = (
-	trusteeList: Array<string> | string,
+	trusteeList: Array<string> | string | number,
 	address: string
 ): boolean => {
 	let trusteeAddress: Array<string> = [];

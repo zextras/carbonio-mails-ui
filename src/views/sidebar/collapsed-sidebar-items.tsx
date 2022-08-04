@@ -3,12 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
-import { AppLink } from '@zextras/carbonio-shell-ui';
+import React, { FC, useMemo } from 'react';
+import { AccordionFolder, AppLink } from '@zextras/carbonio-shell-ui';
 import { Row, Padding, Tooltip, IconButton } from '@zextras/carbonio-design-system';
 import { getFolderIconColor, getFolderIconName } from './utils';
 
-const CollapsedSideBarItems = ({ folder }) => {
+const CollapsedSideBarItems: FC<{ folder: AccordionFolder }> = ({ folder }) => {
 	const folderIconColor = useMemo(() => getFolderIconColor(folder), [folder]);
 	const folderIconLabel = useMemo(() => getFolderIconName(folder), [folder]);
 
@@ -21,7 +21,7 @@ const CollapsedSideBarItems = ({ folder }) => {
 							customSize={{ iconSize: 'large', paddingSize: 'small' }}
 							icon={folderIconLabel}
 							customIconColor={folderIconColor}
-							onClick={() => undefined}
+							onClick={(): null => null}
 						/>
 					</Padding>
 				</Tooltip>

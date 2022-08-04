@@ -16,7 +16,7 @@ import { TFunction } from 'i18next';
 import { concat, filter, includes, map } from 'lodash';
 import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../sidebar/commons/modal-footer';
-import { ModalHeader } from '../sidebar/commons/modal-header';
+import ModalHeader  from '../sidebar/commons/modal-header';
 import ToggleFilters from './parts/toggle-filters';
 import SubjectKeywordRow from './parts/subject-keyword-row';
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';

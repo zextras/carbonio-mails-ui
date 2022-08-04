@@ -12,13 +12,12 @@ import { Context } from './parts/edit/edit-context';
 import { ModalProps } from '../../types';
 
 export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 	const [activeModal, setActiveModal] = useState('default');
 	const [activeGrant, setActiveGrant] = useState({});
 	const goBack = useCallback(() => {
 		setActiveModal('default');
 	}, [setActiveModal]);
+	console.log('xxx:', { grant: folder });
 	return (
 		<Context.Provider value={{ activeModal, setActiveModal, activeGrant, setActiveGrant, onClose }}>
 			<Container
@@ -46,7 +45,6 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 						folder={folder.folder}
 						goBack={goBack}
 						grant={activeGrant || folder?.folder.acl?.grant[0]}
-						createSnackbar={createSnackbar}
 					/>
 				)}
 				{activeModal === 'share' && (

@@ -19,6 +19,7 @@ import { Conversation, MailMessage } from '../types';
 
 type ACPProps = {
 	folderId: string;
+	isConversation?: boolean;
 };
 
 type ActionObj = {

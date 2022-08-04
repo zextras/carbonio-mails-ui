@@ -5,12 +5,12 @@
  */
 import React, { useState, useMemo, useCallback, useEffect, FC, useContext } from 'react';
 import { Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, store } from '@zextras/carbonio-shell-ui';
 import { filter, includes, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import ModalFooter from '../../commons/modal-footer';
-import { ModalHeader } from '../../commons/modal-header';
+import ModalHeader from '../../commons/modal-header';
 import { folderAction } from '../../../../store/actions/folder-action';
 import NameInputRow from './name-input';
 import FolderDetails from './folder-details';
@@ -46,6 +46,7 @@ type EditModalProps = ModalProps & {
 const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal }) => {
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
+
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 
@@ -289,8 +290,8 @@ const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal 
 				{!isEmpty(folder?.folder.acl) && !folder.folder?.owner && (
 					<ShareFolderProperties
 						folder={folder}
-						setfolder={(): null => null}
-						totalAppointments={folder.folder?.n}
+						// setfolder={(): null => null}
+						// totalAppointments={folder.folder?.n}
 						setActiveModal={setActiveModal}
 					/>
 				)}

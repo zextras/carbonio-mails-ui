@@ -3,9 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { filter, forEach, isArray, reduce, some } from 'lodash';
-import { Trans, useTranslation } from 'react-i18next';
+import React, {
+	FC,
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
+import { filter, forEach, isArray, isNull, reduce, some } from 'lodash';
+import { Trans } from 'react-i18next';
 import {
 	Container,
 	Text,
@@ -17,9 +25,10 @@ import {
 	MultiButton
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
-import { editSettings, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { editSettings, getBridgedFunctions, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
+import { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';
 
 export const _CI_REGEX = /^<(.*)>$/;
 export const _CI_SRC_REGEX = /^cid:(.*)$/;
@@ -27,7 +36,7 @@ const LINK_REGEX =
 	/(?:https?:\/\/|www\.)+(?![^\s]*?")([\w.,@?!^=%&amp;:()/~+#-]*[\w@?!^=%&amp;()/~+#-])?/gi;
 const LINE_BREAK_REGEX = /(?:\r\n|\r|\n)/g;
 
-export const plainTextToHTML = (str) => {
+export const plainTextToHTML = (str: string): string => {
 	if (str !== undefined && str !== null) {
 		return str.replace(LINE_BREAK_REGEX, '<br />');
 	}
@@ -59,7 +68,7 @@ const StyledMultiBtn = styled(MultiButton)`
 	}
 `;
 
-const replaceLinkToAnchor = (content) => {
+const replaceLinkToAnchor = (content: string): string => {
 	if (content === '' || content === undefined) {
 		return '';
 	}
@@ -78,7 +87,7 @@ const replaceLinkToAnchor = (content) => {
 	});
 };
 
-const _TextMessageRenderer = ({ body, t }) => {
+const _TextMessageRenderer: FC<{ body: { content: string; contentType: string } }> = ({ body }) => {
 	const [showQuotedText, setShowQuotedText] = useState(false);
 	const orignalText = getOriginalContent(body.content, false);
 	const quoted = getQuotedTextOnly(body.content, false);
@@ -105,10 +114,10 @@ const _TextMessageRenderer = ({ body, t }) => {
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center" padding={{ top: 'medium' }}>
 					<Button
-						label={t('label.show_quoted_text', 'Show quoted text')}
+						label={getBridgedFunctions()?.t('label.show_quoted_text', 'Show quoted text')}
 						icon="EyeOutline"
 						type="outlined"
-						onClick={() => setShowQuotedText(true)}
+						onClick={(): void => setShowQuotedText(true)}
 						size="fill"
 					/>
 				</Row>
@@ -117,9 +126,20 @@ const _TextMessageRenderer = ({ body, t }) => {
 	);
 };
 
-const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
-	const divRef = useRef();
-	const iframeRef = useRef();
+type _HtmlMessageRendererType = {
+	msgId: string;
+	body: { content: string; contentType: string };
+	parts: MailMessagePart[];
+	participants: Participant[] | undefined;
+};
+const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
+	msgId,
+	body,
+	parts,
+	participants
+}) => {
+	const divRef = useRef<HTMLDivElement>(null);
+	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const [showQuotedText, setShowQuotedText] = useState(false);
 
 	const settingsPref = useUserSettings()?.prefs;
@@ -161,9 +181,11 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 			setShowExternalImage(true);
 	}, [from, settingsPref.zimbraPrefMailTrustedSenderList]);
 
-	const calculateHeight = () => {
-		iframeRef.current.style.height = '0px';
-		iframeRef.current.style.height = `${iframeRef.current.contentDocument.body.scrollHeight}px`;
+	const calculateHeight = (): void => {
+		if (!isNull(iframeRef.current)) {
+			iframeRef.current.style.height = '0px';
+			iframeRef.current.style.height = `${iframeRef?.current?.contentDocument?.body?.scrollHeight}px`;
+		}
 	};
 
 	const saveTrustee = useCallback(
@@ -172,7 +194,9 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 			if (settingsPref.zimbraPrefMailTrustedSenderList) {
 				trusteeAddress = isArray(settingsPref.zimbraPrefMailTrustedSenderList)
 					? settingsPref.zimbraPrefMailTrustedSenderList
-					: settingsPref.zimbraPrefMailTrustedSenderList.split(',');
+					: // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					  // @ts-ignore
+					  settingsPref.zimbraPrefMailTrustedSenderList?.split(',');
 			}
 			editSettings({
 				prefs: { zimbraPrefMailTrustedSenderList: [...trusteeAddress, trustee] }
@@ -218,10 +242,11 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 		[displayBanner, showExternalImage]
 	);
 	useLayoutEffect(() => {
-		iframeRef.current.contentDocument.open();
-		iframeRef.current.contentDocument.write(contentToDisplay);
-		iframeRef.current.contentDocument.close();
-
+		if (!isNull(iframeRef.current) && !isNull(iframeRef.current.contentDocument)) {
+			iframeRef.current.contentDocument.open();
+			iframeRef.current.contentDocument.write(contentToDisplay);
+			iframeRef.current.contentDocument.close();
+		}
 		const styleTag = document.createElement('style');
 		const styles = `
 			max-width: 100% !important;
@@ -249,7 +274,8 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 			}
 		`;
 		styleTag.textContent = styles;
-		iframeRef.current.contentDocument.head.append(styleTag);
+		if (!isNull(iframeRef.current) && !isNull(iframeRef.current.contentDocument))
+			iframeRef.current.contentDocument.head.append(styleTag);
 
 		// TODO: fix Dark Reader inside iframes
 		// if (darkMode && darkMode !== 'disabled') {
@@ -275,28 +301,35 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 			{}
 		);
 
-		const images = iframeRef.current.contentDocument.body.getElementsByTagName('img');
-
-		forEach(images, (p) => {
-			if (p.hasAttribute('dfsrc')) {
-				p.setAttribute('src', p.getAttribute('dfsrc'));
-				p.setAttribute('style', showImage ? 'display: block' : 'display: none');
-			}
-			if (!_CI_SRC_REGEX.test(p.src)) return;
-			const ci = _CI_SRC_REGEX.exec(p.getAttribute('src'))[1];
-			if (imgMap[ci]) {
-				const part = imgMap[ci];
-				p.setAttribute('pnsrc', p.getAttribute('src'));
-				p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
-			}
-		});
+		const images =
+			iframeRef.current &&
+			iframeRef.current.contentDocument &&
+			iframeRef.current.contentDocument.body.getElementsByTagName('img');
+		if (images)
+			forEach(images, (p: HTMLImageElement) => {
+				if (p.hasAttribute('dfsrc')) {
+					p.setAttribute('src', p.getAttribute('dfsrc'));
+					p.setAttribute('style', showImage ? 'display: block' : 'display: none');
+				}
+				if (!_CI_SRC_REGEX.test(p.src)) return;
+				const ci = _CI_SRC_REGEX.exec(p.getAttribute('src'))[1];
+				if (imgMap[ci]) {
+					const part = imgMap[ci];
+					p.setAttribute('pnsrc', p.getAttribute('src'));
+					p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
+				}
+			});
 
 		const resizeObserver = new ResizeObserver(calculateHeight);
-		resizeObserver.observe(divRef.current);
+		divRef.current && resizeObserver.observe(divRef.current);
 
 		return () => resizeObserver.disconnect();
 	}, [contentToDisplay, msgId, parts, showImage]);
 
+	const multiBtnLabel = useMemo(
+		() => getBridgedFunctions()?.t('label.view_images', 'VIEW IMAGES'),
+		[]
+	);
 	return (
 		<div ref={divRef} className="force-white-bg">
 			{showBanner && !showExternalImage && (
@@ -324,7 +357,7 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 							<Icon icon="AlertTriangleOutline" color="warning" size="large" />
 						</Padding>
 						<Text overflow="break-word" size="small">
-							{t(
+							{getBridgedFunctions()?.t(
 								'message.external_images_blocked',
 								'External images have been blocked to protect you against potential spam'
 							)}
@@ -345,9 +378,9 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 						<StyledMultiBtn
 							background="transparent"
 							type="outlined"
-							label={t('label.view_images', 'VIEW IMAGES')}
+							label={multiBtnLabel}
 							color="warning"
-							onClick={() => {
+							onClick={(): void => {
 								setShowExternalImage(true);
 							}}
 							btnProps={{ size: 'fit', isSmall: true }}
@@ -359,7 +392,7 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 						/>
 						<IconButton
 							icon="CloseOutline"
-							onClick={() => setDisplayBanner(false)}
+							onClick={(): void => setDisplayBanner(false)}
 							customSize={{
 								iconSize: 'large',
 								paddingSize: 'small'
@@ -383,10 +416,10 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center">
 					<Button
-						label={t('label.show_quoted_text', 'Show quoted text')}
+						label={getBridgedFunctions()?.t('label.show_quoted_text', 'Show quoted text')}
 						icon="EyeOutline"
 						type="outlined"
-						onClick={() => setShowQuotedText(true)}
+						onClick={(): void => setShowQuotedText(true)}
 						size="fill"
 					/>
 				</Row>
@@ -395,19 +428,22 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 	);
 };
 
-const EmptyBody = () => {
-	const { t } = useTranslation();
+const EmptyBody: FC = () => (
+	<Container padding={{ bottom: 'medium' }}>
+		<Text>{`(${getBridgedFunctions()?.t(
+			'messages.no_content',
+			'This message has no text content'
+		)}.)`}</Text>
+	</Container>
+);
 
-	return (
-		<Container padding={{ bottom: 'medium' }}>
-			<Text>{`(${t('messages.no_content', 'This message has no text content')}.)`}</Text>
-		</Container>
-	);
-};
-export function findAttachments(parts, acc) {
+export function findAttachments(
+	parts: MailMessagePart[],
+	acc: Array<EditorAttachmentFiles>
+): Array<EditorAttachmentFiles> {
 	return reduce(
 		parts,
-		(found, part) => {
+		(found, part: any) => {
 			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
 				found.push(part);
 			}
@@ -417,9 +453,14 @@ export function findAttachments(parts, acc) {
 		acc
 	);
 }
-const MailMessageRenderer = ({ mailMsg, onLoadChange }) => {
-	const [t] = useTranslation();
+const MailMessageRenderer: FC<{ mailMsg: MailMessage; onLoadChange: () => void }> = ({
+	mailMsg,
+	onLoadChange
+}) => {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	const parts = findAttachments(mailMsg.parts ?? [], []);
+
 	useEffect(() => {
 		if (!mailMsg.read) {
 			onLoadChange();
@@ -434,14 +475,15 @@ const MailMessageRenderer = ({ mailMsg, onLoadChange }) => {
 			<_HtmlMessageRenderer
 				msgId={mailMsg.id}
 				body={mailMsg.body}
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				parts={parts}
-				t={t}
 				participants={mailMsg.participants}
 			/>
 		);
 	}
 	if (mailMsg.body?.contentType === 'text/plain') {
-		return <_TextMessageRenderer body={mailMsg.body} t={t} />;
+		return <_TextMessageRenderer body={mailMsg.body} />;
 	}
 	return <EmptyBody />;
 };

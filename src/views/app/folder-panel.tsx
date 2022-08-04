@@ -5,7 +5,7 @@
  */
 /* eslint-disable no-nested-ternary */
 
-import React, { useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
@@ -16,8 +16,9 @@ import ConversationList from './folder-panel/conversation-list';
 import MessageList from './folder-panel/message-list';
 import ShimmerList from '../search/shimmer-list';
 
-export default function FolderPanel() {
-	const { folderId } = useParams();
+
+const FolderPanel:FC=()=> {
+	const { folderId } = useParams<{folderId:string}>();
 	const dispatch = useDispatch();
 	const { isMessageView } = useAppContext();
 
@@ -52,3 +53,5 @@ export default function FolderPanel() {
 		</ActionsContextProvider>
 	);
 }
+
+export default FolderPanel

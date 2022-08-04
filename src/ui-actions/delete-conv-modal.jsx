@@ -7,7 +7,7 @@ import React, { useCallback, useContext } from 'react';
 import { Container, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { convAction, msgAction } from '../store/actions';
-import { ModalHeader } from '../views/sidebar/commons/modal-header';
+import ModalHeader from '../views/sidebar/commons/modal-header';
 import ModalFooter from '../views/sidebar/commons/modal-footer';
 
 const DeleteConvConfirm = ({ selectedIDs, isMessageView, deselectAll, onClose, dispatch }) => {

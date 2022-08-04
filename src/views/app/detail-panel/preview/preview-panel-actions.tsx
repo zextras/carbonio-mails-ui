@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useContext, useMemo } from 'react';
+import React, { FC, useContext, useMemo } from 'react';
 import {
 	Container,
 	Dropdown,
@@ -23,8 +23,20 @@ import {
 } from '../../../../ui-actions/conversation-actions';
 import { replyAllMsg, replyMsg, setMsgRead } from '../../../../ui-actions/message-actions';
 import { useSelection } from '../../../../hooks/useSelection';
+import { Conversation, MailMessage } from '../../../../types';
 
-export default function PreviewPanelActions({ item, folderId, isMessageView, conversation }) {
+type PreviewPanelActionsType = {
+	item: Conversation;
+	folderId: string;
+	isMessageView: boolean;
+	conversation: Conversation;
+};
+const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
+	item,
+	folderId,
+	isMessageView,
+	conversation
+}) => {
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
@@ -33,7 +45,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 	const { setCount } = useAppContext();
 	const { deselectAll } = useSelection(folderId, setCount);
 
-	const ids = useMemo(() => [item.id], [item.id]);
+	const ids = useMemo(() => [item?.id], [item?.id]);
 
 	const primaryActions = useMemo(() => {
 		switch (folderId) {
@@ -61,12 +73,12 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 		switch (folderId) {
 			case FOLDERS.SENT:
 				// return [setConversationsFlag(ids, item.flagged, t, dispatch)];
-				return [setConversationsFlag({ ids, value: item.flagged, t, dispatch })];
+				return [setConversationsFlag({ ids, value: item?.flagged, t, dispatch })];
 			case FOLDERS.TRASH:
 			case FOLDERS.SPAM:
 				return [
 					isMessageView
-						? setMsgRead({ ids, value: item.read, t, dispatch, folderId })
+						? setMsgRead({ ids, value: item?.read, t, dispatch, folderId })
 						: setConversationsRead({
 								ids,
 								value: conversation.read,
@@ -76,7 +88,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 								shouldReplaceHistory: true,
 								deselectAll
 						  }),
-					setConversationsFlag({ ids, value: item.flagged, t, dispatch })
+					setConversationsFlag({ ids, value: item?.flagged, t, dispatch })
 					// setConversationsSpam(ids, true, t, dispatch)
 				];
 			case FOLDERS.INBOX:
@@ -84,7 +96,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 				return [
 					replyAllMsg({ id: item?.messages?.[0]?.id ?? item?.id, folderId, t }),
 					isMessageView
-						? setMsgRead({ ids, value: item.read, t, dispatch, folderId })
+						? setMsgRead({ ids, value: item?.read, t, dispatch, folderId })
 						: setConversationsRead({
 								ids,
 								value: conversation.read,
@@ -94,7 +106,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 								shouldReplaceHistory: false,
 								deselectAll
 						  }),
-					setConversationsFlag({ ids, value: item.flagged, t, dispatch }),
+					setConversationsFlag({ ids, value: item?.flagged, t, dispatch }),
 					printConversation(t, conversation, account)
 					// setConversationsSpam(ids, false, t, dispatch)
 					// archiveMsg
@@ -104,8 +116,8 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 	}, [
 		folderId,
 		ids,
-		item.flagged,
-		item.read,
+		item?.flagged,
+		item?.read,
 		item?.messages,
 		item?.id,
 		t,
@@ -131,7 +143,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 						key={action.id}
 						size="medium"
 						icon={action.icon}
-						onClick={(ev) => {
+						onClick={(ev: React.MouseEvent<HTMLElement>): void => {
 							if (ev) ev.preventDefault();
 							action.click();
 						}}
@@ -146,15 +158,17 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 						id: action.label,
 						icon: action.icon,
 						label: action.label,
-						click: (ev) => {
+						click: (ev: React.MouseEvent<HTMLElement>): void => {
 							if (ev) ev.preventDefault();
 							action.click();
 						}
 					}))}
 				>
-					<IconButton size="medium" icon="MoreVertical" />
+					<IconButton size="medium" icon="MoreVertical" onClick={(): null => null} />
 				</Dropdown>
 			</Padding>
 		</Container>
 	);
-}
+};
+
+export default PreviewPanelActions;

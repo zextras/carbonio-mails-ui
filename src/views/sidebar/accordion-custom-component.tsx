@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, SyntheticEvent, useCallback, useContext, useMemo, useState } from 'react';
+import React, { FC, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import {
 	AppLink,
 	FOLDERS,
@@ -30,11 +30,10 @@ import {
 	Icon,
 	Row,
 	Padding,
-	ModalManagerContext,
 	DragObj,
 	ContainerProps
 } from '@zextras/carbonio-design-system';
-import { find, startsWith } from 'lodash';
+import { startsWith } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -87,8 +86,7 @@ type FolderActionsProps = {
 const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> => {
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createModal = useContext(ModalManagerContext) as Function;
+
 	const [activeModal, setActiveModal] = useState('default');
 	const [activeGrant, setActiveGrant] = useState({});
 	const goBack = useCallback(() => {
@@ -105,13 +103,13 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = getBridgedFunctions()?.createModal(
 						{
 							maxHeight: '90vh',
 							children: (
-								<>
-									<NewModal folder={folder} onClose={(): void => closeModal()} />
-								</>
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								<NewModal folder={folder} onClose={(): void => closeModal()} />
 							)
 						},
 						true
@@ -128,13 +126,13 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = getBridgedFunctions()?.createModal(
 						{
 							maxHeight: '90vh',
 							children: (
-								<>
-									<MoveModal folder={folder} onClose={(): void => closeModal()} />
-								</>
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								<MoveModal folder={folder} onClose={(): void => closeModal()} />
 							)
 						},
 						true
@@ -153,13 +151,11 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = getBridgedFunctions()?.createModal(
 						{
-							children: (
-								<>
-									<EmptyModal onClose={(): void => closeModal()} folder={folder} />
-								</>
-							)
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							children: <EmptyModal onClose={(): void => closeModal()} folder={folder} />
 						},
 						true
 					);
@@ -175,14 +171,12 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = getBridgedFunctions()?.createModal(
 						{
 							maxHeight: '90vh',
-							children: (
-								<>
-									<EditModal onClose={(): void => closeModal()} folder={folder} />
-								</>
-							)
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							children: <EditModal onClose={(): void => closeModal()} folder={folder} />
 						},
 						true
 					);
@@ -198,13 +192,11 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = getBridgedFunctions()?.createModal(
 						{
-							children: (
-								<>
-									<DeleteModal onClose={(): void => closeModal()} folder={folder} />
-								</>
-							)
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							children: <DeleteModal onClose={(): void => closeModal()} folder={folder} />
 						},
 						true
 					);
@@ -218,11 +210,13 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = getBridgedFunctions()?.createModal(
 						{
 							children: (
 								<>
 									<ShareFolderModal
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore
 										onClose={(): void => closeModal()}
 										folder={folder}
 										activeGrant={activeGrant}
@@ -254,12 +248,12 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = getBridgedFunctions()?.createModal(
 						{
 							children: (
-								<>
-									<SharesInfoModal onClose={(): void => closeModal()} folder={folder.folder} />
-								</>
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								<SharesInfoModal onClose={(): void => closeModal()} folder={folder.folder} />
 							)
 						},
 						true
@@ -267,7 +261,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				}
 			}
 		],
-		[activeGrant, createModal, dispatch, folder, goBack, t]
+		[activeGrant, dispatch, folder, goBack, t]
 	);
 
 	const defaultFolderActions = useMemo(

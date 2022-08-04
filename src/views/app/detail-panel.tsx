@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { FC } from 'react';
 import { useRouteMatch, Switch, Route } from 'react-router-dom';
 import { Container } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
@@ -12,7 +12,7 @@ import ConversationPreviewPanel from './detail-panel/conversation-preview-panel'
 import MessagePreviewPanel from './detail-panel/message-preview-panel';
 import MailEditPanel from './detail-panel/mail-edit-panel';
 
-const DetailPanel = () => {
+const DetailPanel:FC = () => {
 	const { path } = useRouteMatch();
 	const { count } = useAppContext();
 	return (

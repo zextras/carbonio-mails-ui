@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
-import React, { useMemo, useState, useRef, useCallback, useEffect, useContext } from 'react';
+import React, { useMemo, useState, useRef, useCallback, useEffect, useContext, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, find } from 'lodash';
 import {
@@ -32,8 +32,12 @@ import { getMsg, msgAction } from '../../../../store/actions';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 import ReadReceiptModal from './read-receipt-modal';
 import PreviewHeader from './parts/preview-header';
+import { MailMessage } from '../../../../types';
 
-const MailContent = ({ message, isMailPreviewOpen }) => {
+const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
+	message,
+	isMailPreviewOpen
+}) => {
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
 	const [showModal, setShowModal] = useState(true);
 	const dispatch = useDispatch();
@@ -75,21 +79,24 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 	const readReceiptSetting = useMemo(() => prefs?.zimbraPrefMailSendReadReceipts, [prefs]);
 	const showReadReceiptModal = useMemo(
 		() =>
-			!!readReceiptRequester &&
-			showModal &&
-			message.isReadReceiptRequested &&
-			!message?.isSentByMe &&
-			readReceiptSetting === 'prompt',
+			(!!readReceiptRequester &&
+				showModal &&
+				message.isReadReceiptRequested &&
+				!message?.isSentByMe &&
+				readReceiptSetting === 'prompt') ??
+			false,
 		[readReceiptRequester, showModal, message, readReceiptSetting]
 	);
 
 	const showShareInvite = useMemo(
 		() =>
-			message.shr &&
-			message.shr.length > 0 &&
-			!message.fragment.includes('revoked') &&
-			!message.fragment.includes('has accepted') &&
-			!message.fragment.includes('has declined'),
+			message &&
+			message?.shr &&
+			message?.shr?.length > 0 &&
+			message.fragment &&
+			!message?.fragment.includes('revoked') &&
+			!message?.fragment.includes('has accepted') &&
+			!message?.fragment.includes('has declined'),
 		[message]
 	);
 
@@ -119,8 +126,9 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 					{showAppointmentInvite ? (
 						<Container width="100%">
 							<InviteResponse
-								// eslint-disable-next-line @typescript-eslint/no-empty-function
-								onLoadChange={() => {}}
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								onLoadChange={(): null => null}
 								mailMsg={message}
 								inviteId={`${message.invite[0].comp[0].apptId}-${message.id}`}
 								participationStatus={
@@ -136,7 +144,7 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 						</Container>
 					) : showShareInvite ? (
 						<SharedInviteReply
-							title={message.fragment.split('Shared item:')[0]}
+							// title={message?.fragment?.split('Shared item:')[0]}
 							sharedContent={message.shr[0].content}
 							mailMsg={message}
 						/>
@@ -144,8 +152,7 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 						<MailMessageRenderer
 							key={message.id}
 							mailMsg={message}
-							// eslint-disable-next-line @typescript-eslint/no-empty-function
-							onLoadChange={() => {}}
+							onLoadChange={(): null => null}
 						/>
 					)}
 				</Padding>
@@ -182,9 +189,15 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 	);
 };
 
-const MailPreviewBlock = ({ message, open, onClick, isAlone }) => {
+type MailPreviewBlockType = {
+	message: MailMessage;
+	open: boolean;
+	onClick: () => void;
+	isAlone: boolean;
+};
+const MailPreviewBlock: FC<MailPreviewBlockType> = ({ message, open, onClick, isAlone }) => {
 	const [t] = useTranslation();
-	const { folderId } = useParams();
+	const { folderId } = useParams<{ folderId: string }>();
 
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
@@ -239,13 +252,15 @@ const MailPreviewBlock = ({ message, open, onClick, isAlone }) => {
 	);
 };
 
-export default function MailPreview({ message, expanded, isAlone, isMessageView }) {
-	const mailContainerRef = useRef(undefined);
-	const settings = useUserSettings();
-	const timezone = useMemo(
-		() => settings?.prefs.zimbraPrefTimeZoneId,
-		[settings?.prefs.zimbraPrefTimeZoneId]
-	);
+type MailPreviewType = {
+	message: MailMessage;
+	expanded: boolean;
+	isAlone: boolean;
+	isMessageView: boolean;
+};
+const MailPreview: FC<MailPreviewType> = ({ message, expanded, isAlone, isMessageView }) => {
+	const mailContainerRef = useRef<HTMLDivElement>(null);
+
 	const [open, setOpen] = useState(expanded || isAlone);
 
 	const onClick = useCallback(() => {
@@ -261,7 +276,6 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 			<MailPreviewBlock
 				onClick={onClick}
 				message={message}
-				timezone={timezone}
 				open={isMailPreviewOpen}
 				isAlone={isAlone}
 			/>
@@ -279,4 +293,6 @@ export default function MailPreview({ message, expanded, isAlone, isMessageView 
 			</Container>
 		</Container>
 	);
-}
+};
+
+export default MailPreview;

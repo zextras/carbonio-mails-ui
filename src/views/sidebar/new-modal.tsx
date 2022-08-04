@@ -36,7 +36,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import ModalFooter from './commons/modal-footer';
-import { ModalHeader } from './commons/modal-header';
+import ModalHeader from './commons/modal-header';
 import { createFolder } from '../../store/actions/create-folder';
 import { FOLDER_VIEW } from '../../constants';
 import ModalAccordionCustomComponent from './parts/edit/modal-accordion-custom-component';
@@ -61,7 +61,9 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [folderDestination, setFolderDestination] = useState<AccordionFolder | undefined>(folder);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
-	const [label, setLabel] = useState<string>(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
+	const [label, setLabel] = useState<string>(
+		t('folder_panel.modal.new.input.name', 'Enter Folder Name')
+	);
 	const { folderId } = useParams<{ folderId: string }>();
 	const accountName = useUserAccount().name;
 	const accordionRef = useRef<HTMLDivElement>(null);

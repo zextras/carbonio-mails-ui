@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Container, Text, SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { deleteTag } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../../commons/modal-footer';
-import { ModalHeader } from '../../commons/modal-header';
+import ModalHeader from '../../commons/modal-header';
 
 type ComponentProps = {
 	onClose: () => void;
