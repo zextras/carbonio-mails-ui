@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.28](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.27...v0.1.28) (2022-08-05)
+
+
+### Bug Fixes
+
+* attachment preview with shared folder broken ([7edee69](https://github.com/zextras/carbonio-mails-ui/commit/7edee69fdaf9588da394a0ae88d34beb67376296))
+
 ### [0.1.27](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.26...v0.1.27) (2022-08-01)
 
 ### [0.1.26](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.25...v0.1.26) (2022-07-22)
