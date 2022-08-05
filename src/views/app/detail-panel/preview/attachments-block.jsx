@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo, useRef, useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { filter, find, map, reduce, uniqBy } from 'lodash';
+import { filter, find, includes, map, reduce, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -39,21 +39,28 @@ function findAttachments(parts, acc) {
 	);
 }
 
-function getAttachmentsLink(messageId, messageSubject, attachments, attachmentType) {
+function getAttachmentsDownloadLink(messageId, messageSubject, attachments) {
 	if (attachments.length > 1) {
 		return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
 			','
 		)}&disp=a&fmt=zip`;
 	}
-	if (
-		attachmentType === 'image/png' ||
-		attachmentType === 'image/jpeg' ||
-		attachmentType === 'image/jpg'
-	) {
-		return `/service/preview/image/${messageId}/${attachments.join(',')}/0x0/?quality=high&disp=a`;
-	}
-	if (attachmentType === 'application/pdf') {
-		return `/service/preview/pdf/${messageId}/${attachments.join(',')}/?first_page=1&disp=a`;
+	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
+}
+
+function getAttachmentsLink(messageId, messageSubject, attachments, attachmentType) {
+	if (!messageId.includes(':')) {
+		if (attachments.length > 1) {
+			return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
+				','
+			)}&disp=a&fmt=zip`;
+		}
+		if (includes(['image/png', 'image/jpeg', 'image/jpg'], attachmentType)) {
+			return `/service/preview/image/${messageId}/${attachments.join(',')}/0x0/?quality=high`;
+		}
+		if (includes(['application/pdf'], attachmentType)) {
+			return `/service/preview/pdf/${messageId}/${attachments.join(',')}/?first_page=1`;
+		}
 	}
 	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
 }
@@ -100,7 +107,7 @@ const AttachmentExtension = styled(Text)`
 	margin-right: ${({ theme }) => theme.sizes.padding.small};
 `;
 
-function Attachment({ filename, size, link, message, part, iconColors, att }) {
+function Attachment({ filename, size, link, downloadlink, message, part, iconColors, att }) {
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
@@ -265,7 +272,7 @@ function Attachment({ filename, size, link, message, part, iconColors, att }) {
 				target="_blank"
 				href={`/service/home/~/?auth=co&id=${message.id}&part=${part}`}
 			/>
-			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={link} />
+			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
 		</AttachmentContainer>
 	);
 }
@@ -284,11 +291,10 @@ export default function AttachmentsBlock({ message }) {
 	const attachments = useMemo(() => findAttachments(message.parts, []), [message]);
 	const attachmentsCount = useMemo(() => attachments.length, [attachments]);
 	const attachmentsParts = useMemo(() => map(attachments, 'name'), [attachments]);
-	const attachmentType = useMemo(() => map(attachments, 'contentType'), [attachments]);
 	const theme = useTheme();
 	const actionsDownloadLink = useMemo(
-		() => getAttachmentsLink(message.id, message.subject, attachmentsParts, attachmentType[0]),
-		[message, attachmentsParts, attachmentType]
+		() => getAttachmentsDownloadLink(message.id, message.subject, attachmentsParts),
+		[message, attachmentsParts]
 	);
 	const removeAttachments = useCallback(() => removeAttachments(), []);
 	const createSnackbar = useContext(SnackbarManagerContext);
@@ -387,6 +393,7 @@ export default function AttachmentsBlock({ message }) {
 							filename={att.filename}
 							size={att.size}
 							link={getAttachmentsLink(message.id, message.subject, [att.name], att.contentType)}
+							downloadlink={getAttachmentsDownloadLink(message.id, message.subject, [att.name])}
 							message={message}
 							part={att.name}
 							iconColors={iconColors}
