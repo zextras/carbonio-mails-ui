@@ -47,3 +47,28 @@ export type ResponseActionsProps = {
 export type ReplyShareParameters = {
 	data: any;
 };
+
+export type GranteeInfoProps = {
+	grant: Grant;
+	shareCalendarRoleOptions: ShareCalendarRoleOptions;
+	hovered?: boolean;
+};
+
+export type GranteeProps = {
+	grant: Grant;
+	folder: FolderType;
+	onMouseLeave?: () => void;
+	onMouseEnter?: () => void;
+	setActiveModal: (modal: string) => void;
+	shareCalendarRoleOptions: ShareCalendarRoleOptions;
+};
+
+export type ShareFolderPropertiesProps = {
+	folder: FolderType;
+	setActiveModal;
+};
+
+export type ShareCalendarRoleOptions = {
+	label: string;
+	value: string;
+};
