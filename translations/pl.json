@@ -270,7 +270,7 @@
         "select_color": "Wybierz kolor",
         "invalid_destination": "Ten węzeł nie jest prawidłowym celem",
         "notification_audio": "Odtwórz dźwięk kiedy pojawi się nowe powiadomienie",
-        "notification_folders": "Foldery powiadomień",
+        "notification_folders": "Powiadomienia Folderów",
         "save_to_files": "Zapisz do Files",
         "tag_max_length": "Dozwolone max. 128 znaków",
         "tag_name": "Nazwa Tagu",
@@ -317,7 +317,7 @@
         "delete_tag_message2": "Po usunięciu Tag zostanie zdjęty z każdego elementu oznaczonego nim.",
         "admin_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie, Zarządzanie",
         "manager_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie",
-        "external_images_blocked": "Obrazki z innych domen zostały zablokowane, aby chronić Cie przed potencjalnym spamem"
+        "external_images_blocked": "Obrazki z innych domen zostały zablokowane, aby chronić Cię przed potencjalnym spamem"
     },
     "search": {
         "flagged_note": "Wyszukaj wszystkie oflagowane e-maile.",

@@ -321,7 +321,9 @@
         "upload_from_files": "Von Files hochladen",
         "no_name": "<Kein Name>",
         "always_allow_domain": "Immer erlauben von <strong>{{domain}}</strong> Domain",
-        "always_allow_address": "Immer erlauben von <strong>{{from}}</strong>"
+        "always_allow_address": "Immer erlauben von <strong>{{from}}</strong>",
+        "view_images": "BILDER ANSEHEN",
+        "share_public_link": "Öffentlichen Link teilen"
     },
     "share": {
         "options": {
@@ -489,7 +491,10 @@
             "all_att_saved": "Anlagen erfolgreich im ausgewählten Ordner gespeichert",
             "some_att_fails": "Es scheint ein Problem beim Speichern einiger Dateien zu geben, bitte versuchen Sie es erneut",
             "some_att_add_fails": "Es scheint ein Problem beim Hinzufügen einiger Anhänge zu geben, bitte versuchen Sie es erneut",
-            "att_err_adding": "Es scheint ein Problem beim Hinzufügen von Anhängen zu geben, bitte versuchen Sie es erneut"
+            "att_err_adding": "Es scheint ein Problem beim Hinzufügen von Anhängen zu geben, bitte versuchen Sie es erneut",
+            "all_link_copied": "Öffentlicher Link erfolgreich kopiert",
+            "some_link_copying_error": "Es scheint ein Problem bei der Erstellung des öffentlichen URLS für einige Dateien zu geben, bitte versuchen Sie es erneut",
+            "link_copying_error": "Es scheint ein Problem bei der Erstellung des öffentlichen Links zu geben, bitte versuchen Sie es erneut"
         },
         "search_hints": "Suchhinweise, über die wir sprechen müssen",
         "invalid_search_message": "Wir haben keine Übereinstimmung gefunden",
@@ -498,7 +503,8 @@
         "delete_tag_message2": "Nach dem Löschen wird es aus allen damit gekennzeichneten Artikeln entfernt.",
         "view_rights": "Ansehen",
         "admin_rights": "Anzeigen, Bearbeiten, Hinzufügen, Entfernen, Verwalten",
-        "manager_rights": "Anzeigen, Bearbeiten, Hinzufügen, Entfernen"
+        "manager_rights": "Anzeigen, Bearbeiten, Hinzufügen, Entfernen",
+        "external_images_blocked": "Externe Bilder wurden geblockt, um Sie gegen möglichen Spam zu schützen"
     },
     "remove_from_this_list": "Aus der Liste entfernen",
     "tooltip": {
@@ -509,7 +515,9 @@
         "disable_urgent": "Dringend deaktivieren",
         "edit": "Eigenschaften für das Teilen bearbeiten",
         "enable_rich_text": "Rich Text Editor aktivieren",
-        "enable_urgent": "Dringend aktivieren"
+        "enable_urgent": "Dringend aktivieren",
+        "folder_sharing_status": "Mit {{count}} Person geteilt",
+        "folder_sharing_status_plural": "Mit {{count}} Personen geteilt"
     },
     "administer": "Verwalten",
     "snackbar": {
