@@ -26,10 +26,13 @@ import { ListItemActionWrapper } from '../app/folder-panel/lists-item/list-item-
 
 type SearchMessageListItemProps = {
 	item: IncompleteMessage;
-	isConvChildren: boolean;
+	isConvChildren?: boolean;
 };
 
-export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, isConvChildren }) => {
+export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
+	item,
+	isConvChildren = false
+}) => {
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 	const tagsFromStore = useTags();

@@ -56,7 +56,8 @@ const getFolderOwner = (item: any): string => {
 	return item.name;
 };
 
-const CustomComponent: FC<{ item: AccordionFolder }> = ({ item }): ReactElement => (
+// TODO remove the any type after the Accordion refactor in the DS
+const CustomComponent: FC<{ item: any }> = ({ item }): ReactElement => (
 	<FittedRow>
 		<Padding horizontal="small">
 			<Avatar label={item.label} size="medium" />
@@ -111,7 +112,8 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const requiredAcc = useMemo(() => {
 		const temp = reduce(
 			accordions,
-			(acc: Array<AccordionFolder & CustomComponent>, v) => {
+			// TODO remove the any type after the Accordion refactor in the DS
+			(acc: Array<any>, v) => {
 				acc.push({
 					id: v.id,
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment

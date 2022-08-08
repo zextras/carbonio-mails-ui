@@ -12,7 +12,8 @@ import {
 	ChipInput,
 	Input,
 	Tooltip,
-	IconButton, ChipItem,
+	IconButton,
+	ChipItem
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { filter, omit } from 'lodash';

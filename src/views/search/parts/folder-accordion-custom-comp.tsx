@@ -20,7 +20,8 @@ import {
 	getFolderTranslatedName
 } from '../../sidebar/utils';
 
-const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }) => {
+// TODO remove the any type after the Accordion refactor in the DS
+const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 	const { folder } = item;
 	const accountName = useUserAccount().name;
 	const [t] = useTranslation();

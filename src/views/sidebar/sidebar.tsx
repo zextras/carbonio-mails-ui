@@ -108,7 +108,7 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) =>
 			<Accordion
 				openIds={openIds}
 				ref={sidebarRef}
-				items={accordionsWithFindShare}
+				items={accordionsWithFindShare as any[]}
 				activeId={folderId}
 				disableTransition={disableTransition}
 			/>

@@ -42,11 +42,11 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	);
 
 	const folderChipOnAdd = useCallback(
-		(label: string): any => chipOnAdd(label, 'in', true, false, true, 'FolderOutline', ''),
+		(label): any => chipOnAdd(label, 'in', true, false, true, 'FolderOutline', ''),
 		[chipOnAdd]
 	);
 	const tagChipOnAdd = useCallback(
-		(label: string): any => {
+		(label): any => {
 			const chipBg = filter(tagOptions, { label })[0];
 			return chipOnAdd(
 				label,

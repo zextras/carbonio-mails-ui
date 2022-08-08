@@ -3,14 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	FC,
-	MouseEventHandler,
-	ReactNode,
-	SyntheticEvent,
-	useContext,
-	useMemo
-} from 'react';
+import React, { FC, ReactNode, SyntheticEvent, useContext, useMemo } from 'react';
 import {
 	Container,
 	Tooltip,
@@ -58,12 +51,12 @@ const HoverContainer = styled(Container)<ContainerProps & { current: boolean }>`
 type ListItemActionWrapperProps = {
 	children?: ReactNode;
 	current?: boolean;
-	onClick?: (arg: string) => void;
-	onDoubleClick?: (arg: string) => void;
+	onClick?: ContainerProps['onClick'];
+	onDoubleClick?: ContainerProps['onDoubleClick'];
 	item: Conversation | IncompleteMessage;
 	isConversation?: boolean;
-	hoverTooltipLabel?: string;
 	messagesToRender?: Array<Partial<MailMessage>>;
+	hoverTooltipLabel?: string;
 };
 
 export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
@@ -73,8 +66,8 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	onDoubleClick,
 	item,
 	isConversation,
-	hoverTooltipLabel,
-	messagesToRender
+	messagesToRender,
+	hoverTooltipLabel
 }) => {
 	const { getMessageActions, getConversationActions } = useContext(ActionsContext);
 
@@ -104,9 +97,9 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 				orientation="horizontal"
 				mainAlignment="flex-start"
 				crossAlignment="unset"
+				current={current ?? false}
 				onClick={onClick}
 				onDoubleClick={onDoubleClick}
-				current={current ?? false}
 			>
 				{children}
 				{/* <Tooltip label={hoverTooltipLabel} overflow="break-word" maxWidth="50vw"> */}

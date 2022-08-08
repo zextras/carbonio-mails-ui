@@ -244,7 +244,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 				>
 					<Accordion
 						background="gray6"
-						items={filteredFromUserInput}
+						items={filteredFromUserInput as any[]}
 						style={{ overflowY: 'hidden' }}
 					/>
 				</ContainerEl>

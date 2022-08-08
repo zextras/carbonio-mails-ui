@@ -20,7 +20,8 @@ import {
 	Text,
 	Padding,
 	Accordion,
-	SnackbarManagerContext
+	SnackbarManagerContext,
+	AccordionItemType
 } from '@zextras/carbonio-design-system';
 
 import { cloneDeep, filter, includes, startsWith } from 'lodash';
@@ -245,7 +246,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					<Accordion
 						ref={accordionRef}
 						background="gray6"
-						items={filteredFromUserInput}
+						items={filteredFromUserInput as any[]}
 						style={{ overflowY: 'hidden' }}
 					/>
 				</ContainerEl>

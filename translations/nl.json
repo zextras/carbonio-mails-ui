@@ -328,7 +328,12 @@
         "invalid_destination": "Deze node is geen geldige bestemming",
         "notification_audio": "Audio hint afspelen wanneer nieuwe melding verschijnt",
         "notification_folders": "Meldingsmappen",
-        "upload_from_files": "Uploaden vanuit Bestanden"
+        "upload_from_files": "Uploaden vanuit Bestanden",
+        "no_name": "<Geen naam>",
+        "view_images": "AFBEELDINGEN BEKIJKEN",
+        "share_public_link": "Publieke Link delen",
+        "always_allow_domain": "Altijd toestaan van <strong>{{domain}}</strong> domein",
+        "always_allow_address": "Altijd toestaan van <strong>{{from}}</strong>"
     },
     "messages": {
         "permanent_delete_confirm": "Permanent verwijderen",
@@ -472,7 +477,10 @@
             "all_att_saved": "Bijlagen met succes opgeslagen in de geselecteerde map",
             "att_err_adding": "Er lijkt een probleem te zijn bij het toevoegen van bijlagen, probeer het opnieuw",
             "some_att_add_fails": "Er lijkt een probleem te zijn bij het toevoegen van enkele bijlagen, probeer het opnieuw",
-            "some_att_fails": "Er lijkt een probleem te zijn tijdens het opslaan van enkele bijlagen, probeer het opnieuw"
+            "some_att_fails": "Er lijkt een probleem te zijn tijdens het opslaan van enkele bijlagen, probeer het opnieuw",
+            "some_link_copying_error": "Er lijkt een probleem te zijn met het genereren van de publieke url voor sommige bestanden, probeer het opnieuw",
+            "link_copying_error": "Er lijkt een probleem te zijn tijdens het genereren van de publieke link, probeer het opnieuw",
+            "all_link_copied": "Publieke link met succes gekopieerd"
         },
         "search_hints": "Hints zoeken waar we het over moeten hebben",
         "sending_mail_to_self": "Het lijkt erop dat je op het punt staat een e-mail naar uzelf te sturen",
@@ -482,7 +490,8 @@
         "delete_tag_message2": "Eenmaal verwijderd, zal het verwijderd worden van elk item dat ermee gemarkeerd is.",
         "view_rights": "Bekijken",
         "admin_rights": "Bekijken, Bewerken, Toevoegen, Verwijderen, Beheren",
-        "manager_rights": "Bekijken, Bewerken, Toevoegen, Verwijderen"
+        "manager_rights": "Bekijken, Bewerken, Toevoegen, Verwijderen",
+        "external_images_blocked": "Externe afbeeldingen zijn geblokkeerd om u te beschermen tegen mogelijke spam"
     },
     "administer": "Beheren",
     "allowed_actions": "Toegelaten acties",
@@ -500,7 +509,8 @@
                 "content": "Drop hier uw bijlagen om ze snel aan deze e-mail toe te voegen"
             },
             "contacts_mod": "Contactfiche toevoegen",
-            "files": "Toevoegen vanuit Bestanden"
+            "files": "Toevoegen vanuit Bestanden",
+            "url": "Openbare link toevoegen vanuit Bestanden"
         }
     },
     "find_mail_shares": "Gedeelde mappen zoeken",
@@ -665,7 +675,9 @@
         "edit": "Deeleigenschappen bewerken",
         "enable_rich_text": "Rich Text Editor inschakelen",
         "enable_urgent": "Dringend inschakelen",
-        "resend": "Bericht over dit aandeel verzenden"
+        "resend": "Bericht over dit aandeel verzenden",
+        "folder_sharing_status": "Gedeeld met {{count}} persoon",
+        "folder_sharing_status_plural": "Gedeeld met {{count}} personen"
     },
     "workflow": "Workflow",
     "write": "Schrijven",

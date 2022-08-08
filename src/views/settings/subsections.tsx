@@ -18,6 +18,11 @@ export const receivingMessagesSubSection = (t: TFunction): SettingsSubSection =>
 	label: t('label.receive_message', 'Receiving Messages'),
 	id: 'receiving_messages'
 });
+
+export const domainWhitelistSubSection = (t: TFunction): SettingsSubSection => ({
+	label: t('label.trusted_addresses', 'Trusted addresses'),
+	id: 'trusted_addresses'
+});
 export const signaturesSubSection = (t: TFunction): SettingsSubSection => ({
 	label: t('signatures.signature_heading', 'Signatures'),
 	id: 'signatures'
@@ -36,5 +41,6 @@ export const getSettingsSubSections = (t: TFunction): Array<SettingsSubSection> 
 	receivingMessagesSubSection(t),
 	signaturesSubSection(t),
 	setDefaultSignaturesSubSection(t),
-	filtersSubSection(t)
+	filtersSubSection(t),
+	domainWhitelistSubSection(t)
 ];

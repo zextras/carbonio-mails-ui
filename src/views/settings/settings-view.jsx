@@ -19,6 +19,7 @@ import DisplayMessagesSettings from './displaying-messages-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
 import SignatureSettings from './signature-settings';
 import FilterModule from './filters';
+import TrusteeAddresses from './trustee-addresses';
 import { SignatureRequest } from '../../store/actions/signatures';
 
 /* to keep track of changes done to props we use 3 different values:
@@ -284,6 +285,7 @@ export default function SettingsView() {
 				style={{ overflowY: 'auto' }}
 			>
 				<FormSection minWidth="calc(min(100%, 512px))">
+					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
 					<DisplayMessagesSettings
 						t={t}
 						settingsObj={settingsObj}
@@ -306,11 +308,10 @@ export default function SettingsView() {
 						setSignItems={setSignItems}
 						signItemsUpdated={signItemsUpdated}
 						setSignItemsUpdated={setSignItemsUpdated}
-						/* setFetchSigns={setFetchSigns}
-						fetchSigns={fetchSigns} */
 						flag={flag}
 					/>
 					<FilterModule t={t} />
+					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
 				</FormSection>
 			</Container>
 		</>
