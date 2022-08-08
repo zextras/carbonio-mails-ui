@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { filter, isNil, map, omitBy, reduce } from 'lodash';
+import { getTags } from '@zextras/carbonio-shell-ui';
+import { filter, find, isNil, map, omitBy, reduce } from 'lodash';
 import { ParticipantRole } from '../commons/utils';
 import {
 	IncompleteMessage,
@@ -111,7 +112,23 @@ export function normalizeParticipantsFromSoap(e: SoapMailParticipant): Participa
 		fullName: e.p
 	};
 }
+export const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
+	const tags = getTags();
+	return map(names?.split(','), (name) => find(tags, { name })?.id);
+};
 
+export const getTagIds = (
+	t: string | undefined,
+	tn: string | undefined
+): Array<string | undefined> => {
+	if (!isNil(t)) {
+		return filter(t.split(','), (tag) => tag !== '');
+	}
+	if (!isNil(tn)) {
+		return getTagIdsFromName(tn);
+	}
+	return [];
+};
 export const normalizeMailMessageFromSoap = (
 	m: SoapIncompleteMessage,
 	isComplete: boolean
@@ -125,7 +142,7 @@ export const normalizeMailMessageFromSoap = (
 			fragment: m.fr,
 			subject: m.su,
 			participants: m.e ? map(m.e || [], normalizeParticipantsFromSoap) : undefined,
-			tags: !isNil(m.t) ? filter(m.t.split(','), (t) => t !== '') : [],
+			tags: getTagIds(m.t, m.tn),
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
 			invite: m.inv,
 			shr: m.shr,

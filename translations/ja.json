@@ -326,7 +326,12 @@
         "create_and_move": "作成して移動する",
         "error": "エラー",
         "no_subject_with_tags": "<件名なし>",
-        "save_to_files": "ファイルに保存する"
+        "save_to_files": "ファイルに保存する",
+        "view_images": "画像を見る",
+        "share_public_link": "パブリックリンクを共有する",
+        "no_name": "<名前なし>",
+        "always_allow_domain": "常に<strong>{{domain}}</strong>ドメインから許可する",
+        "always_allow_address": "常に<strong>{{from}}</strong>から許可する"
     },
     "messages": {
         "permanent_delete_confirm": "完全に削除する",
@@ -451,7 +456,8 @@
                 "title": "ドラッグ＆ドロップモード",
                 "content": "添付ファイルをここにドロップして、このメールに素早く追加します"
             },
-            "files": "ファイルから追加する"
+            "files": "ファイルから追加する",
+            "url": "ファイルからパブリックリンクを追加する"
         }
     },
     "find_shares": "共有を探す",
@@ -473,7 +479,10 @@
             "some_att_add_fails": "添付ファイルを追加する際に問題が生じたようです。再度お試しください",
             "att_err": "保存の際に問題が生じたようです。再度お試しください",
             "att_saved": "選択したフォルダに保存された添付ファイル",
-            "calendar_edits_saved": "編集内容が保存されました"
+            "calendar_edits_saved": "編集内容が保存されました",
+            "some_link_copying_error": "一部のファイルのパブリックURLの生成中に問題が発生したようです。再度お試しください",
+            "link_copying_error": "パブリックリンクの生成中に問題が発生したようです。再度お試しください",
+            "all_link_copied": "パブリックリンクがコピーされました"
         },
         "sending_mail_to_self": "自分にメールを送信しようとしているようです",
         "search_hints": "話し合う必要のある検索のヒント",
@@ -483,7 +492,8 @@
         "delete_tag_message2": "削除されると、それでマークされたすべてのアイテムから削除されます。",
         "admin_rights": "表示、編集、追加、削除、管理",
         "manager_rights": "表示、編集、追加、削除",
-        "view_rights": "表示"
+        "view_rights": "表示",
+        "external_images_blocked": "スパムからユーザーを守るために、外部画像はブロックされています"
     },
     "mail_folder": "メールフォルダ",
     "private": "プライベート",
@@ -650,7 +660,8 @@
         "disable_urgent": "緊急を無効にする",
         "edit": "共有プロパティを編集する",
         "enable_rich_text": "リッチテキストエディタを有効にする",
-        "enable_urgent": "緊急を有効にする"
+        "enable_urgent": "緊急を有効にする",
+        "folder_sharing_status": "{{count}}人と共有されました"
     },
     "shared_folders": "共有フォルダ",
     "shared_item": "共有アイテム",
