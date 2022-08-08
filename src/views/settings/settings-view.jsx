@@ -300,7 +300,7 @@ export default function SettingsView() {
 						t={t}
 						settingsObj={settingsObj}
 						updateSettings={updateSettings}
-						disabled={disabled}
+						// disabled={disabled}
 						setDisabled={setDisabled}
 						signItems={signItems}
 						setSignItems={setSignItems}

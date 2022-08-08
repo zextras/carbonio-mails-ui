@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement } from 'react';
 import {
 	Container,
 	FormSubSection,
@@ -17,7 +17,11 @@ import {
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
-import { useIntegratedComponent, useUserAccount } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	useIntegratedComponent,
+	useUserAccount
+} from '@zextras/carbonio-shell-ui';
 import { map, find, findIndex, merge, escape, unescape } from 'lodash';
 import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';
@@ -25,12 +29,12 @@ import { getSignatures } from '../../store/editor-slice-utils';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
 
 const Signature = styled(Row)`
-	border-bottom: 1px solid ${({ theme }) => theme.palette.gray2.regular};
+	border-bottom: 1px solid ${({ theme }): string => theme.palette.gray2.regular};
 	display: block;
 	border-radius: 0;
 	cursor: pointer;
 	&:hover {
-		background-color: ${({ theme }) => theme.palette.gray6.focus};
+		background-color: ${({ theme }): string => theme.palette.gray6.focus};
 	}
 `;
 const EditorWrapper = styled.div`
@@ -39,26 +43,50 @@ const EditorWrapper = styled.div`
 	overflow-y: auto;
 	position: relative;
 `;
-export default function SignatureSettings({
-	t,
+type SignItemType = {
+	name?: string;
+	id: string;
+	description?: string;
+	label?: string;
+	index?: number;
+	content?: [
+		{
+			type: 'text/plain' | 'text/html';
+			_content: string;
+		}
+	];
+};
+type SignatureSettingsPropsType = {
+	settingsObj: Record<string, string>;
+	updateSettings: (arg: {
+		target: {
+			name: string;
+			value: string;
+		};
+	}) => void;
+	setDisabled: (arg: boolean) => void;
+	signItems: SignItemType[];
+	setSignItems: (arg: unknown) => void;
+	setSignItemsUpdated: (arg: unknown) => void;
+};
+
+const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	settingsObj,
 	updateSettings,
 	setDisabled,
 	signItems,
 	setSignItems,
-	/* setFetchSigns,
-	fetchSigns, */
 	setSignItemsUpdated
-}) {
+}): ReactElement => {
 	const account = useUserAccount();
-	const [signatures, setSignatures] = useState(getSignatures(account, t));
+	const [signatures, setSignatures] = useState(getSignatures(account, getBridgedFunctions()?.t));
 	const [signs, setSigns] = useState([]);
 	const [selected, setSelected] = useState({});
 
 	const [id, setId] = useState('');
-	const [name, setName] = useState('');
-	const [description, setDescription] = useState('');
-	const [index, setIndex] = useState();
+	const [name, setName] = useState<string | undefined>('');
+	const [description, setDescription] = useState<string | undefined>('');
+	const [index, setIndex] = useState<number | undefined>(0);
 	const [editorFlag, setEditorFlag] = useState(false);
 
 	useEffect(() => {
@@ -73,10 +101,10 @@ export default function SignatureSettings({
 	setSignItemsUpdated(
 		useMemo(
 			() =>
-				map(signs, (item, idx) => ({
+				map(signs, (item: SignItemType, idx) => ({
 					label: item.name,
 					id: item.id,
-					description: item.content[0]._content,
+					description: item?.content?.[0]?._content,
 					index: idx
 				})),
 			[signs]
@@ -84,27 +112,27 @@ export default function SignatureSettings({
 	);
 	setSignItems(
 		useMemo(() => {
-			const signItem = map(signs, (item, idx) => ({
+			const signItem = map(signs, (item: SignItemType, idx) => ({
 				label: item.name,
 				id: item.id,
-				description: item.content[0]._content,
+				description: item?.content?.[0]?._content,
 				index: idx
 			}));
 			if (signItem?.length) {
 				setId(signItem[0].id);
 				setIndex(0);
-				setName(signItem[0].label);
-				setDescription(signItem[0].description);
+				setName(signItem?.[0]?.label);
+				setDescription(signItem?.[0]?.description);
 			}
 			return signItem;
 		}, [signs])
 	);
 
-	const createSign = () => {
+	const createSign = (): void => {
 		setName('');
 		setDescription('');
 		setId('');
-		setIndex(signItems.length);
+		setIndex(signItems?.length);
 		const updatedSign = signItems;
 		updatedSign.push({
 			id: (Math.random() + 1).toString(36).substring(7),
@@ -119,11 +147,11 @@ export default function SignatureSettings({
 		() => [
 			find(
 				signatures,
-				(signature) => signature.value.id === settingsObj.zimbraPrefDefaultSignatureId
+				(signature) => signature?.value?.id === settingsObj.zimbraPrefDefaultSignatureId
 			) ?? signatures[0],
 			find(
 				signatures,
-				(signature) => signature.value.id === settingsObj.zimbraPrefForwardReplySignatureId
+				(signature) => signature?.value?.id === settingsObj.zimbraPrefForwardReplySignatureId
 			) ?? signatures[0]
 		],
 		[
@@ -132,7 +160,7 @@ export default function SignatureSettings({
 			signatures
 		]
 	);
-	const updateAllSignatures = (updatedSign) => {
+	const updateAllSignatures = (updatedSign: SignItemType[]): void => {
 		const allSignatures = updatedSign.map((item) => ({
 			label: item.label,
 			value: {
@@ -142,12 +170,12 @@ export default function SignatureSettings({
 		}));
 		setSignatures(allSignatures);
 	};
-	const ListItem = ({ item }) => {
+	const ListItem = ({ item }: { item: SignItemType }): ReactElement => {
 		const [hovered, setHovered] = useState(false);
 		const onMouseEnter = useCallback(() => setHovered(true), []);
 		const onMouseLeave = useCallback(() => setHovered(false), []);
 
-		const onDelete = () => {
+		const onDelete = (): void => {
 			const updatedSign = signItems;
 			const deleteIndex = findIndex(updatedSign, { label: item.label });
 			updatedSign.splice(deleteIndex, 1);
@@ -176,14 +204,14 @@ export default function SignatureSettings({
 				onMouseEnter={onMouseEnter}
 				onMouseLeave={onMouseLeave}
 				background={index === item.index ? 'highlight' : ''}
-				onClick={(ev) => {
+				onClick={(ev: React.MouseEvent & { target: { innerText: string } }): void => {
 					if (ev.target.innerText === 'DELETE') {
 						ev.preventDefault();
 					} else {
 						setId(item.id);
 						setName(item.label);
 						setDescription(item.description);
-						setIndex(item.index);
+						setIndex(item?.index);
 					}
 				}}
 			>
@@ -195,11 +223,11 @@ export default function SignatureSettings({
 					<Container width="40%" orientation="horizontal" mainAlignment="flex-end">
 						{hovered && (
 							<Button
-								label={t('label.delete', 'Delete')}
+								label={getBridgedFunctions()?.t('label.delete', 'Delete')}
 								type="outlined"
 								color="error"
-								onClick={() => onDelete()}
-								isSmall
+								onClick={(): void => onDelete()}
+								// isSmall
 							/>
 						)}
 					</Container>
@@ -208,8 +236,11 @@ export default function SignatureSettings({
 		);
 	};
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
-	const sectionTitleSignatures = useMemo(() => signaturesSubSection(t), [t]);
-	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(t), [t]);
+	const sectionTitleSignatures = useMemo(() => signaturesSubSection(getBridgedFunctions()?.t), []);
+	const sectionTitleSetSignatures = useMemo(
+		() => setDefaultSignaturesSubSection(getBridgedFunctions()?.t),
+		[]
+	);
 	return (
 		<>
 			<FormSubSection
@@ -222,12 +253,12 @@ export default function SignatureSettings({
 						<Container mainAlignment="flex-start">
 							<Container>
 								<Button
-									height="47px"
-									label={t('signatures.add_signature', 'Add signature')}
+									// height="47px"
+									label={getBridgedFunctions()?.t('signatures.add_signature', 'Add signature')}
 									type="outlined"
 									onClick={createSign}
-									disabled={signItems?.length && !name}
-									size="fill"
+									disabled={signItems?.length > 0 && !name}
+									//	size="fill"
 								/>
 							</Container>
 							<Padding all="small" />
@@ -240,13 +271,13 @@ export default function SignatureSettings({
 					<Container width="75%" mainAlignment="flex-start">
 						<Container orientation="vertical" mainAlignment="space-around" width="100%">
 							<Input
-								label={t('signatures.name', 'Name')}
+								label={getBridgedFunctions()?.t('signatures.name', 'Name')}
 								value={name}
 								backgroundColor="gray5"
-								onChange={(ev) => {
+								onChange={(ev): void => {
 									setName(ev.target.value);
 									const updatedSign = signItems;
-									updatedSign[index].label = ev.target.value;
+									if (index) updatedSign[index].label = ev.target.value;
 									setDisabled(false);
 									setSignItems(updatedSign);
 									updateAllSignatures(updatedSign);
@@ -258,9 +289,9 @@ export default function SignatureSettings({
 							<EditorWrapper>
 								<Composer
 									value={unescape(description)}
-									onEditorChange={(ev) => {
+									onEditorChange={(ev: [string, string]): void => {
 										const updatedSign = signItems;
-										if (index >= 0 && updatedSign[index].description !== ev[1]) {
+										if (index && index >= 0 && updatedSign[index].description !== ev[1]) {
 											updatedSign[index].description = escape(ev[1]);
 											if (editorFlag) {
 												setDisabled(false);
@@ -278,13 +309,13 @@ export default function SignatureSettings({
 			</FormSubSection>
 			<FormSubSection label={sectionTitleSetSignatures.label} id={sectionTitleSetSignatures.id}>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-					<Heading title={t('title.new_messages', 'New Messages')} />
+					<Heading title={getBridgedFunctions()?.t('title.new_messages', 'New Messages')} />
 					<Select
-						valueKey="id"
+						// valueKey="id"
 						items={signatures}
-						label={t('label.select_signature', 'Select a signature')}
+						label={getBridgedFunctions()?.t('label.select_signature', 'Select a signature')}
 						selection={signatureNewMessage}
-						onChange={(e) => {
+						onChange={(e): void => {
 							updateSettings({
 								target: {
 									name: 'zimbraPrefDefaultSignatureId',
@@ -303,13 +334,15 @@ export default function SignatureSettings({
 					)}
 				</Container>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-					<Heading title={t('title.replies_forwards', 'Replies & Forwards')} />
+					<Heading
+						title={getBridgedFunctions()?.t('title.replies_forwards', 'Replies & Forwards')}
+					/>
 					<Select
-						valueKey="id"
+						//	valueKey="id"
 						items={signatures}
-						label={t('label.select_signature', 'Select a signature')}
+						label={getBridgedFunctions()?.t('label.select_signature', 'Select a signature')}
 						selection={signatureRepliesForwards}
-						onChange={(e) => {
+						onChange={(e: SignItemType): void => {
 							updateSettings({
 								target: {
 									name: 'zimbraPrefForwardReplySignatureId',
@@ -330,4 +363,6 @@ export default function SignatureSettings({
 			</FormSubSection>
 		</>
 	);
-}
+};
+
+export default SignatureSettings;
