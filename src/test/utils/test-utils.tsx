@@ -7,14 +7,19 @@ import React from 'react';
 
 import { render, RenderOptions, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@zextras/carbonio-design-system';
+import { ModalManager, ThemeProvider } from '@zextras/carbonio-design-system';
+import { I18nextProvider } from 'react-i18next';
 
 interface ProvidersWrapperProps {
 	children?: React.ReactElement;
 }
 
 const ProvidersWrapper = ({ children }: ProvidersWrapperProps): JSX.Element => (
-	<ThemeProvider>{children}</ThemeProvider>
+	<I18nextProvider i18n={i18n}>
+		<ModalManager>
+			<ThemeProvider>{children}</ThemeProvider>
+		</ModalManager>
+	</I18nextProvider>
 );
 
 function customRender(

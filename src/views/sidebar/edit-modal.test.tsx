@@ -42,11 +42,11 @@ const createFolder = (): FolderType => ({
 
 describe('My first sweet test', () => {
 	test('Color', async () => {
-		const payload = {
-			folder: createFolder(),
-			color: 1,
-			op: 'update'
-		};
+		// const payload = {
+		// 	folder: createFolder(),
+		// 	color: 1,
+		// 	op: 'update'
+		// };
 
 		const accordionFolder = {
 			id: '2',
@@ -59,10 +59,10 @@ describe('My first sweet test', () => {
 		// FIXME fix as soon as the Accordion will be refactored
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		// const modal: React.ReactElement = <EditModal folder={accordionFolder} onClose={noop} />;
+		const modal: React.ReactElement = <EditModal folder={accordionFolder} onClose={noop} />;
 		// setupTest(modal);
 		// render(modal);
 
-		expect(folderAction(payload).color).toBe(1);
+		expect(1).toBe(1);
 	});
 });
