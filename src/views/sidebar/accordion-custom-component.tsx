@@ -583,7 +583,7 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 			</Tooltip>
 		</FittedRow>
 	) : (
-		<>
+		<Row width="fill" minWidth={0}>
 			<Drop
 				acceptType={['message', 'conversation', 'folder']}
 				onDrop={(data: DragObj): void => {
@@ -625,6 +625,6 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 					</AppLink>
 				</Drag>
 			</Drop>
-		</>
+		</Row>
 	);
 };
