@@ -3,24 +3,24 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useCallback } from 'react';
-import { find, isEmpty, reduce, includes } from 'lodash';
+import React, { useCallback, useMemo } from 'react';
+import { find, includes, isEmpty, reduce } from 'lodash';
 import {
-	useUserAccounts,
-	useAppContext,
+	FOLDERS,
 	replaceHistory,
+	useAppContext,
 	useTags,
-	ZIMBRA_STANDARD_COLORS,
-	FOLDERS
+	useUserAccounts,
+	ZIMBRA_STANDARD_COLORS
 } from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Container,
+	Drag,
 	Icon,
 	Padding,
 	Row,
 	Text,
-	Drag,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
@@ -113,6 +113,7 @@ export default function MessageListItem({
 
 	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
 		if (item) {
+			``;
 			if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
 				return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon', 'secondary'];
 			}

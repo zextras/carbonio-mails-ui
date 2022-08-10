@@ -3,21 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useState, useMemo, useCallback, useEffect, FC, useContext } from 'react';
 import { Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { filter, includes, isEmpty } from 'lodash';
+import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import { folderAction } from '../../../../store/actions/folder-action';
+import { ModalProps } from '../../../../types';
 import ModalFooter from '../../commons/modal-footer';
 import { ModalHeader } from '../../commons/modal-header';
-import { folderAction } from '../../../../store/actions/folder-action';
-import NameInputRow from './name-input';
+import { translatedSystemFolders } from '../../utils';
 import FolderDetails from './folder-details';
+import NameInputRow from './name-input';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
-import { translatedSystemFolders } from '../../utils';
-import { ModalProps } from '../../../../types';
 
 const retentionPeriod = [
 	{
@@ -287,12 +287,7 @@ const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal 
 				<FolderDetails folder={folder} />
 
 				{!isEmpty(folder?.folder.acl) && !folder.folder?.owner && (
-					<ShareFolderProperties
-						folder={folder}
-						setfolder={(): null => null}
-						totalAppointments={folder.folder?.n}
-						setActiveModal={setActiveModal}
-					/>
+					<ShareFolderProperties folder={folder} setActiveModal={setActiveModal} />
 				)}
 				<RetentionPolicies
 					setShowPolicy={setShowPolicy}
