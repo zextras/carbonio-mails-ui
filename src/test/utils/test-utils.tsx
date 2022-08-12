@@ -3,24 +3,40 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import { Store } from '@reduxjs/toolkit';
+import React, { useMemo } from 'react';
 
 import { render, RenderOptions, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ModalManager, ThemeProvider } from '@zextras/carbonio-design-system';
+import { ModalManager, ThemeProvider, SnackbarManager } from '@zextras/carbonio-design-system';
 import { I18nextProvider } from 'react-i18next';
+import { Provider } from 'react-redux';
+import I18nTestFactory from '../i18n/i18n-test-factory';
 
 interface ProvidersWrapperProps {
 	children?: React.ReactElement;
 }
 
-const ProvidersWrapper = ({ children }: ProvidersWrapperProps): JSX.Element => (
-	<I18nextProvider i18n={i18n}>
-		<ModalManager>
-			<ThemeProvider>{children}</ThemeProvider>
-		</ModalManager>
-	</I18nextProvider>
-);
+const ProvidersWrapper = ({ children }: ProvidersWrapperProps): JSX.Element => {
+	const i18n = useMemo(() => {
+		const i18nFactory = new I18nTestFactory();
+		return i18nFactory.getAppI18n();
+	}, []);
+
+	const fakeStore = {} as Store;
+
+	return (
+		<ThemeProvider>
+			{/* <Provider store={fakeStore}> */}
+			<I18nextProvider i18n={i18n}>
+				<SnackbarManager>
+					<ModalManager>{children}</ModalManager>
+				</SnackbarManager>
+			</I18nextProvider>
+			{/* </Provider> */}
+		</ThemeProvider>
+	);
+};
 
 function customRender(
 	ui: React.ReactElement,

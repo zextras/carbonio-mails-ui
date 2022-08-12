@@ -5,6 +5,7 @@
  */
 import { noop } from 'lodash';
 import React from 'react';
+import { screen } from '@testing-library/react';
 import { folderAction } from '../../store/actions/folder-action';
 import { setupTest } from '../../test/utils/test-utils';
 import { FolderType } from '../../types';
@@ -60,9 +61,10 @@ describe('My first sweet test', () => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const modal: React.ReactElement = <EditModal folder={accordionFolder} onClose={noop} />;
-		// setupTest(modal);
+		setupTest(modal);
+		expect(screen.getByTestId('folder-name')).toBeVisible();
 		// render(modal);
 
-		expect(1).toBe(1);
+		// expect(1).toBe(1);
 	});
 });
