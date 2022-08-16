@@ -7,18 +7,19 @@
 import React, { FC, ReactElement, useContext, useMemo, useEffect } from 'react';
 import {
 	Container,
-	Padding,
 	Divider,
-	Row,
 	Icon,
-	Text,
-	SnackbarManagerContext
+	Padding,
+	Row,
+	SnackbarManagerContext,
+	Text
 } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
 import LabelRow from './parts/label-row';
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { ShareCalendarRoleOptions, findLabel } from './parts/utils';

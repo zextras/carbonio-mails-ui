@@ -208,7 +208,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 						) : (
 							<ChipInput
 								placeholder={t('share.recipients_address', 'Recipients’ e-mail addresses')}
-								onChange={(items: ChipItem[]): void => {
+								onChange={(items: any[]): void => {
 									setContacts(map(items, (contact) => ({ email: contact })));
 								}}
 							/>

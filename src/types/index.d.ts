@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+export * from './actions';
 export * from './conversations';
 export * from './editor';
 export * from './filters';

@@ -293,7 +293,7 @@
         "cc_bcc": "Cc Cco",
         "app_name": "E-mails",
         "from_identity": "De: {{identity}}",
-        "new_email": "Nuevo mensaje",
+        "new_email": "Nuevo E-mail",
         "show_quoted_text": "Mostrar texto citado",
         "select_color": "Elige un color",
         "add_task": "Si necesitas tomar una nota, puedes añadirla a tu LISTA DE QUEHACERES",
@@ -348,7 +348,7 @@
                 "first": "Este mensaje se enviará al nuevo destinatario conservando la dirección de correo del remitente original."
             }
         },
-        "new_email": "Nuevo mensaje",
+        "new_email": "Nuevo e-mail",
         "no_content": "Este mensaje no tiene contenido de texto",
         "no_subject": "Sin asunto.",
         "permanent_delete_body": "Al eliminar permanentemente este elemento, no podrás recuperarlo. ¿Continuar?",
@@ -574,15 +574,15 @@
             "inbox_if_cc": "Dejar en la Bandeja de Entrada si estoy en Para: o Cc:"
         },
         "msg_selection_optn": {
-            "based_on_previous": "Elegir el siguiente mensaje en función de las selecciones anteriores",
-            "below_deleted": "Elegir el mensaje debajo del mensaje borrado o movido",
-            "above_deleted": "Elegir el mensaje encima del mensaje borrado o movido"
+            "based_on_previous": "Posicionarse sobre el siguiente mensaje en función de las selecciones anteriores",
+            "below_deleted": "Posicionarse sobre el mensaje debajo del que ha sido borrado o movido",
+            "above_deleted": "Posicionarse sobre el mensaje encima del mensaje borrado o movido"
         },
         "new_mail_optn": {
             "manually": "Manualmente",
             "minute": "{{count}} minuto",
             "minute_plural": "{{count}} minutos",
-            "when_arrive": "Conforme lleguen los nuevos mensajes"
+            "when_arrive": "A medida que llegan los mensajes"
         },
         "notify_folder_optn": {
             "new_message_inbox": "Mostrar notificaciones para los mensajes que lleguen a la Bandeja de Entrada",
@@ -769,7 +769,7 @@
         "list_trash_title": "La papelera está vacía",
         "search_description3": "Comprueba la ortografía y las opciones de los filtros, o intenta con otra palabra.",
         "search_title4": "Elige uno o más resultados para realizar acciones o para mostrar los detalles.",
-        "title1": "Crea un nuevo e-mail haciendo clic en el botón \"NUEVO MENSAJE\"",
+        "title1": "Crea un nuevo e-mail haciendo clic en el botón \"NUEVO\"",
         "title2": "Haz clic en el botón \"NUEVO\"",
         "sent_title2": "Elige un mensaje para mostrar lo que has enviado.",
         "title3": "Selecciona un mensaje para leer su contenido",
