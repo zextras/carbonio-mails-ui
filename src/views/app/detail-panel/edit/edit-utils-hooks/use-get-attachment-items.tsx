@@ -7,11 +7,31 @@
 import { Icon, Padding, Text } from '@zextras/carbonio-design-system';
 import { getAction } from '@zextras/carbonio-shell-ui';
 import { compact } from 'lodash';
-import React, { useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGetPublicUrl } from './use-get-public-url';
 import { useGetFilesFromDrive } from './use-get-drive-files';
+import { MailsEditor } from '../../../../../types';
 
+type UseGetAttachItemsPropType = {
+	onFileClick: ((ev: React.MouseEvent<Element, MouseEvent>) => void) | undefined;
+	setOpenDD: (arg: boolean) => void;
+	editorId: string;
+	updateEditorCb: (arg: Partial<MailsEditor>) => void;
+	saveDraftCb: (arg: Partial<MailsEditor>) => void;
+	setValue: (arg1: string, arg2: string) => void;
+};
+type UseGetAttachItemsReturnType = {
+	customComponent?: ReactElement;
+	label: string;
+	id?: string | undefined;
+	icon?: string | undefined;
+	click?: ((ev: React.MouseEvent<Element, MouseEvent>) => void) | undefined;
+	type?: string | undefined;
+	primary?: boolean | undefined;
+	group?: string | undefined;
+	disabled?: boolean | undefined;
+};
 export const useGetAttachItems = ({
 	onFileClick,
 	setOpenDD,
@@ -19,7 +39,7 @@ export const useGetAttachItems = ({
 	updateEditorCb,
 	saveDraftCb,
 	setValue
-}) => {
+}: UseGetAttachItemsPropType): Array<UseGetAttachItemsReturnType> => {
 	const [t] = useTranslation();
 	const [getFilesFromDrive, getFilesAvailable] = useGetFilesFromDrive({
 		editorId,
@@ -81,7 +101,7 @@ export const useGetAttachItems = ({
 			id: 'contactsModAttachment',
 			icon: 'ContactsModOutline',
 			label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
-			click: () => {
+			click: (): void => {
 				setOpenDD(false);
 			},
 			disabled: true

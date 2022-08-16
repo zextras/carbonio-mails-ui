@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { FC } from 'react';
 import { Container, Icon, Text, Padding } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -19,14 +19,14 @@ const BackDropLayout = styled(Container)`
 
 const DropBackground = styled(Container)`
 	width: calc(100% - 10px);
-	background: ${(props) => props.theme.palette.primary.regular}b9;
+	background: ${(props): string => props.theme.palette.primary.regular}b9;
 	height: calc(100% - 10px);
 	border-radius: 4px;
 	left: 5px;
 	pointer-events: none;
 `;
 const BackDropLayoutInnerBox = styled(Container)`
-	background: ${(props) => props.theme.palette.gray6.regular};
+	background: ${(props): string => props.theme.palette.gray6.regular};
 	border-radius: 10px;
 	min-height: 180px;
 	max-width: 380px;
@@ -37,7 +37,7 @@ const BackDropLayoutContentBox = styled(Container)`
 	border-style: dashed;
 	border-width: 2px;
 	border-radius: 5px;
-	border-color: ${(props) => props.theme.palette.primary.regular};
+	border-color: ${(props): string => props.theme.palette.primary.regular};
 	box-sizing: border-box;
 	padding: 40px;
 `;
@@ -50,8 +50,16 @@ const DropBoxIconGroup = styled(Container)`
 const DetailText = styled(Text)`
 	text-align: center;
 `;
-
-export default function DropZoneAttachment({ onDragOverEvent, onDropEvent, onDragLeaveEvent }) {
+type DropZoneAttachmentType = {
+	onDragOverEvent: (arg: any) => void;
+	onDropEvent: (arg: any) => void;
+	onDragLeaveEvent: (arg: any) => void;
+};
+const DropZoneAttachment: FC<DropZoneAttachmentType> = ({
+	onDragOverEvent,
+	onDropEvent,
+	onDragLeaveEvent
+}) => {
 	const [t] = useTranslation();
 	return (
 		<>
@@ -78,7 +86,7 @@ export default function DropZoneAttachment({ onDragOverEvent, onDropEvent, onDra
 										</Padding>
 									</DropBoxIconGroup>
 									<Container mainAlignment="center" height="auto">
-										<Text size="reguler" color="primary" weight="bold">
+										<Text color="primary" weight="bold">
 											{t('composer.attachment.drag_and_drop.title', 'Drag&Drop Mode')}
 										</Text>
 										<Padding top="small" />
@@ -102,4 +110,6 @@ export default function DropZoneAttachment({ onDragOverEvent, onDropEvent, onDra
 			</BackDropLayout>
 		</>
 	);
-}
+};
+
+export default DropZoneAttachment;

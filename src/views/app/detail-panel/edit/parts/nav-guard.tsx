@@ -4,50 +4,53 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, FC, useCallback } from 'react';
 import { Prompt, useHistory } from 'react-router-dom';
 import { Modal, Padding, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import ModalFooter from '../../../../sidebar/commons/modal-footer';
 
-export const RouteLeavingGuard = ({ when, onDeleteDraft }) => {
+export const RouteLeavingGuard: FC<{ when: boolean; onDeleteDraft: () => void }> = ({
+	when,
+	onDeleteDraft
+}) => {
 	const history = useHistory();
-	const lastLocationInitial = useMemo(() => history.location.pathname, [history]);
+	const lastLocationInitial = useMemo<string>(() => history.location.pathname, [history]);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [lastLocation, setLastLocation] = useState(lastLocationInitial);
 	const [confirmedNavigation, setConfirmedNavigation] = useState(false);
 	const [t] = useTranslation();
 
-	const onDelete = () => {
+	const onDelete = useCallback(() => {
 		setModalVisible(false);
 		onDeleteDraft();
 		setConfirmedNavigation(true);
-	};
+	}, [onDeleteDraft]);
 
-	const onClose = () => {
+	const onClose = useCallback(() => {
 		setModalVisible(false);
-	};
+	}, []);
 
-	const onDraft = () => {
+	const onDraft = useCallback(() => {
 		setModalVisible(false);
 		setConfirmedNavigation(true);
-	};
+	}, []);
 
-	const handleBlockedNavigation = (nextLocation) => {
-		if (
-			!confirmedNavigation &&
-			nextLocation.pathname !== (lastLocation?.pathname || lastLocationInitial)
-		) {
-			setModalVisible(true);
-			setLastLocation(nextLocation);
-			return false;
-		}
-		return true;
-	};
+	const handleBlockedNavigation = useCallback(
+		(nextLocation) => {
+			if (!confirmedNavigation && nextLocation.pathname !== (lastLocation || lastLocationInitial)) {
+				setModalVisible(true);
+				setLastLocation(nextLocation?.pathname);
+				return false;
+			}
+			return true;
+		},
+		[confirmedNavigation, lastLocation, lastLocationInitial]
+	);
 	useEffect(() => {
 		if (confirmedNavigation && lastLocation) {
 			// Navigate to the previous blocked location with your navigate function
-			history.push(lastLocation.pathname);
+			history.push(lastLocation);
 		}
 	}, [confirmedNavigation, history, lastLocation]);
 
@@ -62,17 +65,14 @@ export const RouteLeavingGuard = ({ when, onDeleteDraft }) => {
 				onClose={onClose}
 				customFooter={
 					<ModalFooter
-						typeCancel={'outlined'}
-						colorCancel={'primary'}
+						secondaryBtnType={'outlined'}
 						onConfirm={onDraft}
 						label={t('label.keep_draft', 'Keep Draft')}
-						secondaryBtnType={'outlined'}
 						secondaryAction={onDelete}
 						secondaryLabel={t('label.delete_draft', 'Delete Draft')}
 						secondaryColor="primary"
 						showDivider={false}
 						paddingTop="0"
-						t={t}
 					/>
 				}
 			>
@@ -85,4 +85,3 @@ export const RouteLeavingGuard = ({ when, onDeleteDraft }) => {
 		</>
 	);
 };
-export default RouteLeavingGuard;

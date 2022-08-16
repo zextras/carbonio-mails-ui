@@ -60,4 +60,5 @@ export type MailMessage = IncompleteMessage & {
 export type SendMsgParameters = {
 	editorId: string;
 	msg?: MailMessage;
+	message?: MailMessage;
 };

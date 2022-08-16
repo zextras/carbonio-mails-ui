@@ -4,30 +4,66 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Container, Text } from '@zextras/carbonio-design-system';
-import { useRoots, useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Folder, useRoots, useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map, find, filter, findIndex, flatten, isNull } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useParams } from 'react-router-dom';
 import { ParticipantRole } from '../../../../../commons/utils';
+import { MailsEditor } from '../../../../../types';
 
-export const findDefaultIdentity = ({ list, allAccounts, folderId }) => {
+type IdentityType = {
+	value: string;
+	label: string;
+	address: string;
+	fullname: string;
+	fullName?: string;
+	type: string;
+	identityName: string;
+};
+
+type UseGetIdentitiesReturnType = {
+	from: Partial<IdentityType> | undefined;
+	activeFrom: IdentityType | undefined;
+	identitiesList: Array<IdentityType>;
+	hasIdentity: boolean | undefined;
+};
+
+type FindDefaultIdentityType = {
+	list: Array<IdentityType>;
+	allAccounts: Record<string, Folder & { owner: string }>;
+	folderId: string;
+};
+export const findDefaultIdentity = ({
+	list,
+	allAccounts,
+	folderId
+}: FindDefaultIdentityType): IdentityType | undefined => {
 	const activeAcc = find(allAccounts, { zid: folderId?.split?.(':')?.[0] });
 	return find(list, { address: activeAcc?.owner }) ?? find(list, { identityName: 'DEFAULT' });
 };
 
-export const useGetIdentities = ({ updateEditorCb, setOpen, editorId, action }) => {
+type UseGetIdentitiesPropType = {
+	updateEditorCb: (arg: Partial<MailsEditor>) => void;
+	setOpen: (arg: boolean) => void;
+	editorId: string;
+};
+export const useGetIdentities = ({
+	updateEditorCb,
+	setOpen,
+	editorId
+}: UseGetIdentitiesPropType): UseGetIdentitiesReturnType => {
 	const account = useUserAccount();
 	const accounts = useUserAccounts();
 	const [t] = useTranslation();
-	const [from, setFrom] = useState({});
-	const [list, setList] = useState([]);
-	const [activeFrom, setActiveFrom] = useState({});
+	const [from, setFrom] = useState<Partial<IdentityType>>();
+	const [list, setList] = useState<Array<IdentityType>>([]);
+	const [activeFrom, setActiveFrom] = useState<IdentityType>();
 	const [isIdentitySet, setIsIdentitySet] = useState(false);
-	const [defaultIdentity, setDefaultIdentity] = useState();
+	const [defaultIdentity, setDefaultIdentity] = useState<IdentityType>();
 	const allAccounts = useRoots();
-	const { folderId } = useParams();
+	const { folderId } = useParams<{ folderId: string }>();
 
 	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
 
@@ -50,7 +86,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen, editorId, action }) 
 					(rts) => rts.right === 'sendAs' || rts.right === 'sendOnBehalfOf'
 				),
 				(ele, idx) =>
-					map(ele?.target, (item) => ({
+					map(ele?.target, (item: { d: string; email: Array<{ addr: string }> }) => ({
 						value: idx + identityList.length,
 						label:
 							ele.right === 'sendAs'
@@ -70,7 +106,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen, editorId, action }) 
 
 		const uniqueIdentityList = [...identityList];
 		if (flattenList?.length) {
-			map(flattenList, (ele) => {
+			map(flattenList, (ele: IdentityType) => {
 				const uniqIdentity = findIndex(identityList, { address: ele.address });
 				if (uniqIdentity < 0) uniqueIdentityList.push(ele);
 			});
@@ -99,19 +135,19 @@ export const useGetIdentities = ({ updateEditorCb, setOpen, editorId, action }) 
 			setFrom(def);
 			setIsIdentitySet(true);
 		}
-	}, [action, allAccounts, editorId, folderId, list, updateEditorCb, isIdentitySet, from]);
+	}, [allAccounts, editorId, folderId, list, updateEditorCb, isIdentitySet, from]);
 
 	const identitiesList = useMemo(
 		() =>
-			list.map((el) => ({
+			list.map((el: IdentityType) => ({
 				label: el.label,
 				value: el.value,
 				address: el.address,
-				fullname: el.fullName,
+				fullname: el.fullName || el.fullname,
 				type: el.type,
 				identityName: el.identityName,
 
-				onClick: () => {
+				onClick: (): void => {
 					setActiveFrom(el);
 					const data = {
 						address: el.address,

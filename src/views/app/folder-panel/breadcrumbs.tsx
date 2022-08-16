@@ -5,10 +5,14 @@
  */
 import { Container, Divider, Row, Text, Padding } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import React, { useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export function Breadcrumbs({ folderPath, itemsCount, folderId }) {
+export const Breadcrumbs: FC<{
+	folderPath: string;
+	itemsCount: number;
+	folderId: string | number;
+}> = ({ folderPath, itemsCount, folderId }) => {
 	const [t] = useTranslation();
 
 	const folderTitle = useMemo(
@@ -22,7 +26,6 @@ export function Breadcrumbs({ folderPath, itemsCount, folderId }) {
 			mainAlignment="flex-start"
 			crossAlignment="flex-start"
 			height="48px"
-			border={{ bottom: '1px solid secondary' }}
 		>
 			<Row
 				height="100%"
@@ -48,4 +51,4 @@ export function Breadcrumbs({ folderPath, itemsCount, folderId }) {
 			<Divider />
 		</Container>
 	);
-}
+};

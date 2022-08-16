@@ -27,6 +27,7 @@ import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import { getSignatures } from '../../store/editor-slice-utils';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
+import { PrefsType } from './setting-type';
 
 const Signature = styled(Row)`
 	border-bottom: 1px solid ${({ theme }): string => theme.palette.gray2.regular};
@@ -43,7 +44,7 @@ const EditorWrapper = styled.div`
 	overflow-y: auto;
 	position: relative;
 `;
-type SignItemType = {
+export type SignItemType = {
 	name?: string;
 	id: string;
 	description?: string;
@@ -57,7 +58,7 @@ type SignItemType = {
 	];
 };
 type SignatureSettingsPropsType = {
-	settingsObj: Record<string, string>;
+	settingsObj: PrefsType;
 	updateSettings: (arg: {
 		target: {
 			name: string;

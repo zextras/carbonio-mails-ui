@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import React, { ChangeEvent, FC, useMemo } from 'react';
 import {
 	Container,
 	FormSubSection,
@@ -18,13 +18,26 @@ import Heading from './components/settings-heading';
 import { NotifyFolderOpts, ReadReceiptOpts, MsgsFromMeOpts, findLabel } from './components/utils';
 import { receivingMessagesSubSection } from './subsections';
 import { MAIL_APP_ID } from '../../constants';
+import { PrefsType, PropsType } from './setting-type';
 
-export default function ReceivingMessagesSettings({
+type UpdateSettingsProps = {
+	target: {
+		name: string;
+		value: unknown;
+	};
+};
+type ReceivingMessagesSettingsType = {
+	settingsObj: PrefsType;
+	updateSettings: (arg: UpdateSettingsProps) => void;
+	updatedProps: PropsType;
+	updateProps: (arg: UpdateSettingsProps) => void;
+};
+const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 	settingsObj,
 	updateSettings,
 	updatedProps,
 	updateProps
-}) {
+}) => {
 	const [t] = useTranslation();
 	const notifyFolderOptn = useMemo(() => NotifyFolderOpts(t), [t]);
 	const readReceiptOptn = useMemo(() => ReadReceiptOpts(t), [t]);
@@ -46,7 +59,7 @@ export default function ReceivingMessagesSettings({
 				<Input
 					label={t('label.send_notification', 'Send a notification message to')}
 					value={settingsObj.zimbraPrefNewMailNotificationAddress}
-					onChange={(e) => {
+					onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
 						updateSettings({
 							target: {
 								name: 'zimbraPrefNewMailNotificationAddress',
@@ -61,7 +74,7 @@ export default function ReceivingMessagesSettings({
 				<Checkbox
 					label={t('label.show_popup', 'Show a popup notification')}
 					value={settingsObj.zimbraPrefMailToasterEnabled === 'TRUE'}
-					onClick={() =>
+					onClick={(): void =>
 						updateSettings({
 							target: {
 								name: 'zimbraPrefMailToasterEnabled',
@@ -101,7 +114,7 @@ export default function ReceivingMessagesSettings({
 				<Checkbox
 					label={t('label.notification_audio', 'Play audio hint when new notification appears')}
 					value={mailNotificationSoundDefault}
-					onClick={() => {
+					onClick={(): void => {
 						updateProps({
 							target: {
 								name: 'mailNotificationSound',
@@ -120,7 +133,7 @@ export default function ReceivingMessagesSettings({
 					label={t('label.select_folder', 'Select folder')}
 					name="zimbraPrefShowAllNewMailNotifications"
 					items={notifyFolderOptn}
-					onChange={(view) =>
+					onChange={(view): void =>
 						updateSettings({
 							target: { name: 'zimbraPrefShowAllNewMailNotifications', value: view }
 						})
@@ -135,7 +148,7 @@ export default function ReceivingMessagesSettings({
 				<Heading title="Read Reciept" />
 				<Select
 					items={readReceiptOptn}
-					onChange={(view) =>
+					onChange={(view): void =>
 						updateSettings({ target: { name: 'zimbraPrefMailSendReadReceipts', value: view } })
 					}
 					defaultSelection={{
@@ -149,7 +162,7 @@ export default function ReceivingMessagesSettings({
 				<Select
 					items={msgsFromMeOpts}
 					name="zimbraPrefDedupeMessagesSentToSelf"
-					onChange={(view) =>
+					onChange={(view): void =>
 						updateSettings({
 							target: { name: 'zimbraPrefDedupeMessagesSentToSelf', value: view }
 						})
@@ -168,7 +181,7 @@ export default function ReceivingMessagesSettings({
 						'Automatically delete duplicate copies of the same message when received'
 					)}
 					value={settingsObj.zimbraPrefMessageIdDedupingEnabled === 'TRUE'}
-					onClick={() =>
+					onClick={(): void =>
 						updateSettings({
 							target: {
 								name: 'zimbraPrefMessageIdDedupingEnabled',
@@ -180,4 +193,6 @@ export default function ReceivingMessagesSettings({
 			</Container>
 		</FormSubSection>
 	);
-}
+};
+
+export default ReceivingMessagesSettings;

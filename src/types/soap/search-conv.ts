@@ -34,7 +34,7 @@ export type SearchConvParameters = {
 	conversationId: string;
 	folderId: string;
 	fetch: string;
-	tags: Tags;
+	tags?: Tags;
 };
 
 export type SearchConvReturn = {

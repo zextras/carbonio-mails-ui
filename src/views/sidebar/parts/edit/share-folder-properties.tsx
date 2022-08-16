@@ -77,7 +77,7 @@ const Actions: FC<ActionsType> = ({
 	const { setActiveGrant } = useContext(Context);
 	const dispatch = useDispatch();
 	const onRevoke = useCallback(() => {
-		setActiveGrant(grant);
+		setActiveGrant && setActiveGrant(grant);
 		setActiveModal('revoke');
 	}, [setActiveModal, setActiveGrant, grant]);
 
@@ -105,7 +105,7 @@ const Actions: FC<ActionsType> = ({
 		});
 	}, [accounts, dispatch, folder, t, grant.d]);
 	const onEdit = useCallback(() => {
-		setActiveGrant(grant);
+		setActiveGrant && setActiveGrant(grant);
 		setActiveModal('edit');
 	}, [setActiveModal, setActiveGrant, grant]);
 
@@ -118,7 +118,7 @@ const Actions: FC<ActionsType> = ({
 			maxWidth="fit"
 		>
 			<Tooltip label={t('tooltip.edit', 'Edit share properties')} placement="top">
-				<Button type="outlined" label={t('label.edit', 'Edit')} onClick={onEdit} isSmall />
+				<Button type="outlined" label={t('label.edit', 'Edit')} onClick={onEdit} size="small" />
 			</Tooltip>
 			<Padding horizontal="extrasmall" />
 			<Tooltip label={t('tooltip.revoke', 'Revoke access')} placement="top">
@@ -127,7 +127,7 @@ const Actions: FC<ActionsType> = ({
 					label={t('label.revoke', 'Revoke')}
 					color="error"
 					onClick={onRevoke}
-					isSmall
+					size="small"
 				/>
 			</Tooltip>
 			<Padding horizontal="extrasmall" />
@@ -136,7 +136,12 @@ const Actions: FC<ActionsType> = ({
 				placement="top"
 				maxWidth="300px"
 			>
-				<Button type="outlined" label={t('label.resend', 'Resend')} onClick={onResend} isSmall />
+				<Button
+					type="outlined"
+					label={t('label.resend', 'Resend')}
+					onClick={onResend}
+					size="small"
+				/>
 			</Tooltip>
 		</Container>
 	);

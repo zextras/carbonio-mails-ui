@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useContext, useMemo } from 'react';
+import React, { FC, useContext, useMemo } from 'react';
 import {
 	Container,
 	Dropdown,
@@ -25,8 +25,20 @@ import {
 	printConversation
 } from './conversation-actions';
 import { applyMultiTag } from './tag-actions';
+import { Conversation } from '../types';
 
-export default function SelectPanelActions({ conversation, folderId, selectedIds, deselectAll }) {
+type SelectPanelActionsPropType = {
+	conversation: Array<Conversation>;
+	folderId: string;
+	selectedIds: Array<string>;
+	deselectAll: () => void;
+};
+const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
+	conversation,
+	folderId,
+	selectedIds,
+	deselectAll
+}) => {
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
@@ -242,7 +254,7 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						data-testid={`primary-action-button-${action.label}`}
 						icon={action.icon}
 						color="primary"
-						onClick={(ev) => {
+						onClick={(ev): void => {
 							if (ev) ev.preventDefault();
 							action.click();
 						}}
@@ -258,7 +270,7 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 					id: action.label,
 					icon: action.icon,
 					label: action.label,
-					click: (ev) => {
+					click: (ev): void => {
 						if (ev) ev.preventDefault();
 						action.click();
 					},
@@ -271,8 +283,10 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 					iconColor="primary"
 					icon="MoreVertical"
 					data-testid="secondary-actions-open-button"
+					onClick={(): null => null}
 				/>
 			</Dropdown>
 		</Container>
 	);
-}
+};
+export default SelectPanelActions;

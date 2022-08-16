@@ -16,7 +16,13 @@ import {
 } from '@zextras/carbonio-design-system';
 
 import { every, find, includes, map, reduce } from 'lodash';
-import { ZIMBRA_STANDARD_COLORS, replaceHistory, useTags, Tag } from '@zextras/carbonio-shell-ui';
+import {
+	ZIMBRA_STANDARD_COLORS,
+	replaceHistory,
+	useTags,
+	Tag,
+	getBridgedFunctions
+} from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { ArgumentType, ReturnType, TagsFromStoreType, ItemType } from '../types';
@@ -284,7 +290,6 @@ export const MultiSelectTagsDropdownItem = ({
 };
 
 export const applyMultiTag = ({
-	t,
 	tags,
 	ids,
 	conversations,
@@ -292,7 +297,6 @@ export const applyMultiTag = ({
 	folderId,
 	isMessage
 }: {
-	t: TFunction;
 	conversations: any;
 	tags: any;
 	ids: string[];
@@ -338,7 +342,7 @@ export const applyMultiTag = ({
 				</Padding>
 				<Row takeAvailableSpace mainAlignment="space-between">
 					<Padding right="small">
-						<Text>{t('label.tags', 'Tags')}</Text>
+						<Text>{getBridgedFunctions()?.t('label.tags', 'Tags')}</Text>
 					</Padding>
 				</Row>
 			</Row>
@@ -346,12 +350,10 @@ export const applyMultiTag = ({
 	};
 };
 export const applyTag = ({
-	t,
 	conversation,
 	tags,
 	isMessage
 }: {
-	t: TFunction;
 	conversation: any;
 	tags: TagsFromStoreType;
 	isMessage?: boolean;
@@ -385,7 +387,7 @@ export const applyTag = ({
 	return {
 		id: TagsActionsType.Apply,
 		items: tagItem,
-		label: t('label.tag', 'Tag'),
+		label: getBridgedFunctions()?.t('label.tag', 'Tag'),
 		icon: 'TagsMoreOutline',
 		customComponent: (
 			<Row takeAvailableSpace mainAlignment="flex-start">
@@ -394,7 +396,7 @@ export const applyTag = ({
 				</Padding>
 				<Row takeAvailableSpace mainAlignment="space-between">
 					<Padding right="small">
-						<Text>{t('label.tags', 'Tags')}</Text>
+						<Text>{getBridgedFunctions()?.t('label.tags', 'Tags')}</Text>
 					</Padding>
 				</Row>
 			</Row>

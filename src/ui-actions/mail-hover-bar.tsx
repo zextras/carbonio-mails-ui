@@ -10,10 +10,10 @@ import {
 	Tooltip,
 	useModal
 } from '@zextras/carbonio-design-system';
-import React, { useContext, useMemo } from 'react';
+import React, { FC, useContext, useMemo } from 'react';
 import { map } from 'lodash';
 import styled from 'styled-components';
-import { replaceHistory, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import {
@@ -33,7 +33,20 @@ const ButtonBar = styled(Row)`
 	top: 8px;
 `;
 
-export default function MailHoverBar({ messageId, read, flag, folderId, showReplyAll }) {
+type MailHoverBarPropType = {
+	messageId: string;
+	read: boolean;
+	flag: boolean;
+	folderId: string;
+	showReplyAll: boolean;
+};
+const MailHoverBar: FC<MailHoverBarPropType> = ({
+	messageId,
+	read,
+	flag,
+	folderId,
+	showReplyAll
+}) => {
 	const dispatch = useDispatch();
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
@@ -45,69 +58,58 @@ export default function MailHoverBar({ messageId, read, flag, folderId, showRepl
 			case FOLDERS.TRASH:
 			case FOLDERS.SPAM:
 				return [
-					deleteMsg({ ids, t, dispatch, createSnackbar, createModal }),
-					setMsgRead({ ids, value: read, t, dispatch }),
+					deleteMsg({ ids, dispatch }),
+					setMsgRead({ ids, value: read, dispatch }),
 					// archiveMsg(),
-					setMsgFlag({ ids, value: flag, t, dispatch })
+					setMsgFlag({ ids, value: flag, dispatch })
 				];
 			case FOLDERS.SENT:
 				return [
-					moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId),
+					moveMsgToTrash({ ids, dispatch, folderId }),
 					// archiveMsg(),
-					forwardMsg({ id: messageId, folderId, t }),
-					setMsgFlag({ ids, value: flag, t, dispatch })
+					forwardMsg({ id: messageId, folderId }),
+					setMsgFlag({ ids, value: flag, dispatch })
 				];
 			case FOLDERS.DRAFTS:
 				return [
-					moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId),
-					editDraft({ id: messageId, folderId, t }),
+					moveMsgToTrash({ ids, dispatch, folderId }),
+					editDraft({ id: messageId, folderId }),
 					// archiveMsg(),
-					setMsgFlag({ ids, value: flag, t, dispatch })
+					setMsgFlag({ ids, value: flag, dispatch })
 				];
 			// TODO: discuss about Outbox and Archive folder-panel
 			case FOLDERS.INBOX:
 			default:
 				return showReplyAll
 					? [
-							setMsgRead({ ids, value: read, t, dispatch }),
-							replyMsg({ id: messageId, folderId, t }),
+							setMsgRead({ ids, value: read, dispatch }),
+							replyMsg({ id: messageId, folderId }),
 							//	showReplyAll && replyAllMsg(messageId, folderId, t),
-							replyAllMsg({ id: messageId, folderId, t }),
-							setMsgFlag({ ids, value: flag, t, dispatch }),
-							forwardMsg({ id: messageId, folderId, t }),
+							replyAllMsg({ id: messageId, folderId }),
+							setMsgFlag({ ids, value: flag, dispatch }),
+							forwardMsg({ id: messageId, folderId }),
 							// archiveMsg(),
-							moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId)
+							moveMsgToTrash({ ids, dispatch, folderId })
 					  ]
 					: [
-							setMsgRead({ ids, value: read, t, dispatch }),
-							replyMsg({ id: messageId, folderId, t }),
-							setMsgFlag({ ids, value: flag, t, dispatch }),
-							forwardMsg({ id: messageId, folderId, t }),
+							setMsgRead({ ids, value: read, dispatch }),
+							replyMsg({ id: messageId, folderId }),
+							setMsgFlag({ ids, value: flag, dispatch }),
+							forwardMsg({ id: messageId, folderId }),
 							// archiveMsg(),
-							moveMsgToTrash(ids, t, dispatch, createSnackbar, folderId)
+							moveMsgToTrash({ ids, dispatch, folderId })
 					  ];
 		}
-	}, [
-		folderId,
-		ids,
-		t,
-		dispatch,
-		createSnackbar,
-		createModal,
-		read,
-		flag,
-		messageId,
-		showReplyAll
-	]);
+	}, [folderId, ids, dispatch, read, flag, messageId, showReplyAll]);
 
 	return (
 		<ButtonBar orientation="horizontal">
-			{map(actions, (action) => (
+			{map(actions, (action: { icon: string; label: string; click: () => void }) => (
 				<Tooltip key={`${messageId}-${action.icon}`} label={action.label}>
 					<IconButton
 						size="medium"
 						icon={action.icon}
-						onClick={(ev) => {
+						onClick={(ev): void => {
 							ev.preventDefault();
 							action.click();
 						}}
@@ -116,4 +118,5 @@ export default function MailHoverBar({ messageId, read, flag, folderId, showRepl
 			))}
 		</ButtonBar>
 	);
-}
+};
+export default MailHoverBar;

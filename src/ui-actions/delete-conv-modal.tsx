@@ -3,15 +3,28 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, FC } from 'react';
 import { Container, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import { convAction, msgAction } from '../store/actions';
 import ModalHeader from '../views/sidebar/commons/modal-header';
 import ModalFooter from '../views/sidebar/commons/modal-footer';
 
-const DeleteConvConfirm = ({ selectedIDs, isMessageView, deselectAll, onClose, dispatch }) => {
+type DeleteConvConfirmPropType = {
+	selectedIDs: Array<string>;
+	isMessageView: boolean;
+	deselectAll: () => void | undefined;
+	onClose: () => void;
+};
+const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
+	selectedIDs,
+	isMessageView,
+	deselectAll,
+	onClose
+}) => {
 	const [t] = useTranslation();
+	const dispatch = useDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
 
 	const onConfirmConvDelete = useCallback(() => {
@@ -25,6 +38,8 @@ const DeleteConvConfirm = ({ selectedIDs, isMessageView, deselectAll, onClose, d
 						operation: `delete`,
 						ids: selectedIDs
 				  })
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 		).then((res) => {
 			if (res.type.includes('fulfilled')) {
 				deselectAll && deselectAll();
@@ -84,7 +99,6 @@ const DeleteConvConfirm = ({ selectedIDs, isMessageView, deselectAll, onClose, d
 					<ModalFooter
 						onConfirm={onConfirmConvDelete}
 						label={t('label.delete_permanently', 'Delete permanently')}
-						t={t}
 						background="error"
 					/>
 				</Container>

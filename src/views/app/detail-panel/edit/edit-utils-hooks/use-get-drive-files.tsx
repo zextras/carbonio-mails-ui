@@ -10,11 +10,23 @@ import { useCallback, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { selectEditors } from '../../../../../store/editor-slice';
+import { MailsEditor } from '../../../../../types';
 
-export const uploadToFiles = async (node, uploadTo) =>
-	uploadTo({ nodeId: node.id, targetModule: 'MAILS' });
+export const uploadToFiles = async (
+	node: { id: string },
+	uploadTo: (arg: { nodeId: string; targetModule: string }) => any
+): Promise<unknown> => uploadTo({ nodeId: node.id, targetModule: 'MAILS' });
 
-export const useGetFilesFromDrive = ({ editorId, updateEditorCb, saveDraftCb }) => {
+type UseGetFilesFromDrivePropType = {
+	editorId: string;
+	updateEditorCb: (arg: Partial<MailsEditor>) => void;
+	saveDraftCb: (arg: Partial<MailsEditor>) => void;
+};
+export const useGetFilesFromDrive = ({
+	editorId,
+	updateEditorCb,
+	saveDraftCb
+}: UseGetFilesFromDrivePropType): [(arg: any) => void, boolean] => {
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const editors = useSelector(selectEditors);
 	const editor = useMemo(() => editors[editorId], [editors, editorId]);
@@ -23,7 +35,10 @@ export const useGetFilesFromDrive = ({ editorId, updateEditorCb, saveDraftCb }) 
 
 	const confirmAction = useCallback(
 		(nodes) => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			const promises = map(nodes, (node) => uploadToFiles(node, uploadTo));
+
 			if (isAvailable) {
 				Promise.allSettled(promises).then((res) => {
 					const success = filter(res, ['status', 'fulfilled']);
@@ -51,7 +66,13 @@ export const useGetFilesFromDrive = ({ editorId, updateEditorCb, saveDraftCb }) 
 						autoHideTimeout: 4000
 					});
 					const data = {
-						attach: { ...editor.attach, aid: map(success, (i) => i.value.attachmentId).join(',') }
+						attach: {
+							...editor.attach,
+							aid: map(
+								success,
+								(i: { value: { attachmentId: string } }) => i?.value?.attachmentId
+							).join(',')
+						}
 					};
 					const newEditor = { ...editor, ...data };
 					updateEditorCb(newEditor);

@@ -3,17 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useContext, useMemo } from 'react';
-import {
-	Container,
-	Dropdown,
-	IconButton,
-	SnackbarManagerContext,
-	ModalManagerContext
-} from '@zextras/carbonio-design-system';
+import React, { FC, ReactElement, useMemo } from 'react';
+import { Container, Dropdown, IconButton } from '@zextras/carbonio-design-system';
 import { FOLDERS, useTags } from '@zextras/carbonio-shell-ui';
 import { map, every, filter, some } from 'lodash';
-import { useTranslation } from 'react-i18next';
+
 import { useDispatch } from 'react-redux';
 
 import {
@@ -24,18 +18,21 @@ import {
 	deleteMessagePermanently
 } from './message-actions';
 import { applyMultiTag } from './tag-actions';
+import { MailMessage } from '../types';
 
-export default function SelectMessagesPanelActions({
+type SelectMessagesPanelActionsPropType = {
+	messages: MailMessage[];
+	folderId: string;
+	selectedIds: Array<string>;
+	deselectAll: () => void;
+};
+const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 	messages,
 	folderId,
 	selectedIds,
-	deselectAll,
-	conversationId
-}) {
-	const [t] = useTranslation();
-	const createSnackbar = useContext(SnackbarManagerContext);
+	deselectAll
+}) => {
 	const dispatch = useDispatch();
-	const createModal = useContext(ModalManagerContext);
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);
 	const selectedConversation = filter(messages, (convo) => ids.indexOf(convo.id) !== -1);
 	const tags = useTags();
@@ -60,13 +57,11 @@ export default function SelectMessagesPanelActions({
 			case FOLDERS.SPAM:
 			case FOLDERS.INBOX:
 				return [
-					showReadConvo && setMsgRead({ ids, value: true, t, dispatch, folderId, deselectAll }),
-					showUnreadConvo && setMsgRead({ ids, value: false, t, dispatch, folderId, deselectAll }),
+					showReadConvo && setMsgRead({ ids, value: true, dispatch, folderId, deselectAll }),
+					showUnreadConvo && setMsgRead({ ids, value: false, dispatch, folderId, deselectAll }),
 					moveMsgToTrash({
 						ids,
-						t,
 						dispatch,
-						createSnackbar,
 						deselectAll,
 						folderId
 					})
@@ -76,21 +71,21 @@ export default function SelectMessagesPanelActions({
 				];
 			case FOLDERS.SENT:
 				return [
-					moveMsgToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+					moveMsgToTrash({ ids, dispatch, deselectAll, folderId })
 					// archiveMsg
 					// editTagsMsg
 				];
 
 			case FOLDERS.DRAFTS:
 				return [
-					moveMsgToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+					moveMsgToTrash({ ids, dispatch, deselectAll, folderId })
 					// archiveMsg
 					// editTagsMsg
 				];
 
 			case FOLDERS.TRASH:
 				return [
-					deleteMessagePermanently({ ids, t, dispatch, createModal, deselectAll })
+					deleteMessagePermanently({ ids, dispatch, deselectAll })
 
 					// archiveMsg
 					// editTagsMsg
@@ -98,23 +93,12 @@ export default function SelectMessagesPanelActions({
 
 			default:
 				return [
-					moveMsgToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
-
+					moveMsgToTrash({ ids, dispatch, deselectAll, folderId })
 					// archiveMsg
 					// editTagsMsg
 				];
 		}
-	}, [
-		folderId,
-		showReadConvo,
-		ids,
-		t,
-		dispatch,
-		deselectAll,
-		showUnreadConvo,
-		createSnackbar,
-		createModal
-	]);
+	}, [folderId, showReadConvo, ids, dispatch, deselectAll, showUnreadConvo]);
 
 	const secondaryActions = useMemo(() => {
 		switch (folderId) {
@@ -122,22 +106,19 @@ export default function SelectMessagesPanelActions({
 			case FOLDERS.SPAM:
 			case FOLDERS.INBOX:
 				return [
-					showReadConvo && setMsgRead({ ids, value: true, t, dispatch, folderId, deselectAll }),
-					showUnreadConvo && setMsgRead({ ids, value: false, t, dispatch, folderId, deselectAll }),
-					setMsgFlag({ ids, value: showAddFlag, t, dispatch }),
+					showReadConvo && setMsgRead({ ids, value: true, dispatch, folderId, deselectAll }),
+					showUnreadConvo && setMsgRead({ ids, value: false, dispatch, folderId, deselectAll }),
+					setMsgFlag({ ids, value: showAddFlag, dispatch }),
 					moveMessageToFolder({
 						id: ids,
-						t,
 						dispatch,
 						isRestore: false,
-						createModal,
 						deselectAll
 					}),
 					applyMultiTag({
 						ids,
 						tags,
 						conversations: selectedConversation,
-						t,
 						folderId,
 						deselectAll,
 						isMessage: true
@@ -160,27 +141,23 @@ export default function SelectMessagesPanelActions({
 				return [
 					// setConversationsRead(selectedIDs, conversation.read, t, dispatch),
 					// setConversationsFlag(selectedIDs, allRead, t, dispatch),
-					setMsgFlag({ ids, value: showAddFlag, t, dispatch }),
-					deleteMessagePermanently({ ids, t, dispatch, createModal, deselectAll }),
+					setMsgFlag({ ids, value: showAddFlag, dispatch }),
+					deleteMessagePermanently({ ids, dispatch, deselectAll }),
 					moveMessageToFolder({
 						id: ids,
-						t,
 						dispatch,
 						isRestore: true,
-						createModal,
 						deselectAll
 					})
 				];
 			case FOLDERS.DRAFTS:
 			default:
 				return [
-					setMsgFlag({ ids, value: showAddFlag, t, dispatch }),
+					setMsgFlag({ ids, value: showAddFlag, dispatch }),
 					moveMessageToFolder({
 						id: ids,
-						t,
 						dispatch,
 						isRestore: false,
-						createModal,
 						deselectAll
 					})
 					// move
@@ -194,12 +171,10 @@ export default function SelectMessagesPanelActions({
 		folderId,
 		showReadConvo,
 		ids,
-		t,
 		dispatch,
 		deselectAll,
 		showUnreadConvo,
 		showAddFlag,
-		createModal,
 		tags,
 		selectedConversation
 	]);
@@ -222,42 +197,56 @@ export default function SelectMessagesPanelActions({
 				{/* <Button type='ghost' label='Select all' color='primary' /> */}
 			</Container>
 			<Container background="gray5" orientation="horizontal" mainAlignment="flex-end">
-				{map(filter(primaryActions), (action) => (
-					<IconButton
-						data-testid={`primary-action-button-${action.label}`}
-						icon={action.icon}
-						color="primary"
-						onClick={(ev) => {
-							if (ev) ev.preventDefault();
-							action.click();
-						}}
-						size="medium"
-					/>
-				))}
+				{map(
+					filter(primaryActions),
+					(action: { label: string; icon: string; click?: () => void }) => (
+						<IconButton
+							data-testid={`primary-action-button-${action.label}`}
+							icon={action.icon}
+							color="primary"
+							onClick={(ev): void => {
+								if (ev) ev.preventDefault();
+								action.click && action.click();
+							}}
+							size="medium"
+						/>
+					)
+				)}
 			</Container>
 
 			<Dropdown
 				placement="right-end"
 				data-testid="secondary-actions-dropdown"
-				items={map(filter(secondaryActions), (action) => ({
-					id: action.label,
-					icon: action.icon,
-					label: action.label,
-					click: (ev) => {
-						if (ev) ev.preventDefault();
-						action.click();
-					},
-					customComponent: action.customComponent,
-					items: action.items
-				}))}
+				items={map(
+					filter(secondaryActions),
+					(action: {
+						label: string;
+						icon: string;
+						click?: () => void;
+						customComponent?: ReactElement;
+						items?: Array<any>;
+					}) => ({
+						id: action.label,
+						icon: action.icon,
+						label: action.label,
+						click: (ev): void => {
+							if (ev) ev.preventDefault();
+							action.click && action.click();
+						},
+						customComponent: action.customComponent,
+						items: action.items
+					})
+				)}
 			>
 				<IconButton
 					size="medium"
 					iconColor="primary"
 					icon="MoreVertical"
 					data-testid="secondary-actions-open-button"
+					onClick={(): null => null}
 				/>
 			</Dropdown>
 		</Container>
 	);
-}
+};
+export default SelectMessagesPanelActions;

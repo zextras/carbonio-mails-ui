@@ -12,7 +12,18 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { selectEditors } from '../../../../../store/editor-slice';
 
-export const useGetPublicUrl = ({ editorId, updateEditorCb, saveDraftCb, setValue }) => {
+type InputProps = {
+	editorId: string;
+	updateEditorCb: (arg: any) => void;
+	saveDraftCb: (arg: any) => void;
+	setValue: (arg: any, arg2: any) => void;
+};
+export const useGetPublicUrl = ({
+	editorId,
+	updateEditorCb,
+	saveDraftCb,
+	setValue
+}: InputProps): [(nodes: any) => void, boolean] => {
 	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const editors = useSelector(selectEditors);
@@ -54,12 +65,14 @@ export const useGetPublicUrl = ({ editorId, updateEditorCb, saveDraftCb, setValu
 				const newEditor = {
 					...editor,
 					text: [
-						map(success, (i) => i.value.url)
+						map(success, (i: { value: { url: string } }) => i.value.url)
 							.join('\n')
 							.concat(editor.text[0]),
-						` ${map(success, (i) => `<p><a href="${i.value.url}"> ${i.value.url}</a></p>`).join(
-							''
-						)}`.concat(editor.text[1])
+						` ${map(
+							success,
+							(i: { value: { url: string } }) =>
+								`<p><a href="${i.value.url}"> ${i.value.url}</a></p>`
+						).join('')}`.concat(editor.text[1])
 					]
 				};
 

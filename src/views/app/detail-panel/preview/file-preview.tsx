@@ -15,6 +15,6 @@ export const humanFileSize = (inputSize: number): string => {
 	return `${(inputSize / 1024 ** i).toFixed(2).toString()} ${['B', 'KB', 'MB', 'GB', 'TB'][i]}`;
 };
 
-export const previewType = (contentType: string): string | undefined =>
+export const previewType = (contentType: string): 'image' | 'pdf' | undefined =>
 	// eslint-disable-next-line no-nested-ternary
 	contentType?.startsWith('image') ? 'image' : contentType?.endsWith('pdf') ? 'pdf' : undefined;

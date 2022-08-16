@@ -39,7 +39,7 @@ const AppView = () => {
 				: undefined,
 		[currentFolderId, zimbraPrefGroupMailBy]
 	);
-	console.log('xxx:', { bridge: getBridgedFunctions() });
+
 	useEffect(() => {
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);

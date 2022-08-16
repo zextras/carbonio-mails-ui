@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef, useState, useContext, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useState, useContext, useEffect, FC } from 'react';
 import { useParams } from 'react-router-dom';
 import {
 	List,
@@ -16,7 +16,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { find, map, reduce } from 'lodash';
-import { useAppContext } from '@zextras/carbonio-shell-ui';
+import { store as storeFromShell, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import {
 	selectConversationStatus,
@@ -31,6 +31,7 @@ import { useSelection } from '../../../hooks/useSelection';
 import { handleKeyboardShortcuts } from '../../../hooks/keyboard-shortcuts';
 import { useConversationListItems } from '../../../hooks/use-conversation-list';
 import ShimmerList from '../../search/shimmer-list';
+import { Conversation } from '../../../types';
 
 const DragImageContainer = styled.div`
 	position: absolute;
@@ -40,10 +41,13 @@ const DragImageContainer = styled.div`
 	width: 35vw;
 `;
 
-const DragItems = ({ conversations, draggedIds }) => {
+const DragItems: FC<{ conversations: Conversation[]; draggedIds: Array<string> | undefined }> = ({
+	conversations,
+	draggedIds
+}) => {
 	const items = reduce(
 		draggedIds,
-		(acc, v, k) => {
+		(acc: Conversation[], v, k) => {
 			const obj = find(conversations, ['id', k]);
 			if (obj) {
 				return [...acc, obj];
@@ -56,14 +60,16 @@ const DragItems = ({ conversations, draggedIds }) => {
 	return (
 		<>
 			{map(items, (item) => (
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				<ConversationListItem item={item} key={item.id} draggedIds={draggedIds} />
 			))}
 		</>
 	);
 };
 
-const ConversationList = () => {
-	const { folderId, itemId } = useParams();
+const ConversationList: FC = () => {
+	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
 	const { setCount } = useAppContext();
 	const conversations = useConversationListItems();
 
@@ -75,10 +81,15 @@ const ConversationList = () => {
 	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const status = useSelector(selectConversationStatus);
-	const conversationListStatus = useSelector((store) => selectFolderSearchStatus(store, folderId));
+
+	// TODO: Need to replace it with correct type exported from shell
+	const conversationListStatus = useSelector((store: any) =>
+		selectFolderSearchStatus(store, folderId)
+	);
 
 	const { selected, isSelecting, toggle, deselectAll } = useSelection(folderId, setCount);
-	const folder = useSelector((state) => selectFolder(state, folderId));
+
+	const folder = useFolder(folderId);
 
 	const hasMore = useMemo(() => status === 'hasMore', [status]);
 
@@ -87,6 +98,8 @@ const ConversationList = () => {
 			if (hasMore && !isLoading) {
 				setIsLoading(true);
 				const dateOrNull = date ? new Date(date) : null;
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				dispatch(search({ folderId, before: dateOrNull, limit: 50 })).then(() => {
 					setIsLoading(false);
 				});
@@ -96,7 +109,7 @@ const ConversationList = () => {
 	);
 
 	useEffect(() => {
-		const handler = (event) =>
+		const handler = (event): void =>
 			handleKeyboardShortcuts({
 				event,
 				folderId,
@@ -141,9 +154,9 @@ const ConversationList = () => {
 				/>
 			) : (
 				<Breadcrumbs
-					folderPath={folder?.path.substring(1)}
+					folderPath={folder?.absFolderPath}
 					folderId={folderId}
-					itemsCount={folder?.itemsCount}
+					itemsCount={folder?.n}
 				/>
 			)}
 			{conversationListStatus === 'complete' ? (
@@ -181,7 +194,7 @@ const ConversationList = () => {
 									dragImageRef
 								}}
 								ItemComponent={ConversationListItem}
-								onListBottom={() =>
+								onListBottom={(): void =>
 									loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)
 								}
 								data-testid={`conversation-list-${folderId}`}

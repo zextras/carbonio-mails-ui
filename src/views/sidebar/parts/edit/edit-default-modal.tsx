@@ -5,7 +5,7 @@
  */
 import React, { useState, useMemo, useCallback, useEffect, FC, useContext } from 'react';
 import { Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { FOLDERS, store } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { filter, includes, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';

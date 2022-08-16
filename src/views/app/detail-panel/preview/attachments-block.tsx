@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef, useState, useContext } from 'react';
+import React, { useCallback, useMemo, useRef, useState, useContext, FC, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { filter, find, includes, map, reduce, uniqBy } from 'lodash';
+import { filter, find, includes, map, reduce, uniqBy, zip } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -23,6 +23,7 @@ import { getAction, soapFetch } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { humanFileSize, previewType } from './file-preview';
+import { EditorAttachmentFiles, MailMessage } from '../../../../types';
 
 const AttachmentsActions = styled(Row)``;
 function findAttachments(parts, acc) {
@@ -74,52 +75,73 @@ const AttachmentContainer = styled(Container)`
 	border-radius: 2px;
 	width: calc(50% - 4px);
 	transition: 0.2s ease-out;
-	margin-bottom: ${({ theme }) => theme.sizes.padding.small};
+	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
 	&:hover {
-		background-color: ${({ theme, background }) => theme.palette[background].hover};
+		background-color: ${({ theme, background }): string => theme.palette[background].hover};
 		& ${AttachmentHoverBarContainer} {
 			display: flex;
 		}
 	}
 	&:focus {
-		background-color: ${({ theme, background }) => theme.palette[background].focus};
+		background-color: ${({ theme, background }): string => theme.palette[background].focus};
 	}
 	cursor: pointer;
 `;
 
 const AttachmentLink = styled.a`
-	margin-bottom: ${({ theme }) => theme.sizes.padding.small};
+	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
 	position: relative;
 	text-decoration: none;
 `;
 
-const AttachmentExtension = styled(Text)`
+const AttachmentExtension = styled(Text)<{
+	background: { color: string };
+}>`
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 32px;
 	height: 32px;
-	border-radius: ${({ theme }) => theme.borderRadius};
-	background-color: ${({ background }) => background.color};
-	color: ${({ theme }) => theme.palette.gray6.regular};
-	font-size: calc(${({ theme }) => theme.sizes.font.small} - 2px);
+	border-radius: ${({ theme }): string => theme.borderRadius};
+	background-color: ${({ background }): string => background.color};
+	color: ${({ theme }): string => theme.palette.gray6.regular};
+	font-size: calc(${({ theme }): string => theme.sizes.font.small} - 2px);
 	text-transform: uppercase;
-	margin-right: ${({ theme }) => theme.sizes.padding.small};
+	margin-right: ${({ theme }): string => theme.sizes.padding.small};
 `;
 
-function Attachment({ filename, size, link, downloadlink, message, part, iconColors, att }) {
+type AttachmentType = {
+	filename: string;
+	size: number;
+	link: string;
+	downloadlink: string;
+	message: MailMessage;
+	part: string;
+	iconColors: Array<{ extension: 'string'; color: string }>;
+	att: EditorAttachmentFiles;
+};
+const Attachment: FC<AttachmentType> = ({
+	filename,
+	size,
+	link,
+	downloadlink,
+	message,
+	part,
+	iconColors,
+	att
+}) => {
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const [t] = useTranslation();
-	const inputRef = useRef();
-	const inputRef2 = useRef();
+	const inputRef = useRef<HTMLInputElement>();
+	const inputRef2 = useRef<HTMLInputElement>();
 
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
 			// eslint-disable-next-line no-param-reassign
-			inputRef.current.value = null;
+			inputRef.current.value = '';
 			inputRef.current.click();
 		}
 	}, [inputRef]);
@@ -159,7 +181,7 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 		[att.name, createSnackbar, message.id, t]
 	);
 
-	const isAValidDestination = useMemo((node) => node?.permissions?.can_write_file, []);
+	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
 
 	const actionTarget = useMemo(
 		() => ({
@@ -206,7 +228,8 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 					size: humanFileSize(att.size)
 				});
 			} else if (inputRef2.current) {
-				// eslint-disable-next-line no-param-reassign
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				inputRef2.current.value = null;
 				inputRef2.current.click();
 			}
@@ -250,11 +273,11 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
 					{isUploadIntegrationAvailable && (
-						<Tooltip key={uploadIntegration.id} label={t('label.save_to_files', 'Save to Files')}>
+						<Tooltip key={uploadIntegration?.id} label={t('label.save_to_files', 'Save to Files')}>
 							<IconButton
 								size="medium"
-								icon={uploadIntegration.icon}
-								onClick={uploadIntegration.click}
+								icon={uploadIntegration?.icon ?? ''}
+								onClick={uploadIntegration?.click}
 							/>
 						</Tooltip>
 					)}
@@ -275,9 +298,9 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
 		</AttachmentContainer>
 	);
-}
+};
 
-const copyToFiles = (att, message, nodes) =>
+const copyToFiles = (att: EditorAttachmentFiles, message: MailMessage, nodes: any): Promise<any> =>
 	soapFetch('CopyToFiles', {
 		_jsns: 'urn:zimbraMail',
 		mid: message.id,
@@ -285,7 +308,7 @@ const copyToFiles = (att, message, nodes) =>
 		destinationFolderId: nodes?.[0]?.id
 	});
 
-export default function AttachmentsBlock({ message }) {
+const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactElement => {
 	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(() => findAttachments(message.parts, []), [message]);
@@ -296,9 +319,11 @@ export default function AttachmentsBlock({ message }) {
 		() => getAttachmentsDownloadLink(message.id, message.subject, attachmentsParts),
 		[message, attachmentsParts]
 	);
-	const removeAttachments = useCallback(() => removeAttachments(), []);
+
 	const createSnackbar = useContext(SnackbarManagerContext);
 
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	const iconColors = useMemo(
 		() =>
 			uniqBy(
@@ -360,7 +385,7 @@ export default function AttachmentsBlock({ message }) {
 		[attachments, createSnackbar, message, t]
 	);
 
-	const isAValidDestination = useMemo((node) => node?.permissions?.can_write_file, []);
+	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
 
 	const actionTarget = useMemo(
 		() => ({
@@ -383,75 +408,81 @@ export default function AttachmentsBlock({ message }) {
 		actionTarget
 	);
 
-	return (
-		attachmentsCount > 0 && (
-			<Container crossAlignment="flex-start" padding={{ horizontal: 'medium' }}>
-				<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
-					{map(expanded ? attachments : attachments.slice(0, 2), (att, index) => (
-						<Attachment
-							key={`att-${att.filename}-${index}`}
-							filename={att.filename}
-							size={att.size}
-							link={getAttachmentsLink(message.id, message.subject, [att.name], att.contentType)}
-							downloadlink={getAttachmentsDownloadLink(message.id, message.subject, [att.name])}
-							message={message}
-							part={att.name}
-							iconColors={iconColors}
-							att={att}
-						/>
-					))}
-				</Container>
-				<AttachmentsActions
-					mainAlignment="flex-start"
-					padding={{ top: 'extrasmall', bottom: 'medium' }}
-				>
-					<Padding right="small">
-						{attachmentsCount === 1 && (
-							<Text color="gray1">{`1 ${t('label.attachment', 'Attachment')}`}</Text>
-						)}
-						{attachmentsCount === 2 && (
-							<Text color="gray1">
-								{`${attachmentsCount} ${t('label.attachment_plural', 'Attachments')}`}
-							</Text>
-						)}
-						{attachmentsCount > 2 &&
-							(expanded ? (
-								<Row onClick={() => setExpanded(false)} style={{ cursor: 'pointer' }}>
-									<Padding right="small">
-										<Text color="primary">
-											{`${attachmentsCount} ${t('label.attachment_plural', 'Attachments')}`}
-										</Text>
-									</Padding>
-									<Icon icon="ArrowIosUpward" color="primary" />
-								</Row>
-							) : (
-								<Row onClick={() => setExpanded(true)} style={{ cursor: 'pointer' }}>
-									<Padding right="small">
-										<Text color="primary">
-											{`${t('label.show_all', 'Show all')} ${attachmentsCount} ${t(
-												'label.attachment_plural',
-												'attachments'
-											)}`}
-										</Text>
-									</Padding>
-									<Icon icon="ArrowIosDownward" color="primary" />
-								</Row>
-							))}{' '}
-					</Padding>
-					<Link size="medium" href={actionsDownloadLink}>
-						{t('label.download', {
-							count: attachmentsCount,
-							defaultValue: 'Download',
-							defaultValue_plural: 'Download all'
-						})}
-					</Link>
-					{isUploadIntegrationAvailable && (
-						<Link size="medium" onClick={uploadIntegration.click} style={{ paddingLeft: '8px' }}>
-							{t('label.save_to_files', 'Save to Files')}
-						</Link>
-					)}
-				</AttachmentsActions>
+	return attachmentsCount > 0 ? (
+		<Container crossAlignment="flex-start" padding={{ horizontal: 'medium' }}>
+			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
+				{map(expanded ? attachments : attachments.slice(0, 2), (att, index) => (
+					<Attachment
+						key={`att-${att.filename}-${index}`}
+						filename={att.filename}
+						size={att.size}
+						link={getAttachmentsLink(message.id, message.subject, [att.name], att.contentType)}
+						downloadlink={getAttachmentsDownloadLink(message.id, message.subject, [att.name])}
+						message={message}
+						part={att.name}
+						iconColors={iconColors}
+						att={att}
+					/>
+				))}
 			</Container>
-		)
+			<AttachmentsActions
+				mainAlignment="flex-start"
+				padding={{ top: 'extrasmall', bottom: 'medium' }}
+			>
+				<Padding right="small">
+					{attachmentsCount === 1 && (
+						<Text color="gray1">{`1 ${t('label.attachment', 'Attachment')}`}</Text>
+					)}
+					{attachmentsCount === 2 && (
+						<Text color="gray1">
+							{`${attachmentsCount} ${t('label.attachment_plural', 'Attachments')}`}
+						</Text>
+					)}
+					{attachmentsCount > 2 &&
+						(expanded ? (
+							<Row onClick={(): void => setExpanded(false)} style={{ cursor: 'pointer' }}>
+								<Padding right="small">
+									<Text color="primary">
+										{`${attachmentsCount} ${t('label.attachment_plural', 'Attachments')}`}
+									</Text>
+								</Padding>
+								<Icon icon="ArrowIosUpward" color="primary" />
+							</Row>
+						) : (
+							<Row onClick={(): void => setExpanded(true)} style={{ cursor: 'pointer' }}>
+								<Padding right="small">
+									<Text color="primary">
+										{`${t('label.show_all', 'Show all')} ${attachmentsCount} ${t(
+											'label.attachment_plural',
+											'attachments'
+										)}`}
+									</Text>
+								</Padding>
+								<Icon icon="ArrowIosDownward" color="primary" />
+							</Row>
+						))}{' '}
+				</Padding>
+
+				<Link size="medium" href={actionsDownloadLink}>
+					{t('label.download', {
+						count: attachmentsCount,
+						defaultValue: 'Download',
+						defaultValue_plural: 'Download all'
+					})}
+				</Link>
+				{isUploadIntegrationAvailable && (
+					<Link
+						size="medium"
+						onClick={uploadIntegration && uploadIntegration.click}
+						style={{ paddingLeft: '8px' }}
+					>
+						{t('label.save_to_files', 'Save to Files')}
+					</Link>
+				)}
+			</AttachmentsActions>
+		</Container>
+	) : (
+		<></>
 	);
-}
+};
+export default AttachmentsBlock;

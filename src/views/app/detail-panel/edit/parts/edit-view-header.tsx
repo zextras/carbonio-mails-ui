@@ -25,6 +25,7 @@ import {
 	useRemoveCurrentBoard
 } from '@zextras/carbonio-shell-ui';
 import { useHistory } from 'react-router-dom';
+import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { EditViewContext } from './edit-view-context';
 import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
@@ -36,9 +37,18 @@ import { ActionsType } from '../../../../../commons/utils';
 
 type PropType = {
 	setShowRouteGuard: (arg: boolean) => void;
-	setValue: (arg: unknown) => void;
+	setValue: (
+		name: string,
+		value: any,
+		config?:
+			| Partial<{
+					shouldValidate: boolean;
+					shouldDirty: boolean;
+			  }>
+			| undefined
+	) => void;
 	handleSubmit: (arg: () => void) => void;
-	uploadAttachmentsCb: () => void;
+	uploadAttachmentsCb: (files: any) => AsyncThunkAction<any, any, any>;
 };
 const EditViewHeader: FC<PropType> = ({
 	setShowRouteGuard,
@@ -284,7 +294,7 @@ const EditViewHeader: FC<PropType> = ({
 			>
 				{hasIdentity && (
 					<Row>
-						<Tooltip label={activeFrom.label} maxWidth="100%" placement="top-start">
+						<Tooltip label={activeFrom?.label} maxWidth="100%" placement="top-start">
 							<Dropdown
 								items={identitiesList}
 								width="fit"
@@ -318,12 +328,14 @@ const EditViewHeader: FC<PropType> = ({
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								ref={inputRef}
-								onChange={(): void =>
+								onChange={(): Promise<any> =>
 									addAttachments(
 										saveDraftCb,
 										uploadAttachmentsCb,
 										editor,
 										inputRef?.current?.files
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore
 									).then((data: mailAttachment) => {
 										updateEditorCb({
 											attach: { ...value, mp: data }

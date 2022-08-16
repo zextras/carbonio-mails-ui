@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { find, isArray } from 'lodash';
 import { TFunction } from 'react-i18next';
 import { Account } from '@zextras/carbonio-shell-ui';
 import { Participant } from '../types/participant';
 
-export const getTimeLabel = (date: number): string => {
+export const getTimeLabel = (date: Moment): string => {
 	const momentDate = moment(date);
 	if (momentDate.isSame(new Date(), 'day')) {
 		return momentDate.format('LT');
@@ -42,7 +42,7 @@ export const isAvailableInTrusteeList = (
 	let trusteeAddress: Array<string> = [];
 	let availableInTrusteeList = false;
 	if (trusteeList) {
-		trusteeAddress = isArray(trusteeList) ? trusteeList : trusteeList.split(',');
+		trusteeAddress = isArray(trusteeList) ? trusteeList : trusteeList?.split(',');
 	}
 	if (trusteeAddress.length > 0) {
 		const domain = address.substring(address.lastIndexOf('@') + 1);

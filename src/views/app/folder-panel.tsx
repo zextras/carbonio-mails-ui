@@ -16,9 +16,8 @@ import ConversationList from './folder-panel/conversation-list';
 import MessageList from './folder-panel/message-list';
 import ShimmerList from '../search/shimmer-list';
 
-
-const FolderPanel:FC=()=> {
-	const { folderId } = useParams<{folderId:string}>();
+const FolderPanel: FC = () => {
+	const { folderId } = useParams<{ folderId: string }>();
 	const dispatch = useDispatch();
 	const { isMessageView } = useAppContext();
 
@@ -52,6 +51,6 @@ const FolderPanel:FC=()=> {
 			</Container>
 		</ActionsContextProvider>
 	);
-}
+};
 
-export default FolderPanel
+export default FolderPanel;

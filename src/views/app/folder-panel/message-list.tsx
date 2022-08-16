@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { map, reduce, find } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, FC, ReactElement } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Container, List, Padding, Shimmer, Text } from '@zextras/carbonio-design-system';
+import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FOLDERS, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
-import { selectConversationStatus, selectFolder } from '../../../store/conversations-slice';
+import { selectConversationStatus } from '../../../store/conversations-slice';
 import MessageListItem from './lists-item/message-list-item';
 import SelectMessagesPanelActions from '../../../ui-actions/select-panel-action-message';
 import { Breadcrumbs } from './breadcrumbs';
@@ -20,6 +20,7 @@ import { useSelection } from '../../../hooks/useSelection';
 import { useMessageList } from '../../../hooks/use-message-list';
 import { selectFolderMsgSearchStatus } from '../../../store/messages-slice';
 import ShimmerList from '../../search/shimmer-list';
+import { ConvMessage, MailMessage } from '../../../types';
 
 const DragImageContainer = styled.div`
 	position: absolute;
@@ -29,10 +30,13 @@ const DragImageContainer = styled.div`
 	width: 35vw;
 `;
 
-const DragItems = ({ messages, draggedIds }) => {
+const DragItems: FC<{
+	messages: Partial<MailMessage>[];
+	draggedIds: Array<string> | undefined;
+}> = ({ messages, draggedIds }) => {
 	const items = reduce(
 		draggedIds,
-		(acc, v, k) => {
+		(acc: Partial<MailMessage>[], v, k) => {
 			const obj = find(messages, ['id', k]);
 			if (obj) {
 				return [...acc, obj];
@@ -51,10 +55,10 @@ const DragItems = ({ messages, draggedIds }) => {
 	);
 };
 
-const MessageList = () => {
+const MessageList: FC = () => {
 	const history = useHistory();
 	const activeFolder = history?.location?.pathname?.split?.('/')?.[3];
-	const { itemId, folderId } = useParams();
+	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const folder = useFolder(activeFolder);
 	const dispatch = useDispatch();
 	const { setCount } = useAppContext();
@@ -75,6 +79,8 @@ const MessageList = () => {
 			if (hasMore && !isLoading) {
 				setIsLoading(true);
 				const dateOrNull = date ? new Date(date) : null;
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				dispatch(search({ folderId, before: dateOrNull, limit: 50, types: 'message' })).then(() => {
 					setIsLoading(false);
 				});
@@ -136,7 +142,7 @@ const MessageList = () => {
 								dragImageRef
 							}}
 							ItemComponent={MessageListItem}
-							onListBottom={() => loadMore(messages?.[messages.length - 1]?.date)}
+							onListBottom={(): void => loadMore(messages?.[messages.length - 1]?.date)}
 							data-testid={`message-list-${folderId}`}
 						/>
 					) : (

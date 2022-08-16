@@ -12,15 +12,19 @@ import {
 	Divider,
 	Button,
 	Tooltip,
-	List
+	List,
+	TextWithTooltip,
+	Row
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { filter, find } from 'lodash';
+import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import Heading from './components/settings-heading';
 import { domainWhitelistSubSection } from './subsections';
 import TrusteeListItem from './components/trustee-list-item';
 import LoadingShimmer from './filters/parts/loading-shimmer';
+import { PrefsType } from './setting-type';
 
 type UpdateSettingsProps = {
 	target: {
@@ -30,7 +34,7 @@ type UpdateSettingsProps = {
 };
 
 type InputProps = {
-	settingsObj: Record<string, string | Array<string>>;
+	settingsObj: PrefsType;
 	updateSettings: (arg: UpdateSettingsProps) => void;
 };
 
@@ -106,7 +110,7 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 					<Heading title={sectionTitle.label} size="medium" />
 				</Container>
 				<Container width="auto" crossAlignment="flex-end">
-					<Text size="extrasmall">{message}</Text>
+					<TextWithTooltip size="extrasmall">{message}</TextWithTooltip>
 				</Container>
 			</Container>
 			<Divider />
@@ -115,18 +119,20 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 				orientation="horizontal"
 				mainAlignment="flex-start"
 			>
-				<Input
-					width="80vw"
-					label={t('label.enter_email_address', 'Enter email address or domain')}
-					value={address}
-					hasError={isInvalid}
-					description={warningMessage}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setAddress(e.target.value)}
-				/>
+				<Row mainAlignment="flex-start" width="50vw">
+					<Input
+						label={t('label.enter_email_address', 'Enter email address or domain')}
+						value={address}
+						hasError={isInvalid}
+						description={warningMessage}
+						backgroundColor="gray5"
+						onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setAddress(e.target.value)}
+					/>
+				</Row>
 				<Padding left="medium">
 					<Tooltip label={warningMessage} disabled={!isInvalid} maxWidth="100%">
 						<Button
-							label={t('label.add', 'add')}
+							label={getBridgedFunctions()?.t('label.add', 'Add')}
 							type="outlined"
 							onClick={onAdd}
 							disabled={isInvalid}
@@ -135,7 +141,7 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 				</Padding>
 			</Container>
 			<Container
-				padding={{ all: 'medium', bottom: 'small' }}
+				padding={{ horizontal: 'medium', bottom: 'small' }}
 				orientation="horizontal"
 				mainAlignment="flex-start"
 			>

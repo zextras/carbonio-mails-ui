@@ -3,11 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { Folder, getBridgedFunctions, store, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Folder, getBridgedFunctions, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import ModalHeader from '../../commons/modal-header';
 import ModalFooter from '../../commons/modal-footer';
 
@@ -15,10 +15,10 @@ import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite
 import { GranteeInfo } from './share-folder-properties';
 import { sendShareNotification } from '../../../../store/actions/send-share-notification';
 import { folderAction } from '../../../../store/actions/folder-action';
-import { EditFolderArgumentType, GrantType } from '../../../../types';
+import { GrantType } from '../../../../types';
 
 type ShareRevokeModalType = {
-	folder: EditFolderArgumentType;
+	folder: Folder;
 	onClose?: () => void;
 	grant: GrantType;
 	goBack: () => void;
@@ -122,7 +122,11 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 				mainAlignment="flex-end"
 				padding={{ bottom: 'large', top: 'large' }}
 			>
-				<GranteeInfo grant={grant} shareCalendarRoleOptions={shareCalendarRoleOptions} />
+				<GranteeInfo
+					grant={grant}
+					hovered={false}
+					shareCalendarRoleOptions={shareCalendarRoleOptions}
+				/>
 			</Container>
 			<Checkbox
 				iconSize="medium"

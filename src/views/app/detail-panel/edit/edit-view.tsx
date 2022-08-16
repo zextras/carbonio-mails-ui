@@ -10,7 +10,10 @@ import React, {
 	useLayoutEffect,
 	useMemo,
 	useState,
-	useRef
+	useRef,
+	FC,
+	DragEventHandler,
+	SyntheticEvent
 } from 'react';
 import {
 	Button,
@@ -59,19 +62,27 @@ import EditViewHeader from './parts/edit-view-header';
 import WarningBanner from './parts/warning-banner';
 import SubjectRow from './parts/subject-row';
 import { moveMsgToTrash } from '../../../../ui-actions/message-actions';
+import { MailsEditor } from '../../../../types';
 
 let counter = 0;
 
-const generateId = () => {
+const generateId = (): string => {
 	counter += 1;
 	return `new-${counter}`;
 };
 
-export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }) {
+type EditViewPropType = {
+	mailId: string;
+	folderId: string;
+	setHeader: (arg: any) => void;
+	toggleAppBoard: boolean;
+};
+
+const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleAppBoard }) => {
 	const settings = useUserSettings();
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const boardContext = useBoardConfig();
-	const [editor, setEditor] = useState();
+	const boardContext: any = useBoardConfig();
+	const [editor, setEditor] = useState<MailsEditor>();
 
 	const action = useQueryParam('action');
 	const change = useQueryParam('change');
@@ -87,29 +98,31 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 
 	const addBoard = useAddBoardCallback();
 	const [dropZoneEnable, setDropZoneEnable] = useState(false);
-	const saveDraftCb = useCallback((data) => dispatch(saveDraft({ data })), [dispatch]);
+	const saveDraftCb = useCallback((data: MailsEditor) => dispatch(saveDraft({ data })), [dispatch]);
 
 	const [saveFirstDraft, setSaveFirstDraft] = useState(true);
 	const [draftSavedAt, setDraftSavedAt] = useState('');
-	const [timer, setTimer] = useState(null);
+	const [timer, setTimer] = useState<any>(null);
 
 	const [loading, setLoading] = useState(false);
 	const [isUploading, setIsUploading] = useState(false);
 
-	const containerRef = useRef();
-	const textEditorRef = useRef();
+	const containerRef = useRef<HTMLInputElement>(null);
+	const textEditorRef = useRef<HTMLInputElement>(null);
 
 	const [avaibleMinHeight, setAvaibleMinHeight] = useState(0);
 
 	useLayoutEffect(() => {
-		const calculateAvaibleMinHeight = () => {
-			const containerHeight = containerRef?.current?.clientHeight;
-			setAvaibleMinHeight(containerHeight ? containerHeight - 235 : 0);
+		const calculateAvaibleMinHeight = (): void => {
+			if (containerRef?.current && containerRef?.current?.clientHeight)
+				setAvaibleMinHeight(Number(containerRef?.current?.clientHeight) - 235);
+			else setAvaibleMinHeight(0);
 		};
 		calculateAvaibleMinHeight();
 		window.addEventListener('resize', calculateAvaibleMinHeight);
 		return () => window.removeEventListener('resize', calculateAvaibleMinHeight);
 	}, [containerRef?.current?.clientHeight, textEditorRef?.current?.clientHeight]);
+
 	const [showRouteGuard, setShowRouteGuard] = useState(true);
 
 	const activeMailId = useMemo(
@@ -147,20 +160,20 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 
 	const throttledSaveToDraft = useCallback(
 		(data) => {
-			clearTimeout(timer);
+			if (timer) clearTimeout(timer);
 			const newTimer = setTimeout(() => {
 				const newData = { ...editor, ...data };
 				if (saveFirstDraft) {
 					saveDraftCb(newData);
 					setDraftSavedAt(moment().format('HH:mm'));
 					setSaveFirstDraft(false);
-				} else if (!isNil(editor.id)) {
+				} else if (!isNil(editor?.id)) {
 					saveDraftCb(newData);
 					setDraftSavedAt(moment().format('HH:mm'));
 				}
 			}, 500);
 
-			setTimer(newTimer);
+			if (newTimer) setTimer(newTimer);
 		},
 		[editor, saveDraftCb, saveFirstDraft, timer]
 	);
@@ -191,6 +204,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		if (setHeader) {
 			setHeader(editor?.subject ?? t('label.no_subject', 'No subject'));
 		} else {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			updateBoard(undefined, editor?.subject ?? t('messages.new_email', 'New e-mail'));
 		}
 	}, [editor?.subject, setHeader, updateBoard, action, t]);
@@ -213,6 +228,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 						original: messages?.[activeMailId ?? editorId],
 						boardContext,
 						action,
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						change,
 						accounts,
 						labels: {
@@ -270,6 +287,9 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			if (activeMailId) {
 				addBoard(`${MAILS_ROUTE}/edit/${activeMailId}?action=${action}`, {
 					app: MAIL_APP_ID,
+					// TODO: type the function in shell
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					mailId: activeMailId,
 					title: editor?.subject
 				});
@@ -283,15 +303,17 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		}
 	}, [addBoard, folderId, activeMailId, toggleAppBoard, action, editor?.subject, t]);
 
-	const onDragOverEvent = (event) => {
+	const onDragOverEvent = (event: SyntheticEvent): void => {
 		event.preventDefault();
 		setDropZoneEnable(true);
 	};
 
-	const onDropEvent = (event) => {
+	const onDropEvent = (event: DragEvent): void => {
 		event.preventDefault();
 		setDropZoneEnable(false);
-		addAttachments(saveDraftCb, uploadAttachmentsCb, editor, event.dataTransfer.files).then(
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		addAttachments(saveDraftCb, uploadAttachmentsCb, editor, event?.dataTransfer?.files).then(
 			(data) => {
 				updateEditorCb({
 					attach: { mp: data }
@@ -300,7 +322,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		);
 	};
 
-	const onDragLeaveEvent = (event) => {
+	const onDragLeaveEvent = (event: DragEvent): void => {
 		event.preventDefault();
 		setDropZoneEnable(false);
 	};
@@ -357,27 +379,29 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	if (loading || !editor)
 		return (
 			<Container height="50%" mainAlignment="center" crossAlignment="center">
-				<Button loading disabled label="" type="ghost" />
+				<Button loading disabled label="" type="ghost" onClick={(): null => null} />
 			</Container>
 		);
 	return (
 		<>
 			<RouteLeavingGuard
 				when={showRouteGuard && !toggleAppBoard}
-				onDeleteDraft={() => {
+				onDeleteDraft={(): void => {
 					moveMsgToTrash({
-						ids: [editor.id],
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						ids: [editor?.id],
 						t,
 						dispatch,
 						createSnackbar,
 						folderId: FOLDERS.TRASH
-					}).click();
+					})?.click();
 					dispatch(closeEditor(editorId));
 				}}
 			/>
 			<EditViewContext.Provider value={context}>
 				<Catcher>
-					<Container onDragOver={(event) => onDragOverEvent(event)}>
+					<Container onDragOver={(event: any): any => onDragOverEvent(event)}>
 						<Container
 							mainAlignment="flex-start"
 							height="fill"
@@ -428,4 +452,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			</EditViewContext.Provider>
 		</>
 	);
-}
+};
+
+export default EditView;

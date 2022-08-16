@@ -44,9 +44,9 @@ export type ConvActionResult = {
 export type FetchConversationsParameters = {
 	folderId?: string;
 	limit: number;
-	before?: Date;
+	before?: Date | null;
 	types?: string;
-	sortBy: 'dateDesc' | 'dateAsc';
+	sortBy?: 'dateDesc' | 'dateAsc';
 	query?: string;
 	offset?: undefined | number;
 	recip?: '0' | '1' | '2';

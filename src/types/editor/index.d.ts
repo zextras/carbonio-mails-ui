@@ -7,6 +7,7 @@ export type EditorAttachmentFiles = {
 	contentType: string;
 	disposition: string;
 	fileName?: string;
+	filename: string;
 	name: string;
 	size: number;
 };

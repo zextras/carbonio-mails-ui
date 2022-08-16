@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Avatar, Container, Tooltip } from '@zextras/carbonio-design-system';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, FC, SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ParticipantRole } from '../../../../commons/utils';
+import { Participant } from '../../../../types';
 
 const AvatarElement = styled(Avatar)`
 	width: 42px !important;
@@ -18,17 +19,33 @@ const AvatarElement = styled(Avatar)`
 		font-size: 14px;
 	}
 `;
-export const ItemAvatar = ({ item, selected, selecting, toggle, folderId, isSearch = false }) => {
+
+type ItemAvatarType = {
+	item: any;
+	selected: boolean;
+	selecting: boolean;
+	toggle: (arg: string) => void;
+	folderId: string;
+	isSearch: boolean;
+};
+export const ItemAvatar: FC<ItemAvatarType> = ({
+	item,
+	selected,
+	selecting,
+	toggle,
+	folderId,
+	isSearch = false
+}) => {
 	const targetParticipants = folderId === '5' ? ParticipantRole.TO : ParticipantRole.FROM;
 	const [t] = useTranslation();
 	const [avatarLabel, avatarEmail] = useMemo(() => {
-		let sender = item?.participants?.find((p) => p.type === targetParticipants);
+		let sender = item?.participants?.find((p: Participant) => p.type === targetParticipants);
 		if (!sender) [sender] = item.participants ?? [];
 		return [sender?.fullName || sender?.name || sender?.address || '.', sender?.address];
 	}, [item.participants, targetParticipants]);
 
 	const conversationSelect = useCallback(
-		(id) => (ev) => {
+		(id) => (ev: SyntheticEvent) => {
 			ev.preventDefault();
 			toggle && toggle(id);
 		},

@@ -15,7 +15,7 @@ import {
 	Radio,
 	SelectItem
 } from '@zextras/carbonio-design-system';
-import { TFunction } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import Heading from './components/settings-heading';
 import {
 	CheckNewMailOptions,
@@ -34,16 +34,15 @@ type UpdateSettingsProps = {
 };
 
 type DisplayingMessagesSettingsProps = {
-	t: TFunction;
 	settingsObj: Record<string, string>;
 	updateSettings: (arg: UpdateSettingsProps) => void;
 };
 
 const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
-	t,
 	settingsObj,
 	updateSettings
 }) => {
+	const [t] = useTranslation();
 	const checkNewMailOptions = useMemo(
 		() =>
 			CheckNewMailOptions(

@@ -3,14 +3,26 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import React, { FC, ReactElement, useMemo } from 'react';
 import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
+import { map } from 'lodash';
 import {
 	ColorContainer,
 	TextUpperCase
 } from '../../../../integrations/shared-invite-reply/parts/styled-components';
 
-const LabelFactory = ({ selected, label, open, focus }) => (
+type LabelFactoryPropsType = {
+	selected: Array<{ label: string }>;
+	label: string;
+	open: boolean;
+	focus: boolean;
+};
+const LabelFactory: FC<LabelFactoryPropsType> = ({
+	selected,
+	label,
+	open,
+	focus
+}): ReactElement => (
 	<ColorContainer
 		orientation="horizontal"
 		width="fill"
@@ -45,18 +57,13 @@ const LabelFactory = ({ selected, label, open, focus }) => (
 	</ColorContainer>
 );
 
-const getItems = (items) =>
-	items.map((el) => ({
+type GetItemsReturnType = Array<{ label: string; value: any; customComponent: ReactElement }>;
+const getItems = (items: Array<{ label: string; value: any }>): GetItemsReturnType =>
+	map(items, (el) => ({
 		label: el?.label,
 		value: el?.value,
 		customComponent: (
-			<Container
-				width="100%"
-				takeAvailableSpace
-				mainAlignment="space-between"
-				orientation="horizontal"
-				height="fit"
-			>
+			<Container width="100%" mainAlignment="space-between" orientation="horizontal" height="fit">
 				<Padding left="small">
 					<TextUpperCase>{el?.label}</TextUpperCase>
 				</Padding>
@@ -64,9 +71,13 @@ const getItems = (items) =>
 		)
 	}));
 
-const CustomSelect = ({ onChange, defaultSelection, label, items }) => {
+const CustomSelect: FC<{
+	onChange: (arg: any) => void;
+	defaultSelection: { label: string; value: any };
+	label: string;
+	items: Array<{ label: string; value: any }>;
+}> = ({ onChange, defaultSelection, label, items }) => {
 	const newItems = useMemo(() => getItems(items), [items]);
-
 	return (
 		<Select
 			label={label}

@@ -420,7 +420,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 						icon="EyeOutline"
 						type="outlined"
 						onClick={(): void => setShowQuotedText(true)}
-						size="fill"
+						width="fill"
 					/>
 				</Row>
 			)}

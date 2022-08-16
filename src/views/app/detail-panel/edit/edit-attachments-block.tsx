@@ -3,7 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+	useCallback,
+	useMemo,
+	useRef,
+	useState,
+	FC,
+	SyntheticEvent,
+	ReactElement
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { filter, find, map, uniqBy } from 'lodash';
@@ -15,14 +23,22 @@ import {
 	Padding,
 	Row,
 	Text,
+	Theme,
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
 import { updateEditor } from '../../../../store/editor-slice';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
+import {
+	EditorAttachmentFiles,
+	EditorsStateType,
+	mailAttachment,
+	mailAttachmentParts,
+	MailsEditor
+} from '../../../../types';
 
-function getSizeLabel(size) {
+const getSizeLabel = (size: number): string => {
 	let value = '';
 	if (size < 1024000) {
 		value = `${Math.round((size / 1024) * 100) / 100} KB`;
@@ -32,16 +48,20 @@ function getSizeLabel(size) {
 		value = `${Math.round((size / 1024 / 1024 / 1024) * 100) / 100} GB`;
 	}
 	return value;
-}
+};
 
-function getAttachmentsLink(messageId, messageSubject, attachments) {
+const getAttachmentsLink = (
+	messageId: string | undefined,
+	messageSubject: string,
+	attachments: string[]
+): string => {
 	if (attachments.length > 1) {
 		return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
 			','
 		)}&disp=a&fmt=zip`;
 	}
 	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
-}
+};
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
@@ -52,45 +72,67 @@ const AttachmentContainer = styled(Container)`
 	border-radius: 2px;
 	width: calc(50% - 4px);
 	transition: 0.2s ease-out;
-	margin-bottom: ${({ theme }) => theme.sizes.padding.small};
+	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
 	&:hover {
-		background-color: ${({ theme, background }) => theme.palette[background].hover};
+		background-color: ${({ theme, background }): string =>
+			background && theme.palette[background].hover};
 		& ${AttachmentHoverBarContainer} {
 			display: flex;
 		}
 	}
 	&:focus {
-		background-color: ${({ theme, background }) => theme.palette[background].focus};
+		background-color: ${({ theme, background }): string =>
+			background && theme.palette[background].focus};
 	}
 	cursor: pointer;
 `;
 
 const AttachmentLink = styled.a`
-	margin-bottom: ${({ theme }) => theme.sizes.padding.small};
+	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
 	position: relative;
 	text-decoration: none;
 `;
 
-const AttachmentExtension = styled(Text)`
+const AttachmentExtension = styled(Text)<{
+	background: string;
+}>`
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 32px;
 	height: 32px;
-	border-radius: ${({ theme }) => theme.borderRadius};
-	background-color: ${({ background }) => background.color};
-	color: ${({ theme }) => theme.palette.gray6.regular};
-	font-size: calc(${({ theme }) => theme.sizes.font.small} - 2px);
+	border-radius: ${({ theme }): string => theme.borderRadius};
+	background-color: ${({ background }): string => background};
+	color: ${({ theme }): string => theme.palette.gray6.regular};
+	font-size: calc(${({ theme }): string => theme.sizes.font.small} - 2px);
 	text-transform: uppercase;
-	margin-right: ${({ theme }) => theme.sizes.padding.small};
+	margin-right: ${({ theme }): string => theme.sizes.padding.small};
 `;
-
-function Attachment({ filename, size, link, editor, part, iconColors, throttledSaveToDraft, att }) {
+type AttachmentType = {
+	filename: string;
+	size: number;
+	link: string;
+	editor: MailsEditor;
+	part: string;
+	iconColors: Array<{ extension: 'string'; color: 'string' }>;
+	throttledSaveToDraft: (arg: any) => void;
+	att: EditorAttachmentFiles;
+};
+const Attachment: FC<AttachmentType> = ({
+	filename,
+	size,
+	link,
+	editor,
+	part,
+	iconColors,
+	throttledSaveToDraft,
+	att
+}) => {
 	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
-	const inputRef = useRef();
-	const inputRef2 = useRef();
+	const inputRef = useRef<HTMLInputElement>();
+	const inputRef2 = useRef<HTMLInputElement>();
 	const dispatch = useDispatch();
 
 	const removeAttachment = useCallback(() => {
@@ -116,21 +158,23 @@ function Attachment({ filename, size, link, editor, part, iconColors, throttledS
 			height="fit"
 			background="gray3"
 		>
-			<Tooltip key={`${editor.id}-Preview`} label={t('action.preview', 'Preview')}>
+			<Tooltip key={`${editor?.id}-Preview`} label={t('action.preview', 'Preview')}>
 				<Row
 					padding={{ all: 'small' }}
 					mainAlignment="flex-start"
-					onClick={(ev) => {
+					onClick={(ev: SyntheticEvent): void => {
 						ev.preventDefault();
 						if (inputRef2.current) {
 							// eslint-disable-next-line no-param-reassign
-							inputRef2.current.value = null;
+							inputRef2.current.value = '';
 							inputRef2.current.click();
 						}
 					}}
 					takeAvailableSpace
 				>
-					<AttachmentExtension background={find(iconColors, (ic) => ic.extension === extension)}>
+					<AttachmentExtension
+						background={find(iconColors, (ic) => ic.extension === extension)?.color}
+					>
 						{extension}
 					</AttachmentExtension>
 					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
@@ -174,9 +218,12 @@ function Attachment({ filename, size, link, editor, part, iconColors, throttledS
 			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={link} />
 		</AttachmentContainer>
 	);
-}
+};
 
-export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
+const EditAttachmentsBlock: FC<{
+	editor: MailsEditor;
+	throttledSaveToDraft: (arg: any) => void;
+}> = ({ editor, throttledSaveToDraft }): ReactElement => {
 	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 	const dispatch = useDispatch();
@@ -198,6 +245,8 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 		});
 	}, [editor.editorId, dispatch, throttledSaveToDraft]);
 
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	const iconColors = useMemo(
 		() =>
 			uniqBy(
@@ -224,73 +273,75 @@ export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
 		[editor.attachmentFiles, theme]
 	);
 
-	return (
-		editor.attachmentFiles.length > 0 && (
-			<Container crossAlignment="flex-start">
-				<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
-					{map(
-						expanded ? editor.attachmentFiles : editor.attachmentFiles.slice(0, 2),
-						(att, index) => (
-							<Attachment
-								key={`att-${att.filename}-${index}`}
-								filename={att.filename}
-								size={att.size}
-								link={getAttachmentsLink(editor.id, editor.subject, [att.name])}
-								editor={editor}
-								part={att.name}
-								iconColors={iconColors}
-								throttledSaveToDraft={throttledSaveToDraft}
-								att={att}
-							/>
-						)
-					)}
-				</Container>
-				<Row mainAlignment="flex-start" padding={{ vertical: 'extrasmall' }}>
-					<Padding right="small">
-						{editor.attachmentFiles.length === 1 && (
-							<Text color="gray1">{`1 ${t('label.attachment', 'Attachment')}`}</Text>
-						)}
-						{editor.attachmentFiles.length === 2 && (
-							<Text color="gray1">
-								{`${editor.attachmentFiles.length} ${t('label.attachment_plural', 'Attachments')}`}
-							</Text>
-						)}
-						{editor.attachmentFiles.length > 2 &&
-							(expanded ? (
-								<Row onClick={() => setExpanded(false)} style={{ cursor: 'pointer' }}>
-									<Padding right="small">
-										<Text color="primary">
-											{`${editor.attachmentFiles.length} ${t(
-												'label.attachment_plural',
-												'attachments'
-											)}`}
-										</Text>
-									</Padding>
-									<Icon icon="ArrowIosUpward" color="primary" />
-								</Row>
-							) : (
-								<Row onClick={() => setExpanded(true)} style={{ cursor: 'pointer' }}>
-									<Padding right="small">
-										<Text color="primary">
-											{`${t('label.show_all', 'Show all')} ${editor.attachmentFiles.length} ${t(
-												'label.attachment_plural',
-												'attachments'
-											)}`}
-										</Text>
-									</Padding>
-									<Icon icon="ArrowIosDownward" color="primary" />
-								</Row>
-							))}
-					</Padding>
-					<Link size="medium" onClick={removeAllAttachments}>
-						{t('label.remove', {
-							count: editor.attachmentFiles.length,
-							defaultValue: 'Remove',
-							defaultValuePlural: 'Remove all {{count}}'
-						})}
-					</Link>
-				</Row>
+	return editor.attachmentFiles.length > 0 ? (
+		<Container crossAlignment="flex-start">
+			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
+				{map(
+					expanded ? editor.attachmentFiles : editor.attachmentFiles.slice(0, 2),
+					(att, index) => (
+						<Attachment
+							key={`att-${att.filename}-${index}`}
+							filename={att.filename}
+							size={att.size}
+							link={getAttachmentsLink(editor?.id, editor.subject, [att.name])}
+							editor={editor}
+							part={att.name}
+							iconColors={iconColors}
+							throttledSaveToDraft={throttledSaveToDraft}
+							att={att}
+						/>
+					)
+				)}
 			</Container>
-		)
+			<Row mainAlignment="flex-start" padding={{ vertical: 'extrasmall' }}>
+				<Padding right="small">
+					{editor.attachmentFiles.length === 1 && (
+						<Text color="gray1">{`1 ${t('label.attachment', 'Attachment')}`}</Text>
+					)}
+					{editor.attachmentFiles.length === 2 && (
+						<Text color="gray1">
+							{`${editor.attachmentFiles.length} ${t('label.attachment_plural', 'Attachments')}`}
+						</Text>
+					)}
+					{editor.attachmentFiles.length > 2 &&
+						(expanded ? (
+							<Row onClick={(): void => setExpanded(false)} style={{ cursor: 'pointer' }}>
+								<Padding right="small">
+									<Text color="primary">
+										{`${editor.attachmentFiles.length} ${t(
+											'label.attachment_plural',
+											'attachments'
+										)}`}
+									</Text>
+								</Padding>
+								<Icon icon="ArrowIosUpward" color="primary" />
+							</Row>
+						) : (
+							<Row onClick={(): void => setExpanded(true)} style={{ cursor: 'pointer' }}>
+								<Padding right="small">
+									<Text color="primary">
+										{`${t('label.show_all', 'Show all')} ${editor.attachmentFiles.length} ${t(
+											'label.attachment_plural',
+											'attachments'
+										)}`}
+									</Text>
+								</Padding>
+								<Icon icon="ArrowIosDownward" color="primary" />
+							</Row>
+						))}
+				</Padding>
+				<Link size="medium" onClick={removeAllAttachments}>
+					{t('label.remove', {
+						count: editor.attachmentFiles.length,
+						defaultValue: 'Remove',
+						defaultValuePlural: 'Remove all {{count}}'
+					})}
+				</Link>
+			</Row>
+		</Container>
+	) : (
+		<></>
 	);
-}
+};
+
+export default EditAttachmentsBlock;

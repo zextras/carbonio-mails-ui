@@ -154,16 +154,16 @@ type ConversationListItemProps = {
 	item: Conversation;
 	itemId: string;
 	folderId: string;
-	selected: boolean;
-	selecting: boolean;
-	toggle: () => void;
-	active: boolean;
-	visible: boolean;
-	setDraggedIds: (ids: Record<string, boolean>) => void;
-	draggedIds: Array<string>;
-	setIsDragging: (isDragging: boolean) => void;
-	selectedItems: Record<string, boolean>;
-	dragImageRef: React.RefObject<HTMLInputElement>;
+	selected?: boolean;
+	selecting?: boolean;
+	toggle?: () => void;
+	active?: boolean;
+	visible?: boolean;
+	setDraggedIds?: (ids: Record<string, boolean>) => void;
+	draggedIds?: Array<string> | undefined;
+	setIsDragging?: (isDragging: boolean) => void;
+	selectedItems?: Record<string, boolean>;
+	dragImageRef?: React.RefObject<HTMLInputElement>;
 };
 
 const ConversationListItem: FC<ConversationListItemProps> = ({
@@ -270,12 +270,12 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 
 	const dragCheck = useCallback(
 		(e, id) => {
-			setIsDragging(true);
-			e.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
-			if (selectedItems[id]) {
-				setDraggedIds(selectedItems);
+			setIsDragging && setIsDragging(true);
+			dragImageRef && e.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
+			if (selectedItems && selectedItems[id]) {
+				setDraggedIds && setDraggedIds(selectedItems);
 			} else {
-				setDraggedIds({ [id]: true });
+				setDraggedIds && setDraggedIds({ [id]: true });
 			}
 		},
 		[setIsDragging, dragImageRef, selectedItems, setDraggedIds]

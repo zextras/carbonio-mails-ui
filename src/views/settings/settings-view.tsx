@@ -3,11 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useState, useMemo, useCallback, useContext } from 'react';
+import React, { useState, useMemo, useCallback, useContext, ReactElement, FC } from 'react';
 import {
 	useUserSettings,
 	useUserAccount,
 	editSettings,
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	SettingsHeader
 } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
@@ -17,10 +19,11 @@ import { useTranslation } from 'react-i18next';
 import { getPropsDiff, differenceObject } from './components/utils';
 import DisplayMessagesSettings from './displaying-messages-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
-import SignatureSettings from './signature-settings';
+import SignatureSettings, { SignItemType } from './signature-settings';
 import FilterModule from './filters';
 import TrusteeAddresses from './trustee-addresses';
 import { SignatureRequest } from '../../store/actions/signatures';
+import { PrefsType } from './setting-type';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -29,11 +32,14 @@ import { SignatureRequest } from '../../store/actions/signatures';
  * All of them will have originalProps as default value
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
-export default function SettingsView() {
+const SettingsView: FC = (): ReactElement => {
 	const [t] = useTranslation();
 	const { prefs, props } = useUserSettings();
+	console.log('xxx:', { prefs: useUserSettings() });
 	const account = useUserAccount();
-	const [settingsObj, setSettingsObj] = useState({ ...prefs });
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	const [settingsObj, setSettingsObj] = useState<PrefsType>({ ...prefs });
 	const [updatedSettings, setUpdatedSettings] = useState({});
 	const originalProps = useMemo(
 		() =>
@@ -69,6 +75,8 @@ export default function SettingsView() {
 	}, [prefs]);
 
 	const onClose = useCallback(() => {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		setSettingsObj({ ...prefs });
 		setUpdatedSettings({});
 		// we discard only latest updates keeping successfully saved changes
@@ -107,27 +115,32 @@ export default function SettingsView() {
 			Object.keys(propsToUpdate).length === 0,
 		[settingsToUpdate, disabled, propsToUpdate]
 	);
-	const setNewOrForwardSignatureId = (itemsAdd, resp, oldSignatureId, isFowardSignature) => {
-		const newOrForwardSignatureToSet = itemsAdd.find((item) => item.id === oldSignatureId);
-		if (
-			!!newOrForwardSignatureToSet &&
-			resp?.payload?.response?.Body?.BatchResponse?.CreateSignatureResponse
-		) {
-			const createdSignature =
-				resp.payload.response.Body.BatchResponse.CreateSignatureResponse[0].signature;
-			const realSignatureId = createdSignature.find(
-				(item) => item.name === newOrForwardSignatureToSet.label
-			).id;
-			const signatureKey = isFowardSignature
-				? 'zimbraPrefForwardReplySignatureId'
-				: 'zimbraPrefDefaultSignatureId';
-			editSettings({
-				prefs: { [signatureKey]: realSignatureId }
-			}).then((res) => {
-				setUpdatedSettings({});
-			});
-		}
-	};
+	const setNewOrForwardSignatureId = useCallback(
+		(itemsAdd, resp, oldSignatureId, isFowardSignature): void => {
+			const newOrForwardSignatureToSet = itemsAdd?.find(
+				(item: SignItemType) => item.id === oldSignatureId
+			);
+			if (
+				!!newOrForwardSignatureToSet &&
+				resp?.payload?.response?.Body?.BatchResponse?.CreateSignatureResponse
+			) {
+				const createdSignature =
+					resp.payload.response.Body.BatchResponse.CreateSignatureResponse[0].signature;
+				const realSignatureId = createdSignature.find(
+					(item: SignItemType) => item.name === newOrForwardSignatureToSet.label
+				).id;
+				const signatureKey = isFowardSignature
+					? 'zimbraPrefForwardReplySignatureId'
+					: 'zimbraPrefDefaultSignatureId';
+				editSettings({
+					prefs: { [signatureKey]: realSignatureId }
+				}).then(() => {
+					setUpdatedSettings({});
+				});
+			}
+		},
+		[]
+	);
 
 	// eslint-disable-next-line consistent-return
 	const saveChanges = useCallback(() => {
@@ -135,7 +148,7 @@ export default function SettingsView() {
 
 		if (!isEqual(signItems, signItemsUpdated)) {
 			let hasError = false;
-			forEach(signItems, (i) => {
+			forEach(signItems, (i: SignItemType) => {
 				if (!i.label || !i.description) hasError = true;
 			});
 
@@ -150,22 +163,25 @@ export default function SettingsView() {
 				});
 				return false;
 			}
-			const itemsDelete = filter(signItemsUpdated, (x) => {
+			const itemsDelete = filter(signItemsUpdated, (x: SignItemType) => {
 				let toggle = false;
-				map(signItems, (ele) => {
+				map(signItems, (ele: SignItemType) => {
 					if (x.id === ele?.id) toggle = true;
 				});
 				return !toggle;
 			});
 
-			const findItems = (arr1, arr2) =>
-				filter(arr1, (o1) => arr2.map((o2) => o2.id).indexOf(o1.id) === -1);
+			const findItems = (
+				arr1: Array<SignItemType>,
+				arr2: Array<SignItemType>
+			): Array<SignItemType> => filter(arr1, (o1) => arr2.map((o2) => o2.id).indexOf(o1.id) === -1);
 
 			const itemsAdd = findItems(signItems, signItemsUpdated);
-			const itemsEdit = filter(signItems, (item) =>
+			const itemsEdit = filter(signItems, (item: SignItemType) =>
 				find(
 					signItemsUpdated,
-					(c) => item.id === c.id && (item.label !== c.label || item.description !== c.description)
+					(c: SignItemType): unknown =>
+						item.id === c.id && (item.label !== c.label || item.description !== c.description)
 				)
 			);
 
@@ -177,7 +193,7 @@ export default function SettingsView() {
 				isReplySignaturePrefisNew &&
 				itemsAdd.length > 0 &&
 				itemsAdd.findIndex(
-					(item) => item.id === settingsToUpdate.zimbraPrefForwardReplySignatureId
+					(item: any) => item?.id === settingsToUpdate.zimbraPrefForwardReplySignatureId
 				) !== -1
 			) {
 				setForwardReplySignatureId = settingsToUpdate.zimbraPrefForwardReplySignatureId;
@@ -191,12 +207,15 @@ export default function SettingsView() {
 			if (
 				isDefaultSignaturePref &&
 				itemsAdd.length > 0 &&
-				itemsAdd.findIndex((item) => item.id === settingsToUpdate.zimbraPrefDefaultSignatureId) !==
-					-1
+				itemsAdd.findIndex(
+					(item: any) => item.id === settingsToUpdate.zimbraPrefDefaultSignatureId
+				) !== -1
 			) {
 				setDefaultSignatureId = settingsToUpdate.zimbraPrefDefaultSignatureId;
 				delete settingsToUpdate.zimbraPrefDefaultSignatureId;
 			}
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			dispatch(SignatureRequest({ itemsAdd, itemsEdit, itemsDelete, account })).then((resp) => {
 				// setFetchSigns(true);
 				if (setForwardReplySignatureId !== '') {
@@ -270,6 +289,7 @@ export default function SettingsView() {
 		account,
 		createSnackbar,
 		t,
+		setNewOrForwardSignatureId,
 		flag
 	]);
 
@@ -285,35 +305,41 @@ export default function SettingsView() {
 				style={{ overflowY: 'auto' }}
 			>
 				<FormSection minWidth="calc(min(100%, 512px))">
-					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
 					<DisplayMessagesSettings
-						t={t}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						settingsObj={settingsObj}
 						updateSettings={updateSettings}
 					/>
 					<ReceivingMessagesSettings
-						t={t}
 						settingsObj={settingsObj}
 						updateSettings={updateSettings}
 						updatedProps={updatedProps}
 						updateProps={updateProps}
 					/>
 					<SignatureSettings
-						t={t}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						settingsObj={settingsObj}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setSignItems={setSignItems}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setSignItemsUpdated={setSignItemsUpdated}
 						updateSettings={updateSettings}
 						// disabled={disabled}
 						setDisabled={setDisabled}
 						signItems={signItems}
-						setSignItems={setSignItems}
 						signItemsUpdated={signItemsUpdated}
-						setSignItemsUpdated={setSignItemsUpdated}
 						flag={flag}
 					/>
-					<FilterModule t={t} />
+					<FilterModule />
 					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
 				</FormSection>
 			</Container>
 		</>
 	);
-}
+};
+
+export default SettingsView;
