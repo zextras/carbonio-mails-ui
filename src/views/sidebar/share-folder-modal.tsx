@@ -222,12 +222,10 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 						background="gray5"
 						label={t('label.role', 'Role')}
 						onChange={onShareRoleChange}
-						defaultSelection={
-							{
-								value: editMode ? activeGrant?.perm : 'r',
-								label: findLabel(shareCalendarRoleOptions, editMode ? activeGrant?.perm : 'r')
-							} as SelectItem
-						}
+						defaultSelection={{
+							value: editMode ? activeGrant?.perm : 'r',
+							label: findLabel(shareCalendarRoleOptions, editMode ? activeGrant?.perm : 'r')
+						}}
 					/>
 				</Container>
 				<Container

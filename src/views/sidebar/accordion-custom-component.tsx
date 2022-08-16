@@ -580,14 +580,14 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 		<Row width="fill" minWidth={0}>
 			<Drop
 				acceptType={['message', 'conversation', 'folder']}
-				onDrop={(data: DragObj): void => {
+				onDrop={(data: any): void => {
 					onDropAction({
 						type: data.type ?? '',
 						data: data.data,
 						event: data.event
 					} as OnDropActionProps);
 				}}
-				onDragEnter={(data: DragObj): { success: boolean } | undefined =>
+				onDragEnter={(data: any): { success: boolean } | undefined =>
 					onDragEnterAction({
 						type: data.type ?? '',
 						data: data.data,

@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import React, { FC, useCallback, useContext, useState } from 'react';
+import { Container } from '@zextras/carbonio-design-system';
+import React, { FC, useCallback, useState } from 'react';
 import { ModalProps } from '../../types';
 import { Context } from './parts/edit/edit-context';
 import EditDefaultModal from './parts/edit/edit-default-modal';
@@ -17,7 +17,7 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const goBack = useCallback(() => {
 		setActiveModal('default');
 	}, [setActiveModal]);
-	console.log('xxx:', { grant: folder });
+
 	return (
 		<Context.Provider value={{ activeModal, setActiveModal, activeGrant, setActiveGrant, onClose }}>
 			<Container

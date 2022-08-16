@@ -6,9 +6,9 @@
 import { createContext } from 'react';
 
 type FilterContextType = {
-	incomingFilters: Record<string, unknown> | Array<unknown>;
+	incomingFilters: Record<string, any> | Array<any>;
 	incomingLoading: boolean;
-	outgoingFilters: Record<string, unknown> | Array<unknown>;
+	outgoingFilters: Record<string, any> | Array<any>;
 	outgoingLoading: boolean;
 	setFetchIncomingFilters?: (arg: boolean) => void;
 	moveUp?: (index: number, list: Array<any>, listSetter: (arg2: any) => void) => void;

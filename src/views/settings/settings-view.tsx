@@ -10,7 +10,8 @@ import {
 	editSettings,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	SettingsHeader
+	SettingsHeader,
+	getBridgedFunctions
 } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep, isEmpty, reduce } from 'lodash';
@@ -23,7 +24,7 @@ import SignatureSettings, { SignItemType } from './signature-settings';
 import FilterModule from './filters';
 import TrusteeAddresses from './trustee-addresses';
 import { SignatureRequest } from '../../store/actions/signatures';
-import { PrefsType } from './setting-type';
+import { PrefsType, PropsType } from './setting-type';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -51,7 +52,7 @@ const SettingsView: FC = (): ReactElement => {
 		[props]
 	);
 	const [currentProps, setCurrentProps] = useState(originalProps);
-	const [updatedProps, setUpdatedProps] = useState(originalProps);
+	const [updatedProps, setUpdatedProps] = useState<PropsType | {}>(originalProps);
 	const [signItems, setSignItems] = useState([]);
 	const [signItemsUpdated, setSignItemsUpdated] = useState([]);
 	const [disabled, setDisabled] = useState(true);
@@ -153,7 +154,7 @@ const SettingsView: FC = (): ReactElement => {
 			});
 
 			if (hasError) {
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `error`,
 					type: 'error',
 					label: t('label.signature_required', 'Signature information is required.'),
@@ -225,7 +226,7 @@ const SettingsView: FC = (): ReactElement => {
 					setNewOrForwardSignatureId(itemsAdd, resp, setDefaultSignatureId, false);
 				}
 				if (resp.type.includes('fulfilled')) {
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'info',
@@ -236,7 +237,7 @@ const SettingsView: FC = (): ReactElement => {
 					setFlag(!flag);
 					setDisabled(true);
 				} else {
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'error',
@@ -258,7 +259,7 @@ const SettingsView: FC = (): ReactElement => {
 		if (!isEmpty(changes)) {
 			editSettings(changes).then((res) => {
 				if (res.type.includes('fulfilled')) {
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'info',
@@ -269,7 +270,7 @@ const SettingsView: FC = (): ReactElement => {
 					// saving new values only when request is performed successfully
 					setCurrentProps((a) => ({ ...a, ...propsToUpdate }));
 				} else {
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'error',
@@ -287,7 +288,6 @@ const SettingsView: FC = (): ReactElement => {
 		propsToUpdate,
 		dispatch,
 		account,
-		createSnackbar,
 		t,
 		setNewOrForwardSignatureId,
 		flag

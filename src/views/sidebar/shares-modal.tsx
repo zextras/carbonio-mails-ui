@@ -117,7 +117,7 @@ type SharedObject = {
 	folderId: string;
 	setLinks: (links: Array<SharedObject>) => void;
 	links: Array<SharedObject>;
-	CustomComponent: AccordionItemType['CustomComponent'];
+	CustomComponent: any;
 };
 
 type GroupedShare = Dictionary<SharedObject[]>;
@@ -156,7 +156,7 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const nestedData = useMemo(() => {
 		const shares = (isEmpty(data) ? filteredFolders : data) as GroupedShare;
 		const sharesDets = values(shares);
-		return sharesDets.map((v): AccordionItemType | AccordionDivider =>
+		return sharesDets.map((v): any =>
 			v
 				? {
 						id: v[0].ownerId,

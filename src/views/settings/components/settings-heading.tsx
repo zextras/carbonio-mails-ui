@@ -8,7 +8,7 @@ import { Padding, Row, Text } from '@zextras/carbonio-design-system';
 
 const Heading: FC<{
 	title: string;
-	size: 'extrasmall' | 'small' | 'medium' | 'large' | 'extralarge';
+	size?: 'extrasmall' | 'small' | 'medium' | 'large' | 'extralarge';
 }> = ({ title, size = 'large' }) => (
 	<>
 		<Padding top="medium" />

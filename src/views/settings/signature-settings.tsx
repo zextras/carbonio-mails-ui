@@ -275,7 +275,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								label={getBridgedFunctions()?.t('signatures.name', 'Name')}
 								value={name}
 								backgroundColor="gray5"
-								onChange={(ev): void => {
+								onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => {
 									setName(ev.target.value);
 									const updatedSign = signItems;
 									if (index) updatedSign[index].label = ev.target.value;
@@ -316,7 +316,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						items={signatures}
 						label={getBridgedFunctions()?.t('label.select_signature', 'Select a signature')}
 						selection={signatureNewMessage}
-						onChange={(e): void => {
+						onChange={(e: any): void => {
 							updateSettings({
 								target: {
 									name: 'zimbraPrefDefaultSignatureId',

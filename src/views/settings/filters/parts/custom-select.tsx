@@ -76,6 +76,7 @@ const CustomSelect: FC<{
 	defaultSelection: { label: string; value: any };
 	label: string;
 	items: Array<{ label: string; value: any }>;
+	background?: string;
 }> = ({ onChange, defaultSelection, label, items }) => {
 	const newItems = useMemo(() => getItems(items), [items]);
 	return (

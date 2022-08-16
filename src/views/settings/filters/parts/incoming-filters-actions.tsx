@@ -86,7 +86,11 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 						t={t}
 						onClose={(): void => closeModal()}
 						incomingFilters={incomingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						setFetchIncomingFilters={setFetchIncomingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						setIncomingFilters={setIncomingFilters}
 					/>
 				)
@@ -106,7 +110,11 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 						t={t}
 						availableList={availableList}
 						activeList={activeList}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						setFilters={setIncomingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						setFetchFilters={setFetchIncomingFilters}
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
@@ -136,7 +144,11 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				t,
 				availableList,
 				activeList,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				setFilters: setIncomingFilters,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				setFetchFilters: setFetchIncomingFilters,
 				modifierFunc: modifyFilterRules
 			}),
@@ -149,7 +161,11 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				t,
 				availableList,
 				activeList,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				setFilters: setIncomingFilters,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				setFetchFilters: setFetchIncomingFilters,
 				modifierFunc: modifyFilterRules
 			}),
@@ -169,7 +185,11 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 						selectedFilter={selectedFilter}
 						onClose={(): void => closeModal()}
 						incomingFilters={incomingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						setFetchIncomingFilters={setFetchIncomingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						setIncomingFilters={setIncomingFilters}
 					/>
 				)

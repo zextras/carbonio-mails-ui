@@ -29,7 +29,7 @@ type UpdateSettingsProps = {
 type ReceivingMessagesSettingsType = {
 	settingsObj: PrefsType;
 	updateSettings: (arg: UpdateSettingsProps) => void;
-	updatedProps: PropsType;
+	updatedProps: PropsType | any;
 	updateProps: (arg: UpdateSettingsProps) => void;
 };
 const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
@@ -133,7 +133,7 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 					label={t('label.select_folder', 'Select folder')}
 					name="zimbraPrefShowAllNewMailNotifications"
 					items={notifyFolderOptn}
-					onChange={(view): void =>
+					onChange={(view: any): void =>
 						updateSettings({
 							target: { name: 'zimbraPrefShowAllNewMailNotifications', value: view }
 						})
@@ -148,7 +148,7 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 				<Heading title="Read Reciept" />
 				<Select
 					items={readReceiptOptn}
-					onChange={(view): void =>
+					onChange={(view: any): void =>
 						updateSettings({ target: { name: 'zimbraPrefMailSendReadReceipts', value: view } })
 					}
 					defaultSelection={{
@@ -162,7 +162,7 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 				<Select
 					items={msgsFromMeOpts}
 					name="zimbraPrefDedupeMessagesSentToSelf"
-					onChange={(view): void =>
+					onChange={(view: any): void =>
 						updateSettings({
 							target: { name: 'zimbraPrefDedupeMessagesSentToSelf', value: view }
 						})

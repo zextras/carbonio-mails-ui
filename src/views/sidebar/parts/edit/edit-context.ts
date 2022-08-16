@@ -5,4 +5,10 @@
  */
 import { createContext } from 'react';
 
-export const Context = createContext<{ setActiveGrant?: (arg: any) => void }>({});
+export const Context = createContext<{
+	setActiveGrant?: (arg: any) => void;
+	activeModal?: string;
+	setActiveModal?: (arg: string) => void;
+	activeGrant?: any;
+	onClose?: () => void;
+}>({});
