@@ -23,14 +23,8 @@ import {
 } from '../../../../ui-actions/conversation-actions';
 import { replyAllMsg, replyMsg, setMsgRead } from '../../../../ui-actions/message-actions';
 import { useSelection } from '../../../../hooks/useSelection';
-import { Conversation, MailMessage } from '../../../../types';
+import { PreviewPanelActionsType } from '../../../../types';
 
-type PreviewPanelActionsType = {
-	item: Conversation;
-	folderId: string;
-	isMessageView: boolean;
-	conversation: Conversation;
-};
 const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 	item,
 	folderId,
@@ -50,9 +44,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 	const primaryActions = useMemo(() => {
 		switch (folderId) {
 			case FOLDERS.SENT:
-				return [
-					moveConversationToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
-				];
+				return [moveConversationToTrash({ ids, dispatch, createSnackbar, deselectAll, folderId })];
 			case FOLDERS.TRASH:
 			case FOLDERS.SPAM:
 				return [
@@ -61,53 +53,53 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 			case FOLDERS.INBOX:
 			default:
 				return [
-					replyMsg({ id: item?.messages?.[0]?.id ?? item?.id, folderId, t }),
-					moveConversationToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+					replyMsg({ id: item?.messages?.[0]?.id ?? item?.id, folderId }),
+					moveConversationToTrash({ ids, dispatch, deselectAll, folderId })
 					// archiveMsg
 					// editTagsMsg
 				];
 		}
-	}, [createSnackbar, dispatch, folderId, ids, item, deselectAll, t]);
+	}, [createSnackbar, dispatch, folderId, ids, item, deselectAll]);
 
 	const secondaryActions = useMemo(() => {
 		switch (folderId) {
 			case FOLDERS.SENT:
 				// return [setConversationsFlag(ids, item.flagged, t, dispatch)];
-				return [setConversationsFlag({ ids, value: item?.flagged, t, dispatch })];
+				return [setConversationsFlag({ ids, value: item?.flagged, dispatch })];
 			case FOLDERS.TRASH:
 			case FOLDERS.SPAM:
 				return [
 					isMessageView
-						? setMsgRead({ ids, value: item?.read, t, dispatch, folderId })
+						? setMsgRead({ ids, value: item?.read, dispatch, folderId })
 						: setConversationsRead({
 								ids,
 								value: conversation.read,
-								t,
+
 								dispatch,
 								folderId,
 								shouldReplaceHistory: true,
 								deselectAll
 						  }),
-					setConversationsFlag({ ids, value: item?.flagged, t, dispatch })
+					setConversationsFlag({ ids, value: item?.flagged, dispatch })
 					// setConversationsSpam(ids, true, t, dispatch)
 				];
 			case FOLDERS.INBOX:
 			default:
 				return [
-					replyAllMsg({ id: item?.messages?.[0]?.id ?? item?.id, folderId, t }),
+					replyAllMsg({ id: item?.messages?.[0]?.id ?? item?.id, folderId }),
 					isMessageView
-						? setMsgRead({ ids, value: item?.read, t, dispatch, folderId })
+						? setMsgRead({ ids, value: item?.read, dispatch, folderId })
 						: setConversationsRead({
 								ids,
 								value: conversation.read,
-								t,
+
 								dispatch,
 								folderId,
 								shouldReplaceHistory: false,
 								deselectAll
 						  }),
-					setConversationsFlag({ ids, value: item?.flagged, t, dispatch }),
-					printConversation(t, conversation, account)
+					setConversationsFlag({ ids, value: item?.flagged, dispatch }),
+					printConversation({ conversation, account })
 					// setConversationsSpam(ids, false, t, dispatch)
 					// archiveMsg
 					// editTagsMsg
@@ -120,7 +112,6 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 		item?.read,
 		item?.messages,
 		item?.id,
-		t,
 		dispatch,
 		isMessageView,
 		conversation,
@@ -145,7 +136,9 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 						icon={action.icon}
 						onClick={(ev: React.MouseEvent<HTMLElement>): void => {
 							if (ev) ev.preventDefault();
-							action.click();
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							action?.click(ev);
 						}}
 					/>
 				</Padding>
@@ -160,7 +153,9 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 						label: action.label,
 						click: (ev: React.MouseEvent<HTMLElement>): void => {
 							if (ev) ev.preventDefault();
-							action.click();
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							action.click(ev);
 						}
 					}))}
 				>

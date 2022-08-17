@@ -5,12 +5,7 @@
  */
 
 import React, { FC, useMemo } from 'react';
-import {
-	FOLDERS,
-	useUserAccount,
-	AccordionFolder,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { AccordionItem, Tooltip, Row, Padding } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 

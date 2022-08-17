@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useState, useMemo, useCallback, useContext, ReactElement, FC } from 'react';
+import React, { useState, useMemo, useCallback, FC } from 'react';
 import {
 	useUserSettings,
 	useUserAccount,
@@ -15,16 +15,16 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep, isEmpty, reduce } from 'lodash';
-import { Container, FormSection, SnackbarManagerContext } from '@zextras/carbonio-design-system';
+import { Container, FormSection } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { getPropsDiff, differenceObject } from './components/utils';
 import DisplayMessagesSettings from './displaying-messages-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
-import SignatureSettings, { SignItemType } from './signature-settings';
+import SignatureSettings from './signature-settings';
 import FilterModule from './filters';
 import TrusteeAddresses from './trustee-addresses';
 import { SignatureRequest } from '../../store/actions/signatures';
-import { PrefsType, PropsType } from './setting-type';
+import { PropsType, SignItemType } from '../../types';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -33,10 +33,10 @@ import { PrefsType, PropsType } from './setting-type';
  * All of them will have originalProps as default value
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
-const SettingsView: FC = (): ReactElement => {
+const SettingsView: FC = () => {
 	const [t] = useTranslation();
 	const { prefs, props } = useUserSettings();
-	console.log('xxx:', { prefs: useUserSettings() });
+
 	const account = useUserAccount();
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
@@ -52,12 +52,14 @@ const SettingsView: FC = (): ReactElement => {
 		[props]
 	);
 	const [currentProps, setCurrentProps] = useState(originalProps);
-	const [updatedProps, setUpdatedProps] = useState<PropsType | {}>(originalProps);
+	const [updatedProps, setUpdatedProps] = useState<PropsType | Record<string, unknown>>(
+		originalProps
+	);
 	const [signItems, setSignItems] = useState([]);
 	const [signItemsUpdated, setSignItemsUpdated] = useState([]);
 	const [disabled, setDisabled] = useState(true);
 	const [flag, setFlag] = useState(false);
-	const createSnackbar = useContext(SnackbarManagerContext);
+
 	const dispatch = useDispatch();
 	// const [fetchSigns, setFetchSigns] = useState(true);
 

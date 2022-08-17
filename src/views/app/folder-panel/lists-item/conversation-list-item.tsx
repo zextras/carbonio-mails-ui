@@ -43,18 +43,14 @@ import { selectMessages } from '../../../../store/messages-slice';
 import { SenderName } from './sender-name';
 import MessageListItem from './message-list-item';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
-import { StateType, Conversation, MailMessage, TextReadValuesProps } from '../../../../types';
-
-type CustomListItem = Partial<MailMessage> & { id: string; isFromSearch?: boolean };
-
-type ConversationMessagesListProps = {
-	active: string;
-	conversationStatus: string | undefined;
-	messages: Array<Partial<MailMessage>>;
-	folderId: string;
-	length: number;
-	isFromSearch?: boolean;
-};
+import {
+	StateType,
+	Conversation,
+	MailMessage,
+	TextReadValuesProps,
+	ConversationMessagesListProps,
+	CustomListItem
+} from '../../../../types';
 
 const CustomList = styled(List)<ListProps<CustomListItem> & { isFromSearch?: boolean }>``;
 
@@ -243,17 +239,20 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (item?.read === false) {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					setConversationsRead({
 						ids: [item.id],
 						value: false,
-						t,
 						dispatch
-					}).click();
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+					})?.click();
 				}
 				pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 			}
 		},
-		[item?.read, item.id, t, dispatch, folderId]
+		[item?.read, item.id, dispatch, folderId]
 	);
 
 	const _onDoubleClick = useCallback(

@@ -171,3 +171,67 @@ export type PrefsType = {
 export type PropsType = {
 	mailNotificationSound: { value: boolean | string };
 };
+
+export type UpdateSettingsProps = {
+	target: {
+		name: string;
+		value: string | Array<string> | undefined;
+	};
+};
+
+export type InputProps = {
+	settingsObj: PrefsType;
+	updateSettings: (arg: UpdateSettingsProps) => void;
+};
+
+export type SignItemType = {
+	name?: string;
+	id: string;
+	description?: string;
+	label?: string;
+	index?: number;
+	content?: [
+		{
+			type: 'text/plain' | 'text/html';
+			_content: string;
+		}
+	];
+};
+type SignatureSettingsPropsType = {
+	settingsObj: PrefsType;
+	updateSettings: (arg: {
+		target: {
+			name: string;
+			value: string;
+		};
+	}) => void;
+	setDisabled: (arg: boolean) => void;
+	signItems: SignItemType[];
+	setSignItems: (arg: unknown) => void;
+	setSignItemsUpdated: (arg: unknown) => void;
+};
+
+export type UpdateSettingsProps = {
+	target: {
+		name: string;
+		value: unknown;
+	};
+};
+export type ReceivingMessagesSettingsType = {
+	settingsObj: PrefsType;
+	updateSettings: (arg: UpdateSettingsProps) => void;
+	updatedProps: PropsType | any;
+	updateProps: (arg: UpdateSettingsProps) => void;
+};
+
+export type UpdateSettingsProps = {
+	target: {
+		name: string;
+		value: string;
+	};
+};
+
+export type DisplayingMessagesSettingsProps = {
+	settingsObj: Record<string, string>;
+	updateSettings: (arg: UpdateSettingsProps) => void;
+};

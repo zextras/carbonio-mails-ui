@@ -27,7 +27,7 @@ import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import { getSignatures } from '../../store/editor-slice-utils';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
-import { PrefsType } from './setting-type';
+import { SignatureSettingsPropsType, SignItemType } from '../../types';
 
 const Signature = styled(Row)`
 	border-bottom: 1px solid ${({ theme }): string => theme.palette.gray2.regular};
@@ -44,32 +44,6 @@ const EditorWrapper = styled.div`
 	overflow-y: auto;
 	position: relative;
 `;
-export type SignItemType = {
-	name?: string;
-	id: string;
-	description?: string;
-	label?: string;
-	index?: number;
-	content?: [
-		{
-			type: 'text/plain' | 'text/html';
-			_content: string;
-		}
-	];
-};
-type SignatureSettingsPropsType = {
-	settingsObj: PrefsType;
-	updateSettings: (arg: {
-		target: {
-			name: string;
-			value: string;
-		};
-	}) => void;
-	setDisabled: (arg: boolean) => void;
-	signItems: SignItemType[];
-	setSignItems: (arg: unknown) => void;
-	setSignItemsUpdated: (arg: unknown) => void;
-};
 
 const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	settingsObj,
@@ -228,7 +202,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								type="outlined"
 								color="error"
 								onClick={(): void => onDelete()}
-								// isSmall
 							/>
 						)}
 					</Container>
@@ -254,12 +227,10 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						<Container mainAlignment="flex-start">
 							<Container>
 								<Button
-									// height="47px"
 									label={getBridgedFunctions()?.t('signatures.add_signature', 'Add signature')}
 									type="outlined"
 									onClick={createSign}
 									disabled={signItems?.length > 0 && !name}
-									//	size="fill"
 								/>
 							</Container>
 							<Padding all="small" />

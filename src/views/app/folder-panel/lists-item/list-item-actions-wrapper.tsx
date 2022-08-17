@@ -13,7 +13,12 @@ import {
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { ActionsContext } from '../../../../commons/actions-context';
-import { Conversation, IncompleteMessage, MailMessage } from '../../../../types';
+import {
+	Conversation,
+	IncompleteMessage,
+	ListItemActionWrapperProps,
+	MailMessage
+} from '../../../../types';
 
 const HoverBarContainer = styled(Container)`
 	top: 0;
@@ -47,17 +52,6 @@ const HoverContainer = styled(Container)<ContainerProps & { current: boolean }>`
 		}
 	}
 `;
-
-type ListItemActionWrapperProps = {
-	children?: ReactNode;
-	current?: boolean;
-	onClick?: ContainerProps['onClick'];
-	onDoubleClick?: ContainerProps['onDoubleClick'];
-	item: Conversation | IncompleteMessage;
-	isConversation?: boolean;
-	messagesToRender?: Array<Partial<MailMessage>>;
-	hoverTooltipLabel?: string;
-};
 
 export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	children,

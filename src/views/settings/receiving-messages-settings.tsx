@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import {
 	Container,
 	FormSubSection,
@@ -18,20 +18,8 @@ import Heading from './components/settings-heading';
 import { NotifyFolderOpts, ReadReceiptOpts, MsgsFromMeOpts, findLabel } from './components/utils';
 import { receivingMessagesSubSection } from './subsections';
 import { MAIL_APP_ID } from '../../constants';
-import { PrefsType, PropsType } from './setting-type';
+import { ReceivingMessagesSettingsType } from '../../types';
 
-type UpdateSettingsProps = {
-	target: {
-		name: string;
-		value: unknown;
-	};
-};
-type ReceivingMessagesSettingsType = {
-	settingsObj: PrefsType;
-	updateSettings: (arg: UpdateSettingsProps) => void;
-	updatedProps: PropsType | any;
-	updateProps: (arg: UpdateSettingsProps) => void;
-};
 const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 	settingsObj,
 	updateSettings,
@@ -55,7 +43,7 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 	return (
 		<FormSubSection label={sectionTitle.label} id={sectionTitle.id}>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title="Message Arrival" />
+				<Heading title={t('label.message_arrival', 'Message Arrival')} />
 				<Input
 					label={t('label.send_notification', 'Send a notification message to')}
 					value={settingsObj.zimbraPrefNewMailNotificationAddress}
@@ -70,7 +58,7 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 				/>
 			</Container>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title="Arrival Notifications" />
+				<Heading title={t('label.arrival_notifications', 'Arrival Notifications')} />
 				<Checkbox
 					label={t('label.show_popup', 'Show a popup notification')}
 					value={settingsObj.zimbraPrefMailToasterEnabled === 'TRUE'}
@@ -119,6 +107,8 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 							target: {
 								name: 'mailNotificationSound',
 								value: {
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									app: MAIL_APP_ID,
 									value: mailNotificationSoundDefault ? 'FALSE' : 'TRUE'
 								}
@@ -145,7 +135,7 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 				/>
 			</Container>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title="Read Reciept" />
+				<Heading title={t('label.read_reciept', 'Read Reciept')} />
 				<Select
 					items={readReceiptOptn}
 					onChange={(view: any): void =>
@@ -158,7 +148,7 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 				/>
 			</Container>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title="Messages from me" />
+				<Heading title={t('label.message_from_me', 'Messages from me')} />
 				<Select
 					items={msgsFromMeOpts}
 					name="zimbraPrefDedupeMessagesSentToSelf"
@@ -174,7 +164,7 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 				/>
 			</Container>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title="Duplicate Messages" />
+				<Heading title={t('label.duplicate_messages', 'Duplicate Messages')} />
 				<Checkbox
 					label={t(
 						'label.automatically_delete_duplicates',

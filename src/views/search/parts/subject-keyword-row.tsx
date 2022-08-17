@@ -5,19 +5,11 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
-import { isValidEmail } from './utils';
 
-type ComponentProps = {
-	compProps: {
-		t: TFunction;
-		otherKeywords: Array<any>;
-		setOtherKeywords: (arg: any) => void;
-		subject: Array<any>;
-		setSubject: (arg: any) => void;
-	};
-};
-const SubjectKeywordRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
+import { isValidEmail } from './utils';
+import { SubjectKeywordRowProps } from '../../../types';
+
+const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({ compProps }): ReactElement => {
 	const { t, otherKeywords, setOtherKeywords, subject, setSubject } = compProps;
 	const onChange = useCallback((state, stateHandler) => {
 		stateHandler(state);

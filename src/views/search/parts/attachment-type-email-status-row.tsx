@@ -4,22 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState, useRef, useEffect } from 'react';
-import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
+import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { filter, find } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { attachmentTypeItemsConstant, emailStatusItemsConstant } from '../../../constants';
-import { KeywordState } from '../../../types';
+import { AttachTypeEmailStatusRowPropType, ChipOnAdd, ChipOnAddProps } from '../../../types';
 
-type ComponentProps = {
-	compProps: {
-		attachmentType: KeywordState;
-		setAttachmentType: (arg: any) => void;
-		emailStatus: KeywordState;
-		setEmailStatus: (arg: any) => void;
-	};
-};
-
-const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
+const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
+	compProps
+}): ReactElement => {
 	const { attachmentType, setAttachmentType, emailStatus, setEmailStatus } = compProps;
 	const [t] = useTranslation();
 	const attachmentTypeItems = attachmentTypeItemsConstant(t);
@@ -36,29 +29,6 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 	const onChange = useCallback((state, stateHandler) => {
 		stateHandler(state);
 	}, []);
-
-	type ChipOnAddProps = {
-		items: Array<{
-			label: string;
-			icon?: string;
-			searchString: string;
-		}>;
-		label: string;
-		preText: string;
-		hasAvatar: boolean;
-		isGeneric: boolean;
-		isQueryFilter: boolean;
-	};
-
-	type ChipOnAdd = ChipItem & {
-		label: string;
-		hasAvatar: boolean;
-		isGeneric: boolean;
-		isQueryFilter: boolean;
-		value: string;
-		avatarIcon: string;
-		avatarColor: string;
-	};
 
 	const chipOnAdd = useCallback(
 		({ items, label, preText, hasAvatar, isGeneric, isQueryFilter }: ChipOnAddProps): ChipOnAdd => {

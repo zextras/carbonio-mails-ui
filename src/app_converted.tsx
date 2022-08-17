@@ -27,9 +27,10 @@ import Notifications from './views/notifications';
 import { ParticipantRole } from './commons/utils';
 import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
-import { SearchProps } from './views/search/search-view';
-import { SidebarComponentProps } from './views/sidebar/sidebar';
-import { Contact } from './types/sidebar';
+// import { SearchProps } from './views/search/search-view';
+// import { SidebarComponentProps } from './views/sidebar/sidebar';
+import { Contact, SidebarComponentProps } from './types/sidebar';
+import { SearchProps } from './types';
 
 const LazyAppView = lazy(
 	() => import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')

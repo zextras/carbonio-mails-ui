@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Dictionary } from '@reduxjs/toolkit';
+
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import {
 	Container,
@@ -14,9 +14,7 @@ import {
 	Text,
 	Input,
 	Icon,
-	Row,
-	AccordionItemType,
-	AccordionDivider
+	Row
 } from '@zextras/carbonio-design-system';
 import {
 	groupBy,
@@ -35,27 +33,11 @@ import {
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { Folder, Folders } from '@zextras/carbonio-shell-ui';
 import ModalHeader from './commons/modal-header';
 import ModalFooter from './commons/modal-footer';
 import { createMountpoint } from '../../store/actions/create-mountpoint';
-import { ResFolder } from '../../types';
 
-type CustomItem = {
-	item: {
-		id: string;
-		label: string;
-		open: boolean;
-		items: Folders;
-		ownerName: string;
-		ownerId: string;
-		checked: boolean;
-		folderId: string;
-		setLinks: (arg: any) => void;
-		links: Folder[];
-		CustomComponent: ReactElement;
-	};
-};
+import { GroupedShare, SharedObject, ShareModalProps } from '../../types/sidebar';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -100,27 +82,6 @@ const CustomItem: FC<any> = ({ item: folder }) => {
 		</>
 	);
 };
-
-type ShareModalProps = {
-	folders: Array<ResFolder>;
-	onClose: () => void;
-};
-
-type SharedObject = {
-	id: string;
-	label: string;
-	open: boolean;
-	items: [];
-	ownerName: string;
-	ownerId: string;
-	checked: boolean;
-	folderId: string;
-	setLinks: (links: Array<SharedObject>) => void;
-	links: Array<SharedObject>;
-	CustomComponent: any;
-};
-
-type GroupedShare = Dictionary<SharedObject[]>;
 
 export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const [links, setLinks] = useState([] as SharedObject[]);

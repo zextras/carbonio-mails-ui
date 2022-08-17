@@ -16,11 +16,10 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { find, map, reduce } from 'lodash';
-import { store as storeFromShell, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
+import { useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import {
 	selectConversationStatus,
-	selectFolder,
 	selectFolderSearchStatus
 } from '../../../store/conversations-slice';
 import ConversationListItem from './lists-item/conversation-list-item';

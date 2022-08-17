@@ -7,13 +7,13 @@
 import { ParticipantRole } from '../../commons/utils';
 import { SoapMailMessage } from './soap-mail-message';
 
-export type mailAttachmentParts = {
+export type MailAttachmentParts = {
 	mid: string;
 	part: string;
 };
 
-export type mailAttachment = {
-	mp: Array<mailAttachmentParts>;
+export type MailAttachment = {
+	mp: Array<MailAttachmentParts>;
 	aid?: string;
 };
 

@@ -12,7 +12,7 @@ import ConversationPreviewPanel from './detail-panel/conversation-preview-panel'
 import MessagePreviewPanel from './detail-panel/message-preview-panel';
 import MailEditPanel from './detail-panel/mail-edit-panel';
 
-const DetailPanel:FC = () => {
+const DetailPanel: FC = () => {
 	const { path } = useRouteMatch();
 	const { count } = useAppContext();
 	return (

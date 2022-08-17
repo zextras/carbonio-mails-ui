@@ -19,6 +19,7 @@ import FolderDetails from './folder-details';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
 import { translatedSystemFolders } from '../../utils';
+import { EditDefaultModalPropType } from '../../../../types/sidebar';
 
 const retentionPeriod = [
 	{
@@ -40,11 +41,7 @@ const retentionPeriod = [
 ];
 const numberRegex = /^\d+$/;
 
-type EditModalProps = ModalProps & {
-	setActiveModal: (modal: string) => void;
-};
-
-const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal }) => {
+const EditDefaultModal: FC<EditDefaultModalPropType> = ({ folder, onClose, setActiveModal }) => {
 	const [t] = useTranslation();
 	const dispatch = useDispatch();
 

@@ -8,7 +8,7 @@ import React, { useCallback, useMemo, FC, SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ParticipantRole } from '../../../../commons/utils';
-import { Participant } from '../../../../types';
+import { ItemAvatarType, Participant } from '../../../../types';
 
 const AvatarElement = styled(Avatar)`
 	width: 42px !important;
@@ -20,14 +20,6 @@ const AvatarElement = styled(Avatar)`
 	}
 `;
 
-type ItemAvatarType = {
-	item: any;
-	selected: boolean;
-	selecting: boolean;
-	toggle: (arg: string) => void;
-	folderId: string;
-	isSearch: boolean;
-};
 export const ItemAvatar: FC<ItemAvatarType> = ({
 	item,
 	selected,

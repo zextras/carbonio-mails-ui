@@ -37,16 +37,7 @@ import { SenderName } from '../app/folder-panel/lists-item/sender-name';
 import { selectMessages } from '../../store/messages-slice';
 import { selectConversationExpandedStatus } from '../../store/conversations-slice';
 import { searchConv } from '../../store/actions';
-import { StateType, MailMessage, Conversation } from '../../types';
-
-type SearchConversationListItemProps = {
-	itemId?: string;
-	item: Conversation;
-	selected: boolean;
-	selecting?: boolean;
-	toggle?: boolean;
-	active: boolean;
-};
+import { StateType, MailMessage, SearchConversationListItemProps } from '../../types';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -55,7 +46,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 	itemId,
 	item,
 	selected,
-	selecting,
+	selecting = false,
 	toggle,
 	active
 }) => {

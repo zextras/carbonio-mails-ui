@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { map, reduce, find } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useRef, useState, FC, ReactElement } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, FC } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,7 +20,7 @@ import { useSelection } from '../../../hooks/useSelection';
 import { useMessageList } from '../../../hooks/use-message-list';
 import { selectFolderMsgSearchStatus } from '../../../store/messages-slice';
 import ShimmerList from '../../search/shimmer-list';
-import { ConvMessage, MailMessage } from '../../../types';
+import { MailMessage } from '../../../types';
 
 const DragImageContainer = styled.div`
 	position: absolute;

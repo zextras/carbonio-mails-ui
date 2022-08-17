@@ -4,37 +4,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Container, Text } from '@zextras/carbonio-design-system';
-import { Folder, useRoots, useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { useRoots, useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map, find, filter, findIndex, flatten, isNull } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useParams } from 'react-router-dom';
 import { ParticipantRole } from '../../../../../commons/utils';
-import { MailsEditor } from '../../../../../types';
+import {
+	FindDefaultIdentityType,
+	IdentityType,
+	MailsEditor,
+	UseGetIdentitiesReturnType
+} from '../../../../../types';
 
-type IdentityType = {
-	value: string;
-	label: string;
-	address: string;
-	fullname: string;
-	fullName?: string;
-	type: string;
-	identityName: string;
-};
-
-type UseGetIdentitiesReturnType = {
-	from: Partial<IdentityType> | undefined;
-	activeFrom: IdentityType | undefined;
-	identitiesList: Array<IdentityType>;
-	hasIdentity: boolean | undefined;
-};
-
-type FindDefaultIdentityType = {
-	list: Array<IdentityType>;
-	allAccounts: Record<string, Folder & { owner: string }>;
-	folderId: string;
-};
 export const findDefaultIdentity = ({
 	list,
 	allAccounts,

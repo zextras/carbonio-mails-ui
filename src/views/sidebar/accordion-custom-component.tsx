@@ -29,9 +29,7 @@ import {
 	Avatar,
 	Icon,
 	Row,
-	Padding,
-	DragObj,
-	ContainerProps
+	Padding
 } from '@zextras/carbonio-design-system';
 import { startsWith } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -49,6 +47,7 @@ import { SharesInfoModal } from './shares-info-modal';
 import ShareFolderModal from './share-folder-modal';
 import { FolderActionsType } from '../../commons/utils';
 import { DataProps } from '../../types';
+import { DragEnterAction, FolderActionsProps, OnDropActionProps } from '../../types/sidebar';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
@@ -74,14 +73,6 @@ const DropDenyOverlayContainer = styled(Container)<ContainerProps & { folder: Fo
 	border: 4px solid #d5e3f6;
 	opacity: 0.4;
 `;
-
-type FolderActionsProps = {
-	id: string;
-	icon: string;
-	label: string;
-	click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
-	disabled?: boolean;
-};
 
 const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> => {
 	const [t] = useTranslation();
@@ -322,18 +313,6 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						return action;
 				  });
 	}
-};
-
-type DragEnterAction =
-	| undefined
-	| {
-			success: false;
-	  };
-
-type OnDropActionProps = {
-	event: React.DragEvent;
-	type: string;
-	data: DataProps;
 };
 
 const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);

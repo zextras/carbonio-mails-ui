@@ -21,13 +21,8 @@ import { getTimeLabel, participantToString } from '../../commons/utils';
 import { ItemAvatar } from '../app/folder-panel/lists-item/item-avatar';
 import { SenderName } from '../app/folder-panel/lists-item/sender-name';
 import { useTagExist } from '../../ui-actions/tag-actions';
-import { IncompleteMessage, TextReadValuesProps } from '../../types';
+import { SearchMessageListItemProps, TextReadValuesProps } from '../../types';
 import { ListItemActionWrapper } from '../app/folder-panel/lists-item/list-item-actions-wrapper';
-
-type SearchMessageListItemProps = {
-	item: IncompleteMessage;
-	isConvChildren?: boolean;
-};
 
 export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 	item,

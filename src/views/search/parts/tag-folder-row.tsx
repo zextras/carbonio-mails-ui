@@ -9,18 +9,9 @@ import { TFunction } from 'i18next';
 import { filter } from 'lodash';
 import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import FolderSelectModal from './folder-modal';
+import { TagFolderRowProps } from '../../../types';
 
-type ComponentProps = {
-	compProps: {
-		t: TFunction;
-		folder: Array<any>;
-		setFolder: (arg: any) => void;
-		tagOptions: Array<any>;
-		tag: Array<any>;
-		setTag: (arg: any) => void;
-	};
-};
-const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
+const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 	const { t, folder, setFolder, tagOptions, tag, setTag } = compProps;
 	const [open, setOpen] = useState(false);
 

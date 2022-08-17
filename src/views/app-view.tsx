@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { Suspense, lazy, useState, useEffect, useMemo, ReactElement } from 'react';
+import React, { Suspense, lazy, useState, useEffect, useMemo, FC } from 'react';
 import { Redirect, Switch, Route, useRouteMatch } from 'react-router-dom';
 import { FOLDERS, setAppContext, Spinner, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Container } from '@zextras/carbonio-design-system';
@@ -19,7 +19,7 @@ const LazyDetailPanel = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')
 );
 
-const AppView = (): ReactElement => {
+const AppView: FC = () => {
 	const { path } = useRouteMatch();
 	const [count, setCount] = useState(0);
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;

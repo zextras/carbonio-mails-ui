@@ -12,9 +12,7 @@ import {
 	Checkbox,
 	Row,
 	ChipInput,
-	Padding,
-	ChipItem,
-	SelectItem
+	Padding
 } from '@zextras/carbonio-design-system';
 import {
 	getBridgedFunctions,
@@ -35,13 +33,7 @@ import ModalFooter from './commons/modal-footer';
 import ModalHeader from './commons/modal-header';
 import { capitalise } from './utils';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
-import { ModalProps } from '../../types';
-
-type ShareFolderModalProps = ModalProps & {
-	goBack: () => void;
-	editMode?: boolean;
-	activeGrant: Partial<{ perm: string; d: string }>;
-};
+import { ShareFolderModalProps } from '../../types/sidebar';
 
 const ShareFolderModal: FC<ShareFolderModalProps> = ({
 	onClose,

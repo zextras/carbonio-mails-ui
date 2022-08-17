@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useCallback, FC, ReactChildren, ReactNode } from 'react';
+import React, { useMemo, useCallback, FC } from 'react';
 import { find, isEmpty, reduce, includes } from 'lodash';
 import {
 	useUserAccounts,
@@ -12,7 +12,6 @@ import {
 	useTags,
 	ZIMBRA_STANDARD_COLORS,
 	FOLDERS,
-	Tags,
 	Tag,
 	useFolder
 } from '@zextras/carbonio-shell-ui';
@@ -37,7 +36,11 @@ import { ListItemActionWrapper } from './list-item-actions-wrapper';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { SenderName } from './sender-name';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
-import { MailMessage } from '../../../../types';
+import {
+	MessageListItemType,
+	MsgListDraggableItemType,
+	TextReadValuesType
+} from '../../../../types';
 
 type Preview = {
 	src?: string | null | ArrayBuffer;
@@ -60,15 +63,8 @@ function previewFile(file: File): void {
 		reader.readAsDataURL(file);
 	}
 }
-type DraggableItemType = {
-	item: MailMessage;
-	folderId: string;
-	children: any;
-	isMessageView: boolean;
-	dragCheck: (e: any, id: any) => void;
-	selectedIds: Array<string>;
-};
-const DraggableItem: FC<DraggableItemType> = ({
+
+const DraggableItem: FC<MsgListDraggableItemType> = ({
 	item,
 	folderId,
 	children,
@@ -89,27 +85,6 @@ const DraggableItem: FC<DraggableItemType> = ({
 		<>{children}</>
 	);
 
-type MessageListItemType = {
-	item: any;
-	folderId: string;
-	active: boolean;
-	selected: boolean;
-	selecting: boolean;
-	toggle: () => null;
-	draggedIds: Array<string> | undefined;
-	setDraggedIds: (arg: any) => void;
-	setIsDragging: (arg: boolean) => void;
-	selectedItems: any;
-	dragImageRef: any;
-	visible: boolean;
-	isConvChildren: boolean;
-};
-
-type TextReadValuesType = {
-	color: 'text' | 'primary';
-	weight: 'medium' | 'light' | 'regular' | 'bold';
-	badge: 'read' | 'unread';
-};
 const MessageListItem: FC<MessageListItemType> = ({
 	item,
 	folderId,
@@ -196,11 +171,11 @@ const MessageListItem: FC<MessageListItemType> = ({
 			if (!e.isDefaultPrevented()) {
 				replaceHistory(`/folder/${folderId}/message/${item.id}`);
 				if (item.read === false) {
-					setMsgRead({ ids: [item.id], value: false, t, dispatch }).click();
+					setMsgRead({ ids: [item.id], value: false, dispatch }).click();
 				}
 			}
 		},
-		[folderId, item.id, item.read, t, dispatch]
+		[folderId, item.id, item.read, dispatch]
 	);
 	const _onDoubleClick = useCallback(
 		(e) => {

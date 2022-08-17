@@ -17,14 +17,8 @@ import { findIconFromChip } from './parts/use-find-icon';
 import { search } from '../../store/actions/search';
 import { selectSearches } from '../../store/searches-slice';
 import SearchMessageList from './search-message-list';
-import { FolderType, SearchResults } from '../../types';
+import { FolderType, SearchProps, SearchResults } from '../../types';
 import { selectFolders } from '../../store/folders-slice';
-
-export type SearchProps = {
-	useDisableSearch: () => [boolean, (arg: any) => void];
-	useQuery: () => [Array<QueryChip>, (arg: any) => void];
-	ResultsHeader: FC<{ label: string }>;
-};
 
 const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();

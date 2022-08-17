@@ -34,3 +34,26 @@ export type MailsEditor = {
 	rt?: string | undefined;
 	origid?: string | undefined;
 };
+
+type IdentityType = {
+	value: string;
+	label: string;
+	address: string;
+	fullname: string;
+	fullName?: string;
+	type: string;
+	identityName: string;
+};
+
+type UseGetIdentitiesReturnType = {
+	from: Partial<IdentityType> | undefined;
+	activeFrom: IdentityType | undefined;
+	identitiesList: Array<IdentityType>;
+	hasIdentity: boolean | undefined;
+};
+
+type FindDefaultIdentityType = {
+	list: Array<IdentityType>;
+	allAccounts: Record<string, Folder & { owner: string }>;
+	folderId: string;
+};

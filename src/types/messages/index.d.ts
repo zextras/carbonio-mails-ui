@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { AttachmentPartType } from '../details-pannel';
+
 export type IncompleteMessage = {
 	id: string;
 	did?: string;

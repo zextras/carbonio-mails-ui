@@ -8,7 +8,6 @@ import {
 	Container,
 	Input,
 	Padding,
-	Text,
 	Divider,
 	Button,
 	Tooltip,
@@ -24,19 +23,7 @@ import Heading from './components/settings-heading';
 import { domainWhitelistSubSection } from './subsections';
 import TrusteeListItem from './components/trustee-list-item';
 import LoadingShimmer from './filters/parts/loading-shimmer';
-import { PrefsType } from './setting-type';
-
-type UpdateSettingsProps = {
-	target: {
-		name: string;
-		value: string | Array<string> | undefined;
-	};
-};
-
-type InputProps = {
-	settingsObj: PrefsType;
-	updateSettings: (arg: UpdateSettingsProps) => void;
-};
+import { InputProps } from '../../types';
 
 const NonSupportedCharacters = /[!#$%^&*()_+\-=[\]{};':"\\|,.<>/?|/^\s*$/]+/;
 const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {

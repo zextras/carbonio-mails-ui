@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo, useRef, useState, useContext, FC, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { filter, find, includes, map, reduce, uniqBy, zip } from 'lodash';
+import { filter, find, includes, map, reduce, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -14,22 +14,26 @@ import {
 	Link,
 	Padding,
 	Row,
-	SnackbarManagerContext,
 	Text,
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getAction, soapFetch } from '@zextras/carbonio-shell-ui';
+import { getAction, getBridgedFunctions, soapFetch } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { humanFileSize, previewType } from './file-preview';
-import { EditorAttachmentFiles, MailMessage } from '../../../../types';
+import {
+	AttachmentPartType,
+	AttachmentType,
+	EditorAttachmentFiles,
+	MailMessage
+} from '../../../../types';
 
 const AttachmentsActions = styled(Row)``;
-function findAttachments(parts, acc) {
+function findAttachments(parts: MailMessagePart[], acc: MailMessagePart[]): AttachmentPartType[] {
 	return reduce(
 		parts,
-		(found, part) => {
+		(found, part: MailMessagePart) => {
 			if (part && part.disposition === 'attachment') {
 				found.push(part);
 			}
@@ -40,7 +44,11 @@ function findAttachments(parts, acc) {
 	);
 }
 
-function getAttachmentsDownloadLink(messageId, messageSubject, attachments) {
+function getAttachmentsDownloadLink(
+	messageId: string,
+	messageSubject: string,
+	attachments: Array<string>
+): string {
 	if (attachments.length > 1) {
 		return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
 			','
@@ -49,7 +57,12 @@ function getAttachmentsDownloadLink(messageId, messageSubject, attachments) {
 	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
 }
 
-function getAttachmentsLink(messageId, messageSubject, attachments, attachmentType) {
+function getAttachmentsLink(
+	messageId: string,
+	messageSubject: string,
+	attachments: Array<string>,
+	attachmentType: string
+): string {
 	if (!messageId.includes(':')) {
 		if (attachments.length > 1) {
 			return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
@@ -110,16 +123,6 @@ const AttachmentExtension = styled(Text)<{
 	margin-right: ${({ theme }): string => theme.sizes.padding.small};
 `;
 
-type AttachmentType = {
-	filename: string;
-	size: number;
-	link: string;
-	downloadlink: string;
-	message: MailMessage;
-	part: string;
-	iconColors: Array<{ extension: 'string'; color: string }>;
-	att: EditorAttachmentFiles;
-};
 const Attachment: FC<AttachmentType> = ({
 	filename,
 	size,
@@ -133,7 +136,7 @@ const Attachment: FC<AttachmentType> = ({
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
-	const createSnackbar = useContext(SnackbarManagerContext);
+
 	const [t] = useTranslation();
 	const inputRef = useRef<HTMLInputElement>();
 	const inputRef2 = useRef<HTMLInputElement>();
@@ -155,7 +158,7 @@ const Attachment: FC<AttachmentType> = ({
 				destinationFolderId: nodes[0].id
 			})
 				.then(() => {
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `calendar-moved-root`,
 						replace: true,
 						type: 'info',
@@ -165,7 +168,7 @@ const Attachment: FC<AttachmentType> = ({
 					});
 				})
 				.catch(() => {
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `calendar-moved-root`,
 						replace: true,
 						type: 'warning',
@@ -178,7 +181,7 @@ const Attachment: FC<AttachmentType> = ({
 					});
 				});
 		},
-		[att.name, createSnackbar, message.id, t]
+		[att.name, message.id, t]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
@@ -300,7 +303,7 @@ const Attachment: FC<AttachmentType> = ({
 	);
 };
 
-const copyToFiles = (att: EditorAttachmentFiles, message: MailMessage, nodes: any): Promise<any> =>
+const copyToFiles = (att: AttachmentPartType, message: MailMessage, nodes: any): Promise<any> =>
 	soapFetch('CopyToFiles', {
 		_jsns: 'urn:zimbraMail',
 		mid: message.id,
@@ -311,8 +314,8 @@ const copyToFiles = (att: EditorAttachmentFiles, message: MailMessage, nodes: an
 const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactElement => {
 	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
-	const attachments = useMemo(() => findAttachments(message.parts, []), [message]);
-	const attachmentsCount = useMemo(() => attachments.length, [attachments]);
+	const attachments = useMemo(() => findAttachments(message?.parts, []), [message]);
+	const attachmentsCount = useMemo(() => attachments?.length, [attachments]);
 	const attachmentsParts = useMemo(() => map(attachments, 'name'), [attachments]);
 	const theme = useTheme();
 	const actionsDownloadLink = useMemo(
@@ -320,14 +323,14 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 		[message, attachmentsParts]
 	);
 
-	const createSnackbar = useContext(SnackbarManagerContext);
-
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	const iconColors = useMemo(
 		() =>
 			uniqBy(
 				map(attachments, (att) => {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					const fileExtn = getFileExtension(att);
 					const color = calcColor(att.contentType, theme);
 
@@ -372,7 +375,7 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 							'message.snackbar.some_att_fails',
 							'There seems to be a problem when saving some files, please try again'
 					  );
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `calendar-moved-root`,
 					replace: true,
 					type,
@@ -382,7 +385,7 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 				});
 			});
 		},
-		[attachments, createSnackbar, message, t]
+		[attachments, message, t]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
@@ -411,10 +414,10 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 	return attachmentsCount > 0 ? (
 		<Container crossAlignment="flex-start" padding={{ horizontal: 'medium' }}>
 			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
-				{map(expanded ? attachments : attachments.slice(0, 2), (att, index) => (
+				{map(expanded ? attachments : attachments?.slice(0, 2), (att, index) => (
 					<Attachment
 						key={`att-${att.filename}-${index}`}
-						filename={att.filename}
+						filename={att?.filename}
 						size={att.size}
 						link={getAttachmentsLink(message.id, message.subject, [att.name], att.contentType)}
 						downloadlink={getAttachmentsDownloadLink(message.id, message.subject, [att.name])}

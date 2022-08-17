@@ -6,14 +6,8 @@
 import { QueryChip } from '@zextras/carbonio-shell-ui';
 import { isEqualWith } from 'lodash';
 import { useMemo } from 'react';
-import { KeywordState } from '../../../types';
+import { KeywordState, UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
 
-type UseDisabledPropType = {
-	queryToBe: Array<QueryChip>;
-	query: Array<QueryChip>;
-	isSharedFolderIncluded: boolean;
-	isSharedFolderIncludedTobe: boolean;
-};
 export const useDisabled = ({
 	queryToBe,
 	query,
@@ -32,24 +26,6 @@ export const useDisabled = ({
 		[isSharedFolderIncluded, isSharedFolderIncludedTobe, query, queryToBe]
 	);
 
-type UseSecondaryDisabledType = {
-	attachmentFilter: KeywordState;
-	attachmentType: KeywordState;
-	emailStatus: KeywordState;
-	flaggedFilter: KeywordState;
-	folder: KeywordState;
-	receivedFromAddress: KeywordState;
-	sentAfter: KeywordState;
-	sentBefore: KeywordState;
-	sentFromAddress: KeywordState;
-	sentOn: KeywordState;
-	sizeLarger: KeywordState;
-	sizeSmaller: KeywordState;
-	subject: KeywordState;
-	tag: KeywordState;
-	totalKeywords: number;
-	unreadFilter: KeywordState;
-};
 export const useSecondaryDisabled = ({
 	attachmentFilter,
 	attachmentType,

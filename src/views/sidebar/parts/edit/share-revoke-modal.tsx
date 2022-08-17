@@ -15,14 +15,9 @@ import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite
 import { GranteeInfo } from './share-folder-properties';
 import { sendShareNotification } from '../../../../store/actions/send-share-notification';
 import { folderAction } from '../../../../store/actions/folder-action';
-import { GrantType } from '../../../../types';
 
-type ShareRevokeModalType = {
-	folder: Folder;
-	onClose?: () => void;
-	grant: GrantType;
-	goBack: () => void;
-};
+import { ShareRevokeModalType } from '../../../../types/sidebar';
+
 const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, goBack }) => {
 	const [t] = useTranslation();
 	const [sendNotification, setSendNotification] = useState(false);

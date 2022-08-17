@@ -4,20 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import { Container, ChipInput } from '@zextras/carbonio-design-system';
+import { SizeLargerSizeSmallerRowProps } from '../../../types';
 
-type ComponentProps = {
-	compProps: {
-		t: TFunction;
-		sizeSmaller: any;
-		setSizeSmaller: (arg: any) => any;
-		sizeLarger: any;
-		setSizeLarger: (arg: any) => any;
-	};
-};
-
-const SizeLargerSizeSmallerRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
+const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
+	compProps
+}): ReactElement => {
 	const { t, sizeSmaller, setSizeSmaller, sizeLarger, setSizeLarger } = compProps;
 
 	const [isInvalidSmallSize, setIsInvalidSmallSize] = useState(false);

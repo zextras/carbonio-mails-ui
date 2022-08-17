@@ -10,7 +10,7 @@ import {
 	useRefresh,
 	updatePrimaryBadge
 } from '@zextras/carbonio-shell-ui';
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty, map, keyBy, find, filter, forEach, sortBy, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -43,8 +43,9 @@ import { normalizeConversation } from '../../normalizations/normalize-conversati
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { extractFolders } from './utils';
 import { MAILS_ROUTE } from '../../constants';
+import { Conversation } from '../../types';
 
-const InboxBadgeUpdater = () => {
+const InboxBadgeUpdater = (): null => {
 	const folder = useSelector(selectFolder(FOLDERS.INBOX));
 	useEffect(() => {
 		updatePrimaryBadge(
@@ -59,7 +60,7 @@ const InboxBadgeUpdater = () => {
 	return null;
 };
 
-export const SyncDataHandler = () => {
+export const SyncDataHandler: FC = () => {
 	const [t] = useTranslation();
 	const refresh = useRefresh();
 	const notifyList = useNotify();
@@ -94,7 +95,7 @@ export const SyncDataHandler = () => {
 	useEffect(() => {
 		if (initialized) {
 			if (notifyList.length > 0) {
-				forEach(sortBy(notifyList, 'seq'), (notify) => {
+				forEach(sortBy(notifyList, 'seq'), (notify: any) => {
 					if (!isEmpty(notify) && (notify.seq > seq || (seq > 1 && notify.seq === 1))) {
 						if (notify.created) {
 							if (notify.created.folder || notify.created.link) {
@@ -109,6 +110,8 @@ export const SyncDataHandler = () => {
 								const conversations = map(notify.created.c, (i) =>
 									normalizeConversation(i, notify.created.m)
 								);
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
 								dispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));
 							}
 							if (notify.created.m) {
@@ -127,18 +130,24 @@ export const SyncDataHandler = () => {
 							}
 							if (notify.modified.c) {
 								const conversations = map(notify.modified.c, normalizeConversation);
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
 								dispatch(handleNotifyModifiedConversations(keyBy(conversations, 'id')));
 							}
 							if (notify.modified.m) {
 								const messages = map(notify.modified.m, (obj) =>
 									normalizeMailMessageFromSoap(obj, false)
 								);
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
 								dispatch(handleModifiedMessages(messages));
 
 								// the condition filters messages with parent property (the only ones we need to update)
 								const toUpdate = filter(messages, 'parent');
 								if (toUpdate?.length > 0) {
 									// this function updates messages' parent in conversations. If parent never changes it does not need to be called
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									dispatch(handleModifiedMessagesInConversation(toUpdate));
 								}
 								// the condition filters messages with conversation property (the only ones we need to add to conversation)
@@ -146,7 +155,15 @@ export const SyncDataHandler = () => {
 								if (conversationToUpdate?.length > 0) {
 									const msgsReference = reduce(
 										conversationToUpdate,
-										(acc, msg) => {
+										(
+											acc: Array<{
+												id: string;
+												parent: string;
+												date: number;
+												conversation: Conversation;
+											}>,
+											msg: any
+										) => {
 											if (messagesState?.[msg?.id]) {
 												return [
 													...acc,
@@ -163,6 +180,8 @@ export const SyncDataHandler = () => {
 										[]
 									);
 									// this function add messages' in conversations. If conversation never changes it does not need to be called
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									dispatch(handleAddMessagesInConversation(msgsReference));
 								}
 							}

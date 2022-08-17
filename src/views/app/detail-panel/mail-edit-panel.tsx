@@ -17,13 +17,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import EditView from './edit/edit-view';
+import { MailEditHeaderType } from '../../../types';
 
-type MailEditHeaderType = {
-	folderId: string | number;
-	header: string | undefined;
-	toggleAppBoard: boolean;
-	setToggleAppBoard: (arg: boolean) => void;
-};
 const MailEditHeader: FC<MailEditHeaderType> = ({
 	folderId,
 	header,

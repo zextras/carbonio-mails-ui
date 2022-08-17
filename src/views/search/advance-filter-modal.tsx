@@ -16,7 +16,7 @@ import { TFunction } from 'i18next';
 import { concat, filter, includes, map } from 'lodash';
 import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../sidebar/commons/modal-footer';
-import ModalHeader  from '../sidebar/commons/modal-header';
+import ModalHeader from '../sidebar/commons/modal-header';
 import ToggleFilters from './parts/toggle-filters';
 import SubjectKeywordRow from './parts/subject-keyword-row';
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
@@ -25,22 +25,7 @@ import TagFolderRow from './parts/tag-folder-row';
 import SendReceivedDateRow from './parts/send-date-row';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
 import ReceivedSentAddressRow from './parts/received-sent-address-row';
-import { KeywordState } from '../../types';
-
-type AdvancedFilterModalProps = {
-	open: boolean;
-	onClose: () => void;
-	t: TFunction;
-	query: Array<{
-		label: string;
-		value?: string;
-		isGeneric?: boolean;
-		isQueryFilter?: boolean;
-	}>;
-	updateQuery: (arg: Array<QueryChip>) => void;
-	isSharedFolderIncluded: boolean;
-	setIsSharedFolderIncluded: (arg: boolean) => void;
-};
+import { AdvancedFilterModalProps, KeywordState } from '../../types';
 
 const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	open,
