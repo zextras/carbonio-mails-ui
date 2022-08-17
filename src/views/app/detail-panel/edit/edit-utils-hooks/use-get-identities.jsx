@@ -13,7 +13,8 @@ import { ParticipantRole } from '../../../../../commons/utils';
 
 const findDefaultIdentity = ({ list, allAccounts, folderId }) => {
 	const activeAcc = find(allAccounts, { zid: folderId?.split?.(':')?.[0] });
-	return find(list, { address: activeAcc?.owner }) ?? find(list, { identityName: 'DEFAULT' });
+	const predicate = activeAcc?.owner ? { address: activeAcc?.owner } : { identityName: 'DEFAULT' };
+	return find(list, predicate);
 };
 
 export const useGetIdentities = ({ updateEditorCb, setOpen, editorId }) => {
