@@ -8,16 +8,17 @@ import { useRoots, useUserAccount, useUserAccounts } from '@zextras/carbonio-she
 import { map, find, filter, findIndex, flatten, isNull } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { useParams } from 'react-router-dom';
 import { ParticipantRole } from '../../../../../commons/utils';
 
-const findDefaultIdentity = ({ list, allAccounts, folderId }) => {
+export const findDefaultIdentity = ({ list, allAccounts, folderId }) => {
 	const activeAcc = find(allAccounts, { zid: folderId?.split?.(':')?.[0] });
 	const predicate = activeAcc?.owner ? { address: activeAcc?.owner } : { identityName: 'DEFAULT' };
 	return find(list, predicate);
 };
 
-export const useGetIdentities = ({ updateEditorCb, setOpen, editorId }) => {
+export const useGetIdentities = ({ updateEditorCb, setOpen, editorId, action }) => {
 	const account = useUserAccount();
 	const accounts = useUserAccounts();
 	const [t] = useTranslation();
@@ -100,6 +101,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen, editorId }) => {
 			setFrom(def);
 			setIsIdentitySet(true);
 		}
+
 		if (editorId?.includes('new-') && !isIdentitySet && list.length > 0) {
 			const def = find(list, { identityName: 'DEFAULT' });
 			updateEditorCb({
