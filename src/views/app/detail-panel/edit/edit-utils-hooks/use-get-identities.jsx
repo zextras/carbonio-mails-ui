@@ -13,9 +13,7 @@ import { ParticipantRole } from '../../../../../commons/utils';
 
 const findDefaultIdentity = ({ list, allAccounts, folderId }) => {
 	const activeAcc = find(allAccounts, { zid: folderId?.split?.(':')?.[0] });
-	return activeAcc
-		? find(list, { address: activeAcc?.owner })
-		: find(list, { identityName: 'DEFAULT' });
+	return find(list, { address: activeAcc?.owner }) ?? find(list, { identityName: 'DEFAULT' });
 };
 
 export const useGetIdentities = ({ updateEditorCb, setOpen, editorId }) => {
@@ -27,6 +25,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen, editorId }) => {
 	const [activeFrom, setActiveFrom] = useState({});
 	const [isIdentitySet, setIsIdentitySet] = useState(false);
 	const [defaultIdentity, setDefaultIdentity] = useState();
+
 	const allAccounts = useRoots();
 	const { folderId } = useParams();
 
@@ -87,6 +86,21 @@ export const useGetIdentities = ({ updateEditorCb, setOpen, editorId }) => {
 				folderId
 			});
 
+			updateEditorCb({
+				from: {
+					address: def?.address,
+					fullName: def?.fullname,
+					name: def?.fullname,
+					type: ParticipantRole.FROM
+				}
+			});
+			setDefaultIdentity(def);
+			setActiveFrom(def);
+			setFrom(def);
+			setIsIdentitySet(true);
+		}
+		if (editorId?.includes('new-') && !isIdentitySet && list.length > 0) {
+			const def = find(list, { identityName: 'DEFAULT' });
 			updateEditorCb({
 				from: {
 					address: def?.address,
