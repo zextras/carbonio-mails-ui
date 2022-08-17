@@ -113,7 +113,6 @@ export default function MessageListItem({
 
 	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
 		if (item) {
-			``;
 			if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
 				return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon', 'secondary'];
 			}
