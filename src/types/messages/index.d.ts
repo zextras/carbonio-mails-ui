@@ -19,6 +19,8 @@ export type IncompleteMessage = {
 	isForwarded: boolean;
 	isInvite: boolean;
 	isDraft: boolean;
+	isScheduled: boolean;
+	autoSendTime?: number;
 	participants?: Array<Participant>;
 	date: number;
 	subject: string;

@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getBridgedFunctions, replaceHistory } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { ActionsType } from '../commons/utils';
@@ -370,14 +370,37 @@ export function editAsNewMsg({ id, folderId, t }) {
 	};
 }
 
-export function editDraft({ id, folderId, t }) {
+export function editDraft({ id, folderId, message }) {
 	return {
 		id: 'message-edit_as_draft',
 		icon: 'Edit2Outline',
-		label: t('label.edit', 'Edit'),
+		label: getBridgedFunctions()?.t('label.edit', 'Edit'),
 		click: (ev) => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
+			if (message?.isScheduled) {
+				const closeModal = getBridgedFunctions()?.createModal({
+					title: getBridgedFunctions()?.t('label.warning', 'Warning'),
+					confirmLabel: getBridgedFunctions()?.t('action.edit_anyway', 'Edit anyway'),
+					onConfirm: () => {
+						closeModal();
+						replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
+					},
+					onClose: () => {
+						closeModal();
+					},
+
+					children: (
+						<>
+							<Text overflow="break-word">
+								{getBridgedFunctions()?.t(
+									'messages.edit_schedule_warning',
+									'By editing this e-mail, the time and date previously set for delayed sending will be reset.'
+								)}
+							</Text>
+						</>
+					)
+				});
+			} else replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
 		}
 	};
 }
@@ -611,7 +634,7 @@ export const getActions = ({
 		case FOLDERS.DRAFTS:
 			return (message, closeEditor) => [
 				[
-					editDraft({ id: message.id, folderId, t }),
+					editDraft({ id: message.id, folderId, t, message }),
 					sendDraft({ id: message.id, message, t, dispatch }),
 					moveMsgToTrash({
 						ids: [message.id],
@@ -638,7 +661,7 @@ export const getActions = ({
 						conversationId: message.conversation,
 						closeEditor
 					}),
-					editDraft({ id: message.id, folderId, t }),
+					editDraft({ id: message.id, folderId, t, message }),
 					sendDraft({ id: message.id, message, t, dispatch }),
 					printMsg({ t, message, account })
 				]

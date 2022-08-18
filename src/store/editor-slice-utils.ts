@@ -371,6 +371,7 @@ export const generateRequest = (data: MailsEditor): SoapDraftMessageObj => {
 	}
 
 	return {
+		autoSendTime: data.autoSendTime ?? undefined,
 		did: data.did ?? undefined,
 		id: data.id ?? undefined,
 		attach: data.attach,

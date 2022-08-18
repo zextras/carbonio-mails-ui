@@ -3,60 +3,64 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
-import { Container, DateTimePicker, Text, Padding, Select } from '@zextras/carbonio-design-system';
+import React, { FC, useCallback, useMemo, useState } from 'react';
+import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
 import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
-import { find } from 'lodash';
 import moment from 'moment';
-import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 import ModalFooter from '../../../../sidebar/commons/modal-footer';
 import { ModalHeader } from '../../../../sidebar/commons/modal-header';
-import { timeZoneList } from './timezones';
 import { saveDraft } from '../../../../../store/actions/save-draft';
-import { EditViewContext } from './edit-view-context';
-import { selectEditors } from '../../../../../store/editor-slice';
+import { MailsEditor } from '../../../../../types';
 
-const SendLaterModal: FC<{ onClose: () => void; editorId: string; dispatch: Dispatch }> = ({
-	onClose,
-	editorId
-}) => {
-	const [time, setTime] = useState(new Date());
-	const [timeZone, setTimeZone] = useState('UTC');
-	const dispatch = useDispatch();
+type SendLaterModalPropTypes = {
+	onClose: () => void;
+	dispatch: Dispatch;
+	editor: MailsEditor;
+	closeBoard: () => void;
+};
+const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor, closeBoard }) => {
+	const [time, setTime] = useState();
+
 	const brdgFn = getBridgedFunctions();
-	const editors = useSelector(selectEditors);
-	const editor = useMemo(() => editors[editorId], [editorId, editors]);
-	const timezones = useMemo(() => timeZoneList(), []);
+
 	const modalTitle = useMemo(() => brdgFn?.t('label.send_later', 'Send Later'), [brdgFn]);
 	const datePickerLabel = useMemo(
 		() => brdgFn?.t('label.select_date_time', 'Select date and time'),
 		[brdgFn]
 	);
 
-	const handleTimeChange = useCallback((e) => {
-		console.log('abc:', { e: moment(e).valueOf() });
-		setTime(e);
+	const handleTimeChange = useCallback((newTime) => {
+		setTime(newTime);
 	}, []);
-	const defaultTimeZone = useMemo(() => find(timezones, { value: 'UTC' }), [timezones]);
 
-	const handleTimeZoneChange = useCallback((tz) => {
-		setTimeZone(tz);
-	}, []);
-	console.log('abc:', { editor });
 	const confirmLabel = useMemo(() => brdgFn?.t('label.set_timing', 'Set timing'), [brdgFn]);
 	const onConfirm = useCallback(() => {
-		// const autoSendTime = moment(time).utc().tz(timeZone).valueOf();
-		// console.log('abc:', { editor, autoSendTime });
-		// dispatch(saveDraft({ ...editor, autoSendTime }));
-	}, []);
+		const autoSendTime = moment(time).valueOf();
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		dispatch(saveDraft({ data: { ...editor, autoSendTime } })).then((res: any) => {
+			if (res.type.includes('fulfilled')) {
+				brdgFn?.createSnackbar({
+					key: 'send_later',
+					replace: true,
+					hideButton: true,
+					type: 'info',
+					label: brdgFn?.t('message.send_later_success', {
+						date: moment(time).format('DD/MM/YYYY'),
+						time: moment(time).format('HH:mm'),
+						defaultValue: 'Your e-mail will be send on {{date}} at {{time}}'
+					}),
+					autoHideTimeout: 3000
+				});
+
+				onClose();
+				closeBoard();
+			}
+		});
+	}, [brdgFn, closeBoard, dispatch, editor, onClose, time]);
 	return (
-		<Container
-			padding={{ all: 'large' }}
-			mainAlignment="center"
-			crossAlignment="flex-start"
-			height="fit"
-		>
+		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
 			<ModalHeader onClose={onClose} title={modalTitle} />
 			<Container
 				padding={{ all: 'small' }}
@@ -76,18 +80,8 @@ const SendLaterModal: FC<{ onClose: () => void; editorId: string; dispatch: Disp
 						dateFormat="dd/MM/yyyy HH:mm"
 					/>
 				</Container>
-				<Select
-					items={timezones}
-					background="gray5"
-					label={brdgFn?.t('label.time_zone', 'Time Zone')}
-					onChange={handleTimeZoneChange}
-					selection={defaultTimeZone}
-					showCheckbox={false}
-					dropdownMaxHeight="200px"
-					selectedBackgroundColor="highlight"
-				/>
-				<ModalFooter onConfirm={onConfirm} label={confirmLabel} disabled={false} />
 			</Container>
+			<ModalFooter onConfirm={onConfirm} label={confirmLabel} disabled={!time} />
 		</Container>
 	);
 };

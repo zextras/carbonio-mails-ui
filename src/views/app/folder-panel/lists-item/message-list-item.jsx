@@ -207,6 +207,16 @@ export default function MessageListItem({
 		() => (!isEmpty(item.fragment) ? item.fragment : subject),
 		[subject, item.fragment]
 	);
+
+	const scheduledTime = useMemo(
+		() =>
+			t('message.schedule_mail', {
+				date: moment(item?.autoSendTime).format('DD/MM/YYYY'),
+				time: moment(item?.autoSendTime).format('HH:mm'),
+				defaultValue: 'Will be send on: {{date}} at {{time}}'
+			}),
+		[item?.autoSendTime, t]
+	);
 	return draggedIds?.[item?.id] || visible || isConvChildren ? (
 		<Drag
 			type="message"
@@ -271,9 +281,17 @@ export default function MessageListItem({
 										</Padding>
 									)}
 									<Padding left="small">
-										<Text data-testid="DateLabel" size="extrasmall">
-											{date}
-										</Text>
+										{item?.isScheduled ? (
+											<Tooltip label={scheduledTime}>
+												<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
+													{t('label.delayed_sending', 'Delayed sending')}
+												</Text>
+											</Tooltip>
+										) : (
+											<Text data-testid="DateLabel" size="extrasmall">
+												{date}
+											</Text>
+										)}
 									</Padding>
 								</Row>
 							</Container>
@@ -332,6 +350,14 @@ export default function MessageListItem({
 										<Padding left="extrasmall">
 											<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
 										</Padding>
+									)}
+
+									{item?.isScheduled && (
+										<Tooltip label={scheduledTime} placement="bottom">
+											<Padding right="extrasmall">
+												<Icon data-testid={iconId} icon="ClockOutline" color="primary" />
+											</Padding>
+										</Tooltip>
 									)}
 									{messageFolder && messageFolder.id !== folderId && !item.isFromSearch && (
 										<Padding left="small">

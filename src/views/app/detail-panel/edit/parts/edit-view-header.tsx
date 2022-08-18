@@ -50,6 +50,7 @@ const EditViewHeader: FC<PropType> = ({
 	uploadAttachmentsCb
 }) => {
 	const [t] = useTranslation();
+
 	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action } =
 		useContext(EditViewContext);
 	const [open, setOpen] = useState(false);
@@ -288,15 +289,16 @@ const EditViewHeader: FC<PropType> = ({
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
 							onClose={(): void => closeModal()}
-							editorId={editorId}
 							dispatch={dispatch}
+							editor={editor}
+							closeBoard={closeBoard}
 						/>
 					</>
 				)
 			},
 			true
 		);
-	}, [dispatch, editorId]);
+	}, [closeBoard, dispatch, editor]);
 	return (
 		<>
 			<Row
