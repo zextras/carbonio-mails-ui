@@ -13,7 +13,7 @@ import {
 	registerActions,
 	registerFunctions,
 	ACTION_TYPES,
-	getBridgedFunctions
+	getBridgedFunctions, useCurrentRoute,
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,6 @@ import {
 	openComposerSharedFunction,
 	openPrefilledComposerSharedFunction
 } from './integrations/shared-functions';
-import Notifications from './views/notifications';
 import { ParticipantRole } from './commons/utils';
 import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
@@ -159,9 +158,10 @@ const App = () => {
 		);
 	}, [t]);
 
+	const x = useCurrentRoute();
+
 	return (
 		<>
-			<Notifications />
 			<SyncDataHandler />
 		</>
 	);
