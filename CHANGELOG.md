@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.30](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.29...v0.1.30) (2022-08-17)
+
+
+### Bug Fixes
+
+* condition for showing button and preselect on reply ([b443424](https://github.com/zextras/carbonio-mails-ui/commit/b443424115716ae99a6a62f75499f30d930fa28d))
+* condition for showing button and preselect on reply ([ddd46af](https://github.com/zextras/carbonio-mails-ui/commit/ddd46afbd589fb0b0c6079e6a373cd67a02ef6d5))
+
 ### [0.1.29](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.28...v0.1.29) (2022-08-05)
 
 

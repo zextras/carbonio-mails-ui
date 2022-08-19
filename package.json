@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "0.1.29",
+	"version": "0.1.30",
 	"description": "Mails module for Zextras Carbonio",
 	"main": "src/app.jsx",
 	"scripts": {
@@ -20,13 +20,14 @@
 	],
 	"types": "./src/types/index.d.ts",
 	"keywords": [],
-	"author": "Zextras DL Team <https://www.zextras.com/carbonio/>",
+	"author": "Zextras Crab Onions Team <https://www.zextras.com/carbonio/>",
 	"maintainers": [
-		"Matteo Dal Zovo <matteo.dalzovo@zextras.com>",
 		"Gabriele Marino <gabriele.marino@zextras.com>",
 		"Abhishek Kumar <abhishek.kumar@zextras.com>",
 		"Giuliano Caregnato <giuliano.caregnato@zextras.com>",
-		"Dhaval Dodiya <dhaval.dodiya@zextras.com>"
+		"Dhaval Dodiya <dhaval.dodiya@zextras.com>",
+		"Francesco Gottardi <francesco.gottardi@zextras.com>",
+		"Luca Stauble <luca.stauble@zextras.com>"
 	],
 	"license": "AGPL-3.0-only",
 	"devDependencies": {

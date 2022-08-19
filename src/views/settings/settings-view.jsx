@@ -285,7 +285,6 @@ export default function SettingsView() {
 				style={{ overflowY: 'auto' }}
 			>
 				<FormSection minWidth="calc(min(100%, 512px))">
-					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
 					<DisplayMessagesSettings
 						t={t}
 						settingsObj={settingsObj}
