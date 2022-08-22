@@ -22,31 +22,31 @@ type SendLaterModalPropTypes = {
 const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor, closeBoard }) => {
 	const [time, setTime] = useState();
 
-	const brdgFn = getBridgedFunctions();
+	const bridgedFn = getBridgedFunctions();
 
-	const modalTitle = useMemo(() => brdgFn?.t('label.send_later', 'Send Later'), [brdgFn]);
+	const modalTitle = useMemo(() => bridgedFn?.t('label.send_later', 'Send Later'), [bridgedFn]);
 	const datePickerLabel = useMemo(
-		() => brdgFn?.t('label.select_date_time', 'Select date and time'),
-		[brdgFn]
+		() => bridgedFn?.t('label.select_date_time', 'Select date and time'),
+		[bridgedFn]
 	);
 
 	const handleTimeChange = useCallback((newTime) => {
 		setTime(newTime);
 	}, []);
 
-	const confirmLabel = useMemo(() => brdgFn?.t('label.set_timing', 'Set timing'), [brdgFn]);
+	const confirmLabel = useMemo(() => bridgedFn?.t('label.set_timing', 'Set timing'), [bridgedFn]);
 	const onConfirm = useCallback(() => {
 		const autoSendTime = moment(time).valueOf();
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		dispatch(saveDraft({ data: { ...editor, autoSendTime } })).then((res: any) => {
 			if (res.type.includes('fulfilled')) {
-				brdgFn?.createSnackbar({
+				bridgedFn?.createSnackbar({
 					key: 'send_later',
 					replace: true,
 					hideButton: true,
 					type: 'info',
-					label: brdgFn?.t('message.send_later_success', {
+					label: bridgedFn?.t('message.send_later_success', {
 						date: moment(time).format('DD/MM/YYYY'),
 						time: moment(time).format('HH:mm'),
 						defaultValue: 'Your e-mail will be send on {{date}} at {{time}}'
@@ -58,7 +58,7 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 				closeBoard();
 			}
 		});
-	}, [brdgFn, closeBoard, dispatch, editor, onClose, time]);
+	}, [bridgedFn, closeBoard, dispatch, editor, onClose, time]);
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
 			<ModalHeader onClose={onClose} title={modalTitle} />
@@ -69,7 +69,7 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 				height="fit"
 			>
 				<Text>
-					{brdgFn?.t('message.select_date_time', 'Select a date and time to send this message')}
+					{bridgedFn?.t('message.select_date_time', 'Select a date and time to send this message')}
 				</Text>
 				<Container padding={{ vertical: 'medium' }}>
 					<DateTimePicker
