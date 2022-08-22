@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useContext, useState } from 'react';
 import { Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import EditDefaultModal from './parts/edit/edit-default-modal';
-import ShareFolderModal from './share-folder-modal';
-import ShareRevokeModal from './parts/edit/share-revoke-modal';
-import { Context } from './parts/edit/edit-context';
+import React, { FC, useCallback, useContext, useState } from 'react';
 import { ModalProps } from '../../types';
+import { Context } from './parts/edit/edit-context';
+import EditDefaultModal from './parts/edit/edit-default-modal';
+import ShareRevokeModal from './parts/edit/share-revoke-modal';
+import ShareFolderModal from './share-folder-modal';
 
 export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 	// eslint-disable-next-line @typescript-eslint/ban-types
