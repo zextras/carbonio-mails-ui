@@ -34,7 +34,7 @@ type InputProps = {
 	updateSettings: (arg: UpdateSettingsProps) => void;
 };
 
-const NonSupportedCharacters = /[!#$%^&*()_+\-=[\]{};':"\\|,.<>/?|/^\s*$/]+/;
+const NonSupportedCharacters = /[!#$%^&*()+=[\]{};':"\\|,<>/?|/^\s*$/]+/;
 const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 	const [t] = useTranslation();
 	const [address, setAddress] = useState('');
