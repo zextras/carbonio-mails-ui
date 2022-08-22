@@ -394,12 +394,11 @@ const EditViewHeader: FC<PropType> = ({
 						</Padding>
 					)}
 					<Padding left="large">
-						{/* <Button onClick={sendMailCb} label={btnLabel} disabled={isSendDisabled} /> */}
 						<MultiButton
 							label={btnLabel}
 							onClick={sendMailCb}
 							disabledPrimary={isSendDisabled}
-							// disabledSecondary={isSendDisabled}
+							disabledSecondary={isSendDisabled}
 							items={[
 								{
 									id: 'delayed_mail',
