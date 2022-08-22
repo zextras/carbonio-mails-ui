@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable import/extensions */
-import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import {
 	Padding,
 	Button,
@@ -14,7 +14,7 @@ import {
 	Input,
 	Text
 } from '@zextras/carbonio-design-system';
-import { useFoldersAccordionByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { find } from 'lodash';
@@ -43,11 +43,9 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	const [calendarName, setCalendarName] = useState(sharedCalendarName);
 	const [selectedColor, setSelectedColor] = useState(0);
 	const accounts = useUserAccounts();
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const calFolders = useFoldersAccordionByView(FOLDER_VIEW.appointment, null);
+	const calFolders = useFoldersByView(FOLDER_VIEW.appointment);
 	const showError = useMemo(
-		() => find(calFolders[0].items, (item) => item.label === calendarName.toLowerCase()),
+		() => find(calFolders[0].children, (item) => item.name === calendarName.toLowerCase()),
 		[calFolders, calendarName]
 	);
 	const disabled = useMemo(
