@@ -128,13 +128,6 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 					item.messages,
 					(acc: Array<Partial<MailMessage>>, v) => {
 						const msg = find(messages, ['id', v.id]);
-
-						if (msg) {
-							if (msg.parent === FOLDERS.TRASH && !searchInTrash) {
-								return acc;
-							}
-						}
-
 						if (msg) {
 							return [...acc, msg];
 						}
@@ -146,7 +139,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 				),
 				'id'
 			),
-		[item.messages, messages, searchInTrash, sortSign]
+		[item.messages, messages, sortSign]
 	);
 
 	const toggleOpen = useCallback(
