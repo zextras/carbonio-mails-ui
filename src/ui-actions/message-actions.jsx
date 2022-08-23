@@ -388,7 +388,7 @@ export function editDraft({ id, folderId, message }) {
 					onClose: () => {
 						closeModal();
 					},
-
+					showCloseIcon: true,
 					children: (
 						<>
 							<Text overflow="break-word">

@@ -21,7 +21,6 @@ type SendLaterModalPropTypes = {
 };
 const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor, closeBoard }) => {
 	const [time, setTime] = useState();
-
 	const bridgedFn = getBridgedFunctions();
 
 	const modalTitle = useMemo(() => bridgedFn?.t('label.send_later', 'Send Later'), [bridgedFn]);
@@ -59,6 +58,16 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 			}
 		});
 	}, [bridgedFn, closeBoard, dispatch, editor, onClose, time]);
+
+	const minTime = useMemo(() => {
+		if (moment(time).isBefore(moment(), 'hour') || !time) {
+			return new Date();
+		}
+		return moment().hours(0).minutes(0);
+	}, [time]);
+
+	const maxTime = useMemo(() => new Date(0, 0, 0, 23, 45, 0, 0), []);
+
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
 			<ModalHeader onClose={onClose} title={modalTitle} />
@@ -78,6 +87,9 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 						width="fill"
 						onChange={handleTimeChange}
 						dateFormat="dd/MM/yyyy HH:mm"
+						minDate={new Date()}
+						minTime={minTime}
+						maxTime={maxTime}
 					/>
 				</Container>
 			</Container>
