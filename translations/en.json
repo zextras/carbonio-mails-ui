@@ -430,6 +430,7 @@
         "view_rights": "View"
     },
     "messages": {
+        "cal_name_exist_warning": "A calendar with the same name already exists in this path",
         "check_and_try_again": "Please, check Carbonio and try again",
         "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
         "invalid_address": "The following address appears to be invalid",
