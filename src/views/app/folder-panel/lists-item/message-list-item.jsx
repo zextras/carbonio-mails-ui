@@ -355,7 +355,7 @@ export default function MessageListItem({
 									{item?.isScheduled && (
 										<Tooltip label={scheduledTime} placement="bottom">
 											<Padding right="extrasmall">
-												<Icon data-testid={iconId} icon="ClockOutline" color="primary" />
+												<Icon data-testid={iconId} icon="SendDelayedOutline" color="primary" />
 											</Padding>
 										</Tooltip>
 									)}
