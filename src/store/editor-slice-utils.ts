@@ -65,9 +65,10 @@ export const emptyEditor = (
 		`<br>${signatureNewMessageValue}`,
 		`<br>${signatureNewMessageValue}`
 	];
+	const isRichText = settings?.prefs?.zimbraPrefComposeFormat === 'html';
 
 	return {
-		richText: true,
+		richText: isRichText,
 		text: textWithSignatureNewMessage,
 		to: [],
 		cc: [],
