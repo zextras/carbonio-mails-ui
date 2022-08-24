@@ -21,6 +21,7 @@ export type SoapIncompleteMessage = {
 	/** Fragment */ fr?: string;
 	/** Contacts */ e?: Array<SoapMailParticipant>;
 	/** Parts */ mp?: Array<SoapMailMessagePart>;
+	/** Scheduled time */ autoSendTime?: number;
 	/** Invite */ inv?: Array<any>;
 	/** Shared */ shr?: Array<any>;
 };
