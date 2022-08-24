@@ -148,6 +148,8 @@ export const normalizeMailMessageFromSoap = (
 			shr: m.shr,
 			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
 			isComplete,
+			isScheduled: !!m.autoSendTime,
+			autoSendTime: m.autoSendTime,
 			read: !isNil(m.f) ? !/u/.test(m.f) : true,
 			attachment: !isNil(m.f) ? /a/.test(m.f) : undefined,
 			flagged: !isNil(m.f) ? /f/.test(m.f) : undefined,
