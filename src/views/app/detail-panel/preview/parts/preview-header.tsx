@@ -314,7 +314,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 								)}
 								<Row ref={textRef} minWidth="fit" padding={{ horizontal: 'small' }}>
 									{message?.isScheduled ? (
-										<Text color="gray1" data-testid="DateLabel" size="extrasmall">
+										<Text color="primary" data-testid="scheduledLabel" size="small">
 											{scheduledTime}
 										</Text>
 									) : (

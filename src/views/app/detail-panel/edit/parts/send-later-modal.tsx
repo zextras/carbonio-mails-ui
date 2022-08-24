@@ -33,7 +33,10 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 		setTime(newTime);
 	}, []);
 
-	const confirmLabel = useMemo(() => bridgedFn?.t('label.set_timing', 'Set timing'), [bridgedFn]);
+	const confirmLabel = useMemo(
+		() => bridgedFn?.t('label.schedule_send', 'Schedule send'),
+		[bridgedFn]
+	);
 	const onConfirm = useCallback(() => {
 		const autoSendTime = moment(time).valueOf();
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -210,13 +210,14 @@ export default function MessageListItem({
 
 	const scheduledTime = useMemo(
 		() =>
-			t('message.schedule_mail', {
+			t('message.schedule_time', {
 				date: moment(item?.autoSendTime).format('DD/MM/YYYY'),
 				time: moment(item?.autoSendTime).format('HH:mm'),
-				defaultValue: 'Will be send on: {{date}} at {{time}}'
+				defaultValue: '{{date}} at {{time}}'
 			}),
 		[item?.autoSendTime, t]
 	);
+
 	return draggedIds?.[item?.id] || visible || isConvChildren ? (
 		<Drag
 			type="message"
@@ -282,11 +283,14 @@ export default function MessageListItem({
 									)}
 									<Padding left="small">
 										{item?.isScheduled ? (
-											<Tooltip label={scheduledTime}>
+											<Row>
+												<Padding right="extrasmall">
+													<Icon data-testid={iconId} icon="SendDelayedOutline" color="primary" />
+												</Padding>
 												<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
 													{t('label.delayed_sending', 'Delayed sending')}
 												</Text>
-											</Tooltip>
+											</Row>
 										) : (
 											<Text data-testid="DateLabel" size="extrasmall">
 												{date}
@@ -353,10 +357,10 @@ export default function MessageListItem({
 									)}
 
 									{item?.isScheduled && (
-										<Tooltip label={scheduledTime} placement="bottom">
-											<Padding right="extrasmall">
-												<Icon data-testid={iconId} icon="SendDelayedOutline" color="primary" />
-											</Padding>
+										<Tooltip label={scheduledTime}>
+											<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
+												{scheduledTime}
+											</Text>
 										</Tooltip>
 									)}
 									{messageFolder && messageFolder.id !== folderId && !item.isFromSearch && (
