@@ -16,7 +16,9 @@ const ColorBox = styled(Container)`
 	border-radius: 8px;
 	border: 3px solid #fff;
 	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-	cursor: pointer;
+	cursor: ${({ disabled }): string => (disabled ? 'no-drop' : 'pointer')};
+	background-color: ${({ color }): string => color};
+	opacity: ${({ disabled }): string => (disabled ? '0.5' : '1')};
 `;
 
 const PopOver = styled(Container)`
@@ -32,7 +34,8 @@ const PopOver = styled(Container)`
 export const ColorPicker: FC<{
 	color: string;
 	onChange: (arg: string) => void;
-}> = ({ color, onChange }) => {
+	disabled?: boolean;
+}> = ({ color, onChange, disabled = false }) => {
 	const popover = useRef(null);
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -48,18 +51,14 @@ export const ColorPicker: FC<{
 			padding={{
 				all: 'small'
 			}}
-			onClick={(): void => setIsOpen(true)}
+			style={{ cursor: disabled ? 'no-drop' : 'pointer' }}
+			onClick={(): void | null => (disabled ? null : setIsOpen(true))}
 			height="48px"
 		>
-			<Container
-				className="picker"
-				style={{ position: 'relative' }}
-				orientation="horizontal"
-				width="fit"
-			>
-				<ColorBox className="swatch" style={{ backgroundColor: color }} />
+			<Container style={{ position: 'relative' }} orientation="horizontal" width="fit">
+				<ColorBox color={color} disabled={disabled} />
 				{isOpen && (
-					<PopOver className="popover" ref={popover}>
+					<PopOver ref={popover}>
 						<HexColorPicker color={color} onChange={onChange} />
 					</PopOver>
 				)}

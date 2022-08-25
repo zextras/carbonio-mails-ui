@@ -14,7 +14,8 @@ import {
 	Participant,
 	SharedParticipant,
 	mailAttachmentParts,
-	SoapDraftMessageObj
+	SoapDraftMessageObj,
+	PrefsType
 } from '../types';
 import { ParticipantRole } from '../commons/utils';
 
@@ -260,6 +261,7 @@ export const extractBody = (msg: MailMessage): Array<string> => {
 	const htmlArr = findBodyPart(msg.parts, 'text/html');
 	const text = textArr.length ? textArr[0].replaceAll('\n', '<br/>') : undefined;
 	const html = htmlArr.length ? htmlArr[0] : undefined;
+	console.log('mnop:', { text, html });
 	return [text ?? html ?? '', html ?? text ?? ''];
 };
 
@@ -286,7 +288,7 @@ export function generateReplyText(
 
 	const textToRetArray = [
 		`\n\n---------------------------\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`,
-		`<br /><br /><hr id="zwchr" ><b>${labels.from}</b> ${headingFrom} <br /> <b>${labels.to}</b> ${headingTo} <br />`
+		`<br /><br /><hr id="zwchr" ><div style="color: black; font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${labels.from}</b> ${headingFrom} <br /> <b>${labels.to}</b> ${headingTo} <br />`
 	];
 
 	if (headingCc.length > 0) {
@@ -296,11 +298,12 @@ export function generateReplyText(
 
 	textToRetArray[1] += `<b>${labels.sent}</b> ${date} <br /> <b>${labels.subject}</b> ${
 		mail.subject
-	} <br /><br />${extractBody(mail)[1]}`;
+	} <br /><br />${extractBody(mail)[1]}</div>`;
 
 	textToRetArray[0] += `${labels.sent} ${date}\n${labels.subject} ${mail.subject}\n\n${
 		extractBody(mail)[0]
 	}`;
+	console.log('mnop:', { textToRetArray });
 	return textToRetArray;
 }
 export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
@@ -341,7 +344,18 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 	};
 };
 
-export const generateRequest = (data: MailsEditor): SoapDraftMessageObj => {
+export const getHtmlWithPreAppliedStyled = (
+	content: string,
+	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
+): string =>
+	`<html><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
+
+export const generateRequest = (data: MailsEditor, prefs?: PrefsType): SoapDraftMessageObj => {
+	const style = {
+		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+		color: prefs?.zimbraPrefHtmlEditorDefaultFontColor
+	};
 	const participants = map(
 		// eslint-disable-next-line no-nested-ternary
 		data.participants
@@ -390,7 +404,7 @@ export const generateRequest = (data: MailsEditor): SoapDraftMessageObj => {
 							{
 								ct: 'text/html',
 								body: true,
-								content: { _content: data?.text[1] ?? '' }
+								content: { _content: getHtmlWithPreAppliedStyled(data?.text[1], style) ?? '' }
 							},
 							{
 								ct: 'text/plain',

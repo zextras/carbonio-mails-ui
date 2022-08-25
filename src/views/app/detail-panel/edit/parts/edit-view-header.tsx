@@ -24,7 +24,8 @@ import {
 	getCurrentRoute,
 	replaceHistory,
 	useBoardConfig,
-	useRemoveCurrentBoard
+	useRemoveCurrentBoard,
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { useHistory } from 'react-router-dom';
 import { EditViewContext } from './edit-view-context';
@@ -51,6 +52,7 @@ const EditViewHeader: FC<PropType> = ({
 }) => {
 	const [t] = useTranslation();
 
+	const { prefs } = useUserSettings();
 	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action } =
 		useContext(EditViewContext);
 	const [open, setOpen] = useState(false);
@@ -156,7 +158,7 @@ const EditViewHeader: FC<PropType> = ({
 					}
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					dispatch(sendMsg({ editorId })).then((res) => {
+					dispatch(sendMsg({ editorId, prefs })).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							createSnackbar({
 								key: `mail-${editorId}`,
@@ -183,17 +185,18 @@ const EditViewHeader: FC<PropType> = ({
 		}
 	}, [
 		t,
+		setShowRouteGuard,
 		action,
 		boardContext,
 		editor,
 		createSnackbar,
-		folderId,
-		closeBoard,
-		dispatch,
-		editorId,
-		setShowRouteGuard,
 		undoURL,
-		updateEditorCb
+		updateEditorCb,
+		editorId,
+		folderId,
+		dispatch,
+		prefs,
+		closeBoard
 	]);
 
 	const onSave = useCallback(() => {

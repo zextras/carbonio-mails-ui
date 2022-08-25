@@ -65,7 +65,10 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 		}),
 		[fontsOptions, settingsObj.zimbraPrefHtmlEditorDefaultFontFamily]
 	);
-
+	const isDisabled = useMemo(
+		() => settingsObj?.zimbraPrefComposeFormat === 'text',
+		[settingsObj?.zimbraPrefComposeFormat]
+	);
 	return (
 		<FormSubSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
 			<Container
@@ -103,6 +106,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 							<CustomSelect
 								items={fontsOptions}
 								background="gray5"
+								disabled={isDisabled}
 								label={bridgedFn?.t('settings.font', 'Font')}
 								onChange={(value: string): void =>
 									updateSettings({
@@ -114,11 +118,12 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 						</Container>
 
 						<Container padding={{ right: 'small' }} minWidth="100px">
-							<Select
+							<CustomSelect
 								items={fontSizesOptions}
 								background="gray5"
-								label={bridgedFn?.t('settings.size', 'size')}
+								label={bridgedFn?.t('label.size', 'Size')}
 								defaultSelection={defaultSelectionFontSize}
+								disabled={isDisabled}
 								onChange={(size: string): void =>
 									updateSettings({
 										target: { name: 'zimbraPrefHtmlEditorDefaultFontSize', value: size }
@@ -129,7 +134,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 							/>
 						</Container>
 						<Container padding={{ right: 'small' }} crossAlignment="flex-start">
-							<ColorPicker color={color} onChange={onColorChange} />
+							<ColorPicker color={color} onChange={onColorChange} disabled={isDisabled} />
 						</Container>
 					</Container>
 				</Container>

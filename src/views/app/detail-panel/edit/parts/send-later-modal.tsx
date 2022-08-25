@@ -41,7 +41,7 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 		const autoSendTime = moment(time).valueOf();
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		dispatch(saveDraft({ data: { ...editor, autoSendTime } })).then((res: any) => {
+		dispatch(saveDraft({ data: { ...editor, autoSendTime }, prefs })).then((res: any) => {
 			if (res.type.includes('fulfilled')) {
 				bridgedFn?.createSnackbar({
 					key: 'send_later',

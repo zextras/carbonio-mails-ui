@@ -17,3 +17,4 @@ export * from './soap';
 export * from './state';
 export * from './tags';
 export * from './utils';
+export * from './settings';
