@@ -36,6 +36,7 @@ const NameInputRow: FC<NameInputRowProps> = ({
 				background="gray5"
 				borderColor={showWarning ? 'error' : 'gray2'}
 				textColor={showWarning ? 'error' : 'text'}
+				data-testid="folder-name"
 			/>
 			{showWarning && (
 				<Padding all="small">
@@ -50,6 +51,7 @@ const NameInputRow: FC<NameInputRowProps> = ({
 				t={t}
 				label={t('label.select_color', 'Select Color')}
 				defaultColor={folderColor}
+				data-testid="folder-color"
 			/>
 		</Container>
 	);
