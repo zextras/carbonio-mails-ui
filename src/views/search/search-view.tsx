@@ -85,7 +85,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 
 	const queryToString = useMemo(
 		() =>
-			isSharedFolderIncluded && searchInFolders.length > 0
+			isSharedFolderIncluded && searchInFolders?.length > 0
 				? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
 				: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
 		[isSharedFolderIncluded, searchInFolders.length, query, foldersToSearchInQuery]
