@@ -15,7 +15,9 @@ import {
 	Tooltip,
 	SnackbarManagerContext,
 	IconButton,
-	MultiButton
+	MultiButton,
+	useModal,
+	Text
 } from '@zextras/carbonio-design-system';
 import { concat, some } from 'lodash';
 import { useDispatch } from 'react-redux';
@@ -106,6 +108,7 @@ const EditViewHeader: FC<PropType> = ({
 		() => `${history.location.pathname?.split('/mails')?.[1]}${history.location.search}`,
 		[history]
 	);
+
 	const sendMailCb = useCallback(() => {
 		setBtnLabel(t('label.sending', 'Sending'));
 		setIsDisabled(true);
@@ -195,6 +198,42 @@ const EditViewHeader: FC<PropType> = ({
 		undoURL,
 		updateEditorCb
 	]);
+
+	const createModal = useModal();
+	const sendMailAction = useCallback(() => {
+		if (editor?.subject) {
+			sendMailCb();
+		} else {
+			const closeModal = createModal({
+				title: t('header.attention', 'Attention'),
+				confirmLabel: t('action.ok', 'Ok'),
+				dismissLabel: t('label.cancel', 'Cancel'),
+				onConfirm: () => {
+					sendMailCb();
+					closeModal();
+				},
+				onClose: () => {
+					closeModal();
+				},
+				onSecondaryAction: () => {
+					closeModal();
+				},
+				children: (
+					<>
+						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
+							{t(
+								'messages.modal.send_anyway.first',
+								"Email subject is empty and you didn't attach any files."
+							)}
+						</Text>
+						<Text overflow="break-word" style={{ paddingBottom: '16px' }}>
+							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
+						</Text>
+					</>
+				)
+			});
+		}
+	}, [editor?.subject, createModal, t, sendMailCb]);
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
@@ -396,7 +435,7 @@ const EditViewHeader: FC<PropType> = ({
 					<Padding left="large">
 						<MultiButton
 							label={btnLabel}
-							onClick={sendMailCb}
+							onClick={sendMailAction}
 							disabledPrimary={isSendDisabled}
 							disabledSecondary={isSendDisabled}
 							items={[

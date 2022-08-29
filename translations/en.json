@@ -204,6 +204,7 @@
         "trash": "Trash"
     },
     "header": {
+        "attention": "Attention",
         "delete_email": "Delete e-mail",
         "edit_draft": "Edit draft",
         "message_not_sent": "Error - Message not sent",
@@ -448,6 +449,10 @@
             "redirect": {
                 "first": "This e-mail will be sent on to a new recipient while preserving the e-mail address of the original sender.",
                 "second": "The e-mail will appear as originally intended for the new recipient"
+            },
+            "send_anyway": {
+                "first": "Email subject is empty and you didn't attach any files.",
+                "second": "Do you still want to send the email?"
             }
         },
         "new_email": "New e-mail",
