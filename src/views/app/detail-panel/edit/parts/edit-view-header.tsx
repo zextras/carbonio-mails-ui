@@ -208,6 +208,7 @@ const EditViewHeader: FC<PropType> = ({
 				title: t('header.attention', 'Attention'),
 				confirmLabel: t('action.ok', 'Ok'),
 				dismissLabel: t('label.cancel', 'Cancel'),
+				showCloseIcon: true,
 				onConfirm: () => {
 					sendMailCb();
 					closeModal();
