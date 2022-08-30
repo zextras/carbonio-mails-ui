@@ -52,7 +52,7 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 
 	if (message.parent === FOLDERS.DRAFTS) {
 		arr.push(sendDraft({ id: message.id, message, t, dispatch }));
-		arr.push(editDraft({ id: message.id, folderId, t }));
+		arr.push(editDraft({ id: message.id, folderId, t, message }));
 		arr.push(
 			moveMsgToTrash({
 				ids: [message.id],

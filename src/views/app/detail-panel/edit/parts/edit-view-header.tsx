@@ -14,11 +14,13 @@ import {
 	Row,
 	Tooltip,
 	SnackbarManagerContext,
-	IconButton
+	IconButton,
+	MultiButton
 } from '@zextras/carbonio-design-system';
 import { concat, some } from 'lodash';
 import { useDispatch } from 'react-redux';
 import {
+	getBridgedFunctions,
 	getCurrentRoute,
 	replaceHistory,
 	useBoardConfig,
@@ -33,6 +35,7 @@ import { addAttachments } from '../edit-utils';
 import { CreateSnackbar, mailAttachment } from '../../../../../types';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import { ActionsType } from '../../../../../commons/utils';
+import SendLaterModal from './send-later-modal';
 
 type PropType = {
 	setShowRouteGuard: (arg: boolean) => void;
@@ -47,6 +50,7 @@ const EditViewHeader: FC<PropType> = ({
 	uploadAttachmentsCb
 }) => {
 	const [t] = useTranslation();
+
 	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action } =
 		useContext(EditViewContext);
 	const [open, setOpen] = useState(false);
@@ -274,6 +278,27 @@ const EditViewHeader: FC<PropType> = ({
 		]
 	);
 
+	const openSendLaterModal = useCallback(() => {
+		const closeModal = getBridgedFunctions()?.createModal(
+			{
+				maxHeight: '90vh',
+				children: (
+					<>
+						<SendLaterModal
+							// TODO : fix it inside shell
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							onClose={(): void => closeModal()}
+							dispatch={dispatch}
+							editor={editor}
+							closeBoard={closeBoard}
+						/>
+					</>
+				)
+			},
+			true
+		);
+	}, [closeBoard, dispatch, editor]);
 	return (
 		<>
 			<Row
@@ -369,7 +394,20 @@ const EditViewHeader: FC<PropType> = ({
 						</Padding>
 					)}
 					<Padding left="large">
-						<Button onClick={sendMailCb} label={btnLabel} disabled={isSendDisabled} />
+						<MultiButton
+							label={btnLabel}
+							onClick={sendMailCb}
+							disabledPrimary={isSendDisabled}
+							disabledSecondary={isSendDisabled}
+							items={[
+								{
+									id: 'delayed_mail',
+									icon: 'ClockOutline',
+									label: t('label.send_later', 'Send later'),
+									click: openSendLaterModal
+								}
+							]}
+						/>
 					</Padding>
 				</Row>
 			</Row>

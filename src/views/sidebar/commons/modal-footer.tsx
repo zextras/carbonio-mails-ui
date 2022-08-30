@@ -26,12 +26,12 @@ const ModalFooter: FC<ModalFooterProps> = ({
 	secondarybackground,
 	color = 'primary',
 	secondaryColor = 'secondary',
-	size,
+	size = 'medium',
 	showDivider = true,
 	tooltip,
 	secondaryTooltip,
 	paddingTop = 'medium'
-}: ModalFooterProps): ReactElement => (
+}): ReactElement => (
 	<Container
 		mainAlignment={mainAlignment}
 		crossAlignment={crossAlignment}

@@ -5,7 +5,6 @@
  */
 import { TextProps, ButtonProps, ContainerProps } from '@zextras/carbonio-design-system';
 import { AccordionFolder } from '@zextras/carbonio-shell-ui';
-import { TFunction } from 'react-i18next';
 
 export type ModalFooterProps = {
 	mainAlignment?: ContainerProps['mainAlignment'] | undefined;
@@ -28,17 +27,6 @@ export type ModalFooterProps = {
 	tooltip?: string;
 	secondaryTooltip?: string;
 	paddingTop?: string;
-};
-
-export type SnackbarArgumentType = {
-	key: string;
-	replace: boolean;
-	type: string;
-	label: string;
-	autoHideTimeout: number;
-	hideButton?: boolean;
-	actionLabel?: string;
-	onActionClick?: TFunction;
 };
 
 export type CreateSnackbar = (arg: {
@@ -118,23 +106,3 @@ export type TextReadValuesProps = {
 	weight: TextProps['weight'];
 	badge: 'unread' | 'read';
 };
-
-export type CreateSnackbarProps = {
-	key: string;
-	replace: boolean;
-	type: string;
-	label: string;
-	autoHideTimeout: number;
-	hideButton: boolean;
-};
-
-export type CreateSnackbar = (arg: {
-	key: string;
-	replace?: boolean;
-	type: string;
-	hideButton?: boolean;
-	label: string;
-	autoHideTimeout: number;
-	actionLabel?: string;
-	onActionClick?: () => void;
-}) => void;
