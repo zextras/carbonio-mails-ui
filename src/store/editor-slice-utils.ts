@@ -303,7 +303,6 @@ export function generateReplyText(
 	textToRetArray[0] += `${labels.sent} ${date}\n${labels.subject} ${mail.subject}\n\n${
 		extractBody(mail)[0]
 	}`;
-	console.log('mnop:', { textToRetArray });
 	return textToRetArray;
 }
 export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
