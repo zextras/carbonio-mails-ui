@@ -12,7 +12,7 @@ import ModalFooter from '../../../../sidebar/commons/modal-footer';
 import { ModalHeader } from '../../../../sidebar/commons/modal-header';
 import { saveDraft } from '../../../../../store/actions/save-draft';
 import { MailsEditor } from '../../../../../types';
-import DatePickerCustomComponent from './date-picker-custm-component';
+import DatePickerCustomComponent from './date-picker-custom-component';
 
 type SendLaterModalPropTypes = {
 	onClose: () => void;
