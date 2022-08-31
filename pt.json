@@ -1,19 +1,14 @@
 {
     "action": {
-        "restore": "Restaurar",
         "back": "Traseira",
-        "cancel": "Cancelar",
         "delete": "Excluir",
-        "download": "Download",
         "edit_as_draft": "Editar",
         "forward": "Encaminhar",
         "mark_as_read": "Marcar como lído",
         "mark_as_unread": "Marcar como não lído",
-        "move": "Mover",
         "ok": "Ok",
         "reply": "Responder",
         "search": "Buscar",
-        "send": "Enviar",
         "delete_permanently": "Excluir Permanentemente",
         "edit_share": "Editar partilha",
         "edit_as_new": "Editar como novo",
@@ -39,25 +34,17 @@
     "folder": {
         "modal": {
             "delete": {
-                "title": "Excluir",
                 "footer": "Ok",
                 "body": {
-                    "message1": "Deseja excluir a pasta selecionada?",
                     "message2": "Deseja excluir a pasta selecionada permanentemente?",
-                    "message4": "Ao excluí-la, todo conteúdo relacionado será removido permanentemente e a pasta não será mais recuperável.",
                     "message3": "Ao excluí-la, todo conteúdo relacionado será movido para a Lixeira e a pasta não estará mais visível."
                 }
             },
             "edit": {
-                "footer": "Editar",
                 "size": "Tamanho",
-                "type": "Tipo",
                 "folder_type": "Pasta de E-mails",
-                "messages": "Mensagens",
                 "rename_warning": "Você não pode renomear a pasta como uma pasta de sistema.",
-                "retention_msg": "As mensagens nesta pasta que se enquadram no período de retenção necessitam de conformação expressa antes de serem excluídas",
                 "retention_properties": "Propriedades de retenção",
-                "rtn_dur_warning": "A duração da retenção deve ser um número positivo",
                 "threshold_msg": "Nesta pasta, as mensagens anteriores ao período definido estarão sujeitas a uma limpeza e exclusão automática.",
                 "retention_duration_warning": "A duração da retenção deve ser um número positivo",
                 "retention_message": "As mensagens nesta pasta que se enquadram no período de retenção necessitam de conformação expressa antes de serem excluídas",
@@ -65,66 +52,44 @@
                 "add_share": "Adicionar partilha"
             },
             "move": {
-                "footer": "Mover",
                 "new": "Nova pasta",
-                "title": "Mover",
                 "body": {
                     "message2": "Selecione uma pasta de destino",
-                    "message1": "Selecione uma pasta para mover a selecionada:",
                     "message_restore": "Selecione uma pasta para recuperar a selecionada:"
-                },
-                "input": {
-                    "filter": "Filtrar Pastas"
                 },
                 "title_modal": "Mover Conversa"
             },
             "new": {
-                "footer": "Criar",
                 "create_footer": "Criar e Mover",
-                "go_back": "Voltar",
                 "input": {
-                    "name": "Nome da Pasta",
-                    "position": "Posição da Pasta"
+                    "name": "Nome da Pasta"
                 },
                 "name_exist_warning": "O nome já existe",
-                "restore_create_footer": "Criar e Restaurar",
                 "title": "Criar nova pasta"
             },
             "restore": {
-                "footer": "Restaurar",
                 "title_modal": "Restaurar"
             },
             "empty": {
                 "body": {
-                    "message1": "Deseja esvaziar a pasta selecionada?",
                     "message2": "Ao esvaziá-la, todo conteúdo relacionado será excluído permanentemente."
                 },
-                "footer": "Vazia",
                 "title": "Vazia"
             },
             "wipe": {
                 "body": {
-                    "message1": "Deseja limpar a pasta selecionada?",
                     "message2": "Ao limpá-la, todo conteúdo relacionado será excluído permanentemente."
                 },
-                "footer": "Limpar",
                 "title": "Limpar"
             }
         },
         "action": {
-            "new": "Nova pasta",
             "empty": {
                 "trash": "Esvaziar lixeira"
             },
-            "delete": "Excluir pasta",
             "delete_permanently": "Excluir pasta permanentemente",
-            "edit": "Editar propriedades da pasta",
             "edit_properties": "Editar propriedades",
-            "move": "Mover pasta",
-            "restore": "Recuperar Pasta",
-            "wipe": {
-                "folder": "Limpar pasta"
-            }
+            "restore": "Recuperar Pasta"
         },
         "item": {
             "root": "/Raiz"
@@ -143,7 +108,6 @@
         "remove": "Remover",
         "remove_plural": "Remover tudo",
         "save": "Salvar",
-        "search_subject": "Assunto",
         "advance_filters": "1 Filtro avançado",
         "advance_filters_plural": "{{count}} Filtros avançados",
         "add_custom_message": "Adicionar mensagem personalizada",
@@ -165,29 +129,20 @@
         "grantee": "Beneficiário: ",
         "highlight_tab": "Destacar a aba de E-mail",
         "keywords": "Palavras-chave",
-        "mailSelected": "1 e-mail selecionado",
-        "mailSelected_plural": "{{count}} e-mails selecionados",
         "mail_setting": "Configurações do E-mail",
         "no_subject": "Sem Assunto",
         "owner": "Proprietário: ",
         "receive_message": "A receber mensagens",
         "retention_policy": "Política de retenção",
-        "revoke_send_standard_msg": "Revogar acesso enviando uma notificação personalizada",
         "revoke_share": "Revogar partilha de {{title}}",
-        "search_hint": "Dicas de pesquisa!",
         "role": "Função: ",
-        "select_1": "Selecione um e-mail para ler",
         "select_2": "ou clique no botão \"Novo\"",
-        "select_3": "para escrever um e-mail novo.",
         "select_folder": "Selecionar pasta",
-        "single_advance_fillter": "Filtros Avançados",
         "send_notification": "Enviar mensagem de notificação para",
         "sent": "Enviado",
         "shared_item": "Item partilhado",
         "shares_folder_edit": "Partilha desta pasta",
         "shares_items": "Pastas partilhadas de {{value}}",
-        "show": "Mostrar",
-        "show_plural": "Mostrar tudo",
         "show_popup": "Mostrar uma notificação pop-up",
         "subject": "Assunto",
         "to": "Para",
@@ -316,17 +271,12 @@
         "always_allow_address": "Permitir sempre de <strong>{{from}}</strong>",
         "share_public_link": "Partilhar link público"
     },
-    "of": "de",
     "owner": "Proprietário",
-    "read": "Lida",
     "title": {
         "new_messages": "Novas mensagens",
-        "advanced_filters": "Filtros Avançados",
         "replies_forwards": "Respostas e encaminhamentos"
     },
-    "add": "Adicionar",
     "create": "Criar",
-    "delete": "Excluir",
     "folders": {
         "trash": "Lixeira",
         "drafts": "Rascunhos",
@@ -340,23 +290,17 @@
         "delete_email": "Excluir e-mail",
         "edit_draft": "Editar rascunho",
         "message_not_sent": "Erro - Mensagem não enviada",
-        "no_subject": "Sem assunto",
         "redirect_email": "Redirecionar e-mail"
     },
     "messages": {
-        "permanent_delete_confirm": "Excluir permanentemente",
         "snackbar": {
             "message_move_error": "Algo deu errado, a mensagem não foi movida. Tente novamente.",
-            "conversation_delete_error": "Algo deu errado, esta conversa não foi excluída. Tente novamente.",
             "conversation_deleted": "Conversa excluída",
-            "conversation_deleted_permanently": "E-mail excluído permanentemente",
             "conversation_deleted_permanently_error": "Algo deu errado. Tente novamente",
             "conversation_move": "Conversa movida com sucesso",
-            "email_move_error": "Algo deu errado. Tente novamente",
             "email_moved_to_trash": "E-mail movido para Lixeira",
             "email_restored": "E-mail restaurado na pasta de destino",
             "folder_created": "Nova pasta criada",
-            "folder_created_error": "Algo deu errado. Tente novamente.",
             "folder_deleted": "Pasta excluída com sucesso.",
             "folder_edited": "Alterações salvas com sucesso",
             "folder_empty_error": "Algo deu errado, as alterações não foram feitas. Tente novamente.",
@@ -365,18 +309,15 @@
             "folder_moved_to_trash": "Pasta movida para lixeira",
             "folder_wiped": "Pasta esvaziada com sucesso",
             "folder_empty": "Lixeira esvaziada com sucesso",
-            "folder_wiped_error": "Algo deu errado. Tente novamente",
             "mail_sent": "Mensagem enviada",
             "marked_as_non_spam": "Você marcou este e-mail como Não é spam",
             "marked_as_spam": "Você marcou este e-mail como Spam",
             "message_delete_error": "Algo deu errado, esta mensagem não foi excluída. Tente novamente.",
             "message_deleted": "Mensagem excluída",
-            "message_deleted_permanently": "E-mail excluído permanentemente",
             "message_deleted_permanently_error": "Algo deu errado. Tente novamente",
             "message_move": "Mensagem movida com sucesso",
             "message_redirected": "A mensagem foi redirecionada",
             "conversation_move_error": "Algo deu errado, a conversa não foi movida. Tente novamente.",
-            "email_restore_error": "Algo deu errado. Tente novamente",
             "folder_edited_error": "Algo deu errado, as alterações não foram feitas. Tente novamente.",
             "folder_will_be_moved_in_time": "Esta pasta será movida dentro de {{remainingTime}}",
             "folder_restored": "Pasta restaurada",
@@ -402,7 +343,6 @@
         },
         "new_email": "Novo e-mail",
         "no_content": "Essa mensagem não possui conteúdo de texto",
-        "no_subject": "Sem Assunto.",
         "permanent_delete_title": "Tem certeza que deseja excluir permanentemente este elemento?",
         "permanent_delete_body": "Se você excluir permanentemente este elemento, você não poderá mais recuperá-lo. Continuar?",
         "check_and_try_again": "Por favor, verifique o Carbonio e tente novamente",
@@ -411,11 +351,8 @@
         "powered_by": "powered by"
     },
     "placeholder": {
-        "subject": "Assunto",
         "add_new_recipients": "Adicionar novos destinatários",
-        "bcc": "CCO",
-        "cc": "CC",
-        "to": "Para"
+        "cc": "CC"
     },
     "search": {
         "attachment": "Anexo",
@@ -423,7 +360,6 @@
         "attachment_note": "Buscar por todos os e-mails que possuam anexos.",
         "flagged_note": "Buscar por todos os e-mails sinalizados.",
         "unread_note": "Buscar por todos os e-mails não lidos.",
-        "flagged": "Sinalizado",
         "sent_on": "Enviar em",
         "sent_after": "Enviar depois",
         "sent_before": "Enviar antes",
@@ -450,35 +386,25 @@
         "filter_folder_message": "Selecione uma pasta para iniciar a busca avançada",
         "is_contained_in": "Está contido em"
     },
-    "type": "Tipo",
     "settings": {
         "notify_folder_optn": {
             "new_message_folder": "Exibir notificações para as novas mensagens que chegarem em qualquer pasta",
             "new_message_inbox": "Exibir notificações para as novas mensagens que chegarem na caixa de entrada"
         },
         "conv_sort_optn": {
-            "asc": "Do antigo para o novo",
             "desc": "Do novo para o antigo"
         },
         "dspl_mail_optn": {
-            "html": "Como HTML (quando possível)",
             "text": "Como texto"
         },
         "label": {
-            "always_dsp_received_time": "Sempre exibir a hora de recebimento na lista de e-mails",
             "check_new_mail": "Verificar novo e-mail",
-            "conv_sorting": "Ordem de conversas",
             "dflt_mail_search": "Busca de E-mail Padrão",
-            "disp_messages": "Exibindo Mensagens",
             "display_mail": "Exibir e-mail",
-            "dsp_external_imgs": "Exibir imagens externas automaticamente em e-mails HTML",
             "dsp_msg_snpt": "Exibir trechos das mensagens na lista de e-mails",
-            "msg_prv_title": "Visualização da mensagem e Imagens",
             "msg_selection": "Seleção de Mensagem",
             "search_query": "Consulta padrão",
-            "dbl_click_opens_msg": "Um clique duplo abre a mensagem em uma nova janela",
             "msg_color": "Cor da Mensagem",
-            "set_msg_color_acc_tag": "Definir cor das mensagens e conversas conforme a cor da etiqueta.",
             "conversation_ordering": "Ordem das conversas",
             "default_mail_search": "Busca de E-mail Padrão",
             "display_messages": "A exibir mensagens",
@@ -593,14 +519,11 @@
         "redirect_to_address": "Redirecionar ao endereço",
         "remove_condition": "Remover esta condição"
     },
-    "administer": "Administrar",
     "allowed_actions": "Ações permitidas",
     "composer": {
         "attachment": {
-            "contactsMod": "Adicionar Cartão de Contato",
             "draganddrop": {
-                "content": "Solte aqui seus anexos para adicioná-los rapidamente a este e-mail",
-                "title": "Modo Arrastar e Soltar"
+                "content": "Solte aqui seus anexos para adicioná-los rapidamente a este e-mail"
             },
             "drive": "Adicionar do Drive",
             "local": "Adicionar de pasta local",
@@ -613,14 +536,11 @@
             "files": "Adicionar a partir de Files"
         }
     },
-    "find_mail_shares": "Localizar pastas compartilhadas",
     "find_shares": "Localizar compartilhamentos",
-    "insert": "Inserir",
     "freebusy": "FreeBusy",
     "message": {
         "snackbar": {
             "share": {
-                "error": "Algo deu errado, tente novamente",
                 "accepted": "Você aceitou este pedido de partilha",
                 "declined": "Você recusou este pedido partilha"
             },
@@ -638,7 +558,6 @@
             "some_link_copying_error": "Parece que há um problema ao gerar o link público para alguns ficheiros. Tente de novo"
         },
         "sending_mail_to_self": "Parece que você vai enviar um e-mail a si mesmo",
-        "search_hints": "Dicas de pesquisa que precisamos conversar",
         "invalid_search_message": "Não encontramos nenhuma correspondência",
         "email_saved_at": "E-mail salvo como rascunho às {{time}}",
         "delete_tag_message1": "Tem certeza que deseja excluir a Etiqueta \"{{name}}\"?",
@@ -648,25 +567,19 @@
         "external_images_blocked": "As imagens externas foram bloqueadas para protegê-lo de possível spam",
         "admin_rights": "Ver,Editar,Adicionar,Remover,Administrar"
     },
-    "mail_folder": "Pasta de e-mail",
     "private": "Privado",
-    "remove_from_this_list": "Remover desta lista",
     "select_signature": "Selecionar assinatura",
-    "set_default_signatures": "Definir assinatura padrão",
     "shared_folders": "Pastas Compartilhadas",
-    "shared_item": "Item Compartilhado",
     "snackbar": {
         "folder_shared_error": "Algo deu errado. Tente novamente",
         "share_resend": "Convite da partilha reenviado",
         "share_revoke": "Acesso à partilha revogado",
         "share_updated": "\"Direitos de acesso atualizados\"",
-        "error": "Algo deu errado. Tente novamente",
         "folder_shared": "Pasta partilhada",
         "email_moved_to_trash": "E-mail movido para a Lixeira",
         "tag_removed": "Etiqueta \"{{tag}}\" removida",
         "tag_applied": "Etiqueta \"{{tag}}\" aplicada"
     },
-    "shares_info": "Informações da pasta compartilhada",
     "tooltip": {
         "add_attachments": "Adicionar anexos",
         "resend": "Reenviar notificação por e-mail sobre esta partilha",
@@ -679,7 +592,6 @@
         "folder_sharing_status": "Partilhado com {{count}} persona",
         "folder_sharing_status_plural": "Partilhado com {{count}} personas"
     },
-    "write": "Escrever",
     "workflow": "Fluxo de Trabalho",
     "folder_panel": {
         "modal": {
