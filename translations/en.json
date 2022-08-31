@@ -412,7 +412,7 @@
         "external_images_blocked": "External images have been blocked to protect you against potential spam",
         "invalid_search_message": "We didn't find any match",
         "manager_rights": "View,Edit,Add,Remove",
-        "schedule_mail": "Will be send on: {{date}} at {{time}}",
+        "schedule_mail": "Will be sent on: {{date}} at {{time}}",
         "schedule_time": "{{date}} at {{time}}",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {

@@ -12,6 +12,7 @@ import ModalFooter from '../../../../sidebar/commons/modal-footer';
 import { ModalHeader } from '../../../../sidebar/commons/modal-header';
 import { saveDraft } from '../../../../../store/actions/save-draft';
 import { MailsEditor } from '../../../../../types';
+import DatePickerCustomComponent from './date-picker-custom-component';
 
 type SendLaterModalPropTypes = {
 	onClose: () => void;
@@ -93,6 +94,7 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 						minDate={new Date()}
 						minTime={minTime}
 						maxTime={maxTime}
+						customInput={<DatePickerCustomComponent label={datePickerLabel} value={time} />}
 					/>
 				</Container>
 			</Container>
