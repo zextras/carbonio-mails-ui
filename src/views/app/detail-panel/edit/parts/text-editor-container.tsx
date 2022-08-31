@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import React, { FC, ReactElement, useCallback, useContext, useRef, useState } from 'react';
+import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Row, Container, Text } from '@zextras/carbonio-design-system';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,17 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minH
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const [t] = useTranslation();
 
+	const { prefs } = useUserSettings();
+
+	const defaultFontFamily = useMemo<string>(
+		// TODO: Once the Typescript branch is merged it can be removed
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		() => prefs?.zimbraPrefHtmlEditorDefaultFontFamily ?? 'sans-serif',
+		[prefs]
+	);
+
+	const [inputValue, setInputValue] = useState(editor?.text ?? ['', '']);
 	const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 	const [showStickyTime, setStickyTime] = useState(false);
 
@@ -46,30 +57,22 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minH
 					crossAlignment="flex-end"
 				>
 					{editor?.richText && composerIsAvailable ? (
-						<Controller
-							height="fit"
-							name="text"
-							control={control}
-							defaultValue={editor?.text}
-							render={({ onChange, value }): ReactElement => (
-								<Container background="gray6" mainAlignment="flex-start" style={{ minHeight }}>
-									<StyledComp.EditorWrapper>
-										<Composer
-											// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-											// @ts-ignore
-											value={value[1]}
-											onEditorChange={(ev: Array<string>): void => {
-												updateSubjectField({ text: [ev[0], ev[1]] });
-												throttledSaveToDraft({ text: [ev[0], ev[1]] });
-												onChange([ev[0], ev[1]]);
-												toggleStickyTime();
-											}}
-											onDragOver={onDragOverEvent}
-										/>
-									</StyledComp.EditorWrapper>
-								</Container>
-							)}
-						/>
+						<Container background="gray6" mainAlignment="flex-start" style={{ minHeight }}>
+							<StyledComp.EditorWrapper>
+								<Composer
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
+									value={inputValue[1]}
+									onEditorChange={(ev: Array<string>): void => {
+										setInputValue(ev);
+										updateSubjectField({ text: ev });
+										throttledSaveToDraft({ text: ev });
+										toggleStickyTime();
+									}}
+									onDragOver={onDragOverEvent}
+								/>
+							</StyledComp.EditorWrapper>
+						</Container>
 					) : (
 						<Controller
 							name="text"
@@ -79,6 +82,7 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minH
 								<Container background="gray6" height="fit">
 									<StyledComp.TextArea
 										value={value[0]}
+										style={{ fontFamily: defaultFontFamily }}
 										onChange={(ev): void => {
 											// eslint-disable-next-line no-param-reassign
 											ev.target.style.height = 'auto';

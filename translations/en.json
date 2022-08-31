@@ -204,6 +204,7 @@
         "trash": "Trash"
     },
     "header": {
+        "attention": "Attention",
         "delete_email": "Delete e-mail",
         "edit_draft": "Edit draft",
         "message_not_sent": "Error - Message not sent",
@@ -252,6 +253,7 @@
         "create_new_task": "Create New Task",
         "create_tag": "Create Tag",
         "decline": "Decline",
+        "delayed_sending": "Delayed sending",
         "delete": "Delete",
         "delete_draft": "Delete Draft",
         "delete_permanently": "Delete Permanently",
@@ -274,6 +276,7 @@
         "empty": "Empty",
         "enable_message_disposal": "Enable Message Disposal",
         "enable_message_retention": "Enable Message Retention",
+        "enter_email_address": "Enter email address or domain",
         "error": "Error",
         "error_address": "A valid e-mail is required",
         "error_try_again": "Something went wrong, please try again",
@@ -359,6 +362,7 @@
         "select_signature": "Select a signature",
         "send": "Send",
         "send_email": "Send e-mail",
+        "send_later": "Send later",
         "send_notification": "Send a notification message to",
         "sending": "Sending",
         "sent": "Sent",
@@ -386,7 +390,9 @@
         "tag_max_length": "Max 128 characters are allowed",
         "tag_name": "Tag name",
         "tags": "Tags",
+        "time_zone": "Time Zone",
         "to": "To",
+        "trusted_addresses": "Trusted addresses",
         "type": "Type",
         "type_name_here": "Item name",
         "undo": "Undo",
@@ -406,6 +412,8 @@
         "external_images_blocked": "External images have been blocked to protect you against potential spam",
         "invalid_search_message": "We didn't find any match",
         "manager_rights": "View,Edit,Add,Remove",
+        "schedule_mail": "Will be sent on: {{date}} at {{time}}",
+        "schedule_time": "{{date}} at {{time}}",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
             "all_att_added": "Attachments added successfully",
@@ -428,9 +436,11 @@
         "view_rights": "View"
     },
     "messages": {
+        "cal_name_exist_warning": "A calendar with the same name already exists in this path",
         "check_and_try_again": "Please, check Carbonio and try again",
         "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
         "invalid_address": "The following address appears to be invalid",
+        "invalid_trustee_address": "Please enter only e-mail addresses or domains",
         "modal": {
             "delete": {
                 "if_delete_lost_forever": "If you delete the e-mail, it will be lost forever.",
@@ -439,6 +449,10 @@
             "redirect": {
                 "first": "This e-mail will be sent on to a new recipient while preserving the e-mail address of the original sender.",
                 "second": "The e-mail will appear as originally intended for the new recipient"
+            },
+            "send_anyway": {
+                "first": "Email subject is empty and you didn't attach any files.",
+                "second": "Do you still want to send the email?"
             }
         },
         "new_email": "New e-mail",
@@ -480,7 +494,8 @@
             "tag_not_updated": "Something went wrong, the tag was not updated. Please try again.",
             "tag_updated": "Tag successfully updated"
         },
-        "something_went_wrong": "SOMETHING WENT WRONG"
+        "something_went_wrong": "SOMETHING WENT WRONG",
+        "trustee_addresses": "Mail from these addresses or domains will be considered trusted and images will automatically be displayed."
     },
     "modal": {
         "delete_draft": {

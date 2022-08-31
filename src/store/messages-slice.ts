@@ -10,7 +10,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { forEach, merge } from 'lodash';
+import { cloneDeep, forEach, merge, mergeWith, reduce } from 'lodash';
 import { CONVACTIONS } from '../commons/utilities';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import {
@@ -51,7 +51,12 @@ function fetchConversationsFulfilled(
 ): void {
 	if (payload?.messages) {
 		if (payload?.types === 'message') {
-			merge(state?.messages, payload.messages);
+			mergeWith(state?.messages, payload.messages, (objValue, srcValue, key, object, source) => {
+				if (key !== 'participants') {
+					return undefined;
+				}
+				return source.participants;
+			});
 		}
 	}
 	if (payload?.types === 'message') {

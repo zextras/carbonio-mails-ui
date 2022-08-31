@@ -12,6 +12,7 @@ export type EditorAttachmentFiles = {
 };
 
 export type MailsEditor = {
+	autoSendTime?: number;
 	id: string | undefined;
 	did?: string | undefined;
 	oldId?: string | undefined;

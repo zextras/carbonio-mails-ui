@@ -19,8 +19,9 @@ import DisplayMessagesSettings from './displaying-messages-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
 import SignatureSettings from './signature-settings';
 import FilterModule from './filters';
+import TrusteeAddresses from './trustee-addresses';
 import { SignatureRequest } from '../../store/actions/signatures';
-
+import ComposeMessage from './compose-msg-settings';
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
  * - currentProps is the current status of the props once saved successfully without refreshing the page
@@ -306,11 +307,11 @@ export default function SettingsView() {
 						setSignItems={setSignItems}
 						signItemsUpdated={signItemsUpdated}
 						setSignItemsUpdated={setSignItemsUpdated}
-						/* setFetchSigns={setFetchSigns}
-						fetchSigns={fetchSigns} */
 						flag={flag}
 					/>
+					<ComposeMessage settingsObj={settingsObj} updateSettings={updateSettings} />
 					<FilterModule t={t} />
+					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
 				</FormSection>
 			</Container>
 		</>
