@@ -15,7 +15,9 @@ import {
 	Tooltip,
 	SnackbarManagerContext,
 	IconButton,
-	MultiButton
+	MultiButton,
+	useModal,
+	Text
 } from '@zextras/carbonio-design-system';
 import { concat, some } from 'lodash';
 import { useDispatch } from 'react-redux';
@@ -24,7 +26,8 @@ import {
 	getCurrentRoute,
 	replaceHistory,
 	useBoardConfig,
-	useRemoveCurrentBoard
+	useRemoveCurrentBoard,
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { useHistory } from 'react-router-dom';
 import { EditViewContext } from './edit-view-context';
@@ -51,6 +54,7 @@ const EditViewHeader: FC<PropType> = ({
 }) => {
 	const [t] = useTranslation();
 
+	const { prefs } = useUserSettings();
 	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action } =
 		useContext(EditViewContext);
 	const [open, setOpen] = useState(false);
@@ -106,6 +110,7 @@ const EditViewHeader: FC<PropType> = ({
 		() => `${history.location.pathname?.split('/mails')?.[1]}${history.location.search}`,
 		[history]
 	);
+
 	const sendMailCb = useCallback(() => {
 		setBtnLabel(t('label.sending', 'Sending'));
 		setIsDisabled(true);
@@ -156,7 +161,7 @@ const EditViewHeader: FC<PropType> = ({
 					}
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					dispatch(sendMsg({ editorId })).then((res) => {
+					dispatch(sendMsg({ editorId, prefs })).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							createSnackbar({
 								key: `mail-${editorId}`,
@@ -183,18 +188,56 @@ const EditViewHeader: FC<PropType> = ({
 		}
 	}, [
 		t,
+		setShowRouteGuard,
 		action,
 		boardContext,
 		editor,
 		createSnackbar,
-		folderId,
-		closeBoard,
-		dispatch,
-		editorId,
-		setShowRouteGuard,
 		undoURL,
-		updateEditorCb
+		updateEditorCb,
+		editorId,
+		folderId,
+		dispatch,
+		prefs,
+		closeBoard
 	]);
+
+	const createModal = useModal();
+	const sendMailAction = useCallback(() => {
+		if (editor?.subject) {
+			sendMailCb();
+		} else {
+			const closeModal = createModal({
+				title: t('header.attention', 'Attention'),
+				confirmLabel: t('action.ok', 'Ok'),
+				dismissLabel: t('label.cancel', 'Cancel'),
+				showCloseIcon: true,
+				onConfirm: () => {
+					sendMailCb();
+					closeModal();
+				},
+				onClose: () => {
+					closeModal();
+				},
+				onSecondaryAction: () => {
+					closeModal();
+				},
+				children: (
+					<>
+						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
+							{t(
+								'messages.modal.send_anyway.first',
+								"Email subject is empty and you didn't attach any files."
+							)}
+						</Text>
+						<Text overflow="break-word" style={{ paddingBottom: '16px' }}>
+							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
+						</Text>
+					</>
+				)
+			});
+		}
+	}, [editor?.subject, createModal, t, sendMailCb]);
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
@@ -396,7 +439,7 @@ const EditViewHeader: FC<PropType> = ({
 					<Padding left="large">
 						<MultiButton
 							label={btnLabel}
-							onClick={sendMailCb}
+							onClick={sendMailAction}
 							disabledPrimary={isSendDisabled}
 							disabledSecondary={isSendDisabled}
 							items={[

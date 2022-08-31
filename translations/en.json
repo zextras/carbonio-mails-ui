@@ -204,6 +204,7 @@
         "trash": "Trash"
     },
     "header": {
+        "attention": "Attention",
         "delete_email": "Delete e-mail",
         "edit_draft": "Edit draft",
         "message_not_sent": "Error - Message not sent",
@@ -411,7 +412,7 @@
         "external_images_blocked": "External images have been blocked to protect you against potential spam",
         "invalid_search_message": "We didn't find any match",
         "manager_rights": "View,Edit,Add,Remove",
-        "schedule_mail": "Will be send on: {{date}} at {{time}}",
+        "schedule_mail": "Will be sent on: {{date}} at {{time}}",
         "schedule_time": "{{date}} at {{time}}",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
@@ -448,6 +449,10 @@
             "redirect": {
                 "first": "This e-mail will be sent on to a new recipient while preserving the e-mail address of the original sender.",
                 "second": "The e-mail will appear as originally intended for the new recipient"
+            },
+            "send_anyway": {
+                "first": "Email subject is empty and you didn't attach any files.",
+                "second": "Do you still want to send the email?"
             }
         },
         "new_email": "New e-mail",

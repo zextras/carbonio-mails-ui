@@ -205,7 +205,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			t('message.schedule_mail', {
 				date: moment(message?.autoSendTime).format('DD/MM/YYYY'),
 				time: moment(message?.autoSendTime).format('HH:mm'),
-				defaultValue: 'Will be send on: {{date}} at {{time}}'
+				defaultValue: 'Will be sent on: {{date}} at {{time}}'
 			}),
 		[message?.autoSendTime, t]
 	);

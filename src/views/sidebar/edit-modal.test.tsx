@@ -41,8 +41,8 @@
 // 	rgb: '434343'
 // });
 //
-describe('My first sweet test', () => {
-	test('Color', async () => {
+describe.skip('My first sweet test', () => {
+	test.skip('Color', async () => {
 		//
 		// 		const accordionFolder = {
 		// 			id: '2',
