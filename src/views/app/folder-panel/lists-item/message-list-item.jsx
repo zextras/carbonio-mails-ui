@@ -150,10 +150,10 @@ export default function MessageListItem({
 	const _onClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
-				replaceHistory(`/folder/${folderId}/message/${item.id}`);
 				if (item.read === false) {
 					setMsgRead({ ids: [item.id], value: false, t, dispatch }).click();
 				}
+				replaceHistory(`/folder/${folderId}/message/${item.id}`);
 			}
 		},
 		[folderId, item.id, item.read, t, dispatch]
