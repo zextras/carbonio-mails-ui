@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.32](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.31...v0.1.32) (2022-09-01)
+
+
+### Bug Fixes
+
+* missing prefs pass to onConfirm action ([955adb7](https://github.com/zextras/carbonio-mails-ui/commit/955adb7b43b0c332b0261379ae902af0d15c7f65))
+
 ### [0.1.31](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.30...v0.1.31) (2022-08-31)
 
 
