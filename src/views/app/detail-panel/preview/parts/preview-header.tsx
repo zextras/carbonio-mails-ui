@@ -37,6 +37,7 @@ import {
 	Tag
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
+import moment from 'moment';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import MailMsgPreviewActions from '../../../../../ui-actions/mail-message-preview-actions';
 import { useMessageActions } from '../../../../../hooks/use-message-actions';
@@ -199,7 +200,15 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			),
 		[]
 	);
-
+	const scheduledTime = useMemo(
+		() =>
+			t('message.schedule_mail', {
+				date: moment(message?.autoSendTime).format('DD/MM/YYYY'),
+				time: moment(message?.autoSendTime).format('HH:mm'),
+				defaultValue: 'Will be sent on: {{date}} at {{time}}'
+			}),
+		[message?.autoSendTime, t]
+	);
 	return (
 		<HoverContainer
 			height="fit"
@@ -304,9 +313,15 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 									</Padding>
 								)}
 								<Row ref={textRef} minWidth="fit" padding={{ horizontal: 'small' }}>
-									<Text color="gray1" data-testid="DateLabel" size="extrasmall">
-										{getTimeLabel(message.date)}
-									</Text>
+									{message?.isScheduled ? (
+										<Text color="primary" data-testid="scheduledLabel" size="small">
+											{scheduledTime}
+										</Text>
+									) : (
+										<Text color="gray1" data-testid="DateLabel" size="extrasmall">
+											{getTimeLabel(message.date)}
+										</Text>
+									)}
 								</Row>
 
 								{open && <MailMsgPreviewActions actions={actions} />}

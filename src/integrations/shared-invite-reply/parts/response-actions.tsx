@@ -4,14 +4,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable import/extensions */
-import React, { FC, ReactElement, useCallback, useState } from 'react';
-import { Padding, Button, Divider, Row, Checkbox, Input } from '@zextras/carbonio-design-system';
-import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import {
+	Padding,
+	Button,
+	Divider,
+	Row,
+	Checkbox,
+	Input,
+	Text
+} from '@zextras/carbonio-design-system';
+import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import { find } from 'lodash';
 import ColorSelect from './color-select';
 import { ResponseActionsProps } from '../../../types';
 import { accept, decline } from './share-calendar-actions';
+import { FOLDER_VIEW } from '../../../constants';
 
 const ResponseActions: FC<ResponseActionsProps> = ({
 	dispatch,
@@ -33,7 +43,15 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	const [calendarName, setCalendarName] = useState(sharedCalendarName);
 	const [selectedColor, setSelectedColor] = useState(0);
 	const accounts = useUserAccounts();
-
+	const calFolders = useFoldersByView(FOLDER_VIEW.appointment);
+	const showError = useMemo(
+		() => find(calFolders[0].children, (item) => item.name === calendarName.toLowerCase()),
+		[calFolders, calendarName]
+	);
+	const disabled = useMemo(
+		() => !calendarName || !calendarName.length || showError,
+		[calendarName, showError]
+	);
 	const acceptShare = useCallback(
 		() =>
 			accept({
@@ -137,6 +155,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 						label={t('label.type_name_here', 'Item name')}
 						backgroundColor="gray5"
 						value={calendarName}
+						hasError={disabled}
 						onChange={(e: any): void => setCalendarName(e.target.value)}
 					/>
 				</Row>
@@ -150,6 +169,16 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 						t={t}
 						label={t('label.calendar_color', `Item color`)}
 					/>
+				</Row>
+				<Row width="100%" height="16px" mainAlignment="flex-start" style={{ marginBottom: '8px' }}>
+					{showError && (
+						<Text size="small" color="error">
+							{t(
+								'messages.cal_name_exist_warning',
+								'A calendar with the same name already exists in this path'
+							)}
+						</Text>
+					)}
 				</Row>
 			</Row>
 			<Divider />
@@ -166,6 +195,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					label={t('label.accept', 'Accept')}
 					icon="Checkmark"
 					onClick={acceptShare}
+					disabled={disabled}
 				/>
 				<Padding horizontal="small" />
 				<Button

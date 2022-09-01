@@ -84,10 +84,13 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const messages = useSelector(selectMessages);
 
 	const { handleSubmit, control, setValue } = useForm();
-
+	const { prefs } = useUserSettings();
 	const addBoard = useAddBoardCallback();
 	const [dropZoneEnable, setDropZoneEnable] = useState(false);
-	const saveDraftCb = useCallback((data) => dispatch(saveDraft({ data })), [dispatch]);
+	const saveDraftCb = useCallback(
+		(data) => dispatch(saveDraft({ data, prefs })),
+		[dispatch, prefs]
+	);
 
 	const [saveFirstDraft, setSaveFirstDraft] = useState(true);
 	const [draftSavedAt, setDraftSavedAt] = useState('');

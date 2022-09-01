@@ -3,27 +3,25 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-/* eslint-disable import/extensions */
-import React, { FC, ReactElement, useState, useContext, useMemo, useEffect } from 'react';
 import {
 	Container,
-	Padding,
 	Divider,
-	Row,
 	Icon,
-	Text,
-	SnackbarManagerContext
+	Padding,
+	Row,
+	SnackbarManagerContext,
+	Text
 } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import React, { FC, ReactElement, useContext, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
 import LabelRow from './parts/label-row';
+import ResponseActions from './parts/response-actions';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { ShareCalendarRoleOptions, findLabel } from './parts/utils';
-
-import ResponseActions from './parts/response-actions';
+import { findLabel, ShareCalendarRoleOptions } from './parts/utils';
 
 const InviteContainer = styled(Container)`
 	border: 1px solid ${({ theme }: any): string => theme.palette.gray2.regular};

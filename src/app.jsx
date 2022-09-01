@@ -13,7 +13,8 @@ import {
 	registerActions,
 	registerFunctions,
 	ACTION_TYPES,
-	getBridgedFunctions, useCurrentRoute,
+	getBridgedFunctions,
+	useCurrentRoute
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 import { useTranslation } from 'react-i18next';
