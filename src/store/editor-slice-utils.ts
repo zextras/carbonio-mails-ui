@@ -261,7 +261,7 @@ export const extractBody = (msg: MailMessage): Array<string> => {
 	const htmlArr = findBodyPart(msg.parts, 'text/html');
 	const text = textArr.length ? textArr[0].replaceAll('\n', '<br/>') : undefined;
 	const html = htmlArr.length ? htmlArr[0] : undefined;
-	console.log('mnop:', { text, html });
+
 	return [text ?? html ?? '', html ?? text ?? ''];
 };
 
