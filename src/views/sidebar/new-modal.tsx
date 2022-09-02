@@ -23,14 +23,9 @@ import {
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
 
-import { cloneDeep, filter, includes, startsWith } from 'lodash';
+import { filter, includes, startsWith } from 'lodash';
 import { nanoid } from '@reduxjs/toolkit';
-import {
-	AccordionFolder,
-	FOLDERS,
-	useFoldersAccordionByView,
-	useUserAccount
-} from '@zextras/carbonio-shell-ui';
+import { Folder, FOLDERS, useFoldersByView, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -55,10 +50,10 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	const folders = useFoldersAccordionByView(FOLDER_VIEW.message, null);
+	const folders = useFoldersByView(FOLDER_VIEW.message);
 	const [inputValue, setInputValue] = useState('');
 	const [searchString, setSearchString] = useState('');
-	const [folderDestination, setFolderDestination] = useState<AccordionFolder | undefined>(folder);
+	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
 	const [label, setLabel] = useState(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
@@ -83,14 +78,13 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	);
 
 	const flattenFolders = useCallback(
-		(arr: Array<AccordionFolder>): Array<AccordionFolder> => {
-			const result: Array<AccordionFolder> = [];
+		(arr: Array<Folder>): Array<Folder> => {
+			const result: Array<Folder> = [];
 			arr.forEach((item) => {
-				const { items } = item;
 				if (
-					item.folder.id !== FOLDERS.TRASH &&
-					item.folder.id !== FOLDERS.SPAM &&
-					!startsWith(item.folder.absFolderPath, '/Trash')
+					item.id !== FOLDERS.TRASH &&
+					item.id !== FOLDERS.SPAM &&
+					!startsWith(item.absFolderPath, '/Trash')
 				)
 					result.push({
 						...item,
@@ -101,38 +95,40 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 							setFolderDestination(item);
 						},
 						background:
-							typeof folderDestination !== 'undefined' && folderDestination.id === item.folder.id
+							typeof folderDestination !== 'undefined' && folderDestination.id === item.id
 								? 'highlight'
 								: undefined,
 						label:
-							item.folder.id === FOLDERS.USER_ROOT
+							item.id === FOLDERS.USER_ROOT
 								? accountName
 								: getFolderTranslatedName({
 										t,
-										folderId: item.folder.id,
-										folderName: item.folder.name
+										folderId: item.id,
+										folderName: item.name
 								  }),
-						activeId: item.folder.id === folderId,
+						activeId: item.id === folderId,
 						accordionWidth,
 						items: []
 					});
-				if (items) result.push(...flattenFolders(items));
+				if (item.children.length > 0) {
+					result.push(...flattenFolders(item.children));
+				}
 			});
 			return result;
 		},
 		[folderDestination, accountName, t, folderId, accordionWidth]
 	);
 
-	const getFolderRootName = useCallback((_folder: AccordionFolder): string => {
-		let result = _folder.folder;
+	const getFolderRootName = useCallback((_folder: Folder): string => {
+		let result = _folder;
 		while (result.parent?.parent) {
 			result = result.parent;
 		}
-		return result.owner || result.parent?.name || result.name;
+		return (result.isLink && result.owner) || result.parent?.name || result.name;
 	}, []);
 
 	const filteredFolders = useMemo(
-		() => folders.filter((item) => item.label === getFolderRootName(folder)),
+		() => folders.filter((item: Folder) => item.name === getFolderRootName(folder)),
 		[folders, getFolderRootName, folder]
 	);
 
@@ -146,8 +142,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 			setDisabled(true);
 			return;
 		}
-		const value = !!filter(folderDestination.folder.children, (item) => item.name === inputValue)
-			.length;
+		const value = !!filter(folderDestination.children, (item) => item.name === inputValue).length;
 		if (value) {
 			setLabel(t('folder_panel.modal.new.input.name_exist', 'Name already exists in this path'));
 		} else {
@@ -157,10 +152,11 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		setDisabled(value);
 	}, [folderDestination, inputValue, showWarning, t]);
 
+	// @TODO: optimize function
 	const filteredFromUserInput = useMemo(
 		() =>
 			filter(flattenedFolders, (item) => {
-				const folderName = item.label.toLowerCase();
+				const folderName = item.name.toLowerCase();
 				return startsWith(folderName, searchString.toLowerCase());
 			}),
 		[flattenedFolders, searchString]

@@ -6,7 +6,7 @@
 import React, { FC } from 'react';
 import { Container, Row, Padding, Text, Divider } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
-import { AccordionFolder } from '@zextras/carbonio-shell-ui';
+import { Folder } from '@zextras/carbonio-shell-ui';
 
 const bytesToSize = (bytes: number): string => {
 	const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -15,7 +15,7 @@ const bytesToSize = (bytes: number): string => {
 	return `${Math.round(bytes / 1024 ** i)} ${sizes[i]}`;
 };
 
-const FolderDetails: FC<{ folder: AccordionFolder }> = ({ folder }) => {
+const FolderDetails: FC<{ folder: Folder }> = ({ folder }) => {
 	const [t] = useTranslation();
 	return (
 		<>
@@ -39,14 +39,14 @@ const FolderDetails: FC<{ folder: AccordionFolder }> = ({ folder }) => {
 						{t('label.messages', 'Messages')}
 					</Text>
 					<Padding top="extrasmall" />
-					<Text>{folder.folder?.n}</Text>
+					<Text>{folder.n}</Text>
 				</Row>
 				<Row orientation="vertical" width="33.33%" crossAlignment="flex-start">
 					<Text size="small" color="secondary">
 						Size{t('label.size', 'Size')}
 					</Text>
 					<Padding top="extrasmall" />
-					<Text>{bytesToSize(folder.folder?.s || 0)}</Text>
+					<Text>{bytesToSize(folder.s || 0)}</Text>
 				</Row>
 			</Container>
 			<Divider />

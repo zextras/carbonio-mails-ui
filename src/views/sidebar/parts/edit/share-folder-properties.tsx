@@ -166,11 +166,8 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 	setActiveModal
 }) => {
 	const [t] = useTranslation();
-	const [grant, setGrant] = useState<Array<Grant>>(folder.folder.acl.grant);
-	const shareCalendarRoleOptions = useCallback(
-		(_grant: Grant) => ShareCalendarRoleOptions(t, _grant.perm.includes('p')),
-		[t]
-	);
+	const [grant, setGrant] = useState<Array<Grant> | undefined>();
+
 	useEffect(() => {
 		soapFetch('GetFolder', {
 			_jsns: 'urn:zimbraMail',
@@ -182,8 +179,12 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 		});
 	}, [folder.id]);
 
+	const shareCalendarRoleOptions = useMemo(
+		() => ShareCalendarRoleOptions(t, grant?.[0]?.perm?.includes('p')),
+		[t, grant]
+	);
 	return (
-		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
+		<Container mainAlignmenEt="center" crossAlignment="flex-start" height="fit">
 			<Padding vertical="small" />
 			<Text weight="bold">{t('label.shares_folder_edit', 'Sharing of this folder')}</Text>
 			<Padding vertical="small" />
@@ -193,7 +194,7 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 					grant={item}
 					folder={folder}
 					setActiveModal={setActiveModal}
-					shareCalendarRoleOptions={shareCalendarRoleOptions(item)}
+					shareCalendarRoleOptions={shareCalendarRoleOptions}
 				/>
 			))}
 			<Padding top="medium" />

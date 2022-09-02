@@ -8,7 +8,8 @@ import {
 	store,
 	useNotify,
 	useRefresh,
-	updatePrimaryBadge
+	updatePrimaryBadge,
+	getTags
 } from '@zextras/carbonio-shell-ui';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -106,8 +107,9 @@ export const SyncDataHandler = () => {
 								);
 							}
 							if (notify.created.c && notify.created.m) {
+								const tags = getTags();
 								const conversations = map(notify.created.c, (i) =>
-									normalizeConversation(i, notify.created.m)
+									normalizeConversation({ c: i, m: notify.created.m, tags })
 								);
 								dispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));
 							}

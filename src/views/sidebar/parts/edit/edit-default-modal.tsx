@@ -49,7 +49,7 @@ const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal 
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 
-	const [inputValue, setInputValue] = useState(folder.folder?.name);
+	const [inputValue, setInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);
 	const [rtnValue, setRtnValue] = useState<number | string>(0);
 	const [purgeValue, setPurgeValue] = useState<number | string>(0);
@@ -61,17 +61,19 @@ const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal 
 	const [dsblMsgRet, setDsblMsgRet] = useState(false);
 	const [emptyRtnValue, setEmptyRtnValue] = useState(false);
 	const [emptyDisValue, setEmptyDisValue] = useState(false);
-	const [folderColor, setFolderColor] = useState(folder.folder?.color);
+	const [folderColor, setFolderColor] = useState(folder.color);
 
 	useEffect(() => {
 		if (
-			folder.folder?.retentionPolicy &&
-			folder.folder?.retentionPolicy?.length &&
-			folder.folder?.retentionPolicy[0].keep !== undefined &&
-			folder.folder?.retentionPolicy[0].keep &&
-			Object.keys(folder.folder?.retentionPolicy[0].keep[0]).length !== 0
+			folder.retentionPolicy &&
+			folder.retentionPolicy?.length &&
+			folder.retentionPolicy[0].keep !== undefined &&
+			folder.retentionPolicy[0].keep &&
+			Object.keys(folder.retentionPolicy[0].keep[0]).length !== 0
 		) {
-			const lifetime = folder.folder?.retentionPolicy[0]?.keep[0]?.policy[0]?.lifetime;
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			const lifetime = folder.retentionPolicy[0]?.keep[0]?.policy[0]?.lifetime;
 			// eslint-disable-next-line radix
 			const d = parseInt(lifetime);
 			setDsblMsgRet(true);
@@ -100,15 +102,16 @@ const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal 
 		}
 
 		if (
-			folder.folder?.retentionPolicy &&
-			folder.folder?.retentionPolicy.length &&
-			folder.folder?.retentionPolicy[0].purge !== undefined &&
-			folder.folder?.retentionPolicy[0].purge &&
-			Object.keys(folder.folder?.retentionPolicy[0].purge[0]).length !== 0
+			folder.retentionPolicy &&
+			folder.retentionPolicy.length &&
+			folder.retentionPolicy[0].purge !== undefined &&
+			folder.retentionPolicy[0].purge &&
+			Object.keys(folder.retentionPolicy[0].purge[0]).length !== 0
 		) {
-			const lifetime = folder.folder?.retentionPolicy[0]?.purge[0]?.policy[0]?.lifetime;
-			// eslint-disable-next-line radix
-			const d = parseInt(lifetime);
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			const lifetime = folder.retentionPolicy[0]?.purge[0]?.policy[0]?.lifetime;
+			const d = parseInt(lifetime, 10);
 			setDsblMsgDis(true);
 			setShowPolicy(true);
 
@@ -133,12 +136,12 @@ const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal 
 			setDspYear('d');
 			setDspRange('Days');
 		}
-	}, [folder.folder?.retentionPolicy]);
+	}, [folder.retentionPolicy]);
 
 	const showWarning = useMemo(
 		() =>
 			includes(
-				filter(translatedSystemFolders, (f) => f !== folder.folder?.name),
+				filter(translatedSystemFolders, (f) => f !== folder.name),
 				inputValue
 			),
 		[inputValue, folder]
@@ -191,17 +194,17 @@ const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal 
 			dispatch(
 				folderAction({
 					folder: {
-						...folder.folder,
-						parent: folder.folder?.l,
-						path: folder.folder?.absFolderPath,
+						...folder,
+						parent: folder.l || '',
+						path: folder.absFolderPath,
 						absParent: '2',
 						children: []
 					},
 					name: inputValue,
 					op: 'update',
-					color: folderColor,
+					color: Number(folderColor),
 					retentionPolicy:
-						dsblMsgRet || dsblMsgDis || folder?.folder.retentionPolicy
+						dsblMsgRet || dsblMsgDis || folder?.retentionPolicy
 							? {
 									keep: dsblMsgRet
 										? {
@@ -270,7 +273,7 @@ const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal 
 			<ModalHeader
 				onClose={onClose}
 				title={`${t('label.edit_folder_properties', {
-					name: folder.folder?.name,
+					name: folder.name,
 					defaultValue: 'Edit {{name}} properties'
 				})}`}
 			/>
@@ -280,13 +283,13 @@ const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal 
 				setInputValue={setInputValue}
 				inputValue={inputValue}
 				inpDisable={inpDisable}
-				folderColor={folderColor}
+				folderColor={String(folderColor)}
 				setFolderColor={setFolderColor}
 			/>
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'medium' }}>
 				<FolderDetails folder={folder} />
 
-				{!isEmpty(folder?.folder.acl) && !folder.folder?.owner && (
+				{!isEmpty(folder?.acl) && folder.isLink && !folder.owner && (
 					<ShareFolderProperties folder={folder} setActiveModal={setActiveModal} />
 				)}
 				<RetentionPolicies

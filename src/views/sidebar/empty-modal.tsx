@@ -20,7 +20,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 
 	const onConfirm = useCallback(() => {
-		dispatch(folderAction({ folder: folder.folder, recursive: true, op: 'empty' }))
+		dispatch(folderAction({ folder, recursive: true, op: 'empty' }))
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			.then((res) => {
@@ -53,9 +53,9 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const title = useMemo(
 		() =>
 			folder.id === FOLDERS.TRASH
-				? `${t('label.empty', 'Empty')} ${folder.folder?.name}`
-				: `${t('label.wipe', 'Wipe')} ${folder.folder?.name}`,
-		[folder.id, folder.folder?.name, t]
+				? `${t('label.empty', 'Empty')} ${folder.name}`
+				: `${t('label.wipe', 'Wipe')} ${folder.name}`,
+		[folder.id, folder.name, t]
 	);
 	return (
 		<Container
@@ -80,10 +80,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 					</Text>
 				) : (
 					<Text overflow="break-word">
-						{
-							(t('folder_panel.modal.wipe.body.message1'),
-							'Do you want to wipe the selected folder?')
-						}
+						{t('folder_panel.modal.wipe.body.message1', 'Do you want to wipe the selected folder?')}
 						<br />
 						{t(
 							'folder_panel.modal.wipe.body.message2',

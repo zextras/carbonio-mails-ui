@@ -70,7 +70,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 						name: userNameCapitalise,
 						defaultValue: "Edit {{name}}'s access"
 				  })} `
-				: `${t('label.share', 'Share')} ${folder.folder.name}`,
+				: `${t('label.share', 'Share')} ${folder.name}`,
 		[t, folder, editMode, userNameCapitalise]
 	);
 
@@ -92,7 +92,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 				contacts: editMode ? [{ email: activeGrant.d }] : contacts,
 				shareWithUserType,
 				shareWithUserRole,
-				folder: folder.folder,
+				folder,
 				accounts
 			})
 		).then((res: { type: string }) => {
@@ -117,7 +117,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 							contacts: editMode ? [{ email: activeGrant.d }] : contacts,
 							shareWithUserType,
 							shareWithUserRole,
-							folder: folder.folder,
+							folder,
 							accounts
 						})
 					).then((res2: { type: string }) => {

@@ -42,7 +42,7 @@ export default function ReceivingMessagesSettings({
 	return (
 		<FormSubSection label={sectionTitle.label} id={sectionTitle.id}>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title="Message Arrival" />
+				<Heading title={t('label.message_arrival', 'Message Arrival')} />
 				<Input
 					label={t('label.send_notification', 'Send a notification message to')}
 					value={settingsObj.zimbraPrefNewMailNotificationAddress}
@@ -57,7 +57,7 @@ export default function ReceivingMessagesSettings({
 				/>
 			</Container>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title="Arrival Notifications" />
+				<Heading title={t('label.arrival_notifications', 'Arrival Notifications')} />
 				<Checkbox
 					label={t('label.show_popup', 'Show a popup notification')}
 					value={settingsObj.zimbraPrefMailToasterEnabled === 'TRUE'}
@@ -132,7 +132,7 @@ export default function ReceivingMessagesSettings({
 				/>
 			</Container>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title="Read Reciept" />
+				<Heading title={t('label.read_receipt', 'Read Receipt')} />
 				<Select
 					items={readReceiptOptn}
 					onChange={(view) =>
@@ -145,7 +145,7 @@ export default function ReceivingMessagesSettings({
 				/>
 			</Container>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title="Messages from me" />
+				<Heading title={t('label.message_from_me', 'Messages from me')} />
 				<Select
 					items={msgsFromMeOpts}
 					name="zimbraPrefDedupeMessagesSentToSelf"
@@ -161,7 +161,7 @@ export default function ReceivingMessagesSettings({
 				/>
 			</Container>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title="Duplicate Messages" />
+				<Heading title={t('label.duplicate_messages', 'Duplicate Messages')} />
 				<Checkbox
 					label={t(
 						'label.automatically_delete_duplicates',

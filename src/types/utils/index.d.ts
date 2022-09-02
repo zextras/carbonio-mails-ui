@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { AccordionFolder } from '@zextras/carbonio-shell-ui';
+import { Folder } from '@zextras/carbonio-shell-ui';
 
 export type ModalFooterProps = {
 	mainAlignment?: string | undefined;
@@ -40,7 +40,7 @@ export type CreateSnackbar = (arg: {
 }) => void;
 
 export type ModalProps = {
-	folder: AccordionFolder;
+	folder: Folder;
 	onClose: () => void;
 };
 
@@ -49,7 +49,7 @@ export type Crumb = {
 	tooltip: string;
 };
 
-export type ResFolder = AccordionFolder &
+export type ResFolder = Folder &
 	Partial<{
 		folderId: number;
 		folderPath: string;

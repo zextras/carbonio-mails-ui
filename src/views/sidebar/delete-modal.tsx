@@ -24,7 +24,11 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 		let inTrash = false;
 		const restoreFolder = (): void =>
 			dispatch(
-				folderAction({ folder: folder.folder, l: folder.folder?.parent, op: FOLDER_ACTIONS.MOVE })
+				folderAction({
+					folder,
+					l: folder.parent as unknown as string,
+					op: FOLDER_ACTIONS.MOVE
+				})
 			)
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -51,12 +55,12 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 				})
 				.catch(report);
 
-		if (startsWith(folder.folder?.absFolderPath, '/Trash')) {
+		if (startsWith(folder.absFolderPath, '/Trash')) {
 			inTrash = true;
 		}
 		dispatch(
 			folderAction({
-				folder: folder.folder,
+				folder,
 				l: FOLDERS.TRASH,
 				op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
 			})
@@ -92,24 +96,21 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 		onClose();
 	}, [folder, dispatch, onClose, createSnackbar, t]);
 
-	return folder.folder ? (
+	return folder ? (
 		<Container
 			padding={{ all: 'large' }}
 			mainAlignment="center"
 			crossAlignment="flex-start"
 			height="fit"
 		>
-			<ModalHeader
-				title={`${t('label.delete', 'Delete')} ${folder.folder?.name}`}
-				onClose={onClose}
-			/>
+			<ModalHeader title={`${t('label.delete', 'Delete')} ${folder.name}`} onClose={onClose} />
 			<Container
 				padding={{ all: 'small' }}
 				mainAlignment="center"
 				crossAlignment="flex-start"
 				height="fit"
 			>
-				{startsWith(folder.folder?.absFolderPath, '/Trash') ? (
+				{startsWith(folder.absFolderPath, '/Trash') ? (
 					<>
 						<Text overflow="break-word">
 							{t(

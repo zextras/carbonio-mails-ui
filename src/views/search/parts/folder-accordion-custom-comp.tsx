@@ -15,8 +15,8 @@ import { AccordionItem, Tooltip, Row, Padding } from '@zextras/carbonio-design-s
 import { useTranslation } from 'react-i18next';
 
 import {
-	getFolderIconColor,
-	getFolderIconName,
+	getFolderIconColorForAccordionFolder,
+	getFolderIconNameForAccordionFolder,
 	getFolderTranslatedName
 } from '../../sidebar/utils';
 
@@ -32,8 +32,8 @@ const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }) => {
 				item.id === FOLDERS.USER_ROOT
 					? accountName
 					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),
-			icon: getFolderIconName(item),
-			iconColor: getFolderIconColor(item),
+			icon: getFolderIconNameForAccordionFolder(item),
+			iconColor: getFolderIconColorForAccordionFolder(item),
 			textProps: { size: 'small' }
 		}),
 		[item, accountName, t]
