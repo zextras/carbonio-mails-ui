@@ -7,24 +7,6 @@
 import { createTheme } from '@mui/material';
 
 export const themeMui = createTheme({
-	palette: {
-		primary: {
-			main: '#ff0',
-			contrastText: '#fff'
-		},
-		secondary: {
-			main: '#ffc107',
-			contrastText: '#fff'
-		},
-		error: {
-			main: '#f44336',
-			contrastText: '#fff'
-		},
-		warning: {
-			main: '#ff9800',
-			contrastText: '#fff'
-		}
-	},
 	components: {
 		MuiSvgIcon: {
 			styleOverrides: {
