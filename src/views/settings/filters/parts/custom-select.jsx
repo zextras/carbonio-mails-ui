@@ -10,7 +10,7 @@ import {
 	TextUpperCase
 } from '../../../../integrations/shared-invite-reply/parts/styled-components';
 
-const LabelFactory = ({ selected, label, open, focus }) => (
+const LabelFactory = ({ selected, label, open, focus, disabled }) => (
 	<ColorContainer
 		orientation="horizontal"
 		width="fill"
@@ -21,6 +21,7 @@ const LabelFactory = ({ selected, label, open, focus }) => (
 		padding={{
 			all: 'extrasmall'
 		}}
+		disabled={disabled}
 		minHeight="48px"
 	>
 		<Row width="100%" takeAvailableSpace mainAlignment="space-between">
@@ -30,10 +31,14 @@ const LabelFactory = ({ selected, label, open, focus }) => (
 				mainAlignment="flex-start"
 				padding={{ left: 'small' }}
 			>
-				<Text size="small" color={open || focus ? 'primary' : 'secondary'}>
+				<Text
+					size="small"
+					// eslint-disable-next-line no-nested-ternary
+					color={open || focus ? 'primary' : disabled ? 'gray2' : 'secondary'}
+				>
 					{label}
 				</Text>
-				<TextUpperCase>{selected?.[0]?.label}</TextUpperCase>
+				<TextUpperCase color={disabled ? 'gray2' : 'text'}>{selected?.[0]?.label}</TextUpperCase>
 			</Row>
 		</Row>
 		<Icon
@@ -64,13 +69,14 @@ const getItems = (items) =>
 		)
 	}));
 
-const CustomSelect = ({ onChange, defaultSelection, label, items }) => {
+const CustomSelect = ({ onChange, defaultSelection, label, items, disabled = false }) => {
 	const newItems = useMemo(() => getItems(items), [items]);
 
 	return (
 		<Select
 			label={label}
 			background="gray4"
+			disabled={disabled}
 			onChange={onChange}
 			items={newItems}
 			defaultSelection={defaultSelection}

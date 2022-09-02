@@ -16,10 +16,10 @@ import { generateRequest } from '../editor-slice-utils';
 
 export const saveDraft = createAsyncThunk<saveDraftNewResult, SaveDraftNewParameters>(
 	'saveDraft',
-	async ({ data }) => {
+	async ({ data, prefs }) => {
 		const resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>('SaveDraft', {
 			_jsns: 'urn:zimbraMail',
-			m: generateRequest(data)
+			m: generateRequest(data, prefs)
 		})) as SaveDraftResponse;
 
 		return { resp };

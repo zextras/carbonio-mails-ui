@@ -1,19 +1,13 @@
 {
     "action": {
-        "back": "Kembali",
         "cancel": "Batal",
-        "delete": "Hapus",
         "download": "Unduh",
-        "edit_as_draft": "Edit",
         "forward": "Teruskan",
         "mark_as_read": "Tandai sebagai dibaca",
         "mark_as_unread": "Tandai sebagai belum dibaca",
-        "move": "Pindahkan",
         "ok": "Oke",
         "reply": "Balas",
-        "restore": "Pulihkan",
         "search": "Cari",
-        "send": "Kirim",
         "delete_permanently": "Hapus Secara Permanen",
         "edit_share": "Edit Akses",
         "edit_as_new": "Edit sebagai baru",
@@ -38,96 +32,65 @@
     },
     "folder": {
         "action": {
-            "new": "Folder baru",
             "delete": "Hapus folder",
-            "delete_permanently": "Hapus folder secara permanen",
             "edit": "Edit properti folder",
-            "edit_properties": "Edit properti",
             "move": "Pindahkan folder",
-            "restore": "Pulihkan Folder",
             "wipe": {
                 "folder": "Hapus folder"
-            },
-            "empty": {
-                "trash": "Kosongkan tempat sampah"
             }
         },
         "modal": {
             "move": {
                 "title": "Pindahkan",
-                "footer": "Pindahkan",
                 "new": "Folder Baru",
                 "body": {
-                    "message1": "Pilih folder sebagai tempat memindahkan file yang diinginkan:",
-                    "message2": "Pilih folder tujuan",
-                    "message_restore": "Pilih folder sebagai tempat memulihkan file yang diinginkan:"
+                    "message2": "Pilih folder tujuan"
                 },
                 "input": {
                     "filter": "Filter Folder"
-                },
-                "title_modal": "Pindahkan Percakapan"
+                }
             },
             "restore": {
-                "title_modal": "Pulihkan",
-                "footer": "Pulihkan"
+                "title_modal": "Pulihkan"
             },
             "delete": {
                 "footer": "Oke",
-                "title": "Hapus",
                 "body": {
                     "message1": "Apakah Anda ingin menghapus folder yang dipilih?",
-                    "message2": "Apakah Anda ingin menghapus folder yang dipilih secara permanen?",
-                    "message4": "Jika dihapus, semua konten terkait akan dihapus secara permanen dan folder tidak dapat dipulihkan lagi.",
-                    "message3": "Jika dihapus, semua konten terkait akan dipindahkan ke Tempat Sampah dan folder tidak terlihat lagi."
+                    "message4": "Jika dihapus, semua konten terkait akan dihapus secara permanen dan folder tidak dapat dipulihkan lagi."
                 }
             },
             "edit": {
                 "footer": "Edit",
-                "size": "Ukuran",
                 "type": "Jenis",
-                "folder_type": "Folder Email",
                 "messages": "Pesan",
-                "retention_msg": "Pesan dalam folder yang termasuk dalam rentang retensi memerlukan konfirmasi langsung sebelum dihapus",
                 "rename_warning": "Anda tidak bisa mengubah nama folder sebagai sistem.",
-                "retention_properties": "Properti retensi",
                 "rtn_dur_warning": "Durasi retensi harus berupa angka positif",
-                "threshold_msg": "Pesan yang lebih lama dari batas waktu pembuangan di dalam folder ini akan otomatis dibersihkan dan dihapus.",
                 "retention_duration_warning": "Durasi retensi harus berupa angka positif",
                 "retention_message": "Pesan dalam folder yang termasuk dalam rentang retensi memerlukan konfirmasi langsung sebelum dihapus",
                 "threshold_message": "Pesan dalam folder ini yang lebih lama dari ambang pembuangan akan dikenakan pembersihan dan penghapusan otomatis.",
                 "add_share": "Tambahkan Berbagi"
             },
             "new": {
-                "footer": "Buat",
                 "create_footer": "Buat dan Pindahkan",
-                "go_back": "Kembali",
                 "input": {
-                    "name": "Nama Folder",
-                    "position": "Posisi Folder"
+                    "name": "Nama Folder"
                 },
                 "restore_create_footer": "Buat dan Pulihkan",
-                "title": "Buat folder baru",
                 "name_exist_warning": "Nama sudah ada"
             },
             "empty": {
-                "footer": "Kosongkan",
                 "title": "Kosongkan",
                 "body": {
-                    "message1": "Apakah Anda ingin mengosongkan folder yang dipilih?",
                     "message2": "Jika dikosongkan, semua konten terkait akan dihapus secara permanen."
                 }
             },
             "wipe": {
                 "body": {
-                    "message2": "Jika dihapus, semua konten terkait akan dihapus secara permanen.",
                     "message1": "Apakah Anda ingin menghapus folder yang dipilih?"
                 },
-                "footer": "Hapus",
                 "title": "Hapus"
             }
-        },
-        "item": {
-            "root": "/Root"
         }
     },
     "folders": {
@@ -142,7 +105,6 @@
         "warning": "Peringatan",
         "delete_email": "Hapus email",
         "message_not_sent": "Kesalahan - Pesan tidak terkirim",
-        "no_subject": "Tanpa subjek",
         "edit_draft": "Edit draf",
         "redirect_email": "Alihkan email"
     },
@@ -154,10 +116,8 @@
         "download": "Unduh",
         "edit": "Edit",
         "remove": "Hapus semua",
-        "search_subject": "Subjek",
         "send": "Kirim",
         "share": "Bagikan",
-        "advance_filters": "{{count}} Filter tingkat lanjut",
         "add_custom_message": "Tambahkan pesan kustom",
         "allowed_actions": "Tindakan yang diperbolehkan",
         "bcc": "Bcc",
@@ -168,10 +128,8 @@
         "draft_folder": "[DRAF]",
         "from": "Dari",
         "keywords": "Kata sandi",
-        "mailSelected": "{{count}} email dipilih",
         "grantee": "Penerima jaminan: ",
         "highlight_tab": "Sorot tab Email",
-        "mail_setting": "Pengaturan Email",
         "no_subject": "Tanpa subjek",
         "owner": "Pemilik: ",
         "receive_message": "Menerima Pesan",
@@ -180,17 +138,13 @@
         "revoke": "Batalkan",
         "revoke_access_without_notification": "Batalkan akses tanpa mengirim pemberitahuan",
         "revoke_access_tooltip": "Batalkan akses dengan mengirim pemberitahuan standar",
-        "search_hint": "Cari petunjuk!",
         "revoke_share": "Batalkan berbagi {{title}}",
         "role": "Peran: ",
-        "select_2": "atau klik tombol \"Baru\"",
         "select_3": "untuk menulis email baru.",
         "select_folder": "Pilih folder",
         "send_notification": "Kirim pesan pemberitahuan ke",
         "sent": "Terkirim",
-        "single_advance_fillter": "Filter Tingkat Lanjut",
         "shares_folder_edit": "Berbagi folder ini",
-        "show": "Tampilkan semua",
         "show_popup": "Tampilkan pemberitahuan pop up",
         "subject": "Subjek",
         "to": "Kepada",
@@ -204,7 +158,6 @@
         "find_shares": "Temukan berbagi",
         "flash_browser_title": "Beri flash pada judul browser",
         "shared_item": "Item bersama",
-        "select_1": "Pilih email yang akan dibaca",
         "revoke_send_standard_msg": "Batalkan akses dengan mengirim pemberitahuan kustom",
         "advanced_filters": "Filter Lanjutan",
         "find_mail_shares": "Temukan folder bersama",
@@ -325,39 +278,29 @@
         "always_allow_address": "Selalu izinkan dari <strong>{{from}}</strong>"
     },
     "messages": {
-        "permanent_delete_confirm": "Hapus secara permanen",
         "snackbar": {
             "message_move_error": "Terjadi kesalahan, pesan belum selesai dipindahkan, coba lagi.",
-            "conversation_deleted_permanently": "Email dihapus secara permanen",
             "conversation_deleted_permanently_error": "Terjadi kesalahan, coba lagi",
             "conversation_move": "Percakapan berhasil dipindahkan",
-            "email_move_error": "Terjadi kesalahan, coba lagi",
             "email_moved_to_trash": "Email dipindahkan ke Sampah",
-            "email_restore_error": "Terjadi kesalahan, coba lagi",
             "email_restored": "Email dipulihkan di folder tujuan",
             "folder_created": "Folder baru dibuat",
             "folder_deleted": "Folder berhasil dihapus.",
             "folder_edited": "Perubahan berhasil disimpan",
-            "folder_edited_error": "Terjadi kesalahan, tidak ada perubahan, coba lagi.",
             "folder_empty": "Sampah berhasil dikosongkan",
             "folder_moved": "Folder berhasil dipindahkan",
             "folder_moved_to_trash": "Folder dipindahkan ke tempat sampah",
             "folder_wiped": "Folder berhasil dihapus",
-            "folder_wiped_error": "Terjadi kesalahan, coba lagi",
             "mail_sent": "Pesan terkirim",
             "message_delete_error": "Terjadi kesalahan, pesan ini belum dihapus. Coba lagi.",
             "message_deleted": "Pesan dihapus",
             "marked_as_non_spam": "Anda telah menandai email ini sebagai Bukan Spam",
-            "message_deleted_permanently_error": "Terjadi kesalahan, coba lagi",
             "message_move": "Pesan berhasil dipindahkan",
             "message_redirected": "Pesan telah dialihkan",
-            "conversation_delete_error": "Terjadi kesalahan, percakapan ini belum dihapus, coba lagi.",
             "conversation_deleted": "Percakapan dihapus",
             "conversation_move_error": "Terjadi kesalahan, percakapan belum selesai dipindahkan, coba lagi.",
-            "folder_created_error": "Terjadi kesalahan, coba lagi.",
             "folder_move_error": "Terjadi kesalahan, folder belum dipindahkan. Coba lagi.",
             "marked_as_spam": "Anda telah menandai email ini sebagai Spam",
-            "message_deleted_permanently": "Email dihapus secara permanen",
             "folder_empty_error": "Terjadi kesalahan, tidak ada perubahan. Coba lagi.",
             "folder_will_be_moved_in_time": "Folder ini akan dipindahkan di {{remainingTime}}",
             "sending_mail_in_count": "Mengirim pesan dalam {{count}} detik",
@@ -380,7 +323,6 @@
         },
         "new_email": "Email baru",
         "no_content": "Pesan ini tidak berisi teks",
-        "no_subject": "Tanpa Subjek.",
         "permanent_delete_title": "Anda yakin ingin menghapus elemen ini secara permanen?",
         "invalid_address": "Alamat berikut tampaknya tidak valid",
         "permanent_delete_body": "Dengan menghapus elemen secara permanen, Anda tidak bisa memulihkannya lagi. Lanjutkan?",
@@ -389,24 +331,17 @@
         "could_not_find_to_show": "Maaf, kami tak menemukan apa pun untuk ditampilkan",
         "something_went_wrong": "TERJADI MASALAH"
     },
-    "of": "dari",
     "add": "Tambahkan",
-    "create": "Buat",
     "delete": "Hapus",
-    "owner": "Pemilik",
     "placeholder": {
         "subject": "Subjek",
         "add_new_recipients": "Tambahkan penerima baru",
-        "bcc": "BCC",
-        "cc": "CC",
-        "to": "Kepada"
+        "cc": "CC"
     },
     "read": "Dibaca",
     "search": {
-        "attachment": "Lampiran",
         "unread": "Belum dibaca",
         "unread_note": "Cari semua item email yang belum dibaca.",
-        "flagged": "Ditandai bendera",
         "attachment_note": "Cari semua email yang berisi lampiran.",
         "flagged_note": "Cari semua email yang ditandai bendera.",
         "sent_after": "Terkirim setelah",
@@ -437,8 +372,7 @@
     },
     "title": {
         "new_messages": "Pesan Baru",
-        "replies_forwards": "Membalas & Meneruskan",
-        "advanced_filters": "Filter Tingkat Lanjut"
+        "replies_forwards": "Membalas & Meneruskan"
     },
     "type": "Jenis",
     "settings": {
@@ -447,28 +381,19 @@
             "new_message_inbox": "Tampilkan notifikasi untuk pesan baru di kotak masuk"
         },
         "conv_sort_optn": {
-            "asc": "Dari lama ke baru",
             "desc": "Dari baru ke lama"
         },
         "dspl_mail_optn": {
-            "text": "Sebagai teks",
             "html": "Sebagai HTML (jika memungkinkan)"
         },
         "label": {
-            "conv_sorting": "Urutan percakapan",
             "dflt_mail_search": "Pencarian Email Default",
-            "disp_messages": "Menampilkan Pesan",
             "display_mail": "Tampilkan email",
-            "dsp_external_imgs": "Tampilkan gambar eksternal secara otomatis di Email HTML",
             "dsp_msg_snpt": "Tampilkan cuplikan pesan di daftar email",
-            "msg_color": "Warna Pesan",
             "msg_prv_title": "Pratinjau pesan dan Gambar",
-            "msg_selection": "Pilihan Pesan",
             "search_query": "Permintaan default",
-            "set_msg_color_acc_tag": "Atur warna pesan dan percakapan berdasarkan warna tag.",
             "always_dsp_received_time": "Selalu tampilkan waktu diterima di daftar email",
             "check_new_mail": "Periksa email baru",
-            "dbl_click_opens_msg": "Klik dua kali untuk membuka pesan di jendela baru",
             "conversation_ordering": "Urutan percakapan",
             "default_mail_search": "Pencarian Email Default",
             "display_messages": "Menampilkan Pesan",
@@ -582,14 +507,11 @@
         "social": "Sosial",
         "tag_with": "Beri tag dengan"
     },
-    "administer": "Kelola",
     "allowed_actions": "Tindakan yang diizinkan",
     "composer": {
         "attachment": {
-            "contactsMod": "Tambahkan Kartu Kontak",
             "draganddrop": {
-                "content": "Letakkan lampiran Anda di sini untuk menambahkannya dengan cepat ke email ini",
-                "title": "Mode Seret & Lepas"
+                "content": "Letakkan lampiran Anda di sini untuk menambahkannya dengan cepat ke email ini"
             },
             "drive": "Tambahkan dari Drive",
             "local": "Tambahkan dari lokal",
@@ -602,14 +524,10 @@
             "url": "Tambahkan tautan publik dari Files"
         }
     },
-    "find_shares": "Temukan berbagi",
     "find_mail_shares": "Temukan folder bersama",
-    "freebusy": "FreeBusy",
     "insert": "Sisipkan",
-    "mail_folder": "Folder email",
     "message": {
         "sending_mail_to_self": "Sepertinya Anda akan mengirim email untuk Anda sendiri",
-        "search_hints": "Cari petunjuk yang perlu didiskusikan",
         "snackbar": {
             "share": {
                 "error": "Terjadi kesalahan. Coba lagi",
@@ -638,10 +556,8 @@
         "manager_rights": "Lihat,Edit,Tambah,Hapus",
         "external_images_blocked": "Gambar eksternal telah diblokir untuk melindungi Anda terhadap potensi spam"
     },
-    "private": "Pribadi",
     "remove_from_this_list": "Hapus dari daftar ini",
     "snackbar": {
-        "error": "Terjadi kesalahan, coba lagi",
         "folder_shared_error": "Terjadi kesalahan, coba lagi",
         "share_resend": "Undangan berbagi dikirim ulang",
         "share_revoke": "Akses berbagi dibatalkan",
@@ -651,9 +567,7 @@
         "tag_applied": "Tag \"{{tag}}\" diterapkan",
         "tag_removed": "Tag \"{{tag}}: dihapus"
     },
-    "shared_folders": "Folder Bersama",
     "shared_item": "Item bersama",
-    "shares_info": "Info folder bersama",
     "tooltip": {
         "add_attachments": "Tambahkan lampiran",
         "disable_rich_text": "Matikan editor teks kaya",
@@ -665,9 +579,7 @@
         "enable_urgent": "Aktifkan mendesak",
         "folder_sharing_status": "Dibagikan kepada {{count}} orang"
     },
-    "workflow": "Alur Kerja",
     "write": "Tulis",
-    "select_signature": "Pilih tanda tangan",
     "set_default_signatures": "Atur tanda tangan default",
     "folder_panel": {
         "modal": {

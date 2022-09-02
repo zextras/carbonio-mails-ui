@@ -2,25 +2,17 @@
     "folder": {
         "modal": {
             "delete": {
-                "footer": "OK",
                 "title": "删除",
                 "body": {
-                    "message4": "如果删除，所有相关内容都将被永久性删除，且文件夹将不再可恢复。",
                     "message1": "是否删除所选文件夹？",
-                    "message2": "是否永久删除所选文件夹？",
                     "message3": "如果删除，所有相关内容都将被移动至回收站，且文件夹将不再可见。"
                 }
             },
             "edit": {
-                "footer": "编辑",
                 "size": "大小",
-                "type": "类型",
                 "folder_type": "邮件文件夹",
-                "messages": "消息",
                 "rename_warning": "您无法将文件夹重命名为系统文件夹.",
-                "retention_msg": "此文件夹中属于保留范围的邮件在被删除之前要求明确确认",
                 "retention_properties": "保留属性",
-                "rtn_dur_warning": "保留时间必须为正数",
                 "threshold_msg": "在此文件夹中，时间早于处置阈值的邮件将被自动清理和删除。",
                 "add_share": "添加共享",
                 "retention_duration_warning": "保留时间必须为正数",
@@ -28,73 +20,50 @@
                 "threshold_message": "此文件夹中时间早于处置阈值的邮件将被自动清理和删除。"
             },
             "move": {
-                "footer": "移动",
                 "new": "新文件夹",
-                "title": "移动",
                 "body": {
                     "message1": "选择文件夹以将其移动至：",
-                    "message2": "选择目标文件夹",
                     "message_restore": "选择文件夹以将其恢复至："
-                },
-                "input": {
-                    "filter": "筛选文件夹"
                 },
                 "title_modal": "移动会话"
             },
             "new": {
-                "footer": "创建",
                 "create_footer": "创建和移动",
-                "go_back": "返回",
                 "input": {
-                    "name": "文件夹名称",
-                    "position": "文件夹位置"
+                    "name": "文件夹名称"
                 },
                 "name_exist_warning": "名称已存在",
-                "restore_create_footer": "创建和恢复",
                 "title": "新建文件夹"
             },
             "restore": {
-                "footer": "恢复",
                 "title_modal": "恢复"
             },
             "empty": {
                 "body": {
-                    "message1": "是否清空所选文件夹？",
                     "message2": "如果清空，所有相关内容都将被永久性删除。"
                 },
-                "footer": "空",
                 "title": "空"
             },
             "wipe": {
                 "body": {
-                    "message1": "是否擦除所选文件夹？",
                     "message2": "如果擦除，则所有相关内容都将被永久性删除。"
                 },
-                "footer": "擦除",
                 "title": "擦除"
             }
         },
         "action": {
-            "new": "新文件夹",
             "delete": "删除文件夹",
-            "delete_permanently": "永久删除文件夹",
             "edit": "编辑文件夹属性",
-            "edit_properties": "编辑属性",
             "empty": {
                 "trash": "清空垃圾箱"
             },
-            "move": "移动文件夹",
-            "restore": "恢复文件夹",
-            "wipe": {
-                "folder": "清除文件夹"
-            }
+            "restore": "恢复文件夹"
         },
         "item": {
             "root": "/Root"
         }
     },
     "messages": {
-        "permanent_delete_confirm": "永久删除",
         "modal": {
             "delete": {
                 "if_delete_lost_forever": "如果您删除邮件，其将永久丢失。",
@@ -107,15 +76,11 @@
         },
         "new_email": "新邮件",
         "no_content": "此消息没有文本内容",
-        "no_subject": "无主题。",
         "permanent_delete_title": "确定要永久删除该元素吗？",
         "snackbar": {
-            "conversation_delete_error": "出现问题，此会话未被删除，请重试。",
             "conversation_deleted": "会话已删除",
-            "conversation_deleted_permanently": "邮件已永久性删除",
             "conversation_deleted_permanently_error": "出现了一些错误，请重试",
             "conversation_move_error": "出现问题，此会话移动未完成，请重试。",
-            "folder_created_error": "出现了一些错误，请重试。",
             "folder_move_error": "出现错误，此文件夹未移动，请重试。",
             "folder_moved": "文件夹已成功移动",
             "folder_moved_to_trash": "文件夹已移动至垃圾箱",
@@ -123,25 +88,19 @@
             "message_delete_error": "出现错误，此消息夹未删除，请重试。",
             "message_deleted": "消息已删除",
             "conversation_move": "会话已成功移动",
-            "email_move_error": "出现了一些错误，请重试",
             "email_moved_to_trash": "邮件已移动至垃圾箱",
-            "email_restore_error": "出现了一些错误，请重试",
             "email_restored": "邮件已在目标文件夹中恢复",
             "folder_created": "新文件夹已创建",
             "folder_deleted": "文件夹已删除成功。",
             "folder_edited": "变更已正确保存",
-            "folder_edited_error": "出现错误，变更未作出，请重试。",
             "folder_empty": "垃圾箱清理成功",
             "folder_empty_error": "出现错误，变更未作出，请重试。",
             "folder_will_be_moved_in_time": "此文件夹将在{{remainingTime}}内移动",
             "folder_wiped": "文件夹擦除成功",
-            "folder_wiped_error": "出现了一些错误，请重试",
             "mail_sent": "消息已发送",
             "marked_as_non_spam": "您已将此邮件标记为非垃圾信息",
-            "message_deleted_permanently": "邮件已永久性删除",
             "message_deleted_permanently_error": "出现了一些错误，请重试",
             "message_redirected": "消息已被重定向",
-            "message_move_error": "出现问题，消息移动未完成，请重试。",
             "message_move": "消息已成功移动",
             "folder_restored": "文件夹已恢复",
             "mail_saved_to_drafts": "邮件已保存至草稿",
@@ -158,13 +117,10 @@
         "could_not_find_to_show": "抱歉，我们无法找到可供展示的东西",
         "something_went_wrong": "出了一些问题"
     },
-    "of": "的",
     "placeholder": {
         "subject": "主题",
         "add_new_recipients": "新增收件人",
-        "bcc": "密送",
-        "cc": "抄送",
-        "to": "收件人"
+        "cc": "抄送"
     },
     "share": {
         "options": {
@@ -189,25 +145,18 @@
     },
     "title": {
         "new_messages": "新消息",
-        "advanced_filters": "高级过滤条件",
         "replies_forwards": "回复与转发"
     },
-    "type": "类型",
     "action": {
         "back": "返回",
-        "cancel": "取消",
         "delete": "删除",
-        "download": "下载",
         "edit_as_draft": "编辑",
         "forward": "转发",
         "mark_as_read": "标记为已读",
         "mark_as_unread": "标记为未读",
-        "move": "移动",
         "ok": "OK",
         "reply": "回复",
-        "restore": "恢复",
         "search": "搜索",
-        "send": "发送",
         "print": "打印",
         "redirect": "重定向",
         "reply_all": "回复全部",
@@ -215,7 +164,6 @@
         "send_anyway": "仍然发送",
         "share_folder": "共享文件夹",
         "show_details": "显示详细信息",
-        "delete_permanently": "永久删除",
         "edit_as_new": "编辑为新的",
         "edit_share": "编辑访问权限",
         "flag": "添加标记",
@@ -230,9 +178,7 @@
         "preview_new_tab": "点击以在另一标签页中预览",
         "click_preview": "点击预览"
     },
-    "add": "添加",
     "create": "创建",
-    "delete": "删除",
     "folders": {
         "trash": "回收站",
         "sent": "已发送",
@@ -246,7 +192,6 @@
         "delete_email": "删除邮件",
         "edit_draft": "编辑草稿",
         "message_not_sent": "错误 - 未发送消息",
-        "no_subject": "无主题",
         "redirect_email": "重定向邮件"
     },
     "label": {
@@ -257,14 +202,12 @@
         "me": "我",
         "remove": "移除全部",
         "save": "保存",
-        "search_subject": "主题",
         "send": "发送",
         "share": "分享",
         "flash_browser_title": "Flash浏览器标题",
         "from": "自",
         "highlight_tab": "突出显示“邮件”选项卡",
         "keywords": "关键词",
-        "mail_setting": "邮件设置",
         "no_subject": "无主题",
         "receive_message": "接收消息",
         "resend": "重新发送",
@@ -272,12 +215,9 @@
         "revoke": "撤销",
         "revoke_access_tooltip": "撤销访问权限并发送标准通知",
         "revoke_access_without_notification": "撤销访问权限并不发送通知",
-        "revoke_send_standard_msg": "撤销访问权限并发送自定义通知",
         "revoke_share": "撤销 {{title}} 的共享",
         "role": "角色： ",
-        "search_hint": "搜索提示！",
         "select_1": "选择一封邮件以阅读",
-        "select_2": "或点击“新建”按钮",
         "select_3": "以编写新的邮件。",
         "select_folder": "选择文件夹",
         "send_notification": "发送通知消息至",
@@ -285,7 +225,6 @@
         "shared_item": "共享项目",
         "shares_folder_edit": "共享此文件夹",
         "shares_items": "{{value}}的共享文件夹",
-        "advance_filters": "{{count}}高级过滤条件",
         "add_custom_message": "添加自定义消息",
         "allowed_actions": "允许操作",
         "automatically_delete_duplicates": "收到相同消息时自动删除重复副本",
@@ -297,12 +236,9 @@
         "edit_folder_properties": "编辑 {{name}} 的属性",
         "filter_user": "过滤用户",
         "find_shares": "查找共享",
-        "mailSelected": "已选择{{count}}封邮件",
         "owner": "所有者 ",
-        "show": "显示全部",
         "grantee": "被授权人 ",
         "show_popup": "显示弹出通知",
-        "single_advance_fillter": "高级过滤条件",
         "subject": "主题",
         "to": "至",
         "type": "类型",
@@ -427,12 +363,9 @@
         "always_allow_domain": "总是允许 <strong>{{domain}}</strong> 域",
         "always_allow_address": "总是允许 <strong>{{from}}</strong>"
     },
-    "owner": "所有者",
     "read": "已读",
     "search": {
-        "attachment": "附件",
         "unread": "未读",
-        "flagged": "已标记",
         "attachment_note": "搜索包含附件的所有邮件。",
         "flagged_note": "搜索已标记的所有邮件。",
         "unread_note": "搜索所有未读邮件项目。",
@@ -441,13 +374,11 @@
         "sent_on": "准时发送：",
         "size_error": "仅允许数字"
     },
-    "freebusy": "FreeBusy",
     "message": {
         "snackbar": {
             "share": {
                 "accepted": "您已接受共享请求",
-                "declined": "您已拒绝共享请求",
-                "error": "出现错误，请重试"
+                "declined": "您已拒绝共享请求"
             },
             "settings_saved": "编辑保存正确",
             "att_err": "保存时似乎出现错误，请重试",
@@ -462,7 +393,6 @@
             "link_copying_error": "生成公开链接时似乎发生错误，请重试",
             "all_link_copied": "公开链接已复制成功"
         },
-        "search_hints": "搜索我们需要讨论的提示",
         "sending_mail_to_self": "似乎您即将向自己发送邮件",
         "invalid_search_message": "我们没有找到任何匹配",
         "email_saved_at": "邮件已于 {{time}} 保存为草稿",
@@ -475,18 +405,12 @@
     },
     "settings": {
         "label": {
-            "always_dsp_received_time": "始终在邮件列表中显示接收时间",
             "check_new_mail": "检查新邮件",
-            "conv_sorting": "会话排序",
             "dsp_external_imgs": "自动以HTML邮件的形式显示外部图像",
-            "dsp_msg_snpt": "在邮件列表中显示消息片段",
             "msg_color": "消息颜色",
-            "msg_prv_title": "消息预览和图像",
             "msg_selection": "消息选择",
             "search_query": "默认查询",
-            "set_msg_color_acc_tag": "根据标签颜色设置消息和对话的颜色。",
             "dbl_click_opens_msg": "双击以在新窗口中打开消息",
-            "dflt_mail_search": "默认邮件搜索",
             "disp_messages": "显示消息",
             "display_mail": "显示邮件",
             "conversation_ordering": "会话排序",
@@ -517,11 +441,9 @@
             "new_message_folder": "针对到达任意文件夹的新消息展示通知"
         },
         "conv_sort_optn": {
-            "asc": "从旧到新",
             "desc": "从新到旧"
         },
         "dspl_mail_optn": {
-            "html": "HTML（如可用）",
             "text": "文本"
         },
         "read_rcpt_optn": {
@@ -614,12 +536,9 @@
         "perform_following_action": "执行以下操作：",
         "gb": "GB"
     },
-    "shared_item": "共享项目",
     "shares_info": "共享文件夹信息",
     "snackbar": {
-        "error": "出现了一些错误，请重试",
         "folder_shared": "文件夹已共享",
-        "folder_shared_error": "出现错误，请重试",
         "share_resend": "共享邀请重发",
         "share_revoke": "共享访问权限已撤销",
         "share_updated": "“访问权限更新”",
@@ -641,10 +560,8 @@
     "composer": {
         "attachment": {
             "draganddrop": {
-                "title": "拖放模式",
                 "content": "在此处拖入您的附件以将其快速添加至此邮件"
             },
-            "contactsMod": "添加联系人卡片",
             "drive": "从云盘添加",
             "local": "从本地添加",
             "drag_and_drop": {
@@ -656,19 +573,12 @@
             "url": "从文件添加公开链接"
         }
     },
-    "administer": "管理",
     "allowed_actions": "允许操作",
-    "find_mail_shares": "查找共享文件夹",
     "find_shares": "查找共享",
-    "insert": "插入",
     "mail_folder": "邮件文件夹",
-    "private": "私密",
     "remove_from_this_list": "从此列表中移除",
-    "select_signature": "选择签名",
     "set_default_signatures": "设置默认签名",
-    "shared_folders": "共享文件夹",
     "workflow": "工作流",
-    "write": "编写",
     "folder_panel": {
         "modal": {
             "move": {
