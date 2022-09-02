@@ -562,6 +562,11 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 		return '';
 	}, [folder, t]);
 
+	// hide folders where a share was provided and subsequently removed
+	if (folder.broken) {
+		return <></>;
+	}
+
 	return folder.id === FOLDERS.USER_ROOT || folder.oname === ROOT_NAME ? (
 		<FittedRow>
 			<Padding horizontal="small">
@@ -572,34 +577,36 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			</Tooltip>
 		</FittedRow>
 	) : (
-		<Drop
-			acceptType={['message', 'conversation', 'folder']}
-			onDrop={(data: OnDropActionProps): void => onDropAction(data)}
-			onDragEnter={(data: OnDropActionProps): unknown => onDragEnterAction(data)}
-			overlayAcceptComponent={<DropOverlayContainer folder={folder} />}
-			overlayDenyComponent={<DropDenyOverlayContainer folder={folder} />}
-		>
-			<Drag
-				type="folder"
-				data={folder}
-				dragDisabled={dragFolderDisable}
-				style={{ display: 'block' }}
+		<Row width="fill" minWidth={0}>
+			<Drop
+				acceptType={['message', 'conversation', 'folder']}
+				onDrop={(data: OnDropActionProps): void => onDropAction(data)}
+				onDragEnter={(data: OnDropActionProps): unknown => onDragEnterAction(data)}
+				overlayAcceptComponent={<DropOverlayContainer folder={folder} />}
+				overlayDenyComponent={<DropDenyOverlayContainer folder={folder} />}
 			>
-				<AppLink
-					onClick={onClick}
-					to={`/folder/${folder.id}`}
-					style={{ width: '100%', height: '100%', textDecoration: 'none' }}
+				<Drag
+					type="folder"
+					data={folder}
+					dragDisabled={dragFolderDisable}
+					style={{ display: 'block' }}
 				>
-					<Dropdown contextMenu items={dropdownItems} display="block" width="100%">
-						<Row>
-							<Padding left="small" />
-							<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-								<AccordionItem item={accordionItem}>{statusIcon}</AccordionItem>
-							</Tooltip>
-						</Row>
-					</Dropdown>
-				</AppLink>
-			</Drag>
-		</Drop>
+					<AppLink
+						onClick={onClick}
+						to={`/folder/${folder.id}`}
+						style={{ width: '100%', height: '100%', textDecoration: 'none' }}
+					>
+						<Dropdown contextMenu items={dropdownItems} display="block" width="100%">
+							<Row>
+								<Padding left="small" />
+								<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+									<AccordionItem item={accordionItem}>{statusIcon}</AccordionItem>
+								</Tooltip>
+							</Row>
+						</Dropdown>
+					</AppLink>
+				</Drag>
+			</Drop>
+		</Row>
 	);
 };

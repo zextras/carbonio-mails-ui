@@ -4,20 +4,33 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Container, Text } from '@zextras/carbonio-design-system';
-import { useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { map, find, filter, findIndex, flatten } from 'lodash';
+import { useRoots, useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { map, find, filter, findIndex, flatten, isNull } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { useParams } from 'react-router-dom';
 import { ParticipantRole } from '../../../../../commons/utils';
 
-export const useGetIdentities = ({ updateEditorCb, setOpen }) => {
+export const findDefaultIdentity = ({ list, allAccounts, folderId }) => {
+	const activeAcc = find(allAccounts, { zid: folderId?.split?.(':')?.[0] });
+	const predicate = activeAcc?.owner ? { address: activeAcc?.owner } : { identityName: 'DEFAULT' };
+	return find(list, predicate);
+};
+
+export const useGetIdentities = ({ updateEditorCb, setOpen, editorId, action }) => {
 	const account = useUserAccount();
 	const accounts = useUserAccounts();
 	const [t] = useTranslation();
 	const [from, setFrom] = useState({});
 	const [list, setList] = useState([]);
 	const [activeFrom, setActiveFrom] = useState({});
+	const [isIdentitySet, setIsIdentitySet] = useState(false);
 	const [defaultIdentity, setDefaultIdentity] = useState();
+
+	const allAccounts = useRoots();
+	const { folderId } = useParams();
+
 	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
 
 	useEffect(() => {
@@ -31,22 +44,6 @@ export const useGetIdentities = ({ updateEditorCb, setOpen }) => {
 			type: item._attrs.zimbraPrefFromAddressType,
 			identityName: item.name ?? ''
 		}));
-		setDefaultIdentity(find(identityList, { identityName: 'DEFAULT' }));
-		setFrom({
-			address: find(identityList, (item) => item?.identityName === 'DEFAULT')?.address,
-			fullName: find(identityList, (item) => item?.identityName === 'DEFAULT')?.fullname,
-			name: find(identityList, (item) => item?.identityName === 'DEFAULT')?.address,
-			type: ParticipantRole.FROM
-		});
-		setActiveFrom(find(identityList, (item) => item?.identityName === 'DEFAULT'));
-		updateEditorCb({
-			from: {
-				address: defaultIdentity?.address,
-				fullName: defaultIdentity?.fullname,
-				name: defaultIdentity?.fullname,
-				type: ParticipantRole.FROM
-			}
-		});
 
 		const rightsList = flatten(
 			map(
@@ -72,6 +69,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen }) => {
 		);
 
 		const flattenList = flatten(rightsList);
+
 		const uniqueIdentityList = [...identityList];
 		if (flattenList?.length) {
 			map(flattenList, (ele) => {
@@ -81,6 +79,45 @@ export const useGetIdentities = ({ updateEditorCb, setOpen }) => {
 			setList(uniqueIdentityList);
 		} else setList(identityList);
 	}, [account, accounts, defaultIdentity?.address, defaultIdentity?.fullname, t, updateEditorCb]);
+
+	useEffect(() => {
+		if (!editorId?.includes('new-') && !isIdentitySet && list.length > 0 && !isNull(from)) {
+			const def = findDefaultIdentity({
+				list,
+				allAccounts,
+				folderId
+			});
+
+			updateEditorCb({
+				from: {
+					address: def?.address,
+					fullName: def?.fullname,
+					name: def?.fullname,
+					type: ParticipantRole.FROM
+				}
+			});
+			setDefaultIdentity(def);
+			setActiveFrom(def);
+			setFrom(def);
+			setIsIdentitySet(true);
+		}
+
+		if (editorId?.includes('new-') && !isIdentitySet && list.length > 0) {
+			const def = find(list, { identityName: 'DEFAULT' });
+			updateEditorCb({
+				from: {
+					address: def?.address,
+					fullName: def?.fullname,
+					name: def?.fullname,
+					type: ParticipantRole.FROM
+				}
+			});
+			setDefaultIdentity(def);
+			setActiveFrom(def);
+			setFrom(def);
+			setIsIdentitySet(true);
+		}
+	}, [allAccounts, editorId, folderId, list, updateEditorCb, isIdentitySet, from]);
 
 	const identitiesList = useMemo(
 		() =>
@@ -130,7 +167,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen }) => {
 			})),
 		[accounts, activeFrom, list, noName, setOpen, updateEditorCb]
 	);
-	const hasIdentity = useMemo(() => defaultIdentity && list.length > 1, [defaultIdentity, list]);
+	const hasIdentity = useMemo(() => list.length > 1, [list]);
 
 	return { from, activeFrom, identitiesList, hasIdentity };
 };

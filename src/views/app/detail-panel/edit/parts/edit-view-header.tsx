@@ -14,11 +14,22 @@ import {
 	Row,
 	Tooltip,
 	SnackbarManagerContext,
-	IconButton
+	IconButton,
+	MultiButton,
+	useModal,
+	Text
 } from '@zextras/carbonio-design-system';
 import { concat, some } from 'lodash';
 import { useDispatch } from 'react-redux';
-import { replaceHistory, useBoardHooks, useBoard } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	getCurrentRoute,
+	replaceHistory,
+	useUserSettings,
+	useBoardHooks,
+	useBoard
+} from '@zextras/carbonio-shell-ui';
+import { useHistory } from 'react-router-dom';
 import { EditViewContext } from './edit-view-context';
 import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
@@ -27,6 +38,7 @@ import { addAttachments } from '../edit-utils';
 import { CreateSnackbar, mailAttachment } from '../../../../../types';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import { ActionsType } from '../../../../../commons/utils';
+import SendLaterModal from './send-later-modal';
 
 type PropType = {
 	setShowRouteGuard: (arg: boolean) => void;
@@ -41,6 +53,8 @@ const EditViewHeader: FC<PropType> = ({
 	uploadAttachmentsCb
 }) => {
 	const [t] = useTranslation();
+
+	const { prefs } = useUserSettings();
 	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action } =
 		useContext(EditViewContext);
 	const [open, setOpen] = useState(false);
@@ -66,7 +80,8 @@ const EditViewHeader: FC<PropType> = ({
 
 	const { from, activeFrom, identitiesList, hasIdentity } = useGetIdentities({
 		updateEditorCb,
-		setOpen
+		setOpen,
+		editorId: editor?.editorId
 	});
 
 	const inputRef = useRef<any>();
@@ -91,6 +106,11 @@ const EditViewHeader: FC<PropType> = ({
 	};
 
 	const toggleOpen = useCallback(() => setOpen((show) => !show), []);
+	const history = useHistory();
+	const undoURL = useMemo(
+		() => `${history.location.pathname?.split('/mails')?.[1]}${history.location.search}`,
+		[history]
+	);
 
 	const sendMailCb = useCallback(() => {
 		setBtnLabel(t('label.sending', 'Sending'));
@@ -100,6 +120,7 @@ const EditViewHeader: FC<PropType> = ({
 			boardContext?.onConfirm(editor);
 		} else {
 			let notCanceled = true;
+			const oldEditor = { ...editor };
 			const infoSnackbar = (remainingTime: number, hideButton = false): void => {
 				createSnackbar({
 					key: 'send',
@@ -115,19 +136,33 @@ const EditViewHeader: FC<PropType> = ({
 					actionLabel: 'Undo',
 					onActionClick: () => {
 						notCanceled = false;
+						setTimeout(() => updateEditorCb({ ...oldEditor }, editorId), 10);
+						replaceHistory(undoURL);
+						setBtnLabel(t('label.send', 'Send'));
+						setIsDisabled(false);
 					}
 				});
 			};
+			setTimeout(() => {
+				if (folderId) {
+					replaceHistory(`/folder/${folderId}/`);
+				}
+			}, 10);
 
 			infoSnackbar(3);
 			setTimeout(() => notCanceled && infoSnackbar(2), 1000);
 			setTimeout(() => notCanceled && infoSnackbar(1), 2000);
 			setTimeout(() => {
 				if (notCanceled) {
-					folderId ? replaceHistory(`/folder/${folderId}/`) : boardUtilities?.closeBoard();
+					const activeRoute = getCurrentRoute();
+					if (activeRoute?.route === 'mails') {
+						folderId ? replaceHistory(`/folder/${folderId}/`) : boardUtilities?.closeBoard();
+					} else {
+						boardUtilities?.closeBoard();
+					}
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					dispatch(sendMsg({ editorId })).then((res) => {
+					dispatch(sendMsg({ editorId, prefs })).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							createSnackbar({
 								key: `mail-${editorId}`,
@@ -159,11 +194,51 @@ const EditViewHeader: FC<PropType> = ({
 		boardContext,
 		editor,
 		createSnackbar,
+		undoURL,
+		updateEditorCb,
+		editorId,
 		folderId,
 		boardUtilities,
 		dispatch,
-		editorId
+		prefs
 	]);
+
+	const createModal = useModal();
+	const sendMailAction = useCallback(() => {
+		if (editor?.subject) {
+			sendMailCb();
+		} else {
+			const closeModal = createModal({
+				title: t('header.attention', 'Attention'),
+				confirmLabel: t('action.ok', 'Ok'),
+				dismissLabel: t('label.cancel', 'Cancel'),
+				showCloseIcon: true,
+				onConfirm: () => {
+					sendMailCb();
+					closeModal();
+				},
+				onClose: () => {
+					closeModal();
+				},
+				onSecondaryAction: () => {
+					closeModal();
+				},
+				children: (
+					<>
+						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
+							{t(
+								'messages.modal.send_anyway.first',
+								"Email subject is empty and you didn't attach any files."
+							)}
+						</Text>
+						<Text overflow="break-word" style={{ paddingBottom: '16px' }}>
+							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
+						</Text>
+					</>
+				)
+			});
+		}
+	}, [editor?.subject, createModal, t, sendMailCb]);
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
@@ -247,6 +322,27 @@ const EditViewHeader: FC<PropType> = ({
 		]
 	);
 
+	const openSendLaterModal = useCallback(() => {
+		const closeModal = getBridgedFunctions()?.createModal(
+			{
+				maxHeight: '90vh',
+				children: (
+					<>
+						<SendLaterModal
+							// TODO : fix it inside shell
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							onClose={(): void => closeModal()}
+							dispatch={dispatch}
+							editor={editor}
+							closeBoard={boardUtilities?.closeBoard}
+						/>
+					</>
+				)
+			},
+			true
+		);
+	}, [boardUtilities, dispatch, editor]);
 	return (
 		<>
 			<Row
@@ -342,7 +438,20 @@ const EditViewHeader: FC<PropType> = ({
 						</Padding>
 					)}
 					<Padding left="large">
-						<Button onClick={sendMailCb} label={btnLabel} disabled={isSendDisabled} />
+						<MultiButton
+							label={btnLabel}
+							onClick={sendMailAction}
+							disabledPrimary={isSendDisabled}
+							disabledSecondary={isSendDisabled}
+							items={[
+								{
+									id: 'delayed_mail',
+									icon: 'ClockOutline',
+									label: t('label.send_later', 'Send later'),
+									click: openSendLaterModal
+								}
+							]}
+						/>
 					</Padding>
 				</Row>
 			</Row>

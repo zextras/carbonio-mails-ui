@@ -8,7 +8,7 @@ import { Container } from '@zextras/carbonio-design-system';
 import { QueryChip, Spinner, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
-import { includes, map } from 'lodash';
+import { includes, map, reduce } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import SearchPanel from './search-panel';
 import SearchConversationList from './search-conversation-list';
@@ -17,7 +17,8 @@ import { findIconFromChip } from './parts/use-find-icon';
 import { search } from '../../store/actions/search';
 import { selectSearches } from '../../store/searches-slice';
 import SearchMessageList from './search-message-list';
-import { SearchResults } from '../../types';
+import { FolderType, SearchResults } from '../../types';
+import { selectFolders } from '../../store/folders-slice';
 
 type SearchProps = {
 	useDisableSearch: () => [boolean, (arg: any) => void];
@@ -29,8 +30,28 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const [query, updateQuery] = useQuery();
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
-	const sortBySetting = settings.prefs.zimbraPrefConvListSortBy as 'dateDesc' | 'dateAsc';
 	const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
+	const folders = useSelector(selectFolders);
+
+	const searchInFolders = useMemo(
+		() =>
+			reduce(
+				folders,
+				(acc: Array<string>, v: FolderType, k: string) => {
+					if (v.isShared || v.perm) {
+						acc.push(k);
+					}
+					return acc;
+				},
+				[]
+			),
+		[folders]
+	);
+
+	const foldersToSearchInQuery = useMemo(
+		() => `( ${map(searchInFolders, (folder) => `inid:"${folder}"`).join(' OR ')} OR is:local) `,
+		[searchInFolders]
+	);
 
 	const emptySearchResults = useMemo(
 		() =>
@@ -48,6 +69,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
+	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(true);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 	const searchResults = useSelector(selectSearches);
 
@@ -62,8 +84,11 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	}, [searchResults.status, t]);
 
 	const queryToString = useMemo(
-		() => `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
-		[query]
+		() =>
+			isSharedFolderIncluded && searchInFolders?.length > 0
+				? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
+				: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
+		[isSharedFolderIncluded, searchInFolders.length, query, foldersToSearchInQuery]
 	);
 
 	const searchQuery = useCallback(
@@ -72,14 +97,14 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 				search({
 					query: queryString,
 					limit: 100,
-					sortBy: sortBySetting,
+					sortBy: 'dateDesc',
 					types: isMessageView ? 'message' : 'conversation',
 					offset: reset ? 0 : searchResults.offset,
 					recip: '0'
 				})
 			);
 		},
-		[dispatch, isMessageView, searchResults.offset, sortBySetting]
+		[dispatch, isMessageView, searchResults.offset]
 	);
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
@@ -188,6 +213,8 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			<AdvancedFilterModal
 				query={query}
 				updateQuery={updateQuery}
+				isSharedFolderIncluded={isSharedFolderIncluded}
+				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
 				open={showAdvanceFilters}
 				onClose={(): void => setShowAdvanceFilters(false)}
 				t={t}

@@ -17,6 +17,7 @@ export const Square = styled.div`
 `;
 export const ColorContainer = styled(Container)`
 	border-bottom: 1px solid ${({ theme }) => theme.palette.gray2.regular};
+	cursor: ${({ disabled }) => (disabled ? 'no-drop' : 'pointer')};
 `;
 
 export const TextUpperCase = styled(Text)`

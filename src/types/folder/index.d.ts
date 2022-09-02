@@ -23,6 +23,7 @@ export type FolderType = {
 	rgb: string;
 	rid?: string;
 	isSharedFolder?: boolean;
+	isShared?: boolean;
 	owner?: string;
 	zid?: string;
 	acl?: unknown;

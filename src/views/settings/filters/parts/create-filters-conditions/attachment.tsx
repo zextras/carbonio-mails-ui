@@ -15,7 +15,7 @@ import React, {
 import { Container } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import CustomSelect from '../custom-select';
-import { getExistOptions, findDefaultValue } from '../utils';
+import { getExistOptions } from '../utils';
 import { CreateFilterContext } from '../create-filter-context';
 
 type ComponentProps = {
