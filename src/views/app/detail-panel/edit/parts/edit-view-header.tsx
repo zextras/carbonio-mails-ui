@@ -51,13 +51,13 @@ const EditViewHeader: FC<PropType> = ({
 	const createSnackbar: CreateSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 
-	const { closeBoard, boardId } = useBoardHooks();
+	const boardUtilities = useBoardHooks();
 	const [showRichText, setShowRichtext] = useState(editor?.richText ?? false);
 	const [isUrgent, setIsUrgent] = useState(editor?.urgent ?? false);
 	const [isReceiptRequested, setIsReceiptRequested] = useState(editor?.requestReadReceipt ?? false);
 
 	// needs to be replace with correct type
-	const boardContext: { onConfirm: (arg: any) => void } = useBoard(boardId).context;
+	const boardContext: { onConfirm: (arg: any) => void } = useBoard(boardUtilities?.boardId)?.context;
 
 	const isSendDisabled = useMemo(() => {
 		const participants = concat(editor?.to, editor?.bcc, editor?.cc);
@@ -124,7 +124,7 @@ const EditViewHeader: FC<PropType> = ({
 			setTimeout(() => notCanceled && infoSnackbar(1), 2000);
 			setTimeout(() => {
 				if (notCanceled) {
-					folderId ? replaceHistory(`/folder/${folderId}/`) : closeBoard();
+					folderId ? replaceHistory(`/folder/${folderId}/`) : boardUtilities?.closeBoard();
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					dispatch(sendMsg({ editorId })).then((res) => {
@@ -154,15 +154,15 @@ const EditViewHeader: FC<PropType> = ({
 		}
 	}, [
 		t,
+		setShowRouteGuard,
 		action,
 		boardContext,
 		editor,
 		createSnackbar,
 		folderId,
-		closeBoard,
+		boardUtilities,
 		dispatch,
-		editorId,
-		setShowRouteGuard
+		editorId
 	]);
 
 	const onSave = useCallback(() => {
@@ -178,10 +178,10 @@ const EditViewHeader: FC<PropType> = ({
 			onActionClick: () => {
 				// todo: redirect to folder/6 i.e. Drafts
 				replaceHistory(`/folder/6/`);
-				closeBoard();
+				boardUtilities?.closeBoard();
 			}
 		});
-	}, [closeBoard, createSnackbar, editor, saveDraftCb, t]);
+	}, [boardUtilities, createSnackbar, editor, saveDraftCb, t]);
 
 	const onDropdownClose = useCallback((): void => {
 		setShowDropdown(false);

@@ -146,18 +146,10 @@ const App = () => {
 					icon: 'MailModOutline',
 					click: (ev) => {
 						ev?.preventDefault?.();
-						console.log(
-							'click',
-							addBoard,
-							addBoard({
-								url: `${MAILS_ROUTE}/new?action=new`,
-								title: t('label.new_email', 'New E-mail')
-							})
-						);
-						// addBoard({
-						// 	url: `${MAILS_ROUTE}/new?action=new`,
-						// 	title: t('label.new_email', 'New E-mail')
-						// });
+						addBoard({
+							url: `${MAILS_ROUTE}/new?action=new`,
+							title: t('label.new_email', 'New E-mail')
+						});
 					},
 					disabled: false,
 					group: MAIL_APP_ID,

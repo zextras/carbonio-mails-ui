@@ -61,7 +61,7 @@ const generateId = () => {
 
 export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }) {
 	const settings = useUserSettings();
-	const { updateBoard } = useBoardHooks();
+	const boardUtilities = useBoardHooks();
 	const board = useBoard();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const [editor, setEditor] = useState();
@@ -162,9 +162,11 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		if (setHeader) {
 			setHeader(editor?.subject ?? t('label.no_subject', 'No subject'));
 		} else {
-			updateBoard({ title: editor?.subject ?? t('messages.new_email', 'New e-mail') });
+			boardUtilities?.updateBoard({
+				title: editor?.subject?.length > 0 ? editor?.subject : t('messages.new_email', 'New e-mail')
+			});
 		}
-	}, [editor?.subject, setHeader, action, t, updateBoard]);
+	}, [editor?.subject, setHeader, action, t, boardUtilities]);
 
 	useEffect(() => {
 		if (action !== initialAction) {
@@ -196,7 +198,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 						editorId,
 						id: action === ActionsType.EDIT_AS_DRAFT ? activeMailId : undefined,
 						original: messages?.[activeMailId ?? editorId],
-						boardContext: board.context,
+						boardContext: board?.context,
 						action,
 						change,
 						accounts,
@@ -221,7 +223,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		action,
 		actionChanged,
 		activeMailId,
-		board.context,
+		board?.context,
 		change,
 		dispatch,
 		editor,
