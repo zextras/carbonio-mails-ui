@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
+import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import { isEqual, transform, isObject, filter, reduce } from 'lodash';
 
 export const differenceObject = (object, base) => {
@@ -205,6 +206,146 @@ export const ReadSignatureSettings = (t) => [
 	}
 ];
 
+export const getFontSizesOptions = () => [
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '8',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '8pt'
+	},
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '9',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '9pt'
+	},
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '10',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '10pt'
+	},
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '11',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '11pt'
+	},
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '12',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '12pt'
+	},
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '13',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '13pt'
+	},
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '14',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '14pt'
+	},
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '16',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '16pt'
+	},
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '18',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '18pt'
+	},
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '24',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '24pt'
+	},
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '36',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '36pt'
+	},
+	{
+		label: getBridgedFunctions()?.t('settings.font_size', {
+			count: '48',
+			defaultValue: '{{count}} pt'
+		}),
+		value: '48pt'
+	}
+];
+
+export const getFonts = () => {
+	const bridgedFn = getBridgedFunctions();
+	return [
+		{
+			label: bridgedFn?.t('settings.fonts.sans_serif', 'Sans Serif'),
+			value: 'arial,helvetica,sans-serif'
+		},
+		{
+			label: bridgedFn?.t('settings.fonts.serif', 'Serif'),
+			value: 'times new roman,new york,times,serif'
+		},
+		{
+			label: bridgedFn?.t('settings.fonts.wide_block', 'Wide Block'),
+			value: 'arial black,avant garde'
+		},
+		{
+			label: bridgedFn?.t('settings.fonts.monospaced', 'Monospaced'),
+			value: 'courier new,courier,monaco,monospace,sans-serif'
+		},
+		{
+			label: bridgedFn?.t('settings.fonts.comic', 'Comic'),
+			value: 'comic sans ms,comic sans,sans-serif'
+		},
+		{
+			label: bridgedFn?.t('settings.fonts.console', 'Console'),
+			value: 'lucida console,sans-serif'
+		},
+		{
+			label: bridgedFn?.t('settings.fonts.garamond', 'Garamond'),
+			value: 'garamond,new york,times,serif'
+		},
+		{
+			label: bridgedFn?.t('settings.fonts.elegant', 'Elegant'),
+			value: 'georgia,serif'
+		},
+		{
+			label: bridgedFn?.t('settings.fonts.professional', 'Professional'),
+			value: 'tahoma,new york,times,serif'
+		},
+		{
+			label: bridgedFn?.t('settings.fonts.terminal', 'Terminal'),
+			value: 'terminal,monaco'
+		},
+		{
+			label: bridgedFn?.t('settings.fonts.modern', 'Modern'),
+			value: 'trebuchet ms,sans-serif'
+		},
+		{
+			label: bridgedFn?.t('settings.fonts.wide', 'Wide'),
+			value: 'verdana,helvetica,sans-serif'
+		}
+	];
+};
 export const ConversationSortingSettings = (t) => [
 	{ label: t('settings.conv_sort_option.desc', 'From new to old'), value: 'dateDesc' },
 	{ label: t('settings.conv_sort_option.asc', 'From old to new'), value: 'dateAsc' }

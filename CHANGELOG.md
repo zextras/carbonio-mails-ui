@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.32](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.31...v0.1.32) (2022-09-01)
+
+
+### Bug Fixes
+
+* missing prefs pass to onConfirm action ([955adb7](https://github.com/zextras/carbonio-mails-ui/commit/955adb7b43b0c332b0261379ae902af0d15c7f65))
+
+### [0.1.31](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.30...v0.1.31) (2022-08-31)
+
+
+### Features
+
+* correct identity on reply ([5a280f9](https://github.com/zextras/carbonio-mails-ui/commit/5a280f9017a71035fdba5616d0b08353a03301cf))
+* default font size setting for email composition ([1651ff3](https://github.com/zextras/carbonio-mails-ui/commit/1651ff3b6be5968b87fbf7bf8791740954a864be))
+* managed the trash elements in search result ([#158](https://github.com/zextras/carbonio-mails-ui/issues/158)) ([625354c](https://github.com/zextras/carbonio-mails-ui/commit/625354c8af746681a130d381c5881a3713632fe6))
+* remove mail ordering param on search result ([30e7f31](https://github.com/zextras/carbonio-mails-ui/commit/30e7f31bb71c98760e1f536b9a6c0f7499e12a6f))
+* trustee address list setting added ([1e574cd](https://github.com/zextras/carbonio-mails-ui/commit/1e574cd1b4cb6d0cfdfd03515b513f185da6a908))
+* warning for missing subject or attachment ([b7b339c](https://github.com/zextras/carbonio-mails-ui/commit/b7b339cbe4fa73111109dabc8c0b98622c7e1f75))
+
+
+### Bug Fixes
+
+* accept shared calendar with existing name handled ([bab131b](https://github.com/zextras/carbonio-mails-ui/commit/bab131bf527c7e9c7e1aa03612fbafc5692b5281))
+* accordionItem correct width in sidebar component ([5572b58](https://github.com/zextras/carbonio-mails-ui/commit/5572b58d23d278a19ff4e6f4a6dbe048f45e4193))
+* fix editor mail composer ([e0d9e21](https://github.com/zextras/carbonio-mails-ui/commit/e0d9e21518ca612f7e1e85724f594a3502388cdb))
+* improved usage of composer values ([2fa52e9](https://github.com/zextras/carbonio-mails-ui/commit/2fa52e927486f096fdf2f0500039b139978dfaf5))
+* shared with information on edit folder modal ([b4ff3b8](https://github.com/zextras/carbonio-mails-ui/commit/b4ff3b839f1421f87fef681dd15d034dac481ca8))
+* switching between email sender and receiver ([1e05291](https://github.com/zextras/carbonio-mails-ui/commit/1e052913589152528883dd3b04c7ba92c8cac4bc))
+* trustee setting order and regex updated ([941ee5d](https://github.com/zextras/carbonio-mails-ui/commit/941ee5d8e0aee94400c9c675fdd06e7a4fa307a8))
+
 ### [0.1.30](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.29...v0.1.30) (2022-08-17)
 
 

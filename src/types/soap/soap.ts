@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { MailsEditor } from '../editor';
+import { PrefsType } from '../settings';
 import { EmailAddresses } from './redirect-message-action';
 import { SaveDraftResponse } from './save-draft';
 
@@ -263,6 +264,7 @@ export type RedirectActionParameters = {
 
 export type SaveDraftNewParameters = {
 	data: MailsEditor;
+	prefs?: PrefsType;
 };
 
 export type saveDraftNewResult = {
