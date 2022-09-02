@@ -159,8 +159,6 @@ const App = () => {
 		);
 	}, [t]);
 
-	const x = useCurrentRoute();
-
 	return (
 		<>
 			<SyncDataHandler />
