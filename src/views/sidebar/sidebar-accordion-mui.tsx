@@ -9,9 +9,8 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Container from '@mui/material/Container';
-import { Folder } from '@zextras/carbonio-shell-ui';
+import { Folder, useLocalStorage } from '@zextras/carbonio-shell-ui';
 import React, { FC, useCallback, useRef } from 'react';
-import { useLocalStorage } from '../../hooks/use-local-storage';
 import AccordionCustomComponent from './accordion-custom-component';
 import { ButtonFindShares } from './button-find-shares';
 
