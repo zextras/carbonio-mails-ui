@@ -278,7 +278,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 			<Padding left="small">
 				<Tooltip placement="right" label={tooltipText}>
 					<Row>
-						<Icon icon={icon} color={color} size="medium" />
+						<Icon icon={icon} color={color} size="large" />
 					</Row>
 				</Tooltip>
 			</Padding>

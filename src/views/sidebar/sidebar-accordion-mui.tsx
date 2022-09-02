@@ -62,7 +62,7 @@ export const SidebarAccordionMui: FC<{ accordions: Array<Folder>; folderId: stri
 								aria-controls="panel1a-content"
 								id={accordion.id}
 								sx={{
-									backgroundColor: accordion.id === folderId ? '#96b8e8' : '#f5f6f8',
+									backgroundColor: accordion.id === folderId ? '#d5e3f6' : '#f5f6f8',
 									'&:hover': { backgroundColor: accordion.id === folderId ? '#abc7ed' : '#D7DBE3' }
 								}}
 							>

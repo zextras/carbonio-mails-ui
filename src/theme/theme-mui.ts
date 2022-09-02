@@ -32,6 +32,7 @@ export const themeMui = createTheme({
 					color: '#333333',
 					'&:hover': { background: '#c8cfd8' },
 					fontSize: '20px',
+					padding: '2px',
 					fontWeight: 400
 				}
 			}
