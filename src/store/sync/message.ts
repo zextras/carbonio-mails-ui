@@ -7,7 +7,9 @@ import {
 	FOLDERS,
 	getBridgedFunctions,
 	getNotificationManager,
-	getUserSettings
+	getUserSettings,
+	pushHistory,
+	replaceHistory
 } from '@zextras/carbonio-shell-ui';
 import { NotificationConfig } from '@zextras/carbonio-shell-ui/types/notification';
 import {
@@ -47,7 +49,7 @@ const triggerNotification = (m: Array<SoapIncompleteMessage>): void => {
 				subject: t('notification.new_message', 'New Message')
 			};
 		}
-		return pick(norm, ['subject', 'fragment', 'date', 'parent', 'isSentByMe']);
+		return pick(norm, ['id', 'subject', 'fragment', 'date', 'parent', 'isSentByMe']);
 	});
 	const messagesToNotify = reverse(
 		sortBy(
@@ -68,7 +70,11 @@ const triggerNotification = (m: Array<SoapIncompleteMessage>): void => {
 		title: msg.subject,
 		message: msg.fragment ?? t('notification.no_content', 'Message without content') ?? '',
 		playSound: isAudioEnabled === 'TRUE',
-		showPopup: isShowNotificationEnabled === 'TRUE'
+		showPopup: isShowNotificationEnabled === 'TRUE',
+		onClick: (): void => {
+			window.focus();
+			replaceHistory(`/folder/${msg.parent}/message/${msg.id}`);
+		}
 	}));
 
 	getNotificationManager().multipleNotify(notificationConfig);
