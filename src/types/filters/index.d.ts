@@ -21,6 +21,7 @@ export type FilterRules = [
 ];
 
 export type KeywordState = Array<{
+	id: string;
 	label: string;
 	hasAvatar?: boolean;
 	value?: string;

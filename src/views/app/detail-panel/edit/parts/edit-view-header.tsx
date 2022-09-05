@@ -5,8 +5,6 @@
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Controller } from 'react-hook-form';
-
-import { useTranslation } from 'react-i18next';
 import {
 	Button,
 	Dropdown,
@@ -27,7 +25,8 @@ import {
 	replaceHistory,
 	useUserSettings,
 	useBoardHooks,
-	useBoard
+	useBoard,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { useHistory } from 'react-router-dom';
 import { EditViewContext } from './edit-view-context';
@@ -35,7 +34,7 @@ import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
 import * as StyledComp from './edit-view-styled-components';
 import { addAttachments } from '../edit-utils';
-import { CreateSnackbar, mailAttachment } from '../../../../../types';
+import { mailAttachment } from '../../../../../types';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import { ActionsType } from '../../../../../commons/utils';
 import SendLaterModal from './send-later-modal';
@@ -52,8 +51,6 @@ const EditViewHeader: FC<PropType> = ({
 	handleSubmit,
 	uploadAttachmentsCb
 }) => {
-	const [t] = useTranslation();
-
 	const { prefs } = useUserSettings();
 	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action } =
 		useContext(EditViewContext);
@@ -71,7 +68,7 @@ const EditViewHeader: FC<PropType> = ({
 	const [isReceiptRequested, setIsReceiptRequested] = useState(editor?.requestReadReceipt ?? false);
 
 	// needs to be replace with correct type
-	const boardContext: { onConfirm: (arg: any) => void } = useBoard(boardUtilities?.boardId)?.context;
+	const boardContext = useBoard()?.context;
 
 	const isSendDisabled = useMemo(() => {
 		const participants = concat(editor?.to, editor?.bcc, editor?.cc);
@@ -116,8 +113,11 @@ const EditViewHeader: FC<PropType> = ({
 		setBtnLabel(t('label.sending', 'Sending'));
 		setIsDisabled(true);
 		setShowRouteGuard(false);
-		if (action === ActionsType.COMPOSE && boardContext?.onConfirm) {
-			boardContext?.onConfirm(editor);
+		if (
+			action === ActionsType.COMPOSE &&
+			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm
+		) {
+			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm(editor);
 		} else {
 			let notCanceled = true;
 			const oldEditor = { ...editor };
@@ -188,7 +188,6 @@ const EditViewHeader: FC<PropType> = ({
 			}, 3000);
 		}
 	}, [
-		t,
 		setShowRouteGuard,
 		action,
 		boardContext,
@@ -238,7 +237,7 @@ const EditViewHeader: FC<PropType> = ({
 				)
 			});
 		}
-	}, [editor?.subject, createModal, t, sendMailCb]);
+	}, [editor?.subject, createModal, sendMailCb]);
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
@@ -256,7 +255,7 @@ const EditViewHeader: FC<PropType> = ({
 				boardUtilities?.closeBoard();
 			}
 		});
-	}, [boardUtilities, createSnackbar, editor, saveDraftCb, t]);
+	}, [boardUtilities, createSnackbar, editor, saveDraftCb]);
 
 	const onDropdownClose = useCallback((): void => {
 		setShowDropdown(false);
@@ -313,7 +312,6 @@ const EditViewHeader: FC<PropType> = ({
 		],
 		[
 			showRichText,
-			t,
 			toggleRichTextEditor,
 			isUrgent,
 			toggleImportant,

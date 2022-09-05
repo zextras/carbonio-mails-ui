@@ -172,7 +172,6 @@ const App = () => {
 
 	return (
 		<StoreProvider>
-			<Notifications />
 			<SyncDataHandler />
 		</StoreProvider>
 	);

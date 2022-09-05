@@ -41,7 +41,7 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [trusteeAddressesList, setTrusteeAddressList] = useState<string[]>([]);
 
-	const sectionTitle = useMemo(() => domainWhitelistSubSection(t), [t]);
+	const sectionTitle = useMemo(() => domainWhitelistSubSection(), []);
 	const message = useMemo(
 		() =>
 			t(

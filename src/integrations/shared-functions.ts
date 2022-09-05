@@ -10,6 +10,8 @@ import { MAILS_ROUTE } from '../constants';
 import { ActionsType } from '../commons/utils';
 
 export const mailToSharedFunction: (contacts: Array<Partial<Participant>>) => void = (contacts) => {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	addBoard({
 		url: `${MAILS_ROUTE}/new?action=mailTo`,
 		context: {
@@ -23,6 +25,8 @@ export const openComposerSharedFunction: (
 	compositionData: any,
 	...rest: any[]
 ) => void = (onConfirm, compositionData, ...rest) => {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	addBoard({
 		url: `${MAILS_ROUTE}/new?action=compose`,
 		context: {
@@ -57,6 +61,8 @@ export const openPrefilledComposerSharedFunction: (
 	const editor = omitBy({ ...normalizedValues, attach }, isNil);
 
 	// add board with custom editor
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	addBoard({
 		url: `${MAILS_ROUTE}/new?action=${ActionsType.PREFILL_COMPOSE}`,
 		context: {

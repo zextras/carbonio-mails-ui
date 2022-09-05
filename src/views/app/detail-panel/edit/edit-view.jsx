@@ -27,9 +27,9 @@ import {
 	replaceHistory,
 	addBoard,
 	useBoard,
-	FOLDERS
+	FOLDERS,
+	t
 } from '@zextras/carbonio-shell-ui';
-import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 
 import moment from 'moment';
@@ -79,7 +79,6 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 
 	const editors = useSelector(selectEditors);
 	const dispatch = useDispatch();
-	const [t] = useTranslation();
 
 	const accounts = useUserAccounts();
 	const messages = useSelector(selectMessages);
@@ -196,7 +195,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 				title: editor?.subject?.length > 0 ? editor?.subject : t('messages.new_email', 'New e-mail')
 			});
 		}
-	}, [editor?.subject, setHeader, action, t, boardUtilities]);
+	}, [editor?.subject, setHeader, action, boardUtilities]);
 
 	useEffect(() => {
 		if (
@@ -247,8 +246,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		editors,
 		messages,
 		saveDraftCb,
-		settings,
-		t
+		settings
 	]);
 
 	useEffect(() => {
@@ -281,7 +279,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 			}
 			replaceHistory(`/folder/${folderId}`);
 		}
-	}, [folderId, activeMailId, toggleAppBoard, action, editor?.subject, t]);
+	}, [folderId, activeMailId, toggleAppBoard, action, editor?.subject]);
 
 	const onDragOverEvent = (event) => {
 		event.preventDefault();

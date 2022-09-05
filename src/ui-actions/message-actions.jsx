@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { ActionsType } from '../commons/utils';
@@ -19,7 +19,6 @@ import { applyTag } from './tag-actions';
 export function setMsgRead({
 	ids,
 	value,
-	t,
 	dispatch,
 	folderId,
 	shouldReplaceHistory = false,
@@ -48,7 +47,7 @@ export function setMsgRead({
 	};
 }
 
-export function setMsgFlag({ ids, value, t, dispatch }) {
+export function setMsgFlag({ ids, value, dispatch }) {
 	return {
 		id: 'message-flag',
 		icon: value ? 'FlagOutline' : 'Flag',
@@ -68,7 +67,6 @@ export function setMsgFlag({ ids, value, t, dispatch }) {
 export function setMsgAsSpam({
 	ids,
 	value,
-	t,
 	dispatch,
 	createSnackbar,
 	shouldReplaceHistory = true,
@@ -129,7 +127,7 @@ export function setMsgAsSpam({
 	};
 }
 
-export function printMsg({ t, message, account }) {
+export function printMsg({ message, account }) {
 	const conversations = map([message], (msg) => ({
 		conversation: msg.conversation,
 		subject: msg.subject
@@ -151,7 +149,7 @@ export function printMsg({ t, message, account }) {
 					printWindow.top.document.title = 'Carbonio';
 					printWindow.document.write(content);
 				})
-				.catch((err) => {
+				.catch(() => {
 					const errorContent = getErrorPage(t);
 					printWindow.document.write(errorContent);
 				});
@@ -159,7 +157,7 @@ export function printMsg({ t, message, account }) {
 	};
 }
 
-export function showOriginalMsg({ id, t }) {
+export function showOriginalMsg({ id }) {
 	return {
 		id: 'message-show_original',
 		icon: 'CodeOutline',
@@ -173,7 +171,6 @@ export function showOriginalMsg({ id, t }) {
 
 export function moveMsgToTrash({
 	ids,
-	t,
 	dispatch,
 	createSnackbar,
 	deselectAll,
@@ -257,7 +254,7 @@ export function moveMsgToTrash({
 	};
 }
 
-export function deleteMsg({ ids, t, dispatch, createSnackbar, createModal }) {
+export function deleteMsg({ ids, dispatch, createSnackbar, createModal }) {
 	return {
 		id: 'message-delete',
 		icon: 'Trash2Outline',
@@ -322,7 +319,7 @@ export function deleteMsg({ ids, t, dispatch, createSnackbar, createModal }) {
 	};
 }
 
-export function replyMsg({ id, folderId, t }) {
+export function replyMsg({ id, folderId }) {
 	return {
 		id: 'message-reply',
 		icon: 'UndoOutline',
@@ -334,7 +331,7 @@ export function replyMsg({ id, folderId, t }) {
 	};
 }
 
-export function replyAllMsg({ id, folderId, t }) {
+export function replyAllMsg({ id, folderId }) {
 	return {
 		id: 'message-reply_all',
 		icon: 'ReplyAll',
@@ -346,7 +343,7 @@ export function replyAllMsg({ id, folderId, t }) {
 	};
 }
 
-export function forwardMsg({ id, folderId, t }) {
+export function forwardMsg({ id, folderId }) {
 	return {
 		id: 'message-forward',
 		icon: 'Forward',
@@ -358,7 +355,7 @@ export function forwardMsg({ id, folderId, t }) {
 	};
 }
 
-export function editAsNewMsg({ id, folderId, t }) {
+export function editAsNewMsg({ id, folderId }) {
 	return {
 		id: 'message-edit_as_new',
 		icon: 'Edit2Outline',
@@ -374,13 +371,13 @@ export function editDraft({ id, folderId, message }) {
 	return {
 		id: 'message-edit_as_draft',
 		icon: 'Edit2Outline',
-		label: getBridgedFunctions()?.t('label.edit', 'Edit'),
+		label: t('label.edit', 'Edit'),
 		click: (ev) => {
 			if (ev) ev.preventDefault();
 			if (message?.isScheduled) {
 				const closeModal = getBridgedFunctions()?.createModal({
-					title: getBridgedFunctions()?.t('label.warning', 'Warning'),
-					confirmLabel: getBridgedFunctions()?.t('action.edit_anyway', 'Edit anyway'),
+					title: t('label.warning', 'Warning'),
+					confirmLabel: t('action.edit_anyway', 'Edit anyway'),
 					onConfirm: () => {
 						closeModal();
 						replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
@@ -392,7 +389,7 @@ export function editDraft({ id, folderId, message }) {
 					children: (
 						<>
 							<Text overflow="break-word">
-								{getBridgedFunctions()?.t(
+								{t(
 									'messages.edit_schedule_warning',
 									'By editing this e-mail, the time and date previously set for delayed sending will be reset.'
 								)}
@@ -405,7 +402,7 @@ export function editDraft({ id, folderId, message }) {
 	};
 }
 
-export function sendDraft({ id, message, t, dispatch }) {
+export function sendDraft({ id, message, dispatch }) {
 	return {
 		id: 'message-send',
 		icon: 'PaperPlaneOutline',
@@ -422,7 +419,7 @@ export function sendDraft({ id, message, t, dispatch }) {
 	};
 }
 
-export function redirectMsg({ id, t, createModal }) {
+export function redirectMsg({ id, createModal }) {
 	return {
 		id: 'message-redirect',
 		icon: 'CornerUpRight',
@@ -444,7 +441,7 @@ export function redirectMsg({ id, t, createModal }) {
 	};
 }
 
-export function moveMessageToFolder({ id, t, dispatch, isRestore, createModal, deselectAll }) {
+export function moveMessageToFolder({ id, dispatch, isRestore, createModal, deselectAll }) {
 	return {
 		id: 'message-restore',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
@@ -472,7 +469,7 @@ export function moveMessageToFolder({ id, t, dispatch, isRestore, createModal, d
 	};
 }
 
-export function deleteMessagePermanently({ ids, t, dispatch, createModal, deselectAll }) {
+export function deleteMessagePermanently({ ids, dispatch, createModal, deselectAll }) {
 	return {
 		id: 'message-delete-permanently',
 		icon: 'DeletePermanentlyOutline',
@@ -500,7 +497,6 @@ export function deleteMessagePermanently({ ids, t, dispatch, createModal, desele
 
 export const getActions = ({
 	folderId,
-	t,
 	dispatch,
 	createSnackbar,
 	createModal,
@@ -515,20 +511,18 @@ export const getActions = ({
 					setMsgRead({
 						ids: [message.id],
 						value: message.read,
-						t,
 						dispatch,
 						folderId,
 						shouldReplaceHistory: true,
 						deselectAll
 					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
-					replyMsg({ id: message.id, folderId, t }),
-					forwardMsg({ id: message.id, folderId, t }),
-					deleteMessagePermanently({ ids: [message.id], t, dispatch, createModal, deselectAll }),
+					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
+					replyMsg({ id: message.id, folderId }),
+					forwardMsg({ id: message.id, folderId }),
+					deleteMessagePermanently({ ids: [message.id], dispatch, createModal, deselectAll }),
 
 					moveMessageToFolder({
 						id: [message.id],
-						t,
 						dispatch,
 						isRestore: true,
 						createModal,
@@ -539,31 +533,29 @@ export const getActions = ({
 					setMsgRead({
 						ids: [message.id],
 						value: message.read,
-						t,
 						dispatch,
 						folderId,
 						shouldReplaceHistory: true,
 						deselectAll
 					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
-					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
-					setMsgAsSpam({ ids: [message.id], value: false, t, dispatch, createSnackbar, folderId }),
-					printMsg({ t, message, account }),
-					deleteMessagePermanently({ ids: [message.id], t, dispatch, createModal, deselectAll }),
+					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
+					applyTag({ tags, conversation: message, folderId, deselectAll, isMessage: true }),
+					setMsgAsSpam({ ids: [message.id], value: false, dispatch, createSnackbar, folderId }),
+					printMsg({ message, account }),
+					deleteMessagePermanently({ ids: [message.id], dispatch, createModal, deselectAll }),
 					moveMessageToFolder({
 						id: [message.id],
-						t,
 						dispatch,
 						isRestore: true,
 						createModal,
 						deselectAll
 					}),
-					replyMsg({ id: message.id, folderId, t }),
-					replyAllMsg({ id: message.id, folderId, t }),
-					forwardMsg({ id: message.id, folderId, t }),
-					editAsNewMsg({ id: message.id, folderId, t }),
-					sendDraft({ id: message.id, message, t, dispatch }),
-					redirectMsg({ id: message.id, t, createModal })
+					replyMsg({ id: message.id, folderId }),
+					replyAllMsg({ id: message.id, folderId }),
+					forwardMsg({ id: message.id, folderId }),
+					editAsNewMsg({ id: message.id, folderId }),
+					sendDraft({ id: message.id, message, dispatch }),
+					redirectMsg({ id: message.id, createModal })
 				]
 			];
 		case FOLDERS.SPAM:
@@ -572,50 +564,45 @@ export const getActions = ({
 					setMsgRead({
 						ids: [message.id],
 						value: message.read,
-						t,
 						dispatch,
 						folderId,
 						shouldReplaceHistory: true,
 						deselectAll
 					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
 					setMsgAsSpam({
 						ids: [message.id],
 						value: true,
-						t,
 						dispatch,
 						createSnackbar,
 						folderId,
 						shouldReplaceHistory: true
 					}),
-					deleteMsg({ ids: [message.id], t, dispatch, createSnackbar, createModal, closeEditor })
+					deleteMsg({ ids: [message.id], dispatch, createSnackbar, createModal, closeEditor })
 				],
 				[
 					setMsgRead({
 						ids: [message.id],
 						value: message.read,
-						t,
 						dispatch,
 						folderId,
 						shouldReplaceHistory: true,
 						deselectAll
 					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
-					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
+					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
+					applyTag({ tags, conversation: message, folderId, deselectAll, isMessage: true }),
 					setMsgAsSpam({
 						ids: [message.id],
 						value: true,
-						t,
 						dispatch,
 						createSnackbar,
 						folderId,
 						shouldReplaceHistory: true
 					}),
-					printMsg({ t, message, account }),
-					showOriginalMsg({ id: message.id, t }),
+					printMsg({ message, account }),
+					showOriginalMsg({ id: message.id }),
 					moveMsgToTrash({
 						ids: [message.id],
-						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
@@ -623,22 +610,21 @@ export const getActions = ({
 						conversationId: message.conversation,
 						closeEditor
 					}),
-					replyMsg({ id: message.id, folderId, t }),
-					replyAllMsg({ id: message.id, folderId, t }),
-					forwardMsg({ id: message.id, folderId, t }),
-					editAsNewMsg({ id: message.id, folderId, t }),
-					sendDraft({ id: message.id, message, t, dispatch }),
-					redirectMsg({ id: message.id, t, createModal })
+					replyMsg({ id: message.id, folderId }),
+					replyAllMsg({ id: message.id, folderId }),
+					forwardMsg({ id: message.id, folderId }),
+					editAsNewMsg({ id: message.id, folderId }),
+					sendDraft({ id: message.id, message, dispatch }),
+					redirectMsg({ id: message.id, createModal })
 				]
 			];
 		case FOLDERS.DRAFTS:
 			return (message, closeEditor) => [
 				[
-					editDraft({ id: message.id, folderId, t, message }),
-					sendDraft({ id: message.id, message, t, dispatch }),
+					editDraft({ id: message.id, folderId, message }),
+					sendDraft({ id: message.id, message, dispatch }),
 					moveMsgToTrash({
 						ids: [message.id],
-						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
@@ -646,14 +632,13 @@ export const getActions = ({
 						conversationId: message.conversation,
 						closeEditor
 					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch })
+					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch })
 				],
 				[
-					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
-					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
+					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
+					applyTag({ tags, conversation: message, folderId, deselectAll, isMessage: true }),
 					moveMsgToTrash({
 						ids: [message.id],
-						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
@@ -661,9 +646,9 @@ export const getActions = ({
 						conversationId: message.conversation,
 						closeEditor
 					}),
-					editDraft({ id: message.id, folderId, t, message }),
-					sendDraft({ id: message.id, message, t, dispatch }),
-					printMsg({ t, message, account })
+					editDraft({ id: message.id, folderId, message }),
+					sendDraft({ id: message.id, message, dispatch }),
+					printMsg({ message, account })
 				]
 			];
 		case FOLDERS.SENT:
@@ -671,12 +656,11 @@ export const getActions = ({
 		default:
 			return (message, closeEditor) => [
 				[
-					replyMsg({ id: message.id, folderId, t }),
-					replyAllMsg({ id: message.id, folderId, t }),
-					forwardMsg({ id: message.id, folderId, t }),
+					replyMsg({ id: message.id, folderId }),
+					replyAllMsg({ id: message.id, folderId }),
+					forwardMsg({ id: message.id, folderId }),
 					moveMsgToTrash({
 						ids: [message.id],
-						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
@@ -687,41 +671,37 @@ export const getActions = ({
 					setMsgRead({
 						ids: [message.id],
 						value: message.read,
-						t,
 						dispatch,
 						folderId,
 						shouldReplaceHistory: true,
 						deselectAll
 					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch })
+					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch })
 				],
 				[
 					setMsgRead({
 						ids: [message.id],
 						value: message.read,
-						t,
 						dispatch,
 						folderId,
 						shouldReplaceHistory: true,
 						deselectAll
 					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }),
+					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
 
 					applyTag({ t, tags, conversation: message, folderId, deselectAll, isMessage: true }),
 					setMsgAsSpam({
 						ids: [message.id],
 						value: false,
-						t,
 						dispatch,
 						createSnackbar,
 						folderId,
 						shouldReplaceHistory: true
 					}),
-					printMsg({ t, message, account }),
-					showOriginalMsg({ id: message.id, t }),
+					printMsg({ message, account }),
+					showOriginalMsg({ id: message.id }),
 					moveMsgToTrash({
 						ids: [message.id],
-						t,
 						dispatch,
 						createSnackbar,
 						deselectAll,
@@ -729,12 +709,12 @@ export const getActions = ({
 						conversationId: message.conversation,
 						closeEditor
 					}),
-					replyMsg({ id: message.id, folderId, t }),
-					replyAllMsg({ id: message.id, folderId, t }),
-					forwardMsg({ id: message.id, folderId, t }),
-					editAsNewMsg({ id: message.id, folderId, t }),
-					sendDraft({ id: message.id, message, t, dispatch }),
-					redirectMsg({ id: message.id, t, createModal })
+					replyMsg({ id: message.id, folderId }),
+					replyAllMsg({ id: message.id, folderId }),
+					forwardMsg({ id: message.id, folderId }),
+					editAsNewMsg({ id: message.id, folderId }),
+					sendDraft({ id: message.id, message, dispatch }),
+					redirectMsg({ id: message.id, createModal })
 				]
 			];
 	}

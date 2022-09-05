@@ -5,15 +5,8 @@
  */
 
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import {
-	Container,
-	FormSubSection,
-	RadioGroup,
-	Radio,
-	Select
-} from '@zextras/carbonio-design-system';
-
-import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
+import { Container, FormSubSection, RadioGroup, Radio } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import Heading from './components/settings-heading';
 import { composingMsgSubSection } from './subsections';
 import CustomSelect from './filters/parts/custom-select';
@@ -33,7 +26,6 @@ type ComposeMessagesProps = {
 };
 
 const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings }) => {
-	const bridgedFn = getBridgedFunctions();
 	const [color, setColor] = useState(
 		settingsObj?.zimbraPrefHtmlEditorDefaultFontColor ?? '#aabbcc'
 	);
@@ -82,7 +74,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 						crossAlignment="flex-start"
 						mainAlignment="flex-start"
 					>
-						<Heading title={bridgedFn?.t('labels.compose_colin', 'Compose :')} size="small" />{' '}
+						<Heading title={t('labels.compose_colin', 'Compose :')} size="small" />{' '}
 						<RadioGroup
 							style={{ width: '100%' }}
 							value={settingsObj?.zimbraPrefComposeFormat}
@@ -90,8 +82,8 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 								updateSettings({ target: { name: 'zimbraPrefComposeFormat', value: newValue } });
 							}}
 						>
-							<Radio width="100%" label={bridgedFn?.t('label.as_html', 'As HTML')} value="html" />
-							<Radio width="100%" label={bridgedFn?.t('label.as_text', 'As Text')} value="text" />
+							<Radio width="100%" label={t('label.as_html', 'As HTML')} value="html" />
+							<Radio width="100%" label={t('label.as_text', 'As Text')} value="text" />
 						</RadioGroup>
 					</Container>
 					<Container
@@ -106,7 +98,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 								items={fontsOptions}
 								background="gray5"
 								disabled={isDisabled}
-								label={bridgedFn?.t('settings.font', 'Font')}
+								label={t('settings.font', 'Font')}
 								onChange={(value: string): void =>
 									updateSettings({
 										target: { name: 'zimbraPrefHtmlEditorDefaultFontFamily', value }
@@ -120,7 +112,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 							<CustomSelect
 								items={fontSizesOptions}
 								background="gray5"
-								label={bridgedFn?.t('label.size', 'Size')}
+								label={t('label.size', 'Size')}
 								defaultSelection={defaultSelectionFontSize}
 								disabled={isDisabled}
 								onChange={(size: string): void =>

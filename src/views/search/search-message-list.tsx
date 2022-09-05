@@ -7,7 +7,7 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
 import { isEmpty } from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { t } from '@zextras/carbonio-shell-ui';
 import ShimmerList from './shimmer-list';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import { SearchMessageListItem } from './search-message-list-item';
@@ -24,7 +24,6 @@ const SearchMessageList: FC<SearchListProps> = ({
 	isInvalidQuery
 }) => {
 	const { itemId } = useParams<{ itemId: string; folderId: string }>();
-	const [t] = useTranslation();
 
 	const canLoadMore = useMemo(
 		() => !loading && searchResults && !isEmpty(searchResults.messages) && searchResults.more,
@@ -58,7 +57,7 @@ const SearchMessageList: FC<SearchListProps> = ({
 			return t('displayer.search_list_title2', 'None of your items matches your search.');
 		}
 		return null;
-	}, [isInvalidQuery, searchResults.messages, randomListIndex, t]);
+	}, [isInvalidQuery, searchResults.messages, randomListIndex]);
 
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
