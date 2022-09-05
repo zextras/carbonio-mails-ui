@@ -87,7 +87,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 			{!isInvalidQuery && !isEmpty(searchResults?.conversations) && !loading && (
 				<Container style={{ overflowY: 'auto' }} mainAlignment="flex-start">
 					<List
-						items={searchResults.conversations}
+						items={searchResults.conversations ?? []}
 						ItemComponent={SearchConversationListItem}
 						onListBottom={canLoadMore ? loadMore : undefined}
 						active={itemId}

@@ -86,7 +86,6 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 						<RadioGroup
 							style={{ width: '100%' }}
 							value={settingsObj?.zimbraPrefComposeFormat}
-							mainAlignment="flex-start"
 							onChange={(newValue: string): void => {
 								updateSettings({ target: { name: 'zimbraPrefComposeFormat', value: newValue } });
 							}}

@@ -70,9 +70,9 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "1.6.2",
-    "@zextras/carbonio-design-system": "^0.3.10",
+    "@zextras/carbonio-design-system": "^0.4.0",
     "@zextras/carbonio-shell-ui": "^0.4.34",
-    "@zextras/carbonio-ui-preview": "^0.1.5",
+    "@zextras/carbonio-ui-preview": "^0.2.0",
     "core-js": "3.19.1",
     "i18next": "^21.5.4",
     "immer": "7.0.14",

@@ -195,7 +195,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				iconPlacement="left"
 				disabled={disableAdd}
 				onClick={onAdd}
-				size="fill"
+				width="fill"
 			/>
 			<Padding bottom="medium" />
 			<Button
@@ -205,14 +205,14 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				icon="ArrowheadRightOutline"
 				disabled={disableRemove}
 				onClick={onRemove}
-				size="fill"
+				width="fill"
 			/>
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.edit', 'Edit')}
 				type="outlined"
 				disabled={disableEdit}
-				size="fill"
+				width="fill"
 				onClick={openFilterModifyModal}
 			/>
 			<Padding bottom="medium" />
@@ -224,14 +224,14 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				color="error"
 				onClick={openDeleteModal}
 				disabled={disableDelete}
-				size="fill"
+				width="fill"
 			/>
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.create', 'Create')}
 				type="outlined"
 				disabled={disablCreate}
-				size="fill"
+				width="fill"
 				onClick={openCreateModal}
 			/>
 		</>

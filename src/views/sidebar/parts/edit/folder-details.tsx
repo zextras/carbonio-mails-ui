@@ -23,7 +23,6 @@ const FolderDetails: FC<{ folder: AccordionFolder }> = ({ folder }) => {
 				mainAlignment="flex-start"
 				padding={{ all: 'small' }}
 				crossAlignment="flex-start"
-				takeAvailableSpace
 				width="100%"
 				orientation="horizontal"
 			>

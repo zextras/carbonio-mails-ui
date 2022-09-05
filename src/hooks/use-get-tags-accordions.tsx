@@ -76,7 +76,7 @@ export const TagLabel: FC<ItemType> = (props) => {
 		<Dropdown contextMenu display="block" width="fit" items={[createTag({ t, createModal })]}>
 			<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
 				<Icon size="large" icon="TagsMoreOutline" /> <Padding right="large" />
-				<AccordionItem {...props} height={40} />
+				<AccordionItem {...{ ...props, color: `${props.color}` }} height={40} />
 			</Row>
 		</Dropdown>
 	);
@@ -102,6 +102,7 @@ const useGetTagsAccordion = (): TagsAccordionItems => {
 				(acc: Array<ItemType>, v) => {
 					const item = {
 						id: v.id,
+						item: v,
 						active: false,
 						color: v.color || 0,
 						divider: false,

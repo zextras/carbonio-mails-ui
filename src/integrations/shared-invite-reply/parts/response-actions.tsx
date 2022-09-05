@@ -155,7 +155,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 						label={t('label.type_name_here', 'Item name')}
 						backgroundColor="gray5"
 						value={calendarName}
-						hasError={disabled}
+						hasError={disabled && false}
 						onChange={(e: any): void => setCalendarName(e.target.value)}
 					/>
 				</Row>
@@ -186,7 +186,6 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				orientation="horizontal"
 				crossAlignment="flex-start"
 				mainAlignment="center"
-				weight="fill"
 				height="fit"
 				padding={{ all: 'large' }}
 			>
@@ -195,7 +194,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					label={t('label.accept', 'Accept')}
 					icon="Checkmark"
 					onClick={acceptShare}
-					disabled={disabled}
+					disabled={disabled && false}
 				/>
 				<Padding horizontal="small" />
 				<Button
