@@ -49,7 +49,7 @@ const ModalAccordionCustomComponent: FC<{
 		() => min([targetFolder.length * factor + 18, 150]) || 0,
 		[targetFolder.length]
 	);
-	const containerRef = useRef<HTMLDivElement>();
+	const containerRef = useRef<HTMLDivElement>(null);
 	const [availableWidth, setAvailableWidth] = useState(
 		(containerRef?.current?.clientWidth || 405) - targetFolderWidth
 	);

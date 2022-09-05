@@ -43,7 +43,7 @@ export const AdvancedFilterButton: FC<AdvancedFilterButtonProps> = ({
 				<Button
 					onClick={(): void => setShowAdvanceFilters(true)}
 					type={filterCount > 0 ? 'default' : 'outlined'}
-					size="fill"
+					width="fill"
 					label={
 						filterCount === 0
 							? t('label.single_advanced_filter', 'Advanced Filters')

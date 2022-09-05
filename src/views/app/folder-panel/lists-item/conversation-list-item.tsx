@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isEmpty, reduce, trimStart, uniqBy, find, includes, filter, map } from 'lodash';
+import { isEmpty, reduce, trimStart, uniqBy, find, includes, filter, map, noop } from 'lodash';
 import styled from 'styled-components';
 import {
 	pushHistory,
@@ -27,7 +27,9 @@ import {
 	Text,
 	Drag,
 	Tooltip,
-	List
+	List,
+	ContainerProps,
+	ListProps
 } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -43,6 +45,8 @@ import MessageListItem from './message-list-item';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { StateType, Conversation, MailMessage, TextReadValuesProps } from '../../../../types';
 
+type CustomListItem = Partial<MailMessage> & { id: string; isFromSearch?: boolean };
+
 type ConversationMessagesListProps = {
 	active: string;
 	conversationStatus: string | undefined;
@@ -51,6 +55,8 @@ type ConversationMessagesListProps = {
 	length: number;
 	isFromSearch?: boolean;
 };
+
+const CustomList = styled(List)<ListProps<CustomListItem> & { isFromSearch?: boolean }>``;
 
 export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 	active,
@@ -61,19 +67,24 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 	isFromSearch
 }) => {
 	const messagesToRender = useMemo(
-		() => (isFromSearch ? map(messages, (item) => ({ ...item, isFromSearch: true })) : messages),
+		() =>
+			map(messages, (item) => ({
+				...item,
+				id: item.id ?? '',
+				...(isFromSearch && { isFromSearch: true })
+			})),
 		[isFromSearch, messages]
 	);
 	if (conversationStatus !== 'complete') {
 		return (
 			<Container height={64 * length}>
-				<Button loading disabled label="" type="ghost" />
+				<Button loading disabled label="" type="ghost" onClick={noop} />
 			</Container>
 		);
 	}
 
 	return (
-		<List
+		<CustomList
 			style={{ paddingBottom: '4px' }}
 			active={active}
 			items={messagesToRender}
@@ -87,7 +98,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 	);
 };
 
-const CollapseElement = styled(Container)`
+const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
 `;
 
@@ -119,7 +130,7 @@ export const RowInfo: FC<RowInfoProps> = ({ item, tags, isFromSearch, allMessage
 			)}
 			{showTagIcon && (
 				<Padding left="small">
-					<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+					<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
 				</Padding>
 			)}
 			{item.attachment && (
@@ -146,7 +157,7 @@ type ConversationListItemProps = {
 	selected: boolean;
 	selecting: boolean;
 	toggle: () => void;
-	active: string;
+	active: boolean;
 	visible: boolean;
 	setDraggedIds: (ids: Record<string, boolean>) => void;
 	draggedIds: Array<string>;
@@ -354,7 +365,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 			type="conversation"
 			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
 			style={{ display: 'block' }}
-			onDragStart={(e: Element): void => dragCheck(e, item.id)}
+			onDragStart={(e): void => dragCheck(e, item.id)}
 		>
 			<Container
 				background={item.read ? 'transparent' : 'gray5'}

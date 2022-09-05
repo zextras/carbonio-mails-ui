@@ -22,7 +22,7 @@ import {
 	Button,
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
-import { cloneDeep, filter, startsWith } from 'lodash';
+import { cloneDeep, filter, noop, startsWith } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
@@ -244,7 +244,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 				>
 					<Accordion
 						background="gray6"
-						items={filteredFromUserInput}
+						items={filteredFromUserInput as any[]}
 						style={{ overflowY: 'hidden' }}
 					/>
 				</ContainerEl>
@@ -254,7 +254,12 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 					mainAlignment="center"
 					crossAlignment="flex-start"
 				>
-					<Button type="ghost" label={t('label.new_folder', 'New Folder')} color="primary" />
+					<Button
+						type="ghost"
+						label={t('label.new_folder', 'New Folder')}
+						color="primary"
+						onClick={noop}
+					/>
 				</Container>
 				<ModalFooter
 					onConfirm={onConfirm}

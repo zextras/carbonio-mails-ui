@@ -35,7 +35,7 @@ const ReadReceiptModal: FC<CompProps> = ({
 	const dispatch = useDispatch();
 
 	const [t] = useTranslation();
-	const createSnackbar: CreateSnackbar = useContext(SnackbarManagerContext);
+	const createSnackbar = useContext(SnackbarManagerContext);
 	const title = useMemo(() => t('label.read_receipt_req', 'Read receipt required'), [t]);
 	const onConfirm = useCallback(() => {
 		dispatch(

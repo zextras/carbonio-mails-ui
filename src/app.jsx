@@ -23,7 +23,6 @@ import {
 	openComposerSharedFunction,
 	openPrefilledComposerSharedFunction
 } from './integrations/shared-functions';
-import Notifications from './views/notifications';
 import { ParticipantRole } from './commons/utils';
 import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';

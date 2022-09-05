@@ -12,7 +12,8 @@ import {
 	ChipInput,
 	Input,
 	Tooltip,
-	IconButton
+	IconButton,
+	ChipItem
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { filter, omit } from 'lodash';
@@ -23,7 +24,7 @@ import CustomSelect from './custom-select';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 1px solid
-		${({ theme, disabled, iconColor }): string =>
+		${({ theme, disabled, iconColor = 'primary' }): string =>
 			disabled ? theme.palette.gray2.regular : theme.palette[iconColor].regular};
 	svg {
 		border: none !important;
@@ -188,7 +189,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	const showTagOptions = useMemo(() => activeActionOption === 'tagWith', [activeActionOption]);
 
 	const tagChipOnAdd = useCallback(
-		(label: string): any => {
+		(label: unknown): ChipItem => {
 			const chipBg = filter(tagOptions, { label })[0];
 			return {
 				label: `${label}`,
@@ -291,7 +292,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 							defaultValue={[]}
 							options={tagOptions}
 							value={tag}
-							singleSelction
+							singleSelection
 							onChange={onTagChange}
 							onAdd={tagChipOnAdd}
 							disableOptions={false}

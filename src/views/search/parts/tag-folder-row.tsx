@@ -22,7 +22,6 @@ type ComponentProps = {
 };
 const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { t, folder, setFolder, tagOptions, tag, setTag } = compProps;
-	const chipBackground = useMemo(() => 'gray5', []);
 	const [open, setOpen] = useState(false);
 
 	const onClose = useCallback(() => setOpen(false), []);
@@ -43,11 +42,11 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	);
 
 	const folderChipOnAdd = useCallback(
-		(label: string): any => chipOnAdd(label, 'in', true, false, true, 'FolderOutline', ''),
+		(label): any => chipOnAdd(label, 'in', true, false, true, 'FolderOutline', ''),
 		[chipOnAdd]
 	);
 	const tagChipOnAdd = useCallback(
-		(label: string): any => {
+		(label): any => {
 			const chipBg = filter(tagOptions, { label })[0];
 			return chipOnAdd(
 				label,
@@ -84,7 +83,7 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 				<ChipInput
 					placeholder={tagPlaceholder}
-					background={chipBackground}
+					background="gray5"
 					defaultValue={[]}
 					options={tagOptions}
 					value={tag}
@@ -97,7 +96,7 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 				<ChipInput
-					background={chipBackground}
+					background="gray5"
 					icon="FolderOutline"
 					placeholder={t('share.is_contained_in', 'Is contained in')}
 					value={folder}

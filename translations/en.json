@@ -189,7 +189,7 @@
             },
             "wipe": {
                 "body": {
-                    "message1": "",
+                    "message1": "Do you want to wipe the selected folder?",
                     "message2": "If you wipe it, all the related content will be deleted permanently."
                 }
             }

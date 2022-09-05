@@ -3,12 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { noop } from 'lodash';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { Row, IconButton, Input } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
 type CustomComponentProps = {
-	value: unknown;
+	value: string | number;
 	onClick?: () => void;
 	label: string;
 };
@@ -31,10 +32,10 @@ const CustomButtonWrapper = styled(Row)`
 
 const DatePickerCustomComponent: FC<CustomComponentProps> = ({
 	value,
-	onClick,
+	onClick = noop,
 	label
 }): ReactElement => {
-	const [input, setInput] = useState(value);
+	const [input, setInput] = useState<string | number>(value);
 
 	useEffect(() => {
 		setInput(value);

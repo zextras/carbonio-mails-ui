@@ -60,9 +60,9 @@ const EditViewHeader: FC<PropType> = ({
 	const [open, setOpen] = useState(false);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [openDD, setOpenDD] = useState(false);
-	const [btnLabel, setBtnLabel] = useState(t('label.send', 'Send'));
+	const [btnLabel, setBtnLabel] = useState<string>(t('label.send', 'Send'));
 	const [isDisabled, setIsDisabled] = useState(false);
-	const createSnackbar: CreateSnackbar = useContext(SnackbarManagerContext);
+	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 
 	const boardUtilities = useBoardHooks();
@@ -432,7 +432,7 @@ const EditViewHeader: FC<PropType> = ({
 						<Padding left="large">
 							<Button
 								type="outlined"
-								onClick={handleSubmit(onSave)}
+								onClick={(): void => handleSubmit(onSave)}
 								label={`${t('label.save', 'Save')}`}
 							/>
 						</Padding>

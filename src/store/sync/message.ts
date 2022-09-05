@@ -3,7 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, t, getUserSettings } from '@zextras/carbonio-shell-ui';
+import {
+	FOLDERS,
+	t,
+	getNotificationManager,
+	getUserSettings,
+	replaceHistory
+} from '@zextras/carbonio-shell-ui';
+import { NotificationConfig } from '@zextras/carbonio-shell-ui/types/notification';
 import {
 	forEach,
 	pick,
@@ -17,15 +24,8 @@ import {
 	find,
 	reject
 } from 'lodash';
-import sound from '../../assets/notification.mp3';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { SoapIncompleteMessage, MsgStateType, IncompleteMessage, Payload } from '../../types';
-import { showNotification } from '../../views/notifications';
-
-function playSound(): void {
-	const audio = new Audio(sound);
-	audio.play();
-}
 
 const triggerNotification = (m: Array<SoapIncompleteMessage>): void => {
 	const { props, prefs } = getUserSettings();
@@ -47,7 +47,7 @@ const triggerNotification = (m: Array<SoapIncompleteMessage>): void => {
 				subject: t('notification.new_message', 'New Message')
 			};
 		}
-		return pick(norm, ['subject', 'fragment', 'date', 'parent', 'isSentByMe']);
+		return pick(norm, ['id', 'subject', 'fragment', 'date', 'parent', 'isSentByMe']);
 	});
 	const messagesToNotify = reverse(
 		sortBy(
@@ -59,18 +59,23 @@ const triggerNotification = (m: Array<SoapIncompleteMessage>): void => {
 			'date'
 		)
 	);
-	if (isAudioEnabled === 'TRUE' && messagesToNotify?.length > 0) {
-		playSound();
+
+	if (!messagesToNotify?.length || !(isAudioEnabled || isShowNotificationEnabled)) {
+		return;
 	}
 
-	if (isShowNotificationEnabled === 'TRUE') {
-		forEach(messagesToNotify, (msg) => {
-			showNotification(
-				msg.subject,
-				msg.fragment ?? t('notification.no_content', 'Message without content')
-			);
-		});
-	}
+	const notificationConfig: NotificationConfig[] = messagesToNotify.map((msg) => ({
+		title: msg.subject,
+		message: msg.fragment ?? t('notification.no_content', 'Message without content') ?? '',
+		playSound: isAudioEnabled === 'TRUE',
+		showPopup: isShowNotificationEnabled === 'TRUE',
+		onClick: (): void => {
+			window.focus();
+			replaceHistory(`/folder/${msg.parent}/message/${msg.id}`);
+		}
+	}));
+
+	getNotificationManager().multipleNotify(notificationConfig);
 };
 
 export const handleCreatedMessagesReducer = (state: MsgStateType, { payload }: Payload): void => {

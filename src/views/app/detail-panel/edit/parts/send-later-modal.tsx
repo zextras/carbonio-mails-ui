@@ -95,7 +95,7 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 						minDate={new Date()}
 						minTime={minTime}
 						maxTime={maxTime}
-						customInput={<DatePickerCustomComponent label={datePickerLabel} value={time} />}
+						customInput={<DatePickerCustomComponent label={datePickerLabel} value={time ?? ''} />}
 					/>
 				</Container>
 			</Container>
