@@ -26,10 +26,10 @@ export default function ReceivingMessagesSettings({
 	updateProps
 }) {
 	const [t] = useTranslation();
-	const notifyFolderOptn = useMemo(() => NotifyFolderOpts(t), [t]);
-	const readReceiptOptn = useMemo(() => ReadReceiptOpts(t), [t]);
-	const msgsFromMeOpts = useMemo(() => MsgsFromMeOpts(t), [t]);
-	const sectionTitle = useMemo(() => receivingMessagesSubSection(t), [t]);
+	const notifyFolderOptn = useMemo(() => NotifyFolderOpts(), []);
+	const readReceiptOptn = useMemo(() => ReadReceiptOpts(), []);
+	const msgsFromMeOpts = useMemo(() => MsgsFromMeOpts(), []);
+	const sectionTitle = useMemo(() => receivingMessagesSubSection(), []);
 
 	const mailNotificationSoundDefault = useMemo(
 		() =>
