@@ -13,6 +13,7 @@ import { FilterContext } from './filter-context';
 import CreateOutgoingFilterModal from './create-outgoing-filter-modal ';
 import DeleteOutgoingFilterModal from './delete-outgoing-filter-modal';
 import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
+import { StoreProvider } from '../../../../store/redux';
 
 type FilterListType = {
 	active: boolean;
@@ -79,13 +80,15 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<CreateOutgoingFilterModal
-						t={t}
-						onClose={(): void => closeModal()}
-						outgoingFilters={outgoingFilters}
-						setFetchOutgoingFilters={setFetchOutgoingFilters}
-						setOutgoingFilters={setOutgoingFilters}
-					/>
+					<StoreProvider>
+						<CreateOutgoingFilterModal
+							t={t}
+							onClose={(): void => closeModal()}
+							outgoingFilters={outgoingFilters}
+							setFetchOutgoingFilters={setFetchOutgoingFilters}
+							setOutgoingFilters={setOutgoingFilters}
+						/>
+					</StoreProvider>
 				)
 			},
 			true
@@ -123,20 +126,22 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			{
 				size: 'small',
 				children: (
-					<DeleteOutgoingFilterModal
-						onClose={(): void => closeModal()}
-						t={t}
-						availableList={availableList}
-						activeList={activeList}
-						setFilters={setOutgoingFilters}
-						setFetchFilters={setFetchOutgoingFilters}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						modifierFunc={modifyOutgoingFilterRules}
-						filterName={selectedFilterName}
-						selectedFilter={selectedFilter}
-						outgoingFilters={outgoingFilters}
-					/>
+					<StoreProvider>
+						<DeleteOutgoingFilterModal
+							onClose={(): void => closeModal()}
+							t={t}
+							availableList={availableList}
+							activeList={activeList}
+							setFilters={setOutgoingFilters}
+							setFetchFilters={setFetchOutgoingFilters}
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							modifierFunc={modifyOutgoingFilterRules}
+							filterName={selectedFilterName}
+							selectedFilter={selectedFilter}
+							outgoingFilters={outgoingFilters}
+						/>
+					</StoreProvider>
 				)
 			},
 			true
@@ -160,14 +165,16 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<ModifyOutgoingFilterModal
-						t={t}
-						selectedFilter={selectedFilter}
-						onClose={(): void => closeModal()}
-						outgoingFilters={outgoingFilters}
-						setFetchOutgoingFilters={setFetchOutgoingFilters}
-						setOutgoingFilters={setOutgoingFilters}
-					/>
+					<StoreProvider>
+						<ModifyOutgoingFilterModal
+							t={t}
+							selectedFilter={selectedFilter}
+							onClose={(): void => closeModal()}
+							outgoingFilters={outgoingFilters}
+							setFetchOutgoingFilters={setFetchOutgoingFilters}
+							setOutgoingFilters={setOutgoingFilters}
+						/>
+					</StoreProvider>
 				)
 			},
 			true

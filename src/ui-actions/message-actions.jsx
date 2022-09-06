@@ -15,6 +15,7 @@ import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
+import { StoreProvider } from '../store/redux';
 
 export function setMsgRead({
 	ids,
@@ -299,7 +300,7 @@ export function deleteMsg({ ids, dispatch, createSnackbar, createModal }) {
 				},
 				dismissLabel: t('label.cancel', 'Cancel'),
 				children: (
-					<>
+					<StoreProvider>
 						<Text overflow="break-word">
 							{t(
 								'messages.modal.delete.sure_delete_email',
@@ -312,7 +313,7 @@ export function deleteMsg({ ids, dispatch, createSnackbar, createModal }) {
 								'If you delete the e-mail, it will be lost forever.'
 							)}
 						</Text>
-					</>
+					</StoreProvider>
 				)
 			});
 		}
@@ -387,14 +388,14 @@ export function editDraft({ id, folderId, message }) {
 					},
 					showCloseIcon: true,
 					children: (
-						<>
+						<StoreProvider>
 							<Text overflow="break-word">
 								{t(
 									'messages.edit_schedule_warning',
 									'By editing this e-mail, the time and date previously set for delayed sending will be reset.'
 								)}
 							</Text>
-						</>
+						</StoreProvider>
 					)
 				});
 			} else replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
@@ -430,9 +431,9 @@ export function redirectMsg({ id, createModal }) {
 				{
 					maxHeight: '90vh',
 					children: (
-						<>
+						<StoreProvider>
 							<RedirectAction onClose={() => closeModal()} id={id} />
-						</>
+						</StoreProvider>
 					)
 				},
 				true
@@ -451,7 +452,7 @@ export function moveMessageToFolder({ id, dispatch, isRestore, createModal, dese
 				{
 					maxHeight: '90vh',
 					children: (
-						<>
+						<StoreProvider>
 							<MoveConvMessage
 								selectedIDs={id}
 								onClose={() => closeModal()}
@@ -460,7 +461,7 @@ export function moveMessageToFolder({ id, dispatch, isRestore, createModal, dese
 								isRestore={isRestore}
 								deselectAll={deselectAll}
 							/>
-						</>
+						</StoreProvider>
 					)
 				},
 				true
@@ -478,7 +479,7 @@ export function deleteMessagePermanently({ ids, dispatch, createModal, deselectA
 			const closeModal = createModal(
 				{
 					children: (
-						<>
+						<StoreProvider>
 							<DeleteConvConfirm
 								selectedIDs={ids}
 								dispatch={dispatch}
@@ -486,7 +487,7 @@ export function deleteMessagePermanently({ ids, dispatch, createModal, deselectA
 								onClose={() => closeModal()}
 								deselectAll={deselectAll}
 							/>
-						</>
+						</StoreProvider>
 					)
 				},
 				true
