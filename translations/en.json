@@ -228,6 +228,8 @@
         "always_allow_domain": "Always allow from <strong>{{domain}}</strong> domain",
         "any": "any",
         "app_name": "Mails",
+        "as_html": "As HTML",
+        "as_text": "As Text",
         "attachement_unknown": "Unknown <{{mimeType}}>",
         "attachment": "Attachment",
         "attachment_plural": "Attachments",
@@ -355,10 +357,12 @@
         "role": "Role: ",
         "save": "Save",
         "save_to_files": "Save to Files",
+        "schedule_send": "Schedule send",
         "search_activate_selection_mode": "Selection mode isn’t available yet on search results",
         "searching": "Searching...",
         "select": "Select",
         "select_color": "Select Color",
+        "select_date_time": "Select date and time",
         "select_folder": "Select folder",
         "select_signature": "Select a signature",
         "send": "Send",
@@ -406,6 +410,10 @@
         "would_like_to_share": "shared its",
         "write": "Write"
     },
+    "labels": {
+        "compose_colin": "Compose :",
+        "composing_messages": "Composing Messages"
+    },
     "message": {
         "admin_rights": "View,Edit,Add,Remove,Administer",
         "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
@@ -416,6 +424,8 @@
         "manager_rights": "View,Edit,Add,Remove",
         "schedule_mail": "Will be sent on: {{date}} at {{time}}",
         "schedule_time": "{{date}} at {{time}}",
+        "select_date_time": "Select a date and time to send this message",
+        "send_later_success": "Your e-mail will be send on {{date}} at {{time}}",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
             "all_att_added": "Attachments added successfully",
@@ -570,6 +580,7 @@
         "filter_deleted": "Filter successfully deleted",
         "filter_folder_message": "Select a folder to apply your filter:",
         "filter_name": "Filter Name",
+        "font": "Font",
         "from_distribution_list": "from distribution list",
         "gb": "GB",
         "header_name": "Header Named",
