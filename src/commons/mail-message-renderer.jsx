@@ -109,7 +109,6 @@ const _TextMessageRenderer = ({ body, t }) => {
 						icon="EyeOutline"
 						type="outlined"
 						onClick={() => setShowQuotedText(true)}
-						size="fill"
 					/>
 				</Row>
 			)}
