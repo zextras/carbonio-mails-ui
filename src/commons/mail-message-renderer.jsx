@@ -387,7 +387,6 @@ const _HtmlMessageRenderer = ({ msgId, body, parts, t, participants }) => {
 						icon="EyeOutline"
 						type="outlined"
 						onClick={() => setShowQuotedText(true)}
-						size="fill"
 					/>
 				</Row>
 			)}
