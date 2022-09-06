@@ -49,18 +49,33 @@ function getAttachmentsDownloadLink(messageId, messageSubject, attachments) {
 }
 
 function getAttachmentsLink(messageId, messageSubject, attachments, attachmentType) {
-	if (!messageId.includes(':')) {
-		if (attachments.length > 1) {
-			return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
-				','
-			)}&disp=a&fmt=zip`;
-		}
-		if (includes(['image/png', 'image/jpeg', 'image/jpg'], attachmentType)) {
-			return `/service/preview/image/${messageId}/${attachments.join(',')}/0x0/?quality=high`;
-		}
-		if (includes(['application/pdf'], attachmentType)) {
-			return `/service/preview/pdf/${messageId}/${attachments.join(',')}/?first_page=1`;
-		}
+	if (attachments.length > 1) {
+		return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
+			','
+		)}&disp=a&fmt=zip`;
+	}
+	if (includes(['image/gif', 'image/png', 'image/jpeg', 'image/jpg'], attachmentType)) {
+		return `/service/preview/image/${messageId}/${attachments.join(',')}/0x0/?quality=high`;
+	}
+	if (includes(['application/pdf'], attachmentType)) {
+		return `/service/preview/pdf/${messageId}/${attachments.join(',')}/?first_page=1`;
+	}
+	if (
+		includes(
+			[
+				'text/csv',
+				'text/plain',
+				'application/vnd.ms-excel',
+				'application/msword',
+				'application/vnd.oasis.opendocument.spreadsheet',
+				'application/vnd.oasis.opendocument.presentation',
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+				'application/vnd.oasis.opendocument.text'
+			],
+			attachmentType
+		)
+	) {
+		return `/service/preview/document/${messageId}/${attachments.join(',')}`;
 	}
 	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
 }
@@ -197,7 +212,14 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 						tooltipLabel: t('preview.close', 'Close Preview')
 					},
 					/** Actions for the preview */
-					// actions: HeaderAction[],
+					actions: [
+						{
+							icon: 'DownloadOutline',
+							tooltipLabel: t('label.download', 'Download'),
+							id: 'DownloadOutline',
+							onClick: downloadAttachment
+						}
+					],
 					/** Extension of the file, shown as info */
 					extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
 					/** Name of the file, shown as info */
@@ -211,7 +233,7 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 				inputRef2.current.click();
 			}
 		},
-		[att, createPreview, link, t]
+		[att, createPreview, downloadAttachment, link, t]
 	);
 
 	return (
