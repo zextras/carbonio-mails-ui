@@ -41,6 +41,7 @@ import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
+import { StoreProvider } from '../../store/redux';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 import { NewModal } from './new-modal';
 import { MoveModal } from './move-modal';
@@ -109,9 +110,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						{
 							maxHeight: '90vh',
 							children: (
-								<>
+								<StoreProvider>
 									<NewModal folder={folder} onClose={(): void => closeModal()} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -132,9 +133,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						{
 							maxHeight: '90vh',
 							children: (
-								<>
+								<StoreProvider>
 									<MoveModal folder={folder} onClose={(): void => closeModal()} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -156,9 +157,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<EmptyModal onClose={(): void => closeModal()} folder={folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -179,9 +180,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						{
 							maxHeight: '90vh',
 							children: (
-								<>
+								<StoreProvider>
 									<EditModal onClose={(): void => closeModal()} folder={folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -201,9 +202,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<DeleteModal onClose={(): void => closeModal()} folder={folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -221,14 +222,14 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<ShareFolderModal
 										onClose={(): void => closeModal()}
 										folder={folder}
 										activeGrant={activeGrant}
 										goBack={goBack}
 									/>
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -257,9 +258,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<SharesInfoModal onClose={(): void => closeModal()} folder={folder.folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true

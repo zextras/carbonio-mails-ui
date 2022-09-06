@@ -28,6 +28,7 @@ import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-
 import DeleteTagModal from '../views/sidebar/parts/tags/delete-tag-modal';
 import { convAction, msgAction } from '../store/actions';
 import { TagsActionsType } from '../commons/utils';
+import { StoreProvider } from '../store/redux';
 
 export const createTag = ({ createModal }: ArgumentType): ReturnType => ({
 	id: TagsActionsType.NEW,
@@ -40,7 +41,13 @@ export const createTag = ({ createModal }: ArgumentType): ReturnType => ({
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const closeModal = createModal(
-			{ children: <CreateUpdateTagModal onClose={(): void => closeModal()} /> },
+			{
+				children: (
+					<StoreProvider>
+						<CreateUpdateTagModal onClose={(): void => closeModal()} />
+					</StoreProvider>
+				)
+			},
 			true
 		);
 	}
@@ -58,7 +65,11 @@ export const editTag = ({ createModal, tag }: ArgumentType): ReturnType => ({
 		// @ts-ignore
 		const closeModal = createModal(
 			{
-				children: <CreateUpdateTagModal onClose={(): void => closeModal()} tag={tag} editMode />
+				children: (
+					<StoreProvider>
+						<CreateUpdateTagModal onClose={(): void => closeModal()} tag={tag} editMode />
+					</StoreProvider>
+				)
 			},
 			true
 		);
@@ -77,7 +88,11 @@ export const deleteTag = ({ createModal, tag }: ArgumentType): ReturnType => ({
 		// @ts-ignore
 		const closeModal = createModal(
 			{
-				children: <DeleteTagModal onClose={(): void => closeModal()} tag={tag} />
+				children: (
+					<StoreProvider>
+						<DeleteTagModal onClose={(): void => closeModal()} tag={tag} />
+					</StoreProvider>
+				)
 			},
 			true
 		);

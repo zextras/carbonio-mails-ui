@@ -38,6 +38,7 @@ import { mailAttachment } from '../../../../../types';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import { ActionsType } from '../../../../../commons/utils';
 import SendLaterModal from './send-later-modal';
+import { StoreProvider } from '../../../../../store/redux';
 
 type PropType = {
 	setShowRouteGuard: (arg: boolean) => void;
@@ -223,7 +224,7 @@ const EditViewHeader: FC<PropType> = ({
 					closeModal();
 				},
 				children: (
-					<>
+					<StoreProvider>
 						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
 							{t(
 								'messages.modal.send_anyway.first',
@@ -233,7 +234,7 @@ const EditViewHeader: FC<PropType> = ({
 						<Text overflow="break-word" style={{ paddingBottom: '16px' }}>
 							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
 						</Text>
-					</>
+					</StoreProvider>
 				)
 			});
 		}
@@ -325,7 +326,7 @@ const EditViewHeader: FC<PropType> = ({
 			{
 				maxHeight: '90vh',
 				children: (
-					<>
+					<StoreProvider>
 						<SendLaterModal
 							// TODO : fix it inside shell
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -335,7 +336,7 @@ const EditViewHeader: FC<PropType> = ({
 							editor={editor}
 							closeBoard={boardUtilities?.closeBoard}
 						/>
-					</>
+					</StoreProvider>
 				)
 			},
 			true
