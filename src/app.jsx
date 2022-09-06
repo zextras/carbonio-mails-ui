@@ -13,8 +13,7 @@ import {
 	registerActions,
 	registerFunctions,
 	ACTION_TYPES,
-	getBridgedFunctions,
-	useCurrentRoute
+	addBoard
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +26,7 @@ import {
 import { ParticipantRole } from './commons/utils';
 import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
+import { StoreProvider } from './store/redux';
 
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
@@ -48,29 +48,39 @@ const LazySidebarView = lazy(() =>
 
 const AppView = () => (
 	<Suspense fallback={<Spinner />}>
-		<LazyAppView />
+		<StoreProvider>
+			<LazyAppView />
+		</StoreProvider>
 	</Suspense>
 );
 const EditView = () => (
 	<Suspense fallback={<Spinner />}>
-		<LazyEditView />
+		<StoreProvider>
+			<LazyEditView />
+		</StoreProvider>
 	</Suspense>
 );
 const SettingsView = () => (
 	<Suspense fallback={<Spinner />}>
-		<LazySettingsView />
+		<StoreProvider>
+			<LazySettingsView />
+		</StoreProvider>
 	</Suspense>
 );
 
 const SearchView = (props) => (
 	<Suspense fallback={<Spinner />}>
-		<LazySearchView {...props} />
+		<StoreProvider>
+			<LazySearchView {...props} />
+		</StoreProvider>
 	</Suspense>
 );
 
 const SidebarView = (props) => (
 	<Suspense fallback={<Spinner />}>
-		<LazySidebarView {...props} />
+		<StoreProvider>
+			<LazySidebarView {...props} />
+		</StoreProvider>
 	</Suspense>
 );
 
@@ -135,7 +145,8 @@ const App = () => {
 					icon: 'MailModOutline',
 					click: (ev) => {
 						ev?.preventDefault?.();
-						getBridgedFunctions().addBoard(`${MAILS_ROUTE}/new?action=new`, {
+						addBoard({
+							url: `${MAILS_ROUTE}/new?action=new`,
 							title: t('label.new_email', 'New E-mail')
 						});
 					},
@@ -160,9 +171,9 @@ const App = () => {
 	}, [t]);
 
 	return (
-		<>
+		<StoreProvider>
 			<SyncDataHandler />
-		</>
+		</StoreProvider>
 	);
 };
 

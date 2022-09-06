@@ -6,12 +6,12 @@
 import { map, reduce, find } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Container, List, Padding, Shimmer, Text } from '@zextras/carbonio-design-system';
+import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FOLDERS, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
-import { selectConversationStatus, selectFolder } from '../../../store/conversations-slice';
+import { selectConversationStatus } from '../../../store/conversations-slice';
 import MessageListItem from './lists-item/message-list-item';
 import SelectMessagesPanelActions from '../../../ui-actions/select-panel-action-message';
 import { Breadcrumbs } from './breadcrumbs';

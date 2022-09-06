@@ -6,7 +6,7 @@
 import React, { FC, useCallback, useContext, useMemo } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { useTags, ZIMBRA_STANDARD_COLORS, runSearch } from '@zextras/carbonio-shell-ui';
+import { t, useTags, ZIMBRA_STANDARD_COLORS, runSearch } from '@zextras/carbonio-shell-ui';
 import {
 	AccordionItem,
 	Dropdown,
@@ -26,8 +26,7 @@ type ItemProps = {
 };
 
 const CustomComp: FC<ItemProps> = (props) => {
-	const [t] = useTranslation();
-	const actions = useGetTagsActions({ tag: props?.item, t });
+	const actions = useGetTagsActions({ tag: props?.item });
 
 	const triggerSearch = useCallback(
 		() =>
@@ -71,9 +70,8 @@ const CustomComp: FC<ItemProps> = (props) => {
 
 export const TagLabel: FC<ItemType> = (props) => {
 	const createModal = useContext(ModalManagerContext) as () => () => void;
-	const [t] = useTranslation();
 	return (
-		<Dropdown contextMenu display="block" width="fit" items={[createTag({ t, createModal })]}>
+		<Dropdown contextMenu display="block" width="fit" items={[createTag({ createModal })]}>
 			<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
 				<Icon size="large" icon="TagsMoreOutline" /> <Padding right="large" />
 				<AccordionItem {...{ ...props, color: `${props.color}` }} height={40} />
@@ -84,7 +82,6 @@ export const TagLabel: FC<ItemType> = (props) => {
 
 const useGetTagsAccordion = (): TagsAccordionItems => {
 	const tagsFromStore = useTags();
-	const [t] = useTranslation();
 
 	return useMemo(
 		() => ({
@@ -117,7 +114,7 @@ const useGetTagsAccordion = (): TagsAccordionItems => {
 				[]
 			)
 		}),
-		[t, tagsFromStore]
+		[tagsFromStore]
 	);
 };
 

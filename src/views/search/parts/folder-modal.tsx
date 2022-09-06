@@ -18,17 +18,15 @@ import {
 	Row,
 	Padding
 } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
 import { filter, isEmpty, reduce, startsWith } from 'lodash';
-
 import {
 	AccordionFolder,
 	FOLDERS,
+	t,
 	useFolders,
 	useFoldersAccordionByView,
 	useUserAccount
 } from '@zextras/carbonio-shell-ui';
-
 import styled from 'styled-components';
 import ModalFooter from '../../sidebar/commons/modal-footer';
 import { ModalHeader } from '../../sidebar/commons/modal-header';
@@ -38,7 +36,7 @@ import { FOLDER_VIEW } from '../../../constants';
 import AccordionCustomComponent from './folder-accordion-custom-comp';
 
 type ComponentProps = {
-	compProps: { open: boolean; onClose: () => void; setFolder: (arg: any) => void; t: TFunction };
+	compProps: { open: boolean; onClose: () => void; setFolder: (arg: any) => void };
 };
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -76,7 +74,7 @@ type CustomComponent = {
 	items: Array<any>;
 };
 const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
-	const { open, onClose, setFolder, t } = compProps;
+	const { open, onClose, setFolder } = compProps;
 
 	const [input, setInput] = useState('');
 	const [folderDestination, setFolderDestination] = useState<FolderType | any>({});
@@ -122,7 +120,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 					label:
 						v.id === FOLDERS.USER_ROOT
 							? accountName
-							: getFolderTranslatedName({ t, folderId: v.id, folderName: v.label }),
+							: getFolderTranslatedName({ folderId: v.id, folderName: v.label }),
 					divider: true,
 					items: v.items,
 					background: folderDestination.id === v.id ? 'highlight' : undefined,
@@ -136,7 +134,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		);
 
 		return temp;
-	}, [accordions, accountName, folderDestination.id, t]);
+	}, [accordions, accountName, folderDestination.id]);
 
 	const filteredFolders = useMemo(
 		() =>
@@ -146,14 +144,13 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				}
 
 				const folderName = getFolderTranslatedName({
-					t,
 					folderId: v?.id,
 					folderName: v?.label
 				})?.toLowerCase();
 
 				return startsWith(folderName, input.toLowerCase());
 			}),
-		[input, requiredAcc, t]
+		[input, requiredAcc]
 	);
 
 	const getFolderPath = useCallback(

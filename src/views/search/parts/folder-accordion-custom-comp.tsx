@@ -5,15 +5,8 @@
  */
 
 import React, { FC, useMemo } from 'react';
-import {
-	FOLDERS,
-	useUserAccount,
-	AccordionFolder,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { AccordionItem, Tooltip, Row, Padding } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
-
 import {
 	getFolderIconColor,
 	getFolderIconName,
@@ -24,7 +17,6 @@ import {
 const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 	const { folder } = item;
 	const accountName = useUserAccount().name;
-	const [t] = useTranslation();
 
 	const accordionItem = useMemo(
 		() => ({
@@ -32,12 +24,12 @@ const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 			label:
 				item.id === FOLDERS.USER_ROOT
 					? accountName
-					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),
+					: getFolderTranslatedName({ folderId: item.id, folderName: item.label }),
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
 			textProps: { size: 'small' }
 		}),
-		[item, accountName, t]
+		[item, accountName]
 	);
 	const settings = useUserSettings()?.prefs;
 	const [includeSpam, includeTrash, includeSharedFolders] = useMemo(

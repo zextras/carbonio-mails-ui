@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { t } from '@zextras/carbonio-shell-ui';
 import React, { ChangeEvent, FC, useCallback, useMemo } from 'react';
 import {
 	Container,
@@ -15,7 +16,6 @@ import {
 	Radio,
 	SelectItem
 } from '@zextras/carbonio-design-system';
-import { TFunction } from 'react-i18next';
 import Heading from './components/settings-heading';
 import {
 	CheckNewMailOptions,
@@ -34,29 +34,26 @@ type UpdateSettingsProps = {
 };
 
 type DisplayingMessagesSettingsProps = {
-	t: TFunction;
 	settingsObj: Record<string, string>;
 	updateSettings: (arg: UpdateSettingsProps) => void;
 };
 
 const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
-	t,
 	settingsObj,
 	updateSettings
 }) => {
 	const checkNewMailOptions = useMemo(
 		() =>
 			CheckNewMailOptions(
-				t,
 				settingsObj.zimbraPrefMailPollingInterval.includes('s'),
 				settingsObj.zimbraPrefMailPollingInterval.includes('m')
 			),
-		[settingsObj?.zimbraPrefMailPollingInterval, t]
+		[settingsObj?.zimbraPrefMailPollingInterval]
 	);
-	const displayMailOptions = useMemo(() => DisplayMailOptions(t), [t]);
-	const messageSelectionOptions = useMemo(() => MessageSelectionOptions(t), [t]);
-	const conversationSortingSettings = useMemo(() => ConversationSortingSettings(t), [t]);
-	const sectionTitle = useMemo(() => displayingMessagesSubSection(t), [t]);
+	const displayMailOptions = useMemo(() => DisplayMailOptions(), []);
+	const messageSelectionOptions = useMemo(() => MessageSelectionOptions(), []);
+	const conversationSortingSettings = useMemo(() => ConversationSortingSettings(), []);
+	const sectionTitle = useMemo(() => displayingMessagesSubSection(), []);
 	const onChangeSorting = useCallback(
 		(view: SelectItem[] | string | null): void =>
 			updateSettings({

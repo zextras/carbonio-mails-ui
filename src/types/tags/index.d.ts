@@ -25,7 +25,6 @@ export type ReturnType = {
 export type TagsFromStoreType = Record<string, Tag>;
 
 export type ArgumentType = {
-	t: TFunction;
 	createModal?: (...args: any) => () => void;
 	createSnackbar?: (...args: any) => void;
 	items?: ReturnType;

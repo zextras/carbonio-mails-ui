@@ -28,7 +28,7 @@ const ModalAccordionCustomComponent: FC<{
 		}
 		return result;
 	}, [item.folder.absFolderPath]);
-	const translatedSystemFolder = getSystemFolderTranslatedName({ t, folderName: systemFolder });
+	const translatedSystemFolder = getSystemFolderTranslatedName({ folderName: systemFolder });
 	const factor = 10;
 	const path = useMemo(
 		() =>

@@ -16,7 +16,8 @@ import {
 	useUserAccount,
 	pushHistory,
 	AccordionFolder,
-	Folder
+	Folder,
+	t
 } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import {
@@ -34,7 +35,7 @@ import {
 	DragObj,
 	ContainerProps
 } from '@zextras/carbonio-design-system';
-import { find, startsWith } from 'lodash';
+import { startsWith } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -85,7 +86,6 @@ type FolderActionsProps = {
 };
 
 const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> => {
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createModal = useContext(ModalManagerContext) as Function;
@@ -267,7 +267,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				}
 			}
 		],
-		[activeGrant, createModal, dispatch, folder, goBack, t]
+		[activeGrant, createModal, dispatch, folder, goBack]
 	);
 
 	const defaultFolderActions = useMemo(
@@ -348,7 +348,6 @@ const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefin
 export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 	const { folder } = item;
 	const accountName = useUserAccount().name;
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
 
@@ -528,7 +527,7 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 			label:
 				item.id === FOLDERS.USER_ROOT
 					? accountName
-					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),
+					: getFolderTranslatedName({ folderId: item.id, folderName: item.label }),
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
 			// open: openIds ? openIds.includes(folder.id) : false,
@@ -537,7 +536,7 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 			to: `/folder/${item.id}`,
 			textProps: { size: 'small' }
 		}),
-		[item, accountName, t]
+		[item, accountName]
 	);
 
 	const dropdownItems = useFolderActions(item);
@@ -566,7 +565,7 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 			return RowWithIcon('Linked', 'linked', tooltipText);
 		}
 		return '';
-	}, [folder, t]);
+	}, [folder]);
 
 	// hide folders where a share was provided and subsequently removed
 	if (folder.broken) {
