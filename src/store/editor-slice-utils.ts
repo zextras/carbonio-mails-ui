@@ -260,7 +260,7 @@ export const extractBody = (msg: MailMessage): Array<string> => {
 	const textArr = findBodyPart(msg.parts, 'text/plain');
 	const htmlArr = findBodyPart(msg.parts, 'text/html');
 	const text = textArr.length ? textArr[0].replaceAll('\n', '<br/>') : undefined;
-	const html = htmlArr.length ? htmlArr[0] : undefined;
+	const html = htmlArr.length ? htmlArr[0].replaceAll('dfsrc', 'src') : undefined;
 
 	return [text ?? html ?? '', html ?? text ?? ''];
 };
