@@ -35,7 +35,11 @@ import {
 } from '../app/folder-panel/lists-item/conversation-list-item';
 import { SenderName } from '../app/folder-panel/lists-item/sender-name';
 import { selectMessages } from '../../store/messages-slice';
-import { selectConversationExpandedStatus } from '../../store/conversations-slice';
+import {
+	selectConversation,
+	selectConversationExpandedStatus,
+	selectConversations
+} from '../../store/conversations-slice';
 import { searchConv } from '../../store/actions';
 import { StateType, MailMessage, Conversation } from '../../types';
 
@@ -71,14 +75,16 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 		() => settings?.prefs?.zimbraPrefIncludeTrashInSearch === 'TRUE',
 		[settings]
 	);
+	// const conv = useSelector((state) => selectConversation(state, item?.id));
+	// if (active) console.log('mnop:', { conv, item });
 	const _onClick = useCallback(() => {
 		const path = head(split(pathname, '/folder'));
-		dispatch({
-			type: 'conversations/setCurrentFolder',
-			payload: parent
-		});
+		// dispatch({
+		// 	type: 'conversations/setCurrentFolder',
+		// 	payload: parent
+		// });
 		history.push(`${path}/folder/${parent}/conversation/${item.id}`);
-	}, [dispatch, history, item, parent, pathname]);
+	}, [history, item.id, parent, pathname]);
 	const subject = useMemo(
 		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
 		[item.subject, t]
