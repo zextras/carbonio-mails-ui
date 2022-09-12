@@ -14,7 +14,8 @@ const ContainerEl = styled(Container)`
 	display: block;
 `;
 
-const FolderItem: FC<{ folders: AccordionFolder[] }> = ({ folders }) => {
+// TODO remove any after the accordion refactor
+const FolderItem: FC<{ folders: any }> = ({ folders }) => {
 	const [t] = useTranslation();
 	return folders.length ? (
 		<ContainerEl

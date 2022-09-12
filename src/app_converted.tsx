@@ -87,6 +87,8 @@ const App = (): ReactElement => {
 			visible: true,
 			label: t('label.app_name', 'Mails'),
 			primaryBar: 'MailModOutline',
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			secondaryBar: SidebarView,
 			appView: AppView
 		});
@@ -98,6 +100,8 @@ const App = (): ReactElement => {
 		});
 		addSearchView({
 			route: MAILS_ROUTE,
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			component: SearchView
 		});
 		addBoardView({
@@ -109,6 +113,8 @@ const App = (): ReactElement => {
 	useEffect(() => {
 		registerActions(
 			{
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				action: (contacts: Contact[]): any => ({
 					id: 'mail-to',
 					label: 'Send Mail',
@@ -151,6 +157,7 @@ const App = (): ReactElement => {
 				type: ACTION_TYPES.NEW
 			}
 		);
+
 		registerFunctions(
 			{
 				id: 'compose',
@@ -158,6 +165,8 @@ const App = (): ReactElement => {
 			},
 			{
 				id: 'composePrefillMessage',
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				fn: openPrefilledComposerSharedFunction
 			}
 		);

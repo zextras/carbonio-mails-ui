@@ -12,7 +12,7 @@ import styled from 'styled-components';
 import { FOLDERS, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { selectConversationStatus } from '../../../store/conversations-slice';
-import MessageListItem from './lists-item/message-list-item';
+import { MessageListItem } from './lists-item/message-list-item';
 import SelectMessagesPanelActions from '../../../ui-actions/select-panel-action-message';
 import { Breadcrumbs } from './breadcrumbs';
 import { search } from '../../../store/actions';
@@ -49,6 +49,8 @@ const DragItems: FC<{
 	return (
 		<>
 			{map(items, (item) => (
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				<MessageListItem item={item} key={item.id} draggedIds={draggedIds} />
 			))}
 		</>
@@ -122,7 +124,11 @@ const MessageList: FC = () => {
 					deselectAll={deselectAll}
 				/>
 			) : (
-				<Breadcrumbs folderPath={folder?.path} itemsCount={folder?.itemsCount} />
+				<Breadcrumbs
+					folderId={folderId}
+					folderPath={folder?.path}
+					itemsCount={folder?.itemsCount}
+				/>
 			)}
 			{messageListStatus === 'complete' ? (
 				<>
@@ -141,6 +147,8 @@ const MessageList: FC = () => {
 								selectedItems: selected,
 								dragImageRef
 							}}
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
 							ItemComponent={MessageListItem}
 							onListBottom={(): void => loadMore(messages?.[messages.length - 1]?.date)}
 							data-testid={`message-list-${folderId}`}

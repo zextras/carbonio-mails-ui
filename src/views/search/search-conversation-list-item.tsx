@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isEmpty, split, head, includes, reduce, uniqBy, find, filter } from 'lodash';
+import { isEmpty, split, head, includes, reduce, uniqBy, find, filter, noop } from 'lodash';
 import {
 	Badge,
 	Container,
@@ -120,13 +120,6 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 					item.messages,
 					(acc: Array<Partial<MailMessage>>, v) => {
 						const msg = find(messages, ['id', v.id]);
-
-						if (msg) {
-							if (msg.parent === FOLDERS.TRASH && !searchInTrash) {
-								return acc;
-							}
-						}
-
 						if (msg) {
 							return [...acc, msg];
 						}
@@ -138,7 +131,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 				),
 				'id'
 			),
-		[item.messages, messages, searchInTrash, sortSign]
+		[item.messages, messages, sortSign]
 	);
 
 	const toggleOpen = useCallback(
@@ -184,7 +177,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 						item={item}
 						selected={selected}
 						selecting={selecting}
-						toggle={toggle}
+						toggle={toggle ?? noop}
 						folderId={parent}
 						isSearch
 					/>

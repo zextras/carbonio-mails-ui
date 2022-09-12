@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo, useRef, useState, useContext, FC, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { filter, find, includes, map, reduce, uniqBy } from 'lodash';
+import { filter, find, includes, map, noop, reduce, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -26,13 +26,18 @@ import {
 	AttachmentPartType,
 	AttachmentType,
 	EditorAttachmentFiles,
-	MailMessage
+	MailMessage,
+	MailMessagePart
 } from '../../../../types';
 
 const AttachmentsActions = styled(Row)``;
 function findAttachments(parts: MailMessagePart[], acc: MailMessagePart[]): AttachmentPartType[] {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	return reduce(
 		parts,
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		(found, part: MailMessagePart) => {
 			if (part && part.disposition === 'attachment') {
 				found.push(part);
@@ -90,13 +95,15 @@ const AttachmentContainer = styled(Container)`
 	transition: 0.2s ease-out;
 	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
 	&:hover {
-		background-color: ${({ theme, background }): string => theme.palette[background].hover};
+		background-color: ${({ theme, background = 'currentColor' }): string =>
+			theme.palette[background].hover};
 		& ${AttachmentHoverBarContainer} {
 			display: flex;
 		}
 	}
 	&:focus {
-		background-color: ${({ theme, background }): string => theme.palette[background].focus};
+		background-color: ${({ theme, background = 'currentColor' }): string =>
+			theme.palette[background].focus};
 	}
 	cursor: pointer;
 `;
@@ -138,13 +145,11 @@ const Attachment: FC<AttachmentType> = ({
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 
 	const [t] = useTranslation();
-	const inputRef = useRef<HTMLInputElement>();
-	const inputRef2 = useRef<HTMLInputElement>();
+	const inputRef = useRef<HTMLAnchorElement>(null);
+	const inputRef2 = useRef<HTMLAnchorElement>(null);
 
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
-			// eslint-disable-next-line no-param-reassign
-			inputRef.current.value = '';
 			inputRef.current.click();
 		}
 	}, [inputRef]);
@@ -254,7 +259,9 @@ const Attachment: FC<AttachmentType> = ({
 					onClick={preview}
 					takeAvailableSpace
 				>
-					<AttachmentExtension background={find(iconColors, (ic) => ic.extension === extension)}>
+					<AttachmentExtension
+						background={find(iconColors, (ic) => ic.extension === extension) ?? { color: '' }}
+					>
 						{extension}
 					</AttachmentExtension>
 					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
@@ -280,7 +287,7 @@ const Attachment: FC<AttachmentType> = ({
 							<IconButton
 								size="medium"
 								icon={uploadIntegration?.icon ?? ''}
-								onClick={uploadIntegration?.click}
+								onClick={uploadIntegration?.click ?? noop}
 							/>
 						</Tooltip>
 					)}

@@ -3,29 +3,29 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useContext, useMemo } from 'react';
 import {
 	Container,
 	Dropdown,
 	IconButton,
-	SnackbarManagerContext,
-	ModalManagerContext
+	ModalManagerContext,
+	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
-import { map, every, filter, some } from 'lodash';
+import { FOLDERS, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { every, filter, map, some } from 'lodash';
+import React, { FC, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { FOLDERS, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { Conversation } from '../types';
 
 import {
-	moveConversationToTrash,
-	setConversationsFlag,
-	setConversationsRead,
-	moveConversationToFolder,
 	deleteConversationPermanently,
-	printConversation
+	moveConversationToFolder,
+	moveConversationToTrash,
+	printConversation,
+	setConversationsFlag,
+	setConversationsRead
 } from './conversation-actions';
 import { applyMultiTag } from './tag-actions';
-import { Conversation } from '../types';
 
 type SelectPanelActionsPropType = {
 	conversation: Array<Conversation>;
@@ -39,15 +39,11 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 	selectedIds,
 	deselectAll
 }) => {
-	const [t] = useTranslation();
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const account = useUserAccount();
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);
 	const selectedConversation = filter(conversation, (convo) => ids.indexOf(convo.id) !== -1);
 	const tags = useTags();
-
-	const createModal = useContext(ModalManagerContext);
 
 	const showAddFlag = useMemo(() => {
 		const selectedConversations = filter(conversation, (convo) => ids.indexOf(convo.id) !== -1);
@@ -70,11 +66,25 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 				return [
 					showReadConvo &&
 						//	setConversationsRead(ids, true, t, dispatch, folderId, null, deselectAll),
-						setConversationsRead({ ids, value: true, t, dispatch, folderId, deselectAll }),
+						setConversationsRead({
+							ids,
+							value: true,
+							dispatch,
+							folderId,
+							deselectAll,
+							shouldReplaceHistory: false
+						}),
 
 					showUnreadConvo &&
-						setConversationsRead({ ids, value: false, t, dispatch, folderId, deselectAll }),
-					moveConversationToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+						setConversationsRead({
+							ids,
+							value: false,
+							dispatch,
+							folderId,
+							deselectAll,
+							shouldReplaceHistory: false
+						}),
+					moveConversationToTrash({ ids, dispatch, deselectAll, folderId })
 
 					// archiveMsg
 					// editTagsMsg
@@ -82,17 +92,31 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 			case FOLDERS.SENT:
 				return [
 					showReadConvo &&
-						setConversationsRead({ ids, value: true, t, dispatch, folderId, deselectAll }),
+						setConversationsRead({
+							ids,
+							value: true,
+							dispatch,
+							folderId,
+							deselectAll,
+							shouldReplaceHistory: false
+						}),
 					showUnreadConvo &&
-						setConversationsRead({ ids, value: false, t, dispatch, folderId, deselectAll }),
-					moveConversationToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+						setConversationsRead({
+							ids,
+							value: false,
+							dispatch,
+							folderId,
+							deselectAll,
+							shouldReplaceHistory: false
+						}),
+					moveConversationToTrash({ ids, dispatch, deselectAll, folderId })
 					// archiveMsg
 					// editTagsMsg
 				];
 
 			case FOLDERS.DRAFTS:
 				return [
-					moveConversationToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+					moveConversationToTrash({ ids, dispatch, deselectAll, folderId })
 
 					// archiveMsg
 					// editTagsMsg
@@ -100,29 +124,19 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 
 			case FOLDERS.TRASH:
 				return [
-					deleteConversationPermanently({ ids, t, dispatch, createModal, deselectAll })
+					deleteConversationPermanently({ ids, deselectAll })
 					// archiveMsg
 					// editTagsMsg
 				];
 
 			default:
 				return [
-					moveConversationToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+					moveConversationToTrash({ ids, dispatch, deselectAll, folderId })
 					// archiveMsg
 					// editTagsMsg
 				];
 		}
-	}, [
-		folderId,
-		showReadConvo,
-		ids,
-		t,
-		dispatch,
-		deselectAll,
-		showUnreadConvo,
-		createSnackbar,
-		createModal
-	]);
+	}, [folderId, showReadConvo, ids, dispatch, deselectAll, showUnreadConvo]);
 
 	const secondaryActions = useMemo(() => {
 		switch (folderId) {
@@ -131,24 +145,35 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 			case FOLDERS.INBOX:
 				return [
 					showReadConvo &&
-						setConversationsRead({ ids, value: true, t, dispatch, folderId, deselectAll }),
+						setConversationsRead({
+							ids,
+							value: true,
+							dispatch,
+							folderId,
+							deselectAll,
+							shouldReplaceHistory: false
+						}),
 					showUnreadConvo &&
-						setConversationsRead({ ids, value: false, t, dispatch, folderId, deselectAll }),
-					setConversationsFlag({ ids, value: showAddFlag, t, dispatch }),
+						setConversationsRead({
+							ids,
+							value: false,
+							dispatch,
+							folderId,
+							deselectAll,
+							shouldReplaceHistory: false
+						}),
+					setConversationsFlag({ ids, value: showAddFlag, dispatch }),
 					moveConversationToFolder({
 						ids,
-						t,
 						dispatch,
 						isRestore: false,
-						createModal,
 						deselectAll
 					}),
-					printConversation({ t, conversation: selectedConversation, account }),
+					printConversation({ conversation: selectedConversation, account }),
 					applyMultiTag({
 						ids,
 						tags,
 						conversations: selectedConversation,
-						t,
 						folderId,
 						deselectAll
 					})
@@ -169,21 +194,18 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 				return [
 					// setConversationsRead(selectedIDs, conversation.read, t, dispatch),
 					// setConversationsFlag(selectedIDs, allRead, t, dispatch),
-					setConversationsFlag({ ids, value: showAddFlag, t, dispatch }),
-					deleteConversationPermanently({ ids, t, dispatch, createModal, deselectAll }),
+					setConversationsFlag({ ids, value: showAddFlag, dispatch }),
+					deleteConversationPermanently({ ids, deselectAll }),
 					moveConversationToFolder({
 						ids,
-						t,
 						dispatch,
 						isRestore: true,
-						createModal,
 						deselectAll
 					}),
 					applyMultiTag({
 						ids,
 						tags,
 						conversations: selectedConversation,
-						t,
 						folderId,
 						deselectAll
 					})
@@ -191,20 +213,17 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 			case FOLDERS.DRAFTS:
 			default:
 				return [
-					setConversationsFlag({ ids, value: showAddFlag, t, dispatch }),
+					setConversationsFlag({ ids, value: showAddFlag, dispatch }),
 					moveConversationToFolder({
 						ids,
-						t,
 						dispatch,
 						isRestore: false,
-						createModal,
 						deselectAll
 					}),
 					applyMultiTag({
 						ids,
 						tags,
 						conversations: selectedConversation,
-						t,
 						folderId,
 						deselectAll
 					})
@@ -219,12 +238,10 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 		folderId,
 		showReadConvo,
 		ids,
-		t,
 		dispatch,
 		deselectAll,
 		showUnreadConvo,
 		showAddFlag,
-		createModal,
 		selectedConversation,
 		account,
 		tags
@@ -249,34 +266,62 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 				{/* <Button type='ghost' label='Select all' color='primary' /> */}
 			</Container>
 			<Container background="gray5" orientation="horizontal" mainAlignment="flex-end">
-				{map(filter(primaryActions), (action) => (
-					<IconButton
-						data-testid={`primary-action-button-${action.label}`}
-						icon={action.icon}
-						color="primary"
-						onClick={(ev): void => {
-							if (ev) ev.preventDefault();
-							action.click();
-						}}
-						size="medium"
-					/>
-				))}
+				{map(filter(primaryActions), (action) => {
+					if (typeof action === 'boolean') {
+						return <></>;
+					}
+
+					return (
+						<IconButton
+							data-testid={`primary-action-button-${action.label}`}
+							icon={action.icon}
+							color="primary"
+							onClick={(ev): void => {
+								if (ev) ev.preventDefault();
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								action.click(ev);
+							}}
+							size="medium"
+						/>
+					);
+				})}
 			</Container>
 
 			<Dropdown
 				placement="right-end"
 				data-testid="secondary-actions-dropdown"
-				items={map(filter(secondaryActions), (action) => ({
-					id: action.label,
-					icon: action.icon,
-					label: action.label,
-					click: (ev): void => {
-						if (ev) ev.preventDefault();
-						action.click();
-					},
-					customComponent: action.customComponent,
-					items: action.items
-				}))}
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				items={map(filter(secondaryActions), (action) => {
+					if (typeof action === 'boolean') {
+						return { id: ';' };
+					}
+
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					return {
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						id: action.label,
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						icon: action.icon,
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						label: action.label,
+						click: (ev): void => {
+							if (ev) ev.preventDefault();
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							action.click();
+						},
+						customComponent: action.customComponent,
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						items: action.items
+					};
+				})}
 			>
 				<IconButton
 					size="medium"

@@ -10,9 +10,10 @@ import {
 	FOLDERS,
 	getBridgedFunctions,
 	replaceHistory,
+	t,
 	Tags
 } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
+import { map, noop } from 'lodash';
 import { Dispatch } from '@reduxjs/toolkit';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { ActionsType } from '../commons/utils';
@@ -27,7 +28,7 @@ import { MailMessage } from '../types';
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
 type DeselectAllType = () => void;
-type CloseEditorType = () => void;
+// type CloseEditorType = () => void;
 type MessageActionPropType = {
 	ids: MessageActionIdsType;
 	id?: string | MessageActionIdsType;
@@ -37,12 +38,12 @@ type MessageActionPropType = {
 	shouldReplaceHistory?: boolean;
 	deselectAll?: DeselectAllType;
 	conversationId?: string;
-	closeEditor?: CloseEditorType;
+	closeEditor?: boolean;
 	isRestore?: boolean;
 	message?: MailMessage;
 };
 
-type MessageActionReturnType = {
+export type MessageActionReturnType = {
 	id: string;
 	icon: string;
 	label: string;
@@ -59,8 +60,8 @@ export const setMsgRead = ({
 	id: 'message-mark_as_read',
 	icon: value ? 'EmailOutline' : 'EmailReadOutline',
 	label: value
-		? getBridgedFunctions()?.t('action.mark_as_unread', 'Mark as unread')
-		: getBridgedFunctions()?.t('action.mark_as_read', 'Mark as read'),
+		? t('action.mark_as_unread', 'Mark as unread')
+		: t('action.mark_as_read', 'Mark as read'),
 	click: (ev): void => {
 		if (ev) ev.preventDefault();
 		dispatch(
@@ -92,9 +93,7 @@ export function setMsgFlag({
 	return {
 		id: 'message-flag',
 		icon: value ? 'FlagOutline' : 'Flag',
-		label: value
-			? getBridgedFunctions()?.t('action.unflag', 'Remove flag')
-			: getBridgedFunctions()?.t('action.flag', 'Add flag'),
+		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
 			dispatch(
@@ -120,8 +119,8 @@ export function setMsgAsSpam({
 		id: 'message-mark_as_spam',
 		icon: value ? 'AlertCircleOutline' : 'AlertCircle',
 		label: value
-			? getBridgedFunctions()?.t('action.mark_as_non_spam', 'Not spam')
-			: getBridgedFunctions()?.t('action.mark_as_spam', 'Mark as spam'),
+			? t('action.mark_as_non_spam', 'Not spam')
+			: t('action.mark_as_spam', 'Mark as spam'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
 			let notCanceled = true;
@@ -132,17 +131,11 @@ export function setMsgAsSpam({
 					replace: true,
 					type: 'info',
 					label: value
-						? getBridgedFunctions()?.t(
-								'messages.snackbar.marked_as_non_spam',
-								'You’ve marked this e-mail as Not Spam'
-						  )
-						: getBridgedFunctions()?.t(
-								'messages.snackbar.marked_as_spam',
-								'You’ve marked this e-mail as Spam'
-						  ),
+						? t('messages.snackbar.marked_as_non_spam', 'You’ve marked this e-mail as Not Spam')
+						: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
 					autoHideTimeout: 3000,
 					hideButton,
-					actionLabel: getBridgedFunctions()?.t('label.undo', 'Undo'),
+					actionLabel: t('label.undo', 'Undo'),
 					onActionClick: () => {
 						notCanceled = false;
 					}
@@ -169,10 +162,7 @@ export function setMsgAsSpam({
 								key: `trash-${ids}`,
 								replace: true,
 								type: 'error',
-								label: getBridgedFunctions()?.t(
-									'label.error_try_again',
-									'Something went wrong, please try again'
-								),
+								label: t('label.error_try_again', 'Something went wrong, please try again'),
 								autoHideTimeout: 3000
 							});
 						}
@@ -197,7 +187,7 @@ export function printMsg({
 	return {
 		id: 'message-print',
 		icon: 'PrinterOutline',
-		label: getBridgedFunctions()?.t('action.print', 'Print'),
+		label: t('action.print', 'Print'),
 		click: (): void => {
 			const printWindow = window.open('', '_blank');
 			getMsgsForPrint({ ids: [message.id] })
@@ -214,7 +204,7 @@ export function printMsg({
 					}
 				})
 				.catch(() => {
-					const errorContent = getErrorPage(getBridgedFunctions()?.t);
+					const errorContent = getErrorPage(t);
 					if (printWindow) printWindow.document.write(errorContent);
 				});
 		}
@@ -225,7 +215,7 @@ export function showOriginalMsg({ id }: { id: string }): MessageActionReturnType
 	return {
 		id: 'message-show_original',
 		icon: 'CodeOutline',
-		label: getBridgedFunctions()?.t('action.show_original', 'Show original'),
+		label: t('action.show_original', 'Show original'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
 			window.open(`/service/home/~/?auth=co&view=text&id=${id}`, '_blank');
@@ -264,10 +254,7 @@ export function moveMsgToTrash({
 					key: `move-${ids}`,
 					replace: true,
 					type: 'success',
-					label: getBridgedFunctions()?.t(
-						'messages.snackbar.email_restored',
-						'E-mail restored in destination folder'
-					),
+					label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
@@ -276,10 +263,7 @@ export function moveMsgToTrash({
 					key: `move-${ids}`,
 					replace: true,
 					type: 'error',
-					label: getBridgedFunctions()?.t(
-						'label.error_try_again',
-						'Something went wrong, please try again'
-					),
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
@@ -289,7 +273,7 @@ export function moveMsgToTrash({
 	return {
 		id: 'message-trash',
 		icon: 'Trash2Outline',
-		label: getBridgedFunctions()?.t('label.delete', 'Delete'),
+		label: t('label.delete', 'Delete'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
 
@@ -309,13 +293,10 @@ export function moveMsgToTrash({
 						key: `trash-${ids}`,
 						replace: true,
 						type: 'info',
-						label: getBridgedFunctions()?.t(
-							'messages.snackbar.email_moved_to_trash',
-							'E-mail moved to Trash'
-						),
+						label: t('messages.snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
 						autoHideTimeout: 5000,
 						hideButton: false,
-						actionLabel: getBridgedFunctions()?.t('label.undo', 'Undo'),
+						actionLabel: t('label.undo', 'Undo'),
 						onActionClick: () => restoreMessage()
 					});
 				} else {
@@ -323,10 +304,7 @@ export function moveMsgToTrash({
 						key: `trash-${ids}`,
 						replace: true,
 						type: 'error',
-						label: getBridgedFunctions()?.t(
-							'label.error_try_again',
-							'Something went wrong, please try again'
-						),
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
@@ -343,12 +321,12 @@ export function deleteMsg({
 	return {
 		id: 'message-delete',
 		icon: 'Trash2Outline',
-		label: getBridgedFunctions()?.t('label.delete', 'Delete'),
+		label: t('label.delete', 'Delete'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
 			const closeModal = getBridgedFunctions()?.createModal({
-				title: getBridgedFunctions()?.t('header.delete_email', 'Delete e-mail'),
-				confirmLabel: getBridgedFunctions()?.t('action.ok', 'Ok'),
+				title: t('header.delete_email', 'Delete e-mail'),
+				confirmLabel: t('action.ok', 'Ok'),
 				onConfirm: () => {
 					dispatch(
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -368,10 +346,7 @@ export function deleteMsg({
 								key: `trash-${ids}`,
 								replace: true,
 								type: 'info',
-								label: getBridgedFunctions()?.t(
-									'messages.snackbar.message_deleted',
-									'Message deleted'
-								),
+								label: t('messages.snackbar.message_deleted', 'Message deleted'),
 								autoHideTimeout: 3000
 							});
 						} else {
@@ -379,10 +354,7 @@ export function deleteMsg({
 								key: `trash-${ids}`,
 								replace: true,
 								type: 'error',
-								label: getBridgedFunctions()?.t(
-									'label.error_try_again',
-									'Something went wrong, please try again.'
-								),
+								label: t('label.error_try_again', 'Something went wrong, please try again.'),
 								autoHideTimeout: 3000
 							});
 						}
@@ -400,17 +372,17 @@ export function deleteMsg({
 					// @ts-ignore
 					closeModal();
 				},
-				dismissLabel: getBridgedFunctions()?.t('label.cancel', 'Cancel'),
+				dismissLabel: t('label.cancel', 'Cancel'),
 				children: (
 					<>
 						<Text overflow="break-word">
-							{getBridgedFunctions()?.t(
+							{t(
 								'messages.modal.delete.sure_delete_email',
 								'Are you sure to delete the selected e-mail?'
 							)}
 						</Text>
 						<Text overflow="break-word">
-							{getBridgedFunctions()?.t(
+							{t(
 								'messages.modal.delete.if_delete_lost_forever',
 								'If you delete the e-mail, it will be lost forever.'
 							)}
@@ -429,7 +401,7 @@ export function replyMsg({
 	return {
 		id: 'message-reply',
 		icon: 'UndoOutline',
-		label: getBridgedFunctions()?.t('action.reply', 'Reply'),
+		label: t('action.reply', 'Reply'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
 			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.REPLY}`);
@@ -444,7 +416,7 @@ export function replyAllMsg({
 	return {
 		id: 'message-reply_all',
 		icon: 'ReplyAll',
-		label: getBridgedFunctions()?.t('action.reply_all', 'Reply all'),
+		label: t('action.reply_all', 'Reply all'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
 			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.REPLY_ALL}`);
@@ -459,7 +431,7 @@ export function forwardMsg({
 	return {
 		id: 'message-forward',
 		icon: 'Forward',
-		label: getBridgedFunctions()?.t('action.forward', 'Forward'),
+		label: t('action.forward', 'Forward'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
 			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.FORWARD}`);
@@ -474,7 +446,7 @@ export function editAsNewMsg({
 	return {
 		id: 'message-edit_as_new',
 		icon: 'Edit2Outline',
-		label: getBridgedFunctions()?.t('action.edit_as_new', 'Edit as new'),
+		label: t('action.edit_as_new', 'Edit as new'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
 			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_NEW}`);
@@ -484,15 +456,35 @@ export function editAsNewMsg({
 
 export function editDraft({
 	id,
-	folderId
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+	folderId,
+	message
+}: Pick<MessageActionPropType, 'id' | 'folderId' | 'message'>): MessageActionReturnType {
 	return {
 		id: 'message-edit_as_draft',
 		icon: 'Edit2Outline',
-		label: getBridgedFunctions()?.t('label.edit', 'Edit'),
+		label: t('label.edit', 'Edit'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
+			if (message?.isScheduled) {
+				const closeModal = getBridgedFunctions()?.createModal({
+					title: t('label.warning', 'Warning'),
+					confirmLabel: t('action.edit_anyway', 'Edit anyway'),
+					onConfirm: () => {
+						replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
+					},
+					showCloseIcon: true,
+					children: (
+						<>
+							<Text overflow="break-word">
+								{t(
+									'messages.edit_schedule_warning',
+									'By editing this e-mail, the time and date previously set for delayed sending will be reset.'
+								)}
+							</Text>
+						</>
+					)
+				});
+			} else replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
 		}
 	};
 }
@@ -509,7 +501,7 @@ export function sendDraft({
 	return {
 		id: 'message-send',
 		icon: 'PaperPlaneOutline',
-		label: getBridgedFunctions()?.t('label.send', 'Send'),
+		label: t('label.send', 'Send'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
 			dispatch(
@@ -528,7 +520,7 @@ export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
 	return {
 		id: 'message-redirect',
 		icon: 'CornerUpRight',
-		label: getBridgedFunctions()?.t('action.redirect', 'Redirect'),
+		label: t('action.redirect', 'Redirect'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
 			const closeModal = getBridgedFunctions()?.createModal(
@@ -564,9 +556,7 @@ export function moveMessageToFolder({
 	return {
 		id: 'message-restore',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
-		label: isRestore
-			? getBridgedFunctions()?.t('label.restore', 'Restore')
-			: getBridgedFunctions()?.t('label.move', 'Move'),
+		label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 		click: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
@@ -581,7 +571,7 @@ export function moveMessageToFolder({
 								onClose={(): void => closeModal()}
 								isMessageView
 								isRestore={isRestore ?? false}
-								deselectAll={deselectAll}
+								deselectAll={deselectAll ?? noop}
 							/>
 						</>
 					)
@@ -600,7 +590,7 @@ export function deleteMessagePermanently({
 	return {
 		id: 'message-delete-permanently',
 		icon: 'DeletePermanentlyOutline',
-		label: getBridgedFunctions()?.t('label.delete_permanently', 'Delete Permanently'),
+		label: t('label.delete_permanently', 'Delete Permanently'),
 		click: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
@@ -690,7 +680,7 @@ export const getActions = ({
 				]
 			];
 		case FOLDERS.SPAM:
-			return (message: MailMessage, closeEditor: () => void): any => [
+			return (message: MailMessage, closeEditor: boolean): any => [
 				[
 					setMsgRead({
 						ids: [message.id],
@@ -747,7 +737,7 @@ export const getActions = ({
 				]
 			];
 		case FOLDERS.DRAFTS:
-			return (message: MailMessage, closeEditor: CloseEditorType) => [
+			return (message: MailMessage, closeEditor: boolean) => [
 				[
 					editDraft({ id: message.id, folderId }),
 					sendDraft({ id: message.id, message, dispatch }),
@@ -782,7 +772,7 @@ export const getActions = ({
 		case FOLDERS.SENT:
 		case FOLDERS.INBOX:
 		default:
-			return (message: MailMessage, closeEditor: CloseEditorType) => [
+			return (message: MailMessage, closeEditor: boolean) => [
 				[
 					replyMsg({ id: message.id, folderId }),
 					replyAllMsg({ id: message.id, folderId }),

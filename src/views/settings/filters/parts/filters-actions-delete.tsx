@@ -79,62 +79,37 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			true
 		);
 	}, [createModal, t]);
-	const onRemove = useCallback(
-		() =>
-			removeFilter({
-				t,
-				availableList,
-				activeList,
 
-				setFilters:
-					selectedFilterType === 'incoming-messages' ? setIncomingFilters : setOutgoingFilters,
-				setFetchFilters:
-					selectedFilterType === 'incoming-messages'
-						? setFetchIncomingFilters
-						: setFetchOutgoingFilters,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				modifierFunc:
-					selectedFilterType === 'incoming-messages' ? modifyFilterRules : modifyOutgoingFilterRules
-			}),
-		[
+	const setFilters =
+		selectedFilterType === 'incoming-messages' ? setIncomingFilters : setOutgoingFilters;
+	const setFetchFilters =
+		selectedFilterType === 'incoming-messages' ? setFetchIncomingFilters : setFetchOutgoingFilters;
+	const modifierFunc =
+		selectedFilterType === 'incoming-messages' ? modifyFilterRules : modifyOutgoingFilterRules;
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	const emptyFilter = (arg: any): void => {};
+
+	const onRemove = useCallback(() => {
+		removeFilter({
 			t,
 			availableList,
 			activeList,
-			selectedFilterType,
-			setIncomingFilters,
-			setOutgoingFilters,
-			setFetchIncomingFilters,
-			setFetchOutgoingFilters
-		]
-	);
+			setFilters: setFilters ?? emptyFilter,
+			setFetchFilters: setFetchFilters ?? emptyFilter,
+			modifierFunc
+		});
+	}, [t, availableList, activeList, setFilters, setFetchFilters, modifierFunc]);
 	const onAdd = useCallback(
 		() =>
 			addFilter({
 				t,
 				availableList,
 				activeList,
-				setFilters:
-					selectedFilterType === 'incoming-messages' ? setIncomingFilters : setOutgoingFilters,
-				setFetchFilters:
-					selectedFilterType === 'incoming-messages'
-						? setFetchIncomingFilters
-						: setFetchOutgoingFilters,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				modifierFunc:
-					selectedFilterType === 'incoming-messages' ? modifyFilterRules : modifyOutgoingFilterRules
+				setFilters: setFilters ?? emptyFilter,
+				setFetchFilters: setFetchFilters ?? emptyFilter,
+				modifierFunc
 			}),
-		[
-			t,
-			availableList,
-			activeList,
-			selectedFilterType,
-			setIncomingFilters,
-			setOutgoingFilters,
-			setFetchIncomingFilters,
-			setFetchOutgoingFilters
-		]
+		[t, availableList, activeList, setFilters, setFetchFilters, modifierFunc]
 	);
 
 	const openFilterModifyModal = useCallback(() => {
@@ -150,8 +125,8 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 						selectedFilter={selectedFilter}
 						onClose={(): void => closeModal()}
 						outgoingFilters={outgoingFilters}
-						setFetchOutgoingFilters={setFetchOutgoingFilters}
-						setOutgoingFilters={setOutgoingFilters}
+						setFetchOutgoingFilters={setFetchOutgoingFilters ?? emptyFilter}
+						setOutgoingFilters={setOutgoingFilters ?? emptyFilter}
 					/>
 				)
 			},

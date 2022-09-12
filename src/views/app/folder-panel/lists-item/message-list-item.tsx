@@ -85,7 +85,7 @@ const DraggableItem: FC<MsgListDraggableItemType> = ({
 		<>{children}</>
 	);
 
-const MessageListItem: FC<MessageListItemType> = ({
+export const MessageListItem: FC<any> = ({
 	item,
 	folderId,
 	active,
@@ -112,12 +112,15 @@ const MessageListItem: FC<MessageListItemType> = ({
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc: Array<Tag & { color: string }>, v) => {
+				(acc, v) => {
 					if (includes(item.tags, v.id))
+						// TODO fix color type
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[v.color ?? '0'].hex });
 					return acc;
 				},
-				[]
+				[] as Array<Tag & { color: string }>
 			),
 		[item.tags, tagsFromStore]
 	);
@@ -125,13 +128,14 @@ const MessageListItem: FC<MessageListItemType> = ({
 	const [date, participantsString] = useMemo(() => {
 		if (item) {
 			const sender = find(item.participants, ['type', 'f']);
-			return [getTimeLabel(moment(item.date)), participantToString(sender, t, accounts)];
+			return [getTimeLabel(item.date), participantToString(sender, t, accounts)];
 		}
 		return ['.', '.', '', ''];
 	}, [item, t, accounts]);
 
 	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
 		if (item) {
+			``;
 			if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
 				return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon', 'secondary'];
 			}
@@ -169,10 +173,10 @@ const MessageListItem: FC<MessageListItemType> = ({
 	const _onClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
-				replaceHistory(`/folder/${folderId}/message/${item.id}`);
 				if (item.read === false) {
 					setMsgRead({ ids: [item.id], value: false, dispatch }).click();
 				}
+				replaceHistory(`/folder/${folderId}/message/${item.id}`);
 			}
 		},
 		[folderId, item.id, item.read, dispatch]
@@ -226,164 +230,179 @@ const MessageListItem: FC<MessageListItemType> = ({
 		() => (!isEmpty(item.fragment) ? item.fragment : subject),
 		[subject, item.fragment]
 	);
-	return (
-		<>
-			{draggedIds?.[item?.id] || visible || isConvChildren ? (
-				<Drag
-					type="message"
-					data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
-					style={{ display: 'block' }}
-					onDragStart={(e): void => dragCheck(e, item.id)}
+
+	const scheduledTime = useMemo(
+		() =>
+			t('message.schedule_time', {
+				date: moment(item?.autoSendTime).format('DD/MM/YYYY'),
+				time: moment(item?.autoSendTime).format('HH:mm'),
+				defaultValue: '{{date}} at {{time}}'
+			}),
+		[item?.autoSendTime, t]
+	);
+
+	return draggedIds?.[item?.id] || visible || isConvChildren ? (
+		<Drag
+			type="message"
+			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
+			style={{ display: 'block' }}
+			onDragStart={(e): void => dragCheck(e, item.id)}
+		>
+			<DraggableItem
+				item={item}
+				folderId={folderId}
+				isMessageView={isMessageView}
+				dragCheck={dragCheck}
+				selectedIds={ids}
+			>
+				<Container
+					mainAlignment="flex-start"
+					data-testid={`SearchMessageListItem-${item.id}`}
+					background={item.read ? 'tranparent' : 'gray5'}
 				>
-					<DraggableItem
-						item={item}
-						folderId={folderId}
-						isMessageView={isMessageView}
-						dragCheck={dragCheck}
-						selectedIds={ids}
-					>
-						<Container
-							mainAlignment="flex-start"
-							data-testid={`SearchMessageListItem-${item.id}`}
-							background={item.read ? 'tranparent' : 'gray5'}
+					<ListItemActionWrapper item={item} onClick={_onClick} onDoubleClick={_onDoubleClick}>
+						<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
+							<ItemAvatar
+								item={item}
+								selected={selected}
+								selecting={selecting}
+								toggle={toggle}
+								folderId={folderId}
+							/>
+							<Padding horizontal="extrasmall" />
+						</div>
+						<Row
+							wrap="wrap"
+							orientation="horizontal"
+							takeAvailableSpace
+							padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 						>
-							<ListItemActionWrapper item={item} onClick={_onClick} onDoubleClick={_onDoubleClick}>
-								<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
-									<ItemAvatar
-										item={item}
-										selected={selected}
-										selecting={selecting}
-										toggle={toggle}
-										folderId={folderId}
-									/>
-									<Padding horizontal="extrasmall" />
-								</div>
-								<Row
-									wrap="wrap"
-									orientation="horizontal"
-									takeAvailableSpace
-									padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
-								>
-									<Container orientation="horizontal" height="fit" width="fill">
-										<SenderName
-											item={item}
-											textValues={textReadValues}
-											isFromSearch={item.isFromSearch}
-										/>
-										<Row>
-											{item.isFromSearch && item.parent === FOLDERS.TRASH && (
-												<Padding left="small">
-													<Icon data-testid="deleted-in-search-icon" icon="Trash2Outline" />
+							<Container orientation="horizontal" height="fit" width="fill">
+								<SenderName
+									item={item}
+									textValues={textReadValues}
+									isFromSearch={item.isFromSearch}
+								/>
+								<Row>
+									{item.isFromSearch && item.parent === FOLDERS.TRASH && (
+										<Padding left="small">
+											<Icon data-testid="deleted-in-search-icon" icon="Trash2Outline" />
+										</Padding>
+									)}
+									{showTagIcon && (
+										<Padding left="small">
+											<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+										</Padding>
+									)}
+									{item.attachment && (
+										<Padding left="small">
+											<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
+										</Padding>
+									)}
+									{item.flagged && (
+										<Padding left="small">
+											<Icon data-testid="FlagIcon" color="error" icon="Flag" />
+										</Padding>
+									)}
+									<Padding left="small">
+										{item?.isScheduled ? (
+											<Row>
+												<Padding right="extrasmall">
+													<Icon data-testid={iconId} icon="SendDelayedOutline" color="primary" />
 												</Padding>
-											)}
-											{showTagIcon && (
-												<Padding left="small">
-													<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
-												</Padding>
-											)}
-											{item.attachment && (
-												<Padding left="small">
-													<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
-												</Padding>
-											)}
-											{item.flagged && (
-												<Padding left="small">
-													<Icon data-testid="FlagIcon" color="error" icon="Flag" />
-												</Padding>
-											)}
-											<Padding left="small">
-												<Text data-testid="DateLabel" size="extrasmall">
-													{date}
+												<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
+													{t('label.delayed_sending', 'Delayed sending')}
 												</Text>
+											</Row>
+										) : (
+											<Text data-testid="DateLabel" size="extrasmall">
+												{date}
+											</Text>
+										)}
+									</Padding>
+								</Row>
+							</Container>
+							<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
+								<Row
+									wrap="nowrap"
+									takeAvailableSpace
+									mainAlignment="flex-start"
+									crossAlignment="center"
+								>
+									{showIcon && (
+										<Tooltip label={iconTooltip} placement="bottom">
+											<Padding right="extrasmall">
+												<Icon data-testid={iconId} icon={icon} color={color} />
 											</Padding>
-										</Row>
-									</Container>
-									<Container
-										orientation="horizontal"
-										height="fit"
-										width="fill"
-										crossAlignment="center"
-									>
+										</Tooltip>
+									)}
+									<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
 										<Row
 											wrap="nowrap"
 											takeAvailableSpace
 											mainAlignment="flex-start"
-											crossAlignment="center"
+											crossAlignment="baseline"
 										>
-											{showIcon && (
-												<Tooltip label={iconTooltip} placement="bottom">
-													<Padding right="extrasmall">
-														<Icon data-testid={iconId} icon={icon} color={color} />
-													</Padding>
-												</Tooltip>
+											{!isConvChildren && (
+												<Text
+													data-testid="Subject"
+													weight={textReadValues.weight}
+													color={item.subject ? 'text' : 'secondary'}
+												>
+													{subject}
+												</Text>
 											)}
-											<Tooltip
-												label={subFragmentTooltipLabel}
-												overflow="break-word"
-												maxWidth="60vw"
-											>
+
+											{!isEmpty(item.fragment) && (
 												<Row
-													wrap="nowrap"
 													takeAvailableSpace
 													mainAlignment="flex-start"
-													crossAlignment="baseline"
+													padding={{ left: 'extrasmall' }}
 												>
-													{!isConvChildren && (
-														<Text
-															data-testid="Subject"
-															weight={textReadValues.weight}
-															color={item.subject ? 'text' : 'secondary'}
-														>
-															{subject}
-														</Text>
-													)}
-
-													{!isEmpty(item.fragment) && (
-														<Row
-															takeAvailableSpace
-															mainAlignment="flex-start"
-															padding={{ left: 'extrasmall' }}
-														>
-															<Text
-																data-testid="Fragment"
-																size="small"
-																color="secondary"
-																weight={textReadValues.weight}
-															>
-																{fragmentLabel}
-															</Text>
-														</Row>
-													)}
+													<Text
+														data-testid="Fragment"
+														size="small"
+														color="secondary"
+														weight={textReadValues.weight}
+													>
+														{fragmentLabel}
+													</Text>
 												</Row>
-											</Tooltip>
-										</Row>
-										<Row>
-											{item.urgent && (
-												<Padding left="extrasmall">
-													<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
-												</Padding>
-											)}
-											{messageFolder && messageFolder.id !== folderId && !item.isFromSearch && (
-												<Padding left="small">
-													<Badge
-														data-testid="FolderBadge"
-														value={messageFolder.name}
-														type={textReadValues.badge}
-													/>
-												</Padding>
 											)}
 										</Row>
-									</Container>
+									</Tooltip>
 								</Row>
-							</ListItemActionWrapper>
-						</Container>
-					</DraggableItem>
-				</Drag>
-			) : (
-				<div style={{ height: '64px' }} />
-			)}
-		</>
+								<Row>
+									{item.urgent && (
+										<Padding left="extrasmall">
+											<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
+										</Padding>
+									)}
+
+									{item?.isScheduled && (
+										<Tooltip label={scheduledTime}>
+											<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
+												{scheduledTime}
+											</Text>
+										</Tooltip>
+									)}
+									{messageFolder && messageFolder.id !== folderId && !item.isFromSearch && (
+										<Padding left="small">
+											<Badge
+												data-testid="FolderBadge"
+												value={messageFolder.name}
+												type={textReadValues.badge}
+											/>
+										</Padding>
+									)}
+								</Row>
+							</Container>
+						</Row>
+					</ListItemActionWrapper>
+				</Container>
+			</DraggableItem>
+		</Drag>
+	) : (
+		<div style={{ height: '64px' }} />
 	);
 };
-
-export default MessageListItem;

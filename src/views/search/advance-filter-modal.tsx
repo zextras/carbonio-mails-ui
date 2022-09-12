@@ -257,6 +257,8 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	);
 
 	const onConfirm = useCallback(() => {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		updateQuery(queryToBe);
 		setIsSharedFolderIncluded(isSharedFolderIncludedTobe);
 		onClose();
@@ -344,6 +346,8 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 
 	const disabled = useDisabled({
 		query,
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		queryToBe,
 		isSharedFolderIncluded,
 		isSharedFolderIncludedTobe

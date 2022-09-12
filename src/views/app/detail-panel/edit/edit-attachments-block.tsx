@@ -30,13 +30,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { updateEditor } from '../../../../store/editor-slice';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
-import {
-	EditorAttachmentFiles,
-	EditorsStateType,
-	mailAttachment,
-	mailAttachmentParts,
-	MailsEditor
-} from '../../../../types';
+import { EditorAttachmentFiles, MailsEditor } from '../../../../types';
 
 const getSizeLabel = (size: number): string => {
 	let value = '';
@@ -131,8 +125,8 @@ const Attachment: FC<AttachmentType> = ({
 	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
-	const inputRef = useRef<HTMLInputElement>();
-	const inputRef2 = useRef<HTMLInputElement>();
+	const inputRef = useRef<HTMLAnchorElement>(null);
+	const inputRef2 = useRef<HTMLAnchorElement>(null);
 	const dispatch = useDispatch();
 
 	const removeAttachment = useCallback(() => {
@@ -165,15 +159,13 @@ const Attachment: FC<AttachmentType> = ({
 					onClick={(ev: SyntheticEvent): void => {
 						ev.preventDefault();
 						if (inputRef2.current) {
-							// eslint-disable-next-line no-param-reassign
-							inputRef2.current.value = '';
 							inputRef2.current.click();
 						}
 					}}
 					takeAvailableSpace
 				>
 					<AttachmentExtension
-						background={find(iconColors, (ic) => ic.extension === extension)?.color}
+						background={find(iconColors, (ic) => ic.extension === extension)?.color ?? ''}
 					>
 						{extension}
 					</AttachmentExtension>

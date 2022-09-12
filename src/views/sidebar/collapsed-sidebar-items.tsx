@@ -19,7 +19,7 @@ const CollapsedSideBarItems: FC<{ folder: AccordionFolder }> = ({ folder }) => {
 					<Padding all="extrasmall">
 						<IconButton
 							customSize={{ iconSize: 'large', paddingSize: 'small' }}
-							icon={folderIconLabel}
+							icon={folderIconLabel ?? ''}
 							customIconColor={folderIconColor}
 							onClick={(): null => null}
 						/>

@@ -9,6 +9,7 @@ import {
 	FOLDERS,
 	getBridgedFunctions,
 	replaceHistory,
+	t,
 	Tags
 } from '@zextras/carbonio-shell-ui';
 import { forEach, isArray, map } from 'lodash';
@@ -45,6 +46,7 @@ type ConvActionReturnType = {
 	label: string;
 	disabled?: boolean;
 	click: (ev: MouseEvent) => void;
+	customComponent?: JSX.Element;
 };
 
 export function setConversationsFlag({
@@ -55,9 +57,7 @@ export function setConversationsFlag({
 	return {
 		id: 'flag-conversation',
 		icon: value ? 'FlagOutline' : 'Flag',
-		label: value
-			? getBridgedFunctions()?.t('action.unflag', 'Remove flag')
-			: getBridgedFunctions()?.t('action.flag', 'Add flag'),
+		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
 		click: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -79,7 +79,7 @@ export function setMultipleConversationsFlag({
 	return {
 		id: 'flag--multiple-conversations',
 		icon: 'Flag',
-		label: getBridgedFunctions()?.t('action.flag', 'Add flag'),
+		label: t('action.flag', 'Add flag'),
 		disabled,
 		click: (): void => {
 			dispatch(
@@ -102,7 +102,7 @@ export function unSetMultipleConversationsFlag({
 	return {
 		id: 'unflag-multiple-conversations',
 		icon: 'FlagOutline',
-		label: getBridgedFunctions()?.t('action.unflag', 'Remove flag'),
+		label: t('action.unflag', 'Remove flag'),
 		disabled,
 		click: (): void => {
 			dispatch(
@@ -133,8 +133,8 @@ export function setConversationsRead({
 		id: `read-conversations-${value}`,
 		icon: value ? 'EmailOutline' : 'EmailReadOutline',
 		label: value
-			? getBridgedFunctions()?.t('action.mark_as_unread', 'Mark as unread')
-			: getBridgedFunctions()?.t('action.mark_as_read', 'Mark as read'),
+			? t('action.mark_as_unread', 'Mark as unread')
+			: t('action.mark_as_read', 'Mark as read'),
 		click: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -179,7 +179,7 @@ export function printConversation({
 	return {
 		id: 'print-conversations',
 		icon: 'PrinterOutline',
-		label: getBridgedFunctions()?.t('action.print', 'Print'),
+		label: t('action.print', 'Print'),
 		click: (): void => {
 			const printWindow = window.open('', '_blank');
 			getMsgsForPrint({ ids: messageIds })
@@ -195,7 +195,7 @@ export function printConversation({
 					}
 				})
 				.catch((err) => {
-					const errorContent = getErrorPage(getBridgedFunctions()?.t);
+					const errorContent = getErrorPage(t);
 					if (printWindow) printWindow.document.write(errorContent);
 				});
 		}
@@ -212,8 +212,8 @@ export function setConversationsSpam({
 		id: 'spam-conversations',
 		icon: value ? 'AlertCircleOutline' : 'AlertCircle',
 		label: value
-			? getBridgedFunctions()?.t('action.mark_as_non_spam', 'Not spam')
-			: getBridgedFunctions()?.t('action.mark_as_spam', 'Mark as spam'),
+			? t('action.mark_as_non_spam', 'Not spam')
+			: t('action.mark_as_spam', 'Mark as spam'),
 		click: (): void => {
 			let notCanceled = true;
 
@@ -223,14 +223,8 @@ export function setConversationsSpam({
 					replace: true,
 					type: 'info',
 					label: value
-						? getBridgedFunctions()?.t(
-								'messages.snackbar.marked_as_non_spam',
-								'You’ve marked this e-mail as Not Spam'
-						  )
-						: getBridgedFunctions()?.t(
-								'messages.snackbar.marked_as_spam',
-								'You’ve marked this e-mail as Spam'
-						  ),
+						? t('messages.snackbar.marked_as_non_spam', 'You’ve marked this e-mail as Not Spam')
+						: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
 					autoHideTimeout: 3000,
 					hideButton,
 					actionLabel: 'Undo',
@@ -260,10 +254,7 @@ export function setConversationsSpam({
 								key: `trash-${ids}`,
 								replace: true,
 								type: 'error',
-								label: getBridgedFunctions()?.t(
-									'label.error_try_again',
-									'Something went wrong, please try again'
-								),
+								label: t('label.error_try_again', 'Something went wrong, please try again'),
 								autoHideTimeout: 3000
 							});
 						}
@@ -286,7 +277,7 @@ export function moveConversationToTrash({
 	return {
 		id: 'trash-conversations',
 		icon: 'Trash2Outline',
-		label: getBridgedFunctions()?.t('label.delete', 'Delete'),
+		label: t('label.delete', 'Delete'),
 		// first click, delete email
 		click: (): void => {
 			const restoreConversation = (): void => {
@@ -309,10 +300,7 @@ export function moveConversationToTrash({
 							replace: true,
 							type: 'success',
 							hideButton: true,
-							label: getBridgedFunctions()?.t(
-								'messages.snackbar.email_restored',
-								'E-mail restored in destination folder'
-							),
+							label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
 							autoHideTimeout: 3000
 						});
 					} else {
@@ -321,10 +309,7 @@ export function moveConversationToTrash({
 							replace: true,
 							hideButton: true,
 							type: 'error',
-							label: getBridgedFunctions()?.t(
-								'label.error_try_again',
-								'Something went wrong, please try again.'
-							),
+							label: t('label.error_try_again', 'Something went wrong, please try again.'),
 							autoHideTimeout: 3000
 						});
 					}
@@ -348,10 +333,7 @@ export function moveConversationToTrash({
 						replace: true,
 						type: 'info',
 						actionLabel: 'Undo',
-						label: getBridgedFunctions()?.t(
-							'snackbar.email_moved_to_trash',
-							'E-mail moved to Trash'
-						),
+						label: t('snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
 						autoHideTimeout: 5000,
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
@@ -362,10 +344,7 @@ export function moveConversationToTrash({
 						key: `trash-${ids}`,
 						replace: true,
 						type: 'error',
-						label: getBridgedFunctions()?.t(
-							'label.error_try_again',
-							'Something went wrong, please try again'
-						),
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
@@ -387,9 +366,7 @@ export function moveConversationToFolder({
 	return {
 		id: 'move-conversations',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
-		label: isRestore
-			? getBridgedFunctions()?.t('label.restore', 'Restore')
-			: getBridgedFunctions()?.t('label.move', 'Move'),
+		label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 		click: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
@@ -421,7 +398,7 @@ export function deleteConversationPermanently({
 	return {
 		id: 'delete-conversations',
 		icon: 'DeletePermanentlyOutline',
-		label: getBridgedFunctions()?.t('label.delete_permanently', 'Delete permanently'),
+		label: t('label.delete_permanently', 'Delete permanently'),
 		click: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{

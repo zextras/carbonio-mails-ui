@@ -15,7 +15,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep, isEmpty, reduce } from 'lodash';
-import { Container, FormSection } from '@zextras/carbonio-design-system';
+import { Container, FormSection, SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { getPropsDiff, differenceObject } from './components/utils';
 import DisplayMessagesSettings from './displaying-messages-settings';
@@ -24,6 +24,7 @@ import SignatureSettings from './signature-settings';
 import FilterModule from './filters';
 import TrusteeAddresses from './trustee-addresses';
 import { SignatureRequest } from '../../store/actions/signatures';
+import ComposeMessage from './compose-msg-settings';
 import { PropsType, SignItemType } from '../../types';
 
 /* to keep track of changes done to props we use 3 different values:
@@ -336,6 +337,7 @@ const SettingsView: FC = () => {
 						signItemsUpdated={signItemsUpdated}
 						flag={flag}
 					/>
+					<ComposeMessage settingsObj={settingsObj} updateSettings={updateSettings} />
 					<FilterModule />
 					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
 				</FormSection>

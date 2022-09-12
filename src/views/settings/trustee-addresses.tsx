@@ -25,7 +25,7 @@ import TrusteeListItem from './components/trustee-list-item';
 import LoadingShimmer from './filters/parts/loading-shimmer';
 import { InputProps } from '../../types';
 
-const NonSupportedCharacters = /[!#$%^&*()_+\-=[\]{};':"\\|,.<>/?|/^\s*$/]+/;
+const NonSupportedCharacters = /[!#$%^&*()+=[\]{};':"\\|,<>/?|/^\s*$/]+/;
 const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 	const [t] = useTranslation();
 	const [address, setAddress] = useState('');
@@ -119,7 +119,7 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 				<Padding left="medium">
 					<Tooltip label={warningMessage} disabled={!isInvalid} maxWidth="100%">
 						<Button
-							label={getBridgedFunctions()?.t('label.add', 'Add')}
+							label={t('label.add', 'Add')}
 							type="outlined"
 							onClick={onAdd}
 							disabled={isInvalid}

@@ -31,7 +31,7 @@ const ModalFooter: FC<ModalFooterProps> = ({
 	tooltip,
 	secondaryTooltip,
 	paddingTop = 'medium'
-}: ModalFooterProps): ReactElement => (
+}): ReactElement => (
 	<Container
 		mainAlignment={mainAlignment}
 		crossAlignment={crossAlignment}

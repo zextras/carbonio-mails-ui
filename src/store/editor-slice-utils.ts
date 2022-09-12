@@ -13,8 +13,9 @@ import {
 	MailMessagePart,
 	Participant,
 	SharedParticipant,
-	mailAttachmentParts,
-	SoapDraftMessageObj
+	MailAttachmentParts,
+	SoapDraftMessageObj,
+	PrefsType
 } from '../types';
 import { ParticipantRole } from '../commons/utils';
 
@@ -22,14 +23,14 @@ import { ParticipantRole } from '../commons/utils';
 export const retrieveAttachmentsType = (
 	original: MailMessage,
 	disposition: string
-): Array<mailAttachmentParts> =>
+): Array<MailAttachmentParts> =>
 	reduce(
 		original?.parts?.[0]?.parts ?? [],
 		(acc, part) =>
 			part.disposition && part.disposition === disposition
 				? [...acc, { part: part.name, mid: original.id }]
 				: acc,
-		[] as Array<mailAttachmentParts>
+		[] as Array<MailAttachmentParts>
 	);
 
 export const getSignatures: any = (account: any, t: any) => {
@@ -65,9 +66,10 @@ export const emptyEditor = (
 		`<br>${signatureNewMessageValue}`,
 		`<br>${signatureNewMessageValue}`
 	];
+	const isRichText = settings?.prefs?.zimbraPrefComposeFormat === 'html';
 
 	return {
-		richText: true,
+		richText: isRichText,
 		text: textWithSignatureNewMessage,
 		to: [],
 		cc: [],
@@ -222,7 +224,7 @@ export function findAttachments(
 		parts,
 		(found, part) => {
 			if (part && part.disposition === 'attachment' && !part.ci) {
-				found.push(part);
+				found.push({ ...part, filename: part.filename ?? '' });
 			}
 			if (part.parts) return findAttachments(part.parts, found);
 			return acc;
@@ -259,6 +261,7 @@ export const extractBody = (msg: MailMessage): Array<string> => {
 	const htmlArr = findBodyPart(msg.parts, 'text/html');
 	const text = textArr.length ? textArr[0].replaceAll('\n', '<br/>') : undefined;
 	const html = htmlArr.length ? htmlArr[0] : undefined;
+
 	return [text ?? html ?? '', html ?? text ?? ''];
 };
 
@@ -285,7 +288,7 @@ export function generateReplyText(
 
 	const textToRetArray = [
 		`\n\n---------------------------\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`,
-		`<br /><br /><hr id="zwchr" ><b>${labels.from}</b> ${headingFrom} <br /> <b>${labels.to}</b> ${headingTo} <br />`
+		`<br /><br /><hr id="zwchr" ><div style="color: black; font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${labels.from}</b> ${headingFrom} <br /> <b>${labels.to}</b> ${headingTo} <br />`
 	];
 
 	if (headingCc.length > 0) {
@@ -295,7 +298,7 @@ export function generateReplyText(
 
 	textToRetArray[1] += `<b>${labels.sent}</b> ${date} <br /> <b>${labels.subject}</b> ${
 		mail.subject
-	} <br /><br />${extractBody(mail)[1]}`;
+	} <br /><br />${extractBody(mail)[1]}</div>`;
 
 	textToRetArray[0] += `${labels.sent} ${date}\n${labels.subject} ${mail.subject}\n\n${
 		extractBody(mail)[0]
@@ -310,6 +313,8 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 		did: msg.isDraft ? msg.did ?? msg.id : undefined,
 		attach: { mp: retrieveAttachmentsType(msg, 'attachment') },
 		su: { _content: msg.subject ?? '' },
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		e: map(msg.participants, (c) => ({
 			t: c.type,
 			a: c.address,
@@ -340,7 +345,18 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 	};
 };
 
-export const generateRequest = (data: MailsEditor): SoapDraftMessageObj => {
+export const getHtmlWithPreAppliedStyled = (
+	content: string,
+	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
+): string =>
+	`<html><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
+
+export const generateRequest = (data: MailsEditor, prefs?: PrefsType): SoapDraftMessageObj => {
+	const style = {
+		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+		color: prefs?.zimbraPrefHtmlEditorDefaultFontColor
+	};
 	const participants = map(
 		// eslint-disable-next-line no-nested-ternary
 		data.participants
@@ -371,6 +387,7 @@ export const generateRequest = (data: MailsEditor): SoapDraftMessageObj => {
 	}
 
 	return {
+		autoSendTime: data.autoSendTime,
 		did: data.did ?? undefined,
 		id: data.id ?? undefined,
 		attach: data.attach,
@@ -388,7 +405,7 @@ export const generateRequest = (data: MailsEditor): SoapDraftMessageObj => {
 							{
 								ct: 'text/html',
 								body: true,
-								content: { _content: data?.text[1] ?? '' }
+								content: { _content: getHtmlWithPreAppliedStyled(data?.text[1], style) ?? '' }
 							},
 							{
 								ct: 'text/plain',

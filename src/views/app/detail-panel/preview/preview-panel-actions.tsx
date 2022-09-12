@@ -44,7 +44,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 	const primaryActions = useMemo(() => {
 		switch (folderId) {
 			case FOLDERS.SENT:
-				return [moveConversationToTrash({ ids, dispatch, createSnackbar, deselectAll, folderId })];
+				return [moveConversationToTrash({ ids, dispatch, deselectAll, folderId })];
 			case FOLDERS.TRASH:
 			case FOLDERS.SPAM:
 				return [
@@ -59,7 +59,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 					// editTagsMsg
 				];
 		}
-	}, [createSnackbar, dispatch, folderId, ids, item, deselectAll]);
+	}, [dispatch, folderId, ids, item, deselectAll]);
 
 	const secondaryActions = useMemo(() => {
 		switch (folderId) {
@@ -134,7 +134,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 						key={action.id}
 						size="medium"
 						icon={action.icon}
-						onClick={(ev: React.MouseEvent<HTMLElement>): void => {
+						onClick={(ev): void => {
 							if (ev) ev.preventDefault();
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
@@ -151,7 +151,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 						id: action.label,
 						icon: action.icon,
 						label: action.label,
-						click: (ev: React.MouseEvent<HTMLElement>): void => {
+						click: (ev): void => {
 							if (ev) ev.preventDefault();
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore

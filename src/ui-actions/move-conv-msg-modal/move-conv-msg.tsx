@@ -26,7 +26,7 @@ type MoveConvMsgPropType = {
 	selectedIDs: string | undefined | Array<string>;
 	isMessageView: boolean;
 	isRestore: boolean;
-	deselectAll?: () => void;
+	deselectAll: () => void;
 	onClose?: () => void;
 };
 const MoveConvMessage: FC<MoveConvMsgPropType> = ({
@@ -41,13 +41,11 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 	const [moveConvModal, setMoveConvModal] = useState(true);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
-	const [label, setLabel] = useState(
-		getBridgedFunctions()?.t('folder_panel.modal.new.input.name', 'Folder Name')
-	);
+	const [label, setLabel] = useState(t('folder_panel.modal.new.input.name', 'Folder Name'));
 	const dispatch = useDispatch();
 
 	const [currentFolder, setCurrentFolder] = useState<UserFolder>();
-	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(currentFolder);
+	const [folderDestination, setFolderDestination] = useState<any>(currentFolder);
 	const [folderPosition, setFolderPosition] = useState(currentFolder?.name ?? '');
 	const allFolders = useSelector(selectFolders);
 	const [input, setInput] = useState('');
@@ -57,11 +55,19 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 			reduce(
 				allFolders,
 				(
-					a: Array<{ id: string; parent: Folder; label: string; items?: Array<any>; to?: string }>,
+					a: Array<{
+						id: string;
+						parent: Folder;
+						label: string;
+						items?: Array<any>;
+						to?: string;
+						depth: number;
+					}>,
 					c: {
 						id: string;
 						parent: Folder;
 						name: string;
+						depth: number;
 					}
 				) => {
 					a.push({
@@ -70,7 +76,8 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 						parent: c.parent,
 						label: c.name,
 						items: [],
-						to: `/folder/${c.id}`
+						to: `/folder/${c.id}`,
+						depth: c.depth
 					});
 					return a;
 				},
@@ -84,27 +91,33 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 				if (isEmpty(v)) {
 					return false;
 				}
+
 				if (
 					v.id === currentFolder?.id ||
-					v.id === currentFolder?.parent ||
-					v.parent === FOLDERS.TRASH ||
-					(v.absParent === currentFolder?.absParent && v.level > currentFolder?.level) ||
-					(v.level + currentFolder?.depth > 3 && v.level !== 0)
+					v.id === currentFolder?.parent?.id ||
+					v.parent.id === FOLDERS.TRASH ||
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					(v.absParent === currentFolder?.absParent && v.depth > (currentFolder?.depth ?? 0)) ||
+					(v.depth + (currentFolder?.depth ?? 0) > 3 && v.depth !== 0)
 				) {
 					return false;
 				}
 				return startsWith(v.label.toLowerCase(), input.toLowerCase());
 			}),
 		[
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			currentFolder?.absParent,
 			currentFolder?.depth,
 			currentFolder?.id,
-			currentFolder?.level,
 			currentFolder?.parent,
 			folders,
 			input
 		]
 	);
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	const nestFilteredFolders = useCallback(
 		(items, id, results) =>
 			reduce(
@@ -112,6 +125,8 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 					items,
 					(item) => item.parent === id && item.id !== FOLDERS.SPAM && item.id !== FOLDERS.TRASH
 				),
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				(acc, item) => {
 					const match = filter(results, (result) => result.id === item.id);
 					if (match && match.length) {
@@ -156,16 +171,22 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 		setMoveConvModal(true);
 		setInputValue('');
 		setFolderDestination(undefined);
-		setLabel(getBridgedFunctions()?.t('folder_panel.modal.new.input.name', 'Folder Name'));
+		setLabel(t('folder_panel.modal.new.input.name', 'Folder Name'));
 		setHasError(false);
 		if (onClose) onClose();
-	}, [onClose]);
+	}, [onClose, t]);
 	const onConfirmConvMove = useCallback(
 		(newFolderId = 0) => {
 			dispatch(
 				convAction({
 					operation: `move`,
-					ids: selectedIDs,
+					ids:
+						// eslint-disable-next-line no-nested-ternary
+						selectedIDs === undefined
+							? []
+							: typeof selectedIDs === 'string'
+							? [selectedIDs]
+							: selectedIDs,
 					parent: newFolderId > 0 ? newFolderId : currentFolder
 				})
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -178,16 +199,10 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 						replace: true,
 						type: 'info',
 						label: isRestore
-							? getBridgedFunctions()?.t(
-									'messages.snackbar.email_restored',
-									'E-mail restored in destination folder'
-							  )
-							: getBridgedFunctions()?.t(
-									'messages.snackbar.conversation_move',
-									'Conversation successfully moved'
-							  ),
+							? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
+							: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
 						autoHideTimeout: 3000,
-						actionLabel: getBridgedFunctions()?.t('action.goto_folder', 'GO TO FOLDER'),
+						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
 						onActionClick: () => {
 							replaceHistory(`/folder/${newFolderId > 0 ? newFolderId : currentFolder}`);
 						}
@@ -197,10 +212,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 						key: `edit`,
 						replace: true,
 						type: 'error',
-						label: getBridgedFunctions()?.t(
-							'label.error_try_again',
-							'Something went wrong, please try again'
-						),
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
@@ -209,7 +221,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 				onCloseModal();
 			});
 		},
-		[dispatch, selectedIDs, currentFolder, onCloseModal, deselectAll, isRestore]
+		[dispatch, selectedIDs, currentFolder, onCloseModal, deselectAll, isRestore, t]
 	);
 
 	const onConfirmMessageMove = useCallback(
@@ -217,7 +229,13 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 			dispatch(
 				msgAction({
 					operation: `move`,
-					ids: selectedIDs,
+					ids:
+						// eslint-disable-next-line no-nested-ternary
+						selectedIDs === undefined
+							? []
+							: typeof selectedIDs === 'string'
+							? [selectedIDs]
+							: selectedIDs,
 					parent: newFolderId > 0 ? newFolderId : currentFolder
 				})
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -230,14 +248,8 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 						replace: true,
 						type: 'info',
 						label: isRestore
-							? getBridgedFunctions()?.t(
-									'messages.snackbar.email_restored',
-									'E-mail restored in destination folder'
-							  )
-							: getBridgedFunctions()?.t(
-									'messages.snackbar.message_move',
-									'Message successfully moved'
-							  ),
+							? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
+							: t('messages.snackbar.message_move', 'Message successfully moved'),
 						autoHideTimeout: 3000,
 						hideButton: true // todo: add Go to folder action
 					});
@@ -246,10 +258,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 						key: `edit`,
 						replace: true,
 						type: 'error',
-						label: getBridgedFunctions()?.t(
-							'label.error_try_again',
-							'Something went wrong, please try again'
-						),
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
@@ -258,7 +267,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 				onCloseModal();
 			});
 		},
-		[onCloseModal, currentFolder, dispatch, selectedIDs, isRestore, deselectAll]
+		[dispatch, selectedIDs, currentFolder, onCloseModal, deselectAll, isRestore, t]
 	);
 
 	const nest = useCallback(
@@ -298,9 +307,13 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 							},
 							open:
 								folder.open ??
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
 								(currentFolder?.absParent === FOLDERS.USER_ROOT
 									? currentFolder?.id === item.id
-									: currentFolder?.absParent === item.id),
+									: // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									  // @ts-ignore
+									  currentFolder?.absParent === item.id),
 							items: []
 						};
 					}
@@ -312,12 +325,18 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 						},
 						open:
 							folder.open ??
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
 							(currentFolder?.absParent === FOLDERS.USER_ROOT
 								? currentFolder?.id === item.id
-								: currentFolder?.absParent === item.id)
+								: // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								  // @ts-ignore
+								  currentFolder?.absParent === item.id)
 					};
 				}
 			),
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		[currentFolder?.absParent, currentFolder?.id, folderDestination?.id]
 	);
 
@@ -332,9 +351,9 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 		}
 		const value = !!filter(folderDestination?.items, (item) => item.label === inputValue).length;
 		if (value) {
-			setLabel(getBridgedFunctions()?.t('folder_panel.modal.new.input.name_exist'));
+			setLabel(t('folder_panel.modal.new.input.name_exist'));
 		} else {
-			setLabel(getBridgedFunctions()?.t('folder_panel.modal.new.input.name'));
+			setLabel(t('folder_panel.modal.new.input.name'));
 		}
 		setHasError(value);
 		setDisabled(value);
@@ -343,13 +362,13 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 	const rootEl = useMemo(
 		() => ({
 			id: FOLDERS.USER_ROOT,
-			label: getBridgedFunctions()?.t('folder_panel.lists_item.root', '/Root'),
+			label: t('folder_panel.lists_item.root', '/Root'),
 			level: 0,
 			open: true,
 			parent: '0',
 			background: folderDestination?.id === FOLDERS.USER_ROOT ? 'gray6' : undefined // todo: fix with right color
 		}),
-		[folderDestination?.id]
+		[folderDestination?.id, t]
 	);
 
 	const data = useMemo(() => nest([rootEl, ...folders], '0'), [folders, nest, rootEl]);
@@ -369,10 +388,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 					key: `edit`,
 					replace: true,
 					type: 'error',
-					label: getBridgedFunctions()?.t(
-						'label.error_try_again',
-						'Something went wrong, please try again'
-					),
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
@@ -380,7 +396,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 		});
 
 		setInputValue('');
-		setLabel(getBridgedFunctions()?.t('folder_panel.modal.new.input.name'));
+		setLabel(t('folder_panel.modal.new.input.name'));
 		setFolderDestination(undefined);
 		setHasError(false);
 	}, [
@@ -389,7 +405,8 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 		inputValue,
 		isMessageView,
 		onConfirmConvMove,
-		onConfirmMessageMove
+		onConfirmMessageMove,
+		t
 	]);
 
 	return (
@@ -398,6 +415,8 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 				<MoveConvMsgModal
 					onClose={onCloseModal}
 					setMoveConvModal={setMoveConvModal}
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					currentFolder={currentFolder}
 					input={input}
 					nestedData={nestedData}

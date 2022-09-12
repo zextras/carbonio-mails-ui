@@ -8,7 +8,7 @@ import { TFunction } from 'react-i18next';
 // this ignore can be removed after the next rc
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { SettingsSubSection } from '@zextras/carbonio-shell-ui';
+import { getBridgedFunctions, SettingsSubSection, t } from '@zextras/carbonio-shell-ui';
 
 export const displayingMessagesSubSection = (t: TFunction): SettingsSubSection => ({
 	label: t('settings.label.display_messages', 'Displaying Messages'),
@@ -44,3 +44,8 @@ export const getSettingsSubSections = (t: TFunction): Array<SettingsSubSection> 
 	filtersSubSection(t),
 	domainWhitelistSubSection(t)
 ];
+
+export const composingMsgSubSection = (): SettingsSubSection => ({
+	label: t('labels.composing_messages', 'Composing Messages'),
+	id: 'compose'
+});

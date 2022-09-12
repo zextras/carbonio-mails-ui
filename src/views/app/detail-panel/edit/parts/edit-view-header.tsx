@@ -14,15 +14,20 @@ import {
 	Row,
 	Tooltip,
 	SnackbarManagerContext,
-	IconButton
+	IconButton,
+	MultiButton,
+	useModal,
+	Text
 } from '@zextras/carbonio-design-system';
 import { concat, some } from 'lodash';
 import { useDispatch } from 'react-redux';
 import {
+	getBridgedFunctions,
 	getCurrentRoute,
 	replaceHistory,
 	useBoardConfig,
-	useRemoveCurrentBoard
+	useRemoveCurrentBoard,
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { useHistory } from 'react-router-dom';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
@@ -31,9 +36,9 @@ import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
 import * as StyledComp from './edit-view-styled-components';
 import { addAttachments } from '../edit-utils';
-import { CreateSnackbar, mailAttachment } from '../../../../../types';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import { ActionsType } from '../../../../../commons/utils';
+import SendLaterModal from './send-later-modal';
 
 type PropType = {
 	setShowRouteGuard: (arg: boolean) => void;
@@ -57,6 +62,8 @@ const EditViewHeader: FC<PropType> = ({
 	uploadAttachmentsCb
 }) => {
 	const [t] = useTranslation();
+
+	const { prefs } = useUserSettings();
 	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action } =
 		useContext(EditViewContext);
 	const [open, setOpen] = useState(false);
@@ -112,6 +119,7 @@ const EditViewHeader: FC<PropType> = ({
 		() => `${history.location.pathname?.split('/mails')?.[1]}${history.location.search}`,
 		[history]
 	);
+
 	const sendMailCb = useCallback(() => {
 		setBtnLabel(t('label.sending', 'Sending'));
 		setIsDisabled(true);
@@ -162,7 +170,7 @@ const EditViewHeader: FC<PropType> = ({
 					}
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					dispatch(sendMsg({ editorId })).then((res) => {
+					dispatch(sendMsg({ editorId, prefs })).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							createSnackbar({
 								key: `mail-${editorId}`,
@@ -189,18 +197,56 @@ const EditViewHeader: FC<PropType> = ({
 		}
 	}, [
 		t,
+		setShowRouteGuard,
 		action,
 		boardContext,
 		editor,
 		createSnackbar,
-		folderId,
-		closeBoard,
-		dispatch,
-		editorId,
-		setShowRouteGuard,
 		undoURL,
-		updateEditorCb
+		updateEditorCb,
+		editorId,
+		folderId,
+		dispatch,
+		prefs,
+		closeBoard
 	]);
+
+	const createModal = useModal();
+	const sendMailAction = useCallback(() => {
+		if (editor?.subject) {
+			sendMailCb();
+		} else {
+			const closeModal = createModal({
+				title: t('header.attention', 'Attention'),
+				confirmLabel: t('action.ok', 'Ok'),
+				dismissLabel: t('label.cancel', 'Cancel'),
+				showCloseIcon: true,
+				onConfirm: () => {
+					sendMailCb();
+					closeModal();
+				},
+				onClose: () => {
+					closeModal();
+				},
+				onSecondaryAction: () => {
+					closeModal();
+				},
+				children: (
+					<>
+						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
+							{t(
+								'messages.modal.send_anyway.first',
+								"Email subject is empty and you didn't attach any files."
+							)}
+						</Text>
+						<Text overflow="break-word" style={{ paddingBottom: '16px' }}>
+							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
+						</Text>
+					</>
+				)
+			});
+		}
+	}, [editor?.subject, createModal, t, sendMailCb]);
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
@@ -284,6 +330,27 @@ const EditViewHeader: FC<PropType> = ({
 		]
 	);
 
+	const openSendLaterModal = useCallback(() => {
+		const closeModal = getBridgedFunctions()?.createModal(
+			{
+				maxHeight: '90vh',
+				children: (
+					<>
+						<SendLaterModal
+							// TODO : fix it inside shell
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							onClose={(): void => closeModal()}
+							dispatch={dispatch}
+							editor={editor}
+							closeBoard={closeBoard}
+						/>
+					</>
+				)
+			},
+			true
+		);
+	}, [closeBoard, dispatch, editor]);
 	return (
 		<>
 			<Row
@@ -296,6 +363,8 @@ const EditViewHeader: FC<PropType> = ({
 					<Row>
 						<Tooltip label={activeFrom?.label} maxWidth="100%" placement="top-start">
 							<Dropdown
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
 								items={identitiesList}
 								width="fit"
 								maxWidth="100%"
@@ -350,6 +419,8 @@ const EditViewHeader: FC<PropType> = ({
 					{action !== ActionsType.COMPOSE && (
 						<Tooltip label={t('tooltip.add_attachments', 'Add attachments')}>
 							<Dropdown
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
 								items={attachmentsItems}
 								display="inline-block"
 								width="fit"
@@ -381,7 +452,20 @@ const EditViewHeader: FC<PropType> = ({
 						</Padding>
 					)}
 					<Padding left="large">
-						<Button onClick={sendMailCb} label={btnLabel} disabled={isSendDisabled} />
+						<MultiButton
+							label={btnLabel}
+							onClick={sendMailAction}
+							disabledPrimary={isSendDisabled}
+							disabledSecondary={isSendDisabled}
+							items={[
+								{
+									id: 'delayed_mail',
+									icon: 'ClockOutline',
+									label: t('label.send_later', 'Send later'),
+									click: openSendLaterModal
+								}
+							]}
+						/>
 					</Padding>
 				</Row>
 			</Row>

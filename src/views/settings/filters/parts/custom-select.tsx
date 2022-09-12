@@ -12,16 +12,18 @@ import {
 } from '../../../../integrations/shared-invite-reply/parts/styled-components';
 
 type LabelFactoryPropsType = {
-	selected: Array<{ label: string }>;
-	label: string;
+	selected: Array<{ label: string; value: string }>;
+	label?: string;
 	open: boolean;
 	focus: boolean;
+	disabled: boolean;
 };
 const LabelFactory: FC<LabelFactoryPropsType> = ({
 	selected,
 	label,
 	open,
-	focus
+	focus,
+	disabled
 }): ReactElement => (
 	<ColorContainer
 		orientation="horizontal"
@@ -33,6 +35,7 @@ const LabelFactory: FC<LabelFactoryPropsType> = ({
 		padding={{
 			all: 'extrasmall'
 		}}
+		disabled={disabled}
 		minHeight="48px"
 	>
 		<Row width="100%" takeAvailableSpace mainAlignment="space-between">
@@ -42,10 +45,14 @@ const LabelFactory: FC<LabelFactoryPropsType> = ({
 				mainAlignment="flex-start"
 				padding={{ left: 'small' }}
 			>
-				<Text size="small" color={open || focus ? 'primary' : 'secondary'}>
+				<Text
+					size="small"
+					// eslint-disable-next-line no-nested-ternary
+					color={open || focus ? 'primary' : disabled ? 'gray2' : 'secondary'}
+				>
 					{label}
 				</Text>
-				<TextUpperCase>{selected?.[0]?.label}</TextUpperCase>
+				<TextUpperCase color={disabled ? 'gray2' : 'text'}>{selected?.[0]?.label}</TextUpperCase>
 			</Row>
 		</Row>
 		<Icon
@@ -77,12 +84,15 @@ const CustomSelect: FC<{
 	label: string;
 	items: Array<{ label: string; value: any }>;
 	background?: string;
-}> = ({ onChange, defaultSelection, label, items }) => {
+	disabled?: boolean;
+}> = ({ onChange, defaultSelection, label, items, disabled = false }) => {
 	const newItems = useMemo(() => getItems(items), [items]);
+
 	return (
 		<Select
 			label={label}
 			background="gray4"
+			disabled={disabled}
 			onChange={onChange}
 			items={newItems}
 			defaultSelection={defaultSelection}

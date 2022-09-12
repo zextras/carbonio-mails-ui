@@ -41,6 +41,8 @@ const MessagePreviewPanel: FC = () => {
 					>
 						<Container height="fit" mainAlignment="flex-start" background="gray5">
 							<Padding bottom="medium" width="100%">
+								{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+								{/* @ts-ignore */}
 								<MailPreview message={message} expanded isAlone isMessageView />
 							</Padding>
 						</Container>

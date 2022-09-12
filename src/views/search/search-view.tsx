@@ -24,7 +24,6 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const [query, updateQuery] = useQuery();
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
-	const sortBySetting = settings.prefs.zimbraPrefConvListSortBy as 'dateDesc' | 'dateAsc';
 	const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
 	const folders = useSelector(selectFolders);
 
@@ -80,10 +79,10 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 
 	const queryToString = useMemo(
 		() =>
-			isSharedFolderIncluded
+			isSharedFolderIncluded && searchInFolders?.length > 0
 				? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
 				: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
-		[query, foldersToSearchInQuery, isSharedFolderIncluded]
+		[isSharedFolderIncluded, searchInFolders.length, query, foldersToSearchInQuery]
 	);
 
 	const searchQuery = useCallback(
@@ -92,14 +91,14 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 				search({
 					query: queryString,
 					limit: 100,
-					sortBy: sortBySetting,
+					sortBy: 'dateDesc',
 					types: isMessageView ? 'message' : 'conversation',
 					offset: reset ? 0 : searchResults.offset,
 					recip: '0'
 				})
 			);
 		},
-		[dispatch, isMessageView, searchResults.offset, sortBySetting]
+		[dispatch, isMessageView, searchResults.offset]
 	);
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
@@ -205,6 +204,8 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 					</Suspense>
 				</Container>
 			</Container>
+			{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+			{/* @ts-ignore */}
 			<AdvancedFilterModal
 				query={query}
 				updateQuery={updateQuery}

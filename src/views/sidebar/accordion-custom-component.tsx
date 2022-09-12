@@ -29,7 +29,8 @@ import {
 	Avatar,
 	Icon,
 	Row,
-	Padding
+	Padding,
+	ContainerProps
 } from '@zextras/carbonio-design-system';
 import { startsWith } from 'lodash';
 import { useTranslation } from 'react-i18next';

@@ -81,7 +81,6 @@ const MailEditPanel: FC = () => {
 						mailId={editId}
 						folderId={folderId}
 						setHeader={setHeader}
-						panel
 						toggleAppBoard={toggleAppBoard}
 					/>
 				</Container>

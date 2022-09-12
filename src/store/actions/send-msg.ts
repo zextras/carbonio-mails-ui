@@ -13,9 +13,9 @@ import { getMsg } from './get-msg';
 
 export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 	'sendMsg',
-	async ({ editorId, msg }, { getState, dispatch }) => {
+	async ({ editorId, msg, prefs }, { getState, dispatch }) => {
 		const editor = (getState() as StateType).editors.editors[editorId];
-		let toSend = editor && generateRequest(editor);
+		let toSend = editor && generateRequest(editor, prefs);
 
 		if (msg) {
 			toSend = generateMailRequest(msg);

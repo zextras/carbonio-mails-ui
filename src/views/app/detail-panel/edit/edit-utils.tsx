@@ -8,7 +8,7 @@ import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { reduce } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { retrieveAttachmentsType } from '../../../../store/editor-slice-utils';
-import { mailAttachmentParts, MailsEditor } from '../../../../types';
+import { MailAttachmentParts, MailsEditor } from '../../../../types';
 
 type AddAttachmentsPayloadType = {
 	resp: {
@@ -23,7 +23,7 @@ export const addAttachments = async (
 	uploadAttachmentsCb: UploadAttachmentsCbType,
 	compositionData: Partial<MailsEditor>,
 	files: FileList
-): Promise<mailAttachmentParts[] | undefined> => {
+): Promise<MailAttachmentParts[] | undefined> => {
 	const { payload } = await saveDraftCb(compositionData);
 	const upload = await uploadAttachmentsCb(files);
 

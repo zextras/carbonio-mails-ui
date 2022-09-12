@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo } from 'react';
-import { Container, Dropdown, IconButton } from '@zextras/carbonio-design-system';
+import { Container, Dropdown, DropdownItem, IconButton } from '@zextras/carbonio-design-system';
 import { FOLDERS, useTags } from '@zextras/carbonio-shell-ui';
 import { map, every, filter, some } from 'lodash';
 
@@ -15,13 +15,14 @@ import {
 	setMsgFlag,
 	moveMsgToTrash,
 	moveMessageToFolder,
-	deleteMessagePermanently
+	deleteMessagePermanently,
+	MessageActionReturnType
 } from './message-actions';
 import { applyMultiTag } from './tag-actions';
 import { MailMessage } from '../types';
 
 type SelectMessagesPanelActionsPropType = {
-	messages: MailMessage[];
+	messages: Partial<MailMessage>[];
 	folderId: string;
 	selectedIds: Array<string>;
 	deselectAll: () => void;
@@ -34,21 +35,21 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 }) => {
 	const dispatch = useDispatch();
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);
-	const selectedConversation = filter(messages, (convo) => ids.indexOf(convo.id) !== -1);
+	const selectedConversation = filter(messages, (convo) => ids.indexOf(convo.id ?? '') !== -1);
 	const tags = useTags();
 
 	const showAddFlag = useMemo(() => {
-		const selectMessages = filter(messages, (convo) => ids.indexOf(convo.id) !== -1);
+		const selectMessages = filter(messages, (convo) => ids.indexOf(convo.id ?? '') !== -1);
 		return every(selectMessages, ['flagged', true]);
 	}, [messages, ids]);
 
 	const showReadConvo = useMemo(() => {
-		const selectMessages = filter(messages, (convo) => ids.indexOf(convo.id) !== -1);
+		const selectMessages = filter(messages, (convo) => ids.indexOf(convo.id ?? '') !== -1);
 		return some(selectMessages, ['read', true]);
 	}, [messages, ids]);
 
 	const showUnreadConvo = useMemo(() => {
-		const selectMessages = filter(messages, (convo) => ids.indexOf(convo.id) !== -1);
+		const selectMessages = filter(messages, (convo) => ids.indexOf(convo.id ?? '') !== -1);
 		return some(selectMessages, ['read', false]);
 	}, [messages, ids]);
 
@@ -178,6 +179,7 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 		tags,
 		selectedConversation
 	]);
+
 	return (
 		<Container
 			background="gray5"
@@ -217,8 +219,12 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 			<Dropdown
 				placement="right-end"
 				data-testid="secondary-actions-dropdown"
-				items={map(
-					filter(secondaryActions),
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				items={map<MessageActionReturnType>(
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					filter<MessageActionReturnType>(secondaryActions),
 					(action: {
 						label: string;
 						icon: string;
@@ -229,7 +235,7 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 						id: action.label,
 						icon: action.icon,
 						label: action.label,
-						click: (ev): void => {
+						click: (ev: Event): void => {
 							if (ev) ev.preventDefault();
 							action.click && action.click();
 						},

@@ -108,7 +108,7 @@ const ConversationList: FC = () => {
 	);
 
 	useEffect(() => {
-		const handler = (event): void =>
+		const handler = (event: any): void =>
 			handleKeyboardShortcuts({
 				event,
 				folderId,

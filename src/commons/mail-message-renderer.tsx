@@ -25,7 +25,7 @@ import {
 	MultiButton
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
-import { editSettings, getBridgedFunctions, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { editSettings, getBridgedFunctions, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
 import { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';
@@ -44,7 +44,7 @@ export const plainTextToHTML = (str: string): string => {
 };
 
 const BannerContainer = styled(Container)`
-	border-bottom: 1px solid ${(props) => props.theme.palette.warning.regular};
+	border-bottom: 1px solid ${(props): string => props.theme.palette.warning.regular};
 	padding: 8px 16px;
 	display: flex;
 	flex-direction: row;
@@ -54,14 +54,14 @@ const BannerContainer = styled(Container)`
 `;
 
 const StyledMultiBtn = styled(MultiButton)`
-	border: 1px solid ${(props) => props.theme.palette.warning.regular};
+	border: 1px solid ${(props): string => props.theme.palette.warning.regular};
 	height: 32px;
 	& > * {
-		background-color: ${(props) => props.theme.palette.transparent.regular} !important;
+		background-color: ${(props): string => props.theme.palette.transparent.regular} !important;
 		cursor: pointer;
 	}
 	&:hover {
-		background-color: ${({ theme }) => theme.palette.gray6.focus};
+		background-color: ${({ theme }): string => theme.palette.gray6.focus};
 	}
 	svg {
 		padding: 0px !important;
@@ -114,11 +114,10 @@ const _TextMessageRenderer: FC<{ body: { content: string; contentType: string } 
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center" padding={{ top: 'medium' }}>
 					<Button
-						label={getBridgedFunctions()?.t('label.show_quoted_text', 'Show quoted text')}
+						label={t('label.show_quoted_text', 'Show quoted text')}
 						icon="EyeOutline"
 						type="outlined"
 						onClick={(): void => setShowQuotedText(true)}
-						size="fill"
 					/>
 				</Row>
 			)}
@@ -209,7 +208,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		[settingsPref.zimbraPrefMailTrustedSenderList]
 	);
 
-	const items = useMemo(
+	const items = useMemo<any[]>(
 		() => [
 			{
 				id: 'always-allow-address',
@@ -294,11 +293,11 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		const imgMap = reduce(
 			parts,
 			(r, v) => {
-				if (!_CI_REGEX.test(v.ci)) return r;
-				r[_CI_REGEX.exec(v.ci)[1]] = v;
+				if (!_CI_REGEX.test(v.ci ?? '')) return r;
+				r[_CI_REGEX.exec(v.ci ?? '')?.[1] ?? ''] = v;
 				return r;
 			},
-			{}
+			{} as any
 		);
 
 		const images =
@@ -308,14 +307,14 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		if (images)
 			forEach(images, (p: HTMLImageElement) => {
 				if (p.hasAttribute('dfsrc')) {
-					p.setAttribute('src', p.getAttribute('dfsrc'));
+					p.setAttribute('src', p.getAttribute('dfsrc') ?? '');
 					p.setAttribute('style', showImage ? 'display: block' : 'display: none');
 				}
 				if (!_CI_SRC_REGEX.test(p.src)) return;
-				const ci = _CI_SRC_REGEX.exec(p.getAttribute('src'))[1];
+				const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';
 				if (imgMap[ci]) {
 					const part = imgMap[ci];
-					p.setAttribute('pnsrc', p.getAttribute('src'));
+					p.setAttribute('pnsrc', p.getAttribute('src') ?? '');
 					p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
 				}
 			});
@@ -326,10 +325,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		return () => resizeObserver.disconnect();
 	}, [contentToDisplay, msgId, parts, showImage]);
 
-	const multiBtnLabel = useMemo(
-		() => getBridgedFunctions()?.t('label.view_images', 'VIEW IMAGES'),
-		[]
-	);
+	const multiBtnLabel = useMemo(() => t('label.view_images', 'VIEW IMAGES'), []);
 	return (
 		<div ref={divRef} className="force-white-bg">
 			{showBanner && !showExternalImage && (
@@ -357,7 +353,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 							<Icon icon="AlertTriangleOutline" color="warning" size="large" />
 						</Padding>
 						<Text overflow="break-word" size="small">
-							{getBridgedFunctions()?.t(
+							{t(
 								'message.external_images_blocked',
 								'External images have been blocked to protect you against potential spam'
 							)}
@@ -383,10 +379,11 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 							onClick={(): void => {
 								setShowExternalImage(true);
 							}}
-							btnProps={{ size: 'fit', isSmall: true }}
 							dropdownProps={{
 								maxWidth: '500px',
-								width: 'fit'
+								width: 'fit',
+								items,
+								children: <></>
 							}}
 							items={items}
 						/>
@@ -416,7 +413,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center">
 					<Button
-						label={getBridgedFunctions()?.t('label.show_quoted_text', 'Show quoted text')}
+						label={t('label.show_quoted_text', 'Show quoted text')}
 						icon="EyeOutline"
 						type="outlined"
 						onClick={(): void => setShowQuotedText(true)}
@@ -430,10 +427,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 
 const EmptyBody: FC = () => (
 	<Container padding={{ bottom: 'medium' }}>
-		<Text>{`(${getBridgedFunctions()?.t(
-			'messages.no_content',
-			'This message has no text content'
-		)}.)`}</Text>
+		<Text>{`(${t('messages.no_content', 'This message has no text content')}.)`}</Text>
 	</Container>
 );
 

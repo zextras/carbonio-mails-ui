@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { AttachmentPartType } from '../details-pannel';
+import { Participant } from '../participant';
 
 export type IncompleteMessage = {
 	id: string;
@@ -21,6 +21,8 @@ export type IncompleteMessage = {
 	isForwarded: boolean;
 	isInvite: boolean;
 	isDraft: boolean;
+	isScheduled: boolean;
+	autoSendTime?: number;
 	participants?: Array<Participant>;
 	date: number;
 	subject: string;
@@ -63,4 +65,5 @@ export type SendMsgParameters = {
 	editorId: string;
 	msg?: MailMessage;
 	message?: MailMessage;
+	prefs?: PrefsType;
 };

@@ -19,6 +19,7 @@ import styled from 'styled-components';
 
 import {
 	getBridgedFunctions,
+	t,
 	useIntegratedComponent,
 	useUserAccount
 } from '@zextras/carbonio-shell-ui';
@@ -54,7 +55,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	setSignItemsUpdated
 }): ReactElement => {
 	const account = useUserAccount();
-	const [signatures, setSignatures] = useState(getSignatures(account, getBridgedFunctions()?.t));
+	const [signatures, setSignatures] = useState(getSignatures(account, t));
 	const [signs, setSigns] = useState([]);
 	const [selected, setSelected] = useState({});
 
@@ -179,6 +180,8 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				onMouseEnter={onMouseEnter}
 				onMouseLeave={onMouseLeave}
 				background={index === item.index ? 'highlight' : ''}
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				onClick={(ev: React.MouseEvent & { target: { innerText: string } }): void => {
 					if (ev.target.innerText === 'DELETE') {
 						ev.preventDefault();
@@ -198,7 +201,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					<Container width="40%" orientation="horizontal" mainAlignment="flex-end">
 						{hovered && (
 							<Button
-								label={getBridgedFunctions()?.t('label.delete', 'Delete')}
+								label={t('label.delete', 'Delete')}
 								type="outlined"
 								color="error"
 								onClick={(): void => onDelete()}
@@ -210,11 +213,8 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		);
 	};
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
-	const sectionTitleSignatures = useMemo(() => signaturesSubSection(getBridgedFunctions()?.t), []);
-	const sectionTitleSetSignatures = useMemo(
-		() => setDefaultSignaturesSubSection(getBridgedFunctions()?.t),
-		[]
-	);
+	const sectionTitleSignatures = useMemo(() => signaturesSubSection(t), []);
+	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(t), []);
 	return (
 		<>
 			<FormSubSection
@@ -227,7 +227,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						<Container mainAlignment="flex-start">
 							<Container>
 								<Button
-									label={getBridgedFunctions()?.t('signatures.add_signature', 'Add signature')}
+									label={t('signatures.add_signature', 'Add signature')}
 									type="outlined"
 									onClick={createSign}
 									disabled={signItems?.length > 0 && !name}
@@ -243,7 +243,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					<Container width="75%" mainAlignment="flex-start">
 						<Container orientation="vertical" mainAlignment="space-around" width="100%">
 							<Input
-								label={getBridgedFunctions()?.t('signatures.name', 'Name')}
+								label={t('signatures.name', 'Name')}
 								value={name}
 								backgroundColor="gray5"
 								onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => {
@@ -260,6 +260,8 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						{composerIsAvailable && (
 							<EditorWrapper>
 								<Composer
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									value={unescape(description)}
 									onEditorChange={(ev: [string, string]): void => {
 										const updatedSign = signItems;
@@ -281,11 +283,11 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			</FormSubSection>
 			<FormSubSection label={sectionTitleSetSignatures.label} id={sectionTitleSetSignatures.id}>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-					<Heading title={getBridgedFunctions()?.t('title.new_messages', 'New Messages')} />
+					<Heading title={t('title.new_messages', 'New Messages')} />
 					<Select
 						// valueKey="id"
 						items={signatures}
-						label={getBridgedFunctions()?.t('label.select_signature', 'Select a signature')}
+						label={t('label.select_signature', 'Select a signature')}
 						selection={signatureNewMessage}
 						onChange={(e: any): void => {
 							updateSettings({
@@ -306,14 +308,14 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					)}
 				</Container>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-					<Heading
-						title={getBridgedFunctions()?.t('title.replies_forwards', 'Replies & Forwards')}
-					/>
+					<Heading title={t('title.replies_forwards', 'Replies & Forwards')} />
 					<Select
 						//	valueKey="id"
 						items={signatures}
-						label={getBridgedFunctions()?.t('label.select_signature', 'Select a signature')}
+						label={t('label.select_signature', 'Select a signature')}
 						selection={signatureRepliesForwards}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						onChange={(e: SignItemType): void => {
 							updateSettings({
 								target: {

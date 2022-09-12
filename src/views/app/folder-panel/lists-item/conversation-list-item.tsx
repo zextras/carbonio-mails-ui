@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import moment from 'moment/moment';
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isEmpty, reduce, trimStart, uniqBy, find, includes, filter, map, noop } from 'lodash';
@@ -41,7 +42,7 @@ import { ListItemActionWrapper } from './list-item-actions-wrapper';
 import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
 import { selectMessages } from '../../../../store/messages-slice';
 import { SenderName } from './sender-name';
-import MessageListItem from './message-list-item';
+import { MessageListItem } from './message-list-item';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import {
 	StateType,
@@ -162,7 +163,7 @@ type ConversationListItemProps = {
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 };
 
-const ConversationListItem: FC<ConversationListItemProps> = ({
+const ConversationListItem: FC<any> = ({
 	itemId,
 	item,
 	folderId,
@@ -210,7 +211,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 	const participantsString = useMemo(
 		() =>
 			reduce(
-				uniqBy(item.participants, (em) => em.address),
+				uniqBy(item.participants, (em: any) => em.address),
 				(acc, part) => trimStart(`${acc}, ${participantToString(part, t, accounts)}`, ', '),
 				''
 			),

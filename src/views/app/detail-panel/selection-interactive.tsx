@@ -5,7 +5,7 @@
  */
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectConversationsArray } from '../../../store/conversations-slice';
@@ -74,7 +74,7 @@ export const SelectionInteractive: FC<{ count: number }> = ({ count }) => {
 	const textContentTitle = useMemo(
 		() =>
 			count > 0
-				? getBridgedFunctions()?.t('label.mail_selected', {
+				? t('label.mail_selected', {
 						count,
 						defaultValue: '{{count}} e-mail selected',
 						defaultValue_plural: '{{count}} e-mails selected'

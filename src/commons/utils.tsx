@@ -9,7 +9,7 @@ import { TFunction } from 'react-i18next';
 import { Account } from '@zextras/carbonio-shell-ui';
 import { Participant } from '../types/participant';
 
-export const getTimeLabel = (date: Moment): string => {
+export const getTimeLabel = (date: number): string => {
 	const momentDate = moment(date);
 	if (momentDate.isSame(new Date(), 'day')) {
 		return momentDate.format('LT');
@@ -42,7 +42,12 @@ export const isAvailableInTrusteeList = (
 	let trusteeAddress: Array<string> = [];
 	let availableInTrusteeList = false;
 	if (trusteeList) {
-		trusteeAddress = isArray(trusteeList) ? trusteeList : trusteeList?.split(',');
+		// eslint-disable-next-line no-nested-ternary
+		trusteeAddress = isArray(trusteeList)
+			? trusteeList
+			: typeof trusteeList === 'string'
+			? trusteeList?.split(',')
+			: [`${trusteeList}`];
 	}
 	if (trusteeAddress.length > 0) {
 		const domain = address.substring(address.lastIndexOf('@') + 1);

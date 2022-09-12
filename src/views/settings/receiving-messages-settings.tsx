@@ -121,7 +121,6 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 				<Heading title={t('label.notification_folders', 'Notification Folders')} />
 				<Select
 					label={t('label.select_folder', 'Select folder')}
-					name="zimbraPrefShowAllNewMailNotifications"
 					items={notifyFolderOptn}
 					onChange={(view: any): void =>
 						updateSettings({
@@ -151,7 +150,6 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 				<Heading title={t('label.message_from_me', 'Messages from me')} />
 				<Select
 					items={msgsFromMeOpts}
-					name="zimbraPrefDedupeMessagesSentToSelf"
 					onChange={(view: any): void =>
 						updateSettings({
 							target: { name: 'zimbraPrefDedupeMessagesSentToSelf', value: view }

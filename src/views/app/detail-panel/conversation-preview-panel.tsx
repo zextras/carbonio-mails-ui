@@ -50,7 +50,7 @@ const MessagesComponent = ({
 		return msgs ?? [];
 	}, [
 		folderId,
-		activeRoute,
+		activeRoute?.id,
 		searchInTrash,
 		conversation?.messages,
 		settings.prefs.zimbraPrefConversationOrder,

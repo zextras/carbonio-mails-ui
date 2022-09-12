@@ -1,6 +1,7 @@
 {
     "action": {
         "click_preview": "Click to preview",
+        "edit_anyway": "Edit anyway",
         "edit_as_new": "Edit as new",
         "edit_share": "Edit Share",
         "flag": "Add flag",
@@ -204,6 +205,7 @@
         "trash": "Trash"
     },
     "header": {
+        "attention": "Attention",
         "delete_email": "Delete e-mail",
         "edit_draft": "Edit draft",
         "message_not_sent": "Error - Message not sent",
@@ -227,6 +229,8 @@
         "any": "any",
         "app_name": "Mails",
         "arrival_notifications": "Arrival Notifications",
+        "as_html": "As HTML",
+        "as_text": "As Text",
         "attachement_unknown": "Unknown <{{mimeType}}>",
         "attachment": "Attachment",
         "attachment_plural": "Attachments",
@@ -253,6 +257,7 @@
         "create_new_task": "Create New Task",
         "create_tag": "Create Tag",
         "decline": "Decline",
+        "delayed_sending": "Delayed sending",
         "delete": "Delete",
         "delete_draft": "Delete Draft",
         "delete_permanently": "Delete Permanently",
@@ -365,6 +370,7 @@
         "select_signature": "Select a signature",
         "send": "Send",
         "send_email": "Send e-mail",
+        "send_later": "Send later",
         "send_notification": "Send a notification message to",
         "sending": "Sending",
         "sent": "Sent",
@@ -392,6 +398,7 @@
         "tag_max_length": "Max 128 characters are allowed",
         "tag_name": "Tag name",
         "tags": "Tags",
+        "time_zone": "Time Zone",
         "to": "To",
         "trusted_addresses": "Trusted addresses",
         "type": "Type",
@@ -399,11 +406,16 @@
         "undo": "Undo",
         "upload_from_files": "Upload from Files",
         "view_images": "VIEW IMAGES",
+        "warning": "Warning",
         "wipe": "Wipe",
         "with_you": "with you",
         "workflow": "WorkFlow",
         "would_like_to_share": "shared its",
         "write": "Write"
+    },
+    "labels": {
+        "compose_colin": "Compose :",
+        "composing_messages": "Composing Messages"
     },
     "message": {
         "admin_rights": "View,Edit,Add,Remove,Administer",
@@ -413,6 +425,8 @@
         "external_images_blocked": "External images have been blocked to protect you against potential spam",
         "invalid_search_message": "We didn't find any match",
         "manager_rights": "View,Edit,Add,Remove",
+        "schedule_mail": "Will be sent on: {{date}} at {{time}}",
+        "schedule_time": "{{date}} at {{time}}",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
             "all_att_added": "Attachments added successfully",
@@ -435,8 +449,10 @@
         "view_rights": "View"
     },
     "messages": {
+        "cal_name_exist_warning": "A calendar with the same name already exists in this path",
         "check_and_try_again": "Please, check Carbonio and try again",
         "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
+        "edit_schedule_warning": "By editing this e-mail, the time and date previously set for delayed sending will be reset.",
         "invalid_address": "The following address appears to be invalid",
         "invalid_trustee_address": "Please enter only e-mail addresses or domains",
         "modal": {
@@ -447,6 +463,10 @@
             "redirect": {
                 "first": "This e-mail will be sent on to a new recipient while preserving the e-mail address of the original sender.",
                 "second": "The e-mail will appear as originally intended for the new recipient"
+            },
+            "send_anyway": {
+                "first": "Email subject is empty and you didn't attach any files.",
+                "second": "Do you still want to send the email?"
             }
         },
         "new_email": "New e-mail",
@@ -561,6 +581,9 @@
         "filter_deleted": "Filter successfully deleted",
         "filter_folder_message": "Select a folder to apply your filter:",
         "filter_name": "Filter Name",
+        "font": "Font",
+        "font_size": "{{count}} pt",
+        "font_size_plural": "",
         "from_distribution_list": "from distribution list",
         "gb": "GB",
         "header_name": "Header Named",

@@ -21,7 +21,8 @@ import {
 	replaceHistory,
 	useTags,
 	Tag,
-	getBridgedFunctions
+	getBridgedFunctions,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -342,7 +343,7 @@ export const applyMultiTag = ({
 				</Padding>
 				<Row takeAvailableSpace mainAlignment="space-between">
 					<Padding right="small">
-						<Text>{getBridgedFunctions()?.t('label.tags', 'Tags')}</Text>
+						<Text>{t('label.tags', 'Tags')}</Text>
 					</Padding>
 				</Row>
 			</Row>
@@ -387,7 +388,7 @@ export const applyTag = ({
 	return {
 		id: TagsActionsType.Apply,
 		items: tagItem,
-		label: getBridgedFunctions()?.t('label.tag', 'Tag'),
+		label: t('label.tag', 'Tag'),
 		icon: 'TagsMoreOutline',
 		customComponent: (
 			<Row takeAvailableSpace mainAlignment="flex-start">
@@ -396,7 +397,7 @@ export const applyTag = ({
 				</Padding>
 				<Row takeAvailableSpace mainAlignment="space-between">
 					<Padding right="small">
-						<Text>{getBridgedFunctions()?.t('label.tags', 'Tags')}</Text>
+						<Text>{t('label.tags', 'Tags')}</Text>
 					</Padding>
 				</Row>
 			</Row>

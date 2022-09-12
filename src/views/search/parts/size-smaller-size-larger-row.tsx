@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Container, ChipInput } from '@zextras/carbonio-design-system';
+import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { SizeLargerSizeSmallerRowProps } from '../../../types';
 
 const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({

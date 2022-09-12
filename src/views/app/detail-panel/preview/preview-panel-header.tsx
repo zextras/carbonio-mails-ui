@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, FC, useMemo } from 'react';
-import { getBridgedFunctions, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { Container, Divider, Icon, IconButton, Row, Text } from '@zextras/carbonio-design-system';
 import { Conversation, MailMessage } from '../../../../types';
 
@@ -18,7 +18,7 @@ const PreviewPanelHeader: FC<{
 	);
 
 	const subject = useMemo(
-		() => item?.subject || getBridgedFunctions()?.t('label.no_subject_with_tags', '<No Subject>'),
+		() => item?.subject || t('label.no_subject_with_tags', '<No Subject>'),
 		[item?.subject]
 	);
 	return (

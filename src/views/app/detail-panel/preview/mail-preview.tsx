@@ -199,7 +199,6 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({ message, open, onClick, is
 	const [t] = useTranslation();
 	const { folderId } = useParams<{ folderId: string }>();
 
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const compProps = useMemo(
 		() => ({ message, onClick, open, isAlone }),
@@ -210,13 +209,11 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({ message, open, onClick, is
 			setMsgAsSpam({
 				ids: [message.id],
 				value: true,
-				t,
 				dispatch,
-				createSnackbar,
 				shouldReplaceHistory: true,
 				folderId
 			}).click(),
-		[createSnackbar, dispatch, folderId, message.id, t]
+		[dispatch, folderId, message.id]
 	);
 	return (
 		<>

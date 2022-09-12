@@ -4,6 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { Conversation } from '../conversations';
+import { IncompleteMessage, MailMessage } from '../messages';
+import { TextReadValuesProps } from '../utils';
+
 export type FolderType = {
 	id: string;
 	uuid: string;
@@ -86,7 +90,7 @@ export type ItemAvatarType = {
 	selecting: boolean;
 	toggle: (arg: string) => void;
 	folderId: string;
-	isSearch: boolean;
+	isSearch?: boolean;
 };
 
 export type CustomListItem = Partial<MailMessage> & { id: string; isFromSearch?: boolean };

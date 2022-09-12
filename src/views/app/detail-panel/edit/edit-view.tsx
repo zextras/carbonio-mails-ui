@@ -12,7 +12,6 @@ import React, {
 	useState,
 	useRef,
 	FC,
-	DragEventHandler,
 	SyntheticEvent
 } from 'react';
 import {
@@ -95,10 +94,16 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 	const messages = useSelector(selectMessages);
 
 	const { handleSubmit, control, setValue } = useForm();
-
+	const { prefs } = useUserSettings();
 	const addBoard = useAddBoardCallback();
 	const [dropZoneEnable, setDropZoneEnable] = useState(false);
-	const saveDraftCb = useCallback((data: MailsEditor) => dispatch(saveDraft({ data })), [dispatch]);
+
+	const saveDraftCb = useCallback(
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		(data: MailsEditor) => dispatch(saveDraft({ data, prefs })),
+		[dispatch, prefs]
+	);
 
 	const [saveFirstDraft, setSaveFirstDraft] = useState(true);
 	const [draftSavedAt, setDraftSavedAt] = useState('');

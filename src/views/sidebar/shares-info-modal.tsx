@@ -21,7 +21,7 @@ export const ShareInfoRow: FC<{
 				<Text weight="bold">{`${label}: `}</Text>
 			</Row>
 			<Row takeAvailableSpace>
-				<Text overflow="breakword">{text}</Text>
+				<Text overflow="break-word">{text}</Text>
 			</Row>
 		</Row>
 	</Row>

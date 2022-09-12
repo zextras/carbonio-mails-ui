@@ -14,7 +14,7 @@ import { useGetFilesFromDrive } from './use-get-drive-files';
 import { MailsEditor } from '../../../../../types';
 
 type UseGetAttachItemsPropType = {
-	onFileClick: ((ev: React.MouseEvent<Element, MouseEvent>) => void) | undefined;
+	onFileClick: ((ev: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void) | undefined;
 	setOpenDD: (arg: boolean) => void;
 	editorId: string;
 	updateEditorCb: (arg: Partial<MailsEditor>) => void;
@@ -26,7 +26,7 @@ type UseGetAttachItemsReturnType = {
 	label: string;
 	id?: string | undefined;
 	icon?: string | undefined;
-	click?: ((ev: React.MouseEvent<Element, MouseEvent>) => void) | undefined;
+	click?: ((ev: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void) | undefined;
 	type?: string | undefined;
 	primary?: boolean | undefined;
 	group?: string | undefined;

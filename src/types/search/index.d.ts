@@ -5,8 +5,11 @@
  */
 
 import { ChipItem } from '@zextras/carbonio-design-system';
+import { QueryChip } from '@zextras/carbonio-shell-ui';
+import { TFunction } from 'react-i18next';
 import { Conversation } from '../conversations';
-import { MailMessage } from '../messages';
+import { KeywordState } from '../filters';
+import { IncompleteMessage, MailMessage } from '../messages';
 import { SearchesStateType } from '../state';
 
 export type SearchResults = {
@@ -62,15 +65,17 @@ export type SearchConversationListItemProps = {
 	item: Conversation;
 	selected: boolean;
 	selecting: boolean;
-	toggle?: boolean;
+	toggle?: (arg: string) => void;
 	active: boolean;
 };
 
 export type AdvancedFilterModalProps = {
+	id: string;
 	open: boolean;
 	onClose: () => void;
 	t: TFunction;
 	query: Array<{
+		id: string;
 		label: string;
 		value?: string;
 		isGeneric?: boolean;

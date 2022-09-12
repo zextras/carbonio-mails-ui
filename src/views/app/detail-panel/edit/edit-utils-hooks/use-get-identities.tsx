@@ -24,7 +24,8 @@ export const findDefaultIdentity = ({
 	folderId
 }: FindDefaultIdentityType): IdentityType | undefined => {
 	const activeAcc = find(allAccounts, { zid: folderId?.split?.(':')?.[0] });
-	return find(list, { address: activeAcc?.owner }) ?? find(list, { identityName: 'DEFAULT' });
+	const predicate = activeAcc?.owner ? { address: activeAcc?.owner } : { identityName: 'DEFAULT' };
+	return find(list, predicate) as IdentityType | undefined;
 };
 
 type UseGetIdentitiesPropType = {
@@ -105,6 +106,22 @@ export const useGetIdentities = ({
 				folderId
 			});
 
+			updateEditorCb({
+				from: {
+					address: def?.address,
+					fullName: def?.fullname,
+					name: def?.fullname,
+					type: ParticipantRole.FROM
+				}
+			});
+			setDefaultIdentity(def);
+			setActiveFrom(def);
+			setFrom(def);
+			setIsIdentitySet(true);
+		}
+
+		if (editorId?.includes('new-') && !isIdentitySet && list.length > 0) {
+			const def = find(list, { identityName: 'DEFAULT' });
 			updateEditorCb({
 				from: {
 					address: def?.address,

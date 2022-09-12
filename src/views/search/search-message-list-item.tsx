@@ -142,6 +142,8 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 		>
 			<ListItemActionWrapper item={item} onClick={onClick}>
 				<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
+					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+					{/* @ts-ignore */}
 					<ItemAvatar item={item} folderId={item.parent} />
 					<Padding horizontal="extrasmall" />
 				</div>
