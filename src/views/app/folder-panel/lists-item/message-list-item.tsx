@@ -135,7 +135,6 @@ export const MessageListItem: FC<any> = ({
 
 	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
 		if (item) {
-			``;
 			if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
 				return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon', 'secondary'];
 			}

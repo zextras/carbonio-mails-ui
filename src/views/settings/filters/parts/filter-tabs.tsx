@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { t } from '@zextras/carbonio-shell-ui';
 import React, {
 	FC,
 	ReactElement,
@@ -19,7 +20,6 @@ import {
 	TabBar,
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
 import { useDispatch } from 'react-redux';
 import IncomingMessageFilterTab from './incoming-message-filter-tab';
 import OutgoingMessageFilterTab from './outgoing-message-filter-tab';
@@ -27,9 +27,6 @@ import { FilterContext } from './filter-context';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
 
-type ComponentProps = {
-	t: TFunction;
-};
 type Item = {
 	active: boolean;
 	filterActions: Array<any>;
@@ -38,7 +35,7 @@ type Item = {
 	name: string;
 };
 
-const FilterTabs: FC<ComponentProps> = ({ t }): ReactElement => {
+const FilterTabs: FC = (): ReactElement => {
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const [selectedFilterType, setSelectedFilterType] = useState('incoming-messages');
 	const tabs = useMemo(
@@ -52,7 +49,7 @@ const FilterTabs: FC<ComponentProps> = ({ t }): ReactElement => {
 				label: t('filters.outgoing_message_filters', 'Outgoing Message Filters')
 			}
 		],
-		[t]
+		[]
 	);
 	const onTabClick = useCallback((ev) => setSelectedFilterType(ev.selectedItemId), []);
 	const dispatch = useDispatch();
@@ -88,7 +85,7 @@ const FilterTabs: FC<ComponentProps> = ({ t }): ReactElement => {
 					setFetchIncomingFilters(false);
 				});
 		}
-	}, [dispatch, fetchIncomingFilters, createSnackbar, t]);
+	}, [dispatch, fetchIncomingFilters, createSnackbar]);
 
 	useEffect(() => {
 		if (fetchOutgoingFilters) {

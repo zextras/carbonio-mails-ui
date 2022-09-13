@@ -213,7 +213,6 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
 				open={showAdvanceFilters}
 				onClose={(): void => setShowAdvanceFilters(false)}
-				t={t}
 			/>
 		</>
 	);

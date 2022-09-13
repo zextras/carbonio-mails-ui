@@ -7,6 +7,7 @@ import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react
 import { TFunction } from 'i18next';
 import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { find } from 'lodash';
+import { StoreProvider } from '../../../../store/redux';
 import { removeFilter, addFilter } from './actions';
 import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { FilterContext } from './filter-context';
@@ -82,17 +83,15 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<CreateFilterModal
-						t={t}
-						onClose={(): void => closeModal()}
-						incomingFilters={incomingFilters}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						setFetchIncomingFilters={setFetchIncomingFilters}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						setIncomingFilters={setIncomingFilters}
-					/>
+					<StoreProvider>
+						<CreateFilterModal
+							t={t}
+							onClose={(): void => closeModal()}
+							incomingFilters={incomingFilters}
+							setFetchIncomingFilters={setFetchIncomingFilters}
+							setIncomingFilters={setIncomingFilters}
+						/>
+					</StoreProvider>
 				)
 			},
 			true
@@ -105,24 +104,26 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			{
 				size: 'small',
 				children: (
-					<DeleteFilterModal
-						onClose={(): void => closeModal()}
-						t={t}
-						availableList={availableList}
-						activeList={activeList}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						setFilters={setIncomingFilters}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						setFetchFilters={setFetchIncomingFilters}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						modifierFunc={modifyFilterRules}
-						filterName={selectedFilterName}
-						selectedFilter={selectedFilter}
-						incomingFilters={incomingFilters}
-					/>
+					<StoreProvider>
+						<DeleteFilterModal
+							onClose={(): void => closeModal()}
+							t={t}
+							availableList={availableList}
+							activeList={activeList}
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							setFilters={setIncomingFilters}
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							setFetchFilters={setFetchIncomingFilters}
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							modifierFunc={modifyFilterRules}
+							filterName={selectedFilterName}
+							selectedFilter={selectedFilter}
+							incomingFilters={incomingFilters}
+						/>
+					</StoreProvider>
 				)
 			},
 			true
@@ -180,18 +181,20 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<ModifyFilterModal
-						t={t}
-						selectedFilter={selectedFilter}
-						onClose={(): void => closeModal()}
-						incomingFilters={incomingFilters}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						setFetchIncomingFilters={setFetchIncomingFilters}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						setIncomingFilters={setIncomingFilters}
-					/>
+					<StoreProvider>
+						<ModifyFilterModal
+							t={t}
+							selectedFilter={selectedFilter}
+							onClose={(): void => closeModal()}
+							incomingFilters={incomingFilters}
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							setFetchIncomingFilters={setFetchIncomingFilters}
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							setIncomingFilters={setIncomingFilters}
+						/>
+					</StoreProvider>
 				)
 			},
 			true

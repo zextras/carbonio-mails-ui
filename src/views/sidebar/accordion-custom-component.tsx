@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import React, { FC, SyntheticEvent, useCallback, useContext, useMemo, useState } from 'react';
 import {
 	AppLink,
 	FOLDERS,
@@ -16,7 +16,8 @@ import {
 	useUserAccount,
 	pushHistory,
 	AccordionFolder,
-	Folder
+	Folder,
+	t
 } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import {
@@ -30,14 +31,16 @@ import {
 	Icon,
 	Row,
 	Padding,
+	ModalManagerContext,
+	DragObj,
 	ContainerProps
 } from '@zextras/carbonio-design-system';
 import { startsWith } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
+import { StoreProvider } from '../../store/redux';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 import { NewModal } from './new-modal';
 import { MoveModal } from './move-modal';
@@ -47,7 +50,6 @@ import { EditModal } from './edit-modal';
 import { SharesInfoModal } from './shares-info-modal';
 import ShareFolderModal from './share-folder-modal';
 import { FolderActionsType } from '../../commons/utils';
-import { DataProps } from '../../types';
 import { DragEnterAction, FolderActionsProps, OnDropActionProps } from '../../types/sidebar';
 
 const FittedRow = styled(Row)`
@@ -76,9 +78,9 @@ const DropDenyOverlayContainer = styled(Container)<ContainerProps & { folder: Fo
 `;
 
 const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> => {
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
-
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	const createModal = useContext(ModalManagerContext) as Function;
 	const [activeModal, setActiveModal] = useState('default');
 	const [activeGrant, setActiveGrant] = useState({});
 	const goBack = useCallback(() => {
@@ -95,13 +97,13 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = getBridgedFunctions()?.createModal(
+					const closeModal = createModal(
 						{
 							maxHeight: '90vh',
 							children: (
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								<NewModal folder={folder} onClose={(): void => closeModal()} />
+								<StoreProvider>
+									<NewModal folder={folder} onClose={(): void => closeModal()} />
+								</StoreProvider>
 							)
 						},
 						true
@@ -118,13 +120,13 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = getBridgedFunctions()?.createModal(
+					const closeModal = createModal(
 						{
 							maxHeight: '90vh',
 							children: (
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								<MoveModal folder={folder} onClose={(): void => closeModal()} />
+								<StoreProvider>
+									<MoveModal folder={folder} onClose={(): void => closeModal()} />
+								</StoreProvider>
 							)
 						},
 						true
@@ -143,11 +145,13 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = getBridgedFunctions()?.createModal(
+					const closeModal = createModal(
 						{
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							children: <EmptyModal onClose={(): void => closeModal()} folder={folder} />
+							children: (
+								<StoreProvider>
+									<EmptyModal onClose={(): void => closeModal()} folder={folder} />
+								</StoreProvider>
+							)
 						},
 						true
 					);
@@ -163,12 +167,14 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = getBridgedFunctions()?.createModal(
+					const closeModal = createModal(
 						{
 							maxHeight: '90vh',
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							children: <EditModal onClose={(): void => closeModal()} folder={folder} />
+							children: (
+								<StoreProvider>
+									<EditModal onClose={(): void => closeModal()} folder={folder} />
+								</StoreProvider>
+							)
 						},
 						true
 					);
@@ -184,11 +190,13 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = getBridgedFunctions()?.createModal(
+					const closeModal = createModal(
 						{
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							children: <DeleteModal onClose={(): void => closeModal()} folder={folder} />
+							children: (
+								<StoreProvider>
+									<DeleteModal onClose={(): void => closeModal()} folder={folder} />
+								</StoreProvider>
+							)
 						},
 						true
 					);
@@ -202,10 +210,10 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = getBridgedFunctions()?.createModal(
+					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<ShareFolderModal
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
@@ -214,7 +222,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 										activeGrant={activeGrant}
 										goBack={goBack}
 									/>
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -240,12 +248,12 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = getBridgedFunctions()?.createModal(
+					const closeModal = createModal(
 						{
 							children: (
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								<SharesInfoModal onClose={(): void => closeModal()} folder={folder.folder} />
+								<StoreProvider>
+									<SharesInfoModal onClose={(): void => closeModal()} folder={folder.folder} />
+								</StoreProvider>
 							)
 						},
 						true
@@ -253,7 +261,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				}
 			}
 		],
-		[activeGrant, dispatch, folder, goBack, t]
+		[activeGrant, createModal, dispatch, folder, goBack]
 	);
 
 	const defaultFolderActions = useMemo(
@@ -322,7 +330,6 @@ const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefin
 export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 	const { folder } = item;
 	const accountName = useUserAccount().name;
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
 
@@ -502,7 +509,7 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 			label:
 				item.id === FOLDERS.USER_ROOT
 					? accountName
-					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),
+					: getFolderTranslatedName({ folderId: item.id, folderName: item.label }),
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
 			// open: openIds ? openIds.includes(folder.id) : false,
@@ -511,7 +518,7 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 			to: `/folder/${item.id}`,
 			textProps: { size: 'small' }
 		}),
-		[item, accountName, t]
+		[item, accountName]
 	);
 
 	const dropdownItems = useFolderActions(item);
@@ -540,7 +547,7 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 			return RowWithIcon('Linked', 'linked', tooltipText);
 		}
 		return '';
-	}, [folder, t]);
+	}, [folder]);
 
 	// hide folders where a share was provided and subsequently removed
 	if (folder.broken) {
@@ -560,14 +567,14 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 		<Row width="fill" minWidth={0}>
 			<Drop
 				acceptType={['message', 'conversation', 'folder']}
-				onDrop={(data: any): void => {
+				onDrop={(data: DragObj): void => {
 					onDropAction({
 						type: data.type ?? '',
 						data: data.data,
 						event: data.event
 					} as OnDropActionProps);
 				}}
-				onDragEnter={(data: any): { success: boolean } | undefined =>
+				onDragEnter={(data: DragObj): { success: boolean } | undefined =>
 					onDragEnterAction({
 						type: data.type ?? '',
 						data: data.data,

@@ -7,7 +7,6 @@ import { SnackbarManagerContext, useModal } from '@zextras/carbonio-design-syste
 import { FOLDERS, useAppContext, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import { useContext, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useSelection } from './useSelection';
@@ -33,7 +32,6 @@ import {
 import { applyTag } from '../ui-actions/tag-actions';
 
 export const useMessageActions = (message: MailMessage, isAlone = false): Array<any> => {
-	const [t] = useTranslation();
 	const { folderId }: { folderId: string } = useParams();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();

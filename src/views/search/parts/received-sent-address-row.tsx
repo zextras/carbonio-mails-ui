@@ -6,13 +6,13 @@
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
-import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { RcvdSentAddressRowPropType, SearchChipItem } from '../../../types';
 import { isValidEmail } from './utils';
 
 const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): ReactElement => {
-	const { t, receivedFromAddress, setReceivedFromAddress, sentFromAddress, setSentFromAddress } =
+	const { receivedFromAddress, setReceivedFromAddress, sentFromAddress, setSentFromAddress } =
 		compProps;
 
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');

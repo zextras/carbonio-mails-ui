@@ -190,7 +190,7 @@
             },
             "wipe": {
                 "body": {
-                    "message1": "",
+                    "message1": "Do you want to wipe the selected folder?",
                     "message2": "If you wipe it, all the related content will be deleted permanently."
                 }
             }
@@ -362,10 +362,12 @@
         "role": "Role: ",
         "save": "Save",
         "save_to_files": "Save to Files",
+        "schedule_send": "Schedule send",
         "search_activate_selection_mode": "Selection mode isn’t available yet on search results",
         "searching": "Searching...",
         "select": "Select",
         "select_color": "Select Color",
+        "select_date_time": "Select date and time",
         "select_folder": "Select folder",
         "select_signature": "Select a signature",
         "send": "Send",
@@ -427,6 +429,8 @@
         "manager_rights": "View,Edit,Add,Remove",
         "schedule_mail": "Will be sent on: {{date}} at {{time}}",
         "schedule_time": "{{date}} at {{time}}",
+        "select_date_time": "Select a date and time to send this message",
+        "send_later_success": "Your e-mail will be send on {{date}} at {{time}}",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
             "all_att_added": "Attachments added successfully",
@@ -584,6 +588,20 @@
         "font": "Font",
         "font_size": "{{count}} pt",
         "font_size_plural": "",
+        "fonts": {
+            "comic": "Comic",
+            "console": "Console",
+            "elegant": "Elegant",
+            "garamond": "Garamond",
+            "modern": "Modern",
+            "monospaced": "Monospaced",
+            "professional": "Professional",
+            "sans_serif": "Sans Serif",
+            "serif": "Serif",
+            "terminal": "Terminal",
+            "wide": "Wide",
+            "wide_block": "Wide Block"
+        },
         "from_distribution_list": "from distribution list",
         "gb": "GB",
         "header_name": "Header Named",

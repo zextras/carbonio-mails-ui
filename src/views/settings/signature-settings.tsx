@@ -213,8 +213,8 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		);
 	};
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
-	const sectionTitleSignatures = useMemo(() => signaturesSubSection(t), []);
-	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(t), []);
+	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
+	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
 	return (
 		<>
 			<FormSubSection

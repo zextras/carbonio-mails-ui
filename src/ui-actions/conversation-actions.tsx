@@ -19,6 +19,7 @@ import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
+import { StoreProvider } from '../store/redux';
 import { Conversation, MailMessage } from '../types';
 
 type ConvActionIdsType = Array<string>;
@@ -372,7 +373,7 @@ export function moveConversationToFolder({
 				{
 					maxHeight: '90vh',
 					children: (
-						<>
+						<StoreProvider>
 							<MoveConvMessage
 								selectedIDs={ids}
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -382,7 +383,7 @@ export function moveConversationToFolder({
 								isRestore={isRestore}
 								deselectAll={deselectAll}
 							/>
-						</>
+						</StoreProvider>
 					)
 				},
 				true
@@ -403,7 +404,7 @@ export function deleteConversationPermanently({
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
 					children: (
-						<>
+						<StoreProvider>
 							<DeleteConvConfirm
 								selectedIDs={ids}
 								isMessageView={false}
@@ -412,7 +413,7 @@ export function deleteConversationPermanently({
 								onClose={(): void => closeModal()}
 								deselectAll={deselectAll}
 							/>
-						</>
+						</StoreProvider>
 					)
 				},
 				true

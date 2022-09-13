@@ -3,14 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
-
 import { isValidEmail } from './utils';
 import { SubjectKeywordRowProps } from '../../../types';
 
 const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({ compProps }): ReactElement => {
-	const { t, otherKeywords, setOtherKeywords, subject, setSubject } = compProps;
+	const { otherKeywords, setOtherKeywords, subject, setSubject } = compProps;
 	const onChange = useCallback((state, stateHandler) => {
 		stateHandler(state);
 	}, []);
@@ -78,7 +78,7 @@ const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({ compProps }): ReactElem
 		[chipOnAdded]
 	);
 
-	const subjectPlaceholder = useMemo(() => t('label.subject', 'Subject'), [t]);
+	const subjectPlaceholder = t('label.subject', 'Subject');
 
 	return (
 		<React.Fragment>

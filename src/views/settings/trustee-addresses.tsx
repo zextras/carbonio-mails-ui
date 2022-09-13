@@ -18,7 +18,6 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { filter, find } from 'lodash';
-import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import Heading from './components/settings-heading';
 import { domainWhitelistSubSection } from './subsections';
 import TrusteeListItem from './components/trustee-list-item';
@@ -32,7 +31,7 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [trusteeAddressesList, setTrusteeAddressList] = useState<string[]>([]);
 
-	const sectionTitle = useMemo(() => domainWhitelistSubSection(t), [t]);
+	const sectionTitle = useMemo(() => domainWhitelistSubSection(), []);
 	const message = useMemo(
 		() =>
 			t(

@@ -15,7 +15,6 @@ import { map } from 'lodash';
 import styled from 'styled-components';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
-import { useTranslation } from 'react-i18next';
 import {
 	deleteMsg,
 	editDraft,
@@ -48,7 +47,6 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 	showReplyAll
 }) => {
 	const dispatch = useDispatch();
-	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const createModal = useModal();
 	const ids = useMemo(() => [messageId], [messageId]);

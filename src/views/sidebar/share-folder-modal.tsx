@@ -12,7 +12,10 @@ import {
 	Checkbox,
 	Row,
 	ChipInput,
-	Padding
+	Padding,
+	SnackbarManagerContext,
+	ChipItem,
+	SelectItem
 } from '@zextras/carbonio-design-system';
 import {
 	getBridgedFunctions,
@@ -200,7 +203,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 						) : (
 							<ChipInput
 								placeholder={t('share.recipients_address', 'Recipients’ e-mail addresses')}
-								onChange={(items: any[]): void => {
+								onChange={(items: ChipItem[]): void => {
 									setContacts(map(items, (contact) => ({ email: contact })));
 								}}
 							/>
@@ -214,10 +217,12 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 						background="gray5"
 						label={t('label.role', 'Role')}
 						onChange={onShareRoleChange}
-						defaultSelection={{
-							value: editMode ? activeGrant?.perm : 'r',
-							label: findLabel(shareCalendarRoleOptions, editMode ? activeGrant?.perm : 'r')
-						}}
+						defaultSelection={
+							{
+								value: editMode ? activeGrant?.perm : 'r',
+								label: findLabel(shareCalendarRoleOptions, editMode ? activeGrant?.perm : 'r')
+							} as SelectItem
+						}
 					/>
 				</Container>
 				<Container

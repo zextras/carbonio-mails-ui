@@ -24,6 +24,7 @@ import RedirectAction from './redirect-message-action';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
 import { MailMessage } from '../types';
+import { StoreProvider } from '../store/redux';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -374,7 +375,7 @@ export function deleteMsg({
 				},
 				dismissLabel: t('label.cancel', 'Cancel'),
 				children: (
-					<>
+					<StoreProvider>
 						<Text overflow="break-word">
 							{t(
 								'messages.modal.delete.sure_delete_email',
@@ -387,7 +388,7 @@ export function deleteMsg({
 								'If you delete the e-mail, it will be lost forever.'
 							)}
 						</Text>
-					</>
+					</StoreProvider>
 				)
 			});
 		}
@@ -474,14 +475,14 @@ export function editDraft({
 					},
 					showCloseIcon: true,
 					children: (
-						<>
+						<StoreProvider>
 							<Text overflow="break-word">
 								{t(
 									'messages.edit_schedule_warning',
 									'By editing this e-mail, the time and date previously set for delayed sending will be reset.'
 								)}
 							</Text>
-						</>
+						</StoreProvider>
 					)
 				});
 			} else replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
@@ -527,15 +528,12 @@ export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
 				{
 					maxHeight: '90vh',
 					children: (
-						<>
-							<RedirectAction
-								// TODO: Fix it in DS
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								onClose={(): void => closeModal()}
-								id={id}
-							/>
-						</>
+						<StoreProvider>
+							{/* TODO: Fix it in DS */}
+							{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+							{/* @ts-ignore */}
+							<RedirectAction onClose={(): void => closeModal()} id={id} />
+						</StoreProvider>
 					)
 				},
 				true
@@ -562,7 +560,7 @@ export function moveMessageToFolder({
 				{
 					maxHeight: '90vh',
 					children: (
-						<>
+						<StoreProvider>
 							<MoveConvMessage
 								selectedIDs={id}
 								// TODO: Fix it in DS
@@ -573,7 +571,7 @@ export function moveMessageToFolder({
 								isRestore={isRestore ?? false}
 								deselectAll={deselectAll ?? noop}
 							/>
-						</>
+						</StoreProvider>
 					)
 				},
 				true
@@ -595,7 +593,7 @@ export function deleteMessagePermanently({
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
 					children: (
-						<>
+						<StoreProvider>
 							<DeleteConvConfirm
 								selectedIDs={ids}
 								isMessageView
@@ -605,7 +603,7 @@ export function deleteMessagePermanently({
 								onClose={(): void => closeModal()}
 								deselectAll={deselectAll || ((): null => null)}
 							/>
-						</>
+						</StoreProvider>
 					)
 				},
 				true

@@ -185,7 +185,7 @@ export const useGetIdentities = ({
 			})),
 		[accounts, activeFrom, list, noName, setOpen, updateEditorCb]
 	);
-	const hasIdentity = useMemo(() => defaultIdentity && list.length > 1, [defaultIdentity, list]);
+	const hasIdentity = useMemo(() => list.length > 1, [list]);
 
 	return { from, activeFrom, identitiesList, hasIdentity };
 };

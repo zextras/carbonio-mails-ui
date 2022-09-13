@@ -79,10 +79,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
 	}, [accordionRef]);
 
-	const showWarning = useMemo(
-		() => includes(translatedSystemFolders(t), inputValue),
-		[t, inputValue]
-	);
+	const showWarning = useMemo(() => includes(translatedSystemFolders(), inputValue), [inputValue]);
 
 	const flattenFolders = useCallback(
 		(arr: Array<AccordionFolder>): Array<AccordionFolder> => {
@@ -110,7 +107,6 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 							item.folder.id === FOLDERS.USER_ROOT
 								? accountName
 								: getFolderTranslatedName({
-										t,
 										folderId: item.folder.id,
 										folderName: item.folder.name
 								  }),
@@ -122,7 +118,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 			});
 			return result;
 		},
-		[folderDestination, accountName, t, folderId, accordionWidth]
+		[folderDestination, accountName, folderId, accordionWidth]
 	);
 
 	const getFolderRootName = useCallback((_folder: AccordionFolder): string => {

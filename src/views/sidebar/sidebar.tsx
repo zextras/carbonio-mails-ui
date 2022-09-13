@@ -31,6 +31,7 @@ import { ResFolder } from '../../types';
 import { SharesModal } from './shares-modal';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
 import { SidebarComponentProps, SidebarProps } from '../../types/sidebar';
+import { StoreProvider } from '../../store/redux';
 
 const ButtonFindShares: FC = () => {
 	const [t] = useTranslation();
@@ -52,7 +53,11 @@ const ButtonFindShares: FC = () => {
 						);
 						const closeModal = createModal(
 							{
-								children: <SharesModal folders={resFolders} onClose={(): void => closeModal()} />
+								children: (
+									<StoreProvider>
+										<SharesModal folders={resFolders} onClose={(): void => closeModal()} />
+									</StoreProvider>
+								)
 							},
 							true
 						);

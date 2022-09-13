@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ChipItem } from '@zextras/carbonio-design-system';
+import { ChipProps } from '@zextras/carbonio-design-system';
 import { QueryChip } from '@zextras/carbonio-shell-ui';
-import { TFunction } from 'react-i18next';
 import { Conversation } from '../conversations';
 import { KeywordState } from '../filters';
 import { IncompleteMessage, MailMessage } from '../messages';
@@ -73,7 +72,6 @@ export type AdvancedFilterModalProps = {
 	id: string;
 	open: boolean;
 	onClose: () => void;
-	t: TFunction;
 	query: Array<{
 		id: string;
 		label: string;
@@ -125,7 +123,6 @@ export type ChipOnAdd = ChipItem & {
 };
 export type RcvdSentAddressRowPropType = {
 	compProps: {
-		t: TFunction;
 		receivedFromAddress: Array<any>;
 		setReceivedFromAddress: (arg: any) => void;
 		sentFromAddress: Array<any>;
@@ -135,7 +132,6 @@ export type RcvdSentAddressRowPropType = {
 
 export type SendReceivedDateRowPropType = {
 	compProps: {
-		t: TFunction;
 		sentBefore: Array<any>;
 		setSentBefore: (arg: any) => void;
 		sentAfter: Array<any>;
@@ -146,7 +142,6 @@ export type SendReceivedDateRowPropType = {
 };
 export type SizeLargerSizeSmallerRowProps = {
 	compProps: {
-		t: TFunction;
 		sizeSmaller: any;
 		setSizeSmaller: (arg: any) => any;
 		sizeLarger: any;
@@ -155,7 +150,6 @@ export type SizeLargerSizeSmallerRowProps = {
 };
 export type SubjectKeywordRowProps = {
 	compProps: {
-		t: TFunction;
 		otherKeywords: Array<any>;
 		setOtherKeywords: (arg: any) => void;
 		subject: Array<any>;
@@ -165,7 +159,6 @@ export type SubjectKeywordRowProps = {
 
 export type TagFolderRowProps = {
 	compProps: {
-		t: TFunction;
 		folder: Array<any>;
 		setFolder: (arg: any) => void;
 		tagOptions: Array<any>;
@@ -175,6 +168,7 @@ export type TagFolderRowProps = {
 };
 
 export type ToggleFilters = Array<{
+	id: string;
 	avatarIcon?: string;
 	label: string;
 	value: string;
@@ -184,7 +178,6 @@ export type ToggleFilters = Array<{
 }>;
 export type ToggleFiltersProps = {
 	compProps: {
-		t: TFunction;
 		query: Array<QueryChip>;
 		setUnreadFilter: (arg: ToggleFilters) => void;
 		setFlaggedFilter: (arg: ToggleFilters) => void;

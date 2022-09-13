@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Dispatch } from '@reduxjs/toolkit';
 import { noop } from 'lodash';
 import React, { createContext, FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
@@ -11,10 +10,7 @@ import {
 	useIntegratedComponent,
 	useTags,
 	useUserAccount,
-	useUserSettings,
-	t,
-	Account,
-	Tags
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { SnackbarManagerContext, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { getActions as conversationActions } from '../ui-actions/conversation-actions';
@@ -29,7 +25,7 @@ type ACPProps = {
 type ActionObj = {
 	id: string;
 	label: string;
-	click: (event: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	click: (event: MouseEvent) => void;
 	icon: string;
 };
 
@@ -76,7 +72,7 @@ export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => 
 				deselectAll: noop
 			})
 		],
-		[folderId, dispatch, createSnackbar, createModal, ContactInput, tags, account, timezone]
+		[folderId, dispatch, tags, account]
 	);
 	const getMessageActions = useCallback<GetMsgActionsFunction>(
 		(item: MailMessage, closeEditor: boolean): [ActionList, ActionList] =>

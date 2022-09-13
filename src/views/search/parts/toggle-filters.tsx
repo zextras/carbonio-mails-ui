@@ -3,15 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { nanoid } from '@reduxjs/toolkit';
 import React, { useCallback, useState, useEffect, FC, ReactElement } from 'react';
-import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
+import { Container, Switch, Text, Padding, ChipProps } from '@zextras/carbonio-design-system';
 import { filter } from 'lodash';
+import { QueryChip, t } from '@zextras/carbonio-shell-ui';
 
 import { ToggleFiltersProps } from '../../../types';
 
 const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 	const {
-		t,
 		query,
 		setUnreadFilter,
 		setFlaggedFilter,
@@ -30,6 +31,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			? setUnreadFilter([])
 			: setUnreadFilter([
 					{
+						id: nanoid(),
 						label: 'is:unread',
 						value: 'is:unread',
 						isQueryFilter: true,
@@ -45,6 +47,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			? setFlaggedFilter([])
 			: setFlaggedFilter([
 					{
+						id: nanoid(),
 						label: 'is:flagged',
 						value: 'is:flagged',
 						isQueryFilter: true,
@@ -60,6 +63,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			? setAttachmentFilter([])
 			: setAttachmentFilter([
 					{
+						id: nanoid(),
 						label: 'has:attachment',
 						value: 'has:attachment',
 						isQueryFilter: true,
@@ -81,6 +85,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			setIsUnread(true);
 			setUnreadFilter([
 				{
+					id: nanoid(),
 					label: 'is:unread',
 					value: 'is:unread',
 					isQueryFilter: true,
@@ -96,6 +101,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			setIsFlagged(true);
 			setFlaggedFilter([
 				{
+					id: nanoid(),
 					label: 'is:flagged',
 					value: 'is:flagged',
 					isQueryFilter: true,
@@ -116,6 +122,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			setHasAttachment(true);
 			setAttachmentFilter([
 				{
+					id: nanoid(),
 					label: 'has:attachment',
 					value: 'has:attachment',
 					isQueryFilter: true,

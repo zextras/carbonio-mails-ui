@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { ReactElement, useCallback, useContext, useMemo, useState } from 'react';
-import { TFunction } from 'i18next';
 import {
 	ModalManagerContext,
 	SnackbarManagerContext,
@@ -16,23 +15,23 @@ import {
 } from '@zextras/carbonio-design-system';
 
 import { every, find, includes, map, reduce } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import {
 	ZIMBRA_STANDARD_COLORS,
 	replaceHistory,
 	useTags,
 	Tag,
-	getBridgedFunctions,
 	t
 } from '@zextras/carbonio-shell-ui';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { ArgumentType, ReturnType, TagsFromStoreType, ItemType } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 import DeleteTagModal from '../views/sidebar/parts/tags/delete-tag-modal';
 import { convAction, msgAction } from '../store/actions';
 import { TagsActionsType } from '../commons/utils';
+import { StoreProvider } from '../store/redux';
 
-export const createTag = ({ t, createModal }: ArgumentType): ReturnType => ({
+export const createTag = ({ createModal }: ArgumentType): ReturnType => ({
 	id: TagsActionsType.NEW,
 	icon: 'TagOutline',
 	label: t('label.create_tag', 'Create Tag'),
@@ -43,13 +42,19 @@ export const createTag = ({ t, createModal }: ArgumentType): ReturnType => ({
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const closeModal = createModal(
-			{ children: <CreateUpdateTagModal onClose={(): void => closeModal()} /> },
+			{
+				children: (
+					<StoreProvider>
+						<CreateUpdateTagModal onClose={(): void => closeModal()} />
+					</StoreProvider>
+				)
+			},
 			true
 		);
 	}
 });
 
-export const editTag = ({ t, createModal, tag }: ArgumentType): ReturnType => ({
+export const editTag = ({ createModal, tag }: ArgumentType): ReturnType => ({
 	id: TagsActionsType.EDIT,
 	icon: 'Edit2Outline',
 	label: t('label.edit_tag', 'Edit Tag'),
@@ -61,14 +66,18 @@ export const editTag = ({ t, createModal, tag }: ArgumentType): ReturnType => ({
 		// @ts-ignore
 		const closeModal = createModal(
 			{
-				children: <CreateUpdateTagModal onClose={(): void => closeModal()} tag={tag} editMode />
+				children: (
+					<StoreProvider>
+						<CreateUpdateTagModal onClose={(): void => closeModal()} tag={tag} editMode />
+					</StoreProvider>
+				)
 			},
 			true
 		);
 	}
 });
 
-export const deleteTag = ({ t, createModal, tag }: ArgumentType): ReturnType => ({
+export const deleteTag = ({ createModal, tag }: ArgumentType): ReturnType => ({
 	id: TagsActionsType.DELETE,
 	icon: 'Untag',
 	label: t('label.delete_tag', 'Delete Tag'),
@@ -80,7 +89,11 @@ export const deleteTag = ({ t, createModal, tag }: ArgumentType): ReturnType => 
 		// @ts-ignore
 		const closeModal = createModal(
 			{
-				children: <DeleteTagModal onClose={(): void => closeModal()} tag={tag} />
+				children: (
+					<StoreProvider>
+						<DeleteTagModal onClose={(): void => closeModal()} tag={tag} />
+					</StoreProvider>
+				)
 			},
 			true
 		);
@@ -96,7 +109,6 @@ export const TagsDropdownItem = ({
 	conversation: any;
 	isMessage?: boolean;
 }): ReactElement => {
-	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const [checked, setChecked] = useState(includes(conversation.tags, tag.id));
@@ -149,7 +161,7 @@ export const TagsDropdownItem = ({
 				}
 			});
 		},
-		[conversation.id, createSnackbar, dispatch, isMessage, t, tag.name]
+		[conversation.id, createSnackbar, dispatch, isMessage, tag.name]
 	);
 	const tagColor = useMemo(() => ZIMBRA_STANDARD_COLORS[tag.color || 0].hex, [tag.color]);
 	const tagIcon = useMemo(() => (checked ? 'Tag' : 'TagOutline'), [checked]);
@@ -196,7 +208,6 @@ export const MultiSelectTagsDropdownItem = ({
 	folderId?: string;
 	isMessage?: boolean;
 }): ReactElement => {
-	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const [isHovering, setIsHovering] = useState(false);
@@ -261,7 +272,7 @@ export const MultiSelectTagsDropdownItem = ({
 				}
 			});
 		},
-		[dispatch, isMessage, ids, tag.name, deselectAll, folderId, createSnackbar, t]
+		[dispatch, isMessage, ids, tag.name, deselectAll, folderId, createSnackbar]
 	);
 
 	const tagIcon = useMemo(() => (checked ? 'Tag' : 'TagOutline'), [checked]);
@@ -405,16 +416,16 @@ export const applyTag = ({
 	};
 };
 
-export const useGetTagsActions = ({ tag, t }: ArgumentType): Array<ReturnType> => {
+export const useGetTagsActions = ({ tag }: ArgumentType): Array<ReturnType> => {
 	const createModal = useContext(ModalManagerContext) as () => () => void;
 	const createSnackbar = useContext(SnackbarManagerContext) as () => void;
 	return useMemo(
 		() => [
-			createTag({ t, createModal }),
-			editTag({ t, createModal, tag }),
-			deleteTag({ t, tag, createSnackbar, createModal })
+			createTag({ createModal }),
+			editTag({ createModal, tag }),
+			deleteTag({ tag, createSnackbar, createModal })
 		],
-		[createModal, createSnackbar, t, tag]
+		[createModal, createSnackbar, tag]
 	);
 };
 

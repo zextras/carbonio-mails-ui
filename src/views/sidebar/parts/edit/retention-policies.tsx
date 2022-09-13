@@ -13,7 +13,8 @@ import {
 	IconButton,
 	Collapse,
 	Input,
-	Select
+	Select,
+	SelectItem
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { RetentionPoliciesProps } from '../../../../types/sidebar';

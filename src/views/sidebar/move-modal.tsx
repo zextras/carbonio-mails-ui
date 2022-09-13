@@ -23,14 +23,14 @@ import {
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
 import { cloneDeep, filter, noop, startsWith } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
 	AccordionFolder,
 	Folder,
 	FOLDERS,
 	useFoldersAccordionByView,
-	useUserAccount
+	useUserAccount,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -48,7 +48,6 @@ const ContainerEl = styled(Container)`
 `;
 
 export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
@@ -98,7 +97,6 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 							item.folder.id === FOLDERS.USER_ROOT
 								? accountName
 								: getFolderTranslatedName({
-										t,
 										folderId: item.folder.id,
 										folderName: item.folder.name
 								  }),
@@ -110,7 +108,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 			});
 			return result;
 		},
-		[folderDestination, accountName, t, folderId, accordionWidth]
+		[folderDestination, accountName, folderId, accordionWidth]
 	);
 	const getFolderRootName = (_folder: AccordionFolder): string => {
 		let result = cloneDeep(_folder.folder);
@@ -204,7 +202,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 		setFolderDestination(undefined);
 		setSearchString('');
 		onClose();
-	}, [folderDestination, folder, onClose, dispatch, createSnackbar, t]);
+	}, [folderDestination, folder, onClose, dispatch, createSnackbar]);
 
 	return folder ? (
 		<Container

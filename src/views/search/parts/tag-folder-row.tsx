@@ -5,14 +5,13 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
 import { filter } from 'lodash';
-import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import FolderSelectModal from './folder-modal';
 import { TagFolderRowProps } from '../../../types';
 
 const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
-	const { t, folder, setFolder, tagOptions, tag, setTag } = compProps;
+	const { folder, setFolder, tagOptions, tag, setTag } = compProps;
 	const [open, setOpen] = useState(false);
 
 	const onClose = useCallback(() => setOpen(false), []);
@@ -57,12 +56,11 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 		() => ({
 			open,
 			onClose,
-			setFolder,
-			t
+			setFolder
 		}),
-		[open, onClose, setFolder, t]
+		[open, onClose, setFolder]
 	);
-	const tagPlaceholder = useMemo(() => t('label.tag', 'Tag'), [t]);
+	const tagPlaceholder = useMemo(() => t('label.tag', 'Tag'), []);
 	const onTagChange = useCallback(
 		(chip) => {
 			setTag(chip);

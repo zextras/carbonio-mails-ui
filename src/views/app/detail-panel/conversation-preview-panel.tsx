@@ -30,14 +30,9 @@ const MessagesComponent = ({
 	const messages = useSelector(selectMessages);
 	const conversationStatus = useSelector(selectCurrentFolderExpandedStatus)[conversationId];
 	const activeRoute = useCurrentRoute();
-	const searchInTrash = useMemo(
-		() => settings.prefs.zimbraPrefIncludeTrashInSearch === 'TRUE',
-		[settings]
-	);
 	const convMessages = useMemo(() => {
 		const msgs =
-			(folderId !== FOLDERS.TRASH && activeRoute && activeRoute.id !== 'search') ||
-			(activeRoute && activeRoute.id === 'search' && !searchInTrash)
+			folderId !== FOLDERS.TRASH && activeRoute && activeRoute.id !== 'search'
 				? map(
 						filter(conversation?.messages, (m) => m.parent !== FOLDERS.TRASH),
 						(item) => messages[item.id] ?? item
@@ -50,8 +45,7 @@ const MessagesComponent = ({
 		return msgs ?? [];
 	}, [
 		folderId,
-		activeRoute?.id,
-		searchInTrash,
+		activeRoute,
 		conversation?.messages,
 		settings.prefs.zimbraPrefConversationOrder,
 		messages

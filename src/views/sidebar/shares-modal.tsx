@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
+import { Dictionary } from '@reduxjs/toolkit';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import {
 	Container,
@@ -14,7 +14,9 @@ import {
 	Text,
 	Input,
 	Icon,
-	Row
+	Row,
+	AccordionItemType,
+	AccordionDivider
 } from '@zextras/carbonio-design-system';
 import {
 	groupBy,
@@ -117,7 +119,7 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const nestedData = useMemo(() => {
 		const shares = (isEmpty(data) ? filteredFolders : data) as GroupedShare;
 		const sharesDets = values(shares);
-		return sharesDets.map((v): any =>
+		return sharesDets.map((v): AccordionItemType | AccordionDivider =>
 			v
 				? {
 						id: v[0].ownerId,
