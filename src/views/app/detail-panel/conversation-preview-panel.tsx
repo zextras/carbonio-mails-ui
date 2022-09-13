@@ -78,7 +78,6 @@ const MessagesComponent = ({
 						<Shimmer.Logo size="large" />
 					)
 				)}
-				;
 			</>
 		);
 	}
