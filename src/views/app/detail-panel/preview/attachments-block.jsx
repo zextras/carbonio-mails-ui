@@ -217,9 +217,7 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 							icon: 'DownloadOutline',
 							tooltipLabel: t('label.download', 'Download'),
 							id: 'DownloadOutline',
-							onClick: () => {
-								downloadAttachment();
-							}
+							onClick: downloadAttachment
 						}
 					],
 					/** Extension of the file, shown as info */
