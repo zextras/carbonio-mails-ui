@@ -139,7 +139,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 				<ModalFooter
 					onConfirm={onConfirm}
 					secondaryAction={onClose}
-					label={t('label.move', 'Move')}
+					label={t('label.create', 'Create')}
 					secondaryLabel={t('label.cancel', 'Cancel')}
 					disabled={disabled}
 				/>

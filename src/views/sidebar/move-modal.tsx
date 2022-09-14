@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { isNil, startsWith } from 'lodash';
+import { isNil, some, startsWith } from 'lodash';
 import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
 import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
@@ -77,15 +77,16 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 					});
 				}
 				setFolderDestination(undefined);
+				onClose();
 			});
-	}, [folderDestination, folder, dispatch, createSnackbar]);
+	}, [dispatch, folder.folder, folderDestination?.id, createSnackbar, onClose]);
 
 	const isInputDisabled = useMemo(
 		() =>
 			isNil(folderDestination) ||
 			folderDestination?.id === folder?.folder?.l ||
-			startsWith(folderDestination?.absFolderPath, folder?.folder?.absFolderPath),
-		[folder?.folder?.absFolderPath, folder?.folder?.l, folderDestination]
+			some(folderDestination?.children, ['name', folder?.folder?.name]),
+		[folder?.folder?.l, folder?.folder?.name, folderDestination]
 	);
 	return folder ? (
 		<Container

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useState, useContext } from 'react';
+import React, { useCallback, useMemo, useState, useContext } from 'react';
 import {
 	Container,
 	Input,
@@ -11,10 +11,10 @@ import {
 	SnackbarManagerContext,
 	Text
 } from '@zextras/carbonio-design-system';
-import { filter } from 'lodash';
+import { some } from 'lodash';
 import { useDispatch } from 'react-redux';
 import { nanoid } from '@reduxjs/toolkit';
-import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { convAction, msgAction } from '../store/actions';
 import { createFolder } from '../store/actions/create-folder';
 import { ModalHeader } from '../views/sidebar/commons/modal-header';
@@ -30,30 +30,25 @@ const MoveConvMessage = ({
 	folderId
 }) => {
 	const [inputValue, setInputValue] = useState('');
+	const [folderDestination, setFolderDestination] = useState();
 	const [moveConvModal, setMoveConvModal] = useState(true);
-	const [disabled, setDisabled] = useState(true);
-	const [hasError, setHasError] = useState(false);
-	const [label, setLabel] = useState(t('folder_panel.modal.new.input.name', 'Folder Name'));
 	const dispatch = useDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const [folderDestination, setFolderDestination] = useState();
 
 	const onCloseModal = useCallback(() => {
 		setMoveConvModal(true);
 		setInputValue('');
 		setFolderDestination('');
-		setLabel(t('folder_panel.modal.new.input.name', 'Folder Name'));
-		setHasError(false);
 		onClose();
 	}, [onClose]);
 
 	const onConfirmConvMove = useCallback(
-		(newFolderId) => {
+		(id) => {
 			dispatch(
 				convAction({
 					operation: `move`,
 					ids: selectedIDs,
-					parent: newFolderId
+					parent: id
 				})
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
@@ -68,7 +63,7 @@ const MoveConvMessage = ({
 						autoHideTimeout: 3000,
 						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
 						onActionClick: () => {
-							replaceHistory(`/folder/newFolderId}`);
+							replaceHistory(`/folder/${id}`);
 						}
 					});
 				} else {
@@ -126,20 +121,29 @@ const MoveConvMessage = ({
 		[onCloseModal, createSnackbar, dispatch, selectedIDs, isRestore, deselectAll]
 	);
 
-	useEffect(() => {
-		if (!folderDestination || !inputValue.length) {
-			setDisabled(true);
-			return;
+	const hasSameName = useMemo(
+		() => some(folderDestination?.children, ['name', inputValue]),
+		[folderDestination?.children, inputValue]
+	);
+
+	const isDisabled = useMemo(() => {
+		if (moveConvModal) {
+			return (
+				!folderDestination ||
+				folderDestination?.id === folderId ||
+				folderDestination?.id === FOLDERS.USER_ROOT
+			);
 		}
-		const value = !!filter(folderDestination.items, (item) => item.label === inputValue).length;
-		if (value) {
-			setLabel(t('folder_panel.modal.new.input.name_exist'));
-		} else {
-			setLabel(t('folder_panel.modal.new.input.name'));
-		}
-		setHasError(value);
-		setDisabled(value);
-	}, [folderDestination, inputValue]);
+		return !folderDestination || !inputValue.length || hasSameName;
+	}, [folderDestination, folderId, hasSameName, inputValue?.length, moveConvModal]);
+
+	const textLabel = useMemo(
+		() =>
+			hasSameName
+				? t('folder_panel.modal.new.input.name_exist')
+				: t('folder_panel.modal.new.input.name', 'Folder Name'),
+		[hasSameName]
+	);
 
 	const onConfirm = useCallback(() => {
 		dispatch(
@@ -160,11 +164,8 @@ const MoveConvMessage = ({
 				});
 			}
 		});
-
 		setInputValue('');
-		setLabel(t('folder_panel.modal.new.input.name'));
 		setFolderDestination('');
-		setHasError(false);
 	}, [
 		dispatch,
 		folderDestination,
@@ -188,12 +189,19 @@ const MoveConvMessage = ({
 	const footerConfirm = useMemo(() => {
 		if (moveConvModal) {
 			if (isMessageView) {
-				return onConfirmMessageMove;
+				return () => onConfirmMessageMove(folderDestination.id);
 			}
-			return onConfirmConvMove;
+			return () => onConfirmConvMove(folderDestination.id);
 		}
 		return onConfirm;
-	}, [isMessageView, moveConvModal, onConfirm, onConfirmConvMove, onConfirmMessageMove]);
+	}, [
+		folderDestination?.id,
+		isMessageView,
+		moveConvModal,
+		onConfirm,
+		onConfirmConvMove,
+		onConfirmMessageMove
+	]);
 
 	const footerSecondary = useMemo(
 		() =>
@@ -237,13 +245,13 @@ const MoveConvMessage = ({
 				{!moveConvModal && (
 					<>
 						<Input
-							label={label}
+							label={textLabel}
 							backgroundColor="gray5"
-							hasError={hasError}
+							hasError={hasSameName}
 							defaultValue={inputValue}
 							onChange={(e) => setInputValue(e.target.value)}
 						/>
-						{hasError && (
+						{hasSameName && (
 							<Padding all="small">
 								<Text size="small" color="error">
 									{t('folder_panel.modal.new.name_exist_warning', 'Name already exists')}
@@ -273,7 +281,7 @@ const MoveConvMessage = ({
 					secondaryAction={footerSecondary}
 					label={footerLabel}
 					secondaryLabel={moveConvModal ? t('label.cancel', 'Cancel') : t('go_back', 'Go Back')}
-					disabled={moveConvModal ? !folderId : disabled}
+					disabled={isDisabled}
 				/>
 			</Container>
 		</Container>
