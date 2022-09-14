@@ -127,6 +127,7 @@ export default function SelectMessagesPanelActions({
 					setMsgFlag({ ids, value: showAddFlag, t, dispatch }),
 					moveMessageToFolder({
 						id: ids,
+						folderId,
 						t,
 						dispatch,
 						isRestore: false,
@@ -164,6 +165,7 @@ export default function SelectMessagesPanelActions({
 					deleteMessagePermanently({ ids, t, dispatch, createModal, deselectAll }),
 					moveMessageToFolder({
 						id: ids,
+						folderId,
 						t,
 						dispatch,
 						isRestore: true,
@@ -177,6 +179,7 @@ export default function SelectMessagesPanelActions({
 					setMsgFlag({ ids, value: showAddFlag, t, dispatch }),
 					moveMessageToFolder({
 						id: ids,
+						folderId,
 						t,
 						dispatch,
 						isRestore: false,

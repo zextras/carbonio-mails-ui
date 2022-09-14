@@ -10,7 +10,7 @@ import { map } from 'lodash';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { ActionsType } from '../commons/utils';
 import { sendMsg } from '../store/actions/send-msg';
-import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
+import MoveConvMessage from './move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
@@ -442,7 +442,14 @@ export function redirectMsg({ id, createModal }) {
 	};
 }
 
-export function moveMessageToFolder({ id, dispatch, isRestore, createModal, deselectAll }) {
+export function moveMessageToFolder({
+	id,
+	dispatch,
+	isRestore,
+	createModal,
+	deselectAll,
+	folderId
+}) {
 	return {
 		id: 'message-restore',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
@@ -454,6 +461,7 @@ export function moveMessageToFolder({ id, dispatch, isRestore, createModal, dese
 					children: (
 						<StoreProvider>
 							<MoveConvMessage
+								folderId={folderId}
 								selectedIDs={id}
 								onClose={() => closeModal()}
 								dispatch={dispatch}
@@ -524,6 +532,7 @@ export const getActions = ({
 
 					moveMessageToFolder({
 						id: [message.id],
+						folderId: message.parent,
 						dispatch,
 						isRestore: true,
 						createModal,
@@ -546,6 +555,7 @@ export const getActions = ({
 					deleteMessagePermanently({ ids: [message.id], dispatch, createModal, deselectAll }),
 					moveMessageToFolder({
 						id: [message.id],
+						folderId: message.parent,
 						dispatch,
 						isRestore: true,
 						createModal,

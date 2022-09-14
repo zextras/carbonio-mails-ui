@@ -8,7 +8,7 @@ import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
 import { forEach, isArray, map } from 'lodash';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
-import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
+import MoveConvMessage from './move-conv-msg';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
 import { StoreProvider } from '../store/redux';
@@ -266,6 +266,7 @@ export function moveConversationToTrash({
 
 export function moveConversationToFolder({
 	ids,
+	folderId,
 	t,
 	dispatch,
 	isRestore,
@@ -283,6 +284,7 @@ export function moveConversationToFolder({
 					children: (
 						<StoreProvider>
 							<MoveConvMessage
+								folderId={folderId}
 								selectedIDs={ids}
 								onClose={() => closeModal()}
 								dispatch={dispatch}
@@ -373,6 +375,7 @@ export const getActions = ({
 					}),
 					moveConversationToFolder({
 						ids: [conversation.id],
+						folderId,
 						t,
 						dispatch,
 						isRestore: true,
@@ -535,6 +538,7 @@ export const getActions = ({
 					}),
 					moveConversationToFolder({
 						ids: [conversation.id],
+						folderId,
 						t,
 						dispatch,
 						isRestore: false,
