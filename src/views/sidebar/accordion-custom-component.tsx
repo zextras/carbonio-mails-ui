@@ -16,7 +16,8 @@ import {
 	useUserAccount,
 	pushHistory,
 	AccordionFolder,
-	Folder
+	Folder,
+	t
 } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import {
@@ -34,12 +35,13 @@ import {
 	DragObj,
 	ContainerProps
 } from '@zextras/carbonio-design-system';
-import { find, startsWith } from 'lodash';
+import { startsWith } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
+import { StoreProvider } from '../../store/redux';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 import { NewModal } from './new-modal';
 import { MoveModal } from './move-modal';
@@ -85,7 +87,6 @@ type FolderActionsProps = {
 };
 
 const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> => {
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createModal = useContext(ModalManagerContext) as Function;
@@ -109,9 +110,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						{
 							maxHeight: '90vh',
 							children: (
-								<>
+								<StoreProvider>
 									<NewModal folder={folder} onClose={(): void => closeModal()} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -132,9 +133,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						{
 							maxHeight: '90vh',
 							children: (
-								<>
+								<StoreProvider>
 									<MoveModal folder={folder} onClose={(): void => closeModal()} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -156,9 +157,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<EmptyModal onClose={(): void => closeModal()} folder={folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -179,9 +180,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						{
 							maxHeight: '90vh',
 							children: (
-								<>
+								<StoreProvider>
 									<EditModal onClose={(): void => closeModal()} folder={folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -201,9 +202,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<DeleteModal onClose={(): void => closeModal()} folder={folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -221,14 +222,14 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<ShareFolderModal
 										onClose={(): void => closeModal()}
 										folder={folder}
 										activeGrant={activeGrant}
 										goBack={goBack}
 									/>
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -257,9 +258,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<SharesInfoModal onClose={(): void => closeModal()} folder={folder.folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -267,7 +268,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				}
 			}
 		],
-		[activeGrant, createModal, dispatch, folder, goBack, t]
+		[activeGrant, createModal, dispatch, folder, goBack]
 	);
 
 	const defaultFolderActions = useMemo(
@@ -348,7 +349,6 @@ const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefin
 export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 	const { folder } = item;
 	const accountName = useUserAccount().name;
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
 
@@ -528,7 +528,7 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 			label:
 				item.id === FOLDERS.USER_ROOT
 					? accountName
-					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),
+					: getFolderTranslatedName({ folderId: item.id, folderName: item.label }),
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
 			// open: openIds ? openIds.includes(folder.id) : false,
@@ -537,7 +537,7 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 			to: `/folder/${item.id}`,
 			textProps: { size: 'small' }
 		}),
-		[item, accountName, t]
+		[item, accountName]
 	);
 
 	const dropdownItems = useFolderActions(item);
@@ -566,7 +566,7 @@ export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 			return RowWithIcon('Linked', 'linked', tooltipText);
 		}
 		return '';
-	}, [folder, t]);
+	}, [folder]);
 
 	// hide folders where a share was provided and subsequently removed
 	if (folder.broken) {

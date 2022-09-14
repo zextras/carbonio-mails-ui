@@ -6,6 +6,7 @@
 import {
 	ZIMBRA_STANDARD_COLORS,
 	FOLDERS,
+	t,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	ROOT_NAME,
@@ -144,7 +145,7 @@ export const getFolderIconName = (folder: AccordionFolder): string | null => {
 	return 'FolderOutline';
 };
 
-export const translatedSystemFolders = (t: TFunction): Array<string> => [
+export const translatedSystemFolders = (): Array<string> => [
 	t('folders.inbox', 'Inbox'),
 	t('folders.sent', 'Sent'),
 	t('folders.drafts', 'Drafts'),
@@ -154,12 +155,11 @@ export const translatedSystemFolders = (t: TFunction): Array<string> => [
 ];
 
 type GetSystemFolderProps = {
-	t: TFunction;
 	folderId?: string;
 	folderName: string;
 };
 
-export const getSystemFolderTranslatedName = ({ t, folderName }: GetSystemFolderProps): string => {
+export const getSystemFolderTranslatedName = ({ folderName }: GetSystemFolderProps): string => {
 	if (folderName) {
 		switch (folderName) {
 			case 'Inbox':
@@ -181,14 +181,10 @@ export const getSystemFolderTranslatedName = ({ t, folderName }: GetSystemFolder
 	return folderName;
 };
 
-export const getFolderTranslatedName = ({
-	t,
-	folderId,
-	folderName
-}: GetSystemFolderProps): string => {
+export const getFolderTranslatedName = ({ folderId, folderName }: GetSystemFolderProps): string => {
 	const id = folderIdRegex.exec(folderId ?? '')?.[2];
 	if (id && Object.values(FOLDERS).includes(id)) {
-		return getSystemFolderTranslatedName({ t, folderName });
+		return getSystemFolderTranslatedName({ folderName });
 	}
 
 	return folderName;

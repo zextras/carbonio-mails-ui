@@ -15,6 +15,7 @@ import {
 import { FilterContext } from './filter-context';
 import CreateFilterModal from './create-filter-modal';
 import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
+import { StoreProvider } from '../../../../store/redux';
 
 type FilterListType = {
 	active: boolean;
@@ -75,7 +76,14 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		const closeModal = createModal(
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			{ size: 'large', children: <CreateFilterModal t={t} onClose={(): void => closeModal()} /> },
+			{
+				size: 'large',
+				children: (
+					<StoreProvider>
+						<CreateFilterModal t={t} onClose={(): void => closeModal()} />
+					</StoreProvider>
+				)
+			},
 			true
 		);
 	}, [createModal, t]);
@@ -145,14 +153,16 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				size: 'large',
 				maxHeight: '70vh',
 				children: (
-					<ModifyOutgoingFilterModal
-						t={t}
-						selectedFilter={selectedFilter}
-						onClose={(): void => closeModal()}
-						outgoingFilters={outgoingFilters}
-						setFetchOutgoingFilters={setFetchOutgoingFilters}
-						setOutgoingFilters={setOutgoingFilters}
-					/>
+					<StoreProvider>
+						<ModifyOutgoingFilterModal
+							t={t}
+							selectedFilter={selectedFilter}
+							onClose={(): void => closeModal()}
+							outgoingFilters={outgoingFilters}
+							setFetchOutgoingFilters={setFetchOutgoingFilters}
+							setOutgoingFilters={setOutgoingFilters}
+						/>
+					</StoreProvider>
 				)
 			},
 			true

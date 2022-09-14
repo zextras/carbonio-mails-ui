@@ -3,17 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+import React, { FC, ReactElement, useCallback } from 'react';
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
-import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { useIntegratedComponent, t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { SearchChipItem } from '../../../types';
 import { isValidEmail } from './utils';
 
 type ComponentProps = {
 	compProps: {
-		t: TFunction;
 		receivedFromAddress: Array<any>;
 		setReceivedFromAddress: (arg: any) => void;
 		sentFromAddress: Array<any>;
@@ -21,7 +19,7 @@ type ComponentProps = {
 	};
 };
 const ReceivedSentAddressRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
-	const { t, receivedFromAddress, setReceivedFromAddress, sentFromAddress, setSentFromAddress } =
+	const { receivedFromAddress, setReceivedFromAddress, sentFromAddress, setSentFromAddress } =
 		compProps;
 
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');

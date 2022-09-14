@@ -3,14 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
 import moment from 'moment';
 
 type ComponentProps = {
 	compProps: {
-		t: TFunction;
 		sentBefore: Array<any>;
 		setSentBefore: (arg: any) => void;
 		sentAfter: Array<any>;
@@ -20,7 +19,7 @@ type ComponentProps = {
 	};
 };
 const SendReceivedDateRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
-	const { t, sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn } = compProps;
+	const { sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn } = compProps;
 
 	const onSentBeforeChange = useCallback(
 		(date) => {

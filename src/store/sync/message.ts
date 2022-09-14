@@ -5,10 +5,9 @@
  */
 import {
 	FOLDERS,
-	getBridgedFunctions,
+	t,
 	getNotificationManager,
 	getUserSettings,
-	pushHistory,
 	replaceHistory
 } from '@zextras/carbonio-shell-ui';
 import { NotificationConfig } from '@zextras/carbonio-shell-ui/types/notification';
@@ -29,7 +28,6 @@ import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-mes
 import { SoapIncompleteMessage, MsgStateType, IncompleteMessage, Payload } from '../../types';
 
 const triggerNotification = (m: Array<SoapIncompleteMessage>): void => {
-	const { t } = getBridgedFunctions();
 	const { props, prefs } = getUserSettings();
 	const isShowNotificationEnabled = prefs?.zimbraPrefMailToasterEnabled ?? 'TRUE';
 	const isAudioEnabled = find(props, ['name', 'mailNotificationSound'])?._content ?? 'TRUE';

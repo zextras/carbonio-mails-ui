@@ -5,8 +5,6 @@
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Controller } from 'react-hook-form';
-
-import { useTranslation } from 'react-i18next';
 import {
 	Button,
 	Dropdown,
@@ -25,9 +23,10 @@ import {
 	getBridgedFunctions,
 	getCurrentRoute,
 	replaceHistory,
-	useBoardConfig,
-	useRemoveCurrentBoard,
-	useUserSettings
+	useUserSettings,
+	useBoardHooks,
+	useBoard,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { useHistory } from 'react-router-dom';
 import { EditViewContext } from './edit-view-context';
@@ -35,10 +34,11 @@ import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
 import * as StyledComp from './edit-view-styled-components';
 import { addAttachments } from '../edit-utils';
-import { CreateSnackbar, mailAttachment } from '../../../../../types';
+import { mailAttachment } from '../../../../../types';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import { ActionsType } from '../../../../../commons/utils';
 import SendLaterModal from './send-later-modal';
+import { StoreProvider } from '../../../../../store/redux';
 
 type PropType = {
 	setShowRouteGuard: (arg: boolean) => void;
@@ -52,8 +52,6 @@ const EditViewHeader: FC<PropType> = ({
 	handleSubmit,
 	uploadAttachmentsCb
 }) => {
-	const [t] = useTranslation();
-
 	const { prefs } = useUserSettings();
 	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action } =
 		useContext(EditViewContext);
@@ -64,13 +62,14 @@ const EditViewHeader: FC<PropType> = ({
 	const [isDisabled, setIsDisabled] = useState(false);
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
+
+	const boardUtilities = useBoardHooks();
 	const [showRichText, setShowRichtext] = useState(editor?.richText ?? false);
 	const [isUrgent, setIsUrgent] = useState(editor?.urgent ?? false);
 	const [isReceiptRequested, setIsReceiptRequested] = useState(editor?.requestReadReceipt ?? false);
-	// needs to be replace with correct type
-	const boardContext: { onConfirm: (arg: any) => void } = useBoardConfig();
 
-	const closeBoard = useRemoveCurrentBoard();
+	// needs to be replace with correct type
+	const boardContext = useBoard()?.context;
 
 	const isSendDisabled = useMemo(() => {
 		const participants = concat(editor?.to, editor?.bcc, editor?.cc);
@@ -115,8 +114,11 @@ const EditViewHeader: FC<PropType> = ({
 		setBtnLabel(t('label.sending', 'Sending'));
 		setIsDisabled(true);
 		setShowRouteGuard(false);
-		if (action === ActionsType.COMPOSE && boardContext?.onConfirm) {
-			boardContext?.onConfirm(editor);
+		if (
+			action === ActionsType.COMPOSE &&
+			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm
+		) {
+			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm(editor);
 		} else {
 			let notCanceled = true;
 			const oldEditor = { ...editor };
@@ -155,9 +157,9 @@ const EditViewHeader: FC<PropType> = ({
 				if (notCanceled) {
 					const activeRoute = getCurrentRoute();
 					if (activeRoute?.route === 'mails') {
-						folderId ? replaceHistory(`/folder/${folderId}/`) : closeBoard();
+						folderId ? replaceHistory(`/folder/${folderId}/`) : boardUtilities?.closeBoard();
 					} else {
-						closeBoard();
+						boardUtilities?.closeBoard();
 					}
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
@@ -187,7 +189,6 @@ const EditViewHeader: FC<PropType> = ({
 			}, 3000);
 		}
 	}, [
-		t,
 		setShowRouteGuard,
 		action,
 		boardContext,
@@ -197,9 +198,9 @@ const EditViewHeader: FC<PropType> = ({
 		updateEditorCb,
 		editorId,
 		folderId,
+		boardUtilities,
 		dispatch,
-		prefs,
-		closeBoard
+		prefs
 	]);
 
 	const createModal = useModal();
@@ -223,7 +224,7 @@ const EditViewHeader: FC<PropType> = ({
 					closeModal();
 				},
 				children: (
-					<>
+					<StoreProvider>
 						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
 							{t(
 								'messages.modal.send_anyway.first',
@@ -233,11 +234,11 @@ const EditViewHeader: FC<PropType> = ({
 						<Text overflow="break-word" style={{ paddingBottom: '16px' }}>
 							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
 						</Text>
-					</>
+					</StoreProvider>
 				)
 			});
 		}
-	}, [editor?.subject, createModal, t, sendMailCb]);
+	}, [editor?.subject, createModal, sendMailCb]);
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
@@ -252,10 +253,10 @@ const EditViewHeader: FC<PropType> = ({
 			onActionClick: () => {
 				// todo: redirect to folder/6 i.e. Drafts
 				replaceHistory(`/folder/6/`);
-				closeBoard();
+				boardUtilities?.closeBoard();
 			}
 		});
-	}, [closeBoard, createSnackbar, editor, saveDraftCb, t]);
+	}, [boardUtilities, createSnackbar, editor, saveDraftCb]);
 
 	const onDropdownClose = useCallback((): void => {
 		setShowDropdown(false);
@@ -312,7 +313,6 @@ const EditViewHeader: FC<PropType> = ({
 		],
 		[
 			showRichText,
-			t,
 			toggleRichTextEditor,
 			isUrgent,
 			toggleImportant,
@@ -326,7 +326,7 @@ const EditViewHeader: FC<PropType> = ({
 			{
 				maxHeight: '90vh',
 				children: (
-					<>
+					<StoreProvider>
 						<SendLaterModal
 							// TODO : fix it inside shell
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -334,14 +334,14 @@ const EditViewHeader: FC<PropType> = ({
 							onClose={(): void => closeModal()}
 							dispatch={dispatch}
 							editor={editor}
-							closeBoard={closeBoard}
+							closeBoard={boardUtilities?.closeBoard}
 						/>
-					</>
+					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [closeBoard, dispatch, editor]);
+	}, [boardUtilities, dispatch, editor]);
 	return (
 		<>
 			<Row
