@@ -1,14 +1,11 @@
 {
     "action": {
         "forward": "Weiterleiten",
-        "cancel": "Abbrechen",
-        "download": "Download",
         "mark_as_read": "Als gelesen markieren",
         "mark_as_unread": "Als Ungelesen markieren",
         "ok": "Ok",
         "reply": "Antworten",
         "search": "Suchen",
-        "delete_permanently": "Endgültig löschen",
         "edit_share": "Zugriff Bearbeiten",
         "edit_as_new": "Als neu bearbeiten",
         "flag": "Markierung hinzufügen",
@@ -33,65 +30,31 @@
     "folder": {
         "modal": {
             "edit": {
-                "size": "Größe",
-                "footer": "Bearbeiten",
-                "rtn_dur_warning": "Die Speicherungsdauer muss eine positive Zahl sein",
                 "rename_warning": "Sie können einen Ordner nicht zu einem Systemordner umbenennen.",
-                "retention_properties": "Speicherungseigenschaften",
                 "retention_duration_warning": "Die Speicherungsdauer muss eine positive Zahl sein",
                 "retention_message": "Nachrichten in diesem Ordner, die in die Speicherungsfrist fallen, werden eine ausdrückliche Bestätigung erfordern, bevor sie gelöscht werden können",
                 "add_share": "Teilen hinzufügen",
                 "threshold_message": "Nachrichten in diesem Ordner, die älter als die Entsorgungsschwelle sind, werden automatisch bereinigt und gelöscht."
             },
-            "restore": {
-                "footer": "Wiederherstellen"
-            },
             "delete": {
-                "title": "Löschen",
                 "body": {
-                    "message3": "Wenn Sie es löschen, wird der gesamte Inhalt in den Papierkorb verschoben und der Ordner wird nicht länger sichtbar sein.",
                     "message2": "Möchten Sie den ausgewählten Ordner endgültig löschen?"
                 }
             },
             "move": {
-                "new": "Neuer Ordner",
-                "input": {
-                    "filter": "Ordner filtern"
-                },
                 "body": {
-                    "message2": "Wählen Sie einen Zielordner aus",
                     "message1": "Einen Ordner als Ziel zum Verschieben aussuchen:"
                 }
             },
             "new": {
-                "create_footer": "Erstellen und verschieben",
-                "input": {
-                    "name": "Ordnernname"
-                },
-                "restore_create_footer": "Erstellen und wiederherstellen",
                 "go_back": "Zurück"
             },
-            "empty": {
-                "body": {
-                    "message2": "Wenn Sie es leeren, wird der zugehörige Inhalt endgültig gelöscht."
-                },
-                "title": "Leer"
-            },
             "wipe": {
-                "body": {
-                    "message2": "Wenn Sie es leeren, wird der zugehörige Inhalt endgültig gelöscht."
-                },
                 "title": "Leeren"
             }
         },
         "action": {
-            "delete": "Ordner löschen",
-            "delete_permanently": "Ordner endgültig löschen",
-            "edit_properties": "Eigenschaften bearbeiten",
             "restore": "Ordner wiederherstellen"
-        },
-        "item": {
-            "root": "/Root"
         }
     },
     "header": {
@@ -99,7 +62,8 @@
         "delete_email": "E-Mail löschen",
         "edit_draft": "Entwurf bearbeiten",
         "message_not_sent": "Fehler - Nachricht nicht gesendet",
-        "redirect_email": "E-Mail umleiten"
+        "redirect_email": "E-Mail umleiten",
+        "attention": "Achtung"
     },
     "label": {
         "me": "Ich",
@@ -129,13 +93,11 @@
         "resend": "Erneut senden",
         "revoke": "Widerrufen",
         "revoke_share": "{{title}}'s Teilen widerrufen",
-        "mail_setting": "E-Mail Einstellungen",
         "no_subject": "Kein Betreff",
         "owner": "Besitzer: ",
         "receive_message": "Nachrichten werden empfangen",
         "retention_policy": "Speicherungseigenschaften",
         "role": "Rolle : ",
-        "select_2": "oder klicken Sie auf den \"Neu\" Button",
         "select_folder": "Ordner auswählen",
         "sent": "Gesendet",
         "shares_items": "{{value}}s geteilte Ordner",
@@ -143,7 +105,6 @@
         "type": "Typ",
         "type_name_here": "Elementname",
         "would_like_to_share": "geteiltes element",
-        "select_3": "um eine neue E-Mail zu schreiben.",
         "shared_item": "Geteiltes Element",
         "shares_folder_edit": "Teilen dieses Ordners",
         "to": "An",
@@ -151,7 +112,6 @@
         "edit_folder_properties": "{{name}}'s Eigenschaften bearbeiten",
         "revoke_access_tooltip": "Zugriff widerrufen mit einer Standardbenachrichtigung",
         "revoke_access_without_notification": "Zugriff widerrufen ohne eine Benachrichtigung zu senden",
-        "single_advance_fillter": "Fortgeschrittene Filter",
         "automatically_delete_duplicates": "Doppelte Exemplare der gleichen Nachricht bei Empfang automatisch löschen",
         "highlight_tab": "E-Mail Reiter hervorheben",
         "flash_browser_title": "Browser Titel beleuchten",
@@ -275,7 +235,11 @@
         "always_allow_domain": "Immer erlauben von <strong>{{domain}}</strong> Domain",
         "always_allow_address": "Immer erlauben von <strong>{{from}}</strong>",
         "view_images": "BILDER ANSEHEN",
-        "share_public_link": "Öffentlichen Link teilen"
+        "share_public_link": "Öffentlichen Link teilen",
+        "time_zone": "Zeitzone",
+        "searching": "Suche ...",
+        "notify": "Benachrichtigen",
+        "do_not_notify": "Nicht benachrichtigen"
     },
     "share": {
         "options": {
@@ -302,7 +266,6 @@
         "new_messages": "Neue Nachrichten",
         "replies_forwards": "Antworten & Weiterleitungen"
     },
-    "delete": "Löschen",
     "folders": {
         "trash": "Papierkorb",
         "drafts": "Entwürfe",
@@ -328,7 +291,6 @@
         "permanent_delete_title": "Sind Sie sicher, dass Sie dieses Element dauerhaft löschen wollen?",
         "snackbar": {
             "conversation_deleted": "Unterhaltung gelöscht",
-            "conversation_deleted_permanently_error": "Etwas ist schiefgegangen, bitte versuchen Sie es erneut",
             "conversation_move": "Unterhaltung erfolgreich verschoben",
             "conversation_move_error": "Etwas ist schiefgelaufen, die Unterhaltung wurde nicht vollständig verschoben, bitte versuchen Sie es erneut.",
             "email_moved_to_trash": "E-Mail in den Papierkorb verschoben",
@@ -345,13 +307,11 @@
             "marked_as_spam": "Sie haben diese E-Mail als Spam markiert",
             "message_move": "Nachricht erfolgreich verschoben",
             "message_redirected": "Diese Nachricht wurde weitergeleitet",
-            "email_restore_error": "Etwas ist schiefgegangen, bitte versuchen Sie es erneut",
             "folder_edited": "Änderungen korrekt gespeichert",
             "folder_empty_error": "Etwas ist schief gelaufen, die Änderungen wurden nicht durchgeführt. Bitte versuchen Sie es erneut.",
             "marked_as_non_spam": "Sie haben diese E-Mail als Kein Spam markiert",
             "message_delete_error": "Etwas ist schiefgelaufen, diese Nachricht wurde nicht gelöscht, bitte versuchen Sie es erneut.",
             "message_deleted": "Nachricht gelöscht",
-            "message_deleted_permanently_error": "Etwas ist schiefgegangen, bitte versuchen Sie es erneut",
             "folder_restored": "Ordner restauriert",
             "mail_saved_to_drafts": "In Entwürfen gespeicherte E-Mails",
             "sending_mail_in_count": "Senden Sie Ihre Nachricht in {{count}} Sekunden",
@@ -366,14 +326,12 @@
         "powered_by": "powered by",
         "check_and_try_again": "Bitte überprüfen Sie Carbonio und versuchen Sie es erneut",
         "could_not_find_to_show": "Sorry, wir konnten nichts zum Anzeigen finden",
-        "something_went_wrong": "ETWAS IST SCHIEFGELAUFEN"
+        "something_went_wrong": "ETWAS IST SCHIEFGELAUFEN",
+        "trustee_addresses": "Mails von diesen Absendern oder Domains werden als vertrauenswürdig eingestuft, und Bilder werden automatisch angezeigt."
     },
-    "owner": "Besitzer",
     "placeholder": {
-        "add_new_recipients": "Neue Empfänger hinzufügen",
-        "cc": "CC"
+        "add_new_recipients": "Neue Empfänger hinzufügen"
     },
-    "read": "Gelesen",
     "search": {
         "unread": "Ungelesen",
         "attachment_note": "Suche nach allen E-Mails, die einen Anhang enthalten.",
@@ -384,13 +342,8 @@
         "sent_on": "Gesendet am",
         "size_error": "Nur Zahlen sind erlaubt"
     },
-    "allowed_actions": "Erlaubte Aktionen",
     "composer": {
         "attachment": {
-            "draganddrop": {
-                "content": "Legen Sie hier Ihre Anhänge ab, um diese Ihrer E-Mail schnell hinzuzufügen"
-            },
-            "drive": "Von Drive hinzufügen",
             "local": "Von lokalem Speicherort hinzufügen",
             "contacts_mod": "Visitenkarte hinzufügen",
             "drag_and_drop": {
@@ -401,8 +354,6 @@
             "url": "Öffentlichen Link von Files hinzufügen"
         }
     },
-    "find_shares": "Teile finden",
-    "insert": "Eingeben",
     "message": {
         "sending_mail_to_self": "Sie versuchen scheinbar, eine E-Mail an sich selbst zu schicken",
         "snackbar": {
@@ -445,7 +396,6 @@
         "folder_sharing_status_plural": "Mit {{count}} Personen geteilt"
     },
     "snackbar": {
-        "folder_shared_error": "Etwas ist schiefgegangen,bitte versuchen Sie es erneut",
         "share_updated": "\"Zugriffsrechte aktualisiert\"",
         "folder_shared": "Ordner geteilt",
         "share_resend": "Einladung zum Teilen erneut gesendet",
@@ -454,23 +404,12 @@
         "tag_applied": "\"{{tag}}\" Tag angewendet",
         "tag_removed": "\"{{tag}}\" Tag entfernt"
     },
-    "select_signature": "Signatur auswählen",
     "settings": {
-        "conv_sort_optn": {
-            "asc": "Von alt zu neu"
-        },
-        "dspl_mail_optn": {
-            "html": "Als HTML (wenn möglich)"
-        },
         "label": {
             "always_dsp_received_time": "Immer die Empfangszeit in der E-Mail Liste anzeigen",
             "check_new_mail": "Neue E-Mails abrufen",
-            "dflt_mail_search": "Standard E-Mail Suche",
             "display_mail": "E-Mail anzeigen",
-            "dsp_msg_snpt": "Vorschau der Nachrichten in E-Mail Liste anzeigen",
-            "msg_prv_title": "Nachrichtenvorschau und Bilder",
             "search_query": "Standardabfrage",
-            "dbl_click_opens_msg": "Doppelklick öffnet Nachricht in neuem Fenster",
             "conversation_ordering": "Reihenfolge der Unterhaltungen",
             "default_mail_search": "Standard E-Mail Suche",
             "display_messages": "Nachrichtenanzeige",
@@ -589,8 +528,6 @@
         "mb": "MB",
         "twitter_notification": "Twitter-Benachrichtigungen"
     },
-    "shared_item": "Geteiltes Element",
-    "workflow": "WorkFlow",
     "folder_panel": {
         "modal": {
             "empty": {
@@ -705,5 +642,31 @@
     },
     "preview": {
         "close": "Vorschau schließen"
+    },
+    "email_status": {
+        "unread": "ungelesen",
+        "unforwarded": "nicht weitergeleitet",
+        "unflagged": "nicht markiert",
+        "tome": "an mich",
+        "sent": "von mir gesendet",
+        "received": "von mir erhalten",
+        "read": "gelesen",
+        "fromme": "von mir",
+        "fromccme": "von mir",
+        "forwarded": "weitergeleitet",
+        "flagged": "gevlagd",
+        "draft": "Entwurf"
+    },
+    "attachment_type": {
+        "word": "Wort",
+        "video": "Video",
+        "text_document": "Textdokument",
+        "powerpoint": "Powerpoint",
+        "pdf": "PDF",
+        "image": "Bild",
+        "html": "HTML",
+        "excel": "Excel",
+        "email": "Mail-Adresse",
+        "application": "Anwendung"
     }
 }
