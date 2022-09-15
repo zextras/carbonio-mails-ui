@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.33](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.32...v0.1.33) (2022-09-15)
+
+
+### Features
+
+* added support for documental preview ([fd38a28](https://github.com/zextras/carbonio-mails-ui/commit/fd38a281f85e90e198f4ad4f71e85e4f00fc3804))
+
 ### [0.1.32](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.31...v0.1.32) (2022-09-01)
 
 
