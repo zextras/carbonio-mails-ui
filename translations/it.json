@@ -10,8 +10,6 @@
             "folder_deleted": "Cartella eliminata con successo.",
             "folder_edited": "Modifiche salvate correttamente",
             "folder_empty": "Pulizia cestino completata",
-            "message_move_error": "Qualcosa è andato storto, questo messaggio non è stato spostato, riprova.",
-            "folder_edited_error": "Qualcosa è andato storto, i cambiamenti non sono stati applicati, riprova.",
             "folder_move_error": "Qualcosa è andato storto, questa cartella non è stata spostata, riprova.",
             "folder_moved": "Cartella spostata correttamente",
             "folder_empty_error": "Qualcosa è andato storto, le modifiche non sono stati applicate. Riprova.",
@@ -24,9 +22,7 @@
             "email_restored": "E-mail ripristinata nella cartella di destinazione",
             "folder_moved_to_trash": "Cartella spostata nel cestino",
             "mail_sent": "Messaggio inviato",
-            "email_move_error": "Qualcosa è andato storto, riprova",
             "marked_as_spam": "Hai contrassegnato questa e-mail come spam",
-            "conversation_deleted_permanently": "E-mail eliminata definitivamente",
             "folder_restored": "Cartella ripristinata",
             "mail_saved_to_drafts": "E-mail salvata in bozze",
             "sending_mail_in_count": "Il tuo messaggio sarà inviato tra {{count}} secondo",
@@ -44,6 +40,10 @@
             "redirect": {
                 "first": "Questa e-mail sarà inviata ad un nuovo destinatario, conservando l'indirizzo e-mail del mittente originale.",
                 "second": "Questa e-mail viene visualizzata avente come ricevente il nuovo destinatario"
+            },
+            "send_anyway": {
+                "second": "Vuoi comunque inviare il messaggio?",
+                "first": "L'oggetto del messaggio è vuoto e non è stato allegato alcun file."
             }
         },
         "invalid_address": "Il seguente indirizzo sembra essere non valido",
@@ -55,7 +55,12 @@
         "powered_by": "offerto da",
         "could_not_find_to_show": "Siamo spiacenti, non è stato trovato nulla da mostrare",
         "something_went_wrong": "QUALCOSA È ANDATO STORTO",
-        "check_and_try_again": "Per favore, controlla Carbonio e riprova"
+        "check_and_try_again": "Per favore, controlla Carbonio e riprova",
+        "cal_name_exist_warning": "Esiste già un calendario con lo stesso nome in questo percorso",
+        "read_receipt_2": "Vuoi notificare il mittente?",
+        "read_receipt_1": "Il mittente di questa e-mail ha chiesto di ricevere una notifica al momento della lettura del messaggio.",
+        "invalid_trustee_address": "Inserisci sono indirizzi e-mail o domini",
+        "trustee_addresses": "La posta proveniente da questi indirizzi o domini verrà considerata affidabile e le immagini saranno visualizzate automaticamente."
     },
     "label": {
         "cc": "Cc",
@@ -69,11 +74,9 @@
         "me": "Io",
         "from": "Da",
         "download": "Scarica",
-        "download_plural": "",
+        "download_plural": "Scarica tutti",
         "attachment": "Allegato",
         "attachment_plural": "Allegati",
-        "select_1": "Seleziona una email per leggerla",
-        "select_3": "per comporre una email.",
         "cancel": "Elimina",
         "draft_folder": "[BOZZA]",
         "remove": "Elimina",
@@ -114,7 +117,7 @@
         "error_try_again": "Qualcosa è andato storto, riprova",
         "move": "Sposta",
         "restore": "Ripristina",
-        "delete": "Cancella",
+        "delete": "Elimina",
         "of": "di",
         "advanced_filters": "Filtro avanzato",
         "advanced_filters_plural": "",
@@ -229,10 +232,30 @@
         "no_name": "<Nessun Nome>",
         "share_public_link": "Condividi Link Pubblico",
         "view_images": "VISUALIZZA IMMAGINI",
-        "notification_folders": "Notifiche delle Cartelle"
+        "notification_folders": "Notifiche delle Cartelle",
+        "keep_draft": "Salva Bozza",
+        "expand_receivers_list": "Espandi la lista dei destinatari",
+        "collapse_receivers_list": "Comprimi la lista dei destinatari",
+        "trusted_addresses": "Indirizzi affidabili",
+        "send_later": "Invia dopo",
+        "request_receipt": "Richiedi conferma di lettura",
+        "remove_request_receipt": "Rimuovi la richiesta di conferma di lettura",
+        "read_receipt_sent": "È stata inviata la conferma di lettura per questo messaggio",
+        "read_receipt_req": "Conferma di lettura richiesta",
+        "mark_as_un_important": "Contrassegna come importante",
+        "mark_as_important": "Contrassegna come importante",
+        "include_shared_folders": "Includi cartelle condivise",
+        "filter_modified": "Filtro modificato con successo",
+        "enter_email_address": "Inserisci l'indirizzo e-mail o il dominio",
+        "delete_draft": "Elimina Bozza",
+        "delayed_sending": "Invio ritardato",
+        "before_you_leave": "Prima di uscire",
+        "time_zone": "Fuso orario",
+        "searching": "Ricerca in corso...",
+        "notify": "Notifica",
+        "do_not_notify": "Non notificare"
     },
     "tooltip": {
-        "enable_disable_rich_text": "Attiva/Disattiva editor avanzato",
         "add_attachments": "Aggiungi allegati",
         "disable_rich_text": "Disattiva editor avanzato",
         "edit": "Modifica proprietà di condivisione",
@@ -241,12 +264,12 @@
         "revoke": "Revoca accesso",
         "disable_urgent": "Disabilita Urgente",
         "enable_urgent": "Abilita Urgente",
-        "folder_sharing_status": "Condiviso con {{count}} persona",
-        "folder_sharing_status_plural": "Condiviso con {{count}} persone"
+        "folder_sharing_status": "Condiviso con {{count}} utente",
+        "folder_sharing_status_plural": "Condiviso con {{count}} utenti",
+        "folder_linked_status": "Condivisa con me",
+        "marked_as_important": "Contrassegnato come importante"
     },
     "placeholder": {
-        "subject": "Oggetto",
-        "bcc": "BCC",
         "add_new_recipients": "Aggiungi nuovi destinatari"
     },
     "header": {
@@ -254,7 +277,8 @@
         "delete_email": "Elimina e-mail",
         "message_not_sent": "Errore - Messaggio non inviato",
         "warning": "Attenzione",
-        "redirect_email": "Reindirizza e-mail"
+        "redirect_email": "Reindirizza e-mail",
+        "attention": "Attenzione"
     },
     "action": {
         "unflag": "Rimuovi contrassegno",
@@ -265,15 +289,12 @@
         "mark_as_read": "Segna come letto",
         "forward": "Inoltra",
         "edit_as_new": "Modifica come nuovo",
-        "delete": "Cancella",
         "hide_details": "Nascondi dettagli",
-        "cancel": "Annulla",
         "preview": "Anteprima",
         "redirect": "Reindirizzamento",
         "send_anyway": "Invia comunque",
         "show_details": "Mostra dettagli",
         "ok": "Ok",
-        "move": "Sposta",
         "search": "Cerca",
         "goto_drafts": "Vai alle bozze",
         "mark_as_non_spam": "Non spam",
@@ -288,69 +309,15 @@
         "click_preview": "Clicca per visualizzare l'anteprima"
     },
     "folder": {
-        "action": {
-            "delete_permanently": "Elimina definitivamente cartella",
-            "empty": {
-                "trash": "Svuota cestino"
-            },
-            "new": "Nuova cartella",
-            "restore": "Ripristina Cartella"
-        },
         "modal": {
-            "move": {
-                "footer": "Sposta",
-                "new": "Nuova Cartella",
-                "body": {
-                    "message2": "Seleziona cartella di destinazione",
-                    "message_restore": "Seleziona una cartella in cui ripristinare quella selezionata:"
-                }
-            },
-            "new": {
-                "footer": "Crea",
-                "go_back": "Torna Indietro",
-                "input": {
-                    "position": "Posizione Cartella"
-                },
-                "name_exist_warning": "Nome già esistente"
-            },
             "edit": {
-                "retention_properties": "Proprietà di Memorizzazione",
-                "size": "Dimensione",
-                "messages": "Messaggi",
                 "footer": "Modifica",
                 "rename_warning": "Non puoi nominare una cartella come una di sistema.",
-                "threshold_msg": "In questa cartella, i messaggi più vecchi del periodo stabilito verranno cancellati automaticamente.",
                 "add_share": "Aggiungi Condivisione",
                 "retention_duration_warning": "Il periodo di ritenzione dev'essere un numero positivo",
                 "retention_message": "All'interno di questa cartella, per i messaggi che rientrano nel periodo di ritenzione, verrà chiesta conferma per la cancellazione",
                 "threshold_message": "In questa cartella, i messaggi più vecchi del limite consentito saranno soggetti a cancellazione automatica."
-            },
-            "wipe": {
-                "body": {
-                    "message1": "Vuoi eliminare la cartella selezionata?"
-                },
-                "footer": "Pulisci"
-            },
-            "delete": {
-                "body": {
-                    "message1": "Vuoi eliminare la cartella selezionata?",
-                    "message3": "Eliminando l'oggetto, i relativi contenuti saranno spostati nel cestino e la cartella non sarà più visibile."
-                },
-                "footer": "Ok"
-            },
-            "empty": {
-                "footer": "Svuota",
-                "body": {
-                    "message1": "Vuoi svuotare la cartella selezionata?",
-                    "message2": "Se rimuovi il contenuto questo verrà eliminato definitivamente."
-                }
-            },
-            "restore": {
-                "footer": "Ripristina"
             }
-        },
-        "item": {
-            "root": "/Root"
         }
     },
     "folders": {
@@ -364,9 +331,6 @@
     "composer": {
         "attachment": {
             "local": "Aggiungi da locale",
-            "draganddrop": {
-                "title": "Modalità Drag&Drop"
-            },
             "contacts_mod": "Aggiungi Scheda di contatto",
             "drag_and_drop": {
                 "title": "Modalità Drag&Drop",
@@ -403,13 +367,11 @@
         "admin_rights": "Visualizza,Modifica,Aggiungi,Rimuovi,Gestisci",
         "manager_rights": "Visualizza,Modifica,Aggiungi,Rimuovi",
         "view_rights": "Visualizza",
-        "external_images_blocked": "Le immagini che provengono dall'esterno sono state bloccate al fine di tutelarti da potenziale spam"
+        "external_images_blocked": "Le immagini che provengono dall'esterno sono state bloccate al fine di tutelarti da potenziale spam",
+        "schedule_time": "{{date}} alle {{time}}",
+        "schedule_mail": "Sarà inviata il: {{date}} alle {{time}}"
     },
-    "allowed_actions": "Azioni consentite",
-    "delete": "Elimina",
-    "find_mail_shares": "Trova cartelle condivise",
     "snackbar": {
-        "error": "Qualcosa è andato storto. riprova",
         "share_resend": "Invito condivisione inviato",
         "share_revoke": "Condivisione accesso revocata",
         "share_updated": "\"Diritti di accesso aggiornati\"",
@@ -445,12 +407,9 @@
     },
     "settings": {
         "label": {
-            "always_dsp_received_time": "Visualizza sempre l'ora di ricezione nella lista di e-mail",
             "check_new_mail": "Controlla nuove e-mail",
             "display_mail": "Visualizza e-mail",
-            "dsp_msg_snpt": "Mostra una parte del messaggio nella lista delle e-mail",
             "search_query": "Richiesta predefinita",
-            "msg_prv_title": "Anteprima messaggi e immagini",
             "message_color": "Colore Messaggio",
             "conversation_ordering": "Ordine conversazione",
             "message_selection": "Selezione Messaggio",
@@ -474,12 +433,6 @@
             "discard": "Elimina il messaggio automaticamente",
             "inbox": "Sposta in posta in arrivo",
             "inbox_if_cc": "Sposta in posta in arrivi se sono in A: o Cc:"
-        },
-        "conv_sort_optn": {
-            "desc": "Da nuovo a vecchio"
-        },
-        "dspl_mail_optn": {
-            "text": "Come testo"
         },
         "notify_folder_optn": {
             "new_message_folder": "Mostra notifiche per ogni nuovo messaggio che arriva in qualsiasi cartella",
@@ -575,12 +528,7 @@
             "below_deleted": "Seleziona il messaggio sotto quello spostato o eliminato"
         }
     },
-    "of": "di",
-    "shared_item": "Elemento condiviso",
-    "freebusy": "LiberoOccupato",
-    "read": "Letto",
     "search": {
-        "attachment": "Allegato",
         "attachment_note": "Cerca tutte le e-mail che hanno un allegato.",
         "unread": "Non letto",
         "unread_note": "Cerca tutte le e-mail non lette.",
@@ -588,11 +536,9 @@
         "size_error": "Sono permessi solo numeri",
         "sent_after": "Invia più tardi",
         "sent_on": "Inviata il",
-        "sent_before": "Inviato prima"
+        "sent_before": "Inviato prima",
+        "shared_folders_note": "Includi elementi condivisi nelle ricerche."
     },
-    "set_default_signatures": "Imposta firma predefinita",
-    "type": "Tipo",
-    "write": "Scrivi",
     "displayer": {
         "draft_title1": "Salvare una e-mail come bozza ti permetterà di tenere i messaggi che vuoi inviare più tardi.",
         "search_description1": "O seleziona \"Filtri Avanzati\" per rifinire la tua ricerca.",
@@ -707,5 +653,48 @@
     },
     "preview": {
         "close": "Chiudi Anteprima"
+    },
+    "email_status": {
+        "toccme": "indirizzata a me oppure sono in copia",
+        "ccme": "sono in copia",
+        "unreplied": "non risposta da me",
+        "tofromme": "da parte mia, per me oppure sono in copia",
+        "tofromccme": "da parte mia, per me oppure sono in copia",
+        "solo": "conversazioni che contengono solo un messaggio",
+        "replied": "risposto da me",
+        "remote": "in una cartella condivisa da me",
+        "local": "nelle mie cartelle",
+        "invitations": "inviti",
+        "anywhere": "in tutte le cartelle",
+        "unread": "non letto",
+        "unforwarded": "non inoltrati",
+        "unflagged": "non contrassegnati",
+        "tome": "a me",
+        "sent": "inviati da me",
+        "received": "ricevuti da me",
+        "read": "letti",
+        "fromme": "da me",
+        "fromccme": "da me",
+        "forwarded": "inoltrati",
+        "flagged": "contrassegnati",
+        "draft": "bozza"
+    },
+    "modal": {
+        "delete_draft": {
+            "message1": "Vuoi tenere oppure eliminare questa bozza?"
+        }
+    },
+    "attachment_type": {
+        "zipped_file": "File Zip",
+        "word": "Word",
+        "video": "Video",
+        "text_document": "Documento di Testo",
+        "powerpoint": "Powerpoint",
+        "pdf": "Documento PDF",
+        "image": "Immagine",
+        "html": "HTML",
+        "excel": "Excel",
+        "email": "Email",
+        "application": "Applicazione"
     }
 }
