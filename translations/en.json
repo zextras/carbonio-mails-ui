@@ -466,7 +466,17 @@
                 "second": "The e-mail will appear as originally intended for the new recipient"
             },
             "send_anyway": {
-                "first": "Email subject is empty and you didn't attach any files.",
+                "attach": "attach",
+                "attached": "attached",
+                "attaching": "attaching",
+                "attachment": "attachment",
+                "attachments": "attachments",
+                "enclose": "enclose",
+                "enclosed": "enclosed",
+                "enclosing": "enclosing",
+                "no_attachments": "You didn’t attach any files.",
+                "no_subject": "Email subject is empty.",
+                "no_subject_no_attachments": "Email subject is empty and you didn’t attach any files.",
                 "second": "Do you still want to send the email?"
             }
         },
