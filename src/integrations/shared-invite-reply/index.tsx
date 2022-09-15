@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import {
+	Button,
+	Collapse,
 	Container,
 	Divider,
 	Icon,
@@ -13,7 +15,7 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import React, { FC, ReactElement, useContext, useEffect, useMemo } from 'react';
+import React, { FC, ReactElement, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -79,6 +81,15 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 		[sharedContent]
 	);
 
+	const notes = useMemo(
+		() =>
+			mailMsg?.body?.content
+				?.substring(Number(mailMsg?.body?.content?.lastIndexOf('<hr />')) + 6)
+				.replace(/<p>/gi, '')
+				.replace(/<\/p>/gi, ''),
+		[mailMsg?.body?.content]
+	);
+
 	const [folderType, folderIcon] = useMemo(() => {
 		switch (view) {
 			case 'message':
@@ -116,6 +127,8 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 		() => sharedContent?.split('<link ')[1]?.split('name="')[1]?.split('" ')[0],
 		[sharedContent]
 	);
+
+	const [showMoreInfo, setShowMoreInfo] = useState(false);
 
 	return (
 		<InviteContainer>
@@ -155,8 +168,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 					icon="UnlockOutline"
 					text={allowedActions}
 				/>
-				{/* todo:find a optimal way to show the additional note */}
-				{/* <>
+				<>
 					<Container>
 						<Collapse orientation="vertical" open={showMoreInfo} crossSize="100%">
 							<Container
@@ -165,11 +177,17 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 								crossAlignment="flex-start"
 								padding={{ horizontal: 'small', bottom: 'small' }}
 							>
-								<Row padding={{ right: 'small' }}>
-									<Icon icon="MessageSquareOutline" />
-								</Row>
-								<Row takeAvailableSpace mainAlignment="flex-start">
-									<Text overflow="break-word"></Text>
+								<Row
+									padding={{ right: 'small' }}
+									mainAlignment="flex-start"
+									crossAlignment="flex-start"
+								>
+									<Row padding={{ right: 'small' }}>
+										<Icon icon="MessageSquareOutline" />
+									</Row>
+									<Row takeAvailableSpace mainAlignment="flex-start" display="flex">
+										<Text overflow="break-word" dangerouslySetInnerHTML={{ __html: notes }}></Text>
+									</Row>
 								</Row>
 							</Container>
 						</Collapse>
@@ -178,10 +196,15 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 						<Button
 							onClick={(): void => setShowMoreInfo(!showMoreInfo)}
 							type="outlined"
-							label={showMoreInfo ? t('label.hide_more_info') : t('label.show_more_info')}
+							size="small"
+							label={
+								showMoreInfo
+									? t('label.hide_more_info', 'Hide more information')
+									: t('label.show_more_info', 'Show more information')
+							}
 						/>
 					</Row>
-				</> */}
+				</>
 
 				{mailMsg.parent !== FOLDERS.TRASH && mailMsg.parent !== FOLDERS.SENT && role !== 'None' && (
 					<>
