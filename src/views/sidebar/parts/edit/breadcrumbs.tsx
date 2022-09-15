@@ -20,7 +20,7 @@ export const Breadcrumbs: FC<{ breadcrumbs: BreadcrumbsProps }> = ({ breadcrumbs
 					/&nbsp;{label}&nbsp;{index === breadcrumbs.length - 1 && '/'}
 				</Text>
 			) : (
-				<Tooltip label={tooltip} key={index} maxWidth={450}>
+				<Tooltip label={tooltip} key={index} maxWidth="450">
 					<Text color="secondary">
 						/&nbsp;{label}&nbsp;{index === breadcrumbs.length - 1 && '/'}
 					</Text>

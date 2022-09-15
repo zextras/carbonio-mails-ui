@@ -28,7 +28,7 @@ const ModalAccordionCustomComponent: FC<{
 		}
 		return result;
 	}, [item.folder.absFolderPath]);
-	const translatedSystemFolder = getSystemFolderTranslatedName({ t, folderName: systemFolder });
+	const translatedSystemFolder = getSystemFolderTranslatedName({ folderName: systemFolder });
 	const factor = 10;
 	const path = useMemo(
 		() =>
@@ -49,7 +49,7 @@ const ModalAccordionCustomComponent: FC<{
 		() => min([targetFolder.length * factor + 18, 150]) || 0,
 		[targetFolder.length]
 	);
-	const containerRef = useRef<HTMLDivElement>();
+	const containerRef = useRef<HTMLDivElement>(null);
 	const [availableWidth, setAvailableWidth] = useState(
 		(containerRef?.current?.clientWidth || 405) - targetFolderWidth
 	);

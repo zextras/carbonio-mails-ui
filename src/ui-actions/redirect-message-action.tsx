@@ -125,8 +125,6 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 									placeholder={t('label.to', 'To')}
 									onChange={onChange}
 									defaultValue={contacts}
-									valueKey="address"
-									getChipLabel={getChipLabel}
 								/>
 							)}
 						</Container>

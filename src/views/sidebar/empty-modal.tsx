@@ -80,10 +80,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 					</Text>
 				) : (
 					<Text overflow="break-word">
-						{
-							(t('folder_panel.modal.wipe.body.message1'),
-							'Do you want to wipe the selected folder?')
-						}
+						{t('folder_panel.modal.wipe.body.message1', 'Do you want to wipe the selected folder?')}
 						<br />
 						{t(
 							'folder_panel.modal.wipe.body.message2',

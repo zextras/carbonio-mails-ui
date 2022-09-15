@@ -24,7 +24,9 @@ type ComponentProps = {
 	item: string;
 	onRemove: (arg: string) => void;
 };
-const TrusteeListItem: FC<ComponentProps> = ({ item, onRemove }): ReactElement => {
+
+// TODO remove the any after the DS
+const TrusteeListItem: FC<any> = ({ item, onRemove }): ReactElement => {
 	const [t] = useTranslation();
 	const [hovered, setHovered] = useState(false);
 
@@ -50,7 +52,7 @@ const TrusteeListItem: FC<ComponentProps> = ({ item, onRemove }): ReactElement =
 				<Container width="20%" orientation="horizontal" mainAlignment="flex-end">
 					{hovered && (
 						<Button
-							isSmall
+							size="small"
 							color="error"
 							type="outlined"
 							label={t('label.remove', 'Remove')}

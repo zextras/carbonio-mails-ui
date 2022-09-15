@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { t } from '@zextras/carbonio-shell-ui';
 import React, { ChangeEvent, FC, useCallback, useMemo } from 'react';
 import {
 	Container,
@@ -12,9 +13,9 @@ import {
 	Input,
 	Checkbox,
 	RadioGroup,
-	Radio
+	Radio,
+	SelectItem
 } from '@zextras/carbonio-design-system';
-import { TFunction } from 'react-i18next';
 import Heading from './components/settings-heading';
 import {
 	CheckNewMailOptions,
@@ -33,32 +34,31 @@ type UpdateSettingsProps = {
 };
 
 type DisplayingMessagesSettingsProps = {
-	t: TFunction;
 	settingsObj: Record<string, string>;
 	updateSettings: (arg: UpdateSettingsProps) => void;
 };
 
 const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
-	t,
 	settingsObj,
 	updateSettings
 }) => {
 	const checkNewMailOptions = useMemo(
 		() =>
 			CheckNewMailOptions(
-				t,
 				settingsObj.zimbraPrefMailPollingInterval.includes('s'),
 				settingsObj.zimbraPrefMailPollingInterval.includes('m')
 			),
-		[settingsObj?.zimbraPrefMailPollingInterval, t]
+		[settingsObj?.zimbraPrefMailPollingInterval]
 	);
-	const displayMailOptions = useMemo(() => DisplayMailOptions(t), [t]);
-	const messageSelectionOptions = useMemo(() => MessageSelectionOptions(t), [t]);
-	const conversationSortingSettings = useMemo(() => ConversationSortingSettings(t), [t]);
-	const sectionTitle = useMemo(() => displayingMessagesSubSection(t), [t]);
+	const displayMailOptions = useMemo(() => DisplayMailOptions(), []);
+	const messageSelectionOptions = useMemo(() => MessageSelectionOptions(), []);
+	const conversationSortingSettings = useMemo(() => ConversationSortingSettings(), []);
+	const sectionTitle = useMemo(() => displayingMessagesSubSection(), []);
 	const onChangeSorting = useCallback(
-		(view: string): void =>
-			updateSettings({ target: { name: 'zimbraPrefConversationOrder', value: view } }),
+		(view: SelectItem[] | string | null): void =>
+			updateSettings({
+				target: { name: 'zimbraPrefConversationOrder', value: (view as string) ?? '' }
+			}),
 		[updateSettings]
 	);
 	const defaultSelectionSorting = useMemo(
@@ -82,8 +82,10 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 				<Select
 					label={t('settings.label.check_new_mail', 'Check new e-mail')}
 					items={checkNewMailOptions}
-					onChange={(view: string): void =>
-						updateSettings({ target: { name: 'zimbraPrefMailPollingInterval', value: view } })
+					onChange={(view: SelectItem[] | string | null): void =>
+						updateSettings({
+							target: { name: 'zimbraPrefMailPollingInterval', value: (view as string) ?? '' }
+						})
 					}
 					defaultSelection={{
 						label: findLabel(checkNewMailOptions, settingsObj.zimbraPrefMailPollingInterval),
@@ -96,9 +98,9 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 				<Select
 					label={t('settings.label.display_mail', 'Display mail')}
 					items={displayMailOptions}
-					onChange={(view: string): void =>
+					onChange={(view: SelectItem[] | string | null): void =>
 						updateSettings({
-							target: { name: 'zimbraPrefMessageViewHtmlPreferred', value: view }
+							target: { name: 'zimbraPrefMessageViewHtmlPreferred', value: (view as string) ?? '' }
 						})
 					}
 					defaultSelection={{
@@ -131,8 +133,10 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 				<Heading title={t('settings.label.message_selection', 'Message Selection')} />
 				<Select
 					items={messageSelectionOptions}
-					onChange={(view: string): void =>
-						updateSettings({ target: { name: 'zimbraPrefMailSelectAfterDelete', value: view } })
+					onChange={(view: SelectItem[] | string | null): void =>
+						updateSettings({
+							target: { name: 'zimbraPrefMailSelectAfterDelete', value: (view as string) ?? '' }
+						})
 					}
 					defaultSelection={{
 						label: findLabel(messageSelectionOptions, settingsObj.zimbraPrefMailSelectAfterDelete),
@@ -140,7 +144,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					}}
 				/>
 			</Container>
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
+			{/* <Container crossAlignment="baseline" padding={{ all: 'small' }}>
 				<Heading title={t('settings.label.message_color', 'Message Color')} />
 				<Checkbox
 					label={t(
@@ -157,13 +161,12 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 						})
 					}
 				/>
-			</Container>
+			</Container> */}
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 				<Heading title={t('settings.label.visualization_options', 'Visualization Options')} />
 				<RadioGroup
 					style={{ width: '100%' }}
 					value={settingsObj.zimbraPrefGroupMailBy}
-					mainAlignment="flex-start"
 					onChange={(newValue: string): void => {
 						updateSettings({ target: { name: 'zimbraPrefGroupMailBy', value: newValue } });
 					}}

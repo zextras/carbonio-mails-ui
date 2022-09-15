@@ -7,6 +7,7 @@ import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react
 import { TFunction } from 'i18next';
 import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { find } from 'lodash';
+import { StoreProvider } from '../../../../store/redux';
 import { removeFilter, addFilter } from './actions';
 import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { FilterContext } from './filter-context';
@@ -82,13 +83,15 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<CreateFilterModal
-						t={t}
-						onClose={(): void => closeModal()}
-						incomingFilters={incomingFilters}
-						setFetchIncomingFilters={setFetchIncomingFilters}
-						setIncomingFilters={setIncomingFilters}
-					/>
+					<StoreProvider>
+						<CreateFilterModal
+							t={t}
+							onClose={(): void => closeModal()}
+							incomingFilters={incomingFilters}
+							setFetchIncomingFilters={setFetchIncomingFilters}
+							setIncomingFilters={setIncomingFilters}
+						/>
+					</StoreProvider>
 				)
 			},
 			true
@@ -101,20 +104,22 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			{
 				size: 'small',
 				children: (
-					<DeleteFilterModal
-						onClose={(): void => closeModal()}
-						t={t}
-						availableList={availableList}
-						activeList={activeList}
-						setFilters={setIncomingFilters}
-						setFetchFilters={setFetchIncomingFilters}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						modifierFunc={modifyFilterRules}
-						filterName={selectedFilterName}
-						selectedFilter={selectedFilter}
-						incomingFilters={incomingFilters}
-					/>
+					<StoreProvider>
+						<DeleteFilterModal
+							onClose={(): void => closeModal()}
+							t={t}
+							availableList={availableList}
+							activeList={activeList}
+							setFilters={setIncomingFilters}
+							setFetchFilters={setFetchIncomingFilters}
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							modifierFunc={modifyFilterRules}
+							filterName={selectedFilterName}
+							selectedFilter={selectedFilter}
+							incomingFilters={incomingFilters}
+						/>
+					</StoreProvider>
 				)
 			},
 			true
@@ -164,14 +169,16 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<ModifyFilterModal
-						t={t}
-						selectedFilter={selectedFilter}
-						onClose={(): void => closeModal()}
-						incomingFilters={incomingFilters}
-						setFetchIncomingFilters={setFetchIncomingFilters}
-						setIncomingFilters={setIncomingFilters}
-					/>
+					<StoreProvider>
+						<ModifyFilterModal
+							t={t}
+							selectedFilter={selectedFilter}
+							onClose={(): void => closeModal()}
+							incomingFilters={incomingFilters}
+							setFetchIncomingFilters={setFetchIncomingFilters}
+							setIncomingFilters={setIncomingFilters}
+						/>
+					</StoreProvider>
 				)
 			},
 			true
@@ -195,7 +202,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				iconPlacement="left"
 				disabled={disableAdd}
 				onClick={onAdd}
-				size="fill"
+				width="fill"
 			/>
 			<Padding bottom="medium" />
 			<Button
@@ -205,14 +212,14 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				icon="ArrowheadRightOutline"
 				disabled={disableRemove}
 				onClick={onRemove}
-				size="fill"
+				width="fill"
 			/>
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.edit', 'Edit')}
 				type="outlined"
 				disabled={disableEdit}
-				size="fill"
+				width="fill"
 				onClick={openFilterModifyModal}
 			/>
 			<Padding bottom="medium" />
@@ -224,14 +231,14 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				color="error"
 				onClick={openDeleteModal}
 				disabled={disableDelete}
-				size="fill"
+				width="fill"
 			/>
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.create', 'Create')}
 				type="outlined"
 				disabled={disablCreate}
-				size="fill"
+				width="fill"
 				onClick={openCreateModal}
 			/>
 		</>

@@ -9,6 +9,7 @@ import { isEmpty, split, head, includes, reduce, uniqBy, find, filter } from 'lo
 import {
 	Badge,
 	Container,
+	ContainerProps,
 	Icon,
 	IconButton,
 	Padding,
@@ -39,15 +40,15 @@ import { searchConv } from '../../store/actions';
 import { StateType, MailMessage, Conversation } from '../../types';
 
 type SearchConversationListItemProps = {
-	itemId: string;
+	itemId?: string;
 	item: Conversation;
 	selected: boolean;
-	selecting: boolean;
-	toggle: boolean;
-	active: string;
+	selecting?: boolean;
+	toggle?: boolean;
+	active: boolean;
 };
 
-const CollapseElement = styled(Container)`
+const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
 `;
 const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
@@ -269,7 +270,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 					height="auto"
 				>
 					<ConversationMessagesList
-						active={itemId}
+						active={itemId ?? ''}
 						length={item?.messages?.length}
 						messages={messagesToRender}
 						conversationStatus={conversationStatus}

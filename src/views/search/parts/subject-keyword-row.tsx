@@ -3,14 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
-import { Container, ChipInput } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { isValidEmail } from './utils';
 
 type ComponentProps = {
 	compProps: {
-		t: TFunction;
 		otherKeywords: Array<any>;
 		setOtherKeywords: (arg: any) => void;
 		subject: Array<any>;
@@ -18,7 +17,7 @@ type ComponentProps = {
 	};
 };
 const SubjectKeywordRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
-	const { t, otherKeywords, setOtherKeywords, subject, setSubject } = compProps;
+	const { otherKeywords, setOtherKeywords, subject, setSubject } = compProps;
 	const onChange = useCallback((state, stateHandler) => {
 		stateHandler(state);
 	}, []);
@@ -42,17 +41,17 @@ const SubjectKeywordRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	);
 
 	const subjectOnChange = useCallback(
-		(label: string): void => onChange(label, setSubject),
+		(value: ChipItem[]): void => onChange(value, setSubject),
 		[onChange, setSubject]
 	);
 
 	const keywordOnChange = useCallback(
-		(label: string): void => onChange(label, setOtherKeywords),
+		(value: ChipItem[]): void => onChange(value, setOtherKeywords),
 		[onChange, setOtherKeywords]
 	);
 
 	const subjectChipOnAdd = useCallback(
-		(label: string): any => chipOnAdd(label, 'Subject', false, false, true),
+		(label: unknown): any => chipOnAdd(label, 'Subject', false, false, true),
 		[chipOnAdd]
 	);
 
@@ -86,8 +85,7 @@ const SubjectKeywordRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		[chipOnAdded]
 	);
 
-	const subjectPlaceholder = useMemo(() => t('label.subject', 'Subject'), [t]);
-	const chipBackground = useMemo(() => 'gray5', []);
+	const subjectPlaceholder = useMemo(() => t('label.subject', 'Subject'), []);
 
 	return (
 		<React.Fragment>
@@ -95,7 +93,7 @@ const SubjectKeywordRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 					<ChipInput
 						placeholder={t('label.keywords', 'Keywords')}
-						background={chipBackground}
+						background="gray5"
 						value={otherKeywords}
 						confirmChipOnSpace={false}
 						onChange={keywordOnChange}
@@ -105,7 +103,7 @@ const SubjectKeywordRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 					<ChipInput
 						placeholder={subjectPlaceholder}
-						background={chipBackground}
+						background="gray5"
 						value={subject}
 						confirmChipOnSpace={false}
 						onChange={subjectOnChange}

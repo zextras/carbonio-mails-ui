@@ -21,6 +21,8 @@ const SubjectRow: FC = () => {
 	const [t] = useTranslation();
 	const { control, editor, updateSubjectField, throttledSaveToDraft } = useContext(EditViewContext);
 
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	return (
 		<StyledComp.ColContainer occupyFull>
 			<Controller

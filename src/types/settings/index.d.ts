@@ -211,24 +211,11 @@ type SignatureSettingsPropsType = {
 	setSignItemsUpdated: (arg: unknown) => void;
 };
 
-export type UpdateSettingsProps = {
-	target: {
-		name: string;
-		value: unknown;
-	};
-};
 export type ReceivingMessagesSettingsType = {
 	settingsObj: PrefsType;
 	updateSettings: (arg: UpdateSettingsProps) => void;
 	updatedProps: PropsType | any;
 	updateProps: (arg: UpdateSettingsProps) => void;
-};
-
-export type UpdateSettingsProps = {
-	target: {
-		name: string;
-		value: string;
-	};
 };
 
 export type DisplayingMessagesSettingsProps = {

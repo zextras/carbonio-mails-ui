@@ -5,6 +5,7 @@
  */
 
 import { TFunction } from 'react-i18next';
+
 // TODO: update the shell constants with this and update the usages in other modules
 export const CORRESPONDING_COLORS = [
 	{ zValue: 0, uiRgb: '#000000', zLabel: 'black' },

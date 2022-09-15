@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { createContext, FC, useCallback, useContext, useMemo } from 'react';
+import React, { createContext, FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
@@ -24,7 +24,7 @@ type ACPProps = {
 type ActionObj = {
 	id: string;
 	label: string;
-	click: (event: MouseEvent) => void;
+	click: (event: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	icon: string;
 };
 
