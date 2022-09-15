@@ -57,7 +57,6 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 		dispatch(
 			folderAction({
 				folder: folder.folder,
-				recursive: true,
 				l: FOLDERS.TRASH,
 				op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
 			})
