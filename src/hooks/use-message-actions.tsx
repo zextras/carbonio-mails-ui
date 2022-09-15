@@ -98,6 +98,7 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 		arr.push(
 			moveMessageToFolder({
 				id: [message.id],
+				folderId,
 				dispatch,
 				isRestore: false,
 				createModal,
@@ -118,6 +119,7 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 		arr.push(
 			moveMessageToFolder({
 				id: [message.id],
+				folderId,
 				dispatch,
 				isRestore: true,
 				createModal,

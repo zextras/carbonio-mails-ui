@@ -532,7 +532,7 @@ export const getActions = ({
 
 					moveMessageToFolder({
 						id: [message.id],
-						folderId: message.parent,
+						folderId,
 						dispatch,
 						isRestore: true,
 						createModal,
@@ -555,7 +555,7 @@ export const getActions = ({
 					deleteMessagePermanently({ ids: [message.id], dispatch, createModal, deselectAll }),
 					moveMessageToFolder({
 						id: [message.id],
-						folderId: message.parent,
+						folderId,
 						dispatch,
 						isRestore: true,
 						createModal,
