@@ -25,7 +25,9 @@ import {
 	ThemeContext,
 	Tooltip,
 	Chip,
-	Dropdown
+	Dropdown,
+	ContainerProps,
+	IconButton
 } from '@zextras/carbonio-design-system';
 import { capitalize, every, find, includes, isEmpty, map, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -47,11 +49,12 @@ import MessageContactsList from './message-contact-list';
 import { MailMessage } from '../../../../../types';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
-const HoverContainer = styled(Container)`
+const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean }>`
 	cursor: pointer;
 	border-radius: ${({ isExpanded }): string => (isExpanded ? '4px 4px 0 0' : '4px')};
 	&:hover {
-		background: ${({ theme, background }): string => theme.palette[background].hover};
+		background: ${({ theme, background = 'currentColor' }): string =>
+			theme.palette[background].hover};
 	}
 `;
 
@@ -82,7 +85,7 @@ const fallbackContact = {
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	const { message, onClick, open, isAlone } = compProps;
 
-	const textRef = useRef<HTMLInputElement>();
+	const textRef = useRef<HTMLInputElement>(null);
 	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 
@@ -121,7 +124,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc: Array<Tag & { label: string; customComponent: ReactElement }>, v) => {
+				(acc: any, v) => {
 					if (includes(message.tags, v.id))
 						acc.push({
 							...v,
@@ -218,7 +221,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			isExpanded={open}
 			onClick={_onClick}
 		>
-			<Container height="fit" width="100%" isExpanded={open}>
+			<Container height="fit" width="100%">
 				<Container orientation="horizontal">
 					<Container
 						orientation="vertical"
@@ -256,7 +259,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 											data-testid="SenderText"
 											size={message.read ? 'small' : 'medium'}
 											color={message.read ? 'text' : 'primary'}
-											weight={message.read ? 'normal' : 'bold'}
+											weight={message.read ? 'regular' : 'bold'}
 										>
 											{capitalize(participantToString(mainContact, t, accounts))}
 										</Text>
@@ -286,18 +289,18 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 								{showTagIcon && (
 									<Padding left="small">
 										<Tooltip label={message?.tags?.[0]} disabled={showMultiTagIcon}>
-											<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+											<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
 										</Tooltip>
 									</Padding>
 								)}
 								{showMultiTagIcon && (
 									<Dropdown items={tags} forceOpen={showDropdown} onClose={onDropdownClose}>
 										<Padding left="small">
-											<Icon
+											<IconButton
 												data-testid="TagIcon"
 												icon={tagIcon}
 												onClick={onIconClick}
-												color={tagIconColor}
+												color={`${tagIconColor}`}
 											/>
 										</Padding>
 									</Dropdown>
@@ -360,7 +363,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 				mainAlignment="flex-start"
 			>
 				{!open && (
-					<Row takeAvailabelSpace padding={{ bottom: 'small' }}>
+					<Row padding={{ bottom: 'small' }}>
 						<Text color="secondary" size="small">
 							{message.fragment}
 						</Text>

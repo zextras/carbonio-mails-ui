@@ -13,7 +13,8 @@ import {
 	IconButton,
 	Collapse,
 	Input,
-	Select
+	Select,
+	SelectItem
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
@@ -30,16 +31,16 @@ type RetentionPoliciesProps = {
 		label: string;
 		value: string;
 	}>;
-	rtnYear: string;
-	setRtnYear: (arg: string) => void;
+	rtnYear: string | null;
+	setRtnYear: (arg: string | null) => void;
 	dsblMsgDis: boolean;
 	setDsblMsgDis: (arg: boolean) => void;
 	emptyDisValue: boolean;
 	setEmptyDisValue: (arg: boolean) => void;
 	purgeValue: number | string;
 	setPurgeValue: (arg: string) => void;
-	dspYear: string;
-	setDspYear: (arg: string) => void;
+	dspYear: string | null;
+	setDspYear: (arg: string | null) => void;
 	rtnRange: string;
 	dspRange: string;
 };
@@ -120,7 +121,6 @@ const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 									setRtnValue(e.target.value);
 								}}
 								label={t('label.retention_range', 'Retention Range')}
-								background="gray5"
 								value={rtnValue === 0 ? '' : rtnValue}
 							/>
 							{emptyRtnValue && (
@@ -141,8 +141,12 @@ const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 									items={retentionPeriod}
 									background="gray5"
 									label={t('label.select', 'Select')}
-									onChange={setRtnYear}
 									disablePortal
+									multiple={false}
+									// TS doesn't get the correct overload
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
+									onChange={setRtnYear}
 									defaultSelection={{ label: rtnRange, value: rtnYear }}
 								/>
 							)}
@@ -182,7 +186,6 @@ const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 										setPurgeValue(e.target.value);
 									}}
 									disabled={!dsblMsgDis}
-									background="gray5"
 									value={purgeValue === 0 ? '' : purgeValue}
 								/>
 								{emptyDisValue && (
@@ -204,6 +207,9 @@ const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 										background="gray5"
 										label={t('label.select', 'Select')}
 										disablePortal
+										// TS doesn't get the correct overload
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore
 										onChange={setDspYear}
 										defaultSelection={{ value: dspYear, label: dspRange }}
 									/>

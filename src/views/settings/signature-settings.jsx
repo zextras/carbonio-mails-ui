@@ -199,7 +199,7 @@ export default function SignatureSettings({
 								type="outlined"
 								color="error"
 								onClick={() => onDelete()}
-								isSmall
+								size="small"
 							/>
 						)}
 					</Container>
@@ -227,7 +227,7 @@ export default function SignatureSettings({
 									type="outlined"
 									onClick={createSign}
 									disabled={signItems?.length && !name}
-									size="fill"
+									width="fill"
 								/>
 							</Container>
 							<Padding all="small" />

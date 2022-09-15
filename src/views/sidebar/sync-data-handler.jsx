@@ -3,13 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	FOLDERS,
-	store,
-	useNotify,
-	useRefresh,
-	updatePrimaryBadge
-} from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useNotify, useRefresh, updatePrimaryBadge } from '@zextras/carbonio-shell-ui';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty, map, keyBy, find, filter, forEach, sortBy, reduce } from 'lodash';
@@ -38,7 +32,6 @@ import {
 	handleDeletedMessages,
 	selectMessages
 } from '../../store/messages-slice';
-import { storeReducers } from '../../store/reducers';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { extractFolders } from './utils';
@@ -71,7 +64,6 @@ export const SyncDataHandler = () => {
 
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
-			store.setReducer(storeReducers);
 			// this also normalize folders so no need to normalize it later
 			const extractedFolders = extractFolders([
 				...(refresh?.folder?.[0]?.folder ?? []),

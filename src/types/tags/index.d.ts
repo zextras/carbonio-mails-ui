@@ -4,15 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { ItemType as AccordionItemType } from '@zextras/carbonio-design-system';
 import { Tag } from '@zextras/carbonio-shell-ui';
-import { ComponentType } from 'react';
+import React, { ComponentType } from 'react';
 import { TFunction } from 'react-i18next';
 
 export type ReturnType = {
 	id: string;
 	icon: string;
 	label: string;
-	click?: (arg: React.SyntheticEvent<EventTarget>) => void;
+	click?: (arg: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	items?: Array<{
 		customComponent: ComponentType;
 		id: string;
@@ -24,15 +25,15 @@ export type ReturnType = {
 export type TagsFromStoreType = Record<string, Tag>;
 
 export type ArgumentType = {
-	t: TFunction;
 	createModal?: (...args: any) => () => void;
 	createSnackbar?: (...args: any) => void;
 	items?: ReturnType;
 	tag?: ItemType;
 };
 
-export type ItemType = {
-	CustomComponent?: ComponentType<any>;
+export interface ItemType extends AccordionItemType<T> {
+	item: T;
+	CustomComponent?: ComponentType<T>;
 	active: boolean;
 	color: number;
 	divider: boolean;
@@ -41,7 +42,7 @@ export type ItemType = {
 	name: string;
 	open: boolean;
 	actions?: Array<unknown>;
-};
+}
 
 export type TagsAccordionItems = {
 	items: ItemType[];

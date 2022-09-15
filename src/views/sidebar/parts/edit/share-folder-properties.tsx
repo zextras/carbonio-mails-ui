@@ -6,6 +6,7 @@
 import {
 	Button,
 	Chip,
+	ChipProps,
 	Container,
 	Divider,
 	Padding,
@@ -34,7 +35,7 @@ import {
 import { capitalise } from '../../utils';
 import { Context } from './edit-context';
 
-const HoverChip = styled(Chip)`
+const HoverChip = styled(Chip)<ChipProps & { hovered?: boolean }>`
 	background-color: ${({ theme, hovered }): string =>
 		hovered ? theme.palette.gray3.hover : theme.palette.gray3.regular};
 `;
@@ -112,7 +113,7 @@ const Actions: FC<ActionProps> = ({
 			maxWidth="fit"
 		>
 			<Tooltip label={t('tooltip.edit', 'Edit share properties')} placement="top">
-				<Button type="outlined" label={t('label.edit', 'Edit')} onClick={onEdit} isSmall />
+				<Button type="outlined" label={t('label.edit', 'Edit')} onClick={onEdit} size="small" />
 			</Tooltip>
 			<Padding horizontal="extrasmall" />
 			<Tooltip label={t('tooltip.revoke', 'Revoke access')} placement="top">
@@ -121,7 +122,7 @@ const Actions: FC<ActionProps> = ({
 					label={t('label.revoke', 'Revoke')}
 					color="error"
 					onClick={onRevoke}
-					isSmall
+					size="small"
 				/>
 			</Tooltip>
 			<Padding horizontal="extrasmall" />
@@ -130,7 +131,12 @@ const Actions: FC<ActionProps> = ({
 				placement="top"
 				maxWidth="300px"
 			>
-				<Button type="outlined" label={t('label.resend', 'Resend')} onClick={onResend} isSmall />
+				<Button
+					type="outlined"
+					label={t('label.resend', 'Resend')}
+					onClick={onResend}
+					size="small"
+				/>
 			</Tooltip>
 		</Container>
 	);

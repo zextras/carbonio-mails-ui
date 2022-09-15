@@ -11,6 +11,7 @@ import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
+import { StoreProvider } from '../store/redux';
 
 export function setConversationsFlag({ ids, value, t, dispatch }) {
 	return {
@@ -280,7 +281,7 @@ export function moveConversationToFolder({
 				{
 					maxHeight: '90vh',
 					children: (
-						<>
+						<StoreProvider>
 							<MoveConvMessage
 								selectedIDs={ids}
 								onClose={() => closeModal()}
@@ -289,7 +290,7 @@ export function moveConversationToFolder({
 								isRestore={isRestore}
 								deselectAll={deselectAll}
 							/>
-						</>
+						</StoreProvider>
 					)
 				},
 				true
@@ -307,7 +308,7 @@ export function deleteConversationPermanently({ ids, t, dispatch, createModal, d
 			const closeModal = createModal(
 				{
 					children: (
-						<>
+						<StoreProvider>
 							<DeleteConvConfirm
 								selectedIDs={ids}
 								dispatch={dispatch}
@@ -315,7 +316,7 @@ export function deleteConversationPermanently({ ids, t, dispatch, createModal, d
 								onClose={() => closeModal()}
 								deselectAll={deselectAll}
 							/>
-						</>
+						</StoreProvider>
 					)
 				},
 				true
