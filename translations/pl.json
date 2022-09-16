@@ -109,9 +109,11 @@
         "disable_urgent": "Wyłącz pilne",
         "resend": "Wyślij powiadomienie mailowe dot. tego udostępnienia",
         "revoke": "Odbierz dostęp",
-        "folder_sharing_status_0": "Udostępniono {{count}} osobie",
-        "folder_sharing_status_1": "Udostępniono {{count}} osobom",
-        "folder_sharing_status_2": "Udostępniono {{count}} osobom"
+        "folder_sharing_status_0": "Udostępniono {{count}} użytkownikowi",
+        "folder_sharing_status_1": "Udostępniono {{count}} użytkownikom",
+        "folder_sharing_status_2": "Udostępniono {{count}} użytkownikom",
+        "folder_linked_status": "Udostępnione mi",
+        "marked_as_important": "Oznaczone jako ważne"
     },
     "label": {
         "create": "Stwórz",
@@ -164,8 +166,8 @@
         "delete": "Usuń",
         "delete_permanently": "Trwale usuń",
         "download_0": "Pobierz",
-        "download_1": "Pobierz",
-        "download_2": "Pobierz",
+        "download_1": "Pobierz wszystkie",
+        "download_2": "Pobierz wszystkie",
         "draft": "Wersja robocza",
         "draft_folder": "[WERSJA ROBOCZA]",
         "email_perm_deleted": "E-mail został trwale usunięty",
@@ -185,7 +187,7 @@
         "highlight_tab": "Podświetl zakładkę Skrzynka pocztowa",
         "insert": "Wstaw",
         "keywords": "Słowa kluczowe",
-        "loading_results": "Ładowanie Wyników. . .",
+        "loading_results": "Ładowanie wyników…",
         "mail_folder": "Folder E-maile",
         "mail_settings": "Ustawienia skrzynki odbiorczej",
         "me": "Ja",
@@ -193,7 +195,7 @@
         "new_folder": "Nowy Folder",
         "no_search_results_found": "Nie znaleziono wyników",
         "on_behalf_of": "w imieniu",
-        "owner": "Posiadacz: ",
+        "owner": "Właściciel: ",
         "read": "Czytanie",
         "receive_message": "Otrzymywanie Wiadomości",
         "received_from_address": "Otrzymano od (adres)",
@@ -287,7 +289,28 @@
         "always_allow_domain": "Zawsze zezwalaj z domeny <strong>{{domain}}</strong>",
         "no_name": "<Brak nazwy>",
         "share_public_link": "Udostępnij Publiczny Link",
-        "view_images": "ZOBACZ OBRAZKI"
+        "view_images": "ZOBACZ OBRAZKI",
+        "keep_draft": "Zapisz wersję roboczą",
+        "expand_receivers_list": "Rozwiń listę odbiorców",
+        "collapse_receivers_list": "Zwiń listę odbiorców",
+        "delayed_sending": "Opóźnione wysyłanie",
+        "read_receipt_sent": "Potwierdzenie przeczytania zostało wysłane dla tej wiadomości",
+        "trusted_addresses": "Zaufane adresy",
+        "time_zone": "Strefa Czasowa",
+        "send_later": "Wyślij później",
+        "searching": "Wyszukiwanie...",
+        "request_receipt": "Wyślij prośbę o potwierdzenie przeczytania",
+        "remove_request_receipt": "Wycofaj prośbę o potwierdzenie przeczytania",
+        "read_receipt_req": "Wymagane potwierdzenie przeczytania",
+        "notify": "Powiadom",
+        "mark_as_un_important": "Oznacz jako nieważne",
+        "mark_as_important": "Oznacz jako ważne",
+        "include_shared_folders": "Zawrzyj udostępnione foldery",
+        "filter_modified": "Filtr został zmodyfikowany pomyślnie",
+        "enter_email_address": "Wprowadź adres e-mail lub domenę",
+        "do_not_notify": "Nie powiadamiaj",
+        "delete_draft": "Usuń wersję roboczą",
+        "before_you_leave": "Zanim opuścisz"
     },
     "message": {
         "snackbar": {
@@ -316,7 +339,9 @@
         "delete_tag_message2": "Po usunięciu Tag zostanie zdjęty z każdego elementu oznaczonego nim.",
         "admin_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie, Zarządzanie",
         "manager_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie",
-        "external_images_blocked": "Obrazki z innych domen zostały zablokowane, aby chronić Cię przed potencjalnym spamem"
+        "external_images_blocked": "Obrazki z innych domen zostały zablokowane, aby chronić Cię przed potencjalnym spamem",
+        "schedule_time": "{{date}} o {{time}}",
+        "schedule_mail": "Zostanie wysłany: {{date}} o {{time}}"
     },
     "search": {
         "flagged_note": "Wyszukaj wszystkie oflagowane e-maile.",
@@ -326,7 +351,8 @@
         "unread": "Nieprzeczytane",
         "unread_note": "Wyszukaj wszystkie nieprzeczytane elementy e-maili.",
         "attachment_note": "Wyszukaj wszystkie e-maile, które mają w sobie załączniki.",
-        "sent_after": "Wysłane po"
+        "sent_after": "Wysłane po",
+        "shared_folders_note": "Zawrzyj udostępnione elementy w wynikach wyszukiwań."
     },
     "share": {
         "options": {
@@ -354,7 +380,8 @@
         "delete_email": "Usuń e-mail",
         "edit_draft": "Edytuj wersję roboczą",
         "redirect_email": "Przekieruj e-mail",
-        "warning": "Ostrzeżenie"
+        "warning": "Ostrzeżenie",
+        "attention": "Uwaga"
     },
     "folder_panel": {
         "lists_item": {
@@ -448,8 +475,8 @@
             "message_move": "Wiadomość została przeniesiona pomyślnie",
             "message_redirected": "Wiadomość została przekierowana",
             "tag_not_updated": "Coś poszło nie tak, Tag nie został zaktualizowany. Spróbuj ponownie.",
-            "tag_created": "Tag {{name}} został pomyślnie stworzony",
-            "tag_deleted": "Tag {{name}} został usunięty pomyślnie",
+            "tag_created": "Tag {{name}} został stworzony pomyślnie",
+            "tag_deleted": "Tag {{name}} został usunięty",
             "tag_updated": "Tag został zaktualizowany pomyślnie"
         },
         "modal": {
@@ -460,6 +487,10 @@
             "redirect": {
                 "second": "E-mail wyświetli się jako pierwotnie zaadresowany do nowego odbiorcy",
                 "first": "Ten e-mail zostanie wysłany do nowego odbiorcy, zachowując adres e-mail pierwszego nadawcy."
+            },
+            "send_anyway": {
+                "second": "Czy mimo to chcesz wysłać e-maila?",
+                "first": "Temat e-maila jest pusty oraz nie załączono żadnych plików."
             }
         },
         "new_email": "Nowy e-mail",
@@ -468,7 +499,12 @@
         "powered_by": "oparte na",
         "check_and_try_again": "Sprawdź Carbonio i spróbuj ponownie",
         "could_not_find_to_show": "Nie udało się znaleźć niczego",
-        "something_went_wrong": "COŚ POSZŁO NIE TAK"
+        "something_went_wrong": "COŚ POSZŁO NIE TAK",
+        "trustee_addresses": "E-maile z tych adresów i domen zostaną uznane za zaufane, a obrazki w nich zawarte będą automatycznie wyświetlane.",
+        "read_receipt_2": "Czy chcesz powiadomić nadawcę?",
+        "read_receipt_1": "Nadawca tej wiadomości poprosił o powiadomienie go kiedy przeczytasz tą wiadomość.",
+        "invalid_trustee_address": "Wprowadź tylko adresy e-mail i domeny",
+        "cal_name_exist_warning": "Kalendarz z wybraną nazwą już istnieje w tej ścieżce"
     },
     "settings": {
         "conv_is_participated": "w konwersacjach, w których uczestniczyłem",
@@ -621,5 +657,48 @@
     },
     "preview": {
         "close": "Zamknij Podgląd"
+    },
+    "modal": {
+        "delete_draft": {
+            "message1": "Czy chcesz zachować tą wersję roboczą?"
+        }
+    },
+    "email_status": {
+        "unreplied": "nie odpowiedziałem",
+        "unread": "nieprzeczytane",
+        "unforwarded": "nie przekazano dalej",
+        "unflagged": "nie oflagowano",
+        "flagged": "oflagowano",
+        "tome": "do mnie",
+        "tofromme": "do mnie, ode mnie lub w cc (kopii) do mnie",
+        "tofromccme": "do mnie, ode mnie lub w cc (kopii) do mnie",
+        "toccme": "do mnie lub w cc (kopii) do mnie",
+        "solo": "konwersacje z jedną wiadomością",
+        "sent": "wysłane przeze mnie",
+        "replied": "odpowiedziałem",
+        "remote": "w folderze udostępnianym przeze mnie",
+        "received": "otrzymane przeze mnie",
+        "read": "przeczytane",
+        "local": "w moich folderach",
+        "invitations": "zaproszenia",
+        "fromme": "ode mnie",
+        "fromccme": "ode mnie",
+        "forwarded": "przekazano dalej",
+        "draft": "wersja robocza",
+        "ccme": "w cc (kopii) do mnie",
+        "anywhere": "we wszystkich folderach"
+    },
+    "attachment_type": {
+        "zipped_file": "Skompresowany plik",
+        "word": "Word",
+        "video": "Wideo",
+        "text_document": "Dokument tekstowy",
+        "powerpoint": "Powerpoint",
+        "pdf": "PDF",
+        "image": "Obraz",
+        "html": "HTML",
+        "excel": "Excel",
+        "email": "E-mail",
+        "application": "Aplikacja"
     }
 }
