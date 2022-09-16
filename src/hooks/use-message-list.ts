@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { getFolder } from '@zextras/carbonio-shell-ui';
 import { filter, orderBy } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,7 +23,12 @@ export const useMessageList = (): Array<Partial<MailMessage>> => {
 
 	const folderMsgStatus = useSelector(selectFolderMsgSearchStatus(folderId));
 	const messages = useSelector(selectMessagesArray);
-	const folder = useSelector(selectFolder(folderId));
+	const folder = getFolder(folderId);
+
+	const filteredMessages = useMemo(
+		() => filter(messages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id]),
+		[folder?.id, folder?.rid, folder?.zid, messages]
+	);
 
 	/* NOTE: Need to comment out when need to sort as per the configured sort order */
 	// const { zimbraPrefSortOrder } = useUserSettings()?.prefs as Record<string, string>;
@@ -39,7 +45,10 @@ export const useMessageList = (): Array<Partial<MailMessage>> => {
 	// 	[messages, sorting]
 	// );
 
-	const sortedMessages = useMemo(() => orderBy(messages, 'date', 'desc'), [messages]);
+	const sortedMessages = useMemo(
+		() => orderBy(filteredMessages, 'date', 'desc'),
+		[filteredMessages]
+	);
 
 	useEffect(() => {
 		if (folderMsgStatus !== 'complete' && folderMsgStatus !== 'pending') {
@@ -47,9 +56,11 @@ export const useMessageList = (): Array<Partial<MailMessage>> => {
 		}
 	}, [dispatch, folderId, folderMsgStatus]);
 
-	return useMemo(
-		() =>
-			filter(sortedMessages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id]),
-		[folder?.id, folder?.rid, folder?.zid, sortedMessages]
-	);
+	console.log('*** folderId', folderId);
+	console.log('*** folder', folder);
+	console.log('*** messages', messages);
+	console.log('*** filteredMessages', filteredMessages);
+	console.log('*** sortedMessages', sortedMessages);
+
+	return sortedMessages;
 };
