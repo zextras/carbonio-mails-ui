@@ -5,7 +5,12 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, useUserSettings, t, replaceHistory } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	useUserSettings,
+	t,
+	replaceHistory
+} from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import { Dispatch } from '@reduxjs/toolkit';
 import ModalFooter from '../../../../sidebar/commons/modal-footer';

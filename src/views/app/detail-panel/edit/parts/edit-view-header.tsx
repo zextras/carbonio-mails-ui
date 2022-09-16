@@ -237,6 +237,7 @@ const EditViewHeader: FC<PropType> = ({
 				children: (
 					<StoreProvider>
 						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
+							{/* eslint-disable-next-line no-nested-ternary */}
 							{isattachWordsPresent && !editor?.attachmentFiles.length && !editor?.subject
 								? t(
 										'messages.modal.send_anyway.no_subject_no_attachments',
