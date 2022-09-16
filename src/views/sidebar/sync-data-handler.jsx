@@ -36,6 +36,12 @@ import { normalizeConversation } from '../../normalizations/normalize-conversati
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { extractFolders } from './utils';
 import { MAILS_ROUTE } from '../../constants';
+import {
+	handleAddMessagesInSearchConversation,
+	handleCreatedMessagesInSearchConversation,
+	handleDeletedMessagesInSearchConversation,
+	handleModifiedMessagesInSearchConversation
+} from '../../store/searches-slice';
 
 const InboxBadgeUpdater = () => {
 	const folder = useSelector(selectFolder(FOLDERS.INBOX));
@@ -106,6 +112,7 @@ export const SyncDataHandler = () => {
 							if (notify.created.m) {
 								dispatch(handleCreatedMessages({ m: notify.created.m }));
 								dispatch(handleCreatedMessagesInConversation({ m: notify.created.m }));
+								dispatch(handleCreatedMessagesInSearchConversation({ m: notify.created.m }));
 							}
 						}
 						if (notify.modified) {
@@ -132,6 +139,7 @@ export const SyncDataHandler = () => {
 								if (toUpdate?.length > 0) {
 									// this function updates messages' parent in conversations. If parent never changes it does not need to be called
 									dispatch(handleModifiedMessagesInConversation(toUpdate));
+									dispatch(handleModifiedMessagesInSearchConversation(toUpdate));
 								}
 								// the condition filters messages with conversation property (the only ones we need to add to conversation)
 								const conversationToUpdate = filter(messages, 'conversation');
@@ -156,6 +164,7 @@ export const SyncDataHandler = () => {
 									);
 									// this function add messages' in conversations. If conversation never changes it does not need to be called
 									dispatch(handleAddMessagesInConversation(msgsReference));
+									dispatch(handleAddMessagesInSearchConversation(msgsReference));
 								}
 							}
 						}
@@ -164,6 +173,7 @@ export const SyncDataHandler = () => {
 							dispatch(handleNotifyDeletedConversations(notify.deleted));
 							dispatch(handleDeletedMessages(notify.deleted));
 							dispatch(handleDeletedMessagesInConversation(notify.deleted));
+							dispatch(handleDeletedMessagesInSearchConversation(notify.deleted));
 						}
 						setSeq(notify.seq);
 					}

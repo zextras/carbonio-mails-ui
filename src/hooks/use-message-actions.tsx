@@ -8,7 +8,7 @@ import { FOLDERS, useAppContext, useTags, useUserAccount } from '@zextras/carbon
 import { includes } from 'lodash';
 import { useContext, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, useHistory } from 'react-router-dom';
 import { useSelection } from './useSelection';
 import { MailMessage } from '../types';
 import {
@@ -33,6 +33,7 @@ import { applyTag } from '../ui-actions/tag-actions';
 
 export const useMessageActions = (message: MailMessage, isAlone = false): Array<any> => {
 	const { folderId }: { folderId: string } = useParams();
+
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const createModal = useModal();

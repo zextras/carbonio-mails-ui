@@ -4,7 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { filter, find, forEach, map, merge, omit, reduce, some, last, sortBy } from 'lodash';
+import {
+	filter,
+	cloneDeep,
+	find,
+	forEach,
+	map,
+	merge,
+	omit,
+	reduce,
+	some,
+	last,
+	sortBy
+} from 'lodash';
 import { ConvMessage, ConversationsStateType, Payload } from '../../types';
 
 export const handleCreatedConversationsReducer = (
@@ -47,8 +59,10 @@ export const handleCreatedMessagesInConversationsReducer = (
 	{ payload }: Payload
 ): void => {
 	const { m } = payload;
+	console.log('vvvv:', { payload: cloneDeep(payload) });
 	forEach(m, (msg) => {
 		const conversation = state.conversations?.[msg.cid];
+		const searchConversation = state.conversations?.[msg.id];
 		if (msg?.cid && msg?.id && msg?.l && conversation) {
 			const messages = find(conversation.messages, ['id', msg.id])
 				? conversation.messages
@@ -102,13 +116,20 @@ export const handleAddMessagesInConversationReducer = (
 	state: ConversationsStateType,
 	{ payload }: Payload
 ): void => {
+	console.log('vvvv: msgConv', { payload: cloneDeep(payload) });
 	forEach(payload, (msg) => {
 		const addMsg = omit(msg, ['conversation']) as ConvMessage;
+		console.log('vvvv: msgConv', { addMsg });
 		if (msg?.conversation && state?.conversations?.[msg?.conversation]) {
+			console.log('vvvv: msgConv hello');
 			state.conversations[msg.conversation] = {
 				...state.conversations[msg.conversation],
 				messages: [...state.conversations[msg.conversation].messages, addMsg]
 			};
+			// state.conversations[msg.id] = {
+			// 	...state.conversations[msg.id],
+			// 	messages: [...state.conversations[msg.id].messages, addMsg]
+			// };
 		}
 	});
 };

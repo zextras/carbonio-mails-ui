@@ -75,8 +75,9 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 		() => settings?.prefs?.zimbraPrefIncludeTrashInSearch === 'TRUE',
 		[settings]
 	);
-	// const conv = useSelector((state) => selectConversation(state, item?.id));
-	// if (active) console.log('mnop:', { conv, item });
+
+	const conv = useSelector((state) => selectConversation(state, item?.id));
+	if (active) console.log('vvvv:', { conv, item });
 	const _onClick = useCallback(() => {
 		const path = head(split(pathname, '/folder'));
 		// dispatch({

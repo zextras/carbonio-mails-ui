@@ -3,9 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, useUserSettings, t } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	useUserSettings,
+	t,
+	replaceHistory
+} from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import { Dispatch } from '@reduxjs/toolkit';
 import ModalFooter from '../../../../sidebar/commons/modal-footer';
@@ -13,6 +18,7 @@ import { ModalHeader } from '../../../../sidebar/commons/modal-header';
 import { saveDraft } from '../../../../../store/actions/save-draft';
 import { MailsEditor } from '../../../../../types';
 import DatePickerCustomComponent from './date-picker-custom-component';
+import { EditViewContext } from './edit-view-context';
 
 type SendLaterModalPropTypes = {
 	onClose: () => void;
@@ -24,6 +30,8 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 	const [time, setTime] = useState();
 	const bridgedFn = getBridgedFunctions();
 
+	const { folderId, action } = useContext(EditViewContext);
+	console.log('mnop:', { folderId, action });
 	const modalTitle = useMemo(() => t('label.send_later', 'Send Later'), []);
 	const datePickerLabel = useMemo(() => t('label.select_date_time', 'Select date and time'), []);
 
@@ -54,9 +62,14 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 
 				onClose();
 				closeBoard();
+				setTimeout(() => {
+					if (folderId) {
+						replaceHistory(`/folder/${folderId}/`);
+					}
+				}, 10);
 			}
 		});
-	}, [bridgedFn, closeBoard, dispatch, editor, onClose, prefs, time]);
+	}, [bridgedFn, closeBoard, dispatch, editor, folderId, onClose, prefs, time]);
 
 	const minTime = useMemo(() => {
 		if (moment(time).isBefore(moment(), 'hour') || !time) {
