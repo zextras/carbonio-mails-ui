@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 /*
  * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
@@ -35,7 +34,7 @@ import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
 import * as StyledComp from './edit-view-styled-components';
 import { addAttachments } from '../edit-utils';
-import { mailAttachment } from '../../../../../types';
+import { CreateSnackbar, mailAttachment } from '../../../../../types';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import { ActionsType } from '../../../../../commons/utils';
 import SendLaterModal from './send-later-modal';
@@ -238,6 +237,7 @@ const EditViewHeader: FC<PropType> = ({
 				children: (
 					<StoreProvider>
 						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
+							{/* eslint-disable-next-line no-nested-ternary */}
 							{isattachWordsPresent && !editor?.attachmentFiles.length && !editor?.subject
 								? t(
 										'messages.modal.send_anyway.no_subject_no_attachments',
@@ -354,13 +354,15 @@ const EditViewHeader: FC<PropType> = ({
 							dispatch={dispatch}
 							editor={editor}
 							closeBoard={boardUtilities?.closeBoard}
+							folderId={folderId}
+							setShowRouteGuard={setShowRouteGuard}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [boardUtilities, dispatch, editor]);
+	}, [boardUtilities, dispatch, editor, folderId, setShowRouteGuard]);
 	return (
 		<>
 			<Row
