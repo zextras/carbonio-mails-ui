@@ -335,13 +335,15 @@ const EditViewHeader: FC<PropType> = ({
 							dispatch={dispatch}
 							editor={editor}
 							closeBoard={closeBoard}
+							folderId={folderId}
+							setShowRouteGuard={setShowRouteGuard}
 						/>
 					</>
 				)
 			},
 			true
 		);
-	}, [closeBoard, dispatch, editor]);
+	}, [closeBoard, dispatch, editor, folderId, setShowRouteGuard]);
 	return (
 		<>
 			<Row
