@@ -3,14 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
 import moment from 'moment';
 
 type ComponentProps = {
 	compProps: {
-		t: TFunction;
 		sentBefore: Array<any>;
 		setSentBefore: (arg: any) => void;
 		sentAfter: Array<any>;
@@ -20,7 +19,7 @@ type ComponentProps = {
 	};
 };
 const SendReceivedDateRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
-	const { t, sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn } = compProps;
+	const { sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn } = compProps;
 
 	const onSentBeforeChange = useCallback(
 		(date) => {
@@ -81,20 +80,22 @@ const SendReceivedDateRow: FC<ComponentProps> = ({ compProps }): ReactElement =>
 	const sentBeforeDefault = useMemo(
 		() =>
 			sentBefore[0]?.label
-				? moment(sentBefore[0]?.label.split('before:')?.[1], 'M/D/YYYY').valueOf()
-				: '',
+				? new Date(moment(sentBefore[0]?.label.split('before:')?.[1], 'M/D/YYYY').valueOf())
+				: undefined,
 		[sentBefore]
 	);
 	const sentAfterDefault = useMemo(
 		() =>
 			sentAfter[0]?.label
-				? moment(sentAfter[0]?.label.split('after:')?.[1], 'M/D/YYYY').valueOf()
-				: '',
+				? new Date(moment(sentAfter[0]?.label.split('after:')?.[1], 'M/D/YYYY').valueOf())
+				: undefined,
 		[sentAfter]
 	);
 	const sentOnDefault = useMemo(
 		() =>
-			sentOn[0]?.label ? moment(sentOn[0]?.label.split('date:')?.[1], 'M/D/YYYY').valueOf() : '',
+			sentOn[0]?.label
+				? new Date(moment(sentOn[0]?.label.split('date:')?.[1], 'M/D/YYYY').valueOf())
+				: undefined,
 		[sentOn]
 	);
 	return (

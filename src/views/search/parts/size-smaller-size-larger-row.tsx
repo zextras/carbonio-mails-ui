@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Container, ChipInput } from '@zextras/carbonio-design-system';
+import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 
 type ComponentProps = {
@@ -54,7 +54,7 @@ const SizeLargerSizeSmallerRow: FC<ComponentProps> = ({ compProps }): ReactEleme
 	);
 
 	const sizeSmallerChipOnAdd = useCallback(
-		(label: string): any => {
+		(label): any => {
 			checkErrorSizeSmaller(label);
 			return chipOnAdd(
 				label,
@@ -70,7 +70,7 @@ const SizeLargerSizeSmallerRow: FC<ComponentProps> = ({ compProps }): ReactEleme
 	);
 
 	const sizeLargerChipOnAdd = useCallback(
-		(label: string): any => {
+		(label): any => {
 			checkErrorSizeLarger(label);
 			return chipOnAdd(
 				label,
@@ -86,17 +86,17 @@ const SizeLargerSizeSmallerRow: FC<ComponentProps> = ({ compProps }): ReactEleme
 	);
 
 	const sizeSmallerOnChange = useCallback(
-		(label: string): void => {
-			onChange(label, setSizeSmaller);
-			if (label.length === 0) setIsInvalidSmallSize(false);
+		(value: ChipItem[]): void => {
+			onChange(value, setSizeSmaller);
+			if (value.length === 0) setIsInvalidSmallSize(false);
 		},
 		[onChange, setSizeSmaller, setIsInvalidSmallSize]
 	);
 
 	const sizeLargerOnChange = useCallback(
-		(label: string): void => {
-			onChange(label, setSizeLarger);
-			if (label.length === 0) setIsInvalidLargeSize(false);
+		(value: ChipItem[]): void => {
+			onChange(value, setSizeLarger);
+			if (value.length === 0) setIsInvalidLargeSize(false);
 		},
 		[onChange, setSizeLarger, setIsInvalidLargeSize]
 	);

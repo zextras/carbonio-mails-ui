@@ -32,7 +32,7 @@ const ShimmerList: FC<ShimmerListProps> = ({ count = 0, delay = 0, transitionDur
 
 	return (
 		<Wrapper
-			mainAlignment="start"
+			mainAlignment="flex-start"
 			height="fill"
 			style={{ animationDelay: `${delay}ms`, animationDuration: `${transitionDuration}ms` }}
 		>

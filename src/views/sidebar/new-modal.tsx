@@ -23,7 +23,7 @@ import {
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
 
-import { cloneDeep, filter, includes, startsWith } from 'lodash';
+import { filter, includes, startsWith } from 'lodash';
 import { nanoid } from '@reduxjs/toolkit';
 import {
 	AccordionFolder,
@@ -61,10 +61,12 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [folderDestination, setFolderDestination] = useState<AccordionFolder | undefined>(folder);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
-	const [label, setLabel] = useState(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
+	const [label, setLabel] = useState<string>(
+		t('folder_panel.modal.new.input.name', 'Enter Folder Name')
+	);
 	const { folderId } = useParams<{ folderId: string }>();
 	const accountName = useUserAccount().name;
-	const accordionRef = useRef<HTMLDivElement>();
+	const accordionRef = useRef<HTMLDivElement>(null);
 	const [accordionWidth, setAccordionWidth] = useState<number>();
 
 	useLayoutEffect(() => {
@@ -77,10 +79,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
 	}, [accordionRef]);
 
-	const showWarning = useMemo(
-		() => includes(translatedSystemFolders(t), inputValue),
-		[t, inputValue]
-	);
+	const showWarning = useMemo(() => includes(translatedSystemFolders(), inputValue), [inputValue]);
 
 	const flattenFolders = useCallback(
 		(arr: Array<AccordionFolder>): Array<AccordionFolder> => {
@@ -108,7 +107,6 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 							item.folder.id === FOLDERS.USER_ROOT
 								? accountName
 								: getFolderTranslatedName({
-										t,
 										folderId: item.folder.id,
 										folderName: item.folder.name
 								  }),
@@ -120,7 +118,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 			});
 			return result;
 		},
-		[folderDestination, accountName, t, folderId, accordionWidth]
+		[folderDestination, accountName, folderId, accordionWidth]
 	);
 
 	const getFolderRootName = useCallback((_folder: AccordionFolder): string => {
@@ -243,7 +241,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					<Accordion
 						ref={accordionRef}
 						background="gray6"
-						items={filteredFromUserInput}
+						items={filteredFromUserInput as any[]}
 						style={{ overflowY: 'hidden' }}
 					/>
 				</ContainerEl>

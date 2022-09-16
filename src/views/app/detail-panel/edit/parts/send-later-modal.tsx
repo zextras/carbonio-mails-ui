@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, useUserSettings, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { getBridgedFunctions, useUserSettings, t, replaceHistory } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import { Dispatch } from '@reduxjs/toolkit';
 import ModalFooter from '../../../../sidebar/commons/modal-footer';
@@ -33,20 +33,14 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 	const [time, setTime] = useState();
 	const bridgedFn = getBridgedFunctions();
 
-	const modalTitle = useMemo(() => bridgedFn?.t('label.send_later', 'Send Later'), [bridgedFn]);
-	const datePickerLabel = useMemo(
-		() => bridgedFn?.t('label.select_date_time', 'Select date and time'),
-		[bridgedFn]
-	);
+	const modalTitle = useMemo(() => t('label.send_later', 'Send Later'), []);
+	const datePickerLabel = useMemo(() => t('label.select_date_time', 'Select date and time'), []);
 
 	const handleTimeChange = useCallback((newTime) => {
 		setTime(newTime);
 	}, []);
 
-	const confirmLabel = useMemo(
-		() => bridgedFn?.t('label.schedule_send', 'Schedule send'),
-		[bridgedFn]
-	);
+	const confirmLabel = useMemo(() => t('label.schedule_send', 'Schedule send'), []);
 	const { prefs } = useUserSettings();
 	const onConfirm = useCallback(() => {
 		const autoSendTime = moment(time).valueOf();
@@ -59,7 +53,7 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 					replace: true,
 					hideButton: true,
 					type: 'info',
-					label: bridgedFn?.t('message.send_later_success', {
+					label: t('message.send_later_success', {
 						date: moment(time).format('DD/MM/YYYY'),
 						time: moment(time).format('HH:mm'),
 						defaultValue: 'Your e-mail will be send on {{date}} at {{time}}'
@@ -97,9 +91,7 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 				crossAlignment="flex-start"
 				height="fit"
 			>
-				<Text>
-					{bridgedFn?.t('message.select_date_time', 'Select a date and time to send this message')}
-				</Text>
+				<Text>{t('message.select_date_time', 'Select a date and time to send this message')}</Text>
 				<Container padding={{ vertical: 'medium' }}>
 					<DateTimePicker
 						label={datePickerLabel}

@@ -3,7 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useRef, FC, useContext, useMemo, useCallback, useEffect, useState } from 'react';
+import React, {
+	useRef,
+	FC,
+	useContext,
+	useMemo,
+	useCallback,
+	useEffect,
+	useState,
+	SyntheticEvent
+} from 'react';
 import {
 	AccordionFolder,
 	useFoldersAccordionByView,
@@ -21,6 +30,7 @@ import { getShareInfo } from '../../store/actions/get-share-info';
 import { ResFolder } from '../../types';
 import { SharesModal } from './shares-modal';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
+import { StoreProvider } from '../../store/redux';
 
 type SidebarComponentProps = {
 	accordions: Array<AccordionFolder>;
@@ -34,7 +44,7 @@ const ButtonFindShares: FC = () => {
 	const createModal = useContext(ModalManagerContext) as Function;
 
 	const openFindShares = useCallback(
-		(ev: MouseEvent): void => {
+		(ev: SyntheticEvent<HTMLButtonElement, Event> | KeyboardEvent): void => {
 			ev.stopPropagation();
 			dispatch(getShareInfo())
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -47,7 +57,11 @@ const ButtonFindShares: FC = () => {
 						);
 						const closeModal = createModal(
 							{
-								children: <SharesModal folders={resFolders} onClose={(): void => closeModal()} />
+								children: (
+									<StoreProvider>
+										<SharesModal folders={resFolders} onClose={(): void => closeModal()} />
+									</StoreProvider>
+								)
 							},
 							true
 						);
@@ -63,7 +77,7 @@ const ButtonFindShares: FC = () => {
 				type="outlined"
 				label={t('label.find_shares', 'Find shares')}
 				color="primary"
-				size="fill"
+				width="fill"
 				onClick={openFindShares}
 			/>
 		</Container>
@@ -99,7 +113,7 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) =>
 			<Accordion
 				openIds={openIds}
 				ref={sidebarRef}
-				items={accordionsWithFindShare}
+				items={accordionsWithFindShare as any[]}
 				activeId={folderId}
 				disableTransition={disableTransition}
 			/>

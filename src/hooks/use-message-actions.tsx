@@ -7,7 +7,6 @@ import { SnackbarManagerContext, useModal } from '@zextras/carbonio-design-syste
 import { FOLDERS, useAppContext, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import { useContext, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useSelection } from './useSelection';
@@ -33,7 +32,6 @@ import {
 import { applyTag } from '../ui-actions/tag-actions';
 
 export const useMessageActions = (message: MailMessage, isAlone = false): Array<any> => {
-	const [t] = useTranslation();
 	const { folderId }: { folderId: string } = useParams();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
@@ -51,12 +49,11 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 	const arr = [];
 
 	if (message.parent === FOLDERS.DRAFTS) {
-		arr.push(sendDraft({ id: message.id, message, t, dispatch }));
-		arr.push(editDraft({ id: message.id, folderId, t, message }));
+		arr.push(sendDraft({ id: message.id, message, dispatch }));
+		arr.push(editDraft({ id: message.id, folderId, message }));
 		arr.push(
 			moveMsgToTrash({
 				ids: [message.id],
-				t,
 				dispatch,
 				createSnackbar,
 				deselectAll,
@@ -65,8 +62,8 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 				closeEditor: isAlone
 			})
 		);
-		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }));
-		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
+		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
+		arr.push(applyTag({ tags, conversation: message, isMessage: true }));
 	}
 	if (
 		message.parent === FOLDERS.INBOX ||
@@ -74,13 +71,12 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 		!includes(systemFolders, message.parent)
 	) {
 		// INBOX, SENT OR CREATED_FOLDER
-		arr.push(replyMsg({ id: message.id, folderId, t }));
-		arr.push(replyAllMsg({ id: message.id, folderId, t }));
-		arr.push(forwardMsg({ id: message.id, folderId, t }));
+		arr.push(replyMsg({ id: message.id, folderId }));
+		arr.push(replyAllMsg({ id: message.id, folderId }));
+		arr.push(forwardMsg({ id: message.id, folderId }));
 		arr.push(
 			moveMsgToTrash({
 				ids: [message.id],
-				t,
 				dispatch,
 				createSnackbar,
 				deselectAll,
@@ -93,7 +89,6 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 			setMsgRead({
 				ids: [message.id],
 				value: message.read,
-				t,
 				dispatch,
 				folderId,
 				shouldReplaceHistory: true,
@@ -103,7 +98,6 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 		arr.push(
 			moveMessageToFolder({
 				id: [message.id],
-				t,
 				dispatch,
 				isRestore: false,
 				createModal,
@@ -111,50 +105,42 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 			})
 		);
 
-		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
-		arr.push(printMsg({ t, message, account }));
-		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, t, dispatch }));
-		arr.push(redirectMsg({ id: message.id, t, createModal }));
-		arr.push(editAsNewMsg({ id: message.id, folderId, t }));
-		arr.push(
-			setMsgAsSpam({ ids: [message.id], value: false, t, dispatch, createSnackbar, folderId })
-		);
-		arr.push(showOriginalMsg({ id: message.id, t }));
+		arr.push(applyTag({ tags, conversation: message, isMessage: true }));
+		arr.push(printMsg({ message, account }));
+		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
+		arr.push(redirectMsg({ id: message.id, createModal }));
+		arr.push(editAsNewMsg({ id: message.id, folderId }));
+		arr.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, createSnackbar, folderId }));
+		arr.push(showOriginalMsg({ id: message.id }));
 	}
 
 	if (message.parent === FOLDERS.TRASH) {
 		arr.push(
 			moveMessageToFolder({
 				id: [message.id],
-				t,
 				dispatch,
 				isRestore: true,
 				createModal,
 				deselectAll
 			})
 		);
-		arr.push(
-			deleteMessagePermanently({ ids: [message.id], t, dispatch, createModal, deselectAll })
-		);
-		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
+		arr.push(deleteMessagePermanently({ ids: [message.id], dispatch, createModal, deselectAll }));
+		arr.push(applyTag({ tags, conversation: message, isMessage: true }));
 	}
 	if (message.parent === FOLDERS.SPAM) {
 		arr.push(
 			deleteMsg({
 				ids: [message.id],
-				t,
 				dispatch,
 				createSnackbar,
 				createModal,
 				closeEditor: isAlone
 			})
 		);
-		arr.push(
-			setMsgAsSpam({ ids: [message.id], value: true, t, dispatch, createSnackbar, folderId })
-		);
-		arr.push(printMsg({ t, message, account }));
-		arr.push(showOriginalMsg({ id: message.id, t }));
-		arr.push(applyTag({ t, tags, conversation: message, isMessage: true }));
+		arr.push(setMsgAsSpam({ ids: [message.id], value: true, dispatch, createSnackbar, folderId }));
+		arr.push(printMsg({ message, account }));
+		arr.push(showOriginalMsg({ id: message.id }));
+		arr.push(applyTag({ tags, conversation: message, isMessage: true }));
 	}
 	return arr;
 };

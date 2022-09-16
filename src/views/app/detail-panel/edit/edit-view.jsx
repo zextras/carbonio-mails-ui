@@ -22,14 +22,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { throttle, filter, isNil } from 'lodash';
 import {
 	useUserSettings,
-	useBoardConfig,
+	useBoardHooks,
 	useUserAccounts,
 	replaceHistory,
-	useAddBoardCallback,
-	useUpdateCurrentBoard,
-	FOLDERS
+	addBoard,
+	useBoard,
+	FOLDERS,
+	t
 } from '@zextras/carbonio-shell-ui';
-import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 
 import moment from 'moment';
@@ -47,7 +47,7 @@ import { saveDraft } from '../../../../store/actions/save-draft';
 import { uploadAttachments } from '../../../../store/actions/upload-attachments';
 import { getMsg } from '../../../../store/actions';
 import DropZoneAttachment from './dropzone-attachment';
-import { MAILS_ROUTE, MAIL_APP_ID } from '../../../../constants';
+import { MAILS_ROUTE } from '../../../../constants';
 
 import { addAttachments } from './edit-utils';
 import { RouteLeavingGuard } from './parts/nav-guard';
@@ -69,8 +69,9 @@ const generateId = () => {
 
 export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }) {
 	const settings = useUserSettings();
+	const boardUtilities = useBoardHooks();
+	const board = useBoard();
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const boardContext = useBoardConfig();
 	const [editor, setEditor] = useState();
 
 	const action = useQueryParam('action');
@@ -78,14 +79,12 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 
 	const editors = useSelector(selectEditors);
 	const dispatch = useDispatch();
-	const [t] = useTranslation();
 
 	const accounts = useUserAccounts();
 	const messages = useSelector(selectMessages);
 
 	const { handleSubmit, control, setValue } = useForm();
 	const { prefs } = useUserSettings();
-	const addBoard = useAddBoardCallback();
 	const [dropZoneEnable, setDropZoneEnable] = useState(false);
 	const saveDraftCb = useCallback(
 		(data) => dispatch(saveDraft({ data, prefs })),
@@ -116,8 +115,8 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	const [showRouteGuard, setShowRouteGuard] = useState(true);
 
 	const activeMailId = useMemo(
-		() => boardContext?.mailId || mailId,
-		[mailId, boardContext?.mailId]
+		() => board?.context?.mailId || mailId,
+		[mailId, board?.context?.mailId]
 	);
 
 	const editorId = useMemo(() => activeMailId ?? generateId(), [activeMailId]);
@@ -188,15 +187,15 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		[dispatch]
 	);
 
-	const updateBoard = useUpdateCurrentBoard();
-
 	useEffect(() => {
 		if (setHeader) {
 			setHeader(editor?.subject ?? t('label.no_subject', 'No subject'));
 		} else {
-			updateBoard(undefined, editor?.subject ?? t('messages.new_email', 'New e-mail'));
+			boardUtilities?.updateBoard({
+				title: editor?.subject?.length > 0 ? editor?.subject : t('messages.new_email', 'New e-mail')
+			});
 		}
-	}, [editor?.subject, setHeader, updateBoard, action, t]);
+	}, [editor?.subject, setHeader, action, boardUtilities]);
 
 	useEffect(() => {
 		if (
@@ -214,7 +213,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 						editorId,
 						id: action === ActionsType.EDIT_AS_DRAFT ? activeMailId : undefined,
 						original: messages?.[activeMailId ?? editorId],
-						boardContext,
+						boardContext: board?.context,
 						action,
 						change,
 						accounts,
@@ -239,7 +238,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		action,
 		isSameAction,
 		activeMailId,
-		boardContext,
+		board?.context,
 		change,
 		dispatch,
 		editor,
@@ -247,8 +246,7 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 		editors,
 		messages,
 		saveDraftCb,
-		settings,
-		t
+		settings
 	]);
 
 	useEffect(() => {
@@ -271,20 +269,17 @@ export default function EditView({ mailId, folderId, setHeader, toggleAppBoard }
 	useEffect(() => {
 		if (toggleAppBoard) {
 			if (activeMailId) {
-				addBoard(`${MAILS_ROUTE}/edit/${activeMailId}?action=${action}`, {
-					app: MAIL_APP_ID,
-					mailId: activeMailId,
+				addBoard({
+					url: `${MAILS_ROUTE}/edit/${activeMailId}?action=${action}`,
+					context: { mailId: activeMailId },
 					title: editor?.subject
 				});
 			} else {
-				addBoard(`${MAILS_ROUTE}/new`, {
-					app: MAIL_APP_ID,
-					title: t('label.new_email', 'New E-mail')
-				});
+				addBoard({ url: `${MAILS_ROUTE}/new`, title: t('label.new_email', 'New E-mail') });
 			}
 			replaceHistory(`/folder/${folderId}`);
 		}
-	}, [addBoard, folderId, activeMailId, toggleAppBoard, action, editor?.subject, t]);
+	}, [folderId, activeMailId, toggleAppBoard, action, editor?.subject]);
 
 	const onDragOverEvent = (event) => {
 		event.preventDefault();

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { ChipItem } from '@zextras/carbonio-design-system';
 import { Conversation } from '../conversations';
 import { MailMessage } from '../messages';
 import { SearchesStateType } from '../state';
@@ -32,4 +33,10 @@ export type SearchListProps = {
 	setShowAdvanceFilters: (show: boolean) => void;
 	isInvalidQuery: boolean;
 	searchDisabled: boolean;
+};
+
+export type SearchChipItem = ChipItem & {
+	isGeneric?: boolean;
+	isQueryFilter?: boolean;
+	hasError?: boolean;
 };

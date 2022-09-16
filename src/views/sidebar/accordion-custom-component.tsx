@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
+import React, { FC, SyntheticEvent, useCallback, useContext, useMemo, useState } from 'react';
 import {
 	AppLink,
 	FOLDERS,
@@ -15,7 +15,9 @@ import {
 	getBridgedFunctions,
 	useUserAccount,
 	pushHistory,
-	AccordionFolder
+	AccordionFolder,
+	Folder,
+	t
 } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import {
@@ -29,14 +31,17 @@ import {
 	Icon,
 	Row,
 	Padding,
-	ModalManagerContext
+	ModalManagerContext,
+	DragObj,
+	ContainerProps
 } from '@zextras/carbonio-design-system';
-import { find, startsWith } from 'lodash';
+import { startsWith } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
+import { StoreProvider } from '../../store/redux';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 import { NewModal } from './new-modal';
 import { MoveModal } from './move-modal';
@@ -53,9 +58,9 @@ const FittedRow = styled(Row)`
 	height: 48px;
 `;
 
-const DropOverlayContainer = styled(Container)`
+const DropOverlayContainer = styled(Container)<ContainerProps & { folder: Folder }>`
 	position: absolute;
-	width: calc(248px - ${(props): number => (props.folder.level - 2) * 16}px);
+	width: calc(248px - ${(props): number => (props.folder.depth - 2) * 16}px);
 	height: 100%;
 	background: ${(props): string => props.theme.palette.primary.regular};
 	border-radius: 4px;
@@ -63,9 +68,9 @@ const DropOverlayContainer = styled(Container)`
 	opacity: 0.4;
 `;
 
-const DropDenyOverlayContainer = styled(Container)`
+const DropDenyOverlayContainer = styled(Container)<ContainerProps & { folder: Folder }>`
 	position: absolute;
-	width: calc(248px - ${(props): number => (props.folder.level - 2) * 16}px);
+	width: calc(248px - ${(props): number => (props.folder.depth - 2) * 16}px);
 	height: 100%;
 	background: ${(props): string => props.theme.palette.gray1.regular};
 	border-radius: 4px;
@@ -77,12 +82,11 @@ type FolderActionsProps = {
 	id: string;
 	icon: string;
 	label: string;
-	click: (e: MouseEvent) => void;
+	click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	disabled?: boolean;
 };
 
 const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> => {
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createModal = useContext(ModalManagerContext) as Function;
@@ -98,7 +102,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				id: FolderActionsType.NEW,
 				icon: 'FolderAddOutline',
 				label: t('label.new_folder', 'New Folder'),
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -106,9 +110,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						{
 							maxHeight: '90vh',
 							children: (
-								<>
+								<StoreProvider>
 									<NewModal folder={folder} onClose={(): void => closeModal()} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -121,7 +125,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				label: startsWith(folder.folder?.absFolderPath, '/Trash')
 					? t('label.restore', 'Restore')
 					: t('label.move', 'Move'),
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -129,9 +133,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						{
 							maxHeight: '90vh',
 							children: (
-								<>
+								<StoreProvider>
 									<MoveModal folder={folder} onClose={(): void => closeModal()} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -146,16 +150,16 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						? t('folder_panel.action.empty.trash', 'Empty Trash')
 						: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
 				disabled: folder.folder?.n === 0 && folder.folder?.children?.length === 0,
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<EmptyModal onClose={(): void => closeModal()} folder={folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -168,7 +172,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				label: folder?.folder?.isLink
 					? t('folder_panel.action.edit_properties', 'Edit Properties')
 					: t('label.edit', 'Edit'),
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -176,9 +180,9 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						{
 							maxHeight: '90vh',
 							children: (
-								<>
+								<StoreProvider>
 									<EditModal onClose={(): void => closeModal()} folder={folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -191,16 +195,16 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				label: startsWith(folder.folder?.absFolderPath, '/Trash')
 					? t('label.delete_permanently', 'Delete Permanently')
 					: t('label.delete', 'Delete'),
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<DeleteModal onClose={(): void => closeModal()} folder={folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -211,21 +215,21 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				id: FolderActionsType.SHARE,
 				icon: 'ShareOutline',
 				label: t('action.share_folder', 'Share folder'),
-				click: (e: MouseEvent): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<ShareFolderModal
 										onClose={(): void => closeModal()}
 										folder={folder}
 										activeGrant={activeGrant}
 										goBack={goBack}
 									/>
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -236,7 +240,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				id: FolderActionsType.REMOVE_FROM_LIST,
 				icon: 'CloseOutline',
 				label: t('label.remove_from_this_list', 'Remove from this list'),
-				click: (e): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 						dispatch(folderAction({ folder: folder.folder, op: 'delete' }));
@@ -247,16 +251,16 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				id: FolderActionsType.SHARES_INFO,
 				icon: 'InfoOutline',
 				label: t('label.shares_info', `Shared folder's info`),
-				click: (e): void => {
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
 					const closeModal = createModal(
 						{
 							children: (
-								<>
+								<StoreProvider>
 									<SharesInfoModal onClose={(): void => closeModal()} folder={folder.folder} />
-								</>
+								</StoreProvider>
 							)
 						},
 						true
@@ -264,7 +268,7 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 				}
 			}
 		],
-		[activeGrant, createModal, dispatch, folder, goBack, t]
+		[activeGrant, createModal, dispatch, folder, goBack]
 	);
 
 	const defaultFolderActions = useMemo(
@@ -334,15 +338,17 @@ type DragEnterAction =
 	  };
 
 type OnDropActionProps = {
+	event: React.DragEvent;
 	type: string;
 	data: DataProps;
 };
 
 const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);
-export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }) => {
+
+// TODO remove the "any" type after the Accordion refactor in the DS
+export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 	const { folder } = item;
 	const accountName = useUserAccount().name;
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
 
@@ -522,7 +528,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			label:
 				item.id === FOLDERS.USER_ROOT
 					? accountName
-					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),
+					: getFolderTranslatedName({ folderId: item.id, folderName: item.label }),
 			icon: getFolderIconName(item),
 			iconColor: getFolderIconColor(item),
 			// open: openIds ? openIds.includes(folder.id) : false,
@@ -531,7 +537,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			to: `/folder/${item.id}`,
 			textProps: { size: 'small' }
 		}),
-		[item, accountName, t]
+		[item, accountName]
 	);
 
 	const dropdownItems = useFolderActions(item);
@@ -560,7 +566,7 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 			return RowWithIcon('Linked', 'linked', tooltipText);
 		}
 		return '';
-	}, [folder, t]);
+	}, [folder]);
 
 	// hide folders where a share was provided and subsequently removed
 	if (folder.broken) {
@@ -580,8 +586,20 @@ export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }
 		<Row width="fill" minWidth={0}>
 			<Drop
 				acceptType={['message', 'conversation', 'folder']}
-				onDrop={(data: OnDropActionProps): void => onDropAction(data)}
-				onDragEnter={(data: OnDropActionProps): unknown => onDragEnterAction(data)}
+				onDrop={(data: DragObj): void => {
+					onDropAction({
+						type: data.type ?? '',
+						data: data.data,
+						event: data.event
+					} as OnDropActionProps);
+				}}
+				onDragEnter={(data: DragObj): { success: boolean } | undefined =>
+					onDragEnterAction({
+						type: data.type ?? '',
+						data: data.data,
+						event: data.event
+					} as OnDropActionProps)
+				}
 				overlayAcceptComponent={<DropOverlayContainer folder={folder} />}
 				overlayDenyComponent={<DropDenyOverlayContainer folder={folder} />}
 			>

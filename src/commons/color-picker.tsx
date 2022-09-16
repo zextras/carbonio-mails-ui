@@ -6,11 +6,11 @@
 import React, { FC, useCallback, useRef, useState } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import styled from 'styled-components';
-import { Container, Icon } from '@zextras/carbonio-design-system';
+import { Container, ContainerProps, Icon } from '@zextras/carbonio-design-system';
 import useClickOutside from '../hooks/use-click-outside-picker';
 import { ColorContainer } from '../integrations/shared-invite-reply/parts/styled-components';
 
-const ColorBox = styled(Container)`
+const ColorBox = styled(Container)<ContainerProps & { disabled: boolean; color: string }>`
 	width: 28px;
 	height: 28px;
 	border-radius: 8px;
