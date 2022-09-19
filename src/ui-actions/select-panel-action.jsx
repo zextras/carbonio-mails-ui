@@ -12,7 +12,6 @@ import {
 	ModalManagerContext
 } from '@zextras/carbonio-design-system';
 import { map, every, filter, some } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { FOLDERS, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
 
@@ -27,7 +26,6 @@ import {
 import { applyMultiTag } from './tag-actions';
 
 export default function SelectPanelActions({ conversation, folderId, selectedIds, deselectAll }) {
-	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const account = useUserAccount();
@@ -58,11 +56,11 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 				return [
 					showReadConvo &&
 						//	setConversationsRead(ids, true, t, dispatch, folderId, null, deselectAll),
-						setConversationsRead({ ids, value: true, t, dispatch, folderId, deselectAll }),
+						setConversationsRead({ ids, value: true, dispatch, folderId, deselectAll }),
 
 					showUnreadConvo &&
-						setConversationsRead({ ids, value: false, t, dispatch, folderId, deselectAll }),
-					moveConversationToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+						setConversationsRead({ ids, value: false, dispatch, folderId, deselectAll }),
+					moveConversationToTrash({ ids, dispatch, createSnackbar, deselectAll, folderId })
 
 					// archiveMsg
 					// editTagsMsg
@@ -70,17 +68,17 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 			case FOLDERS.SENT:
 				return [
 					showReadConvo &&
-						setConversationsRead({ ids, value: true, t, dispatch, folderId, deselectAll }),
+						setConversationsRead({ ids, value: true, dispatch, folderId, deselectAll }),
 					showUnreadConvo &&
-						setConversationsRead({ ids, value: false, t, dispatch, folderId, deselectAll }),
-					moveConversationToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+						setConversationsRead({ ids, value: false, dispatch, folderId, deselectAll }),
+					moveConversationToTrash({ ids, dispatch, createSnackbar, deselectAll, folderId })
 					// archiveMsg
 					// editTagsMsg
 				];
 
 			case FOLDERS.DRAFTS:
 				return [
-					moveConversationToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+					moveConversationToTrash({ ids, dispatch, createSnackbar, deselectAll, folderId })
 
 					// archiveMsg
 					// editTagsMsg
@@ -88,14 +86,14 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 
 			case FOLDERS.TRASH:
 				return [
-					deleteConversationPermanently({ ids, t, dispatch, createModal, deselectAll })
+					deleteConversationPermanently({ ids, dispatch, createModal, deselectAll })
 					// archiveMsg
 					// editTagsMsg
 				];
 
 			default:
 				return [
-					moveConversationToTrash({ ids, t, dispatch, createSnackbar, deselectAll, folderId })
+					moveConversationToTrash({ ids, dispatch, createSnackbar, deselectAll, folderId })
 					// archiveMsg
 					// editTagsMsg
 				];
@@ -104,7 +102,6 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 		folderId,
 		showReadConvo,
 		ids,
-		t,
 		dispatch,
 		deselectAll,
 		showUnreadConvo,
@@ -119,24 +116,24 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 			case FOLDERS.INBOX:
 				return [
 					showReadConvo &&
-						setConversationsRead({ ids, value: true, t, dispatch, folderId, deselectAll }),
+						setConversationsRead({ ids, value: true, dispatch, folderId, deselectAll }),
 					showUnreadConvo &&
-						setConversationsRead({ ids, value: false, t, dispatch, folderId, deselectAll }),
-					setConversationsFlag({ ids, value: showAddFlag, t, dispatch }),
+						setConversationsRead({ ids, value: false, dispatch, folderId, deselectAll }),
+					setConversationsFlag({ ids, value: showAddFlag, dispatch }),
 					moveConversationToFolder({
 						ids,
-						t,
+
 						dispatch,
 						isRestore: false,
 						createModal,
 						deselectAll
 					}),
-					printConversation({ t, conversation: selectedConversation, account }),
+					printConversation({ conversation: selectedConversation, account }),
 					applyMultiTag({
 						ids,
 						tags,
 						conversations: selectedConversation,
-						t,
+
 						folderId,
 						deselectAll
 					})
@@ -157,11 +154,11 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 				return [
 					// setConversationsRead(selectedIDs, conversation.read, t, dispatch),
 					// setConversationsFlag(selectedIDs, allRead, t, dispatch),
-					setConversationsFlag({ ids, value: showAddFlag, t, dispatch }),
-					deleteConversationPermanently({ ids, t, dispatch, createModal, deselectAll }),
+					setConversationsFlag({ ids, value: showAddFlag, dispatch }),
+					deleteConversationPermanently({ ids, dispatch, createModal, deselectAll }),
 					moveConversationToFolder({
 						ids,
-						t,
+
 						dispatch,
 						isRestore: true,
 						createModal,
@@ -171,7 +168,7 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						ids,
 						tags,
 						conversations: selectedConversation,
-						t,
+
 						folderId,
 						deselectAll
 					})
@@ -179,10 +176,10 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 			case FOLDERS.DRAFTS:
 			default:
 				return [
-					setConversationsFlag({ ids, value: showAddFlag, t, dispatch }),
+					setConversationsFlag({ ids, value: showAddFlag, dispatch }),
 					moveConversationToFolder({
 						ids,
-						t,
+
 						dispatch,
 						isRestore: false,
 						createModal,
@@ -192,7 +189,7 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 						ids,
 						tags,
 						conversations: selectedConversation,
-						t,
+
 						folderId,
 						deselectAll
 					})
@@ -207,7 +204,6 @@ export default function SelectPanelActions({ conversation, folderId, selectedIds
 		folderId,
 		showReadConvo,
 		ids,
-		t,
 		dispatch,
 		deselectAll,
 		showUnreadConvo,

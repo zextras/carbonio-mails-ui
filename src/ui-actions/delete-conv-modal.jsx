@@ -5,13 +5,12 @@
  */
 import React, { useCallback, useContext } from 'react';
 import { Container, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
+import { t } from '@zextras/carbonio-shell-ui';
 import { convAction, msgAction } from '../store/actions';
 import { ModalHeader } from '../views/sidebar/commons/modal-header';
 import ModalFooter from '../views/sidebar/commons/modal-footer';
 
 const DeleteConvConfirm = ({ selectedIDs, isMessageView, deselectAll, onClose, dispatch }) => {
-	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 
 	const onConfirmConvDelete = useCallback(() => {
@@ -52,7 +51,7 @@ const DeleteConvConfirm = ({ selectedIDs, isMessageView, deselectAll, onClose, d
 			// setOpenConfirm(false);
 			onClose();
 		});
-	}, [dispatch, isMessageView, selectedIDs, onClose, createSnackbar, t, deselectAll]);
+	}, [dispatch, isMessageView, selectedIDs, onClose, createSnackbar, deselectAll]);
 
 	return (
 		<>

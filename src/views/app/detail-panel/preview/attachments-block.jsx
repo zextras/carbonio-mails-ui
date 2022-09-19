@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useMemo, useRef, useState, useContext } from 'react';
-import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { filter, find, includes, map, reduce, uniqBy } from 'lodash';
 import {
@@ -19,7 +18,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getAction, soapFetch } from '@zextras/carbonio-shell-ui';
+import { getAction, soapFetch, t } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { humanFileSize, previewType } from './file-preview';
@@ -127,7 +126,6 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const [t] = useTranslation();
 	const inputRef = useRef();
 	const inputRef2 = useRef();
 
@@ -171,7 +169,7 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 					});
 				});
 		},
-		[att.name, createSnackbar, message.id, t]
+		[att.name, createSnackbar, message.id]
 	);
 
 	const isAValidDestination = useMemo((node) => node?.permissions?.can_write_file, []);
@@ -188,7 +186,7 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 			canSelectOpenedFolder: true,
 			maxSelection: 1
 		}),
-		[confirmAction, isAValidDestination, t]
+		[confirmAction, isAValidDestination]
 	);
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
@@ -233,7 +231,7 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 				inputRef2.current.click();
 			}
 		},
-		[att, createPreview, downloadAttachment, link, t]
+		[att, createPreview, downloadAttachment, link]
 	);
 
 	return (
@@ -308,7 +306,6 @@ const copyToFiles = (att, message, nodes) =>
 	});
 
 export default function AttachmentsBlock({ message }) {
-	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(() => findAttachments(message.parts, []), [message]);
 	const attachmentsCount = useMemo(() => attachments.length, [attachments]);
@@ -379,7 +376,7 @@ export default function AttachmentsBlock({ message }) {
 				});
 			});
 		},
-		[attachments, createSnackbar, message, t]
+		[attachments, createSnackbar, message]
 	);
 
 	const isAValidDestination = useMemo((node) => node?.permissions?.can_write_file, []);
@@ -396,7 +393,7 @@ export default function AttachmentsBlock({ message }) {
 			canSelectOpenedFolder: true,
 			maxSelection: 1
 		}),
-		[confirmAction, isAValidDestination, t]
+		[confirmAction, isAValidDestination]
 	);
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(

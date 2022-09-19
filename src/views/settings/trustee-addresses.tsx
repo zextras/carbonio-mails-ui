@@ -14,8 +14,7 @@ import {
 	Tooltip,
 	List
 } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
-
+import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
 import Heading from './components/settings-heading';
 import { domainWhitelistSubSection } from './subsections';
@@ -36,7 +35,6 @@ type InputProps = {
 
 const NonSupportedCharacters = /[!#$%^&*()+=[\]{};':"\\|,<>/?|/^\s*$/]+/;
 const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
-	const [t] = useTranslation();
 	const [address, setAddress] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 	const [trusteeAddressesList, setTrusteeAddressList] = useState<string[]>([]);
@@ -48,7 +46,7 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 				'messages.trustee_addresses',
 				'Mail from these addresses or domains will be considered trusted and images will automatically be displayed.'
 			),
-		[t]
+		[]
 	);
 
 	const onRemove = useCallback(
@@ -96,7 +94,7 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 			isInvalid
 				? t('messages.invalid_trustee_address', 'Please enter only e-mail addresses or domains')
 				: '',
-		[t, isInvalid]
+		[isInvalid]
 	);
 
 	return (

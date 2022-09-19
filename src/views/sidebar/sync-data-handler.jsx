@@ -3,11 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, useNotify, useRefresh, updatePrimaryBadge } from '@zextras/carbonio-shell-ui';
+import {
+	FOLDERS,
+	useNotify,
+	useRefresh,
+	updatePrimaryBadge,
+	getTags
+} from '@zextras/carbonio-shell-ui';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty, map, keyBy, find, filter, forEach, sortBy, reduce } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import {
 	handleCreatedFolders,
 	handleModifiedFolders,
@@ -53,7 +58,6 @@ const InboxBadgeUpdater = () => {
 };
 
 export const SyncDataHandler = () => {
-	const [t] = useTranslation();
 	const refresh = useRefresh();
 	const notifyList = useNotify();
 	const [seq, setSeq] = useState(-1);
@@ -98,8 +102,9 @@ export const SyncDataHandler = () => {
 								);
 							}
 							if (notify.created.c && notify.created.m) {
+								const tags = getTags();
 								const conversations = map(notify.created.c, (i) =>
-									normalizeConversation(i, notify.created.m)
+									normalizeConversation({ c: i, m: notify.created.m, tags })
 								);
 								dispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));
 							}
@@ -170,6 +175,6 @@ export const SyncDataHandler = () => {
 				});
 			}
 		}
-	}, [dispatch, initialized, messagesState, notifyList, seq, t]);
+	}, [dispatch, initialized, messagesState, notifyList, seq]);
 	return <InboxBadgeUpdater />;
 };

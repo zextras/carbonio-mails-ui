@@ -5,8 +5,7 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { useTranslation } from 'react-i18next';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectConversationsArray } from '../../../store/conversations-slice';
@@ -22,16 +21,14 @@ import {
 const generateListRandomNumber = () => Math.floor(Math.random() * 3);
 const generateFieldRandomNumber = () => Math.floor(Math.random() * 5);
 export const SelectionInteractive = ({ count }) => {
-	const [t] = useTranslation();
-
 	const { folderId } = useParams();
 	const conversations = useSelector(selectConversationsArray);
-	const emptyListMessages = useMemo(() => EmptyListMessages(t), [t]);
-	const emptyFieldMessages = useMemo(() => EmptyFieldMessages(t), [t]);
-	const spamMessages = useMemo(() => SpamMessages(t), [t]);
-	const sentMessages = useMemo(() => SentMessages(t), [t]);
-	const draftMessages = useMemo(() => DraftMessages(t), [t]);
-	const trashMessages = useMemo(() => TrashMessages(t), [t]);
+	const emptyListMessages = useMemo(() => EmptyListMessages(t), []);
+	const emptyFieldMessages = useMemo(() => EmptyFieldMessages(t), []);
+	const spamMessages = useMemo(() => SpamMessages(t), []);
+	const sentMessages = useMemo(() => SentMessages(t), []);
+	const draftMessages = useMemo(() => DraftMessages(t), []);
+	const trashMessages = useMemo(() => TrashMessages(t), []);
 
 	const [randomListIndex, setRandomListIndex] = useState(0);
 	const [randomFieldIndex, setRandomFieldIndex] = useState(0);
@@ -82,7 +79,7 @@ export const SelectionInteractive = ({ count }) => {
 						defaultValue_plural: '{{count}} e-mails selected'
 				  })
 				: displayerMessage?.title,
-		[count, displayerMessage?.title, t]
+		[count, displayerMessage?.title]
 	);
 	const textContentSubtitle = useMemo(
 		() => (count > 0 ? null : displayerMessage?.description),

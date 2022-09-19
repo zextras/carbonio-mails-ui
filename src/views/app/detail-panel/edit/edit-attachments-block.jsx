@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { filter, find, map, uniqBy } from 'lodash';
 import {
@@ -18,6 +17,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { updateEditor } from '../../../../store/editor-slice';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
@@ -88,7 +88,6 @@ const AttachmentExtension = styled(Text)`
 function Attachment({ filename, size, link, editor, part, iconColors, throttledSaveToDraft, att }) {
 	const extension = getFileExtension(att);
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
-	const [t] = useTranslation();
 	const inputRef = useRef();
 	const inputRef2 = useRef();
 	const dispatch = useDispatch();
@@ -177,7 +176,6 @@ function Attachment({ filename, size, link, editor, part, iconColors, throttledS
 }
 
 export default function EditAttachmentsBlock({ editor, throttledSaveToDraft }) {
-	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 	const dispatch = useDispatch();
 	const theme = useTheme();

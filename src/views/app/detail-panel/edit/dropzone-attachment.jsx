@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { Container, Icon, Text, Padding } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
+import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
 const BackDropLayout = styled(Container)`
@@ -52,7 +52,6 @@ const DetailText = styled(Text)`
 `;
 
 export default function DropZoneAttachment({ onDragOverEvent, onDropEvent, onDragLeaveEvent }) {
-	const [t] = useTranslation();
 	return (
 		<>
 			<BackDropLayout

@@ -13,10 +13,10 @@ import {
 	registerActions,
 	registerFunctions,
 	ACTION_TYPES,
-	addBoard
+	addBoard,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 import {
 	mailToSharedFunction,
@@ -85,7 +85,6 @@ const SidebarView = (props) => (
 );
 
 const App = () => {
-	const [t] = useTranslation();
 	useEffect(() => {
 		addRoute({
 			route: MAILS_ROUTE,
@@ -110,7 +109,7 @@ const App = () => {
 			route: MAILS_ROUTE,
 			component: EditView
 		});
-	}, [t]);
+	}, []);
 
 	useEffect(() => {
 		registerActions(
@@ -168,7 +167,7 @@ const App = () => {
 				fn: openPrefilledComposerSharedFunction
 			}
 		);
-	}, [t]);
+	}, []);
 
 	return (
 		<StoreProvider>

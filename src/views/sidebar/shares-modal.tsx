@@ -33,9 +33,8 @@ import {
 	isEmpty
 } from 'lodash';
 import styled from 'styled-components';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { Folder, Folders } from '@zextras/carbonio-shell-ui';
+import { Folder, Folders, t } from '@zextras/carbonio-shell-ui';
 import { ModalHeader } from './commons/modal-header';
 import ModalFooter from './commons/modal-footer';
 import { createMountpoint } from '../../store/actions/create-mountpoint';
@@ -65,7 +64,6 @@ const ContainerEl = styled(Container)`
 // TODO remove the "any" after the Accordion component refactor in the DS
 const CustomItem: FC<any> = ({ item: folder }) => {
 	const [checked, setChecked] = useState(false);
-	const [t] = useTranslation();
 
 	const onClick = useCallback(() => {
 		if (!checked) {
@@ -89,7 +87,7 @@ const CustomItem: FC<any> = ({ item: folder }) => {
 			folder.setLinks(filter(folder.links, (v) => v.id !== folder.id));
 		}
 		setChecked(!checked);
-	}, [checked, folder, t]);
+	}, [checked, folder]);
 
 	return (
 		<>
@@ -126,8 +124,6 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const [links, setLinks] = useState([] as SharedObject[]);
 	const [data, setData] = useState({});
 	const dispatch = useDispatch();
-	const [t] = useTranslation();
-
 	const onConfirm = useCallback(() => {
 		dispatch(createMountpoint(links));
 		onClose();
@@ -172,7 +168,7 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 						divider: true
 				  }
 		);
-	}, [data, filteredFolders, t]);
+	}, [data, filteredFolders]);
 
 	const filterResults = useCallback(
 		(ev) =>

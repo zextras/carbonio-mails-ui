@@ -5,10 +5,9 @@
  */
 
 import { Icon, Padding, Text } from '@zextras/carbonio-design-system';
-import { getAction } from '@zextras/carbonio-shell-ui';
+import { getAction, t } from '@zextras/carbonio-shell-ui';
 import { compact } from 'lodash';
 import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useGetPublicUrl } from './use-get-public-url';
 import { useGetFilesFromDrive } from './use-get-drive-files';
 
@@ -20,7 +19,6 @@ export const useGetAttachItems = ({
 	saveDraftCb,
 	setValue
 }) => {
-	const [t] = useTranslation();
 	const [getFilesFromDrive, getFilesAvailable] = useGetFilesFromDrive({
 		editorId,
 		updateEditorCb,
@@ -40,7 +38,7 @@ export const useGetAttachItems = ({
 			allowFiles: true,
 			allowFolders: false
 		}),
-		[getFilesFromDrive, t]
+		[getFilesFromDrive]
 	);
 
 	const actionURLTarget = useMemo(
@@ -50,7 +48,7 @@ export const useGetAttachItems = ({
 			allowFiles: true,
 			allowFolders: false
 		}),
-		[getLink, t]
+		[getLink]
 	);
 	const [filesSelectFilesAction, filesSelectFilesActionAvailable] = getAction(
 		'carbonio_files_action',
@@ -104,7 +102,6 @@ export const useGetAttachItems = ({
 
 		return compact([localItem, driveItem, fileUrl, contactItem]);
 	}, [
-		t,
 		onFileClick,
 		filesSelectFilesActionAvailable,
 		getFilesAvailable,

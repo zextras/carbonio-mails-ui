@@ -8,8 +8,7 @@ import { capitalize, map } from 'lodash';
 import React, { FC, ReactElement, useLayoutEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Row, Tooltip, Text } from '@zextras/carbonio-design-system';
-import { useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { useTranslation } from 'react-i18next';
+import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 
 import { participantToString } from '../../../../../commons/utils';
 import { Participant } from '../../../../../types';
@@ -30,7 +29,6 @@ const ContactName: FC<{
 	label: string;
 }> = ({ showMoreCB, showOverflow, contacts, label }): ReactElement => {
 	const accounts = useUserAccounts();
-	const [t] = useTranslation();
 	const toRef = useRef<HTMLInputElement>(null);
 	const [isOverflow, setIsOverflow] = useState(false);
 	useLayoutEffect(() => {

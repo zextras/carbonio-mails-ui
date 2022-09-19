@@ -5,8 +5,7 @@
  */
 import React, { FC, useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
-import { QueryChip, Spinner, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { useTranslation } from 'react-i18next';
+import { QueryChip, Spinner, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { includes, map, reduce } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,7 +13,7 @@ import SearchPanel from './search-panel';
 import SearchConversationList from './search-conversation-list';
 import AdvancedFilterModal from './advance-filter-modal';
 import { findIconFromChip } from './parts/use-find-icon';
-import { search } from '../../store/actions/search';
+import { search } from '../../store/actions';
 import { selectSearches } from '../../store/searches-slice';
 import SearchMessageList from './search-message-list';
 import { FolderType, SearchResults } from '../../types';
@@ -64,7 +63,6 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			} as SearchResults),
 		[]
 	);
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
@@ -81,7 +79,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			return t('label.loading_results', 'Loading Results...');
 		}
 		return '';
-	}, [searchResults.status, t]);
+	}, [searchResults.status]);
 
 	const queryToString = useMemo(
 		() =>
@@ -162,7 +160,15 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			setFilterCount(0);
 			setIsInvalidQuery(false);
 		}
-	}, [query, queryArray, t, isInvalidQuery, searchQuery, searchResults.query, queryToString]);
+	}, [
+		dispatch,
+		isInvalidQuery,
+		isMessageView,
+		query,
+		queryToString,
+		searchQuery,
+		searchResults.query
+	]);
 
 	const { path } = useRouteMatch();
 

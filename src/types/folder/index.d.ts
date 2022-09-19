@@ -29,4 +29,5 @@ export type FolderType = {
 	acl?: unknown;
 	perm?: string;
 	retentionPolicy?: unknown;
+	children?: Array<unknown>;
 };

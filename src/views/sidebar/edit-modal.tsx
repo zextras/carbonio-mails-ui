@@ -31,32 +31,17 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 					<EditDefaultModal folder={folder} onClose={onClose} setActiveModal={setActiveModal} />
 				)}
 
-				{activeModal === 'edit' && (
-					<ShareFolderModal
-						folder={folder}
-						activeGrant={activeGrant}
-						goBack={goBack}
-						onClose={onClose}
-						editMode
-					/>
-				)}
+				{activeModal === 'edit' && <ShareFolderModal folder={folder} onClose={onClose} editMode />}
 
 				{activeModal === 'revoke' && (
 					<ShareRevokeModal
-						folder={folder.folder}
+						folder={folder}
 						goBack={goBack}
-						grant={activeGrant || folder?.folder.acl?.grant[0]}
+						grant={activeGrant || folder?.acl?.grant[0]}
 						createSnackbar={createSnackbar}
 					/>
 				)}
-				{activeModal === 'share' && (
-					<ShareFolderModal
-						folder={folder}
-						activeGrant={activeGrant}
-						onClose={onClose}
-						goBack={goBack}
-					/>
-				)}
+				{activeModal === 'share' && <ShareFolderModal folder={folder} onClose={onClose} />}
 			</Container>
 		</Context.Provider>
 	);

@@ -1,0 +1,293 @@
+Index: src/store/actions/conv-action.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\nimport { createAsyncThunk } from '@reduxjs/toolkit';\nimport { soapFetch } from '@zextras/carbonio-shell-ui';\nimport { isNil, omitBy } from 'lodash';\nimport {\n\tConvActionParameters,\n\tConvActionRequest,\n\tConvActionResponse,\n\tConvActionResult\n} from '../../types';\n\nexport const convAction = createAsyncThunk<ConvActionResult, ConvActionParameters>(\n\t'convAction',\n\tasync ({ ids, operation, parent, tagName }) => {\n\t\tconst { action } = (await soapFetch<ConvActionRequest, ConvActionResponse>('ConvAction', {\n\t\t\t_jsns: 'urn:zimbraMail',\n\n\t\t\taction: omitBy(\n\t\t\t\t{\n\t\t\t\t\tid: ids.join(','),\n\t\t\t\t\top: operation,\n\t\t\t\t\tl: parent,\n\t\t\t\t\ttn: tagName\n\t\t\t\t},\n\t\t\t\tisNil\n\t\t\t)\n\t\t})) as ConvActionResponse;\n\t\treturn {\n\t\t\tids: action.id.split(','),\n\t\t\toperation: action.op\n\t\t};\n\t}\n);\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/store/actions/conv-action.ts b/src/store/actions/conv-action.ts
+--- a/src/store/actions/conv-action.ts	(revision 4adaba21c8889cfd3cf44adf6271b75e82f59433)
++++ b/src/store/actions/conv-action.ts	(date 1659976268999)
+@@ -6,6 +6,7 @@
+ import { createAsyncThunk } from '@reduxjs/toolkit';
+ import { soapFetch } from '@zextras/carbonio-shell-ui';
+ import { isNil, omitBy } from 'lodash';
++// import { omitBy } from '../../commons/utils';
+ import {
+ 	ConvActionParameters,
+ 	ConvActionRequest,
+Index: src/commons/utils.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\nimport moment from 'moment';\nimport { find, isArray } from 'lodash';\nimport { TFunction } from 'react-i18next';\nimport { Account } from '@zextras/carbonio-shell-ui';\nimport { Participant } from '../types/participant';\n\nexport const getTimeLabel = (date: number): string => {\n\tconst momentDate = moment(date);\n\tif (momentDate.isSame(new Date(), 'day')) {\n\t\treturn momentDate.format('LT');\n\t}\n\tif (momentDate.isSame(new Date(), 'week')) {\n\t\treturn momentDate.format('dddd, LT');\n\t}\n\tif (momentDate.isSame(new Date(), 'month')) {\n\t\treturn momentDate.format('DD MMMM');\n\t}\n\treturn momentDate.format('DD/MM/YYYY');\n};\n\nexport const participantToString = (\n\tparticipant: Participant | undefined,\n\tt: TFunction,\n\taccounts: Array<Account>\n): string => {\n\tconst me = find(accounts, ['name', participant?.address]);\n\tif (me) {\n\t\treturn t('label.me', 'Me');\n\t}\n\treturn participant?.fullName || participant?.name || participant?.address || '';\n};\n\nexport const isAvailableInTrusteeList = (\n\ttrusteeList: Array<string> | string,\n\taddress: string\n): boolean => {\n\tlet trusteeAddress: Array<string> = [];\n\tlet availableInTrusteeList = false;\n\tif (trusteeList) {\n\t\ttrusteeAddress = isArray(trusteeList) ? trusteeList : trusteeList.split(',');\n\t}\n\tif (trusteeAddress.length > 0) {\n\t\tconst domain = address.substring(address.lastIndexOf('@') + 1);\n\t\ttrusteeAddress.forEach((ta) => {\n\t\t\tif (ta === domain || ta === address) {\n\t\t\t\tavailableInTrusteeList = true;\n\t\t\t}\n\t\t});\n\t}\n\treturn availableInTrusteeList;\n};\n\n// eslint-disable-next-line no-shadow\nexport enum LineType {\n\tORIG_UNKNOWN = 'UNKNOWN',\n\tORIG_QUOTED = 'QUOTED',\n\tORIG_SEP_STRONG = 'SEP_STRONG',\n\tORIG_WROTE_STRONG = 'WROTE_STRONG',\n\tORIG_WROTE_WEAK = 'WROTE_WEAK',\n\tORIG_HEADER = 'HEADER',\n\tORIG_LINE = 'LINE',\n\tHTML_SEP_ID = 'zwchr',\n\tNOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*'\n}\n\n// eslint-disable-next-line no-shadow\nexport enum FolderActionsType {\n\tNEW = 'new',\n\tMOVE = 'move',\n\tDELETE = 'delete',\n\tEDIT = 'edit',\n\tEMPTY = 'empty',\n\tREMOVE_FROM_LIST = 'removeFromList',\n\tSHARES_INFO = 'sharesInfo',\n\tSHARE = 'share'\n}\n\n// eslint-disable-next-line no-shadow\nexport enum ParticipantRole {\n\tFROM = 'f',\n\tTO = 't',\n\tCARBON_COPY = 'c',\n\tBLIND_CARBON_COPY = 'b',\n\tREPLY_TO = 'r',\n\tSENDER = 's',\n\tREAD_RECEIPT_NOTIFICATION = 'n',\n\tRESENT_FROM = 'rf'\n}\n\n// eslint-disable-next-line no-shadow\nexport enum ActionsType {\n\tNEW = 'new',\n\tEDIT_AS_DRAFT = 'editAsDraft',\n\tEDIT_AS_NEW = 'editAsNew',\n\tREPLY = 'reply',\n\tREPLY_ALL = 'replyAll',\n\tFORWARD = 'forward',\n\tMAIL_TO = 'mailTo',\n\tCOMPOSE = 'compose',\n\tPREFILL_COMPOSE = 'prefillCompose'\n}\n\n// eslint-disable-next-line no-shadow\nexport enum TagsActionsType {\n\tNEW = 'new',\n\tDELETE = 'delete',\n\tEDIT = 'edit',\n\tApply = 'apply'\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/commons/utils.tsx b/src/commons/utils.tsx
+--- a/src/commons/utils.tsx	(revision 4adaba21c8889cfd3cf44adf6271b75e82f59433)
++++ b/src/commons/utils.tsx	(date 1659976157630)
+@@ -112,3 +112,12 @@
+ 	EDIT = 'edit',
+ 	Apply = 'apply'
+ }
++
++// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
++export const omitBy = (obj: any, check: (arg: unknown) => boolean): any => {
++	// eslint-disable-next-line no-param-reassign
++	obj = { ...obj };
++	// eslint-disable-next-line no-param-reassign
++	Object.entries(obj).forEach(([key, value]) => check(value) && delete obj[key]);
++	return obj;
++};
+Index: src/store/actions/search.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\n/* eslint no-param-reassign: [\"error\", { \"props\": true, \"ignorePropertyModificationsFor\": [\"conversation\"] }] */\n\nimport { createAsyncThunk } from '@reduxjs/toolkit';\nimport { soapFetch } from '@zextras/carbonio-shell-ui';\nimport { keyBy, map, reduce } from 'lodash';\nimport { normalizeConversation } from '../../normalizations/normalize-conversation';\nimport { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';\nimport {\n\tConversation,\n\tSearchRequest,\n\tSearchResponse,\n\tFetchConversationsReturn,\n\tFetchConversationsParameters\n} from '../../types';\n\nexport const search = createAsyncThunk<\n\tFetchConversationsReturn | undefined,\n\tFetchConversationsParameters\n>(\n\t'fetchConversations',\n\tasync ({\n\t\tfolderId,\n\t\tlimit = 100,\n\t\tbefore,\n\t\ttypes = 'conversation',\n\t\tsortBy = 'dateDesc',\n\t\tquery,\n\t\toffset,\n\t\trecip = '2',\n\t\twantContent = 'full'\n\t}) => {\n\t\tconst queryPart = [`inId:\"${folderId}\"`];\n\t\tif (before) queryPart.push(`before:${before.getTime()}`);\n\t\tconst result = await soapFetch<SearchRequest, SearchResponse>('Search', {\n\t\t\t_jsns: 'urn:zimbraMail',\n\t\t\tlimit,\n\t\t\tneedExp: 1,\n\t\t\trecip,\n\t\t\tfullConversation: 1,\n\t\t\twantContent,\n\t\t\tsortBy,\n\t\t\tquery: query || queryPart.join(' '),\n\t\t\toffset,\n\t\t\ttypes\n\t\t});\n\n\t\tif (types === 'conversation') {\n\t\t\tconst conversations = map(result?.c ?? [], (obj) =>\n\t\t\t\tnormalizeConversation(obj)\n\t\t\t) as unknown as Array<Conversation>;\n\t\t\treturn {\n\t\t\t\tconversations: keyBy(conversations, 'id'),\n\t\t\t\thasMore: result.more,\n\t\t\t\ttypes\n\t\t\t};\n\t\t}\n\t\tif (types === 'message') {\n\t\t\treturn {\n\t\t\t\tmessages: reduce(\n\t\t\t\t\tresult.m ?? [],\n\t\t\t\t\t(acc, msg) => {\n\t\t\t\t\t\tconst normalized = normalizeMailMessageFromSoap(msg, false);\n\t\t\t\t\t\treturn { ...acc, [normalized.id]: normalized };\n\t\t\t\t\t},\n\t\t\t\t\t{}\n\t\t\t\t),\n\t\t\t\thasMore: result.more,\n\t\t\t\ttypes\n\t\t\t};\n\t\t}\n\t\treturn undefined;\n\t}\n);\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/store/actions/search.ts b/src/store/actions/search.ts
+--- a/src/store/actions/search.ts	(revision 4adaba21c8889cfd3cf44adf6271b75e82f59433)
++++ b/src/store/actions/search.ts	(date 1659976157631)
+@@ -6,7 +6,7 @@
+ /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["conversation"] }] */
+ 
+ import { createAsyncThunk } from '@reduxjs/toolkit';
+-import { soapFetch } from '@zextras/carbonio-shell-ui';
++import { getTags, soapFetch } from '@zextras/carbonio-shell-ui';
+ import { keyBy, map, reduce } from 'lodash';
+ import { normalizeConversation } from '../../normalizations/normalize-conversation';
+ import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
+@@ -49,9 +49,10 @@
+ 			types
+ 		});
+ 
++		const tags = getTags();
+ 		if (types === 'conversation') {
+ 			const conversations = map(result?.c ?? [], (obj) =>
+-				normalizeConversation(obj)
++				normalizeConversation({ c: obj, tags })
+ 			) as unknown as Array<Conversation>;
+ 			return {
+ 				conversations: keyBy(conversations, 'id'),
+Index: src/store/utils.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\nimport { max, map, filter, find, reduce, some, merge, isNil, omitBy } from 'lodash';\nimport { FolderType, MailsFolderMap, FoldersStateType } from '../types';\n\nexport function findDepth(subFolder: FolderType, depth = 1): number {\n\tif (subFolder && subFolder.items && subFolder.items.length) {\n\t\treturn <number>max(map(subFolder.items, (item) => findDepth(item, depth + 1)));\n\t}\n\treturn depth;\n}\n\nexport function calcFolderItems(\n\tfolders: MailsFolderMap,\n\tsubFolders: FolderType | undefined,\n\tid: string\n): FolderType[] {\n\treturn map(\n\t\tfilter(folders, (item) => item.parent === id),\n\t\t(item) => ({\n\t\t\t...item,\n\t\t\titems: calcFolderItems(folders, subFolders, item.id),\n\t\t\tto: `/folder/${item.id}`\n\t\t})\n\t);\n}\n\nexport function calcFolderAbsParentLevelAndPath(\n\tfolders: MailsFolderMap,\n\tsubFolder: FolderType | undefined,\n\tpath = subFolder && subFolder.name,\n\tlevel = 1\n): { absParent: string; level: number; path: string | undefined } | undefined {\n\tif (!subFolder) return undefined;\n\tconst nextFolder = find(folders, (item) => item.id === subFolder.parent);\n\tconst nextPath = `${nextFolder ? nextFolder.name : ''}/${path}`;\n\treturn (\n\t\tcalcFolderAbsParentLevelAndPath(folders, nextFolder, nextPath, level + 1) || {\n\t\t\tabsParent: level > 1 ? subFolder.id : subFolder.parent,\n\t\t\tlevel,\n\t\t\tpath\n\t\t}\n\t);\n}\n\n// replaced lodash \"reduce\" method with vanilla JS in order to decrease iterations and improve performance\nexport function updateFolders(state: FoldersStateType, folders: FolderType[]): void {\n\tstate.folders = Object.values(state.folders).reduce((acc, item) => {\n\t\tconst newFolder = omitBy(\n\t\t\tObject.values(folders).find((c) => c.id === item.id),\n\t\t\tisNil\n\t\t);\n\t\tconst toRet = newFolder ? { ...item, ...newFolder } : item;\n\n\t\treturn {\n\t\t\t...acc,\n\t\t\t[toRet.id]: {\n\t\t\t\t...toRet\n\t\t\t}\n\t\t};\n\t}, {});\n}\n\nexport function updateFolderInStore(state: FoldersStateType, folders: FolderType[]): void {\n\tstate.folders = reduce(\n\t\tstate.folders,\n\t\t(acc, item) => {\n\t\t\tconst toRet = find(folders, (c) => c.id === item.id) || item;\n\n\t\t\tconst items = calcFolderItems(state.folders, toRet, toRet.id);\n\t\t\tconst moreParams = calcFolderAbsParentLevelAndPath(state.folders, toRet);\n\t\t\treturn {\n\t\t\t\t...acc,\n\t\t\t\t[toRet.id]: {\n\t\t\t\t\t...toRet,\n\t\t\t\t\t...moreParams,\n\t\t\t\t\tdepth: findDepth({ ...toRet, items }),\n\t\t\t\t\titems,\n\t\t\t\t\tpath: moreParams ? `/${moreParams.path}` : undefined\n\t\t\t\t}\n\t\t\t};\n\t\t},\n\t\t{}\n\t);\n}\n\nexport function updatePartialFolderInStore(state: FoldersStateType, folders: FolderType[]): void {\n\tstate.folders = reduce(\n\t\tstate.folders,\n\t\t(acc, item) => {\n\t\t\tconst itemToUpdate = find(folders, (c) => c.id === item.id);\n\t\t\tconst toRet = merge(item, itemToUpdate ?? {});\n\n\t\t\tconst items = calcFolderItems(state.folders, toRet, toRet.id);\n\t\t\tconst moreParams = calcFolderAbsParentLevelAndPath(state.folders, toRet);\n\t\t\treturn {\n\t\t\t\t...acc,\n\t\t\t\t[toRet.id]: {\n\t\t\t\t\t...toRet,\n\t\t\t\t\t...moreParams,\n\t\t\t\t\tdepth: findDepth({ ...toRet, items }),\n\t\t\t\t\titems,\n\t\t\t\t\tpath: moreParams ? `/${moreParams.path}` : undefined\n\t\t\t\t}\n\t\t\t};\n\t\t},\n\t\t{}\n\t);\n}\n\n// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types\nexport function addFoldersToStore(state: FoldersStateType, folders: any): void {\n\tstate.folders = reduce(folders, (acc, v, k) => ({ ...acc, [v.id]: v }), state.folders);\n}\n\n// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types\nexport function removeFoldersFromStore(state: FoldersStateType, idsToDelete: any): void {\n\t// state.folders = omit(state.folders, idsToDelete); Maybe?\n\tstate.folders = reduce(\n\t\tstate.folders,\n\t\t(acc, v, k) => {\n\t\t\tconst value = some(idsToDelete, (cid) => cid === v.id);\n\t\t\treturn value ? { ...acc } : { ...acc, [v.id]: v };\n\t\t},\n\t\t{} as MailsFolderMap\n\t);\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/store/utils.ts b/src/store/utils.ts
+--- a/src/store/utils.ts	(revision 4adaba21c8889cfd3cf44adf6271b75e82f59433)
++++ b/src/store/utils.ts	(date 1659976428473)
+@@ -3,7 +3,7 @@
+  *
+  * SPDX-License-Identifier: AGPL-3.0-only
+  */
+-import { max, map, filter, find, reduce, some, merge, isNil, omitBy } from 'lodash';
++import { max, map, filter, find, reduce, omitBy, some, merge, isNil } from 'lodash';
+ import { FolderType, MailsFolderMap, FoldersStateType } from '../types';
+ 
+ export function findDepth(subFolder: FolderType, depth = 1): number {
+Index: src/normalizations/normalize-message.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\nimport { getTags } from '@zextras/carbonio-shell-ui';\nimport { filter, find, isNil, map, omitBy, reduce } from 'lodash';\nimport { ParticipantRole } from '../commons/utils';\nimport {\n\tIncompleteMessage,\n\tMailMessagePart,\n\tSoapEmailParticipantRole,\n\tSoapMailParticipant,\n\tParticipant,\n\tSoapIncompleteMessage,\n\tSoapMailMessagePart\n} from '../types';\n\nexport function normalizeMailPartMapFn(v: SoapMailMessagePart): MailMessagePart {\n\tconst ret: MailMessagePart = {\n\t\tcontentType: v.ct,\n\t\tsize: v.s || 0,\n\t\tname: v.part,\n\t\tdisposition: v.cd\n\t};\n\tif (v.mp) {\n\t\tret.parts = map(v.mp || [], normalizeMailPartMapFn);\n\t}\n\tif (v.filename) ret.filename = v.filename;\n\tif (v.content) ret.content = v.content;\n\tif (v.ci) ret.ci = v.ci;\n\tif (v.cd) ret.disposition = v.cd;\n\treturn ret;\n}\n\nfunction findBodyPart(\n\tmp: Array<SoapMailMessagePart>,\n\tacc: { contentType: string; content: string },\n\tid: string\n): { contentType: string; content: string } {\n\tconst bodyPart = reduce(\n\t\tmp,\n\t\t(found, part) => {\n\t\t\tif (part.mp) return findBodyPart(part.mp, found, id);\n\t\t\tif (part && part.body) {\n\t\t\t\tif (!found.contentType.length) {\n\t\t\t\t\treturn { contentType: part.ct, content: part.content ?? '' };\n\t\t\t\t}\n\t\t\t\tif (\n\t\t\t\t\tpart.part &&\n\t\t\t\t\tpart.part.indexOf('.') === -1 &&\n\t\t\t\t\tpart.cd &&\n\t\t\t\t\tpart.cd === 'inline' &&\n\t\t\t\t\t!part.ci &&\n\t\t\t\t\t!(part.ct && part.ct === 'text/plain')\n\t\t\t\t) {\n\t\t\t\t\treturn {\n\t\t\t\t\t\t...found,\n\t\t\t\t\t\tcontent: found.content.concat(\n\t\t\t\t\t\t\t`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part?.part}'>` ?? ''\n\t\t\t\t\t\t)\n\t\t\t\t\t};\n\t\t\t\t}\n\t\t\t\treturn { ...found, content: found.content.concat(part.content ?? '') };\n\t\t\t}\n\t\t\treturn found;\n\t\t},\n\t\tacc\n\t);\n\n\treturn bodyPart;\n}\n\nexport function generateBody(\n\tmp: Array<SoapMailMessagePart>,\n\tid: string\n): {\n\tcontentType: string;\n\tcontent: string;\n} {\n\treturn findBodyPart(mp, { contentType: '', content: '' }, id);\n}\n\nfunction participantTypeFromSoap(t: SoapEmailParticipantRole): ParticipantRole {\n\tswitch (t) {\n\t\tcase 'f':\n\t\t\treturn ParticipantRole.FROM;\n\t\tcase 't':\n\t\t\treturn ParticipantRole.TO;\n\t\tcase 'c':\n\t\t\treturn ParticipantRole.CARBON_COPY;\n\t\tcase 'b':\n\t\t\treturn ParticipantRole.BLIND_CARBON_COPY;\n\t\tcase 'r':\n\t\t\treturn ParticipantRole.REPLY_TO;\n\t\tcase 's':\n\t\t\treturn ParticipantRole.SENDER;\n\t\tcase 'n':\n\t\t\treturn ParticipantRole.READ_RECEIPT_NOTIFICATION;\n\t\tcase 'rf':\n\t\t\treturn ParticipantRole.RESENT_FROM;\n\t\tdefault:\n\t\t\tthrow new Error(`Participant type not handled: '${t}'`);\n\t}\n}\n\nexport function normalizeParticipantsFromSoap(e: SoapMailParticipant): Participant {\n\treturn {\n\t\ttype: participantTypeFromSoap(e.t),\n\t\taddress: e.a,\n\t\tname: e.d || e.a,\n\t\tfullName: e.p\n\t};\n}\nexport const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {\n\tconst tags = getTags();\n\treturn map(names?.split(','), (name) => find(tags, { name })?.id);\n};\n\nexport const getTagIds = (\n\tt: string | undefined,\n\ttn: string | undefined\n): Array<string | undefined> => {\n\tif (!isNil(t)) {\n\t\treturn filter(t.split(','), (tag) => tag !== '');\n\t}\n\tif (!isNil(tn)) {\n\t\treturn getTagIdsFromName(tn);\n\t}\n\treturn [];\n};\nexport const normalizeMailMessageFromSoap = (\n\tm: SoapIncompleteMessage,\n\tisComplete: boolean\n): IncompleteMessage => <IncompleteMessage>omitBy(\n\t\t{\n\t\t\tconversation: m.cid,\n\t\t\tid: m.id,\n\t\t\tdate: m.d,\n\t\t\tsize: m.s,\n\t\t\tparent: m.l,\n\t\t\tfragment: m.fr,\n\t\t\tsubject: m.su,\n\t\t\tparticipants: m.e ? map(m.e || [], normalizeParticipantsFromSoap) : undefined,\n\t\t\ttags: getTagIds(m.t, m.tn),\n\t\t\tparts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,\n\t\t\tinvite: m.inv,\n\t\t\tshr: m.shr,\n\t\t\tbody: m.mp ? generateBody(m.mp || [], m.id) : undefined,\n\t\t\tisComplete,\n\t\t\tread: !isNil(m.f) ? !/u/.test(m.f) : true,\n\t\t\tattachment: !isNil(m.f) ? /a/.test(m.f) : undefined,\n\t\t\tflagged: !isNil(m.f) ? /f/.test(m.f) : undefined,\n\t\t\turgent: !isNil(m.f) ? /!/.test(m.f) : undefined,\n\t\t\tisDeleted: !isNil(m.f) ? /x/.test(m.f) : undefined,\n\t\t\tisDraft: !isNil(m.f) ? /d/.test(m.f) : undefined,\n\t\t\tisForwarded: !isNil(m.f) ? /w/.test(m.f) : undefined,\n\t\t\tisSentByMe: !isNil(m.f) ? /s/.test(m.f) : undefined,\n\t\t\tisInvite: !isNil(m.f) ? /v/.test(m.f) : undefined,\n\t\t\tisReplied: !isNil(m.f) ? /r/.test(m.f) : undefined,\n\t\t\tisReadReceiptRequested: !isNil(m.f) ? !/n/.test(m.f) : true\n\t\t},\n\t\tisNil\n\t);\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/normalizations/normalize-message.ts b/src/normalizations/normalize-message.ts
+--- a/src/normalizations/normalize-message.ts	(revision 4adaba21c8889cfd3cf44adf6271b75e82f59433)
++++ b/src/normalizations/normalize-message.ts	(date 1659976375980)
+@@ -4,7 +4,7 @@
+  * SPDX-License-Identifier: AGPL-3.0-only
+  */
+ import { getTags } from '@zextras/carbonio-shell-ui';
+-import { filter, find, isNil, map, omitBy, reduce } from 'lodash';
++import { filter, find, isNil, map, reduce, omitBy } from 'lodash';
+ import { ParticipantRole } from '../commons/utils';
+ import {
+ 	IncompleteMessage,
+Index: src/normalizations/normalize-conversation.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\nimport { getTags } from '@zextras/carbonio-shell-ui';\nimport { filter, find, isNil, map, omitBy } from 'lodash';\nimport { Conversation, SoapIncompleteMessage, SoapConversation } from '../types';\nimport { normalizeParticipantsFromSoap } from './normalize-message';\n\nexport const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {\n\tconst tags = getTags();\n\treturn map(names?.split(','), (name) => find(tags, { name })?.id);\n};\n\nexport const getTagIds = (\n\tt: string | undefined,\n\ttn: string | undefined\n): Array<string | undefined> => {\n\tif (!isNil(t)) {\n\t\treturn filter(t.split(','), (tag) => tag !== '');\n\t}\n\tif (!isNil(tn)) {\n\t\treturn getTagIdsFromName(tn);\n\t}\n\treturn [];\n};\nexport const normalizeConversation = (\n\tc: SoapConversation,\n\tm?: Array<SoapIncompleteMessage>\n): Partial<Conversation> => {\n\tconst filteredMsgs = c?.m ?? filter(m ?? [], ['cid', c?.id]);\n\tconst messages = filteredMsgs?.length\n\t\t? map(filteredMsgs, (msg) => ({\n\t\t\t\tid: msg.id,\n\t\t\t\tparent: msg.l,\n\t\t\t\tdate: Number(msg?.d)\n\t\t  }))\n\t\t: undefined;\n\n\treturn omitBy(\n\t\t{\n\t\t\ttags: getTagIds(c.t, c.tn),\n\t\t\tid: c.id,\n\t\t\tdate: c.d,\n\t\t\tmsgCount: c.n,\n\t\t\tunreadMsgCount: c.u,\n\t\t\tmessages,\n\t\t\tparticipants: c.e ? map(c.e, normalizeParticipantsFromSoap) : undefined,\n\t\t\tsubject: c.su,\n\t\t\tfragment: c.fr,\n\t\t\tread: !isNil(c.f) ? !/u/.test(c.f) : !(c.u > 0),\n\t\t\tattachment: !isNil(c.f) ? /a/.test(c.f) : undefined,\n\t\t\tflagged: !isNil(c.f) ? /f/.test(c.f) : undefined,\n\t\t\turgent: !isNil(c.f) ? /!/.test(c.f) : undefined\n\t\t},\n\t\tisNil\n\t);\n};\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/normalizations/normalize-conversation.ts b/src/normalizations/normalize-conversation.ts
+--- a/src/normalizations/normalize-conversation.ts	(revision 4adaba21c8889cfd3cf44adf6271b75e82f59433)
++++ b/src/normalizations/normalize-conversation.ts	(date 1659976157630)
+@@ -3,32 +3,41 @@
+  *
+  * SPDX-License-Identifier: AGPL-3.0-only
+  */
+-import { getTags } from '@zextras/carbonio-shell-ui';
+-import { filter, find, isNil, map, omitBy } from 'lodash';
++import { Tags } from '@zextras/carbonio-shell-ui';
++import { filter, find, isNil, map } from 'lodash';
++import { omitBy } from '../commons/utils';
+ import { Conversation, SoapIncompleteMessage, SoapConversation } from '../types';
+ import { normalizeParticipantsFromSoap } from './normalize-message';
+ 
+-export const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
+-	const tags = getTags();
+-	return map(names?.split(','), (name) => find(tags, { name })?.id);
+-};
+-
++export const getTagIdsFromName = (
++	names: string | undefined,
++	tags?: Tags
++): Array<string | undefined> => map(names?.split(','), (name) => find(tags, { name })?.id);
+ export const getTagIds = (
+ 	t: string | undefined,
+-	tn: string | undefined
++	tn: string | undefined,
++	tags?: Tags
+ ): Array<string | undefined> => {
+ 	if (!isNil(t)) {
+ 		return filter(t.split(','), (tag) => tag !== '');
+ 	}
+ 	if (!isNil(tn)) {
+-		return getTagIdsFromName(tn);
++		return getTagIdsFromName(tn, tags);
+ 	}
+ 	return [];
+ };
+-export const normalizeConversation = (
+-	c: SoapConversation,
+-	m?: Array<SoapIncompleteMessage>
+-): Partial<Conversation> => {
++
++export type NormalizeConversationProps = {
++	c: SoapConversation;
++	tags: Tags;
++	m?: Array<SoapIncompleteMessage>;
++};
++
++export const normalizeConversation = ({
++	c,
++	m,
++	tags
++}: NormalizeConversationProps): Partial<Conversation> => {
+ 	const filteredMsgs = c?.m ?? filter(m ?? [], ['cid', c?.id]);
+ 	const messages = filteredMsgs?.length
+ 		? map(filteredMsgs, (msg) => ({
+@@ -38,9 +47,10 @@
+ 		  }))
+ 		: undefined;
+ 
+-	return omitBy(
++	console.time('@@normalizeConversation');
++	const result = omitBy(
+ 		{
+-			tags: getTagIds(c.t, c.tn),
++			tags: getTagIds(c.t, c.tn, tags),
+ 			id: c.id,
+ 			date: c.d,
+ 			msgCount: c.n,
+@@ -56,4 +66,7 @@
+ 		},
+ 		isNil
+ 	);
++	console.timeEnd('@@normalizeConversation');
++
++	return result;
+ };
+Index: src/views/sidebar/sync-data-handler.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\nimport {\n\tFOLDERS,\n\tstore,\n\tuseNotify,\n\tuseRefresh,\n\tupdatePrimaryBadge\n} from '@zextras/carbonio-shell-ui';\nimport React, { useEffect, useState } from 'react';\nimport { useDispatch, useSelector } from 'react-redux';\nimport { isEmpty, map, keyBy, find, filter, forEach, sortBy, reduce } from 'lodash';\nimport { useTranslation } from 'react-i18next';\nimport {\n\thandleCreatedFolders,\n\thandleModifiedFolders,\n\thandleDeletedFolders,\n\thandleRefresh,\n\tselectFolder\n} from '../../store/folders-slice';\nimport {\n\thandleNotifyCreatedConversations,\n\thandleNotifyModifiedConversations,\n\thandleNotifyDeletedConversations,\n\thandleModifiedMessagesInConversation,\n\thandleDeletedMessagesInConversation,\n\tsetSearchedInFolder,\n\tselectCurrentFolder,\n\thandleCreatedMessagesInConversation,\n\thandleAddMessagesInConversation\n} from '../../store/conversations-slice';\nimport {\n\thandleCreatedMessages,\n\thandleModifiedMessages,\n\thandleDeletedMessages,\n\tselectMessages\n} from '../../store/messages-slice';\nimport { storeReducers } from '../../store/reducers';\nimport { normalizeConversation } from '../../normalizations/normalize-conversation';\nimport { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';\nimport { extractFolders } from './utils';\nimport { MAILS_ROUTE } from '../../constants';\n\nconst InboxBadgeUpdater = () => {\n\tconst folder = useSelector(selectFolder(FOLDERS.INBOX));\n\tuseEffect(() => {\n\t\tupdatePrimaryBadge(\n\t\t\t{\n\t\t\t\tshow: folder.unreadCount > 0,\n\t\t\t\tcount: folder.unreadCount,\n\t\t\t\tshowCount: true\n\t\t\t},\n\t\t\tMAILS_ROUTE\n\t\t);\n\t}, [folder.unreadCount]);\n\treturn null;\n};\n\nexport const SyncDataHandler = () => {\n\tconst [t] = useTranslation();\n\tconst refresh = useRefresh();\n\tconst notifyList = useNotify();\n\tconst [seq, setSeq] = useState(-1);\n\tconst dispatch = useDispatch();\n\tconst [initialized, setInitialized] = useState(false);\n\tconst currentFolder = useSelector(selectCurrentFolder);\n\tconst messagesState = useSelector(selectMessages);\n\n\tuseEffect(() => {\n\t\tif (!isEmpty(refresh) && !initialized) {\n\t\t\tstore.setReducer(storeReducers);\n\t\t\t// this also normalize folders so no need to normalize it later\n\t\t\tconst extractedFolders = extractFolders([\n\t\t\t\t...(refresh?.folder?.[0]?.folder ?? []),\n\t\t\t\t...(refresh?.folder?.[0]?.link ?? [])\n\t\t\t]);\n\t\t\tdispatch(handleRefresh(extractedFolders));\n\t\t\tsetInitialized(true);\n\t\t}\n\t}, [dispatch, initialized, refresh]);\n\n\tuseEffect(() => {\n\t\tforEach(notifyList, (notify) => {\n\t\t\t// this intercept all changes made from different folders towards the current one, it triggers a search request if it finds at least one item which affect currentFolder\n\t\t\tif (find(notify?.modified?.m, ['l', currentFolder])) {\n\t\t\t\tdispatch(setSearchedInFolder({ [currentFolder]: 'incomplete' }));\n\t\t\t}\n\t\t});\n\t}, [currentFolder, dispatch, notifyList]);\n\n\tuseEffect(() => {\n\t\tif (initialized) {\n\t\t\tif (notifyList.length > 0) {\n\t\t\t\tforEach(sortBy(notifyList, 'seq'), (notify) => {\n\t\t\t\t\tif (!isEmpty(notify) && (notify.seq > seq || (seq > 1 && notify.seq === 1))) {\n\t\t\t\t\t\tif (notify.created) {\n\t\t\t\t\t\t\tif (notify.created.folder || notify.created.link) {\n\t\t\t\t\t\t\t\tdispatch(\n\t\t\t\t\t\t\t\t\thandleCreatedFolders([\n\t\t\t\t\t\t\t\t\t\t...(notify.created.folder ?? []),\n\t\t\t\t\t\t\t\t\t\t...(notify.created.link ?? [])\n\t\t\t\t\t\t\t\t\t])\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tif (notify.created.c && notify.created.m) {\n\t\t\t\t\t\t\t\tconst conversations = map(notify.created.c, (i) =>\n\t\t\t\t\t\t\t\t\tnormalizeConversation(i, notify.created.m)\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\tdispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tif (notify.created.m) {\n\t\t\t\t\t\t\t\tdispatch(handleCreatedMessages({ m: notify.created.m }));\n\t\t\t\t\t\t\t\tdispatch(handleCreatedMessagesInConversation({ m: notify.created.m }));\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (notify.modified) {\n\t\t\t\t\t\t\tif (notify.modified.folder || notify.modified.link) {\n\t\t\t\t\t\t\t\tdispatch(\n\t\t\t\t\t\t\t\t\thandleModifiedFolders([\n\t\t\t\t\t\t\t\t\t\t...(notify.modified.folder ?? []),\n\t\t\t\t\t\t\t\t\t\t...(notify.modified.link ?? [])\n\t\t\t\t\t\t\t\t\t])\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tif (notify.modified.c) {\n\t\t\t\t\t\t\t\tconst conversations = map(notify.modified.c, normalizeConversation);\n\t\t\t\t\t\t\t\tdispatch(handleNotifyModifiedConversations(keyBy(conversations, 'id')));\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tif (notify.modified.m) {\n\t\t\t\t\t\t\t\tconst messages = map(notify.modified.m, (obj) =>\n\t\t\t\t\t\t\t\t\tnormalizeMailMessageFromSoap(obj, false)\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\tdispatch(handleModifiedMessages(messages));\n\n\t\t\t\t\t\t\t\t// the condition filters messages with parent property (the only ones we need to update)\n\t\t\t\t\t\t\t\tconst toUpdate = filter(messages, 'parent');\n\t\t\t\t\t\t\t\tif (toUpdate?.length > 0) {\n\t\t\t\t\t\t\t\t\t// this function updates messages' parent in conversations. If parent never changes it does not need to be called\n\t\t\t\t\t\t\t\t\tdispatch(handleModifiedMessagesInConversation(toUpdate));\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t// the condition filters messages with conversation property (the only ones we need to add to conversation)\n\t\t\t\t\t\t\t\tconst conversationToUpdate = filter(messages, 'conversation');\n\t\t\t\t\t\t\t\tif (conversationToUpdate?.length > 0) {\n\t\t\t\t\t\t\t\t\tconst msgsReference = reduce(\n\t\t\t\t\t\t\t\t\t\tconversationToUpdate,\n\t\t\t\t\t\t\t\t\t\t(acc, msg) => {\n\t\t\t\t\t\t\t\t\t\t\tif (messagesState?.[msg?.id]) {\n\t\t\t\t\t\t\t\t\t\t\t\treturn [\n\t\t\t\t\t\t\t\t\t\t\t\t\t...acc,\n\t\t\t\t\t\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tid: messagesState?.[msg?.id].id,\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tparent: messagesState?.[msg?.id].parent,\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tdate: messagesState?.[msg?.id].date,\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tconversation: msg.conversation\n\t\t\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t\t\t];\n\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t\treturn acc;\n\t\t\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t\t\t[]\n\t\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\t\t// this function add messages' in conversations. If conversation never changes it does not need to be called\n\t\t\t\t\t\t\t\t\tdispatch(handleAddMessagesInConversation(msgsReference));\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (notify.deleted) {\n\t\t\t\t\t\t\tdispatch(handleDeletedFolders(notify.deleted));\n\t\t\t\t\t\t\tdispatch(handleNotifyDeletedConversations(notify.deleted));\n\t\t\t\t\t\t\tdispatch(handleDeletedMessages(notify.deleted));\n\t\t\t\t\t\t\tdispatch(handleDeletedMessagesInConversation(notify.deleted));\n\t\t\t\t\t\t}\n\t\t\t\t\t\tsetSeq(notify.seq);\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\t}, [dispatch, initialized, messagesState, notifyList, seq, t]);\n\treturn <InboxBadgeUpdater />;\n};\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/views/sidebar/sync-data-handler.jsx b/src/views/sidebar/sync-data-handler.jsx
+--- a/src/views/sidebar/sync-data-handler.jsx	(revision 4adaba21c8889cfd3cf44adf6271b75e82f59433)
++++ b/src/views/sidebar/sync-data-handler.jsx	(date 1659976157631)
+@@ -8,7 +8,8 @@
+ 	store,
+ 	useNotify,
+ 	useRefresh,
+-	updatePrimaryBadge
++	updatePrimaryBadge,
++	getTags
+ } from '@zextras/carbonio-shell-ui';
+ import React, { useEffect, useState } from 'react';
+ import { useDispatch, useSelector } from 'react-redux';
+@@ -106,8 +107,9 @@
+ 								);
+ 							}
+ 							if (notify.created.c && notify.created.m) {
++								const tags = getTags();
+ 								const conversations = map(notify.created.c, (i) =>
+-									normalizeConversation(i, notify.created.m)
++									normalizeConversation({ c: i, m: notify.created.m, tags })
+ 								);
+ 								dispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));
+ 							}
+Index: src/store/actions/get-conv.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\nimport { createAsyncThunk } from '@reduxjs/toolkit';\nimport { soapFetch } from '@zextras/carbonio-shell-ui';\nimport { map } from 'lodash';\nimport { normalizeConversation } from '../../normalizations/normalize-conversation';\nimport { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';\nimport {\n\tConversation,\n\tGetConvParameters,\n\tGetConvRequest,\n\tGetConvResponse,\n\tIncompleteMessage\n} from '../../types';\n\nexport const getConv = createAsyncThunk<\n\t{ conversation: Partial<Conversation>; messages: Array<IncompleteMessage> },\n\tGetConvParameters\n>(\n\t'conversations/getConv',\n\tasync ({ conversationId, fetch = 'all' }) => {\n\t\tconst result = (await soapFetch<GetConvRequest, GetConvResponse>('GetConv', {\n\t\t\t_jsns: 'urn:zimbraMail',\n\t\t\tc: {\n\t\t\t\tid: conversationId,\n\t\t\t\thtml: 1,\n\t\t\t\tneedExp: 1,\n\t\t\t\tfetch\n\t\t\t}\n\t\t})) as GetConvResponse;\n\t\tconst conversation = normalizeConversation(result.c[0]);\n\t\tconst messages = map(result.c[0].m, (item) =>\n\t\t\tnormalizeMailMessageFromSoap(item, false)\n\t\t) as unknown as Array<IncompleteMessage>;\n\t\treturn { conversation, messages };\n\t},\n\t{\n\t\tcondition: ({ folderId, conversationId }: GetConvParameters, { getState }: any) => {\n\t\t\tif (!folderId) return true;\n\t\t\treturn (\n\t\t\t\tgetState().conversations?.expandedStatus[conversationId] !== 'complete' &&\n\t\t\t\tgetState().conversations?.expandedStatus[conversationId] !== 'pending'\n\t\t\t);\n\t\t}\n\t}\n);\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/store/actions/get-conv.ts b/src/store/actions/get-conv.ts
+--- a/src/store/actions/get-conv.ts	(revision 4adaba21c8889cfd3cf44adf6271b75e82f59433)
++++ b/src/store/actions/get-conv.ts	(date 1659976157631)
+@@ -4,7 +4,7 @@
+  * SPDX-License-Identifier: AGPL-3.0-only
+  */
+ import { createAsyncThunk } from '@reduxjs/toolkit';
+-import { soapFetch } from '@zextras/carbonio-shell-ui';
++import { getTags, soapFetch } from '@zextras/carbonio-shell-ui';
+ import { map } from 'lodash';
+ import { normalizeConversation } from '../../normalizations/normalize-conversation';
+ import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
+@@ -31,7 +31,8 @@
+ 				fetch
+ 			}
+ 		})) as GetConvResponse;
+-		const conversation = normalizeConversation(result.c[0]);
++		const tags = getTags();
++		const conversation = normalizeConversation({ c: result.c[0], tags });
+ 		const messages = map(result.c[0].m, (item) =>
+ 			normalizeMailMessageFromSoap(item, false)
+ 		) as unknown as Array<IncompleteMessage>;
+Index: src/views/sidebar/utils.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\nimport {\n\tZIMBRA_STANDARD_COLORS,\n\tFOLDERS,\n\t// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n\t// @ts-ignore\n\tROOT_NAME,\n\tAccordionFolder,\n\tFolder,\n\tLinkFolderFields\n} from '@zextras/carbonio-shell-ui';\nimport { isNil, omitBy, reduce } from 'lodash';\nimport { TFunction } from 'react-i18next';\n\nconst folderIdRegex = /^(.+:)*(\\d+)$/;\n\nexport const normalizeFolder = (\n\tfolder: Folder & Partial<LinkFolderFields>\n): Partial<Folder & Partial<LinkFolderFields>> =>\n\tomitBy(\n\t\t{\n\t\t\tid: folder.id,\n\t\t\tuuid: folder.uuid,\n\t\t\tcolor: folder.color,\n\t\t\tname: folder.name,\n\t\t\tpath: folder.absFolderPath,\n\t\t\tparent: folder.l,\n\t\t\tparentUuid: folder.luuid,\n\t\t\titemsCount: folder.n,\n\t\t\tsize: folder.s,\n\t\t\tunreadCount: folder.u,\n\t\t\tsynced: true,\n\t\t\trgb: folder.rgb,\n\t\t\towner: folder.owner,\n\t\t\trid: folder.rid,\n\t\t\tzid: folder.zid,\n\t\t\tacl: folder.acl,\n\t\t\tperm: folder.perm,\n\t\t\tisSharedFolder: !!folder.owner,\n\t\t\tretentionPolicy: folder.retentionPolicy,\n\t\t\tview: folder.view\n\t\t},\n\t\tisNil\n\t);\n\nexport const extractFolders = (accordion: Array<any>, acc = {}): any =>\n\treduce(\n\t\taccordion,\n\t\t(acc2, folder) => {\n\t\t\tif (folder.folder) {\n\t\t\t\treturn (folder.view === 'message' &&\n\t\t\t\t\tfolder.id !== FOLDERS.IM_LOGS &&\n\t\t\t\t\tfolder.id !== FOLDERS.USER_ROOT) ||\n\t\t\t\t\tfolder.id === FOLDERS.TRASH\n\t\t\t\t\t? {\n\t\t\t\t\t\t\t...acc2,\n\t\t\t\t\t\t\t[folder.id]: normalizeFolder(folder),\n\t\t\t\t\t\t\t...extractFolders(folder.folder, acc2)\n\t\t\t\t\t  }\n\t\t\t\t\t: { ...acc2, ...extractFolders(folder.folder, acc2) };\n\t\t\t}\n\t\t\treturn (folder.view === 'message' &&\n\t\t\t\tfolder.id !== FOLDERS.IM_LOGS &&\n\t\t\t\tfolder.id !== FOLDERS.USER_ROOT) ||\n\t\t\t\tfolder.id === FOLDERS.TRASH\n\t\t\t\t? {\n\t\t\t\t\t\t...acc2,\n\t\t\t\t\t\t[folder.id]: normalizeFolder(folder)\n\t\t\t\t  }\n\t\t\t\t: acc2;\n\t\t},\n\t\tacc\n\t);\n\nexport const capitalise = (word: string): string => {\n\tconst asciiRef = word?.charCodeAt(0);\n\tconst newAsciiRef = asciiRef - 32;\n\tconst newChar = String.fromCharCode(newAsciiRef);\n\treturn word ? newChar + word.substring(1) : '';\n};\n\nexport const getFolderIconColor = (f: AccordionFolder): string => {\n\tif (f?.folder?.color) {\n\t\treturn f.folder.color < 10\n\t\t\t? ZIMBRA_STANDARD_COLORS[f.folder.color].hex\n\t\t\t: f?.folder.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex;\n\t}\n\treturn ZIMBRA_STANDARD_COLORS[0].hex;\n};\n\nexport const getFolderIconName = (folder: AccordionFolder): string | null => {\n\tconst systemFolders = [\n\t\tFOLDERS.USER_ROOT,\n\t\tFOLDERS.INBOX,\n\t\tFOLDERS.TRASH,\n\t\tFOLDERS.DRAFTS,\n\t\tFOLDERS.SPAM,\n\t\tFOLDERS.SENT\n\t];\n\n\tif (folder.id === FOLDERS.USER_ROOT || folder.folder?.oname === ROOT_NAME) {\n\t\treturn null;\n\t}\n\n\tif (folder.id && systemFolders.includes(folder.id)) {\n\t\tswitch (folder.id) {\n\t\t\tcase FOLDERS.INBOX:\n\t\t\t\treturn 'InboxOutline';\n\t\t\tcase FOLDERS.DRAFTS:\n\t\t\t\treturn 'FileOutline';\n\t\t\tcase FOLDERS.SENT:\n\t\t\t\treturn 'PaperPlaneOutline';\n\t\t\tcase FOLDERS.SPAM:\n\t\t\t\treturn 'SlashOutline';\n\t\t\tcase FOLDERS.TRASH:\n\t\t\t\treturn 'Trash2Outline';\n\t\t\tdefault:\n\t\t\t\treturn 'FolderOutline';\n\t\t}\n\t}\n\tif (\n\t\tfolder.id?.charAt(folder.id.length - 2) === ':' &&\n\t\tsystemFolders.includes(folder.id.slice(-1))\n\t) {\n\t\tswitch (folder.id.slice(-1)) {\n\t\t\tcase FOLDERS.INBOX:\n\t\t\t\treturn 'InboxOutline';\n\t\t\tcase FOLDERS.DRAFTS:\n\t\t\t\treturn 'FileOutline';\n\t\t\tcase FOLDERS.SENT:\n\t\t\t\treturn 'PaperPlaneOutline';\n\t\t\tcase FOLDERS.SPAM:\n\t\t\t\treturn 'SlashOutline';\n\t\t\tcase FOLDERS.TRASH:\n\t\t\t\treturn 'Trash2Outline';\n\t\t\tdefault:\n\t\t\t\treturn 'FolderOutline';\n\t\t}\n\t}\n\treturn 'FolderOutline';\n};\n\nexport const translatedSystemFolders = (t: TFunction): Array<string> => [\n\tt('folders.inbox', 'Inbox'),\n\tt('folders.sent', 'Sent'),\n\tt('folders.drafts', 'Drafts'),\n\tt('folders.trash', 'Trash'),\n\tt('folders.spam', 'Spam'),\n\tt('folders.junk', 'Junk')\n];\n\ntype GetSystemFolderProps = {\n\tt: TFunction;\n\tfolderId?: string;\n\tfolderName: string;\n};\n\nexport const getSystemFolderTranslatedName = ({ t, folderName }: GetSystemFolderProps): string => {\n\tif (folderName) {\n\t\tswitch (folderName) {\n\t\t\tcase 'Inbox':\n\t\t\t\treturn t('folders.inbox', 'Inbox');\n\t\t\tcase 'Sent':\n\t\t\t\treturn t('folders.sent', 'Sent');\n\t\t\tcase 'Drafts':\n\t\t\t\treturn t('folders.drafts', 'Drafts');\n\t\t\tcase 'Trash':\n\t\t\t\treturn t('folders.trash', 'Trash');\n\t\t\tcase 'Spam':\n\t\t\t\treturn t('folders.spam', 'Spam');\n\t\t\tcase 'Junk':\n\t\t\t\treturn t('folders.junk', 'Junk');\n\t\t\tdefault:\n\t\t\t\treturn folderName;\n\t\t}\n\t}\n\treturn folderName;\n};\n\nexport const getFolderTranslatedName = ({\n\tt,\n\tfolderId,\n\tfolderName\n}: GetSystemFolderProps): string => {\n\tconst id = folderIdRegex.exec(folderId ?? '')?.[2];\n\tif (id && Object.values(FOLDERS).includes(id)) {\n\t\treturn getSystemFolderTranslatedName({ t, folderName });\n\t}\n\n\treturn folderName;\n};\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/views/sidebar/utils.ts b/src/views/sidebar/utils.ts
+--- a/src/views/sidebar/utils.ts	(revision 4adaba21c8889cfd3cf44adf6271b75e82f59433)
++++ b/src/views/sidebar/utils.ts	(date 1659976441039)
+@@ -13,7 +13,7 @@
+ 	Folder,
+ 	LinkFolderFields
+ } from '@zextras/carbonio-shell-ui';
+-import { isNil, omitBy, reduce } from 'lodash';
++import { isNil, reduce, omitBy } from 'lodash';
+ import { TFunction } from 'react-i18next';
+ 
+ const folderIdRegex = /^(.+:)*(\d+)$/;
+Index: .idea/prettier.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/prettier.xml b/.idea/prettier.xml
+new file mode 100644
+--- /dev/null	(date 1659976157630)
++++ b/.idea/prettier.xml	(date 1659976157630)
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="PrettierConfiguration">
++    <option name="myRunOnSave" value="true" />
++    <option name="myRunOnReformat" value="true" />
++  </component>
++</project>
+\ No newline at end of file

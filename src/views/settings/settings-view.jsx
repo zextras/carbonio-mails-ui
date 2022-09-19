@@ -8,12 +8,12 @@ import {
 	useUserSettings,
 	useUserAccount,
 	editSettings,
-	SettingsHeader
+	SettingsHeader,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep, isEmpty, reduce } from 'lodash';
 import { Container, FormSection, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
 import { getPropsDiff, differenceObject } from './components/utils';
 import DisplayMessagesSettings from './displaying-messages-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
@@ -30,7 +30,6 @@ import ComposeMessage from './compose-msg-settings';
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
 export default function SettingsView() {
-	const [t] = useTranslation();
 	const { prefs, props } = useUserSettings();
 	const account = useUserAccount();
 	const [settingsObj, setSettingsObj] = useState({ ...prefs });
@@ -269,11 +268,10 @@ export default function SettingsView() {
 		dispatch,
 		account,
 		createSnackbar,
-		t,
 		flag
 	]);
 
-	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), [t]);
+	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), []);
 	return (
 		<>
 			<SettingsHeader onSave={saveChanges} onCancel={onClose} isDirty={!isDisabled} title={title} />

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { createContext, FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
 	useIntegratedComponent,
@@ -44,7 +43,6 @@ export const ActionsContext = createContext<{
 });
 
 export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => {
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const createModal = useContext(ModalManagerContext);
@@ -59,7 +57,6 @@ export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => 
 		() => [
 			conversationActions({
 				folderId,
-				t,
 				dispatch,
 				createSnackbar,
 				createModal,
@@ -69,7 +66,7 @@ export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => 
 			}),
 			messageActions({
 				folderId,
-				t,
+
 				dispatch,
 				createSnackbar,
 				createModal,
@@ -79,7 +76,7 @@ export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => 
 				tags
 			})
 		],
-		[folderId, t, dispatch, createSnackbar, createModal, ContactInput, tags, account, timezone]
+		[folderId, dispatch, createSnackbar, createModal, ContactInput, tags, account, timezone]
 	);
 	const getMessageActions = useCallback<GetMsgActionsFunction>(
 		(item: MailMessage, closeEditor: boolean): [ActionList, ActionList] =>

@@ -11,9 +11,8 @@ import {
 	SnackbarManagerContext,
 	ModalManagerContext
 } from '@zextras/carbonio-design-system';
-import { FOLDERS, useTags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useTags, t } from '@zextras/carbonio-shell-ui';
 import { map, every, filter, some } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 import {
@@ -29,10 +28,8 @@ export default function SelectMessagesPanelActions({
 	messages,
 	folderId,
 	selectedIds,
-	deselectAll,
-	conversationId
+	deselectAll
 }) {
-	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const createModal = useContext(ModalManagerContext);
@@ -108,7 +105,6 @@ export default function SelectMessagesPanelActions({
 		folderId,
 		showReadConvo,
 		ids,
-		t,
 		dispatch,
 		deselectAll,
 		showUnreadConvo,
@@ -194,7 +190,6 @@ export default function SelectMessagesPanelActions({
 		folderId,
 		showReadConvo,
 		ids,
-		t,
 		dispatch,
 		deselectAll,
 		showUnreadConvo,

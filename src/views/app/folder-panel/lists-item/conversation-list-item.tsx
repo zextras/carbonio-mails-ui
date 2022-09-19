@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { isEmpty, reduce, trimStart, uniqBy, find, includes, filter, map, noop } from 'lodash';
 import styled from 'styled-components';
 import {
@@ -14,7 +13,8 @@ import {
 	useUserSettings,
 	useTags,
 	ZIMBRA_STANDARD_COLORS,
-	Tag
+	Tag,
+	t
 } from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
@@ -183,7 +183,6 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 }) => {
 	const dispatch = useDispatch();
 	const [open, setOpen] = useState(false);
-	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 	const messages = useSelector(selectMessages);
 	const conversationStatus = useSelector((state: StateType) =>
@@ -218,7 +217,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 				(acc, part) => trimStart(`${acc}, ${participantToString(part, t, accounts)}`, ', '),
 				''
 			),
-		[item.participants, t, accounts]
+		[item.participants, accounts]
 	);
 	const ids = useMemo(() => Object.keys(selectedItems ?? []), [selectedItems]);
 
@@ -253,7 +252,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 				pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 			}
 		},
-		[item?.read, item.id, t, dispatch, folderId]
+		[item?.read, item.id, dispatch, folderId]
 	);
 
 	const _onDoubleClick = useCallback(
@@ -283,11 +282,11 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 
 	const toggleExpandButtonLabel = useMemo(
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
-		[t, open]
+		[open]
 	);
 	const subject = useMemo(
 		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item.subject, t]
+		[item.subject]
 	);
 	const subFragmentTooltipLabel = useMemo(
 		() => (!isEmpty(item.fragment) ? item.fragment : subject),

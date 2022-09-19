@@ -5,9 +5,8 @@
  */
 
 import React, { ComponentType, FC, ReactElement, useCallback, useContext, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Container, Text, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { deleteTag } from '@zextras/carbonio-shell-ui';
+import { deleteTag, t } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../../commons/modal-footer';
 import { ModalHeader } from '../../commons/modal-header';
 
@@ -26,7 +25,6 @@ type ComponentProps = {
 };
 const DeleteTagModal: FC<ComponentProps> = ({ onClose, tag }): ReactElement => {
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const [t] = useTranslation();
 
 	const title = useMemo(
 		() =>
@@ -34,7 +32,7 @@ const DeleteTagModal: FC<ComponentProps> = ({ onClose, tag }): ReactElement => {
 				name: tag?.name,
 				defaultValue: 'Delete "{{name}}" tag'
 			}),
-		[t, tag?.name]
+		[tag?.name]
 	);
 
 	const onConfirm = useCallback(() => {
@@ -58,7 +56,7 @@ const DeleteTagModal: FC<ComponentProps> = ({ onClose, tag }): ReactElement => {
 			}
 			onClose();
 		});
-	}, [createSnackbar, onClose, t, tag]);
+	}, [createSnackbar, onClose, tag]);
 
 	return (
 		<>

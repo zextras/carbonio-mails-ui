@@ -5,9 +5,8 @@
  */
 
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Input, Padding, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
-import { createTag, renameTag, changeTagColor } from '@zextras/carbonio-shell-ui';
+import { createTag, renameTag, changeTagColor, t } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../../commons/modal-footer';
 import { ModalHeader } from '../../commons/modal-header';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
@@ -25,7 +24,6 @@ const CreateUpdateTagModal: FC<ComponentProps> = ({
 	tag
 }): ReactElement => {
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const [t] = useTranslation();
 	const [name, setName] = useState(tag?.name || '');
 	const [color, setColor] = useState(tag?.color || 0);
 	const title = useMemo(
@@ -33,9 +31,9 @@ const CreateUpdateTagModal: FC<ComponentProps> = ({
 			editMode
 				? t('label.edit_tag_name', { name: tag?.name, defaultValue: 'Edit "{{name}}" tag' })
 				: t('label.create_tag', 'Create a new Tag'),
-		[editMode, t, tag?.name]
+		[editMode, tag?.name]
 	);
-	const label = useMemo(() => t('label.tag_name', 'Tag name'), [t]);
+	const label = useMemo(() => t('label.tag_name', 'Tag name'), []);
 	const handleColorChange = useCallback((c: number) => setColor(c), []);
 	const handleNameChange = useCallback((ev) => setName(ev.target.value), []);
 
@@ -68,7 +66,7 @@ const CreateUpdateTagModal: FC<ComponentProps> = ({
 				}
 				onClose();
 			}),
-		[name, color, onClose, createSnackbar, t]
+		[name, color, onClose, createSnackbar]
 	);
 	const onUpdate = useCallback(() => {
 		Promise.all([renameTag(`${tag?.id}`, name), changeTagColor(`${tag?.id}`, Number(color))])
@@ -101,7 +99,7 @@ const CreateUpdateTagModal: FC<ComponentProps> = ({
 					hideButton: true
 				});
 			});
-	}, [color, createSnackbar, name, onClose, t, tag]);
+	}, [color, createSnackbar, name, onClose, tag]);
 
 	return (
 		<>

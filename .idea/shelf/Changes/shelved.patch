@@ -1,0 +1,599 @@
+Index: src/views/sidebar/accordion-custom-component.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\nimport React, { FC, useCallback, useContext, useMemo, useState } from 'react';\nimport {\n\tAppLink,\n\tFOLDERS,\n\t// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n\t// @ts-ignore\n\tROOT_NAME,\n\treplaceHistory,\n\tuseUserSettings,\n\tgetBridgedFunctions,\n\tuseUserAccount,\n\tpushHistory,\n\tAccordionFolder\n} from '@zextras/carbonio-shell-ui';\nimport styled from 'styled-components';\nimport {\n\tAccordionItem,\n\tDropdown,\n\tDrag,\n\tDrop,\n\tContainer,\n\tTooltip,\n\tAvatar,\n\tIcon,\n\tRow,\n\tPadding,\n\tModalManagerContext\n} from '@zextras/carbonio-design-system';\nimport { find, startsWith } from 'lodash';\nimport { useTranslation } from 'react-i18next';\nimport { useDispatch } from 'react-redux';\nimport { useParams } from 'react-router-dom';\nimport { convAction, msgAction, search } from '../../store/actions';\nimport { folderAction } from '../../store/actions/folder-action';\nimport { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';\nimport { NewModal } from './new-modal';\nimport { MoveModal } from './move-modal';\nimport { EmptyModal } from './empty-modal';\nimport { DeleteModal } from './delete-modal';\nimport { EditModal } from './edit-modal';\nimport { SharesInfoModal } from './shares-info-modal';\nimport ShareFolderModal from './share-folder-modal';\nimport { FolderActionsType } from '../../commons/utils';\nimport { DataProps } from '../../types';\n\nconst FittedRow = styled(Row)`\n\tmax-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));\n\theight: 48px;\n`;\n\nconst DropOverlayContainer = styled(Container)`\n\tposition: absolute;\n\twidth: calc(248px - ${(props): number => (props.folder.level - 2) * 16}px);\n\theight: 100%;\n\tbackground: ${(props): string => props.theme.palette.primary.regular};\n\tborder-radius: 4px;\n\tborder: 4px solid #d5e3f6;\n\topacity: 0.4;\n`;\n\nconst DropDenyOverlayContainer = styled(Container)`\n\tposition: absolute;\n\twidth: calc(248px - ${(props): number => (props.folder.level - 2) * 16}px);\n\theight: 100%;\n\tbackground: ${(props): string => props.theme.palette.gray1.regular};\n\tborder-radius: 4px;\n\tborder: 4px solid #d5e3f6;\n\topacity: 0.4;\n`;\n\ntype FolderActionsProps = {\n\tid: string;\n\ticon: string;\n\tlabel: string;\n\tclick: (e: MouseEvent) => void;\n\tdisabled?: boolean;\n};\n\nconst useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> => {\n\tconst [t] = useTranslation();\n\tconst dispatch = useDispatch();\n\t// eslint-disable-next-line @typescript-eslint/ban-types\n\tconst createModal = useContext(ModalManagerContext) as Function;\n\tconst [activeModal, setActiveModal] = useState('default');\n\tconst [activeGrant, setActiveGrant] = useState({});\n\tconst goBack = useCallback(() => {\n\t\tsetActiveModal('default');\n\t}, [setActiveModal]);\n\n\tconst actions = useMemo(\n\t\t() => [\n\t\t\t{\n\t\t\t\tid: FolderActionsType.NEW,\n\t\t\t\ticon: 'FolderAddOutline',\n\t\t\t\tlabel: t('label.new_folder', 'New Folder'),\n\t\t\t\tclick: (e: MouseEvent): void => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\te.stopPropagation();\n\t\t\t\t\t}\n\t\t\t\t\tconst closeModal = createModal(\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tmaxHeight: '90vh',\n\t\t\t\t\t\t\tchildren: (\n\t\t\t\t\t\t\t\t<>\n\t\t\t\t\t\t\t\t\t<NewModal folder={folder} onClose={(): void => closeModal()} />\n\t\t\t\t\t\t\t\t</>\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t},\n\t\t\t\t\t\ttrue\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\tid: FolderActionsType.MOVE,\n\t\t\t\ticon: 'MoveOutline',\n\t\t\t\tlabel: startsWith(folder.folder?.absFolderPath, '/Trash')\n\t\t\t\t\t? t('label.restore', 'Restore')\n\t\t\t\t\t: t('label.move', 'Move'),\n\t\t\t\tclick: (e: MouseEvent): void => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\te.stopPropagation();\n\t\t\t\t\t}\n\t\t\t\t\tconst closeModal = createModal(\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tmaxHeight: '90vh',\n\t\t\t\t\t\t\tchildren: (\n\t\t\t\t\t\t\t\t<>\n\t\t\t\t\t\t\t\t\t<MoveModal folder={folder} onClose={(): void => closeModal()} />\n\t\t\t\t\t\t\t\t</>\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t},\n\t\t\t\t\t\ttrue\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\tid: FolderActionsType.EMPTY,\n\t\t\t\ticon: folder.id === FOLDERS.TRASH ? 'DeletePermanentlyOutline' : 'EmptyFolderOutline',\n\t\t\t\tlabel:\n\t\t\t\t\tfolder.id === FOLDERS.TRASH\n\t\t\t\t\t\t? t('folder_panel.action.empty.trash', 'Empty Trash')\n\t\t\t\t\t\t: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),\n\t\t\t\tdisabled: folder.folder?.n === 0 && folder.folder?.children?.length === 0,\n\t\t\t\tclick: (e: MouseEvent): void => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\te.stopPropagation();\n\t\t\t\t\t}\n\t\t\t\t\tconst closeModal = createModal(\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tchildren: (\n\t\t\t\t\t\t\t\t<>\n\t\t\t\t\t\t\t\t\t<EmptyModal onClose={(): void => closeModal()} folder={folder} />\n\t\t\t\t\t\t\t\t</>\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t},\n\t\t\t\t\t\ttrue\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\tid: FolderActionsType.EDIT,\n\t\t\t\ticon: 'Edit2Outline',\n\t\t\t\tlabel: folder?.folder?.isLink\n\t\t\t\t\t? t('folder_panel.action.edit_properties', 'Edit Properties')\n\t\t\t\t\t: t('label.edit', 'Edit'),\n\t\t\t\tclick: (e: MouseEvent): void => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\te.stopPropagation();\n\t\t\t\t\t}\n\t\t\t\t\tconst closeModal = createModal(\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tmaxHeight: '90vh',\n\t\t\t\t\t\t\tchildren: (\n\t\t\t\t\t\t\t\t<>\n\t\t\t\t\t\t\t\t\t<EditModal onClose={(): void => closeModal()} folder={folder} />\n\t\t\t\t\t\t\t\t</>\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t},\n\t\t\t\t\t\ttrue\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\tid: FolderActionsType.DELETE,\n\t\t\t\ticon: 'Trash2Outline',\n\t\t\t\tlabel: startsWith(folder.folder?.absFolderPath, '/Trash')\n\t\t\t\t\t? t('label.delete_permanently', 'Delete Permanently')\n\t\t\t\t\t: t('label.delete', 'Delete'),\n\t\t\t\tclick: (e: MouseEvent): void => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\te.stopPropagation();\n\t\t\t\t\t}\n\t\t\t\t\tconst closeModal = createModal(\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tchildren: (\n\t\t\t\t\t\t\t\t<>\n\t\t\t\t\t\t\t\t\t<DeleteModal onClose={(): void => closeModal()} folder={folder} />\n\t\t\t\t\t\t\t\t</>\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t},\n\t\t\t\t\t\ttrue\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\tid: FolderActionsType.SHARE,\n\t\t\t\ticon: 'ShareOutline',\n\t\t\t\tlabel: t('action.share_folder', 'Share folder'),\n\t\t\t\tclick: (e: MouseEvent): void => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\te.stopPropagation();\n\t\t\t\t\t}\n\t\t\t\t\tconst closeModal = createModal(\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tchildren: (\n\t\t\t\t\t\t\t\t<>\n\t\t\t\t\t\t\t\t\t<ShareFolderModal\n\t\t\t\t\t\t\t\t\t\tonClose={(): void => closeModal()}\n\t\t\t\t\t\t\t\t\t\tfolder={folder}\n\t\t\t\t\t\t\t\t\t\tactiveGrant={activeGrant}\n\t\t\t\t\t\t\t\t\t\tgoBack={goBack}\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t</>\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t},\n\t\t\t\t\t\ttrue\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\tid: FolderActionsType.REMOVE_FROM_LIST,\n\t\t\t\ticon: 'CloseOutline',\n\t\t\t\tlabel: t('label.remove_from_this_list', 'Remove from this list'),\n\t\t\t\tclick: (e): void => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\te.stopPropagation();\n\t\t\t\t\t\tdispatch(folderAction({ folder: folder.folder, op: 'delete' }));\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\tid: FolderActionsType.SHARES_INFO,\n\t\t\t\ticon: 'InfoOutline',\n\t\t\t\tlabel: t('label.shares_info', `Shared folder's info`),\n\t\t\t\tclick: (e): void => {\n\t\t\t\t\tif (e) {\n\t\t\t\t\t\te.stopPropagation();\n\t\t\t\t\t}\n\t\t\t\t\tconst closeModal = createModal(\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tchildren: (\n\t\t\t\t\t\t\t\t<>\n\t\t\t\t\t\t\t\t\t<SharesInfoModal onClose={(): void => closeModal()} folder={folder.folder} />\n\t\t\t\t\t\t\t\t</>\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t},\n\t\t\t\t\t\ttrue\n\t\t\t\t\t);\n\t\t\t\t}\n\t\t\t}\n\t\t],\n\t\t[activeGrant, createModal, dispatch, folder, goBack, t]\n\t);\n\n\tconst defaultFolderActions = useMemo(\n\t\t() =>\n\t\t\tactions.filter(\n\t\t\t\t(action) =>\n\t\t\t\t\taction.id !== FolderActionsType.SHARES_INFO &&\n\t\t\t\t\taction.id !== FolderActionsType.REMOVE_FROM_LIST\n\t\t\t),\n\t\t[actions]\n\t);\n\tconst id =\n\t\tfolder.id.indexOf(':') !== -1 ? folder.id.slice(folder.id.indexOf(':') + 1) : folder.id;\n\tswitch (id) {\n\t\t// default folders\n\t\tcase FOLDERS.INBOX:\n\t\tcase FOLDERS.SENT:\n\t\tcase FOLDERS.DRAFTS:\n\t\t\treturn defaultFolderActions.map((action) =>\n\t\t\t\taction.id === FolderActionsType.MOVE || action.id === FolderActionsType.DELETE\n\t\t\t\t\t? { ...action, disabled: true }\n\t\t\t\t\t: action\n\t\t\t);\n\n\t\tcase FOLDERS.SPAM:\n\t\t\treturn defaultFolderActions.map((action) =>\n\t\t\t\taction.id === FolderActionsType.NEW ||\n\t\t\t\taction.id === FolderActionsType.MOVE ||\n\t\t\t\taction.id === FolderActionsType.DELETE\n\t\t\t\t\t? { ...action, disabled: true }\n\t\t\t\t\t: action\n\t\t\t);\n\t\tcase FOLDERS.TRASH:\n\t\t\treturn defaultFolderActions.map((action) =>\n\t\t\t\taction.id === FolderActionsType.MOVE ||\n\t\t\t\taction.id === FolderActionsType.DELETE ||\n\t\t\t\taction.id === FolderActionsType.EDIT ||\n\t\t\t\taction.id === FolderActionsType.SHARE\n\t\t\t\t\t? { ...action, disabled: true }\n\t\t\t\t\t: action\n\t\t\t);\n\t\t// customizable folders\n\t\tdefault:\n\t\t\treturn folder.folder?.isLink\n\t\t\t\t? actions.filter(\n\t\t\t\t\t\t(action) =>\n\t\t\t\t\t\t\taction.id === FolderActionsType.SHARES_INFO ||\n\t\t\t\t\t\t\taction.id === FolderActionsType.REMOVE_FROM_LIST ||\n\t\t\t\t\t\t\taction.id === FolderActionsType.EDIT\n\t\t\t\t  )\n\t\t\t\t: defaultFolderActions.map((action) => {\n\t\t\t\t\t\tif (\n\t\t\t\t\t\t\tstartsWith(folder.folder?.absFolderPath, '/Trash') &&\n\t\t\t\t\t\t\t(action.id === FolderActionsType.NEW || action.id === FolderActionsType.EDIT)\n\t\t\t\t\t\t) {\n\t\t\t\t\t\t\treturn { ...action, disabled: true };\n\t\t\t\t\t\t}\n\t\t\t\t\t\treturn action;\n\t\t\t\t  });\n\t}\n};\n\ntype DragEnterAction =\n\t| undefined\n\t| {\n\t\t\tsuccess: false;\n\t  };\n\ntype OnDropActionProps = {\n\ttype: string;\n\tdata: DataProps;\n};\n\nconst badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);\nexport const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }) => {\n\tconst { folder } = item;\n\tconst accountName = useUserAccount().name;\n\tconst [t] = useTranslation();\n\tconst dispatch = useDispatch();\n\tconst { folderId } = useParams<{ folderId: string }>();\n\n\tconst onDragEnterAction = (data: OnDropActionProps): DragEnterAction => {\n\t\tif (data.type === 'conversation' || data.type === 'message') {\n\t\t\tif (\n\t\t\t\tdata.data.parentFolderId === folder.id || // same folder not allowed\n\t\t\t\t(data.data.parentFolderId === FOLDERS.INBOX && [5, 6].includes(Number(folder.id))) || // from inbox not allowed in draft and sent\n\t\t\t\t(data.data.parentFolderId === FOLDERS.DRAFTS && ![3].includes(Number(folder.id))) || // from draft only allowed in Trash\n\t\t\t\t(folder.id === FOLDERS.DRAFTS && data.data.parentFolderId !== FOLDERS.TRASH) || // only from Trash can move in Draft\n\t\t\t\t(folder.isLink && folder.perm?.indexOf('w') === -1) || // only if shared folder have write permission\n\t\t\t\tfolder.id === FOLDERS.USER_ROOT ||\n\t\t\t\tfolder.oname === ROOT_NAME\n\t\t\t) {\n\t\t\t\treturn { success: false };\n\t\t\t}\n\t\t}\n\t\tif (data.type === 'folder') {\n\t\t\tif (\n\t\t\t\tfolder.id === data.data.id || // same folder not allowed\n\t\t\t\tfolder.isLink || //  shared folder not allowed\n\t\t\t\t[FOLDERS.DRAFTS, FOLDERS.SPAM].includes(folder.id) // cannot be moved inside Draft and Spam\n\t\t\t)\n\t\t\t\treturn { success: false };\n\t\t}\n\t\treturn undefined;\n\t};\n\n\tconst onDropAction = (data: OnDropActionProps): void => {\n\t\tconst dragEnterResponse = onDragEnterAction(data);\n\t\tif (dragEnterResponse && dragEnterResponse?.success === false) return;\n\t\tlet convMsgsIds = [data.data.id];\n\t\tif (\n\t\t\tdata.type !== 'folder' &&\n\t\t\tdata.data?.selectedIDs?.length &&\n\t\t\tdata.data?.selectedIDs.includes(data.data.id)\n\t\t) {\n\t\t\tconvMsgsIds = data.data?.selectedIDs;\n\t\t}\n\n\t\tif (data.type === 'folder') {\n\t\t\tdispatch(folderAction({ folder: data.data, l: folder.id || FOLDERS.USER_ROOT, op: 'move' }))\n\t\t\t\t// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n\t\t\t\t// @ts-ignore\n\t\t\t\t.then((res) => {\n\t\t\t\t\tif (res.type.includes('fulfilled')) {\n\t\t\t\t\t\tgetBridgedFunctions().createSnackbar({\n\t\t\t\t\t\t\tkey: `move`,\n\t\t\t\t\t\t\treplace: true,\n\t\t\t\t\t\t\ttype: 'success',\n\t\t\t\t\t\t\tlabel: t('messages.snackbar.folder_moved', 'Folder successfully moved'),\n\t\t\t\t\t\t\tautoHideTimeout: 3000\n\t\t\t\t\t\t});\n\t\t\t\t\t} else {\n\t\t\t\t\t\tgetBridgedFunctions().createSnackbar({\n\t\t\t\t\t\t\tkey: `move`,\n\t\t\t\t\t\t\treplace: true,\n\t\t\t\t\t\t\ttype: 'error',\n\t\t\t\t\t\t\tlabel: t('label.error_try_again', 'Something went wrong, please try again.'),\n\t\t\t\t\t\t\tautoHideTimeout: 3000\n\t\t\t\t\t\t});\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t} else if (data.type === 'conversation') {\n\t\t\tdispatch(\n\t\t\t\tconvAction({\n\t\t\t\t\toperation: `move`,\n\t\t\t\t\tids: convMsgsIds,\n\t\t\t\t\tparent: folder.id\n\t\t\t\t})\n\t\t\t)\n\t\t\t\t// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n\t\t\t\t// @ts-ignore\n\t\t\t\t.then((res) => {\n\t\t\t\t\tif (res.type.includes('fulfilled')) {\n\t\t\t\t\t\treplaceHistory(`/folder/${folderId}`);\n\t\t\t\t\t\tgetBridgedFunctions().createSnackbar({\n\t\t\t\t\t\t\tkey: `edit`,\n\t\t\t\t\t\t\treplace: true,\n\t\t\t\t\t\t\ttype: 'info',\n\t\t\t\t\t\t\tlabel: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),\n\t\t\t\t\t\t\tautoHideTimeout: 3000,\n\t\t\t\t\t\t\tactionLabel: t('action.goto_folder', 'GO TO FOLDER'),\n\t\t\t\t\t\t\tonActionClick: () => {\n\t\t\t\t\t\t\t\treplaceHistory(`/folder/${folder.id}`);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t} else {\n\t\t\t\t\t\tgetBridgedFunctions().createSnackbar({\n\t\t\t\t\t\t\tkey: `edit`,\n\t\t\t\t\t\t\treplace: true,\n\t\t\t\t\t\t\ttype: 'error',\n\t\t\t\t\t\t\tlabel: t('label.error_try_again', 'Something went wrong, please try again'),\n\t\t\t\t\t\t\tautoHideTimeout: 3000,\n\t\t\t\t\t\t\thideButton: true\n\t\t\t\t\t\t});\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t} else {\n\t\t\tdispatch(\n\t\t\t\tmsgAction({\n\t\t\t\t\toperation: `move`,\n\t\t\t\t\tids: convMsgsIds,\n\t\t\t\t\tparent: folder.id\n\t\t\t\t})\n\t\t\t)\n\t\t\t\t// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n\t\t\t\t// @ts-ignore\n\t\t\t\t.then((res) => {\n\t\t\t\t\tif (res.type.includes('fulfilled')) {\n\t\t\t\t\t\tgetBridgedFunctions().createSnackbar({\n\t\t\t\t\t\t\tkey: `edit`,\n\t\t\t\t\t\t\treplace: true,\n\t\t\t\t\t\t\ttype: 'info',\n\t\t\t\t\t\t\tlabel: t('messages.snackbar.message_move', 'Message successfully moved'),\n\t\t\t\t\t\t\tautoHideTimeout: 3000,\n\t\t\t\t\t\t\tactionLabel: t('action.goto_folder', 'GO TO FOLDER'),\n\t\t\t\t\t\t\tonActionClick: () => {\n\t\t\t\t\t\t\t\treplaceHistory(`/folder/${folder.id}`);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t} else {\n\t\t\t\t\t\tgetBridgedFunctions().createSnackbar({\n\t\t\t\t\t\t\tkey: `edit`,\n\t\t\t\t\t\t\treplace: true,\n\t\t\t\t\t\t\ttype: 'error',\n\t\t\t\t\t\t\tlabel: t('label.error_try_again', 'Something went wrong, please try again'),\n\t\t\t\t\t\t\tautoHideTimeout: 3000,\n\t\t\t\t\t\t\thideButton: true\n\t\t\t\t\t\t});\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t}\n\t};\n\n\tconst dragFolderDisable = useMemo(\n\t\t() =>\n\t\t\t[FOLDERS.INBOX, FOLDERS.TRASH, FOLDERS.SPAM, FOLDERS.SENT, FOLDERS.DRAFTS].includes(\n\t\t\t\tfolder.id\n\t\t\t) || folder.isLink, // Default folders and shared folders not allowed to drag\n\t\t[folder.id, folder.isLink]\n\t);\n\tconst { zimbraPrefGroupMailBy } = useUserSettings().prefs;\n\n\t/* NOTE: Need to comment out when need to sort as per the configured sort order */\n\t// const { zimbraPrefSortOrder, zimbraPrefGroupMailBy } = useUserSettings().prefs;\n\t// const sorting = useMemo(() => {\n\t// \tif (typeof zimbraPrefSortOrder === 'string') {\n\t// \t\treturn (\n\t// \t\t\tfind(zimbraPrefSortOrder?.split(','), (f) => f?.split(':')?.[0] === folder.id)?.split(\n\t// \t\t\t\t':'\n\t// \t\t\t)?.[1] ?? 'dateDesc'\n\t// \t\t);\n\t// \t}\n\t// \treturn 'dateDesc';\n\t// }, [zimbraPrefSortOrder, folder.id]) as 'dateDesc' | 'dateAsc';\n\n\tconst onClick = useCallback((): void => {\n\t\tpushHistory(`/folder/${folder.id}`);\n\t\tdispatch(\n\t\t\tsearch({\n\t\t\t\tfolderId: folder.id,\n\t\t\t\tlimit: 101,\n\t\t\t\tsortBy: 'dateDesc',\n\t\t\t\t// folder.id === FOLDERS.DRAFTS ? 'message' : zimbraPrefGroupMailBy\n\t\t\t\ttypes:\n\t\t\t\t\tfolder.id === FOLDERS.DRAFTS || typeof zimbraPrefGroupMailBy !== 'string'\n\t\t\t\t\t\t? 'message'\n\t\t\t\t\t\t: zimbraPrefGroupMailBy\n\t\t\t})\n\t\t);\n\t}, [dispatch, folder.id, zimbraPrefGroupMailBy]);\n\n\tconst accordionItem = useMemo(\n\t\t() => ({\n\t\t\t...item,\n\t\t\tlabel:\n\t\t\t\titem.id === FOLDERS.USER_ROOT\n\t\t\t\t\t? accountName\n\t\t\t\t\t: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),\n\t\t\ticon: getFolderIconName(item),\n\t\t\ticonColor: getFolderIconColor(item),\n\t\t\t// open: openIds ? openIds.includes(folder.id) : false,\n\t\t\tbadgeCounter: badgeCount(item.id === FOLDERS.DRAFTS ? item?.folder.n : item?.folder?.u),\n\t\t\tbadgeType: item.id === FOLDERS.DRAFTS ? 'read' : 'unread',\n\t\t\tto: `/folder/${item.id}`,\n\t\t\ttextProps: { size: 'small' }\n\t\t}),\n\t\t[item, accountName, t]\n\t);\n\n\tconst dropdownItems = useFolderActions(item);\n\n\tconst statusIcon = useMemo(() => {\n\t\tconst RowWithIcon = (icon: string, color: string, tooltipText: string): JSX.Element => (\n\t\t\t<Padding left=\"small\">\n\t\t\t\t<Tooltip placement=\"right\" label={tooltipText}>\n\t\t\t\t\t<Row>\n\t\t\t\t\t\t<Icon icon={icon} color={color} size=\"medium\" />\n\t\t\t\t\t</Row>\n\t\t\t\t</Tooltip>\n\t\t\t</Padding>\n\t\t);\n\n\t\tif (folder.acl?.grant) {\n\t\t\tconst tooltipText = t('tooltip.folder_sharing_status', {\n\t\t\t\tcount: folder.acl.grant.length,\n\t\t\t\tdefaultValue_one: 'Shared with {{count}} person',\n\t\t\t\tdefaultValue: 'Shared with {{count}} people'\n\t\t\t});\n\t\t\treturn RowWithIcon('Shared', 'shared', tooltipText);\n\t\t}\n\t\tif (folder.isLink) {\n\t\t\tconst tooltipText = t('tooltip.folder_linked_status', 'Linked to me');\n\t\t\treturn RowWithIcon('Linked', 'linked', tooltipText);\n\t\t}\n\t\treturn '';\n\t}, [folder, t]);\n\n\t// hide folders where a share was provided and subsequently removed\n\tif (folder.broken) {\n\t\treturn <></>;\n\t}\n\n\treturn folder.id === FOLDERS.USER_ROOT || folder.oname === ROOT_NAME ? (\n\t\t<FittedRow>\n\t\t\t<Padding horizontal=\"small\">\n\t\t\t\t<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size=\"medium\" />\n\t\t\t</Padding>\n\t\t\t<Tooltip label={accordionItem.label} placement=\"right\" maxWidth=\"100%\">\n\t\t\t\t<AccordionItem item={accordionItem} />\n\t\t\t</Tooltip>\n\t\t</FittedRow>\n\t) : (\n\t\t<Drop\n\t\t\tacceptType={['message', 'conversation', 'folder']}\n\t\t\tonDrop={(data: OnDropActionProps): void => onDropAction(data)}\n\t\t\tonDragEnter={(data: OnDropActionProps): unknown => onDragEnterAction(data)}\n\t\t\toverlayAcceptComponent={<DropOverlayContainer folder={folder} />}\n\t\t\toverlayDenyComponent={<DropDenyOverlayContainer folder={folder} />}\n\t\t>\n\t\t\t<Drag\n\t\t\t\ttype=\"folder\"\n\t\t\t\tdata={folder}\n\t\t\t\tdragDisabled={dragFolderDisable}\n\t\t\t\tstyle={{ display: 'block' }}\n\t\t\t>\n\t\t\t\t<AppLink\n\t\t\t\t\tonClick={onClick}\n\t\t\t\t\tto={`/folder/${folder.id}`}\n\t\t\t\t\tstyle={{ width: '100%', height: '100%', textDecoration: 'none' }}\n\t\t\t\t>\n\t\t\t\t\t<Dropdown contextMenu items={dropdownItems} display=\"block\" width=\"100%\">\n\t\t\t\t\t\t<Row>\n\t\t\t\t\t\t\t<Padding left=\"small\" />\n\t\t\t\t\t\t\t<Tooltip label={accordionItem.label} placement=\"right\" maxWidth=\"100%\">\n\t\t\t\t\t\t\t\t<AccordionItem item={accordionItem}>{statusIcon}</AccordionItem>\n\t\t\t\t\t\t\t</Tooltip>\n\t\t\t\t\t\t</Row>\n\t\t\t\t\t</Dropdown>\n\t\t\t\t</AppLink>\n\t\t\t</Drag>\n\t\t</Drop>\n\t);\n};\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/views/sidebar/accordion-custom-component.tsx b/src/views/sidebar/accordion-custom-component.tsx
+--- a/src/views/sidebar/accordion-custom-component.tsx	(revision 4adaba21c8889cfd3cf44adf6271b75e82f59433)
++++ b/src/views/sidebar/accordion-custom-component.tsx	(date 1661441789000)
+@@ -3,57 +3,48 @@
+  *
+  * SPDX-License-Identifier: AGPL-3.0-only
+  */
+-import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
++import {
++	AccordionItem,
++	Avatar,
++	Container,
++	Drag,
++	Drop,
++	Dropdown,
++	Icon,
++	Padding,
++	Row,
++	Tooltip
++} from '@zextras/carbonio-design-system';
+ import {
+ 	AppLink,
++	Folder,
+ 	FOLDERS,
++	getBridgedFunctions,
++	pushHistory,
++	replaceHistory,
+ 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 	// @ts-ignore
+ 	ROOT_NAME,
+-	replaceHistory,
+-	useUserSettings,
+-	getBridgedFunctions,
+ 	useUserAccount,
+-	pushHistory,
+-	AccordionFolder
++	useUserSettings
+ } from '@zextras/carbonio-shell-ui';
+-import styled from 'styled-components';
+-import {
+-	AccordionItem,
+-	Dropdown,
+-	Drag,
+-	Drop,
+-	Container,
+-	Tooltip,
+-	Avatar,
+-	Icon,
+-	Row,
+-	Padding,
+-	ModalManagerContext
+-} from '@zextras/carbonio-design-system';
+-import { find, startsWith } from 'lodash';
++import React, { FC, useCallback, useMemo } from 'react';
+ import { useTranslation } from 'react-i18next';
+ import { useDispatch } from 'react-redux';
+ import { useParams } from 'react-router-dom';
++import styled from 'styled-components';
+ import { convAction, msgAction, search } from '../../store/actions';
+ import { folderAction } from '../../store/actions/folder-action';
+-import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
+-import { NewModal } from './new-modal';
+-import { MoveModal } from './move-modal';
+-import { EmptyModal } from './empty-modal';
+-import { DeleteModal } from './delete-modal';
+-import { EditModal } from './edit-modal';
+-import { SharesInfoModal } from './shares-info-modal';
+-import ShareFolderModal from './share-folder-modal';
+-import { FolderActionsType } from '../../commons/utils';
+ import { DataProps } from '../../types';
++import { useFolderActions } from './use-folder-actions';
++import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
+ 
+ const FittedRow = styled(Row)`
+ 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
+ 	height: 48px;
+ `;
+ 
+-const DropOverlayContainer = styled(Container)`
++export const DropOverlayContainer = styled(Container)`
+ 	position: absolute;
+ 	width: calc(248px - ${(props): number => (props.folder.level - 2) * 16}px);
+ 	height: 100%;
+@@ -62,8 +53,7 @@
+ 	border: 4px solid #d5e3f6;
+ 	opacity: 0.4;
+ `;
+-
+-const DropDenyOverlayContainer = styled(Container)`
++export const DropDenyOverlayContainer = styled(Container)`
+ 	position: absolute;
+ 	width: calc(248px - ${(props): number => (props.folder.level - 2) * 16}px);
+ 	height: 100%;
+@@ -72,304 +62,52 @@
+ 	border: 4px solid #d5e3f6;
+ 	opacity: 0.4;
+ `;
+-
+-type FolderActionsProps = {
+-	id: string;
+-	icon: string;
+-	label: string;
+-	click: (e: MouseEvent) => void;
+-	disabled?: boolean;
+-};
+-
+-const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> => {
+-	const [t] = useTranslation();
+-	const dispatch = useDispatch();
+-	// eslint-disable-next-line @typescript-eslint/ban-types
+-	const createModal = useContext(ModalManagerContext) as Function;
+-	const [activeModal, setActiveModal] = useState('default');
+-	const [activeGrant, setActiveGrant] = useState({});
+-	const goBack = useCallback(() => {
+-		setActiveModal('default');
+-	}, [setActiveModal]);
+-
+-	const actions = useMemo(
+-		() => [
+-			{
+-				id: FolderActionsType.NEW,
+-				icon: 'FolderAddOutline',
+-				label: t('label.new_folder', 'New Folder'),
+-				click: (e: MouseEvent): void => {
+-					if (e) {
+-						e.stopPropagation();
+-					}
+-					const closeModal = createModal(
+-						{
+-							maxHeight: '90vh',
+-							children: (
+-								<>
+-									<NewModal folder={folder} onClose={(): void => closeModal()} />
+-								</>
+-							)
+-						},
+-						true
+-					);
+-				}
+-			},
+-			{
+-				id: FolderActionsType.MOVE,
+-				icon: 'MoveOutline',
+-				label: startsWith(folder.folder?.absFolderPath, '/Trash')
+-					? t('label.restore', 'Restore')
+-					: t('label.move', 'Move'),
+-				click: (e: MouseEvent): void => {
+-					if (e) {
+-						e.stopPropagation();
+-					}
+-					const closeModal = createModal(
+-						{
+-							maxHeight: '90vh',
+-							children: (
+-								<>
+-									<MoveModal folder={folder} onClose={(): void => closeModal()} />
+-								</>
+-							)
+-						},
+-						true
+-					);
+-				}
+-			},
+-			{
+-				id: FolderActionsType.EMPTY,
+-				icon: folder.id === FOLDERS.TRASH ? 'DeletePermanentlyOutline' : 'EmptyFolderOutline',
+-				label:
+-					folder.id === FOLDERS.TRASH
+-						? t('folder_panel.action.empty.trash', 'Empty Trash')
+-						: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
+-				disabled: folder.folder?.n === 0 && folder.folder?.children?.length === 0,
+-				click: (e: MouseEvent): void => {
+-					if (e) {
+-						e.stopPropagation();
+-					}
+-					const closeModal = createModal(
+-						{
+-							children: (
+-								<>
+-									<EmptyModal onClose={(): void => closeModal()} folder={folder} />
+-								</>
+-							)
+-						},
+-						true
+-					);
+-				}
+-			},
+-			{
+-				id: FolderActionsType.EDIT,
+-				icon: 'Edit2Outline',
+-				label: folder?.folder?.isLink
+-					? t('folder_panel.action.edit_properties', 'Edit Properties')
+-					: t('label.edit', 'Edit'),
+-				click: (e: MouseEvent): void => {
+-					if (e) {
+-						e.stopPropagation();
+-					}
+-					const closeModal = createModal(
+-						{
+-							maxHeight: '90vh',
+-							children: (
+-								<>
+-									<EditModal onClose={(): void => closeModal()} folder={folder} />
+-								</>
+-							)
+-						},
+-						true
+-					);
+-				}
+-			},
+-			{
+-				id: FolderActionsType.DELETE,
+-				icon: 'Trash2Outline',
+-				label: startsWith(folder.folder?.absFolderPath, '/Trash')
+-					? t('label.delete_permanently', 'Delete Permanently')
+-					: t('label.delete', 'Delete'),
+-				click: (e: MouseEvent): void => {
+-					if (e) {
+-						e.stopPropagation();
+-					}
+-					const closeModal = createModal(
+-						{
+-							children: (
+-								<>
+-									<DeleteModal onClose={(): void => closeModal()} folder={folder} />
+-								</>
+-							)
+-						},
+-						true
+-					);
+-				}
+-			},
+-			{
+-				id: FolderActionsType.SHARE,
+-				icon: 'ShareOutline',
+-				label: t('action.share_folder', 'Share folder'),
+-				click: (e: MouseEvent): void => {
+-					if (e) {
+-						e.stopPropagation();
+-					}
+-					const closeModal = createModal(
+-						{
+-							children: (
+-								<>
+-									<ShareFolderModal
+-										onClose={(): void => closeModal()}
+-										folder={folder}
+-										activeGrant={activeGrant}
+-										goBack={goBack}
+-									/>
+-								</>
+-							)
+-						},
+-						true
+-					);
+-				}
+-			},
+-			{
+-				id: FolderActionsType.REMOVE_FROM_LIST,
+-				icon: 'CloseOutline',
+-				label: t('label.remove_from_this_list', 'Remove from this list'),
+-				click: (e): void => {
+-					if (e) {
+-						e.stopPropagation();
+-						dispatch(folderAction({ folder: folder.folder, op: 'delete' }));
+-					}
+-				}
+-			},
+-			{
+-				id: FolderActionsType.SHARES_INFO,
+-				icon: 'InfoOutline',
+-				label: t('label.shares_info', `Shared folder's info`),
+-				click: (e): void => {
+-					if (e) {
+-						e.stopPropagation();
+-					}
+-					const closeModal = createModal(
+-						{
+-							children: (
+-								<>
+-									<SharesInfoModal onClose={(): void => closeModal()} folder={folder.folder} />
+-								</>
+-							)
+-						},
+-						true
+-					);
+-				}
+-			}
+-		],
+-		[activeGrant, createModal, dispatch, folder, goBack, t]
+-	);
+-
+-	const defaultFolderActions = useMemo(
+-		() =>
+-			actions.filter(
+-				(action) =>
+-					action.id !== FolderActionsType.SHARES_INFO &&
+-					action.id !== FolderActionsType.REMOVE_FROM_LIST
+-			),
+-		[actions]
+-	);
+-	const id =
+-		folder.id.indexOf(':') !== -1 ? folder.id.slice(folder.id.indexOf(':') + 1) : folder.id;
+-	switch (id) {
+-		// default folders
+-		case FOLDERS.INBOX:
+-		case FOLDERS.SENT:
+-		case FOLDERS.DRAFTS:
+-			return defaultFolderActions.map((action) =>
+-				action.id === FolderActionsType.MOVE || action.id === FolderActionsType.DELETE
+-					? { ...action, disabled: true }
+-					: action
+-			);
+-
+-		case FOLDERS.SPAM:
+-			return defaultFolderActions.map((action) =>
+-				action.id === FolderActionsType.NEW ||
+-				action.id === FolderActionsType.MOVE ||
+-				action.id === FolderActionsType.DELETE
+-					? { ...action, disabled: true }
+-					: action
+-			);
+-		case FOLDERS.TRASH:
+-			return defaultFolderActions.map((action) =>
+-				action.id === FolderActionsType.MOVE ||
+-				action.id === FolderActionsType.DELETE ||
+-				action.id === FolderActionsType.EDIT ||
+-				action.id === FolderActionsType.SHARE
+-					? { ...action, disabled: true }
+-					: action
+-			);
+-		// customizable folders
+-		default:
+-			return folder.folder?.isLink
+-				? actions.filter(
+-						(action) =>
+-							action.id === FolderActionsType.SHARES_INFO ||
+-							action.id === FolderActionsType.REMOVE_FROM_LIST ||
+-							action.id === FolderActionsType.EDIT
+-				  )
+-				: defaultFolderActions.map((action) => {
+-						if (
+-							startsWith(folder.folder?.absFolderPath, '/Trash') &&
+-							(action.id === FolderActionsType.NEW || action.id === FolderActionsType.EDIT)
+-						) {
+-							return { ...action, disabled: true };
+-						}
+-						return action;
+-				  });
+-	}
+-};
+-
+-type DragEnterAction =
++export type DragEnterAction =
+ 	| undefined
+ 	| {
+ 			success: false;
+ 	  };
+-
+-type OnDropActionProps = {
++export type OnDropActionProps = {
+ 	type: string;
+ 	data: DataProps;
+ };
+ 
+ const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);
+-export const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }) => {
+-	const { folder } = item;
++
++const AccordionCustomComponentRaw: FC<{ item: Folder }> = ({ item }) => {
++	console.count('@@AccordionCustomComponent');
+ 	const accountName = useUserAccount().name;
+ 	const [t] = useTranslation();
+ 	const dispatch = useDispatch();
+ 	const { folderId } = useParams<{ folderId: string }>();
+ 
+-	const onDragEnterAction = (data: OnDropActionProps): DragEnterAction => {
+-		if (data.type === 'conversation' || data.type === 'message') {
+-			if (
+-				data.data.parentFolderId === folder.id || // same folder not allowed
+-				(data.data.parentFolderId === FOLDERS.INBOX && [5, 6].includes(Number(folder.id))) || // from inbox not allowed in draft and sent
+-				(data.data.parentFolderId === FOLDERS.DRAFTS && ![3].includes(Number(folder.id))) || // from draft only allowed in Trash
+-				(folder.id === FOLDERS.DRAFTS && data.data.parentFolderId !== FOLDERS.TRASH) || // only from Trash can move in Draft
+-				(folder.isLink && folder.perm?.indexOf('w') === -1) || // only if shared folder have write permission
+-				folder.id === FOLDERS.USER_ROOT ||
+-				folder.oname === ROOT_NAME
+-			) {
+-				return { success: false };
+-			}
+-		}
+-		if (data.type === 'folder') {
+-			if (
+-				folder.id === data.data.id || // same folder not allowed
+-				folder.isLink || //  shared folder not allowed
+-				[FOLDERS.DRAFTS, FOLDERS.SPAM].includes(folder.id) // cannot be moved inside Draft and Spam
+-			)
+-				return { success: false };
+-		}
+-		return undefined;
+-	};
++	const onDragEnterAction = useCallback(
++		(data: OnDropActionProps): DragEnterAction => {
++			if (data.type === 'conversation' || data.type === 'message') {
++				if (
++					data.data.parentFolderId === item.id || // same folder not allowed
++					(data.data.parentFolderId === FOLDERS.INBOX && [5, 6].includes(Number(item.id))) || // from inbox not allowed in draft and sent
++					(data.data.parentFolderId === FOLDERS.DRAFTS && ![3].includes(Number(item.id))) || // from draft only allowed in Trash
++					(item.id === FOLDERS.DRAFTS && data.data.parentFolderId !== FOLDERS.TRASH) || // only from Trash can move in Draft
++					(item.isLink && item.perm?.indexOf('w') === -1) || // only if shared folder have write permission
++					item.id === FOLDERS.USER_ROOT ||
++					(item.isLink && item.oname === ROOT_NAME)
++				) {
++					return { success: false };
++				}
++			}
++			if (data.type === 'folder') {
++				if (
++					item.id === data.data.id || // same folder not allowed
++					item.isLink || //  shared folder not allowed
++					[FOLDERS.DRAFTS, FOLDERS.SPAM].includes(item.id) // cannot be moved inside Draft and Spam
++				)
++					return { success: false };
++			}
++			return undefined;
++		},
++		[item]
++	);
+ 
+ 	const onDropAction = (data: OnDropActionProps): void => {
+ 		const dragEnterResponse = onDragEnterAction(data);
+@@ -384,7 +122,7 @@
+ 		}
+ 
+ 		if (data.type === 'folder') {
+-			dispatch(folderAction({ folder: data.data, l: folder.id || FOLDERS.USER_ROOT, op: 'move' }))
++			dispatch(folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }))
+ 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 				// @ts-ignore
+ 				.then((res) => {
+@@ -411,7 +149,7 @@
+ 				convAction({
+ 					operation: `move`,
+ 					ids: convMsgsIds,
+-					parent: folder.id
++					parent: item.id
+ 				})
+ 			)
+ 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+@@ -427,7 +165,7 @@
+ 							autoHideTimeout: 3000,
+ 							actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
+ 							onActionClick: () => {
+-								replaceHistory(`/folder/${folder.id}`);
++								replaceHistory(`/folder/${item.id}`);
+ 							}
+ 						});
+ 					} else {
+@@ -446,7 +184,7 @@
+ 				msgAction({
+ 					operation: `move`,
+ 					ids: convMsgsIds,
+-					parent: folder.id
++					parent: item.id
+ 				})
+ 			)
+ 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+@@ -461,7 +199,7 @@
+ 							autoHideTimeout: 3000,
+ 							actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
+ 							onActionClick: () => {
+-								replaceHistory(`/folder/${folder.id}`);
++								replaceHistory(`/folder/${item.id}`);
+ 							}
+ 						});
+ 					} else {
+@@ -481,9 +219,9 @@
+ 	const dragFolderDisable = useMemo(
+ 		() =>
+ 			[FOLDERS.INBOX, FOLDERS.TRASH, FOLDERS.SPAM, FOLDERS.SENT, FOLDERS.DRAFTS].includes(
+-				folder.id
+-			) || folder.isLink, // Default folders and shared folders not allowed to drag
+-		[folder.id, folder.isLink]
++				item.id
++			) || item.isLink, // Default folders and shared folders not allowed to drag
++		[item.id, item.isLink]
+ 	);
+ 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
+ 
+@@ -501,20 +239,20 @@
+ 	// }, [zimbraPrefSortOrder, folder.id]) as 'dateDesc' | 'dateAsc';
+ 
+ 	const onClick = useCallback((): void => {
+-		pushHistory(`/folder/${folder.id}`);
++		pushHistory(`/folder/${item.id}`);
+ 		dispatch(
+ 			search({
+-				folderId: folder.id,
++				folderId: item.id,
+ 				limit: 101,
+ 				sortBy: 'dateDesc',
+ 				// folder.id === FOLDERS.DRAFTS ? 'message' : zimbraPrefGroupMailBy
+ 				types:
+-					folder.id === FOLDERS.DRAFTS || typeof zimbraPrefGroupMailBy !== 'string'
++					item.id === FOLDERS.DRAFTS || typeof zimbraPrefGroupMailBy !== 'string'
+ 						? 'message'
+ 						: zimbraPrefGroupMailBy
+ 			})
+ 		);
+-	}, [dispatch, folder.id, zimbraPrefGroupMailBy]);
++	}, [dispatch, item.id, zimbraPrefGroupMailBy]);
+ 
+ 	const accordionItem = useMemo(
+ 		() => ({
+@@ -522,11 +260,11 @@
+ 			label:
+ 				item.id === FOLDERS.USER_ROOT
+ 					? accountName
+-					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),
++					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.name }),
+ 			icon: getFolderIconName(item),
+ 			iconColor: getFolderIconColor(item),
+ 			// open: openIds ? openIds.includes(folder.id) : false,
+-			badgeCounter: badgeCount(item.id === FOLDERS.DRAFTS ? item?.folder.n : item?.folder?.u),
++			badgeCounter: badgeCount(item.id === FOLDERS.DRAFTS ? item?.n : item?.u),
+ 			badgeType: item.id === FOLDERS.DRAFTS ? 'read' : 'unread',
+ 			to: `/folder/${item.id}`,
+ 			textProps: { size: 'small' }
+@@ -547,27 +285,27 @@
+ 			</Padding>
+ 		);
+ 
+-		if (folder.acl?.grant) {
++		if (item.acl?.grant) {
+ 			const tooltipText = t('tooltip.folder_sharing_status', {
+-				count: folder.acl.grant.length,
++				count: item.acl.grant.length,
+ 				defaultValue_one: 'Shared with {{count}} person',
+ 				defaultValue: 'Shared with {{count}} people'
+ 			});
+ 			return RowWithIcon('Shared', 'shared', tooltipText);
+ 		}
+-		if (folder.isLink) {
++		if (item.isLink) {
+ 			const tooltipText = t('tooltip.folder_linked_status', 'Linked to me');
+ 			return RowWithIcon('Linked', 'linked', tooltipText);
+ 		}
+ 		return '';
+-	}, [folder, t]);
++	}, [item, t]);
+ 
+ 	// hide folders where a share was provided and subsequently removed
+-	if (folder.broken) {
++	if (item.isLink && item.broken) {
+ 		return <></>;
+ 	}
+ 
+-	return folder.id === FOLDERS.USER_ROOT || folder.oname === ROOT_NAME ? (
++	return item.id === FOLDERS.USER_ROOT || (item.isLink && item.oname === ROOT_NAME) ? (
+ 		<FittedRow>
+ 			<Padding horizontal="small">
+ 				<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
+@@ -581,18 +319,13 @@
+ 			acceptType={['message', 'conversation', 'folder']}
+ 			onDrop={(data: OnDropActionProps): void => onDropAction(data)}
+ 			onDragEnter={(data: OnDropActionProps): unknown => onDragEnterAction(data)}
+-			overlayAcceptComponent={<DropOverlayContainer folder={folder} />}
+-			overlayDenyComponent={<DropDenyOverlayContainer folder={folder} />}
++			overlayAcceptComponent={<DropOverlayContainer folder={item} />}
++			overlayDenyComponent={<DropDenyOverlayContainer folder={item} />}
+ 		>
+-			<Drag
+-				type="folder"
+-				data={folder}
+-				dragDisabled={dragFolderDisable}
+-				style={{ display: 'block' }}
+-			>
++			<Drag type="folder" data={item} dragDisabled={dragFolderDisable} style={{ display: 'block' }}>
+ 				<AppLink
+ 					onClick={onClick}
+-					to={`/folder/${folder.id}`}
++					to={`/folder/${item.id}`}
+ 					style={{ width: '100%', height: '100%', textDecoration: 'none' }}
+ 				>
+ 					<Dropdown contextMenu items={dropdownItems} display="block" width="100%">
+@@ -608,3 +341,7 @@
+ 		</Drop>
+ 	);
+ };
++
++const AccordionCustomComponent = React.memo(AccordionCustomComponentRaw);
++
++export default AccordionCustomComponent;

@@ -12,10 +12,10 @@ import {
 	ZIMBRA_STANDARD_COLORS,
 	Tag,
 	FOLDERS,
-	useUserSettings
+	useUserSettings,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
 
 import { getTimeLabel, participantToString } from '../../commons/utils';
 import { ItemAvatar } from '../app/folder-panel/lists-item/item-avatar';
@@ -33,7 +33,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 	item,
 	isConvChildren = false
 }) => {
-	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 	const tagsFromStore = useTags();
 	const tags = useMemo(
@@ -63,7 +62,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 			return [getTimeLabel(item.date), participantToString(sender, t, accounts)];
 		}
 		return ['.', '.', '', ''];
-	}, [item, t, accounts]);
+	}, [item, accounts]);
 
 	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
 		if (item) {
@@ -99,7 +98,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 			}
 		}
 		return [false, '', '', '', ''];
-	}, [item, t]);
+	}, [item]);
 
 	const onClick = useCallback(
 		(e) => {
@@ -131,7 +130,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
 	const subject = useMemo(
 		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item.subject, t]
+		[item.subject]
 	);
 	const subFragmentTooltipLabel = useMemo(
 		() => (!isEmpty(item.fragment) ? item.fragment : subject),

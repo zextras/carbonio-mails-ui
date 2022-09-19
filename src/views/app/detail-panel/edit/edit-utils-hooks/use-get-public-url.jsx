@@ -5,10 +5,9 @@
  */
 
 import { SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { useIntegratedFunction } from '@zextras/carbonio-shell-ui';
+import { useIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import { useCallback, useContext, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { selectEditors } from '../../../../../store/editor-slice';
 
@@ -17,7 +16,6 @@ export const useGetPublicUrl = ({ editorId, updateEditorCb, saveDraftCb, setValu
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const editors = useSelector(selectEditors);
 	const editor = useMemo(() => editors[editorId], [editors, editorId]);
-	const [t] = useTranslation();
 
 	const getPublicUrl = useCallback(
 		(nodes) => {
@@ -68,7 +66,7 @@ export const useGetPublicUrl = ({ editorId, updateEditorCb, saveDraftCb, setValu
 				setValue('text', newEditor.text);
 			});
 		},
-		[createSnackbar, editor, getLink, saveDraftCb, setValue, t, updateEditorCb]
+		[createSnackbar, editor, getLink, saveDraftCb, setValue, updateEditorCb]
 	);
 
 	return [getPublicUrl, getLinkAvailable];

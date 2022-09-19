@@ -11,13 +11,13 @@ import {
 	Padding,
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
+import { t } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import ModalFooter from '../../../sidebar/commons/modal-footer';
 import { ModalHeader } from '../../../sidebar/commons/modal-header';
 import { msgAction } from '../../../../store/actions';
 import { sendDeliveryReport } from '../../../../store/actions/send-delivery-request';
-import { CreateSnackbar, MailMessage } from '../../../../types';
+import { MailMessage } from '../../../../types';
 
 type CompProps = {
 	open: boolean;
@@ -34,9 +34,8 @@ const ReadReceiptModal: FC<CompProps> = ({
 }): ReactElement => {
 	const dispatch = useDispatch();
 
-	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const title = useMemo(() => t('label.read_receipt_req', 'Read receipt required'), [t]);
+	const title = useMemo(() => t('label.read_receipt_req', 'Read receipt required'), []);
 	const onConfirm = useCallback(() => {
 		dispatch(
 			msgAction({
@@ -59,26 +58,26 @@ const ReadReceiptModal: FC<CompProps> = ({
 			});
 		});
 		onClose();
-	}, [createSnackbar, message.id, onClose, t]);
+	}, [createSnackbar, message.id, onClose]);
 
 	useEffect(() => {
 		if (message?.isReadReceiptRequested && readReceiptSetting === 'always' && !message?.isSentByMe)
 			onNotify();
 	}, [message?.isReadReceiptRequested, onNotify, readReceiptSetting, message?.isSentByMe]);
 
-	const confirmLabel = useMemo(() => t('label.do_not_notify', 'Do not notify'), [t]);
-	const notifyLabel = useMemo(() => t('label.notify', 'Notify'), [t]);
+	const confirmLabel = useMemo(() => t('label.do_not_notify', 'Do not notify'), []);
+	const notifyLabel = useMemo(() => t('label.notify', 'Notify'), []);
 	const messageLineOne = useMemo(
 		() =>
 			t(
 				'messages.read_receipt_1',
 				'The sender of this message has requested to be notified when you read this message.'
 			),
-		[t]
+		[]
 	);
 	const messageLineTwo = useMemo(
 		() => t('messages.read_receipt_2', 'Do you wish to notify the sender?'),
-		[t]
+		[]
 	);
 
 	return (

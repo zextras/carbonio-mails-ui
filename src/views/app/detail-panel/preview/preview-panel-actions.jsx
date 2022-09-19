@@ -12,9 +12,8 @@ import {
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { FOLDERS, useAppContext, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useAppContext, useUserAccount, t } from '@zextras/carbonio-shell-ui';
 import {
 	moveConversationToTrash,
 	printConversation,
@@ -25,7 +24,6 @@ import { replyAllMsg, replyMsg, setMsgRead } from '../../../../ui-actions/messag
 import { useSelection } from '../../../../hooks/useSelection';
 
 export default function PreviewPanelActions({ item, folderId, isMessageView, conversation }) {
-	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 	const account = useUserAccount();
@@ -55,7 +53,7 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 					// editTagsMsg
 				];
 		}
-	}, [createSnackbar, dispatch, folderId, ids, item, deselectAll, t]);
+	}, [createSnackbar, dispatch, folderId, ids, item, deselectAll]);
 
 	const secondaryActions = useMemo(() => {
 		switch (folderId) {
@@ -108,7 +106,6 @@ export default function PreviewPanelActions({ item, folderId, isMessageView, con
 		item.read,
 		item?.messages,
 		item?.id,
-		t,
 		dispatch,
 		isMessageView,
 		conversation,

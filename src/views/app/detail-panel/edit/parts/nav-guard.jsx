@@ -7,7 +7,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Prompt, useHistory } from 'react-router-dom';
 import { Modal, Padding, Text } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
+import { t } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../../../../sidebar/commons/modal-footer';
 
 export const RouteLeavingGuard = ({ when, onDeleteDraft }) => {
@@ -16,7 +16,6 @@ export const RouteLeavingGuard = ({ when, onDeleteDraft }) => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [lastLocation, setLastLocation] = useState(lastLocationInitial);
 	const [confirmedNavigation, setConfirmedNavigation] = useState(false);
-	const [t] = useTranslation();
 
 	const onDelete = () => {
 		setModalVisible(false);

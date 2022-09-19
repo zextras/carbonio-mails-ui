@@ -23,8 +23,7 @@ import {
 	Tooltip,
 	Badge
 } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
-
+import { t } from '@zextras/carbonio-shell-ui';
 import { useSelector } from 'react-redux';
 import { selectFolders } from '../../../../../store/folders-slice';
 import ContactNames from './contact-names';
@@ -34,7 +33,6 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 	message,
 	folderId
 }): ReactElement => {
-	const [t] = useTranslation();
 	const [open, setOpen] = useState(false);
 
 	const toggleOpen = useCallback((e) => {
@@ -68,9 +66,9 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 		() => folders[message.parent.includes(':') ? folderId : message.parent],
 		[folderId, folders, message.parent]
 	);
-	const labelTo = useMemo(() => `${t('label.to', 'To')}: `, [t]);
-	const labelCc = useMemo(() => `${t('label.cc', 'CC')}: `, [t]);
-	const labelBcc = useMemo(() => `${t('label.bcc', 'BCC')}: `, [t]);
+	const labelTo = useMemo(() => `${t('label.to', 'To')}: `, []);
+	const labelCc = useMemo(() => `${t('label.cc', 'CC')}: `, []);
+	const labelBcc = useMemo(() => `${t('label.bcc', 'BCC')}: `, []);
 
 	const showBadge = useMemo(
 		() => messageFolder?.name && messageFolder.id !== folderId,
@@ -86,7 +84,7 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 			open
 				? t('label.collapse_receivers_list', "Collapse receiver's list")
 				: t('label.expand_receivers_list', "Expand receiver's list"),
-		[t, open]
+		[open]
 	);
 
 	const containerRef = useRef<HTMLDivElement>(null);

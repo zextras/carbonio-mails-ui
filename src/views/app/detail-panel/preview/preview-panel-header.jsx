@@ -4,12 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
+import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { Container, Divider, Icon, IconButton, Row, Text } from '@zextras/carbonio-design-system';
 
 function PreviewPanelHeader({ item, folderId }) {
-	const [t] = useTranslation();
 	const replaceHistoryCallback = useCallback(
 		() => replaceHistory(`/folder/${folderId}`),
 		[folderId]

@@ -8,8 +8,8 @@ import React, { FC, useMemo } from 'react';
 import { FOLDERS, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { AccordionItem, Tooltip, Row, Padding } from '@zextras/carbonio-design-system';
 import {
-	getFolderIconColor,
-	getFolderIconName,
+	getFolderIconColorForAccordionFolder,
+	getFolderIconNameForAccordionFolder,
 	getFolderTranslatedName
 } from '../../sidebar/utils';
 
@@ -25,8 +25,8 @@ const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 				item.id === FOLDERS.USER_ROOT
 					? accountName
 					: getFolderTranslatedName({ folderId: item.id, folderName: item.label }),
-			icon: getFolderIconName(item),
-			iconColor: getFolderIconColor(item),
+			icon: getFolderIconNameForAccordionFolder(item),
+			iconColor: getFolderIconColorForAccordionFolder(item),
 			textProps: { size: 'small' }
 		}),
 		[item, accountName]

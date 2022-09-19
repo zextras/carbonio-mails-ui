@@ -5,13 +5,13 @@
  */
 /* eslint-disable no-nested-ternary */
 import React, { useMemo, useState, useRef, useCallback, useEffect, useContext } from 'react';
-import { useTranslation } from 'react-i18next';
 import { filter, find } from 'lodash';
 import {
 	useUserAccounts,
 	useIntegratedComponent,
 	useUserSettings,
-	FOLDERS
+	FOLDERS,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import {
@@ -183,7 +183,6 @@ const MailContent = ({ message, isMailPreviewOpen }) => {
 };
 
 const MailPreviewBlock = ({ message, open, onClick, isAlone }) => {
-	const [t] = useTranslation();
 	const { folderId } = useParams();
 
 	const createSnackbar = useContext(SnackbarManagerContext);
@@ -197,13 +196,12 @@ const MailPreviewBlock = ({ message, open, onClick, isAlone }) => {
 			setMsgAsSpam({
 				ids: [message.id],
 				value: true,
-				t,
 				dispatch,
 				createSnackbar,
 				shouldReplaceHistory: true,
 				folderId
 			}).click(),
-		[createSnackbar, dispatch, folderId, message.id, t]
+		[createSnackbar, dispatch, folderId, message.id]
 	);
 	return (
 		<>

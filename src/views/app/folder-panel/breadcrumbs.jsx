@@ -4,17 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Container, Divider, Row, Text, Padding } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 export function Breadcrumbs({ folderPath, itemsCount, folderId }) {
-	const [t] = useTranslation();
-
 	const folderTitle = useMemo(
 		() =>
 			folderId === FOLDERS.SPAM ? t('label.spam', 'Spam') : folderPath?.split('/')?.join(' / '),
-		[t, folderId, folderPath]
+		[folderId, folderPath]
 	);
 	return (
 		<Container

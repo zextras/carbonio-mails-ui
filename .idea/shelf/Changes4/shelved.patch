@@ -1,0 +1,160 @@
+Index: src/views/search/parts/folder-accordion-custom-comp.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\n\nimport React, { FC, useMemo } from 'react';\nimport {\n\tFOLDERS,\n\tuseUserAccount,\n\tAccordionFolder,\n\tuseUserSettings\n} from '@zextras/carbonio-shell-ui';\nimport { AccordionItem, Tooltip, Row, Padding } from '@zextras/carbonio-design-system';\nimport { useTranslation } from 'react-i18next';\n\nimport {\n\tgetFolderIconColor,\n\tgetFolderIconName,\n\tgetFolderTranslatedName\n} from '../../sidebar/utils';\n\nconst AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }) => {\n\tconst { folder } = item;\n\tconst accountName = useUserAccount().name;\n\tconst [t] = useTranslation();\n\n\tconst accordionItem = useMemo(\n\t\t() => ({\n\t\t\t...item,\n\t\t\tlabel:\n\t\t\t\titem.id === FOLDERS.USER_ROOT\n\t\t\t\t\t? accountName\n\t\t\t\t\t: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),\n\t\t\ticon: getFolderIconName(item),\n\t\t\ticonColor: getFolderIconColor(item),\n\t\t\ttextProps: { size: 'small' }\n\t\t}),\n\t\t[item, accountName, t]\n\t);\n\tconst settings = useUserSettings()?.prefs;\n\tconst [includeSpam, includeTrash, includeSharedFolders] = useMemo(\n\t\t() => [\n\t\t\tsettings?.zimbraPrefIncludeSpamInSearch === 'TRUE',\n\t\t\tsettings?.zimbraPrefIncludeTrashInSearch === 'TRUE',\n\t\t\tsettings?.zimbraPrefIncludeSharedItemsInSearch === 'TRUE'\n\t\t],\n\t\t[settings]\n\t);\n\n\tconst hasToExclude = useMemo(\n\t\t() =>\n\t\t\t(!includeTrash && folder.name === 'Trash') ||\n\t\t\t(!includeSpam && folder.name === 'Junk') ||\n\t\t\t(!includeSharedFolders && folder.isLink),\n\t\t[folder.isLink, folder.name, includeSharedFolders, includeSpam, includeTrash]\n\t);\n\n\tif (hasToExclude) return <></>;\n\treturn (\n\t\t<Row>\n\t\t\t<Padding left=\"small\" />\n\t\t\t<Tooltip label={accordionItem.label} placement=\"right\" maxWidth=\"100%\">\n\t\t\t\t<AccordionItem item={accordionItem} />\n\t\t\t</Tooltip>\n\t\t</Row>\n\t);\n};\n\nexport default AccordionCustomComponent;\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/views/search/parts/folder-accordion-custom-comp.tsx b/src/views/search/parts/folder-accordion-custom-comp.tsx
+--- a/src/views/search/parts/folder-accordion-custom-comp.tsx	(revision 625354c8af746681a130d381c5881a3713632fe6)
++++ b/src/views/search/parts/folder-accordion-custom-comp.tsx	(date 1661736228689)
+@@ -5,12 +5,7 @@
+  */
+ 
+ import React, { FC, useMemo } from 'react';
+-import {
+-	FOLDERS,
+-	useUserAccount,
+-	AccordionFolder,
+-	useUserSettings
+-} from '@zextras/carbonio-shell-ui';
++import { FOLDERS, useUserAccount, useUserSettings, Folder } from '@zextras/carbonio-shell-ui';
+ import { AccordionItem, Tooltip, Row, Padding } from '@zextras/carbonio-design-system';
+ import { useTranslation } from 'react-i18next';
+ 
+@@ -20,8 +15,7 @@
+ 	getFolderTranslatedName
+ } from '../../sidebar/utils';
+ 
+-const AccordionCustomComponent: FC<{ item: AccordionFolder }> = ({ item }) => {
+-	const { folder } = item;
++const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
+ 	const accountName = useUserAccount().name;
+ 	const [t] = useTranslation();
+ 
+@@ -31,7 +25,7 @@
+ 			label:
+ 				item.id === FOLDERS.USER_ROOT
+ 					? accountName
+-					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.label }),
++					: getFolderTranslatedName({ t, folderId: item.id, folderName: item.name }),
+ 			icon: getFolderIconName(item),
+ 			iconColor: getFolderIconColor(item),
+ 			textProps: { size: 'small' }
+@@ -50,10 +44,10 @@
+ 
+ 	const hasToExclude = useMemo(
+ 		() =>
+-			(!includeTrash && folder.name === 'Trash') ||
+-			(!includeSpam && folder.name === 'Junk') ||
+-			(!includeSharedFolders && folder.isLink),
+-		[folder.isLink, folder.name, includeSharedFolders, includeSpam, includeTrash]
++			(!includeTrash && item.name === 'Trash') ||
++			(!includeSpam && item.name === 'Junk') ||
++			(!includeSharedFolders && item.isLink),
++		[item.isLink, item.name, includeSharedFolders, includeSpam, includeTrash]
+ 	);
+ 
+ 	if (hasToExclude) return <></>;
+Index: src/views/search/parts/folder-modal.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>\n *\n * SPDX-License-Identifier: AGPL-3.0-only\n */\n\nimport React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';\nimport {\n\tContainer,\n\tCustomModal,\n\tInput,\n\tText,\n\tAccordion,\n\tAccordionItem,\n\tTooltip,\n\tAvatar,\n\tIcon,\n\tRow,\n\tPadding\n} from '@zextras/carbonio-design-system';\nimport { TFunction } from 'i18next';\nimport { filter, isEmpty, reduce, startsWith } from 'lodash';\n\nimport {\n\tAccordionFolder,\n\tFOLDERS,\n\tuseFolders,\n\tuseFoldersAccordionByView,\n\tuseUserAccount\n} from '@zextras/carbonio-shell-ui';\n\nimport styled from 'styled-components';\nimport ModalFooter from '../../sidebar/commons/modal-footer';\nimport { ModalHeader } from '../../sidebar/commons/modal-header';\nimport { FolderType } from '../../../types';\nimport { getFolderIconColor, getFolderTranslatedName } from '../../sidebar/utils';\nimport { FOLDER_VIEW } from '../../../constants';\nimport AccordionCustomComponent from './folder-accordion-custom-comp';\n\ntype ComponentProps = {\n\tcompProps: { open: boolean; onClose: () => void; setFolder: (arg: any) => void; t: TFunction };\n};\nconst ContainerEl = styled(Container)`\n\toverflow-y: auto;\n\tdisplay: block;\n`;\nconst FittedRow = styled(Row)`\n\tmax-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));\n\theight: 48px;\n`;\nconst getFolderOwner = (item: any): string => {\n\tif (item.owner) return item.owner;\n\tif (item.parent) {\n\t\treturn getFolderOwner(item.parent);\n\t}\n\treturn item.name;\n};\n\nconst CustomComponent: FC<{ item: AccordionFolder }> = ({ item }): ReactElement => (\n\t<FittedRow>\n\t\t<Padding horizontal=\"small\">\n\t\t\t<Avatar label={item.label} size=\"medium\" />\n\t\t</Padding>\n\t\t<Tooltip label={item.label} placement=\"right\" maxWidth=\"100%\">\n\t\t\t<AccordionItem item={item} />\n\t\t</Tooltip>\n\t</FittedRow>\n);\n\ntype CustomComponent = {\n\tCustomComponent: ReactElement;\n\tdivider: boolean;\n\tbackground: string | undefined;\n\tonClick: () => void;\n\titems: Array<any>;\n};\nconst FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {\n\tconst { open, onClose, setFolder, t } = compProps;\n\n\tconst [input, setInput] = useState('');\n\tconst [folderDestination, setFolderDestination] = useState<FolderType | any>({});\n\n\tconst foldersFromStore = useFolders();\n\n\tconst getFolderAbsPath = useCallback(\n\t\t(fid: string) => {\n\t\t\tconst path = foldersFromStore[fid]?.absFolderPath;\n\t\t\treturn filter(path?.split('/'), (p) => p !== '').join('/');\n\t\t},\n\t\t[foldersFromStore]\n\t);\n\tconst accountName = useUserAccount().name;\n\tconst [openIds, setOpenIds] = useState(['USER_ROOT']);\n\tconst additionalProps = (item: AccordionFolder): Record<string, any> => ({\n\t\tonClick: (): void => {\n\t\t\tsetFolderDestination(item);\n\t\t},\n\t\tonOpen: () => setOpenIds((s: Array<string>) => (s.includes(item.id) ? s : [...s, item.id])),\n\t\tonClose: () => setOpenIds((s: Array<string>) => s.filter((id: string) => id !== item.id)),\n\t\topenIds\n\t});\n\n\tconst accordions = useFoldersAccordionByView(\n\t\tFOLDER_VIEW.message,\n\t\t// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n\t\t// @ts-ignore\n\t\tAccordionCustomComponent,\n\t\tadditionalProps\n\t);\n\n\tconst requiredAcc = useMemo(() => {\n\t\tconst temp = reduce(\n\t\t\taccordions,\n\t\t\t(acc: Array<AccordionFolder & CustomComponent>, v) => {\n\t\t\t\tacc.push({\n\t\t\t\t\tid: v.id,\n\t\t\t\t\t// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n\t\t\t\t\t// @ts-ignore\n\t\t\t\t\tCustomComponent,\n\t\t\t\t\tlabel:\n\t\t\t\t\t\tv.id === FOLDERS.USER_ROOT\n\t\t\t\t\t\t\t? accountName\n\t\t\t\t\t\t\t: getFolderTranslatedName({ t, folderId: v.id, folderName: v.label }),\n\t\t\t\t\tdivider: true,\n\t\t\t\t\titems: v.items,\n\t\t\t\t\tbackground: folderDestination.id === v.id ? 'highlight' : undefined,\n\t\t\t\t\tonClick: () => {\n\t\t\t\t\t\tv.id !== FOLDERS.USER_ROOT && setFolderDestination(v);\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t\treturn acc;\n\t\t\t},\n\t\t\t[]\n\t\t);\n\n\t\treturn temp;\n\t}, [accordions, accountName, folderDestination.id, t]);\n\n\tconst filteredFolders = useMemo(\n\t\t() =>\n\t\t\tfilter(requiredAcc, (v) => {\n\t\t\t\tif (isEmpty(v)) {\n\t\t\t\t\treturn false;\n\t\t\t\t}\n\n\t\t\t\tconst folderName = getFolderTranslatedName({\n\t\t\t\t\tt,\n\t\t\t\t\tfolderId: v?.id,\n\t\t\t\t\tfolderName: v?.label\n\t\t\t\t})?.toLowerCase();\n\n\t\t\t\treturn startsWith(folderName, input.toLowerCase());\n\t\t\t}),\n\t\t[input, requiredAcc, t]\n\t);\n\n\tconst getFolderPath = useCallback(\n\t\t(folder: AccordionFolder) => {\n\t\t\tconst absoluteParent = getFolderOwner(folder.folder);\n\t\t\tconst relativePath = getFolderAbsPath(folder?.id);\n\n\t\t\tif (absoluteParent === 'USER_ROOT') {\n\t\t\t\treturn relativePath;\n\t\t\t}\n\t\t\tif (relativePath) {\n\t\t\t\treturn `${absoluteParent}/${relativePath}`;\n\t\t\t}\n\t\t\treturn absoluteParent;\n\t\t},\n\t\t[getFolderAbsPath]\n\t);\n\tconst onConfirm = useCallback(() => {\n\t\tconst folderPath = getFolderPath(folderDestination);\n\t\tsetFolder([\n\t\t\t{\n\t\t\t\tlabel: `in:${folderPath}`,\n\t\t\t\thasAvatar: true,\n\t\t\t\tmaxWidth: '200px',\n\t\t\t\tisGeneric: false,\n\t\t\t\tbackground: 'gray2',\n\t\t\t\tavatarBackground: getFolderIconColor(folderDestination),\n\t\t\t\tavatarIcon: 'FolderOutline',\n\t\t\t\tisQueryFilter: true,\n\t\t\t\tvalue: `in:\"${folderPath}\"`\n\t\t\t}\n\t\t]);\n\t\tonClose();\n\t}, [folderDestination, getFolderPath, setFolder, onClose]);\n\n\tconst disabled = useMemo(() => isEmpty(folderDestination), [folderDestination]);\n\n\treturn (\n\t\t<CustomModal open={open} onClose={onClose} maxHeight=\"90vh\" size=\"medium\">\n\t\t\t<Container\n\t\t\t\tpadding={{ all: 'large' }}\n\t\t\t\tmainAlignment=\"center\"\n\t\t\t\tcrossAlignment=\"flex-start\"\n\t\t\t\theight=\"fit\"\n\t\t\t>\n\t\t\t\t<ModalHeader title={t('share.is_contained_in', 'Is contained in')} onClose={onClose} />\n\t\t\t\t<Container mainAlignment=\"center\" crossAlignment=\"flex-start\">\n\t\t\t\t\t<Container\n\t\t\t\t\t\tpadding={{ all: 'small' }}\n\t\t\t\t\t\tmainAlignment=\"center\"\n\t\t\t\t\t\tcrossAlignment=\"flex-start\"\n\t\t\t\t\t\theight=\"fit\"\n\t\t\t\t\t>\n\t\t\t\t\t\t<Container\n\t\t\t\t\t\t\tpadding={{ all: 'small' }}\n\t\t\t\t\t\t\tmainAlignment=\"center\"\n\t\t\t\t\t\t\tcrossAlignment=\"flex-start\"\n\t\t\t\t\t\t>\n\t\t\t\t\t\t\t<Text overflow=\"break-word\">\n\t\t\t\t\t\t\t\t{t(\n\t\t\t\t\t\t\t\t\t'share.filter_folder_message',\n\t\t\t\t\t\t\t\t\t'Select a folder where to start your advanced search'\n\t\t\t\t\t\t\t\t)}\n\t\t\t\t\t\t\t</Text>\n\t\t\t\t\t\t</Container>\n\t\t\t\t\t\t<Input\n\t\t\t\t\t\t\tinputName=\"test\"\n\t\t\t\t\t\t\tlabel={t('label.filter_folders', 'Filter folders')}\n\t\t\t\t\t\t\tbackgroundColor=\"gray5\"\n\t\t\t\t\t\t\tvalue={input}\n\t\t\t\t\t\t\tCustomIcon={({ hasFocus }: { hasFocus: boolean }): ReactElement => (\n\t\t\t\t\t\t\t\t<Icon icon=\"FunnelOutline\" size=\"large\" color={hasFocus ? 'primary' : 'text'} />\n\t\t\t\t\t\t\t)}\n\t\t\t\t\t\t\tonChange={(e: ChangeEvent<HTMLInputElement>): void => setInput(e.target.value)}\n\t\t\t\t\t\t/>\n\n\t\t\t\t\t\t<ContainerEl\n\t\t\t\t\t\t\torientation=\"vertical\"\n\t\t\t\t\t\t\tmainAlignment=\"flex-start\"\n\t\t\t\t\t\t\tminHeight=\"30vh\"\n\t\t\t\t\t\t\tmaxHeight=\"60vh\"\n\t\t\t\t\t\t>\n\t\t\t\t\t\t\t<Accordion\n\t\t\t\t\t\t\t\titems={filteredFolders}\n\t\t\t\t\t\t\t\tactiveId={folderDestination?.id}\n\t\t\t\t\t\t\t\topenIds={openIds}\n\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t</ContainerEl>\n\t\t\t\t\t</Container>\n\t\t\t\t\t<ModalFooter\n\t\t\t\t\t\tonConfirm={onConfirm}\n\t\t\t\t\t\tsecondaryAction={onClose}\n\t\t\t\t\t\tlabel={t('label.choose_folder', 'Choose folder')}\n\t\t\t\t\t\tsecondaryLabel={t('label.go_back', 'Go Back')}\n\t\t\t\t\t\tdisabled={disabled}\n\t\t\t\t\t/>\n\t\t\t\t</Container>\n\t\t\t</Container>\n\t\t</CustomModal>\n\t);\n};\n\nexport default FolderSelectModal;\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/views/search/parts/folder-modal.tsx b/src/views/search/parts/folder-modal.tsx
+--- a/src/views/search/parts/folder-modal.tsx	(revision 625354c8af746681a130d381c5881a3713632fe6)
++++ b/src/views/search/parts/folder-modal.tsx	(date 1661736228652)
+@@ -22,10 +22,10 @@
+ import { filter, isEmpty, reduce, startsWith } from 'lodash';
+ 
+ import {
+-	AccordionFolder,
++	Folder,
+ 	FOLDERS,
+ 	useFolders,
+-	useFoldersAccordionByView,
++	useFoldersByView,
+ 	useUserAccount
+ } from '@zextras/carbonio-shell-ui';
+ 
+@@ -56,12 +56,12 @@
+ 	return item.name;
+ };
+ 
+-const CustomComponent: FC<{ item: AccordionFolder }> = ({ item }): ReactElement => (
++const CustomComponent: FC<{ item: Folder }> = ({ item }): ReactElement => (
+ 	<FittedRow>
+ 		<Padding horizontal="small">
+-			<Avatar label={item.label} size="medium" />
++			<Avatar label={item.name} size="medium" />
+ 		</Padding>
+-		<Tooltip label={item.label} placement="right" maxWidth="100%">
++		<Tooltip label={item.name} placement="right" maxWidth="100%">
+ 			<AccordionItem item={item} />
+ 		</Tooltip>
+ 	</FittedRow>
+@@ -91,7 +91,7 @@
+ 	);
+ 	const accountName = useUserAccount().name;
+ 	const [openIds, setOpenIds] = useState(['USER_ROOT']);
+-	const additionalProps = (item: AccordionFolder): Record<string, any> => ({
++	const additionalProps = (item: Folder): Record<string, any> => ({
+ 		onClick: (): void => {
+ 			setFolderDestination(item);
+ 		},
+@@ -100,18 +100,13 @@
+ 		openIds
+ 	});
+ 
+-	const accordions = useFoldersAccordionByView(
+-		FOLDER_VIEW.message,
+-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+-		// @ts-ignore
+-		AccordionCustomComponent,
+-		additionalProps
+-	);
++	// @@ finish conversion to use useFoldersByView
++	const accordions = useFoldersByView(FOLDER_VIEW.message);
+ 
+ 	const requiredAcc = useMemo(() => {
+ 		const temp = reduce(
+ 			accordions,
+-			(acc: Array<AccordionFolder & CustomComponent>, v) => {
++			(acc: Array<Folder & CustomComponent>, v) => {
+ 				acc.push({
+ 					id: v.id,
+ 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+@@ -120,9 +115,9 @@
+ 					label:
+ 						v.id === FOLDERS.USER_ROOT
+ 							? accountName
+-							: getFolderTranslatedName({ t, folderId: v.id, folderName: v.label }),
++							: getFolderTranslatedName({ t, folderId: v.id, folderName: v.name }),
+ 					divider: true,
+-					items: v.items,
++					items: v.children,
+ 					background: folderDestination.id === v.id ? 'highlight' : undefined,
+ 					onClick: () => {
+ 						v.id !== FOLDERS.USER_ROOT && setFolderDestination(v);
+@@ -146,7 +141,7 @@
+ 				const folderName = getFolderTranslatedName({
+ 					t,
+ 					folderId: v?.id,
+-					folderName: v?.label
++					folderName: v?.name
+ 				})?.toLowerCase();
+ 
+ 				return startsWith(folderName, input.toLowerCase());
+@@ -155,8 +150,8 @@
+ 	);
+ 
+ 	const getFolderPath = useCallback(
+-		(folder: AccordionFolder) => {
+-			const absoluteParent = getFolderOwner(folder.folder);
++		(folder: Folder) => {
++			const absoluteParent = getFolderOwner(folder);
+ 			const relativePath = getFolderAbsPath(folder?.id);
+ 
+ 			if (absoluteParent === 'USER_ROOT') {

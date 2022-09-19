@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { forEach, isArray, map } from 'lodash';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
@@ -13,7 +13,7 @@ import { getContentForPrint, getErrorPage } from '../commons/print-conversation'
 import { applyTag } from './tag-actions';
 import { StoreProvider } from '../store/redux';
 
-export function setConversationsFlag({ ids, value, t, dispatch }) {
+export function setConversationsFlag({ ids, value, dispatch }) {
 	return {
 		id: 'flag-conversation',
 		icon: value ? 'FlagOutline' : 'Flag',
@@ -29,7 +29,7 @@ export function setConversationsFlag({ ids, value, t, dispatch }) {
 	};
 }
 
-export function setMultipleConversationsFlag({ ids, disabled, t, dispatch }) {
+export function setMultipleConversationsFlag({ ids, disabled, dispatch }) {
 	return {
 		id: 'flag--multiple-conversations',
 		icon: 'Flag',
@@ -46,7 +46,7 @@ export function setMultipleConversationsFlag({ ids, disabled, t, dispatch }) {
 	};
 }
 
-export function unSetMultipleConversationsFlag({ ids, disabled, t, dispatch }) {
+export function unSetMultipleConversationsFlag({ ids, disabled, dispatch }) {
 	return {
 		id: 'unflag-multiple-conversations',
 		icon: 'FlagOutline',
@@ -66,7 +66,6 @@ export function unSetMultipleConversationsFlag({ ids, disabled, t, dispatch }) {
 export function setConversationsRead({
 	ids,
 	value,
-	t,
 	dispatch,
 	folderId,
 	shouldReplaceHistory,
@@ -95,7 +94,7 @@ export function setConversationsRead({
 	};
 }
 
-export function printConversation({ t, conversation, account }) {
+export function printConversation({ conversation, account }) {
 	let messageIds = [];
 
 	if (isArray(conversation) && conversation.length > 0) {
@@ -132,7 +131,7 @@ export function printConversation({ t, conversation, account }) {
 	};
 }
 
-export function setConversationsSpam({ ids, value, t, dispatch, createSnackbar, deselectAll }) {
+export function setConversationsSpam({ ids, value, dispatch, createSnackbar, deselectAll }) {
 	return {
 		id: 'spam-conversations',
 		icon: value ? 'AlertCircleOutline' : 'AlertCircle',
@@ -186,14 +185,7 @@ export function setConversationsSpam({ ids, value, t, dispatch, createSnackbar, 
 	};
 }
 
-export function moveConversationToTrash({
-	ids,
-	t,
-	dispatch,
-	createSnackbar,
-	deselectAll,
-	folderId
-}) {
+export function moveConversationToTrash({ ids, dispatch, createSnackbar, deselectAll, folderId }) {
 	return {
 		id: 'trash-conversations',
 		icon: 'Trash2Outline',
@@ -264,14 +256,7 @@ export function moveConversationToTrash({
 	};
 }
 
-export function moveConversationToFolder({
-	ids,
-	t,
-	dispatch,
-	isRestore,
-	createModal,
-	deselectAll
-}) {
+export function moveConversationToFolder({ ids, dispatch, isRestore, createModal, deselectAll }) {
 	return {
 		id: 'move-conversations',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
@@ -299,7 +284,7 @@ export function moveConversationToFolder({
 	};
 }
 
-export function deleteConversationPermanently({ ids, t, dispatch, createModal, deselectAll }) {
+export function deleteConversationPermanently({ ids, dispatch, createModal, deselectAll }) {
 	return {
 		id: 'delete-conversations',
 		icon: 'DeletePermanentlyOutline',
@@ -327,7 +312,6 @@ export function deleteConversationPermanently({ ids, t, dispatch, createModal, d
 
 export const getActions = ({
 	folderId,
-	t,
 	dispatch,
 	createSnackbar,
 	createModal,

@@ -5,9 +5,9 @@
  */
 import React, { useCallback, useEffect, useMemo, useState, useContext } from 'react';
 import { CustomModal, SnackbarManagerContext } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import { filter, map, isEmpty, reduce, startsWith } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
 import { nanoid } from '@reduxjs/toolkit';
 import { createFolder } from '../store/actions/create-folder';
 import { selectFolders } from '../store/folders-slice';
@@ -17,7 +17,6 @@ import { MoveConvMsgModal } from './move-conv-msg-modal/move-conv-msg-modal';
 
 export const MoveConvMessage = ({ selectedIDs, openModal, closeModal, isMessageView }) => {
 	const [inputValue, setInputValue] = useState('');
-	const [t] = useTranslation();
 	const [moveConvModal, setMoveConvModal] = useState(true);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
@@ -149,7 +148,7 @@ export const MoveConvMessage = ({ selectedIDs, openModal, closeModal, isMessageV
 				closeModal();
 			});
 		},
-		[closeModal, createSnackbar, currentFolder, dispatch, selectedIDs, t]
+		[closeModal, createSnackbar, currentFolder, dispatch, selectedIDs]
 	);
 
 	const onConfirmMessageMove = useCallback(
@@ -182,7 +181,7 @@ export const MoveConvMessage = ({ selectedIDs, openModal, closeModal, isMessageV
 				closeModal();
 			});
 		},
-		[closeModal, createSnackbar, currentFolder, dispatch, selectedIDs, t]
+		[closeModal, createSnackbar, currentFolder, dispatch, selectedIDs]
 	);
 
 	const nest = useCallback(
@@ -258,7 +257,7 @@ export const MoveConvMessage = ({ selectedIDs, openModal, closeModal, isMessageV
 		}
 		setHasError(value);
 		setDisabled(value);
-	}, [folderDestination, inputValue, t]);
+	}, [folderDestination, inputValue]);
 
 	const rootEl = useMemo(
 		() => ({
@@ -269,7 +268,7 @@ export const MoveConvMessage = ({ selectedIDs, openModal, closeModal, isMessageV
 			parent: '0',
 			background: folderDestination.id === '1' ? 'gray6' : undefined // todo: fix with right color
 		}),
-		[folderDestination.id, t]
+		[folderDestination.id]
 	);
 
 	const data = useMemo(() => nest([rootEl, ...folders], '0'), [folders, nest, rootEl]);
@@ -301,7 +300,6 @@ export const MoveConvMessage = ({ selectedIDs, openModal, closeModal, isMessageV
 		dispatch,
 		folderDestination,
 		inputValue,
-		t,
 		isMessageView,
 		onConfirmConvMove,
 		onConfirmMessageMove,
@@ -315,7 +313,7 @@ export const MoveConvMessage = ({ selectedIDs, openModal, closeModal, isMessageV
 		setHasError(false);
 		closeModal();
 		setMoveConvModal(false);
-	}, [t, closeModal]);
+	}, [closeModal]);
 
 	return (
 		<CustomModal open={openModal} onClose={onClose} maxHeight="90vh">

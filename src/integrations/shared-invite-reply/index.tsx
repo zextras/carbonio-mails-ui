@@ -14,9 +14,8 @@ import {
 	SnackbarManagerContext,
 	Text
 } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useContext, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import LabelRow from './parts/label-row';
@@ -47,7 +46,6 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 			onLoadChange();
 		}
 	}, [mailMsg.read, onLoadChange]);
-	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 
@@ -58,7 +56,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 
 	const shareCalendarRoleOptions = useMemo(
 		() => ShareCalendarRoleOptions(t, rights?.includes('p')),
-		[t, rights]
+		[rights]
 	);
 
 	const role = useMemo(
@@ -99,7 +97,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 			default:
 				return [t('label.contact_folder', 'Contact Folder'), 'ContactsModOutline'];
 		}
-	}, [view, t]);
+	}, [view]);
 
 	const allowedActions = useMemo((): string => {
 		if (rights === 'rwidx' || rights === 'rwidxp') {
@@ -112,7 +110,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 			return t('message.admin_rights', 'View,Edit,Add,Remove,Administer');
 		}
 		return 'None';
-	}, [rights, t]);
+	}, [rights]);
 
 	const owner = useMemo(
 		() => sharedContent?.split('<grantor ')[1]?.split('name="')[1]?.split('"')[0],

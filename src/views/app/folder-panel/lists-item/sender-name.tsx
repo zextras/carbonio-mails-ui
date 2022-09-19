@@ -3,8 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useTranslation } from 'react-i18next';
-import { FOLDERS, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import React, { FC, useMemo } from 'react';
 import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
@@ -19,7 +18,6 @@ type SenderNameProps = {
 };
 
 export const SenderName: FC<SenderNameProps> = ({ item, textValues, isFromSearch = false }) => {
-	const [t] = useTranslation();
 	const account = useUserAccount();
 	const { folderId } = useParams<{ folderId: string }>();
 	const participantsString = useMemo(() => {
@@ -42,7 +40,7 @@ export const SenderName: FC<SenderNameProps> = ({ item, textValues, isFromSearch
 			(acc, part) => trimStart(`${acc}, ${participantToString(part, t, [account])}`, ', '),
 			''
 		);
-	}, [account, folderId, isFromSearch, item.participants, t]);
+	}, [account, folderId, isFromSearch, item.participants]);
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">

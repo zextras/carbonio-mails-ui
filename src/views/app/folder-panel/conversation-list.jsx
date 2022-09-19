@@ -16,8 +16,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { find, map, reduce } from 'lodash';
-import { useAppContext } from '@zextras/carbonio-shell-ui';
-import { useTranslation } from 'react-i18next';
+import { useAppContext, t } from '@zextras/carbonio-shell-ui';
 import {
 	selectConversationStatus,
 	selectFolder,
@@ -72,7 +71,6 @@ const ConversationList = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const dragImageRef = useRef(null);
 	const dispatch = useDispatch();
-	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const status = useSelector(selectConversationStatus);
 	const conversationListStatus = useSelector((store) => selectFolderSearchStatus(store, folderId));
@@ -102,7 +100,6 @@ const ConversationList = () => {
 				folderId,
 				itemId,
 				conversations,
-				t,
 				dispatch,
 				deselectAll,
 				createSnackbar
@@ -111,7 +108,7 @@ const ConversationList = () => {
 		return () => {
 			document.removeEventListener('keydown', handler);
 		};
-	}, [folderId, itemId, conversations, t, dispatch, deselectAll, createSnackbar]);
+	}, [folderId, itemId, conversations, dispatch, deselectAll, createSnackbar]);
 	const displayerTitle = useMemo(() => {
 		if (conversations?.length === 0) {
 			if (folderId === '4') {
@@ -129,7 +126,7 @@ const ConversationList = () => {
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
 		}
 		return null;
-	}, [t, conversations, folderId]);
+	}, [conversations, folderId]);
 	return (
 		<>
 			{isSelecting ? (

@@ -4,11 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Container, Text } from '@zextras/carbonio-design-system';
-import { useRoots, useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { useRoots, useUserAccount, useUserAccounts, t } from '@zextras/carbonio-shell-ui';
 import { map, find, filter, findIndex, flatten, isNull } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import { useParams } from 'react-router-dom';
 import { ParticipantRole } from '../../../../../commons/utils';
 
@@ -21,7 +19,6 @@ export const findDefaultIdentity = ({ list, allAccounts, folderId }) => {
 export const useGetIdentities = ({ updateEditorCb, setOpen, editorId, action }) => {
 	const account = useUserAccount();
 	const accounts = useUserAccounts();
-	const [t] = useTranslation();
 	const [from, setFrom] = useState({});
 	const [list, setList] = useState([]);
 	const [activeFrom, setActiveFrom] = useState({});
@@ -31,7 +28,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen, editorId, action }) 
 	const allAccounts = useRoots();
 	const { folderId } = useParams();
 
-	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
+	const noName = useMemo(() => t('label.no_name', '<No Name>'), []);
 
 	useEffect(() => {
 		const identityList = map(account.identities.identity, (item, idx) => ({
@@ -78,7 +75,7 @@ export const useGetIdentities = ({ updateEditorCb, setOpen, editorId, action }) 
 			});
 			setList(uniqueIdentityList);
 		} else setList(identityList);
-	}, [account, accounts, defaultIdentity?.address, defaultIdentity?.fullname, t, updateEditorCb]);
+	}, [account, accounts, defaultIdentity?.address, defaultIdentity?.fullname, updateEditorCb]);
 
 	useEffect(() => {
 		if (!editorId?.includes('new-') && !isIdentitySet && list.length > 0 && !isNull(from)) {

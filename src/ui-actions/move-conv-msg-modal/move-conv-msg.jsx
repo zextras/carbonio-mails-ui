@@ -7,9 +7,8 @@ import React, { useCallback, useEffect, useMemo, useState, useContext } from 're
 import { SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { filter, map, isEmpty, reduce, startsWith } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
 import { nanoid } from '@reduxjs/toolkit';
-import { FOLDERS, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { NewFolderConvoMsgMove } from './new-folder-conv-msg-move';
 import { MoveConvMsgModal } from './move-conv-msg-modal';
 import { selectFolders } from '../../store/folders-slice';
@@ -18,7 +17,6 @@ import { createFolder } from '../../store/actions/create-folder';
 
 const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, onClose }) => {
 	const [inputValue, setInputValue] = useState('');
-	const [t] = useTranslation();
 	const [moveConvModal, setMoveConvModal] = useState(true);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
@@ -132,7 +130,7 @@ const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, o
 		setLabel(t('folder_panel.modal.new.input.name', 'Folder Name'));
 		setHasError(false);
 		onClose();
-	}, [onClose, t]);
+	}, [onClose]);
 	const onConfirmConvMove = useCallback(
 		(newFolderId = 0) => {
 			dispatch(
@@ -171,7 +169,7 @@ const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, o
 				onCloseModal();
 			});
 		},
-		[dispatch, selectedIDs, currentFolder, onCloseModal, deselectAll, createSnackbar, isRestore, t]
+		[dispatch, selectedIDs, currentFolder, onCloseModal, deselectAll, createSnackbar, isRestore]
 	);
 
 	const onConfirmMessageMove = useCallback(
@@ -209,7 +207,7 @@ const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, o
 				onCloseModal();
 			});
 		},
-		[onCloseModal, createSnackbar, currentFolder, dispatch, selectedIDs, t, isRestore, deselectAll]
+		[onCloseModal, createSnackbar, currentFolder, dispatch, selectedIDs, isRestore, deselectAll]
 	);
 
 	const nest = useCallback(
@@ -289,7 +287,7 @@ const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, o
 		}
 		setHasError(value);
 		setDisabled(value);
-	}, [folderDestination, inputValue, t]);
+	}, [folderDestination, inputValue]);
 
 	const rootEl = useMemo(
 		() => ({
@@ -300,7 +298,7 @@ const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, o
 			parent: '0',
 			background: folderDestination.id === FOLDERS.USER_ROOT ? 'gray6' : undefined // todo: fix with right color
 		}),
-		[folderDestination.id, t]
+		[folderDestination.id]
 	);
 
 	const data = useMemo(() => nest([rootEl, ...folders], '0'), [folders, nest, rootEl]);
@@ -333,7 +331,6 @@ const MoveConvMessage = ({ selectedIDs, isMessageView, isRestore, deselectAll, o
 		dispatch,
 		folderDestination,
 		inputValue,
-		t,
 		isMessageView,
 		onConfirmConvMove,
 		onConfirmMessageMove,

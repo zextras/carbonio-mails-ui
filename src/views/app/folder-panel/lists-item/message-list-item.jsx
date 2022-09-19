@@ -11,7 +11,8 @@ import {
 	useAppContext,
 	useTags,
 	useUserAccounts,
-	ZIMBRA_STANDARD_COLORS
+	ZIMBRA_STANDARD_COLORS,
+	t
 } from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
@@ -23,7 +24,6 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -81,7 +81,6 @@ export default function MessageListItem({
 	visible,
 	isConvChildren
 }) {
-	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 	const { isMessageView } = useAppContext();
 	const messageFolder = useSelector((state) => selectFolder(state, item.parent));
@@ -106,10 +105,10 @@ export default function MessageListItem({
 	const [date, participantsString] = useMemo(() => {
 		if (item) {
 			const sender = find(item.participants, ['type', 'f']);
-			return [getTimeLabel(moment(item.date)), participantToString(sender, t, accounts)];
+			return [getTimeLabel(moment(item.date)), participantToString(sender, accounts)];
 		}
 		return ['.', '.', '', ''];
-	}, [item, t, accounts]);
+	}, [item, accounts]);
 
 	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
 		if (item) {
@@ -145,7 +144,7 @@ export default function MessageListItem({
 			}
 		}
 		return [false, '', '', '', ''];
-	}, [item, t]);
+	}, [item]);
 
 	const _onClick = useCallback(
 		(e) => {
@@ -156,7 +155,7 @@ export default function MessageListItem({
 				replaceHistory(`/folder/${folderId}/message/${item.id}`);
 			}
 		},
-		[folderId, item.id, item.read, t, dispatch]
+		[folderId, item.id, item.read, dispatch]
 	);
 	const _onDoubleClick = useCallback(
 		(e) => {
@@ -201,7 +200,7 @@ export default function MessageListItem({
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
 	const subject = useMemo(
 		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item.subject, t]
+		[item.subject]
 	);
 	const subFragmentTooltipLabel = useMemo(
 		() => (!isEmpty(item.fragment) ? item.fragment : subject),
@@ -215,7 +214,7 @@ export default function MessageListItem({
 				time: moment(item?.autoSendTime).format('HH:mm'),
 				defaultValue: '{{date}} at {{time}}'
 			}),
-		[item?.autoSendTime, t]
+		[item?.autoSendTime]
 	);
 
 	return draggedIds?.[item?.id] || visible || isConvChildren ? (

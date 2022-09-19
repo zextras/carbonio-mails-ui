@@ -14,10 +14,9 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { Grant, soapFetch, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map, replace, split } from 'lodash';
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
@@ -66,7 +65,6 @@ const Actions: FC<ActionProps> = ({
 	onMouseLeave,
 	onMouseEnter
 }) => {
-	const [t] = useTranslation();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 	const accounts = useUserAccounts();
@@ -98,7 +96,7 @@ const Actions: FC<ActionProps> = ({
 				});
 			}
 		});
-	}, [accounts, dispatch, folder, t, grant.d, createSnackbar]);
+	}, [accounts, dispatch, folder, grant.d, createSnackbar]);
 	const onEdit = useCallback(() => {
 		setActiveGrant(grant);
 		setActiveModal('edit');
@@ -171,12 +169,8 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 	folder,
 	setActiveModal
 }) => {
-	const [t] = useTranslation();
-	const [grant, setGrant] = useState<Array<Grant>>(folder.folder.acl.grant);
-	const shareCalendarRoleOptions = useCallback(
-		(_grant: Grant) => ShareCalendarRoleOptions(t, _grant.perm.includes('p')),
-		[t]
-	);
+	const [grant, setGrant] = useState<Array<Grant> | undefined>();
+
 	useEffect(() => {
 		soapFetch('GetFolder', {
 			_jsns: 'urn:zimbraMail',
@@ -188,6 +182,10 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 		});
 	}, [folder.id]);
 
+	const shareCalendarRoleOptions = useMemo(
+		() => ShareCalendarRoleOptions(t, grant?.[0]?.perm?.includes('p')),
+		[grant]
+	);
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
 			<Padding vertical="small" />
@@ -199,7 +197,7 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 					grant={item}
 					folder={folder}
 					setActiveModal={setActiveModal}
-					shareCalendarRoleOptions={shareCalendarRoleOptions(item)}
+					shareCalendarRoleOptions={shareCalendarRoleOptions}
 				/>
 			))}
 			<Padding top="medium" />
