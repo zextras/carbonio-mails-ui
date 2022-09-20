@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Dictionary } from '@reduxjs/toolkit';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import {
 	Container,
@@ -33,28 +32,13 @@ import {
 	isEmpty
 } from 'lodash';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { Folder, Folders, t } from '@zextras/carbonio-shell-ui';
-import { ModalHeader } from './commons/modal-header';
+import ModalHeader from './commons/modal-header';
 import ModalFooter from './commons/modal-footer';
 import { createMountpoint } from '../../store/actions/create-mountpoint';
-import { ResFolder } from '../../types';
 
-type CustomItem = {
-	item: {
-		id: string;
-		label: string;
-		open: boolean;
-		items: Folders;
-		ownerName: string;
-		ownerId: string;
-		checked: boolean;
-		folderId: string;
-		setLinks: (arg: any) => void;
-		links: Folder[];
-		CustomComponent: ReactElement;
-	};
-};
+import { GroupedShare, SharedObject, ShareModalProps } from '../../types/sidebar';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -64,6 +48,7 @@ const ContainerEl = styled(Container)`
 // TODO remove the "any" after the Accordion component refactor in the DS
 const CustomItem: FC<any> = ({ item: folder }) => {
 	const [checked, setChecked] = useState(false);
+	const [t] = useTranslation();
 
 	const onClick = useCallback(() => {
 		if (!checked) {
@@ -87,7 +72,7 @@ const CustomItem: FC<any> = ({ item: folder }) => {
 			folder.setLinks(filter(folder.links, (v) => v.id !== folder.id));
 		}
 		setChecked(!checked);
-	}, [checked, folder]);
+	}, [checked, folder, t]);
 
 	return (
 		<>
@@ -99,31 +84,12 @@ const CustomItem: FC<any> = ({ item: folder }) => {
 	);
 };
 
-type ShareModalProps = {
-	folders: Array<ResFolder>;
-	onClose: () => void;
-};
-
-type SharedObject = {
-	id: string;
-	label: string;
-	open: boolean;
-	items: [];
-	ownerName: string;
-	ownerId: string;
-	checked: boolean;
-	folderId: string;
-	setLinks: (links: Array<SharedObject>) => void;
-	links: Array<SharedObject>;
-	CustomComponent: AccordionItemType['CustomComponent'];
-};
-
-type GroupedShare = Dictionary<SharedObject[]>;
-
 export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const [links, setLinks] = useState([] as SharedObject[]);
 	const [data, setData] = useState({});
 	const dispatch = useDispatch();
+	const [t] = useTranslation();
+
 	const onConfirm = useCallback(() => {
 		dispatch(createMountpoint(links));
 		onClose();
@@ -168,7 +134,7 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 						divider: true
 				  }
 		);
-	}, [data, filteredFolders]);
+	}, [data, filteredFolders, t]);
 
 	const filterResults = useCallback(
 		(ev) =>

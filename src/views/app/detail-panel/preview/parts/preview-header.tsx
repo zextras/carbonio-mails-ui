@@ -259,7 +259,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 											color={message.read ? 'text' : 'primary'}
 											weight={message.read ? 'regular' : 'bold'}
 										>
-											{capitalize(participantToString(mainContact, t, accounts))}
+											{capitalize(participantToString(mainContact, accounts))}
 										</Text>
 										<Padding left="small" />
 										<Text color="gray1" size={message.read ? 'small' : 'medium'}>

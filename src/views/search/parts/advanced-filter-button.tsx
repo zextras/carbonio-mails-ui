@@ -7,17 +7,12 @@ import React, { FC } from 'react';
 import { Button, Container, Tooltip } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { t } from '@zextras/carbonio-shell-ui';
+import { AdvancedFilterButtonProps } from '../../../types';
 
 const BorderContainer = styled(Container)`
 	border-bottom: 1px solid ${({ theme }): string => theme?.palette?.gray2?.regular};
 	border-right: 1px solid ${({ theme }): string => theme?.palette?.gray2?.regular};
 `;
-
-type AdvancedFilterButtonProps = {
-	searchDisabled: boolean;
-	filterCount: number;
-	setShowAdvanceFilters: (arg: boolean) => void;
-};
 
 export const AdvancedFilterButton: FC<AdvancedFilterButtonProps> = ({
 	setShowAdvanceFilters,

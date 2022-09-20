@@ -41,6 +41,7 @@ export type MsgActionParameters = {
 	parent?: string;
 	tagName?: string;
 	flag?: string;
+	folderId?: string;
 };
 
 export type MsgActionResult = {

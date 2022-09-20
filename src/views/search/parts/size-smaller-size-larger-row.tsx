@@ -3,26 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import { SizeLargerSizeSmallerRowProps } from '../../../types';
 
-type ComponentProps = {
-	compProps: {
-		t: TFunction;
-		sizeSmaller: any;
-		setSizeSmaller: (arg: any) => any;
-		sizeLarger: any;
-		setSizeLarger: (arg: any) => any;
-	};
-};
-
-const SizeLargerSizeSmallerRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
-	const { t, sizeSmaller, setSizeSmaller, sizeLarger, setSizeLarger } = compProps;
+const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
+	compProps
+}): ReactElement => {
+	const { sizeSmaller, setSizeSmaller, sizeLarger, setSizeLarger } = compProps;
 
 	const [isInvalidSmallSize, setIsInvalidSmallSize] = useState(false);
 	const [isInvalidLargeSize, setIsInvalidLargeSize] = useState(false);
-	const errorLabel = useMemo(() => t('search.size_error', 'Only numbers are allowed'), [t]);
+	const errorLabel = useMemo(() => t('search.size_error', 'Only numbers are allowed'), []);
 
 	const onChange = useCallback((state, stateHandler) => {
 		stateHandler(state);
@@ -103,10 +96,10 @@ const SizeLargerSizeSmallerRow: FC<ComponentProps> = ({ compProps }): ReactEleme
 
 	const sizeSmallerPlaceholder = useMemo(
 		() => t('label.size_smaller', 'Size smaller than (MB)'),
-		[t]
+		[]
 	);
 
-	const sizeLargerPlaceholder = useMemo(() => t('label.size_larger', 'Size larger than (MB)'), [t]);
+	const sizeLargerPlaceholder = useMemo(() => t('label.size_larger', 'Size larger than (MB)'), []);
 
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">

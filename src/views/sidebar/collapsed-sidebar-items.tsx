@@ -21,7 +21,7 @@ const CollapsedSideBarItems: FC<{ folder: Folder }> = ({ folder }) => {
 							customSize={{ iconSize: 'large', paddingSize: 'small' }}
 							icon={folderIconLabel ?? ''}
 							customIconColor={folderIconColor}
-							onClick={(): void => undefined}
+							onClick={(): null => null}
 						/>
 					</Padding>
 				</Tooltip>

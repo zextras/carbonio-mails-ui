@@ -9,14 +9,15 @@ import { filter, includes, isEmpty } from 'lodash';
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { folderAction } from '../../../../store/actions/folder-action';
-import { ModalProps } from '../../../../types';
 import ModalFooter from '../../commons/modal-footer';
-import { ModalHeader } from '../../commons/modal-header';
-import { translatedSystemFolders } from '../../utils';
-import { FolderDetails } from './folder-details';
+import ModalHeader from '../../commons/modal-header';
 import NameInputRow from './name-input';
+import { FolderDetails } from './folder-details';
+
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
+import { translatedSystemFolders } from '../../utils';
+import { EditDefaultModalPropType } from '../../../../types/sidebar';
 
 const retentionPeriod = [
 	{
@@ -38,12 +39,9 @@ const retentionPeriod = [
 ];
 const numberRegex = /^\d+$/;
 
-type EditModalProps = ModalProps & {
-	setActiveModal: (modal: string) => void;
-};
-
-const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal }) => {
+const EditDefaultModal: FC<EditDefaultModalPropType> = ({ folder, onClose, setActiveModal }) => {
 	const dispatch = useDispatch();
+
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 
@@ -176,8 +174,8 @@ const EditDefaultModal: FC<EditModalProps> = ({ folder, onClose, setActiveModal 
 			}
 		}
 		if (inputValue && submit) {
-			let lt = 1;
-			let pr = 1;
+			let lt;
+			let pr;
 
 			if (rtnYear === 'w') lt = Number(rtnValue) * 7;
 			else if (rtnYear === 'm') lt = Number(rtnValue) * 31;

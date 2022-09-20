@@ -10,6 +10,7 @@ import { filter, isEqual, uniqWith } from 'lodash';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { getShareInfo } from '../../store/actions/get-share-info';
+import { StoreProvider } from '../../store/redux';
 import { ResFolder } from '../../types';
 import { SharesModal } from './shares-modal';
 
@@ -33,7 +34,11 @@ export const ButtonFindShares: FC = () => {
 						);
 						const closeModal = createModal(
 							{
-								children: <SharesModal folders={resFolders} onClose={(): void => closeModal()} />
+								children: (
+									<StoreProvider>
+										<SharesModal folders={resFolders} onClose={(): void => closeModal()} />
+									</StoreProvider>
+								)
 							},
 							true
 						);

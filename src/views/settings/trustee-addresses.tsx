@@ -8,11 +8,12 @@ import {
 	Container,
 	Input,
 	Padding,
-	Text,
 	Divider,
 	Button,
 	Tooltip,
-	List
+	List,
+	TextWithTooltip,
+	Row
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
@@ -20,18 +21,7 @@ import Heading from './components/settings-heading';
 import { domainWhitelistSubSection } from './subsections';
 import TrusteeListItem from './components/trustee-list-item';
 import LoadingShimmer from './filters/parts/loading-shimmer';
-
-type UpdateSettingsProps = {
-	target: {
-		name: string;
-		value: string | Array<string> | undefined;
-	};
-};
-
-type InputProps = {
-	settingsObj: Record<string, string | Array<string>>;
-	updateSettings: (arg: UpdateSettingsProps) => void;
-};
+import { InputProps } from '../../types';
 
 const NonSupportedCharacters = /[!#$%^&*()+=[\]{};':"\\|,<>/?|/^\s*$/]+/;
 const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
@@ -104,7 +94,7 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 					<Heading title={sectionTitle.label} size="medium" />
 				</Container>
 				<Container width="auto" crossAlignment="flex-end">
-					<Text size="extrasmall">{message}</Text>
+					<TextWithTooltip size="extrasmall">{message}</TextWithTooltip>
 				</Container>
 			</Container>
 			<Divider />
@@ -113,18 +103,20 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 				orientation="horizontal"
 				mainAlignment="flex-start"
 			>
-				<Input
-					width="80vw"
-					label={t('label.enter_email_address', 'Enter email address or domain')}
-					value={address}
-					hasError={isInvalid}
-					description={warningMessage}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setAddress(e.target.value)}
-				/>
+				<Row mainAlignment="flex-start" width="50vw">
+					<Input
+						label={t('label.enter_email_address', 'Enter email address or domain')}
+						value={address}
+						hasError={isInvalid}
+						description={warningMessage}
+						backgroundColor="gray5"
+						onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setAddress(e.target.value)}
+					/>
+				</Row>
 				<Padding left="medium">
 					<Tooltip label={warningMessage} disabled={!isInvalid} maxWidth="100%">
 						<Button
-							label={t('label.add', 'add')}
+							label={t('label.add', 'Add')}
 							type="outlined"
 							onClick={onAdd}
 							disabled={isInvalid}
@@ -133,7 +125,7 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 				</Padding>
 			</Container>
 			<Container
-				padding={{ all: 'medium', bottom: 'small' }}
+				padding={{ horizontal: 'medium', bottom: 'small' }}
 				orientation="horizontal"
 				mainAlignment="flex-start"
 			>

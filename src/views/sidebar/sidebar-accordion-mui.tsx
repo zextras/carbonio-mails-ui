@@ -38,9 +38,9 @@ export const SidebarAccordionMui: FC<{ accordions: Array<Folder>; folderId: stri
 		<Container disableGutters sx={{ width: '100%' }}>
 			{accordions.map((accordion) =>
 				accordion.id === 'find_shares' ? (
-					<ButtonFindShares />
+					<ButtonFindShares key={accordion.id} />
 				) : (
-					<div key={accordion.id} ref={sidebarRef}>
+					<div ref={sidebarRef} key={accordion.id}>
 						<Accordion
 							disableGutters
 							TransitionProps={{ unmountOnExit: true }}
@@ -69,7 +69,11 @@ export const SidebarAccordionMui: FC<{ accordions: Array<Folder>; folderId: stri
 							</AccordionSummary>
 							{accordion.children.length > 0 && (
 								<AccordionDetails>
-									<SidebarAccordionMui accordions={accordion.children} folderId={folderId} />
+									<SidebarAccordionMui
+										accordions={accordion.children}
+										folderId={folderId}
+										key={accordion.id}
+									/>
 								</AccordionDetails>
 							)}
 						</Accordion>

@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, useContext, useEffect, useMemo, useState } from 'react';
 import {
 	Button,
 	Collapse,
@@ -15,14 +16,12 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
-import React, { FC, ReactElement, useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import LabelRow from './parts/label-row';
 import ResponseActions from './parts/response-actions';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { findLabel, ShareCalendarRoleOptions } from './parts/utils';
+import { ShareCalendarRoleOptions, findLabel } from './parts/utils';
+import { MailMessage } from '../../types';
 
 const InviteContainer = styled(Container)`
 	border: 1px solid ${({ theme }: any): string => theme.palette.gray2.regular};
@@ -32,8 +31,8 @@ const InviteContainer = styled(Container)`
 
 type SharedCalendarResponse = {
 	sharedContent: string;
-	mailMsg: any;
-	onLoadChange: () => void;
+	mailMsg: MailMessage;
+	onLoadChange?: () => void;
 };
 
 const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
@@ -43,7 +42,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 }): ReactElement => {
 	useEffect(() => {
 		if (mailMsg.read === 'false') {
-			onLoadChange();
+			onLoadChange && onLoadChange();
 		}
 	}, [mailMsg.read, onLoadChange]);
 	const createSnackbar = useContext(SnackbarManagerContext);

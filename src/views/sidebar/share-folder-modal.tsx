@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC, useCallback, useContext, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import {
 	Container,
 	Input,
@@ -13,11 +13,15 @@ import {
 	Row,
 	ChipInput,
 	Padding,
-	SnackbarManagerContext,
 	ChipItem,
 	SelectItem
 } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	useIntegratedComponent,
+	useUserAccounts,
+	t
+} from '@zextras/carbonio-shell-ui';
 import { map, replace, split } from 'lodash';
 import { useDispatch } from 'react-redux';
 import {
@@ -28,21 +32,14 @@ import {
 import { shareFolder } from '../../store/actions/share-folder';
 import { sendShareNotification } from '../../store/actions/send-share-notification';
 import ModalFooter from './commons/modal-footer';
-import { ModalHeader } from './commons/modal-header';
+import ModalHeader from './commons/modal-header';
 import { capitalise } from './utils';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
-import { ModalProps } from '../../types';
-
-type ShareFolderModalProps = ModalProps & {
-	editMode?: boolean;
-};
+import { ShareFolderModalProps } from '../../types/sidebar';
 
 const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode = false }) => {
 	const activeGrant: Partial<{ perm: string; d: string }> = useMemo(() => ({}), []);
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const dispatch = useDispatch() as Function;
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createSnackbar = useContext(SnackbarManagerContext) as Function;
+	const dispatch = useDispatch();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
@@ -77,8 +74,6 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 
 	const onConfirm = useCallback(() => {
 		dispatch(
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			shareFolder({
 				sendNotification,
 				standardMessage,
@@ -88,9 +83,11 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 				folder,
 				accounts
 			})
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 		).then((res: { type: string }) => {
 			if (res.type.includes('fulfilled')) {
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `share-${folder.id}`,
 					replace: true,
 					hideButton: true,
@@ -102,8 +99,6 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 				});
 				sendNotification &&
 					dispatch(
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						sendShareNotification({
 							sendNotification,
 							standardMessage,
@@ -113,9 +108,11 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 							folder,
 							accounts
 						})
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 					).then((res2: { type: string }) => {
 						if (!res2.type.includes('fulfilled')) {
-							createSnackbar({
+							getBridgedFunctions()?.createSnackbar({
 								key: `share-${folder.id}`,
 								replace: true,
 								type: 'error',
@@ -139,8 +136,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 		shareWithUserRole,
 		folder,
 		accounts,
-		onClose,
-		createSnackbar
+		onClose
 	]);
 
 	const disableEdit = useMemo(

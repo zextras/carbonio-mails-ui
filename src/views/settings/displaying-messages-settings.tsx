@@ -11,7 +11,6 @@ import {
 	FormSubSection,
 	Select,
 	Input,
-	Checkbox,
 	RadioGroup,
 	Radio,
 	SelectItem
@@ -25,18 +24,7 @@ import {
 	ConversationSortingSettings
 } from './components/utils';
 import { displayingMessagesSubSection } from './subsections';
-
-type UpdateSettingsProps = {
-	target: {
-		name: string;
-		value: string;
-	};
-};
-
-type DisplayingMessagesSettingsProps = {
-	settingsObj: Record<string, string>;
-	updateSettings: (arg: UpdateSettingsProps) => void;
-};
+import { DisplayingMessagesSettingsProps } from '../../types';
 
 const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 	settingsObj,

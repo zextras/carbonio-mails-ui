@@ -8,7 +8,7 @@ import { capitalize, map } from 'lodash';
 import React, { FC, ReactElement, useLayoutEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Row, Tooltip, Text } from '@zextras/carbonio-design-system';
-import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 
 import { participantToString } from '../../../../../commons/utils';
 import { Participant } from '../../../../../types';
@@ -65,7 +65,7 @@ const ContactName: FC<{
 				{map(contacts, (contact) => (
 					<Tooltip label={contact.address} key={contact.address}>
 						<ContactSubText color="secondary" size="small">
-							{capitalize(participantToString(contact, t, accounts))}
+							{capitalize(participantToString(contact, accounts))}
 						</ContactSubText>
 					</Tooltip>
 				))}

@@ -21,13 +21,8 @@ import { getTimeLabel, participantToString } from '../../commons/utils';
 import { ItemAvatar } from '../app/folder-panel/lists-item/item-avatar';
 import { SenderName } from '../app/folder-panel/lists-item/sender-name';
 import { useTagExist } from '../../ui-actions/tag-actions';
-import { IncompleteMessage, TextReadValuesProps } from '../../types';
+import { SearchMessageListItemProps, TextReadValuesProps } from '../../types';
 import { ListItemActionWrapper } from '../app/folder-panel/lists-item/list-item-actions-wrapper';
-
-type SearchMessageListItemProps = {
-	item: IncompleteMessage;
-	isConvChildren?: boolean;
-};
 
 export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 	item,
@@ -59,7 +54,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 	const [date, participantsString] = useMemo(() => {
 		if (item) {
 			const sender = find(item.participants, ['type', 'f']);
-			return [getTimeLabel(item.date), participantToString(sender, t, accounts)];
+			return [getTimeLabel(item.date), participantToString(sender, accounts)];
 		}
 		return ['.', '.', '', ''];
 	}, [item, accounts]);
@@ -146,6 +141,8 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 		>
 			<ListItemActionWrapper item={item} onClick={onClick}>
 				<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
+					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+					{/* @ts-ignore */}
 					<ItemAvatar item={item} folderId={item.parent} />
 					<Padding horizontal="extrasmall" />
 				</div>

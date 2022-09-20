@@ -43,9 +43,6 @@ export const themeMui = createTheme({
 					margin: '0px',
 					minHeight: '0px'
 				},
-				focusVisible: {
-					background: 'blue'
-				},
 				content: {
 					margin: '0px'
 				}

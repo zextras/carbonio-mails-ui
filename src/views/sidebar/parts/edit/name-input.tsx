@@ -7,15 +7,7 @@ import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system
 import { t } from '@zextras/carbonio-shell-ui';
 import React, { ChangeEvent, FC } from 'react';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
-
-type NameInputRowProps = {
-	setInputValue: (value: string) => void;
-	inputValue: string;
-	showWarning: boolean;
-	inpDisable: boolean;
-	folderColor: string | undefined;
-	setFolderColor: (value: string) => void;
-};
+import { NameInputRowProps } from '../../../../types/sidebar';
 
 const NameInputRow: FC<NameInputRowProps> = ({
 	setInputValue,

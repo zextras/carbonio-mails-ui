@@ -16,33 +16,7 @@ import {
 	Select
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-
-type RetentionPoliciesProps = {
-	showPolicy: boolean;
-	setShowPolicy: (arg: boolean) => void;
-	emptyRtnValue: boolean;
-	setEmptyRtnValue: (arg: boolean) => void;
-	dsblMsgRet: boolean;
-	setDsblMsgRet: (arg: boolean) => void;
-	rtnValue: string | number;
-	setRtnValue: (arg: string | number) => void;
-	retentionPeriod: Array<{
-		label: string;
-		value: string;
-	}>;
-	rtnYear: string | null;
-	setRtnYear: (arg: string | null) => void;
-	dsblMsgDis: boolean;
-	setDsblMsgDis: (arg: boolean) => void;
-	emptyDisValue: boolean;
-	setEmptyDisValue: (arg: boolean) => void;
-	purgeValue: number | string;
-	setPurgeValue: (arg: string) => void;
-	dspYear: string | null;
-	setDspYear: (arg: string | null) => void;
-	rtnRange: string;
-	dspRange: string;
-};
+import { RetentionPoliciesProps } from '../../../../types/sidebar';
 
 const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 	showPolicy,

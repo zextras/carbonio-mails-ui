@@ -41,20 +41,16 @@ import { ListItemActionWrapper } from './list-item-actions-wrapper';
 import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
 import { selectMessages } from '../../../../store/messages-slice';
 import { SenderName } from './sender-name';
-import MessageListItem from './message-list-item';
+import { MessageListItem } from './message-list-item';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
-import { StateType, Conversation, MailMessage, TextReadValuesProps } from '../../../../types';
-
-type CustomListItem = Partial<MailMessage> & { id: string; isFromSearch?: boolean };
-
-type ConversationMessagesListProps = {
-	active: string;
-	conversationStatus: string | undefined;
-	messages: Array<Partial<MailMessage>>;
-	folderId: string;
-	length: number;
-	isFromSearch?: boolean;
-};
+import {
+	StateType,
+	Conversation,
+	MailMessage,
+	TextReadValuesProps,
+	ConversationMessagesListProps,
+	CustomListItem
+} from '../../../../types';
 
 const CustomList = styled(List)<ListProps<CustomListItem> & { isFromSearch?: boolean }>``;
 
@@ -154,19 +150,19 @@ type ConversationListItemProps = {
 	item: Conversation;
 	itemId: string;
 	folderId: string;
-	selected: boolean;
-	selecting: boolean;
-	toggle: () => void;
-	active: boolean;
-	visible: boolean;
-	setDraggedIds: (ids: Record<string, boolean>) => void;
-	draggedIds: Array<string>;
-	setIsDragging: (isDragging: boolean) => void;
-	selectedItems: Record<string, boolean>;
-	dragImageRef: React.RefObject<HTMLInputElement>;
+	selected?: boolean;
+	selecting?: boolean;
+	toggle?: () => void;
+	active?: boolean;
+	visible?: boolean;
+	setDraggedIds?: (ids: Record<string, boolean>) => void;
+	draggedIds?: Array<string> | undefined;
+	setIsDragging?: (isDragging: boolean) => void;
+	selectedItems?: Record<string, boolean>;
+	dragImageRef?: React.RefObject<HTMLInputElement>;
 };
 
-const ConversationListItem: FC<ConversationListItemProps> = ({
+const ConversationListItem: FC<any> = ({
 	itemId,
 	item,
 	folderId,
@@ -213,8 +209,8 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 	const participantsString = useMemo(
 		() =>
 			reduce(
-				uniqBy(item.participants, (em) => em.address),
-				(acc, part) => trimStart(`${acc}, ${participantToString(part, t, accounts)}`, ', '),
+				uniqBy(item.participants, (em: any) => em.address),
+				(acc, part) => trimStart(`${acc}, ${participantToString(part, accounts)}`, ', '),
 				''
 			),
 		[item.participants, accounts]
@@ -242,12 +238,15 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (item?.read === false) {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					setConversationsRead({
 						ids: [item.id],
 						value: false,
-						t,
 						dispatch
-					}).click();
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+					})?.click();
 				}
 				pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 			}
@@ -269,12 +268,12 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 
 	const dragCheck = useCallback(
 		(e, id) => {
-			setIsDragging(true);
-			e.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
-			if (selectedItems[id]) {
-				setDraggedIds(selectedItems);
+			setIsDragging && setIsDragging(true);
+			dragImageRef && e.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
+			if (selectedItems && selectedItems[id]) {
+				setDraggedIds && setDraggedIds(selectedItems);
 			} else {
-				setDraggedIds({ [id]: true });
+				setDraggedIds && setDraggedIds({ [id]: true });
 			}
 		},
 		[setIsDragging, dragImageRef, selectedItems, setDraggedIds]

@@ -5,7 +5,7 @@
  */
 import React, { FC, useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
-import { QueryChip, Spinner, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { Spinner, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { includes, map, reduce } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,14 +16,8 @@ import { findIconFromChip } from './parts/use-find-icon';
 import { search } from '../../store/actions';
 import { selectSearches } from '../../store/searches-slice';
 import SearchMessageList from './search-message-list';
-import { FolderType, SearchResults } from '../../types';
+import { FolderType, SearchProps, SearchResults } from '../../types';
 import { selectFolders } from '../../store/folders-slice';
-
-type SearchProps = {
-	useDisableSearch: () => [boolean, (arg: any) => void];
-	useQuery: () => [Array<QueryChip>, (arg: any) => void];
-	ResultsHeader: FC<{ label: string }>;
-};
 
 const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -216,6 +210,8 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 					</Suspense>
 				</Container>
 			</Container>
+			{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+			{/* @ts-ignore */}
 			<AdvancedFilterModal
 				query={query}
 				updateQuery={updateQuery}

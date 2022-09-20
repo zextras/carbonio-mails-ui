@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { isEmpty, split, head, includes, reduce, uniqBy, find, filter } from 'lodash';
+import { isEmpty, split, head, includes, reduce, uniqBy, find, filter, noop } from 'lodash';
 import {
 	Badge,
 	Container,
@@ -37,16 +37,7 @@ import { SenderName } from '../app/folder-panel/lists-item/sender-name';
 import { selectMessages } from '../../store/messages-slice';
 import { selectConversationExpandedStatus } from '../../store/conversations-slice';
 import { searchConv } from '../../store/actions';
-import { StateType, MailMessage, Conversation } from '../../types';
-
-type SearchConversationListItemProps = {
-	itemId?: string;
-	item: Conversation;
-	selected: boolean;
-	selecting?: boolean;
-	toggle?: boolean;
-	active: boolean;
-};
+import { StateType, MailMessage, SearchConversationListItemProps } from '../../types';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -55,7 +46,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 	itemId,
 	item,
 	selected,
-	selecting,
+	selecting = false,
 	toggle,
 	active
 }) => {
@@ -185,7 +176,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 						item={item}
 						selected={selected}
 						selecting={selecting}
-						toggle={toggle}
+						toggle={toggle ?? noop}
 						folderId={parent}
 						isSearch
 					/>

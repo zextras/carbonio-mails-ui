@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { createContext, FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
+import { noop } from 'lodash';
+import React, { createContext, FC, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import {
 	useIntegratedComponent,
@@ -11,19 +12,19 @@ import {
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { SnackbarManagerContext, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { getActions as conversationActions } from '../ui-actions/conversation-actions';
 import { getActions as messageActions } from '../ui-actions/message-actions';
 import { Conversation, MailMessage } from '../types';
 
 type ACPProps = {
 	folderId: string;
+	isConversation?: boolean;
 };
 
 type ActionObj = {
 	id: string;
 	label: string;
-	click: (event: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	click: (event: MouseEvent) => void;
 	icon: string;
 };
 
@@ -44,39 +45,32 @@ export const ActionsContext = createContext<{
 
 export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => {
 	const dispatch = useDispatch();
-	const createSnackbar = useContext(SnackbarManagerContext);
-	const createModal = useContext(ModalManagerContext);
 	const settings = useUserSettings();
 	const account = useUserAccount();
 	const timezone = useMemo(() => settings?.prefs.zimbraPrefTimeZoneId, [settings]);
 	const tags = useTags();
 
-	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
+	const [ContactInput] = useIntegratedComponent('contact-input');
 
 	const [conversationActionsCallback, messageActionsCallback] = useMemo(
 		() => [
 			conversationActions({
 				folderId,
 				dispatch,
-				createSnackbar,
-				createModal,
-				ContactInput,
 				tags,
-				account
+				account,
+				deselectAll: noop
 			}),
 			messageActions({
 				folderId,
 
 				dispatch,
-				createSnackbar,
-				createModal,
-				ContactInput,
-				timezone,
 				account,
-				tags
+				tags,
+				deselectAll: noop
 			})
 		],
-		[folderId, dispatch, createSnackbar, createModal, ContactInput, tags, account, timezone]
+		[folderId, dispatch, tags, account]
 	);
 	const getMessageActions = useCallback<GetMsgActionsFunction>(
 		(item: MailMessage, closeEditor: boolean): [ActionList, ActionList] =>

@@ -131,7 +131,7 @@ export const getTagIds = (
 };
 export const normalizeMailMessageFromSoap = (
 	m: SoapIncompleteMessage,
-	isComplete: boolean
+	isComplete?: boolean
 ): IncompleteMessage => <IncompleteMessage>omitBy(
 		{
 			conversation: m.cid,

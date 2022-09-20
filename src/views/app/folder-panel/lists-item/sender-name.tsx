@@ -9,13 +9,7 @@ import React, { FC, useMemo } from 'react';
 import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { ParticipantRole, participantToString } from '../../../../commons/utils';
-import { IncompleteMessage, Conversation, TextReadValuesProps } from '../../../../types';
-
-type SenderNameProps = {
-	item: Conversation | IncompleteMessage;
-	isFromSearch?: boolean;
-	textValues?: TextReadValuesProps;
-};
+import { SenderNameProps } from '../../../../types';
 
 export const SenderName: FC<SenderNameProps> = ({ item, textValues, isFromSearch = false }) => {
 	const account = useUserAccount();
@@ -37,7 +31,7 @@ export const SenderName: FC<SenderNameProps> = ({ item, textValues, isFromSearch
 
 		return reduce(
 			uniqBy(participants, (em) => em.address),
-			(acc, part) => trimStart(`${acc}, ${participantToString(part, t, [account])}`, ', '),
+			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
 			''
 		);
 	}, [account, folderId, isFromSearch, item.participants]);
