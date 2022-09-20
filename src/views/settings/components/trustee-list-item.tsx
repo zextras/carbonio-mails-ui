@@ -20,11 +20,6 @@ const ListItem = styled(Row)`
 	}
 `;
 
-type ComponentProps = {
-	item: string;
-	onRemove: (arg: string) => void;
-};
-
 // TODO remove the any after the DS
 const TrusteeListItem: FC<any> = ({ item, onRemove }): ReactElement => {
 	const [t] = useTranslation();

@@ -9,17 +9,13 @@ import { useTranslation } from 'react-i18next';
 import { Input, Padding, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
 import { createTag, renameTag, changeTagColor } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../../commons/modal-footer';
-import { ModalHeader } from '../../commons/modal-header';
+import ModalHeader from '../../commons/modal-header';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
-import { ItemType } from '../../../../types';
 
-type ComponentProps = {
-	onClose: () => void;
-	editMode?: boolean;
-	tag?: ItemType;
-};
+import { CreateUpdateTagModalPropType } from '../../../../types/sidebar';
+
 const NonSupportedCharacters = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
-const CreateUpdateTagModal: FC<ComponentProps> = ({
+const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 	onClose,
 	editMode = false,
 	tag

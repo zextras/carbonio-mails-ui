@@ -55,7 +55,6 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 			moveMsgToTrash({
 				ids: [message.id],
 				dispatch,
-				createSnackbar,
 				deselectAll,
 				folderId,
 				conversationId: message?.conversation,
@@ -78,7 +77,6 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 			moveMsgToTrash({
 				ids: [message.id],
 				dispatch,
-				createSnackbar,
 				deselectAll,
 				folderId,
 				conversationId: message?.conversation,
@@ -100,7 +98,6 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 				id: [message.id],
 				dispatch,
 				isRestore: false,
-				createModal,
 				deselectAll
 			})
 		);
@@ -108,9 +105,9 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 		arr.push(applyTag({ tags, conversation: message, isMessage: true }));
 		arr.push(printMsg({ message, account }));
 		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
-		arr.push(redirectMsg({ id: message.id, createModal }));
+		arr.push(redirectMsg({ id: message.id }));
 		arr.push(editAsNewMsg({ id: message.id, folderId }));
-		arr.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, createSnackbar, folderId }));
+		arr.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }));
 		arr.push(showOriginalMsg({ id: message.id }));
 	}
 
@@ -120,24 +117,20 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 				id: [message.id],
 				dispatch,
 				isRestore: true,
-				createModal,
 				deselectAll
 			})
 		);
-		arr.push(deleteMessagePermanently({ ids: [message.id], dispatch, createModal, deselectAll }));
+		arr.push(deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }));
 		arr.push(applyTag({ tags, conversation: message, isMessage: true }));
 	}
 	if (message.parent === FOLDERS.SPAM) {
 		arr.push(
 			deleteMsg({
 				ids: [message.id],
-				dispatch,
-				createSnackbar,
-				createModal,
-				closeEditor: isAlone
+				dispatch
 			})
 		);
-		arr.push(setMsgAsSpam({ ids: [message.id], value: true, dispatch, createSnackbar, folderId }));
+		arr.push(setMsgAsSpam({ ids: [message.id], value: true, dispatch, folderId }));
 		arr.push(printMsg({ message, account }));
 		arr.push(showOriginalMsg({ id: message.id }));
 		arr.push(applyTag({ tags, conversation: message, isMessage: true }));

@@ -18,3 +18,4 @@ export * from './state';
 export * from './tags';
 export * from './utils';
 export * from './settings';
+export * from './details-pannel';

@@ -74,7 +74,7 @@ const Actions: FC<ActionProps> = ({
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const dispatch = useDispatch() as Function;
 	const onRevoke = useCallback(() => {
-		setActiveGrant(grant);
+		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('revoke');
 	}, [setActiveModal, setActiveGrant, grant]);
 
@@ -100,7 +100,7 @@ const Actions: FC<ActionProps> = ({
 		});
 	}, [accounts, dispatch, folder, t, grant.d, createSnackbar]);
 	const onEdit = useCallback(() => {
-		setActiveGrant(grant);
+		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('edit');
 	}, [setActiveModal, setActiveGrant, grant]);
 

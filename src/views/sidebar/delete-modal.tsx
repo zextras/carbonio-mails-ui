@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { startsWith } from 'lodash';
 import ModalFooter from './commons/modal-footer';
-import { ModalHeader } from './commons/modal-header';
+import ModalHeader from './commons/modal-header';
 import { folderAction } from '../../store/actions/folder-action';
 import { ModalProps } from '../../types';
 import { FOLDER_ACTIONS } from '../../commons/utilities';

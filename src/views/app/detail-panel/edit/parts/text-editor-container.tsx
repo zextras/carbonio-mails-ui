@@ -5,7 +5,17 @@
  */
 
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, {
+	FC,
+	ReactElement,
+	RefObject,
+	SyntheticEvent,
+	useCallback,
+	useContext,
+	useRef,
+	useState,
+	useMemo
+} from 'react';
 import { Row, Container, Text } from '@zextras/carbonio-design-system';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -13,9 +23,10 @@ import { EditViewContext } from './edit-view-context';
 import * as StyledComp from './edit-view-styled-components';
 
 type PropType = {
-	onDragOverEvent: () => void;
+	onDragOverEvent: (event: SyntheticEvent) => void;
 	draftSavedAt: string;
 	minHeight: number;
+	ref: RefObject<HTMLInputElement>;
 };
 const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minHeight }) => {
 	const { control, editor, throttledSaveToDraft, updateSubjectField } = useContext(EditViewContext);

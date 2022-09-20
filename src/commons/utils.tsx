@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { find, isArray } from 'lodash';
 import { TFunction } from 'react-i18next';
 import { Account } from '@zextras/carbonio-shell-ui';
@@ -36,13 +36,18 @@ export const participantToString = (
 };
 
 export const isAvailableInTrusteeList = (
-	trusteeList: Array<string> | string,
+	trusteeList: Array<string> | string | number,
 	address: string
 ): boolean => {
 	let trusteeAddress: Array<string> = [];
 	let availableInTrusteeList = false;
 	if (trusteeList) {
-		trusteeAddress = isArray(trusteeList) ? trusteeList : trusteeList.split(',');
+		// eslint-disable-next-line no-nested-ternary
+		trusteeAddress = isArray(trusteeList)
+			? trusteeList
+			: typeof trusteeList === 'string'
+			? trusteeList?.split(',')
+			: [`${trusteeList}`];
 	}
 	if (trusteeAddress.length > 0) {
 		const domain = address.substring(address.lastIndexOf('@') + 1);

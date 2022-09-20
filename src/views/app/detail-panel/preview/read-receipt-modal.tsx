@@ -14,16 +14,16 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import ModalFooter from '../../../sidebar/commons/modal-footer';
-import { ModalHeader } from '../../../sidebar/commons/modal-header';
+import ModalHeader from '../../../sidebar/commons/modal-header';
 import { msgAction } from '../../../../store/actions';
 import { sendDeliveryReport } from '../../../../store/actions/send-delivery-request';
-import { CreateSnackbar, MailMessage } from '../../../../types';
+import { MailMessage } from '../../../../types';
 
 type CompProps = {
 	open: boolean;
 	onClose: () => void;
 	message: MailMessage;
-	readReceiptSetting: string;
+	readReceiptSetting: string | undefined | number;
 };
 
 const ReadReceiptModal: FC<CompProps> = ({

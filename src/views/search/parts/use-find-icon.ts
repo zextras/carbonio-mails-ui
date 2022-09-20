@@ -3,16 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-type ChipType = {
-	label: string;
-	hasAvatar?: boolean;
-	value?: string;
-	isQueryFilter?: boolean;
-	isGeneric?: boolean;
-	avatarIcon?: string;
-	avatarBackground?: string;
-	hasError?: boolean;
-};
+
+import { ChipType } from '../../../types';
 
 export const findIconFromChip = (chip: ChipType): ChipType => {
 	switch (chip.label) {
