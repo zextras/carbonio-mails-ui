@@ -5,7 +5,12 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	useUserSettings,
+	t,
+	replaceHistory
+} from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import { Dispatch } from '@reduxjs/toolkit';
 import ModalFooter from '../../../../sidebar/commons/modal-footer';
@@ -19,19 +24,28 @@ type SendLaterModalPropTypes = {
 	dispatch: Dispatch;
 	editor: MailsEditor;
 	closeBoard: () => void;
+	folderId?: string;
+	setShowRouteGuard: (arg: boolean) => void;
 };
-const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor, closeBoard }) => {
+const SendLaterModal: FC<SendLaterModalPropTypes> = ({
+	onClose,
+	dispatch,
+	editor,
+	closeBoard,
+	folderId,
+	setShowRouteGuard
+}) => {
 	const [time, setTime] = useState();
 	const bridgedFn = getBridgedFunctions();
 
-	const modalTitle = t('label.send_later', 'Send Later');
-	const datePickerLabel = t('label.select_date_time', 'Select date and time');
+	const modalTitle = useMemo(() => t('label.send_later', 'Send Later'), []);
+	const datePickerLabel = useMemo(() => t('label.select_date_time', 'Select date and time'), []);
 
 	const handleTimeChange = useCallback((newTime) => {
 		setTime(newTime);
 	}, []);
 
-	const confirmLabel = t('label.schedule_send', 'Schedule send');
+	const confirmLabel = useMemo(() => t('label.schedule_send', 'Schedule send'), []);
 	const { prefs } = useUserSettings();
 	const onConfirm = useCallback(() => {
 		const autoSendTime = moment(time).valueOf();
@@ -53,10 +67,16 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 				});
 
 				onClose();
-				closeBoard();
+				closeBoard && closeBoard();
+				setShowRouteGuard(false);
+				setTimeout(() => {
+					if (folderId) {
+						replaceHistory(`/folder/${folderId}/`);
+					}
+				}, 10);
 			}
 		});
-	}, [bridgedFn, closeBoard, dispatch, editor, onClose, prefs, time]);
+	}, [bridgedFn, closeBoard, dispatch, editor, folderId, onClose, prefs, setShowRouteGuard, time]);
 
 	const minTime = useMemo(() => {
 		if (moment(time).isBefore(moment(), 'hour') || !time) {

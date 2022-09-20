@@ -133,7 +133,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					}}
 				/>
 			</Container>
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
+			{/* <Container crossAlignment="baseline" padding={{ all: 'small' }}>
 				<Heading title={t('settings.label.message_color', 'Message Color')} />
 				<Checkbox
 					label={t(
@@ -150,7 +150,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 						})
 					}
 				/>
-			</Container>
+			</Container> */}
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 				<Heading title={t('settings.label.visualization_options', 'Visualization Options')} />
 				<RadioGroup

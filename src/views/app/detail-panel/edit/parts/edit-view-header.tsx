@@ -35,7 +35,7 @@ import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
 import * as StyledComp from './edit-view-styled-components';
 import { addAttachments } from '../edit-utils';
-import { MailAttachment } from '../../../../../types';
+import { CreateSnackbar, MailAttachment } from '../../../../../types';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import { ActionsType } from '../../../../../commons/utils';
 import SendLaterModal from './send-later-modal';
@@ -215,9 +215,20 @@ const EditViewHeader: FC<PropType> = ({
 
 	const createModal = useModal();
 	const sendMailAction = useCallback(() => {
-		if (editor?.subject) {
-			sendMailCb();
-		} else {
+		const attachWords = [
+			t('messages.modal.send_anyway.attach', 'attach'),
+			t('messages.modal.send_anyway.attachment', 'attachment'),
+			t('messages.modal.send_anyway.attachments', 'attachments'),
+			t('messages.modal.send_anyway.attached', 'attached'),
+			t('messages.modal.send_anyway.attaching', 'attaching'),
+			t('messages.modal.send_anyway.enclose', 'enclose'),
+			t('messages.modal.send_anyway.enclosed', 'enclosed'),
+			t('messages.modal.send_anyway.enclosing', 'enclosing')
+		];
+		const isattachWordsPresent = attachWords.some((el) =>
+			editor.text[0].toLowerCase().includes(el)
+		);
+		if ((isattachWordsPresent && !editor?.attachmentFiles.length) || !editor?.subject) {
 			const closeModal = createModal({
 				title: t('header.attention', 'Attention'),
 				confirmLabel: t('action.ok', 'Ok'),
@@ -236,19 +247,27 @@ const EditViewHeader: FC<PropType> = ({
 				children: (
 					<StoreProvider>
 						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
-							{t(
-								'messages.modal.send_anyway.first',
-								"Email subject is empty and you didn't attach any files."
-							)}
+							{/* eslint-disable-next-line no-nested-ternary */}
+							{isattachWordsPresent && !editor?.attachmentFiles.length && !editor?.subject
+								? t(
+										'messages.modal.send_anyway.no_subject_no_attachments',
+										'Email subject is empty and you didn’t attach any files.'
+								  )
+								: !editor?.subject
+								? t('messages.modal.send_anyway.no_subject', 'Email subject is empty.')
+								: t('messages.modal.send_anyway.no_attachments', 'You didn’t attach any files.')}
 						</Text>
+
 						<Text overflow="break-word" style={{ paddingBottom: '16px' }}>
 							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
 						</Text>
 					</StoreProvider>
 				)
 			});
+		} else {
+			sendMailCb();
 		}
-	}, [editor?.subject, createModal, sendMailCb]);
+	}, [editor?.attachmentFiles.length, editor?.subject, editor.text, createModal, sendMailCb]);
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
@@ -345,13 +364,15 @@ const EditViewHeader: FC<PropType> = ({
 							dispatch={dispatch}
 							editor={editor}
 							closeBoard={boardUtilities?.closeBoard}
+							folderId={folderId}
+							setShowRouteGuard={setShowRouteGuard}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [boardUtilities, dispatch, editor]);
+	}, [boardUtilities, dispatch, editor, folderId, setShowRouteGuard]);
 	return (
 		<>
 			<Row
