@@ -88,6 +88,8 @@ const SearchConversationList: FC<SearchListProps> = ({
 				<Container style={{ overflowY: 'auto' }} mainAlignment="flex-start">
 					<List
 						items={searchResults.conversations ?? []}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						ItemComponent={SearchConversationListItem}
 						onListBottom={canLoadMore ? loadMore : undefined}
 						active={itemId}

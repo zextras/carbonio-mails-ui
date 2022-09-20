@@ -30,12 +30,8 @@ import { getShareInfo } from '../../store/actions/get-share-info';
 import { ResFolder } from '../../types';
 import { SharesModal } from './shares-modal';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
+import { SidebarComponentProps, SidebarProps } from '../../types/sidebar';
 import { StoreProvider } from '../../store/redux';
-
-type SidebarComponentProps = {
-	accordions: Array<AccordionFolder>;
-	openIds: Array<string>;
-};
 
 const ButtonFindShares: FC = () => {
 	const [t] = useTranslation();
@@ -120,10 +116,6 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) =>
 			<Accordion items={[tagsAccordionItems]} />
 		</Container>
 	);
-};
-
-type SidebarProps = {
-	expanded: boolean;
 };
 
 const Sidebar: FC<SidebarProps> = ({ expanded }) => {

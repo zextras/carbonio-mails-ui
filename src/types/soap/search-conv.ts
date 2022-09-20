@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { Tags } from '@zextras/carbonio-shell-ui';
 import { MailMessage } from '../messages';
 import { SoapMailMessage } from './soap-mail-message';
 import { ZimbraRequest } from './zimbra-request';
@@ -33,6 +34,7 @@ export type SearchConvParameters = {
 	conversationId: string;
 	folderId: string;
 	fetch: string;
+	tags?: Tags;
 };
 
 export type SearchConvReturn = {

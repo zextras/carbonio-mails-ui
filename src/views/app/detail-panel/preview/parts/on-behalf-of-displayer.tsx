@@ -11,7 +11,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Participant, MailMessage } from '../../../../../types';
 
-const StyledText = styled.span<{ isRead?: boolean; color?: string }>`
+const StyledText = styled.span<{ isRead?: string | boolean; color?: string }>`
 	padding: 0 2px;
 	color: ${({ theme, color, isRead }): string =>
 		// eslint-disable-next-line no-nested-ternary
@@ -40,7 +40,7 @@ const OnBehalfOfDisplayer: FC<{
 	const behalfOfLabel = useMemo(() => t('label.behalf_of', 'behalf of'), [t]);
 	return (
 		<TextWithTooltip>
-			<StyledText isRead={message.read}>{fullName}</StyledText>
+			<StyledText isRead={message.read ?? ''}>{fullName}</StyledText>
 			<StyledText color="secondary" isRead={message.read}>
 				{` <${address}> `}
 			</StyledText>

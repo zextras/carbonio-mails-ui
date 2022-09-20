@@ -13,7 +13,12 @@ import {
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { ActionsContext } from '../../../../commons/actions-context';
-import { Conversation, IncompleteMessage, MailMessage } from '../../../../types';
+import {
+	Conversation,
+	IncompleteMessage,
+	ListItemActionWrapperProps,
+	MailMessage
+} from '../../../../types';
 
 const HoverBarContainer = styled(Container)`
 	top: 0;
@@ -48,17 +53,6 @@ const HoverContainer = styled(Container)<ContainerProps & { current: boolean }>`
 	}
 `;
 
-type ListItemActionWrapperProps = {
-	children?: ReactNode;
-	current?: boolean;
-	onClick?: ContainerProps['onClick'];
-	onDoubleClick?: ContainerProps['onDoubleClick'];
-	item: Conversation | IncompleteMessage;
-	isConversation?: boolean;
-	messagesToRender?: Array<Partial<MailMessage>>;
-	hoverTooltipLabel?: string;
-};
-
 export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	children,
 	current,
@@ -88,6 +82,8 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	return (
 		<Dropdown
 			contextMenu
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			items={dropdownActions}
 			display="block"
 			style={{ width: '100%', height: '64px' }}
@@ -115,6 +111,8 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 								icon={action.icon}
 								onClick={(ev: SyntheticEvent<HTMLButtonElement, Event> | KeyboardEvent): void => {
 									ev.stopPropagation();
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									action.click(ev);
 								}}
 								size="small"

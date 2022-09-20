@@ -14,7 +14,7 @@ import {
 import moment from 'moment';
 import { Dispatch } from '@reduxjs/toolkit';
 import ModalFooter from '../../../../sidebar/commons/modal-footer';
-import { ModalHeader } from '../../../../sidebar/commons/modal-header';
+import ModalHeader from '../../../../sidebar/commons/modal-header';
 import { saveDraft } from '../../../../../store/actions/save-draft';
 import { MailsEditor } from '../../../../../types';
 import DatePickerCustomComponent from './date-picker-custom-component';

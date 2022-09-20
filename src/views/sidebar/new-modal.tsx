@@ -36,7 +36,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import ModalFooter from './commons/modal-footer';
-import { ModalHeader } from './commons/modal-header';
+import ModalHeader from './commons/modal-header';
 import { createFolder } from '../../store/actions/create-folder';
 import { FOLDER_VIEW } from '../../constants';
 import ModalAccordionCustomComponent from './parts/edit/modal-accordion-custom-component';

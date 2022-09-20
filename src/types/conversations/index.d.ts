@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { Moment } from 'moment';
+import { Participant } from '../participant';
 import { ConvActionOperation } from '../soap/conv-action';
 
 export type ConvMessage = {
@@ -44,9 +46,9 @@ export type ConvActionResult = {
 export type FetchConversationsParameters = {
 	folderId?: string;
 	limit: number;
-	before?: Date;
+	before?: Date | null;
 	types?: string;
-	sortBy: 'dateDesc' | 'dateAsc';
+	sortBy?: 'dateDesc' | 'dateAsc';
 	query?: string;
 	offset?: undefined | number;
 	recip?: '0' | '1' | '2';

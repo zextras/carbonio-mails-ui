@@ -36,7 +36,6 @@ import {
 	ContainerProps
 } from '@zextras/carbonio-design-system';
 import { startsWith } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { convAction, msgAction, search } from '../../store/actions';
@@ -51,7 +50,7 @@ import { EditModal } from './edit-modal';
 import { SharesInfoModal } from './shares-info-modal';
 import ShareFolderModal from './share-folder-modal';
 import { FolderActionsType } from '../../commons/utils';
-import { DataProps } from '../../types';
+import { DragEnterAction, FolderActionsProps, OnDropActionProps } from '../../types/sidebar';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
@@ -77,14 +76,6 @@ const DropDenyOverlayContainer = styled(Container)<ContainerProps & { folder: Fo
 	border: 4px solid #d5e3f6;
 	opacity: 0.4;
 `;
-
-type FolderActionsProps = {
-	id: string;
-	icon: string;
-	label: string;
-	click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
-	disabled?: boolean;
-};
 
 const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> => {
 	const dispatch = useDispatch();
@@ -224,6 +215,8 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 							children: (
 								<StoreProvider>
 									<ShareFolderModal
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore
 										onClose={(): void => closeModal()}
 										folder={folder}
 										activeGrant={activeGrant}
@@ -329,18 +322,6 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						return action;
 				  });
 	}
-};
-
-type DragEnterAction =
-	| undefined
-	| {
-			success: false;
-	  };
-
-type OnDropActionProps = {
-	event: React.DragEvent;
-	type: string;
-	data: DataProps;
 };
 
 const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);

@@ -10,13 +10,7 @@ import React, { FC, useMemo } from 'react';
 import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { ParticipantRole, participantToString } from '../../../../commons/utils';
-import { IncompleteMessage, Conversation, TextReadValuesProps } from '../../../../types';
-
-type SenderNameProps = {
-	item: Conversation | IncompleteMessage;
-	isFromSearch?: boolean;
-	textValues?: TextReadValuesProps;
-};
+import { SenderNameProps } from '../../../../types';
 
 export const SenderName: FC<SenderNameProps> = ({ item, textValues, isFromSearch = false }) => {
 	const [t] = useTranslation();
