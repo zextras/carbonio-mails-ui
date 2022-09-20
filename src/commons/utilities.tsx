@@ -21,201 +21,203 @@ type FileType = {
 	contentType: string;
 };
 export const getFileExtension = (file: FileType): string => {
-	if (isNil(FileExtensionRegex.exec(file.filename))) {
-		switch (file.contentType) {
-			case 'text/html':
-				return 'html';
+	switch (file.contentType) {
+		case 'text/html':
+			return 'html';
 
-			case 'text/css':
-				return 'css';
+		case 'text/css':
+			return 'css';
 
-			case 'text/xml':
-				return 'xml';
+		case 'text/xml':
+			return 'xml';
 
-			case 'image/gif':
-				return 'gif';
+		case 'image/gif':
+			return 'gif';
 
-			case 'image/jpeg':
-				return 'jpg';
+		case 'image/jpeg':
+			return 'jpg';
 
-			case 'application/x-javascript':
-				return 'js';
+		case 'application/x-javascript':
+			return 'js';
 
-			case 'application/atom+xml':
-				return 'atom';
+		case 'application/atom+xml':
+			return 'atom';
 
-			case 'application/rss+xml':
-				return 'rss';
+		case 'application/rss+xml':
+			return 'rss';
 
-			case 'text/mathml':
-				return 'mml';
+		case 'text/mathml':
+			return 'mml';
 
-			case 'text/plain':
-				return 'txt';
+		case 'text/plain':
+			return 'txt';
 
-			case 'text/vnd.sun.jme.app-descriptor':
-				return 'jad';
+		case 'text/vnd.sun.jme.app-descriptor':
+			return 'jad';
 
-			case 'text/vnd.wap.wml':
-				return 'wml';
+		case 'text/vnd.wap.wml':
+			return 'wml';
 
-			case 'text/x-component':
-				return 'htc';
+		case 'text/x-component':
+			return 'htc';
 
-			case 'image/png':
-				return 'png';
+		case 'image/png':
+			return 'png';
 
-			case 'image/tiff':
-				return 'tif,tiff';
+		case 'image/tiff':
+			return 'tif,tiff';
 
-			case 'image/vnd.wap.wbmp':
-				return 'wbmp';
+		case 'image/vnd.wap.wbmp':
+			return 'wbmp';
 
-			case 'image/x-icon':
-				return 'ico';
+		case 'image/x-icon':
+			return 'ico';
 
-			case 'image/x-jng':
-				return 'jng';
+		case 'image/x-jng':
+			return 'jng';
 
-			case 'image/x-ms-bmp':
-				return 'bmp';
+		case 'image/x-ms-bmp':
+			return 'bmp';
 
-			case 'image/svg+xml':
-				return 'svg';
+		case 'image/svg+xml':
+			return 'svg';
 
-			case 'image/webp':
-				return 'webp';
+		case 'image/webp':
+			return 'webp';
 
-			case 'application/java-archive':
-				return 'jar,war,ear';
+		case 'application/java-archive':
+			return 'jar,war,ear';
 
-			case 'application/mac-binhex':
-				return 'hqx';
+		case 'application/mac-binhex':
+			return 'hqx';
 
-			case 'application/msword':
-				return 'doc';
+		case 'application/msword':
+			return 'doc';
 
-			case 'application/pdf':
-				return 'pdf';
+		case 'application/pdf':
+			return 'pdf';
 
-			case 'application/postscript':
-				return 'ps,eps,ai';
+		case 'application/postscript':
+			return 'ps,eps,ai';
 
-			case 'application/rtf':
-				return 'rtf';
+		case 'application/rtf':
+			return 'rtf';
 
-			case 'application/vnd.ms-excel':
-				return 'xls';
+		case 'application/vnd.ms-excel':
+			return 'xls';
 
-			case 'application/vnd.ms-powerpoint':
-				return 'ppt';
+		case 'application/vnd.ms-powerpoint':
+			return 'ppt';
 
-			case 'application/vnd.wap.wmlc':
-				return 'wmlc';
+		case 'application/vnd.wap.wmlc':
+			return 'wmlc';
 
-			case 'application/vnd.google-earth.kml+xml':
-				return 'kml';
+		case 'application/vnd.google-earth.kml+xml':
+			return 'kml';
 
-			case 'application/vnd.google-earth.kmz':
-				return 'kmz';
+		case 'application/vnd.google-earth.kmz':
+			return 'kmz';
 
-			case 'application/x-z-compressed':
-				return 'z';
+		case 'application/x-z-compressed':
+			return 'z';
 
-			case 'application/x-cocoa':
-				return 'cco';
+		case 'application/x-cocoa':
+			return 'cco';
 
-			case 'application/x-java-archive-diff':
-				return 'jardiff';
+		case 'application/x-java-archive-diff':
+			return 'jardiff';
 
-			case 'application/x-java-jnlp-file':
-				return 'jnlp';
+		case 'application/x-java-jnlp-file':
+			return 'jnlp';
 
-			case 'application/x-makeself':
-				return 'run';
+		case 'application/x-makeself':
+			return 'run';
 
-			case 'application/x-perl':
-				return 'pl,pm';
+		case 'application/x-perl':
+			return 'pl,pm';
 
-			case 'application/x-pilot':
-				return 'prc,pdb';
+		case 'application/x-pilot':
+			return 'prc,pdb';
 
-			case 'application/x-rar-compressed':
-				return 'rar';
+		case 'application/x-rar-compressed':
+			return 'rar';
 
-			case 'application/x-redhat-package-manager':
-				return 'rpm';
+		case 'application/x-redhat-package-manager':
+			return 'rpm';
 
-			case 'application/x-sea':
-				return 'sea';
+		case 'application/x-sea':
+			return 'sea';
 
-			case 'application/x-shockwave-flash':
-				return 'swf';
+		case 'application/x-shockwave-flash':
+			return 'swf';
 
-			case 'application/x-stuffit':
-				return 'sit';
+		case 'application/x-stuffit':
+			return 'sit';
 
-			case 'application/x-tcl':
-				return 'tcl';
+		case 'application/x-tcl':
+			return 'tcl';
 
-			case 'application/x-x-ca-cert':
-				return 'der';
+		case 'application/x-x-ca-cert':
+			return 'der';
 
-			case 'application/x-xpinstall':
-				return 'xpi';
+		case 'application/x-xpinstall':
+			return 'xpi';
 
-			case 'application/xhtml+xml':
-				return 'xhtml';
+		case 'application/xhtml+xml':
+			return 'xhtml';
 
-			case 'application/zip':
-				return 'zip';
+		case 'application/zip':
+			return 'zip';
 
-			case 'audio/midi':
-				return 'midi';
+		case 'audio/midi':
+			return 'midi';
 
-			case 'audio/mpeg':
-				return 'mp';
+		case 'audio/mpeg':
+			return 'mp';
 
-			case 'audio/ogg':
-				return 'ogg';
+		case 'audio/ogg':
+			return 'ogg';
 
-			case 'audio/x-realaudio':
-				return 'ra';
+		case 'audio/x-realaudio':
+			return 'ra';
 
-			case 'video/gpp':
-				return 'gp';
+		case 'video/gpp':
+			return 'gp';
 
-			case 'video/mpeg':
-				return 'mpeg';
+		case 'video/mpeg':
+			return 'mpeg';
 
-			case 'video/quicktime':
-				return 'mov';
+		case 'video/quicktime':
+			return 'mov';
 
-			case 'video/x-flv':
-				return 'flv';
+		case 'video/x-flv':
+			return 'flv';
 
-			case 'video/x-mng':
-				return 'mng';
+		case 'video/x-mng':
+			return 'mng';
 
-			case 'video/x-ms-asf':
-				return 'asf';
+		case 'video/x-ms-asf':
+			return 'asf';
 
-			case 'video/x-ms-wmv':
-				return 'wmv';
+		case 'video/x-ms-wmv':
+			return 'wmv';
 
-			case 'video/x-msvideo':
-				return 'avi';
+		case 'video/x-msvideo':
+			return 'avi';
 
-			case 'video/mp':
-				return 'mp';
+		case 'video/mp':
+			return 'mp';
 
-			default:
-				return '?';
-		}
+		case 'message/rfc822':
+			return 'EML';
+
+		default:
+			return isNil(FileExtensionRegex.exec(file?.filename))
+				? '?'
+				: // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				  // @ts-ignore
+				  FileExtensionRegex.exec(file?.filename)[1];
 	}
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	return FileExtensionRegex.exec(file.filename)[1];
 };
 
 // eslint-disable-next-line no-shadow

@@ -19,10 +19,12 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getAction, soapFetch } from '@zextras/carbonio-shell-ui';
+import { getAction, soapFetch, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { humanFileSize, previewType } from './file-preview';
+import { getMsgsForPrint } from '../../../../store/actions';
+import { getEMLContent, getErrorPage } from '../../../../commons/preview-eml';
 
 const AttachmentsActions = styled(Row)``;
 function findAttachments(parts, acc) {
@@ -125,12 +127,13 @@ const AttachmentExtension = styled(Text)`
 function Attachment({ filename, size, link, downloadlink, message, part, iconColors, att }) {
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const extension = getFileExtension(att);
+
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const [t] = useTranslation();
 	const inputRef = useRef();
 	const inputRef2 = useRef();
-
+	const account = useUserAccount();
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
 			// eslint-disable-next-line no-param-reassign
@@ -197,10 +200,36 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 		actionTarget
 	);
 
+	const showEMLPreview = useCallback(() => {
+		const conversations = map([message], (msg) => ({
+			conversation: msg.conversation,
+			subject: msg.subject
+		}));
+
+		const printWindow = window.open('', '_blank');
+		getMsgsForPrint({ ids: [message.id], part: att?.name })
+			.then((res) => {
+				const content = getEMLContent({
+					messages: res,
+					account,
+					conversations,
+					isMsg: true
+				});
+				printWindow.top.document.title = 'Carbonio';
+				printWindow.document.write(content);
+				printWindow.focus();
+			})
+			.catch(() => {
+				const errorContent = getErrorPage(t);
+				printWindow.document.write(errorContent);
+			});
+	}, [account, att?.name, message, t]);
+
 	const preview = useCallback(
 		(ev) => {
 			ev.preventDefault();
 			const pType = previewType(att.contentType);
+
 			if (pType) {
 				createPreview({
 					src: link,
@@ -227,13 +256,25 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 					/** Size of the file, shown as info */
 					size: humanFileSize(att.size)
 				});
+			} else if (extension === 'EML') {
+				showEMLPreview();
 			} else if (inputRef2.current) {
 				// eslint-disable-next-line no-param-reassign
 				inputRef2.current.value = null;
 				inputRef2.current.click();
 			}
 		},
-		[att, createPreview, downloadAttachment, link, t]
+		[
+			att.contentType,
+			att.filename,
+			att.size,
+			createPreview,
+			downloadAttachment,
+			extension,
+			link,
+			showEMLPreview,
+			t
+		]
 	);
 
 	return (
@@ -280,6 +321,7 @@ function Attachment({ filename, size, link, downloadlink, message, part, iconCol
 							/>
 						</Tooltip>
 					)}
+
 					{/* <FilePreview att={att} link={link} /> */}
 					<Padding right="small">
 						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
