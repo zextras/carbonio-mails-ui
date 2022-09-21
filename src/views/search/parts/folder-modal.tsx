@@ -66,13 +66,6 @@ const CustomComponent: FC<{ item: any }> = ({ item }): ReactElement => (
 	</FittedRow>
 );
 
-type CustomComponent = {
-	CustomComponent: ReactElement;
-	divider: boolean;
-	background: string | undefined;
-	onClick: () => void;
-	items: Array<any>;
-};
 const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { open, onClose, setFolder } = compProps;
 

@@ -544,7 +544,6 @@ export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
 
 export function moveMessageToFolder({
 	id,
-	dispatch,
 	isRestore,
 	deselectAll
 }: Pick<
@@ -582,7 +581,6 @@ export function moveMessageToFolder({
 
 export function deleteMessagePermanently({
 	ids,
-	dispatch,
 	deselectAll
 }: MessageActionPropType): MessageActionReturnType {
 	return {

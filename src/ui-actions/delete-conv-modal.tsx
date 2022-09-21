@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useContext, FC } from 'react';
 import { Container, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
+import { t } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { convAction, msgAction } from '../store/actions';
 import ModalHeader from '../views/sidebar/commons/modal-header';
@@ -23,7 +23,6 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 	deselectAll,
 	onClose
 }) => {
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
 
@@ -67,7 +66,7 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 			// setOpenConfirm(false);
 			onClose();
 		});
-	}, [dispatch, isMessageView, selectedIDs, onClose, createSnackbar, t, deselectAll]);
+	}, [dispatch, isMessageView, selectedIDs, onClose, createSnackbar, deselectAll]);
 
 	return (
 		<>

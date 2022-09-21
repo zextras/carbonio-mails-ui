@@ -3,10 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { QueryChip } from '@zextras/carbonio-shell-ui';
 import { isEqualWith } from 'lodash';
 import { useMemo } from 'react';
-import { KeywordState, UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
+import { UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
 
 export const useDisabled = ({
 	queryToBe,

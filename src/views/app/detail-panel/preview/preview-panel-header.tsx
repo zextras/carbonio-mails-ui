@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, FC, useMemo } from 'react';
-import { getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { Container, Divider, Icon, IconButton, Row, Text } from '@zextras/carbonio-design-system';
 import { Conversation, MailMessage } from '../../../../types';
 

@@ -7,13 +7,13 @@ import React, { useCallback, useEffect, useMemo, useState, FC } from 'react';
 
 import { filter, map, isEmpty, reduce, startsWith } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
 import { nanoid } from '@reduxjs/toolkit';
 import {
-	Folder,
 	FOLDERS,
-	getBridgedFunctions,
 	replaceHistory,
+	t,
+	getBridgedFunctions,
+	Folder,
 	UserFolder
 } from '@zextras/carbonio-shell-ui';
 import { NewFolderConvoMsgMove } from './new-folder-conv-msg-move';
@@ -37,7 +37,6 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 	onClose
 }) => {
 	const [inputValue, setInputValue] = useState('');
-	const [t] = useTranslation();
 	const [moveConvModal, setMoveConvModal] = useState(true);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
@@ -174,7 +173,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 		setLabel(t('folder_panel.modal.new.input.name', 'Folder Name'));
 		setHasError(false);
 		if (onClose) onClose();
-	}, [onClose, t]);
+	}, [onClose]);
 	const onConfirmConvMove = useCallback(
 		(newFolderId = 0) => {
 			dispatch(
@@ -221,7 +220,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 				onCloseModal();
 			});
 		},
-		[dispatch, selectedIDs, currentFolder, onCloseModal, deselectAll, isRestore, t]
+		[dispatch, selectedIDs, currentFolder, onCloseModal, deselectAll, isRestore]
 	);
 
 	const onConfirmMessageMove = useCallback(
@@ -267,7 +266,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 				onCloseModal();
 			});
 		},
-		[dispatch, selectedIDs, currentFolder, onCloseModal, deselectAll, isRestore, t]
+		[onCloseModal, currentFolder, dispatch, selectedIDs, isRestore, deselectAll]
 	);
 
 	const nest = useCallback(
@@ -357,7 +356,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 		}
 		setHasError(value);
 		setDisabled(value);
-	}, [folderDestination, inputValue, t]);
+	}, [folderDestination, inputValue]);
 
 	const rootEl = useMemo(
 		() => ({
@@ -368,7 +367,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 			parent: '0',
 			background: folderDestination?.id === FOLDERS.USER_ROOT ? 'gray6' : undefined // todo: fix with right color
 		}),
-		[folderDestination?.id, t]
+		[folderDestination?.id]
 	);
 
 	const data = useMemo(() => nest([rootEl, ...folders], '0'), [folders, nest, rootEl]);
@@ -405,8 +404,7 @@ const MoveConvMessage: FC<MoveConvMsgPropType> = ({
 		inputValue,
 		isMessageView,
 		onConfirmConvMove,
-		onConfirmMessageMove,
-		t
+		onConfirmMessageMove
 	]);
 
 	return (

@@ -8,6 +8,7 @@ import {
 	useUserSettings,
 	useUserAccount,
 	editSettings,
+	t,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeader,
@@ -15,8 +16,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep, isEmpty, reduce } from 'lodash';
-import { Container, FormSection, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
+import { Container, FormSection } from '@zextras/carbonio-design-system';
 import { getPropsDiff, differenceObject } from './components/utils';
 import DisplayMessagesSettings from './displaying-messages-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
@@ -35,7 +35,6 @@ import { PropsType, SignItemType } from '../../types';
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
 const SettingsView: FC = () => {
-	const [t] = useTranslation();
 	const { prefs, props } = useUserSettings();
 
 	const account = useUserAccount();
@@ -291,12 +290,11 @@ const SettingsView: FC = () => {
 		propsToUpdate,
 		dispatch,
 		account,
-		t,
 		setNewOrForwardSignatureId,
 		flag
 	]);
 
-	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), [t]);
+	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), []);
 	return (
 		<>
 			<SettingsHeader onSave={saveChanges} onCancel={onClose} isDirty={!isDisabled} title={title} />

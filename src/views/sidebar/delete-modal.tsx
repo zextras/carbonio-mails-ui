@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useContext } from 'react';
-import { FOLDERS, report } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, report, t } from '@zextras/carbonio-shell-ui';
 import { Container, Text, Divider, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { startsWith } from 'lodash';
 import ModalFooter from './commons/modal-footer';
@@ -16,7 +15,6 @@ import { ModalProps } from '../../types';
 import { FOLDER_ACTIONS } from '../../commons/utilities';
 
 export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
@@ -24,7 +22,11 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 		let inTrash = false;
 		const restoreFolder = (): void =>
 			dispatch(
-				folderAction({ folder: folder.folder, l: folder.folder?.parent, op: FOLDER_ACTIONS.MOVE })
+				folderAction({
+					folder,
+					l: folder.parent as unknown as string,
+					op: FOLDER_ACTIONS.MOVE
+				})
 			)
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -51,12 +53,12 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 				})
 				.catch(report);
 
-		if (startsWith(folder.folder?.absFolderPath, '/Trash')) {
+		if (startsWith(folder.absFolderPath, '/Trash')) {
 			inTrash = true;
 		}
 		dispatch(
 			folderAction({
-				folder: folder.folder,
+				folder,
 				l: FOLDERS.TRASH,
 				op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
 			})
@@ -90,26 +92,23 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 			})
 			.catch(report);
 		onClose();
-	}, [folder, dispatch, onClose, createSnackbar, t]);
+	}, [folder, dispatch, onClose, createSnackbar]);
 
-	return folder.folder ? (
+	return folder ? (
 		<Container
 			padding={{ all: 'large' }}
 			mainAlignment="center"
 			crossAlignment="flex-start"
 			height="fit"
 		>
-			<ModalHeader
-				title={`${t('label.delete', 'Delete')} ${folder.folder?.name}`}
-				onClose={onClose}
-			/>
+			<ModalHeader title={`${t('label.delete', 'Delete')} ${folder.name}`} onClose={onClose} />
 			<Container
 				padding={{ all: 'small' }}
 				mainAlignment="center"
 				crossAlignment="flex-start"
 				height="fit"
 			>
-				{startsWith(folder.folder?.absFolderPath, '/Trash') ? (
+				{startsWith(folder.absFolderPath, '/Trash') ? (
 					<>
 						<Text overflow="break-word">
 							{t(

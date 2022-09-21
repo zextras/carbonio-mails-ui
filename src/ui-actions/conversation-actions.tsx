@@ -5,12 +5,12 @@
  */
 import React from 'react';
 import {
-	Account,
 	FOLDERS,
-	getBridgedFunctions,
 	replaceHistory,
 	t,
-	Tags
+	getBridgedFunctions,
+	Tags,
+	Account
 } from '@zextras/carbonio-shell-ui';
 import { forEach, isArray, map } from 'lodash';
 import { Dispatch } from '@reduxjs/toolkit';
@@ -357,7 +357,6 @@ export function moveConversationToTrash({
 
 export function moveConversationToFolder({
 	ids,
-	dispatch,
 	isRestore,
 	deselectAll
 }: Pick<

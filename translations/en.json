@@ -338,6 +338,7 @@
         "preview": "Preview",
         "private": "Private",
         "read": "Read",
+        "read_receipt": "Read Receipt",
         "read_receipt_req": "Read receipt required",
         "read_receipt_sent": "A read receipt was sent for this message",
         "read_reciept": "Read Reciept",

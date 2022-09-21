@@ -35,7 +35,7 @@ import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
 import * as StyledComp from './edit-view-styled-components';
 import { addAttachments } from '../edit-utils';
-import { CreateSnackbar, MailAttachment } from '../../../../../types';
+import { MailAttachment } from '../../../../../types';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import { ActionsType } from '../../../../../commons/utils';
 import SendLaterModal from './send-later-modal';

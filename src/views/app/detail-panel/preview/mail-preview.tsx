@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
-import React, { useMemo, useState, useRef, useCallback, useEffect, useContext, FC } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useMemo, useState, useRef, useCallback, useEffect, FC } from 'react';
 import { filter, find } from 'lodash';
 import {
 	useUserAccounts,
 	useIntegratedComponent,
 	useUserSettings,
-	FOLDERS
+	FOLDERS,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import {
@@ -21,8 +21,7 @@ import {
 	Icon,
 	Padding,
 	Button,
-	Row,
-	SnackbarManagerContext
+	Row
 } from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
@@ -196,7 +195,6 @@ type MailPreviewBlockType = {
 	isAlone: boolean;
 };
 const MailPreviewBlock: FC<MailPreviewBlockType> = ({ message, open, onClick, isAlone }) => {
-	const [t] = useTranslation();
 	const { folderId } = useParams<{ folderId: string }>();
 
 	const dispatch = useDispatch();

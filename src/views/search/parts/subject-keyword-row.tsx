@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { t } from '@zextras/carbonio-shell-ui';
-import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+import React, { FC, ReactElement, useCallback } from 'react';
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { isValidEmail } from './utils';
 import { SubjectKeywordRowProps } from '../../../types';

@@ -5,7 +5,7 @@
  */
 import React, { FC } from 'react';
 import { Container, Input, Text, Padding } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import FolderItem from '../../views/sidebar/commons/folder-item';
 import ModalFooter from '../../views/sidebar/commons/modal-footer';
 import ModalHeader from '../../views/sidebar/commons/modal-header';

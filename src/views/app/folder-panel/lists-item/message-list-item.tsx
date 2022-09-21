@@ -11,6 +11,7 @@ import {
 	replaceHistory,
 	useTags,
 	ZIMBRA_STANDARD_COLORS,
+	t,
 	FOLDERS,
 	Tag,
 	useFolder
@@ -25,7 +26,6 @@ import {
 	Drag,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
 
@@ -36,11 +36,7 @@ import { ListItemActionWrapper } from './list-item-actions-wrapper';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { SenderName } from './sender-name';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
-import {
-	MessageListItemType,
-	MsgListDraggableItemType,
-	TextReadValuesType
-} from '../../../../types';
+import { MsgListDraggableItemType, TextReadValuesType } from '../../../../types';
 
 type Preview = {
 	src?: string | null | ArrayBuffer;
@@ -88,7 +84,6 @@ const DraggableItem: FC<MsgListDraggableItemType> = ({
 export const MessageListItem: FC<any> = ({
 	item,
 	folderId,
-	active,
 	selected,
 	selecting,
 	toggle = (): null => null,
@@ -100,7 +95,6 @@ export const MessageListItem: FC<any> = ({
 	visible,
 	isConvChildren
 }) => {
-	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 	const { isMessageView } = useAppContext();
 	const messageFolder = useFolder(item.parent);
@@ -128,10 +122,10 @@ export const MessageListItem: FC<any> = ({
 	const [date, participantsString] = useMemo(() => {
 		if (item) {
 			const sender = find(item.participants, ['type', 'f']);
-			return [getTimeLabel(item.date), participantToString(sender, t, accounts)];
+			return [getTimeLabel(item.date), participantToString(sender, accounts)];
 		}
 		return ['.', '.', '', ''];
-	}, [item, t, accounts]);
+	}, [item, accounts]);
 
 	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
 		if (item) {
@@ -167,7 +161,7 @@ export const MessageListItem: FC<any> = ({
 			}
 		}
 		return [false, '', '', '', ''];
-	}, [item, t]);
+	}, [item]);
 
 	const _onClick = useCallback(
 		(e) => {
@@ -223,7 +217,7 @@ export const MessageListItem: FC<any> = ({
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
 	const subject = useMemo(
 		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item.subject, t]
+		[item.subject]
 	);
 	const subFragmentTooltipLabel = useMemo(
 		() => (!isEmpty(item.fragment) ? item.fragment : subject),
@@ -237,7 +231,7 @@ export const MessageListItem: FC<any> = ({
 				time: moment(item?.autoSendTime).format('HH:mm'),
 				defaultValue: '{{date}} at {{time}}'
 			}),
-		[item?.autoSendTime, t]
+		[item?.autoSendTime]
 	);
 
 	return draggedIds?.[item?.id] || visible || isConvChildren ? (

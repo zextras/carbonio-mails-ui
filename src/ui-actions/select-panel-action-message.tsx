@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo } from 'react';
-import { Container, Dropdown, DropdownItem, IconButton } from '@zextras/carbonio-design-system';
+import { Container, Dropdown, IconButton } from '@zextras/carbonio-design-system';
 import { FOLDERS, useTags } from '@zextras/carbonio-shell-ui';
 import { map, every, filter, some } from 'lodash';
-
 import { useDispatch } from 'react-redux';
 
 import {

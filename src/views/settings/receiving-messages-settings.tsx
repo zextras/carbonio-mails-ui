@@ -12,7 +12,7 @@ import {
 	Checkbox,
 	Padding
 } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
+import { t } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 import Heading from './components/settings-heading';
 import { NotifyFolderOpts, ReadReceiptOpts, MsgsFromMeOpts, findLabel } from './components/utils';
@@ -26,7 +26,6 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 	updatedProps,
 	updateProps
 }) => {
-	const [t] = useTranslation();
 	const notifyFolderOptn = useMemo(() => NotifyFolderOpts(), []);
 	const readReceiptOptn = useMemo(() => ReadReceiptOpts(), []);
 	const msgsFromMeOpts = useMemo(() => MsgsFromMeOpts(), []);
@@ -134,7 +133,7 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 				/>
 			</Container>
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('label.read_reciept', 'Read Reciept')} />
+				<Heading title={t('label.read_receipt', 'Read Receipt')} />
 				<Select
 					items={readReceiptOptn}
 					onChange={(view: any): void =>

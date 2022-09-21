@@ -3,14 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	IconButton,
-	Row,
-	SnackbarManagerContext,
-	Tooltip,
-	useModal
-} from '@zextras/carbonio-design-system';
-import React, { FC, useContext, useMemo } from 'react';
+import { IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
+import React, { FC, useMemo } from 'react';
 import { map } from 'lodash';
 import styled from 'styled-components';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
@@ -47,8 +41,6 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 	showReplyAll
 }) => {
 	const dispatch = useDispatch();
-	const createSnackbar = useContext(SnackbarManagerContext);
-	const createModal = useModal();
 	const ids = useMemo(() => [messageId], [messageId]);
 
 	const actions = useMemo(() => {

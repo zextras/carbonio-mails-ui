@@ -23,7 +23,6 @@ import {
 	Padding,
 	Row,
 	Text,
-	Theme,
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
@@ -33,7 +32,7 @@ import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { EditorAttachmentFiles, MailsEditor } from '../../../../types';
 
 const getSizeLabel = (size: number): string => {
-	let value = '';
+	let value;
 	if (size < 1024000) {
 		value = `${Math.round((size / 1024) * 100) / 100} KB`;
 	} else if (size < 1024000000) {

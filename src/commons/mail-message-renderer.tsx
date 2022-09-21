@@ -25,7 +25,7 @@ import {
 	MultiButton
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
-import { editSettings, getBridgedFunctions, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
 import { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';

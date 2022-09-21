@@ -5,9 +5,9 @@
  */
 import { nanoid } from '@reduxjs/toolkit';
 import React, { useCallback, useState, useEffect, FC, ReactElement } from 'react';
-import { Container, Switch, Text, Padding, ChipProps } from '@zextras/carbonio-design-system';
+import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
 import { filter } from 'lodash';
-import { QueryChip, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 
 import { ToggleFiltersProps } from '../../../types';
 
