@@ -111,6 +111,7 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 					setMsgFlag({ ids, value: showAddFlag, dispatch }),
 					moveMessageToFolder({
 						id: ids,
+						folderId,
 						dispatch,
 						isRestore: false,
 						deselectAll
@@ -145,6 +146,7 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 					deleteMessagePermanently({ ids, dispatch, deselectAll }),
 					moveMessageToFolder({
 						id: ids,
+						folderId,
 						dispatch,
 						isRestore: true,
 						deselectAll
@@ -156,6 +158,7 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 					setMsgFlag({ ids, value: showAddFlag, dispatch }),
 					moveMessageToFolder({
 						id: ids,
+						folderId,
 						dispatch,
 						isRestore: false,
 						deselectAll

@@ -159,6 +159,7 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 					moveConversationToFolder({
 						ids,
 						dispatch,
+						folderId,
 						isRestore: false,
 						deselectAll
 					}),
@@ -192,6 +193,7 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 					moveConversationToFolder({
 						ids,
 						dispatch,
+						folderId,
 						isRestore: true,
 						deselectAll
 					}),
@@ -210,6 +212,7 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 					moveConversationToFolder({
 						ids,
 						dispatch,
+						folderId,
 						isRestore: false,
 						deselectAll
 					}),

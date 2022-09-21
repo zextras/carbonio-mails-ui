@@ -204,6 +204,7 @@
         "spam": "Spam",
         "trash": "Trash"
     },
+    "go_back": "Go Back",
     "header": {
         "attention": "Attention",
         "delete_email": "Delete e-mail",
@@ -274,7 +275,7 @@
         "duplicate_messages": "Duplicate Messages",
         "edit": "Edit",
         "edit_access": "Edit {{name}}'s access",
-        "edit_folder_properties": "",
+        "edit_folder_properties": "Edit {{name}} properties",
         "edit_tag": "Edit Tag",
         "edit_tag_name": "Edit \"{{name}}\" tag",
         "email_perm_deleted": "E-mail permanently deleted",
@@ -534,6 +535,7 @@
             "message1": "Do you want to keep this draft or delete it?"
         }
     },
+    "new_folder": "New Folder",
     "notification": {
         "new_message": "New Message",
         "no_content": "Message without content"

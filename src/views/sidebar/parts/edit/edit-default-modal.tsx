@@ -13,7 +13,6 @@ import ModalFooter from '../../commons/modal-footer';
 import ModalHeader from '../../commons/modal-header';
 import NameInputRow from './name-input';
 import { FolderDetails } from './folder-details';
-
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
 import { translatedSystemFolders } from '../../utils';
@@ -57,7 +56,7 @@ const EditDefaultModal: FC<EditDefaultModalPropType> = ({ folder, onClose, setAc
 	const [dsblMsgRet, setDsblMsgRet] = useState(false);
 	const [emptyRtnValue, setEmptyRtnValue] = useState(false);
 	const [emptyDisValue, setEmptyDisValue] = useState(false);
-	const [folderColor, setFolderColor] = useState(folder.color);
+	const [folderColor, setFolderColor] = useState(folder?.color ?? 0);
 
 	useEffect(() => {
 		if (
@@ -263,15 +262,14 @@ const EditDefaultModal: FC<EditDefaultModalPropType> = ({ folder, onClose, setAc
 		createSnackbar
 	]);
 
+	const title = t('label.edit_folder_properties', {
+		name: folder.name,
+		defaultValue: 'Edit {{name}} properties'
+	});
+
 	return (
 		<>
-			<ModalHeader
-				onClose={onClose}
-				title={`${t('label.edit_folder_properties', {
-					name: folder.name,
-					defaultValue: 'Edit {{name}} properties'
-				})}`}
-			/>
+			<ModalHeader onClose={onClose} title={title} />
 
 			<NameInputRow
 				showWarning={showWarning}
