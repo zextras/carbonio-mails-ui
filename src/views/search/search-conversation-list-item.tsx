@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { isEmpty, split, head, includes, reduce, uniqBy, find, filter } from 'lodash';
+import { isEmpty, split, head, includes, reduce, uniqBy, find, filter, noop } from 'lodash';
 import {
 	Badge,
 	Container,
@@ -21,6 +20,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
 	FOLDERS,
+	t,
 	Tag,
 	useTags,
 	useUserSettings,
@@ -37,16 +37,7 @@ import { SenderName } from '../app/folder-panel/lists-item/sender-name';
 import { selectMessages } from '../../store/messages-slice';
 import { selectConversationExpandedStatus } from '../../store/conversations-slice';
 import { searchConv } from '../../store/actions';
-import { StateType, MailMessage, Conversation } from '../../types';
-
-type SearchConversationListItemProps = {
-	itemId?: string;
-	item: Conversation;
-	selected: boolean;
-	selecting?: boolean;
-	toggle?: boolean;
-	active: boolean;
-};
+import { StateType, MailMessage, SearchConversationListItemProps } from '../../types';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -55,11 +46,10 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 	itemId,
 	item,
 	selected,
-	selecting,
+	selecting = false,
 	toggle,
 	active
 }) => {
-	const [t] = useTranslation();
 	const history = useHistory();
 	const dispatch = useDispatch();
 	const { pathname } = useLocation();
@@ -81,7 +71,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 	}, [dispatch, history, item, parent, pathname]);
 	const subject = useMemo(
 		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item.subject, t]
+		[item.subject]
 	);
 	const subFragmentTooltipLabel = useMemo(
 		() => (!isEmpty(item.fragment) ? `${subject} - ${item.fragment}` : subject),
@@ -114,7 +104,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 
 	const toggleExpandButtonLabel = useMemo(
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
-		[t, open]
+		[open]
 	);
 	const sortBy = useMemo(
 		() => settings?.prefs?.zimbraPrefConversationOrder || 'dateDesc',
@@ -186,7 +176,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 						item={item}
 						selected={selected}
 						selecting={selecting}
-						toggle={toggle}
+						toggle={toggle ?? noop}
 						folderId={parent}
 						isSearch
 					/>

@@ -3,21 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useState, useContext } from 'react';
-import {
-	Container,
-	Input,
-	Padding,
-	SnackbarManagerContext,
-	Text
-} from '@zextras/carbonio-design-system';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { some } from 'lodash';
-import { useDispatch } from 'react-redux';
 import { nanoid } from '@reduxjs/toolkit';
-import { FOLDERS, replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { convAction, msgAction } from '../store/actions';
 import { createFolder } from '../store/actions/create-folder';
-import { ModalHeader } from '../views/sidebar/commons/modal-header';
+import ModalHeader from '../views/sidebar/commons/modal-header';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
 import ModalFooter from '../views/sidebar/commons/modal-footer';
 
@@ -27,13 +20,12 @@ const MoveConvMessage = ({
 	isRestore,
 	deselectAll,
 	onClose,
-	folderId
+	folderId,
+	dispatch
 }) => {
 	const [inputValue, setInputValue] = useState('');
 	const [folderDestination, setFolderDestination] = useState();
 	const [moveConvModal, setMoveConvModal] = useState(true);
-	const dispatch = useDispatch();
-	const createSnackbar = useContext(SnackbarManagerContext);
 
 	const onCloseModal = useCallback(() => {
 		setMoveConvModal(true);
@@ -53,7 +45,7 @@ const MoveConvMessage = ({
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll && deselectAll();
-					createSnackbar({
+					getBridgedFunctions().createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -67,7 +59,7 @@ const MoveConvMessage = ({
 						}
 					});
 				} else {
-					createSnackbar({
+					getBridgedFunctions().createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
@@ -80,7 +72,7 @@ const MoveConvMessage = ({
 				onCloseModal();
 			});
 		},
-		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore]
+		[dispatch, selectedIDs, onCloseModal, deselectAll, isRestore]
 	);
 
 	const onConfirmMessageMove = useCallback(
@@ -94,7 +86,7 @@ const MoveConvMessage = ({
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll && deselectAll();
-					createSnackbar({
+					getBridgedFunctions().createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -105,7 +97,7 @@ const MoveConvMessage = ({
 						hideButton: true // todo: add Go to folder action
 					});
 				} else {
-					createSnackbar({
+					getBridgedFunctions().createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
@@ -118,7 +110,7 @@ const MoveConvMessage = ({
 				onCloseModal();
 			});
 		},
-		[onCloseModal, createSnackbar, dispatch, selectedIDs, isRestore, deselectAll]
+		[onCloseModal, dispatch, selectedIDs, isRestore, deselectAll]
 	);
 
 	const hasSameName = useMemo(
@@ -154,7 +146,7 @@ const MoveConvMessage = ({
 					? onConfirmMessageMove(res.payload[0].id)
 					: onConfirmConvMove(res.payload[0].id);
 			} else {
-				createSnackbar({
+				getBridgedFunctions().createSnackbar({
 					key: `edit`,
 					replace: true,
 					type: 'error',
@@ -172,8 +164,7 @@ const MoveConvMessage = ({
 		inputValue,
 		isMessageView,
 		onConfirmConvMove,
-		onConfirmMessageMove,
-		createSnackbar
+		onConfirmMessageMove
 	]);
 
 	const headerTitle = useMemo(() => {

@@ -24,7 +24,8 @@
         "warning": "Cảnh báo",
         "delete_email": "Xoá thư",
         "redirect_email": "Chuyển hướng thư",
-        "message_not_sent": "Lỗi - Tin nhắn không gửi được"
+        "message_not_sent": "Lỗi - Tin nhắn không gửi được",
+        "attention": "Chú ý"
     },
     "label": {
         "activate_selection_mode": "Kích hoạt chế độ lựa chọn",
@@ -190,7 +191,11 @@
         "always_allow_address": "Luôn cho phép từ <strong>{{from}}</strong>",
         "no_name": "<Không có Tên>",
         "share_public_link": "Chia sẻ liên kết công khai",
-        "view_images": "XEM ẢNH"
+        "view_images": "XEM ẢNH",
+        "time_zone": "Múi giờ",
+        "searching": "Đang tìm kiếm...",
+        "notify": "Thông báo",
+        "do_not_notify": "Không cảnh báo"
     },
     "message": {
         "delete_tag_message2": "Sau khi xóa, nó sẽ bị xóa khỏi mọi mục được đánh dấu bởi nó.",
@@ -270,7 +275,8 @@
         "something_went_wrong": "CÓ LỖI XUẤT HIỆN",
         "invalid_address": "Địa chỉ sau không hợp lệ",
         "new_email": "Thư mới",
-        "no_content": "Thư này không có nội dung"
+        "no_content": "Thư này không có nội dung",
+        "trustee_addresses": "Thư gửi từ những địa chỉ hoặc tên miền này sẽ được coi là tin cậy và hình ảnh sẽ tự động được hiển thị."
     },
     "preview": {
         "close": "Đóng chế độ xem trước"
@@ -605,5 +611,31 @@
                 }
             }
         }
+    },
+    "email_status": {
+        "unread": "chưa đọc",
+        "unforwarded": "chưa chuyển tiếp",
+        "unflagged": "không gắn cờ",
+        "tome": "tới tôi",
+        "sent": "được gửi bởi tôi",
+        "received": "nhận bởi tôi",
+        "read": "đọc",
+        "fromme": "từ tôi",
+        "fromccme": "từ tôi",
+        "forwarded": "đã chuyển tiếp",
+        "flagged": "flagged",
+        "draft": "bản nháp"
+    },
+    "attachment_type": {
+        "word": "Word",
+        "video": "Video",
+        "text_document": "Tài liệu văn bản",
+        "powerpoint": "Power point",
+        "pdf": "Pdf",
+        "image": "Hình ảnh",
+        "html": "HTML",
+        "excel": "Excel",
+        "email": "Email",
+        "application": "Ứng dụng"
     }
 }

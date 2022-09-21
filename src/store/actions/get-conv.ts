@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
@@ -31,7 +31,8 @@ export const getConv = createAsyncThunk<
 				fetch
 			}
 		})) as GetConvResponse;
-		const conversation = normalizeConversation(result.c[0]);
+		const tags = getTags();
+		const conversation = normalizeConversation({ c: result.c[0], tags });
 		const messages = map(result.c[0].m, (item) =>
 			normalizeMailMessageFromSoap(item, false)
 		) as unknown as Array<IncompleteMessage>;

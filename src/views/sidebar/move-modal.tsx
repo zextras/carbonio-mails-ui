@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { isNil, some, startsWith } from 'lodash';
+import { isNil, some } from 'lodash';
 import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
 import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
@@ -11,18 +11,18 @@ import { Folder, FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { folderAction } from '../../store/actions/folder-action';
 import { FolderSelector } from './commons/folder-selector';
 import ModalFooter from './commons/modal-footer';
-import { ModalHeader } from './commons/modal-header';
+import ModalHeader from './commons/modal-header';
 import { ModalProps } from '../../types';
 
 export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const dispatch = useDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
-	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder.folder);
+	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
 
 	const onConfirm = useCallback(() => {
 		const restoreFolder = (): void =>
-			dispatch(folderAction({ folder: folder.folder, l: folder.folder.l, op: 'move' }))
+			dispatch(folderAction({ folder, l: folder.l, op: 'move' }))
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				.then((res) => {
@@ -48,7 +48,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 				});
 		dispatch(
 			folderAction({
-				folder: folder.folder,
+				folder,
 				l: folderDestination?.id || FOLDERS.USER_ROOT,
 				op: 'move'
 			})
@@ -79,15 +79,16 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 				setFolderDestination(undefined);
 				onClose();
 			});
-	}, [dispatch, folder.folder, folderDestination?.id, createSnackbar, onClose]);
+	}, [dispatch, folder, folderDestination?.id, createSnackbar, onClose]);
 
 	const isInputDisabled = useMemo(
 		() =>
 			isNil(folderDestination) ||
-			folderDestination?.id === folder?.folder?.l ||
-			some(folderDestination?.children, ['name', folder?.folder?.name]),
-		[folder?.folder?.l, folder?.folder?.name, folderDestination]
+			folderDestination?.id === folder?.l ||
+			some(folderDestination?.children, ['name', folder?.name]),
+		[folder?.l, folder?.name, folderDestination]
 	);
+
 	return folder ? (
 		<Container
 			padding={{ all: 'large' }}
@@ -98,7 +99,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 				overflowY: 'auto'
 			}}
 		>
-			<ModalHeader onClose={onClose} title={`${t('label.move', 'Move')} ${folder.folder?.name}`} />
+			<ModalHeader onClose={onClose} title={`${t('label.move', 'Move')} ${folder?.name}`} />
 			<Container
 				padding={{ all: 'small' }}
 				mainAlignment="center"
@@ -117,7 +118,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 					</Text>
 				</Container>
 				<FolderSelector
-					folderId={folder.folder.id}
+					folderId={folder.id}
 					folderDestination={folderDestination}
 					setFolderDestination={setFolderDestination}
 				/>

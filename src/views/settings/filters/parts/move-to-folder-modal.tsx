@@ -10,7 +10,7 @@ import { TFunction } from 'i18next';
 import { filter, isEmpty, reduce, startsWith } from 'lodash';
 import { useSelector } from 'react-redux';
 import ModalFooter from '../../../sidebar/commons/modal-footer';
-import { ModalHeader } from '../../../sidebar/commons/modal-header';
+import ModalHeader from '../../../sidebar/commons/modal-header';
 import FolderItem from '../../../sidebar/commons/folder-item';
 import { selectFolders } from '../../../../store/folders-slice';
 import { getFolderIconColor, getFolderIconName } from '../../../sidebar/utils';

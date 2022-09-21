@@ -26,7 +26,7 @@ import { Folder, t } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { FolderSelector } from './commons/folder-selector';
 import ModalFooter from './commons/modal-footer';
-import { ModalHeader } from './commons/modal-header';
+import ModalHeader from './commons/modal-header';
 import { createFolder } from '../../store/actions/create-folder';
 import { ModalProps } from '../../types';
 import { translatedSystemFolders } from './utils';
@@ -36,7 +36,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 	const [inputValue, setInputValue] = useState(() => t('new_folder', 'New Folder'));
-	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder.folder);
+	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
 	const [disabled, setDisabled] = useState(true);
 	const [hasError, setHasError] = useState(false);
 	const [label, setLabel] = useState<string>(
@@ -44,7 +44,6 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	);
 
 	const showWarning = useMemo(() => includes(translatedSystemFolders(), inputValue), [inputValue]);
-
 	useEffect(() => {
 		if (!folderDestination || !inputValue.length || showWarning) {
 			setDisabled(true);
@@ -132,7 +131,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					</Padding>
 				)}
 				<FolderSelector
-					folderId={folder.folder.id}
+					folderId={folder.id}
 					folderDestination={folderDestination}
 					setFolderDestination={setFolderDestination}
 				/>

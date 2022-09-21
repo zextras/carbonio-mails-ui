@@ -30,13 +30,12 @@ import {
 	IconButton
 } from '@zextras/carbonio-design-system';
 import { capitalize, every, find, includes, isEmpty, map, reduce } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import {
 	useTags,
 	useUserAccounts,
 	ZIMBRA_STANDARD_COLORS,
 	runSearch,
-	Tag
+	t
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
@@ -86,7 +85,6 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	const { message, onClick, open, isAlone } = compProps;
 
 	const textRef = useRef<HTMLInputElement>(null);
-	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 
 	const [_minWidth, _setMinWidth] = useState('');
@@ -158,7 +156,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
 
-	const tagLabel = useMemo(() => t('label.tags', 'Tags'), [t]);
+	const tagLabel = useMemo(() => t('label.tags', 'Tags'), []);
 
 	const [showDropdown, setShowDropdown] = useState(false);
 	const onIconClick = useCallback((ev: { stopPropagation: () => void }): void => {
@@ -210,7 +208,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 				time: moment(message?.autoSendTime).format('HH:mm'),
 				defaultValue: 'Will be sent on: {{date}} at {{time}}'
 			}),
-		[message?.autoSendTime, t]
+		[message?.autoSendTime]
 	);
 	return (
 		<HoverContainer
@@ -261,7 +259,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 											color={message.read ? 'text' : 'primary'}
 											weight={message.read ? 'regular' : 'bold'}
 										>
-											{capitalize(participantToString(mainContact, t, accounts))}
+											{capitalize(participantToString(mainContact, accounts))}
 										</Text>
 										<Padding left="small" />
 										<Text color="gray1" size={message.read ? 'small' : 'medium'}>

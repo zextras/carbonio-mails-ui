@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { noop } from 'lodash';
 import {
 	setConversationsSpam,
 	moveConversationToTrash,
@@ -13,8 +14,7 @@ import {
 type handleKeyboardShortcutsProps = {
 	event: any;
 	itemId: any;
-	folerId: any;
-	t: (param: any) => void;
+	folderId: any;
 	dispatch: any;
 	deselectAll: any;
 	createSnackbar: any;
@@ -27,7 +27,7 @@ const modifierKeysSecondTier: Array<any> = [];
 let keySequence = '';
 
 export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): void => {
-	const { event, itemId, conversations, t, dispatch, deselectAll, createSnackbar } = params;
+	const { event, itemId, conversations, dispatch, deselectAll, folderId } = params;
 	const ctrlModifierIsActive = event.ctrlKey || event.metaKey;
 	const conversationFlag = conversations.filter((conversation) => conversation.id === itemId)?.[0]
 		?.flagged;
@@ -47,31 +47,59 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 			case 'mr': // Mark read
 				if (isGlobalContext) {
 					eventActions();
-					setConversationsRead({ ids: [itemId], value: false, t, dispatch }).click();
+					setConversationsRead({
+						ids: [itemId],
+						value: false,
+						dispatch,
+						deselectAll: noop,
+						shouldReplaceHistory: false,
+						folderId
+					}).click(event);
 				}
 				break;
 			case 'z': // Mark read
 				if (isGlobalContext) {
 					eventActions();
-					setConversationsRead({ ids: [itemId], value: false, t, dispatch }).click();
+					setConversationsRead({
+						ids: [itemId],
+						value: false,
+						dispatch,
+						deselectAll: noop,
+						shouldReplaceHistory: false,
+						folderId
+					}).click(event);
 				}
 				break;
 			case 'mu': // Mark unread
 				if (isGlobalContext) {
 					eventActions();
-					setConversationsRead({ ids: [itemId], value: true, t, dispatch }).click();
+					setConversationsRead({
+						ids: [itemId],
+						value: true,
+						dispatch,
+						deselectAll: noop,
+						shouldReplaceHistory: false,
+						folderId
+					}).click(event);
 				}
 				break;
 			case 'x': // Mark unread
 				if (isGlobalContext && itemId) {
 					eventActions();
-					setConversationsRead({ ids: [itemId], value: true, t, dispatch }).click();
+					setConversationsRead({
+						ids: [itemId],
+						value: true,
+						dispatch,
+						deselectAll: noop,
+						shouldReplaceHistory: false,
+						folderId
+					}).click(event);
 				}
 				break;
 			case 'mf': // Flag/Unflag messages
 				if (isGlobalContext && itemId) {
 					eventActions();
-					setConversationsFlag({ ids: [itemId], value: conversationFlag, t, dispatch }).click();
+					setConversationsFlag({ ids: [itemId], value: conversationFlag, dispatch }).click(event);
 				}
 				break;
 			case 'ms': // Report (mark as) spam
@@ -80,11 +108,9 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 					setConversationsSpam({
 						ids: [itemId],
 						value: false,
-						t,
 						dispatch,
-						createSnackbar,
 						deselectAll
-					}).click();
+					}).click(event);
 				}
 				break;
 			case '.t': // Move to Trash
@@ -92,11 +118,10 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 					eventActions();
 					moveConversationToTrash({
 						ids: [itemId],
-						t,
 						dispatch,
-						createSnackbar,
-						deselectAll
-					}).click();
+						deselectAll,
+						folderId
+					}).click(event);
 				}
 				break;
 			case '.i': // Move to Inbox

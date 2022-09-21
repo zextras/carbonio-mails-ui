@@ -6,6 +6,7 @@
 
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Container, FormSubSection, RadioGroup, Radio } from '@zextras/carbonio-design-system';
+
 import { t } from '@zextras/carbonio-shell-ui';
 import Heading from './components/settings-heading';
 import { composingMsgSubSection } from './subsections';
@@ -120,8 +121,6 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 										target: { name: 'zimbraPrefHtmlEditorDefaultFontSize', value: size }
 									})
 								}
-								width="100%"
-								showCheckbox={false}
 							/>
 						</Container>
 						<Container padding={{ right: 'small' }} crossAlignment="flex-start">

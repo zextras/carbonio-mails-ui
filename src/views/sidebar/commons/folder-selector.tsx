@@ -6,6 +6,7 @@ import {
 	getFolder,
 	t,
 	useFoldersAccordionByView,
+	useFoldersByView,
 	useUserAccount
 } from '@zextras/carbonio-shell-ui';
 import React, {
@@ -47,7 +48,7 @@ export const FolderSelector = ({
 	const accountName = useUserAccount().name;
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	const folders = useFoldersAccordionByView(FOLDER_VIEW.message, null);
+	const folders = useFoldersByView(FOLDER_VIEW.message);
 	const folder = getFolder(folderId);
 
 	const accordionRef = useRef<HTMLDivElement>();
@@ -76,17 +77,17 @@ export const FolderSelector = ({
 
 	const rootName = useMemo(() => getFolderRootName(folderId), [folderId, getFolderRootName]);
 
-	const filteredFolders = folders.filter((item) => item.label === rootName);
+	const filteredFolders = folders.filter((item) => item.name === rootName);
 
 	const flattenFolders = useCallback(
-		(arr: Array<AccordionFolder>): Array<AccordionFolder> => {
-			const result: Array<AccordionFolder> = [];
+		(arr: Array<Folder>): Array<Folder> => {
+			const result: Array<Folder> = [];
 			arr.forEach((item) => {
-				const { items } = item;
+				const { children } = item;
 				if (
-					item.folder.id !== FOLDERS.TRASH &&
-					item.folder.id !== FOLDERS.SPAM &&
-					!startsWith(item.folder.absFolderPath, '/Trash')
+					item.id !== FOLDERS.TRASH &&
+					item.id !== FOLDERS.SPAM &&
+					!startsWith(item.absFolderPath, '/Trash')
 				)
 					result.push({
 						...item,
@@ -94,24 +95,24 @@ export const FolderSelector = ({
 						// @ts-ignore
 						CustomComponent: ModalAccordionCustomComponent,
 						onClick: () => {
-							setFolderDestination(item.folder);
+							setFolderDestination(item);
 						},
 						background:
-							typeof folderDestination !== 'undefined' && folderDestination.id === item.folder.id
+							typeof folderDestination !== 'undefined' && folderDestination.id === item.id
 								? 'highlight'
 								: undefined,
 						label:
-							item.folder.id === FOLDERS.USER_ROOT
+							item.id === FOLDERS.USER_ROOT
 								? accountName
 								: getFolderTranslatedName({
-										folderId: item.folder.id,
-										folderName: item.folder.name
+										folderId: item.id,
+										folderName: item.name
 								  }),
-						activeId: item.folder.id === folderId,
+						activeId: item.id === folderId,
 						accordionWidth,
 						items: []
 					});
-				if (items) result.push(...flattenFolders(items));
+				if (children?.length) result.push(...flattenFolders(children));
 			});
 			return result;
 		},
@@ -126,7 +127,7 @@ export const FolderSelector = ({
 	const filteredFromUserInput = useMemo(
 		() =>
 			filter(flattenedFolders, (item) => {
-				const folderName = item.label.toLowerCase();
+				const folderName = item.name.toLowerCase();
 				return startsWith(folderName, inputValue.toLowerCase());
 			}),
 		[flattenedFolders, inputValue]
