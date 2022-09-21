@@ -56,11 +56,5 @@ export const useMessageList = (): Array<Partial<MailMessage>> => {
 		}
 	}, [dispatch, folderId, folderMsgStatus]);
 
-	console.log('*** folderId', folderId);
-	console.log('*** folder', folder);
-	console.log('*** messages', messages);
-	console.log('*** filteredMessages', filteredMessages);
-	console.log('*** sortedMessages', sortedMessages);
-
 	return sortedMessages;
 };
