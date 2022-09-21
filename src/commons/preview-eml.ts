@@ -6,6 +6,7 @@
 
 import { forEach, reduce, map, filter, isEmpty } from 'lodash';
 import moment from 'moment';
+import { TFunction } from 'i18next';
 import {
 	plainTextToHTML,
 	findAttachments,
@@ -15,112 +16,9 @@ import {
 import logo from '../assets/zextras-logo-gray.png';
 import productLogo from '../assets/logo-product-grey.png';
 import { getAvatarLabel } from './useGetAvatarLabel';
+import { Conversation, MailMessage, Participant } from '../types';
 
-export const getCompleteHTML = ({ content, account }) =>
-	`	<html>
-		<head>
-			<title>Carbonio</title>
-                <style>
-                    max-width: 100% !important;
-                    body {
-                        max-width: 100% !important;
-                        margin: 0;
-                        overflow-y: hidden;
-                        font-family: Roboto, sans-serif;
-                        font-size: 14px;                      
-                        background-color: #ffffff;
-                    }
-                    body pre, body pre * {
-                        white-space: pre-wrap;
-                        word-wrap: anywhere !important;
-                        text-wrap: suppress !important;
-                    }
-                    img {
-                        max-width: 100%
-                    }
-                    tbody{position:relative !important}
-                    td{
-                        max-width: 100% !important;
-                        overflow-wrap: anywhere !important;
-                    }
-                    
-                    .ZhCallListPrintView td, .zPrintMsgs :not(font){
-                        font-family: font-family: Roboto, sans-serif ;
-                        font-size: 12pt;
-                    }
-                    .ZhPrintSubject {
-                        padding: 10px;
-                        font-weight: bold;
-                    }
-                    table.Msg img {
-                        max-width: 100%;
-                    }
-                    
-                    /* span, p td or div will honour parent's styling if these elements have their own styling that will get applied else will fallback to defaultPrintFontSize */
-                    *[style*="font"] > span, *[style*="font"] > p, *[style*="font"] > td, *[style*="font"] > div {
-                        font-family: inherit;
-                        font-size: inherit;
-                    }
-
-                    .MsgHdrName {
-                        width: 10%;
-                        padding: 3px 0 3px 0;
-                        vertical-align: top;
-                        text-align: right;
-                        font-weight: bold;
-                        white-space: nowrap;
-                    }
-                    .MsgHdrValue {
-                        padding: 3px 3px 3px 3px;
-                        vertical-align: top;
-                        overflow: hidden;
-                    }
-                    .footer {
-                        font-size: 9px;
-                        text-align: left;
-                        padding-left: 20px;
-                    }
-                        
-                    @page {
-                        size: A4;
-                        margin: 11mm 17mm 17mm 17mm;
-                    }
-                        
-                    @media print {
-                        .footer {
-                            position: fixed;
-                            bottom: 0;
-                        }
-                        
-                        .content-block, p {
-                            page-break-inside: avoid;
-                        }
-                        
-                        html, body {
-                            width: 210mm;
-                            height: 297mm;
-                        }
-                    }
-             </style>
-		</head>
-		<body>
-			<table cellPadding="0" cellSpacing="5" width="100%">
-				<tr>
-					<td>
-						<b>Carbonio</b>
-					</td>
-					<td nowrap width="1%">
-						<b>${account?.name}</b>
-					</td>
-				</tr>
-			</table>
-			<hr />${content}
-			<div className="footer">${window.location.hostname} </div>
-			<script type="text/javascript">setTimeout('window.print()', 3000);</script>
-		</body>
-	</html>`;
-
-const getParticipantHeader = (participants, type) => {
+const getParticipantHeader = (participants: Participant[], type: string): string => {
 	const participantsList = map(
 		participants,
 		(f) => `${f.fullName || f.name || f.address} < ${f.address} > `
@@ -144,7 +42,13 @@ const getParticipantHeader = (participants, type) => {
 		</tr>`;
 };
 
-export const getBodyWrapper = ({ content, subject }) => {
+export const getBodyWrapper = ({
+	content,
+	subject
+}: {
+	content: string;
+	subject: string;
+}): string => {
 	const style = `background: white;font-family: Roboto;font-style: normal; font-weight: 400;  font-size: 18px;
     line-height: 27px;`;
 
@@ -166,7 +70,7 @@ export const getBodyWrapper = ({ content, subject }) => {
     </div>`;
 };
 
-export const getErrorPage = (t) =>
+export const getErrorPage = (t: TFunction): string =>
 	`<!DOCTYPE html>
 <html>
     <head>
@@ -268,7 +172,7 @@ export const getErrorPage = (t) =>
     </body>
 </html>`;
 
-export const getCompleteHTMLForEML = ({ content }) =>
+export const getCompleteHTMLForEML = ({ content }: { content: string }): string =>
 	`	<html>
 		<head>
 			<title>Carbonio</title>
@@ -361,7 +265,7 @@ export const getCompleteHTMLForEML = ({ content }) =>
 		</body>
 	</html>`;
 
-const getEMLHeader = (msg, content) => {
+const getEMLHeader = (msg: MailMessage, content: string): string => {
 	const { participants } = msg;
 	const from = filter(participants, { type: 'f' });
 	const to = filter(participants, { type: 't' });
@@ -417,11 +321,23 @@ const getEMLHeader = (msg, content) => {
 </table>`;
 };
 
-export const getEMLContent = ({ messages, account, conversations, isMsg = false }) => {
+type GetEMLContentProps = {
+	messages: MailMessage[];
+	conversations: Array<{ conversation: string; subject: string }>;
+	isMsg?: boolean;
+};
+
+export const getEMLContent = ({
+	messages,
+	conversations,
+	isMsg = false
+}: GetEMLContentProps): string => {
 	let content = '';
 	map(conversations, (conv) => {
-		const conversationMessage = isMsg ? messages : filter(messages, { conversation: conv.id });
-		const ss = map(conversationMessage, (msg) => {
+		const conversationMessage = isMsg
+			? messages
+			: filter(messages, { conversation: conv.conversation });
+		const ss = map(conversationMessage, (msg: MailMessage) => {
 			const { body } = msg;
 			switch (body.contentType) {
 				case 'text/html': {
@@ -431,7 +347,11 @@ export const getEMLContent = ({ messages, account, conversations, isMsg = false 
 					const imgMap = reduce(
 						parts,
 						(r, v) => {
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
 							if (!_CI_REGEX.test(v.ci)) return r;
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
 							r[_CI_REGEX.exec(v.ci)[1]] = v;
 							return r;
 						},
@@ -441,12 +361,22 @@ export const getEMLContent = ({ messages, account, conversations, isMsg = false 
 					const images = htmlDoc.getElementsByTagName('img');
 					forEach(images, (p) => {
 						if (p.hasAttribute('dfsrc')) {
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
 							p.setAttribute('src', p.getAttribute('dfsrc'));
 						}
 						if (!_CI_SRC_REGEX.test(p.src)) return;
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						const ci = _CI_SRC_REGEX.exec(p.getAttribute('src'))[1];
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						if (imgMap[ci]) {
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
 							const part = imgMap[ci];
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
 							p.setAttribute('pnsrc', p.getAttribute('src'));
 							p.setAttribute('src', `/service/home/~/?auth=co&id=${msg.id}&part=${part.name}`);
 						}
@@ -465,10 +395,9 @@ export const getEMLContent = ({ messages, account, conversations, isMsg = false 
 		});
 		content += getBodyWrapper({
 			content: ss.join('<br/>'),
-			subject: messages?.[0]?.subject,
-			isEML: true
+			subject: messages?.[0]?.subject
 		});
 	});
 
-	return getCompleteHTMLForEML({ content, account });
+	return getCompleteHTMLForEML({ content });
 };
