@@ -5,7 +5,12 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, useUserSettings, t } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	useUserSettings,
+	t,
+	replaceHistory
+} from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import { Dispatch } from '@reduxjs/toolkit';
 import ModalFooter from '../../../../sidebar/commons/modal-footer';
@@ -19,8 +24,17 @@ type SendLaterModalPropTypes = {
 	dispatch: Dispatch;
 	editor: MailsEditor;
 	closeBoard: () => void;
+	folderId?: string;
+	setShowRouteGuard: (arg: boolean) => void;
 };
-const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor, closeBoard }) => {
+const SendLaterModal: FC<SendLaterModalPropTypes> = ({
+	onClose,
+	dispatch,
+	editor,
+	closeBoard,
+	folderId,
+	setShowRouteGuard
+}) => {
 	const [time, setTime] = useState();
 	const bridgedFn = getBridgedFunctions();
 
@@ -53,10 +67,16 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 				});
 
 				onClose();
-				closeBoard();
+				closeBoard && closeBoard();
+				setShowRouteGuard(false);
+				setTimeout(() => {
+					if (folderId) {
+						replaceHistory(`/folder/${folderId}/`);
+					}
+				}, 10);
 			}
 		});
-	}, [bridgedFn, closeBoard, dispatch, editor, onClose, prefs, time]);
+	}, [bridgedFn, closeBoard, dispatch, editor, folderId, onClose, prefs, setShowRouteGuard, time]);
 
 	const minTime = useMemo(() => {
 		if (moment(time).isBefore(moment(), 'hour') || !time) {
