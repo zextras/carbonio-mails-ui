@@ -21,18 +21,15 @@ const Wrapper = styled(Container)`
 	overflow: hidden;
 `;
 
-type ShimmerListProps = {
+const ShimmerList: FC<{
 	count?: number;
 	delay?: number;
 	transitionDuration?: number;
-};
-
-const ShimmerList: FC<ShimmerListProps> = ({ count = 0, delay = 0, transitionDuration = 800 }) => {
+}> = ({ count = 0, delay = 0, transitionDuration = 800 }) => {
 	const itemCount = count > 33 ? 33 : count;
 
 	return (
 		<Wrapper
-			mainAlignment="flex-start"
 			height="fill"
 			style={{ animationDelay: `${delay}ms`, animationDuration: `${transitionDuration}ms` }}
 		>

@@ -7,7 +7,6 @@
 import { ItemType as AccordionItemType } from '@zextras/carbonio-design-system';
 import { Tag } from '@zextras/carbonio-shell-ui';
 import React, { ComponentType } from 'react';
-import { TFunction } from 'react-i18next';
 
 export type ReturnType = {
 	id: string;

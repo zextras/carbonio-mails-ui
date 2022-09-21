@@ -24,19 +24,12 @@ import {
 } from '@zextras/carbonio-design-system';
 import { cloneDeep, filter, noop, startsWith } from 'lodash';
 import { useDispatch } from 'react-redux';
-import {
-	AccordionFolder,
-	Folder,
-	FOLDERS,
-	useFoldersAccordionByView,
-	useUserAccount,
-	t
-} from '@zextras/carbonio-shell-ui';
+import { Folder, FOLDERS, t, useFoldersByView, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { folderAction } from '../../store/actions/folder-action';
 import ModalFooter from './commons/modal-footer';
-import { ModalHeader } from './commons/modal-header';
+import ModalHeader from './commons/modal-header';
 import { FOLDER_VIEW } from '../../constants';
 import ModalAccordionCustomComponent from './parts/edit/modal-accordion-custom-component';
 import { ModalProps } from '../../types';
@@ -53,9 +46,9 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	const folders = useFoldersAccordionByView(FOLDER_VIEW.message, null);
+	const folders = useFoldersByView(FOLDER_VIEW.message);
 	const [searchString, setSearchString] = useState('');
-	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder.folder);
+	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
 	const { folderId } = useParams<{ folderId: string }>();
 	const accountName = useUserAccount().name;
 	const accordionRef = useRef<HTMLDivElement>();
@@ -72,14 +65,13 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 	}, [accordionRef]);
 
 	const flattenFolders = useCallback(
-		(arr: Array<AccordionFolder>): Array<AccordionFolder> => {
-			const result: Array<AccordionFolder> = [];
+		(arr: Array<Folder>): Array<Folder> => {
+			const result: Array<Folder> = [];
 			arr.forEach((item) => {
-				const { items } = item;
 				if (
-					item.folder.id !== FOLDERS.TRASH &&
-					item.folder.id !== FOLDERS.SPAM &&
-					!startsWith(item.folder.absFolderPath, '/Trash')
+					item.id !== FOLDERS.TRASH &&
+					item.id !== FOLDERS.SPAM &&
+					!startsWith(item.absFolderPath, '/Trash')
 				)
 					result.push({
 						...item,
@@ -87,38 +79,38 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 						// @ts-ignore
 						CustomComponent: ModalAccordionCustomComponent,
 						onClick: () => {
-							setFolderDestination(item.folder);
+							setFolderDestination(item);
 						},
 						background:
-							typeof folderDestination !== 'undefined' && folderDestination.id === item.folder.id
+							typeof folderDestination !== 'undefined' && folderDestination.id === item.id
 								? 'highlight'
 								: undefined,
 						label:
-							item.folder.id === FOLDERS.USER_ROOT
+							item.id === FOLDERS.USER_ROOT
 								? accountName
 								: getFolderTranslatedName({
-										folderId: item.folder.id,
-										folderName: item.folder.name
+										folderId: item.id,
+										folderName: item.name
 								  }),
-						activeId: item.folder.id === folderId,
+						activeId: item.id === folderId,
 						accordionWidth,
 						items: []
 					});
-				if (items) result.push(...flattenFolders(items));
+				if (item.children) result.push(...flattenFolders(item.children));
 			});
 			return result;
 		},
 		[folderDestination, accountName, folderId, accordionWidth]
 	);
-	const getFolderRootName = (_folder: AccordionFolder): string => {
-		let result = cloneDeep(_folder.folder);
+	const getFolderRootName = (_folder: Folder): string => {
+		let result = cloneDeep(_folder);
 		while (result.parent?.parent) {
 			result = result.parent;
 		}
-		return result.owner || result.parent?.name || result.name;
+		return (result.isLink && result.owner) || result.parent?.name || result.name;
 	};
 
-	const filteredFolders = folders.filter((item) => item.label === getFolderRootName(folder));
+	const filteredFolders = folders.filter((item) => item.name === getFolderRootName(folder));
 
 	const flattenedFolders = useMemo(
 		() => flattenFolders(filteredFolders),
@@ -128,7 +120,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const filteredFromUserInput = useMemo(
 		() =>
 			filter(flattenedFolders, (item) => {
-				const folderName = item.label.toLowerCase();
+				const folderName = item.name.toLowerCase();
 				return startsWith(folderName, searchString.toLowerCase());
 			}),
 		[flattenedFolders, searchString]
@@ -136,7 +128,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 
 	const onConfirm = useCallback(() => {
 		const restoreFolder = (): void =>
-			dispatch(folderAction({ folder: folder.folder, l: folder.folder.l, op: 'move' }))
+			dispatch(folderAction({ folder, l: folder.l, op: 'move' }))
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				.then((res) => {
@@ -162,13 +154,13 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 				});
 
 		if (
-			folderDestination?.id !== folder.folder?.l &&
-			!startsWith(folderDestination?.absFolderPath, folder.folder?.absFolderPath)
+			folderDestination?.id !== folder.l &&
+			!startsWith(folderDestination?.absFolderPath, folder.absFolderPath)
 		) {
 			// if (folderDestination?.id !== folder.id && folderDestination?.l !== folder.folder?.l) {
 			dispatch(
 				folderAction({
-					folder: folder.folder,
+					folder,
 					l: folderDestination?.id || FOLDERS.USER_ROOT,
 					op: 'move'
 				})
@@ -211,7 +203,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 			crossAlignment="flex-start"
 			height="fit"
 		>
-			<ModalHeader onClose={onClose} title={`${t('label.move', 'Move')} ${folder.folder?.name}`} />
+			<ModalHeader onClose={onClose} title={`${t('label.move', 'Move')} ${folder.name}`} />
 			<Container
 				padding={{ all: 'small' }}
 				mainAlignment="center"
@@ -227,7 +219,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 					</Text>
 				</Container>
 				<Input
-					inputName={folder.folder?.name}
+					inputName={folder.name}
 					label={t('label.filter_folders', 'Filter folders')}
 					backgroundColor="gray5"
 					value={searchString}

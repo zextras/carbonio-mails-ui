@@ -13,7 +13,7 @@ import {
 	MailMessagePart,
 	Participant,
 	SharedParticipant,
-	mailAttachmentParts,
+	MailAttachmentParts,
 	SoapDraftMessageObj,
 	PrefsType
 } from '../types';
@@ -23,17 +23,17 @@ import { ParticipantRole } from '../commons/utils';
 export const retrieveAttachmentsType = (
 	original: MailMessage,
 	disposition: string
-): Array<mailAttachmentParts> =>
+): Array<MailAttachmentParts> =>
 	reduce(
 		original?.parts?.[0]?.parts ?? [],
 		(acc, part) =>
 			part.disposition && part.disposition === disposition
 				? [...acc, { part: part.name, mid: original.id }]
 				: acc,
-		[] as Array<mailAttachmentParts>
+		[] as Array<MailAttachmentParts>
 	);
 
-export const getSignatures: any = (account: any, t: any) => {
+export const getSignatures: any = (account: any) => {
 	const signatureArray = [
 		{
 			label: 'No signature',
@@ -224,7 +224,7 @@ export function findAttachments(
 		parts,
 		(found, part) => {
 			if (part && part.disposition === 'attachment' && !part.ci) {
-				found.push(part);
+				found.push({ ...part, filename: part.filename ?? '' });
 			}
 			if (part.parts) return findAttachments(part.parts, found);
 			return acc;
@@ -313,6 +313,8 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 		did: msg.isDraft ? msg.did ?? msg.id : undefined,
 		attach: { mp: retrieveAttachmentsType(msg, 'attachment') },
 		su: { _content: msg.subject ?? '' },
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		e: map(msg.participants, (c) => ({
 			t: c.type,
 			a: c.address,

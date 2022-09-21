@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, useContext, useEffect, useMemo, useState } from 'react';
 import {
 	Button,
 	Collapse,
@@ -14,16 +15,13 @@ import {
 	SnackbarManagerContext,
 	Text
 } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import React, { FC, ReactElement, useContext, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import LabelRow from './parts/label-row';
 import ResponseActions from './parts/response-actions';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { findLabel, ShareCalendarRoleOptions } from './parts/utils';
+import { ShareCalendarRoleOptions, findLabel } from './parts/utils';
+import { MailMessage } from '../../types';
 
 const InviteContainer = styled(Container)`
 	border: 1px solid ${({ theme }: any): string => theme.palette.gray2.regular};
@@ -33,8 +31,8 @@ const InviteContainer = styled(Container)`
 
 type SharedCalendarResponse = {
 	sharedContent: string;
-	mailMsg: any;
-	onLoadChange: () => void;
+	mailMsg: MailMessage;
+	onLoadChange?: () => void;
 };
 
 const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
@@ -44,10 +42,9 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 }): ReactElement => {
 	useEffect(() => {
 		if (mailMsg.read === 'false') {
-			onLoadChange();
+			onLoadChange && onLoadChange();
 		}
 	}, [mailMsg.read, onLoadChange]);
-	const [t] = useTranslation();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useDispatch();
 
@@ -58,7 +55,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 
 	const shareCalendarRoleOptions = useMemo(
 		() => ShareCalendarRoleOptions(t, rights?.includes('p')),
-		[t, rights]
+		[rights]
 	);
 
 	const role = useMemo(
@@ -99,7 +96,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 			default:
 				return [t('label.contact_folder', 'Contact Folder'), 'ContactsModOutline'];
 		}
-	}, [view, t]);
+	}, [view]);
 
 	const allowedActions = useMemo((): string => {
 		if (rights === 'rwidx' || rights === 'rwidxp') {
@@ -112,7 +109,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 			return t('message.admin_rights', 'View,Edit,Add,Remove,Administer');
 		}
 		return 'None';
-	}, [rights, t]);
+	}, [rights]);
 
 	const owner = useMemo(
 		() => sharedContent?.split('<grantor ')[1]?.split('name="')[1]?.split('"')[0],

@@ -5,22 +5,20 @@
  */
 import React, { FC, useCallback, useContext, useMemo } from 'react';
 import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { useTranslation } from 'react-i18next';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import ModalFooter from './commons/modal-footer';
 import { folderAction } from '../../store/actions/folder-action';
-import { ModalHeader } from './commons/modal-header';
+import ModalHeader from './commons/modal-header';
 import { ModalProps } from '../../types';
 
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const [t] = useTranslation();
 	const dispatch = useDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 
 	const onConfirm = useCallback(() => {
-		dispatch(folderAction({ folder: folder.folder, recursive: true, op: 'empty' }))
+		dispatch(folderAction({ folder, recursive: true, op: 'empty' }))
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			.then((res) => {
@@ -48,14 +46,14 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 				}
 			});
 		onClose();
-	}, [dispatch, folder, onClose, createSnackbar, t]);
+	}, [dispatch, folder, onClose, createSnackbar]);
 
 	const title = useMemo(
 		() =>
 			folder.id === FOLDERS.TRASH
-				? `${t('label.empty', 'Empty')} ${folder.folder?.name}`
-				: `${t('label.wipe', 'Wipe')} ${folder.folder?.name}`,
-		[folder.id, folder.folder?.name, t]
+				? `${t('label.empty', 'Empty')} ${folder.name}`
+				: `${t('label.wipe', 'Wipe')} ${folder.name}`,
+		[folder.id, folder.name]
 	);
 	return (
 		<Container

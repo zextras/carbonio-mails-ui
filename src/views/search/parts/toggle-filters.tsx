@@ -5,29 +5,11 @@
  */
 import { nanoid } from '@reduxjs/toolkit';
 import React, { useCallback, useState, useEffect, FC, ReactElement } from 'react';
-import { Container, Switch, Text, Padding, ChipProps } from '@zextras/carbonio-design-system';
+import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
 import { filter } from 'lodash';
-import { QueryChip, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 
-type ToggleFilters = Array<{
-	id: string;
-	avatarIcon?: string;
-	label: string;
-	value: string;
-	isQueryFilter?: boolean;
-	isGeneric?: boolean;
-	avatarBackground?: ChipProps['background'];
-}>;
-type ToggleFiltersProps = {
-	compProps: {
-		query: Array<QueryChip>;
-		setUnreadFilter: (arg: ToggleFilters) => void;
-		setFlaggedFilter: (arg: ToggleFilters) => void;
-		setAttachmentFilter: (arg: ToggleFilters) => void;
-		isSharedFolderIncludedTobe: boolean;
-		setIsSharedFolderIncludedTobe: (arg: boolean) => void;
-	};
-};
+import { ToggleFiltersProps } from '../../../types';
 
 const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 	const {

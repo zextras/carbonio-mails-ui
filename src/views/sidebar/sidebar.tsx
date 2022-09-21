@@ -3,120 +3,43 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	useRef,
-	FC,
-	useContext,
-	useMemo,
-	useCallback,
-	useEffect,
-	useState,
-	SyntheticEvent
-} from 'react';
-import {
-	AccordionFolder,
-	useFoldersAccordionByView,
-	useLocalStorage
-} from '@zextras/carbonio-shell-ui';
-import { Accordion, Container, Button, ModalManagerContext } from '@zextras/carbonio-design-system';
-import { Route, Switch, useRouteMatch, useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { filter, isEqual, map, uniqWith } from 'lodash';
-import { useTranslation } from 'react-i18next';
-import CollapsedSideBarItems from './collapsed-sidebar-items';
+
+import { ThemeProvider } from '@mui/material';
+import { Folder, useFoldersByView } from '@zextras/carbonio-shell-ui';
+import { Accordion, Container } from '@zextras/carbonio-design-system';
+import { map } from 'lodash';
+import React, { FC, useMemo } from 'react';
+import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 import { FOLDER_VIEW } from '../../constants';
-import { AccordionCustomComponent } from './accordion-custom-component';
-import { getShareInfo } from '../../store/actions/get-share-info';
-import { ResFolder } from '../../types';
-import { SharesModal } from './shares-modal';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
-import { StoreProvider } from '../../store/redux';
+import { themeMui } from '../../theme/theme-mui';
+import CollapsedSideBarItems from './collapsed-sidebar-items';
+import { SidebarAccordionMui } from './sidebar-accordion-mui';
 
 type SidebarComponentProps = {
-	accordions: Array<AccordionFolder>;
-	openIds: Array<string>;
+	accordions: Array<Folder>;
 };
 
-const ButtonFindShares: FC = () => {
-	const [t] = useTranslation();
-	const dispatch = useDispatch();
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createModal = useContext(ModalManagerContext) as Function;
-
-	const openFindShares = useCallback(
-		(ev: SyntheticEvent<HTMLButtonElement, Event> | KeyboardEvent): void => {
-			ev.stopPropagation();
-			dispatch(getShareInfo())
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				.then((res: any) => {
-					if (res.type.includes('fulfilled') && res.payload?.share?.length > 0) {
-						const resFolders: Array<ResFolder> = uniqWith(
-							filter(res.payload.share, ['view', 'message']),
-							isEqual
-						);
-						const closeModal = createModal(
-							{
-								children: (
-									<StoreProvider>
-										<SharesModal folders={resFolders} onClose={(): void => closeModal()} />
-									</StoreProvider>
-								)
-							},
-							true
-						);
-					}
-				});
-		},
-		[createModal, dispatch]
-	);
-
-	return (
-		<Container padding={{ horizontal: 'medium', vertical: 'small' }}>
-			<Button
-				type="outlined"
-				label={t('label.find_shares', 'Find shares')}
-				color="primary"
-				width="fill"
-				onClick={openFindShares}
-			/>
-		</Container>
-	);
-};
-
-const SidebarComponent: FC<SidebarComponentProps> = ({ accordions, openIds }) => {
-	const sidebarRef = useRef<HTMLInputElement>(null);
+const SidebarComponent: FC<SidebarComponentProps> = ({ accordions }) => {
 	const { folderId } = useParams<{ folderId: string }>();
 	const tagsAccordionItems = useGetTagsAccordion();
-	const [disableTransition, setDisableTransition] = useState(true);
-	const [t] = useTranslation();
+
 	const accordionsWithFindShare = useMemo(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		accordions[0]?.items?.push({
-			id: 'find_shares',
-			label: t('label.find_shares', 'Find shares'),
-			CustomComponent: ButtonFindShares,
+		if (!accordions?.[0]?.children.find((folder) => folder.id === 'find_shares')) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			disableHover: true
-		});
+			accordions[0]?.children?.push({
+				id: 'find_shares',
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				disableHover: true
+			});
+		}
 		return map(accordions, (item) => ({ ...item, background: 'gray4' }));
-	}, [accordions, t]);
-
-	useEffect(() => {
-		setDisableTransition(false);
-	}, []);
-
+	}, [accordions]);
 	return (
 		<Container orientation="vertical" height="fit">
-			<Accordion
-				openIds={openIds}
-				ref={sidebarRef}
-				items={accordionsWithFindShare as any[]}
-				activeId={folderId}
-				disableTransition={disableTransition}
-			/>
+			<SidebarAccordionMui accordions={accordionsWithFindShare} folderId={folderId} />
 			<Accordion items={[tagsAccordionItems]} />
 		</Container>
 	);
@@ -126,40 +49,26 @@ type SidebarProps = {
 	expanded: boolean;
 };
 
+const MemoSidebar: FC<SidebarComponentProps> = React.memo(SidebarComponent);
+
 const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 	const { path } = useRouteMatch();
-	const [openIds, setOpenIds] = useLocalStorage<Array<string>>('open_mails_folders', []);
-
-	const additionalProps = (item: AccordionFolder): Record<string, any> => ({
-		onOpen: () => setOpenIds((s: Array<string>) => (s.includes(item.id) ? s : [...s, item.id])),
-		onClose: () => setOpenIds((s: Array<string>) => s.filter((id: string) => id !== item.id))
-	});
-
-	const accordions = useFoldersAccordionByView(
-		FOLDER_VIEW.message,
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		AccordionCustomComponent,
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		additionalProps
-	);
-
+	const accordions = useFoldersByView(FOLDER_VIEW.message);
 	return (
 		<>
-			{expanded ? (
-				<>
+			<ThemeProvider theme={themeMui}>
+				{expanded ? (
 					<Switch>
 						<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
-							<SidebarComponent accordions={accordions} openIds={openIds} />
+							<MemoSidebar accordions={accordions} />
 						</Route>
 					</Switch>
-				</>
-			) : (
-				accordions[0].items.map((folder, index: number) => (
-					<CollapsedSideBarItems key={index} folder={folder} />
-				))
-			)}
+				) : (
+					accordions[0].children.map((folder) => (
+						<CollapsedSideBarItems key={folder.id} folder={folder} />
+					))
+				)}
+			</ThemeProvider>
 		</>
 	);
 };
