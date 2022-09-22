@@ -247,7 +247,14 @@
         "time_zone": "Tijdzone",
         "searching": "Bezig met zoeken...",
         "notify": "Waarschuwen",
-        "do_not_notify": "Niet melden"
+        "do_not_notify": "Niet melden",
+        "trusted_addresses": "Vertrouwde adressen",
+        "send_later": "Later versturen",
+        "request_receipt": "Leesontvangstbewijs Vragen",
+        "read_receipt_sent": "Een leesontvangstbewijs is verzonden voor dit bericht",
+        "enter_email_address": "Geef e-mailadres of domein op",
+        "delete_draft": "Klad Verwijderen",
+        "keep_draft": "Concept opslaan"
     },
     "messages": {
         "invalid_address": "Het volgende adres lijkt ongeldig te zijn",
@@ -315,7 +322,8 @@
         "sent_on": "Verstuurd op",
         "sent_after": "Verstuurd na",
         "sent_before": "Verstuurd voor",
-        "size_error": "Alleen cijfers zijn toegestaan"
+        "size_error": "Alleen cijfers zijn toegestaan",
+        "shared_folders_note": "Inclusief gedeelde items in zoekopdrachten."
     },
     "share": {
         "options": {
@@ -526,7 +534,8 @@
         "enable_urgent": "Dringend inschakelen",
         "resend": "Bericht over dit aandeel verzenden",
         "folder_sharing_status": "Gedeeld met {{count}} persoon",
-        "folder_sharing_status_plural": "Gedeeld met {{count}} personen"
+        "folder_sharing_status_plural": "Gedeeld met {{count}} personen",
+        "folder_linked_status": "Mit mir geteilt"
     },
     "folder_panel": {
         "modal": {
@@ -655,7 +664,17 @@
         "fromccme": "van mij",
         "forwarded": "doorgestuurd",
         "flagged": "Markiert",
-        "draft": "concept"
+        "draft": "concept",
+        "unreplied": "niet door mij beantwoord",
+        "tofromme": "aan mij, van mij of in kopie aan mij",
+        "tofromccme": "aan mij, van mij of in kopie aan mij",
+        "toccme": "aan mij of in kopie aan mij",
+        "solo": "gesprekken met één bericht",
+        "replied": "door mij beantwoord",
+        "remote": "op een door mij gedeelde map",
+        "local": "op mijn mappen",
+        "invitations": "uitnodigingen",
+        "ccme": "in kopie aan mij"
     },
     "attachment_type": {
         "word": "Word",
