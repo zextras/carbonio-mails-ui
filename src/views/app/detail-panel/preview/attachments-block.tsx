@@ -84,10 +84,12 @@ function getAttachmentsLink(
 				'text/plain',
 				'application/vnd.ms-excel',
 				'application/msword',
+				'application/microsoft-word',
 				'application/vnd.oasis.opendocument.spreadsheet',
 				'application/vnd.oasis.opendocument.presentation',
 				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-				'application/vnd.oasis.opendocument.text'
+				'application/vnd.oasis.opendocument.text',
+				'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 			],
 			attachmentType
 		)
