@@ -36,25 +36,9 @@
                 "add_share": "Teilen hinzufügen",
                 "threshold_message": "Nachrichten in diesem Ordner, die älter als die Entsorgungsschwelle sind, werden automatisch bereinigt und gelöscht."
             },
-            "delete": {
-                "body": {
-                    "message2": "Möchten Sie den ausgewählten Ordner endgültig löschen?"
-                }
-            },
-            "move": {
-                "body": {
-                    "message1": "Einen Ordner als Ziel zum Verschieben aussuchen:"
-                }
-            },
-            "new": {
-                "go_back": "Zurück"
-            },
             "wipe": {
                 "title": "Leeren"
             }
-        },
-        "action": {
-            "restore": "Ordner wiederherstellen"
         }
     },
     "header": {
@@ -239,7 +223,8 @@
         "time_zone": "Zeitzone",
         "searching": "Suche ...",
         "notify": "Benachrichtigen",
-        "do_not_notify": "Nicht benachrichtigen"
+        "do_not_notify": "Nicht benachrichtigen",
+        "keep_draft": "Entwurf speichern"
     },
     "share": {
         "options": {
@@ -393,7 +378,8 @@
         "enable_rich_text": "Rich Text Editor aktivieren",
         "enable_urgent": "Dringend aktivieren",
         "folder_sharing_status": "Mit {{count}} Person geteilt",
-        "folder_sharing_status_plural": "Mit {{count}} Personen geteilt"
+        "folder_sharing_status_plural": "Mit {{count}} Personen geteilt",
+        "folder_linked_status": "Gedeeld met mij"
     },
     "snackbar": {
         "share_updated": "\"Zugriffsrechte aktualisiert\"",
@@ -406,7 +392,6 @@
     },
     "settings": {
         "label": {
-            "always_dsp_received_time": "Immer die Empfangszeit in der E-Mail Liste anzeigen",
             "check_new_mail": "Neue E-Mails abrufen",
             "display_mail": "E-Mail anzeigen",
             "search_query": "Standardabfrage",
@@ -655,7 +640,17 @@
         "fromccme": "von mir",
         "forwarded": "weitergeleitet",
         "flagged": "gevlagd",
-        "draft": "Entwurf"
+        "draft": "Entwurf",
+        "unreplied": "von mir nicht beantwortet",
+        "tofromme": "an mich, von mir oder in kopie an mich",
+        "tofromccme": "an mich, von mir oder in kopie an mich",
+        "toccme": "an mich oder in kopie an mich",
+        "solo": "gespräche mit einer einzigen nachricht",
+        "replied": "von mir beantwortet",
+        "remote": "in einem von mir freigegebenen ordner",
+        "local": "in meinen ordnern",
+        "invitations": "einladungen",
+        "ccme": "in kopie an mich"
     },
     "attachment_type": {
         "word": "Wort",

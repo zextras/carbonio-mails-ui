@@ -40,13 +40,34 @@
         }
     },
     "folder": {
+        "action": {
+            "new": "Nouveau dossier"
+        },
         "modal": {
+            "delete": {
+                "body": {
+                    "message4": "Si vous le supprimez, tous les contenus associés seront définitivement supprimés et le dossier ne sera plus restaurable."
+                }
+            },
             "edit": {
                 "rename_warning": "Vous ne pouvez pas renommer un dossier en tant que dossier système.",
                 "retention_message": "Les messages de ce dossier qui se situent dans la plage de rétention devront être confirmés explicitement avant d'être supprimés",
                 "add_share": "Ajouter un Partage",
                 "retention_duration_warning": "La durée de rétention doit être un nombre positif",
                 "threshold_message": "Les messages de ce dossier qui sont plus anciens que le seuil d'élimination seront soumis à un nettoyage et une suppression automatiques."
+            },
+            "move": {
+                "footer": "Déplacer"
+            },
+            "new": {
+                "input": {
+                    "name": "Nom du dossier"
+                }
+            },
+            "wipe": {
+                "body": {
+                    "message2": "Si vous le nettoyez, tous les contenus associés seront définitivement supprimés."
+                }
             }
         }
     },
@@ -215,12 +236,12 @@
         "preview": "Prévisualisation",
         "delete_tag": "Supprimer l'étiquette",
         "delete_tag_name": "Supprimer l'étiquette \"{{name}}\"",
-        "edit_tag": "Modifier l'étiquette",
-        "edit_tag_name": "Modifier l'étiquette \"{{name}}\"",
+        "edit_tag": "Éditer l'étiquette",
+        "edit_tag_name": "Éditer l'étiquette \"{{name}}\"",
         "spam": "Spam",
         "tag_name": "Nom de l'étiquette",
         "tags": "Étiquettes",
-        "no_special_char_allowed": "Le nom ne doit pas contenir de caractère spécial",
+        "no_special_char_allowed": "Le nom ne doit pas contenir des caractères spéciaux",
         "calendar": "Calendrier",
         "confirm": "Confirmer",
         "contact_folder": "Dossier de contact",
@@ -246,7 +267,7 @@
         "read_receipt_sent": "Un accusé de lecture a été envoyé pour ce message",
         "read_receipt_req": "Un accusé de lecture est demandé",
         "notify": "Notifier",
-        "mark_as_un_important": "Signaler comme important",
+        "mark_as_un_important": "Marquer comme non important",
         "mark_as_important": "Signaler comme important",
         "keep_draft": "Enregistrer le brouillon",
         "include_shared_folders": "Inclure les dossiers partagés",
@@ -328,6 +349,7 @@
             "message_deleted": "Message supprimé",
             "message_move": "Message déplacé avec succès",
             "message_redirected": "Le message a été redirigé",
+            "folder_wiped_error": "Quelque chose s'est mal passé, veuillez recommencer",
             "mail_sent": "Message envoyé",
             "marked_as_non_spam": "Vous avez marqué cet email comme n'étant pas un spam",
             "email_moved_to_trash": "Email déplacé dans la Corbeille",
@@ -356,6 +378,7 @@
     "placeholder": {
         "add_new_recipients": "Ajouter de nouveaux destinataires"
     },
+    "remove_from_this_list": "Retirer de cette liste",
     "search": {
         "unread": "Non lu",
         "flagged_note": "Recherchez tous les emails qui ont une étiquette.",
