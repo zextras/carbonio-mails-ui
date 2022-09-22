@@ -647,7 +647,17 @@
         "fromccme": "dari saya",
         "forwarded": "diteruskan",
         "flagged": "dibenderai",
-        "draft": "draf"
+        "draft": "draf",
+        "unreplied": "tidak dijawab oleh saya",
+        "tofromme": "kepada saya, dari saya, atau disalin kepada saya",
+        "tofromccme": "kepada saya, dari saya, atau disalin kepada saya",
+        "toccme": "kepada atau disalin ke saya",
+        "solo": "percakapan dengan satu pesan",
+        "replied": "dijawab oleh saya",
+        "remote": "pada folder yang dibagikan oleh saya",
+        "local": "di folder saya",
+        "invitations": "undangan",
+        "ccme": "disalin ke saya"
     },
     "attachment_type": {
         "word": "Word",
