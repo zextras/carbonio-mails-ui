@@ -244,7 +244,13 @@
         "time_zone": "タイムゾーン",
         "searching": "検索中...",
         "notify": "通知",
-        "do_not_notify": "通知しない"
+        "do_not_notify": "通知しない",
+        "trusted_addresses": "信頼できるアドレス",
+        "send_later": "後で送信する",
+        "request_receipt": "開封確認を要求",
+        "keep_draft": "下書きとして保存",
+        "enter_email_address": "メールアドレスまたはドメインを入力",
+        "delete_draft": "下書きを削除する"
     },
     "messages": {
         "modal": {
@@ -310,7 +316,8 @@
         "sent_after": "後に送信",
         "sent_before": "前に送信",
         "sent_on": "に送信",
-        "size_error": "数字のみが許可されます"
+        "size_error": "数字のみが許可されます",
+        "shared_folders_note": "検索対象に共有フォルダを含める."
     },
     "share": {
         "options": {
@@ -517,7 +524,8 @@
         "edit": "共有プロパティを編集する",
         "enable_rich_text": "リッチテキストエディタを有効にする",
         "enable_urgent": "緊急を有効にする",
-        "folder_sharing_status": "{{count}}人と共有されました"
+        "folder_sharing_status": "{{count}}人と共有されました",
+        "folder_linked_status": "共有されたファイル"
     },
     "folder_panel": {
         "modal": {
@@ -646,7 +654,17 @@
         "fromccme": "自分から",
         "forwarded": "転送済み",
         "flagged": "フラグ付き",
-        "draft": "下書き"
+        "draft": "下書き",
+        "unreplied": "回答済み項目がありません",
+        "tofromme": "受信、送信、コピー",
+        "tofromccme": "受信、送信、コピー",
+        "toccme": "受信またはコピー",
+        "solo": "単一のメッセージでの会話",
+        "replied": "回答済み",
+        "remote": "共有しているフォルダ",
+        "local": "フォルダで",
+        "invitations": "招待",
+        "ccme": "コピー"
     },
     "attachment_type": {
         "word": "Word",

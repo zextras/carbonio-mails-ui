@@ -18,7 +18,7 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { ActionsType } from '../commons/utils';
 import { sendMsg } from '../store/actions/send-msg';
-import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
+import MoveConvMessage from './move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
@@ -546,10 +546,11 @@ export function moveMessageToFolder({
 	id,
 	dispatch,
 	isRestore,
-	deselectAll
+	deselectAll,
+	folderId
 }: Pick<
 	MessageActionPropType,
-	'id' | 'dispatch' | 'isRestore' | 'deselectAll'
+	'id' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId'
 >): MessageActionReturnType {
 	return {
 		id: 'message-restore',
@@ -562,6 +563,7 @@ export function moveMessageToFolder({
 					children: (
 						<StoreProvider>
 							<MoveConvMessage
+								folderId={folderId}
 								selectedIDs={id}
 								// TODO: Fix it in DS
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -570,6 +572,7 @@ export function moveMessageToFolder({
 								isMessageView
 								isRestore={isRestore ?? false}
 								deselectAll={deselectAll ?? noop}
+								dispatch={dispatch}
 							/>
 						</StoreProvider>
 					)
@@ -582,7 +585,6 @@ export function moveMessageToFolder({
 
 export function deleteMessagePermanently({
 	ids,
-	dispatch,
 	deselectAll
 }: MessageActionPropType): MessageActionReturnType {
 	return {
@@ -644,6 +646,7 @@ export const getActions = ({
 					deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }),
 					moveMessageToFolder({
 						id: [message.id],
+						folderId,
 						dispatch,
 						isRestore: true,
 						deselectAll
@@ -665,6 +668,7 @@ export const getActions = ({
 					deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }),
 					moveMessageToFolder({
 						id: [message.id],
+						folderId,
 						dispatch,
 						isRestore: true,
 						deselectAll

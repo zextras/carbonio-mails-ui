@@ -78,9 +78,7 @@ export type SharedObject = {
 export type GroupedShare = Dictionary<SharedObject[]>;
 
 export type ShareFolderModalProps = ModalProps & {
-	goBack: () => void;
 	editMode?: boolean;
-	activeGrant: Partial<{ perm: string; d: string }>;
 };
 
 export type FolderActionsProps = {

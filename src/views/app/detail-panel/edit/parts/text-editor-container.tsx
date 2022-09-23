@@ -4,21 +4,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
 import React, {
-	FC,
-	ReactElement,
 	RefObject,
 	SyntheticEvent,
+	FC,
+	ReactElement,
 	useCallback,
 	useContext,
+	useMemo,
 	useRef,
-	useState,
-	useMemo
+	useState
 } from 'react';
 import { Row, Container, Text } from '@zextras/carbonio-design-system';
 import { Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 import { EditViewContext } from './edit-view-context';
 import * as StyledComp from './edit-view-styled-components';
 
@@ -31,7 +30,6 @@ type PropType = {
 const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minHeight }) => {
 	const { control, editor, throttledSaveToDraft, updateSubjectField } = useContext(EditViewContext);
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
-	const [t] = useTranslation();
 
 	const { prefs } = useUserSettings();
 

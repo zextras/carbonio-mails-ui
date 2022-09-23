@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useContext, useEffect, useState } from 'react';
 import { Button, ChipInput, ChipItem, Container } from '@zextras/carbonio-design-system';
 import { Controller } from 'react-hook-form';
 import { map, some } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import * as StyledComp from './edit-view-styled-components';
 import { EditViewContext } from './edit-view-context';
 import { ParticipantRole } from '../../../../../commons/utils';
@@ -35,7 +34,6 @@ const ParticipantsRow: FC = () => {
 	const [showBcc, setShowBcc] = useState(false);
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
 	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
-	const [t] = useTranslation();
 
 	const { control, editor, updateEditorCb, throttledSaveToDraft } = useContext(EditViewContext);
 

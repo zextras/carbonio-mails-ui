@@ -17,7 +17,6 @@ import {
 	ModalManagerContext
 } from '@zextras/carbonio-design-system';
 import { reduce } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { createTag, useGetTagsActions } from '../ui-actions/tag-actions';
 import { ItemType, TagsAccordionItems } from '../types';
 

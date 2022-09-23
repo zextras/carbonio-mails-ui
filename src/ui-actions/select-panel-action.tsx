@@ -3,17 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	Container,
-	Dropdown,
-	IconButton,
-	ModalManagerContext,
-	SnackbarManagerContext
-} from '@zextras/carbonio-design-system';
+import { Container, Dropdown, IconButton } from '@zextras/carbonio-design-system';
 import { FOLDERS, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { every, filter, map, some } from 'lodash';
-import React, { FC, useContext, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { FC, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { Conversation } from '../types';
 
@@ -166,6 +159,7 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 					moveConversationToFolder({
 						ids,
 						dispatch,
+						folderId,
 						isRestore: false,
 						deselectAll
 					}),
@@ -199,6 +193,7 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 					moveConversationToFolder({
 						ids,
 						dispatch,
+						folderId,
 						isRestore: true,
 						deselectAll
 					}),
@@ -217,6 +212,7 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 					moveConversationToFolder({
 						ids,
 						dispatch,
+						folderId,
 						isRestore: false,
 						deselectAll
 					}),

@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { useIntegratedFunction } from '@zextras/carbonio-shell-ui';
+import { useIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import { useCallback, useContext, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { selectEditors } from '../../../../../store/editor-slice';
 import { MailsEditor } from '../../../../../types';
@@ -30,7 +29,6 @@ export const useGetFilesFromDrive = ({
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const editors = useSelector(selectEditors);
 	const editor = useMemo(() => editors[editorId], [editors, editorId]);
-	const [t] = useTranslation();
 	const [uploadTo, isAvailable] = useIntegratedFunction('upload-to-target-and-get-target-id');
 
 	const confirmAction = useCallback(
@@ -80,7 +78,7 @@ export const useGetFilesFromDrive = ({
 				});
 			}
 		},
-		[createSnackbar, editor, isAvailable, saveDraftCb, t, updateEditorCb, uploadTo]
+		[createSnackbar, editor, isAvailable, saveDraftCb, updateEditorCb, uploadTo]
 	);
 
 	return [confirmAction, isAvailable];

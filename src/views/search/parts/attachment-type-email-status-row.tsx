@@ -5,8 +5,8 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { attachmentTypeItemsConstant, emailStatusItemsConstant } from '../../../constants';
 import { AttachTypeEmailStatusRowPropType, ChipOnAdd, ChipOnAddProps } from '../../../types';
 
@@ -14,7 +14,6 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	compProps
 }): ReactElement => {
 	const { attachmentType, setAttachmentType, emailStatus, setEmailStatus } = compProps;
-	const [t] = useTranslation();
 	const attachmentTypeItems = attachmentTypeItemsConstant(t);
 
 	const emailStatusItems = emailStatusItemsConstant(t);
@@ -160,12 +159,12 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 
 	const attachmentTypePlaceholder = useMemo(
 		() => t('label.attachment_type', 'Attachment type'),
-		[t]
+		[]
 	);
 
 	const emailStatusPlaceholder = useMemo(
 		() => t('label.attachment_status', 'Status of e-mail item'),
-		[t]
+		[]
 	);
 	const attachmentIcon = useMemo(
 		() => (attachmentTypeRefHasFocus ? 'ChevronDown' : 'ChevronUp'),

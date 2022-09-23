@@ -7,7 +7,7 @@
 import React, { FC, ReactElement, useCallback, useState } from 'react';
 import { Container, Text, Row, Button } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
-import { useTranslation } from 'react-i18next';
+import { t } from '@zextras/carbonio-shell-ui';
 
 const ListItem = styled(Row)`
 	border-bottom: 1px solid ${({ theme }): string => theme.palette.gray2.regular};
@@ -22,7 +22,6 @@ const ListItem = styled(Row)`
 
 // TODO remove the any after the DS
 const TrusteeListItem: FC<any> = ({ item, onRemove }): ReactElement => {
-	const [t] = useTranslation();
 	const [hovered, setHovered] = useState(false);
 
 	const onMouseEnter = useCallback(() => setHovered(true), []);

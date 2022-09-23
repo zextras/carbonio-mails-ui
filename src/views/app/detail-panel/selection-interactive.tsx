@@ -5,7 +5,7 @@
  */
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectConversationsArray } from '../../../store/conversations-slice';

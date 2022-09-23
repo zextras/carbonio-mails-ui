@@ -5,18 +5,18 @@
  */
 import React from 'react';
 import {
-	Account,
 	FOLDERS,
-	getBridgedFunctions,
 	replaceHistory,
 	t,
-	Tags
+	getBridgedFunctions,
+	Tags,
+	Account
 } from '@zextras/carbonio-shell-ui';
 import { forEach, isArray, map } from 'lodash';
 import { Dispatch } from '@reduxjs/toolkit';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
-import MoveConvMessage from './move-conv-msg-modal/move-conv-msg';
+import MoveConvMessage from './move-conv-msg';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
 import { StoreProvider } from '../store/redux';
@@ -357,12 +357,13 @@ export function moveConversationToTrash({
 
 export function moveConversationToFolder({
 	ids,
+	folderId,
 	dispatch,
 	isRestore,
 	deselectAll
 }: Pick<
 	ConvActionPropType,
-	'ids' | 'dispatch' | 'isRestore' | 'deselectAll'
+	'ids' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId'
 >): ConvActionReturnType {
 	return {
 		id: 'move-conversations',
@@ -375,6 +376,7 @@ export function moveConversationToFolder({
 					children: (
 						<StoreProvider>
 							<MoveConvMessage
+								folderId={folderId}
 								selectedIDs={ids}
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
@@ -382,6 +384,7 @@ export function moveConversationToFolder({
 								isMessageView={false}
 								isRestore={isRestore}
 								deselectAll={deselectAll}
+								dispatch={dispatch}
 							/>
 						</StoreProvider>
 					)
@@ -468,6 +471,7 @@ export const getActions = ({
 					}),
 					moveConversationToFolder({
 						ids: [conversation.id],
+						folderId,
 						dispatch,
 						isRestore: true,
 						deselectAll
@@ -609,6 +613,7 @@ export const getActions = ({
 					}),
 					moveConversationToFolder({
 						ids: [conversation.id],
+						folderId,
 						dispatch,
 						isRestore: false,
 						deselectAll

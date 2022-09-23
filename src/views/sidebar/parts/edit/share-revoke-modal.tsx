@@ -5,9 +5,8 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { Folder, getBridgedFunctions, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { getBridgedFunctions, useUserAccounts, t } from '@zextras/carbonio-shell-ui';
 import ModalHeader from '../../commons/modal-header';
 import ModalFooter from '../../commons/modal-footer';
 
@@ -19,7 +18,6 @@ import { folderAction } from '../../../../store/actions/folder-action';
 import { ShareRevokeModalType } from '../../../../types/sidebar';
 
 const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, goBack }) => {
-	const [t] = useTranslation();
 	const [sendNotification, setSendNotification] = useState(false);
 	const [standardMessage, setStandardMessage] = useState('');
 
@@ -72,20 +70,10 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 				goBack();
 			});
 		}
-	}, [
-		accounts,
-		dispatch,
-		grant.d,
-		grant.zid,
-		sendNotification,
-		standardMessage,
-		folder,
-		t,
-		goBack
-	]);
+	}, [accounts, dispatch, grant.d, grant.zid, sendNotification, standardMessage, folder, goBack]);
 	const shareCalendarRoleOptions = useMemo(
 		() => ShareCalendarRoleOptions(t, grant.perm?.includes('p')),
-		[t, grant.perm]
+		[grant.perm]
 	);
 
 	const toolTip = useMemo(() => {
@@ -97,7 +85,7 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 			'label.revoke_access_without_notification',
 			'Revoke access without sending a notification'
 		);
-	}, [t, sendNotification, standardMessage]);
+	}, [sendNotification, standardMessage]);
 	return (
 		<Container
 			padding={{ all: 'small' }}

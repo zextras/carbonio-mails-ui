@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { noop } from 'lodash';
-import React, { createContext, FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
+import React, { createContext, FC, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import {
 	useIntegratedComponent,
@@ -12,7 +12,6 @@ import {
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { SnackbarManagerContext, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { getActions as conversationActions } from '../ui-actions/conversation-actions';
 import { getActions as messageActions } from '../ui-actions/message-actions';
 import { Conversation, MailMessage } from '../types';
@@ -46,8 +45,6 @@ export const ActionsContext = createContext<{
 
 export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => {
 	const dispatch = useDispatch();
-	const createSnackbar = useContext(SnackbarManagerContext);
-	const createModal = useContext(ModalManagerContext);
 	const settings = useUserSettings();
 	const account = useUserAccount();
 	const timezone = useMemo(() => settings?.prefs.zimbraPrefTimeZoneId, [settings]);
@@ -66,6 +63,7 @@ export const ActionsContextProvider: FC<ACPProps> = ({ children, folderId }) => 
 			}),
 			messageActions({
 				folderId,
+
 				dispatch,
 				account,
 				tags,

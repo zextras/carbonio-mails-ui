@@ -101,19 +101,6 @@ function folderActionPending(state: FoldersStateType, { meta }: any): void {
 
 	switch (op) {
 		case 'move':
-			state.folders = reduce(
-				state.folders,
-				(r, v, k) => {
-					if (v.id === newFolder.id) {
-						return r;
-					}
-					return { ...r, [k]: v };
-				},
-				{}
-			);
-			state.folders[newFolder.id] = newFolder;
-			updateFolderInStore(state, [newFolder]);
-			state.status = 'updating';
 			break;
 
 		case '!grant': {

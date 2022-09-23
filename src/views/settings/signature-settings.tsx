@@ -17,12 +17,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
-import {
-	getBridgedFunctions,
-	t,
-	useIntegratedComponent,
-	useUserAccount
-} from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { map, find, findIndex, merge, escape, unescape } from 'lodash';
 import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';

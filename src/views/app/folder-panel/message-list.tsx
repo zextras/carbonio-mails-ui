@@ -9,8 +9,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { FOLDERS, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
-import { useTranslation } from 'react-i18next';
+import { FOLDERS, useAppContext, useFolder, t } from '@zextras/carbonio-shell-ui';
 import { selectConversationStatus } from '../../../store/conversations-slice';
 import { MessageListItem } from './lists-item/message-list-item';
 import SelectMessagesPanelActions from '../../../ui-actions/select-panel-action-message';
@@ -71,7 +70,6 @@ const MessageList: FC = () => {
 	const status = useSelector(selectConversationStatus);
 	const { selected, isSelecting, toggle, deselectAll } = useSelection(folderId, setCount);
 	const messages = useMessageList();
-	const [t] = useTranslation();
 
 	const messageListStatus = useSelector(selectFolderMsgSearchStatus(folderId));
 
@@ -108,7 +106,7 @@ const MessageList: FC = () => {
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
 		}
 		return null;
-	}, [t, messages, folderId]);
+	}, [messages, folderId]);
 
 	useEffect(() => {
 		setDraggedIds(selected);

@@ -15,7 +15,6 @@ type handleKeyboardShortcutsProps = {
 	event: any;
 	itemId: any;
 	folderId: any;
-	t: (param: any) => void;
 	dispatch: any;
 	deselectAll: any;
 	createSnackbar: any;
@@ -28,8 +27,7 @@ const modifierKeysSecondTier: Array<any> = [];
 let keySequence = '';
 
 export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): void => {
-	const { event, itemId, conversations, t, dispatch, deselectAll, createSnackbar, folderId } =
-		params;
+	const { event, itemId, conversations, dispatch, deselectAll, folderId } = params;
 	const ctrlModifierIsActive = event.ctrlKey || event.metaKey;
 	const conversationFlag = conversations.filter((conversation) => conversation.id === itemId)?.[0]
 		?.flagged;

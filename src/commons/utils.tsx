@@ -3,10 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import moment, { Moment } from 'moment';
+import moment from 'moment';
 import { find, isArray } from 'lodash';
-import { TFunction } from 'react-i18next';
-import { Account } from '@zextras/carbonio-shell-ui';
+import { Account, t } from '@zextras/carbonio-shell-ui';
 import { Participant } from '../types/participant';
 
 export const getTimeLabel = (date: number): string => {
@@ -25,7 +24,6 @@ export const getTimeLabel = (date: number): string => {
 
 export const participantToString = (
 	participant: Participant | undefined,
-	t: TFunction,
 	accounts: Array<Account>
 ): string => {
 	const me = find(accounts, ['name', participant?.address]);
@@ -117,3 +115,12 @@ export enum TagsActionsType {
 	EDIT = 'edit',
 	Apply = 'apply'
 }
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const omitBy = (obj: any, check: (arg: unknown) => boolean): any => {
+	// eslint-disable-next-line no-param-reassign
+	obj = { ...obj };
+	// eslint-disable-next-line no-param-reassign
+	Object.entries(obj).forEach(([key, value]) => check(value) && delete obj[key]);
+	return obj;
+};

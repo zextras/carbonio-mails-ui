@@ -33,7 +33,7 @@ export const retrieveAttachmentsType = (
 		[] as Array<MailAttachmentParts>
 	);
 
-export const getSignatures: any = (account: any, t: any) => {
+export const getSignatures: any = (account: any) => {
 	const signatureArray = [
 		{
 			label: 'No signature',

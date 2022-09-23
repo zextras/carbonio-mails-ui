@@ -64,7 +64,7 @@ export type GranteeProps = {
 };
 
 export type ShareFolderPropertiesProps = {
-	folder: FolderType;
+	folder: FolderType | Folder;
 	setActiveModal;
 };
 

@@ -651,7 +651,17 @@
         "fromccme": "vindas de mim",
         "forwarded": "encaminhadas",
         "flagged": "sinalizadas",
-        "draft": "rascunho"
+        "draft": "rascunho",
+        "unreplied": "não respondido por mim",
+        "tofromme": "para mim, de mim ou em cópia para mim",
+        "tofromccme": "para mim, de mim ou em cópia para mim",
+        "toccme": "para mim ou em cópia para mim",
+        "solo": "conversas com uma única mensagem",
+        "replied": "respondido por mim",
+        "remote": "em uma pasta compartilhada por mim",
+        "local": "nas minhas pastas",
+        "invitations": "convites",
+        "ccme": "em cópia para mim"
     },
     "attachment_type": {
         "word": "Word",

@@ -5,15 +5,9 @@
  */
 
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import {
-	Container,
-	FormSubSection,
-	RadioGroup,
-	Radio,
-	Select
-} from '@zextras/carbonio-design-system';
+import { Container, FormSubSection, RadioGroup, Radio } from '@zextras/carbonio-design-system';
 
-import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import Heading from './components/settings-heading';
 import { composingMsgSubSection } from './subsections';
 import CustomSelect from './filters/parts/custom-select';

@@ -24,8 +24,6 @@ type ComponentProps = {
 	setIncomingFilters?: (arg: any) => void;
 };
 
-type ActionType = Record<string, Array<any>>;
-
 const CreateFilterModal: FC<ComponentProps> = ({
 	t,
 	onClose,

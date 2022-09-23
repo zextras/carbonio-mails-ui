@@ -13,17 +13,16 @@ import {
 	Row,
 	ChipInput,
 	Padding,
-	SnackbarManagerContext,
 	ChipItem,
 	SelectItem
 } from '@zextras/carbonio-design-system';
 import {
 	getBridgedFunctions,
 	useIntegratedComponent,
-	useUserAccounts
+	useUserAccounts,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { map, replace, split } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
 	ShareCalendarWithOptions,
@@ -38,19 +37,12 @@ import { capitalise } from './utils';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
 import { ShareFolderModalProps } from '../../types/sidebar';
 
-const ShareFolderModal: FC<ShareFolderModalProps> = ({
-	onClose,
-	folder,
-	goBack,
-	editMode = false,
-	activeGrant
-}) => {
-	const [t] = useTranslation();
-
+const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode = false }) => {
+	const activeGrant: Partial<{ perm: string; d: string }> = useMemo(() => ({}), []);
 	const dispatch = useDispatch();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
-	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), [t]);
-	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), [t]);
+	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
+	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
 	const [sendNotification, setSendNotification] = useState(false);
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<any>([]);
@@ -68,8 +60,8 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 						name: userNameCapitalise,
 						defaultValue: "Edit {{name}}'s access"
 				  })} `
-				: `${t('label.share', 'Share')} ${folder.folder.name}`,
-		[t, folder, editMode, userNameCapitalise]
+				: `${t('label.share', 'Share')} ${folder.name}`,
+		[folder, editMode, userNameCapitalise]
 	);
 
 	const onShareWithChange = useCallback((shareWith) => {
@@ -88,7 +80,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 				contacts: editMode ? [{ email: activeGrant.d }] : contacts,
 				shareWithUserType,
 				shareWithUserRole,
-				folder: folder.folder,
+				folder,
 				accounts
 			})
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -113,7 +105,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 							contacts: editMode ? [{ email: activeGrant.d }] : contacts,
 							shareWithUserType,
 							shareWithUserRole,
-							folder: folder.folder,
+							folder,
 							accounts
 						})
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -130,7 +122,6 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 							});
 						}
 					});
-				goBack && goBack();
 			}
 			onClose();
 		});
@@ -145,9 +136,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 		shareWithUserRole,
 		folder,
 		accounts,
-		onClose,
-		t,
-		goBack
+		onClose
 	]);
 
 	const disableEdit = useMemo(
@@ -277,7 +266,6 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 				}
 				onConfirm={onConfirm}
 				disabled={editMode ? disableEdit : contacts.length < 1}
-				secondaryAction={goBack}
 				secondaryLabel={t('label.go_back', 'Go Back')}
 			/>
 		</>

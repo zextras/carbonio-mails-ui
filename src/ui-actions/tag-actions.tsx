@@ -15,7 +15,6 @@ import {
 } from '@zextras/carbonio-design-system';
 
 import { every, find, includes, map, reduce } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import {
 	ZIMBRA_STANDARD_COLORS,
 	replaceHistory,

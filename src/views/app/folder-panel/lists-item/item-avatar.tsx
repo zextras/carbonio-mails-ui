@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Avatar, Container, Tooltip } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import React, { useCallback, useMemo, FC, SyntheticEvent } from 'react';
-import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ParticipantRole } from '../../../../commons/utils';
 import { ItemAvatarType, Participant } from '../../../../types';
@@ -29,7 +29,6 @@ export const ItemAvatar: FC<ItemAvatarType> = ({
 	isSearch = false
 }) => {
 	const targetParticipants = folderId === '5' ? ParticipantRole.TO : ParticipantRole.FROM;
-	const [t] = useTranslation();
 	const [avatarLabel, avatarEmail] = useMemo(() => {
 		let sender = item?.participants?.find((p: Participant) => p.type === targetParticipants);
 		if (!sender) [sender] = item.participants ?? [];
@@ -52,7 +51,7 @@ export const ItemAvatar: FC<ItemAvatarType> = ({
 						'Selection mode isn’t available yet on search results'
 				  )
 				: t('label.activate_selection_mode', 'Activate selection mode'),
-		[t, isSearch]
+		[isSearch]
 	);
 	return (
 		<Container

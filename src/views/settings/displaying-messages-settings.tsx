@@ -11,7 +11,6 @@ import {
 	FormSubSection,
 	Select,
 	Input,
-	Checkbox,
 	RadioGroup,
 	Radio,
 	SelectItem

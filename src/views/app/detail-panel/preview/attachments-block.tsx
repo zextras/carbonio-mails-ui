@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useMemo, useRef, useState, useContext, FC, ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { filter, find, includes, map, noop, reduce, uniqBy } from 'lodash';
 import {
@@ -18,7 +17,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getAction, getBridgedFunctions, soapFetch } from '@zextras/carbonio-shell-ui';
+import { getAction, soapFetch, t, getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { humanFileSize, previewType } from './file-preview';
@@ -160,8 +159,6 @@ const Attachment: FC<AttachmentType> = ({
 	const extension = getFileExtension(att);
 
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
-
-	const [t] = useTranslation();
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
 
@@ -206,7 +203,7 @@ const Attachment: FC<AttachmentType> = ({
 					});
 				});
 		},
-		[att.name, message.id, t]
+		[att.name, message.id]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
@@ -223,7 +220,7 @@ const Attachment: FC<AttachmentType> = ({
 			canSelectOpenedFolder: true,
 			maxSelection: 1
 		}),
-		[confirmAction, isAValidDestination, t]
+		[confirmAction, isAValidDestination]
 	);
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
@@ -256,7 +253,7 @@ const Attachment: FC<AttachmentType> = ({
 				const errorContent = getErrorPage(t);
 				printWindow && printWindow.document.write(errorContent);
 			});
-	}, [att?.name, message, t]);
+	}, [att?.name, message]);
 
 	const preview = useCallback(
 		(ev) => {
@@ -306,8 +303,7 @@ const Attachment: FC<AttachmentType> = ({
 			downloadAttachment,
 			extension,
 			link,
-			showEMLPreview,
-			t
+			showEMLPreview
 		]
 	);
 
@@ -386,7 +382,6 @@ const copyToFiles = (att: AttachmentPartType, message: MailMessage, nodes: any):
 	});
 
 const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactElement => {
-	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(() => findAttachments(message?.parts, []), [message]);
 	const attachmentsCount = useMemo(() => attachments?.length, [attachments]);
@@ -459,7 +454,7 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 				});
 			});
 		},
-		[attachments, message, t]
+		[attachments, message]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
@@ -476,7 +471,7 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 			canSelectOpenedFolder: true,
 			maxSelection: 1
 		}),
-		[confirmAction, isAValidDestination, t]
+		[confirmAction, isAValidDestination]
 	);
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(

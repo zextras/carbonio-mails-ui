@@ -84,7 +84,7 @@ export const capitalise = (word: string): string => {
 	return word ? newChar + word.substring(1) : '';
 };
 
-export const getFolderIconColor = (f: AccordionFolder): string => {
+export const getFolderIconColorForAccordionFolder = (f: AccordionFolder): string => {
 	if (f?.folder?.color) {
 		return f.folder.color < 10
 			? ZIMBRA_STANDARD_COLORS[f.folder.color].hex
@@ -93,7 +93,16 @@ export const getFolderIconColor = (f: AccordionFolder): string => {
 	return ZIMBRA_STANDARD_COLORS[0].hex;
 };
 
-export const getFolderIconName = (folder: AccordionFolder): string | null => {
+export const getFolderIconColor = (f: Folder): string => {
+	if (f?.color) {
+		return Number(f.color) < 10
+			? ZIMBRA_STANDARD_COLORS[Number(f.color)].hex
+			: f?.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex;
+	}
+	return ZIMBRA_STANDARD_COLORS[0].hex;
+};
+
+export const getFolderIconNameForAccordionFolder = (folder: AccordionFolder): string | null => {
 	const systemFolders = [
 		FOLDERS.USER_ROOT,
 		FOLDERS.INBOX,
@@ -104,6 +113,58 @@ export const getFolderIconName = (folder: AccordionFolder): string | null => {
 	];
 
 	if (folder.id === FOLDERS.USER_ROOT || folder.folder?.oname === ROOT_NAME) {
+		return null;
+	}
+
+	if (folder.id && systemFolders.includes(folder.id)) {
+		switch (folder.id) {
+			case FOLDERS.INBOX:
+				return 'InboxOutline';
+			case FOLDERS.DRAFTS:
+				return 'FileOutline';
+			case FOLDERS.SENT:
+				return 'PaperPlaneOutline';
+			case FOLDERS.SPAM:
+				return 'SlashOutline';
+			case FOLDERS.TRASH:
+				return 'Trash2Outline';
+			default:
+				return 'FolderOutline';
+		}
+	}
+	if (
+		folder.id?.charAt(folder.id.length - 2) === ':' &&
+		systemFolders.includes(folder.id.slice(-1))
+	) {
+		switch (folder.id.slice(-1)) {
+			case FOLDERS.INBOX:
+				return 'InboxOutline';
+			case FOLDERS.DRAFTS:
+				return 'FileOutline';
+			case FOLDERS.SENT:
+				return 'PaperPlaneOutline';
+			case FOLDERS.SPAM:
+				return 'SlashOutline';
+			case FOLDERS.TRASH:
+				return 'Trash2Outline';
+			default:
+				return 'FolderOutline';
+		}
+	}
+	return 'FolderOutline';
+};
+
+export const getFolderIconName = (folder: Folder): string | null => {
+	const systemFolders = [
+		FOLDERS.USER_ROOT,
+		FOLDERS.INBOX,
+		FOLDERS.TRASH,
+		FOLDERS.DRAFTS,
+		FOLDERS.SPAM,
+		FOLDERS.SENT
+	];
+
+	if (folder.id === FOLDERS.USER_ROOT || (folder.isLink && folder.oname === ROOT_NAME)) {
 		return null;
 	}
 

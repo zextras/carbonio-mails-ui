@@ -5,19 +5,16 @@
  */
 import React, { FC } from 'react';
 import { Container, Text, Accordion } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
-import { useTranslation } from 'react-i18next';
-import { AccordionFolder } from '@zextras/carbonio-shell-ui';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
 	display: block;
 `;
 
-// TODO remove any after the accordion refactor
-const FolderItem: FC<{ folders: any }> = ({ folders }) => {
-	const [t] = useTranslation();
-	return folders.length ? (
+const FolderItem: FC<{ folders: any }> = ({ folders }) =>
+	folders.length ? (
 		<ContainerEl
 			orientation="vertical"
 			mainAlignment="flex-start"
@@ -31,6 +28,5 @@ const FolderItem: FC<{ folders: any }> = ({ folders }) => {
 			<Text size="large"> {t('folder_panel.modal.lists-item.empty')} </Text>
 		</Container>
 	);
-};
 
 export default FolderItem;

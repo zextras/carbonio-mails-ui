@@ -9,7 +9,7 @@ import { isEmpty, isNil, omitBy } from 'lodash';
 import { DataProps, FolderType } from '../../types';
 
 type FolderActionProps = {
-	folder: FolderType | DataProps | Folder;
+	folder: FolderType | DataProps | Omit<Folder, 'parent'>;
 	color?: number;
 	zid?: string;
 	op: string;

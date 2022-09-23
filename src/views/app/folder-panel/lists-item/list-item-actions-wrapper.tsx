@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactNode, SyntheticEvent, useContext, useMemo } from 'react';
+import React, { FC, SyntheticEvent, useContext, useMemo } from 'react';
 import {
 	Container,
 	Tooltip,
@@ -13,12 +13,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { ActionsContext } from '../../../../commons/actions-context';
-import {
-	Conversation,
-	IncompleteMessage,
-	ListItemActionWrapperProps,
-	MailMessage
-} from '../../../../types';
+import { Conversation, IncompleteMessage, ListItemActionWrapperProps } from '../../../../types';
 
 const HoverBarContainer = styled(Container)`
 	top: 0;
@@ -60,8 +55,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	onDoubleClick,
 	item,
 	isConversation,
-	messagesToRender,
-	hoverTooltipLabel
+	messagesToRender
 }) => {
 	const { getMessageActions, getConversationActions } = useContext(ActionsContext);
 

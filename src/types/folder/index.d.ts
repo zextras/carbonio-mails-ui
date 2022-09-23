@@ -33,6 +33,7 @@ export type FolderType = {
 	acl?: unknown;
 	perm?: string;
 	retentionPolicy?: unknown;
+	children?: Array<unknown>;
 };
 
 export type GrantType = { gt: string; perm: string; zid: string; d?: string };
