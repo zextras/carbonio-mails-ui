@@ -270,11 +270,10 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
 	const msgTime = moment(msg.date).format('ddd, MMM DD, YYYY hh:mm A');
 
 	return `
-    <table width="100%" " class="Msg" style="padding:10px;">
-        <tr>
-      
+    <table  "class="Msg" style="padding:10px;width:100%;">
+        <tr>      
             <td  colspan="2">
-                <table width="100%" style="padding:10px;"  border="0"  >
+                <table style="padding:10px;width:100%;"    >
                     <tr>
                     <td style="width:50px;"> 
                     <div style="width:48px;height:48px;border-radius:50%;background:skyblue;margin-left:10px;">
@@ -283,8 +282,8 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
                           </p>
                     </div>
                    </td>
-                        <td align="left">
-                            <table width="100%" align="left"  border="0">
+                        <td  style="text-align:left;">
+                            <table style="text-align:left;width:100%;" >
                                 ${getParticipantHeader(from, 'From')}                            
                                 ${getParticipantHeader(to, 'To')} 
                                 ${getParticipantHeader(cc, 'Cc')}
@@ -292,10 +291,10 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
                                 ${getParticipantHeader(replyTo, 'Reply To')}
                         </table>
                         </td>
-                        <td valign='top'>
-                            <table width="100%" style="padding:5px;"  border="0">
+                        <td style="vertical-align: text-top;">
+                            <table  style="padding:5px;width:100%;"  >
                                 <tr>
-                                    <td nowrap align='right' class='MsgHdrSent'>
+                                    <td nowrap style="text-align:right;" class='MsgHdrSent'>
                                         <span id="messageDisplayTime_19062">${msgTime}</span>
                                     </td>
                                 </tr>
@@ -305,7 +304,7 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
                 </table>
             </td>
         </tr>
-        <td id="iframeBody" style="padding:5px; font-family: Roboto, sans-serif ;" valign='top' colspan="2">
+        <td id="iframeBody" style="padding:5px; font-family: Roboto, sans-serif ;" colspan="2">
             <div id="iframeBody" class="MsgBody-html">
             <hr />
                 ${content}
