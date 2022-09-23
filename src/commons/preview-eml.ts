@@ -16,7 +16,7 @@ import {
 import logo from '../assets/zextras-logo-gray.png';
 import productLogo from '../assets/logo-product-grey.png';
 import { getAvatarLabel } from './useGetAvatarLabel';
-import { Conversation, MailMessage, Participant } from '../types';
+import { MailMessage, Participant } from '../types';
 
 const getParticipantHeader = (participants: Participant[], type: string): string => {
 	const participantsList = map(
@@ -53,21 +53,18 @@ export const getBodyWrapper = ({
     line-height: 27px;`;
 
 	return `
-    <div className="ZhCallListPrintView">
-        <table cellPadding="0" cellSpacing="5" width="100%">
-            <tr>
-                <td>
-                    <div className="ZhPrintSubject" 
-                    style="${style} height: 28px;padding-left: 4px;display: flex;align-items: center;">
-                        <b>${subject}</b>
-                    </div>                  
-                </td>
-            </tr>
-            <tr>
-                <td>${content}</td>
-            </tr>
-        </table>
-    </div>`;
+    <div class="ZhCallListPrintView">
+        <div>
+            <div class="ZhPrintSubject"
+                style="${style} height: 28px;padding-left: 4px;display: flex;align-items: center;">
+                <b>${subject}</b>
+            </div>
+            <div>
+                ${content}
+            </div>
+        </div>
+    </div>
+    `;
 };
 
 export const getErrorPage = (t: TFunction): string =>
@@ -176,8 +173,7 @@ export const getCompleteHTMLForEML = ({ content }: { content: string }): string 
 	`	<html>
 		<head>
 			<title>Carbonio</title>
-                <style>
-                    max-width: 100% !important;
+                <style>                   
                     body {
                         max-width: 100% !important;
                         margin: 0;
@@ -188,8 +184,7 @@ export const getCompleteHTMLForEML = ({ content }: { content: string }): string 
                     }
                     body pre, body pre * {
                         white-space: pre-wrap;
-                        word-wrap: anywhere !important;
-                        text-wrap: suppress !important;
+                        word-wrap: anywhere !important;                      
                     }
                     img {
                         max-width: 100%
@@ -261,7 +256,7 @@ export const getCompleteHTMLForEML = ({ content }: { content: string }): string 
 		</head>
 		<body>			
 			${content}
-			<div className="footer">${window.location.hostname} </div>			
+			<div class="footer">${window.location.hostname} </div>			
 		</body>
 	</html>`;
 
@@ -275,11 +270,11 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
 	const msgTime = moment(msg.date).format('ddd, MMM DD, YYYY hh:mm A');
 
 	return `
-    <table width="100%" cellpadding="0" cellspacing="0" class="Msg" style="padding:10px;">
+    <table width="100%" " class="Msg" style="padding:10px;">
         <tr>
       
             <td  colspan="2">
-                <table width="100%" cellpadding="10" cellspacing="0" border="0"  >
+                <table width="100%" style="padding:10px;"  border="0"  >
                     <tr>
                     <td style="width:50px;"> 
                     <div style="width:48px;height:48px;border-radius:50%;background:skyblue;margin-left:10px;">
@@ -289,7 +284,7 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
                     </div>
                    </td>
                         <td align="left">
-                            <table width="100%" align="left" cellpadding="2" cellspacing="0" border="0">
+                            <table width="100%" align="left"  border="0">
                                 ${getParticipantHeader(from, 'From')}                            
                                 ${getParticipantHeader(to, 'To')} 
                                 ${getParticipantHeader(cc, 'Cc')}
@@ -298,7 +293,7 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
                         </table>
                         </td>
                         <td valign='top'>
-                            <table width="100%" cellpadding="2" cellspacing="0" border="0">
+                            <table width="100%" style="padding:5px;"  border="0">
                                 <tr>
                                     <td nowrap align='right' class='MsgHdrSent'>
                                         <span id="messageDisplayTime_19062">${msgTime}</span>
