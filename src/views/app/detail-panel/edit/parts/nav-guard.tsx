@@ -63,7 +63,6 @@ export const DeleteDraftModal = ({
 				secondaryAction={onDeleteAction}
 				secondaryLabel={t('label.delete_draft', 'Delete Draft')}
 				secondaryColor="primary"
-				showDivider={false}
 				paddingTop="0"
 			/>
 		</>
