@@ -253,7 +253,11 @@
         "time_zone": "Fuso orario",
         "searching": "Ricerca in corso...",
         "notify": "Notifica",
-        "do_not_notify": "Non notificare"
+        "do_not_notify": "Non notificare",
+        "hide_more_info": "Nascondi informazioni ulteriori",
+        "duplicate_messages": "Messaggi Duplicati",
+        "as_text": "Come Testo",
+        "as_html": "Come HTML"
     },
     "tooltip": {
         "add_attachments": "Aggiungi allegati",
@@ -306,10 +310,22 @@
         "goto_folder": "VAI ALLA CARTELLA",
         "reset": "Ripristina",
         "preview_new_tab": "Clicca per l'anteprima in altra scheda",
-        "click_preview": "Clicca per visualizzare l'anteprima"
+        "click_preview": "Clicca per visualizzare l'anteprima",
+        "edit_anyway": "Modifica comunque"
     },
     "folder": {
+        "action": {
+            "restore": "Ripristina Cartella"
+        },
         "modal": {
+            "move": {
+                "body": {
+                    "message_restore": "Seleziona una cartella in cui ripristinare quella selezionata:"
+                }
+            },
+            "new": {
+                "name_exist_warning": "Nome già esistente"
+            },
             "edit": {
                 "footer": "Modifica",
                 "rename_warning": "Non puoi nominare una cartella come una di sistema.",
@@ -317,6 +333,14 @@
                 "retention_duration_warning": "Il periodo di ritenzione dev'essere un numero positivo",
                 "retention_message": "All'interno di questa cartella, per i messaggi che rientrano nel periodo di ritenzione, verrà chiesta conferma per la cancellazione",
                 "threshold_message": "In questa cartella, i messaggi più vecchi del limite consentito saranno soggetti a cancellazione automatica."
+            },
+            "delete": {
+                "body": {
+                    "message3": "Eliminando l'oggetto, i relativi contenuti saranno spostati nel cestino e la cartella non sarà più visibile."
+                }
+            },
+            "restore": {
+                "footer": "Ripristina"
             }
         }
     },
@@ -372,6 +396,7 @@
         "schedule_mail": "Sarà inviata il: {{date}} alle {{time}}"
     },
     "snackbar": {
+        "error": "Qualcosa è andato storto. riprova",
         "share_resend": "Invito condivisione inviato",
         "share_revoke": "Condivisione accesso revocata",
         "share_updated": "\"Diritti di accesso aggiornati\"",
@@ -528,6 +553,7 @@
             "below_deleted": "Seleziona il messaggio sotto quello spostato o eliminato"
         }
     },
+    "read": "Letto",
     "search": {
         "attachment_note": "Cerca tutte le e-mail che hanno un allegato.",
         "unread": "Non letto",
