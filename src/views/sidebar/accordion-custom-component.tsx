@@ -266,6 +266,17 @@ const useFolderActions = (folder: AccordionFolder): Array<FolderActionsProps> =>
 						true
 					);
 				}
+			},
+			{
+				id: FolderActionsType.MARK_ALL_READ,
+				icon: 'EmailReadOutline',
+				label: t('label.mark_all_as_read', 'Mark all as read'),
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+					if (e) {
+						e.stopPropagation();
+						dispatch(folderAction({ folder: folder.folder, op: 'read' }));
+					}
+				}
 			}
 		],
 		[activeGrant, createModal, dispatch, folder, goBack]

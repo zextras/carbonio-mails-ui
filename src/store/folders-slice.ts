@@ -119,6 +119,9 @@ function folderActionPending(state: FoldersStateType, { meta }: any): void {
 		case '!grant': {
 			break;
 		}
+		case 'read': {
+			break;
+		}
 		case 'delete':
 			removeFoldersFromStore(state, [folder.id]);
 			break;

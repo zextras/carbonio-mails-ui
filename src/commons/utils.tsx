@@ -77,7 +77,8 @@ export enum FolderActionsType {
 	EMPTY = 'empty',
 	REMOVE_FROM_LIST = 'removeFromList',
 	SHARES_INFO = 'sharesInfo',
-	SHARE = 'share'
+	SHARE = 'share',
+	MARK_ALL_READ = 'share'
 }
 
 // eslint-disable-next-line no-shadow
