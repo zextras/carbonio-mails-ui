@@ -38,7 +38,7 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions }) => {
 		return map(accordions, (item) => ({ ...item, background: 'gray4' }));
 	}, [accordions]);
 	return (
-		<Container orientation="vertical" height="fit">
+		<Container orientation="vertical" height="fit" width="fill">
 			<SidebarAccordionMui accordions={accordionsWithFindShare} folderId={folderId} />
 			<Accordion items={[tagsAccordionItems]} />
 		</Container>

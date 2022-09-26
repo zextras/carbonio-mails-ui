@@ -9,6 +9,8 @@
 /.idea/workspace.xml
 /.idea/compiler.xml
 /e2e/output/
+/.idea
+.idea
 .idea/jsLibraryMappings.xml
 /junit.xml
 /coverage/cobertura-coverage.xml
