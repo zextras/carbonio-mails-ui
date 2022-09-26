@@ -24,6 +24,7 @@ module.exports = {
 		}
 	],
 	rules: {
+		'no-console': ['error', { allow: ['error', 'warn'] }]
 		// 'notice/notice': [
 		// 	'error',
 		// 	{

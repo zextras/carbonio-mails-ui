@@ -3,32 +3,41 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getTags } from '@zextras/carbonio-shell-ui';
-import { filter, find, isNil, map, omitBy } from 'lodash';
+import { Tags } from '@zextras/carbonio-shell-ui';
+import { filter, find, isNil, map } from 'lodash';
+import { omitBy } from '../commons/utils';
 import { Conversation, SoapIncompleteMessage, SoapConversation } from '../types';
 import { normalizeParticipantsFromSoap } from './normalize-message';
 
-export const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
-	const tags = getTags();
-	return map(names?.split(','), (name) => find(tags, { name })?.id);
-};
-
+export const getTagIdsFromName = (
+	names: string | undefined,
+	tags?: Tags
+): Array<string | undefined> => map(names?.split(','), (name) => find(tags, { name })?.id);
 export const getTagIds = (
 	t: string | undefined,
-	tn: string | undefined
+	tn: string | undefined,
+	tags?: Tags
 ): Array<string | undefined> => {
 	if (!isNil(t)) {
 		return filter(t.split(','), (tag) => tag !== '');
 	}
 	if (!isNil(tn)) {
-		return getTagIdsFromName(tn);
+		return getTagIdsFromName(tn, tags);
 	}
 	return [];
 };
-export const normalizeConversation = (
-	c: SoapConversation,
-	m?: Array<SoapIncompleteMessage>
-): Partial<Conversation> => {
+
+export type NormalizeConversationProps = {
+	c: SoapConversation;
+	tags: Tags;
+	m?: Array<SoapIncompleteMessage>;
+};
+
+export const normalizeConversation = ({
+	c,
+	m,
+	tags
+}: NormalizeConversationProps): Partial<Conversation> => {
 	const filteredMsgs = c?.m ?? filter(m ?? [], ['cid', c?.id]);
 	const messages = filteredMsgs?.length
 		? map(filteredMsgs, (msg) => ({
@@ -40,7 +49,7 @@ export const normalizeConversation = (
 
 	return omitBy(
 		{
-			tags: getTagIds(c.t, c.tn),
+			tags: getTagIds(c.t, c.tn, tags),
 			id: c.id,
 			date: c.d,
 			msgCount: c.n,

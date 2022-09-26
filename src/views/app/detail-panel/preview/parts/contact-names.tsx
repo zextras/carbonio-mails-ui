@@ -9,7 +9,6 @@ import React, { FC, ReactElement, useLayoutEffect, useRef, useState } from 'reac
 import styled from 'styled-components';
 import { Row, Tooltip, Text } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { useTranslation } from 'react-i18next';
 
 import { participantToString } from '../../../../../commons/utils';
 import { Participant } from '../../../../../types';
@@ -30,7 +29,6 @@ const ContactName: FC<{
 	label: string;
 }> = ({ showMoreCB, showOverflow, contacts, label }): ReactElement => {
 	const accounts = useUserAccounts();
-	const [t] = useTranslation();
 	const toRef = useRef<HTMLInputElement>(null);
 	const [isOverflow, setIsOverflow] = useState(false);
 	useLayoutEffect(() => {
@@ -67,7 +65,7 @@ const ContactName: FC<{
 				{map(contacts, (contact) => (
 					<Tooltip label={contact.address} key={contact.address}>
 						<ContactSubText color="secondary" size="small">
-							{capitalize(participantToString(contact, t, accounts))}
+							{capitalize(participantToString(contact, accounts))}
 						</ContactSubText>
 					</Tooltip>
 				))}

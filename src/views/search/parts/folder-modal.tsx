@@ -29,7 +29,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 import ModalFooter from '../../sidebar/commons/modal-footer';
-import { ModalHeader } from '../../sidebar/commons/modal-header';
+import ModalHeader from '../../sidebar/commons/modal-header';
 import { FolderType } from '../../../types';
 import { getFolderIconColor, getFolderTranslatedName } from '../../sidebar/utils';
 import { FOLDER_VIEW } from '../../../constants';
@@ -66,13 +66,6 @@ const CustomComponent: FC<{ item: any }> = ({ item }): ReactElement => (
 	</FittedRow>
 );
 
-type CustomComponent = {
-	CustomComponent: ReactElement;
-	divider: boolean;
-	background: string | undefined;
-	onClick: () => void;
-	items: Array<any>;
-};
 const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { open, onClose, setFolder } = compProps;
 

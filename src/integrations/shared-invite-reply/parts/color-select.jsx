@@ -5,7 +5,7 @@
  */
 import React, { useMemo } from 'react';
 import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
-import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { ColorContainer, Square, TextUpperCase } from './styled-components';
 
 const LabelFactory = ({ selected, label, open, focus }) => (
@@ -45,28 +45,28 @@ const LabelFactory = ({ selected, label, open, focus }) => (
 	</ColorContainer>
 );
 
-const getStatusItems = (t) =>
-	ZIMBRA_STANDARD_COLORS.map((el, index) => ({
-		label: t(el.zLabel),
-		value: index.toString(),
-		customComponent: (
-			<Container
-				width="100%"
-				takeAvailableSpace
-				mainAlignment="space-between"
-				orientation="horizontal"
-				height="fit"
-			>
-				<Padding left="small">
-					<TextUpperCase>{t(el.zLabel)}</TextUpperCase>
-				</Padding>
-				<Square color={el.hex} />
-			</Container>
-		)
-	}));
-
-export default function ColorSelect({ t, onChange, defaultColor = 0, label }) {
-	const colors = useMemo(() => getStatusItems(t), [t]);
+export default function ColorSelect({ onChange, defaultColor = 0, label }) {
+	const colors = useMemo(
+		() =>
+			ZIMBRA_STANDARD_COLORS.map((el, index) => ({
+				label: t(el.zLabel),
+				value: index.toString(),
+				customComponent: (
+					<Container
+						width="100%"
+						mainAlignment="space-between"
+						orientation="horizontal"
+						height="fit"
+					>
+						<Padding left="small">
+							<TextUpperCase>{t(el.zLabel)}</TextUpperCase>
+						</Padding>
+						<Square color={el.hex} />
+					</Container>
+				)
+			})),
+		[]
+	);
 	const defaultSelection = useMemo(() => colors[defaultColor], [colors, defaultColor]);
 	return (
 		<Select

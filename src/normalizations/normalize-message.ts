@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getTags } from '@zextras/carbonio-shell-ui';
-import { filter, find, isNil, map, omitBy, reduce } from 'lodash';
+import { filter, find, isNil, map, reduce, omitBy } from 'lodash';
 import { ParticipantRole } from '../commons/utils';
 import {
 	IncompleteMessage,
@@ -131,7 +131,7 @@ export const getTagIds = (
 };
 export const normalizeMailMessageFromSoap = (
 	m: SoapIncompleteMessage,
-	isComplete: boolean
+	isComplete?: boolean
 ): IncompleteMessage => <IncompleteMessage>omitBy(
 		{
 			conversation: m.cid,

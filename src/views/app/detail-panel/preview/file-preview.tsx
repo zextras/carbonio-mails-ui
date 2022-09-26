@@ -17,7 +17,7 @@ export const humanFileSize = (inputSize: number): string => {
 	return `${(inputSize / 1024 ** i).toFixed(2).toString()} ${['B', 'KB', 'MB', 'GB', 'TB'][i]}`;
 };
 
-export const previewType = (contentType: string): string | undefined => {
+export const previewType = (contentType: string): 'image' | 'pdf' | undefined => {
 	if (contentType?.startsWith('image') && !contentType?.includes('photoshop')) return 'image';
 	if (
 		contentType?.endsWith('pdf') ||

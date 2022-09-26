@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { Folder, soapFetch } from '@zextras/carbonio-shell-ui';
 import { isEmpty, isNil, omitBy } from 'lodash';
 import { DataProps, FolderType } from '../../types';
 
 type FolderActionProps = {
-	folder: FolderType | DataProps;
+	folder: FolderType | DataProps | Omit<Folder, 'parent'>;
 	color?: number;
 	zid?: string;
 	op: string;

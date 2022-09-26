@@ -229,11 +229,11 @@ function deleteAllAttachmentsFulfilled(state: EditorsStateType, action: any): vo
 
 function updateEditorReducer(
 	state: EditorsStateType,
-	{ payload }: { payload: { editorId: string; data: MailsEditor } }
+	{ payload }: { payload: { editorId: string | undefined; data: Partial<MailsEditor> } }
 ): void {
-	if (state.editors[payload.editorId]) {
-		state.editors[payload.editorId] = {
-			...state.editors[payload.editorId],
+	if (payload.editorId && state.editors[payload?.editorId]) {
+		state.editors[payload?.editorId] = {
+			...state.editors[payload?.editorId],
 			...payload.data
 		};
 	}
@@ -279,7 +279,7 @@ export const editorsSlice = createSlice({
 	}
 });
 
-export const { createEditor, closeEditor, updateEditor, closeAllEditors } = editorsSlice.actions;
+export const { createEditor, closeEditor, updateEditor } = editorsSlice.actions;
 
 export const editorSliceReducer = editorsSlice.reducer;
 

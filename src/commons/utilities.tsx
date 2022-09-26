@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { isNil } from 'lodash';
+import { EditorAttachmentFiles } from '../types';
 
 const FileExtensionRegex = /^.+\.([^.]+)$/;
 
@@ -16,11 +17,14 @@ export const calcColor = (label: string, theme: unknown): string => {
 	// @ts-ignore
 	return theme.avatarColors[`avatar_${(sum % 50) + 1}`];
 };
-type FileType = {
-	filename: string;
-	contentType: string;
-};
-export const getFileExtension = (file: FileType): string => {
+// type FileType = {
+// 	filename: string;
+// 	contentType: string;
+// 	disposition: 'attachment' | 'inline';
+// 	name: string;
+// 	size: number;
+// };
+export const getFileExtension = (file: EditorAttachmentFiles): string => {
 	if (isNil(FileExtensionRegex.exec(file.filename))) {
 		switch (file.contentType) {
 			case 'text/html':

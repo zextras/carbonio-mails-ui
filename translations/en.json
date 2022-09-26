@@ -205,6 +205,7 @@
         "spam": "Spam",
         "trash": "Trash"
     },
+    "go_back": "Go Back",
     "header": {
         "attention": "Attention",
         "delete_email": "Delete e-mail",
@@ -229,6 +230,7 @@
         "always_allow_domain": "Always allow from <strong>{{domain}}</strong> domain",
         "any": "any",
         "app_name": "Mails",
+        "arrival_notifications": "Arrival Notifications",
         "as_html": "As HTML",
         "as_text": "As Text",
         "attachement_unknown": "Unknown <{{mimeType}}>",
@@ -271,9 +273,10 @@
         "download_plural": "Download all",
         "draft": "Draft",
         "draft_folder": "[DRAFT]",
+        "duplicate_messages": "Duplicate Messages",
         "edit": "Edit",
         "edit_access": "Edit {{name}}'s access",
-        "edit_folder_properties": "",
+        "edit_folder_properties": "Edit {{name}} properties",
         "edit_tag": "Edit Tag",
         "edit_tag_name": "Edit \"{{name}}\" tag",
         "email_perm_deleted": "E-mail permanently deleted",
@@ -315,8 +318,10 @@
         "mail_settings": "Mails settings",
         "mark_all_as_read": "Mark all as read",
         "mark_as_important": "Mark as important",
-        "mark_as_un_important": "Mark as un important",
+        "mark_as_un_important": "Mark as not important",
         "me": "Me",
+        "message_arrival": "Message Arrival",
+        "message_from_me": "Messages from me",
         "messages": "Messages",
         "move": "Move",
         "new_email": "New E-mail",
@@ -336,13 +341,15 @@
         "preview": "Preview",
         "private": "Private",
         "read": "Read",
+        "read_receipt": "Read Receipt",
         "read_receipt_req": "Read receipt required",
         "read_receipt_sent": "A read receipt was sent for this message",
+        "read_reciept": "Read Reciept",
         "receive_message": "Receiving Messages",
         "received_from_address": "Received from (address)",
         "remove": "Remove",
         "remove_from_this_list": "Remove from this list",
-        "remove_plural": "",
+        "remove_plural": "Remove all",
         "remove_request_receipt": "Remove read receipt request",
         "replied": "Replied",
         "request_receipt": "Request read receipt",
@@ -480,7 +487,7 @@
                 "no_attachments": "You didn’t attach any files.",
                 "no_subject": "Email subject is empty.",
                 "no_subject_no_attachments": "Email subject is empty and you didn’t attach any files.",
-                "second": "Do you still want to send the email?"
+                "second": "Do you want to send the email anyway?"
             }
         },
         "new_email": "New e-mail",
@@ -530,6 +537,7 @@
             "message1": "Do you want to keep this draft or delete it?"
         }
     },
+    "new_folder": "New Folder",
     "notification": {
         "new_message": "New Message",
         "no_content": "Message without content"

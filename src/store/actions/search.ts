@@ -6,7 +6,7 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["conversation"] }] */
 
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { keyBy, map, reduce } from 'lodash';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
@@ -48,10 +48,10 @@ export const search = createAsyncThunk<
 			offset,
 			types
 		});
-
+		const tags = getTags();
 		if (types === 'conversation') {
 			const conversations = map(result?.c ?? [], (obj) =>
-				normalizeConversation(obj)
+				normalizeConversation({ c: obj, tags })
 			) as unknown as Array<Conversation>;
 			return {
 				conversations: keyBy(conversations, 'id'),

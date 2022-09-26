@@ -7,7 +7,7 @@ import { find, isEqual, orderBy, reduce, some } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { getTags, Tag, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { getFolder, getTags, Tag, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import { Conversation, StateType } from '../types';
@@ -22,7 +22,7 @@ export const useConversationListItems = (): Array<Conversation> => {
 	const dispatch = useDispatch();
 	const folderStatus = useSelector((state) => selectFolderSearchStatus(<StateType>state, folderId));
 	const conversations = useSelector(selectConversationsArray);
-	const folder = useSelector(selectFolder(folderId));
+	const folder = getFolder(folderId);
 
 	/* NOTE: Need to comment out when need to sort as per the configured sort order */
 	// const { zimbraPrefSortOrder } = useUserSettings()?.prefs as Record<string, string>;
@@ -39,9 +39,22 @@ export const useConversationListItems = (): Array<Conversation> => {
 	// 	[conversations, sorting]
 	// );
 
+	const filteredConversations = useMemo(
+		() =>
+			reduce(
+				conversations,
+				(acc, v) =>
+					some(v.messages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id])
+						? [...acc, v]
+						: acc,
+				[] as Array<Conversation>
+			),
+		[conversations, folder?.rid, folder?.zid, folder?.id]
+	);
+
 	const sortedConversations = useMemo(
-		() => orderBy(conversations, 'date', 'desc'),
-		[conversations]
+		() => orderBy(filteredConversations, 'date', 'desc'),
+		[filteredConversations]
 	);
 
 	useEffect(() => {
@@ -50,16 +63,5 @@ export const useConversationListItems = (): Array<Conversation> => {
 		}
 	}, [dispatch, folderId, folderStatus]);
 
-	return useMemo(
-		() =>
-			reduce(
-				sortedConversations,
-				(acc, v) =>
-					some(v.messages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id])
-						? [...acc, v]
-						: acc,
-				[] as Array<Conversation>
-			),
-		[sortedConversations, folder?.rid, folder?.zid, folder?.id]
-	);
+	return sortedConversations;
 };
