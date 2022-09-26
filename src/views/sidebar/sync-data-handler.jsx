@@ -37,10 +37,14 @@ import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-mes
 import { extractFolders } from './utils';
 import { MAILS_ROUTE } from '../../constants';
 import {
+	handleNotifyCreatedSearchConversations,
+	handleNotifyDeletedSearchConversations,
+	handleNotifyModifiedSearchConversations,
 	handleAddMessagesInSearchConversation,
 	handleCreatedMessagesInSearchConversation,
 	handleDeletedMessagesInSearchConversation,
-	handleModifiedMessagesInSearchConversation
+	handleModifiedMessagesInSearchConversation,
+	handleDeletedSearchMessages
 } from '../../store/searches-slice';
 
 const InboxBadgeUpdater = () => {
@@ -108,6 +112,7 @@ export const SyncDataHandler = () => {
 									normalizeConversation(i, notify.created.m)
 								);
 								dispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));
+								dispatch(handleNotifyCreatedSearchConversations(keyBy(conversations, 'id')));
 							}
 							if (notify.created.m) {
 								dispatch(handleCreatedMessages({ m: notify.created.m }));
@@ -127,6 +132,8 @@ export const SyncDataHandler = () => {
 							if (notify.modified.c) {
 								const conversations = map(notify.modified.c, normalizeConversation);
 								dispatch(handleNotifyModifiedConversations(keyBy(conversations, 'id')));
+								dispatch(handleNotifyModifiedSearchConversations(keyBy(conversations, 'id')));
+								//	dispatch(handleNotifyDeletedSearchConversations(keyBy(conversations, 'id')));
 							}
 							if (notify.modified.m) {
 								const messages = map(notify.modified.m, (obj) =>
@@ -171,7 +178,9 @@ export const SyncDataHandler = () => {
 						if (notify.deleted) {
 							dispatch(handleDeletedFolders(notify.deleted));
 							dispatch(handleNotifyDeletedConversations(notify.deleted));
+							dispatch(handleNotifyDeletedSearchConversations(notify.deleted));
 							dispatch(handleDeletedMessages(notify.deleted));
+							dispatch(handleDeletedSearchMessages(notify.deleted));
 							dispatch(handleDeletedMessagesInConversation(notify.deleted));
 							dispatch(handleDeletedMessagesInSearchConversation(notify.deleted));
 						}

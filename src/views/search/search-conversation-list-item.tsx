@@ -76,8 +76,6 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 		[settings]
 	);
 
-	const conv = useSelector((state) => selectConversation(state, item?.id));
-	if (active) console.log('vvvv:', { conv, item });
 	const _onClick = useCallback(() => {
 		const path = head(split(pathname, '/folder'));
 		// dispatch({
@@ -170,7 +168,10 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 
 	const msgToDisplayCount = useMemo(() => {
 		const result = !searchInTrash
-			? filter(item?.messages, (msg) => msg.parent !== FOLDERS.TRASH)?.length
+			? filter(
+					item?.messages,
+					(msg) => msg.parent !== FOLDERS.TRASH || msg.parent !== FOLDERS.DRAFT
+			  )?.length
 			: item?.messages?.length;
 		return messagesToRender.length !== 0 ? messagesToRender.length : result;
 	}, [item?.messages, messagesToRender.length, searchInTrash]);

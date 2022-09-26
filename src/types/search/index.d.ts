@@ -10,8 +10,8 @@ import { MailMessage } from '../messages';
 import { SearchesStateType } from '../state';
 
 export type SearchResults = {
-	messages?: Array<MailMessage>;
-	conversations?: Array<Conversation>;
+	messages?: Record<string, MailMessage>;
+	conversations?: Record<string, Conversation>;
 	more: boolean;
 	offset: number;
 	sortBy: 'dateDesc' | 'dateAsc';

@@ -15,7 +15,7 @@ import SearchConversationList from './search-conversation-list';
 import AdvancedFilterModal from './advance-filter-modal';
 import { findIconFromChip } from './parts/use-find-icon';
 import { search } from '../../store/actions/search';
-import { reloadSelector, selectSearches, setReload } from '../../store/searches-slice';
+import { selectSearches } from '../../store/searches-slice';
 import SearchMessageList from './search-message-list';
 import { FolderType, SearchResults } from '../../types';
 import { selectFolders } from '../../store/folders-slice';
@@ -32,9 +32,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const settings = useUserSettings();
 	const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
 	const folders = useSelector(selectFolders);
-	const isReload = useSelector(reloadSelector);
 
-	console.log('abc:', { isReload });
 	const searchInFolders = useMemo(
 		() =>
 			reduce(
@@ -58,7 +56,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const emptySearchResults = useMemo(
 		() =>
 			({
-				conversations: [],
+				conversations: {},
 				more: false,
 				offset: 0,
 				sortBy: 'dateDesc',
@@ -74,7 +72,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(true);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 	const searchResults = useSelector(selectSearches);
-	console.log('vvvvv:', { searchResults });
+
 	const resultLabel = useMemo(() => {
 		if (searchResults.status === 'fulfilled') {
 			return t('label.results_for', 'Results for: ');
@@ -92,7 +90,6 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 				: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
 		[isSharedFolderIncluded, searchInFolders.length, query, foldersToSearchInQuery]
 	);
-	console.log('mmm:', { isReload });
 
 	const searchQuery = useCallback(
 		(queryString: string, reset: boolean) => {
@@ -105,10 +102,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 					offset: reset ? 0 : searchResults.offset,
 					recip: '0'
 				})
-			).then((res) => {
-				console.log('mmmm:', { res });
-				dispatch(setReload(false));
-			});
+			);
 		},
 		[dispatch, isMessageView, searchResults.offset]
 	);
@@ -161,10 +155,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	}, [searchResults.status]);
 
 	useEffect(() => {
-		if (
-			(query && query.length > 0 && queryToString !== searchResults.query && !isInvalidQuery) ||
-			isReload
-		) {
+		if (query && query.length > 0 && queryToString !== searchResults.query && !isInvalidQuery) {
 			setFilterCount(query.length);
 			searchQuery(queryToString, true);
 		}
@@ -172,16 +163,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			setFilterCount(0);
 			setIsInvalidQuery(false);
 		}
-	}, [
-		query,
-		queryArray,
-		t,
-		isInvalidQuery,
-		searchQuery,
-		searchResults.query,
-		queryToString,
-		isReload
-	]);
+	}, [query, queryArray, t, isInvalidQuery, searchQuery, searchResults.query, queryToString]);
 
 	const { path } = useRouteMatch();
 

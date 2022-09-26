@@ -8,7 +8,7 @@ import { Container, List, Padding, Text } from '@zextras/carbonio-design-system'
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { isEmpty } from 'lodash';
+import { filter, isEmpty, sortBy } from 'lodash';
 import SearchConversationListItem from './search-conversation-list-item';
 import ShimmerList from './shimmer-list';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
@@ -64,6 +64,11 @@ const SearchConversationList: FC<SearchListProps> = ({
 		return null;
 	}, [isInvalidQuery, searchResults.conversations, randomListIndex, t]);
 
+	const conversationList = useMemo(
+		() => sortBy(filter(Object.values(searchResults?.conversations ?? [])), 'date').reverse(),
+		[searchResults?.conversations]
+	);
+
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
 			<AdvancedFilterButton
@@ -87,7 +92,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 			{!isInvalidQuery && !isEmpty(searchResults?.conversations) && !loading && (
 				<Container style={{ overflowY: 'auto' }} mainAlignment="flex-start">
 					<List
-						items={searchResults.conversations ?? []}
+						items={conversationList}
 						ItemComponent={SearchConversationListItem}
 						onListBottom={canLoadMore ? loadMore : undefined}
 						active={itemId}
