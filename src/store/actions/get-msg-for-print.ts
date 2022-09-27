@@ -5,18 +5,24 @@
  */
 
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
+import { isNull, map, omitBy } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { GetMsgForPrintParameter, MailMessage } from '../../types';
 
-export const getMsgsForPrint = async ({ ids }: GetMsgForPrintParameter): Promise<any> => {
+export const getMsgsForPrint = async ({ ids, part }: GetMsgForPrintParameter): Promise<any> => {
 	const { GetMsgResponse } = await soapFetch('Batch', {
 		GetMsgRequest: map(ids, (id) => ({
-			m: {
-				html: 1,
-				id,
-				needExp: 1
-			},
+			m: omitBy(
+				{
+					html: 1,
+					id,
+					needExp: 1,
+					max: 250000,
+					part,
+					read: 1
+				},
+				isNull
+			),
 			_jsns: 'urn:zimbraMail'
 		})),
 		_jsns: 'urn:zimbra'
