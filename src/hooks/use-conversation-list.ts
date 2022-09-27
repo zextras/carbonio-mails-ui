@@ -3,15 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { find, isEqual, orderBy, reduce, some } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { orderBy, reduce, some } from 'lodash';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { getFolder, getTags, Tag, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { getFolder } from '@zextras/carbonio-shell-ui';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import { Conversation, StateType } from '../types';
-import { selectFolder } from '../store/folders-slice';
 
 type RouteParams = {
 	folderId: string;

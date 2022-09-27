@@ -27,6 +27,8 @@ import {
 	MailMessage,
 	MailMessagePart
 } from '../../../../types';
+import { getMsgsForPrint } from '../../../../store/actions';
+import { getEMLContent, getErrorPage } from '../../../../commons/preview-eml';
 
 const AttachmentsActions = styled(Row)``;
 function findAttachments(parts: MailMessagePart[], acc: MailMessagePart[]): AttachmentPartType[] {
@@ -82,11 +84,14 @@ function getAttachmentsLink(
 			[
 				'text/csv',
 				'text/plain',
-				'application/vnd.ms-excel',
 				'application/msword',
+				'application/vnd.ms-excel',
+				'application/vnd.ms-powerpoint',
+				'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+				'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 				'application/vnd.oasis.opendocument.spreadsheet',
 				'application/vnd.oasis.opendocument.presentation',
-				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 				'application/vnd.oasis.opendocument.text'
 			],
 			attachmentType
@@ -155,6 +160,7 @@ const Attachment: FC<AttachmentType> = ({
 }) => {
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const extension = getFileExtension(att);
+
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
@@ -226,10 +232,37 @@ const Attachment: FC<AttachmentType> = ({
 		actionTarget
 	);
 
+	const showEMLPreview = useCallback(() => {
+		const conversations = map([message], (msg) => ({
+			conversation: msg.conversation,
+			subject: msg.subject
+		}));
+
+		const printWindow = window.open('', '_blank');
+		getMsgsForPrint({ ids: [message.id], part: att?.name })
+			.then((res) => {
+				const content = getEMLContent({
+					messages: res,
+					conversations,
+					isMsg: true
+				});
+				if (printWindow && printWindow.top && printWindow.document) {
+					printWindow.top.document.title = 'Carbonio';
+					printWindow.document.write(content);
+					printWindow.focus();
+				}
+			})
+			.catch(() => {
+				const errorContent = getErrorPage(t);
+				printWindow && printWindow.document.write(errorContent);
+			});
+	}, [att?.name, message]);
+
 	const preview = useCallback(
 		(ev) => {
 			ev.preventDefault();
 			const pType = previewType(att.contentType);
+
 			if (pType) {
 				createPreview({
 					src: link,
@@ -256,6 +289,8 @@ const Attachment: FC<AttachmentType> = ({
 					/** Size of the file, shown as info */
 					size: humanFileSize(att.size)
 				});
+			} else if (extension === 'EML') {
+				showEMLPreview();
 			} else if (inputRef2.current) {
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -263,7 +298,16 @@ const Attachment: FC<AttachmentType> = ({
 				inputRef2.current.click();
 			}
 		},
-		[att, createPreview, downloadAttachment, link]
+		[
+			att.contentType,
+			att.filename,
+			att.size,
+			createPreview,
+			downloadAttachment,
+			extension,
+			link,
+			showEMLPreview
+		]
 	);
 
 	return (
@@ -312,6 +356,7 @@ const Attachment: FC<AttachmentType> = ({
 							/>
 						</Tooltip>
 					)}
+
 					{/* <FilePreview att={att} link={link} /> */}
 					<Padding right="small">
 						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>

@@ -5,7 +5,6 @@
  */
 import React, {
 	useCallback,
-	useContext,
 	useEffect,
 	useLayoutEffect,
 	useMemo,
@@ -14,14 +13,9 @@ import React, {
 	FC,
 	SyntheticEvent
 } from 'react';
-import {
-	Button,
-	Catcher,
-	Container,
-	SnackbarManagerContext
-} from '@zextras/carbonio-design-system';
+import { Button, Catcher, Container, useModal } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
-import { throttle, filter, isNil } from 'lodash';
+import { throttle, filter, isNil, find, isEmpty } from 'lodash';
 import {
 	useUserSettings,
 	useBoardHooks,
@@ -29,11 +23,9 @@ import {
 	replaceHistory,
 	addBoard,
 	useBoard,
-	FOLDERS,
 	t
 } from '@zextras/carbonio-shell-ui';
 import { useForm } from 'react-hook-form';
-
 import moment from 'moment';
 import { useQueryParam } from '../../../../hooks/useQueryParam';
 import {
@@ -44,15 +36,15 @@ import {
 } from '../../../../store/editor-slice';
 import { ActionsType } from '../../../../commons/utils';
 import { selectMessages } from '../../../../store/messages-slice';
+import { StoreProvider } from '../../../../store/redux';
 import EditAttachmentsBlock from './edit-attachments-block';
 import { saveDraft } from '../../../../store/actions/save-draft';
 import { uploadAttachments } from '../../../../store/actions/upload-attachments';
 import { getMsg } from '../../../../store/actions';
 import DropZoneAttachment from './dropzone-attachment';
 import { MAILS_ROUTE } from '../../../../constants';
-
 import { addAttachments } from './edit-utils';
-import { RouteLeavingGuard } from './parts/nav-guard';
+import { DeleteDraftModal, RouteLeavingGuard } from './parts/nav-guard';
 import * as StyledComp from './parts/edit-view-styled-components';
 import { EditViewContext } from './parts/edit-view-context';
 import ParticipantsRow from './parts/participants-row';
@@ -60,7 +52,6 @@ import TextEditorContainer from './parts/text-editor-container';
 import EditViewHeader from './parts/edit-view-header';
 import WarningBanner from './parts/warning-banner';
 import SubjectRow from './parts/subject-row';
-import { moveMsgToTrash } from '../../../../ui-actions/message-actions';
 import { MailsEditor } from '../../../../types';
 
 let counter = 0;
@@ -81,7 +72,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 	const settings = useUserSettings();
 	const boardUtilities = useBoardHooks();
 	const board = useBoard<any>();
-	const createSnackbar = useContext(SnackbarManagerContext);
+	const createModal = useModal();
 	const [editor, setEditor] = useState<MailsEditor>();
 
 	const action = useQueryParam('action');
@@ -162,6 +153,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 		}
 	}, [activeMailId, dispatch, messages, updateEditorCb]);
 
+	const timeout = useMemo(() => (saveFirstDraft ? 2000 : 500), [saveFirstDraft]);
 	const throttledSaveToDraft = useCallback(
 		(data) => {
 			if (timer) clearTimeout(timer);
@@ -175,12 +167,14 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 					saveDraftCb(newData);
 					setDraftSavedAt(moment().format('HH:mm'));
 				}
-			}, 500);
+			}, timeout);
 
 			if (newTimer) setTimer(newTimer);
 		},
-		[editor, saveDraftCb, saveFirstDraft, timer]
+		[editor, saveDraftCb, saveFirstDraft, timeout, timer]
 	);
+
+	useEffect(() => () => clearTimeout(timer), [timer]);
 
 	const updateSubjectField = useMemo(
 		() =>
@@ -214,6 +208,35 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 			});
 		}
 	}, [editor?.subject, setHeader, action, boardUtilities]);
+
+	useEffect(() => {
+		if (!isEmpty(editors) && editorId) {
+			boardUtilities?.updateBoard({
+				onClose: () => {
+					const boardEditor = find(editors, ['editorId', editorId]);
+					if (boardEditor?.id ?? boardEditor?.did) {
+						const closeModal = createModal(
+							{
+								children: (
+									<StoreProvider>
+										<DeleteDraftModal
+											ids={[boardEditor.id ?? boardEditor?.did]}
+											onDelete={(): void => {
+												dispatch(closeEditor(editorId));
+											}}
+											onConfirm={(): void => closeModal()}
+											onClose={(): void => closeModal()}
+										/>
+									</StoreProvider>
+								)
+							},
+							true
+						);
+					}
+				}
+			});
+		}
+	}, [boardUtilities, createModal, dispatch, editorId, editors]);
 
 	useEffect(() => {
 		if (
@@ -383,17 +406,9 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 	return (
 		<>
 			<RouteLeavingGuard
-				when={showRouteGuard && !toggleAppBoard}
+				when={!saveFirstDraft && showRouteGuard && !toggleAppBoard}
+				id={editor.id}
 				onDeleteDraft={(): void => {
-					moveMsgToTrash({
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						ids: [editor?.id],
-						t,
-						dispatch,
-						createSnackbar,
-						folderId: FOLDERS.TRASH
-					})?.click();
 					dispatch(closeEditor(editorId));
 				}}
 			/>

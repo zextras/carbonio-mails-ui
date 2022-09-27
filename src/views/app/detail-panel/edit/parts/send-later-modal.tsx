@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
 import {
 	getBridgedFunctions,
@@ -18,6 +18,7 @@ import ModalHeader from '../../../../sidebar/commons/modal-header';
 import { saveDraft } from '../../../../../store/actions/save-draft';
 import { MailsEditor } from '../../../../../types';
 import DatePickerCustomComponent from './date-picker-custom-component';
+import { EditViewContext } from './edit-view-context';
 
 type SendLaterModalPropTypes = {
 	onClose: () => void;

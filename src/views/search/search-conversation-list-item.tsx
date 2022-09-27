@@ -35,7 +35,11 @@ import {
 } from '../app/folder-panel/lists-item/conversation-list-item';
 import { SenderName } from '../app/folder-panel/lists-item/sender-name';
 import { selectMessages } from '../../store/messages-slice';
-import { selectConversationExpandedStatus } from '../../store/conversations-slice';
+import {
+	selectConversation,
+	selectConversationExpandedStatus,
+	selectConversations
+} from '../../store/conversations-slice';
 import { searchConv } from '../../store/actions';
 import { StateType, MailMessage, SearchConversationListItemProps } from '../../types';
 
@@ -61,14 +65,11 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 		() => settings?.prefs?.zimbraPrefIncludeTrashInSearch === 'TRUE',
 		[settings]
 	);
+
 	const _onClick = useCallback(() => {
 		const path = head(split(pathname, '/folder'));
-		dispatch({
-			type: 'conversations/setCurrentFolder',
-			payload: parent
-		});
 		history.push(`${path}/folder/${parent}/conversation/${item.id}`);
-	}, [dispatch, history, item, parent, pathname]);
+	}, [history, item.id, parent, pathname]);
 	const subject = useMemo(
 		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
 		[item.subject]
@@ -153,7 +154,10 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 
 	const msgToDisplayCount = useMemo(() => {
 		const result = !searchInTrash
-			? filter(item?.messages, (msg) => msg.parent !== FOLDERS.TRASH)?.length
+			? filter(
+					item?.messages,
+					(msg) => msg.parent !== FOLDERS.TRASH || msg.parent !== FOLDERS.DRAFT
+			  )?.length
 			: item?.messages?.length;
 		return messagesToRender.length !== 0 ? messagesToRender.length : result;
 	}, [item?.messages, messagesToRender.length, searchInTrash]);

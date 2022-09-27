@@ -253,6 +253,9 @@ export function selectConversationsArray({ conversations }: StateType): Array<Co
 	return Object.values(conversations?.conversations ?? []);
 }
 
+export function selectConversation({ conversations }: StateType, id: string): Conversation {
+	return conversations?.conversations?.[id] ?? {};
+}
 export function selectFolderSearchStatus(
 	{ conversations }: StateType,
 	folderId: string
