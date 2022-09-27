@@ -9,7 +9,8 @@ import {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	Folder,
-	t
+	t,
+	replaceHistory
 } from '@zextras/carbonio-shell-ui';
 import { ModalManagerContext } from '@zextras/carbonio-design-system';
 import { startsWith } from 'lodash';
@@ -202,6 +203,17 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						},
 						true
 					);
+				}
+			},
+			{
+				id: FolderActionsType.MARK_ALL_READ,
+				icon: 'EmailReadOutline',
+				label: t('label.mark_all_as_read', 'Mark all as read'),
+				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+					if (e) {
+						e.stopPropagation();
+						dispatch(folderAction({ folder, op: 'read', l: folder.id }));
+					}
 				}
 			}
 		],

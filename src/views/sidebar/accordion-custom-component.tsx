@@ -55,6 +55,7 @@ export const DropOverlayContainer = styled(Container)<ContainerProps & { folder:
 	border: 4px solid #d5e3f6;
 	opacity: 0.4;
 `;
+
 const DropDenyOverlayContainer = styled(Container)<ContainerProps & { folder: Folder }>`
 	position: absolute;
 	width: calc(248px - ${(props): number => (props.folder.depth - 2) * 16}px);
@@ -64,6 +65,7 @@ const DropDenyOverlayContainer = styled(Container)<ContainerProps & { folder: Fo
 	border: 4px solid #d5e3f6;
 	opacity: 0.4;
 `;
+
 export type DragEnterAction =
 	| undefined
 	| {
