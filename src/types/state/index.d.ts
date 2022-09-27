@@ -52,8 +52,9 @@ export type ConversationsStateType = {
 export type SearchesMap = Record<string, Conversation>;
 
 export type SearchesStateType = {
-	conversations?: Array<Conversation>;
-	messages?: Array<Partial<MailMessage>>;
+	searchResults: any;
+	conversations?: Record<string, Conversation>;
+	messages?: Record<string, Partial<MailMessage>>;
 	more: boolean;
 	offset: number;
 	sortBy: 'dateDesc' | 'dateAsc';

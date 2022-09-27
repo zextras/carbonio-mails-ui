@@ -49,7 +49,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const emptySearchResults = useMemo(
 		() =>
 			({
-				conversations: [],
+				conversations: {},
 				more: false,
 				offset: 0,
 				sortBy: 'dateDesc',
@@ -135,7 +135,8 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		isInvalidQuery,
 		emptySearchResults,
 		query,
-		queryToString
+		queryToString,
+		dispatch
 	]);
 
 	useEffect(() => {
