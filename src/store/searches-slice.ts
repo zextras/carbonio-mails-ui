@@ -46,8 +46,8 @@ const fetchSearchesFulfilled = (
 ): void => {
 	if (meta.arg.query) {
 		state.status = meta.requestStatus;
-		state.conversations = payload?.conversations ?? [];
-		state.messages = payload?.messages ?? [];
+		state.conversations = payload?.conversations ?? {};
+		state.messages = payload?.messages ?? {};
 		state.more = payload?.hasMore === true;
 		state.offset = (meta?.arg.offset ?? 0) + 100;
 		state.sortBy = meta?.arg.sortBy ?? 'dateDesc';

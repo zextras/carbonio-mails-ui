@@ -68,10 +68,6 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 
 	const _onClick = useCallback(() => {
 		const path = head(split(pathname, '/folder'));
-		// dispatch({
-		// 	type: 'conversations/setCurrentFolder',
-		// 	payload: parent
-		// });
 		history.push(`${path}/folder/${parent}/conversation/${item.id}`);
 	}, [history, item.id, parent, pathname]);
 	const subject = useMemo(
