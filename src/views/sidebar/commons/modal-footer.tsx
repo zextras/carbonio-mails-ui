@@ -37,7 +37,12 @@ const ModalFooter: FC<ModalFooterProps> = ({
 		crossAlignment={crossAlignment}
 		padding={{ top: paddingTop }}
 	>
-		{showDivider && <Divider />}
+		{showDivider && (
+			<>
+				<Padding top="medium" />
+				<Divider />
+			</>
+		)}
 
 		<Container
 			orientation="horizontal"
