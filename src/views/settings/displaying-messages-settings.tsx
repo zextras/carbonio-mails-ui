@@ -11,7 +11,6 @@ import {
 	FormSubSection,
 	Select,
 	Input,
-	Checkbox,
 	RadioGroup,
 	Radio,
 	SelectItem
@@ -25,18 +24,7 @@ import {
 	ConversationSortingSettings
 } from './components/utils';
 import { displayingMessagesSubSection } from './subsections';
-
-type UpdateSettingsProps = {
-	target: {
-		name: string;
-		value: string;
-	};
-};
-
-type DisplayingMessagesSettingsProps = {
-	settingsObj: Record<string, string>;
-	updateSettings: (arg: UpdateSettingsProps) => void;
-};
+import { DisplayingMessagesSettingsProps } from '../../types';
 
 const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 	settingsObj,
@@ -144,7 +132,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					}}
 				/>
 			</Container>
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
+			{/* <Container crossAlignment="baseline" padding={{ all: 'small' }}>
 				<Heading title={t('settings.label.message_color', 'Message Color')} />
 				<Checkbox
 					label={t(
@@ -161,7 +149,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 						})
 					}
 				/>
-			</Container>
+			</Container> */}
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 				<Heading title={t('settings.label.visualization_options', 'Visualization Options')} />
 				<RadioGroup

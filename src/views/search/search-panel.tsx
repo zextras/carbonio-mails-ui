@@ -6,26 +6,19 @@
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useRouteMatch, Switch, Route } from 'react-router-dom';
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
-import { QueryChip } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import ConversationPreviewPanel from '../app/detail-panel/conversation-preview-panel';
 import MailEditPanel from '../app/detail-panel/mail-edit-panel';
 import { EmptyFieldMessages, EmptyListMessages } from './utils';
 import MessagePreviewPanel from '../app/detail-panel/message-preview-panel';
-import { SearchesStateType } from '../../types';
+import { SearchPanelProps } from '../../types';
 
 const generateRandomNumber = (): number => Math.floor(Math.random() * 3);
 
-type SearchPanelProps = {
-	searchResults: SearchesStateType;
-	query: Array<QueryChip>;
-};
-
 const SearchPanel: FC<SearchPanelProps> = ({ searchResults, query }) => {
 	const { path } = useRouteMatch();
-	const [t] = useTranslation();
-	const emptyListMessages = useMemo(() => EmptyListMessages(t), [t]);
-	const emptyFieldMessages = useMemo(() => EmptyFieldMessages(t), [t]);
+	const emptyListMessages = useMemo(() => EmptyListMessages(t), []);
+	const emptyFieldMessages = useMemo(() => EmptyFieldMessages(t), []);
 	const [randomIndex, setRandomIndex] = useState(0);
 	useEffect(() => {
 		const random = generateRandomNumber();

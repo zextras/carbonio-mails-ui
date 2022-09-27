@@ -1,6 +1,6 @@
 {
   "name": "carbonio-mails-ui",
-  "version": "0.1.32",
+  "version": "0.1.35",
   "description": "Mails module for Zextras Carbonio",
   "main": "src/app.jsx",
   "scripts": {
@@ -69,9 +69,13 @@
     "pinst": "2.1.6"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
+    "@mui/icons-material": "^5.10.2",
+    "@mui/material": "^5.10.2",
     "@reduxjs/toolkit": "1.6.2",
     "@zextras/carbonio-design-system": "^0.4.0",
-    "@zextras/carbonio-shell-ui": "0.4.34-devel.1662384028142",
+    "@zextras/carbonio-shell-ui": "0.4.34-devel.1662539020189",
     "@zextras/carbonio-ui-preview": "^0.2.0",
     "core-js": "3.19.1",
     "i18next": "^21.5.4",

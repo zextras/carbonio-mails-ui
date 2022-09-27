@@ -14,7 +14,7 @@ import {
 import moment from 'moment';
 import { Dispatch } from '@reduxjs/toolkit';
 import ModalFooter from '../../../../sidebar/commons/modal-footer';
-import { ModalHeader } from '../../../../sidebar/commons/modal-header';
+import ModalHeader from '../../../../sidebar/commons/modal-header';
 import { saveDraft } from '../../../../../store/actions/save-draft';
 import { MailsEditor } from '../../../../../types';
 import DatePickerCustomComponent from './date-picker-custom-component';
@@ -25,13 +25,20 @@ type SendLaterModalPropTypes = {
 	dispatch: Dispatch;
 	editor: MailsEditor;
 	closeBoard: () => void;
+	folderId?: string;
+	setShowRouteGuard: (arg: boolean) => void;
 };
-const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor, closeBoard }) => {
+const SendLaterModal: FC<SendLaterModalPropTypes> = ({
+	onClose,
+	dispatch,
+	editor,
+	closeBoard,
+	folderId,
+	setShowRouteGuard
+}) => {
 	const [time, setTime] = useState();
 	const bridgedFn = getBridgedFunctions();
 
-	const { folderId, action } = useContext(EditViewContext);
-	console.log('mnop:', { folderId, action });
 	const modalTitle = useMemo(() => t('label.send_later', 'Send Later'), []);
 	const datePickerLabel = useMemo(() => t('label.select_date_time', 'Select date and time'), []);
 
@@ -61,7 +68,8 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 				});
 
 				onClose();
-				closeBoard();
+				closeBoard && closeBoard();
+				setShowRouteGuard(false);
 				setTimeout(() => {
 					if (folderId) {
 						replaceHistory(`/folder/${folderId}/`);
@@ -69,7 +77,7 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({ onClose, dispatch, editor
 				}, 10);
 			}
 		});
-	}, [bridgedFn, closeBoard, dispatch, editor, folderId, onClose, prefs, time]);
+	}, [bridgedFn, closeBoard, dispatch, editor, folderId, onClose, prefs, setShowRouteGuard, time]);
 
 	const minTime = useMemo(() => {
 		if (moment(time).isBefore(moment(), 'hour') || !time) {

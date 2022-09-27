@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { filter, find, forEach, map, merge, omit, reduce, some, last, sortBy } from 'lodash';
-import { ConvMessage, ConversationsStateType, Payload, SearchesStateType } from '../types';
+
+import { filter, find, forEach, map, merge, omit, reduce, some } from 'lodash';
+import { ConvMessage, Payload, SearchesStateType } from '../types';
 
 export const handleCreatedConversationsReducer = (
 	state: SearchesStateType,
@@ -43,17 +43,11 @@ export const handleCreatedMessagesInConversationsReducer = (
 				? conversation.messages
 				: [...conversation.messages, { id: msg.id, parent: msg.l, date: Number(msg.d) }];
 
-			// const date =
-			// 	msg.l === FOLDERS.DRAFTS
-			// 		? conversation.date
-			// 		: last(sortBy(filter(messages, { parent: state.currentFolder }), 'date'))?.date;
-
 			const conv = {
 				[msg.cid]: {
 					...conversation,
 					messages,
 					fragment: msg?.fr
-					// date
 				}
 			};
 
@@ -61,38 +55,6 @@ export const handleCreatedMessagesInConversationsReducer = (
 		}
 	});
 };
-// export const handleCreatedMessagesInSearchConvReducer = (
-// 	state: ConversationsStateType,
-// 	{ payload }: Payload
-// ): void => {
-// 	const { m } = payload;
-
-// 	forEach(m, (msg) => {
-// 		const conversation = state.conversations?.[msg.cid];
-
-// 		if (msg?.cid && msg?.id && msg?.l && conversation) {
-// 			const messages = find(conversation.messages, ['id', msg.id])
-// 				? conversation.messages
-// 				: [...conversation.messages, { id: msg.id, parent: msg.l, date: Number(msg.d) }];
-
-// 			const date =
-// 				msg.l === FOLDERS.DRAFTS
-// 					? conversation.date
-// 					: last(sortBy(filter(messages, { parent: state.currentFolder }), 'date'))?.date;
-
-// 			const conv = {
-// 				[msg.cid]: {
-// 					...conversation,
-// 					messages,
-// 					fragment: msg?.fr,
-// 					date
-// 				}
-// 			};
-
-// 			state.conversations = { ...state.conversations, ...conv };
-// 		}
-// 	});
-// };
 
 export const handleModifiedMessagesInConversationReducer = (
 	state: SearchesStateType,
@@ -119,24 +81,6 @@ export const handleModifiedMessagesInConversationReducer = (
 	);
 };
 
-// export const handleAddMessagesInConversationReducer = (
-// 	state: ConversationsStateType,
-// 	{ payload }: Payload
-// ): void => {
-// 	console.log('vvvv: msgConv', { payload: cloneDeep(payload) });
-// 	forEach(payload, (msg) => {
-// 		const addMsg = omit(msg, ['conversation']) as ConvMessage;
-// 		console.log('vvvv: msgConv', { addMsg });
-// 		if (msg?.conversation && state?.conversations?.[msg?.conversation]) {
-// 			console.log('vvvv: msgConv hello');
-// 			state.conversations[msg.conversation] = {
-// 				...state.conversations[msg.conversation],
-// 				messages: [...state.conversations[msg.conversation].messages, addMsg]
-// 			};
-
-// 		}
-// 	});
-// };
 export const handleAddMessagesInConversationReducer = (
 	state: SearchesStateType,
 	{ payload }: Payload

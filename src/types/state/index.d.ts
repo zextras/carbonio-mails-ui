@@ -80,5 +80,5 @@ export type ConversationsFolderStatus =
 export type Status = 'pending' | 'error' | 'complete';
 
 export type Payload = {
-	payload: { m: Array<SoapIncompleteMessage>; t: any };
+	payload: { m: Array<SoapIncompleteMessage>; t?: any };
 };

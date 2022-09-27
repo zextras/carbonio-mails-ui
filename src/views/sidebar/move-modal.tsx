@@ -3,140 +3,26 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	ChangeEvent,
-	FC,
-	useCallback,
-	useContext,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
-import {
-	Input,
-	Text,
-	Container,
-	Accordion,
-	Padding,
-	Button,
-	SnackbarManagerContext
-} from '@zextras/carbonio-design-system';
-import { cloneDeep, filter, noop, startsWith } from 'lodash';
+import { isNil, some } from 'lodash';
+import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
+import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
-import {
-	AccordionFolder,
-	Folder,
-	FOLDERS,
-	useFoldersAccordionByView,
-	useUserAccount,
-	t
-} from '@zextras/carbonio-shell-ui';
-import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import { Folder, FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { folderAction } from '../../store/actions/folder-action';
+import { FolderSelector } from './commons/folder-selector';
 import ModalFooter from './commons/modal-footer';
-import { ModalHeader } from './commons/modal-header';
-import { FOLDER_VIEW } from '../../constants';
-import ModalAccordionCustomComponent from './parts/edit/modal-accordion-custom-component';
+import ModalHeader from './commons/modal-header';
 import { ModalProps } from '../../types';
-import { getFolderTranslatedName } from './utils';
-
-const ContainerEl = styled(Container)`
-	overflow-y: auto;
-	display: block;
-`;
 
 export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const dispatch = useDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const folders = useFoldersAccordionByView(FOLDER_VIEW.message, null);
-	const [searchString, setSearchString] = useState('');
-	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder.folder);
-	const { folderId } = useParams<{ folderId: string }>();
-	const accountName = useUserAccount().name;
-	const accordionRef = useRef<HTMLDivElement>();
-	const [accordionWidth, setAccordionWidth] = useState<number>();
-
-	useLayoutEffect(() => {
-		const calculateAvailableWidth = (): void => {
-			if (accordionRef && accordionRef.current) {
-				setAccordionWidth(accordionRef?.current?.clientWidth);
-			}
-		};
-		window.addEventListener('resize', calculateAvailableWidth);
-		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
-	}, [accordionRef]);
-
-	const flattenFolders = useCallback(
-		(arr: Array<AccordionFolder>): Array<AccordionFolder> => {
-			const result: Array<AccordionFolder> = [];
-			arr.forEach((item) => {
-				const { items } = item;
-				if (
-					item.folder.id !== FOLDERS.TRASH &&
-					item.folder.id !== FOLDERS.SPAM &&
-					!startsWith(item.folder.absFolderPath, '/Trash')
-				)
-					result.push({
-						...item,
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						CustomComponent: ModalAccordionCustomComponent,
-						onClick: () => {
-							setFolderDestination(item.folder);
-						},
-						background:
-							typeof folderDestination !== 'undefined' && folderDestination.id === item.folder.id
-								? 'highlight'
-								: undefined,
-						label:
-							item.folder.id === FOLDERS.USER_ROOT
-								? accountName
-								: getFolderTranslatedName({
-										folderId: item.folder.id,
-										folderName: item.folder.name
-								  }),
-						activeId: item.folder.id === folderId,
-						accordionWidth,
-						items: []
-					});
-				if (items) result.push(...flattenFolders(items));
-			});
-			return result;
-		},
-		[folderDestination, accountName, folderId, accordionWidth]
-	);
-	const getFolderRootName = (_folder: AccordionFolder): string => {
-		let result = cloneDeep(_folder.folder);
-		while (result.parent?.parent) {
-			result = result.parent;
-		}
-		return result.owner || result.parent?.name || result.name;
-	};
-
-	const filteredFolders = folders.filter((item) => item.label === getFolderRootName(folder));
-
-	const flattenedFolders = useMemo(
-		() => flattenFolders(filteredFolders),
-		[filteredFolders, flattenFolders]
-	);
-
-	const filteredFromUserInput = useMemo(
-		() =>
-			filter(flattenedFolders, (item) => {
-				const folderName = item.label.toLowerCase();
-				return startsWith(folderName, searchString.toLowerCase());
-			}),
-		[flattenedFolders, searchString]
-	);
+	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
 
 	const onConfirm = useCallback(() => {
 		const restoreFolder = (): void =>
-			dispatch(folderAction({ folder: folder.folder, l: folder.folder.l, op: 'move' }))
+			dispatch(folderAction({ folder, l: folder.l, op: 'move' }))
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				.then((res) => {
@@ -160,49 +46,48 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 						});
 					}
 				});
+		dispatch(
+			folderAction({
+				folder,
+				l: folderDestination?.id || FOLDERS.USER_ROOT,
+				op: 'move'
+			})
+		)
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			.then((res) => {
+				if (res.type.includes('fulfilled')) {
+					createSnackbar({
+						key: `move`,
+						replace: true,
+						type: 'success',
+						label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
+						autoHideTimeout: 5000,
+						hideButton: false,
+						actionLabel: 'Undo',
+						onActionClick: () => restoreFolder()
+					});
+				} else {
+					createSnackbar({
+						key: `move`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again.'),
+						autoHideTimeout: 3000
+					});
+				}
+				setFolderDestination(undefined);
+				onClose();
+			});
+	}, [dispatch, folder, folderDestination?.id, createSnackbar, onClose]);
 
-		if (
-			folderDestination?.id !== folder.folder?.l &&
-			!startsWith(folderDestination?.absFolderPath, folder.folder?.absFolderPath)
-		) {
-			// if (folderDestination?.id !== folder.id && folderDestination?.l !== folder.folder?.l) {
-			dispatch(
-				folderAction({
-					folder: folder.folder,
-					l: folderDestination?.id || FOLDERS.USER_ROOT,
-					op: 'move'
-				})
-			)
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				.then((res) => {
-					if (res.type.includes('fulfilled')) {
-						createSnackbar({
-							key: `move`,
-							replace: true,
-							type: 'success',
-							label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
-							autoHideTimeout: 5000,
-							hideButton: false,
-							actionLabel: 'Undo',
-							onActionClick: () => restoreFolder()
-						});
-					} else {
-						createSnackbar({
-							key: `move`,
-							replace: true,
-							type: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again.'),
-							autoHideTimeout: 3000
-						});
-					}
-				});
-		}
-
-		setFolderDestination(undefined);
-		setSearchString('');
-		onClose();
-	}, [folderDestination, folder, onClose, dispatch, createSnackbar]);
+	const isInputDisabled = useMemo(
+		() =>
+			isNil(folderDestination) ||
+			folderDestination?.id === folder?.l ||
+			some(folderDestination?.children, ['name', folder?.name]),
+		[folder?.l, folder?.name, folderDestination]
+	);
 
 	return folder ? (
 		<Container
@@ -210,13 +95,19 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 			mainAlignment="center"
 			crossAlignment="flex-start"
 			height="fit"
+			style={{
+				overflowY: 'auto'
+			}}
 		>
-			<ModalHeader onClose={onClose} title={`${t('label.move', 'Move')} ${folder.folder?.name}`} />
+			<ModalHeader onClose={onClose} title={`${t('label.move', 'Move')} ${folder?.name}`} />
 			<Container
 				padding={{ all: 'small' }}
 				mainAlignment="center"
 				crossAlignment="flex-start"
 				height="fit"
+				style={{
+					overflowY: 'auto'
+				}}
 			>
 				<Container padding={{ all: 'small' }} mainAlignment="center" crossAlignment="flex-start">
 					<Text overflow="break-word">
@@ -226,45 +117,17 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 						)}
 					</Text>
 				</Container>
-				<Input
-					inputName={folder.folder?.name}
-					label={t('label.filter_folders', 'Filter folders')}
-					backgroundColor="gray5"
-					value={searchString}
-					onChange={(e: ChangeEvent<HTMLInputElement>): void => setSearchString(e.target.value)}
+				<FolderSelector
+					folderId={folder.id}
+					folderDestination={folderDestination}
+					setFolderDestination={setFolderDestination}
 				/>
-				<Padding vertical="medium" />
-				<ContainerEl
-					orientation="vertical"
-					mainAlignment="flex-start"
-					minHeight="30vh"
-					maxHeight="60vh"
-				>
-					<Accordion
-						background="gray6"
-						items={filteredFromUserInput as any[]}
-						style={{ overflowY: 'hidden' }}
-					/>
-				</ContainerEl>
-
-				<Container
-					padding={{ top: 'medium', bottom: 'medium' }}
-					mainAlignment="center"
-					crossAlignment="flex-start"
-				>
-					<Button
-						type="ghost"
-						label={t('label.new_folder', 'New Folder')}
-						color="primary"
-						onClick={noop}
-					/>
-				</Container>
 				<ModalFooter
 					onConfirm={onConfirm}
 					secondaryAction={onClose}
 					label={t('label.move', 'Move')}
 					secondaryLabel={t('label.cancel', 'Cancel')}
-					disabled={typeof folderDestination === 'undefined'}
+					disabled={isInputDisabled}
 				/>
 			</Container>
 		</Container>
