@@ -93,6 +93,7 @@ export const SyncDataHandler: FC = () => {
 			if (notifyList.length > 0) {
 				forEach(sortBy(notifyList, 'seq'), (notify: any) => {
 					if (!isEmpty(notify) && (notify.seq > seq || (seq > 1 && notify.seq === 1))) {
+						const tags = getTags();
 						if (notify.created) {
 							if (notify.created.folder || notify.created.link) {
 								dispatch(
@@ -103,7 +104,6 @@ export const SyncDataHandler: FC = () => {
 								);
 							}
 							if (notify.created.c && notify.created.m) {
-								const tags = getTags();
 								const conversations = map(notify.created.c, (i) =>
 									normalizeConversation({ c: i, m: notify.created.m, tags })
 								);
@@ -126,7 +126,9 @@ export const SyncDataHandler: FC = () => {
 								);
 							}
 							if (notify.modified.c) {
-								const conversations = map(notify.modified.c, normalizeConversation);
+								const conversations = map(notify.modified.c, (i) =>
+									normalizeConversation({ c: i, tags })
+								);
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								dispatch(handleNotifyModifiedConversations(keyBy(conversations, 'id')));
