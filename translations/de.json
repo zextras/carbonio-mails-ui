@@ -36,9 +36,25 @@
                 "add_share": "Teilen hinzufügen",
                 "threshold_message": "Nachrichten in diesem Ordner, die älter als die Entsorgungsschwelle sind, werden automatisch bereinigt und gelöscht."
             },
+            "delete": {
+                "body": {
+                    "message2": "Möchten Sie den ausgewählten Ordner endgültig löschen?"
+                }
+            },
+            "move": {
+                "body": {
+                    "message1": "Einen Ordner als Ziel zum Verschieben aussuchen:"
+                }
+            },
+            "new": {
+                "go_back": "Zurück"
+            },
             "wipe": {
                 "title": "Leeren"
             }
+        },
+        "action": {
+            "restore": "Ordner wiederherstellen"
         }
     },
     "header": {
@@ -651,6 +667,7 @@
         "local": "in meinen ordnern",
         "invitations": "einladungen",
         "ccme": "in kopie an mich"
+        "draft": "Entwurf"
     },
     "attachment_type": {
         "word": "Wort",
