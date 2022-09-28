@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.36](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.35...v0.1.36) (2022-09-28)
+
+
+### Features
+
+* delete draft modal in board ([#192](https://github.com/zextras/carbonio-mails-ui/issues/192)) ([460533a](https://github.com/zextras/carbonio-mails-ui/commit/460533a7440c8535ff1668d8c05c654051929410))
+* eml  preview implemented ([#189](https://github.com/zextras/carbonio-mails-ui/issues/189)) ([3ac3d42](https://github.com/zextras/carbonio-mails-ui/commit/3ac3d42460122a026bd17aa49cb9196799471c0e))
+
+
+### Bug Fixes
+
+* color and size of message action icons ([#197](https://github.com/zextras/carbonio-mails-ui/issues/197)) ([8317892](https://github.com/zextras/carbonio-mails-ui/commit/83178926d31a1754c604d1bbc9e92035a332bcb5))
+* composer modal if attachment word present and file attached is missing ([9b1c50c](https://github.com/zextras/carbonio-mails-ui/commit/9b1c50c5bfea49f172842e1f1c1bf28f9120e842))
+* custom message is missing on calendar share ([1cf5833](https://github.com/zextras/carbonio-mails-ui/commit/1cf58330f65c91ae0cab01799649be9b3838ce28))
+* delete parent folders ([e7ca2be](https://github.com/zextras/carbonio-mails-ui/commit/e7ca2be0360f27af57a16e24d0a6afdf15a02f08))
+* graphical fix to sidebar ([#194](https://github.com/zextras/carbonio-mails-ui/issues/194)) ([67c9bf1](https://github.com/zextras/carbonio-mails-ui/commit/67c9bf1e797b7f9983bb4f2a292ef210df082b69))
+* mark all as read on folders contextual menu ([#193](https://github.com/zextras/carbonio-mails-ui/issues/193)) ([bc54e92](https://github.com/zextras/carbonio-mails-ui/commit/bc54e9245db953ea4db937a19ce617a19f6d41cf))
+* modals have their own providers ([79dba81](https://github.com/zextras/carbonio-mails-ui/commit/79dba810b363c264019bccfc73cd4bdc884d73cc))
+* reset expandedStatus for re-triggering conversation fetch ([2d552b6](https://github.com/zextras/carbonio-mails-ui/commit/2d552b663380295a3c73d77a46361014ade261b1))
+* restore visibility of deleted mails on shared accounts ([93f0394](https://github.com/zextras/carbonio-mails-ui/commit/93f0394f46fc7d44afea9ca239c466b1181e9d0c))
+* restored preview of email with attachments ([ad6a877](https://github.com/zextras/carbonio-mails-ui/commit/ad6a8773272dbd0966215a37a7c5486ee990ff98))
+* restored preview of emails with attachments ([a153111](https://github.com/zextras/carbonio-mails-ui/commit/a153111e4cf11c53ffa23f486ecf1d3832651b0f))
+* restored settings view ([5d43958](https://github.com/zextras/carbonio-mails-ui/commit/5d439580941579a2cef1d25eda80506648e36669))
+* sidebar performance improvements ([#169](https://github.com/zextras/carbonio-mails-ui/issues/169)) ([0430d3e](https://github.com/zextras/carbonio-mails-ui/commit/0430d3eeb9c9456554e0ef8cecc3843094652b31))
+* signature image is removed from draft mail ([bfabafa](https://github.com/zextras/carbonio-mails-ui/commit/bfabafa5687b33de2cc49b3508416f837534730c))
+
 ### [0.1.35](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.34...v0.1.35) (2022-09-16)
 
 
