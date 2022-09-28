@@ -98,7 +98,6 @@ const ConversationPreviewPanel: FC = () => {
 		() => find(conversations, ['id', conversationId]),
 		[conversationId, conversations]
 	);
-
 	useEffect(() => {
 		if (!conversation) {
 			dispatch(getConv({ conversationId }));
@@ -106,7 +105,10 @@ const ConversationPreviewPanel: FC = () => {
 	}, [conversation, dispatch, conversationId]);
 
 	useEffect(() => {
-		if (conversationsStatus !== 'complete' && conversationsStatus !== 'pending') {
+		if (
+			(conversationsStatus !== 'complete' && conversationsStatus !== 'pending') ||
+			!conversationsStatus
+		) {
 			dispatch(searchConv({ conversationId, fetch: 'all', folderId, tags: tagsFromStore }));
 		}
 	}, [conversationId, conversationsStatus, dispatch, folderId, tagsFromStore]);

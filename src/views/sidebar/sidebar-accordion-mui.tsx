@@ -5,12 +5,10 @@
  */
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Container from '@mui/material/Container';
+import { Accordion, AccordionDetails, AccordionSummary, Container } from '@mui/material';
 import { Folder, useLocalStorage } from '@zextras/carbonio-shell-ui';
 import React, { FC, useCallback, useRef } from 'react';
+import { theme } from '../../theme/theme-mui';
 import AccordionCustomComponent from './accordion-custom-component';
 import { ButtonFindShares } from './button-find-shares';
 
@@ -35,49 +33,55 @@ export const SidebarAccordionMui: FC<{ accordions: Array<Folder>; folderId: stri
 	);
 
 	return (
-		<Container disableGutters sx={{ width: '100%' }}>
+		<Container ref={sidebarRef} disableGutters>
 			{accordions.map((accordion) =>
 				accordion.id === 'find_shares' ? (
 					<ButtonFindShares key={accordion.id} />
 				) : (
-					<div ref={sidebarRef} key={accordion.id}>
-						<Accordion
-							disableGutters
-							TransitionProps={{ unmountOnExit: true }}
-							expanded={openIds.includes(accordion.id)}
-						>
-							<AccordionSummary
-								expandIcon={
-									accordion.children.length > 0 && (
-										<ExpandMoreIcon
-											color="primary"
-											onClick={(e): void => {
-												e.preventDefault();
-												onClick(accordion, !openIds.includes(accordion.id));
-											}}
-										/>
-									)
-								}
-								aria-controls="panel1a-content"
-								id={accordion.id}
-								sx={{
-									backgroundColor: accordion.id === folderId ? '#96b8e8' : '#f5f6f8',
-									'&:hover': { backgroundColor: accordion.id === folderId ? '#abc7ed' : '#D7DBE3' }
-								}}
-							>
-								<AccordionCustomComponent item={accordion} />
-							</AccordionSummary>
-							{accordion.children.length > 0 && (
-								<AccordionDetails>
-									<SidebarAccordionMui
-										accordions={accordion.children}
-										folderId={folderId}
-										key={accordion.id}
+					<Accordion
+						disableGutters
+						TransitionProps={{ unmountOnExit: true }}
+						expanded={openIds.includes(accordion.id)}
+					>
+						<AccordionSummary
+							expandIcon={
+								accordion.children.length > 0 && (
+									<ExpandMoreIcon
+										color="primary"
+										onClick={(e): void => {
+											e.preventDefault();
+											onClick(accordion, !openIds.includes(accordion.id));
+										}}
 									/>
-								</AccordionDetails>
-							)}
-						</Accordion>
-					</div>
+								)
+							}
+							aria-controls="panel1a-content"
+							id={accordion.id}
+							sx={{
+								backgroundColor:
+									accordion.id === folderId
+										? theme.palette.highlight.hover
+										: theme.palette.gray5.regular,
+								'&:hover': {
+									backgroundColor:
+										accordion.id === folderId
+											? theme.palette.highlight.active
+											: theme.palette.gray5.hover
+								}
+							}}
+						>
+							<AccordionCustomComponent item={accordion} />
+						</AccordionSummary>
+						{accordion.children.length > 0 && (
+							<AccordionDetails>
+								<SidebarAccordionMui
+									accordions={accordion.children}
+									folderId={folderId}
+									key={accordion.id}
+								/>
+							</AccordionDetails>
+						)}
+					</Accordion>
 				)
 			)}
 		</Container>

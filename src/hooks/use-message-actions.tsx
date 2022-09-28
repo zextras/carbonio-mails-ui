@@ -7,7 +7,7 @@ import { FOLDERS, useAppContext, useTags, useUserAccount } from '@zextras/carbon
 import { includes } from 'lodash';
 import { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, useHistory } from 'react-router-dom';
 import { useSelection } from './useSelection';
 import { MailMessage } from '../types';
 import {

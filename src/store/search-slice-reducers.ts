@@ -3,12 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { filter, find, forEach, map, merge, omit, reduce, some, last, sortBy } from 'lodash';
-import { ConvMessage, ConversationsStateType, Payload } from '../../types';
+
+import { filter, find, forEach, map, merge, omit, reduce, some } from 'lodash';
+import { ConvMessage, Payload, SearchesStateType } from '../types';
 
 export const handleCreatedConversationsReducer = (
-	state: ConversationsStateType,
+	state: SearchesStateType,
 	{ payload }: Payload
 ): void => {
 	forEach(payload, (conv) => {
@@ -19,7 +19,7 @@ export const handleCreatedConversationsReducer = (
 };
 
 export const handleModifiedConversationsReducer = (
-	state: ConversationsStateType,
+	state: SearchesStateType,
 	{ payload }: Payload
 ): void => {
 	forEach(payload, (conv) => {
@@ -31,13 +31,11 @@ export const handleModifiedConversationsReducer = (
 		}
 	});
 };
-
 export const handleCreatedMessagesInConversationsReducer = (
-	state: ConversationsStateType,
+	state: SearchesStateType,
 	{ payload }: Payload
 ): void => {
 	const { m } = payload;
-
 	forEach(m, (msg) => {
 		const conversation = state.conversations?.[msg.cid];
 		if (msg?.cid && msg?.id && msg?.l && conversation) {
@@ -45,17 +43,11 @@ export const handleCreatedMessagesInConversationsReducer = (
 				? conversation.messages
 				: [...conversation.messages, { id: msg.id, parent: msg.l, date: Number(msg.d) }];
 
-			const date =
-				msg.l === FOLDERS.DRAFTS
-					? conversation.date
-					: last(sortBy(filter(messages, { parent: state.currentFolder }), 'date'))?.date;
-
 			const conv = {
 				[msg.cid]: {
 					...conversation,
 					messages,
-					fragment: msg?.fr,
-					date
+					fragment: msg?.fr
 				}
 			};
 
@@ -65,7 +57,7 @@ export const handleCreatedMessagesInConversationsReducer = (
 };
 
 export const handleModifiedMessagesInConversationReducer = (
-	state: ConversationsStateType,
+	state: SearchesStateType,
 	{ payload }: Payload
 ): void => {
 	state.conversations = reduce(
@@ -90,12 +82,11 @@ export const handleModifiedMessagesInConversationReducer = (
 };
 
 export const handleAddMessagesInConversationReducer = (
-	state: ConversationsStateType,
+	state: SearchesStateType,
 	{ payload }: Payload
 ): void => {
 	forEach(payload, (msg) => {
 		const addMsg = omit(msg, ['conversation']) as ConvMessage;
-
 		if (msg?.conversation && state?.conversations?.[msg?.conversation]) {
 			state.conversations[msg.conversation] = {
 				...state.conversations[msg.conversation],
@@ -106,7 +97,7 @@ export const handleAddMessagesInConversationReducer = (
 };
 
 export const handleDeletedConversationsReducer = (
-	state: ConversationsStateType,
+	state: SearchesStateType,
 	{ payload }: Payload
 ): void => {
 	forEach(payload, (id) => {
@@ -115,7 +106,7 @@ export const handleDeletedConversationsReducer = (
 };
 
 export const handleDeletedMessagesInConversationReducer = (
-	state: ConversationsStateType,
+	state: SearchesStateType,
 	{ payload }: Payload
 ): void => {
 	state.conversations = reduce(
@@ -129,4 +120,12 @@ export const handleDeletedMessagesInConversationReducer = (
 		}),
 		{}
 	);
+};
+export const handleDeletedMessagesReducer = (
+	state: SearchesStateType,
+	{ payload }: Payload
+): void => {
+	forEach(payload, (id) => {
+		state.messages = omit(state.messages, id);
+	});
 };

@@ -41,6 +41,16 @@ import { normalizeConversation } from '../../normalizations/normalize-conversati
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { extractFolders } from './utils';
 import { MAILS_ROUTE } from '../../constants';
+import {
+	handleNotifyCreatedSearchConversations,
+	handleNotifyDeletedSearchConversations,
+	handleNotifyModifiedSearchConversations,
+	handleAddMessagesInSearchConversation,
+	handleCreatedMessagesInSearchConversation,
+	handleDeletedMessagesInSearchConversation,
+	handleModifiedMessagesInSearchConversation,
+	handleDeletedSearchMessages
+} from '../../store/searches-slice';
 import { Conversation } from '../../types';
 
 const InboxBadgeUpdater = (): null => {
@@ -110,10 +120,14 @@ export const SyncDataHandler: FC = () => {
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								dispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								dispatch(handleNotifyCreatedSearchConversations(keyBy(conversations, 'id')));
 							}
 							if (notify.created.m) {
 								dispatch(handleCreatedMessages({ m: notify.created.m }));
 								dispatch(handleCreatedMessagesInConversation({ m: notify.created.m }));
+								dispatch(handleCreatedMessagesInSearchConversation({ m: notify.created.m }));
 							}
 						}
 						if (notify.modified) {
@@ -132,6 +146,10 @@ export const SyncDataHandler: FC = () => {
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								dispatch(handleNotifyModifiedConversations(keyBy(conversations, 'id')));
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								dispatch(handleNotifyModifiedSearchConversations(keyBy(conversations, 'id')));
+								//	dispatch(handleNotifyDeletedSearchConversations(keyBy(conversations, 'id')));
 							}
 							if (notify.modified.m) {
 								const messages = map(notify.modified.m, (obj) =>
@@ -148,6 +166,9 @@ export const SyncDataHandler: FC = () => {
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									dispatch(handleModifiedMessagesInConversation(toUpdate));
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
+									dispatch(handleModifiedMessagesInSearchConversation(toUpdate));
 								}
 								// the condition filters messages with conversation property (the only ones we need to add to conversation)
 								const conversationToUpdate = filter(messages, 'conversation');
@@ -182,14 +203,20 @@ export const SyncDataHandler: FC = () => {
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									dispatch(handleAddMessagesInConversation(msgsReference));
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
+									dispatch(handleAddMessagesInSearchConversation(msgsReference));
 								}
 							}
 						}
 						if (notify.deleted) {
 							dispatch(handleDeletedFolders(notify.deleted));
 							dispatch(handleNotifyDeletedConversations(notify.deleted));
+							dispatch(handleNotifyDeletedSearchConversations(notify.deleted));
 							dispatch(handleDeletedMessages(notify.deleted));
+							dispatch(handleDeletedSearchMessages(notify.deleted));
 							dispatch(handleDeletedMessagesInConversation(notify.deleted));
+							dispatch(handleDeletedMessagesInSearchConversation(notify.deleted));
 						}
 						setSeq(notify.seq);
 					}

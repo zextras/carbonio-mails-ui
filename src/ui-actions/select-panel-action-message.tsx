@@ -192,7 +192,7 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 			<Container background="gray5" orientation="horizontal" mainAlignment="flex-start">
 				<IconButton
 					icon="ArrowBack"
-					color="primary"
+					iconColor="primary"
 					size="large"
 					onClick={deselectAll}
 					data-testid="action-button-deselect-all"
@@ -207,12 +207,12 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 						<IconButton
 							data-testid={`primary-action-button-${action.label}`}
 							icon={action.icon}
-							color="primary"
+							iconColor="primary"
 							onClick={(ev): void => {
 								if (ev) ev.preventDefault();
 								action.click && action.click();
 							}}
-							size="medium"
+							size="large"
 						/>
 					)
 				)}

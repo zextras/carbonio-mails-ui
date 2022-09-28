@@ -6,7 +6,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
-import { isEmpty } from 'lodash';
+import { isEmpty, sortBy } from 'lodash';
 import { t } from '@zextras/carbonio-shell-ui';
 import ShimmerList from './shimmer-list';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
@@ -59,6 +59,10 @@ const SearchMessageList: FC<SearchListProps> = ({
 		return null;
 	}, [isInvalidQuery, searchResults.messages, randomListIndex]);
 
+	const messageList = useMemo(
+		() => sortBy(Object.values(searchResults?.messages ?? []), 'date').reverse(),
+		[searchResults?.messages]
+	);
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
 			<AdvancedFilterButton
@@ -71,7 +75,7 @@ const SearchMessageList: FC<SearchListProps> = ({
 					style={{ paddingBottom: '4px' }}
 					background="gray6"
 					active={itemId}
-					items={searchResults.messages}
+					items={messageList}
 					itemProps={{
 						isConvChildren: false
 					}}

@@ -25,7 +25,8 @@
         "show_original": "Orijinal hali göster",
         "unflag": "Bayrağı kaldır",
         "preview_new_tab": "Başka sekmede görüntülemek için tıklayın",
-        "click_preview": "Önizleme için tıklayın"
+        "click_preview": "Önizleme için tıklayın",
+        "edit_anyway": "Yine de düzenle"
     },
     "composer": {
         "attachment": {
@@ -79,7 +80,9 @@
         "manager_rights": "Görüntüle,Düzenle,Ekle,Kaldır",
         "external_images_blocked": "Potansiyel spam mesajlara karşı korumak için dışarıdan resimler engellendi",
         "schedule_time": "{{date}} - {{time}}",
-        "schedule_mail": "Gönderim tarih ve saati: {{date}} - {{time}}"
+        "schedule_mail": "Gönderim tarih ve saati: {{date}} - {{time}}",
+        "send_later_success": "Mesajınız {{date}} - {{time}} tarih ve saatinde gönderilecek",
+        "select_date_time": "Bu mesajı göndermek için tarih ve saati seçin"
     },
     "snackbar": {
         "share_resend": "Paylaşım davetini yeniden gönder",
@@ -102,7 +105,7 @@
         "resend": "Yeniden gönder",
         "revoke": "İptal et",
         "share": "Paylaş",
-        "edit_folder_properties": "{{name}}'in özelliklerini düzenle",
+        "edit_folder_properties": "{{name}} özelliklerini düzenle",
         "flash_browser_title": "Tarayıcı başlığında flaş uyarısı",
         "revoke_access_tooltip": "Standart bildirim göndererek erişim yetkisini kaldır",
         "revoke_access_without_notification": "Bildirim göndermeden erişim yetkisini kaldır",
@@ -281,7 +284,20 @@
         "enter_email_address": "E-posta adresi ya da alanadı girin",
         "do_not_notify": "Bildirim gönderme",
         "delete_draft": "Taslağı sil",
-        "before_you_leave": "Çıkmadan önce"
+        "before_you_leave": "Çıkmadan önce",
+        "warning": "Uyarı",
+        "show_more_info": "Daha fazla bilgi göster",
+        "select_date_time": "Tarih ve saat seçin",
+        "schedule_send": "Zamanlanmış gönderim",
+        "read_reciept": "Okundu Bilgisi",
+        "read_receipt": "Okundu Bilgisi",
+        "message_from_me": "Benden mesajlar",
+        "message_arrival": "Mesaj Geldiğinde",
+        "hide_more_info": "Daha fazla bilgiyi gizle",
+        "duplicate_messages": "Yinelenen Mesajlar",
+        "as_text": "Metin Olarak",
+        "as_html": "HTML olarak",
+        "arrival_notifications": "Geldiğinde Bildirimler"
     },
     "share": {
         "options": {
@@ -346,7 +362,18 @@
             },
             "send_anyway": {
                 "second": "E-postayı yine de göndermek istiyor musunuz?",
-                "first": "E-posta konusu boş ve hiç dosya eklemediniz."
+                "first": "E-posta konusu boş ve hiç dosya eklemediniz.",
+                "no_subject_no_attachments": "E-posta konusu boş ve hiç dosya eklemediniz.",
+                "no_subject": "E-posta konusu boş.",
+                "no_attachments": "Hiç dosya eklemediniz.",
+                "enclosing": "ekleniyor",
+                "enclosed": "ekli",
+                "enclose": "ekle",
+                "attachments": "ekler",
+                "attachment": "ek",
+                "attaching": "ekleniyor",
+                "attached": "eklendi",
+                "attach": "ekle"
             }
         },
         "new_email": "Yeni e-posta",
@@ -395,7 +422,8 @@
         "read_receipt_2": "Gönderen kişiye bildirim göndermek ister misiniz?",
         "read_receipt_1": "Bu mesajı gönderen kişi mesaj okunduğunda bildirim almak istedi.",
         "invalid_trustee_address": "Lütfen sadece e-posta adresleri veya alanadları yazınız",
-        "cal_name_exist_warning": "Aynı ad kullanılmış takvim zaten burada var"
+        "cal_name_exist_warning": "Aynı ad kullanılmış takvim zaten burada var",
+        "edit_schedule_warning": "Bu e-postayı düzenlediğinizde ertelenmiş gönderim için önceden belirlenen tarih ve saat sıfırlanacak."
     },
     "placeholder": {
         "add_new_recipients": "Yeni alıcılar ekle"
@@ -536,7 +564,24 @@
             "based_on_previous": "Önceki seçilenlerden sonraki mesajı seçin",
             "above_deleted": "Silinmiş veya taşınmış mesajın üstündeki mesajı seçin",
             "below_deleted": "Silinmiş veya taşınmış mesajın altındaki mesajı seçin"
-        }
+        },
+        "fonts": {
+            "wide_block": "Geniş Blok",
+            "wide": "Geniş",
+            "terminal": "Terminal",
+            "serif": "Serif",
+            "sans_serif": "Sans Serif",
+            "professional": "Professional",
+            "monospaced": "Monospaced",
+            "modern": "Modern",
+            "garamond": "Garamond",
+            "elegant": "Elegant",
+            "console": "Console",
+            "comic": "Comic"
+        },
+        "font_size": "{{count}} pt",
+        "font_size_plural": "{{count}} pt",
+        "font": "Yazı Tipi"
     },
     "displayer": {
         "description6": "Bu e-postayı yanıtlayın veya diğer kullanıcılara yönlendirin.",
@@ -624,7 +669,8 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "Eğer temizlerseniz, ilgili tüm içerik kalıcı olarak silinecek."
+                    "message2": "Eğer temizlerseniz, ilgili tüm içerik kalıcı olarak silinecek.",
+                    "message1": "Seçili klasörü temizlemek istiyor musunuz?"
                 }
             }
         },
@@ -695,5 +741,11 @@
         "excel": "Excel",
         "email": "E-Posta",
         "application": "Uygulama"
-    }
+    },
+    "new_folder": "Yeni Klasör",
+    "labels": {
+        "composing_messages": "Mesaj Oluşturma",
+        "compose_colin": "Oluştur:"
+    },
+    "go_back": "Geriye git"
 }

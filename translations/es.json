@@ -69,7 +69,8 @@
         "delete_email": "Eliminar mensaje",
         "edit_draft": "Editar borrador",
         "message_not_sent": "Error - Mensaje no enviado",
-        "redirect_email": "Reenviar mensaje"
+        "redirect_email": "Reenviar mensaje",
+        "attention": "Atención"
     },
     "label": {
         "attachment": "Adjunto",
@@ -241,7 +242,11 @@
         "always_allow_domain": "Permitir siempre del dominio <strong>{{domain}}</strong>",
         "share_public_link": "Compartir enlace público",
         "view_images": "Ver imágenes",
-        "no_name": "<Sin nombre>"
+        "no_name": "<Sin nombre>",
+        "time_zone": "Zona horaria",
+        "searching": "Buscando...",
+        "notify": "Notificar",
+        "do_not_notify": "No notificar"
     },
     "messages": {
         "modal": {
@@ -295,7 +300,8 @@
         "check_and_try_again": "Por favor, comprueba Carbonio y prueba de nuevo",
         "could_not_find_to_show": "Lo sentimos, no pudimos encontrar nada que mostrar",
         "something_went_wrong": "ALGO SALIÓ MAL",
-        "powered_by": "powered by"
+        "powered_by": "powered by",
+        "trustee_addresses": "Los correos de esas direcciones o dominios serán considerados de confianza y las imágenes se mostrarán automáticamente."
     },
     "placeholder": {
         "add_new_recipients": "Añadir nuevos destinatarios"
