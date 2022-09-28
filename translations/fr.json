@@ -25,7 +25,8 @@
         "goto_folder": "ALLER AU DOSSIER",
         "search": "Recherche",
         "preview_new_tab": "Cliquez pour afficher un aperçu dans un autre onglet",
-        "click_preview": "Cliquer pour prévisualiser"
+        "click_preview": "Cliquer pour prévisualiser",
+        "edit_anyway": "Éditer malgré tout"
     },
     "composer": {
         "attachment": {
@@ -236,12 +237,12 @@
         "preview": "Prévisualisation",
         "delete_tag": "Supprimer l'étiquette",
         "delete_tag_name": "Supprimer l'étiquette \"{{name}}\"",
-        "edit_tag": "Éditer l'étiquette",
-        "edit_tag_name": "Éditer l'étiquette \"{{name}}\"",
+        "edit_tag": "Modifier l'étiquette",
+        "edit_tag_name": "Modifier l'étiquette \"{{name}}\"",
         "spam": "Spam",
         "tag_name": "Nom de l'étiquette",
         "tags": "Étiquettes",
-        "no_special_char_allowed": "Le nom ne doit pas contenir des caractères spéciaux",
+        "no_special_char_allowed": "Le nom ne doit pas contenir de caractère spécial",
         "calendar": "Calendrier",
         "confirm": "Confirmer",
         "contact_folder": "Dossier de contact",
@@ -278,7 +279,20 @@
         "delete_draft": "Supprimer le brouillon",
         "delayed_sending": "Envoi différé",
         "collapse_receivers_list": "Réduire la liste des destinataires",
-        "before_you_leave": "Avant de quitter"
+        "before_you_leave": "Avant de quitter",
+        "warning": "Avertissement",
+        "show_more_info": "Afficher les informations complémentaires",
+        "select_date_time": "Sélectionnez la date et l'heure",
+        "schedule_send": "Planifier l'envoi",
+        "read_reciept": "Accusé de lecture",
+        "read_receipt": "Accusé de lecture",
+        "message_from_me": "Messages envoyé par moi",
+        "message_arrival": "Arrivée de message",
+        "hide_more_info": "Cacher les informations complémentaires",
+        "duplicate_messages": "Messages dupliqués",
+        "as_text": "En Texte",
+        "as_html": "En HTML",
+        "arrival_notifications": "Notifications d'arrivée"
     },
     "message": {
         "snackbar": {
@@ -309,7 +323,9 @@
         "view_rights": "Affichage",
         "external_images_blocked": "Les images externe ont été bloquées pour vous protéger contre des spams potentiels",
         "schedule_time": "{{date}} à {{time}}",
-        "schedule_mail": "Sera envoyé le : {{date}} à {{time}}"
+        "schedule_mail": "Sera envoyé le : {{date}} à {{time}}",
+        "send_later_success": "Votre email sera envoyé le {{date}} à {{time}}",
+        "select_date_time": "Sélectionner une date et une heure pour envoyer le message"
     },
     "messages": {
         "invalid_address": "L'adresse suivante semble être invalide",
@@ -325,7 +341,18 @@
             },
             "send_anyway": {
                 "second": "Souhaitez vous envoyer cet email malgré tout ?",
-                "first": "Le sujet de l'email est vide et vous n'avez pas joint de fichier."
+                "first": "Le sujet de l'email est vide et vous n'avez pas joint de fichier.",
+                "no_subject_no_attachments": "Le sujet de l'email est vide et vous n'avez pas joint de fichier.",
+                "no_subject": "Le sujet de l'email est vide.",
+                "no_attachments": "Vous n'avez pas joint de fichier.",
+                "enclosing": "enfermant",
+                "enclosed": "ci-joint",
+                "enclose": "joindre",
+                "attachments": "pièces jointes",
+                "attachment": "pièce jointe",
+                "attaching": "attachement",
+                "attached": "attaché",
+                "attach": "attacher"
             }
         },
         "new_email": "Nouvel email",
@@ -373,7 +400,8 @@
         "read_receipt_2": "Souhaitez-vous notifier l'expéditeur ?",
         "read_receipt_1": "L'expéditeur de ce message a demandé une notification de lecture de ce message.",
         "invalid_trustee_address": "Merci de ne saisir que des adresses email ou des domaines",
-        "cal_name_exist_warning": "Ce sont est déjà utilisé par un autre calendrier sur cet emplacement"
+        "cal_name_exist_warning": "Ce sont est déjà utilisé par un autre calendrier sur cet emplacement",
+        "edit_schedule_warning": "En éditant cet email, l'heure et la date définie précédemment pour l'envoi planifiées seront annulées."
     },
     "placeholder": {
         "add_new_recipients": "Ajouter de nouveaux destinataires"
@@ -511,7 +539,24 @@
         "to_cc": "A ou CC",
         "twitter_notification": "Notifications Twitter",
         "under": "sous",
-        "conv_is_started": "Dans la conversation que j'ai lancé"
+        "conv_is_started": "Dans la conversation que j'ai lancé",
+        "fonts": {
+            "wide_block": "Wide Block",
+            "wide": "Wide",
+            "terminal": "Terminal",
+            "serif": "Serif",
+            "sans_serif": "Sans Serif",
+            "professional": "Professional",
+            "monospaced": "Monospaced",
+            "modern": "Modern",
+            "garamond": "Garamond",
+            "elegant": "Elegant",
+            "console": "Console",
+            "comic": "Comic"
+        },
+        "font_size": "{{count}} pt",
+        "font_size_plural": "",
+        "font": "Police"
     },
     "share": {
         "options": {
@@ -656,7 +701,8 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "Si vous l'effacez, tout le contenu associé sera définitivement supprimé."
+                    "message2": "Si vous l'effacez, tout le contenu associé sera définitivement supprimé.",
+                    "message1": "Souhaitez-vous effacer le dossier sélectionné ?"
                 }
             }
         },
@@ -718,5 +764,11 @@
         "excel": "Excel",
         "email": "Email",
         "application": "Application"
-    }
+    },
+    "new_folder": "Nouveau Dossier",
+    "labels": {
+        "composing_messages": "Composition des messages",
+        "compose_colin": "Composer :"
+    },
+    "go_back": "Retour"
 }
