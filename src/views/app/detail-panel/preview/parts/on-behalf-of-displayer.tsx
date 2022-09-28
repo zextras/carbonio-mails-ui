@@ -6,12 +6,12 @@
 import React, { FC, ReactElement, useMemo } from 'react';
 
 import { TextWithTooltip } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import { capitalize } from 'lodash';
 import styled from 'styled-components';
-import { useTranslation } from 'react-i18next';
 import { Participant, MailMessage } from '../../../../../types';
 
-const StyledText = styled.span<{ isRead?: boolean; color?: string }>`
+const StyledText = styled.span<{ isRead?: string | boolean; color?: string }>`
 	padding: 0 2px;
 	color: ${({ theme, color, isRead }): string =>
 		// eslint-disable-next-line no-nested-ternary
@@ -27,7 +27,6 @@ const StyledText = styled.span<{ isRead?: boolean; color?: string }>`
 const OnBehalfOfDisplayer: FC<{
 	compProps: { senderContact: Participant; mainContact: Participant; message: MailMessage };
 }> = ({ compProps: { senderContact, mainContact, message } }): ReactElement => {
-	const [t] = useTranslation();
 	const [mainContactFullName, mainContactAddress] = useMemo(
 		() => [capitalize(mainContact.fullName || mainContact.name), mainContact.address],
 		[mainContact]
@@ -37,10 +36,10 @@ const OnBehalfOfDisplayer: FC<{
 		[senderContact]
 	);
 
-	const behalfOfLabel = useMemo(() => t('label.behalf_of', 'behalf of'), [t]);
+	const behalfOfLabel = useMemo(() => t('label.behalf_of', 'behalf of'), []);
 	return (
 		<TextWithTooltip>
-			<StyledText isRead={message.read}>{fullName}</StyledText>
+			<StyledText isRead={message.read ?? ''}>{fullName}</StyledText>
 			<StyledText color="secondary" isRead={message.read}>
 				{` <${address}> `}
 			</StyledText>

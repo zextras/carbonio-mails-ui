@@ -12,25 +12,22 @@ import {
 	ZIMBRA_STANDARD_COLORS,
 	Tag,
 	FOLDERS,
-	useUserSettings
+	useUserSettings,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
 
 import { getTimeLabel, participantToString } from '../../commons/utils';
 import { ItemAvatar } from '../app/folder-panel/lists-item/item-avatar';
 import { SenderName } from '../app/folder-panel/lists-item/sender-name';
 import { useTagExist } from '../../ui-actions/tag-actions';
-import { IncompleteMessage, TextReadValuesProps } from '../../types';
+import { SearchMessageListItemProps, TextReadValuesProps } from '../../types';
 import { ListItemActionWrapper } from '../app/folder-panel/lists-item/list-item-actions-wrapper';
 
-type SearchMessageListItemProps = {
-	item: IncompleteMessage;
-	isConvChildren: boolean;
-};
-
-export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, isConvChildren }) => {
-	const [t] = useTranslation();
+export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
+	item,
+	isConvChildren = false
+}) => {
 	const accounts = useUserAccounts();
 	const tagsFromStore = useTags();
 	const tags = useMemo(
@@ -57,10 +54,10 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, is
 	const [date, participantsString] = useMemo(() => {
 		if (item) {
 			const sender = find(item.participants, ['type', 'f']);
-			return [getTimeLabel(item.date), participantToString(sender, t, accounts)];
+			return [getTimeLabel(item.date), participantToString(sender, accounts)];
 		}
 		return ['.', '.', '', ''];
-	}, [item, t, accounts]);
+	}, [item, accounts]);
 
 	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
 		if (item) {
@@ -96,7 +93,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, is
 			}
 		}
 		return [false, '', '', '', ''];
-	}, [item, t]);
+	}, [item]);
 
 	const onClick = useCallback(
 		(e) => {
@@ -128,7 +125,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, is
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
 	const subject = useMemo(
 		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item.subject, t]
+		[item.subject]
 	);
 	const subFragmentTooltipLabel = useMemo(
 		() => (!isEmpty(item.fragment) ? item.fragment : subject),
@@ -144,6 +141,8 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, is
 		>
 			<ListItemActionWrapper item={item} onClick={onClick}>
 				<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
+					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+					{/* @ts-ignore */}
 					<ItemAvatar item={item} folderId={item.parent} />
 					<Padding horizontal="extrasmall" />
 				</div>
@@ -163,7 +162,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({ item, is
 							)}
 							{showTagIcon && (
 								<Padding left="small">
-									<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+									<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
 								</Padding>
 							)}
 							{item.attachment && (

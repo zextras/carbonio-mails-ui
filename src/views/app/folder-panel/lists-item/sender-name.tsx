@@ -3,23 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useTranslation } from 'react-i18next';
-import { FOLDERS, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import React, { FC, useMemo } from 'react';
 import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { ParticipantRole, participantToString } from '../../../../commons/utils';
-import { IncompleteMessage, Conversation, TextReadValuesProps } from '../../../../types';
-
-type SenderNameProps = {
-	item: Conversation | IncompleteMessage;
-	isFromSearch?: boolean;
-	textValues?: TextReadValuesProps;
-};
+import { SenderNameProps } from '../../../../types';
 
 export const SenderName: FC<SenderNameProps> = ({ item, textValues, isFromSearch = false }) => {
-	const [t] = useTranslation();
 	const account = useUserAccount();
 	const { folderId } = useParams<{ folderId: string }>();
 	const participantsString = useMemo(() => {
@@ -39,10 +31,10 @@ export const SenderName: FC<SenderNameProps> = ({ item, textValues, isFromSearch
 
 		return reduce(
 			uniqBy(participants, (em) => em.address),
-			(acc, part) => trimStart(`${acc}, ${participantToString(part, t, [account])}`, ', '),
+			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
 			''
 		);
-	}, [account, folderId, isFromSearch, item.participants, t]);
+	}, [account, folderId, isFromSearch, item.participants]);
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">

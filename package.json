@@ -69,10 +69,14 @@
     "pinst": "2.1.6"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/icons-material": "^5.10.6",
+    "@mui/material": "^5.10.6",
     "@reduxjs/toolkit": "1.6.2",
-    "@zextras/carbonio-design-system": "^0.3.10",
-    "@zextras/carbonio-shell-ui": "^0.4.34",
-    "@zextras/carbonio-ui-preview": "^0.1.5",
+    "@zextras/carbonio-design-system": "^0.4.1",
+    "@zextras/carbonio-shell-ui": "0.4.37",
+    "@zextras/carbonio-ui-preview": "0.2.1",
     "core-js": "3.19.1",
     "i18next": "^21.5.4",
     "immer": "7.0.14",

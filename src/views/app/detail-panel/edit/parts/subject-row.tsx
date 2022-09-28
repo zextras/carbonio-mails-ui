@@ -4,23 +4,23 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useContext } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Controller } from 'react-hook-form';
 import {
 	Container,
 	EmailComposerInput,
 	Padding,
 	Tooltip,
-	Icon,
-	Checkbox
+	Icon
 } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import * as StyledComp from './edit-view-styled-components';
 import { EditViewContext } from './edit-view-context';
 
 const SubjectRow: FC = () => {
-	const [t] = useTranslation();
 	const { control, editor, updateSubjectField, throttledSaveToDraft } = useContext(EditViewContext);
 
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	return (
 		<StyledComp.ColContainer occupyFull>
 			<Controller

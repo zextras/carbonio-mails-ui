@@ -4,24 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState, useRef, useEffect } from 'react';
-import { Container, ChipInput } from '@zextras/carbonio-design-system';
+import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { attachmentTypeItemsConstant, emailStatusItemsConstant } from '../../../constants';
-import { KeywordState } from '../../../types';
+import { AttachTypeEmailStatusRowPropType, ChipOnAdd, ChipOnAddProps } from '../../../types';
 
-type ComponentProps = {
-	compProps: {
-		attachmentType: KeywordState;
-		setAttachmentType: (arg: any) => void;
-		emailStatus: KeywordState;
-		setEmailStatus: (arg: any) => void;
-	};
-};
-
-const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
+const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
+	compProps
+}): ReactElement => {
 	const { attachmentType, setAttachmentType, emailStatus, setEmailStatus } = compProps;
-	const [t] = useTranslation();
 	const attachmentTypeItems = attachmentTypeItemsConstant(t);
 
 	const emailStatusItems = emailStatusItemsConstant(t);
@@ -36,29 +28,6 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 	const onChange = useCallback((state, stateHandler) => {
 		stateHandler(state);
 	}, []);
-
-	type ChipOnAddProps = {
-		items: Array<{
-			label: string;
-			icon?: string;
-			searchString: string;
-		}>;
-		label: string;
-		preText: string;
-		hasAvatar: boolean;
-		isGeneric: boolean;
-		isQueryFilter: boolean;
-	};
-
-	type ChipOnAdd = {
-		label: string;
-		hasAvatar: boolean;
-		isGeneric: boolean;
-		isQueryFilter: boolean;
-		value: string;
-		avatarIcon: string;
-		avatarColor: string;
-	};
 
 	const chipOnAdd = useCallback(
 		({ items, label, preText, hasAvatar, isGeneric, isQueryFilter }: ChipOnAddProps): ChipOnAdd => {
@@ -150,10 +119,10 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 	);
 
 	const attachmentTypeChipOnAdd = useCallback(
-		(label: string): ChipOnAdd =>
+		(label: unknown): ChipOnAdd =>
 			chipOnAdd({
 				items: attachmentTypeItems,
-				label,
+				label: label as string,
 				preText: 'Attachment',
 				hasAvatar: true,
 				isGeneric: true,
@@ -163,10 +132,10 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 	);
 
 	const emailStatusChipOnAdd = useCallback(
-		(label: string): ChipOnAdd =>
+		(label: unknown): ChipOnAdd =>
 			chipOnAdd({
 				items: emailStatusItems,
-				label,
+				label: label as string,
 				preText: 'Is',
 				hasAvatar: false,
 				isGeneric: true,
@@ -176,26 +145,26 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 	);
 
 	const attachmentTypeOnChange = useCallback(
-		(label: string): void => {
+		(value: ChipItem[]): void => {
 			setAttachmentTypeRefHasFocus(false);
-			return onChange(label, setAttachmentType);
+			return onChange(value, setAttachmentType);
 		},
 		[onChange, setAttachmentType]
 	);
 
 	const emailStatusOnChange = useCallback(
-		(label: string): void => onChange(label, setEmailStatus),
+		(value: ChipItem[]): void => onChange(value, setEmailStatus),
 		[onChange, setEmailStatus]
 	);
 
 	const attachmentTypePlaceholder = useMemo(
 		() => t('label.attachment_type', 'Attachment type'),
-		[t]
+		[]
 	);
 
 	const emailStatusPlaceholder = useMemo(
 		() => t('label.attachment_status', 'Status of e-mail item'),
-		[t]
+		[]
 	);
 	const attachmentIcon = useMemo(
 		() => (attachmentTypeRefHasFocus ? 'ChevronDown' : 'ChevronUp'),
@@ -220,7 +189,6 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 			<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 				<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 					<ChipInput
-						disableRestoreFocus
 						ref={attachmentTypeRef}
 						placeholder={attachmentTypePlaceholder}
 						defaultValue={attachmentType}
@@ -238,7 +206,6 @@ const AttachmentTypeEmailStatusRow: FC<ComponentProps> = ({ compProps }): ReactE
 				</Container>
 				<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 					<ChipInput
-						disableAutoFocus
 						dropdownMaxHeight="40%"
 						confirmChipOnBlur
 						ref={emailStatusRef}

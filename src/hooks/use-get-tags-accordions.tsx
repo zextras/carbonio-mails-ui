@@ -6,7 +6,7 @@
 import React, { FC, useCallback, useContext, useMemo } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { useTags, ZIMBRA_STANDARD_COLORS, runSearch } from '@zextras/carbonio-shell-ui';
+import { t, useTags, ZIMBRA_STANDARD_COLORS, runSearch } from '@zextras/carbonio-shell-ui';
 import {
 	AccordionItem,
 	Dropdown,
@@ -17,7 +17,6 @@ import {
 	ModalManagerContext
 } from '@zextras/carbonio-design-system';
 import { reduce } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { createTag, useGetTagsActions } from '../ui-actions/tag-actions';
 import { ItemType, TagsAccordionItems } from '../types';
 
@@ -26,8 +25,7 @@ type ItemProps = {
 };
 
 const CustomComp: FC<ItemProps> = (props) => {
-	const [t] = useTranslation();
-	const actions = useGetTagsActions({ tag: props?.item, t });
+	const actions = useGetTagsActions({ tag: props?.item });
 
 	const triggerSearch = useCallback(
 		() =>
@@ -71,12 +69,11 @@ const CustomComp: FC<ItemProps> = (props) => {
 
 export const TagLabel: FC<ItemType> = (props) => {
 	const createModal = useContext(ModalManagerContext) as () => () => void;
-	const [t] = useTranslation();
 	return (
-		<Dropdown contextMenu display="block" width="fit" items={[createTag({ t, createModal })]}>
+		<Dropdown contextMenu display="block" width="fit" items={[createTag({ createModal })]}>
 			<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
 				<Icon size="large" icon="TagsMoreOutline" /> <Padding right="large" />
-				<AccordionItem {...props} height={40} />
+				<AccordionItem {...{ ...props, color: `${props.color}` }} height={40} />
 			</Row>
 		</Dropdown>
 	);
@@ -84,7 +81,6 @@ export const TagLabel: FC<ItemType> = (props) => {
 
 const useGetTagsAccordion = (): TagsAccordionItems => {
 	const tagsFromStore = useTags();
-	const [t] = useTranslation();
 
 	return useMemo(
 		() => ({
@@ -102,6 +98,7 @@ const useGetTagsAccordion = (): TagsAccordionItems => {
 				(acc: Array<ItemType>, v) => {
 					const item = {
 						id: v.id,
+						item: v,
 						active: false,
 						color: v.color || 0,
 						divider: false,
@@ -116,7 +113,7 @@ const useGetTagsAccordion = (): TagsAccordionItems => {
 				[]
 			)
 		}),
-		[t, tagsFromStore]
+		[tagsFromStore]
 	);
 };
 

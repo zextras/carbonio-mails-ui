@@ -6,7 +6,7 @@
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
 import { TFunction } from 'i18next';
 import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
-import { find } from 'lodash';
+import { find, noop } from 'lodash';
 import { removeFilter, addFilter } from './actions';
 import {
 	modifyFilterRules,
@@ -15,6 +15,7 @@ import {
 import { FilterContext } from './filter-context';
 import CreateFilterModal from './create-filter-modal';
 import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
+import { StoreProvider } from '../../../../store/redux';
 
 type FilterListType = {
 	active: boolean;
@@ -75,66 +76,48 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		const closeModal = createModal(
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			{ size: 'large', children: <CreateFilterModal t={t} onClose={(): void => closeModal()} /> },
+			{
+				size: 'large',
+				children: (
+					<StoreProvider>
+						<CreateFilterModal t={t} onClose={(): void => closeModal()} />
+					</StoreProvider>
+				)
+			},
 			true
 		);
 	}, [createModal, t]);
-	const onRemove = useCallback(
-		() =>
-			removeFilter({
-				t,
-				availableList,
-				activeList,
 
-				setFilters:
-					selectedFilterType === 'incoming-messages' ? setIncomingFilters : setOutgoingFilters,
-				setFetchFilters:
-					selectedFilterType === 'incoming-messages'
-						? setFetchIncomingFilters
-						: setFetchOutgoingFilters,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				modifierFunc:
-					selectedFilterType === 'incoming-messages' ? modifyFilterRules : modifyOutgoingFilterRules
-			}),
-		[
+	const setFilters =
+		selectedFilterType === 'incoming-messages' ? setIncomingFilters : setOutgoingFilters;
+	const setFetchFilters =
+		selectedFilterType === 'incoming-messages' ? setFetchIncomingFilters : setFetchOutgoingFilters;
+	const modifierFunc =
+		selectedFilterType === 'incoming-messages' ? modifyFilterRules : modifyOutgoingFilterRules;
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	const emptyFilter = (arg: any): void => {};
+
+	const onRemove = useCallback(() => {
+		removeFilter({
 			t,
 			availableList,
 			activeList,
-			selectedFilterType,
-			setIncomingFilters,
-			setOutgoingFilters,
-			setFetchIncomingFilters,
-			setFetchOutgoingFilters
-		]
-	);
+			setFilters: setFilters ?? emptyFilter,
+			setFetchFilters: setFetchFilters ?? emptyFilter,
+			modifierFunc
+		});
+	}, [t, availableList, activeList, setFilters, setFetchFilters, modifierFunc]);
 	const onAdd = useCallback(
 		() =>
 			addFilter({
 				t,
 				availableList,
 				activeList,
-				setFilters:
-					selectedFilterType === 'incoming-messages' ? setIncomingFilters : setOutgoingFilters,
-				setFetchFilters:
-					selectedFilterType === 'incoming-messages'
-						? setFetchIncomingFilters
-						: setFetchOutgoingFilters,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				modifierFunc:
-					selectedFilterType === 'incoming-messages' ? modifyFilterRules : modifyOutgoingFilterRules
+				setFilters: setFilters ?? emptyFilter,
+				setFetchFilters: setFetchFilters ?? emptyFilter,
+				modifierFunc
 			}),
-		[
-			t,
-			availableList,
-			activeList,
-			selectedFilterType,
-			setIncomingFilters,
-			setOutgoingFilters,
-			setFetchIncomingFilters,
-			setFetchOutgoingFilters
-		]
+		[t, availableList, activeList, setFilters, setFetchFilters, modifierFunc]
 	);
 
 	const openFilterModifyModal = useCallback(() => {
@@ -145,14 +128,16 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				size: 'large',
 				maxHeight: '70vh',
 				children: (
-					<ModifyOutgoingFilterModal
-						t={t}
-						selectedFilter={selectedFilter}
-						onClose={(): void => closeModal()}
-						outgoingFilters={outgoingFilters}
-						setFetchOutgoingFilters={setFetchOutgoingFilters}
-						setOutgoingFilters={setOutgoingFilters}
-					/>
+					<StoreProvider>
+						<ModifyOutgoingFilterModal
+							t={t}
+							selectedFilter={selectedFilter}
+							onClose={(): void => closeModal()}
+							outgoingFilters={outgoingFilters}
+							setFetchOutgoingFilters={setFetchOutgoingFilters ?? emptyFilter}
+							setOutgoingFilters={setOutgoingFilters ?? emptyFilter}
+						/>
+					</StoreProvider>
 				)
 			},
 			true
@@ -175,7 +160,7 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				iconPlacement="left"
 				disabled={disableAdd}
 				onClick={onAdd}
-				size="fill"
+				width="fill"
 			/>
 			<Padding bottom="medium" />
 			<Button
@@ -185,32 +170,39 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				icon="ArrowheadRightOutline"
 				disabled={disableRemove}
 				onClick={onRemove}
-				size="fill"
+				width="fill"
 			/>
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.edit', 'Edit')}
 				type="outlined"
 				disabled={disableEdit}
-				size="fill"
+				width="fill"
 				onClick={openFilterModifyModal}
 			/>
 			<Padding bottom="medium" />
-			<Button label={t('filters.run', 'RUN')} type="outlined" disabled={disableRun} size="fill" />
+			<Button
+				label={t('filters.run', 'RUN')}
+				type="outlined"
+				disabled={disableRun}
+				width="fill"
+				onClick={noop}
+			/>
 			<Padding bottom="medium" />
 			<Button
 				label={t('filters.delete', 'Delete')}
 				type="outlined"
 				color="error"
 				disabled={disableDelete}
-				size="fill"
+				width="fill"
+				onClick={noop}
 			/>
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.create', 'CREATE')}
 				type="outlined"
 				disabled={disablCreate}
-				size="fill"
+				width="fill"
 				onClick={openCreateModal}
 			/>
 		</>

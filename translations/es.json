@@ -656,7 +656,16 @@
         "fromccme": "de mí",
         "forwarded": "reenviado",
         "flagged": "marcado",
-        "draft": "borrador"
+        "draft": "borrador",
+        "unreplied": "no contestado por mí",
+        "tofromme": "para mí, enviado por mí o en copia para mí",
+        "tofromccme": "para mí, enviado por mí o en copia para mí",
+        "toccme": "para mi o en copia para mi",
+        "solo": "conversaciones con un solo mensaje",
+        "replied": "contestado por mi",
+        "remote": "en una carpeta compartida por mi",
+        "local": "en mis carpetas",
+        "ccme": "en copia para mí"
     },
     "attachment_type": {
         "word": "Word",

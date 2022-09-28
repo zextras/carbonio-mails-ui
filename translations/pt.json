@@ -326,7 +326,6 @@
         "add_new_recipients": "Adicionar novos destinatários"
     },
     "search": {
-        "attachment": "Anexo",
         "unread": "Não lida",
         "attachment_note": "Buscar por todos os e-mails que possuam anexos.",
         "flagged_note": "Buscar por todos os e-mails sinalizados.",

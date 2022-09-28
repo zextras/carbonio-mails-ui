@@ -25,7 +25,8 @@
         "goto_folder": "ALLER AU DOSSIER",
         "search": "Recherche",
         "preview_new_tab": "Cliquez pour afficher un aperçu dans un autre onglet",
-        "click_preview": "Cliquer pour prévisualiser"
+        "click_preview": "Cliquer pour prévisualiser",
+        "edit_anyway": "Éditer malgré tout"
     },
     "composer": {
         "attachment": {
@@ -40,13 +41,34 @@
         }
     },
     "folder": {
+        "action": {
+            "new": "Nouveau dossier"
+        },
         "modal": {
+            "delete": {
+                "body": {
+                    "message4": "Si vous le supprimez, tous les contenus associés seront définitivement supprimés et le dossier ne sera plus restaurable."
+                }
+            },
             "edit": {
                 "rename_warning": "Vous ne pouvez pas renommer un dossier en tant que dossier système.",
                 "retention_message": "Les messages de ce dossier qui se situent dans la plage de rétention devront être confirmés explicitement avant d'être supprimés",
                 "add_share": "Ajouter un Partage",
                 "retention_duration_warning": "La durée de rétention doit être un nombre positif",
                 "threshold_message": "Les messages de ce dossier qui sont plus anciens que le seuil d'élimination seront soumis à un nettoyage et une suppression automatiques."
+            },
+            "move": {
+                "footer": "Déplacer"
+            },
+            "new": {
+                "input": {
+                    "name": "Nom du dossier"
+                }
+            },
+            "wipe": {
+                "body": {
+                    "message2": "Si vous le nettoyez, tous les contenus associés seront définitivement supprimés."
+                }
             }
         }
     },
@@ -246,7 +268,7 @@
         "read_receipt_sent": "Un accusé de lecture a été envoyé pour ce message",
         "read_receipt_req": "Un accusé de lecture est demandé",
         "notify": "Notifier",
-        "mark_as_un_important": "Signaler comme important",
+        "mark_as_un_important": "Marquer comme non important",
         "mark_as_important": "Signaler comme important",
         "keep_draft": "Enregistrer le brouillon",
         "include_shared_folders": "Inclure les dossiers partagés",
@@ -257,7 +279,20 @@
         "delete_draft": "Supprimer le brouillon",
         "delayed_sending": "Envoi différé",
         "collapse_receivers_list": "Réduire la liste des destinataires",
-        "before_you_leave": "Avant de quitter"
+        "before_you_leave": "Avant de quitter",
+        "warning": "Avertissement",
+        "show_more_info": "Afficher les informations complémentaires",
+        "select_date_time": "Sélectionnez la date et l'heure",
+        "schedule_send": "Planifier l'envoi",
+        "read_reciept": "Accusé de lecture",
+        "read_receipt": "Accusé de lecture",
+        "message_from_me": "Messages envoyé par moi",
+        "message_arrival": "Arrivée de message",
+        "hide_more_info": "Cacher les informations complémentaires",
+        "duplicate_messages": "Messages dupliqués",
+        "as_text": "En Texte",
+        "as_html": "En HTML",
+        "arrival_notifications": "Notifications d'arrivée"
     },
     "message": {
         "snackbar": {
@@ -288,7 +323,9 @@
         "view_rights": "Affichage",
         "external_images_blocked": "Les images externe ont été bloquées pour vous protéger contre des spams potentiels",
         "schedule_time": "{{date}} à {{time}}",
-        "schedule_mail": "Sera envoyé le : {{date}} à {{time}}"
+        "schedule_mail": "Sera envoyé le : {{date}} à {{time}}",
+        "send_later_success": "Votre email sera envoyé le {{date}} à {{time}}",
+        "select_date_time": "Sélectionner une date et une heure pour envoyer le message"
     },
     "messages": {
         "invalid_address": "L'adresse suivante semble être invalide",
@@ -304,7 +341,18 @@
             },
             "send_anyway": {
                 "second": "Souhaitez vous envoyer cet email malgré tout ?",
-                "first": "Le sujet de l'email est vide et vous n'avez pas joint de fichier."
+                "first": "Le sujet de l'email est vide et vous n'avez pas joint de fichier.",
+                "no_subject_no_attachments": "Le sujet de l'email est vide et vous n'avez pas joint de fichier.",
+                "no_subject": "Le sujet de l'email est vide.",
+                "no_attachments": "Vous n'avez pas joint de fichier.",
+                "enclosing": "enfermant",
+                "enclosed": "ci-joint",
+                "enclose": "joindre",
+                "attachments": "pièces jointes",
+                "attachment": "pièce jointe",
+                "attaching": "attachement",
+                "attached": "attaché",
+                "attach": "attacher"
             }
         },
         "new_email": "Nouvel email",
@@ -328,6 +376,7 @@
             "message_deleted": "Message supprimé",
             "message_move": "Message déplacé avec succès",
             "message_redirected": "Le message a été redirigé",
+            "folder_wiped_error": "Quelque chose s'est mal passé, veuillez recommencer",
             "mail_sent": "Message envoyé",
             "marked_as_non_spam": "Vous avez marqué cet email comme n'étant pas un spam",
             "email_moved_to_trash": "Email déplacé dans la Corbeille",
@@ -351,11 +400,13 @@
         "read_receipt_2": "Souhaitez-vous notifier l'expéditeur ?",
         "read_receipt_1": "L'expéditeur de ce message a demandé une notification de lecture de ce message.",
         "invalid_trustee_address": "Merci de ne saisir que des adresses email ou des domaines",
-        "cal_name_exist_warning": "Ce sont est déjà utilisé par un autre calendrier sur cet emplacement"
+        "cal_name_exist_warning": "Ce sont est déjà utilisé par un autre calendrier sur cet emplacement",
+        "edit_schedule_warning": "En éditant cet email, l'heure et la date définie précédemment pour l'envoi planifiées seront annulées."
     },
     "placeholder": {
         "add_new_recipients": "Ajouter de nouveaux destinataires"
     },
+    "remove_from_this_list": "Retirer de cette liste",
     "search": {
         "unread": "Non lu",
         "flagged_note": "Recherchez tous les emails qui ont une étiquette.",
@@ -488,7 +539,24 @@
         "to_cc": "A ou CC",
         "twitter_notification": "Notifications Twitter",
         "under": "sous",
-        "conv_is_started": "Dans la conversation que j'ai lancé"
+        "conv_is_started": "Dans la conversation que j'ai lancé",
+        "fonts": {
+            "wide_block": "Wide Block",
+            "wide": "Wide",
+            "terminal": "Terminal",
+            "serif": "Serif",
+            "sans_serif": "Sans Serif",
+            "professional": "Professional",
+            "monospaced": "Monospaced",
+            "modern": "Modern",
+            "garamond": "Garamond",
+            "elegant": "Elegant",
+            "console": "Console",
+            "comic": "Comic"
+        },
+        "font_size": "{{count}} pt",
+        "font_size_plural": "",
+        "font": "Police"
     },
     "share": {
         "options": {
@@ -633,7 +701,8 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "Si vous l'effacez, tout le contenu associé sera définitivement supprimé."
+                    "message2": "Si vous l'effacez, tout le contenu associé sera définitivement supprimé.",
+                    "message1": "Souhaitez-vous effacer le dossier sélectionné ?"
                 }
             }
         },
@@ -695,5 +764,11 @@
         "excel": "Excel",
         "email": "Email",
         "application": "Application"
-    }
+    },
+    "new_folder": "Nouveau Dossier",
+    "labels": {
+        "composing_messages": "Composition des messages",
+        "compose_colin": "Composer :"
+    },
+    "go_back": "Retour"
 }

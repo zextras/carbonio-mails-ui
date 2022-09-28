@@ -9,7 +9,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
-import { find, forEach, merge, reduce } from 'lodash';
+import { forEach, merge, reduce } from 'lodash';
 import {
 	FolderType,
 	ConversationsFolderStatus,
@@ -46,6 +46,7 @@ function fetchConversationsFulfilled(
 			...state.searchedInFolder,
 			[meta.arg.folderId]: 'complete'
 		};
+		state.expandedStatus = {};
 	}
 	state.status = payload?.hasMore ? 'hasMore' : 'complete';
 }
@@ -63,11 +64,8 @@ function searchConvFulfilled(state: ConversationsStateType, { payload, meta }: a
 	const conversation = state.conversations[meta.arg.conversationId];
 	if (conversation) {
 		conversation.messages = reduce(
-			conversation.messages,
-			(acc, v) => {
-				const msg = find(payload.messages, ['id', v.id]);
-				return msg ? [...acc, { id: v.id, parent: v.parent, date: Number(v.date) }] : [...acc, v];
-			},
+			payload.messages,
+			(acc, v) => [...acc, { id: v.id, parent: v.parent, date: Number(v.date) }],
 			[] as Array<ConvMessage>
 		);
 	}
@@ -255,6 +253,9 @@ export function selectConversationsArray({ conversations }: StateType): Array<Co
 	return Object.values(conversations?.conversations ?? []);
 }
 
+export function selectConversation({ conversations }: StateType, id: string): Conversation {
+	return conversations?.conversations?.[id] ?? {};
+}
 export function selectFolderSearchStatus(
 	{ conversations }: StateType,
 	folderId: string

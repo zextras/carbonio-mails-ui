@@ -5,7 +5,7 @@
         "spam_title2": "Kliknij ikonkę kosza, aby usunąć e-mail będacy spamem.",
         "title3": "Pozostań w kontakcie z innymi użytkownikami.",
         "archive_title2": "Wybierz zarchiwizowany e-mail aby go przeglądnąć.",
-        "description4": "Możesz oflagować, odpowiedzieć lub przekazać dalej ten przedmiot do innych użytkowników.",
+        "description4": "Możesz oflagować, odpowiedzieć lub przekazać go dalej innym użytkownikom.",
         "description2": "Wyślij dokumenty, obrazki i wiele więcej tworząc nowy e-mail.",
         "description5": "Zobacz o czym chcą rozmawiać z tobą inni użytkownicy.",
         "description6": "Odpowiedz na ten e-mail lub przekaż go dalej innym użytkownikom.",
@@ -74,7 +74,8 @@
         "share_folder": "Udostępnij folder",
         "show_details": "Pokaż szczegóły",
         "show_original": "Pokaż oryginał",
-        "click_preview": "Kliknij aby zobaczyć podgląd"
+        "click_preview": "Kliknij aby zobaczyć podgląd",
+        "edit_anyway": "Edytuj mimo to"
     },
     "composer": {
         "attachment": {
@@ -94,7 +95,7 @@
     "filters": {
         "active_filters": "Aktywne Filtry",
         "available_filters": "Dostępne Filtry",
-        "filter_note": "Zauważ: zmiany w zasadach filtrów są od razu zapisywane",
+        "filter_note": "Uwaga: zmiany w zasadach filtrów są od razu zapisywane",
         "filters": "Filtry",
         "outgoing_message_filters": "Filtry Wysyłanych Wiadomości",
         "incoming_msg_filters": "Filtry Przychodzących Wiadomości",
@@ -176,7 +177,7 @@
         "filter_folders": "Filtruj foldery",
         "filter_user": "Filtruj użytkowników",
         "find_mail_shares": "Znajdź udostępnione foldery",
-        "find_shares": "Znajdź udostępnienia",
+        "find_shares": "Udostępnione dla mnie",
         "flash_browser_title": "Podświetl tytuł przeglądarki",
         "forwarded": "Przekazano dalej",
         "freebusy": "WolnyZajęty",
@@ -192,7 +193,7 @@
         "mail_settings": "Ustawienia skrzynki odbiorczej",
         "me": "Ja",
         "messages": "Wiadomości",
-        "new_folder": "Nowy Folder",
+        "new_folder": "Nowy folder",
         "no_search_results_found": "Nie znaleziono wyników",
         "on_behalf_of": "w imieniu",
         "owner": "Właściciel: ",
@@ -205,7 +206,7 @@
         "results_for_error": "Nie udało się wyszukać, wyczyść pole i spróbuj ponownie: ",
         "retention_policy": "Zasady przechowywania",
         "revoke_access_tooltip": "Odbierz dostęp i wyślij domyślną notkę",
-        "revoke_access_without_notification": "Odbierz dostęp i nie wysyłaj notki",
+        "revoke_access_without_notification": "Odbierz dostęp i nie wysyłaj powiadomienia",
         "revoke_share": "Cofnij udostępnienie {{title}}",
         "revoke_with_custom_message": "Odbierz dostęp i wyślij niestandardową notkę",
         "role": "Rola: ",
@@ -243,7 +244,7 @@
         "from_identity": "Od: {{identity}}",
         "new_email": "Nowy E-mail",
         "send_email": "Wyślij e-maila",
-        "app_name": "Mails",
+        "app_name": "E-maile",
         "set_default_signatures": "Ustaw Domyślne Podpisy",
         "show_quoted_text": "Pokaż zacytowany tekst",
         "share_with": "Udostępnij",
@@ -261,7 +262,7 @@
         "tags": "Tagi",
         "behalf_of": "w imieniu",
         "accept": "Zaakceptuj",
-        "add_task": "Jeżeli chcesz zrobić notkę, możesz dodać zadanie do Twojej LISTY TO-DO",
+        "add_task": "Jeżeli chcesz zrobić notatkę, możesz dodać zadanie do Twojej LISTY TO-DO",
         "create_tag": "Stwórz Tag",
         "delete_tag": "Usuń Tag",
         "delete_tag_name": "Usuń Tag \"{{name}}\"",
@@ -310,7 +311,21 @@
         "enter_email_address": "Wprowadź adres e-mail lub domenę",
         "do_not_notify": "Nie powiadamiaj",
         "delete_draft": "Usuń wersję roboczą",
-        "before_you_leave": "Zanim opuścisz"
+        "before_you_leave": "Zanim opuścisz",
+        "duplicate_messages": "Duplikowanie wiadomości",
+        "warning": "Ostrzeżenie",
+        "show_more_info": "Pokaż więcej informacji",
+        "select_date_time": "Wybierz datę i godzinę",
+        "schedule_send": "Zaplanuj wysyłanie",
+        "read_reciept": "Potwierdzenie przeczytania",
+        "read_receipt": "Potwierdzenie przeczytania",
+        "message_from_me": "Wiadomości ode mnie",
+        "message_arrival": "Przybycie wiadomości",
+        "hide_more_info": "Ukryj informacje",
+        "edit_folder_properties": "Edytuj właściwości {{name}}",
+        "as_text": "Jako tekst",
+        "as_html": "Jako HTML",
+        "arrival_notifications": "Powiadomienia o przybyciu"
     },
     "message": {
         "snackbar": {
@@ -341,7 +356,9 @@
         "manager_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie",
         "external_images_blocked": "Obrazki z innych domen zostały zablokowane, aby chronić Cię przed potencjalnym spamem",
         "schedule_time": "{{date}} o {{time}}",
-        "schedule_mail": "Zostanie wysłany: {{date}} o {{time}}"
+        "schedule_mail": "Zostanie wysłany: {{date}} o {{time}}",
+        "send_later_success": "Twój e-mail zostanie wysłany {{date}} o {{time}}",
+        "select_date_time": "Wybierz datę i godzinę, o której ta wiadomość zostanie wysłana"
     },
     "search": {
         "flagged_note": "Wyszukaj wszystkie oflagowane e-maile.",
@@ -364,14 +381,14 @@
             "share_calendar_role": {
                 "admin": "Administrator",
                 "manager": "Manager",
-                "none": "Nikt z powyższych",
+                "none": "Wyłączone",
                 "viewer": "Wyświetlający"
             }
         },
         "filter_folder_message": "Wybierz folder, w którym rozpoczniesz zaawansowane wyszukiwanie",
         "is_contained_in": "Jest zawarty w",
         "share_note": "Domyślna wiadomość zawiera Twoje imię, nazwę udostępnianiego elementu, uprawnienia przyznane odbiorcom oraz informacje logowania.",
-        "standard_message": "Dodaj notkę do domyślnej wiadomości",
+        "standard_message": "Dodaj notatkę do domyślnej wiadomości",
         "recipients_address": "Adresy e-mail odbiorców",
         "send_notification": "Wyślij powiadomienie o tym udostępnieniu"
     },
@@ -422,7 +439,8 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "Jeśli go wyczyścisz, cała powiązana z nim zawartość zostanie trwale usunięta."
+                    "message2": "Jeśli go wyczyścisz, cała powiązana z nim zawartość zostanie trwale usunięta.",
+                    "message1": "Czy chcesz wyczyścić wybrany folder?"
                 }
             }
         },
@@ -490,7 +508,18 @@
             },
             "send_anyway": {
                 "second": "Czy mimo to chcesz wysłać e-maila?",
-                "first": "Temat e-maila jest pusty oraz nie załączono żadnych plików."
+                "first": "Temat e-maila jest pusty oraz nie załączono żadnych plików.",
+                "no_subject_no_attachments": "Temat e-maila jest pusty i nie załączono żadnych plików.",
+                "no_subject": "Temat e-maila jest pusty.",
+                "no_attachments": "Nie załączono żadnych plików.",
+                "enclosing": "załączanie",
+                "enclosed": "załączone",
+                "enclose": "załącz",
+                "attachments": "załączniki",
+                "attachment": "załącznik",
+                "attaching": "załączanie",
+                "attached": "załączone",
+                "attach": "załącz"
             }
         },
         "new_email": "Nowy e-mail",
@@ -504,13 +533,14 @@
         "read_receipt_2": "Czy chcesz powiadomić nadawcę?",
         "read_receipt_1": "Nadawca tej wiadomości poprosił o powiadomienie go kiedy przeczytasz tą wiadomość.",
         "invalid_trustee_address": "Wprowadź tylko adresy e-mail i domeny",
-        "cal_name_exist_warning": "Kalendarz z wybraną nazwą już istnieje w tej ścieżce"
+        "cal_name_exist_warning": "Kalendarz z wybraną nazwą już istnieje w tej ścieżce",
+        "edit_schedule_warning": "Edytując ten e-mail, poprzednio ustawiona data i czas opóźnionego wysyłania zostanie zresetowana."
     },
     "settings": {
         "conv_is_participated": "w konwersacjach, w których uczestniczyłem",
         "label": {
             "conversation_ordering": "Kolejność konwersacji",
-            "set_message_color": "Ustaw kolor wiadomości i konwersacji w zależności od koloru tagu.",
+            "set_message_color": "Ustawianie koloru komunikatów i rozmów zgodnie z kolorami znaczników.",
             "check_new_mail": "Sprawdź nowego e-maila",
             "default_mail_search": "Wyszukiwanie Domyślnego E-maila",
             "display_mail": "Wyświetl e-maila",
@@ -546,7 +576,7 @@
         "conv_is_started": "w konwersacjach, które rozpocząłem",
         "conv_sort_option": {
             "asc": "Od najstarszych",
-            "desc": "Od najmłodszych"
+            "desc": "Od najnowszych"
         },
         "create_new_filter": "Stwórz nowy Filtr",
         "date": "Data",
@@ -609,7 +639,7 @@
             "new_message_folder": "Wyświetl powiadomienia dla nowych wiadomości, które przychodzą do tego folderu"
         },
         "perform_following_action": "Przeprowadź następujące czynności:",
-        "read_receipt": "Potwierdzenie Przeczytania",
+        "read_receipt": "Potwierdzenie przeczytania",
         "redirect_to_address": "Przekieruj do adresu",
         "remove_condition": "Usuń ten warunek",
         "social": "Społecznościowy",
@@ -625,10 +655,28 @@
         "message": "Wiadomość",
         "not_before": "nie wcześniej niż",
         "msg_selection_optn": {
-            "below_deleted": "Wybierz wiadomość poniżej usuniętej lub przeniesionej wiadomości",
+            "below_deleted": "Wybierz wiadomość pod wiadomością usuniętą lub przeniesioną",
             "above_deleted": "Wybierz wiadomość powyżej usuniętej lub przeniesionej wiadomości",
             "based_on_previous": "Wybierz następna wiadomość na podstawie poprzednich wyborów"
-        }
+        },
+        "fonts": {
+            "wide_block": "Szeroki blok",
+            "wide": "Szeroka",
+            "terminal": "Terminal",
+            "serif": "Serif",
+            "sans_serif": "Sans Serif",
+            "professional": "Profesjonalna",
+            "monospaced": "Stała szerokość znaków",
+            "modern": "Nowoczesna",
+            "garamond": "Garamond",
+            "elegant": "Elegancka",
+            "console": "Konsola",
+            "comic": "Komiksowa"
+        },
+        "font_size_0": "{{count}} pkt",
+        "font_size_1": "{{count}} pkt",
+        "font_size_2": "{{count}} pkt",
+        "font": "Czcionka"
     },
     "signatures": {
         "signature_heading": "Podpisy",
@@ -700,5 +748,11 @@
         "excel": "Excel",
         "email": "E-mail",
         "application": "Aplikacja"
-    }
+    },
+    "new_folder": "Nowy folder",
+    "labels": {
+        "composing_messages": "Tworzenie wiadomości",
+        "compose_colin": "Stwórz:"
+    },
+    "go_back": "Powrót"
 }

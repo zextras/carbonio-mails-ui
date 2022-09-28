@@ -3,25 +3,26 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { AccordionFolder } from '@zextras/carbonio-shell-ui';
+import { TextProps, ButtonProps, ContainerProps } from '@zextras/carbonio-design-system';
+import { Folder } from '@zextras/carbonio-shell-ui';
 
 export type ModalFooterProps = {
-	mainAlignment?: string | undefined;
-	crossAlignment?: string | undefined;
+	mainAlignment?: ContainerProps['mainAlignment'] | undefined;
+	crossAlignment?: ContainerProps['crossAlignment'] | undefined;
 	padding?: Record<string, string> | undefined;
-	onConfirm: (a: string) => void;
+	onConfirm: (e?: SyntheticEvent<Element, Event> | KeyboardEvent) => void;
 	secondaryAction?: () => void | undefined;
 	label: string;
 	secondaryLabel?: string | undefined;
 	disabled?: boolean | undefined;
 	secondaryDisabled?: boolean | undefined;
-	background?: string | undefined;
-	secondarybackground?: string | undefined;
+	background?: ContainerProps['background'] | undefined;
+	secondarybackground?: ContainerProps['background'] | undefined;
 	color?: string | undefined;
 	secondaryColor?: string | undefined;
-	size?: string | undefined;
-	primaryBtnType?: string | undefined;
-	secondaryBtnType?: string | undefined;
+	size?: ButtonProps['size'] | undefined;
+	primaryBtnType?: ButtonProps['type'] | undefined;
+	secondaryBtnType?: ButtonProps['type'] | undefined;
 	showDivider?: boolean;
 	tooltip?: string;
 	secondaryTooltip?: string;
@@ -40,7 +41,7 @@ export type CreateSnackbar = (arg: {
 }) => void;
 
 export type ModalProps = {
-	folder: AccordionFolder;
+	folder: Folder;
 	onClose: () => void;
 };
 
@@ -49,7 +50,7 @@ export type Crumb = {
 	tooltip: string;
 };
 
-export type ResFolder = AccordionFolder &
+export type ResFolder = Folder &
 	Partial<{
 		folderId: number;
 		folderPath: string;
@@ -102,6 +103,6 @@ export type DataProps = {
 
 export type TextReadValuesProps = {
 	color: string;
-	weight: string;
+	weight: TextProps['weight'];
 	badge: 'unread' | 'read';
 };

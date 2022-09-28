@@ -3,35 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { nanoid } from '@reduxjs/toolkit';
 import React, { useCallback, useState, useEffect, FC, ReactElement } from 'react';
 import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
 import { filter } from 'lodash';
-import { TFunction } from 'i18next';
-import { QueryChip } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 
-type ToggleFilters = Array<{
-	avatarIcon?: string;
-	label: string;
-	value: string;
-	isQueryFilter?: boolean;
-	isGeneric?: boolean;
-	avatarBackground?: string;
-}>;
-type ToggleFiltersProps = {
-	compProps: {
-		t: TFunction;
-		query: Array<QueryChip>;
-		setUnreadFilter: (arg: ToggleFilters) => void;
-		setFlaggedFilter: (arg: ToggleFilters) => void;
-		setAttachmentFilter: (arg: ToggleFilters) => void;
-		isSharedFolderIncludedTobe: boolean;
-		setIsSharedFolderIncludedTobe: (arg: boolean) => void;
-	};
-};
+import { ToggleFiltersProps } from '../../../types';
 
 const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 	const {
-		t,
 		query,
 		setUnreadFilter,
 		setFlaggedFilter,
@@ -50,6 +31,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			? setUnreadFilter([])
 			: setUnreadFilter([
 					{
+						id: nanoid(),
 						label: 'is:unread',
 						value: 'is:unread',
 						isQueryFilter: true,
@@ -65,6 +47,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			? setFlaggedFilter([])
 			: setFlaggedFilter([
 					{
+						id: nanoid(),
 						label: 'is:flagged',
 						value: 'is:flagged',
 						isQueryFilter: true,
@@ -80,6 +63,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			? setAttachmentFilter([])
 			: setAttachmentFilter([
 					{
+						id: nanoid(),
 						label: 'has:attachment',
 						value: 'has:attachment',
 						isQueryFilter: true,
@@ -101,6 +85,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			setIsUnread(true);
 			setUnreadFilter([
 				{
+					id: nanoid(),
 					label: 'is:unread',
 					value: 'is:unread',
 					isQueryFilter: true,
@@ -116,6 +101,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			setIsFlagged(true);
 			setFlaggedFilter([
 				{
+					id: nanoid(),
 					label: 'is:flagged',
 					value: 'is:flagged',
 					isQueryFilter: true,
@@ -136,6 +122,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			setHasAttachment(true);
 			setAttachmentFilter([
 				{
+					id: nanoid(),
 					label: 'has:attachment',
 					value: 'has:attachment',
 					isQueryFilter: true,

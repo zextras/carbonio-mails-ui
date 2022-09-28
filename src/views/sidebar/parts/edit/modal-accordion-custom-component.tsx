@@ -6,50 +6,41 @@
 import React, { FC, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Padding, Row, Icon, Container, TextWithTooltip } from '@zextras/carbonio-design-system';
 
-import { AccordionFolder } from '@zextras/carbonio-shell-ui';
-import { useTranslation } from 'react-i18next';
+import { Folder } from '@zextras/carbonio-shell-ui';
 import { indexOf, lastIndexOf, min } from 'lodash';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
 import { Crumb } from '../../../../types';
 import { Breadcrumbs } from './breadcrumbs';
 
 const ModalAccordionCustomComponent: FC<{
-	item: AccordionFolder;
-}> = (folder) => {
-	const { item } = folder;
-	const [t] = useTranslation();
+	item: Folder;
+}> = ({ item }) => {
 	const systemFolder = useMemo(() => {
 		let result = '';
-		if (item.folder.absFolderPath) {
+		if (item.absFolderPath) {
 			result =
-				item.folder.absFolderPath.indexOf('/', 1) === -1
-					? item.folder.absFolderPath.slice(1, item.folder.absFolderPath.indexOf('/', 0))
-					: item.folder.absFolderPath.slice(1, item.folder.absFolderPath.indexOf('/', 1));
+				item.absFolderPath.indexOf('/', 1) === -1
+					? item.absFolderPath.slice(1, item.absFolderPath.indexOf('/', 0))
+					: item.absFolderPath.slice(1, item.absFolderPath.indexOf('/', 1));
 		}
 		return result;
-	}, [item.folder.absFolderPath]);
-	const translatedSystemFolder = getSystemFolderTranslatedName({ t, folderName: systemFolder });
+	}, [item.absFolderPath]);
+	const translatedSystemFolder = getSystemFolderTranslatedName({ folderName: systemFolder });
 	const factor = 10;
 	const path = useMemo(
 		() =>
-			item.folder.absFolderPath &&
-			item.folder.absFolderPath
-				.slice(
-					item.folder.absFolderPath.indexOf('/', 1) + 1,
-					item.folder.absFolderPath.lastIndexOf('/')
-				)
+			item.absFolderPath &&
+			item.absFolderPath
+				.slice(item.absFolderPath.indexOf('/', 1) + 1, item.absFolderPath.lastIndexOf('/'))
 				.split('/'),
-		[item.folder.absFolderPath]
+		[item.absFolderPath]
 	);
-	const targetFolder = useMemo(
-		() => item.label || item.folder.name,
-		[item.label, item.folder.name]
-	);
+	const targetFolder = useMemo(() => item.name, [item.name]);
 	const targetFolderWidth = useMemo(
 		() => min([targetFolder.length * factor + 18, 150]) || 0,
 		[targetFolder.length]
 	);
-	const containerRef = useRef<HTMLDivElement>();
+	const containerRef = useRef<HTMLDivElement>(null);
 	const [availableWidth, setAvailableWidth] = useState(
 		(containerRef?.current?.clientWidth || 405) - targetFolderWidth
 	);
@@ -73,30 +64,33 @@ const ModalAccordionCustomComponent: FC<{
 
 	const crumbs: Array<Crumb> | undefined = useMemo(() => {
 		const result = [];
+		let crumbItem = item;
 		let exitLoop = false;
 		let stringRemainingWidth = availableWidth;
 		while (
 			!(
-				exitLoop !== false ||
-				item.folder.parent?.absFolderPath === '/' ||
-				(item.folder.parent?.isLink === true &&
-					item.folder.parent?.absFolderPath.lastIndexOf('/', 1) !== -1)
+				exitLoop ||
+				crumbItem.parent?.absFolderPath === '/' ||
+				(crumbItem.parent?.isLink === true &&
+					crumbItem.parent?.absFolderPath?.lastIndexOf('/', 1) !== -1)
 			)
 		) {
-			const value = item.folder.absFolderPath.slice(
-				lastIndexOf(item.folder.absFolderPath, '/') + 1
-			);
-			stringRemainingWidth -= item.folder.name.length * factor + 18;
-			if (value !== '' && stringRemainingWidth > 0) {
+			const value = crumbItem.absFolderPath?.slice(lastIndexOf(crumbItem.absFolderPath, '/') + 1);
+			stringRemainingWidth -= crumbItem.name.length * factor + 18;
+			if (value && value !== '' && stringRemainingWidth > 0) {
 				result.push({
 					label: value,
 					tooltip: ''
 				});
-				item.folder = item.folder.parent;
+				if (crumbItem.parent) {
+					// eslint-disable-next-line no-param-reassign
+					crumbItem = crumbItem.parent;
+				}
 			} else {
 				result.push({
 					label: '...',
-					tooltip: item.folder.absFolderPath.slice(indexOf(item.folder.absFolderPath, '/', 2) + 1)
+					tooltip:
+						crumbItem.absFolderPath?.slice(indexOf(crumbItem.absFolderPath, '/', 2) + 1) || ''
 				});
 				exitLoop = true;
 			}
@@ -119,9 +113,9 @@ const ModalAccordionCustomComponent: FC<{
 				<Row orientation="horizontal" width="fill" crossAlignment="flex-start">
 					<Icon color={iconColor} icon={iconName || 'FolderOutline'} size="large" />
 					<Padding right="medium" />
-					{crumbs?.length > 0 && <Breadcrumbs breadcrumbs={crumbs} />}
-					<Container width="fit" maxWidth={availableWidth - fullPath.length + item.label.length}>
-						<TextWithTooltip overflow="ellipsis">&nbsp;{item.label}</TextWithTooltip>
+					{crumbs && crumbs?.length > 0 && <Breadcrumbs breadcrumbs={crumbs} />}
+					<Container width="fit" maxWidth={availableWidth - fullPath.length + item.name.length}>
+						<TextWithTooltip overflow="ellipsis">&nbsp;{item.name}</TextWithTooltip>
 					</Container>
 				</Row>
 			</Padding>

@@ -9,7 +9,7 @@ import { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import ModalFooter from './create-filter-modal-footer';
-import { ModalHeader } from '../../../sidebar/commons/modal-header';
+import ModalHeader from '../../../sidebar/commons/modal-header';
 import DefaultCondition from './create-filters-conditions/default';
 import { CreateFilterContext } from './create-filter-context';
 import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
@@ -20,11 +20,9 @@ type ComponentProps = {
 	t: TFunction;
 	onClose: () => void;
 	incomingFilters?: any;
-	setFetchIncomingFilters: (arg: boolean) => void;
-	setIncomingFilters: (arg: any) => void;
+	setFetchIncomingFilters?: (arg: boolean) => void;
+	setIncomingFilters?: (arg: any) => void;
 };
-
-type ActionType = Record<string, Array<any>>;
 
 const CreateFilterModal: FC<ComponentProps> = ({
 	t,
@@ -116,9 +114,9 @@ const CreateFilterModal: FC<ComponentProps> = ({
 	const onConfirm = useCallback(() => {
 		const toSend = [...incomingFiltersCopy, requiredFilters];
 
-		setIncomingFilters(toSend);
+		setIncomingFilters?.(toSend);
 		modifyFilterRules(toSend).then(() => {
-			setFetchIncomingFilters(true);
+			setFetchIncomingFilters?.(true);
 		});
 		onClose();
 	}, [incomingFiltersCopy, requiredFilters, setIncomingFilters, onClose, setFetchIncomingFilters]);

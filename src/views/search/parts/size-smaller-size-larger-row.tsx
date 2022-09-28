@@ -3,26 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Container, ChipInput } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
+import { SizeLargerSizeSmallerRowProps } from '../../../types';
 
-type ComponentProps = {
-	compProps: {
-		t: TFunction;
-		sizeSmaller: any;
-		setSizeSmaller: (arg: any) => any;
-		sizeLarger: any;
-		setSizeLarger: (arg: any) => any;
-	};
-};
-
-const SizeLargerSizeSmallerRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
-	const { t, sizeSmaller, setSizeSmaller, sizeLarger, setSizeLarger } = compProps;
+const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
+	compProps
+}): ReactElement => {
+	const { sizeSmaller, setSizeSmaller, sizeLarger, setSizeLarger } = compProps;
 
 	const [isInvalidSmallSize, setIsInvalidSmallSize] = useState(false);
 	const [isInvalidLargeSize, setIsInvalidLargeSize] = useState(false);
-	const errorLabel = useMemo(() => t('search.size_error', 'Only numbers are allowed'), [t]);
+	const errorLabel = useMemo(() => t('search.size_error', 'Only numbers are allowed'), []);
 
 	const onChange = useCallback((state, stateHandler) => {
 		stateHandler(state);
@@ -54,7 +47,7 @@ const SizeLargerSizeSmallerRow: FC<ComponentProps> = ({ compProps }): ReactEleme
 	);
 
 	const sizeSmallerChipOnAdd = useCallback(
-		(label: string): any => {
+		(label): any => {
 			checkErrorSizeSmaller(label);
 			return chipOnAdd(
 				label,
@@ -70,7 +63,7 @@ const SizeLargerSizeSmallerRow: FC<ComponentProps> = ({ compProps }): ReactEleme
 	);
 
 	const sizeLargerChipOnAdd = useCallback(
-		(label: string): any => {
+		(label): any => {
 			checkErrorSizeLarger(label);
 			return chipOnAdd(
 				label,
@@ -86,27 +79,27 @@ const SizeLargerSizeSmallerRow: FC<ComponentProps> = ({ compProps }): ReactEleme
 	);
 
 	const sizeSmallerOnChange = useCallback(
-		(label: string): void => {
-			onChange(label, setSizeSmaller);
-			if (label.length === 0) setIsInvalidSmallSize(false);
+		(value: ChipItem[]): void => {
+			onChange(value, setSizeSmaller);
+			if (value.length === 0) setIsInvalidSmallSize(false);
 		},
 		[onChange, setSizeSmaller, setIsInvalidSmallSize]
 	);
 
 	const sizeLargerOnChange = useCallback(
-		(label: string): void => {
-			onChange(label, setSizeLarger);
-			if (label.length === 0) setIsInvalidLargeSize(false);
+		(value: ChipItem[]): void => {
+			onChange(value, setSizeLarger);
+			if (value.length === 0) setIsInvalidLargeSize(false);
 		},
 		[onChange, setSizeLarger, setIsInvalidLargeSize]
 	);
 
 	const sizeSmallerPlaceholder = useMemo(
 		() => t('label.size_smaller', 'Size smaller than (MB)'),
-		[t]
+		[]
 	);
 
-	const sizeLargerPlaceholder = useMemo(() => t('label.size_larger', 'Size larger than (MB)'), [t]);
+	const sizeLargerPlaceholder = useMemo(() => t('label.size_larger', 'Size larger than (MB)'), []);
 
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">

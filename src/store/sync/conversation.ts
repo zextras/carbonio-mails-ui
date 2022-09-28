@@ -32,21 +32,12 @@ export const handleModifiedConversationsReducer = (
 	});
 };
 
-/* const getNewConversationDate = (
-	messages: Array<ConvMessage>,
-	currentFolder: string,
-	oldDate: number,
-	msg: SyncResponseCreatedMessage
-): number | undefined =>
-	msg.l === FOLDERS.DRAFTS
-		? oldDate
-		: head(sortBy(filter(messages, { parent: currentFolder }), 'date'))?.date; */
-
 export const handleCreatedMessagesInConversationsReducer = (
 	state: ConversationsStateType,
 	{ payload }: Payload
 ): void => {
 	const { m } = payload;
+
 	forEach(m, (msg) => {
 		const conversation = state.conversations?.[msg.cid];
 		if (msg?.cid && msg?.id && msg?.l && conversation) {
@@ -104,6 +95,7 @@ export const handleAddMessagesInConversationReducer = (
 ): void => {
 	forEach(payload, (msg) => {
 		const addMsg = omit(msg, ['conversation']) as ConvMessage;
+
 		if (msg?.conversation && state?.conversations?.[msg?.conversation]) {
 			state.conversations[msg.conversation] = {
 				...state.conversations[msg.conversation],

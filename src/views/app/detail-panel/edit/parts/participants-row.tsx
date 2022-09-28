@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useContext, useEffect, useState } from 'react';
-import { Button, ChipInput, Container } from '@zextras/carbonio-design-system';
+import { Button, ChipInput, ChipItem, Container } from '@zextras/carbonio-design-system';
 import { Controller } from 'react-hook-form';
 import { map, some } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import * as StyledComp from './edit-view-styled-components';
 import { EditViewContext } from './edit-view-context';
 import { ParticipantRole } from '../../../../../commons/utils';
@@ -18,16 +17,16 @@ const emailRegex =
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars, max-len, no-control-regex
 	/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
-type ContactType = {
-	type: ParticipantRole;
-	address: string;
+interface ContactType extends ChipItem {
+	type?: ParticipantRole;
+	address?: string;
 	name?: string;
 	fullName?: string;
-	email: string | undefined;
+	email?: string | undefined;
 	firstName?: string;
-	label: string | undefined;
-	error?: boolean;
-};
+	label?: string | undefined;
+	error?: boolean | string;
+}
 
 const ParticipantsRow: FC = () => {
 	const [ContactInput, isAvailable] = useIntegratedComponent('contact-input');
@@ -35,7 +34,6 @@ const ParticipantsRow: FC = () => {
 	const [showBcc, setShowBcc] = useState(false);
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
 	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
-	const [t] = useTranslation();
 
 	const { control, editor, updateEditorCb, throttledSaveToDraft } = useContext(EditViewContext);
 
@@ -216,7 +214,6 @@ const ParticipantsRow: FC = () => {
 							defaultValue={editor.cc ?? []}
 							render={({ onChange, value }): ReactElement => (
 								<ChipInput
-									placeholderType="inline"
 									placeholder={t('label.cc', 'Cc')}
 									onChange={(contacts: Array<ContactType>): void => {
 										const data = map(contacts, (contact) =>
@@ -296,7 +293,6 @@ const ParticipantsRow: FC = () => {
 							defaultValue={editor.bcc ?? []}
 							render={({ onChange, value }): ReactElement => (
 								<ChipInput
-									placeholderType="inline"
 									placeholder={t('label.bcc', 'Bcc')}
 									onChange={(contacts: Array<ContactType>): void => {
 										const data = map(contacts, (contact) =>

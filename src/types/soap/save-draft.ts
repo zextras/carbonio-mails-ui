@@ -7,13 +7,13 @@
 import { ParticipantRole } from '../../commons/utils';
 import { SoapMailMessage } from './soap-mail-message';
 
-export type mailAttachmentParts = {
+export type MailAttachmentParts = {
 	mid: string;
 	part: string;
 };
 
-export type mailAttachment = {
-	mp: Array<mailAttachmentParts>;
+export type MailAttachment = {
+	mp: Array<MailAttachmentParts>;
 	aid?: string;
 };
 
@@ -41,7 +41,7 @@ export type SoapEmailInfoObj = {
 export type SoapDraftMessageObj = {
 	autoSendTime?: number;
 	id?: string;
-	attach: mailAttachment;
+	attach: MailAttachment;
 	su: { _content: string };
 	mp: Array<SoapEmailMessagePartObj>;
 	e: Array<SoapEmailInfoObj>;

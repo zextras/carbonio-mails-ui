@@ -3,11 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactNode, useContext, useMemo } from 'react';
-import { Container, Tooltip, Dropdown, IconButton } from '@zextras/carbonio-design-system';
+import React, { FC, SyntheticEvent, useContext, useMemo } from 'react';
+import {
+	Container,
+	Tooltip,
+	Dropdown,
+	IconButton,
+	ContainerProps
+} from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { ActionsContext } from '../../../../commons/actions-context';
-import { Conversation, IncompleteMessage, MailMessage } from '../../../../types';
+import { Conversation, IncompleteMessage, ListItemActionWrapperProps } from '../../../../types';
 
 const HoverBarContainer = styled(Container)`
 	top: 0;
@@ -27,7 +33,7 @@ const HoverBarContainer = styled(Container)`
 	}
 `;
 
-const HoverContainer = styled(Container)`
+const HoverContainer = styled(Container)<ContainerProps & { current: boolean }>`
 	width: 100%;
 	position: relative;
 	cursor: pointer;
@@ -42,17 +48,6 @@ const HoverContainer = styled(Container)`
 	}
 `;
 
-type ListItemActionWrapperProps = {
-	children?: ReactNode;
-	current?: string;
-	onClick?: (arg: string) => void;
-	onDoubleClick?: (arg: string) => void;
-	item: Conversation | IncompleteMessage;
-	isConversation?: boolean;
-	hoverTooltipLabel?: string;
-	messagesToRender?: Array<Partial<MailMessage>>;
-};
-
 export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	children,
 	current,
@@ -60,7 +55,6 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	onDoubleClick,
 	item,
 	isConversation,
-	hoverTooltipLabel,
 	messagesToRender
 }) => {
 	const { getMessageActions, getConversationActions } = useContext(ActionsContext);
@@ -82,6 +76,8 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	return (
 		<Dropdown
 			contextMenu
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			items={dropdownActions}
 			display="block"
 			style={{ width: '100%', height: '64px' }}
@@ -91,9 +87,9 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 				orientation="horizontal"
 				mainAlignment="flex-start"
 				crossAlignment="unset"
+				current={current ?? false}
 				onClick={onClick}
 				onDoubleClick={onDoubleClick}
-				current={current}
 			>
 				{children}
 				{/* <Tooltip label={hoverTooltipLabel} overflow="break-word" maxWidth="50vw"> */}
@@ -107,8 +103,10 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 							<IconButton
 								key={action.id}
 								icon={action.icon}
-								onClick={(ev: MouseEvent): void => {
+								onClick={(ev: SyntheticEvent<HTMLButtonElement, Event> | KeyboardEvent): void => {
 									ev.stopPropagation();
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									action.click(ev);
 								}}
 								size="small"

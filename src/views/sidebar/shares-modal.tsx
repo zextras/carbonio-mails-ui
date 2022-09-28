@@ -13,7 +13,9 @@ import {
 	Text,
 	Input,
 	Icon,
-	Row
+	Row,
+	AccordionItemType,
+	AccordionDivider
 } from '@zextras/carbonio-design-system';
 import {
 	groupBy,
@@ -32,34 +34,19 @@ import {
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { Folder, Folders } from '@zextras/carbonio-shell-ui';
-import { ModalHeader } from './commons/modal-header';
+import ModalHeader from './commons/modal-header';
 import ModalFooter from './commons/modal-footer';
 import { createMountpoint } from '../../store/actions/create-mountpoint';
-import { ResFolder } from '../../types';
 
-type CustomItem = {
-	item: {
-		id: string;
-		label: string;
-		open: boolean;
-		items: Folders;
-		ownerName: string;
-		ownerId: string;
-		checked: boolean;
-		folderId: string;
-		setLinks: (arg: any) => void;
-		links: Folder[];
-		CustomComponent: ReactElement;
-	};
-};
+import { GroupedShare, SharedObject, ShareModalProps } from '../../types/sidebar';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
 	display: block;
 `;
 
-const CustomItem: FC<CustomItem> = ({ item: folder }) => {
+// TODO remove the "any" after the Accordion component refactor in the DS
+const CustomItem: FC<any> = ({ item: folder }) => {
 	const [checked, setChecked] = useState(false);
 	const [t] = useTranslation();
 
@@ -97,27 +84,8 @@ const CustomItem: FC<CustomItem> = ({ item: folder }) => {
 	);
 };
 
-type ShareModalProps = {
-	folders: Array<ResFolder>;
-	onClose: () => void;
-};
-
-type SharedObject = {
-	id: string;
-	label: string;
-	open: boolean;
-	items: [];
-	ownerName: string;
-	ownerId: string;
-	checked: boolean;
-	folderId: string;
-	setLinks: (links: Array<SharedObject>) => void;
-	links: Array<SharedObject>;
-	CustomComponent: ReactElement;
-};
-
 export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
-	const [links, setLinks] = useState([]);
+	const [links, setLinks] = useState([] as SharedObject[]);
 	const [data, setData] = useState({});
 	const dispatch = useDispatch();
 	const [t] = useTranslation();
@@ -127,35 +95,46 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 		onClose();
 	}, [dispatch, links, onClose]);
 
-	const shared = map(folders, (c) => ({
-		id: `${c.ownerName} - ${c.folderId} - ${c.granteeType} - ${c.granteeName}`,
-		label: last(split(c.folderPath, '/')),
-		open: true,
-		items: [],
-		ownerName: c.ownerName,
-		ownerId: c.ownerId,
-		checked: false,
-		folderId: c.folderId,
-		setLinks,
-		links,
-		CustomComponent: CustomItem
-	}));
-	const filteredFolders = useMemo(() => groupBy(shared, 'ownerName'), [shared]);
-	const nestedData = useMemo(
-		() =>
-			map(values(!isEmpty(data) ? data : filteredFolders), (v: Array<SharedObject>) => ({
-				id: v[0].ownerId,
-				label: t('label.shares_items', {
-					value: v[0].ownerName,
-					defaultValue: "{{value}}'s shared folders"
-				}),
+	const shared = map(
+		folders,
+		(c) =>
+			({
+				id: `${c.ownerName} - ${c.folderId} - ${c.granteeType} - ${c.granteeName}`,
+				label: last(split(c.folderPath, '/')),
 				open: true,
-				items: v,
-				divider: !isEmpty(filteredFolders) || !isEmpty(data),
-				background: undefined
-			})),
-		[data, filteredFolders, t]
+				items: [],
+				ownerName: c.ownerName,
+				ownerId: c.ownerId,
+				checked: false,
+				folderId: `${c.folderId}`,
+				setLinks,
+				links,
+				CustomComponent: CustomItem
+			} as SharedObject)
 	);
+
+	const filteredFolders = useMemo<GroupedShare>(() => groupBy(shared, 'ownerName'), [shared]);
+
+	const nestedData = useMemo(() => {
+		const shares = (isEmpty(data) ? filteredFolders : data) as GroupedShare;
+		const sharesDets = values(shares);
+		return sharesDets.map((v): AccordionItemType | AccordionDivider =>
+			v
+				? {
+						id: v[0].ownerId,
+						label: t('label.shares_items', {
+							value: v[0].ownerName,
+							defaultValue: "{{value}}'s shared folders"
+						}),
+						open: true,
+						items: v,
+						background: undefined
+				  }
+				: {
+						divider: true
+				  }
+		);
+	}, [data, filteredFolders, t]);
 
 	const filterResults = useCallback(
 		(ev) =>

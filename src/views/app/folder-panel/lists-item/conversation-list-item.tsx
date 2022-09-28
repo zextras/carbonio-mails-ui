@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { isEmpty, reduce, trimStart, uniqBy, find, includes, filter, map } from 'lodash';
+import { isEmpty, reduce, trimStart, uniqBy, find, includes, filter, map, noop } from 'lodash';
 import styled from 'styled-components';
 import {
 	pushHistory,
@@ -14,7 +13,8 @@ import {
 	useUserSettings,
 	useTags,
 	ZIMBRA_STANDARD_COLORS,
-	Tag
+	Tag,
+	t
 } from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
@@ -27,7 +27,9 @@ import {
 	Text,
 	Drag,
 	Tooltip,
-	List
+	List,
+	ContainerProps,
+	ListProps
 } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -39,18 +41,18 @@ import { ListItemActionWrapper } from './list-item-actions-wrapper';
 import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
 import { selectMessages } from '../../../../store/messages-slice';
 import { SenderName } from './sender-name';
-import MessageListItem from './message-list-item';
+import { MessageListItem } from './message-list-item';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
-import { StateType, Conversation, MailMessage, TextReadValuesProps } from '../../../../types';
+import {
+	StateType,
+	Conversation,
+	MailMessage,
+	TextReadValuesProps,
+	ConversationMessagesListProps,
+	CustomListItem
+} from '../../../../types';
 
-type ConversationMessagesListProps = {
-	active: string;
-	conversationStatus: string | undefined;
-	messages: Array<Partial<MailMessage>>;
-	folderId: string;
-	length: number;
-	isFromSearch?: boolean;
-};
+const CustomList = styled(List)<ListProps<CustomListItem> & { isFromSearch?: boolean }>``;
 
 export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 	active,
@@ -61,19 +63,24 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 	isFromSearch
 }) => {
 	const messagesToRender = useMemo(
-		() => (isFromSearch ? map(messages, (item) => ({ ...item, isFromSearch: true })) : messages),
+		() =>
+			map(messages, (item) => ({
+				...item,
+				id: item.id ?? '',
+				...(isFromSearch && { isFromSearch: true })
+			})),
 		[isFromSearch, messages]
 	);
 	if (conversationStatus !== 'complete') {
 		return (
 			<Container height={64 * length}>
-				<Button loading disabled label="" type="ghost" />
+				<Button loading disabled label="" type="ghost" onClick={noop} />
 			</Container>
 		);
 	}
 
 	return (
-		<List
+		<CustomList
 			style={{ paddingBottom: '4px' }}
 			active={active}
 			items={messagesToRender}
@@ -87,7 +94,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 	);
 };
 
-const CollapseElement = styled(Container)`
+const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
 `;
 
@@ -119,7 +126,7 @@ export const RowInfo: FC<RowInfoProps> = ({ item, tags, isFromSearch, allMessage
 			)}
 			{showTagIcon && (
 				<Padding left="small">
-					<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+					<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
 				</Padding>
 			)}
 			{item.attachment && (
@@ -143,19 +150,19 @@ type ConversationListItemProps = {
 	item: Conversation;
 	itemId: string;
 	folderId: string;
-	selected: boolean;
-	selecting: boolean;
-	toggle: () => void;
-	active: string;
-	visible: boolean;
-	setDraggedIds: (ids: Record<string, boolean>) => void;
-	draggedIds: Array<string>;
-	setIsDragging: (isDragging: boolean) => void;
-	selectedItems: Record<string, boolean>;
-	dragImageRef: React.RefObject<HTMLInputElement>;
+	selected?: boolean;
+	selecting?: boolean;
+	toggle?: () => void;
+	active?: boolean;
+	visible?: boolean;
+	setDraggedIds?: (ids: Record<string, boolean>) => void;
+	draggedIds?: Array<string> | undefined;
+	setIsDragging?: (isDragging: boolean) => void;
+	selectedItems?: Record<string, boolean>;
+	dragImageRef?: React.RefObject<HTMLInputElement>;
 };
 
-const ConversationListItem: FC<ConversationListItemProps> = ({
+const ConversationListItem: FC<any> = ({
 	itemId,
 	item,
 	folderId,
@@ -172,7 +179,6 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 }) => {
 	const dispatch = useDispatch();
 	const [open, setOpen] = useState(false);
-	const [t] = useTranslation();
 	const accounts = useUserAccounts();
 	const messages = useSelector(selectMessages);
 	const conversationStatus = useSelector((state: StateType) =>
@@ -203,11 +209,11 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 	const participantsString = useMemo(
 		() =>
 			reduce(
-				uniqBy(item.participants, (em) => em.address),
-				(acc, part) => trimStart(`${acc}, ${participantToString(part, t, accounts)}`, ', '),
+				uniqBy(item.participants, (em: any) => em.address),
+				(acc, part) => trimStart(`${acc}, ${participantToString(part, accounts)}`, ', '),
 				''
 			),
-		[item.participants, t, accounts]
+		[item.participants, accounts]
 	);
 	const ids = useMemo(() => Object.keys(selectedItems ?? []), [selectedItems]);
 
@@ -232,17 +238,20 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (item?.read === false) {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					setConversationsRead({
 						ids: [item.id],
 						value: false,
-						t,
 						dispatch
-					}).click();
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+					})?.click();
 				}
 				pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 			}
 		},
-		[item?.read, item.id, t, dispatch, folderId]
+		[item?.read, item.id, dispatch, folderId]
 	);
 
 	const _onDoubleClick = useCallback(
@@ -259,12 +268,12 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 
 	const dragCheck = useCallback(
 		(e, id) => {
-			setIsDragging(true);
-			e.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
-			if (selectedItems[id]) {
-				setDraggedIds(selectedItems);
+			setIsDragging && setIsDragging(true);
+			dragImageRef && e.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
+			if (selectedItems && selectedItems[id]) {
+				setDraggedIds && setDraggedIds(selectedItems);
 			} else {
-				setDraggedIds({ [id]: true });
+				setDraggedIds && setDraggedIds({ [id]: true });
 			}
 		},
 		[setIsDragging, dragImageRef, selectedItems, setDraggedIds]
@@ -272,11 +281,11 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 
 	const toggleExpandButtonLabel = useMemo(
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
-		[t, open]
+		[open]
 	);
 	const subject = useMemo(
 		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item.subject, t]
+		[item.subject]
 	);
 	const subFragmentTooltipLabel = useMemo(
 		() => (!isEmpty(item.fragment) ? item.fragment : subject),
@@ -354,7 +363,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 			type="conversation"
 			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
 			style={{ display: 'block' }}
-			onDragStart={(e: Element): void => dragCheck(e, item.id)}
+			onDragStart={(e): void => dragCheck(e, item.id)}
 		>
 			<Container
 				background={item.read ? 'transparent' : 'gray5'}

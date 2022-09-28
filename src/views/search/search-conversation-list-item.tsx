@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { isEmpty, split, head, includes, reduce, uniqBy, find, filter } from 'lodash';
+import { isEmpty, split, head, includes, reduce, uniqBy, find, filter, noop } from 'lodash';
 import {
 	Badge,
 	Container,
+	ContainerProps,
 	Icon,
 	IconButton,
 	Padding,
@@ -20,6 +20,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
 	FOLDERS,
+	t,
 	Tag,
 	useTags,
 	useUserSettings,
@@ -34,31 +35,25 @@ import {
 } from '../app/folder-panel/lists-item/conversation-list-item';
 import { SenderName } from '../app/folder-panel/lists-item/sender-name';
 import { selectMessages } from '../../store/messages-slice';
-import { selectConversationExpandedStatus } from '../../store/conversations-slice';
+import {
+	selectConversation,
+	selectConversationExpandedStatus,
+	selectConversations
+} from '../../store/conversations-slice';
 import { searchConv } from '../../store/actions';
-import { StateType, MailMessage, Conversation } from '../../types';
+import { StateType, MailMessage, SearchConversationListItemProps } from '../../types';
 
-type SearchConversationListItemProps = {
-	itemId: string;
-	item: Conversation;
-	selected: boolean;
-	selecting: boolean;
-	toggle: boolean;
-	active: string;
-};
-
-const CollapseElement = styled(Container)`
+const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
 `;
 const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 	itemId,
 	item,
 	selected,
-	selecting,
+	selecting = false,
 	toggle,
 	active
 }) => {
-	const [t] = useTranslation();
 	const history = useHistory();
 	const dispatch = useDispatch();
 	const { pathname } = useLocation();
@@ -70,17 +65,14 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 		() => settings?.prefs?.zimbraPrefIncludeTrashInSearch === 'TRUE',
 		[settings]
 	);
+
 	const _onClick = useCallback(() => {
 		const path = head(split(pathname, '/folder'));
-		dispatch({
-			type: 'conversations/setCurrentFolder',
-			payload: parent
-		});
 		history.push(`${path}/folder/${parent}/conversation/${item.id}`);
-	}, [dispatch, history, item, parent, pathname]);
+	}, [history, item.id, parent, pathname]);
 	const subject = useMemo(
 		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item.subject, t]
+		[item.subject]
 	);
 	const subFragmentTooltipLabel = useMemo(
 		() => (!isEmpty(item.fragment) ? `${subject} - ${item.fragment}` : subject),
@@ -113,7 +105,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 
 	const toggleExpandButtonLabel = useMemo(
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
-		[t, open]
+		[open]
 	);
 	const sortBy = useMemo(
 		() => settings?.prefs?.zimbraPrefConversationOrder || 'dateDesc',
@@ -162,7 +154,10 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 
 	const msgToDisplayCount = useMemo(() => {
 		const result = !searchInTrash
-			? filter(item?.messages, (msg) => msg.parent !== FOLDERS.TRASH)?.length
+			? filter(
+					item?.messages,
+					(msg) => msg.parent !== FOLDERS.TRASH || msg.parent !== FOLDERS.DRAFT
+			  )?.length
 			: item?.messages?.length;
 		return messagesToRender.length !== 0 ? messagesToRender.length : result;
 	}, [item?.messages, messagesToRender.length, searchInTrash]);
@@ -185,7 +180,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 						item={item}
 						selected={selected}
 						selecting={selecting}
-						toggle={toggle}
+						toggle={toggle ?? noop}
 						folderId={parent}
 						isSearch
 					/>
@@ -269,7 +264,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 					height="auto"
 				>
 					<ConversationMessagesList
-						active={itemId}
+						active={itemId ?? ''}
 						length={item?.messages?.length}
 						messages={messagesToRender}
 						conversationStatus={conversationStatus}

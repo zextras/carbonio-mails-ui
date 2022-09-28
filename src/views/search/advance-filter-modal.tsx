@@ -12,11 +12,10 @@ import {
 	TextWithTooltip,
 	Padding
 } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
 import { concat, filter, includes, map } from 'lodash';
-import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../sidebar/commons/modal-footer';
-import { ModalHeader } from '../sidebar/commons/modal-header';
+import ModalHeader from '../sidebar/commons/modal-header';
 import ToggleFilters from './parts/toggle-filters';
 import SubjectKeywordRow from './parts/subject-keyword-row';
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
@@ -25,27 +24,11 @@ import TagFolderRow from './parts/tag-folder-row';
 import SendReceivedDateRow from './parts/send-date-row';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
 import ReceivedSentAddressRow from './parts/received-sent-address-row';
-import { KeywordState } from '../../types';
-
-type AdvancedFilterModalProps = {
-	open: boolean;
-	onClose: () => void;
-	t: TFunction;
-	query: Array<{
-		label: string;
-		value?: string;
-		isGeneric?: boolean;
-		isQueryFilter?: boolean;
-	}>;
-	updateQuery: (arg: Array<QueryChip>) => void;
-	isSharedFolderIncluded: boolean;
-	setIsSharedFolderIncluded: (arg: boolean) => void;
-};
+import { AdvancedFilterModalProps, KeywordState } from '../../types';
 
 const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	open,
 	onClose,
-	t,
 	query,
 	updateQuery,
 	setIsSharedFolderIncluded,
@@ -226,7 +209,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 		setTag([]);
 	}, [updateQuery]);
 
-	const queryToBe = useMemo(
+	const queryToBe = useMemo<Array<QueryChip>>(
 		() =>
 			concat(
 				otherKeywords,
@@ -272,6 +255,8 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	);
 
 	const onConfirm = useCallback(() => {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		updateQuery(queryToBe);
 		setIsSharedFolderIncluded(isSharedFolderIncludedTobe);
 		onClose();
@@ -279,35 +264,32 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 
 	const subjectKeywordRowProps = useMemo(
 		() => ({
-			t,
 			otherKeywords,
 			setOtherKeywords,
 			subject,
 			setSubject
 		}),
-		[t, otherKeywords, subject]
+		[otherKeywords, subject]
 	);
 
 	const receivedSentAddressRowProps = useMemo(
 		() => ({
-			t,
 			receivedFromAddress,
 			setReceivedFromAddress,
 			sentFromAddress,
 			setSentFromAddress
 		}),
-		[t, receivedFromAddress, sentFromAddress]
+		[receivedFromAddress, sentFromAddress]
 	);
 
 	const attachmentTypeEmailStatusRowProps = useMemo(
 		() => ({
-			t,
 			attachmentType,
 			setAttachmentType,
 			emailStatus,
 			setEmailStatus
 		}),
-		[t, attachmentType, setAttachmentType, emailStatus, setEmailStatus]
+		[attachmentType, setAttachmentType, emailStatus, setEmailStatus]
 	);
 
 	const sizeSmallerSizeLargerRowProps = useMemo(
@@ -323,7 +305,6 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 			setSizeLargerErrorLabel
 		}),
 		[
-			t,
 			sizeSmaller,
 			setSizeSmaller,
 			sizeLarger,
@@ -336,17 +317,16 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	);
 
 	const tagFolderRowProps = useMemo(
-		() => ({ t, folder, setFolder, tagOptions, tag, setTag }),
-		[t, folder, setFolder, tagOptions, tag, setTag]
+		() => ({ folder, setFolder, tagOptions, tag, setTag }),
+		[folder, setFolder, tagOptions, tag, setTag]
 	);
 
 	const sendDateRowProps = useMemo(
-		() => ({ sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn, t }),
-		[sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn, t]
+		() => ({ sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn }),
+		[sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn]
 	);
 	const toggleFiltersProps = useMemo(
 		() => ({
-			t,
 			query,
 			setUnreadFilter,
 			setFlaggedFilter,
@@ -354,11 +334,13 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 			setIsSharedFolderIncludedTobe,
 			isSharedFolderIncludedTobe
 		}),
-		[t, query, isSharedFolderIncludedTobe]
+		[query, isSharedFolderIncludedTobe]
 	);
 
 	const disabled = useDisabled({
 		query,
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		queryToBe,
 		isSharedFolderIncluded,
 		isSharedFolderIncludedTobe

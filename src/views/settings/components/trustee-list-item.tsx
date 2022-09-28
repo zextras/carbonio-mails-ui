@@ -7,7 +7,7 @@
 import React, { FC, ReactElement, useCallback, useState } from 'react';
 import { Container, Text, Row, Button } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
-import { useTranslation } from 'react-i18next';
+import { t } from '@zextras/carbonio-shell-ui';
 
 const ListItem = styled(Row)`
 	border-bottom: 1px solid ${({ theme }): string => theme.palette.gray2.regular};
@@ -20,12 +20,8 @@ const ListItem = styled(Row)`
 	}
 `;
 
-type ComponentProps = {
-	item: string;
-	onRemove: (arg: string) => void;
-};
-const TrusteeListItem: FC<ComponentProps> = ({ item, onRemove }): ReactElement => {
-	const [t] = useTranslation();
+// TODO remove the any after the DS
+const TrusteeListItem: FC<any> = ({ item, onRemove }): ReactElement => {
 	const [hovered, setHovered] = useState(false);
 
 	const onMouseEnter = useCallback(() => setHovered(true), []);
@@ -50,7 +46,7 @@ const TrusteeListItem: FC<ComponentProps> = ({ item, onRemove }): ReactElement =
 				<Container width="20%" orientation="horizontal" mainAlignment="flex-end">
 					{hovered && (
 						<Button
-							isSmall
+							size="small"
 							color="error"
 							type="outlined"
 							label={t('label.remove', 'Remove')}

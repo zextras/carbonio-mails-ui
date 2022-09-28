@@ -14,10 +14,9 @@ import {
 	Divider,
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
-import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../views/sidebar/commons/modal-footer';
-import { ModalHeader } from '../views/sidebar/commons/modal-header';
+import ModalHeader from '../views/sidebar/commons/modal-header';
 import { redirectMessageAction } from '../store/actions';
 
 type RedirectActionProps = { onClose: () => void; id: string };
@@ -35,7 +34,6 @@ type ContactType = {
 	lastName?: string;
 };
 const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactElement => {
-	const [t] = useTranslation();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const [contacts, setContacts] = useState<ContactType[]>([]);
 	const createSnackbar = useContext(SnackbarManagerContext);
@@ -73,7 +71,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 				}
 				onClose();
 			}),
-		[contacts, createSnackbar, id, t, onClose]
+		[contacts, createSnackbar, id, onClose]
 	);
 
 	return (
@@ -125,8 +123,6 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 									placeholder={t('label.to', 'To')}
 									onChange={onChange}
 									defaultValue={contacts}
-									valueKey="address"
-									getChipLabel={getChipLabel}
 								/>
 							)}
 						</Container>

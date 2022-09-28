@@ -17,7 +17,7 @@ export const humanFileSize = (inputSize: number): string => {
 	return `${(inputSize / 1024 ** i).toFixed(2).toString()} ${['B', 'KB', 'MB', 'GB', 'TB'][i]}`;
 };
 
-export const previewType = (contentType: string): string | undefined => {
+export const previewType = (contentType: string): 'image' | 'pdf' | undefined => {
 	if (contentType?.startsWith('image') && !contentType?.includes('photoshop')) return 'image';
 	if (
 		contentType?.endsWith('pdf') ||
@@ -25,11 +25,14 @@ export const previewType = (contentType: string): string | undefined => {
 			[
 				'text/csv',
 				'text/plain',
-				'application/vnd.ms-excel',
 				'application/msword',
+				'application/vnd.ms-excel',
+				'application/vnd.ms-powerpoint',
+				'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+				'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 				'application/vnd.oasis.opendocument.spreadsheet',
 				'application/vnd.oasis.opendocument.presentation',
-				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 				'application/vnd.oasis.opendocument.text'
 			],
 			contentType

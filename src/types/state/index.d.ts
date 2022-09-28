@@ -52,8 +52,9 @@ export type ConversationsStateType = {
 export type SearchesMap = Record<string, Conversation>;
 
 export type SearchesStateType = {
-	conversations?: Array<Conversation>;
-	messages?: Array<Partial<MailMessage>>;
+	searchResults: any;
+	conversations?: Record<string, Conversation>;
+	messages?: Record<string, Partial<MailMessage>>;
 	more: boolean;
 	offset: number;
 	sortBy: 'dateDesc' | 'dateAsc';
@@ -79,5 +80,5 @@ export type ConversationsFolderStatus =
 export type Status = 'pending' | 'error' | 'complete';
 
 export type Payload = {
-	payload: { m: Array<SoapIncompleteMessage>; t: any };
+	payload: { m: Array<SoapIncompleteMessage>; t?: any };
 };

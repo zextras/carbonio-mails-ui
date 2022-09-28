@@ -5,24 +5,13 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
 import { filter } from 'lodash';
-import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import FolderSelectModal from './folder-modal';
+import { TagFolderRowProps } from '../../../types';
 
-type ComponentProps = {
-	compProps: {
-		t: TFunction;
-		folder: Array<any>;
-		setFolder: (arg: any) => void;
-		tagOptions: Array<any>;
-		tag: Array<any>;
-		setTag: (arg: any) => void;
-	};
-};
-const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
-	const { t, folder, setFolder, tagOptions, tag, setTag } = compProps;
-	const chipBackground = useMemo(() => 'gray5', []);
+const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
+	const { folder, setFolder, tagOptions, tag, setTag } = compProps;
 	const [open, setOpen] = useState(false);
 
 	const onClose = useCallback(() => setOpen(false), []);
@@ -43,11 +32,11 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	);
 
 	const folderChipOnAdd = useCallback(
-		(label: string): any => chipOnAdd(label, 'in', true, false, true, 'FolderOutline', ''),
+		(label): any => chipOnAdd(label, 'in', true, false, true, 'FolderOutline', ''),
 		[chipOnAdd]
 	);
 	const tagChipOnAdd = useCallback(
-		(label: string): any => {
+		(label): any => {
 			const chipBg = filter(tagOptions, { label })[0];
 			return chipOnAdd(
 				label,
@@ -67,12 +56,11 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		() => ({
 			open,
 			onClose,
-			setFolder,
-			t
+			setFolder
 		}),
-		[open, onClose, setFolder, t]
+		[open, onClose, setFolder]
 	);
-	const tagPlaceholder = useMemo(() => t('label.tag', 'Tag'), [t]);
+	const tagPlaceholder = useMemo(() => t('label.tag', 'Tag'), []);
 	const onTagChange = useCallback(
 		(chip) => {
 			setTag(chip);
@@ -84,7 +72,7 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 				<ChipInput
 					placeholder={tagPlaceholder}
-					background={chipBackground}
+					background="gray5"
 					defaultValue={[]}
 					options={tagOptions}
 					value={tag}
@@ -97,7 +85,7 @@ const TagFolderRow: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 				<ChipInput
-					background={chipBackground}
+					background="gray5"
 					icon="FolderOutline"
 					placeholder={t('share.is_contained_in', 'Is contained in')}
 					value={folder}

@@ -6,6 +6,7 @@
 import {
 	Button,
 	Chip,
+	ChipProps,
 	Container,
 	Divider,
 	Padding,
@@ -13,10 +14,9 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { Grant, soapFetch, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map, replace, split } from 'lodash';
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
@@ -34,7 +34,7 @@ import {
 import { capitalise } from '../../utils';
 import { Context } from './edit-context';
 
-const HoverChip = styled(Chip)`
+const HoverChip = styled(Chip)<ChipProps & { hovered?: boolean }>`
 	background-color: ${({ theme, hovered }): string =>
 		hovered ? theme.palette.gray3.hover : theme.palette.gray3.regular};
 `;
@@ -65,7 +65,6 @@ const Actions: FC<ActionProps> = ({
 	onMouseLeave,
 	onMouseEnter
 }) => {
-	const [t] = useTranslation();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 	const accounts = useUserAccounts();
@@ -73,7 +72,7 @@ const Actions: FC<ActionProps> = ({
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const dispatch = useDispatch() as Function;
 	const onRevoke = useCallback(() => {
-		setActiveGrant(grant);
+		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('revoke');
 	}, [setActiveModal, setActiveGrant, grant]);
 
@@ -97,9 +96,9 @@ const Actions: FC<ActionProps> = ({
 				});
 			}
 		});
-	}, [accounts, dispatch, folder, t, grant.d, createSnackbar]);
+	}, [accounts, dispatch, folder, grant.d, createSnackbar]);
 	const onEdit = useCallback(() => {
-		setActiveGrant(grant);
+		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('edit');
 	}, [setActiveModal, setActiveGrant, grant]);
 
@@ -112,7 +111,7 @@ const Actions: FC<ActionProps> = ({
 			maxWidth="fit"
 		>
 			<Tooltip label={t('tooltip.edit', 'Edit share properties')} placement="top">
-				<Button type="outlined" label={t('label.edit', 'Edit')} onClick={onEdit} isSmall />
+				<Button type="outlined" label={t('label.edit', 'Edit')} onClick={onEdit} size="small" />
 			</Tooltip>
 			<Padding horizontal="extrasmall" />
 			<Tooltip label={t('tooltip.revoke', 'Revoke access')} placement="top">
@@ -121,7 +120,7 @@ const Actions: FC<ActionProps> = ({
 					label={t('label.revoke', 'Revoke')}
 					color="error"
 					onClick={onRevoke}
-					isSmall
+					size="small"
 				/>
 			</Tooltip>
 			<Padding horizontal="extrasmall" />
@@ -130,7 +129,12 @@ const Actions: FC<ActionProps> = ({
 				placement="top"
 				maxWidth="300px"
 			>
-				<Button type="outlined" label={t('label.resend', 'Resend')} onClick={onResend} isSmall />
+				<Button
+					type="outlined"
+					label={t('label.resend', 'Resend')}
+					onClick={onResend}
+					size="small"
+				/>
 			</Tooltip>
 		</Container>
 	);
@@ -165,12 +169,8 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 	folder,
 	setActiveModal
 }) => {
-	const [t] = useTranslation();
-	const [grant, setGrant] = useState<Array<Grant>>(folder.folder.acl.grant);
-	const shareCalendarRoleOptions = useCallback(
-		(_grant: Grant) => ShareCalendarRoleOptions(t, _grant.perm.includes('p')),
-		[t]
-	);
+	const [grant, setGrant] = useState<Array<Grant> | undefined>();
+
 	useEffect(() => {
 		soapFetch('GetFolder', {
 			_jsns: 'urn:zimbraMail',
@@ -182,6 +182,10 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 		});
 	}, [folder.id]);
 
+	const shareCalendarRoleOptions = useMemo(
+		() => ShareCalendarRoleOptions(t, grant?.[0]?.perm?.includes('p')),
+		[grant]
+	);
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
 			<Padding vertical="small" />
@@ -193,7 +197,7 @@ export const ShareFolderProperties: FC<ShareFolderPropertiesProps> = ({
 					grant={item}
 					folder={folder}
 					setActiveModal={setActiveModal}
-					shareCalendarRoleOptions={shareCalendarRoleOptions(item)}
+					shareCalendarRoleOptions={shareCalendarRoleOptions}
 				/>
 			))}
 			<Padding top="medium" />

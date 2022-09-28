@@ -5,10 +5,10 @@
  */
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { isEmpty } from 'lodash';
+import { filter, isEmpty, sortBy } from 'lodash';
 import SearchConversationListItem from './search-conversation-list-item';
 import ShimmerList from './shimmer-list';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
@@ -29,7 +29,6 @@ const SearchConversationList: FC<SearchListProps> = ({
 	isInvalidQuery,
 	searchDisabled
 }) => {
-	const [t] = useTranslation();
 	const { itemId } = useParams<{ itemId: string }>();
 	const loadMore = useCallback(() => {
 		if (searchResults && !isEmpty(searchResults.conversations) && searchResults.more) {
@@ -62,7 +61,12 @@ const SearchConversationList: FC<SearchListProps> = ({
 			return t('displayer.search_list_title2', 'None of your items matches your search.');
 		}
 		return null;
-	}, [isInvalidQuery, searchResults.conversations, randomListIndex, t]);
+	}, [isInvalidQuery, searchResults.conversations, randomListIndex]);
+
+	const conversationList = useMemo(
+		() => sortBy(filter(Object.values(searchResults?.conversations ?? [])), 'date').reverse(),
+		[searchResults?.conversations]
+	);
 
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
@@ -87,7 +91,9 @@ const SearchConversationList: FC<SearchListProps> = ({
 			{!isInvalidQuery && !isEmpty(searchResults?.conversations) && !loading && (
 				<Container style={{ overflowY: 'auto' }} mainAlignment="flex-start">
 					<List
-						items={searchResults.conversations}
+						items={conversationList}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						ItemComponent={SearchConversationListItem}
 						onListBottom={canLoadMore ? loadMore : undefined}
 						active={itemId}

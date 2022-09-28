@@ -20,9 +20,10 @@ import {
 	Tooltip,
 	Dropdown,
 	ThemeContext,
-	Padding
+	Padding,
+	RowProps
 } from '@zextras/carbonio-design-system';
-import { difference, map, slice } from 'lodash';
+import { difference, map, noop, slice } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { useVisibleActionsCount } from '../hooks/use-visible-actions-count';
@@ -31,7 +32,7 @@ type MailMsgPreviewActionsType = {
 	actions: Array<any>;
 	maxActions?: number;
 	maxWidth?: string;
-	mainAlignment?: string;
+	mainAlignment?: RowProps['mainAlignment'];
 };
 
 type ThemeContextProps = {
@@ -121,7 +122,7 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 						<Padding right="small">
 							<Tooltip label={action.label}>
 								<Dropdown items={action.items}>
-									<IconButton icon={action.icon} size="small" />
+									<IconButton icon={action.icon} size="small" onClick={noop} />
 								</Dropdown>
 							</Tooltip>
 						</Padding>
@@ -130,7 +131,7 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 							<IconButton
 								size="small"
 								icon={action.icon}
-								onClick={(ev: React.MouseEvent<HTMLButtonElement>): void => {
+								onClick={(ev): void => {
 									if (ev) ev.preventDefault();
 									action.click();
 								}}

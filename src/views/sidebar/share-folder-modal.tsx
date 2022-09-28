@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC, useCallback, useContext, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import {
 	Container,
 	Input,
@@ -13,11 +13,16 @@ import {
 	Row,
 	ChipInput,
 	Padding,
-	SnackbarManagerContext
+	ChipItem,
+	SelectItem
 } from '@zextras/carbonio-design-system';
-import { useIntegratedComponent, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	useIntegratedComponent,
+	useUserAccounts,
+	t
+} from '@zextras/carbonio-shell-ui';
 import { map, replace, split } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
 	ShareCalendarWithOptions,
@@ -27,32 +32,17 @@ import {
 import { shareFolder } from '../../store/actions/share-folder';
 import { sendShareNotification } from '../../store/actions/send-share-notification';
 import ModalFooter from './commons/modal-footer';
-import { ModalHeader } from './commons/modal-header';
+import ModalHeader from './commons/modal-header';
 import { capitalise } from './utils';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
-import { ModalProps } from '../../types';
+import { ShareFolderModalProps } from '../../types/sidebar';
 
-type ShareFolderModalProps = ModalProps & {
-	goBack: () => void;
-	editMode?: boolean;
-	activeGrant: Partial<{ perm: string; d: string }>;
-};
-
-const ShareFolderModal: FC<ShareFolderModalProps> = ({
-	onClose,
-	folder,
-	goBack,
-	editMode = false,
-	activeGrant
-}) => {
-	const [t] = useTranslation();
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const dispatch = useDispatch() as Function;
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createSnackbar = useContext(SnackbarManagerContext) as Function;
+const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode = false }) => {
+	const activeGrant: Partial<{ perm: string; d: string }> = useMemo(() => ({}), []);
+	const dispatch = useDispatch();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
-	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), [t]);
-	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), [t]);
+	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
+	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
 	const [sendNotification, setSendNotification] = useState(false);
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<any>([]);
@@ -70,8 +60,8 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 						name: userNameCapitalise,
 						defaultValue: "Edit {{name}}'s access"
 				  })} `
-				: `${t('label.share', 'Share')} ${folder.folder.name}`,
-		[t, folder, editMode, userNameCapitalise]
+				: `${t('label.share', 'Share')} ${folder.name}`,
+		[folder, editMode, userNameCapitalise]
 	);
 
 	const onShareWithChange = useCallback((shareWith) => {
@@ -84,20 +74,20 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 
 	const onConfirm = useCallback(() => {
 		dispatch(
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			shareFolder({
 				sendNotification,
 				standardMessage,
 				contacts: editMode ? [{ email: activeGrant.d }] : contacts,
 				shareWithUserType,
 				shareWithUserRole,
-				folder: folder.folder,
+				folder,
 				accounts
 			})
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 		).then((res: { type: string }) => {
 			if (res.type.includes('fulfilled')) {
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `share-${folder.id}`,
 					replace: true,
 					hideButton: true,
@@ -109,20 +99,20 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 				});
 				sendNotification &&
 					dispatch(
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						sendShareNotification({
 							sendNotification,
 							standardMessage,
 							contacts: editMode ? [{ email: activeGrant.d }] : contacts,
 							shareWithUserType,
 							shareWithUserRole,
-							folder: folder.folder,
+							folder,
 							accounts
 						})
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 					).then((res2: { type: string }) => {
 						if (!res2.type.includes('fulfilled')) {
-							createSnackbar({
+							getBridgedFunctions()?.createSnackbar({
 								key: `share-${folder.id}`,
 								replace: true,
 								type: 'error',
@@ -132,7 +122,6 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 							});
 						}
 					});
-				goBack && goBack();
 			}
 			onClose();
 		});
@@ -147,10 +136,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 		shareWithUserRole,
 		folder,
 		accounts,
-		onClose,
-		createSnackbar,
-		t,
-		goBack
+		onClose
 	]);
 
 	const disableEdit = useMemo(
@@ -205,19 +191,10 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 							/>
 						) : (
 							<ChipInput
-								backgroundColor="gray5"
 								placeholder={t('share.recipients_address', 'Recipients’ e-mail addresses')}
-								onChange={(ev: ChangeEvent<HTMLInputElement>): void => {
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									setContacts(map(ev, (contact) => ({ email: contact.address })));
+								onChange={(items: ChipItem[]): void => {
+									setContacts(map(items, (contact) => ({ email: contact })));
 								}}
-								valueKey="address"
-								getChipLabel={(
-									participant: Partial<{ fullName: string; name: string; address: string }>
-								): string | undefined =>
-									participant.fullName ?? participant.name ?? participant.address
-								}
 							/>
 						)}
 					</Container>
@@ -229,10 +206,12 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 						background="gray5"
 						label={t('label.role', 'Role')}
 						onChange={onShareRoleChange}
-						defaultSelection={{
-							value: editMode ? activeGrant?.perm : 'r',
-							label: findLabel(shareCalendarRoleOptions, editMode ? activeGrant?.perm : 'r')
-						}}
+						defaultSelection={
+							{
+								value: editMode ? activeGrant?.perm : 'r',
+								label: findLabel(shareCalendarRoleOptions, editMode ? activeGrant?.perm : 'r')
+							} as SelectItem
+						}
 					/>
 				</Container>
 				<Container
@@ -287,7 +266,6 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 				}
 				onConfirm={onConfirm}
 				disabled={editMode ? disableEdit : contacts.length < 1}
-				secondaryAction={goBack}
 				secondaryLabel={t('label.go_back', 'Go Back')}
 			/>
 		</>
