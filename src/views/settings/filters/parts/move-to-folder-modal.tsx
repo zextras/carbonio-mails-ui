@@ -74,6 +74,9 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 						return [
 							...acc,
 							{
+								divider: true
+							},
+							{
 								...item,
 								label: item.name,
 								icon: getFolderIconName(item),
@@ -81,7 +84,6 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 								items: nestFilteredFolders(items, item.id, results, getSharedFolder),
 								onClick: (): void => setFolderDestination(item),
 								open: !!input.length,
-								divider: true,
 								background: folderDestination.id === item.id ? 'highlight' : undefined
 							}
 						];
@@ -103,7 +105,6 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				label: 'Shared Folders',
 				level: '0',
 				icon: 'Share',
-				divider: true,
 				items: nestFilteredFolders(folders, '1', filterFromInput, true),
 				background: folderDestination.id === '1' ? 'highlight' : undefined,
 				onClick: (): void => setFolderDestination({ id: '1' })
