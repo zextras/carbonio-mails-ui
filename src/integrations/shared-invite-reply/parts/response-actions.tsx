@@ -47,8 +47,8 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	const showError = useMemo(
 		() =>
 			find(
-				calFolders[0].children,
-				(item) => item.name.toLowerCase() === calendarName.toLowerCase()
+				calFolders[0]?.children,
+				(item) => item?.name.toLowerCase() === calendarName.toLowerCase()
 			),
 		[calFolders, calendarName]
 	);
