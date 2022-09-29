@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.37](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.36...v0.1.37) (2022-09-29)
+
+
+### Bug Fixes
+
+* restore the folders list in move modal of the filter ([b45a7b0](https://github.com/zextras/carbonio-mails-ui/commit/b45a7b0fbf0c45a7c2dfdae330b1d3b8f4886cfa))
+
 ### [0.1.36](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.35...v0.1.36) (2022-09-28)
 
 
