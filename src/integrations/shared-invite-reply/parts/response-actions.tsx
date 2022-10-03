@@ -45,11 +45,15 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	const accounts = useUserAccounts();
 	const calFolders = useFoldersByView(FOLDER_VIEW.appointment);
 	const showError = useMemo(
-		() => find(calFolders[0].children, (item) => item.name === calendarName.toLowerCase()),
+		() =>
+			find(
+				calFolders[0]?.children,
+				(item) => item?.name.toLowerCase() === calendarName.toLowerCase()
+			),
 		[calFolders, calendarName]
 	);
 	const disabled = useMemo(
-		() => !calendarName || !calendarName.length || showError,
+		() => !!(calendarName.length === 0 || showError),
 		[calendarName, showError]
 	);
 	const acceptShare = useCallback(
@@ -194,7 +198,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					label={t('label.accept', 'Accept')}
 					icon="Checkmark"
 					onClick={acceptShare}
-					disabled={disabled && false}
+					disabled={disabled}
 				/>
 				<Padding horizontal="small" />
 				<Button
