@@ -26,8 +26,11 @@ export const useMessageList = (): Array<Partial<MailMessage>> => {
 	const folder = getFolder(folderId);
 
 	const filteredMessages = useMemo(
-		() => filter(messages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id]),
-		[folder?.id, folder?.rid, folder?.zid, messages]
+		() =>
+			folder
+				? filter(messages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id])
+				: [],
+		[folder, messages]
 	);
 
 	/* NOTE: Need to comment out when need to sort as per the configured sort order */
