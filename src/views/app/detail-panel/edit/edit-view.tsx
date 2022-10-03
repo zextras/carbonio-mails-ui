@@ -15,7 +15,7 @@ import React, {
 } from 'react';
 import { Button, Catcher, Container, useModal } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
-import { throttle, filter, isNil, find, isEmpty } from 'lodash';
+import { throttle, filter, isNil, isEmpty } from 'lodash';
 import {
 	useUserSettings,
 	useBoardHooks,
@@ -31,6 +31,7 @@ import { useQueryParam } from '../../../../hooks/useQueryParam';
 import {
 	closeEditor,
 	createEditor,
+	selectDraftId,
 	selectEditors,
 	updateEditor
 } from '../../../../store/editor-slice';
@@ -52,7 +53,7 @@ import TextEditorContainer from './parts/text-editor-container';
 import EditViewHeader from './parts/edit-view-header';
 import WarningBanner from './parts/warning-banner';
 import SubjectRow from './parts/subject-row';
-import { MailsEditor } from '../../../../types';
+import { MailsEditor, StateType } from '../../../../types';
 
 let counter = 0;
 
@@ -74,7 +75,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 	const board = useBoard<any>();
 	const createModal = useModal();
 	const [editor, setEditor] = useState<MailsEditor>();
-
+	const draftId = useSelector((s: StateType) => selectDraftId(s, editor?.editorId));
 	const action = useQueryParam('action');
 	const change = useQueryParam('change');
 
@@ -101,6 +102,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 
 	const [loading, setLoading] = useState(false);
 	const [isUploading, setIsUploading] = useState(false);
+	const [sending, setSending] = useState(false);
 
 	const containerRef = useRef<HTMLInputElement>(null);
 	const textEditorRef = useRef<HTMLInputElement>(null);
@@ -213,14 +215,13 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 		if (!isEmpty(editors) && editorId) {
 			boardUtilities?.updateBoard({
 				onClose: () => {
-					const boardEditor = find(editors, ['editorId', editorId]);
-					if (boardEditor?.id ?? boardEditor?.did) {
+					if (draftId && !sending) {
 						const closeModal = createModal(
 							{
 								children: (
 									<StoreProvider>
 										<DeleteDraftModal
-											ids={[boardEditor.id ?? boardEditor?.did]}
+											ids={[draftId]}
 											onDelete={(): void => {
 												dispatch(closeEditor(editorId));
 											}}
@@ -236,7 +237,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 				}
 			});
 		}
-	}, [boardUtilities, createModal, dispatch, editorId, editors]);
+	}, [boardUtilities, createModal, dispatch, editorId, editors, draftId, sending]);
 
 	useEffect(() => {
 		if (
@@ -381,7 +382,8 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 			updateSubjectField,
 			action,
 			folderId,
-			saveDraftCb
+			saveDraftCb,
+			setSending
 		}),
 		[
 			action,
