@@ -63,7 +63,7 @@ const EditViewHeader: FC<PropType> = ({
 	uploadAttachmentsCb
 }) => {
 	const { prefs } = useUserSettings();
-	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action } =
+	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action, setSending } =
 		useContext(EditViewContext);
 	const [open, setOpen] = useState(false);
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -121,6 +121,7 @@ const EditViewHeader: FC<PropType> = ({
 	);
 
 	const sendMailCb = useCallback(() => {
+		setSending(true);
 		setBtnLabel(t('label.sending', 'Sending'));
 		setIsDisabled(true);
 		setShowRouteGuard(false);
@@ -164,6 +165,7 @@ const EditViewHeader: FC<PropType> = ({
 			setTimeout(() => notCanceled && infoSnackbar(2), 1000);
 			setTimeout(() => notCanceled && infoSnackbar(1), 2000);
 			setTimeout(() => {
+				setSending(false);
 				if (notCanceled) {
 					const activeRoute = getCurrentRoute();
 					if (activeRoute?.route === 'mails') {
@@ -199,6 +201,7 @@ const EditViewHeader: FC<PropType> = ({
 			}, 3000);
 		}
 	}, [
+		setSending,
 		setShowRouteGuard,
 		action,
 		boardContext,
@@ -208,9 +211,9 @@ const EditViewHeader: FC<PropType> = ({
 		updateEditorCb,
 		editorId,
 		folderId,
-		boardUtilities,
 		dispatch,
-		prefs
+		prefs,
+		boardUtilities
 	]);
 
 	const createModal = useModal();
