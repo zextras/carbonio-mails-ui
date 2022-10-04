@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { map, filter, reduce, concat, isEmpty, find, some } from 'lodash';
+import { map, filter, reduce, concat, isEmpty, find, some, forEach } from 'lodash';
 import { Account, AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import {
@@ -80,6 +80,8 @@ export const emptyEditor = (
 			name: account.name,
 			fullName: account.displayName
 		},
+		inline: [],
+		orignalText: ['', ''],
 		sender: {},
 		editorId,
 		subject: '',
@@ -351,7 +353,37 @@ export const getHtmlWithPreAppliedStyled = (
 ): string =>
 	`<html><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
 
+export const findCidFromPart = (inline: Array<any>, part: string) => {
+	const ci = find(inline, (i) => i.attach?.mp?.[0]?.part === part)?.ci;
+	return `cid:${ci}`;
+};
+export const replaceLinkWithParts = (content: any, inline: any) => {
+	console.log('nmnm:', { content, inline });
+	const parser = new DOMParser();
+	const htmlDoc = parser.parseFromString(content, 'text/html');
+
+	const images = htmlDoc.getElementsByTagName('img');
+
+	if (images) {
+		forEach(images, (p: HTMLImageElement) => {
+			if (p.hasAttribute('src') && p.getAttribute('src')?.includes('/service/home')) {
+				const newSource = findCidFromPart(inline, p.getAttribute('src')?.split('&part=')[1]);
+				console.log('nmnm:', { newSource });
+				p.setAttribute('src', newSource ?? '');
+			}
+			// if (!_CI_SRC_REGEX.test(p.src)) return;
+			// const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';
+			// if (imgMap[ci]) {
+			// 	const part = imgMap[ci];
+			// 	p.setAttribute('pnsrc', p.getAttribute('src') ?? '');
+			// 	p.setAttribute('src', `/service/home/~/?auth=co&id=${message.id}&part=${part.name}`);
+			// }
+		});
+	}
+	return htmlDoc.body.innerHTML;
+};
 export const generateRequest = (data: MailsEditor, prefs?: PrefsType): SoapDraftMessageObj => {
+	console.log('mnopq:', { data });
 	const style = {
 		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
 		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
@@ -385,7 +417,8 @@ export const generateRequest = (data: MailsEditor, prefs?: PrefsType): SoapDraft
 				undefined
 		});
 	}
-
+	const nn = replaceLinkWithParts(data?.text?.[1], data.inline);
+	console.log('nmnm:', { nn });
 	return {
 		autoSendTime: data.autoSendTime,
 		did: data.did ?? undefined,
@@ -398,21 +431,43 @@ export const generateRequest = (data: MailsEditor, prefs?: PrefsType): SoapDraft
 		// @ts-ignore
 		e: participants,
 		mp: [
+			// eslint-disable-next-line no-nested-ternary
 			data.richText
-				? {
-						ct: 'multipart/alternative',
-						mp: [
-							{
-								ct: 'text/html',
-								body: true,
-								content: { _content: getHtmlWithPreAppliedStyled(data?.text[1], style) ?? '' }
-							},
-							{
-								ct: 'text/plain',
-								content: { _content: data?.text[0] ?? '' }
-							}
-						]
-				  }
+				? data.inline?.length > 0
+					? {
+							ct: 'multipart/alternative',
+							mp: [
+								{
+									ct: 'text/plain',
+									content: { _content: data?.text[0] ?? '' }
+								},
+								{
+									ct: 'multipart/related',
+									mp: [
+										{
+											ct: 'text/html',
+											content: { _content: getHtmlWithPreAppliedStyled(nn, style) ?? '' }
+										},
+
+										...data?.inline
+									]
+								}
+							]
+					  }
+					: {
+							ct: 'multipart/alternative',
+							mp: [
+								{
+									ct: 'text/html',
+									body: true,
+									content: { _content: getHtmlWithPreAppliedStyled(data?.text[1], style) ?? '' }
+								},
+								{
+									ct: 'text/plain',
+									content: { _content: data?.text[0] ?? '' }
+								}
+							]
+					  }
 				: {
 						ct: 'text/plain',
 						body: true,

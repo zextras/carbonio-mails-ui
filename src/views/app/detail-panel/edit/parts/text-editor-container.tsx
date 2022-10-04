@@ -14,12 +14,20 @@ import React, {
 	useContext,
 	useMemo,
 	useRef,
-	useState
+	useState,
+	useEffect
 } from 'react';
 import { Row, Container, Text } from '@zextras/carbonio-design-system';
 import { Controller } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
 import { EditViewContext } from './edit-view-context';
 import * as StyledComp from './edit-view-styled-components';
+import {
+	addInlineAttachments,
+	findInlineAttachments,
+	getConvertedImageSources
+} from '../add-inline-attachment';
+import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
 
 type PropType = {
 	onDragOverEvent: (event: SyntheticEvent) => void;
@@ -27,8 +35,21 @@ type PropType = {
 	minHeight: number;
 	ref: RefObject<HTMLInputElement>;
 };
-const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minHeight }) => {
-	const { control, editor, throttledSaveToDraft, updateSubjectField } = useContext(EditViewContext);
+const TextEditorContainer: FC<PropType> = ({
+	onDragOverEvent,
+	draftSavedAt,
+	minHeight,
+	setValue
+}) => {
+	const {
+		control,
+		editor,
+		throttledSaveToDraft,
+		updateSubjectField,
+		updateEditorCb,
+		saveDraftCb,
+		editorId
+	} = useContext(EditViewContext);
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 
 	const { prefs } = useUserSettings();
@@ -42,9 +63,10 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minH
 	);
 
 	const [inputValue, setInputValue] = useState(editor?.text ?? ['', '']);
+	const [valueUpdated, setValueUpdated] = useState(false);
 	const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 	const [showStickyTime, setStickyTime] = useState(false);
-
+	const [isReady, setIsReady] = useState(false);
 	const toggleStickyTime = useCallback(() => {
 		clearTimeout(timeoutRef.current as ReturnType<typeof setTimeout>);
 		setStickyTime(false);
@@ -55,6 +77,34 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minH
 			}, 1500);
 		}, 1500);
 	}, []);
+	console.log('abcde:', { editor });
+
+	useEffect(() => {
+		if (isReady) {
+			console.log('mnopv:', { inputValue, editor });
+			saveDraftCb({
+				...editor,
+				// text: [imageTextArray?.join('<br />'), imageTextArray?.join('<br />')],
+				text: inputValue
+			}).then((res) => {
+				console.log('abcd:', {
+					res,
+					norm: normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0])
+				});
+				const normalisedMsg = normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0]);
+				setIsReady(false);
+				getConvertedImageSources({
+					data: normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0]),
+					updateEditorCb,
+					setValue,
+					setInputValue,
+					editor
+				});
+				// const parts = findInlineAttachments(normalisedMsg?.parts, []);
+				// console.log('abcd:', { parts });
+			});
+		}
+	}, [inputValue, editor, saveDraftCb, isReady, updateEditorCb, setValue]);
 
 	return (
 		<>
@@ -72,10 +122,23 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minH
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									value={inputValue[1]}
+									onFileSelect={({ editor: tinymce, resp }): void => {
+										console.log('mnop:', { editor, resp });
+										addInlineAttachments({
+											aids: resp,
+											tinymce,
+											updateEditorCb,
+											setIsReady,
+											editor
+										});
+									}}
 									onEditorChange={(ev: Array<string>): void => {
+										console.log('abcde:', { ev });
 										setInputValue(ev);
 										updateSubjectField({ text: ev });
-										throttledSaveToDraft({ text: ev });
+										if (isReady) {
+											throttledSaveToDraft({ text: ev });
+										}
 										toggleStickyTime();
 									}}
 									onDragOver={onDragOverEvent}

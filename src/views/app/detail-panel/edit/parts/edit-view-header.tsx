@@ -91,7 +91,7 @@ const EditViewHeader: FC<PropType> = ({
 		setOpen,
 		editorId: editor?.editorId
 	});
-
+	const [isInline, setIsInline] = useState(false);
 	const inputRef = useRef<any>();
 	const onFileClick = useCallback(() => {
 		if (inputRef.current) {
@@ -106,7 +106,8 @@ const EditViewHeader: FC<PropType> = ({
 		editorId,
 		updateEditorCb,
 		saveDraftCb,
-		setValue
+		setValue,
+		setIsInline
 	});
 
 	const onClick = (): void => {
@@ -428,6 +429,7 @@ const EditViewHeader: FC<PropType> = ({
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
 									).then((data: MailAttachment) => {
+										console.log('mnopq:', { data });
 										updateEditorCb({
 											attach: { ...value, mp: data }
 										});
