@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
+import { Container, List, Padding, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { isEmpty, sortBy } from 'lodash';
 import { t } from '@zextras/carbonio-shell-ui';
 import ShimmerList from './shimmer-list';
@@ -21,7 +21,8 @@ const SearchMessageList: FC<SearchListProps> = ({
 	loading,
 	filterCount,
 	setShowAdvanceFilters,
-	isInvalidQuery
+	isInvalidQuery,
+	invalidQueryTooltip
 }) => {
 	const { itemId } = useParams<{ itemId: string; folderId: string }>();
 
@@ -59,6 +60,7 @@ const SearchMessageList: FC<SearchListProps> = ({
 		return null;
 	}, [isInvalidQuery, searchResults.messages, randomListIndex]);
 
+	const tooltipDisabled = !searchDisabled || !invalidQueryTooltip;
 	const messageList = useMemo(
 		() => sortBy(Object.values(searchResults?.messages ?? []), 'date').reverse(),
 		[searchResults?.messages]
@@ -69,6 +71,7 @@ const SearchMessageList: FC<SearchListProps> = ({
 				setShowAdvanceFilters={setShowAdvanceFilters}
 				filterCount={filterCount}
 				searchDisabled={searchDisabled}
+				invalidQueryTooltip={invalidQueryTooltip}
 			/>
 			{searchResults?.messages ? (
 				<List

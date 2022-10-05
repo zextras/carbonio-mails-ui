@@ -5,7 +5,7 @@
  */
 import React, { FC, useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
-import { Spinner, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { QueryChip, Spinner, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { includes, map, reduce } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,8 +13,8 @@ import SearchPanel from './search-panel';
 import SearchConversationList from './search-conversation-list';
 import AdvancedFilterModal from './advance-filter-modal';
 import { findIconFromChip } from './parts/use-find-icon';
-import { search } from '../../store/actions';
-import { selectSearches } from '../../store/searches-slice';
+import { search } from '../../store/actions/search';
+import { resetSearchResults, selectSearches } from '../../store/searches-slice';
 import SearchMessageList from './search-message-list';
 import { FolderType, SearchProps, SearchResults } from '../../types';
 import { selectFolders } from '../../store/folders-slice';
@@ -46,17 +46,6 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		[searchInFolders]
 	);
 
-	const emptySearchResults = useMemo(
-		() =>
-			({
-				conversations: {},
-				more: false,
-				offset: 0,
-				sortBy: 'dateDesc',
-				query: []
-			} as SearchResults),
-		[]
-	);
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
@@ -65,7 +54,16 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 	const searchResults = useSelector(selectSearches);
 
+	const invalidQueryTooltip = useMemo(
+		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
+		[]
+	);
+
 	const resultLabel = useMemo(() => {
+		if (isInvalidQuery) {
+			return invalidQueryTooltip;
+		}
+
 		if (searchResults.status === 'fulfilled') {
 			return t('label.results_for', 'Results for: ');
 		}
@@ -73,7 +71,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			return t('label.loading_results', 'Loading Results...');
 		}
 		return '';
-	}, [searchResults.status]);
+	}, [isInvalidQuery, searchResults.status, invalidQueryTooltip]);
 
 	const queryToString = useMemo(
 		() =>
@@ -84,8 +82,8 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	);
 
 	const searchQuery = useCallback(
-		(queryString: string, reset: boolean) => {
-			dispatch(
+		async (queryString: string, reset: boolean) => {
+			const resultAction = await dispatch(
 				search({
 					query: queryString,
 					limit: 100,
@@ -95,8 +93,20 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 					recip: '0'
 				})
 			);
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			if (search.rejected.match(resultAction)) {
+				if (
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					resultAction?.payload?.Body?.Fault?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
+				) {
+					setIsInvalidQuery(true);
+					setSearchDisabled(true, invalidQueryTooltip);
+				}
+			}
 		},
-		[dispatch, isMessageView, searchResults.offset]
+		[dispatch, invalidQueryTooltip, isMessageView, searchResults.offset, setSearchDisabled]
 	);
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
@@ -127,17 +137,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 				updateQuery(modifiedQuery);
 			}
 		}
-	}, [
-		searchResults,
-		queryArray,
-		updateQuery,
-		findIcon,
-		isInvalidQuery,
-		emptySearchResults,
-		query,
-		queryToString,
-		dispatch
-	]);
+	}, [searchResults, queryArray, updateQuery, findIcon, isInvalidQuery, query, queryToString]);
 
 	useEffect(() => {
 		if (searchResults.status === 'pending') {
@@ -154,23 +154,25 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		if (query && query.length === 0) {
 			setFilterCount(0);
 			setIsInvalidQuery(false);
+			dispatch(resetSearchResults());
 		}
 	}, [
-		dispatch,
-		isInvalidQuery,
-		isMessageView,
 		query,
-		queryToString,
+		queryArray,
+		isInvalidQuery,
 		searchQuery,
-		searchResults.query
+		searchResults.query,
+		queryToString,
+		dispatch
 	]);
 
 	const { path } = useRouteMatch();
+	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 
 	return (
 		<>
 			<Container>
-				<ResultsHeader label={resultLabel} />
+				<ResultsHeader label={resultLabel} labelType={resultLabelType} />
 				<Container
 					orientation="horizontal"
 					background="gray4"
@@ -189,6 +191,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 									filterCount={filterCount}
 									setShowAdvanceFilters={setShowAdvanceFilters}
 									isInvalidQuery={isInvalidQuery}
+									invalidQueryTooltip={invalidQueryTooltip}
 								/>
 							) : (
 								<SearchConversationList
@@ -200,6 +203,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 									filterCount={filterCount}
 									setShowAdvanceFilters={setShowAdvanceFilters}
 									isInvalidQuery={isInvalidQuery}
+									invalidQueryTooltip={invalidQueryTooltip}
 								/>
 							)}
 						</Route>

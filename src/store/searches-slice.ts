@@ -5,7 +5,7 @@
  */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapResponse, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { includes, map } from 'lodash';
@@ -16,7 +16,6 @@ import {
 	StateType
 } from '../types';
 import { msgAction, search } from './actions';
-
 import {
 	handleAddMessagesInConversationReducer,
 	handleCreatedConversationsReducer,
@@ -28,14 +27,26 @@ import {
 	handleCreatedMessagesInConversationsReducer
 } from './search-slice-reducers';
 
+const getSearchInitialiState = (): SearchesStateType =>
+	({
+		searchResults: undefined,
+		conversations: [],
+		messages: [],
+		more: false,
+		offset: 0,
+		sortBy: 'dateDesc',
+		query: '',
+		status: 'empty',
+		loadingMessage: '',
+		parent: '',
+		error: undefined
+	} as SearchesStateType);
+
+const resetResultReducer = (state: SearchesStateType): SearchesStateType =>
+	getSearchInitialiState();
+
 const fetchSearchesPending = (state: SearchesStateType): void => {
 	state.status = 'pending';
-	state.conversations = [];
-	state.messages = [];
-};
-
-const fetchSearchesRejected = (state: SearchesStateType): void => {
-	state.status = 'error';
 	state.conversations = [];
 	state.messages = [];
 };
@@ -51,7 +62,19 @@ const fetchSearchesFulfilled = (
 		state.more = payload?.hasMore === true;
 		state.offset = (meta?.arg.offset ?? 0) + 100;
 		state.sortBy = meta?.arg.sortBy ?? 'dateDesc';
+		state.error = undefined;
 	}
+};
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const fetchSearchesRejected = (state: SearchesStateType, { payload }): void => {
+	state.status = 'error';
+	state.conversations = [];
+	state.messages = [];
+	state.error = {
+		code: payload?.Body.Fault.Detail.Error.Code ?? 'generic error'
+	};
 };
 
 const msgActionFulfilled = (
@@ -59,43 +82,34 @@ const msgActionFulfilled = (
 	{ meta }: { meta: { arg: ConvActionParameters; requestId: string; requestStatus: string } }
 ): void => {
 	if (meta.arg.ids) {
-		// state.conversations = state.conversations
-		// 	? map(state.conversations, (conv) => ({
-		// 			...conv,
-		// 			messages: map(conv.messages, (msg) => {
-		// 				if (includes(meta.arg.ids, msg.id)) {
-		// 					return { ...msg, parent: FOLDERS.TRASH };
-		// 				}
-		// 				return msg;
-		// 			})
-		// 	  }))
-		// 	: [];
-		// state.messages = state.messages
-		// 	? map(state.messages, (msg) => {
-		// 			if (includes(meta.arg.ids, msg.id)) {
-		// 				return { ...msg, parent: FOLDERS.TRASH };
-		// 			}
-		// 			return msg;
-		// 	  })
-		// 	: [];
+		state.error = undefined;
+		state.conversations = state.conversations
+			? map(state.conversations, (conv) => ({
+					...conv,
+					messages: map(conv.messages, (msg) => {
+						if (includes(meta.arg.ids, msg.id)) {
+							return { ...msg, parent: FOLDERS.TRASH };
+						}
+						return msg;
+					})
+			  }))
+			: [];
+		state.messages = state.messages
+			? map(state.messages, (msg) => {
+					if (includes(meta.arg.ids, msg.id)) {
+						return { ...msg, parent: FOLDERS.TRASH };
+					}
+					return msg;
+			  })
+			: [];
 	}
 };
 
 export const searchesSlice = createSlice({
 	name: 'searches',
-	initialState: {
-		conversations: {},
-		messages: {},
-		more: false,
-		offset: 0,
-		sortBy: 'dateDesc',
-		query: '',
-		status: 'empty',
-		loadingMessage: '',
-		parent: '',
-		reload: true
-	} as unknown as SearchesStateType,
+	initialState: getSearchInitialiState(),
 	reducers: {
+		resetSearchResults: resetResultReducer,
 		handleNotifyCreatedSearchConversations: produce(handleCreatedConversationsReducer),
 		handleNotifyModifiedSearchConversations: produce(handleModifiedConversationsReducer),
 		handleNotifyDeletedSearchConversations: produce(handleDeletedConversationsReducer),
@@ -127,4 +141,5 @@ export const {
 } = searchesSlice.actions;
 export const searchesSliceReducer = searchesSlice.reducer;
 export const selectSearches = ({ searches }: StateType): SearchesStateType => searches;
+export const { resetSearchResults } = searchesSlice.actions;
 export const selectSearchesStatus = ({ searches }: StateType): string => searches.status;
