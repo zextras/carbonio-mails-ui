@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.40](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.39...v0.1.40) (2022-10-05)
+
+
+### Bug Fixes
+
+* added close action fo  edit scheduled message warning modal ([a96e41f](https://github.com/zextras/carbonio-mails-ui/commit/a96e41f9877392713618f481409527808bf156a0))
+
 ### [0.1.39](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.38...v0.1.39) (2022-10-05)
 
 
