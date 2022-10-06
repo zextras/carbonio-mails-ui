@@ -37,7 +37,7 @@ const SubjectRow: FC = () => {
 									onChange(ev.target.value);
 									throttledSaveToDraft({ subject: ev.target.value });
 								}}
-								placeholder={t('label.subject', 'Subject')}
+								label={t('label.subject', 'Subject')}
 								value={value}
 								backgroundColor="gray5"
 								hideBorder
