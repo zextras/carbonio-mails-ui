@@ -3,15 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useContext } from 'react';
+import React, { FC, ReactElement, useContext, useMemo } from 'react';
 import { Controller } from 'react-hook-form';
-import {
-	Container,
-	EmailComposerInput,
-	Padding,
-	Tooltip,
-	Icon
-} from '@zextras/carbonio-design-system';
+import { Container, Input, Padding, Tooltip, Icon } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import * as StyledComp from './edit-view-styled-components';
 import { EditViewContext } from './edit-view-context';
@@ -19,8 +13,10 @@ import { EditViewContext } from './edit-view-context';
 const SubjectRow: FC = () => {
 	const { control, editor, updateSubjectField, throttledSaveToDraft } = useContext(EditViewContext);
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
+	const isIconsVisible = useMemo(
+		() => editor?.requestReadReceipt || editor?.urgent,
+		[editor?.requestReadReceipt, editor?.urgent]
+	);
 	return (
 		<StyledComp.ColContainer occupyFull>
 			<Controller
@@ -34,39 +30,40 @@ const SubjectRow: FC = () => {
 						style={{ overflow: 'hidden' }}
 						padding={{ all: 'none' }}
 					>
-						<Container background="gray5" style={{ overflow: 'hidden' }}>
-							<EmailComposerInput
+						<Container background="gray5" style={{ overflow: 'hidden' }} padding="0">
+							<Input
 								onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => {
 									updateSubjectField({ subject: ev.target.value });
 									onChange(ev.target.value);
 									throttledSaveToDraft({ subject: ev.target.value });
 								}}
 								placeholder={t('label.subject', 'Subject')}
-								placeholderType="default"
 								value={value}
+								backgroundColor="gray5"
+								hideBorder
 							/>
 						</Container>
-						<Container
-							width="fit"
-							background="gray5"
-							padding={{ right: 'medium', left: 'extrasmall' }}
-							orientation="horizontal"
-						>
-							{editor?.requestReadReceipt && (
-								<Tooltip label={t('label.request_receipt', 'Request read receipt')}>
-									<Padding right="small">
-										<Icon icon="CheckmarkSquare" color="secondary" size="large" />
-									</Padding>
-								</Tooltip>
-							)}
-							{editor?.urgent && (
-								<Tooltip label={t('tooltip.marked_as_important', 'Marked as important')}>
-									<Padding right="small">
+						{isIconsVisible && (
+							<Container
+								width="fit"
+								background="gray5"
+								padding={{ right: 'medium', left: 'extrasmall' }}
+								orientation="horizontal"
+							>
+								{editor?.requestReadReceipt && (
+									<Tooltip label={t('label.request_receipt', 'Request read receipt')}>
+										<Padding right="small">
+											<Icon icon="CheckmarkSquare" color="secondary" size="large" />
+										</Padding>
+									</Tooltip>
+								)}
+								{editor?.urgent && (
+									<Tooltip label={t('tooltip.marked_as_important', 'Marked as important')}>
 										<Icon icon="ArrowUpward" color="secondary" size="large" />
-									</Padding>
-								</Tooltip>
-							)}
-						</Container>
+									</Tooltip>
+								)}
+							</Container>
+						)}
 					</Container>
 				)}
 			/>
