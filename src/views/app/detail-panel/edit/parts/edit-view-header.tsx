@@ -63,8 +63,17 @@ const EditViewHeader: FC<PropType> = ({
 	uploadAttachmentsCb
 }) => {
 	const { prefs, attrs } = useUserSettings();
-	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action, setSending } =
-		useContext(EditViewContext);
+	const {
+		control,
+		editor,
+		updateEditorCb,
+		editorId,
+		saveDraftCb,
+		folderId,
+		action,
+		setSending,
+		setSendLater
+	} = useContext(EditViewContext);
 	const [open, setOpen] = useState(false);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [openDD, setOpenDD] = useState(false);
@@ -369,13 +378,14 @@ const EditViewHeader: FC<PropType> = ({
 							closeBoard={boardUtilities?.closeBoard}
 							folderId={folderId}
 							setShowRouteGuard={setShowRouteGuard}
+							setSendLater={setSendLater}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [boardUtilities, dispatch, editor, folderId, setShowRouteGuard]);
+	}, [boardUtilities?.closeBoard, dispatch, editor, folderId, setSendLater, setShowRouteGuard]);
 
 	const isSendLaterAllowed = useMemo(
 		() => attrs?.zimbraFeatureMailSendLaterEnabled === 'TRUE',
