@@ -396,7 +396,6 @@
         "schedule_mail": "Sarà inviata il: {{date}} alle {{time}}"
     },
     "snackbar": {
-        "error": "Qualcosa è andato storto. riprova",
         "share_resend": "Invito condivisione inviato",
         "share_revoke": "Condivisione accesso revocata",
         "share_updated": "\"Diritti di accesso aggiornati\"",

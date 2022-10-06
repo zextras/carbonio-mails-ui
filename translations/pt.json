@@ -1,5 +1,6 @@
 {
     "action": {
+        "delete": "Excluir",
         "forward": "Encaminhar",
         "mark_as_read": "Marcar como lído",
         "mark_as_unread": "Marcar como não lído",
@@ -29,19 +30,36 @@
     },
     "folder": {
         "modal": {
+            "delete": {
+                "body": {
+                    "message2": "Deseja excluir a pasta selecionada permanentemente?"
+                }
+            },
             "edit": {
                 "size": "Tamanho",
                 "rename_warning": "Você não pode renomear a pasta como uma pasta de sistema.",
+                "threshold_msg": "Nesta pasta, as mensagens anteriores ao período definido estarão sujeitas a uma limpeza e exclusão automática.",
                 "retention_duration_warning": "A duração da retenção deve ser um número positivo",
                 "retention_message": "As mensagens nesta pasta que se enquadram no período de retenção necessitam de conformação expressa antes de serem excluídas",
                 "threshold_message": "As mensagens nesta pasta mais antigas que o limite de descarte estarão sujeitas a limpeza e exclusão automáticas.",
                 "add_share": "Adicionar partilha"
             },
             "move": {
+                "body": {
+                    "message2": "Selecione uma pasta de destino"
+                },
                 "title_modal": "Mover Conversa"
             },
             "new": {
+                "input": {
+                    "name": "Nome da Pasta"
+                },
                 "title": "Criar nova pasta"
+            },
+            "empty": {
+                "body": {
+                    "message2": "Ao esvaziá-la, todo conteúdo relacionado será excluído permanentemente."
+                }
             },
             "wipe": {
                 "body": {
@@ -50,7 +68,13 @@
             }
         },
         "action": {
-            "restore": "Recuperar Pasta"
+            "empty": {
+                "trash": "Esvaziar lixeira"
+            },
+            "edit_properties": "Editar propriedades"
+        },
+        "item": {
+            "root": "/Raiz"
         }
     },
     "label": {
@@ -337,9 +361,13 @@
             "new_message_folder": "Exibir notificações para as novas mensagens que chegarem em qualquer pasta",
             "new_message_inbox": "Exibir notificações para as novas mensagens que chegarem na caixa de entrada"
         },
+        "dspl_mail_optn": {
+            "text": "Como texto"
+        },
         "label": {
             "check_new_mail": "Verificar novo e-mail",
             "display_mail": "Exibir e-mail",
+            "msg_selection": "Seleção de Mensagem",
             "search_query": "Consulta padrão",
             "conversation_ordering": "Ordem das conversas",
             "default_mail_search": "Busca de E-mail Padrão",
@@ -457,6 +485,9 @@
     },
     "composer": {
         "attachment": {
+            "draganddrop": {
+                "content": "Solte aqui seus anexos para adicioná-los rapidamente a este e-mail"
+            },
             "local": "Adicionar de pasta local",
             "contacts_mod": "Adicionar Cartão de Contato",
             "drag_and_drop": {
@@ -467,6 +498,7 @@
             "files": "Adicionar a partir de Files"
         }
     },
+    "freebusy": "FreeBusy",
     "message": {
         "snackbar": {
             "share": {
@@ -496,6 +528,7 @@
         "external_images_blocked": "As imagens externas foram bloqueadas para protegê-lo de possível spam",
         "admin_rights": "Ver,Editar,Adicionar,Remover,Administrar"
     },
+    "select_signature": "Selecionar assinatura",
     "snackbar": {
         "folder_shared_error": "Algo deu errado. Tente novamente",
         "share_resend": "Convite da partilha reenviado",

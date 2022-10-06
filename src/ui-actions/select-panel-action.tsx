@@ -253,8 +253,8 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 			<Container background="gray5" orientation="horizontal" mainAlignment="flex-start">
 				<IconButton
 					icon="ArrowBack"
-					color="primary"
-					size="medium"
+					iconColor="primary"
+					size="large"
 					onClick={deselectAll}
 					data-testid="action-button-deselect-all"
 				/>
@@ -271,14 +271,14 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 						<IconButton
 							data-testid={`primary-action-button-${action.label}`}
 							icon={action.icon}
-							color="primary"
+							iconColor="primary"
 							onClick={(ev): void => {
 								if (ev) ev.preventDefault();
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								action.click(ev);
 							}}
-							size="medium"
+							size="large"
 						/>
 					);
 				})}

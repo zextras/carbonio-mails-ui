@@ -286,3 +286,5 @@ export const editorSliceReducer = editorsSlice.reducer;
 export function selectEditors({ editors }: StateType): MailsEditorMap {
 	return editors ? editors.editors : {};
 }
+export const selectDraftId = ({ editors }: StateType, id: string | undefined): string | undefined =>
+	id ? editors?.editors?.[id]?.id ?? editors?.editors?.[id]?.did : undefined;
