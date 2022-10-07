@@ -471,7 +471,15 @@ export function editDraft({
 					title: t('label.warning', 'Warning'),
 					confirmLabel: t('action.edit_anyway', 'Edit anyway'),
 					onConfirm: () => {
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						closeModal();
 						replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
+					},
+					onClose: () => {
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						closeModal();
 					},
 					showCloseIcon: true,
 					children: (
