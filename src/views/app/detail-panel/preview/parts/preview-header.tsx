@@ -163,9 +163,15 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 							(tagNotInList) => {
 								acc.push({
 									id: tagNotInList,
-									name: tagNotInList.split(':')[1],
-									label: tagNotInList.split(':')[1],
-									color: 1,
+									name: t('label.not_in_list', {
+										name: tagNotInList.split(':')[1],
+										defaultValue: '{{name}} - Not in your tag list'
+									}),
+									label: t('label.not_in_list', {
+										name: tagNotInList.split(':')[1],
+										defaultValue: '{{name}} - Not in your tag list'
+									}),
+									color: ZIMBRA_STANDARD_COLORS[0].hex,
 									customComponent: (
 										<Row takeAvailableSpace mainAlignment="flex-start">
 											<Row takeAvailableSpace mainAlignment="space-between">
@@ -253,6 +259,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			}),
 		[message?.autoSendTime]
 	);
+
 	return (
 		<HoverContainer
 			height="fit"
