@@ -428,7 +428,6 @@ const EditViewHeader: FC<PropType> = ({
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
 									).then((data: MailAttachment) => {
-										console.log('mnopq:', { data });
 										updateEditorCb({
 											attach: { ...value, mp: data }
 										});

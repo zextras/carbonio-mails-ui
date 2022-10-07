@@ -110,7 +110,6 @@ const TextEditorContainer: FC<PropType> = ({
 									// @ts-ignore
 									value={inputValue[1]}
 									disabled={isReady}
-									loading={isReady}
 									onFileSelect={({ editor: tinymce, files }: FileSelectProps): void => {
 										addInlineAttachments({
 											files,

@@ -145,7 +145,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 	const from = filter(participants, { type: 'f' })[0]?.address;
 	const domain = from?.substring(from.lastIndexOf('@') + 1);
 
-	const [showExternalImage, setShowExternalImage] = useState(true);
+	const [showExternalImage, setShowExternalImage] = useState(false);
 	const [displayBanner, setDisplayBanner] = useState(true);
 	// const darkMode = useMemo(
 	// 	() => find(settings.props, ['name', 'zappDarkreaderMode'])?._content,
@@ -236,11 +236,11 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		[from, domain, saveTrustee]
 	);
 
-	// const showImage = useMemo(
-	// 	() => showExternalImage && displayBanner,
-	// 	[displayBanner, showExternalImage]
-	// );
-	const showImage = useMemo(() => true, []);
+	const showImage = useMemo(
+		() => showExternalImage && displayBanner,
+		[displayBanner, showExternalImage]
+	);
+
 	useLayoutEffect(() => {
 		if (!isNull(iframeRef.current) && !isNull(iframeRef.current.contentDocument)) {
 			iframeRef.current.contentDocument.open();
