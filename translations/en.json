@@ -331,6 +331,7 @@
         "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",
         "no_subject_with_tags": "<No Subject>",
+        "not_in_list": "{{name}} - Not in tag list",
         "notification_audio": "Play audio hint when new notification appears",
         "notification_folders": "Folders Notifications",
         "notify": "Notify",
