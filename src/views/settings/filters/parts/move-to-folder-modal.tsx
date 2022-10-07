@@ -73,6 +73,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 					if (match && match.length) {
 						return [
 							...acc,
+							{ divider: true },
 							{
 								...item,
 								label: item.name,
