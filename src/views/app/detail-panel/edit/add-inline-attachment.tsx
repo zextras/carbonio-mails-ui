@@ -23,6 +23,9 @@ type AddAttachmentsPayloadType = {
 	};
 };
 
+export const _CI_REGEX = /^<(.*)>$/;
+export const _CI_SRC_REGEX = /^cid:(.*)$/;
+
 export const retrieveInlineAttachments = (
 	original: MailMessage,
 	disposition: string
@@ -68,9 +71,6 @@ export const addInlineAttachments = async ({
 		}
 	});
 };
-
-export const _CI_REGEX = /^<(.*)>$/;
-export const _CI_SRC_REGEX = /^cid:(.*)$/;
 
 export function findAttachments(
 	parts: MailMessagePart[],
