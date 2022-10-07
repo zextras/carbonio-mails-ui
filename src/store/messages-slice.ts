@@ -70,7 +70,6 @@ function saveDraftFulfilled(
 	{ messages, status }: MsgStateType,
 	{ payload }: { payload: any }
 ): void {
-	console.log('mnopv:', { payload: cloneDeep(payload) });
 	const message = normalizeMailMessageFromSoap(payload.resp?.m?.[0], true);
 	status[message.id] = 'complete';
 	// eslint-disable-next-line no-param-reassign

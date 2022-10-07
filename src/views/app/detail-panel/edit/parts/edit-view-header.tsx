@@ -91,7 +91,7 @@ const EditViewHeader: FC<PropType> = ({
 		setOpen,
 		editorId: editor?.editorId
 	});
-	const [isInline, setIsInline] = useState(false);
+
 	const inputRef = useRef<any>();
 	const onFileClick = useCallback(() => {
 		if (inputRef.current) {
@@ -106,8 +106,7 @@ const EditViewHeader: FC<PropType> = ({
 		editorId,
 		updateEditorCb,
 		saveDraftCb,
-		setValue,
-		setIsInline
+		setValue
 	});
 
 	const onClick = (): void => {

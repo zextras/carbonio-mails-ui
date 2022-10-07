@@ -19,14 +19,9 @@ import React, {
 } from 'react';
 import { Row, Container, Text } from '@zextras/carbonio-design-system';
 import { Controller } from 'react-hook-form';
-import { v4 as uuidv4 } from 'uuid';
 import { EditViewContext } from './edit-view-context';
 import * as StyledComp from './edit-view-styled-components';
-import {
-	addInlineAttachments,
-	findInlineAttachments,
-	getConvertedImageSources
-} from '../add-inline-attachment';
+import { addInlineAttachments, getConvertedImageSources } from '../add-inline-attachment';
 import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
 
 type PropType = {
@@ -34,6 +29,12 @@ type PropType = {
 	draftSavedAt: string;
 	minHeight: number;
 	ref: RefObject<HTMLInputElement>;
+	setValue: (name: string, value: any) => void;
+};
+
+type FileSelectProps = {
+	editor: any;
+	files: File[];
 };
 const TextEditorContainer: FC<PropType> = ({
 	onDragOverEvent,
@@ -41,15 +42,8 @@ const TextEditorContainer: FC<PropType> = ({
 	minHeight,
 	setValue
 }) => {
-	const {
-		control,
-		editor,
-		throttledSaveToDraft,
-		updateSubjectField,
-		updateEditorCb,
-		saveDraftCb,
-		editorId
-	} = useContext(EditViewContext);
+	const { control, editor, throttledSaveToDraft, updateSubjectField, updateEditorCb, saveDraftCb } =
+		useContext(EditViewContext);
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 
 	const { prefs } = useUserSettings();
@@ -63,7 +57,6 @@ const TextEditorContainer: FC<PropType> = ({
 	);
 
 	const [inputValue, setInputValue] = useState(editor?.text ?? ['', '']);
-	const [valueUpdated, setValueUpdated] = useState(false);
 	const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 	const [showStickyTime, setStickyTime] = useState(false);
 	const [isReady, setIsReady] = useState(false);
@@ -77,31 +70,21 @@ const TextEditorContainer: FC<PropType> = ({
 			}, 1500);
 		}, 1500);
 	}, []);
-	console.log('abcde:', { editor });
 
 	useEffect(() => {
 		if (isReady) {
-			console.log('mnopv:', { inputValue, editor });
 			saveDraftCb({
 				...editor,
-				// text: [imageTextArray?.join('<br />'), imageTextArray?.join('<br />')],
 				text: inputValue
-			}).then((res) => {
-				console.log('abcd:', {
-					res,
-					norm: normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0])
-				});
-				const normalisedMsg = normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0]);
+			}).then((res: any) => {
 				setIsReady(false);
 				getConvertedImageSources({
-					data: normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0]),
+					message: normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0]),
 					updateEditorCb,
 					setValue,
 					setInputValue,
-					editor
+					inputValue
 				});
-				// const parts = findInlineAttachments(normalisedMsg?.parts, []);
-				// console.log('abcd:', { parts });
 			});
 		}
 	}, [inputValue, editor, saveDraftCb, isReady, updateEditorCb, setValue]);
@@ -116,16 +99,21 @@ const TextEditorContainer: FC<PropType> = ({
 					crossAlignment="flex-end"
 				>
 					{editor?.richText && composerIsAvailable ? (
-						<Container background="gray6" mainAlignment="flex-start" style={{ minHeight }}>
+						<Container
+							background="gray6"
+							mainAlignment="flex-start"
+							style={{ minHeight, overflow: 'hidden' }}
+						>
 							<StyledComp.EditorWrapper>
 								<Composer
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									value={inputValue[1]}
-									onFileSelect={({ editor: tinymce, resp }): void => {
-										console.log('mnop:', { editor, resp });
+									disabled={isReady}
+									loading={isReady}
+									onFileSelect={({ editor: tinymce, files }: FileSelectProps): void => {
 										addInlineAttachments({
-											aids: resp,
+											files,
 											tinymce,
 											updateEditorCb,
 											setIsReady,
@@ -133,7 +121,6 @@ const TextEditorContainer: FC<PropType> = ({
 										});
 									}}
 									onEditorChange={(ev: Array<string>): void => {
-										console.log('abcde:', { ev });
 										setInputValue(ev);
 										updateSubjectField({ text: ev });
 										if (isReady) {

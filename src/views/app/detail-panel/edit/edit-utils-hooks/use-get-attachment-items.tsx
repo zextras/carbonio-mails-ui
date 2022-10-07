@@ -37,8 +37,7 @@ export const useGetAttachItems = ({
 	editorId,
 	updateEditorCb,
 	saveDraftCb,
-	setValue,
-	setIsInline
+	setValue
 }: UseGetAttachItemsPropType): Array<UseGetAttachItemsReturnType> => {
 	const [getFilesFromDrive, getFilesAvailable] = useGetFilesFromDrive({
 		editorId,
@@ -96,15 +95,7 @@ export const useGetAttachItems = ({
 				</>
 			)
 		};
-		const inlineItem = {
-			id: 'contactsModAttachment',
-			icon: 'ContactsModOutline',
-			label: 'Add inline image',
-			click: (e): void => {
-				setIsInline(true);
-				onFileClick && onFileClick(e);
-			}
-		};
+
 		const contactItem = {
 			id: 'contactsModAttachment',
 			icon: 'ContactsModOutline',
@@ -130,7 +121,7 @@ export const useGetAttachItems = ({
 				  }
 				: undefined;
 
-		return compact([localItem, inlineItem, driveItem, fileUrl, contactItem]);
+		return compact([localItem, driveItem, fileUrl, contactItem]);
 	}, [
 		onFileClick,
 		filesSelectFilesActionAvailable,
@@ -139,7 +130,6 @@ export const useGetAttachItems = ({
 		getFilesActionAvailable,
 		getLinkAvailable,
 		getFilesAction,
-		setIsInline,
 		setOpenDD
 	]);
 };
