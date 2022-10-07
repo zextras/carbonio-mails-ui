@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.38](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.37...v0.1.38) (2022-10-03)
+
+
+### Bug Fixes
+
+* mark all as read on folders contextual menu ([a3c629a](https://github.com/zextras/carbonio-mails-ui/commit/a3c629af181a00a8ee1f77197125068409ca2edd))
+* mark all as read on folders contextual menu ([29348ec](https://github.com/zextras/carbonio-mails-ui/commit/29348ec3a15f7ede1de6fece84df4ec0126aff7e))
+* sometimes when draft is created, editor id is not updated ([6ccbd6d](https://github.com/zextras/carbonio-mails-ui/commit/6ccbd6def0d05b6839694abdccdd408f978ae0a2))
+* synk normalization error ([352cd66](https://github.com/zextras/carbonio-mails-ui/commit/352cd6663700b8c8bc98be4ef7f55faa9eaa520a))
+* when sending email from board the draft modal is not appearing ([2cf4ca4](https://github.com/zextras/carbonio-mails-ui/commit/2cf4ca4d304a6eb3136d45518ac18dda73bd1c07))
+
+### [0.1.37](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.36...v0.1.37) (2022-09-29)
+
+
+### Bug Fixes
+
+* restore the folders list in move modal of the filter ([b45a7b0](https://github.com/zextras/carbonio-mails-ui/commit/b45a7b0fbf0c45a7c2dfdae330b1d3b8f4886cfa))
+
 ### [0.1.36](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.35...v0.1.36) (2022-09-28)
 
 
