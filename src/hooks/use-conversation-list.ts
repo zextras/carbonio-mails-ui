@@ -40,15 +40,17 @@ export const useConversationListItems = (): Array<Conversation> => {
 
 	const filteredConversations = useMemo(
 		() =>
-			reduce(
-				conversations,
-				(acc, v) =>
-					some(v.messages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id])
-						? [...acc, v]
-						: acc,
-				[] as Array<Conversation>
-			),
-		[conversations, folder?.rid, folder?.zid, folder?.id]
+			folder
+				? reduce(
+						conversations,
+						(acc, v) =>
+							some(v.messages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id])
+								? [...acc, v]
+								: acc,
+						[] as Array<Conversation>
+				  )
+				: [],
+		[folder, conversations]
 	);
 
 	const sortedConversations = useMemo(

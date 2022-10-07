@@ -103,6 +103,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 	const [loading, setLoading] = useState(false);
 	const [isUploading, setIsUploading] = useState(false);
 	const [sending, setSending] = useState(false);
+	const [sendLater, setSendLater] = useState(false);
 
 	const containerRef = useRef<HTMLInputElement>(null);
 	const textEditorRef = useRef<HTMLInputElement>(null);
@@ -215,7 +216,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 		if (!isEmpty(editors) && editorId) {
 			boardUtilities?.updateBoard({
 				onClose: () => {
-					if (draftId && !sending) {
+					if (draftId && !sending && !sendLater) {
 						const closeModal = createModal(
 							{
 								children: (
@@ -237,7 +238,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 				}
 			});
 		}
-	}, [boardUtilities, createModal, dispatch, editorId, editors, draftId, sending]);
+	}, [boardUtilities, createModal, dispatch, editorId, editors, draftId, sending, sendLater]);
 
 	useEffect(() => {
 		if (
@@ -383,7 +384,8 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 			action,
 			folderId,
 			saveDraftCb,
-			setSending
+			setSending,
+			setSendLater
 		}),
 		[
 			action,
