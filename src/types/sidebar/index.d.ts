@@ -107,7 +107,6 @@ export type DeleteTagModalPropsType = {
 		CustomComponent?: ComponentType;
 		active: boolean;
 		color?: number;
-		divider: boolean;
 		id: string;
 		label: string;
 		name: string;

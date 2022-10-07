@@ -74,9 +74,6 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 						return [
 							...acc,
 							{
-								divider: true
-							},
-							{
 								...item,
 								label: item.name,
 								icon: getFolderIconName(item),

@@ -6,7 +6,7 @@
 
 import { ItemType as AccordionItemType } from '@zextras/carbonio-design-system';
 import { Tag } from '@zextras/carbonio-shell-ui';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, SyntheticEvent } from 'react';
 
 export type ReturnType = {
 	id: string;
@@ -35,7 +35,6 @@ export interface ItemType extends AccordionItemType<T> {
 	CustomComponent?: ComponentType<T>;
 	active: boolean;
 	color: number;
-	divider: boolean;
 	id: string;
 	label: string;
 	name: string;
@@ -47,9 +46,8 @@ export type TagsAccordionItems = {
 	items: ItemType[];
 	id: string;
 	label: string;
-	divider: true;
 	active: false;
 	open: boolean;
-	onClick: (e: Event) => void;
+	onClick: (e: SyntheticEvent<Element, Event> | KeyboardEvent) => void;
 	CustomComponent: ComponentType<any>;
 };
