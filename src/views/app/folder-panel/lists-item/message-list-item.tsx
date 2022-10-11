@@ -229,7 +229,7 @@ export const MessageListItem: FC<any> = ({
 			t('message.schedule_time', {
 				date: moment(item?.autoSendTime).format('DD/MM/YYYY'),
 				time: moment(item?.autoSendTime).format('HH:mm'),
-				defaultValue: '{{date}} at {{time}}'
+				defaultValue: 'for {{date}} at {{time}}'
 			}),
 		[item?.autoSendTime]
 	);
@@ -304,7 +304,7 @@ export const MessageListItem: FC<any> = ({
 													<Icon data-testid={iconId} icon="SendDelayedOutline" color="primary" />
 												</Padding>
 												<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
-													{t('label.delayed_sending', 'Delayed sending')}
+													{t('label.send_scheduled', 'Send Scheduled')}
 												</Text>
 											</Row>
 										) : (
