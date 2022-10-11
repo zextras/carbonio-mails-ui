@@ -39,7 +39,7 @@ function findAttachments(parts: MailMessagePart[], acc: MailMessagePart[]): Atta
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		(found, part: MailMessagePart) => {
-			if (part && part.disposition === 'attachment') {
+			if (part && (part.disposition === 'attachment' || part.contentType === 'message/rfc822')) {
 				found.push(part);
 			}
 			if (part.parts) return findAttachments(part.parts, found);
