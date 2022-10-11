@@ -5,4 +5,4 @@
  */
 import { createContext } from 'react';
 
-export const EditViewContext = createContext({});
+export const EditViewContext = createContext<any>({});
