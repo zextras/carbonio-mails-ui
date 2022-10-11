@@ -73,7 +73,7 @@ const fetchSearchesRejected = (state: SearchesStateType, { payload }): void => {
 	state.conversations = [];
 	state.messages = [];
 	state.error = {
-		code: payload?.Body.Fault.Detail.Error.Code ?? 'generic error'
+		code: payload?.Detail.Error.Code ?? 'generic error'
 	};
 };
 

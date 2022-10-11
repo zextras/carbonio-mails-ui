@@ -6,7 +6,7 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["conversation"] }] */
 
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getTags, SoapException, soapFetch } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { keyBy, map, reduce } from 'lodash';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
@@ -41,18 +41,29 @@ export const search = createAsyncThunk<
 		if (before) queryPart.push(`before:${before.getTime()}`);
 
 		try {
-			const result = await soapFetch<SearchRequest, SearchResponse>('Search', {
-				_jsns: 'urn:zimbraMail',
-				limit,
-				needExp: 1,
-				recip,
-				fullConversation: 1,
-				wantContent,
-				sortBy,
-				query: query || queryPart.join(' '),
-				offset,
-				types
-			});
+			const result = await soapFetch<SearchRequest, SearchResponse | ErrorSoapBodyResponse>(
+				'Search',
+				{
+					_jsns: 'urn:zimbraMail',
+					limit,
+					needExp: 1,
+					recip,
+					fullConversation: 1,
+					wantContent,
+					sortBy,
+					query: query || queryPart.join(' '),
+					offset,
+					types
+				}
+			);
+
+			if (!result) {
+				return rejectWithValue(undefined);
+			}
+
+			if ('Fault' in result) {
+				return rejectWithValue(result.Fault);
+			}
 
 			const tags = getTags();
 			if (types === 'conversation') {
@@ -80,7 +91,7 @@ export const search = createAsyncThunk<
 				};
 			}
 		} catch (err: any) {
-			return rejectWithValue(err?.response ?? err);
+			return rejectWithValue(err);
 		}
 		return undefined;
 	}
