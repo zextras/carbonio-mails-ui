@@ -2,28 +2,11 @@
     "folder": {
         "modal": {
             "edit": {
-                "size": "大小",
                 "rename_warning": "您无法将文件夹重命名为系统文件夹.",
                 "add_share": "添加共享",
                 "retention_duration_warning": "保留时间必须为正数",
                 "retention_message": "此文件夹中属于保留范围的邮件在被删除之前要求明确确认",
                 "threshold_message": "此文件夹中时间早于处置阈值的邮件将被自动清理和删除。"
-            },
-            "move": {
-                "title_modal": "移动会话"
-            },
-            "new": {
-                "title": "新建文件夹"
-            },
-            "wipe": {
-                "body": {
-                    "message2": "如果擦除，则所有相关内容都将被永久性删除。"
-                }
-            }
-        },
-        "action": {
-            "empty": {
-                "trash": "清空垃圾箱"
             }
         }
     },
@@ -36,6 +19,10 @@
             "redirect": {
                 "second": "邮件将像由原始收件人发送给新收件人一样",
                 "first": "此邮件将被发送给新的收件人，同时保留原始发件人的邮件地址。"
+            },
+            "send_anyway": {
+                "attachment": "附件",
+                "attachments": "附件"
             }
         },
         "new_email": "新邮件",
@@ -134,7 +121,8 @@
         "show_original": "显示原文",
         "unflag": "移除标记",
         "preview_new_tab": "点击以在另一标签页中预览",
-        "click_preview": "点击预览"
+        "click_preview": "点击预览",
+        "mark_all_read": "全部标记为已读"
     },
     "folders": {
         "trash": "回收站",
@@ -323,7 +311,22 @@
         "notify": "通知",
         "do_not_notify": "不通知",
         "keep_draft": "保存草稿",
-        "enter_email_address": "输入电邮地址或域名"
+        "enter_email_address": "输入电邮地址或域名",
+        "trusted_addresses": "可信地址",
+        "send_later": "稍后发送",
+        "schedule_send": "计划发送时间",
+        "request_receipt": "要求提供读信回条",
+        "read_receipt_sent": "此邮件的读信回条已送出",
+        "message_from_me": "我发的邮件",
+        "message_arrival": "邮件到达",
+        "duplicate_messages": "重复邮件",
+        "arrival_notifications": "来信通知",
+        "warning": "警告",
+        "read_reciept": "读信回条",
+        "read_receipt": "读信回条",
+        "as_text": "作为文本",
+        "as_html": "HTML 文件",
+        "mark_all_as_read": "全部标记为已读"
     },
     "search": {
         "unread": "未读",
@@ -362,7 +365,8 @@
         "view_rights": "查看",
         "admin_rights": "查看、编辑、添加、移除、管理",
         "manager_rights": "查看、编辑、添加、移除",
-        "external_images_blocked": "外部图像已被阻止以保护您免受潜在垃圾信息侵扰"
+        "external_images_blocked": "外部图像已被阻止以保护您免受潜在垃圾信息侵扰",
+        "select_date_time": "选择发送此邮件的日期和时间"
     },
     "settings": {
         "label": {
@@ -484,7 +488,22 @@
         "contains": "包含",
         "over": "高于",
         "perform_following_action": "执行以下操作：",
-        "gb": "GB"
+        "gb": "GB",
+        "font": "字体",
+        "fonts": {
+            "wide_block": "Wide Block",
+            "wide": "宽",
+            "terminal": "Terminal",
+            "serif": "Serif",
+            "sans_serif": "Sans Serif",
+            "professional": "Professional",
+            "monospaced": "Monospaced",
+            "modern": "现代",
+            "garamond": "Garamond",
+            "elegant": "Elegant",
+            "console": "Console",
+            "comic": "Comic"
+        }
     },
     "snackbar": {
         "folder_shared": "文件夹已共享",
@@ -519,7 +538,6 @@
             "url": "从文件添加公开链接"
         }
     },
-    "remove_from_this_list": "从此列表中移除",
     "folder_panel": {
         "modal": {
             "move": {
@@ -669,6 +687,13 @@
         "html": "HTML",
         "excel": "Excel",
         "email": "电子邮件",
-        "application": "应用"
-    }
+        "application": "应用",
+        "zipped_file": "压缩文件"
+    },
+    "labels": {
+        "compose_colin": "写信：",
+        "composing_messages": "编写邮件"
+    },
+    "new_folder": "新文件夹",
+    "go_back": "返回"
 }
