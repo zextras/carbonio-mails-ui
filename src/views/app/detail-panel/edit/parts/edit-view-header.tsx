@@ -17,7 +17,7 @@ import {
 	useModal,
 	Text
 } from '@zextras/carbonio-design-system';
-import { concat, some } from 'lodash';
+import { concat, some, find } from 'lodash';
 import { useDispatch } from 'react-redux';
 import {
 	getBridgedFunctions,
@@ -26,6 +26,8 @@ import {
 	useUserSettings,
 	useBoardHooks,
 	useBoard,
+	minimizeBoards,
+	reopenBoards,
 	t
 } from '@zextras/carbonio-shell-ui';
 import { useHistory } from 'react-router-dom';
@@ -62,7 +64,7 @@ const EditViewHeader: FC<PropType> = ({
 	handleSubmit,
 	uploadAttachmentsCb
 }) => {
-	const { prefs } = useUserSettings();
+	const { prefs, props } = useUserSettings();
 	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action, setSending } =
 		useContext(EditViewContext);
 	const [open, setOpen] = useState(false);
@@ -121,6 +123,7 @@ const EditViewHeader: FC<PropType> = ({
 	);
 
 	const sendMailCb = useCallback(() => {
+		minimizeBoards();
 		setSending(true);
 		setBtnLabel(t('label.sending', 'Sending'));
 		setIsDisabled(true);
@@ -147,6 +150,7 @@ const EditViewHeader: FC<PropType> = ({
 					hideButton,
 					actionLabel: 'Undo',
 					onActionClick: () => {
+						reopenBoards();
 						notCanceled = false;
 						setTimeout(() => updateEditorCb({ ...oldEditor }, editorId), 10);
 						replaceHistory(undoURL);
@@ -161,9 +165,18 @@ const EditViewHeader: FC<PropType> = ({
 				}
 			}, 10);
 
-			infoSnackbar(3);
-			setTimeout(() => notCanceled && infoSnackbar(2), 1000);
-			setTimeout(() => notCanceled && infoSnackbar(1), 2000);
+			let countdownSeconds: number =
+				(find(props, ['name', 'mails_snackbar_delay'])?._content as unknown as number) ?? 30;
+
+			const countdown = setInterval(() => {
+				countdownSeconds -= 1;
+				if (countdownSeconds <= 0 || !notCanceled) {
+					clearInterval(countdown);
+					return;
+				}
+				infoSnackbar(countdownSeconds);
+			}, 1000);
+
 			setTimeout(() => {
 				setSending(false);
 				if (notCanceled) {
@@ -198,7 +211,7 @@ const EditViewHeader: FC<PropType> = ({
 						}
 					});
 				}
-			}, 3000);
+			}, (countdownSeconds as number) * 1000);
 		}
 	}, [
 		setSending,
@@ -206,6 +219,7 @@ const EditViewHeader: FC<PropType> = ({
 		action,
 		boardContext,
 		editor,
+		props,
 		createSnackbar,
 		undoURL,
 		updateEditorCb,
