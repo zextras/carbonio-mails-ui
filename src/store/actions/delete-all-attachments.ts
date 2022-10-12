@@ -11,7 +11,7 @@ type removeAttachmentsPayload = {
 	attachments: string[];
 };
 
-export const deleteAllAttachments = createAsyncThunk(
+export const deleteAttachments = createAsyncThunk(
 	'mails/deleteAttachments',
 	async ({ id, attachments }: removeAttachmentsPayload) => {
 		const res = await soapFetch('RemoveAttachments', {

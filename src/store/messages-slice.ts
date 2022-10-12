@@ -25,7 +25,7 @@ import {
 	DeleteAttachmentsReturn
 } from '../types';
 import { search, getConv, getMsg, msgAction, searchConv } from './actions';
-import { deleteAllAttachments } from './actions/delete-all-attachments';
+import { deleteAttachments } from './actions/delete-all-attachments';
 import { saveDraft } from './actions/save-draft';
 import {
 	handleCreatedMessagesReducer,
@@ -167,7 +167,7 @@ export const messagesSlice = createSlice({
 		builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
 		builder.addCase(saveDraft.fulfilled, produce(saveDraftFulfilled));
 		builder.addCase(search.fulfilled, produce(fetchConversationsFulfilled));
-		builder.addCase(deleteAllAttachments.fulfilled, produce(deleteAttachmentsFulfilled));
+		builder.addCase(deleteAttachments.fulfilled, produce(deleteAttachmentsFulfilled));
 	}
 });
 

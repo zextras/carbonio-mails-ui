@@ -32,7 +32,7 @@ import { getMsgsForPrint } from '../../../../store/actions';
 import { getEMLContent, getErrorPage } from '../../../../commons/preview-eml';
 import { StoreProvider } from '../../../../store/redux';
 import DeleteAttachmentModal from './delete-attachment-modal';
-import { deleteAllAttachments } from '../../../../store/actions/delete-all-attachments';
+import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 
 const AttachmentsActions = styled(Row)``;
 function findAttachments(parts: MailMessagePart[], acc: MailMessagePart[]): AttachmentPartType[] {
@@ -180,7 +180,7 @@ const Attachment: FC<AttachmentType> = ({
 	}, [inputRef]);
 
 	const onDeleteAttachment = useCallback(() => {
-		dispatch(deleteAllAttachments({ id: message.id, attachments: [part] }));
+		dispatch(deleteAttachments({ id: message.id, attachments: [part] }));
 	}, [dispatch, message.id, part]);
 
 	const onDownloadAndDelete = useCallback(() => {
