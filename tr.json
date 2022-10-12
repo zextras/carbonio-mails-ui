@@ -26,7 +26,8 @@
         "unflag": "Bayrağı kaldır",
         "preview_new_tab": "Başka sekmede görüntülemek için tıklayın",
         "click_preview": "Önizleme için tıklayın",
-        "edit_anyway": "Yine de düzenle"
+        "edit_anyway": "Yine de düzenle",
+        "mark_all_read": "Tümünü okundu olarak işaretle"
     },
     "composer": {
         "attachment": {
@@ -297,7 +298,8 @@
         "duplicate_messages": "Yinelenen Mesajlar",
         "as_text": "Metin Olarak",
         "as_html": "HTML olarak",
-        "arrival_notifications": "Geldiğinde Bildirimler"
+        "arrival_notifications": "Geldiğinde Bildirimler",
+        "mark_all_as_read": "Tümünü okundu olarak işaretle"
     },
     "share": {
         "options": {

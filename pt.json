@@ -30,23 +30,14 @@
     "folder": {
         "modal": {
             "edit": {
-                "size": "Tamanho",
                 "rename_warning": "Você não pode renomear a pasta como uma pasta de sistema.",
                 "retention_duration_warning": "A duração da retenção deve ser um número positivo",
                 "retention_message": "As mensagens nesta pasta que se enquadram no período de retenção necessitam de conformação expressa antes de serem excluídas",
                 "threshold_message": "As mensagens nesta pasta mais antigas que o limite de descarte estarão sujeitas a limpeza e exclusão automáticas.",
                 "add_share": "Adicionar partilha"
             },
-            "move": {
-                "title_modal": "Mover Conversa"
-            },
             "new": {
                 "title": "Criar nova pasta"
-            },
-            "wipe": {
-                "body": {
-                    "message2": "Ao limpá-la, todo conteúdo relacionado será excluído permanentemente."
-                }
             }
         },
         "action": {
@@ -497,7 +488,6 @@
         "admin_rights": "Ver,Editar,Adicionar,Remover,Administrar"
     },
     "snackbar": {
-        "folder_shared_error": "Algo deu errado. Tente novamente",
         "share_resend": "Convite da partilha reenviado",
         "share_revoke": "Acesso à partilha revogado",
         "share_updated": "\"Direitos de acesso atualizados\"",

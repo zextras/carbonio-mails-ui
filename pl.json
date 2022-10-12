@@ -75,7 +75,8 @@
         "show_details": "Pokaż szczegóły",
         "show_original": "Pokaż oryginał",
         "click_preview": "Kliknij aby zobaczyć podgląd",
-        "edit_anyway": "Edytuj mimo to"
+        "edit_anyway": "Edytuj mimo to",
+        "mark_all_read": "Oznacz wszystkie jako przeczytane"
     },
     "composer": {
         "attachment": {
@@ -90,7 +91,7 @@
         }
     },
     "board": {
-        "show": "Pokaż tablicę"
+        "show": "Pokaż okienko"
     },
     "filters": {
         "active_filters": "Aktywne Filtry",
@@ -242,7 +243,7 @@
         "signature_required": "Informacje dot. podpisu są wymagane.",
         "cc_bcc": "Cc Bcc",
         "from_identity": "Od: {{identity}}",
-        "new_email": "Nowy E-mail",
+        "new_email": "Nowy e-mail",
         "send_email": "Wyślij e-maila",
         "app_name": "E-maile",
         "set_default_signatures": "Ustaw Domyślne Podpisy",
@@ -306,7 +307,7 @@
         "notify": "Powiadom",
         "mark_as_un_important": "Oznacz jako nieważne",
         "mark_as_important": "Oznacz jako ważne",
-        "include_shared_folders": "Zawrzyj udostępnione foldery",
+        "include_shared_folders": "Uwzględnij udostępnione foldery",
         "filter_modified": "Filtr został zmodyfikowany pomyślnie",
         "enter_email_address": "Wprowadź adres e-mail lub domenę",
         "do_not_notify": "Nie powiadamiaj",
@@ -325,7 +326,8 @@
         "edit_folder_properties": "Edytuj właściwości {{name}}",
         "as_text": "Jako tekst",
         "as_html": "Jako HTML",
-        "arrival_notifications": "Powiadomienia o przybyciu"
+        "arrival_notifications": "Powiadomienia o przybyciu",
+        "mark_all_as_read": "Oznacz wszystkie jako przeczytane"
     },
     "message": {
         "snackbar": {
@@ -369,7 +371,7 @@
         "unread_note": "Wyszukaj wszystkie nieprzeczytane elementy e-maili.",
         "attachment_note": "Wyszukaj wszystkie e-maile, które mają w sobie załączniki.",
         "sent_after": "Wysłane po",
-        "shared_folders_note": "Zawrzyj udostępnione elementy w wynikach wyszukiwań."
+        "shared_folders_note": "Uzwględnij udostępnione elementy w wynikach wyszukiwań."
     },
     "share": {
         "options": {
@@ -545,7 +547,7 @@
             "default_mail_search": "Wyszukiwanie Domyślnego E-maila",
             "display_mail": "Wyświetl e-maila",
             "display_messages": "Wyświetlanie Wiadomości",
-            "message_color": "Kolor Wiadomości",
+            "message_color": "Kolor wiadomości",
             "message_selection": "Wybór Wiadomości",
             "search_query": "Domyślne kryterium",
             "visualization_options": "Opcje wyświetlania"
