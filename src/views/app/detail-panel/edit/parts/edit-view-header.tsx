@@ -64,9 +64,18 @@ const EditViewHeader: FC<PropType> = ({
 	handleSubmit,
 	uploadAttachmentsCb
 }) => {
-	const { prefs, props } = useUserSettings();
-	const { control, editor, updateEditorCb, editorId, saveDraftCb, folderId, action, setSending } =
-		useContext(EditViewContext);
+	const { prefs, props, attrs } = useUserSettings();
+	const {
+		control,
+		editor,
+		updateEditorCb,
+		editorId,
+		saveDraftCb,
+		folderId,
+		action,
+		setSending,
+		setSendLater
+	} = useContext(EditViewContext);
 	const [open, setOpen] = useState(false);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [openDD, setOpenDD] = useState(false);
@@ -383,13 +392,34 @@ const EditViewHeader: FC<PropType> = ({
 							closeBoard={boardUtilities?.closeBoard}
 							folderId={folderId}
 							setShowRouteGuard={setShowRouteGuard}
+							setSendLater={setSendLater}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [boardUtilities, dispatch, editor, folderId, setShowRouteGuard]);
+	}, [boardUtilities?.closeBoard, dispatch, editor, folderId, setSendLater, setShowRouteGuard]);
+
+	const isSendLaterAllowed = useMemo(
+		() => attrs?.zimbraFeatureMailSendLaterEnabled === 'TRUE',
+		[attrs?.zimbraFeatureMailSendLaterEnabled]
+	);
+	const multiBtnActions = useMemo(
+		() => [
+			...(isSendLaterAllowed
+				? [
+						{
+							id: 'delayed_mail',
+							icon: 'ClockOutline',
+							label: t('label.send_later', 'Send later'),
+							click: openSendLaterModal
+						}
+				  ]
+				: [])
+		],
+		[openSendLaterModal, isSendLaterAllowed]
+	);
 	return (
 		<>
 			<Row
@@ -491,20 +521,23 @@ const EditViewHeader: FC<PropType> = ({
 						</Padding>
 					)}
 					<Padding left="large">
-						<MultiButton
-							label={btnLabel}
-							onClick={sendMailAction}
-							disabledPrimary={isSendDisabled}
-							disabledSecondary={isSendDisabled}
-							items={[
-								{
-									id: 'delayed_mail',
-									icon: 'ClockOutline',
-									label: t('label.send_later', 'Send later'),
-									click: openSendLaterModal
-								}
-							]}
-						/>
+						{multiBtnActions.length > 0 ? (
+							<MultiButton
+								label={btnLabel}
+								onClick={sendMailAction}
+								disabledPrimary={isSendDisabled}
+								disabledSecondary={isSendDisabled}
+								items={multiBtnActions}
+							/>
+						) : (
+							<Button
+								color="primary"
+								disabled={isSendDisabled}
+								icon="PaperPlane"
+								onClick={sendMailAction}
+								label={btnLabel}
+							/>
+						)}
 					</Padding>
 				</Row>
 			</Row>
