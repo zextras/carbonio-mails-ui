@@ -25,35 +25,18 @@
         "show_original": "Origineel weergeven",
         "unflag": "Vlag verwijderen",
         "preview_new_tab": "Klik om te bekijken in een ander tabblad",
-        "click_preview": "Klik om te bekijken"
+        "click_preview": "Klik om te bekijken",
+        "mark_all_read": "Alles als gelezen markeren",
+        "edit_anyway": "Toch bewerken"
     },
     "folder": {
-        "action": {
-            "edit": "Mapeigenschappen bewerken"
-        },
         "modal": {
-            "delete": {
-                "body": {
-                    "message2": "Wilt u de geselecteerde map definitief verwijderen?"
-                }
-            },
             "edit": {
                 "rename_warning": "U kunt de naam van een map niet wijzigen als een systeemmap.",
                 "retention_duration_warning": "De retentietijd moet een positief getal zijn",
                 "retention_message": "Berichten in deze map die binnen het retentiebereik vallen, vereisen een uitdrukkelijke bevestiging voordat ze worden verwijderd",
                 "add_share": "Delen toevoegen",
                 "threshold_message": "Berichten in deze map die ouder zijn dan de verwijderingsdrempel zullen automatisch worden opgeschoond en verwijderd."
-            },
-            "move": {
-                "title_modal": "Gesprek verplaatsen"
-            },
-            "new": {
-                "title": "Een nieuwe map creëren"
-            },
-            "wipe": {
-                "body": {
-                    "message2": "Als u het wist, zal alle gerelateerde inhoud permanent worden verwijderd."
-                }
             }
         }
     },
@@ -77,8 +60,8 @@
         "attachment": "Bijlage",
         "attachment_plural": "Bijlagen",
         "cancel": "Annuleren",
-        "download": "Download",
-        "download_plural": "Downloads",
+        "download": "Downloaden",
+        "download_plural": "Alles downloaden",
         "edit": "Bewerken",
         "me": "Me",
         "remove": "Verwijderen",
@@ -254,7 +237,31 @@
         "read_receipt_sent": "Een leesontvangstbewijs is verzonden voor dit bericht",
         "enter_email_address": "Geef e-mailadres of domein op",
         "delete_draft": "Klad Verwijderen",
-        "keep_draft": "Concept opslaan"
+        "keep_draft": "Concept opslaan",
+        "select_date_time": "Startdatum en -tijd",
+        "schedule_send": "Geplande verzending",
+        "message_from_me": "Berichten van mij",
+        "message_arrival": "Aankomst Bericht",
+        "duplicate_messages": "Dubbele Berichten",
+        "arrival_notifications": "Kennisgevingen bij aankomst",
+        "warning": "Warnung",
+        "read_reciept": "Leesbevestiging",
+        "read_receipt": "Leesbevestiging",
+        "as_text": "Als tekst",
+        "as_html": "Als HTML",
+        "show_more_info": "Meer informatie tonen",
+        "remove_request_receipt": "Leesbevestigingsbezoek verwijderen",
+        "read_receipt_req": "Leesbevestiging vereist",
+        "mark_as_un_important": "Als niet belangrijk markeren",
+        "mark_as_important": "Als belangrijk markeren",
+        "mark_all_as_read": "Alles als gelezen markeren",
+        "include_shared_folders": "Gedeelde mappen opnemen",
+        "hide_more_info": "Meer informatie verbergen",
+        "filter_modified": "Filter met succes gewijzigd",
+        "expand_receivers_list": "Ontvangerslijst uitklappen",
+        "delayed_sending": "Vertraagd verstuurd",
+        "collapse_receivers_list": "Ontvangerslijst inklappen",
+        "before_you_leave": "Voordat u vertrekt"
     },
     "messages": {
         "invalid_address": "Het volgende adres lijkt ongeldig te zijn",
@@ -267,6 +274,21 @@
             "redirect": {
                 "first": "Deze e-mail wordt doorgestuurd naar een nieuwe ontvanger met behoud van het e-mailadres van de oorspronkelijke afzender.",
                 "second": "De e-mail zal verschijnen zoals hij oorspronkelijk bedoeld was voor de nieuwe ontvanger"
+            },
+            "send_anyway": {
+                "attachment": "bijlage",
+                "attach": "bijsluiten",
+                "attachments": "bijlagen",
+                "second": "Wilt u de e-mail toch verzenden?",
+                "no_subject_no_attachments": "Het onderwerp van de e-mail is leeg en u heeft geen bestanden bijgevoegd.",
+                "no_subject": "Het onderwerp van de e-mail is leeg.",
+                "no_attachments": "U heeft geen bestanden bijgevoegd.",
+                "first": "Het onderwerp van de e-mail is leeg en u heeft geen bestanden bijgevoegd.",
+                "enclosing": "wordt ingesloten",
+                "enclosed": "ingesloten",
+                "enclose": "insluiten",
+                "attaching": "wordt bijgevoegd",
+                "attached": "bijgevoegd"
             }
         },
         "new_email": "Nieuwe e-mail",
@@ -309,7 +331,12 @@
         "check_and_try_again": "Controleer Carbonio en probeer het opnieuw",
         "could_not_find_to_show": "Sorry, we konden niets vinden om te laten zien",
         "something_went_wrong": "ER IS IETS FOUT GEGAAN",
-        "trustee_addresses": "E-mail van deze adresssen of domeinen worden als vertrouwd beschouwd en afbeeldingen worden automatisch weergegeven."
+        "trustee_addresses": "E-mail van deze adresssen of domeinen worden als vertrouwd beschouwd en afbeeldingen worden automatisch weergegeven.",
+        "read_receipt_2": "Wilt u de afzender verwittigen?",
+        "read_receipt_1": "De afzender van dit bericht heeft verzocht te worden geïnformeerd wanneer u dit bericht leest.",
+        "invalid_trustee_address": "Vul alleen e-mailadressen of domeinen in",
+        "edit_schedule_warning": "Door deze e-mail te bewerken, worden de eerder ingestelde tijd en datum voor uitgestelde verzending opnieuw ingesteld.",
+        "cal_name_exist_warning": "Een kalender met dezelfde naam bestaat al in dit traject"
     },
     "placeholder": {
         "add_new_recipients": "Nieuwe ontvangers toevoegen"
@@ -386,7 +413,11 @@
         "view_rights": "Bekijken",
         "admin_rights": "Bekijken, Bewerken, Toevoegen, Verwijderen, Beheren",
         "manager_rights": "Bekijken, Bewerken, Toevoegen, Verwijderen",
-        "external_images_blocked": "Externe afbeeldingen zijn geblokkeerd om u te beschermen tegen mogelijke spam"
+        "external_images_blocked": "Externe afbeeldingen zijn geblokkeerd om u te beschermen tegen mogelijke spam",
+        "select_date_time": "Selecteer een datum en tijd voor het verzenden van dit bericht",
+        "send_later_success": "Uw e-mail zal worden verstuurd op {{date}} om {{time}}",
+        "schedule_time": "{{date}} om {{time}}",
+        "schedule_mail": "Zal worden verstuurd op: {{date}} om {{time}}"
     },
     "composer": {
         "attachment": {
@@ -400,7 +431,6 @@
             "url": "Openbare link toevoegen vanuit Bestanden"
         }
     },
-    "select_signature": "Handtekening selecteren",
     "settings": {
         "label": {
             "check_new_mail": "Nieuwe e-mail controleren",
@@ -522,7 +552,24 @@
         "perform_following_action": "Voer de volgende acties uit:",
         "redirect_to_address": "Doorsturen naar adres",
         "remove_condition": "Deze voorwaarde verwijderen",
-        "to_cc": "Aan of CC"
+        "to_cc": "Aan of CC",
+        "font": "Lettertype",
+        "fonts": {
+            "wide_block": "Wide Block",
+            "wide": "Breed",
+            "terminal": "Terminal",
+            "serif": "Serif",
+            "sans_serif": "Sans Serif",
+            "professional": "Professional",
+            "monospaced": "Monospaced",
+            "modern": "Modern",
+            "garamond": "Garamond",
+            "elegant": "Elegant",
+            "console": "Console",
+            "comic": "Comic"
+        },
+        "font_size": "{{count}} pt",
+        "font_size_plural": "{{count}} pt"
     },
     "tooltip": {
         "revoke": "Toegang intrekken",
@@ -533,9 +580,10 @@
         "enable_rich_text": "Rich Text Editor inschakelen",
         "enable_urgent": "Dringend inschakelen",
         "resend": "Bericht over dit aandeel verzenden",
-        "folder_sharing_status": "Gedeeld met {{count}} persoon",
-        "folder_sharing_status_plural": "Gedeeld met {{count}} personen",
-        "folder_linked_status": "Mit mir geteilt"
+        "folder_sharing_status": "Gedeeld met {{count}} gebruiker",
+        "folder_sharing_status_plural": "Gedeeld met {{count}} gebruikers",
+        "folder_linked_status": "Mit mir geteilt",
+        "marked_as_important": "Gemarkeerd als belangrijk"
     },
     "folder_panel": {
         "modal": {
@@ -573,7 +621,8 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "Als u het wist, zal alle gerelateerde inhoud permanent worden verwijderd."
+                    "message2": "Als u het wist, zal alle gerelateerde inhoud permanent worden verwijderd.",
+                    "message1": "Wilt u de geselecteerde map wissen?"
                 }
             }
         },
@@ -674,7 +723,8 @@
         "remote": "op een door mij gedeelde map",
         "local": "op mijn mappen",
         "invitations": "uitnodigingen",
-        "ccme": "in kopie aan mij"
+        "ccme": "in kopie aan mij",
+        "anywhere": "in alle mappen"
     },
     "attachment_type": {
         "word": "Word",
@@ -686,6 +736,18 @@
         "html": "HTML",
         "excel": "Excel",
         "email": "E-mail",
-        "application": "Toepassing"
+        "application": "Toepassing",
+        "zipped_file": "Gezipt bestand"
+    },
+    "labels": {
+        "compose_colin": "Opstellen:",
+        "composing_messages": "Berichten opstellen"
+    },
+    "new_folder": "Nieuwe Map",
+    "go_back": "Teruggaan",
+    "modal": {
+        "delete_draft": {
+            "message1": "Wilt u dit ontwerp behouden of verwijderen?"
+        }
     }
 }

@@ -36,7 +36,6 @@
                 }
             },
             "edit": {
-                "size": "Tamanho",
                 "rename_warning": "Você não pode renomear a pasta como uma pasta de sistema.",
                 "threshold_msg": "Nesta pasta, as mensagens anteriores ao período definido estarão sujeitas a uma limpeza e exclusão automática.",
                 "retention_duration_warning": "A duração da retenção deve ser um número positivo",
@@ -530,7 +529,6 @@
     },
     "select_signature": "Selecionar assinatura",
     "snackbar": {
-        "folder_shared_error": "Algo deu errado. Tente novamente",
         "share_resend": "Convite da partilha reenviado",
         "share_revoke": "Acesso à partilha revogado",
         "share_updated": "\"Direitos de acesso atualizados\"",

@@ -43,7 +43,18 @@
             },
             "send_anyway": {
                 "second": "Vuoi comunque inviare il messaggio?",
-                "first": "L'oggetto del messaggio è vuoto e non è stato allegato alcun file."
+                "first": "L'oggetto del messaggio è vuoto e non è stato allegato alcun file.",
+                "attached": "allegato",
+                "no_subject_no_attachments": "L'oggetto del messaggio è vuoto e non è stato allegato alcun file.",
+                "no_subject": "L'oggetto del messaggio è vuoto.",
+                "no_attachments": "Non è stato allegato alcun file.",
+                "enclosed": "allegato",
+                "enclose": "allegare",
+                "attachments": "allegati",
+                "attachment": "allegato",
+                "attach": "allega",
+                "enclosing": "includere",
+                "attaching": "allegare"
             }
         },
         "invalid_address": "Il seguente indirizzo sembra essere non valido",
@@ -60,7 +71,8 @@
         "read_receipt_2": "Vuoi notificare il mittente?",
         "read_receipt_1": "Il mittente di questa e-mail ha chiesto di ricevere una notifica al momento della lettura del messaggio.",
         "invalid_trustee_address": "Inserisci sono indirizzi e-mail o domini",
-        "trustee_addresses": "La posta proveniente da questi indirizzi o domini verrà considerata affidabile e le immagini saranno visualizzate automaticamente."
+        "trustee_addresses": "La posta proveniente da questi indirizzi o domini verrà considerata affidabile e le immagini saranno visualizzate automaticamente.",
+        "edit_schedule_warning": "Modificando questa e-mail, l'ora e il giorno impostati per l'invio ritardato del messaggio saranno resettati."
     },
     "label": {
         "cc": "Cc",
@@ -242,7 +254,7 @@
         "remove_request_receipt": "Rimuovi la richiesta di conferma di lettura",
         "read_receipt_sent": "È stata inviata la conferma di lettura per questo messaggio",
         "read_receipt_req": "Conferma di lettura richiesta",
-        "mark_as_un_important": "Contrassegna come importante",
+        "mark_as_un_important": "Contrassegna come non importante",
         "mark_as_important": "Contrassegna come importante",
         "include_shared_folders": "Includi cartelle condivise",
         "filter_modified": "Filtro modificato con successo",
@@ -257,7 +269,16 @@
         "hide_more_info": "Nascondi informazioni ulteriori",
         "duplicate_messages": "Messaggi Duplicati",
         "as_text": "Come Testo",
-        "as_html": "Come HTML"
+        "as_html": "Come HTML",
+        "warning": "Attenzione",
+        "show_more_info": "Mostra più informazioni",
+        "select_date_time": "Seleziona ora e data",
+        "schedule_send": "Programma invio",
+        "read_reciept": "Conferma di lettura",
+        "message_from_me": "Messaggi da me",
+        "read_receipt": "Ricevuta di lettura",
+        "arrival_notifications": "Notifiche di Arrivo",
+        "mark_all_as_read": "Segna tutti come letti"
     },
     "tooltip": {
         "add_attachments": "Aggiungi allegati",
@@ -311,36 +332,17 @@
         "reset": "Ripristina",
         "preview_new_tab": "Clicca per l'anteprima in altra scheda",
         "click_preview": "Clicca per visualizzare l'anteprima",
-        "edit_anyway": "Modifica comunque"
+        "edit_anyway": "Modifica comunque",
+        "mark_all_read": "Segna tutti come letti"
     },
     "folder": {
-        "action": {
-            "restore": "Ripristina Cartella"
-        },
         "modal": {
-            "move": {
-                "body": {
-                    "message_restore": "Seleziona una cartella in cui ripristinare quella selezionata:"
-                }
-            },
-            "new": {
-                "name_exist_warning": "Nome già esistente"
-            },
             "edit": {
-                "footer": "Modifica",
                 "rename_warning": "Non puoi nominare una cartella come una di sistema.",
                 "add_share": "Aggiungi Condivisione",
                 "retention_duration_warning": "Il periodo di ritenzione dev'essere un numero positivo",
                 "retention_message": "All'interno di questa cartella, per i messaggi che rientrano nel periodo di ritenzione, verrà chiesta conferma per la cancellazione",
                 "threshold_message": "In questa cartella, i messaggi più vecchi del limite consentito saranno soggetti a cancellazione automatica."
-            },
-            "delete": {
-                "body": {
-                    "message3": "Eliminando l'oggetto, i relativi contenuti saranno spostati nel cestino e la cartella non sarà più visibile."
-                }
-            },
-            "restore": {
-                "footer": "Ripristina"
             }
         }
     },
@@ -393,7 +395,9 @@
         "view_rights": "Visualizza",
         "external_images_blocked": "Le immagini che provengono dall'esterno sono state bloccate al fine di tutelarti da potenziale spam",
         "schedule_time": "{{date}} alle {{time}}",
-        "schedule_mail": "Sarà inviata il: {{date}} alle {{time}}"
+        "schedule_mail": "Sarà inviata il: {{date}} alle {{time}}",
+        "send_later_success": "La tua e-mail verrà inviata il {{date}} alle {{time}}",
+        "select_date_time": "Seleziona la data e l’ora di invio di questo messaggio"
     },
     "snackbar": {
         "share_resend": "Invito condivisione inviato",
@@ -550,9 +554,25 @@
             "above_deleted": "Seleziona i messaggi sopra a quelli eliminati o spostati",
             "based_on_previous": "Seleziona il messaggio successivo sulla base delle selezioni precedenti",
             "below_deleted": "Seleziona il messaggio sotto quello spostato o eliminato"
-        }
+        },
+        "fonts": {
+            "elegant": "Elegant",
+            "console": "Console",
+            "wide_block": "Wide Block",
+            "terminal": "Terminal",
+            "serif": "Serif",
+            "sans_serif": "Sans Serif",
+            "professional": "Professional",
+            "monospaced": "Monospaced",
+            "modern": "Modern",
+            "garamond": "Garamond",
+            "comic": "Comic",
+            "wide": "Ampio"
+        },
+        "font": "Carattere",
+        "font_size": "{{count}} pt",
+        "font_size_plural": ""
     },
-    "read": "Letto",
     "search": {
         "attachment_note": "Cerca tutte le e-mail che hanno un allegato.",
         "unread": "Non letto",
@@ -629,7 +649,8 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "Se rimuovi il contenuto questo verrà eliminato definitivamente."
+                    "message2": "Se rimuovi il contenuto questo verrà eliminato definitivamente.",
+                    "message1": "Vuoi svuotare la cartella selezionata?"
                 }
             },
             "delete": {
@@ -721,5 +742,11 @@
         "excel": "Excel",
         "email": "Email",
         "application": "Applicazione"
-    }
+    },
+    "new_folder": "Nuova Cartella",
+    "labels": {
+        "compose_colin": "Componi :",
+        "composing_messages": "Composizione messaggi"
+    },
+    "go_back": "Indietro"
 }
