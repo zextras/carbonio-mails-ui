@@ -163,10 +163,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 							(tagNotInList) => {
 								acc.push({
 									id: tagNotInList,
-									name: t('label.not_in_list', {
-										name: tagNotInList.split(':')[1],
-										defaultValue: '{{name}} - Not in your tag list'
-									}),
+									name: tagNotInList.split(':')[1],
 									label: t('label.not_in_list', {
 										name: tagNotInList.split(':')[1],
 										defaultValue: '{{name}} - Not in your tag list'
@@ -392,7 +389,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 								{tagLabel}:
 								{map(tags, (tag) => (
 									<TagChip
-										label={tag.name}
+										label={tag?.label}
 										avatarBackground={tag.color}
 										background="gray2"
 										hasAvatar
