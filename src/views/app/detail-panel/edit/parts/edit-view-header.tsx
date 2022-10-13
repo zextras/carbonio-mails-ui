@@ -128,7 +128,9 @@ const EditViewHeader: FC<PropType> = ({
 		() => `${history.location.pathname?.split('/mails')?.[1]}${history.location.search}`,
 		[history]
 	);
-
+	const onBoardClose = useCallback(() => {
+		boardUtilities?.closeBoard();
+	}, [boardUtilities]);
 	const sendMailCb = useCallback(() => {
 		setSending(true);
 		setBtnLabel(t('label.sending', 'Sending'));
@@ -138,7 +140,10 @@ const EditViewHeader: FC<PropType> = ({
 			action === ActionsType.COMPOSE &&
 			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm
 		) {
-			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm(editor);
+			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm({
+				editor,
+				onBoardClose
+			});
 		} else {
 			let notCanceled = true;
 			const oldEditor = { ...editor };
@@ -215,6 +220,7 @@ const EditViewHeader: FC<PropType> = ({
 		action,
 		boardContext,
 		editor,
+		onBoardClose,
 		createSnackbar,
 		undoURL,
 		updateEditorCb,
