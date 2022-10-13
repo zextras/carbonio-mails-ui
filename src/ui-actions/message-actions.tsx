@@ -518,7 +518,7 @@ export function sendDraft({
 				// @ts-ignore
 				sendMsg({
 					editorId: id,
-					message
+					msg: message
 				})
 			);
 		}

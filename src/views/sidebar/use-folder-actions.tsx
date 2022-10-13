@@ -236,13 +236,20 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 		// default folders
 		case FOLDERS.INBOX:
 		case FOLDERS.SENT:
-		case FOLDERS.DRAFTS:
+			//	case FOLDERS.DRAFTS:
 			return defaultFolderActions.map((action) =>
 				action.id === FolderActionsType.MOVE || action.id === FolderActionsType.DELETE
 					? { ...action, disabled: true }
 					: action
 			);
-
+		case FOLDERS.DRAFTS:
+			return defaultFolderActions.map((action) =>
+				action.id === FolderActionsType.MOVE ||
+				action.id === FolderActionsType.DELETE ||
+				action.id === FolderActionsType.MARK_ALL_READ
+					? { ...action, disabled: true }
+					: action
+			);
 		case FOLDERS.SPAM:
 			return defaultFolderActions.map((action) =>
 				action.id === FolderActionsType.NEW ||
