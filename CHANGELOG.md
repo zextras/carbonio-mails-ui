@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.41](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.40...v0.1.41) (2022-10-06)
+
+
+### Bug Fixes
+
+* draft modal won't open on send later ([d306c01](https://github.com/zextras/carbonio-mails-ui/commit/d306c01fa97eee0cd2393ec44224346d7ca8ebcf))
+
 ### [0.1.40](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.39...v0.1.40) (2022-10-05)
 
 

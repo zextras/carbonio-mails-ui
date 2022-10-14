@@ -14,21 +14,36 @@ import React, {
 	useContext,
 	useMemo,
 	useRef,
-	useState
+	useState,
+	useEffect
 } from 'react';
 import { Row, Container, Text } from '@zextras/carbonio-design-system';
 import { Controller } from 'react-hook-form';
 import { EditViewContext } from './edit-view-context';
 import * as StyledComp from './edit-view-styled-components';
+import { addInlineAttachments, getConvertedImageSources } from '../add-inline-attachment';
+import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
 
 type PropType = {
 	onDragOverEvent: (event: SyntheticEvent) => void;
 	draftSavedAt: string;
 	minHeight: number;
 	ref: RefObject<HTMLInputElement>;
+	setValue: (name: string, value: any) => void;
 };
-const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minHeight }) => {
-	const { control, editor, throttledSaveToDraft, updateSubjectField } = useContext(EditViewContext);
+
+type FileSelectProps = {
+	editor: any;
+	files: File[];
+};
+const TextEditorContainer: FC<PropType> = ({
+	onDragOverEvent,
+	draftSavedAt,
+	minHeight,
+	setValue
+}) => {
+	const { control, editor, throttledSaveToDraft, updateSubjectField, updateEditorCb, saveDraftCb } =
+		useContext(EditViewContext);
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 
 	const { prefs } = useUserSettings();
@@ -44,7 +59,7 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minH
 	const [inputValue, setInputValue] = useState(editor?.text ?? ['', '']);
 	const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 	const [showStickyTime, setStickyTime] = useState(false);
-
+	const [isReady, setIsReady] = useState(false);
 	const toggleStickyTime = useCallback(() => {
 		clearTimeout(timeoutRef.current as ReturnType<typeof setTimeout>);
 		setStickyTime(false);
@@ -56,6 +71,24 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minH
 		}, 1500);
 	}, []);
 
+	useEffect(() => {
+		if (isReady) {
+			saveDraftCb({
+				...editor,
+				text: inputValue
+			}).then((res: any) => {
+				setIsReady(false);
+				getConvertedImageSources({
+					message: normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0]),
+					updateEditorCb,
+					setValue,
+					setInputValue,
+					inputValue
+				});
+			});
+		}
+	}, [inputValue, editor, saveDraftCb, isReady, updateEditorCb, setValue]);
+
 	return (
 		<>
 			{editor?.text && (
@@ -66,16 +99,32 @@ const TextEditorContainer: FC<PropType> = ({ onDragOverEvent, draftSavedAt, minH
 					crossAlignment="flex-end"
 				>
 					{editor?.richText && composerIsAvailable ? (
-						<Container background="gray6" mainAlignment="flex-start" style={{ minHeight }}>
+						<Container
+							background="gray6"
+							mainAlignment="flex-start"
+							style={{ minHeight, overflow: 'hidden' }}
+						>
 							<StyledComp.EditorWrapper>
 								<Composer
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									value={inputValue[1]}
+									disabled={isReady}
+									onFileSelect={({ editor: tinymce, files }: FileSelectProps): void => {
+										addInlineAttachments({
+											files,
+											tinymce,
+											updateEditorCb,
+											setIsReady,
+											editor
+										});
+									}}
 									onEditorChange={(ev: Array<string>): void => {
 										setInputValue(ev);
 										updateSubjectField({ text: ev });
-										throttledSaveToDraft({ text: ev });
+										if (isReady) {
+											throttledSaveToDraft({ text: ev });
+										}
 										toggleStickyTime();
 									}}
 									onDragOver={onDragOverEvent}
