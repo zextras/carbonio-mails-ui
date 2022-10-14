@@ -95,6 +95,7 @@ export const useGetAttachItems = ({
 				</>
 			)
 		};
+
 		const contactItem = {
 			id: 'contactsModAttachment',
 			icon: 'ContactsModOutline',

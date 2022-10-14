@@ -6,7 +6,7 @@
 
 import { ThemeProvider } from '@mui/material';
 import { Folder, useFoldersByView } from '@zextras/carbonio-shell-ui';
-import { Accordion, Container } from '@zextras/carbonio-design-system';
+import { Accordion, Container, Divider } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 import React, { FC, useMemo } from 'react';
 import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
@@ -40,6 +40,7 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions }) => {
 	return (
 		<Container orientation="vertical" height="fit" width="fill">
 			<SidebarAccordionMui accordions={accordionsWithFindShare} folderId={folderId} />
+			<Divider />
 			<Accordion items={[tagsAccordionItems]} />
 		</Container>
 	);
