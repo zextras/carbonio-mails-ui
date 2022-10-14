@@ -114,7 +114,6 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 						v.id === FOLDERS.USER_ROOT
 							? accountName
 							: getFolderTranslatedName({ folderId: v.id, folderName: v.label }),
-					divider: true,
 					items: v.items,
 					background: folderDestination.id === v.id ? 'highlight' : undefined,
 					onClick: () => {
