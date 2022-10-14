@@ -3,45 +3,45 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { Controller } from 'react-hook-form';
+import { AsyncThunkAction } from '@reduxjs/toolkit';
 import {
 	Button,
 	Dropdown,
-	Padding,
-	Row,
-	Tooltip,
-	SnackbarManagerContext,
 	IconButton,
 	MultiButton,
-	useModal,
-	Text
+	Padding,
+	Row,
+	SnackbarManagerContext,
+	Text,
+	Tooltip,
+	useModal
 } from '@zextras/carbonio-design-system';
-import { concat, some, find } from 'lodash';
-import { useDispatch } from 'react-redux';
 import {
 	getBridgedFunctions,
 	getCurrentRoute,
-	replaceHistory,
-	useUserSettings,
-	useBoardHooks,
-	useBoard,
 	minimizeBoards,
 	reopenBoards,
-	t
+	replaceHistory,
+	t,
+	useBoard,
+	useBoardHooks,
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
+import { concat, find, some } from 'lodash';
+import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { Controller } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { AsyncThunkAction } from '@reduxjs/toolkit';
-import { EditViewContext } from './edit-view-context';
-import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
-import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
-import * as StyledComp from './edit-view-styled-components';
-import { addAttachments } from '../edit-utils';
-import { MailAttachment } from '../../../../../types';
-import { sendMsg } from '../../../../../store/actions/send-msg';
 import { ActionsType } from '../../../../../commons/utils';
-import SendLaterModal from './send-later-modal';
+import { sendMsg } from '../../../../../store/actions/send-msg';
 import { StoreProvider } from '../../../../../store/redux';
+import { MailAttachment } from '../../../../../types';
+import { addAttachments } from '../edit-utils';
+import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
+import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
+import { EditViewContext } from './edit-view-context';
+import * as StyledComp from './edit-view-styled-components';
+import SendLaterModal from './send-later-modal';
 
 type PropType = {
 	setShowRouteGuard: (arg: boolean) => void;
@@ -130,7 +130,9 @@ const EditViewHeader: FC<PropType> = ({
 		() => `${history.location.pathname?.split('/mails')?.[1]}${history.location.search}`,
 		[history]
 	);
-
+	const onBoardClose = useCallback(() => {
+		boardUtilities?.closeBoard();
+	}, [boardUtilities]);
 	const sendMailCb = useCallback(() => {
 		minimizeBoards();
 		setSending(true);
@@ -141,7 +143,10 @@ const EditViewHeader: FC<PropType> = ({
 			action === ActionsType.COMPOSE &&
 			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm
 		) {
-			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm(editor);
+			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm({
+				editor,
+				onBoardClose
+			});
 		} else {
 			let notCanceled = true;
 			const oldEditor = { ...editor };
@@ -229,6 +234,7 @@ const EditViewHeader: FC<PropType> = ({
 		boardContext,
 		editor,
 		props,
+		onBoardClose,
 		createSnackbar,
 		undoURL,
 		updateEditorCb,

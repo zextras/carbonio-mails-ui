@@ -12,7 +12,14 @@ export type EditorAttachmentFiles = {
 	size: number;
 };
 
+export type InlineAttachedType =
+	| Array<{
+			ci: string;
+			attach: { aid: string };
+	  }>
+	| Array[];
 export type MailsEditor = {
+	inline: InlineAttachedType;
 	autoSendTime?: number;
 	id: string | undefined;
 	did?: string | undefined;
