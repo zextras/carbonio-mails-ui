@@ -649,10 +649,16 @@
             "message_selection": "Message Selection",
             "search_query": "Default query",
             "set_message_color": "Set color of messages and conversations according to tag color.",
+            "unsend_time": "Set unsend time",
+            "unsend_time_": "Set unsend time",
             "visualization_options": "Visualization Options"
         },
         "linkedin_msg": "LinkedIn messages and connections",
         "localpart": "localpart",
+        "mail_unsend_time": {
+            "second": "{{count}} second",
+            "second_plural": "{{count}} seconds"
+        },
         "mark_as": "Mark as",
         "mass_marketing": "mass marketing (bulk)",
         "matches_exactly": "matches exactly",
