@@ -64,7 +64,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 						label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
 						autoHideTimeout: 5000,
 						hideButton: false,
-						actionLabel: 'Undo',
+						actionLabel: t('label.undo', 'Undo'),
 						onActionClick: () => restoreFolder()
 					});
 				} else {
