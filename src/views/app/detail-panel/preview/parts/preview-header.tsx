@@ -29,7 +29,18 @@ import {
 	ContainerProps,
 	IconButton
 } from '@zextras/carbonio-design-system';
-import { capitalize, every, find, includes, isEmpty, map, reduce } from 'lodash';
+import {
+	capitalize,
+	every,
+	filter,
+	find,
+	forEach,
+	includes,
+	isEmpty,
+	map,
+	reduce,
+	uniqBy
+} from 'lodash';
 import {
 	useTags,
 	useUserAccounts,
@@ -123,7 +134,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			reduce(
 				tagsFromStore,
 				(acc: any, v) => {
-					if (includes(message.tags, v.id))
+					if (includes(message.tags, v.id)) {
 						acc.push({
 							...v,
 							// TODO: align the use of the property with the type exposed by the shell
@@ -146,7 +157,42 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 								</Row>
 							)
 						});
-					return acc;
+					} else if (message.tags?.length > 0 && !includes(message.tags, v.id)) {
+						forEach(
+							filter(message.tags, (tn) => tn?.includes('nil:')),
+							(tagNotInList) => {
+								acc.push({
+									id: tagNotInList,
+									name: tagNotInList.split(':')[1],
+									label: t('label.not_in_list', {
+										name: tagNotInList.split(':')[1],
+										defaultValue: '{{name}} - Not in your tag list'
+									}),
+									color: ZIMBRA_STANDARD_COLORS[0].hex,
+									customComponent: (
+										<Row takeAvailableSpace mainAlignment="flex-start">
+											<Row takeAvailableSpace mainAlignment="space-between">
+												<Row mainAlignment="flex-end">
+													<Padding right="small">
+														<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[0].hex} />
+													</Padding>
+												</Row>
+												<Row takeAvailableSpace mainAlignment="flex-start">
+													<Text>
+														{t('label.not_in_list', {
+															name: tagNotInList.split(':')[1],
+															defaultValue: '{{name}} - Not in your tag list'
+														})}
+													</Text>
+												</Row>
+											</Row>
+										</Row>
+									)
+								});
+							}
+						);
+					}
+					return uniqBy(acc, 'id');
 				},
 				[]
 			),
@@ -154,7 +200,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	);
 
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
-	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
+	const tagIconColor = useMemo(() => (tags?.length === 1 ? tags[0].color : undefined), [tags]);
 
 	const tagLabel = useMemo(() => t('label.tags', 'Tags'), []);
 
@@ -187,7 +233,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 					{
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						avatarBackground: tagToSearch?.color,
+						avatarBackground: tagToSearch?.color || 0,
 						avatarIcon: 'Tag',
 						background: 'gray2',
 						hasAvatar: true,
@@ -210,6 +256,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			}),
 		[message?.autoSendTime]
 	);
+
 	return (
 		<HoverContainer
 			height="fit"
@@ -298,7 +345,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 												data-testid="TagIcon"
 												icon={tagIcon}
 												onClick={onIconClick}
-												color={`${tagIconColor}`}
+												//	color={`${tagIconColor}`}
 											/>
 										</Padding>
 									</Dropdown>
@@ -342,7 +389,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 								{tagLabel}:
 								{map(tags, (tag) => (
 									<TagChip
-										label={tag.name}
+										label={tag?.label}
 										avatarBackground={tag.color}
 										background="gray2"
 										hasAvatar

@@ -221,4 +221,6 @@ export type ReceivingMessagesSettingsType = {
 export type DisplayingMessagesSettingsProps = {
 	settingsObj: Record<string, string>;
 	updateSettings: (arg: UpdateSettingsProps) => void;
+	updatedProps: PropsType | any;
+	updateProps: (arg: UpdateSettingsProps) => void;
 };
