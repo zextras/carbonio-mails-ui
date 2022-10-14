@@ -14,7 +14,7 @@ import {
 	Checkbox
 } from '@zextras/carbonio-design-system';
 
-import { every, find, includes, map, reduce } from 'lodash';
+import { every, find, includes, map, reduce, some } from 'lodash';
 import {
 	ZIMBRA_STANDARD_COLORS,
 	replaceHistory,
@@ -446,13 +446,18 @@ export const useTagsArrayFromStore = (): Array<ItemType> => {
 
 export const useTagExist = (tags: Array<Tag>): boolean => {
 	const tagsArrayFromStore = useTagsArrayFromStore();
+
 	return useMemo(
 		() =>
 			reduce(
 				tags,
 				(acc: boolean, v: Tag) => {
 					let tmp = false;
-					if (find(tagsArrayFromStore, { id: v?.id })) tmp = true;
+					if (
+						find(tagsArrayFromStore, { id: v?.id }) ||
+						(tags?.length > 0 && some(tags, (tag) => tag.id.includes('nil:')))
+					)
+						tmp = true;
 					return tmp;
 				},
 				false
