@@ -309,6 +309,7 @@
         "include_shared_folders": "Include shared folders",
         "insert": "Insert",
         "invalid_destination": "This node is not a valid destination",
+        "invalid_query": "Unable to parse the search query, clear it and retry",
         "keep_draft": "Save Draft",
         "keywords": "Keywords",
         "loading_results": "Loading Results…",
@@ -558,6 +559,7 @@
         "sent_on": "Sent on",
         "shared_folders_note": "Include shared items in searches.",
         "size_error": "Only numbers are allowed",
+        "unable_to_parse_query": "Unable to complete the search, clear it and retry",
         "unread": "Unread",
         "unread_note": "Search for all unread e-mail items."
     },
