@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useContext, useMemo } from 'react';
+import React, { FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { t, useTags, ZIMBRA_STANDARD_COLORS, runSearch } from '@zextras/carbonio-shell-ui';
@@ -52,11 +52,7 @@ const CustomComp: FC<ItemProps> = (props) => {
 	return (
 		<Dropdown contextMenu items={actions} display="block" width="fit" onClick={triggerSearch}>
 			<Row mainAlignment="flex-start" height="fit" padding={{ left: 'large' }} takeAvailableSpace>
-				<Icon
-					size="large"
-					icon="Tag"
-					customColor={ZIMBRA_STANDARD_COLORS[props?.item?.color ?? 0].hex}
-				/>
+				<Icon size="large" icon="Tag" color={ZIMBRA_STANDARD_COLORS[props?.item?.color ?? 0].hex} />
 
 				<Padding right="large" />
 				<Tooltip label={props?.item?.name} placement="right" maxWidth="100%">
@@ -86,10 +82,9 @@ const useGetTagsAccordion = (): TagsAccordionItems => {
 		() => ({
 			id: 'Tags',
 			label: t('label.tags', 'Tags'),
-			divider: true,
 			active: false,
 			open: false,
-			onClick: (e: Event): void => {
+			onClick: (e: SyntheticEvent<Element, Event> | KeyboardEvent): void => {
 				e.stopPropagation();
 			},
 			CustomComponent: TagLabel,
@@ -101,7 +96,6 @@ const useGetTagsAccordion = (): TagsAccordionItems => {
 						item: v,
 						active: false,
 						color: v.color || 0,
-						divider: false,
 						label: v.name,
 						name: v.name,
 						open: false,

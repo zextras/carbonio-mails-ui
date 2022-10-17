@@ -240,6 +240,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		() => showExternalImage && displayBanner,
 		[displayBanner, showExternalImage]
 	);
+
 	useLayoutEffect(() => {
 		if (!isNull(iframeRef.current) && !isNull(iframeRef.current.contentDocument)) {
 			iframeRef.current.contentDocument.open();
@@ -447,6 +448,7 @@ export function findAttachments(
 		acc
 	);
 }
+
 const MailMessageRenderer: FC<{ mailMsg: MailMessage; onLoadChange: () => void }> = ({
 	mailMsg,
 	onLoadChange

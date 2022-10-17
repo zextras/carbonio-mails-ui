@@ -6,6 +6,7 @@
 
 import { ChipProps } from '@zextras/carbonio-design-system';
 import { QueryChip } from '@zextras/carbonio-shell-ui';
+import { FC } from 'react';
 import { Conversation } from '../conversations';
 import { KeywordState } from '../filters';
 import { IncompleteMessage, MailMessage } from '../messages';
@@ -35,6 +36,7 @@ export type SearchListProps = {
 	setShowAdvanceFilters: (show: boolean) => void;
 	isInvalidQuery: boolean;
 	searchDisabled: boolean;
+	invalidQueryTooltip?: string;
 };
 
 export type SearchChipItem = ChipItem & {
@@ -43,10 +45,10 @@ export type SearchChipItem = ChipItem & {
 	hasError?: boolean;
 };
 
-export type SearchProps = {
-	useDisableSearch: () => [boolean, (arg: any) => void];
+type SearchProps = {
+	useDisableSearch: () => [boolean, (arg: any, invalidQueryTooltip: string) => void];
 	useQuery: () => [Array<QueryChip>, (arg: any) => void];
-	ResultsHeader: FC<{ label: string }>;
+	ResultsHeader: FC<{ label: string; labelType?: string }>;
 };
 
 export type SearchPanelProps = {
@@ -88,6 +90,7 @@ export type AdvancedFilterButtonProps = {
 	searchDisabled: boolean;
 	filterCount: number;
 	setShowAdvanceFilters: (arg: boolean) => void;
+	invalidQueryTooltip?: string;
 };
 
 export type AttachTypeEmailStatusRowPropType = {

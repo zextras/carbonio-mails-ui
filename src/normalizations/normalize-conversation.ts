@@ -12,7 +12,10 @@ import { normalizeParticipantsFromSoap } from './normalize-message';
 export const getTagIdsFromName = (
 	names: string | undefined,
 	tags?: Tags
-): Array<string | undefined> => map(names?.split(','), (name) => find(tags, { name })?.id);
+): Array<string | undefined> =>
+	map(names?.split(','), (name) =>
+		find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`
+	);
 export const getTagIds = (
 	t: string | undefined,
 	tn: string | undefined,

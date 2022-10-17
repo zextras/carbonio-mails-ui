@@ -41,6 +41,11 @@ export type MsgStateType = {
 	status: Record<string, Status>;
 };
 
+export type ErrorType = {
+	code: string;
+	description?: string;
+};
+
 export type ConversationsStateType = {
 	currentFolder: string;
 	searchedInFolder: Record<string, string>;
@@ -62,6 +67,7 @@ export type SearchesStateType = {
 	status: string;
 	parent?: string;
 	tagName?: string;
+	error?: ErrorType;
 };
 
 export type MailsFolderMap = Record<string, FolderType>;

@@ -18,6 +18,7 @@ type AddAttachmentsPayloadType = {
 };
 
 type UploadAttachmentsCbType = (files: any) => AsyncThunkAction<any, any, any>;
+
 export const addAttachments = async (
 	saveDraftCb: (arg: Partial<MailsEditor>) => { payload: AddAttachmentsPayloadType },
 	uploadAttachmentsCb: UploadAttachmentsCbType,
@@ -41,6 +42,7 @@ export const addAttachments = async (
 		id: payload.resp.m[0].id,
 		attach: { aid, mp }
 	});
+
 	return retrieveAttachmentsType(
 		normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0]),
 		'attachment'

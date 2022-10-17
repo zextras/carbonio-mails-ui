@@ -4,7 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { isEmpty, reduce, trimStart, uniqBy, find, includes, filter, map, noop } from 'lodash';
+import {
+	isEmpty,
+	reduce,
+	trimStart,
+	uniqBy,
+	find,
+	includes,
+	filter,
+	map,
+	noop,
+	forEach
+} from 'lodash';
 import styled from 'styled-components';
 import {
 	pushHistory,
@@ -187,19 +198,34 @@ const ConversationListItem: FC<any> = ({
 	const tagsFromStore = useTags();
 	const tags = useMemo(
 		() =>
-			reduce(
-				tagsFromStore,
-				(acc: Array<Tag>, v) => {
-					if (includes(item.tags, v.id))
-						acc.push({
-							...v,
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
-						});
-					return acc;
-				},
-				[]
+			uniqBy(
+				reduce(
+					tagsFromStore,
+					(acc: Array<Tag>, v) => {
+						if (includes(item.tags, v.id)) {
+							acc.push({
+								...v,
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
+							});
+						} else if (item.tags?.length > 0 && !includes(item.tags, v.id)) {
+							forEach(
+								filter(item.tags, (tn) => tn.includes('nil:')),
+								(tagNotInList) => {
+									acc.push({
+										id: tagNotInList,
+										name: tagNotInList.split(':')[1],
+										color: 1
+									});
+								}
+							);
+						}
+						return acc;
+					},
+					[]
+				),
+				'id'
 			),
 		[item.tags, tagsFromStore]
 	);
