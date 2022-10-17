@@ -72,7 +72,7 @@ const SearchMessageList: FC<SearchListProps> = ({
 			/>
 			{searchResults?.messages ? (
 				<List
-					style={{ paddingBottom: '4px' }}
+					style={{ paddingBottom: '0.25rem' }}
 					background="gray6"
 					active={itemId}
 					items={messageList}
@@ -90,7 +90,7 @@ const SearchMessageList: FC<SearchListProps> = ({
 							color="gray1"
 							overflow="break-word"
 							size="small"
-							style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '32px' }}
+							style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '2rem' }}
 						>
 							{displayerTitle}
 						</Text>

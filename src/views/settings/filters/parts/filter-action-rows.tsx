@@ -23,7 +23,7 @@ import { getActionOptions, getMarkAsOptions } from './utils';
 import CustomSelect from './custom-select';
 
 export const StyledIconButton = styled(IconButton)`
-	border: 1px solid
+	border: 0.0625rem solid
 		${({ theme, disabled, iconColor = 'primary' }): string =>
 			disabled ? theme.palette.gray2.regular : theme.palette[iconColor].regular};
 	svg {
@@ -234,7 +234,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			padding={{ top: 'small' }}
 		>
 			<Row>
-				<Row padding={{ right: 'small' }} minWidth="200px">
+				<Row padding={{ right: 'small' }} minWidth="12.5rem">
 					<CustomSelect
 						items={actionOptions}
 						background="gray5"
@@ -267,7 +267,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					</>
 				)}
 				{showMarksAsBtn && (
-					<Row padding={{ right: 'small' }} minWidth="200px">
+					<Row padding={{ right: 'small' }} minWidth="12.5rem">
 						<CustomSelect
 							items={markAsOptions}
 							background="gray5"
@@ -279,13 +279,13 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				)}
 
 				{showRedirectToAddrsInput && (
-					<Row padding={{ right: 'small' }} minWidth="200px">
+					<Row padding={{ right: 'small' }} minWidth="12.5rem">
 						<Input onChange={redirectAddressChange} defaultValue={redirectAddress} />
 					</Row>
 				)}
 
 				{showTagOptions && (
-					<Row padding={{ right: 'small' }} minWidth="200px">
+					<Row padding={{ right: 'small' }} minWidth="12.5rem">
 						<ChipInput
 							placeholder={t('label.tag', 'Tag')}
 							background="gray4"

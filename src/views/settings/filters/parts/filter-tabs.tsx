@@ -131,7 +131,7 @@ const FilterTabs: FC = (): ReactElement => {
 					selected={selectedFilterType}
 					onChange={(): null => null}
 					onItemClick={onTabClick}
-					height={60}
+					height="3.75rem"
 				/>
 				<Container crossAlignment="flex-start" padding={{ top: 'small' }}>
 					{selectedFilterType === 'incoming-messages' && (

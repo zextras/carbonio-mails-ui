@@ -45,7 +45,7 @@ type ThemeContextProps = {
 
 const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	actions,
-	maxWidth = '120px',
+	maxWidth = '7.5rem',
 	mainAlignment = 'flex-end'
 }): ReactElement => {
 	const { folderId }: { folderId: string } = useParams();

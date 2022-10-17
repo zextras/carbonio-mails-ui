@@ -44,18 +44,18 @@ export const plainTextToHTML = (str: string): string => {
 };
 
 const BannerContainer = styled(Container)`
-	border-bottom: 1px solid ${(props): string => props.theme.palette.warning.regular};
-	padding: 8px 16px;
+	border-bottom: 0.0625rem solid ${(props): string => props.theme.palette.warning.regular};
+	padding: 0.5rem 1rem;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	height: 58px;
-	border-radius: 2px 2px 0px 0px;
+	height: 3.625rem;
+	border-radius: 0.125rem 0.125rem 0 0;
 `;
 
 const StyledMultiBtn = styled(MultiButton)`
-	border: 1px solid ${(props): string => props.theme.palette.warning.regular};
-	height: 32px;
+	border: 0.0625rem solid ${(props): string => props.theme.palette.warning.regular};
+	height: 2rem;
 	& > * {
 		background-color: ${(props): string => props.theme.palette.transparent.regular} !important;
 		cursor: pointer;
@@ -64,7 +64,7 @@ const StyledMultiBtn = styled(MultiButton)`
 		background-color: ${({ theme }): string => theme.palette.gray6.focus};
 	}
 	svg {
-		padding: 0px !important;
+		padding: 0 !important;
 	}
 `;
 
@@ -182,7 +182,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 
 	const calculateHeight = (): void => {
 		if (!isNull(iframeRef.current)) {
-			iframeRef.current.style.height = '0px';
+			iframeRef.current.style.height = '0';
 			iframeRef.current.style.height = `${iframeRef?.current?.contentDocument?.body?.scrollHeight}px`;
 		}
 	};
@@ -254,7 +254,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				margin: 0;
 				overflow-y: hidden;
 				font-family: Roboto, sans-serif;
-				font-size: 14px;
+				font-size: 0.875rem;
 				${/* visibility: ${darkMode && darkMode !== 'disabled' ? 'hidden' : 'visible'}; */ ''}
 				background-color: #ffffff;
 			}
@@ -334,7 +334,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 					mainAlignment="space-between"
 					crossAlignment="center"
 					padding={{ all: 'large' }}
-					height="58px"
+					height="3.625rem"
 					background="#FFF7DE"
 					width="100%"
 				>
@@ -380,7 +380,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 								setShowExternalImage(true);
 							}}
 							dropdownProps={{
-								maxWidth: '500px',
+								maxWidth: '31.25rem',
 								width: 'fit',
 								items,
 								children: <></>

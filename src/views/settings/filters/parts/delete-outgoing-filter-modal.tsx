@@ -79,7 +79,7 @@ const DeleteOutgoingFilterModal: FC<ComponentProps> = ({
 					<Text overflow="break-word">
 						{t('settings.delete_filter_text', 'Are you sure to delete filter ')}
 					</Text>
-					<Text weight="bold" style={{ paddingLeft: '5px', paddingRight: '5px' }}>
+					<Text weight="bold" style={{ paddingLeft: '0.3125rem', paddingRight: '0.3125rem' }}>
 						{`"${selectedFilter?.name}" ?`}
 					</Text>
 				</Container>

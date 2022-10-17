@@ -258,7 +258,7 @@ const EditViewHeader: FC<PropType> = ({
 				},
 				children: (
 					<StoreProvider>
-						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
+						<Text overflow="break-word" style={{ paddingTop: '1rem' }}>
 							{/* eslint-disable-next-line no-nested-ternary */}
 							{isattachWordsPresent && !editor?.attachmentFiles.length && !editor?.subject
 								? t(
@@ -270,7 +270,7 @@ const EditViewHeader: FC<PropType> = ({
 								: t('messages.modal.send_anyway.no_attachments', 'You didn’t attach any files.')}
 						</Text>
 
-						<Text overflow="break-word" style={{ paddingBottom: '16px' }}>
+						<Text overflow="break-word" style={{ paddingBottom: '1rem' }}>
 							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
 						</Text>
 					</StoreProvider>
@@ -435,7 +435,7 @@ const EditViewHeader: FC<PropType> = ({
 									icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
 									onClick={toggleOpen}
 									type="outlined"
-									style={{ maxWidth: '280px' }}
+									style={{ maxWidth: '17.5rem' }}
 								/>
 							</Dropdown>
 						</Tooltip>

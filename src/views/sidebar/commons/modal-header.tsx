@@ -16,7 +16,7 @@ import React, { FC } from 'react';
 const ModalHeader: FC<{ title: string; onClose?: () => void }> = ({ title, onClose }) => (
 	<Container mainAlignment="space-between" width="100%">
 		<Row takeAvailableSpace mainAlignment="space-between" width="100%">
-			<Row width="calc(100% - 24px)" takeAvailableSpace mainAlignment="flex-start">
+			<Row width="calc(100% - 1.5rem)" takeAvailableSpace mainAlignment="flex-start">
 				<Text weight="bold" size="large">
 					{title}
 				</Text>
