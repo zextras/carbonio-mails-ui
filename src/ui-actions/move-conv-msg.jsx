@@ -10,9 +10,9 @@ import { nanoid } from '@reduxjs/toolkit';
 import { FOLDERS, getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { convAction, msgAction } from '../store/actions';
 import { createFolder } from '../store/actions/create-folder';
-import ModalHeader from '../views/sidebar/commons/modal-header';
+import ModalHeader from '../carbonio-ui-commons/modals/modal-header';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
-import ModalFooter from '../views/sidebar/commons/modal-footer';
+import ModalFooter from '../carbonio-ui-commons/modals/modal-footer';
 
 const MoveConvMessage = ({
 	selectedIDs,

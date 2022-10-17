@@ -11,8 +11,8 @@ import { Padding, Text, useModal } from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { StoreProvider } from '../../../../../store/redux';
 import { moveMsgToTrash } from '../../../../../ui-actions/message-actions';
-import ModalFooter from '../../../../sidebar/commons/modal-footer';
-import ModalHeader from '../../../../sidebar/commons/modal-header';
+import ModalFooter from '../../../../../carbonio-ui-commons/modals/modal-footer';
+import ModalHeader from '../../../../../carbonio-ui-commons/modals/modal-header';
 
 type DeleteDraftModalProps = {
 	ids: Array<string>;

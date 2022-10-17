@@ -13,8 +13,8 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
-import ModalFooter from '../../../sidebar/commons/modal-footer';
-import ModalHeader from '../../../sidebar/commons/modal-header';
+import ModalFooter from '../../../../carbonio-ui-commons/modals/modal-footer';
+import ModalHeader from '../../../../carbonio-ui-commons/modals/modal-header';
 import { msgAction } from '../../../../store/actions';
 import { sendDeliveryReport } from '../../../../store/actions/send-delivery-request';
 import { MailMessage } from '../../../../types';
