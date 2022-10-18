@@ -3,8 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { t } from '@zextras/carbonio-shell-ui';
 import React, { ChangeEvent, FC, useCallback, useMemo } from 'react';
+
 import {
 	Container,
 	Row,
@@ -21,14 +23,18 @@ import {
 	DisplayMailOptions,
 	MessageSelectionOptions,
 	findLabel,
-	ConversationSortingSettings
+	ConversationSortingSettings,
+	UnsendTimeOptions
 } from './components/utils';
 import { displayingMessagesSubSection } from './subsections';
 import { DisplayingMessagesSettingsProps } from '../../types';
+import { MAIL_APP_ID } from '../../constants';
 
 const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 	settingsObj,
-	updateSettings
+	updateSettings,
+	updateProps,
+	updatedProps
 }) => {
 	const checkNewMailOptions = useMemo(
 		() =>
@@ -41,7 +47,10 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 	const displayMailOptions = useMemo(() => DisplayMailOptions(), []);
 	const messageSelectionOptions = useMemo(() => MessageSelectionOptions(), []);
 	const conversationSortingSettings = useMemo(() => ConversationSortingSettings(), []);
+	const unsendTimeOptions = useMemo(() => UnsendTimeOptions(), []);
+
 	const sectionTitle = useMemo(() => displayingMessagesSubSection(), []);
+
 	const onChangeSorting = useCallback(
 		(view: SelectItem[] | string | null): void =>
 			updateSettings({
@@ -49,6 +58,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 			}),
 		[updateSettings]
 	);
+
 	const defaultSelectionSorting = useMemo(
 		() => ({
 			label: findLabel(conversationSortingSettings, settingsObj.zimbraPrefConversationOrder),
@@ -56,6 +66,14 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 		}),
 		[conversationSortingSettings, settingsObj.zimbraPrefConversationOrder]
 	);
+	const defaultUnsendTime = useMemo(
+		() => ({
+			label: findLabel(unsendTimeOptions, updatedProps?.mails_snackbar_delay?.value as string),
+			value: updatedProps?.mails_snackbar_delay?.value
+		}),
+		[unsendTimeOptions, updatedProps?.mails_snackbar_delay]
+	);
+
 	return (
 		<FormSubSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
 			<Row width="100%" padding={{ horizontal: 'small', vertical: 'small' }}>
@@ -132,6 +150,29 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					}}
 				/>
 			</Container>
+
+			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
+				<Heading title={t('settings.label.unsend_time', 'Set unsend time')} />
+				<Select
+					label={t('settings.label.unsend_time', 'Set unsend time')}
+					items={unsendTimeOptions}
+					onChange={(view: SelectItem[] | string | null): void =>
+						updateProps({
+							target: {
+								name: 'mails_snackbar_delay',
+								value: {
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
+									app: MAIL_APP_ID,
+									value: (view as string) ?? ''
+								}
+							}
+						})
+					}
+					defaultSelection={defaultUnsendTime}
+				/>
+			</Container>
+
 			{/* <Container crossAlignment="baseline" padding={{ all: 'small' }}>
 				<Heading title={t('settings.label.message_color', 'Message Color')} />
 				<Checkbox

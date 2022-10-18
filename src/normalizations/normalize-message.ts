@@ -114,7 +114,9 @@ export function normalizeParticipantsFromSoap(e: SoapMailParticipant): Participa
 }
 export const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
 	const tags = getTags();
-	return map(names?.split(','), (name) => find(tags, { name })?.id);
+	return map(names?.split(','), (name) =>
+		find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`
+	);
 };
 
 export const getTagIds = (

@@ -83,7 +83,7 @@ function saveDraftFulfilled(
 	{ messages, status }: MsgStateType,
 	{ payload }: { payload: any }
 ): void {
-	const message = normalizeMailMessageFromSoap(payload.resp.m[0], true);
+	const message = normalizeMailMessageFromSoap(payload.resp?.m?.[0], true);
 	status[message.id] = 'complete';
 	// eslint-disable-next-line no-param-reassign
 	messages[message.id] = message;
