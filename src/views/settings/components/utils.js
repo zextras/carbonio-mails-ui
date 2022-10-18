@@ -350,3 +350,46 @@ export const ConversationSortingSettings = () => [
 ];
 
 export const findLabel = (list, value) => filter(list, (item) => item.value === value)[0]?.label;
+
+export const UnsendTimeOptions = () => [
+	{
+		label: t('settings.mail_unsend_time.second', {
+			count: 0,
+			defaultValue: '{{count}} second',
+			defaultValue_plural: '{{count}} seconds'
+		}),
+		value: '0'
+	},
+	{
+		label: t('settings.mail_unsend_time.second', {
+			count: 3,
+			defaultValue: '{{count}} second',
+			defaultValue_plural: '{{count}} seconds'
+		}),
+		value: '3'
+	},
+	{
+		label: t('settings.mail_unsend_time.second', {
+			count: 5,
+			defaultValue: '{{count}} second',
+			defaultValue_plural: '{{count}} seconds'
+		}),
+		value: '5'
+	},
+	{
+		label: t('settings.mail_unsend_time.second', {
+			count: 10,
+			defaultValue: '{{count}} second',
+			defaultValue_plural: '{{count}} seconds'
+		}),
+		value: '10'
+	},
+	{
+		label: t('settings.mail_unsend_time.second', {
+			count: 20,
+			defaultValue: '{{count}} second',
+			defaultValue_plural: '{{count}} seconds'
+		}),
+		value: '20'
+	}
+];

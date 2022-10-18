@@ -49,6 +49,7 @@ export type MailMessagePart = {
 	filename?: string;
 	parts?: Array<MailMessagePart>;
 	ci?: string;
+	cd?: string;
 	disposition: 'inline' | 'attachment';
 };
 

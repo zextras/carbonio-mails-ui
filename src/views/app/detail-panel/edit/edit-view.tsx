@@ -174,7 +174,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 
 			if (newTimer) setTimer(newTimer);
 		},
-		[editor, saveDraftCb, saveFirstDraft, timeout, timer]
+		[editor, saveFirstDraft, timeout, timer, saveDraftCb]
 	);
 
 	useEffect(() => () => clearTimeout(timer), [timer]);
@@ -462,6 +462,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 								draftSavedAt={draftSavedAt}
 								minHeight={avaibleMinHeight}
 								ref={textEditorRef}
+								setValue={setValue}
 							/>
 						</Container>
 					</Container>

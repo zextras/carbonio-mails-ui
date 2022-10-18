@@ -311,6 +311,8 @@ const SettingsView: FC = () => {
 						// @ts-ignore
 						settingsObj={settingsObj}
 						updateSettings={updateSettings}
+						updatedProps={updatedProps}
+						updateProps={updateProps}
 					/>
 					<ReceivingMessagesSettings
 						settingsObj={settingsObj}
