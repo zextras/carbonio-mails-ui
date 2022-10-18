@@ -51,7 +51,7 @@ const FilterTabs: FC = (): ReactElement => {
 		],
 		[]
 	);
-	const onChange = useCallback((selectedId) => {
+	const onChange = useCallback((ev, selectedId) => {
 		setSelectedFilterType(selectedId);
 	}, []);
 	const dispatch = useDispatch();
@@ -132,7 +132,6 @@ const FilterTabs: FC = (): ReactElement => {
 					items={tabs}
 					selected={selectedFilterType}
 					onChange={onChange}
-					onItemClick={(): null => null}
 					height={60}
 				/>
 				<Container crossAlignment="flex-start" padding={{ top: 'small' }}>
