@@ -387,9 +387,11 @@ const copyToFiles = (att: AttachmentPart, message: MailMessage, nodes: any): Pro
 
 const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactElement => {
 	const [expanded, setExpanded] = useState(false);
-	// const attachments = useMemo(() => findAttachments(message?.parts, []), [message]);
-	//	const attachments = useMemo(() => getAttachmentsNew(message?.attachment_part), [message]);
-	const attachments = useMemo(() => message?.attachments, [message?.attachments]);
+	const attachments = useMemo(
+		() => filter(message?.attachments, { cd: 'attachment' }),
+		[message?.attachments]
+	);
+
 	const attachmentsCount = useMemo(() => attachments?.length || 0, [attachments]);
 	const attachmentsParts = useMemo(() => map(attachments, 'name'), [attachments]);
 	const theme = useTheme();
