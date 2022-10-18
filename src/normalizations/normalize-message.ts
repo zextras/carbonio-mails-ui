@@ -45,7 +45,6 @@ export const getAttachmentsFromParts = (
 			forEach(mailParts, (part) => {
 				const attachmentParts = getAttachmentsFromParts(part);
 				forEach(attachmentParts, (attachmentPart: AttachmentPart) => {
-					// if (!isIgnoreAttachment(attachmentPart) && attachmentPart.cd !== 'inline') {
 					if (!isIgnoreAttachment(attachmentPart)) {
 						const item = {
 							...attachmentPart,
@@ -93,7 +92,6 @@ export const getAttachmentsFromParts = (
 			mailParts.ci
 		) {
 			const updatedMailPart: AttachmentPart = { ...mailParts };
-			// if (isIgnoreAttachment(mailParts) && mailParts.cd !== 'inline') {
 			if (isIgnoreAttachment(mailParts)) {
 				if (updatedMailPart.cd && updatedMailPart.cd === 'inline' && updatedMailPart.ci) {
 					updatedMailPart.cd = 'inline';
