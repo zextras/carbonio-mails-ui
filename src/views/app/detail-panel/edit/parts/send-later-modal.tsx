@@ -27,6 +27,7 @@ type SendLaterModalPropTypes = {
 	closeBoard: () => void;
 	folderId?: string;
 	setShowRouteGuard: (arg: boolean) => void;
+	setSendLater: (arg: boolean) => void;
 };
 const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 	onClose,
@@ -34,7 +35,8 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 	editor,
 	closeBoard,
 	folderId,
-	setShowRouteGuard
+	setShowRouteGuard,
+	setSendLater
 }) => {
 	const [time, setTime] = useState();
 	const bridgedFn = getBridgedFunctions();
@@ -49,6 +51,7 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 	const confirmLabel = useMemo(() => t('label.schedule_send', 'Schedule send'), []);
 	const { prefs } = useUserSettings();
 	const onConfirm = useCallback(() => {
+		setSendLater(true);
 		const autoSendTime = moment(time).valueOf();
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -77,7 +80,18 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 				}, 10);
 			}
 		});
-	}, [bridgedFn, closeBoard, dispatch, editor, folderId, onClose, prefs, setShowRouteGuard, time]);
+	}, [
+		bridgedFn,
+		closeBoard,
+		dispatch,
+		editor,
+		folderId,
+		onClose,
+		prefs,
+		setSendLater,
+		setShowRouteGuard,
+		time
+	]);
 
 	const minTime = useMemo(() => {
 		if (moment(time).isBefore(moment(), 'hour') || !time) {

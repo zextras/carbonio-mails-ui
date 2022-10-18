@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
+import { Container, List, Padding, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -27,7 +27,8 @@ const SearchConversationList: FC<SearchListProps> = ({
 	filterCount,
 	setShowAdvanceFilters,
 	isInvalidQuery,
-	searchDisabled
+	searchDisabled,
+	invalidQueryTooltip
 }) => {
 	const { itemId } = useParams<{ itemId: string }>();
 	const loadMore = useCallback(() => {
@@ -68,12 +69,15 @@ const SearchConversationList: FC<SearchListProps> = ({
 		[searchResults?.conversations]
 	);
 
+	const tooltipDisabled = !searchDisabled || !invalidQueryTooltip;
+
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
 			<AdvancedFilterButton
 				setShowAdvanceFilters={setShowAdvanceFilters}
 				filterCount={filterCount}
 				searchDisabled={searchDisabled}
+				invalidQueryTooltip={invalidQueryTooltip}
 			/>
 			{isInvalidQuery && (
 				<Container maxHeight="fill" crossAlignment="center">
