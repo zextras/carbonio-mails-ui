@@ -23,7 +23,7 @@ export type Conversation = {
 	subject: string;
 	fragment: string;
 	read: boolean;
-	attachment: boolean;
+	hasAttachment: boolean;
 	flagged: boolean;
 	urgent: boolean;
 	tags: string[];
