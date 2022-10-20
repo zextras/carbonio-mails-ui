@@ -7,8 +7,8 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
 import { getBridgedFunctions, useUserAccounts, t } from '@zextras/carbonio-shell-ui';
-import ModalHeader from '../../commons/modal-header';
-import ModalFooter from '../../commons/modal-footer';
+import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
+import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 
 import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite-reply/parts/utils';
 import { GranteeInfo } from './share-folder-properties';

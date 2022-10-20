@@ -14,8 +14,8 @@ import {
 } from '@zextras/carbonio-design-system';
 import { concat, filter, includes, map } from 'lodash';
 import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
-import ModalFooter from '../sidebar/commons/modal-footer';
-import ModalHeader from '../sidebar/commons/modal-header';
+import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import ToggleFilters from './parts/toggle-filters';
 import SubjectKeywordRow from './parts/subject-keyword-row';
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';

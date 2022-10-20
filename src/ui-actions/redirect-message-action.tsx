@@ -15,8 +15,8 @@ import {
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import ModalFooter from '../views/sidebar/commons/modal-footer';
-import ModalHeader from '../views/sidebar/commons/modal-header';
+import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { redirectMessageAction } from '../store/actions';
 
 type RedirectActionProps = { onClose: () => void; id: string };
