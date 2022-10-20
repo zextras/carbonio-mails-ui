@@ -8,8 +8,8 @@ import { Container, SnackbarManagerContext, Text } from '@zextras/carbonio-desig
 import { t } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { convAction, msgAction } from '../store/actions';
-import ModalHeader from '../carbonio-ui-commons/modals/modal-header';
-import ModalFooter from '../carbonio-ui-commons/modals/modal-footer';
+import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
+import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 
 type DeleteConvConfirmPropType = {
 	selectedIDs: Array<string>;

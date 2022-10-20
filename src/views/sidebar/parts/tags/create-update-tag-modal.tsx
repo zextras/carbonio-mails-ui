@@ -7,8 +7,8 @@
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useState } from 'react';
 import { Input, Padding, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
 import { createTag, renameTag, changeTagColor, t } from '@zextras/carbonio-shell-ui';
-import ModalFooter from '../../../../carbonio-ui-commons/modals/modal-footer';
-import ModalHeader from '../../../../carbonio-ui-commons/modals/modal-header';
+import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
 
 import { CreateUpdateTagModalPropType } from '../../../../types/sidebar';

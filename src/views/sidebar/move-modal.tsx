@@ -10,8 +10,8 @@ import { useDispatch } from 'react-redux';
 import { Folder, FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { folderAction } from '../../store/actions/folder-action';
 import { FolderSelector } from './commons/folder-selector';
-import ModalFooter from '../../carbonio-ui-commons/modals/modal-footer';
-import ModalHeader from '../../carbonio-ui-commons/modals/modal-header';
+import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { ModalProps } from '../../types';
 
 export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {

@@ -5,6 +5,8 @@
  */
 import '@testing-library/jest-dom';
 import failOnConsole from 'jest-fail-on-console';
+import fetchMock from 'jest-fetch-mock';
+import server from './src/carbonio-ui-commons/test/mocks/network/msw/server';
 
 failOnConsole({
 	shouldFailOnError: true,
@@ -12,17 +14,16 @@ failOnConsole({
 });
 
 beforeAll(() => {
-	// before all
+	server.listen();
+	fetchMock.doMock();
 });
 
-beforeEach(() => {
-	// before each
-});
+beforeEach(() => {});
 
 afterEach(() => {
-	// after each
+	server.resetHandlers();
 });
 
 afterAll(() => {
-	// after all
+	server.close();
 });

@@ -8,7 +8,7 @@ import { Input, Container, Checkbox, Padding, Divider, Row } from '@zextras/carb
 import { TFunction } from 'i18next';
 import { map, reduce } from 'lodash';
 import ModalFooter from './create-filter-modal-footer';
-import ModalHeader from '../../../../carbonio-ui-commons/modals/modal-header';
+import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import DefaultCondition from './create-filters-conditions/default';
 import { CreateFilterContext } from './create-filter-context';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';

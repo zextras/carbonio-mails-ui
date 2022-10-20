@@ -13,8 +13,8 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import { Dispatch } from '@reduxjs/toolkit';
-import ModalFooter from '../../../../../carbonio-ui-commons/modals/modal-footer';
-import ModalHeader from '../../../../../carbonio-ui-commons/modals/modal-header';
+import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { saveDraft } from '../../../../../store/actions/save-draft';
 import { MailsEditor } from '../../../../../types';
 import DatePickerCustomComponent from './date-picker-custom-component';
