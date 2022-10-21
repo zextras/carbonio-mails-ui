@@ -37,7 +37,7 @@ const isIgnoreAttachment = (item: AttachmentPart): boolean => {
 };
 
 export const getAttachmentsFromParts = (
-	mailParts: Array<AttachmentPart> | AttachmentPart
+	mailParts: Array<AttachmentPart> | AttachmentPart | any
 ): Array<AttachmentPart> => {
 	let results: Array<AttachmentPart> = [];
 	if (mailParts) {
@@ -244,8 +244,6 @@ export const normalizeMailMessageFromSoap = (
 			participants: m.e ? map(m.e || [], normalizeParticipantsFromSoap) : undefined,
 			tags: getTagIds(m.t, m.tn),
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,
 			invite: m.inv,
 			shr: m.shr,
