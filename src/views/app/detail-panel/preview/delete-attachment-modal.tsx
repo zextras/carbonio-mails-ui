@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback } from 'react';
-import { t } from '@zextras/carbonio-shell-ui';
 import { Container, Text } from '@zextras/carbonio-design-system';
-import ModalFooter from '../../../sidebar/commons/modal-footer';
-import ModalHeader from '../../../sidebar/commons/modal-header';
+import { t } from '@zextras/carbonio-shell-ui';
+import React, { FC, useCallback } from 'react';
+import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 
 export type DeleteAttachmentModalPropsType = {
 	onClose: () => void;

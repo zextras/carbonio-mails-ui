@@ -4,17 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getTags } from '@zextras/carbonio-shell-ui';
-import { filter, find, isNil, map, reduce, omitBy, isArray, forEach } from 'lodash';
+import { filter, find, forEach, isArray, isNil, map, omitBy, reduce } from 'lodash';
 import { ParticipantRole } from '../commons/utils';
 import {
+	AttachmentPart,
 	IncompleteMessage,
 	MailMessagePart,
-	SoapEmailParticipantRole,
-	SoapMailParticipant,
 	Participant,
+	SoapEmailParticipantRole,
 	SoapIncompleteMessage,
 	SoapMailMessagePart,
-	AttachmentPart
+	SoapMailParticipant
 } from '../types';
 
 const isIgnoreAttachment = (item: AttachmentPart): boolean => {
@@ -37,7 +37,7 @@ const isIgnoreAttachment = (item: AttachmentPart): boolean => {
 };
 
 export const getAttachmentsFromParts = (
-	mailParts: Array<AttachmentPart> | AttachmentPart | any
+	mailParts: Array<AttachmentPart> | AttachmentPart
 ): Array<AttachmentPart> => {
 	let results: Array<AttachmentPart> = [];
 	if (mailParts) {

@@ -57,7 +57,7 @@ export function setConversationsFlag({
 }: Pick<ConvActionPropType, 'ids' | 'value' | 'dispatch'>): ConvActionReturnType {
 	return {
 		id: 'flag-conversation',
-		icon: value ? 'FlagOutline' : 'Flag',
+		icon: value ? 'Flag' : 'FlagOutline',
 		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
 		click: (): void => {
 			dispatch(

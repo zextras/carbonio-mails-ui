@@ -56,13 +56,13 @@ export type MailMessagePart = {
 export type AttachmentPart = {
 	part?: string;
 	ct?: string;
-	s: number;
-	size: number;
+	s?: number;
+	size?: number;
 	filename?: string;
 	body?: boolean;
-	contentType: string;
+	contentType?: string;
 	content?: string;
-	name: string;
+	name?: string;
 	parts?: Array<AttachmentPart>;
 	ci?: string;
 	disposition?: 'inline' | 'attachment';
