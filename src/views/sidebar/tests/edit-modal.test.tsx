@@ -41,6 +41,8 @@
 // 	rgb: '434343'
 // });
 //
+import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+
 describe.skip('My first sweet test', () => {
 	test.skip('Color', async () => {
 		//
@@ -58,6 +60,16 @@ describe.skip('My first sweet test', () => {
 		// 		const modal: React.ReactElement = <EditModal folder={accordionFolder} onClose={noop} />;
 		// 		setupTest(modal);
 		// 		expect(screen.getByTestId('folder-name')).toBeVisible();
+		// 		// render(modal);
+		//
+		// 		// expect(1).toBe(1);
+	});
+});
+
+describe('My second sweet test', () => {
+	test('SoapFetch', async () => {
+		// setupTest(modal);
+		// expect(screen.getByTestId('folder-name')).toBeVisible();
 		// 		// render(modal);
 		//
 		// 		// expect(1).toBe(1);

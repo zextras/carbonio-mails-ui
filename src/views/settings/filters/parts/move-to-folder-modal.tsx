@@ -9,8 +9,8 @@ import { Container, CustomModal, Input, Text, Icon } from '@zextras/carbonio-des
 import { TFunction } from 'i18next';
 import { filter, isEmpty, reduce, startsWith } from 'lodash';
 import { useSelector } from 'react-redux';
-import ModalFooter from '../../../sidebar/commons/modal-footer';
-import ModalHeader from '../../../sidebar/commons/modal-header';
+import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import FolderItem from '../../../sidebar/commons/folder-item';
 import { selectFolders } from '../../../../store/folders-slice';
 import { getFolderIconColor, getFolderIconName } from '../../../sidebar/utils';

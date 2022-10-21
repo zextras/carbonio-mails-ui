@@ -7,8 +7,8 @@
 import React, { FC, useCallback, useContext, useMemo } from 'react';
 import { Container, Text, SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { deleteTag, t } from '@zextras/carbonio-shell-ui';
-import ModalFooter from '../../commons/modal-footer';
-import ModalHeader from '../../commons/modal-header';
+import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { DeleteTagModalPropsType } from '../../../../types/sidebar';
 
 const DeleteTagModal: FC<DeleteTagModalPropsType> = ({ onClose, tag }) => {
