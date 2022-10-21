@@ -60,3 +60,8 @@ export type FetchConversationsReturn = {
 	hasMore: boolean;
 	types: string;
 };
+
+export type DeleteAttachmentsReturn = {
+	attachments: string[];
+	res: SoapIncompleteMessage;
+};

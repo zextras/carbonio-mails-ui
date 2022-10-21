@@ -28,8 +28,8 @@ import {
 	useUserAccount
 } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
-import ModalFooter from '../../sidebar/commons/modal-footer';
-import ModalHeader from '../../sidebar/commons/modal-header';
+import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 import { FolderType } from '../../../types';
 import { getFolderIconColor, getFolderTranslatedName } from '../../sidebar/utils';
 import { FOLDER_VIEW } from '../../../constants';

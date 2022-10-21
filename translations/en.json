@@ -270,6 +270,7 @@
         "disposal_threshold": "Disposal Threshold",
         "do_not_notify": "Do not notify",
         "download": "Download",
+        "download_and_delete": "Download And Delete",
         "download_plural": "Download all",
         "draft": "Draft",
         "draft_folder": "[DRAFT]",
@@ -430,6 +431,8 @@
     },
     "message": {
         "admin_rights": "View,Edit,Add,Remove,Administer",
+        "delete_attachment_message1": "Your attachment will be definetly deleted from Carbonio.",
+        "delete_attachment_message2": "Do you want to download it before?",
         "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
         "delete_tag_message2": "Once deleted, it will be removed from every item marked with it.",
         "email_saved_at": "E-mail saved as a draft at {{time}}",
