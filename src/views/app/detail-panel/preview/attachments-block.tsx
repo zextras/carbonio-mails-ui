@@ -19,6 +19,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { getAction, soapFetch, t, getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
+import { useDispatch } from 'react-redux';
 import { getFileExtension, calcColor } from '../../../../commons/utilities';
 import { humanFileSize, previewType } from './file-preview';
 import {
@@ -30,6 +31,9 @@ import {
 } from '../../../../types';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { getEMLContent, getErrorPage } from '../../../../commons/preview-eml';
+import { StoreProvider } from '../../../../store/redux';
+import DeleteAttachmentModal from './delete-attachment-modal';
+import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 
 const AttachmentsActions = styled(Row)``;
 function findAttachments(parts: MailMessagePart[], acc: MailMessagePart[]): AttachmentPartType[] {
@@ -165,6 +169,7 @@ const Attachment: FC<AttachmentType> = ({
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
+	const dispatch = useDispatch();
 
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
@@ -174,6 +179,36 @@ const Attachment: FC<AttachmentType> = ({
 			inputRef.current.click();
 		}
 	}, [inputRef]);
+
+	const onDeleteAttachment = useCallback(() => {
+		dispatch(deleteAttachments({ id: message.id, attachments: [part] }));
+	}, [dispatch, message.id, part]);
+
+	const onDownloadAndDelete = useCallback(() => {
+		downloadAttachment();
+		onDeleteAttachment();
+	}, [downloadAttachment, onDeleteAttachment]);
+
+	const removeAttachment = useCallback(() => {
+		const closeModal = getBridgedFunctions()?.createModal(
+			{
+				maxHeight: '90vh',
+				children: (
+					<StoreProvider>
+						<DeleteAttachmentModal
+							// TODO : fix it inside shell
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							onClose={(): void => closeModal()}
+							onDownloadAndDelete={onDownloadAndDelete}
+							onDeleteAttachment={onDeleteAttachment}
+						/>
+					</StoreProvider>
+				)
+			},
+			true
+		);
+	}, [onDeleteAttachment, onDownloadAndDelete]);
 
 	const confirmAction = useCallback(
 		(nodes) => {
@@ -362,6 +397,18 @@ const Attachment: FC<AttachmentType> = ({
 					<Padding right="small">
 						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
 							<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
+						</Tooltip>
+					</Padding>
+					<Padding right="small">
+						<Tooltip
+							key={`${message.id}-DeletePermanentlyOutline`}
+							label={t('label.delete', 'Delete')}
+						>
+							<IconButton
+								size="medium"
+								icon="DeletePermanentlyOutline"
+								onClick={removeAttachment}
+							/>
 						</Tooltip>
 					</Padding>
 				</AttachmentHoverBarContainer>
