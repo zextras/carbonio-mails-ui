@@ -562,7 +562,6 @@
         "sent_on": "Sent on",
         "shared_folders_note": "Include shared items in searches.",
         "size_error": "Only numbers are allowed",
-        "unable_to_parse_query": "Unable to complete the search, clear it and retry",
         "unread": "Unread",
         "unread_note": "Search for all unread e-mail items."
     },
@@ -655,7 +654,6 @@
             "search_query": "Default query",
             "set_message_color": "Set color of messages and conversations according to tag color.",
             "unsend_time": "Set unsend time",
-            "unsend_time_": "Set unsend time",
             "visualization_options": "Visualization Options"
         },
         "linkedin_msg": "LinkedIn messages and connections",
