@@ -3,65 +3,65 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
-import {
-	isEmpty,
-	reduce,
-	trimStart,
-	uniqBy,
-	find,
-	includes,
-	filter,
-	map,
-	noop,
-	forEach
-} from 'lodash';
-import styled from 'styled-components';
-import {
-	pushHistory,
-	useUserAccounts,
-	FOLDERS,
-	useUserSettings,
-	useTags,
-	ZIMBRA_STANDARD_COLORS,
-	Tag,
-	t
-} from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Button,
 	Container,
+	ContainerProps,
+	Drag,
 	Icon,
 	IconButton,
+	List,
+	ListProps,
 	Padding,
 	Row,
 	Text,
-	Drag,
-	Tooltip,
-	List,
-	ContainerProps,
-	ListProps
+	Tooltip
 } from '@zextras/carbonio-design-system';
+import {
+	FOLDERS,
+	pushHistory,
+	t,
+	Tag,
+	useTags,
+	useUserAccounts,
+	useUserSettings,
+	ZIMBRA_STANDARD_COLORS
+} from '@zextras/carbonio-shell-ui';
+import {
+	filter,
+	find,
+	forEach,
+	includes,
+	isEmpty,
+	map,
+	noop,
+	reduce,
+	trimStart,
+	uniqBy
+} from 'lodash';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 
-import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
-import { searchConv } from '../../../../store/actions';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
+import { searchConv } from '../../../../store/actions';
+import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
+import { selectMessages } from '../../../../store/messages-slice';
+import {
+	Conversation,
+	ConversationMessagesListProps,
+	CustomListItem,
+	MailMessage,
+	StateType,
+	TextReadValuesProps
+} from '../../../../types';
+import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
+import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { ItemAvatar } from './item-avatar';
 import { ListItemActionWrapper } from './list-item-actions-wrapper';
-import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
-import { selectMessages } from '../../../../store/messages-slice';
-import { SenderName } from './sender-name';
 import { MessageListItem } from './message-list-item';
-import { useTagExist } from '../../../../ui-actions/tag-actions';
-import {
-	StateType,
-	Conversation,
-	MailMessage,
-	TextReadValuesProps,
-	ConversationMessagesListProps,
-	CustomListItem
-} from '../../../../types';
+import { SenderName } from './sender-name';
 
 const CustomList = styled(List)<ListProps<CustomListItem> & { isFromSearch?: boolean }>``;
 
@@ -161,19 +161,19 @@ type ConversationListItemProps = {
 	item: Conversation;
 	itemId: string;
 	folderId: string;
-	selected?: boolean;
-	selecting?: boolean;
-	toggle?: () => void;
+	selected: boolean;
+	selecting: boolean;
+	toggle: () => void;
 	active?: boolean;
 	visible?: boolean;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
-	draggedIds?: Array<string> | undefined;
+	draggedIds?: Record<string, boolean> | undefined;
 	setIsDragging?: (isDragging: boolean) => void;
 	selectedItems?: Record<string, boolean>;
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 };
 
-const ConversationListItem: FC<any> = ({
+const ConversationListItem: FC<ConversationListItemProps> = ({
 	itemId,
 	item,
 	folderId,
@@ -384,7 +384,7 @@ const ConversationListItem: FC<any> = ({
 		return item?.messages?.length > 0;
 	}, [item?.messages?.length, textReadValues.badge]);
 
-	return draggedIds?.[parseInt(item?.id, 10)] || visible ? (
+	return draggedIds?.[item?.id] || visible ? (
 		<Drag
 			type="conversation"
 			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}

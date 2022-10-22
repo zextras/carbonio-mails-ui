@@ -3,7 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef, useState, useContext, useEffect, FC } from 'react';
+import React, {
+	useCallback,
+	useMemo,
+	useRef,
+	useState,
+	useContext,
+	useEffect,
+	FC,
+	ComponentType
+} from 'react';
 import { useParams } from 'react-router-dom';
 import {
 	List,
@@ -11,7 +20,8 @@ import {
 	Divider,
 	Container,
 	Padding,
-	Text
+	Text,
+	ItemComponentProps
 } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -182,14 +192,15 @@ const ConversationList: FC = () => {
 								itemProps={{
 									itemId,
 									toggle,
-									// messages,
 									folderId,
 									setDraggedIds,
 									setIsDragging,
 									selectedItems: selected,
 									dragImageRef
 								}}
-								ItemComponent={ConversationListItem}
+								ItemComponent={
+									ConversationListItem as unknown as ComponentType<ItemComponentProps<any>>
+								}
 								onListBottom={(): void =>
 									loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)
 								}
