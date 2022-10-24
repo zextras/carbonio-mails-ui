@@ -89,12 +89,13 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	}, []);
 
 	const _maxWidth = useMemo(
-		() => (iconSize && maxActions ? `${iconSize * maxActions}px` : maxWidth),
+		() => (iconSize && maxActions ? `calc(${iconSize} * ${maxActions})` : maxWidth),
 		[iconSize, maxActions, maxWidth]
 	);
 
 	const _minWidth = useMemo(
-		() => (folderId === FOLDERS.TRASH ? `${iconSize * maxActions}px` : theme.sizes.icon.large),
+		() =>
+			folderId === FOLDERS.TRASH ? `calc(${iconSize} * ${maxActions})` : theme.sizes.icon.large,
 		[folderId, iconSize, maxActions, theme?.sizes?.icon?.large]
 	);
 
