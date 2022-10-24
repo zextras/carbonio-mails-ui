@@ -140,7 +140,7 @@ export const RowInfo: FC<RowInfoProps> = ({ item, tags, isFromSearch, allMessage
 					<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
 				</Padding>
 			)}
-			{item.attachment && (
+			{item.hasAttachment && (
 				<Padding left="small">
 					<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
 				</Padding>

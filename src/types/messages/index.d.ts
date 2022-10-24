@@ -13,7 +13,7 @@ export type IncompleteMessage = {
 	conversation: string;
 	read: boolean | string;
 	size: number;
-	attachment: boolean;
+	hasAttachment: boolean;
 	flagged: boolean;
 	urgent: boolean;
 	isDeleted: boolean;
@@ -23,6 +23,7 @@ export type IncompleteMessage = {
 	isDraft: boolean;
 	isScheduled: boolean;
 	autoSendTime?: number;
+	attachments?: Array<AttachmentPart>;
 	participants?: Array<Participant>;
 	date: number;
 	subject: string;
@@ -50,6 +51,23 @@ export type MailMessagePart = {
 	ci?: string;
 	cd?: string;
 	disposition: 'inline' | 'attachment';
+};
+
+export type AttachmentPart = {
+	part?: string;
+	ct?: string;
+	s?: number;
+	size?: number;
+	filename?: string;
+	body?: boolean;
+	contentType?: string;
+	content?: string;
+	name?: string;
+	parts?: Array<AttachmentPart>;
+	ci?: string;
+	disposition?: 'inline' | 'attachment';
+	cd?: 'inline' | 'attachment';
+	mp?: Array<AttachmentPart>;
 };
 
 export type MailMessage = IncompleteMessage & {

@@ -51,7 +51,9 @@ const FilterTabs: FC = (): ReactElement => {
 		],
 		[]
 	);
-	const onTabClick = useCallback((ev) => setSelectedFilterType(ev.selectedItemId), []);
+	const onItemClick = useCallback((selectedId) => {
+		setSelectedFilterType(selectedId);
+	}, []);
 	const dispatch = useDispatch();
 	const [incomingFilters, setIncomingFilters] = useState<Array<Item>>([]);
 	const [incomingLoading, setIncomingLoading] = useState(true);
@@ -130,8 +132,8 @@ const FilterTabs: FC = (): ReactElement => {
 					items={tabs}
 					selected={selectedFilterType}
 					onChange={(): null => null}
-					onItemClick={onTabClick}
 					height="3.75rem"
+					onItemClick={onItemClick}
 				/>
 				<Container crossAlignment="flex-start" padding={{ top: 'small' }}>
 					{selectedFilterType === 'incoming-messages' && (
