@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { TextProps, ButtonProps, ContainerProps } from '@zextras/carbonio-design-system';
+import { TextProps } from '@zextras/carbonio-design-system';
 import { Folder } from '@zextras/carbonio-shell-ui';
 
 export type CreateSnackbar = (arg: {
@@ -82,4 +82,10 @@ export type TextReadValuesProps = {
 	color: string;
 	weight: TextProps['weight'];
 	badge: 'unread' | 'read';
+};
+
+export type AppContext = {
+	isMessageView: boolean;
+	count: number;
+	setCount: (arg: number) => void;
 };
