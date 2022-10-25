@@ -69,7 +69,8 @@
     "jest-fetch-mock": "^3.0.3",
     "jest-junit": "^14.0.0",
     "msw": "^0.47.4",
-    "pinst": "2.1.6"
+    "pinst": "2.1.6",
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
