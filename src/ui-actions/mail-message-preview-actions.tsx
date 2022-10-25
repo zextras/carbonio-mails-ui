@@ -77,7 +77,7 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	);
 
 	const secondActions = useMemo(() => difference(actions, firstActions), [actions, firstActions]);
-	const iconSize = useMemo(() => parseInt(theme.sizes.icon.large, 10), [theme?.sizes?.icon?.large]);
+	const iconSize = useMemo(() => theme.sizes.icon.large, [theme.sizes.icon.large]);
 
 	const onIconClick = useCallback((ev: { stopPropagation: () => void }): void => {
 		ev.stopPropagation();
