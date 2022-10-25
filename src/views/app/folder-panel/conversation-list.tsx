@@ -3,43 +3,43 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import {
+	Container,
+	Divider,
+	ItemComponentProps,
+	List,
+	Padding,
+	SnackbarManagerContext,
+	Text
+} from '@zextras/carbonio-design-system';
+import { t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
+import { find, map, reduce } from 'lodash';
 import React, {
+	ComponentType,
+	FC,
 	useCallback,
-	useMemo,
-	useRef,
-	useState,
 	useContext,
 	useEffect,
-	FC,
-	ComponentType
+	useMemo,
+	useRef,
+	useState
 } from 'react';
-import { useParams } from 'react-router-dom';
-import {
-	List,
-	SnackbarManagerContext,
-	Divider,
-	Container,
-	Padding,
-	Text,
-	ItemComponentProps
-} from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { find, map, reduce } from 'lodash';
-import { useAppContext, t, useFolder } from '@zextras/carbonio-shell-ui';
+import { handleKeyboardShortcuts } from '../../../hooks/keyboard-shortcuts';
+import { useConversationListItems } from '../../../hooks/use-conversation-list';
+import { useSelection } from '../../../hooks/useSelection';
+import { search } from '../../../store/actions';
 import {
 	selectConversationStatus,
 	selectFolderSearchStatus
 } from '../../../store/conversations-slice';
-import ConversationListItem from './lists-item/conversation-list-item';
-import { search } from '../../../store/actions';
+import { AppContext, Conversation } from '../../../types';
 import SelectPanelActions from '../../../ui-actions/select-panel-action';
-import { Breadcrumbs } from './breadcrumbs';
-import { useSelection } from '../../../hooks/useSelection';
-import { handleKeyboardShortcuts } from '../../../hooks/keyboard-shortcuts';
-import { useConversationListItems } from '../../../hooks/use-conversation-list';
 import ShimmerList from '../../search/shimmer-list';
-import { Conversation } from '../../../types';
+import { Breadcrumbs } from './breadcrumbs';
+import ConversationListItem from './lists-item/conversation-list-item';
 
 const DragImageContainer = styled.div`
 	position: absolute;
@@ -78,7 +78,7 @@ const DragItems: FC<{ conversations: Conversation[]; draggedIds: Array<string> |
 
 const ConversationList: FC = () => {
 	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
-	const { setCount } = useAppContext();
+	const { setCount } = useAppContext<AppContext>();
 	const conversations = useConversationListItems();
 
 	const [isDragging, setIsDragging] = useState(false);
