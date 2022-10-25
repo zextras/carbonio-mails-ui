@@ -115,7 +115,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	);
 	useLayoutEffect(() => {
 		let width = actions.length > 2 ? iconSize : 2 * iconSize;
-		if (message.attachment && attachments.length > 0) width += iconSize;
+		if (message.hasAttachment && attachments.length > 0) width += iconSize;
 		if (message.flagged) width += iconSize;
 		if (textRef?.current?.clientWidth) width += textRef.current.clientWidth;
 		_setMinWidth(`${width}px`);
@@ -123,7 +123,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		actions.length,
 		attachments.length,
 		iconSize,
-		message.attachment,
+		message.hasAttachment,
 		message.flagged,
 		textRef?.current?.clientWidth
 	]);
@@ -350,7 +350,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										</Padding>
 									</Dropdown>
 								)}
-								{message.attachment && attachments.length > 0 && (
+								{message.hasAttachment && attachments.length > 0 && (
 									<Padding left="small">
 										<Icon icon="AttachOutline" />
 									</Padding>

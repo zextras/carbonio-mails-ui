@@ -3,9 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useRef, useState, useContext, FC, ReactElement } from 'react';
-import styled from 'styled-components';
-import { filter, find, includes, map, noop, reduce, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -17,94 +14,23 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getAction, soapFetch, t, getBridgedFunctions } from '@zextras/carbonio-shell-ui';
+import { getAction, getBridgedFunctions, soapFetch, t } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
+import { filter, find, map, noop, uniqBy } from 'lodash';
+import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { getFileExtension, calcColor } from '../../../../commons/utilities';
-import { humanFileSize, previewType } from './file-preview';
-import {
-	AttachmentPartType,
-	AttachmentType,
-	MailMessage,
-	MailMessagePart
-} from '../../../../types';
-import { getMsgsForPrint } from '../../../../store/actions';
+import styled from 'styled-components';
 import { getEMLContent, getErrorPage } from '../../../../commons/preview-eml';
-import { StoreProvider } from '../../../../store/redux';
-import DeleteAttachmentModal from './delete-attachment-modal';
+import { calcColor, getFileExtension } from '../../../../commons/utilities';
+import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
+import { StoreProvider } from '../../../../store/redux';
+import { AttachmentPart, AttachmentType, MailMessage } from '../../../../types';
+import DeleteAttachmentModal from './delete-attachment-modal';
+import { humanFileSize, previewType } from './file-preview';
+import { getAttachmentsDownloadLink, getAttachmentsLink } from './utils';
 
 const AttachmentsActions = styled(Row)``;
-function findAttachments(parts: MailMessagePart[], acc: MailMessagePart[]): AttachmentPartType[] {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	return reduce(
-		parts,
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		(found, part: MailMessagePart) => {
-			if (part && (part.disposition === 'attachment' || part.contentType === 'message/rfc822')) {
-				found.push(part);
-			}
-			if (part.parts) return findAttachments(part.parts, found);
-			return acc;
-		},
-		acc
-	);
-}
-
-function getAttachmentsDownloadLink(
-	messageId: string,
-	messageSubject: string,
-	attachments: Array<string>
-): string {
-	if (attachments.length > 1) {
-		return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
-			','
-		)}&disp=a&fmt=zip`;
-	}
-	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
-}
-
-function getAttachmentsLink(
-	messageId: string,
-	messageSubject: string,
-	attachments: Array<string>,
-	attachmentType: string
-): string {
-	if (attachments.length > 1) {
-		return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
-			','
-		)}&disp=a&fmt=zip`;
-	}
-	if (includes(['image/gif', 'image/png', 'image/jpeg', 'image/jpg'], attachmentType)) {
-		return `/service/preview/image/${messageId}/${attachments.join(',')}/0x0/?quality=high`;
-	}
-	if (includes(['application/pdf'], attachmentType)) {
-		return `/service/preview/pdf/${messageId}/${attachments.join(',')}/?first_page=1`;
-	}
-	if (
-		includes(
-			[
-				'text/csv',
-				'text/plain',
-				'application/msword',
-				'application/vnd.ms-excel',
-				'application/vnd.ms-powerpoint',
-				'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-				'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-				'application/vnd.oasis.opendocument.spreadsheet',
-				'application/vnd.oasis.opendocument.presentation',
-				'application/vnd.oasis.opendocument.text'
-			],
-			attachmentType
-		)
-	) {
-		return `/service/preview/document/${messageId}/${attachments.join(',')}`;
-	}
-	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
-}
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
@@ -423,7 +349,7 @@ const Attachment: FC<AttachmentType> = ({
 	);
 };
 
-const copyToFiles = (att: AttachmentPartType, message: MailMessage, nodes: any): Promise<any> =>
+const copyToFiles = (att: AttachmentPart, message: MailMessage, nodes: any): Promise<any> =>
 	soapFetch('CopyToFiles', {
 		_jsns: 'urn:zimbraMail',
 		mid: message.id,
@@ -433,12 +359,21 @@ const copyToFiles = (att: AttachmentPartType, message: MailMessage, nodes: any):
 
 const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactElement => {
 	const [expanded, setExpanded] = useState(false);
-	const attachments = useMemo(() => findAttachments(message?.parts, []), [message]);
-	const attachmentsCount = useMemo(() => attachments?.length, [attachments]);
+	const attachments = useMemo(
+		() => filter(message?.attachments, { cd: 'attachment' }),
+		[message?.attachments]
+	);
+
+	const attachmentsCount = useMemo(() => attachments?.length || 0, [attachments]);
 	const attachmentsParts = useMemo(() => map(attachments, 'name'), [attachments]);
 	const theme = useTheme();
 	const actionsDownloadLink = useMemo(
-		() => getAttachmentsDownloadLink(message.id, message.subject, attachmentsParts),
+		() =>
+			getAttachmentsDownloadLink({
+				messageId: message.id,
+				messageSubject: message.subject,
+				attachments: attachmentsParts
+			}),
 		[message, attachmentsParts]
 	);
 
@@ -451,7 +386,7 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					const fileExtn = getFileExtension(att);
-					const color = calcColor(att.contentType, theme);
+					const color = calcColor(att?.contentType ?? '', theme);
 
 					if (iconColors) {
 						return [
@@ -537,11 +472,20 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 					<Attachment
 						key={`att-${att.filename}-${index}`}
 						filename={att?.filename}
-						size={att.size}
-						link={getAttachmentsLink(message.id, message.subject, [att.name], att.contentType)}
-						downloadlink={getAttachmentsDownloadLink(message.id, message.subject, [att.name])}
+						size={att?.size ?? 0}
+						link={getAttachmentsLink({
+							messageId: message.id,
+							messageSubject: message.subject,
+							attachments: [att.name],
+							attachmentType: att.contentType
+						})}
+						downloadlink={getAttachmentsDownloadLink({
+							messageId: message.id,
+							messageSubject: message.subject,
+							attachments: [att.name]
+						})}
 						message={message}
-						part={att.name}
+						part={att?.name ?? ''}
 						iconColors={iconColors}
 						att={att}
 					/>
