@@ -3,6 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import {
+	Button,
+	Container,
+	Icon,
+	IconButton,
+	MultiButton,
+	Padding,
+	Row,
+	Text
+} from '@zextras/carbonio-design-system';
+import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { filter, forEach, isArray, isNull, reduce, some } from 'lodash';
 import React, {
 	FC,
 	useCallback,
@@ -12,23 +24,11 @@ import React, {
 	useRef,
 	useState
 } from 'react';
-import { filter, forEach, isArray, isNull, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
-import {
-	Container,
-	Text,
-	Button,
-	Row,
-	Icon,
-	Padding,
-	IconButton,
-	MultiButton
-} from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
-import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
-import { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';
 
 export const _CI_REGEX = /^<(.*)>$/;
 export const _CI_SRC_REGEX = /^cid:(.*)$/;
@@ -404,6 +404,8 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				title={msgId}
 				ref={iframeRef}
 				onLoad={calculateHeight}
+				scrolling="no"
+				frameBorder="0"
 				style={{
 					border: 'none',
 					width: '100%',

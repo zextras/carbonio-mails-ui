@@ -62,7 +62,7 @@ export const normalizeConversation = ({
 			subject: c.su,
 			fragment: c.fr,
 			read: !isNil(c.f) ? !/u/.test(c.f) : !(c.u > 0),
-			attachment: !isNil(c.f) ? /a/.test(c.f) : undefined,
+			hasAttachment: !isNil(c.f) ? /a/.test(c.f) : undefined,
 			flagged: !isNil(c.f) ? /f/.test(c.f) : undefined,
 			urgent: !isNil(c.f) ? /!/.test(c.f) : undefined
 		},

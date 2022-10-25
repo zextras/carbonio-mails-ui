@@ -71,7 +71,7 @@ export type DataProps = {
 	subject: string;
 	fragment: string;
 	read: false;
-	attachment: false;
+	hasAttachment: false;
 	flagged: false;
 	urgent: false;
 	parentFolderId: string;
