@@ -8,7 +8,8 @@ import {
 	Divider,
 	Padding,
 	SnackbarManagerContext,
-	TabBar
+	TabBar,
+	TabBarProps
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import React, {
@@ -51,7 +52,7 @@ const FilterTabs: FC = (): ReactElement => {
 		],
 		[]
 	);
-	const onChange = useCallback((selectedId) => {
+	const onChange = useCallback<TabBarProps['onChange']>((ev, selectedId) => {
 		setSelectedFilterType(selectedId);
 	}, []);
 	const dispatch = useDispatch();
