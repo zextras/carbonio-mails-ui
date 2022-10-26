@@ -36,12 +36,20 @@
                 "threshold_message": "As mensagens nesta pasta mais antigas que o limite de descarte estarão sujeitas a limpeza e exclusão automáticas.",
                 "add_share": "Adicionar partilha"
             },
+            "move": {
+                "title_modal": "Mover Conversa"
+            },
             "new": {
                 "title": "Criar nova pasta"
+            },
+            "wipe": {
+                "body": {
+                    "message2": "Ao limpá-la, todo conteúdo relacionado será excluído permanentemente."
+                }
             }
         },
         "action": {
-            "restore": "Recuperar Pasta"
+            "edit_properties": "Editar propriedades"
         }
     },
     "label": {
