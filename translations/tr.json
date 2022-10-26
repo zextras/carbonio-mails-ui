@@ -299,7 +299,8 @@
         "as_text": "Metin Olarak",
         "as_html": "HTML olarak",
         "arrival_notifications": "Geldiğinde Bildirimler",
-        "mark_all_as_read": "Tümünü okundu olarak işaretle"
+        "mark_all_as_read": "Tümünü okundu olarak işaretle",
+        "send_scheduled": "Gönderim Planlandı"
     },
     "share": {
         "options": {
