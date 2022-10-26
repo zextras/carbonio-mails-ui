@@ -6,6 +6,7 @@
 import {
 	Container,
 	Divider,
+	ItemComponentProps,
 	List,
 	Padding,
 	SnackbarManagerContext,
@@ -13,7 +14,16 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { find, map, reduce } from 'lodash';
-import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+	ComponentType,
+	FC,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -182,14 +192,15 @@ const ConversationList: FC = () => {
 								itemProps={{
 									itemId,
 									toggle,
-									// messages,
 									folderId,
 									setDraggedIds,
 									setIsDragging,
 									selectedItems: selected,
 									dragImageRef
 								}}
-								ItemComponent={ConversationListItem}
+								ItemComponent={
+									ConversationListItem as unknown as ComponentType<ItemComponentProps<any>>
+								}
 								onListBottom={(): void =>
 									loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)
 								}
