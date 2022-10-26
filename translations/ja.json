@@ -7,23 +7,6 @@
                 "retention_duration_warning": "保持期間は正の数でなければなりません",
                 "add_share": "共有を追加する",
                 "threshold_message": "このフォルダ内の廃棄しきい値より古いメッセージは、自動クリーンアップと削除の対象になります。"
-            },
-            "move": {
-                "new": "新規フォルダ"
-            },
-            "new": {
-                "create_footer": "作成して移動する"
-            },
-            "restore": {
-                "title_modal": "復元する"
-            },
-            "wipe": {
-                "title": "一掃する"
-            }
-        },
-        "action": {
-            "wipe": {
-                "folder": "フォルダを一掃する"
             }
         }
     },
@@ -65,7 +48,9 @@
         "hide_details": "詳細を非表示にする",
         "show_original": "オリジナルを表示する",
         "preview_new_tab": "クリックして別のタブでプレビューする",
-        "click_preview": "クリックしてプレビューする"
+        "click_preview": "クリックしてプレビューする",
+        "mark_all_read": "すべて既読にする",
+        "edit_anyway": "とにかく編集する"
     },
     "folders": {
         "trash": "ゴミ箱",
@@ -78,7 +63,7 @@
     "label": {
         "attachment": "添付ファイル",
         "cancel": "キャンセル",
-        "download": "ダウンロード",
+        "download": "すべてダウンロードする",
         "edit": "編集する",
         "me": "私",
         "remove": "すべて削除する",
@@ -250,7 +235,32 @@
         "request_receipt": "開封確認を要求",
         "keep_draft": "下書きとして保存",
         "enter_email_address": "メールアドレスまたはドメインを入力",
-        "delete_draft": "下書きを削除する"
+        "delete_draft": "下書きを削除する",
+        "schedule_send": "予定された送信",
+        "read_receipt_sent": "このメッセージの開封確認が送信されました",
+        "message_from_me": "自分からのメッセージ",
+        "message_arrival": "新規メッセージ着信時",
+        "duplicate_messages": "重複メッセージ",
+        "warning": "警告",
+        "read_receipt": "開封確認",
+        "read_reciept": "開封確認",
+        "as_text": "テキスト",
+        "as_html": "HTML",
+        "show_more_info": "詳細情報を表示する",
+        "select_date_time": "日時を選択する",
+        "remove_request_receipt": "開封確認リクエストを削除する",
+        "read_receipt_req": "開封確認が必要です",
+        "mark_as_un_important": "重要ではないものとしてマークする",
+        "mark_as_important": "重要としてマークする",
+        "mark_all_as_read": "すべて既読にする",
+        "include_shared_folders": "共有フォルダを含める",
+        "hide_more_info": "詳細情報を非表示する",
+        "filter_modified": "フィルタが変更されました",
+        "expand_receivers_list": "受信者リストを展開する",
+        "delayed_sending": "遅延送信",
+        "collapse_receivers_list": "受信者リストを折りたたむ",
+        "before_you_leave": "外出する前に",
+        "arrival_notifications": "受信通知"
     },
     "messages": {
         "modal": {
@@ -261,6 +271,21 @@
             "redirect": {
                 "first": "このメールは、元の送信者のメールアドレスを保持したまま、新しい受信者に送信されます。",
                 "second": "元々、メールは新しい受信者宛てに表示されます"
+            },
+            "send_anyway": {
+                "attachment": "添付ファイル",
+                "attach": "添付",
+                "attachments": "添付ファイル",
+                "second": "このままメールを送信しますか？",
+                "first": "メールの件名が空欄で、ファイルが添付されていません。",
+                "no_subject_no_attachments": "メールの件名が空欄で、ファイルが添付されていません。",
+                "no_subject": "メールの件名が空欄です。",
+                "no_attachments": "ファイルを添付していません。",
+                "enclosing": "開封しています",
+                "enclosed": "同封済み",
+                "enclose": "同封する",
+                "attaching": "添付しています",
+                "attached": "添付済み"
             }
         },
         "invalid_address": "次のアドレスは無効のようです",
@@ -303,7 +328,12 @@
         "could_not_find_to_show": "申し訳ありませんが、表示するものが見つかりませんでした",
         "something_went_wrong": "エラーが発生しました",
         "powered_by": "搭載",
-        "trustee_addresses": "これらのアドレスまたはドメインからのメールは信頼できるとみなされ、メール閲覧時に外部サイトの画像も自動的にダウンロード・表示されます。"
+        "trustee_addresses": "これらのアドレスまたはドメインからのメールは信頼できるとみなされ、メール閲覧時に外部サイトの画像も自動的にダウンロード・表示されます。",
+        "read_receipt_2": "送信者に通知しますか？",
+        "read_receipt_1": "このメッセージの送信者は、あなたがこのメッセージを読んだときに通知を受けるようにリクエストしています。",
+        "invalid_trustee_address": "メールアドレスまたはドメインのみを入力してください",
+        "edit_schedule_warning": "このメールを編集すると、以前に設定された遅延送信の日時がリセットされます。",
+        "cal_name_exist_warning": "同じ名前のカレンダーがこのパスにすでに存在しています"
     },
     "placeholder": {
         "add_new_recipients": "新しい受信者を追加する"
@@ -379,12 +409,13 @@
         "admin_rights": "表示、編集、追加、削除、管理",
         "manager_rights": "表示、編集、追加、削除",
         "view_rights": "表示",
-        "external_images_blocked": "スパムからユーザーを守るために、外部画像はブロックされています"
+        "external_images_blocked": "スパムからユーザーを守るために、外部画像はブロックされています",
+        "select_date_time": "このメッセージを送信する日付と時刻を選択",
+        "send_later_success": "メールは {{date}} {{time}} に送信されます",
+        "schedule_time": "{{date}} {{time}}",
+        "schedule_mail": "送信予定日: {{date}} {{time}}"
     },
     "settings": {
-        "dspl_mail_optn": {
-            "text": "テキストとして"
-        },
         "label": {
             "check_new_mail": "新規メールを確認する",
             "display_mail": "メールを表示する",
@@ -504,7 +535,22 @@
         "not_in": "内ではない",
         "not_over": "上ではない",
         "not_under": "下ではない",
-        "twitter_notification": "Twitterの通知"
+        "twitter_notification": "Twitterの通知",
+        "font": "フォント",
+        "fonts": {
+            "wide_block": "Wide Block",
+            "wide": "ワイド",
+            "terminal": "Terminal",
+            "serif": "Serif",
+            "sans_serif": "Sans Serif",
+            "professional": "Professional",
+            "monospaced": "Monospaced",
+            "modern": "モダン",
+            "garamond": "Garamond",
+            "elegant": "Elegant",
+            "console": "Console",
+            "comic": "Comic"
+        }
     },
     "snackbar": {
         "share_resend": "送信された招待を共有する",
@@ -524,8 +570,9 @@
         "edit": "共有プロパティを編集する",
         "enable_rich_text": "リッチテキストエディタを有効にする",
         "enable_urgent": "緊急を有効にする",
-        "folder_sharing_status": "{{count}}人と共有されました",
-        "folder_linked_status": "共有されたファイル"
+        "folder_sharing_status": "{{count}}ユーザーと共有されました",
+        "folder_linked_status": "共有されたファイル",
+        "marked_as_important": "重要としてマークする"
     },
     "folder_panel": {
         "modal": {
@@ -563,7 +610,8 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "一層すると、関連するコンテンツがすべて完全に削除されます。"
+                    "message2": "一層すると、関連するコンテンツがすべて完全に削除されます。",
+                    "message1": "選択したフォルダを一掃しますか？"
                 }
             }
         },
@@ -664,7 +712,8 @@
         "remote": "共有しているフォルダ",
         "local": "フォルダで",
         "invitations": "招待",
-        "ccme": "コピー"
+        "ccme": "コピー",
+        "anywhere": "すべてのフォルダに"
     },
     "attachment_type": {
         "word": "Word",
@@ -676,6 +725,18 @@
         "html": "HTML",
         "excel": "Excel",
         "email": "メールアドレス",
-        "application": "アプリケーション"
+        "application": "アプリケーション",
+        "zipped_file": "zipファイル"
+    },
+    "labels": {
+        "compose_colin": "作成：",
+        "composing_messages": "メッセージの作成"
+    },
+    "new_folder": "新規フォルダ",
+    "go_back": "戻る",
+    "modal": {
+        "delete_draft": {
+            "message1": "この下書きを保持しますか、それとも削除しますか？"
+        }
     }
 }

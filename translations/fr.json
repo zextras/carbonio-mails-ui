@@ -26,7 +26,8 @@
         "search": "Recherche",
         "preview_new_tab": "Cliquez pour afficher un aperçu dans un autre onglet",
         "click_preview": "Cliquer pour prévisualiser",
-        "edit_anyway": "Éditer malgré tout"
+        "edit_anyway": "Éditer malgré tout",
+        "mark_all_read": "Définir comme lu"
     },
     "composer": {
         "attachment": {
@@ -45,11 +46,6 @@
             "new": "Nouveau dossier"
         },
         "modal": {
-            "delete": {
-                "body": {
-                    "message4": "Si vous le supprimez, tous les contenus associés seront définitivement supprimés et le dossier ne sera plus restaurable."
-                }
-            },
             "edit": {
                 "rename_warning": "Vous ne pouvez pas renommer un dossier en tant que dossier système.",
                 "retention_message": "Les messages de ce dossier qui se situent dans la plage de rétention devront être confirmés explicitement avant d'être supprimés",
@@ -292,7 +288,8 @@
         "duplicate_messages": "Messages dupliqués",
         "as_text": "En Texte",
         "as_html": "En HTML",
-        "arrival_notifications": "Notifications d'arrivée"
+        "arrival_notifications": "Notifications d'arrivée",
+        "mark_all_as_read": "Définir tous comme lus"
     },
     "message": {
         "snackbar": {
