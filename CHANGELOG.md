@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.45](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.44...v0.1.45) (2022-10-26)
+
+
+### Features
+
+* added a message slice test ([1d8829c](https://github.com/zextras/carbonio-mails-ui/commit/1d8829ca07a9cad5e4d419d56c7d43626fca565d))
+* collapse board on send, send time options ([#223](https://github.com/zextras/carbonio-mails-ui/issues/223)) ([e6297d2](https://github.com/zextras/carbonio-mails-ui/commit/e6297d22698c8794dccfe4f1894aa3950f3c31a5))
+* integrating commons module changes ([ba2d78f](https://github.com/zextras/carbonio-mails-ui/commit/ba2d78f6b4056c1c26be707ec6d627970c977701))
+
+
+### Bug Fixes
+
+* close board on sending appointment cancellation ([4cf4e81](https://github.com/zextras/carbonio-mails-ui/commit/4cf4e81fc9548f9302fa8c16961e3393c8f4713d))
+* disable mark all as read action for draft folder ([bab403e](https://github.com/zextras/carbonio-mails-ui/commit/bab403ee11f04f39671bb3554fc8bf4037d3d537))
+* fixed drag and drop of list items in shared folders and accounts ([#231](https://github.com/zextras/carbonio-mails-ui/issues/231)) ([bc1b1a3](https://github.com/zextras/carbonio-mails-ui/commit/bc1b1a3aa384edba1c2d005ed914c4f748311304))
+* fixed scrollbar on displayer ([#233](https://github.com/zextras/carbonio-mails-ui/issues/233)) ([17af49d](https://github.com/zextras/carbonio-mails-ui/commit/17af49de317d9d0872fbbbb805d6b614daab0f9c))
+* flag appears like applied when not applied on email ([#228](https://github.com/zextras/carbonio-mails-ui/issues/228)) ([aea5ec6](https://github.com/zextras/carbonio-mails-ui/commit/aea5ec6ad1e7c2cd981a6a5c8d78f8fdac85355a))
+* label rendered instead of name for tag ([97bcbbb](https://github.com/zextras/carbonio-mails-ui/commit/97bcbbb7b1025828c496610833e10369c3eeb315))
+* lists sometimes breaks the view ([0411ad3](https://github.com/zextras/carbonio-mails-ui/commit/0411ad36ec7eafa4fbed21d8a56439c9bbdc03a0))
+* missing attachments ([#227](https://github.com/zextras/carbonio-mails-ui/issues/227)) ([3638acd](https://github.com/zextras/carbonio-mails-ui/commit/3638acd224376eb938babc6f82bae7fc58a6acf9))
+* send draft action fixed ([ca71128](https://github.com/zextras/carbonio-mails-ui/commit/ca71128d88aef2964678adf0b9d754fa5c68cd41))
+
 ### [0.1.44](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.43...v0.1.44) (2022-10-14)
 
 ### [0.1.43](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.42...v0.1.43) (2022-10-12)
