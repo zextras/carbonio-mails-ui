@@ -21,9 +21,11 @@ import {
 	MailMessage,
 	FetchConversationsReturn,
 	SearchConvReturn,
-	MsgActionResult
+	MsgActionResult,
+	DeleteAttachmentsReturn
 } from '../types';
 import { search, getConv, getMsg, msgAction, searchConv } from './actions';
+import { deleteAttachments } from './actions/delete-all-attachments';
 import { saveDraft } from './actions/save-draft';
 import {
 	handleCreatedMessagesReducer,
@@ -66,11 +68,22 @@ function fetchConversationsFulfilled(
 		};
 	}
 }
+
+function deleteAttachmentsFulfilled(
+	state: MsgStateType,
+	{ payload, meta }: { payload: DeleteAttachmentsReturn | undefined; meta: any }
+): void {
+	if (payload?.attachments?.length && state.messages[meta.arg.id]) {
+		const normalizeMsg = normalizeMailMessageFromSoap(payload.res.m[0], true);
+		state.messages[meta.arg.id] = { ...state.messages[meta.arg.id], parts: normalizeMsg.parts };
+	}
+}
+
 function saveDraftFulfilled(
 	{ messages, status }: MsgStateType,
 	{ payload }: { payload: any }
 ): void {
-	const message = normalizeMailMessageFromSoap(payload.resp.m[0], true);
+	const message = normalizeMailMessageFromSoap(payload.resp?.m?.[0], true);
 	status[message.id] = 'complete';
 	// eslint-disable-next-line no-param-reassign
 	messages[message.id] = message;
@@ -154,6 +167,7 @@ export const messagesSlice = createSlice({
 		builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
 		builder.addCase(saveDraft.fulfilled, produce(saveDraftFulfilled));
 		builder.addCase(search.fulfilled, produce(fetchConversationsFulfilled));
+		builder.addCase(deleteAttachments.fulfilled, produce(deleteAttachmentsFulfilled));
 	}
 });
 

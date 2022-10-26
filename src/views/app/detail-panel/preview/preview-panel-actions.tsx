@@ -3,11 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useMemo } from 'react';
 import { Container, Dropdown, IconButton, Padding } from '@zextras/carbonio-design-system';
-import { map } from 'lodash';
-import { useDispatch } from 'react-redux';
 import { FOLDERS, useAppContext, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
+import React, { FC, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import { useSelection } from '../../../../hooks/useSelection';
+import { AppContext, PreviewPanelActionsType } from '../../../../types';
 import {
 	moveConversationToTrash,
 	printConversation,
@@ -15,8 +17,6 @@ import {
 	setConversationsRead
 } from '../../../../ui-actions/conversation-actions';
 import { replyAllMsg, replyMsg, setMsgRead } from '../../../../ui-actions/message-actions';
-import { useSelection } from '../../../../hooks/useSelection';
-import { PreviewPanelActionsType } from '../../../../types';
 
 const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 	item,
@@ -27,7 +27,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 	const dispatch = useDispatch();
 	const account = useUserAccount();
 
-	const { setCount } = useAppContext();
+	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection(folderId, setCount);
 
 	const ids = useMemo(() => [item?.id], [item?.id]);

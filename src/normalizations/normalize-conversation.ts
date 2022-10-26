@@ -12,7 +12,10 @@ import { normalizeParticipantsFromSoap } from './normalize-message';
 export const getTagIdsFromName = (
 	names: string | undefined,
 	tags?: Tags
-): Array<string | undefined> => map(names?.split(','), (name) => find(tags, { name })?.id);
+): Array<string | undefined> =>
+	map(names?.split(','), (name) =>
+		find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`
+	);
 export const getTagIds = (
 	t: string | undefined,
 	tn: string | undefined,
@@ -59,7 +62,7 @@ export const normalizeConversation = ({
 			subject: c.su,
 			fragment: c.fr,
 			read: !isNil(c.f) ? !/u/.test(c.f) : !(c.u > 0),
-			attachment: !isNil(c.f) ? /a/.test(c.f) : undefined,
+			hasAttachment: !isNil(c.f) ? /a/.test(c.f) : undefined,
 			flagged: !isNil(c.f) ? /f/.test(c.f) : undefined,
 			urgent: !isNil(c.f) ? /!/.test(c.f) : undefined
 		},

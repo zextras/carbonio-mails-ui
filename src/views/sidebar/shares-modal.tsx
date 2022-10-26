@@ -34,8 +34,8 @@ import {
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import ModalHeader from './commons/modal-header';
-import ModalFooter from './commons/modal-footer';
+import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import { createMountpoint } from '../../store/actions/create-mountpoint';
 
 import { GroupedShare, SharedObject, ShareModalProps } from '../../types/sidebar';

@@ -3,40 +3,40 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useCallback, FC } from 'react';
-import { find, isEmpty, reduce, includes } from 'lodash';
-import {
-	useUserAccounts,
-	useAppContext,
-	replaceHistory,
-	useTags,
-	ZIMBRA_STANDARD_COLORS,
-	t,
-	FOLDERS,
-	Tag,
-	useFolder
-} from '@zextras/carbonio-shell-ui';
 import {
 	Badge,
 	Container,
+	Drag,
 	Icon,
 	Padding,
 	Row,
 	Text,
-	Drag,
 	Tooltip
 } from '@zextras/carbonio-design-system';
+import {
+	FOLDERS,
+	replaceHistory,
+	t,
+	Tag,
+	useAppContext,
+	useFolder,
+	useTags,
+	useUserAccounts,
+	ZIMBRA_STANDARD_COLORS
+} from '@zextras/carbonio-shell-ui';
+import { find, includes, isEmpty, reduce } from 'lodash';
 import moment from 'moment';
+import React, { FC, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 
+import { AppContext, MsgListDraggableItemType, TextReadValuesType } from '../../../../types';
+import { setMsgRead } from '../../../../ui-actions/message-actions';
+import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { ItemAvatar } from './item-avatar';
 import { ListItemActionWrapper } from './list-item-actions-wrapper';
-import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { SenderName } from './sender-name';
-import { useTagExist } from '../../../../ui-actions/tag-actions';
-import { MsgListDraggableItemType, TextReadValuesType } from '../../../../types';
 
 type Preview = {
 	src?: string | null | ArrayBuffer;
@@ -96,7 +96,7 @@ export const MessageListItem: FC<any> = ({
 	isConvChildren
 }) => {
 	const accounts = useUserAccounts();
-	const { isMessageView } = useAppContext();
+	const { isMessageView } = useAppContext<AppContext>();
 	const messageFolder = useFolder(item.parent);
 	const ids = useMemo(() => Object.keys(selectedItems ?? []), [selectedItems]);
 	const dispatch = useDispatch();
@@ -287,7 +287,7 @@ export const MessageListItem: FC<any> = ({
 											<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
 										</Padding>
 									)}
-									{item.attachment && (
+									{item.hasAttachment && (
 										<Padding left="small">
 											<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
 										</Padding>

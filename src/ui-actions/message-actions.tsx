@@ -93,7 +93,7 @@ export function setMsgFlag({
 >): MessageActionReturnType {
 	return {
 		id: 'message-flag',
-		icon: value ? 'FlagOutline' : 'Flag',
+		icon: value ? 'Flag' : 'FlagOutline',
 		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
@@ -518,7 +518,7 @@ export function sendDraft({
 				// @ts-ignore
 				sendMsg({
 					editorId: id,
-					message
+					msg: message
 				})
 			);
 		}

@@ -19,7 +19,7 @@ import {
 	SaveDraftNewParameters,
 	saveDraftNewResult
 } from '../types';
-import { deleteAllAttachments } from './actions/delete-all-attachments';
+import { deleteAttachments } from './actions/delete-all-attachments';
 import { saveDraft } from './actions/save-draft';
 import {
 	emptyEditor,
@@ -215,7 +215,7 @@ function closeEditorReducer(state: EditorsStateType, { payload }: { payload: str
 function closeAllEditorReducer(state: EditorsStateType): void {
 	state.editors = {};
 }
-function deleteAllAttachmentsFulfilled(state: EditorsStateType, action: any): void {
+function deleteAttachmentsFulfilled(state: EditorsStateType, action: any): void {
 	state.editors[action.meta.arg.id] = {
 		...state.editors[action.meta.arg.id],
 		attach: {
@@ -275,7 +275,7 @@ export const editorsSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder.addCase(saveDraft.fulfilled, produce(saveDraftFulfilled));
-		builder.addCase(deleteAllAttachments.fulfilled, produce(deleteAllAttachmentsFulfilled));
+		builder.addCase(deleteAttachments.fulfilled, produce(deleteAttachmentsFulfilled));
 	}
 });
 

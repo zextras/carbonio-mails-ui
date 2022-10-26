@@ -3,5 +3,4 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: T[SubKey] };
+export * from '../../src/carbonio-ui-commons/test/mocks/carbonio-ui-preview';

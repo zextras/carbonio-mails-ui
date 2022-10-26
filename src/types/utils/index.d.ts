@@ -3,31 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { TextProps, ButtonProps, ContainerProps } from '@zextras/carbonio-design-system';
+import { TextProps } from '@zextras/carbonio-design-system';
 import { Folder } from '@zextras/carbonio-shell-ui';
-
-export type ModalFooterProps = {
-	mainAlignment?: ContainerProps['mainAlignment'] | undefined;
-	crossAlignment?: ContainerProps['crossAlignment'] | undefined;
-	padding?: Record<string, string> | undefined;
-	onConfirm: (e?: SyntheticEvent<Element, Event> | KeyboardEvent) => void;
-	secondaryAction?: () => void | undefined;
-	label: string;
-	secondaryLabel?: string | undefined;
-	disabled?: boolean | undefined;
-	secondaryDisabled?: boolean | undefined;
-	background?: ContainerProps['background'] | undefined;
-	secondarybackground?: ContainerProps['background'] | undefined;
-	color?: string | undefined;
-	secondaryColor?: string | undefined;
-	size?: ButtonProps['size'] | undefined;
-	primaryBtnType?: ButtonProps['type'] | undefined;
-	secondaryBtnType?: ButtonProps['type'] | undefined;
-	showDivider?: boolean;
-	tooltip?: string;
-	secondaryTooltip?: string;
-	paddingTop?: string;
-};
 
 export type CreateSnackbar = (arg: {
 	key: string;
@@ -94,7 +71,7 @@ export type DataProps = {
 	subject: string;
 	fragment: string;
 	read: false;
-	attachment: false;
+	hasAttachment: false;
 	flagged: false;
 	urgent: false;
 	parentFolderId: string;
@@ -105,4 +82,10 @@ export type TextReadValuesProps = {
 	color: string;
 	weight: TextProps['weight'];
 	badge: 'unread' | 'read';
+};
+
+export type AppContext = {
+	isMessageView: boolean;
+	count: number;
+	setCount: (arg: number) => void;
 };
