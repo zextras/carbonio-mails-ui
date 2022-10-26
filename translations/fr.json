@@ -289,7 +289,8 @@
         "as_text": "En Texte",
         "as_html": "En HTML",
         "arrival_notifications": "Notifications d'arrivée",
-        "mark_all_as_read": "Définir tous comme lus"
+        "mark_all_as_read": "Définir tous comme lus",
+        "send_scheduled": "Envoi programmé"
     },
     "message": {
         "snackbar": {
@@ -319,7 +320,7 @@
         "manager_rights": "Voir, Éditer, Ajouter, Supprimer",
         "view_rights": "Affichage",
         "external_images_blocked": "Les images externe ont été bloquées pour vous protéger contre des spams potentiels",
-        "schedule_time": "{{date}} à {{time}}",
+        "schedule_time": "le {{date}} à {{time}}",
         "schedule_mail": "Sera envoyé le : {{date}} à {{time}}",
         "send_later_success": "Votre email sera envoyé le {{date}} à {{time}}",
         "select_date_time": "Sélectionner une date et une heure pour envoyer le message"
