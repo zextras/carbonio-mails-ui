@@ -25,7 +25,9 @@
         "reply_all": "Allen antworten",
         "reset": "Zurücksetzen",
         "preview_new_tab": "Klicken zur Vorschau in einem anderen Reiter",
-        "click_preview": "Klicken zur Vorschau"
+        "click_preview": "Klicken zur Vorschau",
+        "mark_all_read": "Alle als gelesen markieren",
+        "edit_anyway": "Trotzdem bearbeiten"
     },
     "folder": {
         "modal": {
@@ -35,6 +37,11 @@
                 "retention_message": "Nachrichten in diesem Ordner, die in die Speicherungsfrist fallen, werden eine ausdrückliche Bestätigung erfordern, bevor sie gelöscht werden können",
                 "add_share": "Teilen hinzufügen",
                 "threshold_message": "Nachrichten in diesem Ordner, die älter als die Entsorgungsschwelle sind, werden automatisch bereinigt und gelöscht."
+            },
+            "move": {
+                "body": {
+                    "message1": "Einen Ordner als Ziel zum Verschieben aussuchen:"
+                }
             },
             "wipe": {
                 "title": "Leeren"
@@ -56,8 +63,8 @@
         "attachment": "Anhang",
         "attachment_plural": "Anhänge",
         "cancel": "Abbrechen",
-        "download": "Download",
-        "download_plural": "Download",
+        "download": "Herunterladen",
+        "download_plural": "Alle herunterladen",
         "edit": "Bearbeiten",
         "save": "Speichern",
         "send": "Senden",
@@ -224,7 +231,37 @@
         "searching": "Suche ...",
         "notify": "Benachrichtigen",
         "do_not_notify": "Nicht benachrichtigen",
-        "keep_draft": "Entwurf speichern"
+        "keep_draft": "Entwurf speichern",
+        "trusted_addresses": "Vertrauenswürdige Adressen",
+        "send_later": "Später senden",
+        "select_date_time": "Startdatum und zeit",
+        "schedule_send": "Mail wird gesendet",
+        "request_receipt": "Lesebestätigung anfordern",
+        "read_receipt_sent": "Für diese Mail wurde eine Lesebestätigung gesendet",
+        "message_from_me": "Mail von mir",
+        "message_arrival": "Mail-Eingang",
+        "enter_email_address": "Mail-Adresse/Domain eingeben",
+        "duplicate_messages": "Doppelt vorhandene Mails",
+        "delete_draft": "Entwurf Löschen",
+        "arrival_notifications": "Eingangsbenachrichtigungen",
+        "warning": "Waarschuwing",
+        "read_receipt": "Lesebestätigung",
+        "read_reciept": "Lesebestätigung",
+        "as_text": "Als Plain-Text",
+        "as_html": "Als HTML",
+        "mark_all_as_read": "Alle als gelesen markieren",
+        "show_more_info": "Mehr Informationen anzeigen",
+        "remove_request_receipt": "Anfrage zur Lesebestätigung entfernen",
+        "read_receipt_req": "Lesebestätigung erforderlich",
+        "mark_as_un_important": "Als unwichtig markieren",
+        "mark_as_important": "Als wichtig markieren",
+        "include_shared_folders": "Geteilte Ordner inkludieren",
+        "hide_more_info": "Mehr Informationen verbergen",
+        "filter_modified": "Filter erfolgreich geändert",
+        "expand_receivers_list": "Empfängerliste aufklappen",
+        "delayed_sending": "Verzögertes Senden",
+        "collapse_receivers_list": "Empfängerliste zusammenklappen",
+        "before_you_leave": "Bevor Sie gehen"
     },
     "share": {
         "options": {
@@ -268,6 +305,21 @@
             "redirect": {
                 "first": "Diese E-Mail wird an einen neuen Empfänger weitergesendet, während die E-Mail Adresse des ursprünglichen Absenders beibehalten wird.",
                 "second": "Die E-Mail wird so erscheinen, wie sie ursprünglich für den neuen Empfänger bestimmt war."
+            },
+            "send_anyway": {
+                "attachment": "anhang",
+                "attach": "anhängen",
+                "attachments": "Anhänge",
+                "second": "Möchten Sie die E-Mail trotzdem versenden?",
+                "no_subject_no_attachments": "Der E-Mail Betreff ist leer und Sie haben keine Dateien angehangen.",
+                "no_subject": "Der E-Mail Betreff ist leer.",
+                "no_attachments": "Sie haben keine Dateien angehangen.",
+                "first": "Der E-Mail Betreff ist leer und Sie haben keine Dateien angehangen.",
+                "enclosing": "wird angehangen",
+                "enclosed": "angehangen",
+                "enclose": "anhängen",
+                "attaching": "wird angehangen",
+                "attached": "angehangen"
             }
         },
         "new_email": "Neue E-Mail",
@@ -312,7 +364,12 @@
         "check_and_try_again": "Bitte überprüfen Sie Carbonio und versuchen Sie es erneut",
         "could_not_find_to_show": "Sorry, wir konnten nichts zum Anzeigen finden",
         "something_went_wrong": "ETWAS IST SCHIEFGELAUFEN",
-        "trustee_addresses": "Mails von diesen Absendern oder Domains werden als vertrauenswürdig eingestuft, und Bilder werden automatisch angezeigt."
+        "trustee_addresses": "Mails von diesen Absendern oder Domains werden als vertrauenswürdig eingestuft, und Bilder werden automatisch angezeigt.",
+        "read_receipt_2": "Möchten Sie den Absender benachrichtigen?",
+        "read_receipt_1": "Der Absender dieser Nachricht hat angefordert benachrichtigt zu werden, sobald Sie diese Nachricht gelesen haben.",
+        "invalid_trustee_address": "Bitte geben Sie nur E-Mail Adressen oder Domains ein",
+        "edit_schedule_warning": "Durch das Bearbeiten dieser E-Mail werden zuvor eingestellte Zeit und Datum für das verzögerte Versenden zurückgesetzt.",
+        "cal_name_exist_warning": "Ein Kalender mit dem gleichen Namen existiert bereits in diesem Pfad"
     },
     "placeholder": {
         "add_new_recipients": "Neue Empfänger hinzufügen"
@@ -325,7 +382,8 @@
         "sent_after": "Gesendet nach",
         "sent_before": "Gesendet vor",
         "sent_on": "Gesendet am",
-        "size_error": "Nur Zahlen sind erlaubt"
+        "size_error": "Nur Zahlen sind erlaubt",
+        "shared_folders_note": "Freigegebene Objekte in Suche einbeziehen."
     },
     "composer": {
         "attachment": {
@@ -366,7 +424,11 @@
         "view_rights": "Ansehen",
         "admin_rights": "Anzeigen, Bearbeiten, Hinzufügen, Entfernen, Verwalten",
         "manager_rights": "Anzeigen, Bearbeiten, Hinzufügen, Entfernen",
-        "external_images_blocked": "Externe Bilder wurden geblockt, um Sie gegen möglichen Spam zu schützen"
+        "external_images_blocked": "Externe Bilder wurden geblockt, um Sie gegen möglichen Spam zu schützen",
+        "select_date_time": "Wählen Sie Datum und Uhrzeit aus, zu denen diese Mail gesendet werden soll.",
+        "send_later_success": "Ihre E-Mail wird gesendet am {{date}} um {{time}}",
+        "schedule_time": "{{date}} um {{time}}",
+        "schedule_mail": "Wird gesendet am: {{date}} um {{time}}"
     },
     "tooltip": {
         "revoke": "Zugriff widerrufen",
@@ -377,9 +439,10 @@
         "edit": "Eigenschaften für das Teilen bearbeiten",
         "enable_rich_text": "Rich Text Editor aktivieren",
         "enable_urgent": "Dringend aktivieren",
-        "folder_sharing_status": "Mit {{count}} Person geteilt",
-        "folder_sharing_status_plural": "Mit {{count}} Personen geteilt",
-        "folder_linked_status": "Gedeeld met mij"
+        "folder_sharing_status": "Mit {{count}} Nutzer geteilt",
+        "folder_sharing_status_plural": "Mit {{count}} Nutzern geteilt",
+        "folder_linked_status": "Gedeeld met mij",
+        "marked_as_important": "Als wichtig markiert"
     },
     "snackbar": {
         "share_updated": "\"Zugriffsrechte aktualisiert\"",
@@ -511,7 +574,24 @@
         "linkedin_msg": "LinkedIn Nachrichten und Verbindungen",
         "matches_wildcard_condition": "entspricht der Platzhalterbedingung",
         "mb": "MB",
-        "twitter_notification": "Twitter-Benachrichtigungen"
+        "twitter_notification": "Twitter-Benachrichtigungen",
+        "font": "Schriftart",
+        "fonts": {
+            "wide_block": "Wide Block",
+            "wide": "Weit",
+            "terminal": "Terminal",
+            "serif": "Serif",
+            "sans_serif": "Sans Serif",
+            "professional": "Professional",
+            "monospaced": "Monospaced",
+            "modern": "Modern",
+            "garamond": "Garamond",
+            "elegant": "Elegant",
+            "console": "Console",
+            "comic": "Comic"
+        },
+        "font_size": "{{count}} pt",
+        "font_size_plural": "{{count}} pt"
     },
     "folder_panel": {
         "modal": {
@@ -542,7 +622,8 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "Wenn Sie es leeren, wird der zugehörige Inhalt endgültig gelöscht."
+                    "message2": "Wenn Sie es leeren, wird der zugehörige Inhalt endgültig gelöscht.",
+                    "message1": "Möchten Sie den ausgewählten Ordner leeren?"
                 }
             },
             "move": {
@@ -650,7 +731,8 @@
         "remote": "in einem von mir freigegebenen ordner",
         "local": "in meinen ordnern",
         "invitations": "einladungen",
-        "ccme": "in kopie an mich"
+        "ccme": "in kopie an mich",
+        "anywhere": "in allen Ordnern"
     },
     "attachment_type": {
         "word": "Wort",
@@ -662,6 +744,18 @@
         "html": "HTML",
         "excel": "Excel",
         "email": "Mail-Adresse",
-        "application": "Anwendung"
+        "application": "Anwendung",
+        "zipped_file": "Gepackte Datei"
+    },
+    "labels": {
+        "compose_colin": "Verfassen:",
+        "composing_messages": "Mails verfassen"
+    },
+    "new_folder": "Neuer Ordner",
+    "go_back": "Zurück",
+    "modal": {
+        "delete_draft": {
+            "message1": "Möchten Sie diesen Entwurf behalten oder löschen?"
+        }
     }
 }
