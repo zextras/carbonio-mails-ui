@@ -5,13 +5,14 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { FilterRules } from '../../types';
 
 export const getOutgoingFilters = createAsyncThunk(
 	'filters/get_filters',
 	async (): Promise<any> => {
-		const { filterRules } = await soapFetch('GetOutgoingFilterRules', {
+		const { filterRules } = (await soapFetch('GetOutgoingFilterRules', {
 			_jsns: 'urn:zimbraMail'
-		});
+		})) as { filterRules: FilterRules };
 		return { filterRules };
 	}
 );

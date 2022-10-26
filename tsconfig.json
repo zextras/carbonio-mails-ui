@@ -4,6 +4,6 @@
 		"skipLibCheck": true,
 		"jsx": "react"
 	},
-	"include": ["src/**/*.ts", "src/**/*.tsx"],
-	"exclude": ["./node_modules/*"]
+	"include": ["src/**/*.ts", "src/**/*.tsx", "jest.config.js"],
+	"exclude": ["./node_modules/*", "./dist/*"]
 }
