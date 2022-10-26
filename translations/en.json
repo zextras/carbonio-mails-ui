@@ -270,6 +270,7 @@
         "disposal_threshold": "Disposal Threshold",
         "do_not_notify": "Do not notify",
         "download": "Download",
+        "download_and_delete": "Download And Delete",
         "download_plural": "Download all",
         "draft": "Draft",
         "draft_folder": "[DRAFT]",
@@ -309,6 +310,7 @@
         "include_shared_folders": "Include shared folders",
         "insert": "Insert",
         "invalid_destination": "This node is not a valid destination",
+        "invalid_query": "Unable to parse the search query, clear it and retry",
         "keep_draft": "Save Draft",
         "keywords": "Keywords",
         "loading_results": "Loading Results…",
@@ -331,6 +333,7 @@
         "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",
         "no_subject_with_tags": "<No Subject>",
+        "not_in_list": "{{name}} - Not in your tag list",
         "notification_audio": "Play audio hint when new notification appears",
         "notification_folders": "Folders Notifications",
         "notify": "Notify",
@@ -428,6 +431,8 @@
     },
     "message": {
         "admin_rights": "View,Edit,Add,Remove,Administer",
+        "delete_attachment_message1": "Your attachment will be definetly deleted from Carbonio.",
+        "delete_attachment_message2": "Do you want to download it before?",
         "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
         "delete_tag_message2": "Once deleted, it will be removed from every item marked with it.",
         "email_saved_at": "E-mail saved as a draft at {{time}}",
@@ -648,10 +653,15 @@
             "message_selection": "Message Selection",
             "search_query": "Default query",
             "set_message_color": "Set color of messages and conversations according to tag color.",
+            "unsend_time": "Set unsend time",
             "visualization_options": "Visualization Options"
         },
         "linkedin_msg": "LinkedIn messages and connections",
         "localpart": "localpart",
+        "mail_unsend_time": {
+            "second": "{{count}} second",
+            "second_plural": "{{count}} seconds"
+        },
         "mark_as": "Mark as",
         "mass_marketing": "mass marketing (bulk)",
         "matches_exactly": "matches exactly",

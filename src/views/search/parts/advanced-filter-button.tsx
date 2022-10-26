@@ -17,20 +17,21 @@ const BorderContainer = styled(Container)`
 export const AdvancedFilterButton: FC<AdvancedFilterButtonProps> = ({
 	setShowAdvanceFilters,
 	searchDisabled,
-	filterCount
+	filterCount,
+	invalidQueryTooltip
 }) => (
-	<BorderContainer
-		padding={{ all: 'small' }}
-		height="fit"
-		mainAlignment="flex-start"
-		crossAlignment="flex-start"
-		borderRadius="none"
+	<Tooltip
+		label={invalidQueryTooltip}
+		placement="top"
+		maxWidth="100%"
+		disabled={!searchDisabled || !invalidQueryTooltip}
 	>
-		<Tooltip
-			label={t('label.results_for_error', 'Unable to parse the search query, clear it and retry')}
-			placement="top"
-			maxWidth="100%"
-			disabled={!searchDisabled}
+		<BorderContainer
+			padding={{ all: 'small' }}
+			height="fit"
+			mainAlignment="flex-start"
+			crossAlignment="flex-start"
+			borderRadius="none"
 		>
 			<Button
 				onClick={(): void => setShowAdvanceFilters(true)}
@@ -48,6 +49,6 @@ export const AdvancedFilterButton: FC<AdvancedFilterButtonProps> = ({
 				disabled={searchDisabled}
 				icon="Options2Outline"
 			/>
-		</Tooltip>
-	</BorderContainer>
+		</BorderContainer>
+	</Tooltip>
 );

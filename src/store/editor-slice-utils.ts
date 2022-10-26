@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { map, filter, reduce, concat, isEmpty, find, some } from 'lodash';
+import { map, filter, reduce, concat, isEmpty, find, some, forEach } from 'lodash';
 import { Account, AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 import {
@@ -15,7 +15,8 @@ import {
 	SharedParticipant,
 	MailAttachmentParts,
 	SoapDraftMessageObj,
-	PrefsType
+	PrefsType,
+	InlineAttachedType
 } from '../types';
 import { ParticipantRole } from '../commons/utils';
 
@@ -80,6 +81,7 @@ export const emptyEditor = (
 			name: account.name,
 			fullName: account.displayName
 		},
+		inline: [],
 		sender: {},
 		editorId,
 		subject: '',
@@ -351,6 +353,92 @@ export const getHtmlWithPreAppliedStyled = (
 ): string =>
 	`<html><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
 
+export const findCidFromPart = (inline: InlineAttachedType | undefined, part: string): string => {
+	const ci = find(inline, (i) => i.attach?.mp?.[0]?.part === part)?.ci;
+	return `cid:${ci}`;
+};
+export const replaceLinkWithParts = (
+	content: string,
+	inline: InlineAttachedType | undefined
+): string => {
+	const parser = new DOMParser();
+	const htmlDoc = parser.parseFromString(content, 'text/html');
+
+	const images = htmlDoc.getElementsByTagName('img');
+
+	if (images) {
+		forEach(images, (p: HTMLImageElement) => {
+			if (p.hasAttribute('src') && p.getAttribute('src')?.includes('/service/home')) {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				const newSource = findCidFromPart(inline, p.getAttribute('src')?.split('&part=')[1]);
+				p.setAttribute('src', newSource ?? '');
+			}
+		});
+	}
+	return htmlDoc.body.innerHTML;
+};
+
+export const getMP = ({
+	data,
+	style
+}: {
+	data: MailsEditor;
+	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined };
+}): any => {
+	const contentWithBodyParts = replaceLinkWithParts(data?.text?.[1], data?.inline);
+	if (data.richText) {
+		if (data?.inline?.length > 0) {
+			return [
+				{
+					ct: 'multipart/alternative',
+					mp: [
+						{
+							ct: 'text/plain',
+							content: { _content: data?.text[0] ?? '' }
+						},
+						{
+							ct: 'multipart/related',
+							mp: [
+								{
+									ct: 'text/html',
+									content: {
+										_content: getHtmlWithPreAppliedStyled(contentWithBodyParts, style) ?? ''
+									}
+								},
+								...data.inline
+							]
+						}
+					]
+				}
+			];
+		}
+		return [
+			{
+				ct: 'multipart/alternative',
+				mp: [
+					{
+						ct: 'text/html',
+						body: true,
+						content: { _content: getHtmlWithPreAppliedStyled(data?.text[1], style) ?? '' }
+					},
+					{
+						ct: 'text/plain',
+						content: { _content: data?.text[0] ?? '' }
+					}
+				]
+			}
+		];
+	}
+	return [
+		{
+			ct: 'text/plain',
+			body: true,
+			content: { _content: data?.text[0] ?? '' }
+		}
+	];
+};
+
 export const generateRequest = (data: MailsEditor, prefs?: PrefsType): SoapDraftMessageObj => {
 	const style = {
 		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
@@ -394,30 +482,7 @@ export const generateRequest = (data: MailsEditor, prefs?: PrefsType): SoapDraft
 		su: { _content: data.subject ?? '' },
 		rt: data?.rt ?? undefined,
 		origid: data?.origid ?? undefined,
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		e: participants,
-		mp: [
-			data.richText
-				? {
-						ct: 'multipart/alternative',
-						mp: [
-							{
-								ct: 'text/html',
-								body: true,
-								content: { _content: getHtmlWithPreAppliedStyled(data?.text[1], style) ?? '' }
-							},
-							{
-								ct: 'text/plain',
-								content: { _content: data?.text[0] ?? '' }
-							}
-						]
-				  }
-				: {
-						ct: 'text/plain',
-						body: true,
-						content: { _content: data?.text[0] ?? '' }
-				  }
-		]
+		mp: getMP({ data, style })
 	};
 };

@@ -74,8 +74,8 @@
         "attachment": "Anhang",
         "attachment_plural": "Anhänge",
         "cancel": "Abbrechen",
-        "download": "Download",
-        "download_plural": "Download",
+        "download": "Herunterladen",
+        "download_plural": "Alle herunterladen",
         "edit": "Bearbeiten",
         "save": "Speichern",
         "send": "Senden",
@@ -260,7 +260,19 @@
         "read_reciept": "Lesebestätigung",
         "as_text": "Als Plain-Text",
         "as_html": "Als HTML",
-        "mark_all_as_read": "Alle als gelesen markieren"
+        "mark_all_as_read": "Alle als gelesen markieren",
+        "show_more_info": "Mehr Informationen anzeigen",
+        "remove_request_receipt": "Anfrage zur Lesebestätigung entfernen",
+        "read_receipt_req": "Lesebestätigung erforderlich",
+        "mark_as_un_important": "Als unwichtig markieren",
+        "mark_as_important": "Als wichtig markieren",
+        "include_shared_folders": "Geteilte Ordner inkludieren",
+        "hide_more_info": "Mehr Informationen verbergen",
+        "filter_modified": "Filter erfolgreich geändert",
+        "expand_receivers_list": "Empfängerliste aufklappen",
+        "delayed_sending": "Verzögertes Senden",
+        "collapse_receivers_list": "Empfängerliste zusammenklappen",
+        "before_you_leave": "Bevor Sie gehen"
     },
     "share": {
         "options": {
@@ -308,7 +320,17 @@
             "send_anyway": {
                 "attachment": "anhang",
                 "attach": "anhängen",
-                "attachments": "Anhänge"
+                "attachments": "Anhänge",
+                "second": "Möchten Sie die E-Mail trotzdem versenden?",
+                "no_subject_no_attachments": "Der E-Mail Betreff ist leer und Sie haben keine Dateien angehangen.",
+                "no_subject": "Der E-Mail Betreff ist leer.",
+                "no_attachments": "Sie haben keine Dateien angehangen.",
+                "first": "Der E-Mail Betreff ist leer und Sie haben keine Dateien angehangen.",
+                "enclosing": "wird angehangen",
+                "enclosed": "angehangen",
+                "enclose": "anhängen",
+                "attaching": "wird angehangen",
+                "attached": "angehangen"
             }
         },
         "new_email": "Neue E-Mail",
@@ -353,7 +375,12 @@
         "check_and_try_again": "Bitte überprüfen Sie Carbonio und versuchen Sie es erneut",
         "could_not_find_to_show": "Sorry, wir konnten nichts zum Anzeigen finden",
         "something_went_wrong": "ETWAS IST SCHIEFGELAUFEN",
-        "trustee_addresses": "Mails von diesen Absendern oder Domains werden als vertrauenswürdig eingestuft, und Bilder werden automatisch angezeigt."
+        "trustee_addresses": "Mails von diesen Absendern oder Domains werden als vertrauenswürdig eingestuft, und Bilder werden automatisch angezeigt.",
+        "read_receipt_2": "Möchten Sie den Absender benachrichtigen?",
+        "read_receipt_1": "Der Absender dieser Nachricht hat angefordert benachrichtigt zu werden, sobald Sie diese Nachricht gelesen haben.",
+        "invalid_trustee_address": "Bitte geben Sie nur E-Mail Adressen oder Domains ein",
+        "edit_schedule_warning": "Durch das Bearbeiten dieser E-Mail werden zuvor eingestellte Zeit und Datum für das verzögerte Versenden zurückgesetzt.",
+        "cal_name_exist_warning": "Ein Kalender mit dem gleichen Namen existiert bereits in diesem Pfad"
     },
     "placeholder": {
         "add_new_recipients": "Neue Empfänger hinzufügen"
@@ -409,7 +436,10 @@
         "admin_rights": "Anzeigen, Bearbeiten, Hinzufügen, Entfernen, Verwalten",
         "manager_rights": "Anzeigen, Bearbeiten, Hinzufügen, Entfernen",
         "external_images_blocked": "Externe Bilder wurden geblockt, um Sie gegen möglichen Spam zu schützen",
-        "select_date_time": "Wählen Sie Datum und Uhrzeit aus, zu denen diese Mail gesendet werden soll."
+        "select_date_time": "Wählen Sie Datum und Uhrzeit aus, zu denen diese Mail gesendet werden soll.",
+        "send_later_success": "Ihre E-Mail wird gesendet am {{date}} um {{time}}",
+        "schedule_time": "{{date}} um {{time}}",
+        "schedule_mail": "Wird gesendet am: {{date}} um {{time}}"
     },
     "tooltip": {
         "revoke": "Zugriff widerrufen",
@@ -420,9 +450,10 @@
         "edit": "Eigenschaften für das Teilen bearbeiten",
         "enable_rich_text": "Rich Text Editor aktivieren",
         "enable_urgent": "Dringend aktivieren",
-        "folder_sharing_status": "Mit {{count}} Person geteilt",
-        "folder_sharing_status_plural": "Mit {{count}} Personen geteilt",
-        "folder_linked_status": "Gedeeld met mij"
+        "folder_sharing_status": "Mit {{count}} Nutzer geteilt",
+        "folder_sharing_status_plural": "Mit {{count}} Nutzern geteilt",
+        "folder_linked_status": "Gedeeld met mij",
+        "marked_as_important": "Als wichtig markiert"
     },
     "snackbar": {
         "share_updated": "\"Zugriffsrechte aktualisiert\"",
@@ -569,7 +600,9 @@
             "elegant": "Elegant",
             "console": "Console",
             "comic": "Comic"
-        }
+        },
+        "font_size": "{{count}} pt",
+        "font_size_plural": "{{count}} pt"
     },
     "folder_panel": {
         "modal": {
@@ -709,7 +742,8 @@
         "remote": "in einem von mir freigegebenen ordner",
         "local": "in meinen ordnern",
         "invitations": "einladungen",
-        "ccme": "in kopie an mich"
+        "ccme": "in kopie an mich",
+        "anywhere": "in allen Ordnern"
     },
     "attachment_type": {
         "word": "Wort",
@@ -729,5 +763,10 @@
         "composing_messages": "Mails verfassen"
     },
     "new_folder": "Neuer Ordner",
-    "go_back": "Zurück"
+    "go_back": "Zurück",
+    "modal": {
+        "delete_draft": {
+            "message1": "Möchten Sie diesen Entwurf behalten oder löschen?"
+        }
+    }
 }

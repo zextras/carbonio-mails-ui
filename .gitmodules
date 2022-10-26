@@ -1,0 +1,4 @@
+[submodule "src/carbonio-ui-commons"]
+	path = src/carbonio-ui-commons
+	url = git@github.com:Zextras/carbonio-ui-commons.git
+	branch = main

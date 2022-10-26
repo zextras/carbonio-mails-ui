@@ -6,7 +6,7 @@
 
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useContext, useEffect, useState } from 'react';
-import { Button, ChipInput, ChipItem, Container } from '@zextras/carbonio-design-system';
+import { Button, ChipInput, ChipItem, Container, Padding } from '@zextras/carbonio-design-system';
 import { Controller } from 'react-hook-form';
 import { map, some } from 'lodash';
 import * as StyledComp from './edit-view-styled-components';
@@ -89,17 +89,20 @@ const ParticipantsRow: FC = () => {
 									/>
 								</Container>
 								<Container
-									width="fit"
+									width="fill"
+									maxWidth="fit"
 									background="gray5"
 									padding={{ right: 'medium', left: 'extrasmall' }}
 									orientation="horizontal"
 								>
-									<Button
-										label={t('label.cc', 'Cc')}
-										type="ghost"
-										style={{ color: '#282828', padding: 0 }}
-										onClick={toggleCc}
-									/>
+									<Padding right="small">
+										<Button
+											label={t('label.cc', 'Cc')}
+											type="ghost"
+											style={{ color: '#282828', padding: 0 }}
+											onClick={toggleCc}
+										/>
+									</Padding>
 									<Button
 										label={t('label.bcc', 'Bcc')}
 										type="ghost"

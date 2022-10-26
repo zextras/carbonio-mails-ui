@@ -31,8 +31,8 @@ import {
 } from '../../integrations/shared-invite-reply/parts/utils';
 import { shareFolder } from '../../store/actions/share-folder';
 import { sendShareNotification } from '../../store/actions/send-share-notification';
-import ModalFooter from './commons/modal-footer';
-import ModalHeader from './commons/modal-header';
+import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { capitalise } from './utils';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
 import { ShareFolderModalProps } from '../../types/sidebar';

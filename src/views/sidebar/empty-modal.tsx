@@ -7,9 +7,9 @@ import React, { FC, useCallback, useContext, useMemo } from 'react';
 import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
-import ModalFooter from './commons/modal-footer';
+import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import { folderAction } from '../../store/actions/folder-action';
-import ModalHeader from './commons/modal-header';
+import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { ModalProps } from '../../types';
 
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {

@@ -6,7 +6,7 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["conversation"] }] */
 
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getTags, soapFetch } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { keyBy, map, reduce } from 'lodash';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
@@ -23,55 +23,75 @@ export const search = createAsyncThunk<
 	FetchConversationsParameters
 >(
 	'fetchConversations',
-	async ({
-		folderId,
-		limit = 100,
-		before,
-		types = 'conversation',
-		sortBy = 'dateDesc',
-		query,
-		offset,
-		recip = '2',
-		wantContent = 'full'
-	}) => {
+	async (
+		{
+			folderId,
+			limit = 100,
+			before,
+			types = 'conversation',
+			sortBy = 'dateDesc',
+			query,
+			offset,
+			recip = '2',
+			wantContent = 'full'
+		},
+		{ rejectWithValue }
+	) => {
 		const queryPart = [`inId:"${folderId}"`];
 		if (before) queryPart.push(`before:${before.getTime()}`);
-		const result = await soapFetch<SearchRequest, SearchResponse>('Search', {
-			_jsns: 'urn:zimbraMail',
-			limit,
-			needExp: 1,
-			recip,
-			fullConversation: 1,
-			wantContent,
-			sortBy,
-			query: query || queryPart.join(' '),
-			offset,
-			types
-		});
-		const tags = getTags();
-		if (types === 'conversation') {
-			const conversations = map(result?.c ?? [], (obj) =>
-				normalizeConversation({ c: obj, tags })
-			) as unknown as Array<Conversation>;
-			return {
-				conversations: keyBy(conversations, 'id'),
-				hasMore: result.more,
-				types
-			};
-		}
-		if (types === 'message') {
-			return {
-				messages: reduce(
-					result.m ?? [],
-					(acc, msg) => {
-						const normalized = normalizeMailMessageFromSoap(msg, false);
-						return { ...acc, [normalized.id]: normalized };
-					},
-					{}
-				),
-				hasMore: result.more,
-				types
-			};
+
+		try {
+			const result = await soapFetch<SearchRequest, SearchResponse | ErrorSoapBodyResponse>(
+				'Search',
+				{
+					_jsns: 'urn:zimbraMail',
+					limit,
+					needExp: 1,
+					recip,
+					fullConversation: 1,
+					wantContent,
+					sortBy,
+					query: query || queryPart.join(' '),
+					offset,
+					types
+				}
+			);
+
+			if (!result) {
+				return rejectWithValue(undefined);
+			}
+
+			if ('Fault' in result) {
+				return rejectWithValue(result.Fault);
+			}
+
+			const tags = getTags();
+			if (types === 'conversation') {
+				const conversations = map(result?.c ?? [], (obj) =>
+					normalizeConversation({ c: obj, tags })
+				) as unknown as Array<Conversation>;
+				return {
+					conversations: keyBy(conversations, 'id'),
+					hasMore: result.more,
+					types
+				};
+			}
+			if (types === 'message') {
+				return {
+					messages: reduce(
+						result.m ?? [],
+						(acc, msg) => {
+							const normalized = normalizeMailMessageFromSoap(msg, false);
+							return { ...acc, [normalized.id]: normalized };
+						},
+						{}
+					),
+					hasMore: result.more,
+					types
+				};
+			}
+		} catch (err: any) {
+			return rejectWithValue(err);
 		}
 		return undefined;
 	}

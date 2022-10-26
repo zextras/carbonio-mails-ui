@@ -12,7 +12,7 @@ module.exports = {
 			files: [
 				'**/__tests__/**/*.[jt]s?(x)',
 				'**/?(*.)+(spec|test).[jt]s?(x)',
-				'**/utils/test-utils.tsx',
+				'**/utils/test-setup.tsx',
 				'jest-setup.ts'
 			],
 			extends: ['plugin:jest-dom/recommended', 'plugin:testing-library/react'],

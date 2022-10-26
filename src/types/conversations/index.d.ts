@@ -23,7 +23,7 @@ export type Conversation = {
 	subject: string;
 	fragment: string;
 	read: boolean;
-	attachment: boolean;
+	hasAttachment: boolean;
 	flagged: boolean;
 	urgent: boolean;
 	tags: string[];
@@ -59,4 +59,9 @@ export type FetchConversationsReturn = {
 	messages?: Record<string, IncompleteMessage>;
 	hasMore: boolean;
 	types: string;
+};
+
+export type DeleteAttachmentsReturn = {
+	attachments: string[];
+	res: SoapIncompleteMessage;
 };
