@@ -3,18 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	useCallback,
-	useMemo,
-	useRef,
-	useState,
-	FC,
-	SyntheticEvent,
-	ReactElement
-} from 'react';
-import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { filter, find, map, uniqBy } from 'lodash';
 import {
 	Container,
 	Icon,
@@ -26,10 +14,22 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
+import { filter, find, map, uniqBy } from 'lodash';
+import React, {
+	FC,
+	ReactElement,
+	SyntheticEvent,
+	useCallback,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import { calcColor, getFileExtension } from '../../../../commons/utilities';
 import { updateEditor } from '../../../../store/editor-slice';
-import { getFileExtension, calcColor } from '../../../../commons/utilities';
-import { EditorAttachmentFiles, MailsEditor } from '../../../../types';
+import { EditorAttachmentFiles, IconColors, MailsEditor } from '../../../../types';
 
 const getSizeLabel = (size: number): string => {
 	let value;
@@ -107,7 +107,7 @@ type AttachmentType = {
 	link: string;
 	editor: MailsEditor;
 	part: string;
-	iconColors: Array<{ extension: 'string'; color: 'string' }>;
+	iconColors: IconColors;
 	throttledSaveToDraft: (arg: any) => void;
 	att: EditorAttachmentFiles;
 };
@@ -236,24 +236,13 @@ const EditAttachmentsBlock: FC<{
 		});
 	}, [editor.editorId, dispatch, throttledSaveToDraft]);
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const iconColors = useMemo(
+	const iconColors: IconColors = useMemo(
 		() =>
 			uniqBy(
 				map(editor.attachmentFiles, (att) => {
 					const fileExtn = getFileExtension(att);
 					const color = calcColor(att.contentType, theme);
 
-					if (iconColors) {
-						return [
-							...iconColors,
-							{
-								extension: fileExtn,
-								color
-							}
-						];
-					}
 					return {
 						extension: fileExtn,
 						color

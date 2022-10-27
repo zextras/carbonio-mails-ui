@@ -4,21 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { isNil } from 'lodash';
-import { EditorAttachmentFiles } from '../types';
+import { AttachmentPart, EditorAttachmentFiles, ThemeObj } from '../types';
 
 const FileExtensionRegex = /^.+\.([^.]+)$/;
 
-export const calcColor = (label: string, theme: unknown): string => {
+export const calcColor = (label: string, theme: ThemeObj): string => {
 	let sum = 0;
 	for (let i = 0; i < label.length; i += 1) {
 		sum += label.charCodeAt(i);
 	}
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	return theme.avatarColors[`avatar_${(sum % 50) + 1}`];
 };
 
-export const getFileExtension = (file: EditorAttachmentFiles): string => {
+export const getFileExtension = (file: EditorAttachmentFiles | AttachmentPart): string => {
 	switch (file.contentType) {
 		case 'text/html':
 			return 'html';
@@ -210,7 +208,7 @@ export const getFileExtension = (file: EditorAttachmentFiles): string => {
 			return 'EML';
 
 		default:
-			return isNil(FileExtensionRegex.exec(file?.filename))
+			return isNil(FileExtensionRegex.exec(file?.filename ?? ''))
 				? '?'
 				: // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				  // @ts-ignore

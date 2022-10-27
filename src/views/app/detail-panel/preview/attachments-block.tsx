@@ -25,7 +25,7 @@ import { calcColor, getFileExtension } from '../../../../commons/utilities';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
-import { AttachmentPart, AttachmentType, MailMessage } from '../../../../types';
+import { AttachmentPart, AttachmentType, IconColors, MailMessage } from '../../../../types';
 import DeleteAttachmentModal from './delete-attachment-modal';
 import { humanFileSize, previewType } from './file-preview';
 
@@ -442,26 +442,13 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 		[message, attachmentsParts]
 	);
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const iconColors = useMemo(
+	const iconColors: IconColors = useMemo(
 		() =>
 			uniqBy(
 				map(attachments, (att) => {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
 					const fileExtn = getFileExtension(att);
 					const color = calcColor(att?.contentType ?? '', theme);
 
-					if (iconColors) {
-						return [
-							...iconColors,
-							{
-								extension: fileExtn,
-								color
-							}
-						];
-					}
 					return {
 						extension: fileExtn,
 						color
@@ -472,6 +459,31 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 		[attachments, theme]
 	);
 
+	const getLabel = ({
+		allSuccess,
+		allFails
+	}: {
+		allSuccess: boolean;
+		allFails: boolean;
+	}): string => {
+		if (allSuccess) {
+			return t(
+				'message.snackbar.all_att_saved',
+				'Attachments successfully saved in the selected folder'
+			);
+		}
+		if (allFails) {
+			return t(
+				'message.snackbar.att_err',
+				'There seems to be a problem when saving, please try again'
+			);
+		}
+		return t(
+			'message.snackbar.some_att_fails',
+			'There seems to be a problem when saving some files, please try again'
+		);
+	};
+
 	const confirmAction = useCallback(
 		(nodes) => {
 			const promises = map(attachments, (att) => copyToFiles(att, message, nodes));
@@ -479,21 +491,7 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 				const allSuccess = res.length === filter(res, ['status', 'fulfilled'])?.length;
 				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
 				const type = allSuccess ? 'info' : 'warning';
-				// eslint-disable-next-line no-nested-ternary
-				const label = allSuccess
-					? t(
-							'message.snackbar.all_att_saved',
-							'Attachments successfully saved in the selected folder'
-					  )
-					: allFails
-					? t(
-							'message.snackbar.att_err',
-							'There seems to be a problem when saving, please try again'
-					  )
-					: t(
-							'message.snackbar.some_att_fails',
-							'There seems to be a problem when saving some files, please try again'
-					  );
+				const label = getLabel({ allSuccess, allFails });
 				getBridgedFunctions()?.createSnackbar({
 					key: `calendar-moved-root`,
 					replace: true,
