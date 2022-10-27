@@ -22,7 +22,18 @@
             },
             "send_anyway": {
                 "attachment": "附件",
-                "attachments": "附件"
+                "attachments": "附件",
+                "second": "是否仍然发送邮件？",
+                "no_subject_no_attachments": "邮件主题为空且您没有附加任何文件。",
+                "no_subject": "邮件主题为空。",
+                "no_attachments": "您没有附加任何文件。",
+                "first": "邮件主题为空且您没有附加任何文件。",
+                "enclosing": "附上中",
+                "enclosed": "已附上",
+                "enclose": "附上",
+                "attaching": "附加中",
+                "attached": "已附加",
+                "attach": "附加"
             }
         },
         "new_email": "新邮件",
@@ -65,7 +76,12 @@
         "check_and_try_again": "请检查Carbonio并重试",
         "could_not_find_to_show": "抱歉，我们无法找到可供展示的东西",
         "something_went_wrong": "出了一些问题",
-        "trustee_addresses": "来自这些地址或域的邮件将被视为可信，且将自动显示图片。"
+        "trustee_addresses": "来自这些地址或域的邮件将被视为可信，且将自动显示图片。",
+        "read_receipt_2": "是否通知发送者？",
+        "read_receipt_1": "此消息的发送者已请求在您阅读此消息时接收通知。",
+        "invalid_trustee_address": "请仅输入邮件地址或域",
+        "edit_schedule_warning": "编辑此邮件时将重置之前为延迟发送设置的时间和日期。",
+        "cal_name_exist_warning": "此路径中已存在带有相同名称的日历"
     },
     "placeholder": {
         "add_new_recipients": "新增收件人"
@@ -122,7 +138,8 @@
         "unflag": "移除标记",
         "preview_new_tab": "点击以在另一标签页中预览",
         "click_preview": "点击预览",
-        "mark_all_read": "全部标记为已读"
+        "mark_all_read": "全部标记为已读",
+        "edit_anyway": "仍然编辑"
     },
     "folders": {
         "trash": "回收站",
@@ -143,7 +160,7 @@
     "label": {
         "attachment": "附件",
         "cancel": "取消",
-        "download": " ",
+        "download": "下载全部",
         "edit": "编辑",
         "me": "我",
         "remove": "移除全部",
@@ -326,7 +343,21 @@
         "read_receipt": "读信回条",
         "as_text": "作为文本",
         "as_html": "HTML 文件",
-        "mark_all_as_read": "全部标记为已读"
+        "mark_all_as_read": "全部标记为已读",
+        "show_more_info": "显示更多信息",
+        "select_date_time": "选择日期和时间",
+        "remove_request_receipt": "移除已读回执请求",
+        "read_receipt_req": "已要求已读回执",
+        "mark_as_un_important": "标记为不重要",
+        "mark_as_important": "标记为重要",
+        "include_shared_folders": "包含共享文件夹",
+        "hide_more_info": "隐藏更多信息",
+        "filter_modified": "过滤条件修改成功",
+        "expand_receivers_list": "展开收件人列表",
+        "delete_draft": "删除草稿",
+        "delayed_sending": "延迟发送",
+        "collapse_receivers_list": "收起收件人列表",
+        "before_you_leave": "在您离开前"
     },
     "search": {
         "unread": "未读",
@@ -336,7 +367,8 @@
         "sent_after": "之后发送：",
         "sent_before": "之前发送：",
         "sent_on": "准时发送：",
-        "size_error": "仅允许数字"
+        "size_error": "仅允许数字",
+        "shared_folders_note": "在搜索中包含共享项目。"
     },
     "message": {
         "snackbar": {
@@ -366,7 +398,10 @@
         "admin_rights": "查看、编辑、添加、移除、管理",
         "manager_rights": "查看、编辑、添加、移除",
         "external_images_blocked": "外部图像已被阻止以保护您免受潜在垃圾信息侵扰",
-        "select_date_time": "选择发送此邮件的日期和时间"
+        "select_date_time": "选择发送此邮件的日期和时间",
+        "send_later_success": "您的邮件将于 {{date}}，{{time}} 发送",
+        "schedule_time": "{{date}}，{{time}}",
+        "schedule_mail": "发送时间：{{date}}，{{time}}"
     },
     "settings": {
         "label": {
@@ -503,7 +538,8 @@
             "elegant": "Elegant",
             "console": "Console",
             "comic": "Comic"
-        }
+        },
+        "font_size": " "
     },
     "snackbar": {
         "folder_shared": "文件夹已共享",
@@ -523,8 +559,9 @@
         "enable_rich_text": "启用富文本编辑器",
         "enable_urgent": "启用紧急程度",
         "revoke": "撤销访问权限",
-        "folder_sharing_status": "已与 {{count}} 人分享",
-        "folder_linked_status": "同我分享的"
+        "folder_sharing_status": "已与 {{count}} 用户分享",
+        "folder_linked_status": "同我分享的",
+        "marked_as_important": "已标记为重要"
     },
     "composer": {
         "attachment": {
@@ -568,7 +605,8 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "如果擦除，则所有相关内容都将被永久性删除。"
+                    "message2": "如果擦除，则所有相关内容都将被永久性删除。",
+                    "message1": "是否擦除所选文件夹？"
                 }
             },
             "empty": {
@@ -675,7 +713,8 @@
         "remote": "于由我分享的文件夹",
         "local": "于我的文件夹",
         "invitations": "邀请",
-        "ccme": "抄送给我"
+        "ccme": "抄送给我",
+        "anywhere": "于所有文件夹"
     },
     "attachment_type": {
         "word": "Word",
@@ -691,9 +730,14 @@
         "zipped_file": "压缩文件"
     },
     "labels": {
-        "compose_colin": "写信：",
+        "compose_colin": "撰写：",
         "composing_messages": "编写邮件"
     },
     "new_folder": "新文件夹",
-    "go_back": "返回"
+    "go_back": "返回",
+    "modal": {
+        "delete_draft": {
+            "message1": "是否保留此草稿或将其删除？"
+        }
+    }
 }
