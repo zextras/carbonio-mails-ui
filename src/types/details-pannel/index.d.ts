@@ -11,6 +11,11 @@ export type MailEditHeaderType = {
 	setToggleAppBoard: (arg: boolean) => void;
 };
 
+export type IconColors = Array<{
+	color: string;
+	extension: string;
+}>;
+
 export type AttachmentType = {
 	filename?: string;
 	size: number;
@@ -18,7 +23,7 @@ export type AttachmentType = {
 	downloadlink: string;
 	message: MailMessage;
 	part: string;
-	iconColors: Array<{ extension: 'string'; color: string }>;
+	iconColors: IconColors;
 	att: EditorAttachmentFiles;
 };
 
