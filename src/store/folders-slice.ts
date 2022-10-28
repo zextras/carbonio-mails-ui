@@ -218,12 +218,15 @@ function searchFolderFulFilled(state: any, { payload }: any): void {
 	});
 }
 
-export const foldersSlice = createSlice({
-	name: 'folders',
-	initialState: {
+export const getFoldersSliceInitialState = (): FoldersStateType =>
+	({
 		status: 'idle',
 		folders: {} as MailsFolderMap
-	} as FoldersStateType,
+	} as FoldersStateType);
+
+export const foldersSlice = createSlice({
+	name: 'folders',
+	initialState: getFoldersSliceInitialState(),
 	reducers: {
 		handleCreatedFolders: produce(handleCreatedFoldersReducer),
 		handleModifiedFolders: produce(handleModifiedFoldersReducer),
