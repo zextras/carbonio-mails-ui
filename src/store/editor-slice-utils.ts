@@ -3,24 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { map, filter, reduce, concat, isEmpty, find, some, forEach } from 'lodash';
 import { Account, AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
+import { ParticipantRole } from '../commons/utils';
 import {
 	EditorAttachmentFiles,
-	MailsEditor,
+	InlineAttachedType,
+	MailAttachmentParts,
 	MailMessage,
 	MailMessagePart,
+	MailsEditor,
 	Participant,
-	SharedParticipant,
-	MailAttachmentParts,
-	SoapDraftMessageObj,
 	PrefsType,
-	InlineAttachedType
+	SharedParticipant,
+	SoapDraftMessageObj
 } from '../types';
-import { ParticipantRole } from '../commons/utils';
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const retrieveAttachmentsType = (
 	original: MailMessage,
 	disposition: string

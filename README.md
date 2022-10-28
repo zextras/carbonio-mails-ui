@@ -26,7 +26,9 @@ Mails module for Zextras Carbonio
 - clone this repo
 
 - install the dependencies:
+
 ```
+nvm use
 npm install
 npm run sdk-setup
 ```
@@ -35,6 +37,14 @@ npm run sdk-setup
 
 ```
 npm run start -- -h <host>
+```
+
+The host parameter is required to proxy requests and content from an existing Carbonio installation.
+
+<h4>Deploy</h4>
+
+```
+npm run deploy -- -h <host>
 ```
 
 The host parameter is required to proxy requests and content from an existing Carbonio installation.
