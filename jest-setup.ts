@@ -5,25 +5,35 @@
  */
 import '@testing-library/jest-dom';
 import failOnConsole from 'jest-fail-on-console';
-import fetchMock from 'jest-fetch-mock';
-import server from './src/carbonio-ui-commons/test/mocks/network/msw/server';
+import { rest } from 'msw';
+import {
+	defaultAfterAllTests,
+	defaultAfterEachTest,
+	defaultBeforeAllTests,
+	defaultBeforeEachTest,
+	getFailOnConsoleDefaultConfig
+} from './src/carbonio-ui-commons/test/jest-setup';
+import { registerRestHandler } from './src/carbonio-ui-commons/test/mocks/network/msw/handlers';
+import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
 
 failOnConsole({
-	shouldFailOnError: true,
-	shouldFailOnWarn: true
+	...getFailOnConsoleDefaultConfig()
 });
 
 beforeAll(() => {
-	server.listen();
-	fetchMock.doMock();
+	const h = rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
+	registerRestHandler(h);
+	defaultBeforeAllTests();
 });
 
-beforeEach(() => {});
+beforeEach(() => {
+	defaultBeforeEachTest();
+});
 
 afterEach(() => {
-	server.resetHandlers();
+	defaultAfterEachTest();
 });
 
 afterAll(() => {
-	server.close();
+	defaultAfterAllTests();
 });

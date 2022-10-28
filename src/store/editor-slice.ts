@@ -261,12 +261,15 @@ function saveDraftFulfilled(state: EditorsStateType, action: saveDraftAction): v
 	};
 }
 
-export const editorsSlice = createSlice({
-	name: 'editors',
-	initialState: {
+export const getEditorsSliceInitialState = (): EditorsStateType =>
+	({
 		status: 'idle',
 		editors: {} as MailsEditorMap
-	} as EditorsStateType,
+	} as EditorsStateType);
+
+export const editorsSlice = createSlice({
+	name: 'editors',
+	initialState: getEditorsSliceInitialState(),
 	reducers: {
 		createEditor: produce(createEditorReducer),
 		closeEditor: produce(closeEditorReducer),
