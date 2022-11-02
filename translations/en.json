@@ -659,6 +659,7 @@
         "linkedin_msg": "LinkedIn messages and connections",
         "localpart": "localpart",
         "mail_unsend_time": {
+            "no_delay": "No delay",
             "second": "{{count}} second",
             "second_plural": "{{count}} seconds"
         },
