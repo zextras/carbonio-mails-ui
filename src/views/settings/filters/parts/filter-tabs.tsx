@@ -3,29 +3,30 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import {
+	Container,
+	Divider,
+	Padding,
+	SnackbarManagerContext,
+	TabBar,
+	TabBarProps
+} from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import React, {
 	FC,
 	ReactElement,
 	useCallback,
-	useMemo,
-	useState,
+	useContext,
 	useEffect,
-	useContext
+	useMemo,
+	useState
 } from 'react';
-import {
-	Container,
-	Padding,
-	Divider,
-	TabBar,
-	SnackbarManagerContext
-} from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
-import IncomingMessageFilterTab from './incoming-message-filter-tab';
-import OutgoingMessageFilterTab from './outgoing-message-filter-tab';
-import { FilterContext } from './filter-context';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
+import { FilterContext } from './filter-context';
+import IncomingMessageFilterTab from './incoming-message-filter-tab';
+import OutgoingMessageFilterTab from './outgoing-message-filter-tab';
 
 type Item = {
 	active: boolean;
@@ -51,7 +52,7 @@ const FilterTabs: FC = (): ReactElement => {
 		],
 		[]
 	);
-	const onItemClick = useCallback((selectedId) => {
+	const onChange = useCallback<TabBarProps['onChange']>((ev, selectedId) => {
 		setSelectedFilterType(selectedId);
 	}, []);
 	const dispatch = useDispatch();
@@ -131,9 +132,8 @@ const FilterTabs: FC = (): ReactElement => {
 					background="gray5"
 					items={tabs}
 					selected={selectedFilterType}
-					onChange={(): null => null}
 					height="3.75rem"
-					onItemClick={onItemClick}
+					onChange={onChange}
 				/>
 				<Container crossAlignment="flex-start" padding={{ top: 'small' }}>
 					{selectedFilterType === 'incoming-messages' && (

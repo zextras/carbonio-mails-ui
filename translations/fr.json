@@ -26,7 +26,8 @@
         "search": "Recherche",
         "preview_new_tab": "Cliquez pour afficher un aperçu dans un autre onglet",
         "click_preview": "Cliquer pour prévisualiser",
-        "edit_anyway": "Éditer malgré tout"
+        "edit_anyway": "Éditer malgré tout",
+        "mark_all_read": "Définir comme lu"
     },
     "composer": {
         "attachment": {
@@ -45,11 +46,6 @@
             "new": "Nouveau dossier"
         },
         "modal": {
-            "delete": {
-                "body": {
-                    "message4": "Si vous le supprimez, tous les contenus associés seront définitivement supprimés et le dossier ne sera plus restaurable."
-                }
-            },
             "edit": {
                 "rename_warning": "Vous ne pouvez pas renommer un dossier en tant que dossier système.",
                 "retention_message": "Les messages de ce dossier qui se situent dans la plage de rétention devront être confirmés explicitement avant d'être supprimés",
@@ -292,7 +288,9 @@
         "duplicate_messages": "Messages dupliqués",
         "as_text": "En Texte",
         "as_html": "En HTML",
-        "arrival_notifications": "Notifications d'arrivée"
+        "arrival_notifications": "Notifications d'arrivée",
+        "mark_all_as_read": "Définir tous comme lus",
+        "send_scheduled": "Envoi programmé"
     },
     "message": {
         "snackbar": {
@@ -322,7 +320,7 @@
         "manager_rights": "Voir, Éditer, Ajouter, Supprimer",
         "view_rights": "Affichage",
         "external_images_blocked": "Les images externe ont été bloquées pour vous protéger contre des spams potentiels",
-        "schedule_time": "{{date}} à {{time}}",
+        "schedule_time": "le {{date}} à {{time}}",
         "schedule_mail": "Sera envoyé le : {{date}} à {{time}}",
         "send_later_success": "Votre email sera envoyé le {{date}} à {{time}}",
         "select_date_time": "Sélectionner une date et une heure pour envoyer le message"

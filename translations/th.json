@@ -1,34 +1,16 @@
 {
     "folder": {
-        "action": {
-            "wipe": {
-                "folder": "ล้างโฟลเดอร์"
-            }
-        },
         "modal": {
             "edit": {
-                "footer": "แก้ไข",
                 "rename_warning": "คุณไม่สามารถเปลี่ยนชื่อโฟลเดอร์เหมือนชื่อระบบได้",
                 "retention_duration_warning": "ระยะเวลาการเก็บรักษาต้องเป็นจำนวนบวก",
                 "retention_message": "ข้อความในโฟลเดอร์นี้ซึ่งอยู่ในช่วงการเก็บรักษาจะต้องได้รับการยืนยันก่อนที่จะถูกลบ",
                 "add_share": "เพิ่มการแชร์",
                 "threshold_message": "ข้อความในโฟลเดอร์นี้เก่ากว่าเกณฑ์ในการกำจัดทิ้งและจะถูกล้างและลบโดยอัตโนมัติ"
-            },
-            "move": {
-                "title_modal": "ย้ายการสนทนา"
-            },
-            "new": {
-                "name_exist_warning": "มีชื่ออยู่แล้ว"
-            },
-            "wipe": {
-                "body": {
-                    "message2": "หากคุณล้างข้อมูลจะทำให้เนื้อหาที่เกี่ยวข้องทั้งหมดถูกลบออกอย่างถาวร"
-                }
             }
         }
     },
     "action": {
-        "edit_as_draft": "แก้ไข",
         "forward": "ส่งต่อ",
         "mark_as_read": "ทำเครื่องหมายว่าอ่านแล้ว",
         "mark_as_unread": "ทำเครื่องหมายว่ายังไม่ได้อ่าน",
@@ -54,7 +36,9 @@
         "show_original": "แสดงต้นฉบับ",
         "unflag": "ลบการติดธง",
         "preview_new_tab": "คลิกเพื่อดูตัวอย่างในแท็บอื่น",
-        "click_preview": "คลิกเพื่อดูตัวอย่าง"
+        "click_preview": "คลิกเพื่อดูตัวอย่าง",
+        "mark_all_read": "ทำเครื่องหมายทั้งหมดว่าอ่านแล้ว",
+        "edit_anyway": "แก้ไขต่อไป"
     },
     "folders": {
         "trash": "ถังขยะ",
@@ -75,7 +59,7 @@
     "label": {
         "attachment": "สิ่งที่แนบมา",
         "cancel": "ยกเลิก",
-        "download": "ดาวน์โหลด",
+        "download": "ดาวน์โหลดทั้งหมด",
         "edit": "แก้ไข",
         "me": "ฉัน",
         "remove": "ลบทั้งหมด",
@@ -241,7 +225,38 @@
         "time_zone": "โซนเวลา",
         "searching": "กำลังค้นหา...",
         "notify": "แจ้งให้ทราบ",
-        "do_not_notify": "ไม่แจ้งเตือน"
+        "do_not_notify": "ไม่แจ้งเตือน",
+        "trusted_addresses": "ที่อยู่ที่เชื่อถือได้",
+        "send_later": "ส่งในภายหลัง",
+        "schedule_send": "การส่งที่มีกำหนดการ",
+        "request_receipt": "ร้องขอการแจ้งเมื่อผู้รับเปิดอ่าน",
+        "read_receipt_sent": "การแจ้งเมื่อผู้รับเปิดอ่านข้อความนี้ถูกส่งแล้ว",
+        "message_from_me": "ข้อความจากฉัน",
+        "message_arrival": "ข้อความมาถึง",
+        "enter_email_address": "ใส่อีเมลหรือโดเมน",
+        "duplicate_messages": "ข้อความซ้ำ",
+        "delete_draft": "ลบฉบับร่าง",
+        "arrival_notifications": "การแจ้งให้ทราบเมื่อมาถึง",
+        "read_reciept": "การแจ้งเมื่อผู้รับเปิดอ่าน",
+        "warning": "คำเตือน",
+        "read_receipt": "การแจ้งเมื่อผู้รับเปิดอ่าน",
+        "keep_draft": "บันทึกร่าง",
+        "as_text": "เป็นข้อความ",
+        "as_html": "เป็น HTML",
+        "show_more_info": "แสดงข้อมูลเพิ่มเติม",
+        "select_date_time": "เลือกวันที่และเวลา",
+        "read_receipt_req": "จำเป็นต้องมีใบตอบรับการเปิดอ่าน",
+        "remove_request_receipt": "ลบคำขอใบตอบรับการเปิดอ่าน",
+        "mark_as_un_important": "ทำเครื่องหมายว่าไม่มีความสำคัญ",
+        "mark_as_important": "ทำเครื่องหมายว่ามีความสำคัญ",
+        "mark_all_as_read": "ทำเครื่องหมายทั้งหมดว่าอ่านแล้ว",
+        "include_shared_folders": "รวมโฟลเดอร์ที่ใช้ร่วมกัน",
+        "hide_more_info": "ซ่อนข้อมูลเพิ่มเติม",
+        "filter_modified": "แก้ไขตัวกรองเรียบร้อยแล้ว",
+        "expand_receivers_list": "ขยายรายชื่อผู้รับ",
+        "delayed_sending": "ส่งล่าช้า",
+        "collapse_receivers_list": "ยุบรายชื่อผู้รับ",
+        "before_you_leave": "ก่อนคุณจากไป"
     },
     "messages": {
         "modal": {
@@ -252,6 +267,21 @@
             "redirect": {
                 "first": "อีเมลนี้จะถูกส่งไปยังผู้รับใหม่โดยคงที่อยู่อีเมลของผู้ส่งเดิมไว้",
                 "second": "อีเมลจะปรากฏตามที่กำหนดไว้สำหรับผู้รับใหม่"
+            },
+            "send_anyway": {
+                "attachment": "สิ่งที่แนบมา",
+                "attachments": "สิ่งที่แนบมา",
+                "second": "คุณต้องการส่งอีเมลต่อไปหรือไม่?",
+                "no_subject_no_attachments": "หัวเรื่องอีเมลว่างเปล่าและคุณไม่ได้แนบไฟล์ใดๆ",
+                "no_subject": "หัวเรื่องอีเมลว่างเปล่า",
+                "no_attachments": "คุณไม่ได้แนบไฟล์ใดๆ",
+                "first": "หัวเรื่องอีเมลว่างเปล่าและคุณไม่ได้แนบไฟล์ใดๆ",
+                "enclosing": "กำลังแนบ",
+                "enclosed": "แนบมาด้วย",
+                "enclose": "แนบ",
+                "attaching": "กำลังแนบ",
+                "attached": "ที่แนบมาด้วย",
+                "attach": "แนบ"
             }
         },
         "new_email": "อีเมลใหม่",
@@ -294,7 +324,12 @@
         "check_and_try_again": "โปรดตรวจสอบ Carbonio แล้วลองใหม่อีกครั้ง",
         "could_not_find_to_show": "ขออภัย เราไม่พบสิ่งใดเพื่อแสดง",
         "something_went_wrong": "มีบางอย่างผิดพลาด",
-        "trustee_addresses": "จดหมายจากที่อยู่หรือโดเมนเหล่านี้จะถือว่าเชื่อถือได้ และจะแสดงรูปโดยอัตโนมัติ"
+        "trustee_addresses": "จดหมายจากที่อยู่หรือโดเมนเหล่านี้จะถือว่าเชื่อถือได้ และจะแสดงรูปโดยอัตโนมัติ",
+        "read_receipt_2": "คุณต้องการแจ้งเตือนไปยังผู้ส่งหรือไม่?",
+        "read_receipt_1": "ผู้ส่งข้อความนี้ขอรับการแจ้งเตือนเมื่อคุณอ่านข้อความนี้",
+        "invalid_trustee_address": "โปรดป้อนเฉพาะที่อยู่อีเมลหรือโดเมน",
+        "edit_schedule_warning": "เมื่อแก้ไขอีเมลนี้ เวลาและวันที่ที่กำหนดไว้ก่อนหน้านี้สำหรับการส่งล่าช้าจะถูกรีเซ็ต",
+        "cal_name_exist_warning": "มีปฏิทินชื่อเดียวกันนี้แล้วในเส้นทางนี้"
     },
     "placeholder": {
         "add_new_recipients": "เพิ่มผู้รับใหม่"
@@ -307,7 +342,8 @@
         "sent_after": "ส่งหลังจาก",
         "sent_before": "ส่งก่อน",
         "sent_on": "ส่งเมื่อ",
-        "size_error": "อนุญาตเฉพาะตัวเลขเท่านั้น"
+        "size_error": "อนุญาตเฉพาะตัวเลขเท่านั้น",
+        "shared_folders_note": "รวมรายการที่ใช้ร่วมกันในการค้นหา"
     },
     "share": {
         "options": {
@@ -373,12 +409,13 @@
         "view_rights": "มุมมอง",
         "admin_rights": "ดู, แก้ไข, เพิ่ม, ลบ, จัดการ",
         "manager_rights": "ดู, แก้ไข, เพิ่ม, ลบ",
-        "external_images_blocked": "รูปภาพจากภายนอกถูกบล็อกเพื่อป้องกันคุณจากสแปมที่อาจเกิดขึ้น"
+        "external_images_blocked": "รูปภาพจากภายนอกถูกบล็อกเพื่อป้องกันคุณจากสแปมที่อาจเกิดขึ้น",
+        "select_date_time": "เลือกวันที่และเวลาในการส่งข้อความนี้",
+        "send_later_success": "อีเมลของคุณจะถูกส่งในวันที่ {{date}} เวลา {{time}}",
+        "schedule_time": "{{date}} เวลา {{time}}",
+        "schedule_mail": "จะถูกส่งเมื่อ: {{date}} เวลา {{time}}"
     },
     "settings": {
-        "dspl_mail_optn": {
-            "text": "เป็นข้อความ"
-        },
         "label": {
             "check_new_mail": "ตรวจสอบอีเมลใหม่",
             "display_mail": "แสดงจดหมาย",
@@ -498,7 +535,22 @@
         "is_not_me": "ไม่ใช่ฉัน",
         "keep_in_sent": "เก็บไว้ในข้อความขาออก",
         "matches_exactly": "ตรงทุกประการ",
-        "not_over": "ไม่เกิน"
+        "not_over": "ไม่เกิน",
+        "font": "แบบอักษร",
+        "fonts": {
+            "wide_block": "Wide Block",
+            "wide": "กว้าง",
+            "terminal": "Terminal",
+            "serif": "Serif",
+            "sans_serif": "Sans Serif",
+            "professional": "Professional",
+            "monospaced": "Monospaced",
+            "modern": "โมเดิร์น",
+            "garamond": "Garamond",
+            "elegant": "Elegant",
+            "console": "Console",
+            "comic": "Comic"
+        }
     },
     "snackbar": {
         "share_resend": "ส่งการแชร์คำเชิญอีกครั้ง",
@@ -518,7 +570,9 @@
         "resend": "ส่งการแจ้งเตือนทางอีเมลเกี่ยวกับการแชร์นี้อีกครั้ง",
         "disable_rich_text": "ปิดการใช้งานตัวแก้ไข Rich Text",
         "enable_urgent": "เปิดการใช้งานแบบเร่งด่วน",
-        "folder_sharing_status": "แชร์กับ {{count}} คน"
+        "folder_sharing_status": "แชร์กับผู้ใช้ {{count}} ราย",
+        "folder_linked_status": "แชร์กับฉัน",
+        "marked_as_important": "ทำเครื่องหมายว่าสำคัญแล้ว"
     },
     "folder_panel": {
         "modal": {
@@ -556,7 +610,8 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "หากคุณล้างข้อมูลจะทำให้เนื้อหาที่เกี่ยวข้องทั้งหมดถูกลบออกอย่างถาวร"
+                    "message2": "หากคุณล้างข้อมูลจะทำให้เนื้อหาที่เกี่ยวข้องทั้งหมดถูกลบออกอย่างถาวร",
+                    "message1": "คุณต้องการล้างโฟลเดอร์ที่เลือกหรือไม่?"
                 }
             }
         },
@@ -657,7 +712,8 @@
         "remote": "ในโฟลเดอร์ที่แชร์โดยฉัน",
         "local": "ในโฟลเดอร์ของฉัน",
         "invitations": "การเชิญ",
-        "ccme": "ในสำเนาให้ฉัน"
+        "ccme": "ในสำเนาให้ฉัน",
+        "anywhere": "ในทุกโฟลเดอร์"
     },
     "attachment_type": {
         "word": "Word",
@@ -669,6 +725,18 @@
         "html": "HTML",
         "excel": "Excel",
         "email": "อีเมล",
-        "application": "โปรแกรมประยุกต์"
+        "application": "โปรแกรมประยุกต์",
+        "zipped_file": "ไฟล์ซิป"
+    },
+    "labels": {
+        "compose_colin": "เขียน:",
+        "composing_messages": "การเขียนข้อความ"
+    },
+    "new_folder": "โฟลเดอร์ใหม่",
+    "go_back": "ย้อนกลับ",
+    "modal": {
+        "delete_draft": {
+            "message1": "คุณต้องการเก็บฉบับร่างนี้ไว้หรือลบทิ้ง?"
+        }
     }
 }

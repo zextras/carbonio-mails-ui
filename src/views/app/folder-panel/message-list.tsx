@@ -3,23 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { map, reduce, find } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useRef, useState, FC } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
 import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
+import { FOLDERS, t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
+import { find, map, reduce } from 'lodash';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { FOLDERS, useAppContext, useFolder, t } from '@zextras/carbonio-shell-ui';
-import { selectConversationStatus } from '../../../store/conversations-slice';
-import { MessageListItem } from './lists-item/message-list-item';
-import SelectMessagesPanelActions from '../../../ui-actions/select-panel-action-message';
-import { Breadcrumbs } from './breadcrumbs';
-import { search } from '../../../store/actions';
-import { useSelection } from '../../../hooks/useSelection';
 import { useMessageList } from '../../../hooks/use-message-list';
+import { useSelection } from '../../../hooks/useSelection';
+import { search } from '../../../store/actions';
+import { selectConversationStatus } from '../../../store/conversations-slice';
 import { selectFolderMsgSearchStatus } from '../../../store/messages-slice';
+import { AppContext, MailMessage } from '../../../types';
+import SelectMessagesPanelActions from '../../../ui-actions/select-panel-action-message';
 import ShimmerList from '../../search/shimmer-list';
-import { MailMessage } from '../../../types';
+import { Breadcrumbs } from './breadcrumbs';
+import { MessageListItem } from './lists-item/message-list-item';
 
 const DragImageContainer = styled.div`
 	position: absolute;
@@ -62,7 +62,7 @@ const MessageList: FC = () => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const folder = useFolder(activeFolder);
 	const dispatch = useDispatch();
-	const { setCount } = useAppContext();
+	const { setCount } = useAppContext<AppContext>();
 	const [isDragging, setIsDragging] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [draggedIds, setDraggedIds] = useState();

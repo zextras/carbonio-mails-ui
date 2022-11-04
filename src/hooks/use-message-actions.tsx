@@ -7,33 +7,33 @@ import { FOLDERS, useAppContext, useTags, useUserAccount } from '@zextras/carbon
 import { includes } from 'lodash';
 import { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useParams, useLocation, useHistory } from 'react-router-dom';
-import { useSelection } from './useSelection';
-import { MailMessage } from '../types';
+import { useParams } from 'react-router-dom';
+import { AppContext, MailMessage } from '../types';
 import {
+	deleteMessagePermanently,
 	deleteMsg,
 	editAsNewMsg,
 	editDraft,
 	forwardMsg,
+	moveMessageToFolder,
 	moveMsgToTrash,
+	printMsg,
 	redirectMsg,
 	replyAllMsg,
 	replyMsg,
 	sendDraft,
-	setMsgFlag,
 	setMsgAsSpam,
-	printMsg,
-	showOriginalMsg,
+	setMsgFlag,
 	setMsgRead,
-	moveMessageToFolder,
-	deleteMessagePermanently
+	showOriginalMsg
 } from '../ui-actions/message-actions';
 import { applyTag } from '../ui-actions/tag-actions';
+import { useSelection } from './useSelection';
 
 export const useMessageActions = (message: MailMessage, isAlone = false): Array<any> => {
 	const { folderId }: { folderId: string } = useParams();
 	const dispatch = useDispatch();
-	const { setCount } = useAppContext() as { setCount: () => void };
+	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection(folderId, setCount);
 
 	const account = useUserAccount();

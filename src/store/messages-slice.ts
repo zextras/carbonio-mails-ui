@@ -147,12 +147,15 @@ function getConvFulfilled(
 	});
 }
 
-export const messagesSlice = createSlice({
-	name: 'messages',
-	initialState: {
+export const getMessagesSliceInitialState = (): MsgStateType =>
+	({
 		messages: {} as MsgMap,
 		status: {}
-	} as MsgStateType,
+	} as MsgStateType);
+
+export const messagesSlice = createSlice({
+	name: 'messages',
+	initialState: getMessagesSliceInitialState(),
 	reducers: {
 		handleCreatedMessages: produce(handleCreatedMessagesReducer),
 		handleModifiedMessages: produce(handleModifiedMessagesReducer),

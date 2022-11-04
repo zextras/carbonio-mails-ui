@@ -347,7 +347,7 @@
         "read_receipt": "Read Receipt",
         "read_receipt_req": "Read receipt required",
         "read_receipt_sent": "A read receipt was sent for this message",
-        "read_reciept": "Read Reciept",
+        "read_reciept": "Read Receipt",
         "receive_message": "Receiving Messages",
         "received_from_address": "Received from (address)",
         "remove": "Remove",
@@ -442,7 +442,7 @@
         "schedule_mail": "Will be sent on: {{date}} at {{time}}",
         "schedule_time": "for {{date}} at {{time}}",
         "select_date_time": "Select a date and time to send this message",
-        "send_later_success": "Your e-mail will be send on {{date}} at {{time}}",
+        "send_later_success": "Your e-mail will be sent on {{date}} at {{time}}",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
             "all_att_added": "Attachments added successfully",
