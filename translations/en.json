@@ -285,6 +285,7 @@
         "enable_message_disposal": "Enable Message Disposal",
         "enable_message_retention": "Enable Message Retention",
         "enter_email_address": "Enter email address or domain",
+        "enter_name": "Enter Name",
         "error": "Error",
         "error_address": "A valid e-mail is required",
         "error_try_again": "Something went wrong, please try again",

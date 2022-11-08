@@ -60,7 +60,8 @@ export const useGetIdentities = ({
 			address: item._attrs?.zimbraPrefFromAddress,
 			fullname: item._attrs?.zimbraPrefFromDisplay ?? '',
 			type: item._attrs.zimbraPrefFromAddressType,
-			identityName: item.name ?? ''
+			identityName: item.name ?? '',
+			displayName: item._attrs?.zimbraPrefIdentityName ?? ''
 		}));
 
 		const rightsList = flatten(
@@ -81,14 +82,15 @@ export const useGetIdentities = ({
 						address: item.email[0].addr,
 						fullname: item.d,
 						type: ele.right,
-						identityName: ''
+						identityName: '',
+						displayName: ''
 					}))
 			)
 		);
 
 		const flattenList = flatten(rightsList);
 
-		const uniqueIdentityList = [...identityList];
+		const uniqueIdentityList: IdentityType[] = [...identityList];
 		if (flattenList?.length) {
 			map(flattenList, (ele: IdentityType) => {
 				const uniqIdentity = findIndex(identityList, { address: ele.address });
@@ -146,6 +148,7 @@ export const useGetIdentities = ({
 				fullname: el.fullName || el.fullname,
 				type: el.type,
 				identityName: el.identityName,
+				displayName: el.displayName,
 
 				onClick: (): void => {
 					setActiveFrom(el);
@@ -154,7 +157,8 @@ export const useGetIdentities = ({
 						fullName: el.fullname,
 						name: el.address,
 						type: ParticipantRole.FROM,
-						identityName: el.identityName
+						identityName: el.identityName,
+						displayName: el.displayName
 					};
 
 					updateEditorCb({ from: data });
@@ -175,14 +179,14 @@ export const useGetIdentities = ({
 				selected: el === activeFrom,
 				customComponent: (
 					<Container width="100%" orientation="horizontal" height="fit">
-						<Avatar label={el.identityName || noName} />
+						<Avatar label={el.displayName || el.fullname || noName} />
 						<Container
 							width="100%"
 							crossAlignment="flex-start"
 							height="fit"
 							padding={{ left: 'medium' }}
 						>
-							<Text weight="bold">{el.identityName || noName}</Text>
+							<Text weight="bold">{el.displayName || el.fullname || noName}</Text>
 							{el.type === 'sendOnBehalfOf' ? (
 								<Text color="gray1"> {el.label} </Text>
 							) : (
