@@ -180,7 +180,7 @@ const EditViewHeader: FC<PropType> = ({
 			}, 10);
 
 			let countdownSeconds: number =
-				(find(props, ['name', 'mails_snackbar_delay'])?._content as unknown as number) ?? 30;
+				(find(props, ['name', 'mails_snackbar_delay'])?._content as unknown as number) ?? 3;
 
 			const countdown = setInterval(() => {
 				countdownSeconds -= 1;
