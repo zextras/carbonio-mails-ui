@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.47](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.46...v0.1.47) (2022-11-08)
+
+
+### Bug Fixes
+
+* default unsend time to 3 sec ([962c588](https://github.com/zextras/carbonio-mails-ui/commit/962c588906c37f39e69cc30ffc36d45f57f453a5))
+
 ### [0.1.46](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.45...v0.1.46) (2022-10-27)
 
 
