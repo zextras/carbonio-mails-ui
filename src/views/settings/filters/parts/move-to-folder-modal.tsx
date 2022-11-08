@@ -119,7 +119,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		const previous = tempActions.slice();
 		previous[activeIndex] = {
 			id: previous[activeIndex]?.id,
-			actionFileInto: [{ folderPath: `${folderDestination.name}` }]
+			actionFileInto: [{ folderPath: `${folderDestination.path}` }]
 		};
 		setTempActions(previous);
 		setFolder(folderDestination);
