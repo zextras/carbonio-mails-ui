@@ -33,6 +33,7 @@ import styled from 'styled-components';
 import { concat, find, some } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Controller } from 'react-hook-form';
+import { SubmitErrorHandler, SubmitHandler } from 'react-hook-form/dist/types/form';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { ActionsType } from '../../../../../commons/utils';
@@ -66,7 +67,10 @@ type PropType = {
 			  }>
 			| undefined
 	) => void;
-	handleSubmit: (arg: () => void) => void;
+	handleSubmit: (
+		onValid: SubmitHandler<any>,
+		onInvalid?: SubmitErrorHandler<any>
+	) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 	uploadAttachmentsCb: (files: any) => AsyncThunkAction<any, any, any>;
 };
 const EditViewHeader: FC<PropType> = ({
@@ -553,7 +557,9 @@ const EditViewHeader: FC<PropType> = ({
 						<Padding left="large">
 							<Button
 								type="outlined"
-								onClick={(): void => handleSubmit(onSave)}
+								onClick={(): void => {
+									handleSubmit(onSave)();
+								}}
 								label={`${t('label.save', 'Save')}`}
 							/>
 						</Padding>
