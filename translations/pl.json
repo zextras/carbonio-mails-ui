@@ -84,7 +84,7 @@
             "contacts_mod": "Dodaj Wizytówkę",
             "drag_and_drop": {
                 "content": "Upuść tutaj swoje załączniki, aby szybko dodać je do e-maila",
-                "title": "Tryb Przeciągnij i upuść"
+                "title": "Tryb przeciągnij i upuść"
             },
             "files": "Dodaj z Files",
             "url": "Dodaj publiczny link z Files"
@@ -114,7 +114,7 @@
         "folder_sharing_status_0": "Udostępniono {{count}} użytkownikowi",
         "folder_sharing_status_1": "Udostępniono {{count}} użytkownikom",
         "folder_sharing_status_2": "Udostępniono {{count}} użytkownikom",
-        "folder_linked_status": "Udostępnione mi",
+        "folder_linked_status": "Udostępnione dla mnie",
         "marked_as_important": "Oznaczone jako ważne"
     },
     "label": {
