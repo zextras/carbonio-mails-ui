@@ -15,7 +15,6 @@ import {
 	LinkFolderFields
 } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
-import { TFunction } from 'react-i18next';
 
 const folderIdRegex = /^(.+:)*(\d+)$/;
 
