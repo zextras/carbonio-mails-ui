@@ -108,7 +108,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		updatedSign.push({
 			id: (Math.random() + 1).toString(36).substring(7),
 			description: '',
-			label: 'Enter Name',
+			label: t('label.enter_name', 'Enter Name'),
 			index: signItems.length
 		});
 		setSignItems(updatedSign);
