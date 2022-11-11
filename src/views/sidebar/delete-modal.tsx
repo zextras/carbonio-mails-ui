@@ -76,7 +76,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 							: t('messages.snackbar.folder_moved_to_trash', 'Folder moved to trash'),
 						autoHideTimeout: 5000,
 						hideButton: false,
-						actionLabel: 'Undo',
+						actionLabel: t('label.undo', 'Undo'),
 						onActionClick: () => restoreFolder()
 					});
 				} else {

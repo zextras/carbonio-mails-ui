@@ -9,6 +9,7 @@ import { FOLDERS, setAppContext, Spinner, useUserSettings } from '@zextras/carbo
 import { Container } from '@zextras/carbonio-design-system';
 import { useSelector } from 'react-redux';
 import { includes } from 'lodash';
+import moment from 'moment';
 import { selectCurrentFolder } from '../store/conversations-slice';
 
 const LazyFolderView = lazy(
@@ -22,7 +23,7 @@ const LazyDetailPanel = lazy(
 const AppView: FC = () => {
 	const { path } = useRouteMatch();
 	const [count, setCount] = useState(0);
-	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
+	const { zimbraPrefGroupMailBy, zimbraPrefLocale } = useUserSettings().prefs;
 	const currentFolderId = useSelector(selectCurrentFolder);
 
 	const isMessageView = useMemo(
@@ -33,6 +34,10 @@ const AppView: FC = () => {
 				: undefined,
 		[currentFolderId, zimbraPrefGroupMailBy]
 	);
+
+	if (zimbraPrefLocale) {
+		moment.locale(zimbraPrefLocale as string);
+	}
 
 	useEffect(() => {
 		setAppContext({ isMessageView, count, setCount });

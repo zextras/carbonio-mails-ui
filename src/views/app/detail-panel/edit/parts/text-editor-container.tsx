@@ -122,9 +122,7 @@ const TextEditorContainer: FC<PropType> = ({
 									onEditorChange={(ev: Array<string>): void => {
 										setInputValue(ev);
 										updateSubjectField({ text: ev });
-										if (isReady) {
-											throttledSaveToDraft({ text: ev });
-										}
+										throttledSaveToDraft({ text: ev });
 										toggleStickyTime();
 									}}
 									onDragOver={onDragOverEvent}

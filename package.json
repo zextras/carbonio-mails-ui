@@ -1,6 +1,6 @@
 {
   "name": "carbonio-mails-ui",
-  "version": "0.1.46",
+  "version": "0.1.48",
   "description": "Mails module for Zextras Carbonio",
   "main": "src/app.jsx",
   "scripts": {
@@ -13,7 +13,9 @@
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
-    "test": "jest"
+    "test": "jest",
+    "pull-translations": "git subtree pull -P translations git@bitbucket.org:zextras/com_zextras_zapp_mails.git master --squash",
+    "push-translations": "git subtree push -P translations git@bitbucket.org:zextras/com_zextras_zapp_mails.git"
   },
   "files": [
     "src/types/"

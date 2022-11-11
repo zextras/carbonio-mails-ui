@@ -113,7 +113,6 @@ const CreateFilterModal: FC<ComponentProps> = ({
 
 	const onConfirm = useCallback(() => {
 		const toSend = [...incomingFiltersCopy, requiredFilters];
-
 		setIncomingFilters?.(toSend);
 		modifyFilterRules(toSend).then(() => {
 			setFetchIncomingFilters?.(true);

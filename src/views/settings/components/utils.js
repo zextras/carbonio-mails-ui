@@ -353,11 +353,7 @@ export const findLabel = (list, value) => filter(list, (item) => item.value === 
 
 export const UnsendTimeOptions = () => [
 	{
-		label: t('settings.mail_unsend_time.second', {
-			count: 0,
-			defaultValue: '{{count}} second',
-			defaultValue_plural: '{{count}} seconds'
-		}),
+		label: t('settings.mail_unsend_time.no_delay', 'No delay'),
 		value: '0'
 	},
 	{

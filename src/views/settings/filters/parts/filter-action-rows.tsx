@@ -207,6 +207,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		setActiveIndex(index);
 		setOpen(true);
 	}, [setOpen, setActiveIndex, index]);
+
 	const onTagChange = useCallback(
 		(chip) => {
 			const requiredTag = chip.length > 1 ? chip[1] : chip[0];
