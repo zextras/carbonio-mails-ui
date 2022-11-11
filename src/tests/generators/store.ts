@@ -5,16 +5,21 @@
  */
 /* eslint-disable import/no-extraneous-dependencies */
 
+import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
+import { MAIL_APP_ID } from '../../constants';
 import { getConversationsSliceInitialState } from '../../store/conversations-slice';
 import { getEditorsSliceInitialState } from '../../store/editor-slice';
 import { getFoldersSliceInitialState } from '../../store/folders-slice';
 import { getMessagesSliceInitialState } from '../../store/messages-slice';
+import { storeReducers } from '../../store/reducers';
 import { getSearchSliceInitialiState } from '../../store/searches-slice';
 import { StateType } from '../../types';
 
-// export const generateMessagesSliceEntry = () => {};
-
-export const mockEmptyStore = (state?: StateType): StateType => ({
+/**
+ *
+ * @param state
+ */
+export const generateState = (state?: StateType): StateType => ({
 	editors: {
 		...getEditorsSliceInitialState(),
 		...state?.editors
@@ -27,11 +32,6 @@ export const mockEmptyStore = (state?: StateType): StateType => ({
 		...getSearchSliceInitialiState(),
 		...state?.searches
 	},
-	// status: '',
-	// sync: {
-	// 	status: '',
-	// 	intervalId: 0
-	// },
 	conversations: {
 		...getConversationsSliceInitialState(),
 		...state?.conversations
@@ -41,3 +41,19 @@ export const mockEmptyStore = (state?: StateType): StateType => ({
 		...state?.messages
 	}
 });
+
+/**
+ *
+ * @param initialState
+ */
+export const generateStore = (initialState?: StateType): EnhancedStore<StateType> => {
+	const store = configureStore({
+		devTools: {
+			name: MAIL_APP_ID
+		},
+		reducer: storeReducers,
+		preloadedState: generateState(initialState)
+	});
+
+	return store;
+};

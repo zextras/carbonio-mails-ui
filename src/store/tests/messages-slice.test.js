@@ -8,7 +8,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { storeReducers } from '../reducers';
 import { getMsg } from '../actions';
 import { selectMessage, selectMessages } from '../messages-slice';
-import { mockEmptyStore } from '../../tests/generators/store';
+import { generateState } from '../../tests/generators/store';
 import { MAIL_APP_ID } from '../../constants';
 
 describe('Messages Slice', () => {
@@ -19,7 +19,7 @@ describe('Messages Slice', () => {
 					name: MAIL_APP_ID
 				},
 				reducer: storeReducers,
-				preloadedState: mockEmptyStore()
+				preloadedState: generateState()
 			});
 
 			// const options = { store };
