@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo, useCallback } from 'react';
-import { Container, Padding, IconButton, Tooltip } from '@zextras/carbonio-design-system';
+import { Container, Padding, IconButton, Tooltip, getColor } from '@zextras/carbonio-design-system';
 
 import styled from 'styled-components';
 import { getStatusOptions, findDefaultValue } from './utils';
@@ -15,7 +15,7 @@ import { getRowFunc } from './get-row';
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
 		${({ theme, disabled, iconColor = 'primary' }): string =>
-			disabled ? theme.palette.gray2.regular : theme.palette[iconColor].regular};
+			disabled ? theme.palette.gray2.regular : getColor(iconColor, theme)};
 	svg {
 		border: none !important;
 	}

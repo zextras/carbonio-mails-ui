@@ -12,7 +12,8 @@ import {
 	Row,
 	Text,
 	Tooltip,
-	useTheme
+	useTheme,
+	getColor
 } from '@zextras/carbonio-design-system';
 import { filter, find, map, uniqBy } from 'lodash';
 import React, {
@@ -26,7 +27,7 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
+import styled, { SimpleInterpolation } from 'styled-components';
 import { calcColor, getFileExtension } from '../../../../commons/utilities';
 import { updateEditor } from '../../../../store/editor-slice';
 import { EditorAttachmentFiles, IconColors, MailsEditor } from '../../../../types';
@@ -67,15 +68,15 @@ const AttachmentContainer = styled(Container)`
 	transition: 0.2s ease-out;
 	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
 	&:hover {
-		background-color: ${({ theme, background }): string =>
-			background && theme.palette[background].hover};
+		background-color: ${({ theme, background }): SimpleInterpolation =>
+			background && getColor(`${background}.hover`, theme)};
 		& ${AttachmentHoverBarContainer} {
 			display: flex;
 		}
 	}
 	&:focus {
-		background-color: ${({ theme, background }): string =>
-			background && theme.palette[background].focus};
+		background-color: ${({ theme, background }): SimpleInterpolation =>
+			background && getColor(`${background}.focus`, theme)};
 	}
 	cursor: pointer;
 `;

@@ -13,7 +13,8 @@ import {
 	Input,
 	Tooltip,
 	IconButton,
-	ChipItem
+	ChipItem,
+	getColor
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { filter, omit } from 'lodash';
@@ -25,7 +26,7 @@ import CustomSelect from './custom-select';
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
 		${({ theme, disabled, iconColor = 'primary' }): string =>
-			disabled ? theme.palette.gray2.regular : theme.palette[iconColor].regular};
+			disabled ? theme.palette.gray2.regular : getColor(iconColor, theme)};
 	svg {
 		border: none !important;
 	}
