@@ -58,12 +58,12 @@ const getAttachmentsLink = (
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
-	height: 0px;
+	height: 0;
 `;
 
 const AttachmentContainer = styled(Container)`
-	border-radius: 2px;
-	width: calc(50% - 4px);
+	border-radius: 0.125rem;
+	width: calc(50% - 0.25rem);
 	transition: 0.2s ease-out;
 	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
 	&:hover {
@@ -92,12 +92,12 @@ const AttachmentExtension = styled(Text)<{
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 32px;
-	height: 32px;
+	width: 2rem;
+	height: 2rem;
 	border-radius: ${({ theme }): string => theme.borderRadius};
 	background-color: ${({ background }): string => background};
 	color: ${({ theme }): string => theme.palette.gray6.regular};
-	font-size: calc(${({ theme }): string => theme.sizes.font.small} - 2px);
+	font-size: calc(${({ theme }): string => theme.sizes.font.small} - 0.125rem);
 	text-transform: uppercase;
 	margin-right: ${({ theme }): string => theme.sizes.padding.small};
 `;

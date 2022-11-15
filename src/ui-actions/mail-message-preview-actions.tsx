@@ -45,7 +45,7 @@ type ThemeContextProps = {
 
 const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	actions,
-	maxWidth = '120px',
+	maxWidth = '7.5rem',
 	mainAlignment = 'flex-end'
 }): ReactElement => {
 	const { folderId }: { folderId: string } = useParams();
@@ -77,7 +77,7 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	);
 
 	const secondActions = useMemo(() => difference(actions, firstActions), [actions, firstActions]);
-	const iconSize = useMemo(() => parseInt(theme.sizes.icon.large, 10), [theme?.sizes?.icon?.large]);
+	const iconSize = useMemo(() => theme.sizes.icon.large, [theme.sizes.icon.large]);
 
 	const onIconClick = useCallback((ev: { stopPropagation: () => void }): void => {
 		ev.stopPropagation();
@@ -89,12 +89,13 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	}, []);
 
 	const _maxWidth = useMemo(
-		() => (iconSize && maxActions ? `${iconSize * maxActions}px` : maxWidth),
+		() => (iconSize && maxActions ? `calc(${iconSize} * ${maxActions})` : maxWidth),
 		[iconSize, maxActions, maxWidth]
 	);
 
 	const _minWidth = useMemo(
-		() => (folderId === FOLDERS.TRASH ? `${iconSize * maxActions}px` : theme.sizes.icon.large),
+		() =>
+			folderId === FOLDERS.TRASH ? `calc(${iconSize} * ${maxActions})` : theme.sizes.icon.large,
 		[folderId, iconSize, maxActions, theme?.sizes?.icon?.large]
 	);
 

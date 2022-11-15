@@ -56,7 +56,7 @@ const CustomComp: FC<ItemProps> = (props) => {
 
 				<Padding right="large" />
 				<Tooltip label={props?.item?.name} placement="right" maxWidth="100%">
-					<AccordionItem {...props} height={40} />
+					<AccordionItem {...props} height="2.5rem" />
 				</Tooltip>
 			</Row>
 		</Dropdown>
@@ -69,7 +69,7 @@ export const TagLabel: FC<ItemType> = (props) => {
 		<Dropdown contextMenu display="block" width="fit" items={[createTag({ createModal })]}>
 			<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
 				<Icon size="large" icon="TagsMoreOutline" /> <Padding right="large" />
-				<AccordionItem {...{ ...props, color: `${props.color}` }} height={40} />
+				<AccordionItem {...{ ...props, color: `${props.color}` }} height="2.5rem" />
 			</Row>
 		</Dropdown>
 	);

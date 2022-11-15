@@ -28,7 +28,7 @@ export const useVisibleActionsCount = (
 	const [visibleActionsCount, setVisibleActionsCount] = useState<number>(0);
 	const { iconWidth, numberLimit } = args;
 	const theme = useContext<ThemeContextProps>(ThemeContext);
-	const iconSize = iconWidth ?? parseInt(theme.sizes.icon.large, 10);
+	const iconSize = iconWidth ?? parseFloat(theme.sizes.icon.large);
 
 	const calculateVisibleActionsCount = useCallback(() => {
 		if (containerRef && containerRef.current && containerRef?.current?.clientWidth > 0) {

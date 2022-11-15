@@ -127,7 +127,7 @@ const Actions: FC<ActionProps> = ({
 			<Tooltip
 				label={t('tooltip.resend', 'Send mail notification about this share')}
 				placement="top"
-				maxWidth="300px"
+				maxWidth="18.75rem"
 			>
 				<Button
 					type="outlined"

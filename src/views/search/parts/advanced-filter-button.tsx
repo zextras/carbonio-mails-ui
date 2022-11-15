@@ -10,8 +10,8 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { AdvancedFilterButtonProps } from '../../../types';
 
 const BorderContainer = styled(Container)`
-	border-bottom: 1px solid ${({ theme }): string => theme?.palette?.gray2?.regular};
-	border-right: 1px solid ${({ theme }): string => theme?.palette?.gray2?.regular};
+	border-bottom: 0.0625rem solid ${({ theme }): string => theme?.palette?.gray2?.regular};
+	border-right: 0.0625rem solid ${({ theme }): string => theme?.palette?.gray2?.regular};
 `;
 
 export const AdvancedFilterButton: FC<AdvancedFilterButtonProps> = ({

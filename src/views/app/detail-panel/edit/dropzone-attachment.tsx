@@ -13,38 +13,38 @@ const BackDropLayout = styled(Container)`
 	position: absolute;
 	height: 100%;
 	z-index: 2;
-	top: 0px;
-	left: 0px;
+	top: 0;
+	left: 0;
 `;
 
 const DropBackground = styled(Container)`
-	width: calc(100% - 10px);
+	width: calc(100% - 0.625rem);
 	background: ${(props): string => props.theme.palette.primary.regular}b9;
-	height: calc(100% - 10px);
-	border-radius: 4px;
-	left: 5px;
+	height: calc(100% - 0.625rem);
+	border-radius: 0.25rem;
+	left: 0.3125rem;
 	pointer-events: none;
 `;
 const BackDropLayoutInnerBox = styled(Container)`
 	background: ${(props): string => props.theme.palette.gray6.regular};
-	border-radius: 10px;
-	min-height: 180px;
-	max-width: 380px;
-	max-height: 210px;
+	border-radius: 0.625rem;
+	min-height: 11.25rem;
+	max-width: 23.75rem;
+	max-height: 13.125rem;
 `;
 
 const BackDropLayoutContentBox = styled(Container)`
 	border-style: dashed;
-	border-width: 2px;
-	border-radius: 5px;
+	border-width: 0.125rem;
+	border-radius: 0.3125rem;
 	border-color: ${(props): string => props.theme.palette.primary.regular};
 	box-sizing: border-box;
-	padding: 40px;
+	padding: 2.5rem;
 `;
 
 const DropBoxIconGroup = styled(Container)`
-	margin-bottom: 8px;
-	height: 40px;
+	margin-bottom: 0.5rem;
+	height: 2.5rem;
 `;
 
 const DetailText = styled(Text)`
@@ -74,13 +74,23 @@ const DropZoneAttachment: FC<DropZoneAttachmentType> = ({
 							<Container mainAlignment="center">
 								<DropBoxIconGroup mainAlignment="center" orientation="horizontal">
 									<Padding right="small" left="small">
-										<Icon icon="ImageOutline" height="35px" width="35px" color="primary" />
+										<Icon
+											icon="ImageOutline"
+											height="2.1875rem"
+											width="2.1875rem"
+											color="primary"
+										/>
 									</Padding>
 									<Padding right="small" left="small">
-										<Icon icon="FileAddOutline" height="35px" width="35px" color="primary" />
+										<Icon
+											icon="FileAddOutline"
+											height="2.1875rem"
+											width="2.1875rem"
+											color="primary"
+										/>
 									</Padding>
 									<Padding right="small" left="small">
-										<Icon icon="FilmOutline" height="35px" width="35px" color="primary" />
+										<Icon icon="FilmOutline" height="2.1875rem" width="2.1875rem" color="primary" />
 									</Padding>
 								</DropBoxIconGroup>
 								<Container mainAlignment="center" height="auto">

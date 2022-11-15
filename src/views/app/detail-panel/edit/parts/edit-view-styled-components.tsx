@@ -13,24 +13,24 @@ export const FileInput = styled.input`
 
 export const Divider = styled.div`
 	width: 100%;
-	min-height: 1px;
-	max-height: 1px;
-	border-bottom: 1px solid ${(props): string => props.theme.palette.gray2.regular};
+	min-height: 0.0625rem;
+	max-height: 0.0625rem;
+	border-bottom: 0.0625rem solid ${(props): string => props.theme.palette.gray2.regular};
 `;
 
 export const ResizedIconCheckbox = styled(IconCheckbox)`
 	[class^='Padding__Comp'] {
-		padding: 6px;
+		padding: 0.375rem;
 		svg {
-			height: 20px;
-			width: 20px;
+			height: 1.25rem;
+			width: 1.25rem;
 		}
 	}
 `;
 
 export const TextArea = styled.textarea`
 	box-sizing: border-box;
-	min-height: 250px;
+	min-height: 15.625rem;
 
 	flex-grow: 1;
 	width: 100%;
@@ -53,7 +53,7 @@ export const EditorWrapper = styled.div`
 		width: 100%;
 		border: none;
 		.tox-editor-container {
-			min-height: 300px;
+			min-height: 18.75rem;
 		}
 		.tox-editor-header {
 			padding: ${(props): string => props.theme.sizes.padding.large};
@@ -82,16 +82,16 @@ export const EditorWrapper = styled.div`
 `;
 
 export const BannerContainer = styled(Container)`
-	border-bottom: 1px solid ${(props): string => props.theme.palette.info.regular};
-	border-top-right-radius: 4px;
-	border-top-left-radius: 4px;
-	padding: 16px;
+	border-bottom: 0.0625rem solid ${(props): string => props.theme.palette.info.regular};
+	border-top-right-radius: 0.25rem;
+	border-top-left-radius: 0.25rem;
+	padding: 1rem;
 `;
 
 export const RowContainer = styled(Container)`
 	display: grid;
 	grid-template-columns: repeat(12, 1fr);
-	grid-gap: 8px;
+	grid-gap: 0.5rem;
 `;
 
 export const ColContainer = styled.div`
@@ -101,13 +101,13 @@ export const ColContainer = styled.div`
 
 export const StickyTime = styled(Row)`
 	position: relative;
-	bottom: 38px;
-	right: -2px;
+	bottom: 2.375rem;
+	right: -0.125rem;
 `;
 
 export const StickyTimeContainer = styled(Row)`
 	position: sticky;
-	bottom: 10px;
-	right: 10px;
-	height: 0px;
+	bottom: 0.625rem;
+	right: 0.625rem;
+	height: 0;
 `;

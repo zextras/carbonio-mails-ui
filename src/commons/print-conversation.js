@@ -26,7 +26,7 @@ export const getCompleteHTML = ({ content, account }) =>
                         margin: 0;
                         overflow-y: hidden;
                         font-family: Roboto, sans-serif;
-                        font-size: 14px;                      
+                        font-size: 0.875rem;                      
                         background-color: #ffffff;
                     }
                     body pre, body pre * {
@@ -48,7 +48,7 @@ export const getCompleteHTML = ({ content, account }) =>
                         font-size: 12pt;
                     }
                     .ZhPrintSubject {
-                        padding: 10px;
+                        padding: 0.625rem;
                         font-weight: bold;
                     }
                     table.Msg img {
@@ -63,21 +63,21 @@ export const getCompleteHTML = ({ content, account }) =>
 
                     .MsgHdrName {
                         width: 10%;
-                        padding: 3px 0 3px 0;
+                        padding: 0.1875rem 0 0.1875rem 0;
                         vertical-align: top;
                         text-align: right;
                         font-weight: bold;
                         white-space: nowrap;
                     }
                     .MsgHdrValue {
-                        padding: 3px 3px 3px 3px;
+                        padding: 0.1875rem 0.1875rem 0.1875rem 0.1875rem;
                         vertical-align: top;
                         overflow: hidden;
                     }
                     .footer {
-                        font-size: 9px;
+                        font-size: 0.5625rem;
                         text-align: left;
-                        padding-left: 20px;
+                        padding-left: 1.25rem;
                     }
                         
                     @page {
@@ -129,14 +129,14 @@ const getParticipantHeader = (participants, type) => {
 	return `<tr>
 			<td style="
                 width: 10%;
-                padding: 3px 0 3px 0;
+                padding: 0.1875rem 0 0.1875rem 0;
                 vertical-align: top;
                 text-align: right;
                 font-weight: bold;
                 white-space: nowrap;
             ">${type}:</td>
 			<td className="MsgHdrValue"
-             style="padding: 3px 3px 3px 3px; vertical-align: top; overflow: hidden; ">
+             style="padding: 0.1875rem 0.1875rem 0.1875rem 0.1875rem; vertical-align: top; overflow: hidden; ">
                 ${participantsList}
              </td>
 		</tr>`;
@@ -151,7 +151,7 @@ const getHeader = (msg, content) => {
 	const replyTo = filter(participants, { type: 'r' });
 	const msgTime = moment(msg.date).format('ddd, MMM DD, YYYY hh:mm A');
 	return `
-    <table width="100%" cellpadding="0" cellspacing="0" class="Msg" style="padding:10px;">
+    <table width="100%" cellpadding="0" cellspacing="0" class="Msg" style="padding:0.625rem;">
         <tr>
             <td  colspan="2">
                 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#EEEEEE;" >
@@ -182,7 +182,7 @@ const getHeader = (msg, content) => {
                 </table>
             </td>
         </tr>
-        <td id="iframeBody" style="padding:5px; font-family: monospace" valign='top' colspan="2">
+        <td id="iframeBody" style="padding:0.3125rem; font-family: monospace" valign='top' colspan="2">
             <div id="iframeBody" class="MsgBody-html">
                 ${content}
             </div>
@@ -198,8 +198,8 @@ export const getBodyWrapper = ({ content, subject }) => `
 				<tr>
 					<td>
 						<div className="ZhPrintSubject" 
-                        style="background: rgba(176, 195, 231, 0.8);height: 28px;
-                        padding-left: 4px;
+                        style="background: rgba(176, 195, 231, 0.8);height: 1.75rem;
+                        padding-left: 0.25rem;
                         display: flex;
                         align-items: center;">
 							<b>${subject}</b>
@@ -280,7 +280,7 @@ export const getErrorPage = (t) =>
             body {
                 background-color: #ffffff;
                 color: #4d4d4d;
-                font-size: 13px;
+                font-size: 0.8125rem;
                 font-family: Roboto, sans-serif;
             }
             .container {
@@ -292,48 +292,48 @@ export const getErrorPage = (t) =>
             .mainTextWrapper {
                 color: #2b73d2;
                 font-weight: 900;
-                font-size: 26px;
-                line-height: 24px;
-                margin-top: 30px;
+                font-size: 1.625rem;
+                line-height: 1.5rem;
+                margin-top: 1.875rem;
             }
             .errorWrapper {
                 display: flex;
                 flex-direction: row;
                 align-items: center;
-                margin: 23px 0 10px;
+                margin: 1.4375rem 0 0.625rem;
             }
             .line {
-                height: 1px;
-                width: 100px;
+                height: 0.0625rem;
+                width: 6.25rem;
                 background-color: gray;
             }
             .errorCode {
                 color: #4d4d4d;
                 font-weight: 300;
-                font-size: 14px;
-                line-height: 21px;
-                padding: 0 50px;
+                font-size: 0.875rem;
+                line-height: 1.3125rem;
+                padding: 0 3.125rem;
                 text-transform: uppercase;
             }
             .customText {
-                margin: 0 5px 0 0;
+                margin: 0 0.3125rem 0 0;
                 color: #414141;
             }
             .needSupportText {
                 color: #414141;
-                font-size: 15px;
+                font-size: 0.9375rem;
             }
             .poweredByZextras {
                 display: flex;
-                margin: 30px 0 0 0;
+                margin: 1.875rem 0 0 0;
             }
             .zextrasLogo {
-                top: 3px;
+                top: 0.1875rem;
                 position: relative;
             }
             .productLogo {
-                height: 75px;
-                width: 564px;
+                height: 4.6875rem;
+                width: 35.25rem;
             }
         </style>
     </head>

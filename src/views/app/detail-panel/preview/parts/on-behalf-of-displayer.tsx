@@ -12,7 +12,7 @@ import styled from 'styled-components';
 import { Participant, MailMessage } from '../../../../../types';
 
 const StyledText = styled.span<{ isRead?: string | boolean; color?: string }>`
-	padding: 0 2px;
+	padding: 0 0.125rem;
 	color: ${({ theme, color, isRead }): string =>
 		// eslint-disable-next-line no-nested-ternary
 		color

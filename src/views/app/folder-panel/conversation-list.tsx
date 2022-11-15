@@ -43,8 +43,8 @@ import ConversationListItem from './lists-item/conversation-list-item';
 
 const DragImageContainer = styled.div`
 	position: absolute;
-	top: -5000px;
-	left: -5000px;
+	top: -312.5rem;
+	left: -312.5rem;
 	transform: translate(-100%, -100%);
 	width: 35vw;
 `;
@@ -175,7 +175,7 @@ const ConversationList: FC = () => {
 									color="gray1"
 									overflow="break-word"
 									size="small"
-									style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '32px' }}
+									style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '2rem' }}
 								>
 									{displayerTitle}
 								</Text>
@@ -184,7 +184,7 @@ const ConversationList: FC = () => {
 					) : (
 						<Container style={{ minHeight: 0 }}>
 							<List
-								style={{ flexGrow: 1, paddingBottom: '4px' }}
+								style={{ flexGrow: 1, paddingBottom: '0.25rem' }}
 								background="gray6"
 								selected={selected}
 								active={itemId}

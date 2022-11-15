@@ -103,7 +103,7 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 			padding={{ bottom: 'small' }}
 		>
 			<Container
-				style={{ width: '25px', padding: '0 8px 0 0' }}
+				style={{ width: '1.5625rem', padding: '0 0.5rem 0 0' }}
 				crossAlignment="baseline"
 				mainAlignment="space-between"
 				orientation="horizontal"
@@ -124,7 +124,7 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 			</Container>
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" width={badgeWidth}>
 				{!open && (
-					<Container width="calc(100% - 24px)" crossAlignment="flex-start">
+					<Container width="calc(100% - 1.5rem)" crossAlignment="flex-start">
 						<Row height="fit" crossAlignment="flex-start" mainAlignment="flex-start">
 							{toContacts.length > 0 && (
 								<ContactNames
@@ -158,7 +158,7 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 					</Container>
 				)}
 				{open && (
-					<Container width="calc(100% - 24px)" crossAlignment="flex-start">
+					<Container width="calc(100% - 1.5rem)" crossAlignment="flex-start">
 						<Container width="100%">
 							<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
 								{toContacts.length > 0 && <ContactNames contacts={toContacts} label={labelTo} />}

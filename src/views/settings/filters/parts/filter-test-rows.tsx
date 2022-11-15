@@ -13,7 +13,7 @@ import CustomSelect from './custom-select';
 import { getRowFunc } from './get-row';
 
 export const StyledIconButton = styled(IconButton)`
-	border: 1px solid
+	border: 0.0625rem solid
 		${({ theme, disabled, iconColor = 'primary' }): string =>
 			disabled ? theme.palette.gray2.regular : theme.palette[iconColor].regular};
 	svg {

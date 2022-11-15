@@ -37,7 +37,7 @@ const FilterTestConditionRow: FC<FilterTestConditionRowProps> = ({ compProps }):
 					<Row padding={{ right: 'small' }}>
 						<Text>{t('settings.if', 'If')}</Text>
 					</Row>
-					<Row padding={{ right: 'small' }} minWidth="95px">
+					<Row padding={{ right: 'small' }} minWidth="5.9375rem">
 						<CustomSelect
 							items={fieldOptions}
 							background="gray5"

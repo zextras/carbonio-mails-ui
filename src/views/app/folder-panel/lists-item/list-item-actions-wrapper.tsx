@@ -25,7 +25,7 @@ const HoverBarContainer = styled(Container)`
 		transparent,
 		${({ theme }): string => theme.palette.gray6.hover}
 	);
-	width: calc(100% - 64px);
+	width: calc(100% - 4rem);
 	height: 45%;
 	& > * {
 		margin-top: ${({ theme }): string => theme.sizes.padding.small};
@@ -80,7 +80,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 			// @ts-ignore
 			items={dropdownActions}
 			display="block"
-			style={{ width: '100%', height: '64px' }}
+			style={{ width: '100%', height: '4rem' }}
 		>
 			<HoverContainer
 				data-testid={isConversation ? `ConversationRow` : `MessageListItem-${item.id}`}
