@@ -278,7 +278,9 @@
         "message_from_me": "Messaggi da me",
         "read_receipt": "Ricevuta di lettura",
         "arrival_notifications": "Notifiche di Arrivo",
-        "mark_all_as_read": "Segna tutti come letti"
+        "mark_all_as_read": "Segna tutti come letti",
+        "send_scheduled": "Invio Programmato",
+        "message_arrival": "Messaggi in arrivo"
     },
     "tooltip": {
         "add_attachments": "Aggiungi allegati",
@@ -394,7 +396,7 @@
         "manager_rights": "Visualizza,Modifica,Aggiungi,Rimuovi",
         "view_rights": "Visualizza",
         "external_images_blocked": "Le immagini che provengono dall'esterno sono state bloccate al fine di tutelarti da potenziale spam",
-        "schedule_time": "{{date}} alle {{time}}",
+        "schedule_time": "per il {{date}} alle {{time}}",
         "schedule_mail": "Sarà inviata il: {{date}} alle {{time}}",
         "send_later_success": "La tua e-mail verrà inviata il {{date}} alle {{time}}",
         "select_date_time": "Seleziona la data e l’ora di invio di questo messaggio"
