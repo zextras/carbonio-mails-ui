@@ -26,7 +26,7 @@ import CustomSelect from './custom-select';
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
 		${({ theme, disabled, iconColor = 'primary' }): string =>
-			disabled ? theme.palette.gray2.regular : getColor(iconColor, theme)};
+			disabled ? theme.palette.gray2.regular : getColor(String(iconColor), theme)};
 	svg {
 		border: none !important;
 	}

@@ -15,7 +15,7 @@ export const calcColor = (label: string, theme: DefaultTheme): string => {
 	for (let i = 0; i < label.length; i += 1) {
 		sum += label.charCodeAt(i);
 	}
-	return getColor(`avatar_${(sum % 50) + 1}`, theme);
+	return theme.avatarColors[`avatar_${(sum % 50) + 1}`];
 };
 
 export const getFileExtension = (file: EditorAttachmentFiles | AttachmentPart): string => {

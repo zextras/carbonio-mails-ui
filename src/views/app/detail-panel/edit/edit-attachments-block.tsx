@@ -5,6 +5,7 @@
  */
 import {
 	Container,
+	getColor,
 	Icon,
 	IconButton,
 	Link,
@@ -12,8 +13,7 @@ import {
 	Row,
 	Text,
 	Tooltip,
-	useTheme,
-	getColor
+	useTheme
 } from '@zextras/carbonio-design-system';
 import { filter, find, map, uniqBy } from 'lodash';
 import React, {
