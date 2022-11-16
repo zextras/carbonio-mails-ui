@@ -5,6 +5,7 @@
  */
 import {
 	Container,
+	getColor,
 	Icon,
 	IconButton,
 	Link,
@@ -109,14 +110,14 @@ const AttachmentContainer = styled(Container)`
 	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
 	&:hover {
 		background-color: ${({ theme, background = 'currentColor' }): string =>
-			theme.palette[background].hover};
+			getColor(`${background}.hover`, theme)};
 		& ${AttachmentHoverBarContainer} {
 			display: flex;
 		}
 	}
 	&:focus {
 		background-color: ${({ theme, background = 'currentColor' }): string =>
-			theme.palette[background].focus};
+			getColor(`${background}.focus`, theme)};
 	}
 	cursor: pointer;
 `;

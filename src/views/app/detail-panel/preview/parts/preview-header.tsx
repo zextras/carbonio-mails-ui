@@ -27,7 +27,8 @@ import {
 	Chip,
 	Dropdown,
 	ContainerProps,
-	IconButton
+	IconButton,
+	getColor
 } from '@zextras/carbonio-design-system';
 import {
 	capitalize,
@@ -64,7 +65,7 @@ const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean 
 	border-radius: ${({ isExpanded }): string => (isExpanded ? '0.25rem 0.25rem 0 0' : '0.25rem')};
 	&:hover {
 		background: ${({ theme, background = 'currentColor' }): string =>
-			theme.palette[background].hover};
+			getColor(`${background}.hover`, theme)};
 	}
 `;
 
@@ -82,8 +83,6 @@ type PreviewHeaderProps = {
 		isAlone: boolean;
 	};
 };
-
-type ThemeType = { sizes: { icon: { large: string } } };
 
 const fallbackContact = {
 	type: ParticipantRole.FROM,
@@ -108,7 +107,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	// @ts-ignore
 	const { folderId } = useParams();
 
-	const theme: ThemeType = useContext(ThemeContext);
+	const theme = useContext(ThemeContext);
 	const iconSize = useMemo(
 		() => parseInt(theme?.sizes.icon.large, 10),
 		[theme?.sizes?.icon?.large]

@@ -51,7 +51,7 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	const { folderId }: { folderId: string } = useParams();
 	const actionContainerRef = useRef<HTMLInputElement>(null);
 	const [open, setOpen] = useState(false);
-	const theme = useContext<ThemeContextProps>(ThemeContext);
+	const theme = useContext(ThemeContext);
 
 	const maxActions = useMemo(() => {
 		if (folderId === FOLDERS.TRASH) return 2;
