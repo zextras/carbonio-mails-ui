@@ -5,7 +5,9 @@
  */
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import {
+	Avatar,
 	Button,
+	Container,
 	Dropdown,
 	IconButton,
 	MultiButton,
@@ -27,6 +29,7 @@ import {
 	useBoardHooks,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
+import styled from 'styled-components';
 import { concat, find, some } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Controller } from 'react-hook-form';
@@ -43,6 +46,14 @@ import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { EditViewContext } from './edit-view-context';
 import * as StyledComp from './edit-view-styled-components';
 import SendLaterModal from './send-later-modal';
+
+const FromItem = styled(Row)`
+	border-radius: 4px;
+	cursor: pointer;
+	&:hover {
+		background-color: ${({ theme }): string => theme.palette.gray6.focus};
+	}
+`;
 
 type PropType = {
 	setShowRouteGuard: (arg: boolean) => void;
@@ -128,6 +139,9 @@ const EditViewHeader: FC<PropType> = ({
 		setOpenDD(!openDD);
 	};
 
+	const onFromDropdownClose = useCallback((): void => {
+		setOpen(false);
+	}, []);
 	const toggleOpen = useCallback(() => setOpen((show) => !show), []);
 	const history = useHistory();
 	const undoURL = useMemo(
@@ -166,7 +180,7 @@ const EditViewHeader: FC<PropType> = ({
 					}),
 					autoHideTimeout: remainingTime * 1000,
 					hideButton,
-					actionLabel: 'Undo',
+					actionLabel: t('label.undo', 'Undo'),
 					onActionClick: () => {
 						reopenBoards();
 						notCanceled = false;
@@ -282,7 +296,7 @@ const EditViewHeader: FC<PropType> = ({
 				},
 				children: (
 					<StoreProvider>
-						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
+						<Text overflow="break-word" style={{ paddingTop: '1rem' }}>
 							{/* eslint-disable-next-line no-nested-ternary */}
 							{isattachWordsPresent && !editor?.attachmentFiles.length && !editor?.subject
 								? t(
@@ -294,7 +308,7 @@ const EditViewHeader: FC<PropType> = ({
 								: t('messages.modal.send_anyway.no_attachments', 'You didn’t attach any files.')}
 						</Text>
 
-						<Text overflow="break-word" style={{ paddingBottom: '16px' }}>
+						<Text overflow="break-word" style={{ paddingBottom: '1rem' }}>
 							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
 						</Text>
 					</StoreProvider>
@@ -430,6 +444,7 @@ const EditViewHeader: FC<PropType> = ({
 		],
 		[openSendLaterModal, isSendLaterAllowed]
 	);
+	const noName = useMemo(() => t('label.no_name', '<No Name>'), []);
 	return (
 		<>
 			<Row
@@ -439,7 +454,7 @@ const EditViewHeader: FC<PropType> = ({
 				width="100%"
 			>
 				{hasIdentity && (
-					<Row>
+					<FromItem orientation="horizontal" mainAlignment="space-between">
 						<Tooltip label={activeFrom?.label} maxWidth="100%" placement="top-start">
 							<Dropdown
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -448,22 +463,39 @@ const EditViewHeader: FC<PropType> = ({
 								width="fit"
 								maxWidth="100%"
 								forceOpen={open}
-								onClose={toggleOpen}
+								onClose={onFromDropdownClose}
 								selectedBackgroundColor="highlight"
 							>
-								<Button
-									label={t('label.from_identity', {
-										identity: from?.fullName || from?.address,
-										defaultValue: 'From: {{identity}}'
-									})}
-									icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+								<Row
 									onClick={toggleOpen}
-									type="outlined"
-									style={{ maxWidth: '280px' }}
-								/>
+									width="100%"
+									orientation="horizontal"
+									height="fit"
+									wrap="nowrap"
+									padding={{ all: 'small' }}
+								>
+									<Avatar label={from?.displayName || from?.fullName || noName} />
+									<Container
+										width="100%"
+										crossAlignment="flex-start"
+										height="fit"
+										padding={{ left: 'medium', right: 'medium' }}
+									>
+										<Text weight="bold">
+											{from?.displayName || from?.fullName || from?.address}
+										</Text>
+										<Text color="gray1" size="small">
+											{from?.address}
+										</Text>
+									</Container>
+									<IconButton
+										icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+										onClick={(): null => null}
+									/>
+								</Row>
 							</Dropdown>
 						</Tooltip>
-					</Row>
+					</FromItem>
 				)}
 				<Row>
 					<Controller

@@ -42,9 +42,6 @@
         }
     },
     "folder": {
-        "action": {
-            "new": "Nouveau dossier"
-        },
         "modal": {
             "edit": {
                 "rename_warning": "Vous ne pouvez pas renommer un dossier en tant que dossier système.",
@@ -52,19 +49,6 @@
                 "add_share": "Ajouter un Partage",
                 "retention_duration_warning": "La durée de rétention doit être un nombre positif",
                 "threshold_message": "Les messages de ce dossier qui sont plus anciens que le seuil d'élimination seront soumis à un nettoyage et une suppression automatiques."
-            },
-            "move": {
-                "footer": "Déplacer"
-            },
-            "new": {
-                "input": {
-                    "name": "Nom du dossier"
-                }
-            },
-            "wipe": {
-                "body": {
-                    "message2": "Si vous le nettoyez, tous les contenus associés seront définitivement supprimés."
-                }
             }
         }
     },
@@ -290,7 +274,10 @@
         "as_html": "En HTML",
         "arrival_notifications": "Notifications d'arrivée",
         "mark_all_as_read": "Définir tous comme lus",
-        "send_scheduled": "Envoi programmé"
+        "send_scheduled": "Envoi programmé",
+        "not_in_list": "{{name}} - N'est pas dans votre liste d'étiquettes",
+        "invalid_query": "Impossible d'analyser la requête de recherche, supprimez la et réessayez",
+        "download_and_delete": "Télécharger et Supprimer"
     },
     "message": {
         "snackbar": {
@@ -323,7 +310,9 @@
         "schedule_time": "le {{date}} à {{time}}",
         "schedule_mail": "Sera envoyé le : {{date}} à {{time}}",
         "send_later_success": "Votre email sera envoyé le {{date}} à {{time}}",
-        "select_date_time": "Sélectionner une date et une heure pour envoyer le message"
+        "select_date_time": "Sélectionner une date et une heure pour envoyer le message",
+        "delete_attachment_message2": "Souhaitez-vous le télécharger avant ?",
+        "delete_attachment_message1": "Votre pièce jointe sera définitivement supprimée de Carbonio."
     },
     "messages": {
         "invalid_address": "L'adresse suivante semble être invalide",
@@ -374,7 +363,6 @@
             "message_deleted": "Message supprimé",
             "message_move": "Message déplacé avec succès",
             "message_redirected": "Le message a été redirigé",
-            "folder_wiped_error": "Quelque chose s'est mal passé, veuillez recommencer",
             "mail_sent": "Message envoyé",
             "marked_as_non_spam": "Vous avez marqué cet email comme n'étant pas un spam",
             "email_moved_to_trash": "Email déplacé dans la Corbeille",
@@ -404,7 +392,6 @@
     "placeholder": {
         "add_new_recipients": "Ajouter de nouveaux destinataires"
     },
-    "remove_from_this_list": "Retirer de cette liste",
     "search": {
         "unread": "Non lu",
         "flagged_note": "Recherchez tous les emails qui ont une étiquette.",
@@ -427,7 +414,8 @@
             "display_messages": "Affichage des Messages",
             "message_color": "Couleur du message",
             "message_selection": "Sélection du message",
-            "visualization_options": "Options d'affichage"
+            "visualization_options": "Options d'affichage",
+            "unsend_time": "Définir le temps pour annuler un envoi"
         },
         "msg_from_optn": {
             "discard": "Rejeter le message automatiquement",
@@ -554,7 +542,11 @@
         },
         "font_size": "{{count}} pt",
         "font_size_plural": "",
-        "font": "Police"
+        "font": "Police",
+        "mail_unsend_time": {
+            "second": "{{count}} seconde",
+            "second_plural": "{{count}} secondes"
+        }
     },
     "share": {
         "options": {

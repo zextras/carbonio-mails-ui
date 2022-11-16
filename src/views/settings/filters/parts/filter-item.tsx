@@ -12,7 +12,7 @@ import { ListPropsType } from '../../../../types';
 const ContainerEl = styled(Container)``;
 
 const Filter = styled(Row)`
-	border-bottom: 1px solid ${({ theme }): string => theme.palette.gray2.regular};
+	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
 	display: block;
 	border-radius: 0;
 	cursor: pointer;
@@ -23,7 +23,7 @@ const Filter = styled(Row)`
 `;
 
 const ButtonEl = styled(Icon)`
-	border: 1px solid
+	border: 0.0625rem solid
 		${({ theme, disabled }): string =>
 			disabled ? theme.palette.primary.disabled : theme.palette.primary.regular};
 `;
@@ -68,7 +68,7 @@ const FilterItem: FC<any> = ({ item, selected, unSelect, listProps }): ReactElem
 			onMouseEnter={onMouseEnter}
 			onMouseLeave={onMouseLeave}
 		>
-			<Row height="40px" padding={{ all: 'small' }}>
+			<Row height="2.5rem" padding={{ all: 'small' }}>
 				<ContainerEl width="80%" crossAlignment="flex-start">
 					<Text size="small">{item?.name}</Text>
 				</ContainerEl>

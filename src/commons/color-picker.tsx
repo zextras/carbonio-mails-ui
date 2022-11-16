@@ -11,11 +11,11 @@ import useClickOutside from '../hooks/use-click-outside-picker';
 import { ColorContainer } from '../integrations/shared-invite-reply/parts/styled-components';
 
 const ColorBox = styled(Container)<ContainerProps & { disabled: boolean; color: string }>`
-	width: 28px;
-	height: 28px;
-	border-radius: 8px;
-	border: 3px solid #fff;
-	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+	width: 1.75rem;
+	height: 1.75rem;
+	border-radius: 0.5rem;
+	border: 0.1875rem solid #fff;
+	box-shadow: 0 0 0 0.0625rem rgba(0, 0, 0, 0.1), inset 0 0 0 0.0625rem rgba(0, 0, 0, 0.1);
 	cursor: ${({ disabled }): string => (disabled ? 'no-drop' : 'pointer')};
 	background-color: ${({ color }): string => color};
 	opacity: ${({ disabled }): string => (disabled ? '0.5' : '1')};
@@ -23,12 +23,12 @@ const ColorBox = styled(Container)<ContainerProps & { disabled: boolean; color: 
 
 const PopOver = styled(Container)`
 	position: absolute;
-	top: calc(100% + 2px);
+	top: calc(100% + 0.125rem);
 	left: 0;
-	width: 200px;
-	height: 200px;
-	border-radius: 9px;
-	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+	width: 12.5rem;
+	height: 12.5rem;
+	border-radius: 0.5625rem;
+	box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.15);
 `;
 
 export const ColorPicker: FC<{
@@ -53,7 +53,7 @@ export const ColorPicker: FC<{
 			}}
 			style={{ cursor: disabled ? 'no-drop' : 'pointer' }}
 			onClick={(): void | null => (disabled ? null : setIsOpen(true))}
-			height="48px"
+			height="3rem"
 		>
 			<Container style={{ position: 'relative' }} orientation="horizontal" width="fit">
 				<ColorBox color={color} disabled={disabled} />

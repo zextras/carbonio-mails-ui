@@ -5,24 +5,13 @@
  */
 
 export type StateType = {
-	status: string;
+	// status: string;
 	folders: FoldersStateType;
 	editors: EditorsStateType;
 	conversations: ConversationsStateType;
-	sync: SyncStateType;
+	// sync: SyncStateType;
 	messages: MsgStateType;
 	searches: SearchesStateType;
-};
-
-export type FoldersSlice = {
-	status: string;
-	folders: FoldersStateType[];
-};
-
-export type SyncStateType = {
-	status: string;
-	intervalId: number;
-	token?: string;
 };
 
 export type EditorsStateType = {
@@ -53,8 +42,6 @@ export type ConversationsStateType = {
 	expandedStatus: Record<string, Status>;
 	status: ConversationsFolderStatus;
 };
-
-export type SearchesMap = Record<string, Conversation>;
 
 export type SearchesStateType = {
 	searchResults: any;

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Text } from '@zextras/carbonio-design-system';
+import { Avatar, Container, Text } from '@zextras/carbonio-design-system';
 import { useRoots, useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map, find, filter, findIndex, flatten, isNull } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -60,7 +60,8 @@ export const useGetIdentities = ({
 			address: item._attrs?.zimbraPrefFromAddress,
 			fullname: item._attrs?.zimbraPrefFromDisplay ?? '',
 			type: item._attrs.zimbraPrefFromAddressType,
-			identityName: item.name ?? ''
+			identityName: item.name ?? '',
+			displayName: item._attrs?.zimbraPrefIdentityName ?? ''
 		}));
 
 		const rightsList = flatten(
@@ -81,14 +82,15 @@ export const useGetIdentities = ({
 						address: item.email[0].addr,
 						fullname: item.d,
 						type: ele.right,
-						identityName: ''
+						identityName: '',
+						displayName: ''
 					}))
 			)
 		);
 
 		const flattenList = flatten(rightsList);
 
-		const uniqueIdentityList = [...identityList];
+		const uniqueIdentityList: IdentityType[] = [...identityList];
 		if (flattenList?.length) {
 			map(flattenList, (ele: IdentityType) => {
 				const uniqIdentity = findIndex(identityList, { address: ele.address });
@@ -146,6 +148,7 @@ export const useGetIdentities = ({
 				fullname: el.fullName || el.fullname,
 				type: el.type,
 				identityName: el.identityName,
+				displayName: el.displayName,
 
 				onClick: (): void => {
 					setActiveFrom(el);
@@ -153,7 +156,9 @@ export const useGetIdentities = ({
 						address: el.address,
 						fullName: el.fullname,
 						name: el.address,
-						type: ParticipantRole.FROM
+						type: ParticipantRole.FROM,
+						identityName: el.identityName,
+						displayName: el.displayName
 					};
 
 					updateEditorCb({ from: data });
@@ -173,13 +178,21 @@ export const useGetIdentities = ({
 				},
 				selected: el === activeFrom,
 				customComponent: (
-					<Container width="100%" crossAlignment="flex-start" height="fit">
-						<Text weight="bold">{el.identityName || noName}</Text>
-						{el.type === 'sendOnBehalfOf' ? (
-							<Text color="gray1"> {el.label} </Text>
-						) : (
-							<Text color="gray1">{`${el.fullname} <${el.address}>`}</Text>
-						)}
+					<Container width="100%" orientation="horizontal" height="fit">
+						<Avatar label={el.displayName || el.fullname || noName} />
+						<Container
+							width="100%"
+							crossAlignment="flex-start"
+							height="fit"
+							padding={{ left: 'medium' }}
+						>
+							<Text weight="bold">{el.displayName || el.fullname || noName}</Text>
+							{el.type === 'sendOnBehalfOf' ? (
+								<Text color="gray1"> {el.label} </Text>
+							) : (
+								<Text color="gray1">{`${el.fullname} <${el.address}>`}</Text>
+							)}
+						</Container>
 					</Container>
 				)
 			})),

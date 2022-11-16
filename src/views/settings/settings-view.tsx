@@ -305,7 +305,7 @@ const SettingsView: FC = () => {
 				background="gray5"
 				style={{ overflowY: 'auto' }}
 			>
-				<FormSection minWidth="calc(min(100%, 512px))">
+				<FormSection minWidth="calc(min(100%, 32rem))">
 					<DisplayMessagesSettings
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore

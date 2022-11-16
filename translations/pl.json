@@ -328,7 +328,10 @@
         "as_html": "Jako HTML",
         "arrival_notifications": "Powiadomienia o otrzymaniu",
         "mark_all_as_read": "Oznacz wszystkie jako przeczytane",
-        "send_scheduled": "Zaplanuj wysyłanie"
+        "send_scheduled": "Zaplanuj wysyłanie",
+        "not_in_list": "{{name}} nie znajduje się na Twojej liście tagów",
+        "invalid_query": "Nie udało się wyszukać, wyczyść pole wyszukiwania i spróbuj ponownie",
+        "download_and_delete": "Pobierz i usuń"
     },
     "message": {
         "snackbar": {
@@ -361,7 +364,8 @@
         "schedule_time": "na {{date}} o {{time}}",
         "schedule_mail": "Zostanie wysłany: {{date}} o {{time}}",
         "send_later_success": "Twój e-mail zostanie wysłany {{date}} o {{time}}",
-        "select_date_time": "Wybierz datę i godzinę, o której ta wiadomość zostanie wysłana"
+        "select_date_time": "Wybierz datę i godzinę, o której ta wiadomość zostanie wysłana",
+        "delete_attachment_message2": "Czy chcesz pobrać go przed tym?"
     },
     "search": {
         "flagged_note": "Wyszukaj wszystkie oflagowane e-maile.",
@@ -679,7 +683,12 @@
         "font_size_0": "{{count}} pkt",
         "font_size_1": "{{count}} pkt",
         "font_size_2": "{{count}} pkt",
-        "font": "Czcionka"
+        "font": "Czcionka",
+        "mail_unsend_time": {
+            "second_0": "{{count}} sekunda",
+            "second_1": "{{count}} sekundy",
+            "second_2": "{{count}} sekund"
+        }
     },
     "signatures": {
         "signature_heading": "Podpisy",

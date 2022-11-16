@@ -26,17 +26,21 @@ const PreviewPanelHeader: FC<{
 			<Container
 				data-testid="PreviewPanelHeader"
 				orientation="horizontal"
-				height="48px"
+				height="3rem"
 				background="gray5"
 				mainAlignment="space-between"
 				crossAlignment="center"
 				padding={{ left: 'large', right: 'extrasmall' }}
-				style={{ minHeight: '48px' }}
+				style={{ minHeight: '3rem' }}
 			>
 				{item?.read ? (
-					<Icon style={{ width: '18px' }} icon="EmailReadOutline" data-testid="EmailReadIcon" />
+					<Icon style={{ width: '1.125rem' }} icon="EmailReadOutline" data-testid="EmailReadIcon" />
 				) : (
-					<Icon style={{ width: '18px' }} icon="EmailReadOutline" data-testid="EmailUnreadIcon" />
+					<Icon
+						style={{ width: '1.125rem' }}
+						icon="EmailReadOutline"
+						data-testid="EmailUnreadIcon"
+					/>
 				)}
 				<Row mainAlignment="flex-start" padding={{ left: 'large' }} takeAvailableSpace>
 					<Text size="medium" data-testid="Subject" color={item?.subject ? 'text' : 'secondary'}>

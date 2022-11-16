@@ -27,7 +27,7 @@ import {
 	handleCreatedMessagesInConversationsReducer
 } from './search-slice-reducers';
 
-const getSearchInitialiState = (): SearchesStateType =>
+export const getSearchSliceInitialiState = (): SearchesStateType =>
 	({
 		searchResults: undefined,
 		conversations: [],
@@ -43,7 +43,7 @@ const getSearchInitialiState = (): SearchesStateType =>
 	} as SearchesStateType);
 
 const resetResultReducer = (state: SearchesStateType): SearchesStateType =>
-	getSearchInitialiState();
+	getSearchSliceInitialiState();
 
 const fetchSearchesPending = (state: SearchesStateType): void => {
 	state.status = 'pending';
@@ -107,7 +107,7 @@ const msgActionFulfilled = (
 
 export const searchesSlice = createSlice({
 	name: 'searches',
-	initialState: getSearchInitialiState(),
+	initialState: getSearchSliceInitialiState(),
 	reducers: {
 		resetSearchResults: resetResultReducer,
 		handleNotifyCreatedSearchConversations: produce(handleCreatedConversationsReducer),

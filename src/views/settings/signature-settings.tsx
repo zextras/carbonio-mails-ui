@@ -26,7 +26,7 @@ import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsecti
 import { SignatureSettingsPropsType, SignItemType } from '../../types';
 
 const Signature = styled(Row)`
-	border-bottom: 1px solid ${({ theme }): string => theme.palette.gray2.regular};
+	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
 	display: block;
 	border-radius: 0;
 	cursor: pointer;
@@ -108,7 +108,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		updatedSign.push({
 			id: (Math.random() + 1).toString(36).substring(7),
 			description: '',
-			label: 'Enter Name',
+			label: t('label.enter_name', 'Enter Name'),
 			index: signItems.length
 		});
 		setSignItems(updatedSign);
@@ -188,7 +188,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					}
 				}}
 			>
-				<Row height="40px" padding={{ all: 'small' }}>
+				<Row height="2.5rem" padding={{ all: 'small' }}>
 					<Container width="60%" crossAlignment="flex-start">
 						<Text weight="bold">{item.label}</Text>
 					</Container>
@@ -230,7 +230,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 							</Container>
 							<Padding all="small" />
 
-							<Container height={500}>
+							<Container height="31.25rem">
 								<List items={signItems ?? []} ItemComponent={ListItem} selected={selected} />
 							</Container>
 						</Container>

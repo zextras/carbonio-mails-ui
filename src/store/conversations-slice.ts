@@ -169,15 +169,18 @@ function getConvRejected(state: ConversationsStateType, { meta }: any): void {
 	state.expandedStatus[meta.arg.conversationId] = 'error';
 }
 
-export const conversationsSlice = createSlice({
-	name: 'conversations',
-	initialState: {
+export const getConversationsSliceInitialState = (): ConversationsStateType =>
+	({
 		currentFolder: '2',
 		conversations: {},
 		expandedStatus: {},
 		searchedInFolder: {},
 		status: 'empty'
-	} as ConversationsStateType,
+	} as ConversationsStateType);
+
+export const conversationsSlice = createSlice({
+	name: 'conversations',
+	initialState: getConversationsSliceInitialState(),
 	reducers: {
 		handleNotifyCreatedConversations: produce(handleCreatedConversationsReducer),
 		handleNotifyModifiedConversations: produce(handleModifiedConversationsReducer),
