@@ -426,6 +426,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 							background="gray5"
 							padding={{ top: 'small', bottom: 'medium', horizontal: 'large' }}
 							ref={containerRef}
+							data-testid="edit-view-editor"
 						>
 							{dropZoneEnable && (
 								<DropZoneAttachment

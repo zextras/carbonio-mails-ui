@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { screen, waitFor } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import React from 'react';
@@ -21,7 +22,7 @@ describe('Edit view', () => {
 			mailId: '',
 			folderId: FOLDERS.INBOX,
 			setHeader: noop,
-			toggleAppBoard: false
+			toggleAppBoard: true
 		};
 
 		jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param, defaultValue) => {
@@ -33,5 +34,10 @@ describe('Edit view', () => {
 		});
 
 		setupTest(<EditView {...props} />, { store });
+
+		await waitFor(() => {
+			expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument;
+		});
+		expect(screen.getByTestId('BtnSendMail')).toBeVisible();
 	});
 });

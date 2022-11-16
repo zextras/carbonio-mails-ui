@@ -561,6 +561,7 @@ const EditViewHeader: FC<PropType> = ({
 					<Padding left="large">
 						{multiBtnActions.length > 0 ? (
 							<MultiButton
+								data-testid="BtnSendMailMulti"
 								label={btnLabel}
 								onClick={sendMailAction}
 								disabledPrimary={isSendDisabled}
@@ -570,6 +571,7 @@ const EditViewHeader: FC<PropType> = ({
 						) : (
 							<Button
 								color="primary"
+								data-testid="BtnSendMail"
 								disabled={isSendDisabled}
 								icon="PaperPlane"
 								onClick={sendMailAction}
