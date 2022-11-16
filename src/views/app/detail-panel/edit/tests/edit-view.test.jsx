@@ -8,6 +8,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { ActionsType } from '../../../../../commons/utils';
 import * as useQueryParam from '../../../../../hooks/useQueryParam';
@@ -22,7 +23,7 @@ describe('Edit view', () => {
 			mailId: '',
 			folderId: FOLDERS.INBOX,
 			setHeader: noop,
-			toggleAppBoard: true
+			toggleAppBoard: false
 		};
 
 		jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param, defaultValue) => {
@@ -36,7 +37,7 @@ describe('Edit view', () => {
 		setupTest(<EditView {...props} />, { store });
 
 		await waitFor(() => {
-			expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument;
+			expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
 		});
 		expect(screen.getByTestId('BtnSendMail')).toBeVisible();
 	});

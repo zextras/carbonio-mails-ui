@@ -130,6 +130,7 @@ const EditViewHeader: FC<PropType> = ({
 		saveDraftCb,
 		setValue
 	});
+	console.log('**** att', attachmentsItems);
 
 	const onClick = (): void => {
 		setOpenDD(!openDD);
@@ -558,7 +559,7 @@ const EditViewHeader: FC<PropType> = ({
 							/>
 						</Padding>
 					)}
-					<Padding left="large">
+					{<Padding left="large">
 						{multiBtnActions.length > 0 ? (
 							<MultiButton
 								data-testid="BtnSendMailMulti"
@@ -578,7 +579,7 @@ const EditViewHeader: FC<PropType> = ({
 								label={btnLabel}
 							/>
 						)}
-					</Padding>
+					</Padding>}
 				</Row>
 			</Row>
 		</>

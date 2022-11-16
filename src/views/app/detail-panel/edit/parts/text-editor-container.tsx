@@ -28,7 +28,6 @@ type PropType = {
 	onDragOverEvent: (event: SyntheticEvent) => void;
 	draftSavedAt: string;
 	minHeight: number;
-	ref: RefObject<HTMLInputElement>;
 	setValue: (name: string, value: any) => void;
 };
 

@@ -23,7 +23,8 @@ import {
 	replaceHistory,
 	addBoard,
 	useBoard,
-	t
+	t,
+	useRoots
 } from '@zextras/carbonio-shell-ui';
 import { useForm } from 'react-hook-form';
 import moment from 'moment';
@@ -409,13 +410,13 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 		);
 	return (
 		<>
-			<RouteLeavingGuard
+			{/* <RouteLeavingGuard
 				when={!saveFirstDraft && showRouteGuard && !toggleAppBoard}
 				id={editor.id}
 				onDeleteDraft={(): void => {
 					dispatch(closeEditor(editorId));
 				}}
-			/>
+			/> */}
 			<EditViewContext.Provider value={context}>
 				<Catcher>
 					<Container onDragOver={(event: any): any => onDragOverEvent(event)}>
@@ -462,7 +463,6 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 								onDragOverEvent={onDragOverEvent}
 								draftSavedAt={draftSavedAt}
 								minHeight={avaibleMinHeight}
-								ref={textEditorRef}
 								setValue={setValue}
 							/>
 						</Container>
