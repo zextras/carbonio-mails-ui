@@ -4,7 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { screen, waitFor, within } from '@testing-library/react';
+import {
+	findByText,
+	screen,
+	waitFor,
+	waitForElementToBeRemoved,
+	within
+} from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import React from 'react';
@@ -30,7 +36,7 @@ describe('Edit view', () => {
 		});
 
 		const props = {
-			mailId: 'fakeEmail',
+			mailId: 'new-1',
 			folderId: FOLDERS.INBOX,
 			setHeader: noop,
 			toggleAppBoard: false
@@ -67,8 +73,15 @@ describe('Edit view', () => {
 		// Check for the status of the "send" button to be enabled
 		expect(btnSend).toBeEnabled();
 
+		// Insert a subject
+		await user.type(subjectInputElement, 'Interesting subject');
+		// Click on another component to trigger the change event
+		await user.click(editorTextareaElement);
+
 		// Insert a text inside editor
-		await user.type(toInputElement, 'Lorem ipsum');
+		await user.type(editorTextareaElement, 'Lorem ipsum');
+		// Click on another component to trigger the change event
+		await user.click(subjectInputElement);
 
 		// TODO should we check if the draft is created?
 
@@ -76,15 +89,22 @@ describe('Edit view', () => {
 		await user.click(btnSend);
 
 		// Check if a snackbar (countdown) will appear
+		// FIXME: resolve the string using the corresponding key in en.json
+		//await findByText('Sending your message in', {}, { timeout: 4000 });
+		// const snackbar = await screen.findByText(/Sending your message in/i, {}, { timeout: 4000 });
+		// console.log(snackbar);
+		// await waitForElementToBeRemoved(() => screen.findByText('Sending your message in'));
 
-		// Wait the default delay (3 sec) for the email to be send
+		// // Wait the default delay (3 sec) for the email to be send
 
-		// Check if a snackbar (email sent) will appear
+		// // Check if a snackbar (email sent) will appear
+		// // FIXME: resolve the string using the corresponding key in en.json
+		// await findByText('Message sent', {}, { timeout: 10000 });
 
-		// TEST SOLUTION 1: Check inside the store if the email exists
+		// // TEST SOLUTION 1: Check inside the store if the email exists
 
-		// TEST SOLUTION 2: Intercept the SOAP call (need some new feature in common-ui) and check the request content
+		// // TEST SOLUTION 2: Intercept the SOAP call (need some new feature in common-ui) and check the request content
 
-		// console.log('**** editors', selectEditors(store.getState()));
+		console.log('**** editors', selectEditors(store.getState()));
 	});
 });
