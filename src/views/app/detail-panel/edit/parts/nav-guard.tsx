@@ -114,12 +114,13 @@ export const RouteLeavingGuard: FC<{
 		},
 		[confirmedNavigation, createModal, id, lastLocation, lastLocationInitial, onDelete, onDraft]
 	);
+
 	useEffect(() => {
 		if (confirmedNavigation && lastLocation) {
 			// Navigate to the previous blocked location with your navigate function
 			history.push(lastLocation);
 		}
-	}, [confirmedNavigation, history, lastLocation]);
+	}, [confirmedNavigation, history, lastLocation])
 
 	return <Prompt when={when} message={handleBlockedNavigation} />;
 };
