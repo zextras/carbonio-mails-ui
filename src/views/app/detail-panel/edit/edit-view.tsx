@@ -23,8 +23,7 @@ import {
 	replaceHistory,
 	addBoard,
 	useBoard,
-	t,
-	useRoots
+	t
 } from '@zextras/carbonio-shell-ui';
 import { useForm } from 'react-hook-form';
 import moment from 'moment';
