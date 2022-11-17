@@ -29,7 +29,7 @@ interface ContactType extends ChipItem {
 }
 
 const ParticipantsRow: FC = () => {
-	const [ContactInput, isAvailable] = useIntegratedComponent('contact-input');
+	let [ContactInput, isAvailable] = useIntegratedComponent('contact-input');
 	const [showCc, setShowCc] = useState(false);
 	const [showBcc, setShowBcc] = useState(false);
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
@@ -46,7 +46,9 @@ const ParticipantsRow: FC = () => {
 		}
 	}, [editor?.bcc?.length, editor?.cc?.length]);
 
-	return (
+	isAvailable = false
+
+	const result = (
 		<>
 			<StyledComp.ColContainer occupyFull>
 				{isAvailable ? (
@@ -63,6 +65,7 @@ const ParticipantsRow: FC = () => {
 							>
 								<Container background="gray5" style={{ overflow: 'hidden' }}>
 									<ContactInput
+										data-testid="RecipientTo"
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
 										placeholder={t('label.to', 'To')}
@@ -122,6 +125,7 @@ const ParticipantsRow: FC = () => {
 							<Container orientation="horizontal" background="gray5">
 								<Container background="gray5">
 									<ChipInput
+										data-testid="RecipientTo"
 										placeholder={t('label.to', 'To')}
 										onChange={(contacts: Array<ContactType>): void => {
 											const data = map(contacts, (contact) =>
@@ -332,6 +336,7 @@ const ParticipantsRow: FC = () => {
 			)}
 		</>
 	);
+	return result;
 };
 
 export default ParticipantsRow;

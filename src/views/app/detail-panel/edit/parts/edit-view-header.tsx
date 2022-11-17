@@ -122,16 +122,14 @@ const EditViewHeader: FC<PropType> = ({
 		}
 	}, []);
 
-	// const attachmentsItems = useGetAttachItems({
-	// 	onFileClick,
-	// 	setOpenDD,
-	// 	editorId,
-	// 	updateEditorCb,
-	// 	saveDraftCb,
-	// 	setValue
-	// });
-	// console.log('**** att', attachmentsItems);
-	const attachmentsItems = [];
+	const attachmentsItems = useGetAttachItems({
+		onFileClick,
+		setOpenDD,
+		editorId,
+		updateEditorCb,
+		saveDraftCb,
+		setValue
+	});
 
 	const onClick = (): void => {
 		setOpenDD(!openDD);
