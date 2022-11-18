@@ -29,7 +29,7 @@ interface ContactType extends ChipItem {
 }
 
 const ParticipantsRow: FC = () => {
-	let [ContactInput, isAvailable] = useIntegratedComponent('contact-input');
+	const [ContactInput, isAvailable] = useIntegratedComponent('contact-input');
 	const [showCc, setShowCc] = useState(false);
 	const [showBcc, setShowBcc] = useState(false);
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
@@ -45,8 +45,6 @@ const ParticipantsRow: FC = () => {
 			setShowBcc(true);
 		}
 	}, [editor?.bcc?.length, editor?.cc?.length]);
-
-	isAvailable = false
 
 	const result = (
 		<>
@@ -104,6 +102,7 @@ const ParticipantsRow: FC = () => {
 											type="ghost"
 											style={{ color: '#282828', padding: 0 }}
 											onClick={toggleCc}
+											data-testid="BtnCc"
 										/>
 									</Padding>
 									<Button
@@ -166,6 +165,7 @@ const ParticipantsRow: FC = () => {
 										type="ghost"
 										style={{ color: '#282828', padding: 0 }}
 										onClick={toggleCc}
+										data-testid="BtnCc"
 									/>
 									<Button
 										label={t('label.bcc', 'Bcc')}
@@ -189,6 +189,7 @@ const ParticipantsRow: FC = () => {
 							defaultValue={editor.cc ?? []}
 							render={({ onChange, value }): ReactElement => (
 								<ContactInput
+									data-testid="RecipientCc"
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									placeholder={t('label.cc', 'Cc')}
@@ -221,6 +222,7 @@ const ParticipantsRow: FC = () => {
 							defaultValue={editor.cc ?? []}
 							render={({ onChange, value }): ReactElement => (
 								<ChipInput
+									data-testid="RecipientCc"
 									placeholder={t('label.cc', 'Cc')}
 									onChange={(contacts: Array<ContactType>): void => {
 										const data = map(contacts, (contact) =>
