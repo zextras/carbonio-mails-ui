@@ -131,7 +131,7 @@ const TextEditorContainer: FC<PropType> = ({
 							</StyledComp.EditorWrapper>
 						</Container>
 					) : (
-							<Controller
+						<Controller
 							name="text"
 							control={control}
 							defaultValue={editor?.text}
