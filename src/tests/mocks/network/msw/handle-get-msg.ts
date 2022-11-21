@@ -15,7 +15,6 @@ export const handleGetMsgRequest = async (
 	res: ResponseComposition<RestGenericResponse>,
 	ctx: RestContext
 ) => {
-	console.log('**** getMsgMock');
 	if (!req) {
 		return res(ctx.status(500, 'Empty request'));
 	}

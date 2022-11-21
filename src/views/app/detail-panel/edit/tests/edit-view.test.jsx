@@ -5,8 +5,8 @@
  */
 
 import { act, screen, waitFor, waitForElementToBeRemoved, within } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
+import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
+import { find, noop } from 'lodash';
 import React from 'react';
 import { rest } from 'msw';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -27,6 +27,8 @@ describe('Edit view', () => {
 			return undefined;
 		});
 
+		const from = find(getUserAccount().identities.identity, ['name', 'DEFAULT'])._attrs
+			.zimbraPrefFromAddress;
 		const address = 'ciccio@foo.com';
 		const ccAddress = 'john@foo.com';
 		const subject = 'Interesting subject';
@@ -88,32 +90,31 @@ describe('Edit view', () => {
 		act(() => jest.advanceTimersByTime(1000));
 
 		// Register a handler for the REST call
-		const restHandler = rest.post('*', async (req, res, ctx) => {
-			console.log('**** send req', req);
+		getSetupServerApi().use(
+			rest.post('/service/soap/SendMsgRequest', async (req, res, ctx) => {
+				// console.log('**** send req', req);
 
-			if (!req) {
-				// done(new Error('Empty request'));
-			}
+				if (!req) {
+					// done(new Error('Empty request'));
+				}
 
-			const msg = (await req.json()).Body.SendMsgRequest.m;
-			try {
-				expect(msg.su._content).toBe(subject);
-				msg.e.forEach((participant) => {
-					if (participant.t === 't') {
-						expect(participant.a).toBe(address);
-					} else if (participant.t === 'f') {
-						expect(participant.a).toBe(address);
-					}
-				});
-				expect(msg.mp[0].mp[1]._content).toBe(body);
-			} catch (error) {
-				// done(error);
-				return;
-			}
-			// done();
-		});
-
-		getSetupServerApi().use(restHandler);
+				const msg = (await req.json()).Body.SendMsgRequest.m;
+				try {
+					expect(msg.su._content).toBe(subject);
+					msg.e.forEach((participant) => {
+						if (participant.t === 't') {
+							expect(participant.a).toBe(address);
+						} else if (participant.t === 'f') {
+							expect(participant.a).toBe(from);
+						}
+					});
+					expect(msg.mp[0].mp[1]._content).toBe(body);
+				} catch (error) {
+					console.error(error);
+					// done(error);
+				}
+			})
+		);
 
 		// Click on the "send" button
 		await user.click(btnSend);
@@ -129,8 +130,8 @@ describe('Edit view', () => {
 
 		// Check if a snackbar (email sent) will appear
 		// await screen.findByText('messages.snackbar.mail_sent', {}, { timeout: 4000 });
-		// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
+		await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
 
 		// console.log('**** editors', selectEditors(store.getState()));
-	});
+	}, 150000);
 });

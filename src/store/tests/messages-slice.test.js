@@ -4,12 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { configureStore } from '@reduxjs/toolkit';
-import { storeReducers } from '../reducers';
+import fetchMock from 'jest-fetch-mock';
 import { getMsg } from '../actions';
 import { selectMessage, selectMessages } from '../messages-slice';
-import { generateState, generateStore } from '../../tests/generators/store';
-import { MAIL_APP_ID } from '../../constants';
+import { generateStore } from '../../tests/generators/store';
 import { getSetupServerApi } from '../../carbonio-ui-commons/test/jest-setup';
 
 describe('Messages Slice', () => {
@@ -32,9 +30,9 @@ describe('Messages Slice', () => {
 			const msgId = '1';
 			await store.dispatch(getMsg({ msgId }));
 			const state = store.getState();
-			// const readMessage = selectMessage(state, msgId);
-			// expect(readMessage).toBeDefined();
-			// expect(readMessage.parts.length).toBeGreaterThan(0);
+			const readMessage = selectMessage(state, msgId);
+			expect(readMessage).toBeDefined();
+			expect(readMessage.parts.length).toBeGreaterThan(0);
 		});
 	});
 });

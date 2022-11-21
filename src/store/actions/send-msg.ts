@@ -20,11 +20,15 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 		if (msg) {
 			toSend = generateMailRequest(msg);
 		}
-		console.log('**** sendMSg', { toSend, editor, msg });
-		const resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>('SendMsg', {
-			_jsns: 'urn:zimbraMail',
-			m: toSend
-		})) as SaveDraftResponse;
+		let resp;
+		try {
+			resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>('SendMsg', {
+				_jsns: 'urn:zimbraMail',
+				m: toSend
+			})) as SaveDraftResponse;
+		} catch (e) {
+			console.error(e);
+		}
 
 		if (resp?.m[0]?.id) {
 			dispatch(getMsg({ msgId: resp.m[0].id }));
