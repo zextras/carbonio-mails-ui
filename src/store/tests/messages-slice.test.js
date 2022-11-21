@@ -10,12 +10,12 @@ import { getMsg } from '../actions';
 import { selectMessage, selectMessages } from '../messages-slice';
 import { generateState, generateStore } from '../../tests/generators/store';
 import { MAIL_APP_ID } from '../../constants';
+import { getSetupServerApi } from '../../carbonio-ui-commons/test/jest-setup';
 
 describe('Messages Slice', () => {
 	describe('GetMsg', () => {
 		test('add single message on the store', async () => {
 			const store = generateStore();
-
 			// const options = { store };
 			//
 			// setupTest(<Dummy />, options);

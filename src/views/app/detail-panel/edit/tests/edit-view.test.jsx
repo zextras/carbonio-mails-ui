@@ -8,11 +8,12 @@ import { act, screen, waitFor, waitForElementToBeRemoved, within } from '@testin
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import React from 'react';
+import { rest } from 'msw';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import * as useQueryParam from '../../../../../hooks/useQueryParam';
 import { generateStore } from '../../../../../tests/generators/store';
 import EditView from '../edit-view';
-import { selectEditors } from '../../../../../store/editor-slice';
+import { getSetupServerApi } from '../../../../../carbonio-ui-commons/test/jest-setup';
 
 describe('Edit view', () => {
 	test('create a new email', async () => {
@@ -86,7 +87,33 @@ describe('Edit view', () => {
 		await user.type(editorTextareaElement, body);
 		act(() => jest.advanceTimersByTime(1000));
 
-		// TODO should we check if the draft is created?
+		// Register a handler for the REST call
+		const restHandler = rest.post('*', async (req, res, ctx) => {
+			console.log('**** send req', req);
+
+			if (!req) {
+				// done(new Error('Empty request'));
+			}
+
+			const msg = (await req.json()).Body.SendMsgRequest.m;
+			try {
+				expect(msg.su._content).toBe(subject);
+				msg.e.forEach((participant) => {
+					if (participant.t === 't') {
+						expect(participant.a).toBe(address);
+					} else if (participant.t === 'f') {
+						expect(participant.a).toBe(address);
+					}
+				});
+				expect(msg.mp[0].mp[1]._content).toBe(body);
+			} catch (error) {
+				// done(error);
+				return;
+			}
+			// done();
+		});
+
+		getSetupServerApi().use(restHandler);
 
 		// Click on the "send" button
 		await user.click(btnSend);
@@ -102,11 +129,7 @@ describe('Edit view', () => {
 
 		// Check if a snackbar (email sent) will appear
 		// await screen.findByText('messages.snackbar.mail_sent', {}, { timeout: 4000 });
-		await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
-
-		// // TEST SOLUTION 1: Check inside the store if the email exists
-
-		// // TEST SOLUTION 2: Intercept the SOAP call (need some new feature in common-ui) and check the request content
+		// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
 
 		// console.log('**** editors', selectEditors(store.getState()));
 	});
