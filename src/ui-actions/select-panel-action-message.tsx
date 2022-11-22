@@ -185,7 +185,7 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 	return (
 		<Container
 			background="gray5"
-			height={49}
+			height="3.0625rem"
 			orientation="horizontal"
 			padding={{ all: 'extrasmall' }}
 		>

@@ -14,7 +14,7 @@ import { participantToString } from '../../../../../commons/utils';
 import { Participant } from '../../../../../types';
 
 const ContactSubText = styled(Text)`
-	padding: 0 2px;
+	padding: 0 0.125rem;
 	overflow: initial;
 	&:not(:last-child) {
 		&:after {
@@ -44,7 +44,7 @@ const ContactName: FC<{
 	return (
 		<>
 			<Row mainAlignment="flex-start">
-				<Text color="secondary" size="small" style={{ paddingRight: '4px' }}>
+				<Text color="secondary" size="small" style={{ paddingRight: '0.25rem' }}>
 					{label}
 				</Text>
 			</Row>
@@ -57,7 +57,7 @@ const ContactName: FC<{
 				display="flex"
 				wrap={showOverflow ? 'nowrap' : 'wrap'}
 				style={{
-					lineHeight: '18px',
+					lineHeight: '1.125rem',
 					flexDirection: 'row',
 					overflow: 'hidden'
 				}}
@@ -71,7 +71,7 @@ const ContactName: FC<{
 				))}
 			</Row>
 			{isOverflow && showOverflow && (
-				<Text color="secondary" size="small" style={{ paddingLeft: '5px' }}>
+				<Text color="secondary" size="small" style={{ paddingLeft: '0.3125rem' }}>
 					...
 				</Text>
 			)}

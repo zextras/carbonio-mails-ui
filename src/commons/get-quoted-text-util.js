@@ -580,7 +580,7 @@ export function getQuotedTextOnly(message, isHtmlContent) {
 			},
 			{
 				name: 'blockquote',
-				index: htmlBody.indexOf('<blockquote style="margin: 0 0 20px 0;">')
+				index: htmlBody.indexOf('<blockquote style="margin: 0 0 1.25rem 0;">')
 			}
 		];
 		let foundIndex = indexList.filter((v) => v.index !== -1);
@@ -658,7 +658,7 @@ export function getQuotedTextOnly(message, isHtmlContent) {
 					break;
 				}
 				case 'blockquote': {
-					const zimbraQuoted = htmlBody.split('<blockquote style="margin: 0 0 20px 0;">');
+					const zimbraQuoted = htmlBody.split('<blockquote style="margin: 0 0 1.25rem 0;">');
 					htmlDoc.body.innerHTML = '';
 					zimbraQuoted.splice(1).forEach((item) => {
 						const div = htmlDoc.createElement('div');
@@ -757,8 +757,8 @@ export function getQuotedText(body) {
 			});
 			return htmlDoc.body.innerHTML;
 		}
-		if (htmlBody.indexOf('<blockquote style="margin: 0 0 20px 0;">') !== -1) {
-			const zimbraQuoted = htmlBody.split('<blockquote style="margin: 0 0 20px 0;">');
+		if (htmlBody.indexOf('<blockquote style="margin: 0 0 1.25rem 0;">') !== -1) {
+			const zimbraQuoted = htmlBody.split('<blockquote style="margin: 0 0 1.25rem 0;">');
 			htmlDoc.body.innerHTML = '';
 			zimbraQuoted.splice(1).forEach((item) => {
 				const div = htmlDoc.createElement('div');

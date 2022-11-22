@@ -246,7 +246,7 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 	return (
 		<Container
 			background="gray5"
-			height={49}
+			height="3.0625rem"
 			orientation="horizontal"
 			padding={{ all: 'extrasmall' }}
 		>

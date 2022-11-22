@@ -33,6 +33,7 @@ import styled from 'styled-components';
 import { concat, find, some } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Controller } from 'react-hook-form';
+import { SubmitErrorHandler, SubmitHandler } from 'react-hook-form/dist/types/form';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { ActionsType } from '../../../../../commons/utils';
@@ -66,7 +67,10 @@ type PropType = {
 			  }>
 			| undefined
 	) => void;
-	handleSubmit: (arg: () => void) => void;
+	handleSubmit: (
+		onValid: SubmitHandler<any>,
+		onInvalid?: SubmitErrorHandler<any>
+	) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 	uploadAttachmentsCb: (files: any) => AsyncThunkAction<any, any, any>;
 };
 const EditViewHeader: FC<PropType> = ({
@@ -176,7 +180,7 @@ const EditViewHeader: FC<PropType> = ({
 					}),
 					autoHideTimeout: remainingTime * 1000,
 					hideButton,
-					actionLabel: 'Undo',
+					actionLabel: t('label.undo', 'Undo'),
 					onActionClick: () => {
 						reopenBoards();
 						notCanceled = false;
@@ -292,7 +296,7 @@ const EditViewHeader: FC<PropType> = ({
 				},
 				children: (
 					<StoreProvider>
-						<Text overflow="break-word" style={{ paddingTop: '16px' }}>
+						<Text overflow="break-word" style={{ paddingTop: '1rem' }}>
 							{/* eslint-disable-next-line no-nested-ternary */}
 							{isattachWordsPresent && !editor?.attachmentFiles.length && !editor?.subject
 								? t(
@@ -304,7 +308,7 @@ const EditViewHeader: FC<PropType> = ({
 								: t('messages.modal.send_anyway.no_attachments', 'You didn’t attach any files.')}
 						</Text>
 
-						<Text overflow="break-word" style={{ paddingBottom: '16px' }}>
+						<Text overflow="break-word" style={{ paddingBottom: '1rem' }}>
 							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
 						</Text>
 					</StoreProvider>
@@ -470,7 +474,7 @@ const EditViewHeader: FC<PropType> = ({
 									wrap="nowrap"
 									padding={{ all: 'small' }}
 								>
-									<Avatar label={from?.identityName || from?.fullName || noName} />
+									<Avatar label={from?.displayName || from?.fullName || noName} />
 									<Container
 										width="100%"
 										crossAlignment="flex-start"
@@ -478,7 +482,7 @@ const EditViewHeader: FC<PropType> = ({
 										padding={{ left: 'medium', right: 'medium' }}
 									>
 										<Text weight="bold">
-											{from?.identityName || from?.fullName || from?.address}
+											{from?.displayName || from?.fullName || from?.address}
 										</Text>
 										<Text color="gray1" size="small">
 											{from?.address}
@@ -553,7 +557,9 @@ const EditViewHeader: FC<PropType> = ({
 						<Padding left="large">
 							<Button
 								type="outlined"
-								onClick={(): void => handleSubmit(onSave)}
+								onClick={(): void => {
+									handleSubmit(onSave)();
+								}}
 								label={`${t('label.save', 'Save')}`}
 							/>
 						</Padding>

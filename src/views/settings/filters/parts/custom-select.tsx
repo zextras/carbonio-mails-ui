@@ -36,7 +36,7 @@ const LabelFactory: FC<LabelFactoryPropsType> = ({
 			all: 'extrasmall'
 		}}
 		disabled={disabled}
-		minHeight="48px"
+		minHeight="3rem"
 	>
 		<Row width="100%" takeAvailableSpace mainAlignment="space-between">
 			<Row

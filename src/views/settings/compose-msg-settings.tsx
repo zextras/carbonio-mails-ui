@@ -94,7 +94,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 						padding={{ left: 'medium' }}
 						maxWidth="40vw"
 					>
-						<Container padding={{ right: 'small' }} minWidth="95px">
+						<Container padding={{ right: 'small' }} minWidth="5.9375rem">
 							<CustomSelect
 								items={fontsOptions}
 								background="gray5"
@@ -109,7 +109,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 							/>
 						</Container>
 
-						<Container padding={{ right: 'small' }} minWidth="100px">
+						<Container padding={{ right: 'small' }} minWidth="6.25rem">
 							<CustomSelect
 								items={fontSizesOptions}
 								background="gray5"

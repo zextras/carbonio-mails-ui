@@ -8,14 +8,6 @@ import { ThemeContext } from '@zextras/carbonio-design-system';
 import { min } from 'lodash';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
-type ThemeContextProps = {
-	sizes: {
-		icon: {
-			large: string;
-		};
-	};
-};
-
 type ArgsProps = {
 	iconWidth?: number;
 	numberLimit?: number;
@@ -27,8 +19,8 @@ export const useVisibleActionsCount = (
 ): [number, () => void] => {
 	const [visibleActionsCount, setVisibleActionsCount] = useState<number>(0);
 	const { iconWidth, numberLimit } = args;
-	const theme = useContext<ThemeContextProps>(ThemeContext);
-	const iconSize = iconWidth ?? parseInt(theme.sizes.icon.large, 10);
+	const theme = useContext(ThemeContext);
+	const iconSize = iconWidth ?? parseFloat(theme.sizes.icon.large);
 
 	const calculateVisibleActionsCount = useCallback(() => {
 		if (containerRef && containerRef.current && containerRef?.current?.clientWidth > 0) {

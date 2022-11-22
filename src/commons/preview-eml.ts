@@ -28,16 +28,16 @@ const getParticipantHeader = (participants: Participant[], type: string): string
 	return `<tr>
 			<td style="
                 width: auto;
-                padding: 3px 0 3px 0;
+                padding: 0.1875rem 0 0.1875rem 0;
                 vertical-align: top;
                 text-align: left;
                 font-weight: bold;
                 white-space: nowrap;
-            ">${type}: <span style="padding: 3px 3px 3px 3px; vertical-align: top; overflow: hidden; color: #828282;font-family: Roboto;
+            ">${type}: <span style="padding: 0.1875rem 0.1875rem 0.1875rem 0.1875rem; vertical-align: top; overflow: hidden; color: #828282;font-family: Roboto;
             font-style: normal;
             font-weight: 400;
-            font-size: 14px;
-            line-height: 21px;">${participantsList}</span></td>
+            font-size: 0.875rem;
+            line-height: 1.3125rem;">${participantsList}</span></td>
 			
 		</tr>`;
 };
@@ -49,14 +49,14 @@ export const getBodyWrapper = ({
 	content: string;
 	subject: string;
 }): string => {
-	const style = `background: white;font-family: Roboto;font-style: normal; font-weight: 400;  font-size: 18px;
-    line-height: 27px;`;
+	const style = `background: white;font-family: Roboto;font-style: normal; font-weight: 400;  font-size: 1.125rem;
+    line-height: 1.6875rem;`;
 
 	return `
     <div class="ZhCallListPrintView">
         <div>
             <div class="ZhPrintSubject"
-                style="${style} height: 28px;padding-left: 4px;display: flex;align-items: center;">
+                style="${style} height: 1.75rem;padding-left: 0.25rem;display: flex;align-items: center;">
                 <b>${subject}</b>
             </div>
             <div>
@@ -82,7 +82,7 @@ export const getErrorPage = (t: TFunction): string =>
             body {
                 background-color: #ffffff;
                 color: #4d4d4d;
-                font-size: 13px;
+                font-size: 0.8125rem;
                 font-family: Roboto, sans-serif;
             }
             .container {
@@ -94,48 +94,48 @@ export const getErrorPage = (t: TFunction): string =>
             .mainTextWrapper {
                 color: #2b73d2;
                 font-weight: 900;
-                font-size: 26px;
-                line-height: 24px;
-                margin-top: 30px;
+                font-size: 1.625rem;
+                line-height: 1.5rem;
+                margin-top: 1.875rem;
             }
             .errorWrapper {
                 display: flex;
                 flex-direction: row;
                 align-items: center;
-                margin: 23px 0 10px;
+                margin: 1.4375rem 0 0.625rem;
             }
             .line {
-                height: 1px;
-                width: 100px;
+                height: 0.0625rem;
+                width: 6.25rem;
                 background-color: gray;
             }
             .errorCode {
                 color: #4d4d4d;
                 font-weight: 300;
-                font-size: 14px;
-                line-height: 21px;
-                padding: 0 50px;
+                font-size: 0.875rem;
+                line-height: 1.3125rem;
+                padding: 0 3.125rem;
                 text-transform: uppercase;
             }
             .customText {
-                margin: 0 5px 0 0;
+                margin: 0 0.3125rem 0 0;
                 color: #414141;
             }
             .needSupportText {
                 color: #414141;
-                font-size: 15px;
+                font-size: 0.9375rem;
             }
             .poweredByZextras {
                 display: flex;
-                margin: 30px 0 0 0;
+                margin: 1.875rem 0 0 0;
             }
             .zextrasLogo {
-                top: 3px;
+                top: 0.1875rem;
                 position: relative;
             }
             .productLogo {
-                height: 75px;
-                width: 564px;
+                height: 4.6875rem;
+                width: 35.25rem;
             }
         </style>
     </head>
@@ -179,7 +179,7 @@ export const getCompleteHTMLForEML = ({ content }: { content: string }): string 
                         margin: 0;
                         overflow-y: hidden;
                         font-family: Roboto, sans-serif !important;
-                        font-size: 14px;                      
+                        font-size: 0.875rem;                      
                         background-color: #ffffff;
                     }
                     body pre, body pre * {
@@ -200,7 +200,7 @@ export const getCompleteHTMLForEML = ({ content }: { content: string }): string 
                         font-size: 12pt;
                     }
                     .ZhPrintSubject {
-                        padding: 10px;
+                        padding: 0.625rem;
                         font-weight: bold;
                     }
                     table.Msg img {
@@ -215,21 +215,21 @@ export const getCompleteHTMLForEML = ({ content }: { content: string }): string 
 
                     .MsgHdrName {
                         width: 10%;
-                        padding: 3px 0 3px 0;
+                        padding: 0.1875rem 0 0.1875rem 0;
                         vertical-align: top;
                         text-align: right;
                         font-weight: bold;
                         white-space: nowrap;
                     }
                     .MsgHdrValue {
-                        padding: 3px 3px 3px 3px;
+                        padding: 0.1875rem 0.1875rem 0.1875rem 0.1875rem;
                         vertical-align: top;
                         overflow: hidden;
                     }
                     .footer {
-                        font-size: 9px;
+                        font-size: 0.5625rem;
                         text-align: left;
-                        padding-left: 20px;
+                        padding-left: 1.25rem;
                     }
                         
                     @page {
@@ -270,14 +270,14 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
 	const msgTime = moment(msg.date).format('ddd, MMM DD, YYYY hh:mm A');
 
 	return `
-    <table  "class="Msg" style="padding:10px;width:100%;">
+    <table  "class="Msg" style="padding:0.625rem;width:100%;">
         <tr>      
             <td  colspan="2">
-                <table style="padding:10px;width:100%;"    >
+                <table style="padding:0.625rem;width:100%;"    >
                     <tr>
-                    <td style="width:50px;"> 
-                    <div style="width:48px;height:48px;border-radius:50%;background:skyblue;margin-left:10px;">
-                          <p style="text-align:center;line-height:50px">
+                    <td style="width:3.125rem;"> 
+                    <div style="width:3rem;height:3rem;border-radius:50%;background:skyblue;margin-left:0.625rem;">
+                          <p style="text-align:center;line-height:3.125rem">
                           ${getAvatarLabel(from?.[0]?.fullName ?? from?.[0]?.address)}
                           </p>
                     </div>
@@ -292,7 +292,7 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
                         </table>
                         </td>
                         <td style="vertical-align: text-top;">
-                            <table  style="padding:5px;width:100%;"  >
+                            <table  style="padding:0.3125rem;width:100%;"  >
                                 <tr>
                                     <td nowrap style="text-align:right;" class='MsgHdrSent'>
                                         <span id="messageDisplayTime_19062">${msgTime}</span>
@@ -304,7 +304,7 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
                 </table>
             </td>
         </tr>
-        <td id="iframeBody" style="padding:5px; font-family: Roboto, sans-serif ;" colspan="2">
+        <td id="iframeBody" style="padding:0.3125rem; font-family: Roboto, sans-serif ;" colspan="2">
             <div id="iframeBody" class="MsgBody-html">
             <hr />
                 ${content}

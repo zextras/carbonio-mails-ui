@@ -29,11 +29,11 @@ const MailEditHeader: FC<MailEditHeaderType> = ({
 	}, [folderId]);
 
 	return (
-		<Container height={49} background="gray5">
+		<Container height="3.0625rem" background="gray5">
 			<Container
 				orientation="horizontal"
 				mainAlignment="flex-start"
-				height={48}
+				height="3rem"
 				padding={{ left: 'large' }}
 			>
 				<Icon size="medium" icon="EditOutline" />
@@ -72,7 +72,7 @@ const MailEditPanel: FC = () => {
 					mainAlignment="flex-start"
 					height="fit"
 					background="gray6"
-					style={{ maxHeight: 'calc(100% - 49px)', flexGrow: '1' }}
+					style={{ maxHeight: 'calc(100% - 3.0625rem)', flexGrow: '1' }}
 				>
 					<EditView
 						mailId={editId}

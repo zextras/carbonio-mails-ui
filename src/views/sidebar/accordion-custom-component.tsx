@@ -43,26 +43,26 @@ import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from '
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
-	height: 48px;
+	height: 3rem;
 `;
 
 export const DropOverlayContainer = styled(Container)<ContainerProps & { folder: Folder }>`
 	position: absolute;
-	width: calc(248px - ${(props): number => (props.folder.depth - 2) * 16}px);
+	width: calc(15.5rem - ${(props): number => props.folder.depth - 2}rem);
 	height: 100%;
 	background: ${(props): string => props.theme.palette.primary.regular};
-	border-radius: 4px;
-	border: 4px solid #d5e3f6;
+	border-radius: 0.25rem;
+	border: 0.25rem solid #d5e3f6;
 	opacity: 0.4;
 `;
 
 const DropDenyOverlayContainer = styled(Container)<ContainerProps & { folder: Folder }>`
 	position: absolute;
-	width: calc(248px - ${(props): number => (props.folder.depth - 2) * 16}px);
+	width: calc(15.5rem - ${(props): number => props.folder.depth - 2}rem);
 	height: 100%;
 	background: ${(props): string => props.theme.palette.gray1.regular};
-	border-radius: 4px;
-	border: 4px solid #d5e3f6;
+	border-radius: 0.25rem;
+	border: 0.25rem solid #d5e3f6;
 	opacity: 0.4;
 `;
 

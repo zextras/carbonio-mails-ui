@@ -11,12 +11,12 @@ import { ParticipantRole } from '../../../../commons/utils';
 import { ItemAvatarType, Participant } from '../../../../types';
 
 const AvatarElement = styled(Avatar)`
-	width: 42px !important;
-	height: 42px !important;
-	min-width: 42px !important;
-	min-height: 42px !important;
+	width: 2.625rem !important;
+	height: 2.625rem !important;
+	min-width: 2.625rem !important;
+	min-height: 2.625rem !important;
 	p {
-		font-size: 14px;
+		font-size: 0.875ren;
 	}
 `;
 

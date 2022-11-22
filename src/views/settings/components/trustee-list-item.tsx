@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import { t } from '@zextras/carbonio-shell-ui';
 
 const ListItem = styled(Row)`
-	border-bottom: 1px solid ${({ theme }): string => theme.palette.gray2.regular};
+	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
 	display: block;
 	border-radius: 0;
 	cursor: pointer;
@@ -38,7 +38,7 @@ const TrusteeListItem: FC<any> = ({ item, onRemove }): ReactElement => {
 			onMouseEnter={onMouseEnter}
 			onMouseLeave={onMouseLeave}
 		>
-			<Row height="40px" padding={{ all: 'small' }}>
+			<Row height="2.5rem" padding={{ all: 'small' }}>
 				<Container width="80%" crossAlignment="flex-start">
 					<Text size="small">{item}</Text>
 				</Container>

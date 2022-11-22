@@ -24,8 +24,8 @@ import { ShareCalendarRoleOptions, findLabel } from './parts/utils';
 import { MailMessage } from '../../types';
 
 const InviteContainer = styled(Container)`
-	border: 1px solid ${({ theme }: any): string => theme.palette.gray2.regular};
-	border-radius: 14px;
+	border: 0.0625rem solid ${({ theme }: any): string => theme.palette.gray2.regular};
+	border-radius: 0.875rem;
 	margin: ${({ theme }: any): string => theme.sizes.padding.extrasmall};
 `;
 

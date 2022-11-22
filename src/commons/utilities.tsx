@@ -3,12 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { getColor } from '@zextras/carbonio-design-system';
 import { isNil } from 'lodash';
-import { AttachmentPart, EditorAttachmentFiles, ThemeObj } from '../types';
+import { DefaultTheme } from 'styled-components';
+import { AttachmentPart, EditorAttachmentFiles } from '../types';
 
 const FileExtensionRegex = /^.+\.([^.]+)$/;
 
-export const calcColor = (label: string, theme: ThemeObj): string => {
+export const calcColor = (label: string, theme: DefaultTheme): string => {
 	let sum = 0;
 	for (let i = 0; i < label.length; i += 1) {
 		sum += label.charCodeAt(i);
