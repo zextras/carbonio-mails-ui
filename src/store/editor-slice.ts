@@ -8,6 +8,7 @@ import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { drop, find } from 'lodash';
 import { ActionsType } from '../commons/utils';
+import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import {
 	EditorsStateType,
@@ -32,8 +33,7 @@ import {
 	retrieveTO,
 	retrieveALL,
 	retrieveReplyTo,
-	retrieveCCForEditNew,
-	getSignatures
+	retrieveCCForEditNew
 } from './editor-slice-utils';
 
 type CreateEditorPayload = {
@@ -63,25 +63,22 @@ function createEditorReducer(
 	state: EditorsStateType,
 	{ payload }: { payload: CreateEditorPayload }
 ): void {
-	const signatures = getSignatures(payload.accounts[0]);
 	const empty = emptyEditor(payload.editorId, payload.accounts[0], payload.settings);
 
 	state.editors[payload.editorId] = empty;
 
-	const signatureRepliesForwardsValue =
-		find(
-			signatures,
-			(signature: any) =>
-				signature.value.id === payload.settings.prefs.zimbraPrefForwardReplySignatureId
-		)?.value?.description ?? '';
+	const signatureRepliesForwardsValue = getSignatureValue(
+		payload.accounts[0],
+		String(payload.settings.prefs.zimbraPrefForwardReplySignatureId)
+	);
 
 	const textWithSignatureRepliesForwards =
 		payload.labels && payload.original
 			? [
-					`<br>${signatureRepliesForwardsValue} ${
+					`${composeMailBodyWithSignature(signatureRepliesForwardsValue, false)} ${
 						generateReplyText(payload.original, payload.labels)[0]
 					}`,
-					`<br>${signatureRepliesForwardsValue} ${
+					`${composeMailBodyWithSignature(signatureRepliesForwardsValue, true)} ${
 						generateReplyText(payload.original, payload.labels)[1]
 					}`
 			  ]

@@ -92,10 +92,8 @@ describe('Edit view', () => {
 		// Register a handler for the REST call
 		getSetupServerApi().use(
 			rest.post('/service/soap/SendMsgRequest', async (req, res, ctx) => {
-				// console.log('**** send req', req);
-
 				if (!req) {
-					// done(new Error('Empty request'));
+					throw new Error('Empty request');
 				}
 
 				const msg = (await req.json()).Body.SendMsgRequest.m;
@@ -108,11 +106,35 @@ describe('Edit view', () => {
 							expect(participant.a).toBe(from);
 						}
 					});
-					expect(msg.mp[0].mp[1]._content).toBe(body);
+					expect(msg.mp[0].content._content).toBe(body);
 				} catch (error) {
 					console.error(error);
-					// done(error);
+					throw error;
 				}
+
+				const response = {
+					Header: {
+						context: {
+							session: {
+								id: '1220806',
+								_content: '1220806'
+							}
+						}
+					},
+					Body: {
+						SendMsgResponse: {
+							m: [
+								{
+									id: '1'
+								}
+							],
+							_jsns: 'urn:zimbraMail'
+						}
+					},
+					_jsns: 'urn:zimbraSoap'
+				};
+
+				return res(ctx.json(response));
 			})
 		);
 
@@ -129,8 +151,8 @@ describe('Edit view', () => {
 		);
 
 		// Check if a snackbar (email sent) will appear
-		// await screen.findByText('messages.snackbar.mail_sent', {}, { timeout: 4000 });
-		await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
+		await screen.findByText('messages.snackbar.mail_sent', {}, { timeout: 4000 });
+		// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
 
 		// console.log('**** editors', selectEditors(store.getState()));
 	}, 150000);
