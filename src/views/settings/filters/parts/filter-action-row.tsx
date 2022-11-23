@@ -26,7 +26,7 @@ const FilterTestConditionRow: FC<FilterActionRowProps> = ({
 				<Row padding={{ right: 'small' }}>
 					<Text>{t('settings.if', 'If')}</Text>
 				</Row>
-				<Row padding={{ right: 'small' }} minWidth="95px">
+				<Row padding={{ right: 'small' }} minWidth="5.9375rem">
 					<CustomSelect
 						items={fieldOptions}
 						background="gray5"
@@ -40,7 +40,7 @@ const FilterTestConditionRow: FC<FilterActionRowProps> = ({
 				</Row>
 			</Row>
 			<Padding top="small" />
-			<Container maxHeight="140px" style={{ overflow: 'auto' }} padding={{ top: 'small' }}>
+			<Container maxHeight="8.75rem" style={{ overflow: 'auto' }} padding={{ top: 'small' }}>
 				{map(newFilters, (tmpFilter, index) => (
 					<FilterActionRows
 						key={index}

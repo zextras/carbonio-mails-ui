@@ -7,16 +7,16 @@ import styled from 'styled-components';
 import { Container, Text } from '@zextras/carbonio-design-system';
 
 export const Square = styled.div`
-	width: 18px;
-	height: 18px;
+	width: 1.125rem;
+	height: 1.125rem;
 	position: relative;
-	top: -3px;
-	border: 1px solid ${({ theme }) => theme.palette.gray2.regular};
+	top: -0.1875rem;
+	border: 0.0625rem solid ${({ theme }) => theme.palette.gray2.regular};
 	background: ${({ color }) => color};
-	border-radius: 4px;
+	border-radius: 0.25rem;
 `;
 export const ColorContainer = styled(Container)`
-	border-bottom: 1px solid ${({ theme }) => theme.palette.gray2.regular};
+	border-bottom: 0.0625rem solid ${({ theme }) => theme.palette.gray2.regular};
 	cursor: ${({ disabled }) => (disabled ? 'no-drop' : 'pointer')};
 `;
 

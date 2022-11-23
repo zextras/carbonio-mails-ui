@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.49](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.48...v0.1.49) (2022-11-16)
+
+
+### Features
+
+* convert px to rem ([#225](https://github.com/zextras/carbonio-mails-ui/issues/225)) ([1a176ae](https://github.com/zextras/carbonio-mails-ui/commit/1a176ae50f844e2b8d187d01009409e53d779a82))
+* refactor board composer experience by changing the 'from' selector ([#245](https://github.com/zextras/carbonio-mails-ui/issues/245)) ([48e5f0e](https://github.com/zextras/carbonio-mails-ui/commit/48e5f0eecd9836ec256cfb4da4c882168806d906))
+
+
+### Bug Fixes
+
+* default unsend time ([4c8cd95](https://github.com/zextras/carbonio-mails-ui/commit/4c8cd9507bc8b35d165909ca3e3792f09c401cf1))
+* folder path passed instead of name for move filter ([#246](https://github.com/zextras/carbonio-mails-ui/issues/246)) ([231be69](https://github.com/zextras/carbonio-mails-ui/commit/231be693dfed13ce470c2200f671a158905a8d05))
+* hardcoded translations removed ([#251](https://github.com/zextras/carbonio-mails-ui/issues/251)) ([146609b](https://github.com/zextras/carbonio-mails-ui/commit/146609bd4960e5612b63504468b09facc0c8e6d6))
+
+### [0.1.48](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.47...v0.1.48) (2022-11-09)
+
+### [0.1.47](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.46...v0.1.47) (2022-11-08)
+
+
+### Bug Fixes
+
+* default unsend time to 3 sec ([962c588](https://github.com/zextras/carbonio-mails-ui/commit/962c588906c37f39e69cc30ffc36d45f57f453a5))
+
 ### [0.1.46](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.45...v0.1.46) (2022-10-27)
 
 

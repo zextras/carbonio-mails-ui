@@ -174,7 +174,12 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 						label={t('label.calendar_color', `Item color`)}
 					/>
 				</Row>
-				<Row width="100%" height="16px" mainAlignment="flex-start" style={{ marginBottom: '8px' }}>
+				<Row
+					width="100%"
+					height="1rem"
+					mainAlignment="flex-start"
+					style={{ marginBottom: '0.5rem' }}
+				>
 					{showError && (
 						<Text size="small" color="error">
 							{t(

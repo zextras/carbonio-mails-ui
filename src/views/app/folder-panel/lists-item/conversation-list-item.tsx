@@ -92,7 +92,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 
 	return (
 		<CustomList
-			style={{ paddingBottom: '4px' }}
+			style={{ paddingBottom: '0.25rem' }}
 			active={active}
 			items={messagesToRender}
 			isFromSearch={isFromSearch}
@@ -485,7 +485,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 			</Container>
 		</Drag>
 	) : (
-		<div style={{ height: '64px' }} />
+		<div style={{ height: '4rem' }} />
 	);
 };
 

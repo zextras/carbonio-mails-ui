@@ -27,7 +27,8 @@ import {
 	Chip,
 	Dropdown,
 	ContainerProps,
-	IconButton
+	IconButton,
+	getColor
 } from '@zextras/carbonio-design-system';
 import {
 	capitalize,
@@ -61,17 +62,17 @@ import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean }>`
 	cursor: pointer;
-	border-radius: ${({ isExpanded }): string => (isExpanded ? '4px 4px 0 0' : '4px')};
+	border-radius: ${({ isExpanded }): string => (isExpanded ? '0.25rem 0.25rem 0 0' : '0.25rem')};
 	&:hover {
 		background: ${({ theme, background = 'currentColor' }): string =>
-			theme.palette[background].hover};
+			getColor(`${background}.hover`, theme)};
 	}
 `;
 
 const TagChip = styled(Chip)`
 	margin-left: ${({ theme }): string => theme.sizes.padding.extrasmall};
-	padding: 1px 8px !important;
-	margin-bottom: 4px;
+	padding: 0.0625rem 0.5rem !important;
+	margin-bottom: 0.25rem;
 `;
 
 type PreviewHeaderProps = {
@@ -82,8 +83,6 @@ type PreviewHeaderProps = {
 		isAlone: boolean;
 	};
 };
-
-type ThemeType = { sizes: { icon: { large: string } } };
 
 const fallbackContact = {
 	type: ParticipantRole.FROM,
@@ -108,7 +107,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	// @ts-ignore
 	const { folderId } = useParams();
 
-	const theme: ThemeType = useContext(ThemeContext);
+	const theme = useContext(ThemeContext);
 	const iconSize = useMemo(
 		() => parseInt(theme?.sizes.icon.large, 10),
 		[theme?.sizes?.icon?.large]
@@ -282,7 +281,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 					</Container>
 					<Row
 						height="fit"
-						width="calc(100% - 48px)"
+						width="calc(100% - 3rem)"
 						padding={{ vertical: 'small' }}
 						takeAvailableSpace
 					>

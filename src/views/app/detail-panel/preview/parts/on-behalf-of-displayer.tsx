@@ -5,23 +5,23 @@
  */
 import React, { FC, ReactElement, useMemo } from 'react';
 
-import { TextWithTooltip } from '@zextras/carbonio-design-system';
+import { getColor, TextWithTooltip } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { capitalize } from 'lodash';
 import styled from 'styled-components';
 import { Participant, MailMessage } from '../../../../../types';
 
 const StyledText = styled.span<{ isRead?: string | boolean; color?: string }>`
-	padding: 0 2px;
+	padding: 0 0.125rem;
 	color: ${({ theme, color, isRead }): string =>
 		// eslint-disable-next-line no-nested-ternary
 		color
-			? theme.palette[color].regular
+			? getColor(color, theme)
 			: isRead
 			? theme.palette.text.regular
 			: theme.palette.primary.regular};
 
-	font-weight: ${({ theme, isRead }): string =>
+	font-weight: ${({ theme, isRead }): number =>
 		isRead ? theme.fonts.weight.regular : theme.fonts.weight.bold};
 `;
 const OnBehalfOfDisplayer: FC<{

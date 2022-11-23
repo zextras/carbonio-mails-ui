@@ -132,7 +132,7 @@ const FilterTabs: FC = (): ReactElement => {
 					background="gray5"
 					items={tabs}
 					selected={selectedFilterType}
-					height={60}
+					height="3.75rem"
 					onChange={onChange}
 				/>
 				<Container crossAlignment="flex-start" padding={{ top: 'small' }}>

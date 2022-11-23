@@ -22,8 +22,8 @@ import {
 
 const ButtonBar = styled(Row)`
 	position: absolute;
-	right: 8px;
-	top: 8px;
+	right: 0.5rem;
+	top: 0.5rem;
 `;
 
 type MailHoverBarPropType = {

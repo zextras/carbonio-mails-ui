@@ -44,7 +44,7 @@ const ContainerEl = styled(Container)`
 `;
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
-	height: 48px;
+	height: 3rem;
 `;
 const getFolderOwner = (item: any): string => {
 	if (item.owner) return item.owner;
@@ -166,7 +166,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			{
 				label: `in:${folderPath}`,
 				hasAvatar: true,
-				maxWidth: '200px',
+				maxWidth: '12.5rem',
 				isGeneric: false,
 				background: 'gray2',
 				avatarBackground: getFolderIconColor(folderDestination),

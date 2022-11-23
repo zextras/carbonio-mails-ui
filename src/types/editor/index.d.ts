@@ -51,6 +51,7 @@ type IdentityType = {
 	fullName?: string;
 	type: string;
 	identityName: string;
+	displayName?: string;
 };
 
 type UseGetIdentitiesReturnType = {

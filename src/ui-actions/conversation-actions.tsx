@@ -228,7 +228,7 @@ export function setConversationsSpam({
 						: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
 					autoHideTimeout: 3000,
 					hideButton,
-					actionLabel: 'Undo',
+					actionLabel: t('label.undo', 'Undo'),
 					onActionClick: (): void => {
 						notCanceled = false;
 					}
@@ -333,7 +333,7 @@ export function moveConversationToTrash({
 						key: `trash-${ids}`,
 						replace: true,
 						type: 'info',
-						actionLabel: 'Undo',
+						actionLabel: t('label.undo', 'Undo'),
 						label: t('snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
 						autoHideTimeout: 5000,
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment

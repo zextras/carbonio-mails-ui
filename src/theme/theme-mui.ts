@@ -203,7 +203,7 @@ export const themeMui = createTheme({
 				root: {
 					color: theme.palette.text.regular,
 					'&:hover': { background: theme.palette.gray3.hover },
-					fontSize: '20px',
+					fontSize: '1.25rem',
 					fontWeight: 400
 				}
 			}
@@ -211,14 +211,14 @@ export const themeMui = createTheme({
 		MuiAccordionSummary: {
 			styleOverrides: {
 				root: {
-					padding: '0 16px 0 0',
-					margin: '0px',
-					minHeight: '0px',
+					padding: '0 1rem 0 0',
+					margin: '0',
+					minHeight: '0',
 					justifyContent: 'left'
 				},
 				content: {
-					margin: '0px',
-					maxWidth: 'calc(100% - 20px)'
+					margin: '0',
+					maxWidth: 'calc(100% - 1.25rem)'
 				}
 			}
 		},
@@ -226,25 +226,25 @@ export const themeMui = createTheme({
 			styleOverrides: {
 				root: {
 					background: theme.palette.gray5.regular,
-					padding: '0 0 0 8px',
-					margin: '0px'
+					padding: '0 0 0 0.5rem',
+					margin: '0'
 				}
 			}
 		},
 		MuiButtonBase: {
 			styleOverrides: {
 				root: {
-					padding: '0px'
+					padding: '0'
 				}
 			}
 		},
 		MuiPaper: {
 			styleOverrides: {
 				root: {
-					borderBottomLeftRadius: '0px',
-					borderTopLeftRadius: '0px',
-					borderBottomRightRadius: '0px',
-					borderTopRightRadius: '0px'
+					borderBottomLeftRadius: '0',
+					borderTopLeftRadius: '0',
+					borderBottomRightRadius: '0',
+					borderTopRightRadius: '0'
 				}
 			}
 		},
@@ -252,21 +252,21 @@ export const themeMui = createTheme({
 			styleOverrides: {
 				root: {
 					':last-of-type': {
-						borderBottomLeftRadius: '0px',
-						borderTopLeftRadius: '0px',
-						borderBottomRightRadius: '0px',
-						borderTopRightRadius: '0px'
+						borderBottomLeftRadius: '0',
+						borderTopLeftRadius: '0',
+						borderBottomRightRadius: '0',
+						borderTopRightRadius: '0'
 					},
 					':first-of-type': {
-						borderBottomLeftRadius: '0px',
-						borderTopLeftRadius: '0px',
-						borderBottomRightRadius: '0px',
-						borderTopRightRadius: '0px'
+						borderBottomLeftRadius: '0',
+						borderTopLeftRadius: '0',
+						borderBottomRightRadius: '0',
+						borderTopRightRadius: '0'
 					},
 					boxShadow: 'none',
 					background: theme.palette.gray5.highlight,
 					'&.MuiAccordion-root:before': {
-						top: '0px'
+						top: '0'
 					}
 				}
 			}
