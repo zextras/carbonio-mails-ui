@@ -46,7 +46,7 @@ const ParticipantsRow: FC = () => {
 		}
 	}, [editor?.bcc?.length, editor?.cc?.length]);
 
-	return (
+	const result = (
 		<>
 			<StyledComp.ColContainer occupyFull>
 				{isAvailable ? (
@@ -63,6 +63,7 @@ const ParticipantsRow: FC = () => {
 							>
 								<Container background="gray5" style={{ overflow: 'hidden' }}>
 									<ContactInput
+										data-testid="RecipientTo"
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
 										placeholder={t('label.to', 'To')}
@@ -101,6 +102,7 @@ const ParticipantsRow: FC = () => {
 											type="ghost"
 											style={{ color: '#282828', padding: 0 }}
 											onClick={toggleCc}
+											data-testid="BtnCc"
 										/>
 									</Padding>
 									<Button
@@ -122,6 +124,7 @@ const ParticipantsRow: FC = () => {
 							<Container orientation="horizontal" background="gray5">
 								<Container background="gray5">
 									<ChipInput
+										data-testid="RecipientTo"
 										placeholder={t('label.to', 'To')}
 										onChange={(contacts: Array<ContactType>): void => {
 											const data = map(contacts, (contact) =>
@@ -162,6 +165,7 @@ const ParticipantsRow: FC = () => {
 										type="ghost"
 										style={{ color: '#282828', padding: 0 }}
 										onClick={toggleCc}
+										data-testid="BtnCc"
 									/>
 									<Button
 										label={t('label.bcc', 'Bcc')}
@@ -185,6 +189,7 @@ const ParticipantsRow: FC = () => {
 							defaultValue={editor.cc ?? []}
 							render={({ onChange, value }): ReactElement => (
 								<ContactInput
+									data-testid="RecipientCc"
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									placeholder={t('label.cc', 'Cc')}
@@ -217,6 +222,7 @@ const ParticipantsRow: FC = () => {
 							defaultValue={editor.cc ?? []}
 							render={({ onChange, value }): ReactElement => (
 								<ChipInput
+									data-testid="RecipientCc"
 									placeholder={t('label.cc', 'Cc')}
 									onChange={(contacts: Array<ContactType>): void => {
 										const data = map(contacts, (contact) =>
@@ -332,6 +338,7 @@ const ParticipantsRow: FC = () => {
 			)}
 		</>
 	);
+	return result;
 };
 
 export default ParticipantsRow;

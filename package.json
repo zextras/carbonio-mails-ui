@@ -98,7 +98,7 @@
     "react-redux": "7.2.6",
     "react-router-dom": "^5.3.0",
     "styled-components": "5.3.6",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.0"
   },
   "browserslist": [
     ">1%",

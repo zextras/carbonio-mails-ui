@@ -13,15 +13,17 @@ import {
 	List,
 	Row,
 	Button,
-	Padding
+	Padding,
+	SelectItem
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
 import { t, useIntegratedComponent, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { map, find, findIndex, merge, escape, unescape } from 'lodash';
+import { getSignature, getSignatures } from '../../helpers/signatures';
+import { SignatureDescriptor } from '../../types/signatures';
 import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';
-import { getSignatures } from '../../store/editor-slice-utils';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
 import { SignatureSettingsPropsType, SignItemType } from '../../types';
 
@@ -50,7 +52,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	setSignItemsUpdated
 }): ReactElement => {
 	const account = useUserAccount();
-	const [signatures, setSignatures] = useState(getSignatures(account, t));
+	const [signatures, setSignatures] = useState(getSignatures(account));
 	const [signs, setSigns] = useState([]);
 	const [selected, setSelected] = useState({});
 
@@ -81,6 +83,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			[signs]
 		)
 	);
+
 	setSignItems(
 		useMemo(() => {
 			const signItem = map(signs, (item: SignItemType, idx) => ({
@@ -116,31 +119,30 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 
 	const [signatureNewMessage, signatureRepliesForwards] = useMemo(
 		() => [
-			find(
-				signatures,
-				(signature) => signature?.value?.id === settingsObj.zimbraPrefDefaultSignatureId
-			) ?? signatures[0],
-			find(
-				signatures,
-				(signature) => signature?.value?.id === settingsObj.zimbraPrefForwardReplySignatureId
-			) ?? signatures[0]
+			getSignature(account, settingsObj.zimbraPrefDefaultSignatureId, true),
+			getSignature(account, String(settingsObj.zimbraPrefForwardReplySignatureId), true)
 		],
 		[
+			account,
 			settingsObj.zimbraPrefDefaultSignatureId,
-			settingsObj.zimbraPrefForwardReplySignatureId,
-			signatures
+			settingsObj.zimbraPrefForwardReplySignatureId
 		]
 	);
+
 	const updateAllSignatures = (updatedSign: SignItemType[]): void => {
-		const allSignatures = updatedSign.map((item) => ({
-			label: item.label,
-			value: {
-				description: unescape(item.description),
-				id: item.id
-			}
-		}));
+		const allSignatures = updatedSign.map(
+			(item) =>
+				({
+					label: item.label ?? '',
+					value: {
+						description: unescape(item.description),
+						id: item.id
+					}
+				} as SignatureDescriptor)
+		);
 		setSignatures(allSignatures);
 	};
+
 	const ListItem = ({ item }: { item: SignItemType }): ReactElement => {
 		const [hovered, setHovered] = useState(false);
 		const onMouseEnter = useCallback(() => setHovered(true), []);
@@ -280,52 +282,71 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 					<Heading title={t('title.new_messages', 'New Messages')} />
 					<Select
-						// valueKey="id"
-						items={signatures}
+						items={signatures.map((signature) => ({
+							label: signature.label,
+							value: signature.value.id
+						}))}
 						label={t('label.select_signature', 'Select a signature')}
-						selection={signatureNewMessage}
-						onChange={(e: any): void => {
+						selection={
+							{
+								label: signatureNewMessage?.label,
+								value: signatureNewMessage?.value.id
+							} as SelectItem
+						}
+						onChange={(selectedId: any): void => {
+							if (selectedId === signatureNewMessage?.value.id) {
+								return;
+							}
 							updateSettings({
 								target: {
 									name: 'zimbraPrefDefaultSignatureId',
-									value: find(signatures, (signature) => signature?.value?.id === e?.id)?.value?.id
+									value: getSignature(account, selectedId)?.value.id ?? ''
 								}
 							});
 						}}
 					/>
-					{signatureNewMessage.description && (
+					{signatureNewMessage?.value.description && (
 						<Container
 							crossAlignment="baseline"
 							padding={{ all: 'large' }}
 							background="gray5"
-							dangerouslySetInnerHTML={{ __html: signatureNewMessage.description }}
+							dangerouslySetInnerHTML={{ __html: signatureNewMessage.value.description }}
 						/>
 					)}
 				</Container>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 					<Heading title={t('title.replies_forwards', 'Replies & Forwards')} />
 					<Select
-						//	valueKey="id"
-						items={signatures}
+						items={signatures.map((signature) => ({
+							label: signature.label,
+							value: signature.value.id
+						}))}
 						label={t('label.select_signature', 'Select a signature')}
-						selection={signatureRepliesForwards}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						onChange={(e: SignItemType): void => {
+						selection={
+							{
+								label: signatureRepliesForwards?.label,
+								value: signatureRepliesForwards?.value.id
+							} as SelectItem
+						}
+						onChange={(selectedId: any): void => {
+							if (selectedId === signatureRepliesForwards?.value.id) {
+								return;
+							}
+
 							updateSettings({
 								target: {
 									name: 'zimbraPrefForwardReplySignatureId',
-									value: find(signatures, (signature) => signature?.value?.id === e?.id)?.value?.id
+									value: getSignature(account, selectedId)?.value.id ?? ''
 								}
 							});
 						}}
 					/>
-					{signatureRepliesForwards.description && (
+					{signatureRepliesForwards?.value.description && (
 						<Container
 							crossAlignment="baseline"
 							padding={{ all: 'large' }}
 							background="gray5"
-							dangerouslySetInnerHTML={{ __html: signatureRepliesForwards.description }}
+							dangerouslySetInnerHTML={{ __html: signatureRepliesForwards.value.description }}
 						/>
 					)}
 				</Container>

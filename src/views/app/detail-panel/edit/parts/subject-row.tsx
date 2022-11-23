@@ -32,6 +32,7 @@ const SubjectRow: FC = () => {
 					>
 						<Container background="gray5" style={{ overflow: 'hidden' }} padding="0">
 							<Input
+								data-testid="subject"
 								onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => {
 									updateSubjectField({ subject: ev.target.value });
 									onChange(ev.target.value);
