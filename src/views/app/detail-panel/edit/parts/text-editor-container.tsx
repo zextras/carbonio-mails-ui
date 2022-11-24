@@ -28,7 +28,6 @@ type PropType = {
 	onDragOverEvent: (event: SyntheticEvent) => void;
 	draftSavedAt: string;
 	minHeight: number;
-	ref: RefObject<HTMLInputElement>;
 	setValue: (name: string, value: any) => void;
 };
 
@@ -104,7 +103,7 @@ const TextEditorContainer: FC<PropType> = ({
 							mainAlignment="flex-start"
 							style={{ minHeight, overflow: 'hidden' }}
 						>
-							<StyledComp.EditorWrapper>
+							<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
 								<Composer
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
@@ -137,6 +136,7 @@ const TextEditorContainer: FC<PropType> = ({
 							render={({ onChange, value }): ReactElement => (
 								<Container background="gray6" height="fit">
 									<StyledComp.TextArea
+										data-testid="MailPlainTextEditor"
 										value={value[0]}
 										style={{ fontFamily: defaultFontFamily }}
 										onChange={(ev): void => {

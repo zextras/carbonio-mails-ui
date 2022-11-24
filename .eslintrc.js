@@ -18,7 +18,7 @@ module.exports = {
 			extends: ['plugin:jest-dom/recommended', 'plugin:testing-library/react'],
 			rules: {
 				'testing-library/no-global-regexp-flag-in-query': 'error',
-				'testing-library/prefer-user-event': 'warn',
+				'testing-library/prefer-user-event': 'error',
 				'import/no-extraneous-dependencies': 'off'
 			}
 		}

@@ -459,7 +459,10 @@ const EditViewHeader: FC<PropType> = ({
 							<Dropdown
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
-								items={identitiesList}
+								items={identitiesList.map((identity, index) => ({
+									...identity,
+									id: index
+								}))}
 								width="fit"
 								maxWidth="100%"
 								forceOpen={open}
@@ -564,25 +567,29 @@ const EditViewHeader: FC<PropType> = ({
 							/>
 						</Padding>
 					)}
-					<Padding left="large">
-						{multiBtnActions.length > 0 ? (
-							<MultiButton
-								label={btnLabel}
-								onClick={sendMailAction}
-								disabledPrimary={isSendDisabled}
-								disabledSecondary={isSendDisabled}
-								items={multiBtnActions}
-							/>
-						) : (
-							<Button
-								color="primary"
-								disabled={isSendDisabled}
-								icon="PaperPlane"
-								onClick={sendMailAction}
-								label={btnLabel}
-							/>
-						)}
-					</Padding>
+					{
+						<Padding left="large">
+							{multiBtnActions.length > 0 ? (
+								<MultiButton
+									data-testid="BtnSendMailMulti"
+									label={btnLabel}
+									onClick={sendMailAction}
+									disabledPrimary={isSendDisabled}
+									disabledSecondary={isSendDisabled}
+									items={multiBtnActions}
+								/>
+							) : (
+								<Button
+									color="primary"
+									data-testid="BtnSendMail"
+									disabled={isSendDisabled}
+									icon="PaperPlane"
+									onClick={sendMailAction}
+									label={btnLabel}
+								/>
+							)}
+						</Padding>
+					}
 				</Row>
 			</Row>
 		</>

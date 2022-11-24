@@ -8,6 +8,11 @@ import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodas
 import moment from 'moment';
 import { ParticipantRole } from '../commons/utils';
 import {
+	composeMailBodyWithSignature,
+	getSignatures,
+	getSignatureValue
+} from '../helpers/signatures';
+import {
 	EditorAttachmentFiles,
 	InlineAttachedType,
 	MailAttachmentParts,
@@ -33,38 +38,19 @@ export const retrieveAttachmentsType = (
 		[] as Array<MailAttachmentParts>
 	);
 
-export const getSignatures: any = (account: any) => {
-	const signatureArray = [
-		{
-			label: 'No signature',
-			value: { description: '', id: '11111111-1111-1111-1111-111111111111' }
-		}
-	];
-	map(account.signatures.signature, (item) =>
-		signatureArray.push({
-			label: item.name,
-			value: { description: item.content ? item.content[0]._content : '', id: item?.id }
-		})
-	);
-	return signatureArray;
-};
-
 export const emptyEditor = (
 	editorId: string,
 	account: Account,
 	settings: AccountSettings
 ): MailsEditor => {
-	const signatures = getSignatures(account);
-
-	const signatureNewMessageValue =
-		find(
-			signatures,
-			(signature: any) => signature.value.id === settings.prefs.zimbraPrefDefaultSignatureId
-		)?.value.description ?? '';
+	const signatureNewMessageValue = getSignatureValue(
+		account,
+		String(settings.prefs.zimbraPrefDefaultSignatureId)
+	);
 
 	const textWithSignatureNewMessage = [
-		`<br>${signatureNewMessageValue}`,
-		`<br>${signatureNewMessageValue}`
+		composeMailBodyWithSignature(signatureNewMessageValue, false),
+		composeMailBodyWithSignature(signatureNewMessageValue, true)
 	];
 	const isRichText = settings?.prefs?.zimbraPrefComposeFormat === 'html';
 
