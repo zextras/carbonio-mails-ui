@@ -330,7 +330,7 @@
         "mark_all_as_read": "Oznacz wszystkie jako przeczytane",
         "send_scheduled": "Zaplanuj wysyłanie",
         "not_in_list": "{{name}} nie znajduje się na Twojej liście tagów",
-        "invalid_query": "Nie udało się wyszukać, wyczyść pole wyszukiwania i spróbuj ponownie",
+        "invalid_query": "Nie udało się przetworzyć filtrów, wyczyść wyszukiwanie i spróbuj ponownie",
         "download_and_delete": "Pobierz i usuń"
     },
     "message": {
@@ -365,7 +365,8 @@
         "schedule_mail": "Zostanie wysłany: {{date}} o {{time}}",
         "send_later_success": "Twój e-mail zostanie wysłany {{date}} o {{time}}",
         "select_date_time": "Wybierz datę i godzinę, o której ta wiadomość zostanie wysłana",
-        "delete_attachment_message2": "Czy chcesz pobrać go przed tym?"
+        "delete_attachment_message2": "Czy chcesz pobrać go przed tym?",
+        "delete_attachment_message1": "Załącznik zostanie trwale usunięty z Carbonio."
     },
     "search": {
         "flagged_note": "Wyszukaj wszystkie oflagowane e-maile.",
@@ -555,7 +556,8 @@
             "message_color": "Kolor wiadomości",
             "message_selection": "Wybór wiadomości",
             "search_query": "Domyślne kryterium",
-            "visualization_options": "Opcje wyświetlania"
+            "visualization_options": "Opcje wyświetlania",
+            "unsend_time": "Ustaw czas cofnięcia wysyłania"
         },
         "actions": "Czynności",
         "active_filter": "Filtr aktywny",
