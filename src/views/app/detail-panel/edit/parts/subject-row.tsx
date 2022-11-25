@@ -4,14 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useContext, useMemo } from 'react';
-import { Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Container, Input, Padding, Tooltip, Icon } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import * as StyledComp from './edit-view-styled-components';
 import { EditViewContext } from './edit-view-context';
+import { EditViewContextType } from '../../../../../types';
 
-const SubjectRow: FC = () => {
-	const { control, editor, updateSubjectField, throttledSaveToDraft } = useContext(EditViewContext);
+type PropType = { updateSubjectField: ({ subject }: { subject: string }) => void };
+
+const SubjectRow: FC<PropType> = ({ updateSubjectField }) => {
+	const { control } = useForm();
+
+	const { editor, throttledSaveToDraft } = useContext<EditViewContextType>(EditViewContext);
 
 	const isIconsVisible = useMemo(
 		() => editor?.requestReadReceipt || editor?.urgent,

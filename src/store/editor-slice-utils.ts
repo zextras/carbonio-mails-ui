@@ -62,7 +62,7 @@ export const emptyEditor = (
 			(signature: any) => signature.value.id === settings.prefs.zimbraPrefDefaultSignatureId
 		)?.value.description ?? '';
 
-	const textWithSignatureNewMessage = [
+	const textWithSignatureNewMessage: [string, string] = [
 		`<br>${signatureNewMessageValue}`,
 		`<br>${signatureNewMessageValue}`
 	];
@@ -387,7 +387,7 @@ export const getMP = ({
 }): any => {
 	const contentWithBodyParts = replaceLinkWithParts(data?.text?.[1], data?.inline);
 	if (data.richText) {
-		if (data?.inline?.length > 0) {
+		if (data?.inline && data?.inline?.length > 0) {
 			return [
 				{
 					ct: 'multipart/alternative',
@@ -438,7 +438,10 @@ export const getMP = ({
 	];
 };
 
-export const generateRequest = (data: MailsEditor, prefs?: PrefsType): SoapDraftMessageObj => {
+export const generateRequest = (
+	data: MailsEditor,
+	prefs?: Partial<PrefsType>
+): SoapDraftMessageObj => {
 	const style = {
 		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
 		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
@@ -453,11 +456,8 @@ export const generateRequest = (data: MailsEditor, prefs?: PrefsType): SoapDraft
 			: [data.from, data.sender, ...data.to, ...data.cc, ...data.bcc],
 		(c) => ({
 			t: c.type,
-			a: (c as unknown as SharedParticipant).email ?? (c as unknown as Participant).address,
-			d:
-				(c as unknown as Participant).fullName ??
-				(c as unknown as SharedParticipant).firstName ??
-				undefined
+			a: c.email ?? c.address,
+			d: c.fullName ?? c.firstName ?? undefined
 		})
 	);
 	if (data.requestReadReceipt) {

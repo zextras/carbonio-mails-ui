@@ -57,5 +57,7 @@ export type SaveDraftRequest = {
 };
 
 export type SaveDraftResponse = {
-	m: Array<SoapMailMessage>;
+	[x: string]: any;
+	m?: Array<SoapMailMessage>;
+	Fault?: any;
 };

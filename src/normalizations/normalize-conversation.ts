@@ -9,14 +9,11 @@ import { omitBy } from '../commons/utils';
 import { Conversation, SoapIncompleteMessage, SoapConversation } from '../types';
 import { normalizeParticipantsFromSoap } from './normalize-message';
 
-export const getTagIdsFromName = (
-	names: string | undefined,
-	tags?: Tags
-): Array<string | undefined> =>
+const getTagIdsFromName = (names: string | undefined, tags?: Tags): Array<string | undefined> =>
 	map(names?.split(','), (name) =>
 		find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`
 	);
-export const getTagIds = (
+const getTagIds = (
 	t: string | undefined,
 	tn: string | undefined,
 	tags?: Tags

@@ -24,11 +24,11 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 			_jsns: 'urn:zimbraMail',
 			m: toSend
 		})) as SaveDraftResponse;
-		if (resp?.m[0]?.id) {
+		if (resp.m && resp?.m[0]?.id) {
 			dispatch(getMsg({ msgId: resp.m[0].id }));
 			dispatch(closeEditor(editorId));
 		}
-		if (resp?.m[0]?.cid) {
+		if (resp.m && resp?.m[0]?.cid) {
 			dispatch(getConv({ conversationId: resp.m[0].cid }));
 		}
 		return { resp, editor };

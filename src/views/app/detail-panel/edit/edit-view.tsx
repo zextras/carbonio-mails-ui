@@ -3,31 +3,37 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { Button, Catcher, Container, useModal } from '@zextras/carbonio-design-system';
+import {
+	addBoard,
+	replaceHistory,
+	t,
+	useBoard,
+	useBoardHooks,
+	useUserAccounts,
+	useUserSettings
+} from '@zextras/carbonio-shell-ui';
+import { filter, isEmpty, isNil, throttle } from 'lodash';
+import moment from 'moment';
 import React, {
+	FC,
+	SyntheticEvent,
 	useCallback,
 	useEffect,
 	useLayoutEffect,
 	useMemo,
-	useState,
 	useRef,
-	FC,
-	SyntheticEvent
+	useState
 } from 'react';
-import { Button, Catcher, Container, useModal } from '@zextras/carbonio-design-system';
-import { useDispatch, useSelector } from 'react-redux';
-import { throttle, filter, isNil, isEmpty } from 'lodash';
-import {
-	useUserSettings,
-	useBoardHooks,
-	useUserAccounts,
-	replaceHistory,
-	addBoard,
-	useBoard,
-	t
-} from '@zextras/carbonio-shell-ui';
 import { useForm } from 'react-hook-form';
-import moment from 'moment';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { ActionsType } from '../../../../commons/utils';
+import { MAILS_ROUTE } from '../../../../constants';
 import { useQueryParam } from '../../../../hooks/useQueryParam';
+import { getMsg } from '../../../../store/actions';
+import { saveDraft } from '../../../../store/actions/save-draft';
+import { uploadAttachments } from '../../../../store/actions/upload-attachments';
 import {
 	closeEditor,
 	createEditor,
@@ -35,25 +41,20 @@ import {
 	selectEditors,
 	updateEditor
 } from '../../../../store/editor-slice';
-import { ActionsType } from '../../../../commons/utils';
 import { selectMessages } from '../../../../store/messages-slice';
 import { StoreProvider } from '../../../../store/redux';
-import EditAttachmentsBlock from './edit-attachments-block';
-import { saveDraft } from '../../../../store/actions/save-draft';
-import { uploadAttachments } from '../../../../store/actions/upload-attachments';
-import { getMsg } from '../../../../store/actions';
+import { EditViewContextType, MailsEditor, StateType } from '../../../../types';
 import DropZoneAttachment from './dropzone-attachment';
-import { MAILS_ROUTE } from '../../../../constants';
+import EditAttachmentsBlock from './edit-attachments-block';
 import { addAttachments } from './edit-utils';
-import { DeleteDraftModal, RouteLeavingGuard } from './parts/nav-guard';
-import * as StyledComp from './parts/edit-view-styled-components';
 import { EditViewContext } from './parts/edit-view-context';
-import ParticipantsRow from './parts/participants-row';
-import TextEditorContainer from './parts/text-editor-container';
 import EditViewHeader from './parts/edit-view-header';
-import WarningBanner from './parts/warning-banner';
+import * as StyledComp from './parts/edit-view-styled-components';
+import { DeleteDraftModal, RouteLeavingGuard } from './parts/nav-guard';
+import ParticipantsRow from './parts/participants-row';
 import SubjectRow from './parts/subject-row';
-import { MailsEditor, StateType } from '../../../../types';
+import TextEditorContainer from './parts/text-editor-container';
+import WarningBanner from './parts/warning-banner';
 
 let counter = 0;
 
@@ -63,19 +64,17 @@ const generateId = (): string => {
 };
 
 type EditViewPropType = {
-	mailId: string;
-	folderId: string;
 	setHeader: (arg: any) => void;
 	toggleAppBoard: boolean;
 };
 
-const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleAppBoard }) => {
+const EditView: FC<EditViewPropType> = ({ setHeader, toggleAppBoard }) => {
+	const { folderId } = useParams<{ folderId: string }>();
+	const { editId } = useParams<{ editId: string }>();
 	const settings = useUserSettings();
 	const boardUtilities = useBoardHooks();
 	const board = useBoard<any>();
 	const createModal = useModal();
-	const [editor, setEditor] = useState<MailsEditor>();
-	const draftId = useSelector((s: StateType) => selectDraftId(s, editor?.editorId));
 	const action = useQueryParam('action');
 	const change = useQueryParam('change');
 
@@ -85,14 +84,12 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 	const accounts = useUserAccounts();
 	const messages = useSelector(selectMessages);
 
-	const { handleSubmit, control, setValue } = useForm();
+	const { handleSubmit, setValue } = useForm();
 	const { prefs } = useUserSettings();
 	const [dropZoneEnable, setDropZoneEnable] = useState(false);
 
 	const saveDraftCb = useCallback(
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		(data: MailsEditor) => dispatch(saveDraft({ data, prefs })),
+		(data: MailsEditor, signal?: AbortSignal) => dispatch(saveDraft({ data, prefs, signal })),
 		[dispatch, prefs]
 	);
 
@@ -123,12 +120,15 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 
 	const [showRouteGuard, setShowRouteGuard] = useState(true);
 
-	const activeMailId = useMemo(
-		() => board?.context?.mailId || mailId,
-		[mailId, board?.context?.mailId]
+	const activeMailId = useMemo<string>(
+		() => board?.context?.mailId || editId,
+		[editId, board?.context?.mailId]
 	);
 
 	const editorId = useMemo(() => activeMailId ?? generateId(), [activeMailId]);
+
+	const [editor, setEditor] = useState<MailsEditor>(editors[editorId]);
+	const draftId = useSelector((s: StateType) => selectDraftId(s, editor?.editorId));
 
 	const isSameAction = useMemo(() => {
 		if (editors[editorId]) {
@@ -144,21 +144,22 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 	}, [isSameAction, dispatch, editorId, editors]);
 
 	const updateEditorCb = useCallback(
-		(data) => {
+		(data: Partial<MailsEditor>) => {
 			dispatch(updateEditor({ editorId, data }));
 		},
 		[dispatch, editorId]
 	);
 
 	useEffect(() => {
-		if (activeMailId && !messages?.[activeMailId]?.isComplete) {
+		if (!!activeMailId && !messages?.[activeMailId]?.isComplete) {
 			dispatch(getMsg({ msgId: activeMailId }));
 		}
 	}, [activeMailId, dispatch, messages, updateEditorCb]);
 
 	const timeout = useMemo(() => (saveFirstDraft ? 2000 : 500), [saveFirstDraft]);
+
 	const throttledSaveToDraft = useCallback(
-		(data) => {
+		(data: Partial<MailsEditor>): void => {
 			if (timer) clearTimeout(timer);
 			const newTimer = setTimeout(() => {
 				const newData = { ...editor, ...data };
@@ -182,7 +183,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 	const updateSubjectField = useMemo(
 		() =>
 			throttle(
-				(mod) => {
+				(mod: Partial<MailsEditor>) => {
 					updateEditorCb(mod);
 				},
 				250,
@@ -349,6 +350,7 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 		event.preventDefault();
 		setDropZoneEnable(false);
 	};
+
 	const isSendingToYourself = useMemo(
 		() => filter(editor?.to, { type: 't', address: accounts[0].name }).length > 0,
 		[editor?.to, accounts]
@@ -373,32 +375,13 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 		[action, editor?.attach?.mp?.length, editor?.original]
 	);
 
-	const context = useMemo(
+	const context: EditViewContextType = useMemo(
 		() => ({
-			updateEditorCb,
-			throttledSaveToDraft,
-			control,
-			editorId,
 			editor,
-			updateSubjectField,
-			action,
-			folderId,
-			saveDraftCb,
-			setSending,
-			setSendLater
+			setSendLater,
+			throttledSaveToDraft
 		}),
-		[
-			action,
-			control,
-			editor,
-			editorId,
-			folderId,
-
-			saveDraftCb,
-			throttledSaveToDraft,
-			updateEditorCb,
-			updateSubjectField
-		]
+		[editor, throttledSaveToDraft]
 	);
 
 	if (loading || !editor)
@@ -441,12 +424,17 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 									setValue={setValue}
 									handleSubmit={handleSubmit}
 									uploadAttachmentsCb={uploadAttachmentsCb}
+									updateEditorCb={updateEditorCb}
+									action={action}
+									saveDraftCb={saveDraftCb}
+									editorId={editorId}
+									setSending={setSending}
 								/>
 								{isSendingToYourself && <WarningBanner />}
 
 								<StyledComp.RowContainer background="gray6" padding={{ all: 'small' }}>
-									<ParticipantsRow />
-									<SubjectRow />
+									<ParticipantsRow updateEditorCb={updateEditorCb} />
+									<SubjectRow updateSubjectField={updateSubjectField} />
 
 									{showAttachments && (
 										<StyledComp.ColContainer occupyFull>
@@ -463,6 +451,9 @@ const EditView: FC<EditViewPropType> = ({ mailId, folderId, setHeader, toggleApp
 								draftSavedAt={draftSavedAt}
 								minHeight={avaibleMinHeight}
 								setValue={setValue}
+								updateEditorCb={updateEditorCb}
+								updateSubjectField={updateSubjectField}
+								saveDraftCb={saveDraftCb}
 							/>
 						</Container>
 					</Container>
