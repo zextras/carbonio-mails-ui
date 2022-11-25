@@ -13,13 +13,12 @@ import { defaultConfig } from './src/carbonio-ui-commons/test/jest-config';
 
 const config: Config = {
 	...defaultConfig,
-    "moduleNameMapper":{
-        "\\.(jpg|ico|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
-        "\\.(css|less)$": "<rootDir>/__mocks__/fileMock.js",
-		// Force module uuid to resolve with the CJS entry point, because Jest does not support package.json.exports. See https://github.com/uuidjs/uuid/issues/451
-		"uuid": require.resolve('uuid'),
-    },
-    collectCoverage: false,
+	moduleNameMapper: {
+		'\\.(jpg|ico|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+			'<rootDir>/__mocks__/fileMock.js',
+		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js'
+	},
+	collectCoverage: false
 };
 
 export default config;

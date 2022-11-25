@@ -5,14 +5,15 @@
  */
 
 import { act, screen, waitFor, waitForElementToBeRemoved, within } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
+import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
+import { find, noop } from 'lodash';
 import React from 'react';
+import { rest } from 'msw';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import * as useQueryParam from '../../../../../hooks/useQueryParam';
 import { generateStore } from '../../../../../tests/generators/store';
 import EditView from '../edit-view';
-import { selectEditors } from '../../../../../store/editor-slice';
+import { getSetupServerApi } from '../../../../../carbonio-ui-commons/test/jest-setup';
 
 describe('Edit view', () => {
 	test('create a new email', async () => {
@@ -26,6 +27,8 @@ describe('Edit view', () => {
 			return undefined;
 		});
 
+		const from = find(getUserAccount().identities.identity, ['name', 'DEFAULT'])._attrs
+			.zimbraPrefFromAddress;
 		const address = 'ciccio@foo.com';
 		const ccAddress = 'john@foo.com';
 		const subject = 'Interesting subject';
@@ -86,7 +89,54 @@ describe('Edit view', () => {
 		await user.type(editorTextareaElement, body);
 		act(() => jest.advanceTimersByTime(1000));
 
-		// TODO should we check if the draft is created?
+		// Register a handler for the REST call
+		getSetupServerApi().use(
+			rest.post('/service/soap/SendMsgRequest', async (req, res, ctx) => {
+				if (!req) {
+					throw new Error('Empty request');
+				}
+
+				const msg = (await req.json()).Body.SendMsgRequest.m;
+				try {
+					expect(msg.su._content).toBe(subject);
+					msg.e.forEach((participant) => {
+						if (participant.t === 't') {
+							expect(participant.a).toBe(address);
+						} else if (participant.t === 'f') {
+							expect(participant.a).toBe(from);
+						}
+					});
+					expect(msg.mp[0].content._content).toBe(body);
+				} catch (error) {
+					console.error(error);
+					throw error;
+				}
+
+				const response = {
+					Header: {
+						context: {
+							session: {
+								id: '1220806',
+								_content: '1220806'
+							}
+						}
+					},
+					Body: {
+						SendMsgResponse: {
+							m: [
+								{
+									id: '1'
+								}
+							],
+							_jsns: 'urn:zimbraMail'
+						}
+					},
+					_jsns: 'urn:zimbraSoap'
+				};
+
+				return res(ctx.json(response));
+			})
+		);
 
 		// Click on the "send" button
 		await user.click(btnSend);
@@ -101,13 +151,9 @@ describe('Edit view', () => {
 		);
 
 		// Check if a snackbar (email sent) will appear
-		// await screen.findByText('messages.snackbar.mail_sent', {}, { timeout: 4000 });
-		await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
-
-		// // TEST SOLUTION 1: Check inside the store if the email exists
-
-		// // TEST SOLUTION 2: Intercept the SOAP call (need some new feature in common-ui) and check the request content
+		await screen.findByText('messages.snackbar.mail_sent', {}, { timeout: 4000 });
+		// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
 
 		// console.log('**** editors', selectEditors(store.getState()));
-	});
+	}, 150000);
 });

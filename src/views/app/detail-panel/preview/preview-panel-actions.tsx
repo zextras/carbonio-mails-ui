@@ -117,7 +117,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 			crossAlignment="center"
 			height="auto"
 			padding={{ horizontal: 'large', vertical: 'small' }}
-			background="gray5"
+			background="error"
 		>
 			{map(primaryActions, (action) => (
 				<Padding left="extrasmall" key={action.label}>
@@ -134,7 +134,6 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 					/>
 				</Padding>
 			))}
-
 			<Padding left="extrasmall">
 				<Dropdown
 					placement="right-end"

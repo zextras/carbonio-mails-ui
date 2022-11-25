@@ -459,7 +459,10 @@ const EditViewHeader: FC<PropType> = ({
 							<Dropdown
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
-								items={identitiesList}
+								items={identitiesList.map((identity, index) => ({
+									...identity,
+									id: index
+								}))}
 								width="fit"
 								maxWidth="100%"
 								forceOpen={open}

@@ -4,18 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { configureStore } from '@reduxjs/toolkit';
-import { storeReducers } from '../reducers';
+import fetchMock from 'jest-fetch-mock';
 import { getMsg } from '../actions';
 import { selectMessage, selectMessages } from '../messages-slice';
-import { generateState, generateStore } from '../../tests/generators/store';
-import { MAIL_APP_ID } from '../../constants';
+import { generateStore } from '../../tests/generators/store';
+import { getSetupServerApi } from '../../carbonio-ui-commons/test/jest-setup';
 
 describe('Messages Slice', () => {
 	describe('GetMsg', () => {
 		test('add single message on the store', async () => {
 			const store = generateStore();
-
 			// const options = { store };
 			//
 			// setupTest(<Dummy />, options);
