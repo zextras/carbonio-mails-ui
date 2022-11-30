@@ -188,8 +188,11 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 			const previousActions = (): Array<any> => {
 				const actions: Array<any> = [];
 				forEach(selectedFilter?.filterActions?.[0], (value, key) => {
-					key !== 'actionStop' &&
-						actions.push({ [key]: [{ ...omit(value[0], 'index') }], id: uuidv4() });
+					if (key !== 'actionStop') {
+						forEach(value, (val) => {
+							actions.push({ [key]: [{ ...omit(val, 'index') }], id: uuidv4() });
+						});
+					}
 				});
 				return actions;
 			};

@@ -18,10 +18,11 @@ import {
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { filter, omit } from 'lodash';
-import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { Folder, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import { v4 as uuidv4 } from 'uuid';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import CustomSelect from './custom-select';
+import MoveToFolderModal from './move-to-folder-modal';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
@@ -34,20 +35,21 @@ export const StyledIconButton = styled(IconButton)`
 
 type FilterActionRowProps = {
 	tmpFilter: any;
-	index: string;
+	index: number;
 	compProps: any;
-	modalProps: any;
 	tagOptions?: Array<any>;
 };
 const FilterActionRows: FC<FilterActionRowProps> = ({
 	tmpFilter,
 	index,
 	compProps,
-	modalProps,
 	tagOptions
 }): ReactElement => {
 	const { t, isIncoming, tempActions, setTempActions } = compProps;
-	const { setOpen, setActiveIndex, folder, setFolder } = modalProps;
+	const [open, setOpen] = useState(false);
+	const [activeIndex, setActiveIndex] = useState(0);
+	const [folderDestination, setFolderDestination] = useState<Folder | any>({});
+	const [folder, setFolder] = useState<Folder | any>({});
 
 	const actionOptions = useMemo(() => getActionOptions(t, isIncoming ?? false), [t, isIncoming]);
 	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
@@ -66,6 +68,30 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		() => activeActionOption === 'redirectToAddress',
 		[activeActionOption]
 	);
+
+	const onModalClose = useCallback(() => {
+		setFolder({});
+		setOpen(false);
+	}, []);
+
+	const modalProps = useMemo(
+		() => ({
+			open,
+			onClose: onModalClose,
+			t,
+			setOpen,
+			activeIndex,
+			setActiveIndex,
+			tempActions,
+			setTempActions,
+			folderDestination,
+			setFolderDestination,
+			folder,
+			setFolder
+		}),
+		[open, onModalClose, t, activeIndex, tempActions, setTempActions, folderDestination, folder]
+	);
+
 	const defaultValue = useMemo(() => {
 		const action = Object.keys(omit(tmpFilter, 'id'))[0];
 		switch (action) {
@@ -299,6 +325,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					</Tooltip>
 				</Padding>
 			</Container>
+			<MoveToFolderModal compProps={modalProps} />
 		</Container>
 	);
 };
