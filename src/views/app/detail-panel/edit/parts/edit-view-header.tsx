@@ -511,6 +511,7 @@ const EditViewHeader: FC<PropType> = ({
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								ref={inputRef}
+								data-testid="file-input"
 								onChange={(): Promise<any> =>
 									addAttachments(
 										saveDraftCb,
