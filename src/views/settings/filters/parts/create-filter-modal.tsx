@@ -80,7 +80,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 		return reduce(
 			allTest,
 			(a, i) => {
-				const firstKey = Object.keys(i)[0];
+				const firstKey = Object.keys(omit(i, ['condition']))[0];
 				if (Object.keys(a).includes(firstKey)) {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
@@ -91,6 +91,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 			{}
 		);
 	}, [newFilters]);
+
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
