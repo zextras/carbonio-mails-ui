@@ -7,13 +7,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-// export const GetAllSignatures = createAsyncThunk('GetSignatures', async () => {
-// 	const result = await soapFetch('GetSignatures', {
-// 		_jsns: 'urn:zimbraAccount'
-// 	});
-// 	return result;
-// });
-
 export const GetAllSignatures = async (): Promise<any> => {
 	const result = await soapFetch('GetSignatures', {
 		_jsns: 'urn:zimbraAccount'
