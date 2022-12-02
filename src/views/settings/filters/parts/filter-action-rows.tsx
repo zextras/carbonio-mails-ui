@@ -142,37 +142,17 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					setTempActions(previous);
 					break;
 				}
-
-				case 'tagWith': {
-					const previous = tempActions.slice();
-					previous[index] = { id: previous[index].id, actionDiscard: [{}] };
-					setTempActions(previous);
-					break;
-				}
-				case 'markAs': {
-					const previous = tempActions.slice();
-					previous[index] = {
-						id: previous[index].id,
-						actionFlag: [{ flagName: 'read' }]
-					};
-					setTempActions(previous);
-					break;
-				}
-				case 'redirectToAddress': {
-					const previous = tempActions.slice();
-					previous[index] = { actionRedirect: [{ a: '' }], id: previous[index].id };
-					setTempActions(previous);
-					break;
-				}
-				default: {
+				case 'inbox': {
 					const previous = tempActions.slice();
 					previous[index] = { actionKeep: [{}], id: previous[index].id };
 					setTempActions(previous);
+					break;
 				}
+				default:
 			}
 			setActiveActionOption(str);
 		},
-		[tempActions, index, setTempActions]
+		[index, setTempActions, tempActions]
 	);
 	const openFolderModalDisabled = useMemo(
 		() => activeActionOption !== 'moveIntoFolder',
