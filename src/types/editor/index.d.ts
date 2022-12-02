@@ -26,7 +26,7 @@ export type MailsEditor = {
 	oldId?: string | undefined;
 	editorId: string;
 	richText: boolean;
-	text: Array<string>;
+	text: [string, string];
 	subject: string;
 	original?: MailMessage;
 	attach: mailAttachment;
@@ -66,3 +66,13 @@ type FindDefaultIdentityType = {
 	allAccounts: Record<string, Folder & { owner: string }>;
 	folderId: string;
 };
+
+type ThrottledSaveToDraftType = (data: Partial<MailsEditor>) => void;
+
+type EditViewContextType =
+	| {
+			throttledSaveToDraft: ThrottledSaveToDraftType;
+			editor: MailsEditor;
+			setSendLater: (arg: boolean) => void;
+	  }
+	| Record<string, never>;

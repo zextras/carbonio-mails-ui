@@ -264,7 +264,8 @@ export type RedirectActionParameters = {
 
 export type SaveDraftNewParameters = {
 	data: MailsEditor;
-	prefs?: PrefsType;
+	prefs?: Partial<PrefsType>;
+	signal?: AbortSignal;
 };
 
 export type saveDraftNewResult = {

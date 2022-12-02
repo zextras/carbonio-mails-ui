@@ -7,11 +7,12 @@
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useContext, useEffect, useState } from 'react';
 import { Button, ChipInput, ChipItem, Container, Padding } from '@zextras/carbonio-design-system';
-import { Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { map, some } from 'lodash';
 import * as StyledComp from './edit-view-styled-components';
 import { EditViewContext } from './edit-view-context';
 import { ParticipantRole } from '../../../../../commons/utils';
+import { EditViewContextType, MailsEditor } from '../../../../../types';
 
 const emailRegex =
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars, max-len, no-control-regex
@@ -28,14 +29,17 @@ interface ContactType extends ChipItem {
 	error?: boolean | string;
 }
 
-const ParticipantsRow: FC = () => {
+const ParticipantsRow: FC<{
+	updateEditorCb: (data: Partial<MailsEditor>, editorId?: string) => void;
+}> = ({ updateEditorCb }) => {
 	const [ContactInput, isAvailable] = useIntegratedComponent('contact-input');
 	const [showCc, setShowCc] = useState(false);
 	const [showBcc, setShowBcc] = useState(false);
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
 	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
+	const { control } = useForm();
 
-	const { control, editor, updateEditorCb, throttledSaveToDraft } = useContext(EditViewContext);
+	const { editor, throttledSaveToDraft } = useContext<EditViewContextType>(EditViewContext);
 
 	useEffect(() => {
 		if (editor?.cc?.length) {

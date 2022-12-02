@@ -10,34 +10,16 @@ import { uploadInlineAttachments } from '../../../../store/actions/upload-inline
 import {
 	EditorAttachmentFiles,
 	InlineAttachedType,
-	MailAttachmentParts,
 	MailMessage,
 	MailMessagePart,
 	MailsEditor
 } from '../../../../types';
 
-type AddAttachmentsPayloadType = {
-	resp: {
-		m: Array<any>;
-		_jsns: 'urn:zimbraMail';
-	};
-};
-
 export const _CI_REGEX = /^<(.*)>$/;
 export const _CI_SRC_REGEX = /^cid:(.*)$/;
 
-export const retrieveInlineAttachments = (
-	original: MailMessage,
-	disposition: string
-): Array<MailAttachmentParts> =>
-	reduce(
-		original?.parts?.[0]?.parts ?? [],
-		(acc, part) =>
-			part.ci && part.ci === disposition ? [...acc, { part: part.name, mid: original.id }] : acc,
-		[] as Array<MailAttachmentParts>
-	);
 type InputProps = {
-	updateEditorCb: (arg: Partial<MailsEditor>) => { payload: AddAttachmentsPayloadType };
+	updateEditorCb: (data: Partial<MailsEditor>) => void;
 	files: File[];
 	tinymce: any;
 	setIsReady: (arg: boolean) => void;
@@ -67,13 +49,13 @@ export const addInlineAttachments = async ({
 			updateEditorCb({
 				inline: attachAids
 			});
-			setTimeout(() => setIsReady(true), 10);
+			setTimeout(() => setIsReady(true), 5000);
 		}
 	});
 };
 
 export function findAttachments(
-	parts: MailMessagePart[],
+	parts: Array<MailMessagePart>,
 	acc: Array<EditorAttachmentFiles>
 ): Array<EditorAttachmentFiles> {
 	return reduce(
@@ -108,11 +90,12 @@ export function findInlineAttachments(
 
 type GetConvertedImageSourcesType = {
 	message: MailMessage;
-	updateEditorCb: (arg: Partial<MailsEditor>) => { payload: AddAttachmentsPayloadType };
+	updateEditorCb: (data: Partial<MailsEditor>) => void;
 	setValue: (name: string, value: any) => void;
 	setInputValue: (arg: [string, string]) => void;
 	inputValue: [string, string];
 };
+
 export const getConvertedImageSources = ({
 	message,
 	updateEditorCb,

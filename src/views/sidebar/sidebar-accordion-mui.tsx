@@ -42,6 +42,7 @@ export const SidebarAccordionMui: FC<{ accordions: Array<Folder>; folderId: stri
 						disableGutters
 						TransitionProps={{ unmountOnExit: true }}
 						expanded={openIds.includes(accordion.id)}
+						key={accordion.id}
 					>
 						<AccordionSummary
 							expandIcon={
