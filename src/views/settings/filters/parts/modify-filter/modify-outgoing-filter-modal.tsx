@@ -22,7 +22,7 @@ import {
 	Row
 } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
-import { findIndex, forEach, map, omit, reduce } from 'lodash';
+import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import ModalFooter from '../create-filter-modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
@@ -64,6 +64,8 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
 	const [tempActions, setTempActions] = useState([{ actionKeep: [{}], id: uuidv4() }]);
+	const [copyRequiredFilters, setCopyRequiredFilters] = useState({});
+	const [updateRequiredFilters, setUpdateRequiredFilters] = useState(true);
 	const [reFetch, setReFetch] = useState(false);
 	const [newFilters, setNewFilters] = useState([
 		{
@@ -140,7 +142,10 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 		[activeFilter, filterName, condition, requiredFilterTest, dontProcessAddFilters, finalActions]
 	);
 
-	const createFilterDisabled = useMemo(() => filterName.length === 0, [filterName]);
+	const createFilterDisabled = useMemo(
+		() => filterName.length === 0 || isEqual(copyRequiredFilters, requiredFilters),
+		[copyRequiredFilters, filterName.length, requiredFilters]
+	);
 	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice(), [outgoingFilters]);
 
 	const toggleCheckBox = useCallback(() => {
@@ -199,6 +204,22 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 			setTempActions(previousActions);
 		}
 	}, [selectedFilter]);
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const setCopyOfFilter = (): void => {
+		setCopyRequiredFilters(requiredFilters);
+	};
+
+	useEffect(() => {
+		if (selectedFilter) {
+			if (updateRequiredFilters) {
+				setTimeout(() => {
+					setUpdateRequiredFilters(false);
+					setCopyOfFilter();
+				}, 10);
+			}
+		}
+	}, [selectedFilter, setCopyOfFilter, updateRequiredFilters]);
 
 	const previousFilterTests = useMemo(() => {
 		const tempTests: Array<any> = [];
