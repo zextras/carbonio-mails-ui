@@ -5,14 +5,7 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
-
-// export const GetAllSignatures = createAsyncThunk('GetSignatures', async () => {
-// 	const result = await soapFetch('GetSignatures', {
-// 		_jsns: 'urn:zimbraAccount'
-// 	});
-// 	return result;
-// });
+import { map, escape } from 'lodash';
 
 export const GetAllSignatures = async (): Promise<any> => {
 	const result = await soapFetch('GetSignatures', {
@@ -39,7 +32,11 @@ export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data
 		ItemsAddRequest = map(
 			itemsAdd,
 			(sign) =>
-				`<CreateSignatureRequest  xmlns="urn:zimbraAccount"><signature name='${sign.label}'><content type="text/html">${sign.description}</content></signature></CreateSignatureRequest>`
+				`<CreateSignatureRequest  xmlns="urn:zimbraAccount"><signature name='${
+					sign.label
+				}'><content type="text/html">${escape(
+					sign.description
+				)}</content></signature></CreateSignatureRequest>`
 		).join('');
 	}
 	if (itemsEdit?.length) {
@@ -47,7 +44,7 @@ export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data
 			itemsEdit,
 			(sign) => `<ModifySignatureRequest  xmlns="urn:zimbraAccount"> 
 			<signature id='${sign.id}' name='${sign.label}'> 
-				<content type="text/html">${sign.description}</content>
+				<content type="text/html">${escape(sign.description)}</content>
 			</signature>
 		</ModifySignatureRequest>`
 		).join('');
