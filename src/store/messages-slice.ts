@@ -22,7 +22,8 @@ import {
 	FetchConversationsReturn,
 	SearchConvReturn,
 	MsgActionResult,
-	DeleteAttachmentsReturn
+	DeleteAttachmentsReturn,
+	SaveDraftResponse
 } from '../types';
 import { search, getConv, getMsg, msgAction, searchConv } from './actions';
 import { deleteAttachments } from './actions/delete-all-attachments';
@@ -81,12 +82,14 @@ function deleteAttachmentsFulfilled(
 
 function saveDraftFulfilled(
 	{ messages, status }: MsgStateType,
-	{ payload }: { payload: any }
+	{ payload }: { payload: { resp: SaveDraftResponse } }
 ): void {
-	const message = normalizeMailMessageFromSoap(payload.resp?.m?.[0], true);
-	status[message.id] = 'complete';
-	// eslint-disable-next-line no-param-reassign
-	messages[message.id] = message;
+	if (payload.resp.m) {
+		const message = normalizeMailMessageFromSoap(payload.resp?.m?.[0], true);
+		status[message.id] = 'complete';
+		// eslint-disable-next-line no-param-reassign
+		messages[message.id] = message;
+	}
 }
 function searchConvFulfilled(
 	{ messages, status }: MsgStateType,
