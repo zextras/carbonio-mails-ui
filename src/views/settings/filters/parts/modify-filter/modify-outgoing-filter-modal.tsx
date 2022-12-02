@@ -351,6 +351,11 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 
 				<ModalFooter
 					label={t('label.edit', 'Edit')}
+					toolTipText={
+						createFilterDisabled
+							? t('settings.label.not_changed_anything', 'You haven’t changed anything')
+							: t('label.edit', 'Edit')
+					}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}

@@ -198,6 +198,11 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 
 				<ModalFooter
 					label={t('label.create', 'Create')}
+					toolTipText={
+						createFilterDisabled
+							? t('settings.label.filter_name_required', 'Filter name is required')
+							: t('label.create', 'Create')
+					}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}
