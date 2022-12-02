@@ -55,8 +55,8 @@ const SettingsView: FC = () => {
 	const [updatedProps, setUpdatedProps] = useState<PropsType | Record<string, unknown>>(
 		originalProps
 	);
-	const [signatures, setSignatures] = useState<SignItemType[]>([]);
-	const [originalSignatures, setOriginalSignatures] = useState([]);
+	const [signatures, setSignatures] = useState<SignItemType[]>(() => []);
+	const [originalSignatures, setOriginalSignatures] = useState(() => []);
 	const [disabled, setDisabled] = useState(true);
 	const [flag, setFlag] = useState(false);
 
@@ -173,12 +173,13 @@ const SettingsView: FC = () => {
 				return !toggle;
 			});
 
-			const findItems = (
-				arr1: Array<SignItemType>,
-				arr2: Array<SignItemType>
-			): Array<SignItemType> => filter(arr1, (o1) => arr2.map((o2) => o2.id).indexOf(o1.id) === -1);
+			const findNewSignatures = (
+				updated: Array<SignItemType>,
+				original: Array<SignItemType>
+			): Array<SignItemType> =>
+				filter(updated, (o1) => original.map((o2) => o2.id).indexOf(o1.id) === -1);
 
-			const itemsAdd = findItems(signatures, originalSignatures);
+			const itemsAdd = findNewSignatures(signatures, originalSignatures);
 			const itemsEdit = filter(signatures, (item: SignItemType) =>
 				find(
 					originalSignatures,
@@ -187,9 +188,7 @@ const SettingsView: FC = () => {
 				)
 			);
 
-			const isReplySignaturePrefisNew =
-				settingsToUpdate.zimbraPrefForwardReplySignatureId &&
-				!settingsToUpdate.zimbraPrefForwardReplySignatureId.includes('-');
+			const isReplySignaturePrefisNew = settingsToUpdate.zimbraPrefForwardReplySignatureId;
 			let setForwardReplySignatureId = '';
 			if (
 				isReplySignaturePrefisNew &&
@@ -202,9 +201,7 @@ const SettingsView: FC = () => {
 				delete settingsToUpdate.zimbraPrefForwardReplySignatureId;
 			}
 
-			const isDefaultSignaturePref =
-				settingsToUpdate.zimbraPrefDefaultSignatureId &&
-				!settingsToUpdate.zimbraPrefDefaultSignatureId.includes('-');
+			const isDefaultSignaturePref = settingsToUpdate.zimbraPrefDefaultSignatureId;
 			let setDefaultSignatureId = '';
 			if (
 				isDefaultSignaturePref &&

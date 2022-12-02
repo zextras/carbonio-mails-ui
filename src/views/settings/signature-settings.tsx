@@ -19,7 +19,7 @@ import {
 import styled from 'styled-components';
 
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import { map, escape, unescape, reject, find } from 'lodash';
+import { map, escape, unescape, reject, find, concat } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';
@@ -54,6 +54,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
+	const [signaturesLoaded, setSignaturesLoaded] = useState(false);
 
 	// Fetches signatures from the BE
 	useEffect(() => {
@@ -65,7 +66,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						label: item.name,
 						name: item.name,
 						id: item.id,
-						description: item?.content?.[0]?._content
+						description: unescape(item?.content?.[0]?._content)
 					} as SignItemType)
 			);
 			setSignatures(signaturesItems);
@@ -77,6 +78,9 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					description: el.description ?? ''
 				}))
 			);
+
+			// Updates state to enable the loading of all signatures-dependent component
+			setSignaturesLoaded(true);
 		});
 	}, [setSignatures, setOriginalSignatures]);
 
@@ -118,17 +122,39 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		[signatures]
 	);
 
+	// Create the fake signature for the "no signature"
+	const noSignature: SignItemType = useMemo(
+		() => ({
+			label: t('label.no_signature', 'No signature'),
+			name: 'no signature',
+			description: '',
+			id: '11111111-1111-1111-1111-111111111111'
+		}),
+		[]
+	);
+
 	// Get the selected signatures for the new message and for the replies
 	const [signatureNewMessage, signatureRepliesForwards] = useMemo(
 		() => [
-			getSignature(settingsObj.zimbraPrefDefaultSignatureId, true),
-			getSignature(String(settingsObj.zimbraPrefForwardReplySignatureId), true)
+			getSignature(settingsObj.zimbraPrefDefaultSignatureId) ?? noSignature,
+			getSignature(String(settingsObj.zimbraPrefForwardReplySignatureId)) ?? noSignature
 		],
 		[
 			getSignature,
+			noSignature,
 			settingsObj.zimbraPrefDefaultSignatureId,
 			settingsObj.zimbraPrefForwardReplySignatureId
 		]
+	);
+
+	// Composes the SelectItem array for the signature selects
+	const signatureSelectItems: SelectItem[] = useMemo(
+		(): SelectItem[] =>
+			concat(noSignature, signatures).map((signature) => ({
+				label: signature.label,
+				value: signature.id
+			})),
+		[noSignature, signatures]
 	);
 
 	const ListItem = ({ item }: { item: SignItemType }): ReactElement => {
@@ -143,6 +169,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				setCurrentSignature(undefined);
 			}
 			setSignatures(updatedSignatureList);
+			setDisabled(false);
 		};
 
 		return (
@@ -203,7 +230,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 							<Padding all="small" />
 
 							<Container height="31.25rem">
-								<List items={signatures ?? []} ItemComponent={ListItem} />
+								{signaturesLoaded && <List items={signatures ?? []} ItemComponent={ListItem} />}
 							</Container>
 						</Container>
 					</Container>
@@ -218,6 +245,10 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 										return;
 									}
 									const newName = ev.target.value;
+									if (currentSignature.name === newName) {
+										return;
+									}
+
 									setCurrentSignature(
 										(current) =>
 											({
@@ -249,9 +280,15 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								<Composer
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									value={unescape(currentSignature?.description)}
+									value={currentSignature?.description}
 									onEditorChange={(ev: [string, string]): void => {
-										const newDescription = escape(ev[1]);
+										// Rich text signature
+										const newDescription = ev[1];
+
+										if (currentSignature?.description === newDescription) {
+											return;
+										}
+
 										setCurrentSignature(
 											(current) =>
 												({
@@ -285,72 +322,79 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			<FormSubSection label={sectionTitleSetSignatures.label} id={sectionTitleSetSignatures.id}>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 					<Heading title={t('title.new_messages', 'New Messages')} />
-					<Select
-						items={signatures.map((signature) => ({
-							label: signature.label,
-							value: signature.id
-						}))}
-						label={t('label.select_signature', 'Select a signature')}
-						selection={
-							{
-								label: signatureNewMessage?.label,
-								value: signatureNewMessage?.id
-							} as SelectItem
-						}
-						onChange={(selectedId: any): void => {
-							if (selectedId === signatureNewMessage?.id) {
-								return;
+					{signaturesLoaded && (
+						<Select
+							items={signatureSelectItems}
+							label={t('label.select_signature', 'Select a signature')}
+							selection={
+								{
+									label: signatureNewMessage?.label,
+									value: signatureNewMessage?.id
+								} as SelectItem
 							}
-							updateSettings({
-								target: {
-									name: 'zimbraPrefDefaultSignatureId',
-									value: selectedId
+							onChange={(selectedId: any): void => {
+								if (selectedId === signatureNewMessage?.id) {
+									return;
 								}
-							});
-						}}
-					/>
+								updateSettings({
+									target: {
+										name: 'zimbraPrefDefaultSignatureId',
+										value: selectedId
+									}
+								});
+							}}
+						/>
+					)}
 					{signatureNewMessage?.description && (
 						<Container
 							crossAlignment="baseline"
 							padding={{ all: 'large' }}
 							background="gray5"
-							dangerouslySetInnerHTML={{ __html: unescape(signatureNewMessage.description) }}
+							dangerouslySetInnerHTML={{ __html: signatureNewMessage.description }}
 						/>
 					)}
 				</Container>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 					<Heading title={t('title.replies_forwards', 'Replies & Forwards')} />
-					<Select
-						items={signatures.map((signature) => ({
-							label: signature.label,
-							value: signature.id
-						}))}
-						label={t('label.select_signature', 'Select a signature')}
-						selection={
-							{
-								label: signatureRepliesForwards?.label,
-								value: signatureRepliesForwards?.id
-							} as SelectItem
-						}
-						onChange={(selectedId: any): void => {
-							if (selectedId === signatureRepliesForwards?.id) {
-								return;
+					{signaturesLoaded && (
+						<Select
+							items={concat(
+								{
+									label: t('label.no_signature', 'No signature'),
+									value: '11111111-1111-1111-1111-111111111111'
+								},
+								signatures.map((signature) => ({
+									label: signature.label,
+									value: signature.id
+								}))
+							)}
+							label={t('label.select_signature', 'Select a signature')}
+							selection={
+								{
+									label: signatureRepliesForwards?.label,
+									value: signatureRepliesForwards?.id
+								} as SelectItem
 							}
-
-							updateSettings({
-								target: {
-									name: 'zimbraPrefForwardReplySignatureId',
-									value: selectedId
+							onChange={(selectedId: any): void => {
+								if (selectedId === signatureRepliesForwards?.id) {
+									return;
 								}
-							});
-						}}
-					/>
+
+								updateSettings({
+									target: {
+										name: 'zimbraPrefForwardReplySignatureId',
+										value: selectedId
+									}
+								});
+							}}
+						/>
+					)}
 					{signatureRepliesForwards?.description && (
 						<Container
 							crossAlignment="baseline"
 							padding={{ all: 'large' }}
 							background="gray5"
-							dangerouslySetInnerHTML={{ __html: unescape(signatureRepliesForwards.description) }}
+							dangerouslySetInnerHTML={{ __html: signatureRepliesForwards.description }}
 						/>
 					)}
 				</Container>
