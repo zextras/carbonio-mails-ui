@@ -27,15 +27,6 @@ export type AttachmentType = {
 	att: EditorAttachmentFiles;
 };
 
-export type AttachmentPartType = {
-	contentType: string;
-	size: number;
-	name: string;
-	disposition?: 'attachment' | 'inline';
-	filename?: string;
-	parts: AttachmentPartType[];
-};
-
 export type PreviewPanelActionsType = {
 	item: Conversation;
 	folderId: string;

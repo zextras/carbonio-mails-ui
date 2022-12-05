@@ -57,7 +57,7 @@ const MailEditHeader: FC<MailEditHeaderType> = ({
 const MailEditPanel: FC = () => {
 	const [header, setHeader] = useState();
 	const [toggleAppBoard, setToggleAppBoard] = useState(false);
-	const { folderId, editId } = useParams<{ folderId: string; editId: string }>();
+	const { folderId } = useParams<{ folderId: string }>();
 
 	return (
 		<>
@@ -74,12 +74,7 @@ const MailEditPanel: FC = () => {
 					background="gray6"
 					style={{ maxHeight: 'calc(100% - 3.0625rem)', flexGrow: '1' }}
 				>
-					<EditView
-						mailId={editId}
-						folderId={folderId}
-						setHeader={setHeader}
-						toggleAppBoard={toggleAppBoard}
-					/>
+					<EditView setHeader={setHeader} toggleAppBoard={toggleAppBoard} />
 				</Container>
 			</Container>
 		</>
