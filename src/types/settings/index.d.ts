@@ -185,11 +185,10 @@ export type InputProps = {
 };
 
 export type SignItemType = {
-	name?: string;
+	name: string;
 	id: string;
-	description?: string;
-	label?: string;
-	index?: number;
+	description: string;
+	label: string;
 	content?: [
 		{
 			type: 'text/plain' | 'text/html';
@@ -206,9 +205,9 @@ type SignatureSettingsPropsType = {
 		};
 	}) => void;
 	setDisabled: (arg: boolean) => void;
-	signItems: SignItemType[];
-	setSignItems: (arg: unknown) => void;
-	setSignItemsUpdated: (arg: unknown) => void;
+	signatures: SignItemType[];
+	setSignatures: (signatures: SignItemType[]) => void;
+	setOriginalSignatures: (signatures: SignItemType[]) => void;
 };
 
 export type ReceivingMessagesSettingsType = {
