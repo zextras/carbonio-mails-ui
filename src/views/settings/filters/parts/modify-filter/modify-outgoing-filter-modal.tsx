@@ -86,7 +86,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 		() => `${t('label.edit', 'Edit')} ${selectedFilter?.name}`,
 		[t, selectedFilter?.name]
 	);
-	const inputLabel = useMemo(() => t('settings.filter_name', 'Filter Name'), [t]);
+	const inputLabel = useMemo(() => `${t('settings.filter_name', 'Filter Name')}*`, [t]);
 	const activeFilterLabel = useMemo(() => t('settings.active_filter', 'Active filter'), [t]);
 
 	const requiredFilterTest = useMemo(() => {

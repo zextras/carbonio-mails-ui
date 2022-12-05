@@ -40,7 +40,7 @@ const ModalFooter: FC<ModalFooterProps> = ({
 		<Container orientation="horizontal" padding={{ top: 'medium' }} mainAlignment="space-between">
 			<Checkbox defaultChecked={checked} onClick={onSecondaryAction} label={checkboxLabel} />
 			<Tooltip label={toolTipText}>
-				<Padding vertical="small">
+				<Padding left="small">
 					<Button onClick={onConfirm} label={label} disabled={disabled} />
 				</Padding>
 			</Tooltip>
