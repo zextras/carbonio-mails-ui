@@ -22,10 +22,7 @@ export const uploadAttachments = createAsyncThunk<any, any>(
 					method: 'POST',
 					body: file
 				})
-					.then((res) => {
-						console.log(`***************************** res`, res.text());
-						return res;
-					})
+					.then((res) => res)
 					.then((res) => res.text())
 					// eslint-disable-next-line no-eval
 					.then((txt) => eval(`[${txt}]`))

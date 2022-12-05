@@ -19,6 +19,6 @@ export const handleSaveDraftRequest = async (
 		return res(ctx.status(500, 'Empty request'));
 	}
 	const { id } = (await req.json<RestGenericRequest>()).Body.SaveDraftResponse.m;
-	const { msg } = await import(`./cases/saveDraft/saveDraft-${id}`);
-	return res(ctx.json(msg));
+	const { saveDraftResult } = await import(`./cases/saveDraft/saveDraft-${id}`);
+	return res(ctx.json(saveDraftResult));
 };

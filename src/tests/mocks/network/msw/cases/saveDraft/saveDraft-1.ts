@@ -7,7 +7,7 @@ import { createFakeIdentity } from '../../../../../../carbonio-ui-commons/test/m
 
 const identity = createFakeIdentity();
 
-const result = {
+export const saveDraftResult = {
 	Header: {
 		context: {
 			session: { id: '113405', _content: '113405' },

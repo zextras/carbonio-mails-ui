@@ -13,7 +13,6 @@ import {
 	waitForElementToBeRemoved,
 	within
 } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import React from 'react';
@@ -23,8 +22,8 @@ import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import * as useQueryParam from '../../../../../hooks/useQueryParam';
 import * as saveDraftAction from '../../../../../store/actions/save-draft';
 import { generateStore } from '../../../../../tests/generators/store';
+import { saveDraftResult } from '../../../../../tests/mocks/network/msw/cases/saveDraft/saveDraft-1';
 import { SoapDraftMessageObj } from '../../../../../types';
-import * as editUtils from '../edit-utils';
 import EditView from '../edit-view';
 import { getSetupServerApi } from '../../../../../carbonio-ui-commons/test/jest-setup';
 
@@ -465,16 +464,19 @@ describe('Edit view', () => {
 			const store = generateStore();
 
 			// Create and wait for the component to be rendered
-			const renderResult = setupTest(<EditView {...props} />, { store });
-			const { user } = renderResult;
+			setupTest(<EditView {...props} />, { store });
 			await waitFor(() => {
 				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
 			});
+
+			const callTester = jest.fn();
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
 				getSetupServerApi().use(
 					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
+						callTester();
+
 						if (!req) {
 							reject(new Error('Empty request'));
 						}
@@ -482,137 +484,39 @@ describe('Edit view', () => {
 						const msg = (await req.json()).Body.SaveDraftRequest.m;
 						resolve(msg);
 
-						// Result
-						const result = {
-							Header: {
-								context: {
-									session: { id: '113405', _content: '113405' },
-									change: { token: 21489 },
-									notify: [
-										{
-											seq: 14,
-											modified: {
-												mbx: [{ s: 248716466 }],
-												folder: [
-													{
-														id: '6',
-														uuid: '8d438ed1-5d63-4bfb-8059-0ef93812a488',
-														deletable: false,
-														n: 2,
-														s: 1955,
-														i4ms: 21488,
-														i4next: 10719
-													}
-												],
-												m: [
-													{
-														s: 866,
-														d: 1669740509000,
-														meta: [{}],
-														rev: 21488,
-														i4uid: 10718,
-														id: '10718',
-														e: [
-															{
-																a: 'luca.stauble@zextras.com',
-																d: 'luca',
-																p: 'luca stauble',
-																t: 'f'
-															}
-														],
-														su: ''
-													}
-												]
-											}
-										}
-									],
-									_jsns: 'urn:zimbra'
-								}
-							},
-							Body: {
-								SaveDraftResponse: {
-									m: [
-										{
-											s: 866,
-											d: 1669740509000,
-											l: '6',
-											cid: '-10718',
-											f: 'sd',
-											rev: 21488,
-											id: '10718',
-											e: [{ a: 'luca.stauble@zextras.com', d: 'luca', p: 'luca stauble', t: 'f' }],
-											su: '',
-											mid: '\u003C840622014.2092008.1669740509754.JavaMail.zextras@zextras.com\u003E',
-											sd: 1669740509000,
-											mp: [
-												{
-													part: 'TEXT',
-													ct: 'multipart/mixed',
-													mp: [
-														{
-															part: '1',
-															ct: 'multipart/alternative',
-															mp: [
-																{
-																	part: '1.1',
-																	ct: 'text/html',
-																	s: 120,
-																	body: true,
-																	content:
-																		'\u003Chtml\u003E\u003Cbody\u003E\u003Cdiv style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"\u003E\u003C/div\u003E\u003C/body\u003E\u003C/html\u003E'
-																},
-																{ part: '1.2', ct: 'text/plain', s: 0 }
-															]
-														}
-													]
-												}
-											]
-										}
-									],
-									_jsns: 'urn:zimbraMail'
-								}
-							},
-							_jsns: 'urn:zimbraSoap'
-						};
-						return res(ctx.json({}));
+						// Don't care about the response. Return a fake one
+						return res(ctx.json(saveDraftResult));
 					})
 				);
 			});
 
-			const attachmentPart = [
-				{
-					part: '2',
-					mid: '1251'
-				}
-			];
-
 			const fileInput = await screen.findByTestId('file-input');
 
-			const mockedAddAttachments = jest
-				.spyOn(editUtils, 'addAttachments')
-				.mockResolvedValue(Promise.resolve(attachmentPart));
-
-			await new Promise<void>((resolve, reject) => {
-				// eslint-disable-next-line testing-library/prefer-user-event
-				fireEvent.change(fileInput, {
-					target: {
-						files: [new File(['(⌐□_□)'], 'chucknorris.png', { type: 'image/png' })]
-					}
-				})
-					? resolve()
-					: reject();
-			});
-
-			// expect(mockedAddAttachments).toBeCalled();
+			await act(
+				() =>
+					new Promise<void>((resolve, reject) => {
+						// eslint-disable-next-line testing-library/prefer-user-event
+						fireEvent.change(fileInput, {
+							target: {
+								files: [new File(['(⌐□_□)'], 'fakeimage.png', { type: 'image/png' })]
+							}
+						})
+							? resolve()
+							: reject();
+					})
+			);
 
 			// Wait few seconds
 			act(() => {
 				jest.advanceTimersByTime(5000);
 			});
 
-			const msg = await draftSavingInterceptor;
-			console.log('****************** msg', msg);
-			// expect(msg.attach.mp[0]).toEqual(attachmentPart);
-		}, 10000);
+			// Await the call to the saveDraft
+			await draftSavingInterceptor;
+
+			// The saveDraft request should be invoked 2 times (1 before and
+			// 1 after the upload of the attachment
+			expect(callTester).toBeCalledTimes(2);
+		});
 	});
 });
