@@ -8,7 +8,7 @@ import {
 	Container,
 	FormSubSection,
 	Select,
-	Text,
+	TextWithTooltip,
 	Input,
 	List,
 	Row,
@@ -18,10 +18,9 @@ import {
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
-import { t, useIntegratedComponent, useUserAccount } from '@zextras/carbonio-shell-ui';
-import { map, find, findIndex, merge, escape, unescape } from 'lodash';
-import { getSignature, getSignatures } from '../../helpers/signatures';
-import { SignatureDescriptor } from '../../types/signatures';
+import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { map, escape, unescape, reject, find, concat } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
@@ -47,101 +46,116 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	settingsObj,
 	updateSettings,
 	setDisabled,
-	signItems,
-	setSignItems,
-	setSignItemsUpdated
+	signatures,
+	setSignatures,
+	setOriginalSignatures
 }): ReactElement => {
-	const account = useUserAccount();
-	const [signatures, setSignatures] = useState(getSignatures(account));
-	const [signs, setSigns] = useState([]);
-	const [selected, setSelected] = useState({});
+	const [currentSignature, setCurrentSignature] = useState<SignItemType | undefined>(undefined);
+	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
+	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
+	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
+	const [signaturesLoaded, setSignaturesLoaded] = useState(false);
 
-	const [id, setId] = useState('');
-	const [name, setName] = useState<string | undefined>('');
-	const [description, setDescription] = useState<string | undefined>('');
-	const [index, setIndex] = useState<number | undefined>(0);
-	const [editorFlag, setEditorFlag] = useState(false);
-
+	// Fetches signatures from the BE
 	useEffect(() => {
-		// if (fetchSigns) {
-		GetAllSignatures().then((res) => {
-			setSigns(res.signature);
-			// setFetchSigns(false);
+		GetAllSignatures().then(({ signature: signs }) => {
+			const signaturesItems = map(
+				signs,
+				(item: SignItemType, idx) =>
+					({
+						label: item.name,
+						name: item.name,
+						id: item.id,
+						description: unescape(item?.content?.[0]?._content)
+					} as SignItemType)
+			);
+			setSignatures(signaturesItems);
+			setOriginalSignatures(
+				signaturesItems.map((el) => ({
+					id: el.id,
+					name: el.label ?? '',
+					label: el.label ?? '',
+					description: el.description ?? ''
+				}))
+			);
+
+			// Updates state to enable the loading of all signatures-dependent component
+			setSignaturesLoaded(true);
 		});
-		// }
-	}, []);
+	}, [setSignatures, setOriginalSignatures]);
 
-	setSignItemsUpdated(
-		useMemo(
-			() =>
-				map(signs, (item: SignItemType, idx) => ({
-					label: item.name,
-					id: item.id,
-					description: item?.content?.[0]?._content,
-					index: idx
-				})),
-			[signs]
-		)
-	);
+	// Set the default current signature if missing
+	useEffect(() => {
+		if (signatures?.length && !currentSignature) {
+			setCurrentSignature(signatures[0]);
+		}
+	}, [currentSignature, signatures]);
 
-	setSignItems(
-		useMemo(() => {
-			const signItem = map(signs, (item: SignItemType, idx) => ({
-				label: item.name,
-				id: item.id,
-				description: item?.content?.[0]?._content,
-				index: idx
-			}));
-			if (signItem?.length) {
-				setId(signItem[0].id);
-				setIndex(0);
-				setName(signItem?.[0]?.label);
-				setDescription(signItem?.[0]?.description);
-			}
-			return signItem;
-		}, [signs])
-	);
+	// Creates an empty signature
+	const createEmptySignature = (): SignItemType => ({
+		id: uuidv4(),
+		label: t('label.enter_name', 'Enter Name'),
+		name: t('label.enter_name', 'Enter Name'),
+		description: ''
+	});
 
-	const createSign = (): void => {
-		setName('');
-		setDescription('');
-		setId('');
-		setIndex(signItems?.length);
-		const updatedSign = signItems;
-		updatedSign.push({
-			id: (Math.random() + 1).toString(36).substring(7),
-			description: '',
-			label: t('label.enter_name', 'Enter Name'),
-			index: signItems.length
-		});
-		setSignItems(updatedSign);
+	// Creates and adds a new signature to the signatures list
+	const addNewSignature = (): void => {
+		const updatedSign = [...signatures];
+		const newSignature = createEmptySignature();
+		updatedSign.push(newSignature);
+		setSignatures(updatedSign);
+		setCurrentSignature(newSignature);
 	};
 
+	// Gets the signatures by the given id. If "fallbackOnFirst" and if no
+	// signature is found it returns the first of the list
+	const getSignature = useCallback(
+		(id: string, fallbackOnFirst = false) => {
+			const result = find(signatures, ['id', id]);
+			if (!result && fallbackOnFirst && signatures.length > 0) {
+				return signatures[0];
+			}
+
+			return result;
+		},
+		[signatures]
+	);
+
+	// Create the fake signature for the "no signature"
+	const noSignature: SignItemType = useMemo(
+		() => ({
+			label: t('label.no_signature', 'No signature'),
+			name: 'no signature',
+			description: '',
+			id: '11111111-1111-1111-1111-111111111111'
+		}),
+		[]
+	);
+
+	// Get the selected signatures for the new message and for the replies
 	const [signatureNewMessage, signatureRepliesForwards] = useMemo(
 		() => [
-			getSignature(account, settingsObj.zimbraPrefDefaultSignatureId, true),
-			getSignature(account, String(settingsObj.zimbraPrefForwardReplySignatureId), true)
+			getSignature(settingsObj.zimbraPrefDefaultSignatureId) ?? noSignature,
+			getSignature(String(settingsObj.zimbraPrefForwardReplySignatureId)) ?? noSignature
 		],
 		[
-			account,
+			getSignature,
+			noSignature,
 			settingsObj.zimbraPrefDefaultSignatureId,
 			settingsObj.zimbraPrefForwardReplySignatureId
 		]
 	);
 
-	const updateAllSignatures = (updatedSign: SignItemType[]): void => {
-		const allSignatures = updatedSign.map(
-			(item) =>
-				({
-					label: item.label ?? '',
-					value: {
-						description: unescape(item.description),
-						id: item.id
-					}
-				} as SignatureDescriptor)
-		);
-		setSignatures(allSignatures);
-	};
+	// Composes the SelectItem array for the signature selects
+	const signatureSelectItems: SelectItem[] = useMemo(
+		(): SelectItem[] =>
+			concat(noSignature, signatures).map((signature) => ({
+				label: signature.label,
+				value: signature.id
+			})),
+		[noSignature, signatures]
+	);
 
 	const ListItem = ({ item }: { item: SignItemType }): ReactElement => {
 		const [hovered, setHovered] = useState(false);
@@ -149,25 +163,13 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		const onMouseLeave = useCallback(() => setHovered(false), []);
 
 		const onDelete = (): void => {
-			const updatedSign = signItems;
-			const deleteIndex = findIndex(updatedSign, { label: item.label });
-			updatedSign.splice(deleteIndex, 1);
-			map(signItems, (ele, i) => {
-				merge(updatedSign[i], { index: i });
-			});
-			if (updatedSign?.length) {
-				setIndex(0);
-				setName(`${updatedSign[0].label}`);
-				setDescription(updatedSign[0].description);
-				setId(updatedSign[0].id);
-				setSelected({ [updatedSign[0].id]: true });
-			} else {
-				setIndex(-1);
-				setName('');
-				setDescription('');
-				setId('');
+			// Create a new signature array copy without the deleted element
+			const updatedSignatureList = reject(signatures, ['id', item.id]);
+			if (currentSignature?.id === item.id) {
+				setCurrentSignature(undefined);
 			}
-			setSignItems(updatedSign);
+			setSignatures(updatedSignatureList);
+			setDisabled(false);
 		};
 
 		return (
@@ -176,32 +178,29 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				orientation="horizontal"
 				onMouseEnter={onMouseEnter}
 				onMouseLeave={onMouseLeave}
-				background={index === item.index ? 'highlight' : ''}
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				onClick={(ev: React.MouseEvent & { target: { innerText: string } }): void => {
-					if (ev.target.innerText === 'DELETE') {
-						ev.preventDefault();
-					} else {
-						setId(item.id);
-						setName(item.label);
-						setDescription(item.description);
-						setIndex(item?.index);
-					}
+				background={currentSignature?.id === item.id ? 'highlight' : ''}
+				onClick={(ev: React.MouseEvent & { target: { innerText?: string } }): void => {
+					setCurrentSignature({
+						id: item.id,
+						name: item.label ?? '',
+						label: item.label ?? '',
+						description: item.description ?? ''
+					});
 				}}
 			>
 				<Row height="2.5rem" padding={{ all: 'small' }}>
-					<Container width="60%" crossAlignment="flex-start">
-						<Text weight="bold">{item.label}</Text>
-					</Container>
-
-					<Container width="40%" orientation="horizontal" mainAlignment="flex-end">
+					<Container orientation="horizontal" mainAlignment="space-between">
+						<TextWithTooltip weight="bold">{item.label}</TextWithTooltip>
 						{hovered && (
 							<Button
 								label={t('label.delete', 'Delete')}
 								type="outlined"
 								color="error"
-								onClick={(): void => onDelete()}
+								width="fit"
+								onClick={(ev): void => {
+									ev.stopPropagation();
+									onDelete();
+								}}
 							/>
 						)}
 					</Container>
@@ -209,9 +208,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			</Signature>
 		);
 	};
-	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
-	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
-	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
+
 	return (
 		<>
 			<FormSubSection
@@ -226,14 +223,14 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								<Button
 									label={t('signatures.add_signature', 'Add signature')}
 									type="outlined"
-									onClick={createSign}
-									disabled={signItems?.length > 0 && !name}
+									onClick={addNewSignature}
+									disabled={signatures?.length > 0 && !currentSignature?.name}
 								/>
 							</Container>
 							<Padding all="small" />
 
 							<Container height="31.25rem">
-								<List items={signItems ?? []} ItemComponent={ListItem} selected={selected} />
+								{signaturesLoaded && <List items={signatures ?? []} ItemComponent={ListItem} />}
 							</Container>
 						</Container>
 					</Container>
@@ -241,15 +238,39 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						<Container orientation="vertical" mainAlignment="space-around" width="100%">
 							<Input
 								label={t('signatures.name', 'Name')}
-								value={name}
+								value={currentSignature?.name}
 								backgroundColor="gray5"
 								onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => {
-									setName(ev.target.value);
-									const updatedSign = signItems;
-									if (index) updatedSign[index].label = ev.target.value;
+									if (!currentSignature) {
+										return;
+									}
+									const newName = ev.target.value;
+									if (currentSignature.name === newName) {
+										return;
+									}
+
+									setCurrentSignature(
+										(current) =>
+											({
+												...current,
+												name: newName,
+												label: newName
+											} as SignItemType)
+									);
+
+									const updatedSign = signatures.map((signature) => {
+										if (signature.id === currentSignature.id) {
+											return {
+												...signature,
+												label: newName,
+												name: newName
+											};
+										}
+										return signature;
+									});
+
 									setDisabled(false);
-									setSignItems(updatedSign);
-									updateAllSignatures(updatedSign);
+									setSignatures(updatedSign);
 								}}
 							/>
 						</Container>
@@ -259,18 +280,38 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								<Composer
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									value={unescape(description)}
+									value={currentSignature?.description}
 									onEditorChange={(ev: [string, string]): void => {
-										const updatedSign = signItems;
-										if (index && index >= 0 && updatedSign[index].description !== ev[1]) {
-											updatedSign[index].description = escape(ev[1]);
-											if (editorFlag) {
-												setDisabled(false);
-											}
-											setEditorFlag(true);
-											setSignItems(updatedSign);
-											updateAllSignatures(updatedSign);
+										// Rich text signature
+										const newDescription = ev[1];
+
+										if (currentSignature?.description === newDescription) {
+											return;
 										}
+
+										setCurrentSignature(
+											(current) =>
+												({
+													...current,
+													description: newDescription
+												} as SignItemType)
+										);
+
+										const updatedSign = signatures.map((signature) => {
+											if (
+												signature.id === currentSignature?.id &&
+												signature.description !== newDescription
+											) {
+												return {
+													...signature,
+													description: newDescription
+												};
+											}
+											return signature;
+										});
+
+										setDisabled(false);
+										setSignatures(updatedSign);
 									}}
 								/>
 							</EditorWrapper>
@@ -281,72 +322,79 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			<FormSubSection label={sectionTitleSetSignatures.label} id={sectionTitleSetSignatures.id}>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 					<Heading title={t('title.new_messages', 'New Messages')} />
-					<Select
-						items={signatures.map((signature) => ({
-							label: signature.label,
-							value: signature.value.id
-						}))}
-						label={t('label.select_signature', 'Select a signature')}
-						selection={
-							{
-								label: signatureNewMessage?.label,
-								value: signatureNewMessage?.value.id
-							} as SelectItem
-						}
-						onChange={(selectedId: any): void => {
-							if (selectedId === signatureNewMessage?.value.id) {
-								return;
+					{signaturesLoaded && (
+						<Select
+							items={signatureSelectItems}
+							label={t('label.select_signature', 'Select a signature')}
+							selection={
+								{
+									label: signatureNewMessage?.label,
+									value: signatureNewMessage?.id
+								} as SelectItem
 							}
-							updateSettings({
-								target: {
-									name: 'zimbraPrefDefaultSignatureId',
-									value: getSignature(account, selectedId)?.value.id ?? ''
+							onChange={(selectedId: any): void => {
+								if (selectedId === signatureNewMessage?.id) {
+									return;
 								}
-							});
-						}}
-					/>
-					{signatureNewMessage?.value.description && (
+								updateSettings({
+									target: {
+										name: 'zimbraPrefDefaultSignatureId',
+										value: selectedId
+									}
+								});
+							}}
+						/>
+					)}
+					{signatureNewMessage?.description && (
 						<Container
 							crossAlignment="baseline"
 							padding={{ all: 'large' }}
 							background="gray5"
-							dangerouslySetInnerHTML={{ __html: signatureNewMessage.value.description }}
+							dangerouslySetInnerHTML={{ __html: signatureNewMessage.description }}
 						/>
 					)}
 				</Container>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
 					<Heading title={t('title.replies_forwards', 'Replies & Forwards')} />
-					<Select
-						items={signatures.map((signature) => ({
-							label: signature.label,
-							value: signature.value.id
-						}))}
-						label={t('label.select_signature', 'Select a signature')}
-						selection={
-							{
-								label: signatureRepliesForwards?.label,
-								value: signatureRepliesForwards?.value.id
-							} as SelectItem
-						}
-						onChange={(selectedId: any): void => {
-							if (selectedId === signatureRepliesForwards?.value.id) {
-								return;
+					{signaturesLoaded && (
+						<Select
+							items={concat(
+								{
+									label: t('label.no_signature', 'No signature'),
+									value: '11111111-1111-1111-1111-111111111111'
+								},
+								signatures.map((signature) => ({
+									label: signature.label,
+									value: signature.id
+								}))
+							)}
+							label={t('label.select_signature', 'Select a signature')}
+							selection={
+								{
+									label: signatureRepliesForwards?.label,
+									value: signatureRepliesForwards?.id
+								} as SelectItem
 							}
-
-							updateSettings({
-								target: {
-									name: 'zimbraPrefForwardReplySignatureId',
-									value: getSignature(account, selectedId)?.value.id ?? ''
+							onChange={(selectedId: any): void => {
+								if (selectedId === signatureRepliesForwards?.id) {
+									return;
 								}
-							});
-						}}
-					/>
-					{signatureRepliesForwards?.value.description && (
+
+								updateSettings({
+									target: {
+										name: 'zimbraPrefForwardReplySignatureId',
+										value: selectedId
+									}
+								});
+							}}
+						/>
+					)}
+					{signatureRepliesForwards?.description && (
 						<Container
 							crossAlignment="baseline"
 							padding={{ all: 'large' }}
 							background="gray5"
-							dangerouslySetInnerHTML={{ __html: signatureRepliesForwards.value.description }}
+							dangerouslySetInnerHTML={{ __html: signatureRepliesForwards.description }}
 						/>
 					)}
 				</Container>
