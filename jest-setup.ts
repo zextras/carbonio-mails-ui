@@ -11,8 +11,7 @@ import {
 	defaultAfterEachTest,
 	defaultBeforeAllTests,
 	defaultBeforeEachTest,
-	getFailOnConsoleDefaultConfig,
-	getSetupServerApi
+	getFailOnConsoleDefaultConfig
 } from './src/carbonio-ui-commons/test/jest-setup';
 import { registerRestHandler } from './src/carbonio-ui-commons/test/mocks/network/msw/handlers';
 import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
