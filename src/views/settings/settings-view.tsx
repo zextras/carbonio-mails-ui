@@ -55,8 +55,8 @@ const SettingsView: FC = () => {
 	const [updatedProps, setUpdatedProps] = useState<PropsType | Record<string, unknown>>(
 		originalProps
 	);
-	const [signItems, setSignItems] = useState([]);
-	const [signItemsUpdated, setSignItemsUpdated] = useState([]);
+	const [signatures, setSignatures] = useState<SignItemType[]>(() => []);
+	const [originalSignatures, setOriginalSignatures] = useState(() => []);
 	const [disabled, setDisabled] = useState(true);
 	const [flag, setFlag] = useState(false);
 
@@ -148,10 +148,9 @@ const SettingsView: FC = () => {
 	// eslint-disable-next-line consistent-return
 	const saveChanges = useCallback(() => {
 		let changes = {};
-
-		if (!isEqual(signItems, signItemsUpdated)) {
+		if (!isEqual(signatures, originalSignatures)) {
 			let hasError = false;
-			forEach(signItems, (i: SignItemType) => {
+			forEach(signatures, (i: SignItemType) => {
 				if (!i.label || !i.description) hasError = true;
 			});
 
@@ -166,31 +165,30 @@ const SettingsView: FC = () => {
 				});
 				return false;
 			}
-			const itemsDelete = filter(signItemsUpdated, (x: SignItemType) => {
+			const itemsDelete = filter(originalSignatures, (x: SignItemType) => {
 				let toggle = false;
-				map(signItems, (ele: SignItemType) => {
+				map(signatures, (ele: SignItemType) => {
 					if (x.id === ele?.id) toggle = true;
 				});
 				return !toggle;
 			});
 
-			const findItems = (
-				arr1: Array<SignItemType>,
-				arr2: Array<SignItemType>
-			): Array<SignItemType> => filter(arr1, (o1) => arr2.map((o2) => o2.id).indexOf(o1.id) === -1);
+			const findNewSignatures = (
+				updated: Array<SignItemType>,
+				original: Array<SignItemType>
+			): Array<SignItemType> =>
+				filter(updated, (o1) => original.map((o2) => o2.id).indexOf(o1.id) === -1);
 
-			const itemsAdd = findItems(signItems, signItemsUpdated);
-			const itemsEdit = filter(signItems, (item: SignItemType) =>
+			const itemsAdd = findNewSignatures(signatures, originalSignatures);
+			const itemsEdit = filter(signatures, (item: SignItemType) =>
 				find(
-					signItemsUpdated,
+					originalSignatures,
 					(c: SignItemType): unknown =>
 						item.id === c.id && (item.label !== c.label || item.description !== c.description)
 				)
 			);
 
-			const isReplySignaturePrefisNew =
-				settingsToUpdate.zimbraPrefForwardReplySignatureId &&
-				!settingsToUpdate.zimbraPrefForwardReplySignatureId.includes('-');
+			const isReplySignaturePrefisNew = settingsToUpdate.zimbraPrefForwardReplySignatureId;
 			let setForwardReplySignatureId = '';
 			if (
 				isReplySignaturePrefisNew &&
@@ -203,9 +201,7 @@ const SettingsView: FC = () => {
 				delete settingsToUpdate.zimbraPrefForwardReplySignatureId;
 			}
 
-			const isDefaultSignaturePref =
-				settingsToUpdate.zimbraPrefDefaultSignatureId &&
-				!settingsToUpdate.zimbraPrefDefaultSignatureId.includes('-');
+			const isDefaultSignaturePref = settingsToUpdate.zimbraPrefDefaultSignatureId;
 			let setDefaultSignatureId = '';
 			if (
 				isDefaultSignaturePref &&
@@ -284,8 +280,8 @@ const SettingsView: FC = () => {
 			});
 		}
 	}, [
-		signItems,
-		signItemsUpdated,
+		signatures,
+		originalSignatures,
 		settingsToUpdate,
 		propsToUpdate,
 		dispatch,
@@ -321,20 +317,15 @@ const SettingsView: FC = () => {
 						updateProps={updateProps}
 					/>
 					<SignatureSettings
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						settingsObj={settingsObj}
+						setSignatures={setSignatures}
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						setSignItems={setSignItems}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						setSignItemsUpdated={setSignItemsUpdated}
+						setOriginalSignatures={setOriginalSignatures}
 						updateSettings={updateSettings}
 						// disabled={disabled}
 						setDisabled={setDisabled}
-						signItems={signItems}
-						signItemsUpdated={signItemsUpdated}
+						signatures={signatures}
 						flag={flag}
 					/>
 					<ComposeMessage settingsObj={settingsObj} updateSettings={updateSettings} />
