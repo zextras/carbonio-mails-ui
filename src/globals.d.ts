@@ -4,4 +4,3 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 declare module '*.properties';
-// declare module '@zextras/carbonio-design-system';

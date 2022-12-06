@@ -30,7 +30,12 @@ import { useDispatch } from 'react-redux';
 import styled, { SimpleInterpolation } from 'styled-components';
 import { calcColor, getFileExtension } from '../../../../commons/utilities';
 import { updateEditor } from '../../../../store/editor-slice';
-import { EditorAttachmentFiles, IconColors, MailsEditor } from '../../../../types';
+import {
+	EditorAttachmentFiles,
+	IconColors,
+	MailsEditor,
+	ThrottledSaveToDraftType
+} from '../../../../types';
 
 const getSizeLabel = (size: number): string => {
 	let value;
@@ -109,7 +114,7 @@ type AttachmentType = {
 	editor: MailsEditor;
 	part: string;
 	iconColors: IconColors;
-	throttledSaveToDraft: (arg: any) => void;
+	throttledSaveToDraft: ThrottledSaveToDraftType;
 	att: EditorAttachmentFiles;
 };
 const Attachment: FC<AttachmentType> = ({

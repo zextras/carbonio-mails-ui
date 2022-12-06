@@ -30,11 +30,11 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 			console.error(e);
 		}
 
-		if (resp?.m[0]?.id) {
+		if (resp?.m && resp?.m[0]?.id) {
 			dispatch(getMsg({ msgId: resp.m[0].id }));
 			dispatch(closeEditor(editorId));
 		}
-		if (resp?.m[0]?.cid) {
+		if (resp?.m && resp?.m[0]?.cid) {
 			dispatch(getConv({ conversationId: resp.m[0].cid }));
 		}
 		return { resp, editor };

@@ -16,7 +16,7 @@ import { Dispatch } from '@reduxjs/toolkit';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { saveDraft } from '../../../../../store/actions/save-draft';
-import { MailsEditor } from '../../../../../types';
+import { EditViewContextType, MailsEditor } from '../../../../../types';
 import DatePickerCustomComponent from './date-picker-custom-component';
 import { EditViewContext } from './edit-view-context';
 
@@ -27,7 +27,6 @@ type SendLaterModalPropTypes = {
 	closeBoard: () => void;
 	folderId?: string;
 	setShowRouteGuard: (arg: boolean) => void;
-	setSendLater: (arg: boolean) => void;
 };
 const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 	onClose,
@@ -35,12 +34,11 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 	editor,
 	closeBoard,
 	folderId,
-	setShowRouteGuard,
-	setSendLater
+	setShowRouteGuard
 }) => {
 	const [time, setTime] = useState();
 	const bridgedFn = getBridgedFunctions();
-
+	const { setSendLater } = useContext<EditViewContextType>(EditViewContext);
 	const modalTitle = useMemo(() => t('label.send_later', 'Send Later'), []);
 	const datePickerLabel = useMemo(() => t('label.select_date_time', 'Select date and time'), []);
 

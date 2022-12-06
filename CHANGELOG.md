@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+### [0.1.52](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.51...v0.1.52) (2022-12-05)
+
+
+### Bug Fixes
+
+* restore signatures broken settings ([d5be0ce](https://github.com/zextras/carbonio-mails-ui/commit/d5be0cea3823297ad4fcecd823efb7748929e8a8))
+
+
+### [0.1.51](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.50...v0.1.51) (2022-11-30)
+
+
+### Bug Fixes
+
+* fixed inline attachments ([f014402](https://github.com/zextras/carbonio-mails-ui/commit/f014402bd8fa281fdadb1f78bd9d0ae7872f493c))
+
 ### [0.1.50](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.49...v0.1.50) (2022-11-24)
 
 ### [0.1.49](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.48...v0.1.49) (2022-11-16)

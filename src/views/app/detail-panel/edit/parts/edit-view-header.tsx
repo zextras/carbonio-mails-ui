@@ -32,20 +32,19 @@ import {
 import styled from 'styled-components';
 import { concat, find, some } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { Controller } from 'react-hook-form';
-import { SubmitErrorHandler, SubmitHandler } from 'react-hook-form/dist/types/form';
+import { Controller, SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { ActionsType } from '../../../../../commons/utils';
 import { sendMsg } from '../../../../../store/actions/send-msg';
-import { StoreProvider } from '../../../../../store/redux';
-import { MailAttachment } from '../../../../../types';
+import { EditViewContextType, MailAttachment } from '../../../../../types';
 import { addAttachments } from '../edit-utils';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
 import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { EditViewContext } from './edit-view-context';
 import * as StyledComp from './edit-view-styled-components';
 import SendLaterModal from './send-later-modal';
+import { StoreProvider } from '../../../../../store/redux';
 
 const FromItem = styled(Row)`
 	border-radius: 4px;
@@ -72,25 +71,27 @@ type PropType = {
 		onInvalid?: SubmitErrorHandler<any>
 	) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 	uploadAttachmentsCb: (files: any) => AsyncThunkAction<any, any, any>;
+	updateEditorCb: (data: any, editorId?: string) => void;
+	editorId: string;
+	saveDraftCb: (arg: any) => any;
+	setSending: (arg: boolean) => void;
+	action: string | undefined;
 };
 const EditViewHeader: FC<PropType> = ({
 	setShowRouteGuard,
 	setValue,
 	handleSubmit,
-	uploadAttachmentsCb
+	uploadAttachmentsCb,
+	updateEditorCb,
+	editorId,
+	saveDraftCb,
+	setSending,
+	action
 }) => {
+	const { folderId } = useParams<{ folderId: string }>();
 	const { prefs, props, attrs } = useUserSettings();
-	const {
-		control,
-		editor,
-		updateEditorCb,
-		editorId,
-		saveDraftCb,
-		folderId,
-		action,
-		setSending,
-		setSendLater
-	} = useContext(EditViewContext);
+	const { control } = useForm();
+	const { editor } = useContext<EditViewContextType>(EditViewContext);
 	const [open, setOpen] = useState(false);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [openDD, setOpenDD] = useState(false);
@@ -416,14 +417,13 @@ const EditViewHeader: FC<PropType> = ({
 							closeBoard={boardUtilities?.closeBoard}
 							folderId={folderId}
 							setShowRouteGuard={setShowRouteGuard}
-							setSendLater={setSendLater}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [boardUtilities?.closeBoard, dispatch, editor, folderId, setSendLater, setShowRouteGuard]);
+	}, [boardUtilities?.closeBoard, dispatch, editor, folderId, setShowRouteGuard]);
 
 	const isSendLaterAllowed = useMemo(
 		() => attrs?.zimbraFeatureMailSendLaterEnabled === 'TRUE',
@@ -511,6 +511,7 @@ const EditViewHeader: FC<PropType> = ({
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								ref={inputRef}
+								data-testid="file-input"
 								onChange={(): Promise<any> =>
 									addAttachments(
 										saveDraftCb,
