@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.53](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.52...v0.1.53) (2022-12-06)
+
+
+### Bug Fixes
+
+* undo trashing an email raise an error and doesn't restore email ([f3e21f7](https://github.com/zextras/carbonio-mails-ui/commit/f3e21f71162e8a5b53d53803de0b0bb804e0d06e))
+
 ### [0.1.52](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.51...v0.1.52) (2022-12-05)
 
 
