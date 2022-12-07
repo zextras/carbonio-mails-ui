@@ -245,7 +245,12 @@
         "collapse_receivers_list": "Recolher lista de destinatários",
         "expand_receivers_list": "Expandir lista de destinatários",
         "filter_modified": "Filtro modificado com sucesso",
-        "hide_more_info": "Ocultar mais informações"
+        "hide_more_info": "Ocultar mais informações",
+        "enter_name": "Insira o Nome",
+        "invalid_query": "Não foi possível analisar a consulta de busca, exclua-a e tente novamente",
+        "send_scheduled": "Enviar Programado",
+        "download_and_delete": "Baixar e Excluir",
+        "not_in_list": "{{name}} - Não está na sua lista de etiquetas"
     },
     "title": {
         "new_messages": "Novas mensagens",
@@ -392,7 +397,8 @@
             "message_color": "Cor da mensagem",
             "message_selection": "Seleção de mensagem",
             "set_message_color": "Definir cor das mensagens e conversas conforme a cor da etiqueta.",
-            "visualization_options": "Opções de visualização"
+            "visualization_options": "Opções de visualização",
+            "unsend_time": "Definir tempo para cancelar o envio"
         },
         "msg_from_optn": {
             "discard": "Descartar mensagem automaticamente",
@@ -515,7 +521,12 @@
             "comic": "Comic"
         },
         "font_size": "{{count}} pt",
-        "font_size_plural": ""
+        "font_size_plural": "",
+        "mail_unsend_time": {
+            "no_delay": "Sem atraso",
+            "second": "{{count}} segundo",
+            "second_plural": "{{count}} segundos"
+        }
     },
     "composer": {
         "attachment": {
@@ -558,9 +569,11 @@
         "manager_rights": "Ver,Editar,Adicionar,Remover",
         "external_images_blocked": "As imagens externas foram bloqueadas para proteger você ante potencial spam",
         "select_date_time": "Selecione uma data e hora para enviar esta mensagem",
-        "schedule_time": "{{date}} às {{time}}",
+        "schedule_time": "em {{date}} às {{time}}",
         "send_later_success": "Seu e-mail será enviado em {{date}} às {{time}}",
-        "schedule_mail": "Será enviado em: {{date}} às {{time}}"
+        "schedule_mail": "Será enviado em: {{date}} às {{time}}",
+        "delete_attachment_message1": "Seu anexo será excluído permanentemente do Carbonio.",
+        "delete_attachment_message2": "Deseja baixá-lo antes?"
     },
     "snackbar": {
         "share_resend": "Convite do compartilhamento reenviado",
