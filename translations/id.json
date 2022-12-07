@@ -256,7 +256,12 @@
         "filter_modified": "Filter berhasil diubah",
         "expand_receivers_list": "Perluas daftar penerima",
         "read_receipt_req": "Perlu tanda terima baca",
-        "collapse_receivers_list": "Ciutkan daftar penerima"
+        "collapse_receivers_list": "Ciutkan daftar penerima",
+        "enter_name": "Masukkan Nama",
+        "send_scheduled": "Kirim Terjadwal",
+        "download_and_delete": "Unduh dan Hapus",
+        "invalid_query": "Tidak dapat mengurai kueri pencarian. Hapus dan coba lagi",
+        "not_in_list": "{{name}} - Tidak ada di daftar tag Anda"
     },
     "messages": {
         "snackbar": {
@@ -385,7 +390,8 @@
             "message_color": "Warna Pesan",
             "message_selection": "Pilihan Pesan",
             "set_message_color": "Atur warna pesan dan percakapan menurut warna tag.",
-            "visualization_options": "Opsi Visualisasi"
+            "visualization_options": "Opsi Visualisasi",
+            "unsend_time": "Atur waktu belum kirim"
         },
         "msg_from_optn": {
             "discard": "Hapus pesan secara otomatis",
@@ -505,6 +511,10 @@
             "elegant": "Elegant",
             "console": "Console",
             "comic": "Comic"
+        },
+        "mail_unsend_time": {
+            "no_delay": "Tidak ada penundaan",
+            "second": "{{count}} detik"
         }
     },
     "composer": {
@@ -549,8 +559,10 @@
         "external_images_blocked": "Gambar eksternal telah diblokir untuk melindungi Anda terhadap potensi spam",
         "select_date_time": "Pilih tanggal dan waktu untuk mengirim pesan ini",
         "schedule_mail": "Akan dikirim pada: {{date}} pukul {{time}}",
-        "schedule_time": "{{date}} pukul {{time}}",
-        "send_later_success": "Email Anda akan dikirim pada {{date}} pukul {{time}}"
+        "schedule_time": "untuk {{date}} pukul {{time}}",
+        "send_later_success": "Email Anda akan dikirim pada {{date}} pukul {{time}}",
+        "delete_attachment_message1": "Lampiran Anda akan dihapus permanen dari Carbonio.",
+        "delete_attachment_message2": "Ingin mengunduhnya dulu?"
     },
     "snackbar": {
         "share_resend": "Undangan berbagi dikirim ulang",

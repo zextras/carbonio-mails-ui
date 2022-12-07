@@ -331,7 +331,8 @@
         "send_scheduled": "Zaplanuj wysyłanie",
         "not_in_list": "{{name}} nie znajduje się na Twojej liście tagów",
         "invalid_query": "Nie udało się przetworzyć filtrów, wyczyść wyszukiwanie i spróbuj ponownie",
-        "download_and_delete": "Pobierz i usuń"
+        "download_and_delete": "Pobierz i usuń",
+        "enter_name": "Wprowadź nazwę"
     },
     "message": {
         "snackbar": {
@@ -689,7 +690,8 @@
         "mail_unsend_time": {
             "second_0": "{{count}} sekunda",
             "second_1": "{{count}} sekundy",
-            "second_2": "{{count}} sekund"
+            "second_2": "{{count}} sekund",
+            "no_delay": "Brak opóźnienia"
         }
     },
     "signatures": {
@@ -718,7 +720,7 @@
         "add_new_recipients": "Dodaj nowych odbiorców"
     },
     "preview": {
-        "close": "Zamknij Podgląd"
+        "close": "Zamknij podgląd"
     },
     "modal": {
         "delete_draft": {

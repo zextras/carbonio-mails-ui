@@ -215,7 +215,12 @@
         "expand_receivers_list": "पाने वालों की लिंक बड़ी करें",
         "delayed_sending": "देर से भेजें",
         "collapse_receivers_list": "पाने वालों की लिस्ट नीचे छिपाएँ",
-        "before_you_leave": "इससे पहले कि आप जाएँ"
+        "before_you_leave": "इससे पहले कि आप जाएँ",
+        "invalid_query": "सर्च क्वेरी पार्स नहीं कर पा रहा, इसे साफ करें और दोबारा कोशिश करें",
+        "send_scheduled": "शैड्यूल्ड भेजें",
+        "download_and_delete": "डाउनलोड और डिलीट करें",
+        "enter_name": "नाम एंटर करें",
+        "not_in_list": "{{name}} - आपकी टैग लिस्ट में नहीं है"
     },
     "messages": {
         "invalid_address": "निम्नलिखित एड्रेस अमान्य लग रहा है",
@@ -404,7 +409,8 @@
             "message_selection": "मैसेज सिलेक्शन",
             "conversation_ordering": "बात-चीत क्रम में लगाना",
             "set_message_color": "अपने मैसेज और बात-चीतों के कलर टैग कलर के अनुसार सेट करें।",
-            "visualization_options": "दिखने के ऑप्शन"
+            "visualization_options": "दिखने के ऑप्शन",
+            "unsend_time": "अनसेंड टाइम सेट करें"
         },
         "msg_from_optn": {
             "discard": "मैसेज ऑटोमैटिक हटाएँ",
@@ -527,7 +533,12 @@
             "comic": "Comic"
         },
         "font_size": "{{count}} pt",
-        "font_size_plural": "{{count}} pt"
+        "font_size_plural": "{{count}} pt",
+        "mail_unsend_time": {
+            "no_delay": "कोई देर नहीं",
+            "second": "{{count}} सेकंड",
+            "second_plural": "{{count}} सेकंड"
+        }
     },
     "tooltip": {
         "edit": "शेयर गुणों में संशोधन",
@@ -573,8 +584,10 @@
         "external_images_blocked": "संभावित स्पैम से आपको सुरक्षित रखने के लिए बाहरी फोटो ब्लॉक कर दी गई हैं",
         "select_date_time": "यह संदेश भेजने के लिए तिथि और समय का चयन करें",
         "send_later_success": "आपकी ईमेल {{date}} को {{time}} बजे भेजी जाएगी",
-        "schedule_time": "{{date}} को {{time}} बजे",
-        "schedule_mail": "भेजे जाने का समय: {{date}} को {{time}} बजे"
+        "schedule_time": "{{date}} को {{time}} बजे के लिए",
+        "schedule_mail": "भेजे जाने का समय: {{date}} को {{time}} बजे",
+        "delete_attachment_message2": "क्या आप इसे पहले डाउनलोड करना चाहते हैं?",
+        "delete_attachment_message1": "आपका अटैचमेंट Carbonio से परमानेंट डिलीट कर दिया जाएगा।"
     },
     "snackbar": {
         "folder_shared": "फोल्डर शेयर किए",

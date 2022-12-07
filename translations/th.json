@@ -256,7 +256,12 @@
         "expand_receivers_list": "ขยายรายชื่อผู้รับ",
         "delayed_sending": "ส่งล่าช้า",
         "collapse_receivers_list": "ยุบรายชื่อผู้รับ",
-        "before_you_leave": "ก่อนคุณจากไป"
+        "before_you_leave": "ก่อนคุณจากไป",
+        "send_scheduled": "ส่งตามกำหนดเวลา",
+        "download_and_delete": "ดาวน์โหลดและลบ",
+        "invalid_query": "ไม่สามารถวิเคราะห์คำค้นหาได้ โปรดล้างข้อมูลแล้วลองใหม่อีกครั้ง",
+        "enter_name": "ป้อนชื่อ",
+        "not_in_list": "{{name}} - ไม่อยู่ในรายการแท็กของคุณ"
     },
     "messages": {
         "modal": {
@@ -412,8 +417,10 @@
         "external_images_blocked": "รูปภาพจากภายนอกถูกบล็อกเพื่อป้องกันคุณจากสแปมที่อาจเกิดขึ้น",
         "select_date_time": "เลือกวันที่และเวลาในการส่งข้อความนี้",
         "send_later_success": "อีเมลของคุณจะถูกส่งในวันที่ {{date}} เวลา {{time}}",
-        "schedule_time": "{{date}} เวลา {{time}}",
-        "schedule_mail": "จะถูกส่งเมื่อ: {{date}} เวลา {{time}}"
+        "schedule_time": "สำหรับ {{date}} เวลา {{time}}",
+        "schedule_mail": "จะถูกส่งเมื่อ: {{date}} เวลา {{time}}",
+        "delete_attachment_message1": "ไฟล์แนบของคุณจะถูกลบออกจาก Carbonio อย่างถาวร",
+        "delete_attachment_message2": "คุณต้องการดาวน์โหลดไว้ก่อนหรือไม่?"
     },
     "settings": {
         "label": {
@@ -426,7 +433,8 @@
             "message_color": "สีข้อความ",
             "message_selection": "การเลือกข้อความ",
             "set_message_color": "กำหนดสีของข้อความและการสนทนาตามสีแท็ก",
-            "visualization_options": "ตัวเลือกการแสดงภาพ"
+            "visualization_options": "ตัวเลือกการแสดงภาพ",
+            "unsend_time": "ตั้งเวลายกเลิกการส่ง"
         },
         "msg_from_optn": {
             "discard": "ยกเลิกข้อความโดยอัตโนมัติ",
@@ -550,6 +558,10 @@
             "elegant": "Elegant",
             "console": "Console",
             "comic": "Comic"
+        },
+        "mail_unsend_time": {
+            "no_delay": "ไม่มีความล่าช้า",
+            "second": "{{count}} วินาที"
         }
     },
     "snackbar": {
