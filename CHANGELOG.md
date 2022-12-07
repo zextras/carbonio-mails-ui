@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.54](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.53...v0.1.54) (2022-12-07)
+
+
+### Bug Fixes
+
+* restored previous version of normalize-message ([3312412](https://github.com/zextras/carbonio-mails-ui/commit/3312412e9065154ad87d703204c7953a04b66da4))
+* restored previous version of normalize-message ([9531c5e](https://github.com/zextras/carbonio-mails-ui/commit/9531c5ee8edbb5a0159240af77e1f9768708451a))
+
 ### [0.1.53](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.52...v0.1.53) (2022-12-06)
 
 
