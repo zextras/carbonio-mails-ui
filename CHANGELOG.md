@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.54](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.53...v0.1.54) (2022-12-07)
+
+
+### Bug Fixes
+
+* restored previous version of normalize-message ([3312412](https://github.com/zextras/carbonio-mails-ui/commit/3312412e9065154ad87d703204c7953a04b66da4))
+* restored previous version of normalize-message ([9531c5e](https://github.com/zextras/carbonio-mails-ui/commit/9531c5ee8edbb5a0159240af77e1f9768708451a))
+
+### [0.1.53](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.52...v0.1.53) (2022-12-06)
+
+
+### Bug Fixes
+
+* undo trashing an email raise an error and doesn't restore email ([f3e21f7](https://github.com/zextras/carbonio-mails-ui/commit/f3e21f71162e8a5b53d53803de0b0bb804e0d06e))
+
+### [0.1.52](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.51...v0.1.52) (2022-12-05)
+
+
+### Bug Fixes
+
+* restore signatures broken settings ([d5be0ce](https://github.com/zextras/carbonio-mails-ui/commit/d5be0cea3823297ad4fcecd823efb7748929e8a8))
+
 ### [0.1.51](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.50...v0.1.51) (2022-11-30)
 
 

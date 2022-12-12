@@ -41,14 +41,8 @@ const FilterTestConditionRow: FC<FilterActionRowProps> = ({
 			</Row>
 			<Padding top="small" />
 			<Container maxHeight="8.75rem" style={{ overflow: 'auto' }} padding={{ top: 'small' }}>
-				{map(newFilters, (tmpFilter, index) => (
-					<FilterActionRows
-						key={index}
-						index={index}
-						tmpFilter={tmpFilter}
-						compProps={compProps}
-						modalProps={modalProps}
-					/>
+				{map(newFilters, (tmpFilter, index: number) => (
+					<FilterActionRows key={index} index={index} tmpFilter={tmpFilter} compProps={compProps} />
 				))}
 			</Container>
 		</>

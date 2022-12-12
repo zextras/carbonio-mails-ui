@@ -280,7 +280,11 @@
         "arrival_notifications": "Notifiche di Arrivo",
         "mark_all_as_read": "Segna tutti come letti",
         "send_scheduled": "Invio Programmato",
-        "message_arrival": "Messaggi in arrivo"
+        "message_arrival": "Messaggi in arrivo",
+        "enter_name": "Inserisci Nome",
+        "invalid_query": "Impossibile analizzare la query di ricerca, cancella e riprova",
+        "download_and_delete": "Scarica e Elimina",
+        "not_in_list": "{{name}} - Non presente nella tua lista di tag"
     },
     "tooltip": {
         "add_attachments": "Aggiungi allegati",
@@ -399,7 +403,9 @@
         "schedule_time": "per il {{date}} alle {{time}}",
         "schedule_mail": "Sarà inviata il: {{date}} alle {{time}}",
         "send_later_success": "La tua e-mail verrà inviata il {{date}} alle {{time}}",
-        "select_date_time": "Seleziona la data e l’ora di invio di questo messaggio"
+        "select_date_time": "Seleziona la data e l’ora di invio di questo messaggio",
+        "delete_attachment_message1": "L'allegato verrà eliminato permanentemente da Carbonio.",
+        "delete_attachment_message2": "Vuoi scaricarlo prima?"
     },
     "snackbar": {
         "share_resend": "Invito condivisione inviato",
@@ -446,7 +452,8 @@
             "set_message_color": "Imposta il colore di messaggi e conversazioni selezionando il colore del tag.",
             "display_messages": "Visualizza Messaggi",
             "default_mail_search": "Ricerca Predefinita dei messaggi",
-            "visualization_options": "Opzioni di Visualizzazione"
+            "visualization_options": "Opzioni di Visualizzazione",
+            "unsend_time": "Imposta tempo per l'invio"
         },
         "new_mail_optn": {
             "manually": "Manualmente",
@@ -573,7 +580,12 @@
         },
         "font": "Carattere",
         "font_size": "{{count}} pt",
-        "font_size_plural": ""
+        "font_size_plural": "",
+        "mail_unsend_time": {
+            "no_delay": "Nessun ritardo",
+            "second": "{{count}} secondo",
+            "second_plural": "{{count}} secondi"
+        }
     },
     "search": {
         "attachment_note": "Cerca tutte le e-mail che hanno un allegato.",
