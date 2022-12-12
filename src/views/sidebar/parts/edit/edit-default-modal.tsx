@@ -282,7 +282,7 @@ const EditDefaultModal: FC<EditDefaultModalPropType> = ({ folder, onClose, setAc
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'medium' }}>
 				<FolderDetails folder={folder} />
 
-				{!isEmpty(folder?.acl) && folder.isLink && !folder.owner && (
+				{!isEmpty(folder?.acl) && !folder.owner && (
 					<ShareFolderProperties folder={folder} setActiveModal={setActiveModal} />
 				)}
 				<RetentionPolicies
