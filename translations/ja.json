@@ -260,7 +260,12 @@
         "delayed_sending": "遅延送信",
         "collapse_receivers_list": "受信者リストを折りたたむ",
         "before_you_leave": "外出する前に",
-        "arrival_notifications": "受信通知"
+        "arrival_notifications": "受信通知",
+        "send_scheduled": "送信予定",
+        "download_and_delete": "ダウンロードして削除",
+        "invalid_query": "検索クエリを解析できません。クリアして再びお試しください",
+        "not_in_list": "{{name}} - タグリストにありません",
+        "enter_name": "名前を入力する"
     },
     "messages": {
         "modal": {
@@ -412,8 +417,10 @@
         "external_images_blocked": "スパムからユーザーを守るために、外部画像はブロックされています",
         "select_date_time": "このメッセージを送信する日付と時刻を選択",
         "send_later_success": "メールは {{date}} {{time}} に送信されます",
-        "schedule_time": "{{date}} {{time}}",
-        "schedule_mail": "送信予定日: {{date}} {{time}}"
+        "schedule_time": "{{date}}、{{time}}",
+        "schedule_mail": "送信予定日: {{date}} {{time}}",
+        "delete_attachment_message1": "添付ファイルが Carbonio から完全に削除されます。",
+        "delete_attachment_message2": "事前にダウンロードしますか？"
     },
     "settings": {
         "label": {
@@ -426,7 +433,8 @@
             "message_color": "メッセージの色",
             "message_selection": "メッセージの選択",
             "set_message_color": "タグの色に合わせてメッセージや会話の色を設定します。",
-            "visualization_options": "視覚化オプション"
+            "visualization_options": "視覚化オプション",
+            "unsend_time": "未送信時間の設定"
         },
         "msg_from_optn": {
             "discard": "メッセージを自動的に破棄する",
@@ -550,6 +558,10 @@
             "elegant": "Elegant",
             "console": "Console",
             "comic": "Comic"
+        },
+        "mail_unsend_time": {
+            "no_delay": "遅延なし",
+            "second": "{{count}}秒"
         }
     },
     "snackbar": {

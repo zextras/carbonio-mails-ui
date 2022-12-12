@@ -277,7 +277,8 @@
         "send_scheduled": "Envoi programmé",
         "not_in_list": "{{name}} - N'est pas dans votre liste d'étiquettes",
         "invalid_query": "Impossible d'analyser la requête de recherche, supprimez la et réessayez",
-        "download_and_delete": "Télécharger et Supprimer"
+        "download_and_delete": "Télécharger et Supprimer",
+        "enter_name": "Saisir le nom"
     },
     "message": {
         "snackbar": {
@@ -545,7 +546,8 @@
         "font": "Police",
         "mail_unsend_time": {
             "second": "{{count}} seconde",
-            "second_plural": "{{count}} secondes"
+            "second_plural": "{{count}} secondes",
+            "no_delay": "Sans délai"
         }
     },
     "share": {

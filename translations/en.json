@@ -331,6 +331,7 @@
         "new_folder": "New Folder",
         "no_name": "<No Name>",
         "no_search_results_found": "No results found",
+        "no_signature": "No signature",
         "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",
         "no_subject_with_tags": "<No Subject>",
@@ -432,7 +433,7 @@
     },
     "message": {
         "admin_rights": "View,Edit,Add,Remove,Administer",
-        "delete_attachment_message1": "Your attachment will be definetly deleted from Carbonio.",
+        "delete_attachment_message1": "Your attachment will be permanently deleted from Carbonio.",
         "delete_attachment_message2": "Do you want to download it before?",
         "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
         "delete_tag_message2": "Once deleted, it will be removed from every item marked with it.",
@@ -656,7 +657,7 @@
             "not_changed_anything": "You haven’t changed anything",
             "search_query": "Default query",
             "set_message_color": "Set color of messages and conversations according to tag color.",
-            "unsend_time": "Set unsend time",
+            "unsend_time": "Set send time",
             "visualization_options": "Visualization Options"
         },
         "linkedin_msg": "LinkedIn messages and connections",

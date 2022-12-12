@@ -38,25 +38,9 @@
                 "add_share": "Teilen hinzufügen",
                 "threshold_message": "Nachrichten in diesem Ordner, die älter als die Entsorgungsschwelle sind, werden automatisch bereinigt und gelöscht."
             },
-            "delete": {
-                "body": {
-                    "message2": "Möchten Sie den ausgewählten Ordner endgültig löschen?"
-                }
-            },
-            "move": {
-                "body": {
-                    "message1": "Einen Ordner als Ziel zum Verschieben aussuchen:"
-                }
-            },
-            "new": {
-                "go_back": "Zurück"
-            },
             "wipe": {
                 "title": "Leeren"
             }
-        },
-        "action": {
-            "restore": "Ordner wiederherstellen"
         }
     },
     "header": {
@@ -272,7 +256,12 @@
         "expand_receivers_list": "Empfängerliste aufklappen",
         "delayed_sending": "Verzögertes Senden",
         "collapse_receivers_list": "Empfängerliste zusammenklappen",
-        "before_you_leave": "Bevor Sie gehen"
+        "before_you_leave": "Bevor Sie gehen",
+        "send_scheduled": "Geplante senden",
+        "download_and_delete": "Herunterladen und Löschen",
+        "invalid_query": "Die Suche kann nicht geparst werden, löschen Sie sie und versuchen Sie es erneut",
+        "not_in_list": "{{name}} - Nicht in Ihrer Etiketten Liste",
+        "enter_name": "Namen eingeben"
     },
     "share": {
         "options": {
@@ -438,8 +427,10 @@
         "external_images_blocked": "Externe Bilder wurden geblockt, um Sie gegen möglichen Spam zu schützen",
         "select_date_time": "Wählen Sie Datum und Uhrzeit aus, zu denen diese Mail gesendet werden soll.",
         "send_later_success": "Ihre E-Mail wird gesendet am {{date}} um {{time}}",
-        "schedule_time": "{{date}} um {{time}}",
-        "schedule_mail": "Wird gesendet am: {{date}} um {{time}}"
+        "schedule_time": "für {{date}} um {{time}}",
+        "schedule_mail": "Wird gesendet am: {{date}} um {{time}}",
+        "delete_attachment_message1": "Ihr Anhang wird endgültig von Carbonio gelöscht.",
+        "delete_attachment_message2": "Möchten Sie ihn vorher herunterladen?"
     },
     "tooltip": {
         "revoke": "Zugriff widerrufen",
@@ -475,7 +466,8 @@
             "message_color": "Nachrichtenfarbe",
             "message_selection": "Nachrichtenauswahl",
             "set_message_color": "Legen Sie die Farbe von Nachrichten und Unterhaltungen entsprechend der Tag-Farbe fest.",
-            "visualization_options": "Visualisierungsoptionen"
+            "visualization_options": "Visualisierungsoptionen",
+            "unsend_time": "Zeit für das Zurückrufen einer Nachricht festlegen"
         },
         "msg_from_optn": {
             "discard": "Nachricht automatisch verwerfen",
@@ -602,7 +594,12 @@
             "comic": "Comic"
         },
         "font_size": "{{count}} pt",
-        "font_size_plural": "{{count}} pt"
+        "font_size_plural": "{{count}} pt",
+        "mail_unsend_time": {
+            "second": "{{count}} Sekunde",
+            "second_plural": "{{count}} Sekunden",
+            "no_delay": "Keine Verzögerung"
+        }
     },
     "folder_panel": {
         "modal": {

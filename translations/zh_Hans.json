@@ -357,7 +357,12 @@
         "delete_draft": "删除草稿",
         "delayed_sending": "延迟发送",
         "collapse_receivers_list": "收起收件人列表",
-        "before_you_leave": "在您离开前"
+        "before_you_leave": "在您离开前",
+        "send_scheduled": "发送已计划",
+        "download_and_delete": "下载并删除",
+        "invalid_query": "无法解析搜索语句，请将其清除并重试",
+        "not_in_list": "{{name}} - 不在您的标签列表中",
+        "enter_name": "输入名称"
     },
     "search": {
         "unread": "未读",
@@ -401,7 +406,9 @@
         "select_date_time": "选择发送此邮件的日期和时间",
         "send_later_success": "您的邮件将于 {{date}}，{{time}} 发送",
         "schedule_time": "{{date}}，{{time}}",
-        "schedule_mail": "发送时间：{{date}}，{{time}}"
+        "schedule_mail": "发送时间：{{date}}，{{time}}",
+        "delete_attachment_message1": "您的附件将从Carbonio中永久删除。",
+        "delete_attachment_message2": "此前是否想要下载？"
     },
     "settings": {
         "label": {
@@ -414,7 +421,8 @@
             "message_color": "消息颜色",
             "message_selection": "消息选择",
             "set_message_color": "根据标签颜色设置消息和对话的颜色。",
-            "visualization_options": "可视化选项"
+            "visualization_options": "可视化选项",
+            "unsend_time": "设置未发送时间"
         },
         "msg_from_optn": {
             "discard": "自动丢弃消息",
@@ -539,7 +547,11 @@
             "console": "Console",
             "comic": "Comic"
         },
-        "font_size": " "
+        "font_size": " ",
+        "mail_unsend_time": {
+            "no_delay": "无延迟",
+            "second": "{{count}} 秒"
+        }
     },
     "snackbar": {
         "folder_shared": "文件夹已共享",
