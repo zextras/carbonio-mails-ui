@@ -17,7 +17,8 @@ import { registerRestHandler } from './src/carbonio-ui-commons/test/mocks/networ
 import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
 
 failOnConsole({
-	...getFailOnConsoleDefaultConfig()
+	...getFailOnConsoleDefaultConfig(),
+	shouldFailOnWarn: false
 });
 
 beforeAll(() => {
