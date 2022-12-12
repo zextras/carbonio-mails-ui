@@ -343,6 +343,7 @@ const Attachment: FC<AttachmentType> = ({
 			mainAlignment="flex-start"
 			height="fit"
 			background="gray3"
+			data-testid={`attachment-container-${filename}`}
 		>
 			<Tooltip key={`${message.id}-Preview`} label={t('action.click_preview', 'Click to preview')}>
 				<Row
@@ -570,7 +571,11 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 					)}
 					{attachmentsCount > 2 &&
 						(expanded ? (
-							<Row onClick={(): void => setExpanded(false)} style={{ cursor: 'pointer' }}>
+							<Row
+								data-testid="attachment-list-collapse-link"
+								onClick={(): void => setExpanded(false)}
+								style={{ cursor: 'pointer' }}
+							>
 								<Padding right="small">
 									<Text color="primary">
 										{`${attachmentsCount} ${t('label.attachment_plural', 'Attachments')}`}
@@ -579,7 +584,11 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 								<Icon icon="ArrowIosUpward" color="primary" />
 							</Row>
 						) : (
-							<Row onClick={(): void => setExpanded(true)} style={{ cursor: 'pointer' }}>
+							<Row
+								data-testid="attachment-list-expand-link"
+								onClick={(): void => setExpanded(true)}
+								style={{ cursor: 'pointer' }}
+							>
 								<Padding right="small">
 									<Text color="primary">
 										{`${t('label.show_all', 'Show all')} ${attachmentsCount} ${t(
