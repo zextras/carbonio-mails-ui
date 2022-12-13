@@ -37,8 +37,12 @@ import { capitalise } from './utils';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
 import { ShareFolderModalProps } from '../../types/sidebar';
 
-const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode = false }) => {
-	const activeGrant: Partial<{ perm: string; d: string }> = useMemo(() => ({}), []);
+const ShareFolderModal: FC<ShareFolderModalProps> = ({
+	onClose,
+	folder,
+	editMode = false,
+	grant
+}) => {
 	const dispatch = useDispatch();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
@@ -47,8 +51,8 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<any>([]);
 	const [shareWithUserType, setshareWithUserType] = useState('usr');
-	const [shareWithUserRole, setshareWithUserRole] = useState(editMode ? activeGrant.perm : 'r');
-	const userName = useMemo(() => replace(split(activeGrant?.d, '@')?.[0], '.', ' '), [activeGrant]);
+	const [shareWithUserRole, setshareWithUserRole] = useState(editMode ? grant.perm : 'r');
+	const userName = useMemo(() => replace(split(grant?.d, '@')?.[0], '.', ' '), [grant]);
 	const userNameCapitalise = useMemo(() => capitalise(userName), [userName]);
 
 	const accounts = useUserAccounts();
@@ -77,7 +81,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 			shareFolder({
 				sendNotification,
 				standardMessage,
-				contacts: editMode ? [{ email: activeGrant.d }] : contacts,
+				contacts: editMode ? [{ email: grant.d }] : contacts,
 				shareWithUserType,
 				shareWithUserRole,
 				folder,
@@ -102,7 +106,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 						sendShareNotification({
 							sendNotification,
 							standardMessage,
-							contacts: editMode ? [{ email: activeGrant.d }] : contacts,
+							contacts: editMode ? [{ email: grant.d }] : contacts,
 							shareWithUserType,
 							shareWithUserRole,
 							folder,
@@ -130,7 +134,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 		sendNotification,
 		standardMessage,
 		editMode,
-		activeGrant.d,
+		grant.d,
 		contacts,
 		shareWithUserType,
 		shareWithUserRole,
@@ -140,8 +144,8 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 	]);
 
 	const disableEdit = useMemo(
-		() => activeGrant?.perm === shareWithUserRole,
-		[activeGrant?.perm, shareWithUserRole]
+		() => grant?.perm === shareWithUserRole,
+		[grant?.perm, shareWithUserRole]
 	);
 
 	return (
@@ -174,7 +178,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 						mainAlignment="flex-end"
 						padding={{ bottom: 'large', top: 'large' }}
 					>
-						<GranteeInfo grant={activeGrant} shareCalendarRoleOptions={shareCalendarRoleOptions} />
+						<GranteeInfo grant={grant} shareCalendarRoleOptions={shareCalendarRoleOptions} />
 					</Container>
 				) : (
 					<Container height="fit" padding={{ vertical: 'small' }}>
@@ -208,8 +212,8 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 						onChange={onShareRoleChange}
 						defaultSelection={
 							{
-								value: editMode ? activeGrant?.perm : 'r',
-								label: findLabel(shareCalendarRoleOptions, editMode ? activeGrant?.perm : 'r')
+								value: editMode ? grant?.perm : 'r',
+								label: findLabel(shareCalendarRoleOptions, editMode ? grant?.perm : 'r')
 							} as SelectItem
 						}
 					/>

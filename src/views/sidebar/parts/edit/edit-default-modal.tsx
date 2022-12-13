@@ -40,10 +40,7 @@ const numberRegex = /^\d+$/;
 
 const EditDefaultModal: FC<EditDefaultModalPropType> = ({ folder, onClose, setActiveModal }) => {
 	const dispatch = useDispatch();
-
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createSnackbar = useContext(SnackbarManagerContext) as Function;
-
+	const createSnackbar = useContext(SnackbarManagerContext);
 	const [inputValue, setInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);
 	const [rtnValue, setRtnValue] = useState<number | string>(0);
