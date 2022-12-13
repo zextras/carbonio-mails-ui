@@ -44,15 +44,16 @@ export const GranteeInfo: FC<GranteeInfoProps> = ({ grant, shareCalendarRoleOpti
 		() => findLabel(shareCalendarRoleOptions, grant.perm || ''),
 		[shareCalendarRoleOptions, grant.perm]
 	);
-	const label = useMemo(
-		() => `${replace(split(grant.d, '@')?.[0], '.', ' ')} - ${role}`,
-		[grant.d, role]
-	);
-	const upperCaseLabel = useMemo(() => capitalise(label), [label]);
+
+	const label = useMemo(() => {
+		const composeLabel = (name: string): string => `${name} - ${role}`;
+		return grant.d ? composeLabel(grant.d) : composeLabel(grant.zid);
+	}, [grant, role]);
+
 	return (
 		<Container crossAlignment="flex-start">
 			<Text>
-				<HoverChip label={upperCaseLabel} hovered={hovered} />
+				<HoverChip label={capitalise(label)} hovered={hovered} />
 			</Text>
 		</Container>
 	);
