@@ -134,7 +134,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 		sendNotification,
 		standardMessage,
 		editMode,
-		grant.d,
+		grant,
 		contacts,
 		shareWithUserType,
 		shareWithUserRole,
