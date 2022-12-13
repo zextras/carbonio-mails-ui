@@ -6,7 +6,7 @@
 
 // 1 inline attachment with cid in the body
 
-export const msg = {
+export const getMsgResult = {
 	Header: {
 		context: {
 			session: { id: '165483', _content: '165483' },

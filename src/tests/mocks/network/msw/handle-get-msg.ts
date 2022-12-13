@@ -19,6 +19,6 @@ export const handleGetMsgRequest = async (
 		return res(ctx.status(500, 'Empty request'));
 	}
 	const { id } = (await req.json<RestGenericRequest>()).Body.GetMsgRequest.m;
-	const { msg } = await import(`./cases/getMsg/getMsg-${id}`);
-	return res(ctx.json(msg));
+	const { getMsgResult } = await import(`./cases/getMsg/getMsg-${id}`);
+	return res(ctx.json(getMsgResult));
 };

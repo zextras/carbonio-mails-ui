@@ -45,10 +45,10 @@ describe('Edit view', () => {
 
 			const from = find(getUserAccount().identities.identity, ['name', 'DEFAULT'])._attrs
 				.zimbraPrefFromAddress;
-			const address = 'ciccio@foo.com';
-			const ccAddress = 'john@foo.com';
-			const subject = 'Interesting subject';
-			const body = 'Lorem ipsum';
+			const address = faker.internet.email();
+			const ccAddress = faker.internet.email();
+			const subject = faker.lorem.sentence(1);
+			const body = faker.lorem.sentence(10);
 
 			const props = {
 				mailId: 'new-1',
@@ -59,9 +59,12 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 10000 }
+			);
 
 			// Get the components
 			const btnSend = screen.getByTestId('BtnSendMail');
@@ -175,7 +178,7 @@ describe('Edit view', () => {
 			// Check if a snackbar (email sent) will appear
 			await screen.findByText('messages.snackbar.mail_sent', {}, { timeout: 4000 });
 			// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
-		}, 10000);
+		}, 50000);
 	});
 
 	describe('Draft', () => {
