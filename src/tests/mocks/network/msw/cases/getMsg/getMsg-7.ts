@@ -76,7 +76,7 @@ export const getMsgResult = {
 													ct: 'text/html',
 													s: 716,
 													body: true,
-													content: `<html><body><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000">\r\n<div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"><br /> <img src="cid:6301e287-32bd-4a66-a4bc-26c11993b4a3&#64;carbonio" /><br /><br /> <img src="cid:616059c8-b2fb-48a5-a0eb-3e0b0e621ca3&#64;carbonio" /><br />\r\n<p><span style="color:#000000;font-family:&#39;helvetica&#39; , &#39;arial&#39; , sans-serif">${
+													content: `<html><body><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000">\r\n<div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"><br /><img src="cid:6301e287-32bd-4a66-a4bc-26c11993b4a3&#64;carbonio" /><br /><br /><img src="cid:616059c8-b2fb-48a5-a0eb-3e0b0e621ca3&#64;carbonio" /><br />\r\n<p><span style="color:#000000;font-family:&#39;helvetica&#39; , &#39;arial&#39; , sans-serif">${
 														identity1.fullName
 													}</span></p>\r\n<p><span style="color:#e03e2d;font-family:&#39;helvetica&#39; , &#39;arial&#39; , sans-serif"><em>${faker.commerce.department()}<br /><br /><br /><br /></em></span></p>\r\n</div>\r\n</div></div></body></html>`
 												},
