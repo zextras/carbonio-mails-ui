@@ -15,7 +15,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { map, replace, split } from 'lodash';
+import { map } from 'lodash';
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -31,7 +31,6 @@ import {
 	GranteeProps,
 	ShareFolderPropertiesProps
 } from '../../../../types';
-import { capitalise } from '../../utils';
 import { Context } from './edit-context';
 
 const HoverChip = styled(Chip)<ChipProps & { hovered?: boolean }>`

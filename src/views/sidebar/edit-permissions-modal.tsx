@@ -21,7 +21,7 @@ import {
 	useIntegratedComponent,
 	useUserAccounts
 } from '@zextras/carbonio-shell-ui';
-import { map, replace, split } from 'lodash';
+import { map } from 'lodash';
 import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
@@ -33,14 +33,15 @@ import {
 } from '../../integrations/shared-invite-reply/parts/utils';
 import { sendShareNotification } from '../../store/actions/send-share-notification';
 import { shareFolder } from '../../store/actions/share-folder';
-import { ShareFolderModalProps } from '../../types/sidebar';
+import { EditPermissionsModalProps } from '../../types/sidebar';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
 
-const ShareFolderModal: FC<ShareFolderModalProps> = ({
+const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	onClose,
 	folder,
 	editMode = false,
-	grant
+	grant,
+	goBack
 }) => {
 	const dispatch = useDispatch();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
@@ -51,19 +52,15 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 	const [contacts, setContacts] = useState<any>([]);
 	const [shareWithUserType, setshareWithUserType] = useState('usr');
 	const [shareWithUserRole, setshareWithUserRole] = useState(editMode ? grant.perm : 'r');
-	const userName = useMemo(() => grant.d || grant.zid, [grant]);
 
 	const accounts = useUserAccounts();
 
 	const title = useMemo(
 		() =>
 			editMode
-				? `${t('label.edit_access', {
-						name: userName,
-						defaultValue: "Edit {{name}}'s access"
-				  })} `
+				? `${t('label.edit_access', 'Edit access')} `
 				: `${t('label.share', 'Share')} ${folder.name}`,
-		[editMode, userName, folder.name]
+		[editMode, folder.name]
 	);
 
 	const onShareWithChange = useCallback((shareWith) => {
@@ -79,7 +76,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 			shareFolder({
 				sendNotification,
 				standardMessage,
-				contacts: editMode ? [{ email: grant.d }] : contacts,
+				contacts: editMode ? [{ email: grant.d || grant.zid }] : contacts,
 				shareWithUserType,
 				shareWithUserRole,
 				folder,
@@ -104,7 +101,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 						sendShareNotification({
 							sendNotification,
 							standardMessage,
-							contacts: editMode ? [{ email: grant.d }] : contacts,
+							contacts: editMode ? [{ email: grant.d || grant.zid }] : contacts,
 							shareWithUserType,
 							shareWithUserRole,
 							folder,
@@ -268,10 +265,11 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 				}
 				onConfirm={onConfirm}
 				disabled={editMode ? disableEdit : contacts.length < 1}
+				secondaryAction={goBack}
 				secondaryLabel={t('label.go_back', 'Go Back')}
 			/>
 		</>
 	);
 };
 
-export default ShareFolderModal;
+export default EditPermissionsModal;

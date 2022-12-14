@@ -16,7 +16,7 @@ import { FolderDetails } from './folder-details';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
 import { translatedSystemFolders } from '../../utils';
-import { EditDefaultModalPropType } from '../../../../types/sidebar';
+import { MainEditModalPropType } from '../../../../types/sidebar';
 
 const retentionPeriod = [
 	{
@@ -38,7 +38,7 @@ const retentionPeriod = [
 ];
 const numberRegex = /^\d+$/;
 
-const EditDefaultModal: FC<EditDefaultModalPropType> = ({ folder, onClose, setActiveModal }) => {
+const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveModal }) => {
 	const dispatch = useDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const [inputValue, setInputValue] = useState(folder.name);
@@ -320,4 +320,4 @@ const EditDefaultModal: FC<EditDefaultModalPropType> = ({ folder, onClose, setAc
 	);
 };
 
-export default EditDefaultModal;
+export default MainEditModal;
