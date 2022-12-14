@@ -53,7 +53,7 @@ export const GranteeInfo: FC<GranteeInfoProps> = ({ grant, shareCalendarRoleOpti
 	return (
 		<Container crossAlignment="flex-start">
 			<Text>
-				<HoverChip label={capitalise(label)} hovered={hovered} />
+				<HoverChip label={label} hovered={hovered} />
 			</Text>
 		</Container>
 	);

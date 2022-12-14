@@ -3,39 +3,38 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import {
+	Checkbox,
+	ChipInput,
+	ChipItem,
 	Container,
 	Input,
-	Select,
-	Text,
-	Checkbox,
-	Row,
-	ChipInput,
 	Padding,
-	ChipItem,
-	SelectItem
+	Row,
+	Select,
+	SelectItem,
+	Text
 } from '@zextras/carbonio-design-system';
 import {
 	getBridgedFunctions,
+	t,
 	useIntegratedComponent,
-	useUserAccounts,
-	t
+	useUserAccounts
 } from '@zextras/carbonio-shell-ui';
 import { map, replace, split } from 'lodash';
+import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-	ShareCalendarWithOptions,
-	findLabel,
-	ShareCalendarRoleOptions
-} from '../../integrations/shared-invite-reply/parts/utils';
-import { shareFolder } from '../../store/actions/share-folder';
-import { sendShareNotification } from '../../store/actions/send-share-notification';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import { capitalise } from './utils';
-import { GranteeInfo } from './parts/edit/share-folder-properties';
+import {
+	findLabel,
+	ShareCalendarRoleOptions,
+	ShareCalendarWithOptions
+} from '../../integrations/shared-invite-reply/parts/utils';
+import { sendShareNotification } from '../../store/actions/send-share-notification';
+import { shareFolder } from '../../store/actions/share-folder';
 import { ShareFolderModalProps } from '../../types/sidebar';
+import { GranteeInfo } from './parts/edit/share-folder-properties';
 
 const ShareFolderModal: FC<ShareFolderModalProps> = ({
 	onClose,
@@ -52,8 +51,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 	const [contacts, setContacts] = useState<any>([]);
 	const [shareWithUserType, setshareWithUserType] = useState('usr');
 	const [shareWithUserRole, setshareWithUserRole] = useState(editMode ? grant.perm : 'r');
-	const userName = useMemo(() => replace(split(grant?.d, '@')?.[0], '.', ' '), [grant]);
-	const userNameCapitalise = useMemo(() => capitalise(userName), [userName]);
+	const userName = useMemo(() => grant.d || grant.zid, [grant]);
 
 	const accounts = useUserAccounts();
 
@@ -61,11 +59,11 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({
 		() =>
 			editMode
 				? `${t('label.edit_access', {
-						name: userNameCapitalise,
+						name: userName,
 						defaultValue: "Edit {{name}}'s access"
 				  })} `
 				: `${t('label.share', 'Share')} ${folder.name}`,
-		[folder, editMode, userNameCapitalise]
+		[editMode, userName, folder.name]
 	);
 
 	const onShareWithChange = useCallback((shareWith) => {
