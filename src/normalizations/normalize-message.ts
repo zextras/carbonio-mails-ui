@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getTags } from '@zextras/carbonio-shell-ui';
-import { filter, find, forEach, isNil, map, omitBy, reduce } from 'lodash';
+import { filter, find, forEach, isArray, isNil, map, omitBy, reduce } from 'lodash';
 import { ParticipantRole } from '../commons/utils';
 import {
 	AttachmentPart,
@@ -17,65 +17,104 @@ import {
 	SoapMailParticipant
 } from '../types';
 
-// finds if in the content there is a "cid:"" string
-const findCidInHTMLBody = (
-	multipart: Array<SoapMailMessagePart> | undefined | AttachmentPart | Array<AttachmentPart>
-): boolean => {
-	let hasCidInBody = false;
-
-	const extractCid = (
-		mp: Array<SoapMailMessagePart> | undefined | AttachmentPart | Array<AttachmentPart>
-	): void => {
-		forEach(mp, (item: SoapMailMessagePart) => {
-			if (item.mp) {
-				extractCid(item.mp);
-			}
-			if (item.content) {
-				hasCidInBody = item.content.includes('cid:');
-			}
-		});
-	};
-
-	extractCid(multipart);
-	return hasCidInBody;
+const isIgnoreAttachment = (item: AttachmentPart): boolean => {
+	if ((item && item.ct === 'multipart/appledouble') || item.ct === 'application/applefile') {
+		return true;
+	}
+	if (item.body && (item.ct === 'text/html' || item.ct === 'text/plain')) {
+		return true;
+	}
+	if (item.ct === 'multipart/digest') {
+		return true;
+	}
+	if (item.ci && item.ci === 'text-body') {
+		return true;
+	}
+	if (item.ct === 'text/calendar' && !item.filename) {
+		return true;
+	}
+	return false;
 };
 
-const getAttachmentsFromParts = (
-	mp: Array<SoapMailMessagePart> | undefined | AttachmentPart | Array<AttachmentPart>
+export const getAttachmentsFromParts = (
+	mailParts: Array<AttachmentPart> | AttachmentPart
 ): Array<AttachmentPart> => {
-	const attachments: Array<AttachmentPart> = [];
-	forEach(mp, (item: SoapMailMessagePart) => {
-		if (item.mp) {
-			attachments.push(...getAttachmentsFromParts(item.mp));
-		}
-		// exclude attachments that are not real attachments
-		if (
-			(item.ct && item.ct.startsWith('multipart/')) ||
-			item.ct === 'message/rfc822' ||
-			item.ct === 'text/html' ||
-			item.ct === 'text/plain' ||
-			item.ct === 'application/applefile' ||
-			item.ct === 'multipart/appledouble' ||
-			(item.ct === 'text/calendar' && !item.filename)
-		) {
-			return;
-		}
-		// if the attachment has cd = inline but has no "cid:" in the body, it is treated as a normal attachment
-		if (item.part && item.part) {
-			attachments.push({
-				...item,
-				part: item.part,
-				size: item.s,
-				ci: item.ci,
-				name: item.part,
-				cd: item.cd === 'inline' && findCidInHTMLBody(mp) ? item.cd : 'attachment'
+	let results: Array<AttachmentPart> = [];
+	if (mailParts) {
+		if (isArray(mailParts)) {
+			forEach(mailParts, (part) => {
+				const attachmentParts = getAttachmentsFromParts(part);
+				forEach(attachmentParts, (attachmentPart: AttachmentPart) => {
+					if (!isIgnoreAttachment(attachmentPart)) {
+						const item = {
+							...attachmentPart,
+							contentType: attachmentPart.ct,
+							name: attachmentPart?.part,
+							size: attachmentPart?.s
+						};
+						if (
+							(item.cd && item.cd === 'attachment') ||
+							(item.ct && (item.ct === 'message/rfc822' || item.ct === 'text/calendar')) ||
+							item.filename ||
+							item.ci
+						) {
+							if (item.cd && item.cd === 'inline' && item.ci) {
+								item.cd = 'inline';
+							} else if (
+								part.ct === 'multipart/related' &&
+								item.ci &&
+								item.cd &&
+								item.cd === 'attachment'
+							) {
+								item.cd = 'inline';
+							} else {
+								item.cd = 'attachment';
+							}
+							if (item.ct === 'message/rfc822' && !item.filename) {
+								item.filename = 'Unknown <message/rfc822>';
+							}
+							if (item.ct === 'text/html' && !item.filename) {
+								item.filename = 'Unknown <text/html>';
+							}
+							if (item.ct && item.ct !== 'application/pkcs7-signature') {
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								results.push(item);
+							}
+						}
+					}
+				});
 			});
+		} else if (
+			(mailParts && mailParts.cd && mailParts.cd === 'attachment') ||
+			(mailParts.ct && (mailParts.ct === 'message/rfc822' || mailParts.ct === 'text/calendar')) ||
+			mailParts.filename ||
+			mailParts.ci
+		) {
+			const updatedMailPart: AttachmentPart = { ...mailParts };
+			if (isIgnoreAttachment(mailParts)) {
+				if (updatedMailPart.cd && updatedMailPart.cd === 'inline' && updatedMailPart.ci) {
+					updatedMailPart.cd = 'inline';
+				} else if (
+					updatedMailPart.ct === 'multipart/related' &&
+					updatedMailPart.ci &&
+					updatedMailPart.cd &&
+					updatedMailPart.cd === 'attachment'
+				) {
+					updatedMailPart.cd = 'inline';
+				} else {
+					updatedMailPart.cd = 'attachment';
+				}
+			}
+			results.push(updatedMailPart);
+		} else if (mailParts.mp) {
+			results = results.concat(getAttachmentsFromParts(mailParts.mp));
 		}
-	});
-	return attachments;
+	}
+	return results;
 };
 
-const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
+export function normalizeMailPartMapFn(v: SoapMailMessagePart): MailMessagePart {
 	const ret: MailMessagePart = {
 		contentType: v.ct,
 		size: v.s || 0,
@@ -90,13 +129,13 @@ const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
 	if (v.ci) ret.ci = v.ci;
 	if (v.cd) ret.disposition = v.cd;
 	return ret;
-};
+}
 
-const findBodyPart = (
+function findBodyPart(
 	mp: Array<SoapMailMessagePart>,
 	acc: { contentType: string; content: string },
 	id: string
-): { contentType: string; content: string } => {
+): { contentType: string; content: string } {
 	const bodyPart = reduce(
 		mp,
 		(found, part) => {
@@ -128,17 +167,19 @@ const findBodyPart = (
 	);
 
 	return bodyPart;
-};
+}
 
-const generateBody = (
+export function generateBody(
 	mp: Array<SoapMailMessagePart>,
 	id: string
 ): {
 	contentType: string;
 	content: string;
-} => findBodyPart(mp, { contentType: '', content: '' }, id);
+} {
+	return findBodyPart(mp, { contentType: '', content: '' }, id);
+}
 
-const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRole => {
+function participantTypeFromSoap(t: SoapEmailParticipantRole): ParticipantRole {
 	switch (t) {
 		case 'f':
 			return ParticipantRole.FROM;
@@ -159,23 +200,27 @@ const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRole =
 		default:
 			throw new Error(`Participant type not handled: '${t}'`);
 	}
-};
+}
 
-export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participant => ({
-	type: participantTypeFromSoap(e.t),
-	address: e.a,
-	name: e.d || e.a,
-	fullName: e.p
-});
-
-const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
+export function normalizeParticipantsFromSoap(e: SoapMailParticipant): Participant {
+	return {
+		type: participantTypeFromSoap(e.t),
+		address: e.a,
+		name: e.d || e.a,
+		fullName: e.p
+	};
+}
+export const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
 	const tags = getTags();
 	return map(names?.split(','), (name) =>
 		find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`
 	);
 };
 
-const getTagIds = (t: string | undefined, tn: string | undefined): Array<string | undefined> => {
+export const getTagIds = (
+	t: string | undefined,
+	tn: string | undefined
+): Array<string | undefined> => {
 	if (!isNil(t)) {
 		return filter(t.split(','), (tag) => tag !== '');
 	}
@@ -184,7 +229,6 @@ const getTagIds = (t: string | undefined, tn: string | undefined): Array<string 
 	}
 	return [];
 };
-
 export const normalizeMailMessageFromSoap = (
 	m: SoapIncompleteMessage,
 	isComplete?: boolean

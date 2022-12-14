@@ -181,7 +181,7 @@ export const { handleCreatedMessages, handleModifiedMessages, handleDeletedMessa
 	messagesSlice.actions;
 export const messageSliceReducer = messagesSlice.reducer;
 
-export function selectMessage(state: StateType, id: string): Partial<MailMessage> {
+export function selectMessage(state: StateType, id: string): MailMessage {
 	return state?.messages?.messages?.[id];
 }
 
@@ -189,7 +189,7 @@ export function selectMessages(state: StateType): MsgMap {
 	return state?.messages?.messages;
 }
 
-export function selectMessagesArray(state: StateType): Array<Partial<MailMessage>> {
+export function selectMessagesArray(state: StateType): Array<MailMessage> {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	return Object.values(state?.messages?.messages ?? []);
