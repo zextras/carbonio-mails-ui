@@ -211,9 +211,12 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
@@ -294,7 +297,7 @@ describe('Edit view', () => {
 				}
 			});
 			expect(msg.mp[0]?.content?._content).toBe(body);
-		});
+		}, 50000);
 
 		test('is not autosaved if unchanged', async () => {
 			// Mock the saveDraft
