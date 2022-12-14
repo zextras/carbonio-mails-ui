@@ -323,16 +323,19 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
 
 			// Wait few seconds
 			act(() => {
 				jest.advanceTimersByTime(10000);
 			});
 			expect(mockedSaveDraft).not.toBeCalled();
-		});
+		}, 50000);
 
 		test('is autosaved if subject is changed', async () => {
 			// Mock the "action" query param
@@ -355,9 +358,12 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
@@ -390,7 +396,7 @@ describe('Edit view', () => {
 
 			const msg = await draftSavingInterceptor;
 			expect(msg.su._content).toBe(subjectText);
-		});
+		}, 50000);
 
 		test('is autosaved if recipient (to) is changed', async () => {
 			// Mock the "action" query param
@@ -413,9 +419,12 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
@@ -459,7 +468,7 @@ describe('Edit view', () => {
 			);
 
 			expect(sentRecipient?.a).toBe(recipient);
-		});
+		}, 50000);
 
 		test('is autosaved if body is changed', async () => {
 			// Mock the "action" query param
@@ -482,9 +491,12 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
@@ -519,7 +531,7 @@ describe('Edit view', () => {
 
 			const msg = await draftSavingInterceptor;
 			expect(msg.mp[0]?.content?._content).toBe(body);
-		});
+		}, 50000);
 
 		test('is not autosaved within 2 seconds if body is changed', async () => {
 			// Spy the saveDraftAction
@@ -545,9 +557,12 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
 
 			const body = faker.lorem.text();
 
@@ -562,7 +577,7 @@ describe('Edit view', () => {
 			});
 
 			expect(mockedSaveDraft).not.toBeCalled();
-		});
+		}, 50000);
 
 		test('is autosaved if a file is attached', async () => {
 			// Mock the "action" query param
@@ -637,6 +652,6 @@ describe('Edit view', () => {
 			// The saveDraft request should be invoked 2 times (1 before and
 			// 1 after the upload of the attachment
 			expect(callTester).toBeCalledTimes(2);
-		});
+		}, 50000);
 	});
 });
