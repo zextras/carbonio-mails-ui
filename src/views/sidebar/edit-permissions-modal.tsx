@@ -3,42 +3,46 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import {
+	Checkbox,
+	ChipInput,
+	ChipItem,
 	Container,
 	Input,
-	Select,
-	Text,
-	Checkbox,
-	Row,
-	ChipInput,
 	Padding,
-	ChipItem,
-	SelectItem
+	Row,
+	Select,
+	SelectItem,
+	Text
 } from '@zextras/carbonio-design-system';
 import {
 	getBridgedFunctions,
+	t,
 	useIntegratedComponent,
-	useUserAccounts,
-	t
+	useUserAccounts
 } from '@zextras/carbonio-shell-ui';
-import { map, replace, split } from 'lodash';
+import { map } from 'lodash';
+import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-	ShareCalendarWithOptions,
-	findLabel,
-	ShareCalendarRoleOptions
-} from '../../integrations/shared-invite-reply/parts/utils';
-import { shareFolder } from '../../store/actions/share-folder';
-import { sendShareNotification } from '../../store/actions/send-share-notification';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import { capitalise } from './utils';
+import {
+	findLabel,
+	ShareCalendarRoleOptions,
+	ShareCalendarWithOptions
+} from '../../integrations/shared-invite-reply/parts/utils';
+import { sendShareNotification } from '../../store/actions/send-share-notification';
+import { shareFolder } from '../../store/actions/share-folder';
+import { EditPermissionsModalProps } from '../../types/sidebar';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
-import { ShareFolderModalProps } from '../../types/sidebar';
 
-const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode = false }) => {
-	const activeGrant: Partial<{ perm: string; d: string }> = useMemo(() => ({}), []);
+const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
+	onClose,
+	folder,
+	editMode = false,
+	grant,
+	goBack
+}) => {
 	const dispatch = useDispatch();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
@@ -47,21 +51,16 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<any>([]);
 	const [shareWithUserType, setshareWithUserType] = useState('usr');
-	const [shareWithUserRole, setshareWithUserRole] = useState(editMode ? activeGrant.perm : 'r');
-	const userName = useMemo(() => replace(split(activeGrant?.d, '@')?.[0], '.', ' '), [activeGrant]);
-	const userNameCapitalise = useMemo(() => capitalise(userName), [userName]);
+	const [shareWithUserRole, setshareWithUserRole] = useState(editMode ? grant.perm : 'r');
 
 	const accounts = useUserAccounts();
 
 	const title = useMemo(
 		() =>
 			editMode
-				? `${t('label.edit_access', {
-						name: userNameCapitalise,
-						defaultValue: "Edit {{name}}'s access"
-				  })} `
+				? `${t('label.edit_access', 'Edit access')} `
 				: `${t('label.share', 'Share')} ${folder.name}`,
-		[folder, editMode, userNameCapitalise]
+		[editMode, folder.name]
 	);
 
 	const onShareWithChange = useCallback((shareWith) => {
@@ -77,7 +76,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 			shareFolder({
 				sendNotification,
 				standardMessage,
-				contacts: editMode ? [{ email: activeGrant.d }] : contacts,
+				contacts: editMode ? [{ email: grant.d || grant.zid }] : contacts,
 				shareWithUserType,
 				shareWithUserRole,
 				folder,
@@ -102,7 +101,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 						sendShareNotification({
 							sendNotification,
 							standardMessage,
-							contacts: editMode ? [{ email: activeGrant.d }] : contacts,
+							contacts: editMode ? [{ email: grant.d || grant.zid }] : contacts,
 							shareWithUserType,
 							shareWithUserRole,
 							folder,
@@ -130,7 +129,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 		sendNotification,
 		standardMessage,
 		editMode,
-		activeGrant.d,
+		grant,
 		contacts,
 		shareWithUserType,
 		shareWithUserRole,
@@ -140,8 +139,8 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 	]);
 
 	const disableEdit = useMemo(
-		() => activeGrant?.perm === shareWithUserRole,
-		[activeGrant?.perm, shareWithUserRole]
+		() => grant?.perm === shareWithUserRole,
+		[grant?.perm, shareWithUserRole]
 	);
 
 	return (
@@ -174,7 +173,7 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 						mainAlignment="flex-end"
 						padding={{ bottom: 'large', top: 'large' }}
 					>
-						<GranteeInfo grant={activeGrant} shareCalendarRoleOptions={shareCalendarRoleOptions} />
+						<GranteeInfo grant={grant} shareCalendarRoleOptions={shareCalendarRoleOptions} />
 					</Container>
 				) : (
 					<Container height="fit" padding={{ vertical: 'small' }}>
@@ -208,8 +207,8 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 						onChange={onShareRoleChange}
 						defaultSelection={
 							{
-								value: editMode ? activeGrant?.perm : 'r',
-								label: findLabel(shareCalendarRoleOptions, editMode ? activeGrant?.perm : 'r')
+								value: editMode ? grant?.perm : 'r',
+								label: findLabel(shareCalendarRoleOptions, editMode ? grant?.perm : 'r')
 							} as SelectItem
 						}
 					/>
@@ -266,10 +265,11 @@ const ShareFolderModal: FC<ShareFolderModalProps> = ({ onClose, folder, editMode
 				}
 				onConfirm={onConfirm}
 				disabled={editMode ? disableEdit : contacts.length < 1}
+				secondaryAction={goBack}
 				secondaryLabel={t('label.go_back', 'Go Back')}
 			/>
 		</>
 	);
 };
 
-export default ShareFolderModal;
+export default EditPermissionsModal;

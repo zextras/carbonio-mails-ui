@@ -3,28 +3,27 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { SyntheticEvent, useContext, useMemo } from 'react';
+import { ModalManagerContext } from '@zextras/carbonio-design-system';
 import {
-	FOLDERS,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	Folder,
-	t,
-	replaceHistory
+	FOLDERS,
+	t
 } from '@zextras/carbonio-shell-ui';
-import { ModalManagerContext } from '@zextras/carbonio-design-system';
 import { startsWith } from 'lodash';
+import React, { SyntheticEvent, useContext, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
+import { FolderActionsType } from '../../commons/utils';
 import { folderAction } from '../../store/actions/folder-action';
 import { StoreProvider } from '../../store/redux';
 import { DeleteModal } from './delete-modal';
 import { EditModal } from './edit-modal';
+import EditPermissionsModal from './edit-permissions-modal';
 import { EmptyModal } from './empty-modal';
 import { MoveModal } from './move-modal';
 import { NewModal } from './new-modal';
 import { SharesInfoModal } from './shares-info-modal';
-import ShareFolderModal from './share-folder-modal';
-import { FolderActionsType } from '../../commons/utils';
 
 type FolderActionsProps = {
 	id: string;
@@ -166,7 +165,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						{
 							children: (
 								<StoreProvider>
-									<ShareFolderModal onClose={(): void => closeModal()} folder={folder} />
+									<EditPermissionsModal onClose={(): void => closeModal()} folder={folder} />
 								</StoreProvider>
 							)
 						},
