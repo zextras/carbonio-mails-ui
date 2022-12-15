@@ -18,12 +18,7 @@ import { useParams } from 'react-router-dom';
 import EditView from './edit/edit-view';
 import { MailEditHeaderType } from '../../../types';
 
-const MailEditHeader: FC<MailEditHeaderType> = ({
-	folderId,
-	header,
-	toggleAppBoard,
-	setToggleAppBoard
-}) => {
+const MailEditHeader: FC<MailEditHeaderType> = ({ folderId, header }) => {
 	const onClose = useCallback(() => {
 		replaceHistory(`/folder/${folderId}`);
 	}, [folderId]);
@@ -40,12 +35,6 @@ const MailEditHeader: FC<MailEditHeaderType> = ({
 				<Row takeAvailableSpace mainAlignment="flex-start" padding={{ left: 'large' }}>
 					<Text size="large">{header || t('header.edit_draft', 'Edit draft')}</Text>
 				</Row>
-				<Tooltip label={t('board.show', 'Show board')} placement="bottom">
-					<IconButton
-						icon={toggleAppBoard ? 'DiagonalArrowRightUpOutline' : 'DiagonalArrowLeftDownOutline'}
-						onClick={(): void => setToggleAppBoard(!toggleAppBoard)}
-					/>
-				</Tooltip>
 				<IconButton icon="Close" onClick={onClose} />
 			</Container>
 
@@ -56,25 +45,19 @@ const MailEditHeader: FC<MailEditHeaderType> = ({
 
 const MailEditPanel: FC = () => {
 	const [header, setHeader] = useState();
-	const [toggleAppBoard, setToggleAppBoard] = useState(false);
 	const { folderId } = useParams<{ folderId: string }>();
 
 	return (
 		<>
 			<Container style={{ position: 'relative' }}>
-				<MailEditHeader
-					folderId={folderId}
-					header={header}
-					toggleAppBoard={toggleAppBoard}
-					setToggleAppBoard={setToggleAppBoard}
-				/>
+				<MailEditHeader folderId={folderId} header={header} />
 				<Container
 					mainAlignment="flex-start"
 					height="fit"
 					background="gray6"
 					style={{ maxHeight: 'calc(100% - 3.0625rem)', flexGrow: '1' }}
 				>
-					<EditView setHeader={setHeader} toggleAppBoard={toggleAppBoard} />
+					<EditView setHeader={setHeader} />
 				</Container>
 			</Container>
 		</>
