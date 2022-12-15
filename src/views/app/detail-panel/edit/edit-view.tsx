@@ -65,10 +65,9 @@ const generateId = (): string => {
 
 type EditViewPropType = {
 	setHeader: (arg: any) => void;
-	toggleAppBoard: boolean;
 };
 
-const EditView: FC<EditViewPropType> = ({ setHeader, toggleAppBoard }) => {
+const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 	const { folderId } = useParams<{ folderId: string }>();
 	const { editId } = useParams<{ editId: string }>();
 	const settings = useUserSettings();
@@ -312,21 +311,6 @@ const EditView: FC<EditViewPropType> = ({ setHeader, toggleAppBoard }) => {
 		}
 	}, [action, editor, isUploading, saveFirstDraft, throttledSaveToDraft]);
 
-	useEffect(() => {
-		if (toggleAppBoard) {
-			if (activeMailId) {
-				addBoard({
-					url: `${MAILS_ROUTE}/edit/${activeMailId}?action=${action}`,
-					context: { mailId: activeMailId },
-					title: editor?.subject ?? ''
-				});
-			} else {
-				addBoard({ url: `${MAILS_ROUTE}/new`, title: t('label.new_email', 'New E-mail') });
-			}
-			replaceHistory(`/folder/${folderId}`);
-		}
-	}, [folderId, activeMailId, toggleAppBoard, action, editor?.subject]);
-
 	const onDragOverEvent = (event: SyntheticEvent): void => {
 		event.preventDefault();
 		setDropZoneEnable(true);
@@ -393,7 +377,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader, toggleAppBoard }) => {
 	return (
 		<>
 			<RouteLeavingGuard
-				when={!saveFirstDraft && showRouteGuard && !toggleAppBoard}
+				when={!saveFirstDraft && showRouteGuard}
 				id={editor.id}
 				onDeleteDraft={(): void => {
 					dispatch(closeEditor(editorId));

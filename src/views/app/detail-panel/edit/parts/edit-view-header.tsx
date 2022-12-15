@@ -560,6 +560,7 @@ const EditViewHeader: FC<PropType> = ({
 					{action !== ActionsType.COMPOSE && (
 						<Padding left="large">
 							<Button
+								data-testid="BtnSaveMail"
 								type="outlined"
 								onClick={(): void => {
 									handleSubmit(onSave)();
