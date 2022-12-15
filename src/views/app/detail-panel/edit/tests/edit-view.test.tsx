@@ -27,11 +27,17 @@ import { SoapDraftMessageObj } from '../../../../../types';
 import EditView from '../edit-view';
 import { getSetupServerApi } from '../../../../../carbonio-ui-commons/test/jest-setup';
 
+/**
+ * Test the EditView component in different scenarios
+ */
 describe('Edit view', () => {
 	/**
-	 *
+	 * Creation of emails
 	 */
 	describe('Mail creation', () => {
+		/**
+		 * Test the creation of a new email
+		 */
 		test('create a new email', async () => {
 			const store = generateStore();
 
@@ -181,7 +187,118 @@ describe('Edit view', () => {
 		}, 50000);
 	});
 
+	/**
+	 * Test the email drafts
+	 */
 	describe('Draft', () => {
+		test('is saved when user clicks on the save button', async () => {
+			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+				if (param === 'action') {
+					return 'new';
+				}
+				return undefined;
+			});
+
+			const props = {
+				mailId: 'new-1',
+				folderId: FOLDERS.INBOX,
+				setHeader: noop,
+				toggleAppBoard: false
+			};
+
+			// Generate the state store
+			const store = generateStore();
+
+			// Create and wait for the component to be rendered
+			const { user } = setupTest(<EditView {...props} />, { store });
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
+
+			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
+				// Register a handler for the REST call
+				getSetupServerApi().use(
+					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
+						if (!req) {
+							reject(new Error('Empty request'));
+						}
+
+						const msg = (await req.json()).Body.SaveDraftRequest.m;
+						resolve(msg);
+
+						// Don't care about the actual response
+						return res(ctx.json({}));
+					})
+				);
+			});
+
+			const subject = faker.lorem.sentence(5);
+			const sender = find(getUserAccount().identities.identity, ['name', 'DEFAULT'])._attrs
+				.zimbraPrefFromAddress;
+			const recipient = faker.internet.email();
+			const cc = faker.internet.email();
+			const body = faker.lorem.paragraph(5);
+
+			// Get the components
+			const btnSave = screen.getByTestId('BtnSaveMail');
+			const btnCc = screen.getByTestId('BtnCc');
+			const toComponent = screen.getByTestId('RecipientTo');
+			const toInputElement = within(toComponent).getByRole('textbox');
+			const subjectComponent = screen.getByTestId('subject');
+			const subjectInputElement = within(subjectComponent).getByRole('textbox');
+			const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
+
+			// Reset the content of the "to" component and type the address
+			await user.click(toInputElement);
+			await user.clear(toInputElement);
+			await user.type(toInputElement, recipient);
+
+			// Click on the "CC" button to show CC Recipient field
+			await user.click(btnCc);
+			const ccComponent = screen.getByTestId('RecipientCc');
+			const ccInputElement = within(ccComponent).getByRole('textbox');
+
+			// Reset the content of the "Cc" component and type the address
+			await user.click(ccInputElement);
+			await user.clear(ccInputElement);
+			await user.type(ccInputElement, cc);
+
+			// Click on another component to trigger the change event
+			await user.click(subjectInputElement);
+
+			// Insert a subject
+			await user.type(subjectInputElement, subject);
+			act(() => {
+				jest.advanceTimersByTime(1000);
+			});
+
+			// Insert a text inside editor
+			await user.type(editorTextareaElement, body);
+			act(() => {
+				jest.advanceTimersByTime(1000);
+			});
+
+			// Click on the "save" button
+			await user.click(btnSave);
+
+			// Obtain the message from the rest handler
+			const msg = await draftSavingInterceptor;
+
+			// Check the content of the message
+			expect(msg.su._content).toBe(subject);
+			msg.e.forEach((participant) => {
+				if (participant.t === 't') {
+					expect(participant.a).toBe(recipient);
+				} else if (participant.t === 'f') {
+					expect(participant.a).toBe(sender);
+				}
+			});
+			expect(msg.mp[0]?.content?._content).toBe(body);
+		}, 50000);
+
 		test('is not autosaved if unchanged', async () => {
 			// Mock the saveDraft
 			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraft');
@@ -206,16 +323,19 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
 
 			// Wait few seconds
 			act(() => {
 				jest.advanceTimersByTime(10000);
 			});
 			expect(mockedSaveDraft).not.toBeCalled();
-		});
+		}, 50000);
 
 		test('is autosaved if subject is changed', async () => {
 			// Mock the "action" query param
@@ -238,9 +358,12 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
@@ -273,7 +396,7 @@ describe('Edit view', () => {
 
 			const msg = await draftSavingInterceptor;
 			expect(msg.su._content).toBe(subjectText);
-		});
+		}, 50000);
 
 		test('is autosaved if recipient (to) is changed', async () => {
 			// Mock the "action" query param
@@ -296,9 +419,12 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
@@ -342,7 +468,7 @@ describe('Edit view', () => {
 			);
 
 			expect(sentRecipient?.a).toBe(recipient);
-		});
+		}, 50000);
 
 		test('is autosaved if body is changed', async () => {
 			// Mock the "action" query param
@@ -365,9 +491,12 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
@@ -402,7 +531,7 @@ describe('Edit view', () => {
 
 			const msg = await draftSavingInterceptor;
 			expect(msg.mp[0]?.content?._content).toBe(body);
-		});
+		}, 50000);
 
 		test('is not autosaved within 2 seconds if body is changed', async () => {
 			// Spy the saveDraftAction
@@ -428,9 +557,12 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 30000 }
+			);
 
 			const body = faker.lorem.text();
 
@@ -445,7 +577,7 @@ describe('Edit view', () => {
 			});
 
 			expect(mockedSaveDraft).not.toBeCalled();
-		});
+		}, 50000);
 
 		test('is autosaved if a file is attached', async () => {
 			// Mock the "action" query param
@@ -520,6 +652,6 @@ describe('Edit view', () => {
 			// The saveDraft request should be invoked 2 times (1 before and
 			// 1 after the upload of the attachment
 			expect(callTester).toBeCalledTimes(2);
-		});
+		}, 50000);
 	});
 });
