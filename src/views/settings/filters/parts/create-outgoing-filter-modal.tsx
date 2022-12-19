@@ -6,7 +6,7 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Input, Container, Checkbox, Padding, Divider, Row } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
-import { map, omit, reduce } from 'lodash';
+import { forEach, map, omit, reduce } from 'lodash';
 import ModalFooter from './create-filter-modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import DefaultCondition from './create-filters-conditions/default';
@@ -35,6 +35,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
 	const [tempActions, setTempActions] = useState([{ actionKeep: [{}] }]);
+	const [tooltip, setTooltip] = useState<string>(t('label.create', 'Create'));
 
 	const finalActions = useMemo(
 		() =>
@@ -107,7 +108,59 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 		[activeFilter, filterName, condition, requiredFilterTest, finalActions, dontProcessAddFilters]
 	);
 
-	const createFilterDisabled = useMemo(() => filterName.length === 0, [filterName]);
+	const createFilterDisabled = useMemo(() => {
+		const keys = Object.keys(requiredFilters.filterActions[0]);
+		const actions: any = requiredFilters.filterActions[0];
+		if (filterName.length === 0) {
+			setTooltip(t('settings.label.filter_name_required', 'Filter name is required'));
+			return true;
+		}
+		if (keys.includes('actionTag')) {
+			let isEmpty = false;
+			forEach(actions.actionTag, (action) => {
+				if (action.tagName === '') isEmpty = true;
+			});
+			if (isEmpty) {
+				setTooltip(
+					t('settings.tag_name_required', 'The action "Tag with" is missing one or more values.')
+				);
+				return true;
+			}
+		}
+		if (keys.includes('actionFileInto')) {
+			let isEmpty = false;
+			forEach(actions.actionFileInto, (files) => {
+				if (files.folderPath === '') isEmpty = true;
+			});
+			if (isEmpty) {
+				setTooltip(
+					t(
+						'settings.folder_path_required',
+						'The action "Move into folder" is missing one or more values.'
+					)
+				);
+				return true;
+			}
+		}
+		if (keys.includes('actionRedirect')) {
+			let isEmpty = false;
+			forEach(actions.actionRedirect, (address) => {
+				if (address.a === '') isEmpty = true;
+			});
+			if (isEmpty) {
+				setTooltip(
+					t(
+						'settings.address_required',
+						'The action "Redirect to Address" is missing one or more values.'
+					)
+				);
+				return true;
+			}
+		}
+		setTooltip(t('label.create', 'Create'));
+		return false;
+	}, [filterName.length, requiredFilters.filterActions, t]);
+
 	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice() || [], [outgoingFilters]);
 	const onConfirm = useCallback(() => {
 		const toSend = [...outgoingFiltersCopy, requiredFilters];
@@ -198,11 +251,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 
 				<ModalFooter
 					label={t('label.create', 'Create')}
-					toolTipText={
-						createFilterDisabled
-							? t('settings.label.filter_name_required', 'Filter name is required')
-							: t('label.create', 'Create')
-					}
+					toolTipText={tooltip}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}
