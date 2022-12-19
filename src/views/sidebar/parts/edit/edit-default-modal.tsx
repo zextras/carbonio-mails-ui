@@ -16,7 +16,7 @@ import { FolderDetails } from './folder-details';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
 import { translatedSystemFolders } from '../../utils';
-import { EditDefaultModalPropType } from '../../../../types/sidebar';
+import { MainEditModalPropType } from '../../../../types/sidebar';
 
 const retentionPeriod = [
 	{
@@ -38,12 +38,9 @@ const retentionPeriod = [
 ];
 const numberRegex = /^\d+$/;
 
-const EditDefaultModal: FC<EditDefaultModalPropType> = ({ folder, onClose, setActiveModal }) => {
+const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveModal }) => {
 	const dispatch = useDispatch();
-
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createSnackbar = useContext(SnackbarManagerContext) as Function;
-
+	const createSnackbar = useContext(SnackbarManagerContext);
 	const [inputValue, setInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);
 	const [rtnValue, setRtnValue] = useState<number | string>(0);
@@ -282,7 +279,7 @@ const EditDefaultModal: FC<EditDefaultModalPropType> = ({ folder, onClose, setAc
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'medium' }}>
 				<FolderDetails folder={folder} />
 
-				{!isEmpty(folder?.acl) && folder.isLink && !folder.owner && (
+				{!isEmpty(folder?.acl) && !folder.owner && (
 					<ShareFolderProperties folder={folder} setActiveModal={setActiveModal} />
 				)}
 				<RetentionPolicies
@@ -323,4 +320,4 @@ const EditDefaultModal: FC<EditDefaultModalPropType> = ({ folder, onClose, setAc
 	);
 };
 
-export default EditDefaultModal;
+export default MainEditModal;
