@@ -85,7 +85,7 @@
         "send_later_success": "Mesajınız {{date}} - {{time}} tarih ve saatinde gönderilecek",
         "select_date_time": "Bu mesajı göndermek için tarih ve saati seçin",
         "delete_attachment_message2": "Önce indirmek ister misiniz?",
-        "delete_attachment_message1": "Ek, Carbonio'dan tamamen silinecek."
+        "delete_attachment_message1": "Ekiniz, Carbonio'dan tamamen silinecek."
     },
     "snackbar": {
         "share_resend": "Paylaşım davetini yeniden gönder",
@@ -305,7 +305,8 @@
         "send_scheduled": "Gönderim Planlandı",
         "not_in_list": "{{name}} - Etiket listenizde yok",
         "invalid_query": "Arama sorgusu çözümlenemedi, silip yeniden deneyin",
-        "download_and_delete": "İndir ve Sil"
+        "download_and_delete": "İndir ve Sil",
+        "enter_name": "Ad Girin"
     },
     "share": {
         "options": {
@@ -593,7 +594,8 @@
         "font": "Yazı Tipi",
         "mail_unsend_time": {
             "second": "{{count}} saniye",
-            "second_plural": "{{count}} saniye"
+            "second_plural": "{{count}} saniye",
+            "no_delay": "Gecikme yok"
         }
     },
     "displayer": {

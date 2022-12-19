@@ -14,25 +14,14 @@ describe('Messages Slice', () => {
 	describe('GetMsg', () => {
 		test('add single message on the store', async () => {
 			const store = generateStore();
-			// const options = { store };
-			//
-			// setupTest(<Dummy />, options);
-			// expect(screen.getByTestId('dummy-id')).toBeInTheDocument();
-			// expect(screen.getByTestId('dummy-id').innerHTML).toEqual('0');
-			// const msgId = '1';
-			// await store.dispatch(getMsg({ msgId }));
-			// const state = store.getState();
-			// const readMessage = selectMessage(state, msgId);
-			// expect(screen.getByTestId('dummy-id').innerHTML).toEqual('1');
-
 			const messages = selectMessages(store.getState());
 			expect(messages).toEqual({});
 			const msgId = '1';
 			await store.dispatch(getMsg({ msgId }));
 			const state = store.getState();
-			// const readMessage = selectMessage(state, msgId);
-			// expect(readMessage).toBeDefined();
-			// expect(readMessage.parts.length).toBeGreaterThan(0);
+			const readMessage = selectMessage(state, msgId);
+			expect(readMessage).toBeDefined();
+			expect(readMessage.parts.length).toBeGreaterThan(0);
 		});
 	});
 });

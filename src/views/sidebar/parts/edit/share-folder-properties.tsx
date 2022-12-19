@@ -15,7 +15,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { map, replace, split } from 'lodash';
+import { map } from 'lodash';
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -31,7 +31,6 @@ import {
 	GranteeProps,
 	ShareFolderPropertiesProps
 } from '../../../../types';
-import { capitalise } from '../../utils';
 import { Context } from './edit-context';
 
 const HoverChip = styled(Chip)<ChipProps & { hovered?: boolean }>`
@@ -44,15 +43,16 @@ export const GranteeInfo: FC<GranteeInfoProps> = ({ grant, shareCalendarRoleOpti
 		() => findLabel(shareCalendarRoleOptions, grant.perm || ''),
 		[shareCalendarRoleOptions, grant.perm]
 	);
-	const label = useMemo(
-		() => `${replace(split(grant.d, '@')?.[0], '.', ' ')} - ${role}`,
-		[grant.d, role]
-	);
-	const upperCaseLabel = useMemo(() => capitalise(label), [label]);
+
+	const label = useMemo(() => {
+		const composeLabel = (name: string): string => `${name} - ${role}`;
+		return grant.d ? composeLabel(grant.d) : composeLabel(grant.zid);
+	}, [grant, role]);
+
 	return (
 		<Container crossAlignment="flex-start">
 			<Text>
-				<HoverChip label={upperCaseLabel} hovered={hovered} />
+				<HoverChip label={label} hovered={hovered} />
 			</Text>
 		</Container>
 	);

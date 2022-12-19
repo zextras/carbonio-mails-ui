@@ -17,7 +17,7 @@ export type ShareCalendarModalProps = {
 	allCalendars: any;
 };
 
-export type ShareFolderModalProps = {
+export type EditPermissionsModalProps = {
 	openModal: () => void;
 	setModal: (a: any) => void;
 	dispatch: Dispatch;

@@ -59,6 +59,7 @@ export type SidebarCustomItem = {
 export type ShareModalProps = {
 	folders: Array<ResFolder>;
 	onClose: () => void;
+	goBack?: () => void;
 };
 
 export type SharedObject = {
@@ -77,7 +78,7 @@ export type SharedObject = {
 
 export type GroupedShare = Dictionary<SharedObject[]>;
 
-export type ShareFolderModalProps = ModalProps & {
+export type EditPermissionsModalProps = ModalProps & {
 	editMode?: boolean;
 };
 
@@ -163,6 +164,6 @@ export type NameInputRowProps = {
 	setFolderColor: (value: string) => void;
 };
 
-export type EditDefaultModalPropType = ModalProps & {
+export type MainEditModalPropType = ModalProps & {
 	setActiveModal: (modal: string) => void;
 };

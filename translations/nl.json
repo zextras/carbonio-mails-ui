@@ -261,7 +261,12 @@
         "expand_receivers_list": "Ontvangerslijst uitklappen",
         "delayed_sending": "Vertraagd verstuurd",
         "collapse_receivers_list": "Ontvangerslijst inklappen",
-        "before_you_leave": "Voordat u vertrekt"
+        "before_you_leave": "Voordat u vertrekt",
+        "not_in_list": "{{name}} - Niet in uw tag-lijst",
+        "send_scheduled": "Gepland verzenden",
+        "download_and_delete": "Downloaden en verwijderen",
+        "invalid_query": "Kan de zoekopdracht niet parseren, wis deze en probeer opnieuw",
+        "enter_name": "Naam invullen"
     },
     "messages": {
         "invalid_address": "Het volgende adres lijkt ongeldig te zijn",
@@ -416,8 +421,10 @@
         "external_images_blocked": "Externe afbeeldingen zijn geblokkeerd om u te beschermen tegen mogelijke spam",
         "select_date_time": "Selecteer een datum en tijd voor het verzenden van dit bericht",
         "send_later_success": "Uw e-mail zal worden verstuurd op {{date}} om {{time}}",
-        "schedule_time": "{{date}} om {{time}}",
-        "schedule_mail": "Zal worden verstuurd op: {{date}} om {{time}}"
+        "schedule_time": "voor {{date}} om {{time}}",
+        "schedule_mail": "Zal worden verstuurd op: {{date}} om {{time}}",
+        "delete_attachment_message1": "Uw bijlage wordt permanent verwijderd uit Carbonio.",
+        "delete_attachment_message2": "Wilt u het eerst downloaden?"
     },
     "composer": {
         "attachment": {
@@ -442,7 +449,8 @@
             "message_color": "Bericht kleur",
             "message_selection": "Berichtselectie",
             "set_message_color": "De setkleur van berichten en gesprekken instellen volgens de kleur van de tag.",
-            "visualization_options": "Visualisatie-opties"
+            "visualization_options": "Visualisatie-opties",
+            "unsend_time": "Tijd voor afmelden instellen"
         },
         "msg_from_optn": {
             "discard": "Bericht automatisch verwijderen",
@@ -569,7 +577,12 @@
             "comic": "Comic"
         },
         "font_size": "{{count}} pt",
-        "font_size_plural": "{{count}} pt"
+        "font_size_plural": "{{count}} pt",
+        "mail_unsend_time": {
+            "no_delay": "Geen vertraging",
+            "second": "{{count}} seconde",
+            "second_plural": "{{count}} seconden"
+        }
     },
     "tooltip": {
         "revoke": "Toegang intrekken",

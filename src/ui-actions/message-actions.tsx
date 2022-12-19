@@ -7,6 +7,7 @@ import React from 'react';
 import { Text } from '@zextras/carbonio-design-system';
 import {
 	Account,
+	addBoard,
 	FOLDERS,
 	getBridgedFunctions,
 	replaceHistory,
@@ -14,7 +15,8 @@ import {
 	Tags
 } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
-import { Dispatch } from '@reduxjs/toolkit';
+import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
+import { MAILS_ROUTE } from '../constants';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { ActionsType } from '../commons/utils';
 import { sendMsg } from '../store/actions/send-msg';
@@ -23,7 +25,7 @@ import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
 import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
-import { MailMessage } from '../types';
+import { MailMessage, MsgActionParameters, MsgActionResult } from '../types';
 import { StoreProvider } from '../store/redux';
 
 type MessageActionIdsType = Array<string>;
@@ -224,53 +226,65 @@ export function showOriginalMsg({ id }: { id: string }): MessageActionReturnType
 	};
 }
 
+export const dispatchMsgMove = (
+	dispatch: Dispatch<any>,
+	ids: MessageActionIdsType,
+	folderId: string
+): AsyncThunkAction<MsgActionResult, MsgActionParameters, Record<string, unknown>> =>
+	dispatch(
+		msgAction({
+			operation: 'move',
+			ids,
+			parent: folderId
+		})
+	);
+
+const restoreMessage = (
+	dispatch: Dispatch<any>,
+	ids: MessageActionIdsType,
+	folderId: string,
+	closeEditor: boolean | undefined,
+	conversationId: string | undefined
+): void => {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	dispatchMsgMove(dispatch, ids, folderId).then((res) => {
+		if (res.type.includes('fulfilled')) {
+			closeEditor &&
+				replaceHistory(
+					conversationId
+						? `/folder/${folderId}/conversation/${conversationId}`
+						: `/folder/${folderId}/conversation/-${ids[0]}`
+				);
+			getBridgedFunctions()?.createSnackbar({
+				key: `move-${ids}`,
+				replace: true,
+				type: 'success',
+				label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
+		} else {
+			getBridgedFunctions()?.createSnackbar({
+				key: `move-${ids}`,
+				replace: true,
+				type: 'error',
+				label: t('label.error_try_again', 'Something went wrong, please try again'),
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
+		}
+	});
+};
+
 export function moveMsgToTrash({
 	ids,
 	dispatch,
 	deselectAll,
-	folderId,
+	folderId = FOLDERS.INBOX,
 	conversationId,
 	closeEditor
 }: MessageActionPropType): MessageActionReturnType {
-	const restoreMessage = (): void => {
-		dispatch(
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			msgAction({
-				operation: 'move',
-				ids,
-				folderId
-			})
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-		).then((res) => {
-			if (res.type.includes('fulfilled')) {
-				closeEditor &&
-					replaceHistory(
-						conversationId
-							? `/folder/${folderId}/conversation/${conversationId}`
-							: `/folder/${folderId}/conversation/-${ids[0]}`
-					);
-				getBridgedFunctions()?.createSnackbar({
-					key: `move-${ids}`,
-					replace: true,
-					type: 'success',
-					label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			} else {
-				getBridgedFunctions()?.createSnackbar({
-					key: `move-${ids}`,
-					replace: true,
-					type: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			}
-		});
-	};
 	return {
 		id: 'message-trash',
 		icon: 'Trash2Outline',
@@ -298,7 +312,8 @@ export function moveMsgToTrash({
 						autoHideTimeout: 5000,
 						hideButton: false,
 						actionLabel: t('label.undo', 'Undo'),
-						onActionClick: () => restoreMessage()
+						onActionClick: () =>
+							restoreMessage(dispatch, ids, folderId, closeEditor, conversationId)
 					});
 				} else {
 					getBridgedFunctions()?.createSnackbar({
@@ -405,7 +420,11 @@ export function replyMsg({
 		label: t('action.reply', 'Reply'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.REPLY}`);
+			addBoard({
+				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY}`,
+				context: { mailId: id },
+				title: ''
+			});
 		}
 	};
 }
@@ -420,7 +439,11 @@ export function replyAllMsg({
 		label: t('action.reply_all', 'Reply all'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.REPLY_ALL}`);
+			addBoard({
+				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY_ALL}`,
+				context: { mailId: id },
+				title: ''
+			});
 		}
 	};
 }
@@ -435,7 +458,11 @@ export function forwardMsg({
 		label: t('action.forward', 'Forward'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.FORWARD}`);
+			addBoard({
+				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.FORWARD}`,
+				context: { mailId: id },
+				title: ''
+			});
 		}
 	};
 }
@@ -450,7 +477,11 @@ export function editAsNewMsg({
 		label: t('action.edit_as_new', 'Edit as new'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_NEW}`);
+			addBoard({
+				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_NEW}`,
+				context: { mailId: id },
+				title: ''
+			});
 		}
 	};
 }
@@ -474,7 +505,11 @@ export function editDraft({
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						closeModal();
-						replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
+						addBoard({
+							url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
+							context: { mailId: id },
+							title: ''
+						});
 					},
 					onClose: () => {
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -493,7 +528,13 @@ export function editDraft({
 						</StoreProvider>
 					)
 				});
-			} else replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
+			} else {
+				addBoard({
+					url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
+					context: { mailId: id },
+					title: ''
+				});
+			}
 		}
 	};
 }

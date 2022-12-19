@@ -7,8 +7,6 @@
 export type MailEditHeaderType = {
 	folderId: string | number;
 	header: string | undefined;
-	toggleAppBoard: boolean;
-	setToggleAppBoard: (arg: boolean) => void;
 };
 
 export type IconColors = Array<{

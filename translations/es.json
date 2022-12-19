@@ -261,7 +261,12 @@
         "delete_draft": "Eliminar borrador",
         "delayed_sending": "Envío demorado",
         "collapse_receivers_list": "Contraer la lista de destinatarios",
-        "before_you_leave": "Antes de irte"
+        "before_you_leave": "Antes de irte",
+        "send_scheduled": "Envío programado",
+        "download_and_delete": "Descargar y borrar",
+        "enter_name": "Introducir nombre",
+        "invalid_query": "No se puede analizar la consulta de la búsqueda, bórrala y prueba de nuevo",
+        "not_in_list": "{{name}} - No está en tu lista de firmas"
     },
     "messages": {
         "modal": {
@@ -419,8 +424,10 @@
         "external_images_blocked": "Las imágenes externas han sido bloqueadas para protección contra posible spam",
         "select_date_time": "Seleccionar una fecha y una hora para enviar este mensaje",
         "send_later_success": "Tu e-mail se enviará el {{date}} a la(s) {{time}}",
-        "schedule_time": "{{date}} a la(s) {{time}}",
-        "schedule_mail": "Se enviará en: {{date}} a la(s) {{time}}"
+        "schedule_time": "durante {{date}} a las {{time}}",
+        "schedule_mail": "Se enviará en: {{date}} a la(s) {{time}}",
+        "delete_attachment_message1": "Tu archivo anexo se eliminará de Carbonio permanentemente.",
+        "delete_attachment_message2": "¿Quieres decargarlo antes?"
     },
     "snackbar": {
         "folder_shared": "Carpeta compartida",
@@ -456,7 +463,8 @@
             "message_color": "Color del mensaje",
             "message_selection": "Selección de mensajes",
             "set_message_color": "Aplicar el color de la etiqueta a mensajes y conversaciones.",
-            "visualization_options": "Opciones de visualización"
+            "visualization_options": "Opciones de visualización",
+            "unsend_time": "Ajustar tiempo de desenvío"
         },
         "msg_from_optn": {
             "discard": "Descartar mensaje",
@@ -583,7 +591,12 @@
         },
         "font": "Fuente",
         "font_size": "{{count}} pt",
-        "font_size_plural": "{{count}} pt"
+        "font_size_plural": "{{count}} pt",
+        "mail_unsend_time": {
+            "second": "{{count}} segundo",
+            "second_plural": "{{count}} segundos",
+            "no_delay": "Sin demora"
+        }
     },
     "folder_panel": {
         "modal": {
