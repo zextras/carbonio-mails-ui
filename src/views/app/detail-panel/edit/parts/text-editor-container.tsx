@@ -18,6 +18,7 @@ import React, {
 	useState
 } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils/text/html';
 import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
 import { EditViewContextType, MailsEditor, SaveDraftResponse } from '../../../../../types';
 import { addInlineAttachments, getConvertedImageSources } from '../add-inline-attachment';
@@ -54,10 +55,7 @@ const TextEditorContainer: FC<PropType> = ({
 	const { prefs } = useUserSettings();
 
 	const defaultFontFamily = useMemo<string>(
-		// TODO: Once the Typescript branch is merged it can be removed
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		() => prefs?.zimbraPrefHtmlEditorDefaultFontFamily ?? 'sans-serif',
+		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontFamily) ?? 'sans-serif',
 		[prefs]
 	);
 	const [inputValue, setInputValue] = useState(editor?.text ?? ['', '']);
@@ -152,7 +150,8 @@ const TextEditorContainer: FC<PropType> = ({
 								<Container background="gray6" height="fit">
 									<StyledComp.TextArea
 										data-testid="MailPlainTextEditor"
-										value={value[0]}
+										value={convertHtmlToPlainText(value[0])}
+										// value={value[0]}
 										style={{ fontFamily: defaultFontFamily }}
 										onChange={(ev): void => {
 											// eslint-disable-next-line no-param-reassign
