@@ -105,7 +105,7 @@ const EditViewHeader: FC<PropType> = ({
 	const [isUrgent, setIsUrgent] = useState(editor?.urgent ?? false);
 	const [isReceiptRequested, setIsReceiptRequested] = useState(editor?.requestReadReceipt ?? false);
 
-	// needs to be replace with correct type
+	// needs to be replaced with correct type
 	const boardContext = useBoard()?.context;
 
 	const isSendDisabled = useMemo(() => {
