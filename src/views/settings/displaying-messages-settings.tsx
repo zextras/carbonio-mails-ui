@@ -13,9 +13,12 @@ import {
 	FormSubSection,
 	Select,
 	Input,
+	Padding,
 	RadioGroup,
 	Radio,
-	SelectItem
+	SelectItem,
+	Icon,
+	Text
 } from '@zextras/carbonio-design-system';
 import Heading from './components/settings-heading';
 import {
@@ -222,6 +225,53 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 						})
 					}
 				/>
+			</Container>
+			{/* Read after N seconds option managed as a read immediately */}
+			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
+				<Heading
+					title={t('settings.label.mark_reading_panel', 'Mark as Read Messages in Shared Account')}
+				/>
+				<RadioGroup
+					style={{ width: '100%' }}
+					value={settingsObj.zimbraPrefMarkMsgRead === '-1' ? '-1' : '0'}
+					onChange={(newValue: string): void => {
+						updateSettings({ target: { name: 'zimbraPrefMarkMsgRead', value: newValue } });
+					}}
+				>
+					<Radio
+						width="100%"
+						label={
+							<Row orientation="column" crossAlignment="flex-start">
+								<Text weight="bold">{t('settings.label.default', 'Default')}</Text>
+							</Row>
+						}
+						value="0"
+					/>
+					<Padding left="2rem" bottom="0.5rem">
+						<Text>
+							{t(
+								'label.mark_read_message_immediately',
+								'Mark messages in displayer as read immediately'
+							)}
+						</Text>
+					</Padding>
+					<Radio
+						width="100%"
+						label={<Text weight="bold">{t('settings.label.mark_manually', 'Mark Manually')}</Text>}
+						value="-1"
+					/>
+					<Row padding={{ left: '2rem' }} display="inline-flex">
+						<Text>
+							{t(
+								'label.mark_read_message_manually',
+								'Mark messages manually as read clicking the relative icon button'
+							)}
+						</Text>
+						<Padding left="small">
+							<Icon size="medium" icon="EmailReadOutline" />
+						</Padding>
+					</Row>
+				</RadioGroup>
 			</Container>
 		</FormSubSection>
 	);

@@ -231,7 +231,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 	);
 
 	const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
-
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 	const participantsString = useMemo(
 		() =>
 			reduce(
@@ -263,7 +263,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 	const _onClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
-				if (item?.read === false) {
+				if (item?.read === false && zimbraPrefMarkMsgRead) {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					setConversationsRead({
@@ -277,7 +277,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 				pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 			}
 		},
-		[item?.read, item.id, dispatch, folderId]
+		[item?.read, item.id, zimbraPrefMarkMsgRead, folderId, dispatch]
 	);
 
 	const _onDoubleClick = useCallback(
