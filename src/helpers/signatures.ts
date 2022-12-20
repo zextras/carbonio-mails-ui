@@ -5,6 +5,8 @@
  */
 import { Account } from '@zextras/carbonio-shell-ui';
 import { find, map } from 'lodash';
+import convert from 'lodash/fp/convert';
+import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { SignatureDescriptor } from '../types/signatures';
 
 /**
@@ -77,7 +79,9 @@ const composeMailBodyWithSignature = (
 		return '';
 	}
 
-	return (isRichText ? '<br/><br/>' : '\n\n') + signatureValue;
+	return isRichText
+		? `<br/><br/>${signatureValue}`
+		: `\n\n${convertHtmlToPlainText(signatureValue)}`;
 };
 
 export { getSignatures, getSignature, getSignatureValue, composeMailBodyWithSignature };

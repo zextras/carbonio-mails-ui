@@ -18,7 +18,6 @@ import React, {
 	useState
 } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils/text/html';
 import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
 import { EditViewContextType, MailsEditor, SaveDraftResponse } from '../../../../../types';
 import { addInlineAttachments, getConvertedImageSources } from '../add-inline-attachment';
@@ -150,7 +149,7 @@ const TextEditorContainer: FC<PropType> = ({
 								<Container background="gray6" height="fit">
 									<StyledComp.TextArea
 										data-testid="MailPlainTextEditor"
-										value={convertHtmlToPlainText(value[0])}
+										value={value[0]}
 										// value={value[0]}
 										style={{ fontFamily: defaultFontFamily }}
 										onChange={(ev): void => {
