@@ -14,6 +14,8 @@ import { CreateFilterContext } from './create-filter-context';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import FilterActionConditions from './new-filter-action-conditions';
 import FilterTestConditionRow from './filter-test-condition-row';
+import { getButtonInfo } from './utils';
+import { FilterActions } from '../../../../types';
 
 type ComponentProps = {
 	t: TFunction;
@@ -93,8 +95,8 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? [{ ...finalActions, actionStop: [{}] }]
-				: [{ ...finalActions }],
+				? ([{ ...finalActions, actionStop: [{}] }] as FilterActions[])
+				: ([{ ...finalActions }] as FilterActions[]),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
@@ -107,7 +109,11 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 		[activeFilter, filterName, condition, requiredFilterTest, finalActions, dontProcessAddFilters]
 	);
 
-	const createFilterDisabled = useMemo(() => filterName.length === 0, [filterName]);
+	const [createFilterDisabled, buttonTooltip] = useMemo(
+		() => getButtonInfo(filterName, requiredFilters, t),
+		[filterName, requiredFilters, t]
+	);
+
 	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice() || [], [outgoingFilters]);
 	const onConfirm = useCallback(() => {
 		const toSend = [...outgoingFiltersCopy, requiredFilters];
@@ -198,11 +204,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 
 				<ModalFooter
 					label={t('label.create', 'Create')}
-					toolTipText={
-						createFilterDisabled
-							? t('settings.label.filter_name_required', 'Filter name is required')
-							: t('label.create', 'Create')
-					}
+					toolTipText={buttonTooltip}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}

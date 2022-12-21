@@ -33,6 +33,7 @@ import FilterActionConditions from '../new-filter-action-conditions';
 import FilterTestConditionRow from '../filter-test-condition-row';
 import { getTestComponent, findRowKey } from '../get-test-component';
 import { capitalise } from '../../../../sidebar/utils';
+import { getButtonInfo } from '../utils';
 
 type FilterType = {
 	active: boolean;
@@ -142,10 +143,13 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 		[activeFilter, filterName, condition, requiredFilterTest, dontProcessAddFilters, finalActions]
 	);
 
-	const createFilterDisabled = useMemo(
-		() => filterName.length === 0 || isEqual(copyRequiredFilters, requiredFilters),
-		[copyRequiredFilters, filterName.length, requiredFilters]
-	);
+	const [createFilterDisabled, buttonTooltip] = useMemo(() => {
+		if (isEqual(copyRequiredFilters, requiredFilters)) {
+			return [true, t('settings.label.not_changed_anything', 'You haven’t changed anything')];
+		}
+		return getButtonInfo(filterName, requiredFilters, t, false);
+	}, [copyRequiredFilters, filterName, requiredFilters, t]);
+
 	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice(), [outgoingFilters]);
 
 	const toggleCheckBox = useCallback(() => {
@@ -351,11 +355,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 
 				<ModalFooter
 					label={t('label.edit', 'Edit')}
-					toolTipText={
-						createFilterDisabled
-							? t('settings.label.not_changed_anything', 'You haven’t changed anything')
-							: t('label.edit', 'Edit')
-					}
+					toolTipText={buttonTooltip}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}
