@@ -228,9 +228,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 			</Container>
 			{/* Read after N seconds option managed as a read immediately */}
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading
-					title={t('settings.label.mark_reading_panel', 'Mark as Read Messages in Shared Account')}
-				/>
+				<Heading title={t('settings.label.mark_reading_panel', 'Mark as Read Management')} />
 				<RadioGroup
 					style={{ width: '100%' }}
 					value={settingsObj.zimbraPrefMarkMsgRead === '-1' ? '-1' : '0'}
