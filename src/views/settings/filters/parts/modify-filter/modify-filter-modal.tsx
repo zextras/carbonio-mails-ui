@@ -33,6 +33,8 @@ import FilterActionConditions from '../new-filter-action-conditions';
 import FilterTestConditionRow from '../filter-test-condition-row';
 import { getTestComponent, findRowKey } from '../get-test-component';
 import { capitalise } from '../../../../sidebar/utils';
+import { FilterActions } from '../../../../../types';
+import { getButtonInfo } from '../utils';
 
 type FilterType = {
 	active: boolean;
@@ -67,9 +69,6 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const [copyRequiredFilters, setCopyRequiredFilters] = useState({});
 	const [reFetch, setReFetch] = useState(false);
 	const [updateRequiredFilters, setUpdateRequiredFilters] = useState(true);
-	const [tooltip, setTooltip] = useState<string>(
-		t('settings.label.not_changed_anything', 'You haven’t changed anything')
-	);
 	const [newFilters, setNewFilters] = useState([
 		{
 			filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
@@ -132,8 +131,8 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? [{ ...omit(finalActions, 'id'), actionStop: [{}] }]
-				: [{ ...omit(finalActions, 'id') }],
+				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions[])
+				: ([{ ...omit(finalActions, 'id') }] as FilterActions[]),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
@@ -146,62 +145,12 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		[activeFilter, filterName, condition, requiredFilterTest, dontProcessAddFilters, finalActions]
 	);
 
-	const createFilterDisabled = useMemo(() => {
-		const keys = Object.keys(requiredFilters.filterActions[0]);
-		const actions: any = requiredFilters.filterActions[0];
-		if (filterName.length === 0) {
-			setTooltip(t('settings.label.filter_name_required', 'Filter name is required'));
-			return true;
-		}
+	const [createFilterDisabled, buttonTooltip] = useMemo(() => {
 		if (isEqual(copyRequiredFilters, requiredFilters)) {
-			setTooltip(t('settings.label.not_changed_anything', 'You haven’t changed anything'));
-			return true;
+			return [true, t('settings.label.not_changed_anything', 'You haven’t changed anything')];
 		}
-		if (keys.includes('actionTag')) {
-			let isEmpty = false;
-			forEach(actions.actionTag, (action) => {
-				if (action.tagName === '') isEmpty = true;
-			});
-			if (isEmpty) {
-				setTooltip(
-					t('settings.tag_name_required', 'The action "Tag with" is missing one or more values.')
-				);
-				return true;
-			}
-		}
-		if (keys.includes('actionFileInto')) {
-			let isEmpty = false;
-			forEach(actions.actionFileInto, (files) => {
-				if (files.folderPath === '') isEmpty = true;
-			});
-			if (isEmpty) {
-				setTooltip(
-					t(
-						'settings.folder_path_required',
-						'The action "Move into folder" is missing one or more values.'
-					)
-				);
-				return true;
-			}
-		}
-		if (keys.includes('actionRedirect')) {
-			let isEmpty = false;
-			forEach(actions.actionRedirect, (address) => {
-				if (address.a === '') isEmpty = true;
-			});
-			if (isEmpty) {
-				setTooltip(
-					t(
-						'settings.address_required',
-						'The action "Redirect to Address" is missing one or more values.'
-					)
-				);
-				return true;
-			}
-		}
-		setTooltip(t('label.edit', 'Edit'));
-		return false;
-	}, [copyRequiredFilters, filterName.length, requiredFilters, t]);
+		return getButtonInfo(filterName, requiredFilters, t, false);
+	}, [copyRequiredFilters, filterName, requiredFilters, t]);
 
 	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice(), [incomingFilters]);
 
@@ -409,7 +358,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 				</Row>
 				<ModalFooter
 					label={t('label.edit', 'Edit')}
-					toolTipText={tooltip}
+					toolTipText={buttonTooltip}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}
