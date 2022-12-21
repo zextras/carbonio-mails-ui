@@ -150,7 +150,6 @@ const TextEditorContainer: FC<PropType> = ({
 									<StyledComp.TextArea
 										data-testid="MailPlainTextEditor"
 										value={value[0]}
-										// value={value[0]}
 										style={{ fontFamily: defaultFontFamily }}
 										onChange={(ev): void => {
 											// eslint-disable-next-line no-param-reassign
