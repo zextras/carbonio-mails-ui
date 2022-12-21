@@ -5,8 +5,6 @@
  */
 import { Button, Catcher, Container, useModal } from '@zextras/carbonio-design-system';
 import {
-	addBoard,
-	replaceHistory,
 	t,
 	useBoard,
 	useBoardHooks,
@@ -29,7 +27,6 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { ActionsType } from '../../../../commons/utils';
-import { MAILS_ROUTE } from '../../../../constants';
 import { useQueryParam } from '../../../../hooks/useQueryParam';
 import { getMsg } from '../../../../store/actions';
 import { saveDraft } from '../../../../store/actions/save-draft';
@@ -68,7 +65,6 @@ type EditViewPropType = {
 };
 
 const EditView: FC<EditViewPropType> = ({ setHeader }) => {
-	const { folderId } = useParams<{ folderId: string }>();
 	const { editId } = useParams<{ editId: string }>();
 	const settings = useUserSettings();
 	const boardUtilities = useBoardHooks();
