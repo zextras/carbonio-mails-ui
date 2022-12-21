@@ -10,8 +10,7 @@ import { createTag, renameTag, changeTagColor, t } from '@zextras/carbonio-shell
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
-
-import { CreateUpdateTagModalPropType } from '../../../../types/sidebar';
+import { CreateUpdateTagModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
 
 const NonSupportedCharacters = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
 const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({

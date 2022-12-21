@@ -5,20 +5,18 @@
  */
 
 import { ThemeProvider } from '@mui/material';
-import { Folder, useFoldersByView } from '@zextras/carbonio-shell-ui';
 import { Accordion, Container, Divider } from '@zextras/carbonio-design-system';
+import { useFoldersByView } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { FC, useMemo } from 'react';
 import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
-import { FOLDER_VIEW } from '../../constants';
+import { SidebarAccordionMui } from '../../carbonio-ui-commons/components/sidebar/sidebar-accordion-mui';
+import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
+import { themeMui } from '../../carbonio-ui-commons/theme/theme-mui';
+import { SidebarComponentProps, SidebarProps } from '../../carbonio-ui-commons/types/sidebar';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
-import { themeMui } from '../../theme/theme-mui';
+import AccordionCustomComponent from './accordion-custom-component';
 import CollapsedSideBarItems from './collapsed-sidebar-items';
-import { SidebarAccordionMui } from './sidebar-accordion-mui';
-
-type SidebarComponentProps = {
-	accordions: Array<Folder>;
-};
 
 const SidebarComponent: FC<SidebarComponentProps> = ({ accordions }) => {
 	const { folderId } = useParams<{ folderId: string }>();
@@ -39,15 +37,16 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions }) => {
 	}, [accordions]);
 	return (
 		<Container orientation="vertical" height="fit" width="fill">
-			<SidebarAccordionMui accordions={accordionsWithFindShare} folderId={folderId} />
+			<SidebarAccordionMui
+				accordions={accordionsWithFindShare}
+				folderId={folderId}
+				localStorageName="open_mails_folders"
+				AccordionCustomComponent={AccordionCustomComponent}
+			/>
 			<Divider />
 			<Accordion items={[tagsAccordionItems]} />
 		</Container>
 	);
-};
-
-type SidebarProps = {
-	expanded: boolean;
 };
 
 const MemoSidebar: FC<SidebarComponentProps> = React.memo(SidebarComponent);

@@ -1,14 +1,13 @@
 import { Accordion, Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
 import {
-	AccordionFolder,
 	Folder,
 	FOLDERS,
 	getFolder,
 	t,
-	useFoldersAccordionByView,
 	useFoldersByView,
 	useUserAccount
 } from '@zextras/carbonio-shell-ui';
+import { filter, startsWith } from 'lodash';
 import React, {
 	ChangeEvent,
 	ReactElement,
@@ -18,9 +17,7 @@ import React, {
 	useRef,
 	useState
 } from 'react';
-import { filter, startsWith } from 'lodash';
 import styled from 'styled-components';
-import { FOLDER_VIEW } from '../../../constants';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
 import { getFolderTranslatedName } from '../utils';
 

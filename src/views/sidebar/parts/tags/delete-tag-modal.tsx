@@ -9,7 +9,7 @@ import { Container, Text, SnackbarManagerContext } from '@zextras/carbonio-desig
 import { deleteTag, t } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { DeleteTagModalPropsType } from '../../../../types/sidebar';
+import { DeleteTagModalPropsType } from '../../../../carbonio-ui-commons/types/sidebar';
 
 const DeleteTagModal: FC<DeleteTagModalPropsType> = ({ onClose, tag }) => {
 	const createSnackbar = useContext(SnackbarManagerContext);
