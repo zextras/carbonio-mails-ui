@@ -274,6 +274,7 @@ const ParticipantsRow: FC<{
 							defaultValue={editor.bcc ?? []}
 							render={({ onChange, value }): ReactElement => (
 								<ContactInput
+									data-testid="RecipientBcc"
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									placeholder={t('label.bcc', 'Bcc')}
@@ -306,6 +307,7 @@ const ParticipantsRow: FC<{
 							defaultValue={editor.bcc ?? []}
 							render={({ onChange, value }): ReactElement => (
 								<ChipInput
+									data-testid="RecipientBcc"
 									placeholder={t('label.bcc', 'Bcc')}
 									onChange={(contacts: Array<ContactType>): void => {
 										const data = map(contacts, (contact) =>

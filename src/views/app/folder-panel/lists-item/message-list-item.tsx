@@ -242,6 +242,7 @@ export const MessageListItem: FC<any> = ({
 			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
 			style={{ display: 'block' }}
 			onDragStart={(e): void => dragCheck(e, item.id)}
+			data-testid="MailItemContainer"
 		>
 			<DraggableItem
 				item={item}
