@@ -5,7 +5,6 @@
  */
 
 // this message has got 1 eml attachment
-
 export const getMsgResult = {
 	Header: {
 		context: {
