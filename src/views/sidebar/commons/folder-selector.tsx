@@ -19,6 +19,7 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
+import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { getFolderTranslatedName } from '../utils';
 
 const ContainerEl = styled(Container)`
