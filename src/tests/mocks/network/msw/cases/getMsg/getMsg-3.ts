@@ -5,7 +5,6 @@
  */
 
 // 1 inline attachment with cid in the body
-
 export const getMsgResult = {
 	Header: {
 		context: {

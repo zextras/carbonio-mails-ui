@@ -5,12 +5,10 @@
  */
 import { Accordion, Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
 import {
-	AccordionFolder,
 	Folder,
 	FOLDERS,
 	getFolder,
 	t,
-	useFoldersAccordionByView,
 	useFoldersByView,
 	useUserAccount
 } from '@zextras/carbonio-shell-ui';

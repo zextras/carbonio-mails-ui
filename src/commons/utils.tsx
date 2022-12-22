@@ -68,6 +68,7 @@ export enum LineType {
 	ORIG_HEADER = 'HEADER',
 	ORIG_LINE = 'LINE',
 	HTML_SEP_ID = 'zwchr',
+	PLAINTEXT_SEP = '---------------------------',
 	NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*'
 }
 

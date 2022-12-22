@@ -6,7 +6,8 @@
 import { Account, AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
-import { ParticipantRole } from '../commons/utils';
+import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
+import { LineType, ParticipantRole } from '../commons/utils';
 import {
 	composeMailBodyWithSignature,
 	getSignatures,
@@ -274,8 +275,8 @@ export function generateReplyText(
 	const date = moment(mail.date).format('LLLL');
 
 	const textToRetArray = [
-		`\n\n---------------------------\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`,
-		`<br /><br /><hr id="zwchr" ><div style="color: black; font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${labels.from}</b> ${headingFrom} <br /> <b>${labels.to}</b> ${headingTo} <br />`
+		`\n\n${LineType.PLAINTEXT_SEP}\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`,
+		`<br /><br /><hr id="${LineType.HTML_SEP_ID}" ><div style="color: black; font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${labels.from}</b> ${headingFrom} <br /> <b>${labels.to}</b> ${headingTo} <br />`
 	];
 
 	if (headingCc.length > 0) {
@@ -290,8 +291,10 @@ export function generateReplyText(
 	textToRetArray[0] += `${labels.sent} ${date}\n${labels.subject} ${mail.subject}\n\n${
 		extractBody(mail)[0]
 	}`;
-	return textToRetArray;
+
+	return [convertHtmlToPlainText(textToRetArray[0]), textToRetArray[1]];
 }
+
 export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 	const richText = extractBody(msg);
 	const body = isHtml(msg.parts);
