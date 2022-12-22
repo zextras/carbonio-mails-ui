@@ -129,7 +129,11 @@ const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
 								// @ts-ignore
 								onLoadChange={(): null => null}
 								mailMsg={message}
-								inviteId={`${message.invite[0].comp[0].apptId}-${message.id}`}
+								inviteId={
+									message.invite[0].comp[0].apptId
+										? `${message.invite[0].comp[0].apptId}-${message.id}`
+										: message.id
+								}
 								participationStatus={
 									message.invite[0].replies ? message.invite[0].replies[0].reply[0].ptst : ''
 								}
