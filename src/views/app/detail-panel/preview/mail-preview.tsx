@@ -109,24 +109,29 @@ const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
 	);
 
 	const collapsedContent = useMemo(() => {
-		/*
-		 * Compose the invite ID
-		 * The invite ID is composed by the following fields:
-		 * - the appointment ID (if present)
-		 * - the message ID
-		 * If the 2 fields are both present they will be separated by a hyphen otherwise only the message ID will be used
-		 *
-		 * The appointment ID is present only if the appointment was automatically added to the calendar (following the
-		 * user's preferences)
-		 */
-		const inviteId = message.invite[0].comp[0].apptId
-			? `${message.invite[0].comp[0].apptId}-${message.id}`
-			: message.id;
+		const { inviteId, participationStatus } = {
+			/*
+			 * Compose the invite ID
+			 * The invite ID is composed by the following fields:
+			 * - the appointment ID (if present)
+			 * - the message ID
+			 * If the 2 fields are both present they will be separated by a hyphen otherwise only the message ID will be used
+			 *
+			 * The appointment ID is present only if the appointment was automatically added to the calendar (following the
+			 * user's preferences)
+			 */
+			inviteId: showAppointmentInvite
+				? message.invite[0].comp[0].apptId
+					? `${message.invite[0].comp[0].apptId}-${message.id}`
+					: message.id
+				: '',
 
-		// Compose the participation status
-		const participationStatus = message.invite[0].replies
-			? message.invite[0].replies[0].reply[0].ptst
-			: '';
+			// Compose the participation status
+			participationStatus:
+				showAppointmentInvite && message.invite[0].replies
+					? message.invite[0].replies[0].reply[0].ptst
+					: ''
+		};
 
 		return (
 			<Container
