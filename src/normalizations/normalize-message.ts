@@ -24,7 +24,7 @@ export const extractAttachmentIdsFromHtmlContent = (content: string): Array<stri
 	return result;
 };
 
-// extract from the html content the referenced attachment ids
+// examine the multipart and return an array of ids referenced in the body of the html
 const getAttachmentsAnchoredOnHtmlBody = (
 	multipart: Array<SoapMailMessagePart> | undefined | AttachmentPart | Array<AttachmentPart>
 ): Array<string> => {
