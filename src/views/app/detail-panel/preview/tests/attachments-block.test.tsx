@@ -14,8 +14,9 @@ import { generateStore } from '../../../../../tests/generators/store';
 import AttachmentsBlock from '../attachments-block';
 
 describe('Attachments visualization', () => {
-	// TODO enable also the test for the case 6 once the message normalization is fixed
+	// TODO enable also the test for the cases 6 and 10 once the message normalization is fixed
 	// ${'6'} | ${'MIME formatted mail inline images'}
+	// ${'10'} | ${'inline images'}
 	test.each`
 		msgId  | attachmentType
 		${'5'} | ${'MIME formatted mail PDF'}
@@ -29,6 +30,9 @@ describe('Attachments visualization', () => {
 		await store.dispatch<any>(getMsg({ msgId }));
 		const state = store.getState();
 		const message = selectMessage(state, msgId);
+		if (msgId === '10') {
+			// console.log({ message });
+		}
 
 		// Get the attachment filename
 		const filenames = message?.attachments?.map((attachment) => attachment.filename);
@@ -59,5 +63,7 @@ describe('Attachments visualization', () => {
 				throw new Error(`The attachment block for the file ${filename} is not present`);
 			}
 		});
+
+		// check that all inline images are displaying correctly
 	});
 });
