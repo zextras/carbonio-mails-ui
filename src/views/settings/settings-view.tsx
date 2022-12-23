@@ -17,6 +17,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { map, forEach, isEqual, filter, find, cloneDeep, isEmpty, reduce } from 'lodash';
 import { Container, FormSection } from '@zextras/carbonio-design-system';
+import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { getPropsDiff, differenceObject } from './components/utils';
 import DisplayMessagesSettings from './displaying-messages-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
@@ -69,10 +70,10 @@ const SettingsView: FC = () => {
 			s.zimbraPrefNewMailNotificationAddress = '';
 		}
 		if (s?.zimbraPrefForwardReplySignatureId === undefined) {
-			s.zimbraPrefForwardReplySignatureId = '11111111-1111-1111-1111-111111111111';
+			s.zimbraPrefForwardReplySignatureId = NO_SIGNATURE_ID;
 		}
 		if (s?.zimbraPrefDefaultSignatureId === undefined) {
-			s.zimbraPrefDefaultSignatureId = '11111111-1111-1111-1111-111111111111';
+			s.zimbraPrefDefaultSignatureId = NO_SIGNATURE_ID;
 		}
 		return s;
 	}, [prefs]);
