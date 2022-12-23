@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { act, screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { getMsg } from '../../../../../store/actions';
@@ -14,11 +14,10 @@ import { generateStore } from '../../../../../tests/generators/store';
 import AttachmentsBlock from '../attachments-block';
 
 describe('Attachments visualization', () => {
-	// TODO enable also the test for the case 6 once the message normalization is fixed
-	// ${'6'} | ${'MIME formatted mail inline images'}
 	test.each`
 		msgId  | attachmentType
 		${'5'} | ${'MIME formatted mail PDF'}
+		${'6'} | ${'MIME formatted mail inline images'}
 		${'8'} | ${'GIF'}
 		${'9'} | ${'PDF'}
 	`(`$attachmentType attachments are visible in email preview`, async ({ msgId }) => {
