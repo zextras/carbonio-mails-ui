@@ -91,7 +91,7 @@ const EditViewHeader: FC<PropType> = ({
 	const { folderId } = useParams<{ folderId: string }>();
 	const { prefs, props, attrs } = useUserSettings();
 	const { control } = useForm();
-	const { editor } = useContext<EditViewContextType>(EditViewContext);
+	const { setSendLater, editor } = useContext<EditViewContextType>(EditViewContext);
 	const [open, setOpen] = useState(false);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [openDD, setOpenDD] = useState(false);
@@ -417,13 +417,14 @@ const EditViewHeader: FC<PropType> = ({
 							closeBoard={boardUtilities?.closeBoard}
 							folderId={folderId}
 							setShowRouteGuard={setShowRouteGuard}
+							setSendLater={setSendLater}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [boardUtilities?.closeBoard, dispatch, editor, folderId, setShowRouteGuard]);
+	}, [boardUtilities?.closeBoard, dispatch, editor, folderId, setSendLater, setShowRouteGuard]);
 
 	const isSendLaterAllowed = useMemo(
 		() => attrs?.zimbraFeatureMailSendLaterEnabled === 'TRUE',
