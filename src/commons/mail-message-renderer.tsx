@@ -411,6 +411,8 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				title={msgId}
 				ref={iframeRef}
 				onLoad={calculateHeight}
+				scrolling="no"
+				frameBorder="0"
 				style={{
 					border: 'none',
 					width: '100%',
