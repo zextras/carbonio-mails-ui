@@ -279,8 +279,8 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				overflow-wrap: anywhere !important;
 			}
 			#bodyTable {
-			height: fit-content
-			 }
+				height: fit-content
+			}
 		`;
 		styleTag.textContent = styles;
 		if (!isNull(iframeRef.current) && !isNull(iframeRef.current.contentDocument))
