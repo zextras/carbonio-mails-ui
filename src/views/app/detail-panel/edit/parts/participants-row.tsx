@@ -9,9 +9,12 @@ import React, { FC, ReactElement, useCallback, useContext, useEffect, useState }
 import { Button, ChipInput, ChipItem, Container, Padding } from '@zextras/carbonio-design-system';
 import { Controller, useForm } from 'react-hook-form';
 import { map, some } from 'lodash';
+import {
+	ParticipantRole,
+	ParticipantRoleType
+} from '../../../../../carbonio-ui-commons/constants/participants';
 import * as StyledComp from './edit-view-styled-components';
 import { EditViewContext } from './edit-view-context';
-import { ParticipantRole } from '../../../../../commons/utils';
 import { EditViewContextType, MailsEditor } from '../../../../../types';
 
 const emailRegex =
@@ -19,7 +22,7 @@ const emailRegex =
 	/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
 interface ContactType extends ChipItem {
-	type?: ParticipantRole;
+	type?: ParticipantRoleType;
 	address?: string;
 	name?: string;
 	fullName?: string;

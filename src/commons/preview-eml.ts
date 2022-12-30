@@ -17,6 +17,7 @@ import logo from '../assets/zextras-logo-gray.png';
 import productLogo from '../assets/logo-product-grey.png';
 import { getAvatarLabel } from './useGetAvatarLabel';
 import { MailMessage, Participant } from '../types';
+import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 
 const getParticipantHeader = (participants: Participant[], type: string): string => {
 	const participantsList = map(
@@ -262,11 +263,11 @@ export const getCompleteHTMLForEML = ({ content }: { content: string }): string 
 
 const getEMLHeader = (msg: MailMessage, content: string): string => {
 	const { participants } = msg;
-	const from = filter(participants, { type: 'f' });
-	const to = filter(participants, { type: 't' });
-	const cc = filter(participants, { type: 'c' });
-	const bcc = filter(participants, { type: 'b' });
-	const replyTo = filter(participants, { type: 'r' });
+	const from = filter(participants, { type: ParticipantRole.FROM });
+	const to = filter(participants, { type: ParticipantRole.TO });
+	const cc = filter(participants, { type: ParticipantRole.CARBON_COPY });
+	const bcc = filter(participants, { type: ParticipantRole.BLIND_CARBON_COPY });
+	const replyTo = filter(participants, { type: ParticipantRole.REPLY_TO });
 	const msgTime = moment(msg.date).format('ddd, MMM DD, YYYY hh:mm A');
 
 	return `

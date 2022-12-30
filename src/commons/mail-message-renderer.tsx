@@ -26,7 +26,9 @@ import React, {
 } from 'react';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
+import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';
+
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
 
@@ -142,7 +144,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 	const [showQuotedText, setShowQuotedText] = useState(false);
 
 	const settingsPref = useUserSettings()?.prefs;
-	const from = filter(participants, { type: 'f' })[0]?.address;
+	const from = filter(participants, { type: ParticipantRole.FROM })[0]?.address;
 	const domain = from?.substring(from.lastIndexOf('@') + 1);
 
 	const [showExternalImage, setShowExternalImage] = useState(false);
