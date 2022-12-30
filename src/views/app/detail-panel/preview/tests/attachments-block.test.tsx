@@ -28,9 +28,6 @@ describe('Attachments visualization', () => {
 		await store.dispatch<any>(getMsg({ msgId }));
 		const state = store.getState();
 		const message = selectMessage(state, msgId);
-		if (msgId === '10') {
-			// console.log({ message });
-		}
 
 		// Get the attachment filename
 		const filenames = message?.attachments?.map((attachment) => attachment.filename);
@@ -61,7 +58,5 @@ describe('Attachments visualization', () => {
 				throw new Error(`The attachment block for the file ${filename} is not present`);
 			}
 		});
-
-		// check that all inline images are displaying correctly
 	});
 });
