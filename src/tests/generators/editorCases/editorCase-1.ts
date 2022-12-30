@@ -343,10 +343,10 @@ export const editorCase = {
 		subject: '',
 		participants: [
 			{
-				type: 'f',
-				address: 'luca.stauble@zextras.com',
-				name: 'luca',
-				fullName: 'luca stauble'
+				address: identity1.email,
+				fullName: identity1.fullName,
+				name: identity1.fullName,
+				type: 'f'
 			}
 		],
 		tags: [],
