@@ -23,10 +23,11 @@ import { sendMsg } from '../store/actions/send-msg';
 import MoveConvMessage from './move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
-import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
+import { getContentForPrint } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
 import { MailMessage, MsgActionParameters, MsgActionResult } from '../types';
 import { StoreProvider } from '../store/redux';
+import { getErrorPage } from '../commons/preview-eml';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -207,7 +208,7 @@ export function printMsg({
 					}
 				})
 				.catch(() => {
-					const errorContent = getErrorPage(t);
+					const errorContent = getErrorPage();
 					if (printWindow) printWindow.document.write(errorContent);
 				});
 		}
