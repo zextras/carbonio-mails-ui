@@ -829,6 +829,15 @@ export const getActions = ({
 					replyMsg({ id: message.id, folderId }),
 					replyAllMsg({ id: message.id, folderId }),
 					forwardMsg({ id: message.id, folderId }),
+					setMsgRead({
+						ids: [message.id],
+						value: message.read,
+
+						dispatch,
+						folderId,
+						shouldReplaceHistory: true,
+						deselectAll
+					}),
 					moveMsgToTrash({
 						ids: [message.id],
 
@@ -839,15 +848,7 @@ export const getActions = ({
 						conversationId: message.conversation,
 						closeEditor
 					}),
-					setMsgRead({
-						ids: [message.id],
-						value: message.read,
 
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
 					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch })
 				],
 				[
