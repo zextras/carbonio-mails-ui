@@ -4,19 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { forEach, reduce, map, filter, isEmpty } from 'lodash';
+import { t } from '@zextras/carbonio-shell-ui';
+import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 import moment from 'moment';
-import { TFunction } from 'i18next';
+import productLogo from '../assets/logo-product-grey.png';
+import logo from '../assets/zextras-logo-gray.png';
+import { MailMessage, Participant } from '../types';
 import {
-	plainTextToHTML,
 	findAttachments,
+	plainTextToHTML,
 	_CI_REGEX,
 	_CI_SRC_REGEX
 } from './mail-message-renderer';
-import logo from '../assets/zextras-logo-gray.png';
-import productLogo from '../assets/logo-product-grey.png';
 import { getAvatarLabel } from './useGetAvatarLabel';
-import { MailMessage, Participant } from '../types';
 
 const getParticipantHeader = (participants: Participant[], type: string): string => {
 	const participantsList = map(
@@ -67,7 +67,7 @@ export const getBodyWrapper = ({
     `;
 };
 
-export const getErrorPage = (t: TFunction): string =>
+export const getErrorPage = (): string =>
 	`<!DOCTYPE html>
 <html>
     <head>
@@ -177,7 +177,7 @@ export const getCompleteHTMLForEML = ({ content }: { content: string }): string 
                     body {
                         max-width: 100% !important;
                         margin: 0;
-                        overflow-y: hidden;
+                        overflow-y: auto;
                         font-family: Roboto, sans-serif !important;
                         font-size: 0.875rem;                      
                         background-color: #ffffff;
@@ -260,6 +260,29 @@ export const getCompleteHTMLForEML = ({ content }: { content: string }): string 
 		</body>
 	</html>`;
 
+const getAttachments = ({ msg }: { msg: MailMessage }): string => `<tr>
+                <td style="
+                    width: auto;
+                    padding: 0.1875rem 0 0.1875rem 0;
+                    vertical-align: top;
+                    text-align: left;
+                    font-weight: bold;
+                    white-space: nowrap;
+                ">${t('label.attachment', {
+									count: msg.attachments?.length,
+									defaultValue: 'Attachment',
+									defaultValue_plural: 'Attachments'
+								})}: <span style="padding: 0.1875rem 0.1875rem 0.1875rem 0.1875rem; vertical-align: top; overflow: hidden; color: #828282;font-family: Roboto;
+                font-style: normal;
+                font-weight: 400;
+                font-size: 0.875rem;
+                line-height: 1.3125rem;">${map(
+									msg.attachments,
+									(item) =>
+										`<a href=/service/home/~/?auth=co&id=${msg.id}&part=${item.part} >${item.filename}</a>`
+								).join(' ')}</span></td>
+                
+            </tr>`;
 const getEMLHeader = (msg: MailMessage, content: string): string => {
 	const { participants } = msg;
 	const from = filter(participants, { type: 'f' });
@@ -275,9 +298,9 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
             <td  colspan="2">
                 <table style="padding:0.625rem;width:100%;"    >
                     <tr>
-                    <td style="width:3.125rem;"> 
-                    <div style="width:3rem;height:3rem;border-radius:50%;background:skyblue;margin-left:0.625rem;">
-                          <p style="text-align:center;line-height:3.125rem">
+                    <td style="width:3.125rem;vertical-align:top"> 
+                    <div style="width:3rem;height:3rem;border-radius:50%;background:skyblue;margin-left:0.625rem;margin-top:0px">
+                          <p style="text-align:center;line-height:3.125rem;margin-top:0.25rem">
                           ${getAvatarLabel(from?.[0]?.fullName ?? from?.[0]?.address)}
                           </p>
                     </div>
@@ -289,6 +312,7 @@ const getEMLHeader = (msg: MailMessage, content: string): string => {
                                 ${getParticipantHeader(cc, 'Cc')}
                                 ${getParticipantHeader(bcc, 'Bcc')}
                                 ${getParticipantHeader(replyTo, 'Reply To')}
+                                ${getAttachments({ msg })}
                         </table>
                         </td>
                         <td style="vertical-align: text-top;">

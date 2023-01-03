@@ -280,7 +280,7 @@ const Attachment: FC<AttachmentType> = ({
 				}
 			})
 			.catch(() => {
-				const errorContent = getErrorPage(t);
+				const errorContent = getErrorPage();
 				printWindow && printWindow.document.write(errorContent);
 			});
 	}, [att?.name, message]);
