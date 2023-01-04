@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
 import {
 	getBridgedFunctions,
@@ -16,9 +16,8 @@ import { Dispatch } from '@reduxjs/toolkit';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { saveDraft } from '../../../../../store/actions/save-draft';
-import { EditViewContextType, MailsEditor } from '../../../../../types';
+import { MailsEditor } from '../../../../../types';
 import DatePickerCustomComponent from './date-picker-custom-component';
-import { EditViewContext } from './edit-view-context';
 
 type SendLaterModalPropTypes = {
 	onClose: () => void;
@@ -27,18 +26,23 @@ type SendLaterModalPropTypes = {
 	closeBoard: () => void;
 	folderId?: string;
 	setShowRouteGuard: (arg: boolean) => void;
+	setSendLater: (arg: boolean) => void;
 };
+
+/*
+ * SendLaterModal is used for set the date and time for sending mail later on selected date and time
+ */
 const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 	onClose,
 	dispatch,
 	editor,
 	closeBoard,
 	folderId,
-	setShowRouteGuard
+	setShowRouteGuard,
+	setSendLater
 }) => {
 	const [time, setTime] = useState();
 	const bridgedFn = getBridgedFunctions();
-	const { setSendLater } = useContext<EditViewContextType>(EditViewContext);
 	const modalTitle = useMemo(() => t('label.send_later', 'Send Later'), []);
 	const datePickerLabel = useMemo(() => t('label.select_date_time', 'Select date and time'), []);
 
