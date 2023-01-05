@@ -37,9 +37,6 @@
                 "retention_message": "Nachrichten in diesem Ordner, die in die Speicherungsfrist fallen, werden eine ausdrückliche Bestätigung erfordern, bevor sie gelöscht werden können",
                 "add_share": "Teilen hinzufügen",
                 "threshold_message": "Nachrichten in diesem Ordner, die älter als die Entsorgungsschwelle sind, werden automatisch bereinigt und gelöscht."
-            },
-            "wipe": {
-                "title": "Leeren"
             }
         }
     },

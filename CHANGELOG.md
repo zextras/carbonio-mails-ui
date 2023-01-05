@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.55](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.54...v0.1.55) (2023-01-05)
+
+
+### Features
+
+* added attachment section on preview email ([#284](https://github.com/zextras/carbonio-mails-ui/issues/284)) ([c2def3f](https://github.com/zextras/carbonio-mails-ui/commit/c2def3f8b84f2f0e2cf08a4ae1e4b32aa5aa1724))
+* added react hook testing library dependency ([612c837](https://github.com/zextras/carbonio-mails-ui/commit/612c837421e2298a06fa0fb3ca866483f255f0e9))
+* forced email edit on board only ([#274](https://github.com/zextras/carbonio-mails-ui/issues/274)) ([fc1f98c](https://github.com/zextras/carbonio-mails-ui/commit/fc1f98c7dc075ed2e5214ad7c71c2b746429f210))
+
+
+### Bug Fixes
+
+*  fixed missing share list on folder property ([#270](https://github.com/zextras/carbonio-mails-ui/issues/270)) ([fefac23](https://github.com/zextras/carbonio-mails-ui/commit/fefac233b03ecf9e64bc62d44fc5de78e691dcf0))
+* edit of filters is deleting the current condition ([#255](https://github.com/zextras/carbonio-mails-ui/issues/255)) ([c95f8ad](https://github.com/zextras/carbonio-mails-ui/commit/c95f8ad63e315f98217b5d17906ce9c65e978a65))
+* email attachment check for 'attachments' words ([#285](https://github.com/zextras/carbonio-mails-ui/issues/285)) ([a4c0a02](https://github.com/zextras/carbonio-mails-ui/commit/a4c0a02aae82562081909a879c82e41cb93fffc4))
+* filter redirect action fixed and added tooltip for create ([#275](https://github.com/zextras/carbonio-mails-ui/issues/275)) ([24c96cc](https://github.com/zextras/carbonio-mails-ui/commit/24c96cc40a261b46760b25b6471d2ea448851f13))
+* fix issue of send later feature broken ([#283](https://github.com/zextras/carbonio-mails-ui/issues/283)) ([214d878](https://github.com/zextras/carbonio-mails-ui/commit/214d8781f455a0c9dcc9e85a74a74ee99a48b3e6))
+
 ### [0.1.54](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.53...v0.1.54) (2022-12-07)
 
 
