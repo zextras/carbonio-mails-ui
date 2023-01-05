@@ -183,9 +183,9 @@
         "share_with": "Compartir con",
         "accept": "Aceptar",
         "cc_bcc": "Cc Cco",
-        "app_name": "E-mails",
+        "app_name": "Mails",
         "from_identity": "De: {{identity}}",
-        "new_email": "Nuevo E-mail",
+        "new_email": "Nuevo mensaje",
         "show_quoted_text": "Mostrar texto citado",
         "select_color": "Elige un color",
         "add_task": "Si necesitas tomar una nota, puedes añadirla a tu LISTA DE QUEHACERES",
@@ -264,7 +264,7 @@
         "before_you_leave": "Antes de irte",
         "send_scheduled": "Envío programado",
         "download_and_delete": "Descargar y borrar",
-        "enter_name": "Introducir nombre",
+        "enter_name": "Nueva firma",
         "invalid_query": "No se puede analizar la consulta de la búsqueda, bórrala y prueba de nuevo",
         "not_in_list": "{{name}} - No está en tu lista de firmas"
     },
@@ -464,7 +464,7 @@
             "message_selection": "Selección de mensajes",
             "set_message_color": "Aplicar el color de la etiqueta a mensajes y conversaciones.",
             "visualization_options": "Opciones de visualización",
-            "unsend_time": "Ajustar tiempo de desenvío"
+            "unsend_time": "Ajustar tiempo de envío"
         },
         "msg_from_optn": {
             "discard": "Descartar mensaje",
@@ -694,7 +694,7 @@
         "title4": "Selecciona un mensaje para leerlo",
         "title8": "Selecciona un mensaje para leerlo o eliminarlo.",
         "trash_title1": "Haz clic en el icono de la papelera para eliminar un mensaje",
-        "trash_title2": "Seleccionar y restaurar mensajes de la papelera.",
+        "trash_title2": "Selecciona y restaura mensajes de la papelera.",
         "archive_title1": "Salvar un e-mail en un archivo para poder verlo después.",
         "archive_title2": "Selecciona un e-mail archivado para visualizarlo.",
         "description2": "Enviar documentos, imágenes y más a partir de un nuevo e-mail.",
