@@ -11,7 +11,7 @@
         "flag": "Adicionar sinalização",
         "goto_drafts": "Ir para rascunhos",
         "preview": "Pré-visualização",
-        "goto_folder": "IR PARA PASTA",
+        "goto_folder": "IR PARA A PASTA",
         "hide_details": "Ocultar detalhes",
         "mark_as_non_spam": "Não é spam",
         "mark_as_spam": "Marcar como spam",
@@ -20,7 +20,7 @@
         "reply_all": "Responder a todos",
         "reset": "Redefinir",
         "share_folder": "Compartilhar pasta",
-        "send_anyway": "Enviar assim mesmo",
+        "send_anyway": "Enviar mesmo assim",
         "show_details": "Mostrar detalhes",
         "show_original": "Mostrar original",
         "unflag": "Remover sinalização",
@@ -246,7 +246,7 @@
         "expand_receivers_list": "Expandir lista de destinatários",
         "filter_modified": "Filtro modificado com sucesso",
         "hide_more_info": "Ocultar mais informações",
-        "enter_name": "Insira o Nome",
+        "enter_name": "Nova assinatura",
         "invalid_query": "Não foi possível analisar a consulta de busca, exclua-a e tente novamente",
         "send_scheduled": "Enviar Programado",
         "download_and_delete": "Baixar e Excluir",
@@ -531,7 +531,7 @@
     "composer": {
         "attachment": {
             "local": "Adicionar a partir do Meu Computador",
-            "contacts_mod": "Adicionar Cartão de Contato",
+            "contacts_mod": "Adicionar cartão de contato",
             "drag_and_drop": {
                 "title": "Modo Arrastar e Soltar",
                 "content": "Solte aqui seus anexos para adicioná-los rapidamente a este e-mail"
@@ -702,7 +702,7 @@
         "search_description1": "Ou selecione \"Filtros Avançados\" para refinar sua busca.",
         "search_list_title1": "Parece que não existem resultados. Continue buscando!",
         "search_title4": "Selecione um ou mais resultados para realizar ações ou exibir os detalhes.",
-        "draft_title1": "Salvar um e-mail como rascunho te permite guardar as mensagens que você gostaria de enviar mais tarde."
+        "draft_title1": "Salvar um e-mail como rascunho permite guardar as mensagens para enviá-las mais tarde."
     },
     "board": {
         "show": "Exibir painel"
@@ -742,7 +742,7 @@
     "attachment_type": {
         "word": "Word",
         "video": "Vídeo",
-        "text_document": "Documento de Texto",
+        "text_document": "Documento de texto",
         "powerpoint": "Powerpoint",
         "pdf": "Documento PDF",
         "image": "Imagem",
@@ -750,7 +750,7 @@
         "excel": "Excel",
         "email": "E-mail",
         "application": "Aplicativo",
-        "zipped_file": "Arquivo Compactado"
+        "zipped_file": "Arquivo compactado"
     },
     "labels": {
         "compose_colin": "Escrever:",
