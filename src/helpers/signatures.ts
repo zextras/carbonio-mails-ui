@@ -1,6 +1,16 @@
+/*
+ * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
 import { Account } from '@zextras/carbonio-shell-ui';
 import { find, map } from 'lodash';
+import convert from 'lodash/fp/convert';
+import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { SignatureDescriptor } from '../types/signatures';
+
+const NO_SIGNATURE_ID = '11111111-1111-1111-1111-111111111111';
+const NO_SIGNATURE_LABEL = 'No signature';
 
 /**
  * Returns signatures descriptors for the given account
@@ -9,13 +19,13 @@ import { SignatureDescriptor } from '../types/signatures';
 const getSignatures = (account: Account): Array<SignatureDescriptor> => {
 	const signatureArray = [
 		{
-			label: 'No signature',
-			value: { description: '', id: '11111111-1111-1111-1111-111111111111' }
+			label: NO_SIGNATURE_LABEL,
+			value: { description: '', id: NO_SIGNATURE_ID }
 		}
 	];
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	map(account.signatures.signature, (item) =>
+	map(account?.signatures?.signature, (item) =>
 		signatureArray.push({
 			// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -72,7 +82,16 @@ const composeMailBodyWithSignature = (
 		return '';
 	}
 
-	return (isRichText ? '<br/><br/>' : '\n\n') + signatureValue;
+	return isRichText
+		? `<br/><br/>${signatureValue}`
+		: `\n\n${convertHtmlToPlainText(signatureValue)}`;
 };
 
-export { getSignatures, getSignature, getSignatureValue, composeMailBodyWithSignature };
+export {
+	NO_SIGNATURE_ID,
+	NO_SIGNATURE_LABEL,
+	getSignatures,
+	getSignature,
+	getSignatureValue,
+	composeMailBodyWithSignature
+};

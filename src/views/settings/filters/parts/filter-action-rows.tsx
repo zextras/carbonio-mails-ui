@@ -18,10 +18,11 @@ import {
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { filter, omit } from 'lodash';
-import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { Folder, useIntegratedComponent, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import { v4 as uuidv4 } from 'uuid';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import CustomSelect from './custom-select';
+import MoveToFolderModal from './move-to-folder-modal';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
@@ -34,25 +35,36 @@ export const StyledIconButton = styled(IconButton)`
 
 type FilterActionRowProps = {
 	tmpFilter: any;
-	index: string;
+	index: number;
 	compProps: any;
-	modalProps: any;
 	tagOptions?: Array<any>;
 };
+
+type ContactType = {
+	company?: string;
+	email: string;
+	firstName?: string;
+	fullName?: string;
+	id?: string;
+	label?: string;
+	lastName?: string;
+};
+
 const FilterActionRows: FC<FilterActionRowProps> = ({
 	tmpFilter,
 	index,
 	compProps,
-	modalProps,
 	tagOptions
 }): ReactElement => {
 	const { t, isIncoming, tempActions, setTempActions } = compProps;
-	const { setOpen, setActiveIndex, folder, setFolder } = modalProps;
+	const [open, setOpen] = useState(false);
+	const [activeIndex, setActiveIndex] = useState(0);
+	const [folderDestination, setFolderDestination] = useState<Folder | any>({});
+	const [folder, setFolder] = useState<Folder | any>({});
 
 	const actionOptions = useMemo(() => getActionOptions(t, isIncoming ?? false), [t, isIncoming]);
 	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
 	const [tag, setTag] = useState<Array<any>>([]);
-	const [redirectAddress, setRedirectAddress] = useState('');
 
 	const addFilterCondition = useCallback(() => {
 		const previousTempActions = tempActions.slice();
@@ -66,6 +78,45 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		() => activeActionOption === 'redirectToAddress',
 		[activeActionOption]
 	);
+	const [contacts, setContacts] = useState<ContactType[]>([]);
+	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
+	const onChange = useCallback(
+		(users) => {
+			const previous = tempActions.slice();
+			const email = users.length > 0 && users[0].email !== '' ? users[0].email : '';
+			previous[index] = {
+				actionRedirect: [{ a: email }],
+				id: uuidv4()
+			};
+			setContacts([{ email }]);
+			setTempActions(previous);
+		},
+		[index, setTempActions, tempActions]
+	);
+
+	const onModalClose = useCallback(() => {
+		setFolder({});
+		setOpen(false);
+	}, []);
+
+	const modalProps = useMemo(
+		() => ({
+			open,
+			onClose: onModalClose,
+			t,
+			setOpen,
+			activeIndex,
+			setActiveIndex,
+			tempActions,
+			setTempActions,
+			folderDestination,
+			setFolderDestination,
+			folder,
+			setFolder
+		}),
+		[open, onModalClose, t, activeIndex, tempActions, setTempActions, folderDestination, folder]
+	);
+
 	const defaultValue = useMemo(() => {
 		const action = Object.keys(omit(tmpFilter, 'id'))[0];
 		switch (action) {
@@ -87,20 +138,28 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			case 'actionTag': {
 				setActiveActionOption('tagWith');
 				const chipBg = filter(tagOptions, { label: tmpFilter[action][0].tagName })[0];
-				setTag([
-					{
-						label: `${tmpFilter[action][0].tagName}`,
-						hasAvatar: true,
-						avatarIcon: 'Tag',
-						background: 'gray2',
-						avatarBackground: ZIMBRA_STANDARD_COLORS[chipBg?.color]?.hex
-					}
-				]);
+				setTag(
+					tmpFilter[action][0].tagName
+						? [
+								{
+									label: `${tmpFilter[action][0].tagName}`,
+									hasAvatar: true,
+									avatarIcon: 'Tag',
+									background: 'gray2',
+									avatarBackground: ZIMBRA_STANDARD_COLORS[chipBg?.color]?.hex
+								}
+						  ]
+						: []
+				);
 				return actionOptions[3];
 			}
 			case 'actionRedirect': {
 				setActiveActionOption('redirectToAddress');
-				setRedirectAddress(tmpFilter[action][0].a);
+				if (tmpFilter[action][0].a) {
+					setContacts([{ email: tmpFilter[action][0].a }]);
+				} else {
+					setContacts([]);
+				}
 				return actionOptions[5];
 			}
 			default:
@@ -142,51 +201,73 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					setTempActions(previous);
 					break;
 				}
-
-				case 'tagWith': {
+				case 'inbox': {
 					const previous = tempActions.slice();
-					previous[index] = { id: previous[index].id, actionDiscard: [{}] };
+					previous[index] = { actionKeep: [{}], id: previous[index].id };
 					setTempActions(previous);
 					break;
 				}
-				case 'markAs': {
+				case 'tagWith': {
 					const previous = tempActions.slice();
-					previous[index] = {
-						id: previous[index].id,
-						actionFlag: [{ flagName: 'read' }]
-					};
+					let tagDetails = [{}];
+					if (!previous[index].actionTag) {
+						tagDetails = [
+							{
+								id: previous[index]?.id,
+								actionTag: [{ tagName: '' }]
+							}
+						];
+						previous[index] = {
+							id: previous[index]?.id,
+							actionTag: [{ tagName: '' }]
+						};
+						setTempActions(previous);
+						setTag(tagDetails);
+					}
+
+					break;
+				}
+				case 'moveIntoFolder': {
+					const previous = tempActions.slice();
+					let folderDetail = [{}];
+					if (!previous[index].actionFileInto) {
+						folderDetail = [
+							{
+								name: ''
+							}
+						];
+						previous[index] = {
+							id: previous[index]?.id,
+							actionFileInto: [{ folderPath: '' }]
+						};
+					}
 					setTempActions(previous);
+					setFolder(folderDetail);
 					break;
 				}
 				case 'redirectToAddress': {
 					const previous = tempActions.slice();
-					previous[index] = { actionRedirect: [{ a: '' }], id: previous[index].id };
+					if (!previous[index].actionRedirect) {
+						previous[index] = {
+							id: previous[index]?.id,
+							actionRedirect: [{ a: '' }]
+						};
+						setContacts([{ email: '' }]);
+					}
 					setTempActions(previous);
 					break;
 				}
-				default: {
-					const previous = tempActions.slice();
-					previous[index] = { actionKeep: [{}], id: previous[index].id };
-					setTempActions(previous);
-				}
+				default:
 			}
 			setActiveActionOption(str);
 		},
-		[tempActions, index, setTempActions]
+		[index, setTempActions, tempActions]
 	);
 	const openFolderModalDisabled = useMemo(
 		() => activeActionOption !== 'moveIntoFolder',
 		[activeActionOption]
 	);
 
-	const redirectAddressChange = useCallback(
-		(ev) => {
-			const previous = tempActions.slice();
-			previous[index] = { actionRedirect: [{ a: ev.target.value }], id: uuidv4() };
-			setTempActions(previous);
-		},
-		[tempActions, index, setTempActions]
-	);
 	const showTagOptions = useMemo(() => activeActionOption === 'tagWith', [activeActionOption]);
 
 	const tagChipOnAdd = useCallback(
@@ -211,10 +292,16 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 
 	const onTagChange = useCallback(
 		(chip) => {
-			const requiredTag = chip.length > 1 ? chip[1] : chip[0];
-			setTag([requiredTag]);
 			const previous = tempActions.slice();
-			previous[index] = { id: previous[index]?.id, actionTag: [{ tagName: requiredTag.label }] };
+			if (chip.length > 0) {
+				const requiredTag = chip.length > 1 ? chip[1] : chip[0];
+				setTag([requiredTag]);
+				previous[index] = { id: previous[index]?.id, actionTag: [{ tagName: requiredTag.label }] };
+				setTempActions(previous);
+			} else {
+				previous[index] = { id: previous[index]?.id, actionTag: [{ tagName: '' }] };
+				setTag([]);
+			}
 			setTempActions(previous);
 		},
 		[setTag, tempActions, setTempActions, index]
@@ -247,7 +334,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				</Row>
 				{showBrowseBtn && (
 					<>
-						{folder && Object.keys(folder).length > 0 && (
+						{folder && Object.keys(folder).length > 0 && folder?.name !== '' && (
 							<Row padding={{ right: 'small' }}>
 								<Input
 									label={t('label.destination_folder', 'Destination Folder')}
@@ -281,8 +368,25 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				)}
 
 				{showRedirectToAddrsInput && (
-					<Row padding={{ right: 'small' }} minWidth="12.5rem">
-						<Input onChange={redirectAddressChange} defaultValue={redirectAddress} />
+					<Row padding={{ right: 'small' }} minWidth="22rem">
+						{integrationAvailable ? (
+							<ContactInput
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								placeholder={t('settings.address', 'Address')}
+								onChange={onChange}
+								defaultValue={contacts}
+								disablePortal
+								maxChips={1}
+							/>
+						) : (
+							<ChipInput
+								placeholder={t('settings.address', 'Address')}
+								onChange={onChange}
+								defaultValue={contacts}
+								maxChips={1}
+							/>
+						)}
 					</Row>
 				)}
 
@@ -319,6 +423,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					</Tooltip>
 				</Padding>
 			</Container>
+			<MoveToFolderModal compProps={modalProps} />
 		</Container>
 	);
 };

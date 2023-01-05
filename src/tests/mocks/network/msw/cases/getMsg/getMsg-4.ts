@@ -1,12 +1,11 @@
 /*
- * SPDX-FileCopyrightText: 2021 company <https://www.foo.com>
+ * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 // this message has got 1 eml attachment
-
-export const msg = {
+export const getMsgResult = {
 	Header: {
 		context: {
 			session: { id: '165483', _content: '165483' },

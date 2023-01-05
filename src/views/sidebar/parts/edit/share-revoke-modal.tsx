@@ -93,13 +93,7 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 			crossAlignment="flex-start"
 			height="fit"
 		>
-			<ModalHeader
-				title={t('label.revoke_share', {
-					title: folder.name,
-					defaultValue: "Revoke {{title}}'s share"
-				})}
-				onClose={onClose}
-			/>
+			<ModalHeader title={t('label.revoke_share', 'Revoke share')} onClose={onClose} />
 			<Container
 				orientation="horizontal"
 				mainAlignment="flex-end"

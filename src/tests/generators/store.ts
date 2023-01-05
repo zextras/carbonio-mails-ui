@@ -19,7 +19,7 @@ import { StateType } from '../../types';
  *
  * @param state
  */
-export const generateState = (state?: StateType): StateType => ({
+export const generateState = (state?: Partial<StateType>): StateType => ({
 	editors: {
 		...getEditorsSliceInitialState(),
 		...state?.editors
@@ -46,7 +46,7 @@ export const generateState = (state?: StateType): StateType => ({
  *
  * @param initialState
  */
-export const generateStore = (initialState?: StateType): EnhancedStore<StateType> => {
+export const generateStore = (initialState?: Partial<StateType>): EnhancedStore<StateType> => {
 	const store = configureStore({
 		devTools: {
 			name: MAIL_APP_ID

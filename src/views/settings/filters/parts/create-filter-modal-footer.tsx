@@ -7,11 +7,19 @@
 /* eslint-disable import/extensions */
 
 import React, { FC, ReactElement } from 'react';
-import { Container, Button, Padding, Divider, Checkbox } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	Button,
+	Padding,
+	Divider,
+	Checkbox,
+	Tooltip
+} from '@zextras/carbonio-design-system';
 
 type ModalFooterProps = {
 	onConfirm: () => void;
 	label: string;
+	toolTipText: string;
 	disabled: boolean;
 	checkboxLabel: string;
 	onSecondaryAction: () => void;
@@ -21,6 +29,7 @@ type ModalFooterProps = {
 const ModalFooter: FC<ModalFooterProps> = ({
 	onConfirm,
 	label,
+	toolTipText,
 	disabled,
 	checkboxLabel,
 	checked,
@@ -30,9 +39,11 @@ const ModalFooter: FC<ModalFooterProps> = ({
 		<Divider />
 		<Container orientation="horizontal" padding={{ top: 'medium' }} mainAlignment="space-between">
 			<Checkbox defaultChecked={checked} onClick={onSecondaryAction} label={checkboxLabel} />
-			<Padding vertical="small">
-				<Button onClick={onConfirm} label={label} disabled={disabled} />
-			</Padding>
+			<Tooltip label={toolTipText}>
+				<Padding left="small">
+					<Button onClick={onConfirm} label={label} disabled={disabled} />
+				</Padding>
+			</Tooltip>
 		</Container>
 	</Container>
 );

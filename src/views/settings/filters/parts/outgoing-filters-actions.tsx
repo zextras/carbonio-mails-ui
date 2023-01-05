@@ -10,7 +10,7 @@ import { find } from 'lodash';
 import { removeFilter, addFilter } from './actions';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { FilterContext } from './filter-context';
-import CreateOutgoingFilterModal from './create-outgoing-filter-modal ';
+import CreateOutgoingFilterModal from './create-outgoing-filter-modal';
 import DeleteOutgoingFilterModal from './delete-outgoing-filter-modal';
 import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
 import { StoreProvider } from '../../../../store/redux';

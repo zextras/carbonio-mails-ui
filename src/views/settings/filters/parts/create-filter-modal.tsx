@@ -15,6 +15,8 @@ import { CreateFilterContext } from './create-filter-context';
 import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
 import FilterActionConditions from './new-filter-action-conditions';
 import FilterTestConditionRow from './filter-test-condition-row';
+import { getButtonInfo } from './utils';
+import { FilterActions } from '../../../../types';
 
 type ComponentProps = {
 	t: TFunction;
@@ -71,7 +73,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 	const toggleActiveFilter = useCallback(() => setActiveFilter(!activeFilter), [activeFilter]);
 	const onFilterNameChange = useCallback((ev) => setFilterName(ev.target.value), []);
 	const modalTitle = useMemo(() => t('settings.create_new_filter', 'Create new Filter'), [t]);
-	const inputLabel = useMemo(() => t('settings.filter_name', 'Filter Name'), [t]);
+	const inputLabel = useMemo(() => `${t('settings.filter_name', 'Filter Name')}*`, [t]);
 	const activeFilterLabel = useMemo(() => t('settings.active_filter', 'Active filter'), [t]);
 
 	const requiredFilterTest = useMemo(() => {
@@ -80,7 +82,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 		return reduce(
 			allTest,
 			(a, i) => {
-				const firstKey = Object.keys(i)[0];
+				const firstKey = Object.keys(omit(i, ['condition']))[0];
 				if (Object.keys(a).includes(firstKey)) {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
@@ -94,8 +96,17 @@ const CreateFilterModal: FC<ComponentProps> = ({
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? [{ ...omit(finalActions, 'id'), actionStop: [{}] }]
-				: [{ ...omit(finalActions, 'id') }],
+				? ([
+						{
+							...omit(finalActions, 'id'),
+							actionStop: [{}]
+						}
+				  ] as FilterActions[])
+				: ([
+						{
+							...omit(finalActions, 'id')
+						}
+				  ] as FilterActions[]),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
@@ -108,9 +119,12 @@ const CreateFilterModal: FC<ComponentProps> = ({
 		[activeFilter, filterName, condition, requiredFilterTest, finalActions, dontProcessAddFilters]
 	);
 
-	const createFilterDisabled = useMemo(() => filterName.length === 0, [filterName]);
-	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice() || [], [incomingFilters]);
+	const [createFilterDisabled, buttonTooltip] = useMemo(
+		() => getButtonInfo(filterName, requiredFilters, t),
+		[filterName, requiredFilters, t]
+	);
 
+	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice() || [], [incomingFilters]);
 	const onConfirm = useCallback(() => {
 		const toSend = [...incomingFiltersCopy, requiredFilters];
 		setIncomingFilters?.(toSend);
@@ -118,7 +132,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 			setFetchIncomingFilters?.(true);
 		});
 		onClose();
-	}, [incomingFiltersCopy, requiredFilters, setIncomingFilters, onClose, setFetchIncomingFilters]);
+	}, [incomingFiltersCopy, onClose, requiredFilters, setFetchIncomingFilters, setIncomingFilters]);
 
 	const toggleCheckBox = useCallback(() => {
 		setDontProcessAddFilters(!dontProcessAddFilters);
@@ -175,6 +189,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 				</Row>
 				<ModalFooter
 					label={t('label.create', 'Create')}
+					toolTipText={buttonTooltip}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}

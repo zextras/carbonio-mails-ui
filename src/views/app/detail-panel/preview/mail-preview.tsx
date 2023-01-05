@@ -108,8 +108,32 @@ const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
 		[loggedInUser, message]
 	);
 
-	const collapsedContent = useMemo(
-		() => (
+	const collapsedContent = useMemo(() => {
+		const { inviteId, participationStatus } = {
+			/*
+			 * Compose the invite ID
+			 * The invite ID is composed by the following fields:
+			 * - the appointment ID (if present)
+			 * - the message ID
+			 * If the 2 fields are both present they will be separated by a hyphen otherwise only the message ID will be used
+			 *
+			 * The appointment ID is present only if the appointment was automatically added to the calendar (following the
+			 * user's preferences)
+			 */
+			inviteId: showAppointmentInvite
+				? message.invite[0].comp[0].apptId
+					? `${message.invite[0].comp[0].apptId}-${message.id}`
+					: message.id
+				: '',
+
+			// Compose the participation status
+			participationStatus:
+				showAppointmentInvite && message.invite[0].replies
+					? message.invite[0].replies[0].reply[0].ptst
+					: ''
+		};
+
+		return (
 			<Container
 				data-testid="MessageBody"
 				width="100%"
@@ -129,10 +153,8 @@ const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
 								// @ts-ignore
 								onLoadChange={(): null => null}
 								mailMsg={message}
-								inviteId={`${message.invite[0].comp[0].apptId}-${message.id}`}
-								participationStatus={
-									message.invite[0].replies ? message.invite[0].replies[0].reply[0].ptst : ''
-								}
+								inviteId={inviteId}
+								participationStatus={participationStatus}
 								to={filter(message.participants, { type: 'f' })}
 								invite={message.invite}
 								method={message.invite[0]?.comp[0].method}
@@ -162,19 +184,18 @@ const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
 					readReceiptSetting={readReceiptSetting}
 				/>
 			</Container>
-		),
-		[
-			message,
-			showAppointmentInvite,
-			readReceiptSetting,
-			InviteResponse,
-			moveToTrash,
-			isAttendee,
-			showShareInvite,
-			showReadReceiptModal,
-			onModalClose
-		]
-	);
+		);
+	}, [
+		message,
+		showAppointmentInvite,
+		readReceiptSetting,
+		InviteResponse,
+		moveToTrash,
+		isAttendee,
+		showShareInvite,
+		showReadReceiptModal,
+		onModalClose
+	]);
 	return (
 		<Collapse
 			open={isMailPreviewOpen}

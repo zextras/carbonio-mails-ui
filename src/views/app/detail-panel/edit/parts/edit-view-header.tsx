@@ -35,7 +35,7 @@ import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useS
 import { Controller, SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
-import { ActionsType } from '../../../../../commons/utils';
+import { ActionsType, LineType } from '../../../../../commons/utils';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import { EditViewContextType, MailAttachment } from '../../../../../types';
 import { addAttachments } from '../edit-utils';
@@ -91,7 +91,7 @@ const EditViewHeader: FC<PropType> = ({
 	const { folderId } = useParams<{ folderId: string }>();
 	const { prefs, props, attrs } = useUserSettings();
 	const { control } = useForm();
-	const { editor } = useContext<EditViewContextType>(EditViewContext);
+	const { setSendLater, editor } = useContext<EditViewContextType>(EditViewContext);
 	const [open, setOpen] = useState(false);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [openDD, setOpenDD] = useState(false);
@@ -105,7 +105,7 @@ const EditViewHeader: FC<PropType> = ({
 	const [isUrgent, setIsUrgent] = useState(editor?.urgent ?? false);
 	const [isReceiptRequested, setIsReceiptRequested] = useState(editor?.requestReadReceipt ?? false);
 
-	// needs to be replace with correct type
+	// needs to be replaced with correct type
 	const boardContext = useBoard()?.context;
 
 	const isSendDisabled = useMemo(() => {
@@ -276,9 +276,12 @@ const EditViewHeader: FC<PropType> = ({
 			t('messages.modal.send_anyway.enclosed', 'enclosed'),
 			t('messages.modal.send_anyway.enclosing', 'enclosing')
 		];
-		const isattachWordsPresent = attachWords.some((el) =>
-			editor.text[0].toLowerCase().includes(el)
-		);
+		const isattachWordsPresent = attachWords.some((el) => {
+			const [msgContent] = editor.richText
+				? editor.text[1].split(LineType.HTML_SEP_ID)
+				: editor.text[0].split(LineType.PLAINTEXT_SEP);
+			return msgContent.toLowerCase().includes(el);
+		});
 		if ((isattachWordsPresent && !editor?.attachmentFiles.length) || !editor?.subject) {
 			const closeModal = createModal({
 				title: t('header.attention', 'Attention'),
@@ -318,7 +321,14 @@ const EditViewHeader: FC<PropType> = ({
 		} else {
 			sendMailCb();
 		}
-	}, [editor?.attachmentFiles.length, editor?.subject, editor.text, createModal, sendMailCb]);
+	}, [
+		editor?.attachmentFiles.length,
+		editor?.subject,
+		editor.richText,
+		editor.text,
+		createModal,
+		sendMailCb
+	]);
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
@@ -417,13 +427,14 @@ const EditViewHeader: FC<PropType> = ({
 							closeBoard={boardUtilities?.closeBoard}
 							folderId={folderId}
 							setShowRouteGuard={setShowRouteGuard}
+							setSendLater={setSendLater}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [boardUtilities?.closeBoard, dispatch, editor, folderId, setShowRouteGuard]);
+	}, [boardUtilities?.closeBoard, dispatch, editor, folderId, setSendLater, setShowRouteGuard]);
 
 	const isSendLaterAllowed = useMemo(
 		() => attrs?.zimbraFeatureMailSendLaterEnabled === 'TRUE',
@@ -511,6 +522,7 @@ const EditViewHeader: FC<PropType> = ({
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								ref={inputRef}
+								data-testid="file-input"
 								onChange={(): Promise<any> =>
 									addAttachments(
 										saveDraftCb,
@@ -559,6 +571,7 @@ const EditViewHeader: FC<PropType> = ({
 					{action !== ActionsType.COMPOSE && (
 						<Padding left="large">
 							<Button
+								data-testid="BtnSaveMail"
 								type="outlined"
 								onClick={(): void => {
 									handleSubmit(onSave)();

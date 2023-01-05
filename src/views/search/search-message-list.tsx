@@ -66,7 +66,13 @@ const SearchMessageList: FC<SearchListProps> = ({
 		[searchResults?.messages]
 	);
 	return (
-		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
+		<Container
+			background="gray6"
+			width="25%"
+			height="fill"
+			mainAlignment="flex-start"
+			data-testid="MailsSearchResultListContainer"
+		>
 			<AdvancedFilterButton
 				setShowAdvanceFilters={setShowAdvanceFilters}
 				filterCount={filterCount}

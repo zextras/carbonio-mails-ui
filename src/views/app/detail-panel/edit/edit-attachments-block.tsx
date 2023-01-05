@@ -156,6 +156,7 @@ const Attachment: FC<AttachmentType> = ({
 			mainAlignment="flex-start"
 			height="fit"
 			background="gray3"
+			data-testid={`attachment-container-${filename}`}
 		>
 			<Tooltip key={`${editor?.id}-Preview`} label={t('action.preview', 'Preview')}>
 				<Row
@@ -291,7 +292,11 @@ const EditAttachmentsBlock: FC<{
 					)}
 					{editor.attachmentFiles.length > 2 &&
 						(expanded ? (
-							<Row onClick={(): void => setExpanded(false)} style={{ cursor: 'pointer' }}>
+							<Row
+								onClick={(): void => setExpanded(false)}
+								style={{ cursor: 'pointer' }}
+								data-testid="attachment-list-collapse-link"
+							>
 								<Padding right="small">
 									<Text color="primary">
 										{`${editor.attachmentFiles.length} ${t(
@@ -303,7 +308,11 @@ const EditAttachmentsBlock: FC<{
 								<Icon icon="ArrowIosUpward" color="primary" />
 							</Row>
 						) : (
-							<Row onClick={(): void => setExpanded(true)} style={{ cursor: 'pointer' }}>
+							<Row
+								onClick={(): void => setExpanded(true)}
+								style={{ cursor: 'pointer' }}
+								data-testid="attachment-list-expand-link"
+							>
 								<Padding right="small">
 									<Text color="primary">
 										{`${t('label.show_all', 'Show all')} ${editor.attachmentFiles.length} ${t(

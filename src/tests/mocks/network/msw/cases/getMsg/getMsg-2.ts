@@ -1,11 +1,11 @@
 /*
- * SPDX-FileCopyrightText: 2021 company <https://www.foo.com>
+ * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 // 6 inline attachments with cid not in the body
-export const msg = {
+export const getMsgResult = {
 	Header: {
 		context: {
 			session: { id: '165483', _content: '165483' },

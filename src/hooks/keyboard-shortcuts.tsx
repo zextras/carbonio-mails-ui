@@ -28,7 +28,6 @@ let keySequence = '';
 
 export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): void => {
 	const { event, itemId, conversations, dispatch, deselectAll, folderId } = params;
-	const ctrlModifierIsActive = event.ctrlKey || event.metaKey;
 	const conversationFlag = conversations.filter((conversation) => conversation.id === itemId)?.[0]
 		?.flagged;
 
@@ -151,7 +150,6 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 				break;
 
 			default:
-				null;
 		}
 		keySequence = '';
 	};
@@ -174,6 +172,5 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 			break;
 
 		default:
-			null;
 	}
 };

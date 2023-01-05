@@ -5,8 +5,6 @@
  */
 import { Button, Catcher, Container, useModal } from '@zextras/carbonio-design-system';
 import {
-	addBoard,
-	replaceHistory,
 	t,
 	useBoard,
 	useBoardHooks,
@@ -29,7 +27,6 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { ActionsType } from '../../../../commons/utils';
-import { MAILS_ROUTE } from '../../../../constants';
 import { useQueryParam } from '../../../../hooks/useQueryParam';
 import { getMsg } from '../../../../store/actions';
 import { saveDraft } from '../../../../store/actions/save-draft';
@@ -65,11 +62,9 @@ const generateId = (): string => {
 
 type EditViewPropType = {
 	setHeader: (arg: any) => void;
-	toggleAppBoard: boolean;
 };
 
-const EditView: FC<EditViewPropType> = ({ setHeader, toggleAppBoard }) => {
-	const { folderId } = useParams<{ folderId: string }>();
+const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 	const { editId } = useParams<{ editId: string }>();
 	const settings = useUserSettings();
 	const boardUtilities = useBoardHooks();
@@ -312,21 +307,6 @@ const EditView: FC<EditViewPropType> = ({ setHeader, toggleAppBoard }) => {
 		}
 	}, [action, editor, isUploading, saveFirstDraft, throttledSaveToDraft]);
 
-	useEffect(() => {
-		if (toggleAppBoard) {
-			if (activeMailId) {
-				addBoard({
-					url: `${MAILS_ROUTE}/edit/${activeMailId}?action=${action}`,
-					context: { mailId: activeMailId },
-					title: editor?.subject ?? ''
-				});
-			} else {
-				addBoard({ url: `${MAILS_ROUTE}/new`, title: t('label.new_email', 'New E-mail') });
-			}
-			replaceHistory(`/folder/${folderId}`);
-		}
-	}, [folderId, activeMailId, toggleAppBoard, action, editor?.subject]);
-
 	const onDragOverEvent = (event: SyntheticEvent): void => {
 		event.preventDefault();
 		setDropZoneEnable(true);
@@ -393,7 +373,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader, toggleAppBoard }) => {
 	return (
 		<>
 			<RouteLeavingGuard
-				when={!saveFirstDraft && showRouteGuard && !toggleAppBoard}
+				when={!saveFirstDraft && showRouteGuard}
 				id={editor.id}
 				onDeleteDraft={(): void => {
 					dispatch(closeEditor(editorId));

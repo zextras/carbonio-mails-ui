@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -19,6 +19,6 @@ export const handleGetMsgRequest = async (
 		return res(ctx.status(500, 'Empty request'));
 	}
 	const { id } = (await req.json<RestGenericRequest>()).Body.GetMsgRequest.m;
-	const { msg } = await import(`./cases/getMsg/getMsg-${id}`);
-	return res(ctx.json(msg));
+	const { getMsgResult } = await import(`./cases/getMsg/getMsg-${id}`);
+	return res(ctx.json(getMsgResult));
 };

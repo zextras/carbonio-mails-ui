@@ -183,7 +183,9 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 	const calculateHeight = (): void => {
 		if (!isNull(iframeRef.current)) {
 			iframeRef.current.style.height = '0';
-			iframeRef.current.style.height = `${iframeRef?.current?.contentDocument?.body?.scrollHeight}px`;
+			iframeRef.current.style.height = `${
+				(iframeRef?.current?.contentDocument?.body?.scrollHeight || 0) / 16 + 24 / 16
+			}rem`;
 		}
 	};
 
@@ -275,6 +277,9 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 			td{
 				max-width: 100% !important;
 				overflow-wrap: anywhere !important;
+			}
+			#bodyTable {
+				height: fit-content
 			}
 		`;
 		styleTag.textContent = styles;
@@ -405,11 +410,10 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				</BannerContainer>
 			)}
 			<iframe
+				data-testid="message-renderer-iframe"
 				title={msgId}
 				ref={iframeRef}
 				onLoad={calculateHeight}
-				scrolling="no"
-				frameBorder="0"
 				style={{
 					border: 'none',
 					width: '100%',

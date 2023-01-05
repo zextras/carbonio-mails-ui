@@ -3,7 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-export const msg = {
+import { faker } from '@faker-js/faker';
+import { createFakeIdentity } from '../../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
+
+const identity1 = createFakeIdentity();
+const identity2 = createFakeIdentity();
+
+export const getMsgResult = {
 	Header: {
 		context: {
 			session: { id: '165483', _content: '165483' },
@@ -21,14 +27,14 @@ export const msg = {
 					cid: '7579',
 					rev: 15963,
 					id: 1,
-					fr: "This Daily Digest includes 2 updates by 2 contributors Feel like you're missing out? Stay connected with the mobile app ( ...",
+					fr: faker.lorem.sentence(2),
 					e: [
-						{ a: 'confluence@zextras.atlassian.net', d: 'Confluence', p: 'Confluence', t: 'f' },
-						{ a: 'confluence@zextras.atlassian.net', d: 'Confluence', p: 'Confluence', t: 'r' },
-						{ a: 'luca.stauble@zextras.com', d: 'luca', p: 'luca stauble', t: 't' }
+						{ a: identity1.email, d: identity1.firstName, p: identity1.fullName, t: 'f' },
+						{ a: identity1.email, d: identity1.firstName, p: identity1.fullName, t: 'r' },
+						{ a: identity2.email, d: identity2.firstName, p: identity2.fullName, t: 't' }
 					],
-					su: '[Confluence] Daily Digest',
-					mid: '\u003C280337d8-9219-462b-94e1-9501fa19b6ff@zextras.atlassian.net\u003E',
+					su: faker.lorem.sentence(1),
+					mid: '\u003C280337d8-9219-462b-94e1-9501fa19b6ff@foo.net\u003E',
 					sd: 1666160394000,
 					mp: [
 						{

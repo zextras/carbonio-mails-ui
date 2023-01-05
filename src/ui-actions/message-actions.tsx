@@ -7,6 +7,7 @@ import React from 'react';
 import { Text } from '@zextras/carbonio-design-system';
 import {
 	Account,
+	addBoard,
 	FOLDERS,
 	getBridgedFunctions,
 	replaceHistory,
@@ -15,16 +16,18 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
+import { MAILS_ROUTE } from '../constants';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { ActionsType } from '../commons/utils';
 import { sendMsg } from '../store/actions/send-msg';
 import MoveConvMessage from './move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
-import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
+import { getContentForPrint } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
 import { MailMessage, MsgActionParameters, MsgActionResult } from '../types';
 import { StoreProvider } from '../store/redux';
+import { getErrorPage } from '../commons/preview-eml';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -205,7 +208,7 @@ export function printMsg({
 					}
 				})
 				.catch(() => {
-					const errorContent = getErrorPage(t);
+					const errorContent = getErrorPage();
 					if (printWindow) printWindow.document.write(errorContent);
 				});
 		}
@@ -418,7 +421,11 @@ export function replyMsg({
 		label: t('action.reply', 'Reply'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.REPLY}`);
+			addBoard({
+				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY}`,
+				context: { mailId: id },
+				title: ''
+			});
 		}
 	};
 }
@@ -433,7 +440,11 @@ export function replyAllMsg({
 		label: t('action.reply_all', 'Reply all'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.REPLY_ALL}`);
+			addBoard({
+				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY_ALL}`,
+				context: { mailId: id },
+				title: ''
+			});
 		}
 	};
 }
@@ -448,7 +459,11 @@ export function forwardMsg({
 		label: t('action.forward', 'Forward'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.FORWARD}`);
+			addBoard({
+				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.FORWARD}`,
+				context: { mailId: id },
+				title: ''
+			});
 		}
 	};
 }
@@ -463,7 +478,11 @@ export function editAsNewMsg({
 		label: t('action.edit_as_new', 'Edit as new'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_NEW}`);
+			addBoard({
+				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_NEW}`,
+				context: { mailId: id },
+				title: ''
+			});
 		}
 	};
 }
@@ -487,7 +506,11 @@ export function editDraft({
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						closeModal();
-						replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
+						addBoard({
+							url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
+							context: { mailId: id },
+							title: ''
+						});
 					},
 					onClose: () => {
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -506,7 +529,13 @@ export function editDraft({
 						</StoreProvider>
 					)
 				});
-			} else replaceHistory(`/folder/${folderId}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`);
+			} else {
+				addBoard({
+					url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
+					context: { mailId: id },
+					title: ''
+				});
+			}
 		}
 	};
 }
@@ -800,6 +829,15 @@ export const getActions = ({
 					replyMsg({ id: message.id, folderId }),
 					replyAllMsg({ id: message.id, folderId }),
 					forwardMsg({ id: message.id, folderId }),
+					setMsgRead({
+						ids: [message.id],
+						value: message.read,
+
+						dispatch,
+						folderId,
+						shouldReplaceHistory: true,
+						deselectAll
+					}),
 					moveMsgToTrash({
 						ids: [message.id],
 
@@ -810,15 +848,7 @@ export const getActions = ({
 						conversationId: message.conversation,
 						closeEditor
 					}),
-					setMsgRead({
-						ids: [message.id],
-						value: message.read,
 
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
 					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch })
 				],
 				[

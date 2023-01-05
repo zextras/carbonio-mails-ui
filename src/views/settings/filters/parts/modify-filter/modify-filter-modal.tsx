@@ -22,7 +22,7 @@ import {
 	Row
 } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
-import { findIndex, forEach, map, omit, reduce } from 'lodash';
+import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import ModalFooter from '../create-filter-modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
@@ -33,6 +33,8 @@ import FilterActionConditions from '../new-filter-action-conditions';
 import FilterTestConditionRow from '../filter-test-condition-row';
 import { getTestComponent, findRowKey } from '../get-test-component';
 import { capitalise } from '../../../../sidebar/utils';
+import { FilterActions } from '../../../../../types';
+import { getButtonInfo } from '../utils';
 
 type FilterType = {
 	active: boolean;
@@ -64,7 +66,9 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
 	const [tempActions, setTempActions] = useState([{ actionKeep: [{}], id: uuidv4() }]);
+	const [copyRequiredFilters, setCopyRequiredFilters] = useState({});
 	const [reFetch, setReFetch] = useState(false);
+	const [updateRequiredFilters, setUpdateRequiredFilters] = useState(true);
 	const [newFilters, setNewFilters] = useState([
 		{
 			filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
@@ -84,7 +88,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		() => `${t('label.edit', 'Edit')} ${selectedFilter?.name}`,
 		[t, selectedFilter?.name]
 	);
-	const inputLabel = useMemo(() => t('settings.filter_name', 'Filter Name'), [t]);
+	const inputLabel = useMemo(() => `${t('settings.filter_name', 'Filter Name')}*`, [t]);
 	const activeFilterLabel = useMemo(() => t('settings.active_filter', 'Active filter'), [t]);
 
 	const requiredFilterTest = useMemo(() => {
@@ -127,8 +131,8 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? [{ ...omit(finalActions, 'id'), actionStop: [{}] }]
-				: [{ ...omit(finalActions, 'id') }],
+				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions[])
+				: ([{ ...omit(finalActions, 'id') }] as FilterActions[]),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
@@ -141,7 +145,13 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		[activeFilter, filterName, condition, requiredFilterTest, dontProcessAddFilters, finalActions]
 	);
 
-	const createFilterDisabled = useMemo(() => filterName.length === 0, [filterName]);
+	const [createFilterDisabled, buttonTooltip] = useMemo(() => {
+		if (isEqual(copyRequiredFilters, requiredFilters)) {
+			return [true, t('settings.label.not_changed_anything', 'You haven’t changed anything')];
+		}
+		return getButtonInfo(filterName, requiredFilters, t, false);
+	}, [copyRequiredFilters, filterName, requiredFilters, t]);
+
 	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice(), [incomingFilters]);
 
 	const toggleCheckBox = useCallback(() => {
@@ -190,14 +200,33 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 			const previousActions = (): Array<any> => {
 				const actions: Array<any> = [];
 				forEach(selectedFilter?.filterActions?.[0], (value, key) => {
-					key !== 'actionStop' &&
-						actions.push({ [key]: [{ ...omit(value[0], 'index') }], id: uuidv4() });
+					if (key !== 'actionStop') {
+						forEach(value, (val) => {
+							actions.push({ [key]: [{ ...omit(val, 'index') }], id: uuidv4() });
+						});
+					}
 				});
 				return actions;
 			};
 			setTempActions(previousActions);
 		}
 	}, [selectedFilter]);
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const setCopyOfFilter = (): void => {
+		setCopyRequiredFilters(requiredFilters);
+	};
+
+	useEffect(() => {
+		if (selectedFilter) {
+			if (updateRequiredFilters) {
+				setTimeout(() => {
+					setUpdateRequiredFilters(false);
+					setCopyOfFilter();
+				}, 10);
+			}
+		}
+	}, [selectedFilter, setCopyOfFilter, updateRequiredFilters]);
 
 	const previousFilterTests = useMemo(() => {
 		const tempTests: Array<any> = [];
@@ -329,6 +358,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 				</Row>
 				<ModalFooter
 					label={t('label.edit', 'Edit')}
+					toolTipText={buttonTooltip}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}

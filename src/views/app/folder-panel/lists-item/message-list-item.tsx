@@ -22,6 +22,7 @@ import {
 	useFolder,
 	useTags,
 	useUserAccounts,
+	useUserSettings,
 	ZIMBRA_STANDARD_COLORS
 } from '@zextras/carbonio-shell-ui';
 import { find, includes, isEmpty, reduce } from 'lodash';
@@ -101,6 +102,7 @@ export const MessageListItem: FC<any> = ({
 	const ids = useMemo(() => Object.keys(selectedItems ?? []), [selectedItems]);
 	const dispatch = useDispatch();
 	const tagsFromStore = useTags();
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const tags = useMemo(
 		() =>
@@ -166,13 +168,13 @@ export const MessageListItem: FC<any> = ({
 	const _onClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
-				if (item.read === false) {
+				if (item.read === false && zimbraPrefMarkMsgRead) {
 					setMsgRead({ ids: [item.id], value: false, dispatch }).click();
 				}
 				replaceHistory(`/folder/${folderId}/message/${item.id}`);
 			}
 		},
-		[folderId, item.id, item.read, dispatch]
+		[item.read, item.id, zimbraPrefMarkMsgRead, folderId, dispatch]
 	);
 	const _onDoubleClick = useCallback(
 		(e) => {
@@ -240,6 +242,7 @@ export const MessageListItem: FC<any> = ({
 			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
 			style={{ display: 'block' }}
 			onDragStart={(e): void => dragCheck(e, item.id)}
+			data-testid="MailItemContainer"
 		>
 			<DraggableItem
 				item={item}
