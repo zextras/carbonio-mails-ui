@@ -8,7 +8,7 @@ import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { filter } from 'lodash';
 import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import FolderSelectModal from './folder-modal';
-import { TagFolderRowProps } from '../../../types';
+import { TagFolderRowProps, ChipOnAdd } from '../../../types';
 
 const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 	const { folder, setFolder, tagOptions, tag, setTag } = compProps;
@@ -18,7 +18,15 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 	const openFolderModal = useCallback(() => setOpen(true), []);
 
 	const chipOnAdd = useCallback(
-		(label, preText, hasAvatar, isGeneric, isQueryFilter, avatarIcon, avatarBackground) => ({
+		(
+			label,
+			preText,
+			hasAvatar,
+			isGeneric,
+			isQueryFilter,
+			avatarIcon,
+			avatarBackground
+		): ChipOnAdd => ({
 			label: `${preText}:${label}`,
 			hasAvatar,
 			isGeneric,
@@ -36,7 +44,7 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 		[chipOnAdd]
 	);
 	const tagChipOnAdd = useCallback(
-		(label): any => {
+		(label): ChipOnAdd => {
 			const chipBg = filter(tagOptions, { label })[0];
 			return chipOnAdd(
 				label,
@@ -45,7 +53,7 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 				false,
 				true,
 				'Tag',
-				ZIMBRA_STANDARD_COLORS[chipBg.color].hex
+				ZIMBRA_STANDARD_COLORS[chipBg.color ?? 0].hex
 			);
 		},
 		[chipOnAdd, tagOptions]
