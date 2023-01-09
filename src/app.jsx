@@ -17,6 +17,7 @@ import {
 	t
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
+import { useParams } from 'react-router-dom';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 import {
 	mailToSharedFunction,

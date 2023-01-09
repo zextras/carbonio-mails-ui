@@ -291,8 +291,6 @@ const getRecipientReplyIdentity = (
 	settings: AccountSettings,
 	message: MailMessage
 ): MatchingReplyIdentity => {
-	console.log('*** settings', settings);
-
 	// Get all the available identities for the account
 	const identities = getIdentities(account, settings);
 

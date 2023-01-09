@@ -57,12 +57,14 @@ type UseGetIdentitiesPropType = {
 	setOpen: (arg: boolean) => void;
 	editorId: string;
 	originalMessage?: MailMessage;
+	folderId: string;
 };
 export const useGetIdentities = ({
 	updateEditorCb,
 	setOpen,
 	editorId,
-	originalMessage
+	originalMessage,
+	folderId
 }: UseGetIdentitiesPropType): UseGetIdentitiesReturnType => {
 	const account = useUserAccount();
 	const settings = useUserSettings();
@@ -74,7 +76,8 @@ export const useGetIdentities = ({
 	const [isIdentitySet, setIsIdentitySet] = useState(false);
 	const [defaultIdentity, setDefaultIdentity] = useState<IdentityType>();
 	const allAccounts = useRoots();
-	const { folderId } = useParams<{ folderId: string }>();
+
+	console.log('********** folderId', folderId);
 
 	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
 

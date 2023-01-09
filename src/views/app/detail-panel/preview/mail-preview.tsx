@@ -278,10 +278,6 @@ type MailPreviewType = {
 };
 const MailPreview: FC<MailPreviewType> = ({ message, expanded, isAlone, isMessageView }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
-
-	console.log('*************** router', useCurrentRoute());
-	console.log('*************** params', useParams());
-
 	const [open, setOpen] = useState(expanded || isAlone);
 
 	const onClick = useCallback(() => {
