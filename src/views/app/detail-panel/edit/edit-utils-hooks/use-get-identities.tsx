@@ -4,16 +4,25 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Avatar, Container, Text } from '@zextras/carbonio-design-system';
-import { useRoots, useUserAccount, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import {
+	useBoard,
+	useCurrentRoute,
+	useRoots,
+	useUserAccount,
+	useUserAccounts,
+	useUserSettings
+} from '@zextras/carbonio-shell-ui';
 import { map, find, filter, findIndex, flatten, isNull } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useParams } from 'react-router-dom';
-import { ParticipantRole } from '../../../../../commons/utils';
+import { useLocation, useParams } from 'react-router-dom';
+import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
+import { getRecipientReplyIdentity } from '../../../../../helpers/identities';
 import {
 	FindDefaultIdentityType,
 	IdentityType,
+	MailMessage,
 	MailsEditor,
 	UseGetIdentitiesReturnType
 } from '../../../../../types';
@@ -21,24 +30,44 @@ import {
 export const findDefaultIdentity = ({
 	list,
 	allAccounts,
-	folderId
+	folderId,
+	originalMessage,
+	account,
+	settings
 }: FindDefaultIdentityType): IdentityType | undefined => {
-	const activeAcc = find(allAccounts, { zid: folderId?.split?.(':')?.[0] });
-	const predicate = activeAcc?.owner ? { address: activeAcc?.owner } : { identityName: 'DEFAULT' };
-	return find(list, predicate) as IdentityType | undefined;
+	let predicate;
+	if (originalMessage) {
+		const replyIdentity = getRecipientReplyIdentity(account, settings, originalMessage);
+		if (replyIdentity.identityName) {
+			predicate = { identityName: replyIdentity.identityName };
+		}
+	}
+
+	if (!predicate && folderId) {
+		const activeAcc = find(allAccounts, { zid: folderId?.split?.(':')?.[0] });
+		predicate = activeAcc?.owner ? { address: activeAcc?.owner } : { identityName: 'DEFAULT' };
+	}
+
+	const result = find(list, predicate) as IdentityType | undefined;
+	return result;
 };
 
 type UseGetIdentitiesPropType = {
 	updateEditorCb: (arg: Partial<MailsEditor>) => void;
 	setOpen: (arg: boolean) => void;
 	editorId: string;
+	originalMessage?: MailMessage;
+	folderId: string;
 };
 export const useGetIdentities = ({
 	updateEditorCb,
 	setOpen,
-	editorId
+	editorId,
+	originalMessage,
+	folderId
 }: UseGetIdentitiesPropType): UseGetIdentitiesReturnType => {
 	const account = useUserAccount();
+	const settings = useUserSettings();
 	const accounts = useUserAccounts();
 	const [t] = useTranslation();
 	const [from, setFrom] = useState<Partial<IdentityType>>();
@@ -47,7 +76,6 @@ export const useGetIdentities = ({
 	const [isIdentitySet, setIsIdentitySet] = useState(false);
 	const [defaultIdentity, setDefaultIdentity] = useState<IdentityType>();
 	const allAccounts = useRoots();
-	const { folderId } = useParams<{ folderId: string }>();
 
 	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
 
@@ -105,7 +133,10 @@ export const useGetIdentities = ({
 			const def = findDefaultIdentity({
 				list,
 				allAccounts,
-				folderId
+				folderId,
+				originalMessage,
+				account,
+				settings
 			});
 
 			updateEditorCb({
@@ -137,7 +168,18 @@ export const useGetIdentities = ({
 			setFrom(def);
 			setIsIdentitySet(true);
 		}
-	}, [allAccounts, editorId, folderId, list, updateEditorCb, isIdentitySet, from]);
+	}, [
+		allAccounts,
+		editorId,
+		folderId,
+		list,
+		updateEditorCb,
+		isIdentitySet,
+		from,
+		originalMessage,
+		account,
+		settings
+	]);
 
 	const identitiesList = useMemo(
 		() =>

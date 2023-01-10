@@ -5,6 +5,8 @@
  */
 
 import { Dispatch } from '@reduxjs/toolkit';
+import { Grant } from '@zextras/carbonio-shell-ui';
+import { Participant } from '../participant';
 
 export type ShareCalendarModalProps = {
 	openModal: () => void;
@@ -41,7 +43,7 @@ export type ResponseActionsProps = {
 	owner: string;
 	role: string;
 	allowedActions: string;
-	participants: any;
+	participants: Participant[s];
 };
 
 export type ReplyShareParameters = {

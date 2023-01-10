@@ -11,7 +11,8 @@ import {
 	useIntegratedComponent,
 	useUserSettings,
 	FOLDERS,
-	t
+	t,
+	useCurrentRoute
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import {
@@ -24,6 +25,7 @@ import {
 	Row
 } from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
+import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
 import AttachmentsBlock from './attachments-block';
 import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
@@ -71,7 +73,7 @@ const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
 		[integrationAvailable, InviteResponse, message]
 	);
 	const readReceiptRequester = useMemo(
-		() => find(message?.participants, { type: 'n' }),
+		() => find(message?.participants, { type: ParticipantRole.READ_RECEIPT_NOTIFICATION }),
 		[message?.participants]
 	);
 
@@ -276,7 +278,6 @@ type MailPreviewType = {
 };
 const MailPreview: FC<MailPreviewType> = ({ message, expanded, isAlone, isMessageView }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
-
 	const [open, setOpen] = useState(expanded || isAlone);
 
 	const onClick = useCallback(() => {

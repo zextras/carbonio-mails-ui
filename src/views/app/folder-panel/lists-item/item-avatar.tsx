@@ -7,7 +7,7 @@ import { Avatar, Container, Tooltip } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import React, { useCallback, useMemo, FC, SyntheticEvent } from 'react';
 import styled from 'styled-components';
-import { ParticipantRole } from '../../../../commons/utils';
+import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { ItemAvatarType, Participant } from '../../../../types';
 
 const AvatarElement = styled(Avatar)`
@@ -16,7 +16,7 @@ const AvatarElement = styled(Avatar)`
 	min-width: 2.625rem !important;
 	min-height: 2.625rem !important;
 	p {
-		font-size: 0.875ren;
+		font-size: 0.875rem;
 	}
 `;
 

@@ -19,6 +19,7 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import {
+	FOLDERS,
 	getBridgedFunctions,
 	getCurrentRoute,
 	minimizeBoards,
@@ -37,7 +38,7 @@ import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import { ActionsType, LineType } from '../../../../../commons/utils';
 import { sendMsg } from '../../../../../store/actions/send-msg';
-import { EditViewContextType, MailAttachment } from '../../../../../types';
+import { BoardContext, EditViewContextType, MailAttachment } from '../../../../../types';
 import { addAttachments } from '../edit-utils';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
 import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
@@ -106,7 +107,7 @@ const EditViewHeader: FC<PropType> = ({
 	const [isReceiptRequested, setIsReceiptRequested] = useState(editor?.requestReadReceipt ?? false);
 
 	// needs to be replaced with correct type
-	const boardContext = useBoard()?.context;
+	const boardContext = useBoard<BoardContext>()?.context;
 
 	const isSendDisabled = useMemo(() => {
 		const participants = concat(editor?.to, editor?.bcc, editor?.cc);
@@ -116,7 +117,9 @@ const EditViewHeader: FC<PropType> = ({
 	const { from, activeFrom, identitiesList, hasIdentity } = useGetIdentities({
 		updateEditorCb,
 		setOpen,
-		editorId: editor?.editorId
+		editorId: editor?.editorId,
+		originalMessage: editor?.original,
+		folderId: boardContext?.folderId ?? FOLDERS.INBOX
 	});
 
 	const inputRef = useRef<any>();
