@@ -77,8 +77,6 @@ export const useGetIdentities = ({
 	const [defaultIdentity, setDefaultIdentity] = useState<IdentityType>();
 	const allAccounts = useRoots();
 
-	console.log('********** folderId', folderId);
-
 	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
 
 	useEffect(() => {
