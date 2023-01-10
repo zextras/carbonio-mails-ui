@@ -20,6 +20,39 @@ import {
 	SoapMailParticipant
 } from '../types';
 
+// extract ids of attachments from html content. the ids are preceded by "cid: and end with " or with &
+export const extractAttachmentIdsFromHtmlContent = (content: string): Array<string> => {
+	const matches = content.match(/cid:(.*?)(?="|&)/g);
+	const result = matches ? map(matches, (match) => match.replace('cid:', '')) : [];
+	return result;
+};
+
+// examine the multipart and return an array of ids referenced in the body of the html
+const getAttachmentsAnchoredOnHtmlBody = (
+	multipart: Array<SoapMailMessagePart> | undefined | AttachmentPart | Array<AttachmentPart>
+): Array<string> => {
+	const result: Array<string> = [];
+
+	const extractCid = (
+		mp: Array<SoapMailMessagePart> | undefined | AttachmentPart | Array<AttachmentPart>
+	): void => {
+		forEach(mp, (item: SoapMailMessagePart) => {
+			if (item.mp) {
+				extractCid(item.mp);
+			}
+			if (item.content) {
+				result.push(...extractAttachmentIdsFromHtmlContent(item.content));
+			}
+		});
+	};
+
+	extractCid(multipart);
+	return result;
+};
+
+// removes all charachters after "@" and the leading "<" character of a ci
+const cleanUpCi = (id: string): string => id.slice(1, id.indexOf('@'));
+
 const isIgnoreAttachment = (item: AttachmentPart): boolean => {
 	if ((item && item.ct === 'multipart/appledouble') || item.ct === 'application/applefile') {
 		return true;
@@ -42,6 +75,7 @@ const isIgnoreAttachment = (item: AttachmentPart): boolean => {
 export const getAttachmentsFromParts = (
 	mailParts: Array<AttachmentPart> | AttachmentPart
 ): Array<AttachmentPart> => {
+	const anchoredAttachmentsList = getAttachmentsAnchoredOnHtmlBody(mailParts);
 	let results: Array<AttachmentPart> = [];
 	if (mailParts) {
 		if (isArray(mailParts)) {
@@ -61,13 +95,19 @@ export const getAttachmentsFromParts = (
 							item.filename ||
 							item.ci
 						) {
-							if (item.cd && item.cd === 'inline' && item.ci) {
+							if (
+								item.cd &&
+								item.cd === 'inline' &&
+								item.ci &&
+								anchoredAttachmentsList.includes(cleanUpCi(item.ci))
+							) {
 								item.cd = 'inline';
 							} else if (
 								part.ct === 'multipart/related' &&
 								item.ci &&
 								item.cd &&
-								item.cd === 'attachment'
+								item.cd === 'attachment' &&
+								anchoredAttachmentsList.includes(cleanUpCi(item.ci))
 							) {
 								item.cd = 'inline';
 							} else {
@@ -96,13 +136,20 @@ export const getAttachmentsFromParts = (
 		) {
 			const updatedMailPart: AttachmentPart = { ...mailParts };
 			if (isIgnoreAttachment(mailParts)) {
-				if (updatedMailPart.cd && updatedMailPart.cd === 'inline' && updatedMailPart.ci) {
+				extractAttachmentIdsFromHtmlContent(updatedMailPart.content || '');
+				if (
+					updatedMailPart.cd &&
+					updatedMailPart.cd === 'inline' &&
+					updatedMailPart.ci &&
+					anchoredAttachmentsList.includes(cleanUpCi(updatedMailPart.ci))
+				) {
 					updatedMailPart.cd = 'inline';
 				} else if (
 					updatedMailPart.ct === 'multipart/related' &&
 					updatedMailPart.ci &&
 					updatedMailPart.cd &&
-					updatedMailPart.cd === 'attachment'
+					updatedMailPart.cd === 'attachment' &&
+					anchoredAttachmentsList.includes(cleanUpCi(updatedMailPart.ci))
 				) {
 					updatedMailPart.cd = 'inline';
 				} else {
@@ -117,7 +164,7 @@ export const getAttachmentsFromParts = (
 	return results;
 };
 
-export function normalizeMailPartMapFn(v: SoapMailMessagePart): MailMessagePart {
+const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
 	const ret: MailMessagePart = {
 		contentType: v.ct,
 		size: v.s || 0,
@@ -132,13 +179,13 @@ export function normalizeMailPartMapFn(v: SoapMailMessagePart): MailMessagePart 
 	if (v.ci) ret.ci = v.ci;
 	if (v.cd) ret.disposition = v.cd;
 	return ret;
-}
+};
 
-function findBodyPart(
+const findBodyPart = (
 	mp: Array<SoapMailMessagePart>,
 	acc: { contentType: string; content: string },
 	id: string
-): { contentType: string; content: string } {
+): { contentType: string; content: string } => {
 	const bodyPart = reduce(
 		mp,
 		(found, part) => {
@@ -170,19 +217,17 @@ function findBodyPart(
 	);
 
 	return bodyPart;
-}
+};
 
-export function generateBody(
+const generateBody = (
 	mp: Array<SoapMailMessagePart>,
 	id: string
 ): {
 	contentType: string;
 	content: string;
-} {
-	return findBodyPart(mp, { contentType: '', content: '' }, id);
-}
+} => findBodyPart(mp, { contentType: '', content: '' }, id);
 
-function participantTypeFromSoap(t: SoapEmailParticipantRole): ParticipantRoleType {
+const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRoleType => {
 	switch (t) {
 		case 'f':
 			return ParticipantRole.FROM;
@@ -203,27 +248,23 @@ function participantTypeFromSoap(t: SoapEmailParticipantRole): ParticipantRoleTy
 		default:
 			throw new Error(`Participant type not handled: '${t}'`);
 	}
-}
+};
 
-export function normalizeParticipantsFromSoap(e: SoapMailParticipant): Participant {
-	return {
-		type: participantTypeFromSoap(e.t),
-		address: e.a,
-		name: e.d || e.a,
-		fullName: e.p
-	};
-}
-export const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
+export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participant => ({
+	type: participantTypeFromSoap(e.t),
+	address: e.a,
+	name: e.d || e.a,
+	fullName: e.p
+});
+
+const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
 	const tags = getTags();
 	return map(names?.split(','), (name) =>
 		find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`
 	);
 };
 
-export const getTagIds = (
-	t: string | undefined,
-	tn: string | undefined
-): Array<string | undefined> => {
+const getTagIds = (t: string | undefined, tn: string | undefined): Array<string | undefined> => {
 	if (!isNil(t)) {
 		return filter(t.split(','), (tag) => tag !== '');
 	}
@@ -232,6 +273,7 @@ export const getTagIds = (
 	}
 	return [];
 };
+
 export const normalizeMailMessageFromSoap = (
 	m: SoapIncompleteMessage,
 	isComplete?: boolean

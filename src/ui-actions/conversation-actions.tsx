@@ -17,10 +17,11 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg';
-import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
+import { getContentForPrint } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
 import { StoreProvider } from '../store/redux';
 import { Conversation, MailMessage } from '../types';
+import { getErrorPage } from '../commons/preview-eml';
 
 type ConvActionIdsType = Array<string>;
 type ConvActionValueType = string | boolean;
@@ -196,7 +197,7 @@ export function printConversation({
 					}
 				})
 				.catch((err) => {
-					const errorContent = getErrorPage(t);
+					const errorContent = getErrorPage();
 					if (printWindow) printWindow.document.write(errorContent);
 				});
 		}
