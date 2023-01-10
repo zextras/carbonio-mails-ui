@@ -218,7 +218,7 @@ const getRecipients = (message: MailMessage): Array<RecipientWeight> => {
  * @param availableAddresses
  *
  * @returns the list of recipients with the matchingAddress flag set
- */ 2;
+ */
 const checkMatchingAddress = (
 	recipients: Array<RecipientWeight>,
 	availableAddresses: Array<AvailableAddress>
