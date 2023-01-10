@@ -27,7 +27,7 @@ import { getContentForPrint } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
 import { MailMessage, MsgActionParameters, MsgActionResult } from '../types';
 import { StoreProvider } from '../store/redux';
-import { getErrorPage } from '../commons/preview-eml';
+import { errorPage } from '../commons/preview-eml/error-page';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -208,7 +208,7 @@ export function printMsg({
 					}
 				})
 				.catch(() => {
-					const errorContent = getErrorPage();
+					const errorContent = errorPage;
 					if (printWindow) printWindow.document.write(errorContent);
 				});
 		}

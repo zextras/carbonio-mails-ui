@@ -18,8 +18,7 @@ const config: Config = {
 			'<rootDir>/__mocks__/fileMock.js',
 		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js'
 	},
-	collectCoverage: false,
-	testEnvironmentOptions: { resources: 'usable' }
+	collectCoverage: false
 };
 
 export default config;

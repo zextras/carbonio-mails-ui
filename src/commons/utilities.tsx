@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getColor } from '@zextras/carbonio-design-system';
 import { isNil } from 'lodash';
 import { DefaultTheme } from 'styled-components';
 import { AttachmentPart, EditorAttachmentFiles } from '../types';
@@ -18,203 +17,205 @@ export const calcColor = (label: string, theme: DefaultTheme): string => {
 	return theme.avatarColors[`avatar_${(sum % 50) + 1}`];
 };
 
-export const getFileExtension = (file: EditorAttachmentFiles | AttachmentPart): string => {
+export const getFileExtension = (
+	file: EditorAttachmentFiles | AttachmentPart
+): { value: string; displayName?: string } => {
 	switch (file.contentType) {
 		case 'text/html':
-			return 'html';
+			return { value: 'html' };
 
 		case 'text/css':
-			return 'css';
+			return { value: 'css' };
 
 		case 'text/xml':
-			return 'xml';
+			return { value: 'xml' };
 
 		case 'image/gif':
-			return 'gif';
+			return { value: 'gif' };
 
 		case 'image/jpeg':
-			return 'jpg';
+			return { value: 'jpg' };
 
 		case 'application/x-javascript':
-			return 'js';
+			return { value: 'js' };
 
 		case 'application/atom+xml':
-			return 'atom';
+			return { value: 'atom' };
 
 		case 'application/rss+xml':
-			return 'rss';
+			return { value: 'rss' };
 
 		case 'text/mathml':
-			return 'mml';
+			return { value: 'mml' };
 
 		case 'text/plain':
-			return 'txt';
+			return { value: 'txt' };
 
 		case 'text/vnd.sun.jme.app-descriptor':
-			return 'jad';
+			return { value: 'jad' };
 
 		case 'text/vnd.wap.wml':
-			return 'wml';
+			return { value: 'wml' };
 
 		case 'text/x-component':
-			return 'htc';
+			return { value: 'htc' };
 
 		case 'image/png':
-			return 'png';
+			return { value: 'png' };
 
 		case 'image/tiff':
-			return 'tif,tiff';
+			return { value: 'tif,tiff', displayName: 'tif' };
 
 		case 'image/vnd.wap.wbmp':
-			return 'wbmp';
+			return { value: 'wbmp' };
 
 		case 'image/x-icon':
-			return 'ico';
+			return { value: 'ico' };
 
 		case 'image/x-jng':
-			return 'jng';
+			return { value: 'jng' };
 
 		case 'image/x-ms-bmp':
-			return 'bmp';
+			return { value: 'bmp' };
 
 		case 'image/svg+xml':
-			return 'svg';
+			return { value: 'svg' };
 
 		case 'image/webp':
-			return 'webp';
+			return { value: 'webp' };
 
 		case 'application/java-archive':
-			return 'jar,war,ear';
+			return { value: 'jar,war,ear' };
 
 		case 'application/mac-binhex':
-			return 'hqx';
+			return { value: 'hqx' };
 
 		case 'application/msword':
-			return 'doc';
+			return { value: 'doc' };
 
 		case 'application/pdf':
-			return 'pdf';
+			return { value: 'pdf' };
 
 		case 'application/postscript':
-			return 'ps,eps,ai';
+			return { value: 'ps,eps,ai' };
 
 		case 'application/rtf':
-			return 'rtf';
+			return { value: 'rtf' };
 
 		case 'application/vnd.ms-excel':
-			return 'xls';
+			return { value: 'xls' };
 
 		case 'application/vnd.ms-powerpoint':
-			return 'ppt';
+			return { value: 'ppt' };
 
 		case 'application/vnd.wap.wmlc':
-			return 'wmlc';
+			return { value: 'wmlc' };
 
 		case 'application/vnd.google-earth.kml+xml':
-			return 'kml';
+			return { value: 'kml' };
 
 		case 'application/vnd.google-earth.kmz':
-			return 'kmz';
+			return { value: 'kmz' };
 
 		case 'application/x-z-compressed':
-			return 'z';
+			return { value: 'z' };
 
 		case 'application/x-cocoa':
-			return 'cco';
+			return { value: 'cco' };
 
 		case 'application/x-java-archive-diff':
-			return 'jardiff';
+			return { value: 'jardiff' };
 
 		case 'application/x-java-jnlp-file':
-			return 'jnlp';
+			return { value: 'jnlp' };
 
 		case 'application/x-makeself':
-			return 'run';
+			return { value: 'run' };
 
 		case 'application/x-perl':
-			return 'pl,pm';
+			return { value: 'pl,pm' };
 
 		case 'application/x-pilot':
-			return 'prc,pdb';
+			return { value: 'prc,pdb' };
 
 		case 'application/x-rar-compressed':
-			return 'rar';
+			return { value: 'rar' };
 
 		case 'application/x-redhat-package-manager':
-			return 'rpm';
+			return { value: 'rpm' };
 
 		case 'application/x-sea':
-			return 'sea';
+			return { value: 'sea' };
 
 		case 'application/x-shockwave-flash':
-			return 'swf';
+			return { value: 'swf' };
 
 		case 'application/x-stuffit':
-			return 'sit';
+			return { value: 'sit' };
 
 		case 'application/x-tcl':
-			return 'tcl';
+			return { value: 'tcl' };
 
 		case 'application/x-x-ca-cert':
-			return 'der';
+			return { value: 'der' };
 
 		case 'application/x-xpinstall':
-			return 'xpi';
+			return { value: 'xpi' };
 
 		case 'application/xhtml+xml':
-			return 'xhtml';
+			return { value: 'xhtml' };
 
 		case 'application/zip':
-			return 'zip';
+			return { value: 'zip' };
 
 		case 'audio/midi':
-			return 'midi';
+			return { value: 'midi' };
 
 		case 'audio/mpeg':
-			return 'mp';
+			return { value: 'mp' };
 
 		case 'audio/ogg':
-			return 'ogg';
+			return { value: 'ogg' };
 
 		case 'audio/x-realaudio':
-			return 'ra';
+			return { value: 'ra' };
 
 		case 'video/gpp':
-			return 'gp';
+			return { value: 'gp' };
 
 		case 'video/mpeg':
-			return 'mpeg';
+			return { value: 'mpeg' };
 
 		case 'video/quicktime':
-			return 'mov';
+			return { value: 'mov' };
 
 		case 'video/x-flv':
-			return 'flv';
+			return { value: 'flv' };
 
 		case 'video/x-mng':
-			return 'mng';
+			return { value: 'mng' };
 
 		case 'video/x-ms-asf':
-			return 'asf';
+			return { value: 'asf' };
 
 		case 'video/x-ms-wmv':
-			return 'wmv';
+			return { value: 'wmv' };
 
 		case 'video/x-msvideo':
-			return 'avi';
+			return { value: 'avi' };
 
 		case 'video/mp':
-			return 'mp';
+			return { value: 'mp' };
 
 		case 'message/rfc822':
-			return 'EML';
+			return { value: 'EML' };
 
 		default:
-			return isNil(FileExtensionRegex.exec(file?.filename ?? ''))
-				? '?'
-				: // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				  // @ts-ignore
-				  FileExtensionRegex.exec(file?.filename)[1];
+			return {
+				value: isNil(FileExtensionRegex.exec(file?.filename ?? ''))
+					? '?'
+					: FileExtensionRegex.exec(file?.filename ?? '')?.[1] ?? ''
+			};
 	}
 };
 

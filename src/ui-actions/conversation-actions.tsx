@@ -21,7 +21,7 @@ import { getContentForPrint } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
 import { StoreProvider } from '../store/redux';
 import { Conversation, MailMessage } from '../types';
-import { getErrorPage } from '../commons/preview-eml';
+import { errorPage } from '../commons/preview-eml/error-page';
 
 type ConvActionIdsType = Array<string>;
 type ConvActionValueType = string | boolean;
@@ -197,7 +197,7 @@ export function printConversation({
 					}
 				})
 				.catch((err) => {
-					const errorContent = getErrorPage();
+					const errorContent = errorPage;
 					if (printWindow) printWindow.document.write(errorContent);
 				});
 		}
