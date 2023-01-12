@@ -5,7 +5,10 @@
  */
 import { getTags } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, isArray, isNil, map, omitBy, reduce } from 'lodash';
-import { ParticipantRole } from '../commons/utils';
+import {
+	ParticipantRole,
+	ParticipantRoleType
+} from '../carbonio-ui-commons/constants/participants';
 import {
 	AttachmentPart,
 	IncompleteMessage,
@@ -224,7 +227,7 @@ const generateBody = (
 	content: string;
 } => findBodyPart(mp, { contentType: '', content: '' }, id);
 
-const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRole => {
+const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRoleType => {
 	switch (t) {
 		case 'f':
 			return ParticipantRole.FROM;

@@ -6,13 +6,13 @@
 import { Account, AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
-import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
-import { LineType, ParticipantRole } from '../commons/utils';
 import {
-	composeMailBodyWithSignature,
-	getSignatures,
-	getSignatureValue
-} from '../helpers/signatures';
+	ParticipantRole,
+	ParticipantRoleType
+} from '../carbonio-ui-commons/constants/participants';
+import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
+import { LineType } from '../commons/utils';
+import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import {
 	EditorAttachmentFiles,
 	InlineAttachedType,
@@ -84,8 +84,8 @@ export const retrieveFROM = (original: MailMessage): Array<Participant> =>
 
 export const changeParticipantRole = (
 	original: MailMessage,
-	previousRole: ParticipantRole,
-	newRole: ParticipantRole
+	previousRole: ParticipantRoleType,
+	newRole: ParticipantRoleType
 ): Array<Participant> =>
 	map(
 		filter(original.participants, (c) => c.type === previousRole),
@@ -94,7 +94,7 @@ export const changeParticipantRole = (
 
 export const changeTypeOfParticipants = (
 	participants: Array<Participant>,
-	newRole: ParticipantRole
+	newRole: ParticipantRoleType
 ): Array<Participant> =>
 	map(participants, (c: Participant): Participant => ({ ...c, type: newRole }));
 

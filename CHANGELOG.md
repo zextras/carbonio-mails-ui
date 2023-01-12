@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.56](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.55...v0.1.56) (2023-01-10)
+
+
+### Features
+
+* autoselection of sender ([0c72442](https://github.com/zextras/carbonio-mails-ui/commit/0c72442a1f43e69a674af4af1f889681dda3f49f))
+
+
+### Bug Fixes
+
+* default identity selection ([0e078e4](https://github.com/zextras/carbonio-mails-ui/commit/0e078e44ba3ad74908b8027e3c13a176bceef50a))
+
 ### [0.1.55](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.54...v0.1.55) (2023-01-05)
 
 
