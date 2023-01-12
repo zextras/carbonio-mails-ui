@@ -409,11 +409,11 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			</Row>
 
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
-				<Tooltip label={t('settings.add_condition', 'Add new condition')} placement="top">
+				<Tooltip label={t('settings.add_action', 'Add new action')} placement="top">
 					<StyledIconButton icon="PlusOutline" onClick={addFilterCondition} iconColor="primary" />
 				</Tooltip>
 				<Padding left="small">
-					<Tooltip label={t('settings.remove_condition', 'Remove this condition')} placement="top">
+					<Tooltip label={t('settings.remove_action', 'Remove this action')} placement="top">
 						<StyledIconButton
 							icon="MinusOutline"
 							disabled={disableRemove}

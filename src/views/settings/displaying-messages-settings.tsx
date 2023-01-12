@@ -155,9 +155,9 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 			</Container>
 
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('settings.label.unsend_time', 'Set unsend time')} />
+				<Heading title={t('settings.label.unsend_time', 'Set send time')} />
 				<Select
-					label={t('settings.label.unsend_time', 'Set unsend time')}
+					label={t('settings.label.unsend_time', 'Set send time')}
 					items={unsendTimeOptions}
 					onChange={(view: SelectItem[] | string | null): void =>
 						updateProps({
@@ -228,7 +228,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 			</Container>
 			{/* Read after N seconds option managed as a read immediately */}
 			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('settings.label.mark_reading_panel', 'Mark as Read Management')} />
+				<Heading title={t('settings.label.mark_reading_panel', 'Mark as read')} />
 				<RadioGroup
 					style={{ width: '100%' }}
 					value={settingsObj.zimbraPrefMarkMsgRead === '-1' ? '-1' : '0'}
@@ -247,10 +247,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					/>
 					<Padding left="2rem" bottom="0.5rem">
 						<Text>
-							{t(
-								'label.mark_read_message_immediately',
-								'Mark messages in displayer as read immediately'
-							)}
+							{t('label.mark_read_message_immediately', 'Mark as read when opening the message')}
 						</Text>
 					</Padding>
 					<Radio
@@ -260,10 +257,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					/>
 					<Row padding={{ left: '2rem' }} display="inline-flex">
 						<Text>
-							{t(
-								'label.mark_read_message_manually',
-								'Mark messages manually as read clicking the relative icon button'
-							)}
+							{t('label.mark_read_message_manually', 'Manually mark as read by clicking this icon')}
 						</Text>
 						<Padding left="small">
 							<Icon size="medium" icon="EmailReadOutline" />
