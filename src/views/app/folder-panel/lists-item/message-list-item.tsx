@@ -14,6 +14,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import {
+	addBoard,
 	FOLDERS,
 	replaceHistory,
 	t,
@@ -30,7 +31,8 @@ import moment from 'moment';
 import React, { FC, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { getTimeLabel, participantToString } from '../../../../commons/utils';
+import { ActionsType, getTimeLabel, participantToString } from '../../../../commons/utils';
+import { MAILS_ROUTE } from '../../../../constants';
 
 import { AppContext, MsgListDraggableItemType, TextReadValuesType } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
@@ -180,7 +182,13 @@ export const MessageListItem: FC<any> = ({
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				const { id, isDraft } = item;
-				if (isDraft) replaceHistory(`/folder/${folderId}/edit/${id}?action=editAsDraft`);
+				if (isDraft) {
+					addBoard({
+						url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
+						context: { mailId: id, folderId },
+						title: ''
+					});
+				}
 			}
 		},
 		[folderId, item]
