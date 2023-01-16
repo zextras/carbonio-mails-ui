@@ -23,10 +23,10 @@ import {
 	openComposerSharedFunction,
 	openPrefilledComposerSharedFunction
 } from './integrations/shared-functions';
-import { ParticipantRole } from './commons/utils';
 import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
 import { StoreProvider } from './store/redux';
+import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
 
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')

@@ -13,6 +13,7 @@ import { banner } from './banner';
 import { getActionsRow } from './get-actions-row';
 import { getAttachments } from './get-attachments';
 import { getParticipantHeader } from './get-participant-header';
+import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 
 export type getEmailHeaderProps = {
 	msg: MailMessage;
@@ -22,11 +23,11 @@ export type getEmailHeaderProps = {
 
 export const getEmlHeader = ({ msg, content, theme }: getEmailHeaderProps): string => {
 	const { participants } = msg;
-	const from = filter(participants, { type: 'f' });
-	const to = filter(participants, { type: 't' });
-	const cc = filter(participants, { type: 'c' });
-	const bcc = filter(participants, { type: 'b' });
-	const replyTo = filter(participants, { type: 'r' });
+	const from = filter(participants, { type: ParticipantRole.FROM });
+	const to = filter(participants, { type: ParticipantRole.TO });
+	const cc = filter(participants, { type: ParticipantRole.CARBON_COPY });
+	const bcc = filter(participants, { type: ParticipantRole.BLIND_CARBON_COPY });
+	const replyTo = filter(participants, { type: ParticipantRole.REPLY_TO });
 	const msgTime = moment(msg.date).format('ddd, MMM DD, YYYY hh:mm A');
 	const hasAttachments = msg.attachments && msg.attachments?.length > 0;
 	return `

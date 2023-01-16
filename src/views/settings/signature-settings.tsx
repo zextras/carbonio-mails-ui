@@ -21,6 +21,7 @@ import styled from 'styled-components';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, escape, unescape, reject, find, concat } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
@@ -125,10 +126,10 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	// Create the fake signature for the "no signature"
 	const noSignature: SignItemType = useMemo(
 		() => ({
-			label: t('label.no_signature', 'No signature'),
+			label: t('label.no_signature', NO_SIGNATURE_LABEL),
 			name: 'no signature',
 			description: '',
-			id: '11111111-1111-1111-1111-111111111111'
+			id: NO_SIGNATURE_ID
 		}),
 		[]
 	);
@@ -360,8 +361,8 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						<Select
 							items={concat(
 								{
-									label: t('label.no_signature', 'No signature'),
-									value: '11111111-1111-1111-1111-111111111111'
+									label: t('label.no_signature', NO_SIGNATURE_LABEL),
+									value: NO_SIGNATURE_ID
 								},
 								signatures.map((signature) => ({
 									label: signature.label,

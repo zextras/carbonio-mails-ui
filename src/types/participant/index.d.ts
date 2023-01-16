@@ -4,10 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-// import { ParticipantRole } from '../../commons/utils';
-
 export type Participant = {
-	type: string;
+	type: ParticipantRoleType;
 	address: string;
 	name?: string;
 	fullName?: string;
