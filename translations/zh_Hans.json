@@ -178,7 +178,7 @@
         "revoke": "撤销",
         "revoke_access_tooltip": "撤销访问权限并发送标准通知",
         "revoke_access_without_notification": "撤销访问权限并不发送通知",
-        "revoke_share": "撤销 {{title}} 的共享",
+        "revoke_share": "撤回分享",
         "role": "角色： ",
         "select_folder": "选择文件夹",
         "send_notification": "发送通知消息至",
@@ -193,7 +193,7 @@
         "calendar_color": "项目颜色",
         "cc": "抄送",
         "draft_folder": "[草稿]",
-        "edit_access": "编辑 {{name}} 的访问权限",
+        "edit_access": "编辑 的访问权限",
         "edit_folder_properties": "编辑 {{name}} 的属性",
         "filter_user": "过滤用户",
         "find_shares": "查找共享",
@@ -362,7 +362,9 @@
         "download_and_delete": "下载并删除",
         "invalid_query": "无法解析搜索语句，请将其清除并重试",
         "not_in_list": "{{name}} - 不在您的标签列表中",
-        "enter_name": "输入名称"
+        "enter_name": "输入名称",
+        "mark_read_message_immediately": "立即将阅读窗格中的邮件标记为已读",
+        "no_signature": "无签名"
     },
     "search": {
         "unread": "未读",
@@ -422,7 +424,9 @@
             "message_selection": "消息选择",
             "set_message_color": "根据标签颜色设置消息和对话的颜色。",
             "visualization_options": "可视化选项",
-            "unsend_time": "设置未发送时间"
+            "unsend_time": "设置未发送时间",
+            "mark_reading_panel": "标记为已读",
+            "default": "默认"
         },
         "msg_from_optn": {
             "discard": "自动丢弃消息",
@@ -551,7 +555,8 @@
         "mail_unsend_time": {
             "no_delay": "无延迟",
             "second": "{{count}} 秒"
-        }
+        },
+        "address": "地址"
     },
     "snackbar": {
         "folder_shared": "文件夹已共享",

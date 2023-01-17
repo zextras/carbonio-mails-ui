@@ -261,7 +261,8 @@
         "send_scheduled": "Kirim Terjadwal",
         "download_and_delete": "Unduh dan Hapus",
         "invalid_query": "Tidak dapat mengurai kueri pencarian. Hapus dan coba lagi",
-        "not_in_list": "{{name}} - Tidak ada di daftar tag Anda"
+        "not_in_list": "{{name}} - Tidak ada di daftar tag Anda",
+        "no_signature": "Tidak ada tanda tangan"
     },
     "messages": {
         "snackbar": {
@@ -391,7 +392,8 @@
             "message_selection": "Pilihan Pesan",
             "set_message_color": "Atur warna pesan dan percakapan menurut warna tag.",
             "visualization_options": "Opsi Visualisasi",
-            "unsend_time": "Atur waktu belum kirim"
+            "unsend_time": "Atur waktu belum kirim",
+            "default": "Default"
         },
         "msg_from_optn": {
             "discard": "Hapus pesan secara otomatis",
@@ -515,7 +517,8 @@
         "mail_unsend_time": {
             "no_delay": "Tidak ada penundaan",
             "second": "{{count}} detik"
-        }
+        },
+        "address": "Alamat"
     },
     "composer": {
         "attachment": {
