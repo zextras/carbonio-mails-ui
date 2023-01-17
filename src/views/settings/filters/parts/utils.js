@@ -372,7 +372,10 @@ export const getButtonInfo = (filterName, filters, t, isCreate = true) => {
 		if (isEmpty) {
 			return [
 				true,
-				t('settings.tag_name_required', 'The action "Tag with" is missing one or more values.')
+				t(
+					'settings.tag_name_required',
+					'Fill in the "Tag" field in order to complete the action "Tag with".'
+				)
 			];
 		}
 	}
@@ -386,7 +389,7 @@ export const getButtonInfo = (filterName, filters, t, isCreate = true) => {
 				true,
 				t(
 					'settings.folder_path_required',
-					'The action "Move into folder" is missing one or more values.'
+					'Select a destination folder in order to complete the action "Move into folder".'
 				)
 			];
 		}
@@ -401,7 +404,7 @@ export const getButtonInfo = (filterName, filters, t, isCreate = true) => {
 				true,
 				t(
 					'settings.address_required',
-					'The action "Redirect to Address" is missing one or more values.'
+					'Fill in the "Address" field in order to complete the action "Redirect to Address".'
 				)
 			];
 		}
