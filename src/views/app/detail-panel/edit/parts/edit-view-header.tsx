@@ -118,7 +118,13 @@ const EditViewHeader: FC<PropType> = ({
 		updateEditorCb,
 		setOpen,
 		editorId: editor?.editorId,
-		originalMessage: editor?.original,
+		currentMessage: editor?.original,
+		originalMessage:
+			action === ActionsType.REPLY_ALL ||
+			action === ActionsType.REPLY ||
+			action === ActionsType.FORWARD
+				? editor?.original
+				: undefined,
 		folderId: boardContext?.folderId ?? FOLDERS.INBOX
 	});
 

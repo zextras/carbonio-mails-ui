@@ -26,6 +26,7 @@ import React, {
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { v4 as uuid } from 'uuid';
 import { ActionsType } from '../../../../commons/utils';
 import { useQueryParam } from '../../../../hooks/useQueryParam';
 import { getMsg } from '../../../../store/actions';
@@ -120,7 +121,19 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 		[editId, board?.context?.mailId]
 	);
 
-	const editorId = useMemo(() => activeMailId ?? generateId(), [activeMailId]);
+	/*
+	 * If the mail id is not set in the context, it means that the user is creating a
+	 * new mail, so an id with prefix 'new-' is created.
+	 *
+	 * Otherwise an uuid is generated in order to keep apart different replies to the same mail.
+	 */
+	const editorId = useMemo(() => {
+		if (!board?.context?.mailId) {
+			return generateId();
+		}
+
+		return uuid();
+	}, [board?.context?.mailId]);
 
 	const [editor, setEditor] = useState<MailsEditor>(editors[editorId]);
 	const draftId = useSelector((s: StateType) => selectDraftId(s, editor?.editorId));
@@ -254,8 +267,6 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 						original: messages?.[activeMailId ?? editorId],
 						boardContext: board?.context,
 						action,
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						change,
 						accounts,
 						labels: {
@@ -280,6 +291,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 		isSameAction,
 		activeMailId,
 		board?.context,
+		board?.context?.mailId,
 		change,
 		dispatch,
 		editor,

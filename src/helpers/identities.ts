@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
-import { isArray } from 'lodash';
+import { Account, AccountSettings, Folder, Roots } from '@zextras/carbonio-shell-ui';
+import { find, isArray } from 'lodash';
 import { MailMessage } from '../types';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 
@@ -32,9 +32,15 @@ const UNKNOWN_ADDRESS_DEFAULT_TYPE = 'alias';
 type IdentityType = 'primary' | 'alias' | 'shared';
 
 /**
+ * The type describe the possibility of a match between the account that owns the message's folder
+ * and the account that owns an identity
+ */
+type AccountOwnershipMatchType = 'match' | 'nomatch';
+
+/**
  * The type describe all the available addresses for an account
  */
-type AvailableAddress = { address: string; type: IdentityType };
+type AvailableAddress = { address: string; type: IdentityType; ownerAccount: string };
 
 /**
  * The type describe the identity, its type and the addresses used to
@@ -42,6 +48,7 @@ type AvailableAddress = { address: string; type: IdentityType };
  */
 type Identity = {
 	id: string;
+	ownerAccount: string;
 	identityName: string;
 	receivingAddress: string;
 	fromAddress: string;
@@ -72,7 +79,15 @@ type RecipientWeight = {
 };
 
 /**
- * Weight of the recipient based on its role in the message (e.g. the
+ * Weights of the match/nomatch between the owner of a folder and the owner of an identity
+ */
+const AccountOwnershipWeights: Record<AccountOwnershipMatchType, number> = {
+	match: 1000,
+	nomatch: 1
+};
+
+/**
+ * Weights of the recipient based on its role in the message (e.g. the
  * recipient in the TO field has a higher weight)
  */
 const RoleWeights = {
@@ -82,7 +97,7 @@ const RoleWeights = {
 };
 
 /**
- * Weight of the identity based on its type (e.g. the primary identity
+ * Weights of the identity based on its type (e.g. the primary identity
  * has a higher weight)
  */
 const IdentityTypeWeights = {
@@ -105,7 +120,8 @@ const getAvailableAddresses = (
 	// Adds the email address of the primary account
 	result.push({
 		address: account.name,
-		type: 'primary'
+		type: 'primary',
+		ownerAccount: account.name
 	});
 
 	// Adds all the aliases
@@ -114,13 +130,15 @@ const getAvailableAddresses = (
 			result.push(
 				...settings.attrs.zimbraMailAlias.map<AvailableAddress>((alias: string) => ({
 					address: alias,
-					type: 'alias'
+					type: 'alias',
+					ownerAccount: account.name
 				}))
 			);
 		} else {
 			result.push({
 				address: settings.attrs.zimbraMailAlias as string,
-				type: 'alias'
+				type: 'alias',
+				ownerAccount: account.name
 			});
 		}
 	}
@@ -132,7 +150,7 @@ const getAvailableAddresses = (
 				target.target.forEach((user) => {
 					if (user.type === 'account' && user.email) {
 						user.email.forEach((email) => {
-							result.push({ address: email.addr, type: 'shared' });
+							result.push({ address: email.addr, type: 'shared', ownerAccount: email.addr });
 						});
 					}
 				});
@@ -173,6 +191,7 @@ const getIdentities = (account: Account, settings: AccountSettings): Array<Ident
 			: UNKNOWN_IDENTITY_DEFAULT_TYPE;
 
 		identities.push({
+			ownerAccount: matchingReceivingAddress?.ownerAccount ?? account.name,
 			receivingAddress,
 			id: identity._attrs.zimbraPrefIdentityId,
 			identityName: identity.name,
@@ -231,8 +250,9 @@ const checkMatchingAddress = (
 	}));
 
 /**
- * Computes the weight of the recipient based on its role in the message
- * and on the type of the matching identity
+ * Computes the weight of the recipient based on its role in the message, the type of
+ * the matching identity, and the matching between the accounts that own the identity and
+ * the the message's folder
  *
  * @param recipients
  * @param identities
@@ -241,7 +261,8 @@ const checkMatchingAddress = (
  */
 const computeIdentityWeight = (
 	recipients: Array<RecipientWeight>,
-	identities: Array<Identity>
+	identities: Array<Identity>,
+	folderOwnerAccount: string
 ): Array<RecipientWeight> => {
 	const result: Array<RecipientWeight> = [];
 
@@ -252,14 +273,18 @@ const computeIdentityWeight = (
 			(identity) => identity.fromAddress === recipient.recipientAddress
 		);
 
-		// If the recipient does not have a matching identity check if matches one of the available addresses
-
-		// If the recipient does not have a matching identity, set the weight to 0
+		/*
+		 * Check if the owner account of the matching identity
+		 * is the same of the message's folder owner account
+		 */
+		const accountMatch =
+			matchingIdentity?.ownerAccount === folderOwnerAccount ? 'match' : 'nomatch';
 
 		result.push({
 			...recipient,
 			matchingIdentity,
 			weight:
+				AccountOwnershipWeights[accountMatch] *
 				RoleWeights[recipient.role] *
 				IdentityTypeWeights[matchingIdentity?.type || UNKNOWN_ADDRESS_DEFAULT_TYPE]
 		});
@@ -280,19 +305,52 @@ const filterMatchingRecipients = (recipients: Array<RecipientWeight>): Array<Rec
 	return result;
 };
 
+const getMessageOwnerAccount = (
+	message: MailMessage,
+	account: Account,
+	folderRoots: Record<string, Folder & { owner: string }>
+): string => {
+	/*
+	 * Get the message parent folder's id and the optional zid, based on the format:
+	 *
+	 * [<zid>:]<folderId>
+	 *
+	 * e.g. a79fa996-e90e-4f04-97c4-c84209bb8277:2
+	 */
+	const folderId = message.parent;
+	const zid = folderId?.split(':')?.[0];
+
+	// If the id doesn't contain the zid the primary account is considered the owner
+	if (!zid) {
+		return account.name;
+	}
+
+	// If the id contains the zid, the account is considered the owner if the zid matches the account id
+	const matchingFolderRoot = find(folderRoots, { zid });
+	if (!matchingFolderRoot) {
+		return account.name;
+	}
+
+	return matchingFolderRoot?.owner ?? account.name;
+};
+
 /**
  * Analyze the message and return the identity that should be used to reply it.
- * @param account
- * @param settings
- * @param message
+ * @param folderRoots - The list of all the folder roots
+ * @param account - The primary account infos
+ * @param settings - The settings of the account
+ * @param message - The message to analyze
  */
 const getRecipientReplyIdentity = (
+	folderRoots: Record<string, Folder & { owner: string }>,
 	account: Account,
 	settings: AccountSettings,
 	message: MailMessage
 ): MatchingReplyIdentity => {
 	// Get all the available identities for the account
 	const identities = getIdentities(account, settings);
+
+	const messageFolderOwnerAccount = getMessageOwnerAccount(message, account, folderRoots);
 
 	// Extract all the recipients addresses from the message
 	const recipients = getRecipients(message);
@@ -310,7 +368,11 @@ const getRecipientReplyIdentity = (
 	const filteredRecipients = filterMatchingRecipients(recipientsWithMatchingAddress);
 
 	// For each recipient, compute the identity weight based on the recipients address and position in the message
-	const recipientWeights = computeIdentityWeight(filteredRecipients, identities);
+	const recipientWeights = computeIdentityWeight(
+		filteredRecipients,
+		identities,
+		messageFolderOwnerAccount
+	);
 
 	// Sort the recipient by weight
 	const replyIdentity = recipientWeights.sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0))?.[0];

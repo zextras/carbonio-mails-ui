@@ -5,8 +5,6 @@
  */
 import { Avatar, Container, Text } from '@zextras/carbonio-design-system';
 import {
-	useBoard,
-	useCurrentRoute,
 	useRoots,
 	useUserAccount,
 	useUserAccounts,
@@ -16,7 +14,6 @@ import { map, find, filter, findIndex, flatten, isNull } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useLocation, useParams } from 'react-router-dom';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { getRecipientReplyIdentity } from '../../../../../helpers/identities';
 import {
@@ -31,15 +28,39 @@ export const findDefaultIdentity = ({
 	list,
 	allAccounts,
 	folderId,
+	currentMessage,
 	originalMessage,
 	account,
 	settings
 }: FindDefaultIdentityType): IdentityType | undefined => {
 	let predicate;
+
+	/*
+	 * If the message is a reply or a forward, the identity of the sender is determined
+	 * by the recipients of original message and the owning folder of the current message.
+	 */
 	if (originalMessage) {
-		const replyIdentity = getRecipientReplyIdentity(account, settings, originalMessage);
+		const replyIdentity = getRecipientReplyIdentity(
+			allAccounts,
+			account,
+			settings,
+			originalMessage
+		);
 		if (replyIdentity.identityName) {
 			predicate = { identityName: replyIdentity.identityName };
+		}
+	}
+
+	/*
+	 * if the message is a draft and the sender is already set in it, the identity is
+	 * chosen within the list of identities based on the info of the sender of the draft.
+	 */
+	if (!predicate && currentMessage?.participants) {
+		const sender = find(currentMessage.participants, { type: ParticipantRole.FROM });
+		if (sender) {
+			predicate = {
+				address: sender.address
+			};
 		}
 	}
 
@@ -56,6 +77,7 @@ type UseGetIdentitiesPropType = {
 	updateEditorCb: (arg: Partial<MailsEditor>) => void;
 	setOpen: (arg: boolean) => void;
 	editorId: string;
+	currentMessage?: MailMessage;
 	originalMessage?: MailMessage;
 	folderId: string;
 };
@@ -63,6 +85,7 @@ export const useGetIdentities = ({
 	updateEditorCb,
 	setOpen,
 	editorId,
+	currentMessage,
 	originalMessage,
 	folderId
 }: UseGetIdentitiesPropType): UseGetIdentitiesReturnType => {
@@ -86,6 +109,7 @@ export const useGetIdentities = ({
 				item._attrs?.zimbraPrefFromAddress
 			}>)`,
 			address: item._attrs?.zimbraPrefFromAddress,
+			name: item.name,
 			fullname: item._attrs?.zimbraPrefFromDisplay ?? '',
 			type: item._attrs.zimbraPrefFromAddressType,
 			identityName: item.name ?? '',
@@ -129,32 +153,17 @@ export const useGetIdentities = ({
 	}, [account, accounts, defaultIdentity?.address, defaultIdentity?.fullname, t, updateEditorCb]);
 
 	useEffect(() => {
-		if (!editorId?.includes('new-') && !isIdentitySet && list.length > 0 && !isNull(from)) {
+		if (!isIdentitySet && list.length > 0 && !isNull(from)) {
 			const def = findDefaultIdentity({
 				list,
 				allAccounts,
 				folderId,
+				currentMessage: editorId?.includes('new-') ? undefined : currentMessage,
 				originalMessage,
 				account,
 				settings
 			});
 
-			updateEditorCb({
-				from: {
-					address: def?.address,
-					fullName: def?.fullname,
-					name: def?.fullname,
-					type: ParticipantRole.FROM
-				}
-			});
-			setDefaultIdentity(def);
-			setActiveFrom(def);
-			setFrom(def);
-			setIsIdentitySet(true);
-		}
-
-		if (editorId?.includes('new-') && !isIdentitySet && list.length > 0) {
-			const def = find(list, { identityName: 'DEFAULT' });
 			updateEditorCb({
 				from: {
 					address: def?.address,
@@ -178,7 +187,8 @@ export const useGetIdentities = ({
 		from,
 		originalMessage,
 		account,
-		settings
+		settings,
+		currentMessage
 	]);
 
 	const identitiesList = useMemo(
