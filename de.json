@@ -65,7 +65,7 @@
         "allowed_actions": "Erlaubte aktionen",
         "bcc": "Bcc",
         "calendar_color": "Farbe des Elements",
-        "edit_access": "{{name}}'s Zugriff bearbeiten",
+        "edit_access": "Zugriff bearbeiten",
         "cc": "Cc",
         "draft_folder": "[ENTWURF]",
         "filter_user": "Benutzer filtern",
@@ -75,7 +75,7 @@
         "keywords": "Schlüsselwörter",
         "resend": "Erneut senden",
         "revoke": "Widerrufen",
-        "revoke_share": "{{title}}'s Teilen widerrufen",
+        "revoke_share": "Delen herroepen",
         "no_subject": "Kein Betreff",
         "owner": "Besitzer: ",
         "receive_message": "Nachrichten werden empfangen",
@@ -258,7 +258,8 @@
         "download_and_delete": "Herunterladen und Löschen",
         "invalid_query": "Die Suche kann nicht geparst werden, löschen Sie sie und versuchen Sie es erneut",
         "not_in_list": "{{name}} - Nicht in Ihrer Etiketten Liste",
-        "enter_name": "Namen eingeben"
+        "enter_name": "Namen eingeben",
+        "no_signature": "Keine Signatur"
     },
     "share": {
         "options": {
@@ -464,7 +465,9 @@
             "message_selection": "Nachrichtenauswahl",
             "set_message_color": "Legen Sie die Farbe von Nachrichten und Unterhaltungen entsprechend der Tag-Farbe fest.",
             "visualization_options": "Visualisierungsoptionen",
-            "unsend_time": "Zeit für das Zurückrufen einer Nachricht festlegen"
+            "unsend_time": "Zeit für das Zurückrufen einer Nachricht festlegen",
+            "mark_reading_panel": "Als gelesen markieren",
+            "default": "Voreinstellung"
         },
         "msg_from_optn": {
             "discard": "Nachricht automatisch verwerfen",
@@ -596,7 +599,8 @@
             "second": "{{count}} Sekunde",
             "second_plural": "{{count}} Sekunden",
             "no_delay": "Keine Verzögerung"
-        }
+        },
+        "address": "Adresse"
     },
     "folder_panel": {
         "modal": {

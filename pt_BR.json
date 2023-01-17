@@ -56,7 +56,7 @@
         "add_custom_message": "Adicionar mensagem personalizada",
         "allowed_actions": "Ações permitidas",
         "draft_folder": "[RASCUNHO]",
-        "edit_access": "Editar acesso de {{name}}",
+        "edit_access": "Editar acesso",
         "edit_folder_properties": "Editar propriedades de {{name}}",
         "automatically_delete_duplicates": "Excluir automaticamente as cópias duplicadas da mesma mensagem após o recebimento",
         "bcc": "Cco",
@@ -76,7 +76,7 @@
         "owner": "Proprietário: ",
         "receive_message": "Recebendo mensagens",
         "retention_policy": "Política de retenção",
-        "revoke_share": "Revogar compartilhamento de {{title}}",
+        "revoke_share": "Revogar compartilhamento",
         "role": "Função: ",
         "select_folder": "Selecionar pasta",
         "send_notification": "Enviar mensagem de notificação para",
@@ -250,7 +250,8 @@
         "invalid_query": "Não foi possível analisar a consulta de busca, exclua-a e tente novamente",
         "send_scheduled": "Enviar Programado",
         "download_and_delete": "Baixar e Excluir",
-        "not_in_list": "{{name}} - Não está na sua lista de etiquetas"
+        "not_in_list": "{{name}} - Não está na sua lista de etiquetas",
+        "no_signature": "Sem assinatura"
     },
     "title": {
         "new_messages": "Novas mensagens",
@@ -398,7 +399,9 @@
             "message_selection": "Seleção de mensagem",
             "set_message_color": "Definir cor das mensagens e conversas conforme a cor da etiqueta.",
             "visualization_options": "Opções de visualização",
-            "unsend_time": "Definir tempo para cancelar o envio"
+            "unsend_time": "Definir tempo para cancelar o envio",
+            "mark_reading_panel": "Marcar como lida",
+            "default": "Padrão"
         },
         "msg_from_optn": {
             "discard": "Descartar mensagem automaticamente",
@@ -526,7 +529,8 @@
             "no_delay": "Sem atraso",
             "second": "{{count}} segundo",
             "second_plural": "{{count}} segundos"
-        }
+        },
+        "address": "Endereço"
     },
     "composer": {
         "attachment": {
