@@ -17,86 +17,20 @@ import {
 } from '@zextras/carbonio-design-system';
 import { getAction, getBridgedFunctions, soapFetch, t } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
-import { filter, find, includes, map, noop, uniqBy } from 'lodash';
+import { filter, find, map, noop } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { getEMLContent, getErrorPage } from '../../../../commons/preview-eml';
-import { calcColor, getFileExtension } from '../../../../commons/utilities';
+import { errorPage } from '../../../../commons/preview-eml/error-page';
+import { getEMLContent } from '../../../../commons/preview-eml/get-eml-content';
+import { getFileExtension } from '../../../../commons/utilities';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
-import { AttachmentPart, AttachmentType, IconColors, MailMessage } from '../../../../types';
+import { AttachmentPart, AttachmentType, MailMessage } from '../../../../types';
 import DeleteAttachmentModal from './delete-attachment-modal';
 import { humanFileSize, previewType } from './file-preview';
-
-const AttachmentsActions = styled(Row)``;
-
-type GetAttachmentsDownloadLinkProps = {
-	messageId: string;
-	messageSubject: string;
-	attachments: Array<string | undefined>;
-};
-
-function getAttachmentsDownloadLink({
-	messageId,
-	messageSubject,
-	attachments
-}: GetAttachmentsDownloadLinkProps): string {
-	if (attachments.length > 1) {
-		return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
-			','
-		)}&disp=a&fmt=zip`;
-	}
-	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
-}
-
-type GetAttachmentsLinkProps = {
-	messageId: string;
-	messageSubject: string;
-	attachments: Array<string | undefined>;
-	attachmentType: string | undefined;
-};
-
-function getAttachmentsLink({
-	messageId,
-	messageSubject,
-	attachments,
-	attachmentType
-}: GetAttachmentsLinkProps): string {
-	if (attachments.length > 1) {
-		return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
-			','
-		)}&disp=a&fmt=zip`;
-	}
-	if (includes(['image/gif', 'image/png', 'image/jpeg', 'image/jpg'], attachmentType)) {
-		return `/service/preview/image/${messageId}/${attachments.join(',')}/0x0/?quality=high`;
-	}
-	if (includes(['application/pdf'], attachmentType)) {
-		return `/service/preview/pdf/${messageId}/${attachments.join(',')}/?first_page=1`;
-	}
-	if (
-		includes(
-			[
-				'text/csv',
-				'text/plain',
-				'application/msword',
-				'application/vnd.ms-excel',
-				'application/vnd.ms-powerpoint',
-				'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-				'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-				'application/vnd.oasis.opendocument.spreadsheet',
-				'application/vnd.oasis.opendocument.presentation',
-				'application/vnd.oasis.opendocument.text'
-			],
-			attachmentType
-		)
-	) {
-		return `/service/preview/document/${messageId}/${attachments.join(',')}`;
-	}
-	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
-}
+import { getAttachmentIconColors, getAttachmentsDownloadLink, getAttachmentsLink } from './utils';
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
@@ -155,7 +89,8 @@ const Attachment: FC<AttachmentType> = ({
 	att
 }) => {
 	const { createPreview } = useContext(PreviewsManagerContext);
-	const extension = getFileExtension(att);
+	const extension = getFileExtension(att).value;
+	const theme = useTheme();
 
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
@@ -271,7 +206,8 @@ const Attachment: FC<AttachmentType> = ({
 				const content = getEMLContent({
 					messages: res,
 					conversations,
-					isMsg: true
+					isMsg: true,
+					theme
 				});
 				if (printWindow && printWindow.top && printWindow.document) {
 					printWindow.top.document.title = 'Carbonio';
@@ -280,10 +216,10 @@ const Attachment: FC<AttachmentType> = ({
 				}
 			})
 			.catch(() => {
-				const errorContent = getErrorPage();
+				const errorContent = errorPage;
 				printWindow && printWindow.document.write(errorContent);
 			});
-	}, [att?.name, message]);
+	}, [att?.name, message, theme]);
 
 	const preview = useCallback(
 		(ev) => {
@@ -444,23 +380,6 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 		[message, attachmentsParts]
 	);
 
-	const iconColors: IconColors = useMemo(
-		() =>
-			uniqBy(
-				map(attachments, (att) => {
-					const fileExtn = getFileExtension(att);
-					const color = calcColor(att?.contentType ?? '', theme);
-
-					return {
-						extension: fileExtn,
-						color
-					};
-				}),
-				'extension'
-			),
-		[attachments, theme]
-	);
-
 	const getLabel = ({
 		allSuccess,
 		allFails
@@ -551,15 +470,12 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 						})}
 						message={message}
 						part={att?.name ?? ''}
-						iconColors={iconColors}
+						iconColors={getAttachmentIconColors({ attachments, theme })}
 						att={att}
 					/>
 				))}
 			</Container>
-			<AttachmentsActions
-				mainAlignment="flex-start"
-				padding={{ top: 'extrasmall', bottom: 'medium' }}
-			>
+			<Row mainAlignment="flex-start" padding={{ top: 'extrasmall', bottom: 'medium' }}>
 				<Padding right="small">
 					{attachmentsCount === 1 && (
 						<Text color="gray1">{`1 ${t('label.attachment', 'Attachment')}`}</Text>
@@ -618,7 +534,7 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 						{t('label.save_to_files', 'Save to Files')}
 					</Link>
 				)}
-			</AttachmentsActions>
+			</Row>
 		</Container>
 	) : (
 		<></>

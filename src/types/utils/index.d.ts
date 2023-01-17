@@ -141,3 +141,9 @@ export type ThemeObj = {
 	>;
 	avatarColors: Record<`avatar_${number}`, string>;
 };
+
+export type GetAttachmentsDownloadLinkProps = {
+	messageId: string;
+	messageSubject: string;
+	attachments: Array<string | undefined>;
+};
