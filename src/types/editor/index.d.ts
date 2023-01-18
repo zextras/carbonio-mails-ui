@@ -67,6 +67,7 @@ type FindDefaultIdentityType = {
 	list: Array<IdentityType>;
 	allAccounts: Record<string, Folder & { owner: string }>;
 	folderId: string;
+	currentMessage?: MailMessage;
 	originalMessage?: MailMessage;
 	account: Account;
 	settings: AccountSettings;
