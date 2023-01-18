@@ -147,6 +147,7 @@ const App = () => {
 						addBoard({
 							url: `${MAILS_ROUTE}/new?action=new`,
 							title: t('label.new_email', 'New E-mail')
+							// TODO provide the context filled with the current folder id
 						});
 					},
 					disabled: false,
