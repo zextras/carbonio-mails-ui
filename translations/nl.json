@@ -73,7 +73,7 @@
         "bcc": "Bcc",
         "calendar_color": "Kleur item",
         "cc": "Cc",
-        "edit_access": "Toegang van {{name}} bewerken",
+        "edit_access": "Toegang bewerken",
         "edit_folder_properties": "Eigenschappen van {{name}} bewerken",
         "draft_folder": "[CONCEPT]",
         "filter_user": "Gebruikers filteren",
@@ -266,7 +266,8 @@
         "send_scheduled": "Gepland verzenden",
         "download_and_delete": "Downloaden en verwijderen",
         "invalid_query": "Kan de zoekopdracht niet parseren, wis deze en probeer opnieuw",
-        "enter_name": "Naam invullen"
+        "enter_name": "Naam invullen",
+        "no_signature": "Geen handtekening"
     },
     "messages": {
         "invalid_address": "Het volgende adres lijkt ongeldig te zijn",
@@ -450,7 +451,8 @@
             "message_selection": "Berichtselectie",
             "set_message_color": "De setkleur van berichten en gesprekken instellen volgens de kleur van de tag.",
             "visualization_options": "Visualisatie-opties",
-            "unsend_time": "Tijd voor afmelden instellen"
+            "unsend_time": "Tijd voor afmelden instellen",
+            "default": "Standaard"
         },
         "msg_from_optn": {
             "discard": "Bericht automatisch verwijderen",
@@ -582,7 +584,8 @@
             "no_delay": "Geen vertraging",
             "second": "{{count}} seconde",
             "second_plural": "{{count}} seconden"
-        }
+        },
+        "address": "Adres"
     },
     "tooltip": {
         "revoke": "Toegang intrekken",

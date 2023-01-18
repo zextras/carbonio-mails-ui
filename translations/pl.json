@@ -121,7 +121,7 @@
         "create": "Stwórz",
         "discard_changes": "ODRZUĆ ZMIANY",
         "edit": "Edytuj",
-        "edit_access": "Edytuj dostęp do {{name}}",
+        "edit_access": "Edytuj dostęp",
         "empty": "Pusty",
         "error_try_again": "Coś poszło nie tak, spróbuj ponownie",
         "cancel": "Anuluj",
@@ -152,7 +152,7 @@
         "allowed_actions": "Dozwolone czynności",
         "any": "jakiekolwiek",
         "attachment_type": "Typ załącznika",
-        "bcc": "Bcc",
+        "bcc": "UDW",
         "remove_0": "Usuń",
         "remove_1": "Usuń wszystkie",
         "remove_2": "Usuń wszystkie",
@@ -163,7 +163,7 @@
         "attachment_status": "Status załącznika",
         "back": "Powrót",
         "calendar_color": "Kolor elementu",
-        "cc": "Cc",
+        "cc": "DW",
         "choose_folder": "Wybierz folder",
         "delete": "Usuń",
         "delete_permanently": "Trwale usuń",
@@ -186,7 +186,7 @@
         "go_back": "Powrót",
         "grantee": "Beneficjent: ",
         "hide": "Ukryj",
-        "highlight_tab": "Podświetl zakładkę Skrzynka pocztowa",
+        "highlight_tab": "Podświetl zakładkę skrzynka pocztowa",
         "insert": "Wstaw",
         "keywords": "Słowa kluczowe",
         "loading_results": "Ładowanie wyników…",
@@ -208,7 +208,7 @@
         "retention_policy": "Polityka przechowywania",
         "revoke_access_tooltip": "Odbierz dostęp i wyślij domyślną notkę",
         "revoke_access_without_notification": "Odbierz dostęp i nie wysyłaj powiadomienia",
-        "revoke_share": "Cofnij udostępnienie {{title}}",
+        "revoke_share": "Cofnij udostępnienie",
         "revoke_with_custom_message": "Odbierz dostęp i wyślij niestandardową notkę",
         "role": "Rola: ",
         "search_activate_selection_mode": "Tryb wybierania nie jest jeszcze dostępny w wynikach wyszukiwań",
@@ -241,7 +241,7 @@
         "would_like_to_share": "udostępniono jego",
         "write": "Pisanie",
         "signature_required": "Informacje dot. podpisu są wymagane.",
-        "cc_bcc": "Cc Bcc",
+        "cc_bcc": "DW UDW",
         "from_identity": "Od: {{identity}}",
         "new_email": "Nowy e-mail",
         "send_email": "Wyślij e-maila",
@@ -332,7 +332,10 @@
         "not_in_list": "{{name}} nie znajduje się na Twojej liście tagów",
         "invalid_query": "Nie udało się przetworzyć filtrów, wyczyść wyszukiwanie i spróbuj ponownie",
         "download_and_delete": "Pobierz i usuń",
-        "enter_name": "Wprowadź nazwę"
+        "enter_name": "Wprowadź nazwę",
+        "mark_read_message_manually": "Oznaczaj wiadomości jako przeczytane manualnie klikając ikonkę",
+        "no_signature": "Brak podpisu",
+        "mark_read_message_immediately": "Natychmiastowo oznaczaj wiadomości jako przeczytane"
     },
     "message": {
         "snackbar": {
@@ -390,7 +393,7 @@
             "share_calendar_role": {
                 "admin": "Administrator",
                 "manager": "Manager",
-                "none": "Wyłączone",
+                "none": "Brak uprawnień",
                 "viewer": "Wyświetlający"
             }
         },
@@ -558,7 +561,12 @@
             "message_selection": "Wybór wiadomości",
             "search_query": "Domyślne kryterium",
             "visualization_options": "Opcje wyświetlania",
-            "unsend_time": "Ustaw czas wysyłania"
+            "unsend_time": "Ustaw czas cofnięcia wysyłania",
+            "not_changed_anything": "Nie wprowadzono żadnych zmian",
+            "mark_reading_panel": "Ustawienia oznaczania jako przeczytane",
+            "mark_manually": "Oznaczaj manualnie",
+            "filter_name_required": "Nazwa filtra jest wymagana",
+            "default": "Domyślne"
         },
         "actions": "Czynności",
         "active_filter": "Filtr aktywny",
@@ -628,11 +636,11 @@
         "does_not_match_exactly": "nie odpowiada dokładnie",
         "matches_exactly": "odpowiada dokładnie",
         "mb": "MB",
-        "move_into_folder": "Przenieś do Folderu",
+        "move_into_folder": "Przenieś do folderu",
         "msg_from_optn": {
             "inbox": "Umieść w skrzynce odbiorczej",
             "discard": "Automatycznie odrzucaj wiadomość",
-            "inbox_if_cc": "Umieść w skrzynce odbiorczej jeśli jestem w \"Do:\" lub \"Cc:\" e-maila"
+            "inbox_if_cc": "Umieść w skrzynce odbiorczej jeśli jestem w \"Do:\" lub \"DW:\" e-maila"
         },
         "my_frequent_emails": "moje częste e-maile",
         "new_mail_optn": {
@@ -654,7 +662,7 @@
         "remove_condition": "Usuń ten warunek",
         "social": "Społecznościowy",
         "tag_with": "Umieść tag",
-        "to_cc": "Do lub CC",
+        "to_cc": "Do lub DW",
         "twitter_notification": "Powiadomienia z Twittera",
         "not_over": "nie zakończone",
         "over": "zakończone",
@@ -692,7 +700,11 @@
             "second_1": "{{count}} sekundy",
             "second_2": "{{count}} sekund",
             "no_delay": "Brak opóźnienia"
-        }
+        },
+        "folder_path_required": "W czynności \"Przenieś do folderu\" brakuje jednej lub więcej wartości.",
+        "tag_name_required": "W czynności \"Umiesc tag\" brakuje jednej lub więcej wartości.",
+        "address_required": "W czynności \"Przekieruj na adres\" brakuje jednej lub więcej wartości.",
+        "address": "Adres"
     },
     "signatures": {
         "signature_heading": "Podpisy",
@@ -734,9 +746,9 @@
         "unflagged": "nie oflagowano",
         "flagged": "oflagowano",
         "tome": "do mnie",
-        "tofromme": "do mnie, ode mnie lub w cc (kopii) do mnie",
-        "tofromccme": "do mnie, ode mnie lub w cc (kopii) do mnie",
-        "toccme": "do mnie lub w cc (kopii) do mnie",
+        "tofromme": "do mnie, ode mnie lub DW/UDW do mnie",
+        "tofromccme": "do mnie, ode mnie lub DW/UDW do mnie",
+        "toccme": "do mnie lub DW/UDW do mnie",
         "solo": "konwersacje z jedną wiadomością",
         "sent": "wysłane przeze mnie",
         "replied": "odpowiedziałem",
@@ -749,7 +761,7 @@
         "fromccme": "ode mnie",
         "forwarded": "przekazano dalej",
         "draft": "wersja robocza",
-        "ccme": "w cc (kopii) do mnie",
+        "ccme": "DW/UDW do mnie",
         "anywhere": "we wszystkich folderach"
     },
     "attachment_type": {

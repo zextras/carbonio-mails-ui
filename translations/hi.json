@@ -220,7 +220,8 @@
         "send_scheduled": "शैड्यूल्ड भेजें",
         "download_and_delete": "डाउनलोड और डिलीट करें",
         "enter_name": "नाम एंटर करें",
-        "not_in_list": "{{name}} - आपकी टैग लिस्ट में नहीं है"
+        "not_in_list": "{{name}} - आपकी टैग लिस्ट में नहीं है",
+        "no_signature": "कोई हस्ताक्षर नहीं"
     },
     "messages": {
         "invalid_address": "निम्नलिखित एड्रेस अमान्य लग रहा है",
@@ -410,7 +411,8 @@
             "conversation_ordering": "बात-चीत क्रम में लगाना",
             "set_message_color": "अपने मैसेज और बात-चीतों के कलर टैग कलर के अनुसार सेट करें।",
             "visualization_options": "दिखने के ऑप्शन",
-            "unsend_time": "अनसेंड टाइम सेट करें"
+            "unsend_time": "अनसेंड टाइम सेट करें",
+            "default": "डिफ़ॉल्ट"
         },
         "msg_from_optn": {
             "discard": "मैसेज ऑटोमैटिक हटाएँ",
@@ -538,7 +540,8 @@
             "no_delay": "कोई देर नहीं",
             "second": "{{count}} सेकंड",
             "second_plural": "{{count}} सेकंड"
-        }
+        },
+        "address": "एड्रैस"
     },
     "tooltip": {
         "edit": "शेयर गुणों में संशोधन",

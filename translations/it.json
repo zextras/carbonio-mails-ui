@@ -104,10 +104,10 @@
         "revoke": "Revoca",
         "revoke_access_tooltip": "Revoca accesso e invia una notifica standard",
         "shared_item": "Elemento condiviso:",
-        "edit_access": "Modifica l'accesso di {{name}}",
+        "edit_access": "Modifica accesso",
         "edit_folder_properties": "Modifica proprietà di {{name}}",
         "revoke_access_without_notification": "Revoca accesso e non inviare notifica",
-        "revoke_share": "Revoca condivisone di {{title}}",
+        "revoke_share": "Revoca condivisone",
         "share": "Condividi",
         "grantee": "Beneficiario ",
         "highlight_tab": "Evidenzia il pannello Email",
@@ -284,7 +284,10 @@
         "enter_name": "Inserisci Nome",
         "invalid_query": "Impossibile analizzare la query di ricerca, cancella e riprova",
         "download_and_delete": "Scarica e Elimina",
-        "not_in_list": "{{name}} - Non presente nella tua lista di tag"
+        "not_in_list": "{{name}} - Non presente nella tua lista di tag",
+        "mark_read_message_immediately": "Contrassegna immediatamente i messaggi come letti nel riquadro di lettura",
+        "mark_read_message_manually": "Contrassegna come letto manualmente cliccando su questa icona",
+        "no_signature": "Nessuna firma"
     },
     "tooltip": {
         "add_attachments": "Aggiungi allegati",
@@ -453,7 +456,12 @@
             "display_messages": "Visualizza Messaggi",
             "default_mail_search": "Ricerca Predefinita dei messaggi",
             "visualization_options": "Opzioni di Visualizzazione",
-            "unsend_time": "Imposta tempo per l'invio"
+            "unsend_time": "Imposta tempo per l'invio",
+            "not_changed_anything": "Nessuna modifica effettuata",
+            "mark_reading_panel": "Contrassegna come letto",
+            "filter_name_required": "Il nome del filtro è obbligatorio",
+            "mark_manually": "Contrassegna manualmente",
+            "default": "Predefinito"
         },
         "new_mail_optn": {
             "manually": "Manualmente",
@@ -585,7 +593,11 @@
             "no_delay": "Nessun ritardo",
             "second": "{{count}} secondo",
             "second_plural": "{{count}} secondi"
-        }
+        },
+        "folder_path_required": "Seleziona una cartella di destinazione per completare l'azione \"Sposta nella cartella\".",
+        "tag_name_required": "Completa il campo \"Tag\" per completare l'azione \"Tagga con\".",
+        "address_required": "Completa il campo \"Indirizzo\" per completare l'azione \"Reindirizza a Indirizzo\".",
+        "address": "Indirizzo"
     },
     "search": {
         "attachment_note": "Cerca tutte le e-mail che hanno un allegato.",

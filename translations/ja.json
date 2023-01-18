@@ -265,7 +265,8 @@
         "download_and_delete": "ダウンロードして削除",
         "invalid_query": "検索クエリを解析できません。クリアして再びお試しください",
         "not_in_list": "{{name}} - タグリストにありません",
-        "enter_name": "名前を入力する"
+        "enter_name": "名前を入力する",
+        "no_signature": "署名なし"
     },
     "messages": {
         "modal": {
@@ -434,7 +435,8 @@
             "message_selection": "メッセージの選択",
             "set_message_color": "タグの色に合わせてメッセージや会話の色を設定します。",
             "visualization_options": "視覚化オプション",
-            "unsend_time": "未送信時間の設定"
+            "unsend_time": "未送信時間の設定",
+            "default": "デフォルト"
         },
         "msg_from_optn": {
             "discard": "メッセージを自動的に破棄する",
@@ -562,7 +564,8 @@
         "mail_unsend_time": {
             "no_delay": "遅延なし",
             "second": "{{count}}秒"
-        }
+        },
+        "address": "アドレス"
     },
     "snackbar": {
         "share_resend": "送信された招待を共有する",

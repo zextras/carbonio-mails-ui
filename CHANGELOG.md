@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.56...v1.0.0) (2023-01-18)
+
 ### [0.1.56](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.55...v0.1.56) (2023-01-10)
 
 
