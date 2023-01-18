@@ -81,7 +81,7 @@
     "@mui/material": "^5.10.6",
     "@reduxjs/toolkit": "1.6.2",
     "@zextras/carbonio-design-system": "1.0.0",
-    "@zextras/carbonio-shell-ui": "0.4.46",
+    "@zextras/carbonio-shell-ui": "1.0.0",
     "@zextras/carbonio-ui-preview": "1.0.0",
     "core-js": "3.19.1",
     "i18next": "^21.5.4",

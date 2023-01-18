@@ -261,7 +261,8 @@
         "download_and_delete": "ดาวน์โหลดและลบ",
         "invalid_query": "ไม่สามารถวิเคราะห์คำค้นหาได้ โปรดล้างข้อมูลแล้วลองใหม่อีกครั้ง",
         "enter_name": "ป้อนชื่อ",
-        "not_in_list": "{{name}} - ไม่อยู่ในรายการแท็กของคุณ"
+        "not_in_list": "{{name}} - ไม่อยู่ในรายการแท็กของคุณ",
+        "no_signature": "ไม่มีลายเซ็น"
     },
     "messages": {
         "modal": {
@@ -434,7 +435,8 @@
             "message_selection": "การเลือกข้อความ",
             "set_message_color": "กำหนดสีของข้อความและการสนทนาตามสีแท็ก",
             "visualization_options": "ตัวเลือกการแสดงภาพ",
-            "unsend_time": "ตั้งเวลายกเลิกการส่ง"
+            "unsend_time": "ตั้งเวลายกเลิกการส่ง",
+            "default": "ค่าเริ่มต้น"
         },
         "msg_from_optn": {
             "discard": "ยกเลิกข้อความโดยอัตโนมัติ",
@@ -562,7 +564,8 @@
         "mail_unsend_time": {
             "no_delay": "ไม่มีความล่าช้า",
             "second": "{{count}} วินาที"
-        }
+        },
+        "address": "ที่อยู่"
     },
     "snackbar": {
         "share_resend": "ส่งการแชร์คำเชิญอีกครั้ง",

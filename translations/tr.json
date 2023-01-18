@@ -101,7 +101,7 @@
         "download": "İndir",
         "download_plural": "Hepsini İndir",
         "edit": "Düzenle",
-        "edit_access": "{{name}}'in erişimini düzenle",
+        "edit_access": "Erişimi düzenle",
         "save": "Kaydet",
         "attachment": "Ek",
         "attachment_plural": "Ekler",
@@ -112,7 +112,7 @@
         "flash_browser_title": "Tarayıcı başlığında flaş uyarısı",
         "revoke_access_tooltip": "Standart bildirim göndererek erişim yetkisini kaldır",
         "revoke_access_without_notification": "Bildirim göndermeden erişim yetkisini kaldır",
-        "revoke_share": "{{title}} paylaşımını iptal et",
+        "revoke_share": "Paylaşımı kaldır",
         "add_custom_message": "Özel mesaj ekle",
         "allowed_actions": "İzin verilen eylemler",
         "bcc": "Bcc",
@@ -306,12 +306,15 @@
         "not_in_list": "{{name}} - Etiket listenizde yok",
         "invalid_query": "Arama sorgusu çözümlenemedi, silip yeniden deneyin",
         "download_and_delete": "İndir ve Sil",
-        "enter_name": "Ad Girin"
+        "enter_name": "Ad Girin",
+        "mark_read_message_manually": "Bu simgeye tıklayınca okundu olarak işaretle",
+        "mark_read_message_immediately": "Okuma bölmesindeki mesajları hemen okundu olarak işaretle",
+        "no_signature": "İmza yok"
     },
     "share": {
         "options": {
             "share_calendar_role": {
-                "none": "Hiçbiri",
+                "none": "Yok",
                 "admin": "Admin",
                 "manager": "Yöneten",
                 "viewer": "Görüntüleyen"
@@ -464,7 +467,12 @@
             "message_selection": "Mesaj Seçimi",
             "set_message_color": "Mesajların ve görüşmelerin rengini etiket rengine göre belirle.",
             "visualization_options": "Görsel Seçenekler",
-            "unsend_time": "Gönderim zamanı ayarla"
+            "unsend_time": "Gönderim zamanı ayarla",
+            "not_changed_anything": "Değişiklik yapılmadı",
+            "mark_reading_panel": "Okundu Olarak İşaretle",
+            "mark_manually": "Manuel olarak işaretle",
+            "filter_name_required": "Filtre adı gerekiyor",
+            "default": "Varsayılan"
         },
         "msg_from_optn": {
             "discard": "Mesajı otomatik olarak çöpe at",
@@ -596,7 +604,11 @@
             "second": "{{count}} saniye",
             "second_plural": "{{count}} saniye",
             "no_delay": "Gecikme yok"
-        }
+        },
+        "tag_name_required": "\"Etiketle\" işlemini tamamlamak için \"Etiket\" alanını doldurun.",
+        "folder_path_required": "\"Klasöre Taşı\" işlemini tamamlamak için \"Hedef Klasör\" alanını doldurun.",
+        "address_required": "\"Adrese Yönlendir\" işlemini tamamlamak için \"Adres\" alanını doldurun.",
+        "address": "Adres"
     },
     "displayer": {
         "description6": "Bu e-postayı yanıtlayın veya diğer kullanıcılara yönlendirin.",

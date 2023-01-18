@@ -145,7 +145,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 
 	const [createFilterDisabled, buttonTooltip] = useMemo(() => {
 		if (isEqual(copyRequiredFilters, requiredFilters)) {
-			return [true, t('settings.label.not_changed_anything', 'You haven’t changed anything')];
+			return [true, t('settings.label.not_changed_anything', 'No change was made')];
 		}
 		return getButtonInfo(filterName, requiredFilters, t, false);
 	}, [copyRequiredFilters, filterName, requiredFilters, t]);

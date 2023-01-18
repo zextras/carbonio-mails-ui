@@ -69,7 +69,7 @@
         "save": "Guardar",
         "send": "Enviar",
         "share": "Compartir",
-        "edit_access": "Editar el acceso de {{name}}",
+        "edit_access": "Editar el acceso",
         "resend": "Enviar de nuevo",
         "revoke": "Revocar",
         "add_custom_message": "Añadir mensaje personalizado",
@@ -91,7 +91,7 @@
         "retention_policy": "Política de retención",
         "revoke_access_tooltip": "Revocar acceso enviando la notificación estándar",
         "revoke_access_without_notification": "Revocar acceso sin enviar ninguna notificación",
-        "revoke_share": "Revocar compartición de {{title}}",
+        "revoke_share": "Revocar compartición",
         "role": "Rol: ",
         "select_folder": "Elige una carpeta",
         "send_notification": "Enviar un mensaje de notificación a",
@@ -266,7 +266,8 @@
         "download_and_delete": "Descargar y borrar",
         "enter_name": "Nueva firma",
         "invalid_query": "No se puede analizar la consulta de la búsqueda, bórrala y prueba de nuevo",
-        "not_in_list": "{{name}} - No está en tu lista de firmas"
+        "not_in_list": "{{name}} - No está en tu lista de firmas",
+        "no_signature": "Ninguna firma"
     },
     "messages": {
         "modal": {
@@ -464,7 +465,9 @@
             "message_selection": "Selección de mensajes",
             "set_message_color": "Aplicar el color de la etiqueta a mensajes y conversaciones.",
             "visualization_options": "Opciones de visualización",
-            "unsend_time": "Ajustar tiempo de envío"
+            "unsend_time": "Ajustar tiempo de envío",
+            "mark_reading_panel": "Marcar como leído",
+            "default": "Predeterminado"
         },
         "msg_from_optn": {
             "discard": "Descartar mensaje",
@@ -596,7 +599,8 @@
             "second": "{{count}} segundo",
             "second_plural": "{{count}} segundos",
             "no_delay": "Sin demora"
-        }
+        },
+        "address": "Dirección"
     },
     "folder_panel": {
         "modal": {
