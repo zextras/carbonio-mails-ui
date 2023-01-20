@@ -134,11 +134,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 	return !searchInTrash && item.parent === FOLDERS.TRASH ? (
 		<></>
 	) : (
-		<Container
-			mainAlignment="flex-start"
-			data-testid={`SearchMessageListItem-${item.id}`}
-			background={item.read ? 'tranparent' : 'gray5'}
-		>
+		<Container mainAlignment="flex-start" data-testid={`SearchMessageListItem-${item.id}`}>
 			<ListItemActionWrapper item={item} onClick={onClick}>
 				<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
 					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}

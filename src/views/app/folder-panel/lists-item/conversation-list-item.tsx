@@ -11,8 +11,7 @@ import {
 	Drag,
 	Icon,
 	IconButton,
-	List,
-	ListProps,
+	ListV2,
 	Padding,
 	Row,
 	Text,
@@ -43,6 +42,7 @@ import {
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { searchConv } from '../../../../store/actions';
@@ -51,8 +51,9 @@ import { selectMessages } from '../../../../store/messages-slice';
 import {
 	Conversation,
 	ConversationMessagesListProps,
-	CustomListItem,
-	MailMessage,
+	ConvMessage,
+	IncompleteMessage,
+	MessageListItemProps,
 	StateType,
 	TextReadValuesProps
 } from '../../../../types';
@@ -63,8 +64,6 @@ import { ListItemActionWrapper } from './list-item-actions-wrapper';
 import { MessageListItem } from './message-list-item';
 import { SenderName } from './sender-name';
 
-const CustomList = styled(List)<ListProps<CustomListItem> & { isFromSearch?: boolean }>``;
-
 export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 	active,
 	conversationStatus,
@@ -73,15 +72,44 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 	length,
 	isFromSearch
 }) => {
-	const messagesToRender = useMemo(
+	const messagesToRender = useMemo<MessageListItemProps['item'][]>(
 		() =>
 			map(messages, (item) => ({
 				...item,
 				id: item.id ?? '',
-				...(isFromSearch && { isFromSearch: true })
+				isFromSearch
 			})),
 		[isFromSearch, messages]
 	);
+
+	const listItems = useMemo(
+		() =>
+			map(messagesToRender, (message) => (
+				<CustomListItem
+					selected={false}
+					active={active === message.id}
+					key={message.id}
+					background={'transparent'}
+				>
+					{(isVisible): JSX.Element => (
+						<MessageListItem
+							folderId={folderId}
+							isConvChildren
+							item={message}
+							selected={false}
+							selecting={false}
+							draggedIds={{}}
+							setDraggedIds={noop}
+							setIsDragging={noop}
+							selectedItems={{}}
+							visible={isVisible}
+						/>
+					)}
+				</CustomListItem>
+			)),
+		[active, folderId, messagesToRender]
+	);
+
 	if (conversationStatus !== 'complete') {
 		return (
 			<Container height={64 * length}>
@@ -90,19 +118,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 		);
 	}
 
-	return (
-		<CustomList
-			style={{ paddingBottom: '0.25rem' }}
-			active={active}
-			items={messagesToRender}
-			isFromSearch={isFromSearch}
-			itemProps={{
-				folderId,
-				isConvChildren: true
-			}}
-			ItemComponent={MessageListItem}
-		/>
-	);
+	return <ListV2 style={{ paddingBottom: '0.25rem' }}>{listItems}</ListV2>;
 };
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
@@ -164,7 +180,6 @@ type ConversationListItemProps = {
 	selected: boolean;
 	selecting: boolean;
 	toggle: () => void;
-	active?: boolean;
 	visible?: boolean;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	draggedIds?: Record<string, boolean> | undefined;
@@ -180,7 +195,6 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 	selected,
 	selecting,
 	toggle,
-	active,
 	visible,
 	setDraggedIds,
 	draggedIds,
@@ -235,7 +249,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 	const participantsString = useMemo(
 		() =>
 			reduce(
-				uniqBy(item.participants, (em: any) => em.address),
+				uniqBy(item.participants, (em) => em.address),
 				(acc, part) => trimStart(`${acc}, ${participantToString(part, accounts)}`, ', '),
 				''
 			),
@@ -323,12 +337,9 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 	const messagesToRender = useMemo(
 		() =>
 			uniqBy(
-				reduce(
+				reduce<ConvMessage, IncompleteMessage[]>(
 					item.messages,
-					(
-						acc: Array<Partial<MailMessage>>,
-						v: Partial<MailMessage>
-					): Array<Partial<MailMessage>> => {
+					(acc, v) => {
 						const msg = find(messages, ['id', v.id]);
 
 						if (msg) {
@@ -349,9 +360,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 						return acc;
 					},
 					[]
-				).sort((a: Partial<MailMessage>, b: Partial<MailMessage>) =>
-					a.date && b.date ? sortSign * (a.date - b.date) : 1
-				),
+				).sort((a, b) => (a.date && b.date ? sortSign * (a.date - b.date) : 1)),
 				'id'
 			),
 		[item?.messages, folderId, messages, sortSign]
@@ -391,14 +400,9 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 			style={{ display: 'block' }}
 			onDragStart={(e): void => dragCheck(e, item.id)}
 		>
-			<Container
-				background={item.read ? 'transparent' : 'gray5'}
-				mainAlignment="flex-start"
-				data-testid={`ConversationListItem-${item.id}`}
-			>
+			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
 				<ListItemActionWrapper
 					item={item}
-					current={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
 					hoverTooltipLabel={participantsString}

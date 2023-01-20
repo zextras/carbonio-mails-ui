@@ -67,7 +67,6 @@ export type SearchConversationListItemProps = {
 	selected: boolean;
 	selecting: boolean;
 	toggle?: (arg: string) => void;
-	active: boolean;
 };
 
 export type AdvancedFilterModalProps = {

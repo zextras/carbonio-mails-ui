@@ -12,6 +12,7 @@ import {
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
+import { DropdownItem } from '@zextras/carbonio-design-system';
 import { getActions as conversationActions } from '../ui-actions/conversation-actions';
 import { getActions as messageActions } from '../ui-actions/message-actions';
 import { Conversation, MailMessage } from '../types';
@@ -21,11 +22,9 @@ type ACPProps = {
 	isConversation?: boolean;
 };
 
-type ActionObj = {
-	id: string;
-	label: string;
-	click: (event: MouseEvent) => void;
-	icon: string;
+type ActionObj = DropdownItem & {
+	icon: NonNullable<DropdownItem['icon']>;
+	click: NonNullable<DropdownItem['click']>;
 };
 
 type ActionList = Array<ActionObj>;

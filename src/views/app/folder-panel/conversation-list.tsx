@@ -6,28 +6,20 @@
 import {
 	Container,
 	Divider,
-	ItemComponentProps,
-	List,
 	Padding,
 	SnackbarManagerContext,
 	Text
 } from '@zextras/carbonio-design-system';
 import { t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
-import { find, map, reduce } from 'lodash';
-import React, {
-	ComponentType,
-	FC,
-	useCallback,
-	useContext,
-	useEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { find, map, noop, reduce } from 'lodash';
+import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { CustomList } from '../../../carbonio-ui-commons/components/list/list';
+import { CustomListItem } from '../../../carbonio-ui-commons/components/list/list-item';
 import { handleKeyboardShortcuts } from '../../../hooks/keyboard-shortcuts';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useConversationListItems } from '../../../hooks/use-conversation-list';
 import { useSelection } from '../../../hooks/useSelection';
 import { search } from '../../../store/actions';
@@ -49,10 +41,10 @@ const DragImageContainer = styled.div`
 	width: 35vw;
 `;
 
-const DragItems: FC<{ conversations: Conversation[]; draggedIds: Array<string> | undefined }> = ({
-	conversations,
-	draggedIds
-}) => {
+const DragItems: FC<{
+	conversations: Conversation[];
+	draggedIds: Record<string, boolean> | undefined;
+}> = ({ conversations, draggedIds }) => {
 	const items = reduce(
 		draggedIds,
 		(acc: Conversation[], v, k) => {
@@ -68,9 +60,16 @@ const DragItems: FC<{ conversations: Conversation[]; draggedIds: Array<string> |
 	return (
 		<>
 			{map(items, (item) => (
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				<ConversationListItem item={item} key={item.id} draggedIds={draggedIds} />
+				<ConversationListItem
+					item={item}
+					key={item.id}
+					draggedIds={draggedIds}
+					folderId={''}
+					itemId={item.id}
+					selected={false}
+					selecting={false}
+					toggle={noop}
+				/>
 			))}
 		</>
 	);
@@ -82,15 +81,14 @@ const ConversationList: FC = () => {
 	const conversations = useConversationListItems();
 
 	const [isDragging, setIsDragging] = useState(false);
-	const [draggedIds, setDraggedIds] = useState();
+	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
 	const [isLoading, setIsLoading] = useState(false);
 	const dragImageRef = useRef(null);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const status = useSelector(selectConversationStatus);
 
-	// TODO: Need to replace it with correct type exported from shell
-	const conversationListStatus = useSelector((store: any) =>
+	const conversationListStatus = useAppSelector((store) =>
 		selectFolderSearchStatus(store, folderId)
 	);
 
@@ -105,8 +103,6 @@ const ConversationList: FC = () => {
 			if (hasMore && !isLoading) {
 				setIsLoading(true);
 				const dateOrNull = date ? new Date(date) : null;
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				dispatch(search({ folderId, before: dateOrNull, limit: 50 })).then(() => {
 					setIsLoading(false);
 				});
@@ -116,7 +112,7 @@ const ConversationList: FC = () => {
 	);
 
 	useEffect(() => {
-		const handler = (event: any): void =>
+		const handler = (event: KeyboardEvent): void =>
 			handleKeyboardShortcuts({
 				event,
 				folderId,
@@ -131,6 +127,7 @@ const ConversationList: FC = () => {
 			document.removeEventListener('keydown', handler);
 		};
 	}, [folderId, itemId, conversations, dispatch, deselectAll, createSnackbar]);
+
 	const displayerTitle = useMemo(() => {
 		if (conversations?.length === 0) {
 			if (folderId === '4') {
@@ -149,6 +146,40 @@ const ConversationList: FC = () => {
 		}
 		return null;
 	}, [conversations, folderId]);
+
+	const listItems = useMemo(
+		() =>
+			map(conversations, (conversation) => {
+				const isActive = itemId === conversation.id;
+				const isSelected = selected[conversation.id];
+				return (
+					<CustomListItem
+						active={isActive}
+						selected={isSelected}
+						background={conversation.read ? 'gray6' : 'gray5'}
+						key={conversation.id}
+					>
+						{(isVisible): JSX.Element => (
+							<ConversationListItem
+								item={conversation}
+								visible={isVisible}
+								selected={isSelected}
+								itemId={conversation.id}
+								toggle={toggle}
+								folderId={folderId}
+								setDraggedIds={setDraggedIds}
+								setIsDragging={setIsDragging}
+								selectedItems={selected}
+								dragImageRef={dragImageRef}
+								selecting={isSelecting}
+							/>
+						)}
+					</CustomListItem>
+				);
+			}),
+		[conversations, folderId, isSelecting, itemId, selected, toggle]
+	);
+
 	return (
 		<>
 			{isSelecting ? (
@@ -182,31 +213,14 @@ const ConversationList: FC = () => {
 							</Padding>
 						</Container>
 					) : (
-						<Container style={{ minHeight: 0 }}>
-							<List
-								style={{ flexGrow: 1, paddingBottom: '0.25rem' }}
-								background="gray6"
-								selected={selected}
-								active={itemId}
-								items={conversations}
-								itemProps={{
-									itemId,
-									toggle,
-									folderId,
-									setDraggedIds,
-									setIsDragging,
-									selectedItems: selected,
-									dragImageRef
-								}}
-								ItemComponent={
-									ConversationListItem as unknown as ComponentType<ItemComponentProps<any>>
-								}
-								onListBottom={(): void =>
-									loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)
-								}
-								data-testid={`conversation-list-${folderId}`}
-							/>
-						</Container>
+						<CustomList
+							onListBottom={(): void =>
+								loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)
+							}
+							data-testid={`conversation-list-${folderId}`}
+						>
+							{listItems}
+						</CustomList>
 					)}
 					<DragImageContainer ref={dragImageRef}>
 						{isDragging && <DragItems conversations={conversations} draggedIds={draggedIds} />}

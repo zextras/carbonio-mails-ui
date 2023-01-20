@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { Container, List, Padding, Text, Tooltip } from '@zextras/carbonio-design-system';
+import { Container, ListV2, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { filter, isEmpty, sortBy } from 'lodash';
+import { filter, isEmpty, map, sortBy } from 'lodash';
+import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import SearchConversationListItem from './search-conversation-list-item';
 import ShimmerList from './shimmer-list';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
@@ -71,6 +72,23 @@ const SearchConversationList: FC<SearchListProps> = ({
 
 	const tooltipDisabled = !searchDisabled || !invalidQueryTooltip;
 
+	const listItems = useMemo(
+		() =>
+			map(conversationList, (conversation) => (
+				<CustomListItem active={itemId === conversation.id} selected={false} key={conversation.id}>
+					{(): JSX.Element => (
+						<SearchConversationListItem
+							itemId={conversation.id}
+							item={conversation}
+							selected={false}
+							selecting={false}
+						/>
+					)}
+				</CustomListItem>
+			)),
+		[conversationList, itemId]
+	);
+
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
 			<AdvancedFilterButton
@@ -94,14 +112,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 			{loading && <ShimmerList count={33} delay={0} />}
 			{!isInvalidQuery && !isEmpty(searchResults?.conversations) && !loading && (
 				<Container style={{ overflowY: 'auto' }} mainAlignment="flex-start">
-					<List
-						items={conversationList}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						ItemComponent={SearchConversationListItem}
-						onListBottom={canLoadMore ? loadMore : undefined}
-						active={itemId}
-					/>
+					<ListV2 onListBottom={canLoadMore ? loadMore : undefined}>{listItems}</ListV2>
 				</Container>
 			)}
 			{!isInvalidQuery && isEmpty(searchResults?.conversations) && !loading && (

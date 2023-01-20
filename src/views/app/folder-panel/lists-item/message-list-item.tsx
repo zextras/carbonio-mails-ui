@@ -34,7 +34,12 @@ import { useDispatch } from 'react-redux';
 import { ActionsType, getTimeLabel, participantToString } from '../../../../commons/utils';
 import { MAILS_ROUTE } from '../../../../constants';
 
-import { AppContext, MsgListDraggableItemType, TextReadValuesType } from '../../../../types';
+import {
+	AppContext,
+	MessageListItemProps,
+	MsgListDraggableItemType,
+	TextReadValuesType
+} from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { ItemAvatar } from './item-avatar';
@@ -44,6 +49,7 @@ import { SenderName } from './sender-name';
 type Preview = {
 	src?: string | null | ArrayBuffer;
 };
+
 function previewFile(file: File): void {
 	const preview = document.querySelector('img') as Preview;
 	const reader = new FileReader();
@@ -84,7 +90,7 @@ const DraggableItem: FC<MsgListDraggableItemType> = ({
 		<>{children}</>
 	);
 
-export const MessageListItem: FC<any> = ({
+export const MessageListItem: FC<MessageListItemProps> = ({
 	item,
 	folderId,
 	selected,
@@ -195,9 +201,11 @@ export const MessageListItem: FC<any> = ({
 	);
 
 	const dragCheck = useCallback(
-		(e, id) => {
+		(e: React.DragEvent, id: string) => {
 			setIsDragging(true);
-			e.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
+			if (dragImageRef?.current) {
+				e.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
+			}
 			if (selectedItems[id]) {
 				setDraggedIds(selectedItems);
 			} else {
@@ -259,11 +267,7 @@ export const MessageListItem: FC<any> = ({
 				dragCheck={dragCheck}
 				selectedIds={ids}
 			>
-				<Container
-					mainAlignment="flex-start"
-					data-testid={`SearchMessageListItem-${item.id}`}
-					background={item.read ? 'tranparent' : 'gray5'}
-				>
+				<Container mainAlignment="flex-start" data-testid={`MessageListItem-${item.id}`}>
 					<ListItemActionWrapper item={item} onClick={_onClick} onDoubleClick={_onDoubleClick}>
 						<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
 							<ItemAvatar

@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { ContainerProps } from '@zextras/carbonio-design-system';
+import React, { ReactNode } from 'react';
 import { Conversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 import { TextReadValuesProps } from '../utils';
@@ -44,18 +46,17 @@ export type SenderNameProps = {
 	textValues?: TextReadValuesProps;
 };
 
-export type MessageListItemType = {
-	item: any;
+export type MessageListItemProps = {
+	item: IncompleteMessage & { isFromSearch?: boolean };
 	folderId: string;
-	active: boolean;
 	selected: boolean;
 	selecting: boolean;
-	toggle: () => null;
-	draggedIds: Array<string> | undefined;
-	setDraggedIds: (arg: any) => void;
-	setIsDragging: (arg: boolean) => void;
-	selectedItems: any;
-	dragImageRef: any;
+	toggle?: () => void;
+	draggedIds: Record<string, boolean>;
+	setDraggedIds: (ids: Record<string, boolean>) => void;
+	setIsDragging: (isDragging: boolean) => void;
+	selectedItems: Record<string, boolean>;
+	dragImageRef?: React.RefObject<HTMLElement>;
 	visible: boolean;
 	isConvChildren: boolean;
 };
@@ -67,23 +68,23 @@ export type TextReadValuesType = {
 };
 
 export type MsgListDraggableItemType = {
-	item: MailMessage;
+	item: Partial<MailMessage> & Pick<MailMessage, 'id'>;
 	folderId: string;
-	children: any;
+	children: React.ReactNode | React.ReactNode[];
 	isMessageView: boolean;
-	dragCheck: (e: any, id: any) => void;
+	dragCheck: (e: React.DragEvent, id: string) => void;
 	selectedIds: Array<string>;
 };
 export type ListItemActionWrapperProps = {
 	children?: ReactNode;
-	current?: boolean;
 	onClick?: ContainerProps['onClick'];
 	onDoubleClick?: ContainerProps['onDoubleClick'];
-	item: Conversation | IncompleteMessage;
-	isConversation?: boolean;
-	messagesToRender?: Array<Partial<MailMessage>>;
+	messagesToRender?: Array<IncompleteMessage>;
 	hoverTooltipLabel?: string;
-};
+} & (
+	| { isConversation: true; item: Conversation }
+	| { isConversation?: false; item: IncompleteMessage }
+);
 
 export type ItemAvatarType = {
 	item: any;
@@ -99,7 +100,7 @@ export type CustomListItem = Partial<MailMessage> & { id: string; isFromSearch?:
 export type ConversationMessagesListProps = {
 	active: string;
 	conversationStatus: string | undefined;
-	messages: Array<Partial<MailMessage>>;
+	messages: Array<IncompleteMessage>;
 	folderId: string;
 	length: number;
 	isFromSearch?: boolean;

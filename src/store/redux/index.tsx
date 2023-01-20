@@ -17,3 +17,8 @@ const store = configureStore({
 });
 
 export const StoreProvider: FC = ({ children }) => <Provider store={store}>{children}</Provider>;
+
+// @see https://redux.js.org/usage/usage-with-typescript#define-root-state-and-dispatch-types
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
