@@ -85,36 +85,36 @@ const AttachmentExtension = styled(Text)<{
 	margin-right: ${({ theme }): string => theme.sizes.padding.small};
 `;
 
-const tempGetMsg = async (msgId: string, part?: string): Promise<MailMessage> => {
-	console.log('********** tempGetMsg', { msgId, part });
-	const result = (await soapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
-		_jsns: 'urn:zimbraMail',
-		m: {
-			header: [
-				{
-					n: 'List-ID'
-				},
-				{
-					n: 'X-Zimbra-DL'
-				},
-				{
-					n: 'IN-REPLY-TO'
-				},
-				{
-					n: 'GoPolicyd-isExtNetwork'
-				}
-			],
-			html: 1,
-			id: msgId,
-			part,
-			max: 250000,
-			read: 1,
-			needExp: 1
-		}
-	})) as GetMsgResponse;
-	const msg = result?.m[0];
-	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
-};
+// const tempGetMsg = async (msgId: string, part?: string): Promise<MailMessage> => {
+// 	console.log('********** tempGetMsg', { msgId, part });
+// 	const result = (await soapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
+// 		_jsns: 'urn:zimbraMail',
+// 		m: {
+// 			header: [
+// 				{
+// 					n: 'List-ID'
+// 				},
+// 				{
+// 					n: 'X-Zimbra-DL'
+// 				},
+// 				{
+// 					n: 'IN-REPLY-TO'
+// 				},
+// 				{
+// 					n: 'GoPolicyd-isExtNetwork'
+// 				}
+// 			],
+// 			html: 1,
+// 			id: msgId,
+// 			part,
+// 			max: 250000,
+// 			read: 1,
+// 			needExp: 1
+// 		}
+// 	})) as GetMsgResponse;
+// 	const msg = result?.m[0];
+// 	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
+// };
 
 const Attachment: FC<AttachmentType> = ({
 	filename,
@@ -238,32 +238,33 @@ const Attachment: FC<AttachmentType> = ({
 			conversation: msg.conversation,
 			subject: msg.subject
 		}));
-		tempGetMsg(message.id, att?.name)
-			.then((msg) => {
-				emlViewerInvoker(msg);
-			})
-			.catch((reason) => {
-				console.error(reason);
-			});
-		// const printWindow = window.open('', '_blank');
-		// getMsgsForPrint({ ids: [message.id], part: att?.name })
-		// 	.then((res) => {
-		// 		const content = getEMLContent({
-		// 			messages: res,
-		// 			conversations,
-		// 			isMsg: true,
-		// 			theme
-		// 		});
-		// 		if (printWindow && printWindow.top && printWindow.document) {
-		// 			printWindow.top.document.title = 'Carbonio';
-		// 			printWindow.document.write(content);
-		// 			printWindow.focus();
-		// 		}
+		// tempGetMsg(message.id, att?.name)
+		// 	.then((msg) => {
+		// 		emlViewerInvoker(msg);
 		// 	})
-		// 	.catch(() => {
-		// 		const errorContent = errorPage;
-		// 		printWindow && printWindow.document.write(errorContent);
+		// 	.catch((reason) => {
+		// 		console.error(reason);
 		// 	});
+		// const printWindow = window.open('', '_blank');
+		getMsgsForPrint({ ids: [message.id], part: att?.name })
+			.then((res) => {
+				// const content = getEMLContent({
+				// 	messages: res,
+				// 	conversations,
+				// 	isMsg: true,
+				// 	theme
+				// });
+				// if (printWindow && printWindow.top && printWindow.document) {
+				// 	printWindow.top.document.title = 'Carbonio';
+				// 	printWindow.document.write(content);
+				// 	printWindow.focus();
+				// }
+				emlViewerInvoker(res[0]);
+			})
+			.catch(() => {
+				const errorContent = errorPage;
+				// printWindow && printWindow.document.write(errorContent);
+			});
 	}, [att?.name, emlViewerInvoker, message]);
 
 	const preview = useCallback(
@@ -317,7 +318,9 @@ const Attachment: FC<AttachmentType> = ({
 			showEMLPreview
 		]
 	);
-
+	console.log(
+		`****** attachment link 1 : https://localhost:9000/service/home/~/?auth=co&id=${message.id}&part=${part}`
+	);
 	return (
 		<AttachmentContainer
 			orientation="horizontal"
@@ -390,7 +393,7 @@ const Attachment: FC<AttachmentType> = ({
 				rel="noopener"
 				ref={inputRef2}
 				target="_blank"
-				href={`/service/home/~/?auth=co&id=${message.id}&part=${part}`}
+				href={`https://localhost:9000/service/home/~/?auth=co&id=${message.id}&part=${part}`}
 			/>
 			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
 		</AttachmentContainer>
