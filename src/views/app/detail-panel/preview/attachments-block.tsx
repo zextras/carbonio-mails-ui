@@ -24,10 +24,17 @@ import styled from 'styled-components';
 import { errorPage } from '../../../../commons/preview-eml/error-page';
 import { getEMLContent } from '../../../../commons/preview-eml/get-eml-content';
 import { getFileExtension } from '../../../../commons/utilities';
+import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
-import { AttachmentPart, AttachmentType, MailMessage } from '../../../../types';
+import {
+	AttachmentPart,
+	AttachmentType,
+	GetMsgRequest,
+	GetMsgResponse,
+	MailMessage
+} from '../../../../types';
 import DeleteAttachmentModal from './delete-attachment-modal';
 import { humanFileSize, previewType } from './file-preview';
 import { getAttachmentIconColors, getAttachmentsDownloadLink, getAttachmentsLink } from './utils';
@@ -78,6 +85,37 @@ const AttachmentExtension = styled(Text)<{
 	margin-right: ${({ theme }): string => theme.sizes.padding.small};
 `;
 
+const tempGetMsg = async (msgId: string, part?: string): Promise<MailMessage> => {
+	console.log('********** tempGetMsg', { msgId, part });
+	const result = (await soapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
+		_jsns: 'urn:zimbraMail',
+		m: {
+			header: [
+				{
+					n: 'List-ID'
+				},
+				{
+					n: 'X-Zimbra-DL'
+				},
+				{
+					n: 'IN-REPLY-TO'
+				},
+				{
+					n: 'GoPolicyd-isExtNetwork'
+				}
+			],
+			html: 1,
+			id: msgId,
+			part,
+			max: 250000,
+			read: 1,
+			needExp: 1
+		}
+	})) as GetMsgResponse;
+	const msg = result?.m[0];
+	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
+};
+
 const Attachment: FC<AttachmentType> = ({
 	filename,
 	size,
@@ -86,7 +124,8 @@ const Attachment: FC<AttachmentType> = ({
 	message,
 	part,
 	iconColors,
-	att
+	att,
+	emlViewerInvoker
 }) => {
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const extension = getFileExtension(att).value;
@@ -199,27 +238,33 @@ const Attachment: FC<AttachmentType> = ({
 			conversation: msg.conversation,
 			subject: msg.subject
 		}));
-
-		const printWindow = window.open('', '_blank');
-		getMsgsForPrint({ ids: [message.id], part: att?.name })
-			.then((res) => {
-				const content = getEMLContent({
-					messages: res,
-					conversations,
-					isMsg: true,
-					theme
-				});
-				if (printWindow && printWindow.top && printWindow.document) {
-					printWindow.top.document.title = 'Carbonio';
-					printWindow.document.write(content);
-					printWindow.focus();
-				}
+		tempGetMsg(message.id, att?.name)
+			.then((msg) => {
+				emlViewerInvoker(msg);
 			})
-			.catch(() => {
-				const errorContent = errorPage;
-				printWindow && printWindow.document.write(errorContent);
+			.catch((reason) => {
+				console.error(reason);
 			});
-	}, [att?.name, message, theme]);
+		// const printWindow = window.open('', '_blank');
+		// getMsgsForPrint({ ids: [message.id], part: att?.name })
+		// 	.then((res) => {
+		// 		const content = getEMLContent({
+		// 			messages: res,
+		// 			conversations,
+		// 			isMsg: true,
+		// 			theme
+		// 		});
+		// 		if (printWindow && printWindow.top && printWindow.document) {
+		// 			printWindow.top.document.title = 'Carbonio';
+		// 			printWindow.document.write(content);
+		// 			printWindow.focus();
+		// 		}
+		// 	})
+		// 	.catch(() => {
+		// 		const errorContent = errorPage;
+		// 		printWindow && printWindow.document.write(errorContent);
+		// 	});
+	}, [att?.name, emlViewerInvoker, message]);
 
 	const preview = useCallback(
 		(ev) => {
@@ -360,7 +405,10 @@ const copyToFiles = (att: AttachmentPart, message: MailMessage, nodes: any): Pro
 		destinationFolderId: nodes?.[0]?.id
 	});
 
-const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactElement => {
+const AttachmentsBlock: FC<{ message: MailMessage; emlViewerInvoker: any }> = ({
+	message,
+	emlViewerInvoker
+}): ReactElement => {
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(
 		() => filter(message?.attachments, { cd: 'attachment' }),
@@ -454,6 +502,7 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
 				{map(expanded ? attachments : attachments?.slice(0, 2), (att, index) => (
 					<Attachment
+						emlViewerInvoker={emlViewerInvoker}
 						key={`att-${att.filename}-${index}`}
 						filename={att?.filename}
 						size={att?.size ?? 0}

@@ -23,6 +23,7 @@ export type AttachmentType = {
 	part: string;
 	iconColors: IconColors;
 	att: EditorAttachmentFiles;
+	emlViewerInvoker?: any;
 };
 
 export type PreviewPanelActionsType = {

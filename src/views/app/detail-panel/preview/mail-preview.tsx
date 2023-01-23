@@ -4,7 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
-import React, { useMemo, useState, useRef, useCallback, useEffect, FC } from 'react';
+import React, {
+	useMemo,
+	useState,
+	useRef,
+	useCallback,
+	useEffect,
+	FC,
+	ReactElement,
+	memo
+} from 'react';
 import { filter, find } from 'lodash';
 import {
 	useUserAccounts,
@@ -14,6 +23,7 @@ import {
 	t,
 	useCurrentRoute
 } from '@zextras/carbonio-shell-ui';
+import NewWindow from 'react-new-window';
 import { useParams } from 'react-router-dom';
 import {
 	Container,
@@ -35,10 +45,11 @@ import ReadReceiptModal from './read-receipt-modal';
 import PreviewHeader from './parts/preview-header';
 import { MailMessage } from '../../../../types';
 
-const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
-	message,
-	isMailPreviewOpen
-}) => {
+const MailContent: FC<{
+	message: MailMessage;
+	isMailPreviewOpen: boolean;
+	addMailViewers?: any;
+}> = ({ message, isMailPreviewOpen, addMailViewers }) => {
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
 	const [showModal, setShowModal] = useState(true);
 	const dispatch = useDispatch();
@@ -57,6 +68,7 @@ const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
 	// already open that message will not be expanded
 	useEffect(() => {
 		if (!message.isComplete) {
+			console.log('*************** message is NOT complete, I reload it');
 			dispatch(getMsg({ msgId: message.id }));
 		}
 	}, [dispatch, message.id, message.isComplete]);
@@ -145,7 +157,7 @@ const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
 				background="gray6"
 			>
 				<Row>
-					<AttachmentsBlock message={message} />
+					<AttachmentsBlock emlViewerInvoker={addMailViewers} message={message} />
 				</Row>
 				<Padding style={{ width: '100%' }} vertical="medium">
 					{showAppointmentInvite ? (
@@ -188,15 +200,16 @@ const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
 			</Container>
 		);
 	}, [
-		message,
 		showAppointmentInvite,
-		readReceiptSetting,
+		message,
+		addMailViewers,
 		InviteResponse,
 		moveToTrash,
 		isAttendee,
 		showShareInvite,
 		showReadReceiptModal,
-		onModalClose
+		onModalClose,
+		readReceiptSetting
 	]);
 	return (
 		<Collapse
@@ -236,6 +249,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({ message, open, onClick, is
 			}).click(),
 		[dispatch, folderId, message.id]
 	);
+
 	return (
 		<>
 			{folderId === FOLDERS.SPAM && (
@@ -276,6 +290,7 @@ type MailPreviewType = {
 	isAlone: boolean;
 	isMessageView: boolean;
 };
+
 const MailPreview: FC<MailPreviewType> = ({ message, expanded, isAlone, isMessageView }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(expanded || isAlone);
@@ -288,8 +303,32 @@ const MailPreview: FC<MailPreviewType> = ({ message, expanded, isAlone, isMessag
 		() => (isMessageView ? true : isAlone ? true : open),
 		[isAlone, isMessageView, open]
 	);
+
+	const [viewers, setViewers] = useState<Array<ReactElement>>([]);
+	const addMailViewers = useCallback(
+		(mail: MailMessage): void => {
+			const name = `${mail.id}-${mail.parts[0].name}`;
+			console.log('************ addMailViewers', { mail, name });
+			const newViewers = [...viewers];
+			newViewers.push(
+				<NewWindow key={viewers.length} title={mail.subject} name={name} features={{}}>
+					<MailContent
+						message={mail}
+						isMailPreviewOpen={isMailPreviewOpen}
+						addMailViewers={addMailViewers}
+					/>
+				</NewWindow>
+			);
+			setViewers(newViewers);
+		},
+		[isMailPreviewOpen, message, viewers]
+	);
+
+	console.log('************ vieweers', { viewers });
+
 	return (
 		<Container ref={mailContainerRef} height="fit" data-testid={`MailPreview-${message.id}`}>
+			{viewers}
 			<MailPreviewBlock
 				onClick={onClick}
 				message={message}
@@ -305,7 +344,11 @@ const MailPreview: FC<MailPreviewType> = ({ message, expanded, isAlone, isMessag
 				}}
 			>
 				{(open || isAlone) && (
-					<MailContent message={message} isMailPreviewOpen={isMailPreviewOpen} />
+					<MailContent
+						message={message}
+						isMailPreviewOpen={isMailPreviewOpen}
+						addMailViewers={addMailViewers}
+					/>
 				)}
 			</Container>
 		</Container>
