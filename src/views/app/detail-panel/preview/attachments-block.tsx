@@ -24,6 +24,7 @@ import styled from 'styled-components';
 import { errorPage } from '../../../../commons/preview-eml/error-page';
 import { getEMLContent } from '../../../../commons/preview-eml/get-eml-content';
 import { getFileExtension } from '../../../../commons/utilities';
+import { getCurrentDocumentBody } from '../../../../commons/utils';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
@@ -84,37 +85,6 @@ const AttachmentExtension = styled(Text)<{
 	text-transform: uppercase;
 	margin-right: ${({ theme }): string => theme.sizes.padding.small};
 `;
-
-// const tempGetMsg = async (msgId: string, part?: string): Promise<MailMessage> => {
-// 	console.log('********** tempGetMsg', { msgId, part });
-// 	const result = (await soapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
-// 		_jsns: 'urn:zimbraMail',
-// 		m: {
-// 			header: [
-// 				{
-// 					n: 'List-ID'
-// 				},
-// 				{
-// 					n: 'X-Zimbra-DL'
-// 				},
-// 				{
-// 					n: 'IN-REPLY-TO'
-// 				},
-// 				{
-// 					n: 'GoPolicyd-isExtNetwork'
-// 				}
-// 			],
-// 			html: 1,
-// 			id: msgId,
-// 			part,
-// 			max: 250000,
-// 			read: 1,
-// 			needExp: 1
-// 		}
-// 	})) as GetMsgResponse;
-// 	const msg = result?.m[0];
-// 	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
-// };
 
 const Attachment: FC<AttachmentType> = ({
 	filename,
@@ -276,6 +246,7 @@ const Attachment: FC<AttachmentType> = ({
 				createPreview({
 					src: link,
 					previewType: pType,
+					// container: getCurrentDocumentBody(),
 					/** Left Action for the preview */
 					closeAction: {
 						id: 'close',
@@ -318,9 +289,7 @@ const Attachment: FC<AttachmentType> = ({
 			showEMLPreview
 		]
 	);
-	console.log(
-		`****** attachment link 1 : https://localhost:9000/service/home/~/?auth=co&id=${message.id}&part=${part}`
-	);
+
 	return (
 		<AttachmentContainer
 			orientation="horizontal"

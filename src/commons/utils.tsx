@@ -114,3 +114,9 @@ export const omitBy = (obj: any, check: (arg: unknown) => boolean): any => {
 	Object.entries(obj).forEach(([key, value]) => check(value) && delete obj[key]);
 	return obj;
 };
+
+export const getCurrentDocumentBody = (): HTMLElement => {
+	const result = document.body;
+	console.log('*********** getCurrentDocumentBody', result);
+	return result;
+};

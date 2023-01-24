@@ -37,6 +37,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
+import { ExtraWindow } from '../../extra-window';
 import AttachmentsBlock from './attachments-block';
 import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
 import { getMsg, msgAction } from '../../../../store/actions';
@@ -311,13 +312,13 @@ const MailPreview: FC<MailPreviewType> = ({ message, expanded, isAlone, isMessag
 			console.log('************ addMailViewers', { mail, name });
 			const newViewers = [...viewers];
 			newViewers.push(
-				<NewWindow key={viewers.length} title={mail.subject} name={name} features={{}}>
+				<ExtraWindow key={'same-dummy'} title={mail.subject} name={name} features={{}}>
 					<MailContent
 						message={mail}
 						isMailPreviewOpen={isMailPreviewOpen}
 						addMailViewers={addMailViewers}
 					/>
-				</NewWindow>
+				</ExtraWindow>
 			);
 			setViewers(newViewers);
 		},
