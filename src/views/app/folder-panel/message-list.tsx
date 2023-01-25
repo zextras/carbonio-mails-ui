@@ -127,11 +127,12 @@ const MessageList: FC = () => {
 		() =>
 			map(messages, (message) => {
 				const isSelected = selected[message.id];
+				const isActive = itemId === message.id;
 				return (
 					<CustomListItem
 						key={message.id}
 						selected={isSelected}
-						active={itemId === message.id}
+						active={isActive}
 						background={message.read ? 'gray6' : 'gray5'}
 					>
 						{(isVisible): JSX.Element => (
@@ -148,6 +149,7 @@ const MessageList: FC = () => {
 								isConvChildren={false}
 								toggle={toggle}
 								dragImageRef={dragImageRef}
+								active={isActive}
 							/>
 						)}
 					</CustomListItem>

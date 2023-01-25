@@ -102,7 +102,8 @@ export const MessageListItem: FC<MessageListItemProps> = ({
 	selectedItems,
 	dragImageRef,
 	visible,
-	isConvChildren
+	isConvChildren,
+	active
 }) => {
 	const accounts = useUserAccounts();
 	const { isMessageView } = useAppContext<AppContext>();
@@ -268,7 +269,12 @@ export const MessageListItem: FC<MessageListItemProps> = ({
 				selectedIds={ids}
 			>
 				<Container mainAlignment="flex-start" data-testid={`MessageListItem-${item.id}`}>
-					<ListItemActionWrapper item={item} onClick={_onClick} onDoubleClick={_onDoubleClick}>
+					<ListItemActionWrapper
+						item={item}
+						onClick={_onClick}
+						onDoubleClick={_onDoubleClick}
+						current={active}
+					>
 						<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
 							<ItemAvatar
 								item={item}

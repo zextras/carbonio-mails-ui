@@ -84,29 +84,33 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 
 	const listItems = useMemo(
 		() =>
-			map(messagesToRender, (message) => (
-				<CustomListItem
-					selected={false}
-					active={active === message.id}
-					key={message.id}
-					background={'transparent'}
-				>
-					{(isVisible): JSX.Element => (
-						<MessageListItem
-							folderId={folderId}
-							isConvChildren
-							item={message}
-							selected={false}
-							selecting={false}
-							draggedIds={{}}
-							setDraggedIds={noop}
-							setIsDragging={noop}
-							selectedItems={{}}
-							visible={isVisible}
-						/>
-					)}
-				</CustomListItem>
-			)),
+			map(messagesToRender, (message) => {
+				const isActive = active === message.id || active === message.conversation;
+				return (
+					<CustomListItem
+						selected={false}
+						active={isActive}
+						key={message.id}
+						background={'transparent'}
+					>
+						{(isVisible): JSX.Element => (
+							<MessageListItem
+								folderId={folderId}
+								isConvChildren
+								item={message}
+								selected={false}
+								selecting={false}
+								draggedIds={{}}
+								setDraggedIds={noop}
+								setIsDragging={noop}
+								selectedItems={{}}
+								visible={isVisible}
+								active={isActive}
+							/>
+						)}
+					</CustomListItem>
+				);
+			}),
 		[active, folderId, messagesToRender]
 	);
 
@@ -175,11 +179,12 @@ export const RowInfo: FC<RowInfoProps> = ({ item, tags, isFromSearch, allMessage
 
 type ConversationListItemProps = {
 	item: Conversation;
-	itemId: string;
+	activeItemId: string;
 	folderId: string;
 	selected: boolean;
 	selecting: boolean;
 	toggle: () => void;
+	active?: boolean;
 	visible?: boolean;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	draggedIds?: Record<string, boolean> | undefined;
@@ -189,12 +194,13 @@ type ConversationListItemProps = {
 };
 
 const ConversationListItem: FC<ConversationListItemProps> = ({
-	itemId,
+	activeItemId,
 	item,
 	folderId,
 	selected,
 	selecting,
 	toggle,
+	active,
 	visible,
 	setDraggedIds,
 	draggedIds,
@@ -403,6 +409,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
 				<ListItemActionWrapper
 					item={item}
+					current={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
 					hoverTooltipLabel={participantsString}
@@ -478,7 +485,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 						height="auto"
 					>
 						<ConversationMessagesList
-							active={itemId}
+							active={activeItemId}
 							length={item?.messages?.length}
 							messages={messagesToRender}
 							conversationStatus={conversationStatus}

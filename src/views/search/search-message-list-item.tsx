@@ -26,7 +26,8 @@ import { ListItemActionWrapper } from '../app/folder-panel/lists-item/list-item-
 
 export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 	item,
-	isConvChildren = false
+	isConvChildren = false,
+	active
 }) => {
 	const accounts = useUserAccounts();
 	const tagsFromStore = useTags();
@@ -135,7 +136,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = ({
 		<></>
 	) : (
 		<Container mainAlignment="flex-start" data-testid={`SearchMessageListItem-${item.id}`}>
-			<ListItemActionWrapper item={item} onClick={onClick}>
+			<ListItemActionWrapper item={item} onClick={onClick} current={active}>
 				<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
 					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 					{/* @ts-ignore */}

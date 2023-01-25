@@ -52,7 +52,8 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 	item,
 	selected,
 	selecting = false,
-	toggle
+	toggle,
+	active
 }) => {
 	const history = useHistory();
 	const dispatch = useDispatch();
@@ -168,7 +169,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 		<></>
 	) : (
 		<Container mainAlignment="flex-start" data-testid={`SearchConversationListItem-${item.id}`}>
-			<ListItemActionWrapper item={item} onClick={_onClick} isConversation>
+			<ListItemActionWrapper item={item} current={active} onClick={_onClick} isConversation>
 				<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
 					<ItemAvatar
 						item={item}

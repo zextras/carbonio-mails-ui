@@ -77,7 +77,9 @@ const SearchMessageList: FC<SearchListProps> = ({
 						active={isActive}
 						background={message.read ? 'gray6' : 'gray5'}
 					>
-						{(): JSX.Element => <SearchMessageListItem item={message} isConvChildren={false} />}
+						{(): JSX.Element => (
+							<SearchMessageListItem item={message} isConvChildren={false} active={isActive} />
+						)}
 					</CustomListItem>
 				);
 			}),

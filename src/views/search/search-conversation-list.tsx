@@ -74,18 +74,23 @@ const SearchConversationList: FC<SearchListProps> = ({
 
 	const listItems = useMemo(
 		() =>
-			map(conversationList, (conversation) => (
-				<CustomListItem active={itemId === conversation.id} selected={false} key={conversation.id}>
-					{(): JSX.Element => (
-						<SearchConversationListItem
-							itemId={conversation.id}
-							item={conversation}
-							selected={false}
-							selecting={false}
-						/>
-					)}
-				</CustomListItem>
-			)),
+			map(conversationList, (conversation) => {
+				const isActive = itemId === conversation.id;
+				const isSelected = false;
+				return (
+					<CustomListItem active={isActive} selected={isSelected} key={conversation.id}>
+						{(): JSX.Element => (
+							<SearchConversationListItem
+								itemId={conversation.id}
+								item={conversation}
+								selected={isSelected}
+								selecting={false}
+								active={isActive}
+							/>
+						)}
+					</CustomListItem>
+				);
+			}),
 		[conversationList, itemId]
 	);
 

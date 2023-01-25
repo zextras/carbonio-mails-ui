@@ -5,11 +5,11 @@
  */
 import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
 import React, { FC, useContext, useMemo } from 'react';
-import styled from 'styled-components';
+import styled, { DefaultTheme } from 'styled-components';
 import { ActionsContext } from '../../../../commons/actions-context';
 import { ListItemActionWrapperProps } from '../../../../types';
 
-const HoverBarContainer = styled(Container)`
+const HoverBarContainer = styled(Container)<{ background: keyof DefaultTheme['palette'] }>`
 	top: 0;
 	right: 0;
 	display: none;
@@ -17,7 +17,7 @@ const HoverBarContainer = styled(Container)`
 	background: linear-gradient(
 		to right,
 		transparent,
-		${({ theme }): string => theme.palette.gray6.hover}
+		${({ background, theme }): string => theme.palette[background].hover}
 	);
 	width: calc(100% - 4rem);
 	height: 45%;
@@ -30,14 +30,14 @@ const HoverBarContainer = styled(Container)`
 
 const HoverContainer = styled(Container).attrs(() => ({
 	background: 'transparent'
-}))`
+}))<{ $hoverBackground: keyof DefaultTheme['palette'] }>`
 	width: 100%;
 	position: relative;
 	cursor: pointer;
 	text-decoration: none;
 
 	&:hover {
-		background: ${({ theme }): string => theme.palette.gray6.hover};
+		background: ${({ $hoverBackground, theme }): string => theme.palette[$hoverBackground].hover};
 
 		& ${HoverBarContainer} {
 			display: flex;
@@ -47,6 +47,7 @@ const HoverContainer = styled(Container).attrs(() => ({
 
 export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	children,
+	current,
 	onClick,
 	onDoubleClick,
 	item,
@@ -78,6 +79,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 				crossAlignment="unset"
 				onClick={onClick}
 				onDoubleClick={onDoubleClick}
+				$hoverBackground={current ? 'highlight' : 'gray6'}
 			>
 				{children}
 				{/* <Tooltip label={hoverTooltipLabel} overflow="break-word" maxWidth="50vw"> */}
@@ -85,6 +87,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 					orientation="horizontal"
 					mainAlignment="flex-end"
 					crossAlignment="center"
+					background={current ? 'highlight' : 'gray6'}
 				>
 					{hoverActions.map((action, index) => (
 						<Tooltip key={action.id ?? index} label={action.label}>

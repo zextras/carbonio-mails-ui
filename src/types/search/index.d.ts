@@ -59,6 +59,7 @@ export type SearchPanelProps = {
 export type SearchMessageListItemProps = {
 	item: IncompleteMessage;
 	isConvChildren?: boolean;
+	active?: boolean;
 };
 
 export type SearchConversationListItemProps = {
@@ -67,6 +68,7 @@ export type SearchConversationListItemProps = {
 	selected: boolean;
 	selecting: boolean;
 	toggle?: (arg: string) => void;
+	active: boolean;
 };
 
 export type AdvancedFilterModalProps = {

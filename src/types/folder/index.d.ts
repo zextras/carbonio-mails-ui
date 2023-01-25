@@ -59,6 +59,7 @@ export type MessageListItemProps = {
 	dragImageRef?: React.RefObject<HTMLElement>;
 	visible: boolean;
 	isConvChildren: boolean;
+	active?: boolean;
 };
 
 export type TextReadValuesType = {
@@ -77,6 +78,7 @@ export type MsgListDraggableItemType = {
 };
 export type ListItemActionWrapperProps = {
 	children?: ReactNode;
+	current?: boolean;
 	onClick?: ContainerProps['onClick'];
 	onDoubleClick?: ContainerProps['onDoubleClick'];
 	messagesToRender?: Array<IncompleteMessage>;

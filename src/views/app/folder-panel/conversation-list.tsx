@@ -65,7 +65,7 @@ const DragItems: FC<{
 					key={item.id}
 					draggedIds={draggedIds}
 					folderId={''}
-					itemId={item.id}
+					activeItemId={item.id}
 					selected={false}
 					selecting={false}
 					toggle={noop}
@@ -164,7 +164,7 @@ const ConversationList: FC = () => {
 								item={conversation}
 								visible={isVisible}
 								selected={isSelected}
-								itemId={conversation.id}
+								activeItemId={itemId}
 								toggle={toggle}
 								folderId={folderId}
 								setDraggedIds={setDraggedIds}
@@ -172,6 +172,7 @@ const ConversationList: FC = () => {
 								selectedItems={selected}
 								dragImageRef={dragImageRef}
 								selecting={isSelecting}
+								active={isActive}
 							/>
 						)}
 					</CustomListItem>
