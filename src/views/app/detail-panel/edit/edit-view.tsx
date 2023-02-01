@@ -42,6 +42,7 @@ import {
 import { selectMessages } from '../../../../store/messages-slice';
 import { StoreProvider } from '../../../../store/redux';
 import { EditViewContextType, MailsEditor, StateType } from '../../../../types';
+import { useExtraWindowsManager } from '../../extra-window';
 import DropZoneAttachment from './dropzone-attachment';
 import EditAttachmentsBlock from './edit-attachments-block';
 import { addAttachments } from './edit-utils';
@@ -366,6 +367,8 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 		() => editor?.original && editor?.attach?.mp?.length > 0 && action !== ActionsType.COMPOSE,
 		[action, editor?.attach?.mp?.length, editor?.original]
 	);
+
+	// const showAttachments = true;
 
 	const context: EditViewContextType = useMemo(
 		() => ({

@@ -4,26 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
-import React, {
-	useMemo,
-	useState,
-	useRef,
-	useCallback,
-	useEffect,
-	FC,
-	ReactElement,
-	memo
-} from 'react';
+import React, { useMemo, useState, useRef, useCallback, useEffect, FC } from 'react';
 import { filter, find } from 'lodash';
 import {
 	useUserAccounts,
 	useIntegratedComponent,
 	useUserSettings,
 	FOLDERS,
-	t,
-	useCurrentRoute
+	t
 } from '@zextras/carbonio-shell-ui';
-import NewWindow from 'react-new-window';
 import { useParams } from 'react-router-dom';
 import {
 	Container,
@@ -37,20 +26,21 @@ import {
 import { useDispatch } from 'react-redux';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
-import { ExtraWindow } from '../../extra-window';
+import { ExtraWindowCreationParams, useExtraWindowsManager } from '../../extra-window';
 import AttachmentsBlock from './attachments-block';
 import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
 import { getMsg, msgAction } from '../../../../store/actions';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 import ReadReceiptModal from './read-receipt-modal';
 import PreviewHeader from './parts/preview-header';
-import { MailMessage } from '../../../../types';
+import { MailMessage, OpenEmlPreviewType } from '../../../../types';
 
 const MailContent: FC<{
 	message: MailMessage;
 	isMailPreviewOpen: boolean;
-	addMailViewers?: any;
-}> = ({ message, isMailPreviewOpen, addMailViewers }) => {
+	isExternalMessage?: boolean;
+	openEmlPreview?: OpenEmlPreviewType;
+}> = ({ message, isMailPreviewOpen, isExternalMessage = false, openEmlPreview }) => {
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
 	const [showModal, setShowModal] = useState(true);
 	const dispatch = useDispatch();
@@ -69,7 +59,6 @@ const MailContent: FC<{
 	// already open that message will not be expanded
 	useEffect(() => {
 		if (!message.isComplete) {
-			console.log('*************** message is NOT complete, I reload it');
 			dispatch(getMsg({ msgId: message.id }));
 		}
 	}, [dispatch, message.id, message.isComplete]);
@@ -158,7 +147,11 @@ const MailContent: FC<{
 				background="gray6"
 			>
 				<Row>
-					<AttachmentsBlock emlViewerInvoker={addMailViewers} message={message} />
+					<AttachmentsBlock
+						message={message}
+						isExternalMessage={isExternalMessage}
+						openEmlPreview={openEmlPreview}
+					/>
 				</Row>
 				<Padding style={{ width: '100%' }} vertical="medium">
 					{showAppointmentInvite ? (
@@ -203,7 +196,8 @@ const MailContent: FC<{
 	}, [
 		showAppointmentInvite,
 		message,
-		addMailViewers,
+		isExternalMessage,
+		openEmlPreview,
 		InviteResponse,
 		moveToTrash,
 		isAttendee,
@@ -230,14 +224,21 @@ type MailPreviewBlockType = {
 	open: boolean;
 	onClick: () => void;
 	isAlone: boolean;
+	isExternalMessage?: boolean;
 };
-const MailPreviewBlock: FC<MailPreviewBlockType> = ({ message, open, onClick, isAlone }) => {
+const MailPreviewBlock: FC<MailPreviewBlockType> = ({
+	message,
+	open,
+	onClick,
+	isAlone,
+	isExternalMessage = false
+}) => {
 	const { folderId } = useParams<{ folderId: string }>();
 
 	const dispatch = useDispatch();
 	const compProps = useMemo(
-		() => ({ message, onClick, open, isAlone }),
-		[message, onClick, open, isAlone]
+		() => ({ message, onClick, open, isAlone, isExternalMessage }),
+		[message, onClick, open, isAlone, isExternalMessage]
 	);
 	const markAsNotSpam = useCallback(
 		() =>
@@ -290,11 +291,19 @@ type MailPreviewType = {
 	expanded: boolean;
 	isAlone: boolean;
 	isMessageView: boolean;
+	isExternalMessage?: boolean;
 };
 
-const MailPreview: FC<MailPreviewType> = ({ message, expanded, isAlone, isMessageView }) => {
+const MailPreview: FC<MailPreviewType> = ({
+	message,
+	expanded,
+	isAlone,
+	isMessageView,
+	isExternalMessage = false
+}) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(expanded || isAlone);
+	const { createWindow } = useExtraWindowsManager();
 
 	const onClick = useCallback(() => {
 		setOpen((o) => !o);
@@ -305,36 +314,42 @@ const MailPreview: FC<MailPreviewType> = ({ message, expanded, isAlone, isMessag
 		[isAlone, isMessageView, open]
 	);
 
-	const [viewers, setViewers] = useState<Array<ReactElement>>([]);
-	const addMailViewers = useCallback(
-		(mail: MailMessage): void => {
-			const name = `${mail.id}-${mail.parts[0].name}`;
-			console.log('************ addMailViewers', { mail, name });
-			const newViewers = [...viewers];
-			newViewers.push(
-				<ExtraWindow key={'same-dummy'} title={mail.subject} name={name} features={{}}>
-					<MailContent
-						message={mail}
-						isMailPreviewOpen={isMailPreviewOpen}
-						addMailViewers={addMailViewers}
+	/**
+	 * To avoid component dependency cycles we define here, outside the
+	 * AttachmentsBlock component, the function that open the EML preview
+	 */
+	const openEmlPreview: OpenEmlPreviewType = useCallback<OpenEmlPreviewType>(
+		(parentMessageId: string, attachmentName: string, emlMessage: MailMessage): void => {
+			const createWindowParams: ExtraWindowCreationParams = {
+				name: `${parentMessageId}-${attachmentName}`,
+				returnComponent: false,
+				children: (
+					<MailPreview
+						message={emlMessage}
+						expanded={false}
+						isAlone
+						isMessageView
+						isExternalMessage
 					/>
-				</ExtraWindow>
-			);
-			setViewers(newViewers);
+				),
+				title: emlMessage.subject,
+				closeOnUnmount: false
+			};
+			if (createWindow) {
+				createWindow(createWindowParams);
+			}
 		},
-		[isMailPreviewOpen, message, viewers]
+		[createWindow]
 	);
-
-	console.log('************ vieweers', { viewers });
 
 	return (
 		<Container ref={mailContainerRef} height="fit" data-testid={`MailPreview-${message.id}`}>
-			{viewers}
 			<MailPreviewBlock
 				onClick={onClick}
 				message={message}
 				open={isMailPreviewOpen}
 				isAlone={isAlone}
+				isExternalMessage={isExternalMessage}
 			/>
 
 			<Container
@@ -348,7 +363,8 @@ const MailPreview: FC<MailPreviewType> = ({ message, expanded, isAlone, isMessag
 					<MailContent
 						message={message}
 						isMailPreviewOpen={isMailPreviewOpen}
-						addMailViewers={addMailViewers}
+						openEmlPreview={openEmlPreview}
+						isExternalMessage={isExternalMessage}
 					/>
 				)}
 			</Container>

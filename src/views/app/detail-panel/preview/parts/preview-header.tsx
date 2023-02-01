@@ -82,6 +82,7 @@ type PreviewHeaderProps = {
 		onClick: (e: SyntheticEvent) => void;
 		open: boolean;
 		isAlone: boolean;
+		isExternalMessage?: boolean;
 	};
 };
 
@@ -93,7 +94,7 @@ const fallbackContact = {
 };
 
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
-	const { message, onClick, open, isAlone } = compProps;
+	const { message, onClick, open, isAlone, isExternalMessage } = compProps;
 
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
@@ -319,65 +320,68 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 									<OnBehalfOfDisplayer compProps={{ senderContact, message, mainContact }} />
 								)}
 							</Row>
-							<Row
-								wrap="nowrap"
-								mainAlignment="flex-end"
-								// this style replace takeAvailableSpace prop, it calculates growth depending from content (all 4 props are needed)
-								style={{
-									flexGrow: 1,
-									flexBasis: 'fit-content',
-									whiteSpace: 'nowrap',
-									overflow: 'hidden'
-								}}
-								minWidth={_minWidth}
-							>
-								{showTagIcon && (
-									<Padding left="small">
-										<Tooltip label={message?.tags?.[0]} disabled={showMultiTagIcon}>
-											<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
-										</Tooltip>
-									</Padding>
-								)}
-								{showMultiTagIcon && (
-									<Dropdown items={tags} forceOpen={showDropdown} onClose={onDropdownClose}>
-										<Padding left="small">
-											<IconButton
-												data-testid="TagIcon"
-												icon={tagIcon}
-												onClick={onIconClick}
-												//	color={`${tagIconColor}`}
-											/>
-										</Padding>
-									</Dropdown>
-								)}
-								{message.hasAttachment && attachments.length > 0 && (
-									<Padding left="small">
-										<Icon icon="AttachOutline" />
-									</Padding>
-								)}
-								{message.flagged && (
-									<Padding left="small">
-										<Icon color="error" icon="Flag" data-testid="FlagIcon" />
-									</Padding>
-								)}
-								<Row ref={textRef} minWidth="fit" padding={{ horizontal: 'small' }}>
-									{message?.isScheduled ? (
-										<Text color="primary" data-testid="scheduledLabel" size="small">
-											{scheduledTime}
-										</Text>
-									) : (
-										<Text color="gray1" data-testid="DateLabel" size="extrasmall">
-											{getTimeLabel(message.date)}
-										</Text>
-									)}
-								</Row>
 
-								{open && <MailMsgPreviewActions actions={actions} />}
-							</Row>
+							{!isExternalMessage && (
+								<Row
+									wrap="nowrap"
+									mainAlignment="flex-end"
+									// this style replace takeAvailableSpace prop, it calculates growth depending from content (all 4 props are needed)
+									style={{
+										flexGrow: 1,
+										flexBasis: 'fit-content',
+										whiteSpace: 'nowrap',
+										overflow: 'hidden'
+									}}
+									minWidth={_minWidth}
+								>
+									{showTagIcon && (
+										<Padding left="small">
+											<Tooltip label={message?.tags?.[0]} disabled={showMultiTagIcon}>
+												<Icon data-testid="TagIcon" icon={tagIcon} color={`${tagIconColor}`} />
+											</Tooltip>
+										</Padding>
+									)}
+									{showMultiTagIcon && (
+										<Dropdown items={tags} forceOpen={showDropdown} onClose={onDropdownClose}>
+											<Padding left="small">
+												<IconButton
+													data-testid="TagIcon"
+													icon={tagIcon}
+													onClick={onIconClick}
+													//	color={`${tagIconColor}`}
+												/>
+											</Padding>
+										</Dropdown>
+									)}
+									{message.hasAttachment && attachments.length > 0 && (
+										<Padding left="small">
+											<Icon icon="AttachOutline" />
+										</Padding>
+									)}
+									{message.flagged && (
+										<Padding left="small">
+											<Icon color="error" icon="Flag" data-testid="FlagIcon" />
+										</Padding>
+									)}
+									<Row ref={textRef} minWidth="fit" padding={{ horizontal: 'small' }}>
+										{message?.isScheduled ? (
+											<Text color="primary" data-testid="scheduledLabel" size="small">
+												{scheduledTime}
+											</Text>
+										) : (
+											<Text color="gray1" data-testid="DateLabel" size="extrasmall">
+												{getTimeLabel(message.date)}
+											</Text>
+										)}
+									</Row>
+
+									{open && <MailMsgPreviewActions actions={actions} />}
+								</Row>
+							)}
 						</Container>
 					</Row>
 				</Container>
-				{tags?.length > 0 && open && (
+				{!isExternalMessage && tags?.length > 0 && open && (
 					<Container
 						orientation="horizontal"
 						crossAlignment="flex-start"

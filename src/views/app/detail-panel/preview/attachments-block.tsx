@@ -22,20 +22,11 @@ import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useS
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { errorPage } from '../../../../commons/preview-eml/error-page';
-import { getEMLContent } from '../../../../commons/preview-eml/get-eml-content';
 import { getFileExtension } from '../../../../commons/utilities';
-import { getCurrentDocumentBody } from '../../../../commons/utils';
-import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
-import {
-	AttachmentPart,
-	AttachmentType,
-	GetMsgRequest,
-	GetMsgResponse,
-	MailMessage
-} from '../../../../types';
+import { AttachmentPart, AttachmentType, MailMessage, OpenEmlPreviewType } from '../../../../types';
 import DeleteAttachmentModal from './delete-attachment-modal';
 import { humanFileSize, previewType } from './file-preview';
 import { getAttachmentIconColors, getAttachmentsDownloadLink, getAttachmentsLink } from './utils';
@@ -92,14 +83,14 @@ const Attachment: FC<AttachmentType> = ({
 	link,
 	downloadlink,
 	message,
+	isExternalMessage = false,
 	part,
 	iconColors,
 	att,
-	emlViewerInvoker
+	openEmlPreview
 }) => {
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const extension = getFileExtension(att).value;
-	const theme = useTheme();
 
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
@@ -197,6 +188,7 @@ const Attachment: FC<AttachmentType> = ({
 		[confirmAction, isAValidDestination]
 	);
 
+	// FIXME
 	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
 		'carbonio_files_action',
 		'files-select-nodes',
@@ -204,38 +196,16 @@ const Attachment: FC<AttachmentType> = ({
 	);
 
 	const showEMLPreview = useCallback(() => {
-		const conversations = map([message], (msg) => ({
-			conversation: msg.conversation,
-			subject: msg.subject
-		}));
-		// tempGetMsg(message.id, att?.name)
-		// 	.then((msg) => {
-		// 		emlViewerInvoker(msg);
-		// 	})
-		// 	.catch((reason) => {
-		// 		console.error(reason);
-		// 	});
-		// const printWindow = window.open('', '_blank');
 		getMsgsForPrint({ ids: [message.id], part: att?.name })
 			.then((res) => {
-				// const content = getEMLContent({
-				// 	messages: res,
-				// 	conversations,
-				// 	isMsg: true,
-				// 	theme
-				// });
-				// if (printWindow && printWindow.top && printWindow.document) {
-				// 	printWindow.top.document.title = 'Carbonio';
-				// 	printWindow.document.write(content);
-				// 	printWindow.focus();
-				// }
-				emlViewerInvoker(res[0]);
+				console.log('******** showEMLPreview', openEmlPreview);
+				openEmlPreview && openEmlPreview(message.id, att?.name, res[0]);
 			})
 			.catch(() => {
-				const errorContent = errorPage;
-				// printWindow && printWindow.document.write(errorContent);
+				// TODO show a snackbar
+				// const errorContent = errorPage;
 			});
-	}, [att?.name, emlViewerInvoker, message]);
+	}, [att?.name, message.id, openEmlPreview]);
 
 	const preview = useCallback(
 		(ev) => {
@@ -344,18 +314,20 @@ const Attachment: FC<AttachmentType> = ({
 							<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
 						</Tooltip>
 					</Padding>
-					<Padding right="small">
-						<Tooltip
-							key={`${message.id}-DeletePermanentlyOutline`}
-							label={t('label.delete', 'Delete')}
-						>
-							<IconButton
-								size="medium"
-								icon="DeletePermanentlyOutline"
-								onClick={removeAttachment}
-							/>
-						</Tooltip>
-					</Padding>
+					{!isExternalMessage && (
+						<Padding right="small">
+							<Tooltip
+								key={`${message.id}-DeletePermanentlyOutline`}
+								label={t('label.delete', 'Delete')}
+							>
+								<IconButton
+									size="medium"
+									icon="DeletePermanentlyOutline"
+									onClick={removeAttachment}
+								/>
+							</Tooltip>
+						</Padding>
+					)}
 				</AttachmentHoverBarContainer>
 			</Row>
 			<AttachmentLink
@@ -377,10 +349,11 @@ const copyToFiles = (att: AttachmentPart, message: MailMessage, nodes: any): Pro
 		destinationFolderId: nodes?.[0]?.id
 	});
 
-const AttachmentsBlock: FC<{ message: MailMessage; emlViewerInvoker: any }> = ({
-	message,
-	emlViewerInvoker
-}): ReactElement => {
+const AttachmentsBlock: FC<{
+	message: MailMessage;
+	isExternalMessage?: boolean;
+	openEmlPreview?: OpenEmlPreviewType;
+}> = ({ message, isExternalMessage = false, openEmlPreview }): ReactElement => {
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(
 		() => filter(message?.attachments, { cd: 'attachment' }),
@@ -474,7 +447,6 @@ const AttachmentsBlock: FC<{ message: MailMessage; emlViewerInvoker: any }> = ({
 			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
 				{map(expanded ? attachments : attachments?.slice(0, 2), (att, index) => (
 					<Attachment
-						emlViewerInvoker={emlViewerInvoker}
 						key={`att-${att.filename}-${index}`}
 						filename={att?.filename}
 						size={att?.size ?? 0}
@@ -490,9 +462,11 @@ const AttachmentsBlock: FC<{ message: MailMessage; emlViewerInvoker: any }> = ({
 							attachments: [att.name]
 						})}
 						message={message}
+						isExternalMessage={isExternalMessage}
 						part={att?.name ?? ''}
 						iconColors={getAttachmentIconColors({ attachments, theme })}
 						att={att}
+						openEmlPreview={openEmlPreview}
 					/>
 				))}
 			</Container>
