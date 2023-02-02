@@ -387,7 +387,7 @@
         "read_receipt_2": "Souhaitez-vous notifier l'expéditeur ?",
         "read_receipt_1": "L'expéditeur de ce message a demandé une notification de lecture de ce message.",
         "invalid_trustee_address": "Merci de ne saisir que des adresses email ou des domaines",
-        "cal_name_exist_warning": "Ce sont est déjà utilisé par un autre calendrier sur cet emplacement",
+        "cal_name_exist_warning": "Un calendrier porte déjà ce nom sur ce point de montage",
         "edit_schedule_warning": "En éditant cet email, l'heure et la date définie précédemment pour l'envoi planifiées seront annulées."
     },
     "placeholder": {
