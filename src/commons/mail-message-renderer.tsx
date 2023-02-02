@@ -318,9 +318,8 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 			iframeRef.current.contentDocument.body.getElementsByTagName('img');
 		if (images)
 			forEach(images, (p: HTMLImageElement) => {
-				if (p.hasAttribute('dfsrc')) {
+				if (p.hasAttribute('dfsrc') && showImage) {
 					p.setAttribute('src', p.getAttribute('dfsrc') ?? '');
-					p.setAttribute('style', showImage ? 'display: block' : 'display: none');
 				}
 				if (!_CI_SRC_REGEX.test(p.src)) return;
 				const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';

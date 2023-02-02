@@ -36,6 +36,7 @@ import {
 	MailsEditor,
 	ThrottledSaveToDraftType
 } from '../../../../types';
+import { getAttachmentIconColors, getAttachmentsLink } from '../preview/utils';
 
 const getSizeLabel = (size: number): string => {
 	let value;
@@ -47,19 +48,6 @@ const getSizeLabel = (size: number): string => {
 		value = `${Math.round((size / 1024 / 1024 / 1024) * 100) / 100} GB`;
 	}
 	return value;
-};
-
-const getAttachmentsLink = (
-	messageId: string | undefined,
-	messageSubject: string,
-	attachments: string[]
-): string => {
-	if (attachments.length > 1) {
-		return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
-			','
-		)}&disp=a&fmt=zip`;
-	}
-	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
 };
 
 const AttachmentHoverBarContainer = styled(Container)`
@@ -127,7 +115,7 @@ const Attachment: FC<AttachmentType> = ({
 	throttledSaveToDraft,
 	att
 }) => {
-	const extension = getFileExtension(att);
+	const extension = getFileExtension(att).value;
 	const sizeLabel = useMemo(() => getSizeLabel(size), [size]);
 	const [t] = useTranslation();
 	const inputRef = useRef<HTMLAnchorElement>(null);
@@ -243,22 +231,10 @@ const EditAttachmentsBlock: FC<{
 		});
 	}, [editor.editorId, dispatch, throttledSaveToDraft]);
 
-	const iconColors: IconColors = useMemo(
-		() =>
-			uniqBy(
-				map(editor.attachmentFiles, (att) => {
-					const fileExtn = getFileExtension(att);
-					const color = calcColor(att.contentType, theme);
-
-					return {
-						extension: fileExtn,
-						color
-					};
-				}),
-				'extension'
-			),
-		[editor.attachmentFiles, theme]
-	);
+	const iconColors: IconColors = getAttachmentIconColors({
+		attachments: editor.attachmentFiles,
+		theme
+	});
 
 	return editor.attachmentFiles.length > 0 ? (
 		<Container crossAlignment="flex-start">
@@ -270,7 +246,12 @@ const EditAttachmentsBlock: FC<{
 							key={`att-${att.filename}-${index}`}
 							filename={att.filename}
 							size={att.size}
-							link={getAttachmentsLink(editor?.id, editor.subject, [att.name])}
+							link={getAttachmentsLink({
+								messageId: editor.id ?? '',
+								messageSubject: editor.subject,
+								attachments: [att.name],
+								attachmentType: att.contentType
+							})}
 							editor={editor}
 							part={att.name}
 							iconColors={iconColors}
