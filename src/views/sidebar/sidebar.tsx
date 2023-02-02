@@ -26,8 +26,6 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions }) => {
 
 	const accordionsWithFindShare = useMemo(() => {
 		if (!accordions?.[0]?.children.find((folder) => folder.id === 'find_shares')) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			accordions[0]?.children?.push({
 				id: 'find_shares',
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
