@@ -26,7 +26,10 @@ import {
 import { useDispatch } from 'react-redux';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
-import { ExtraWindowCreationParams, useExtraWindowsManager } from '../../extra-window';
+import {
+	ExtraWindowCreationParams,
+	useExtraWindowsManager
+} from '../../extra-windows/extra-window';
 import AttachmentsBlock from './attachments-block';
 import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
 import { getMsg, msgAction } from '../../../../store/actions';

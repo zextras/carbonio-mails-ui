@@ -38,7 +38,10 @@ import { AppContext, MsgListDraggableItemType, TextReadValuesType } from '../../
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import MailPreview from '../../detail-panel/preview/mail-preview';
-import { ExtraWindowCreationParams, useExtraWindowsManager } from '../../extra-window';
+import {
+	ExtraWindowCreationParams,
+	useExtraWindowsManager
+} from '../../extra-windows/extra-window';
 import { ItemAvatar } from './item-avatar';
 import { ListItemActionWrapper } from './list-item-actions-wrapper';
 import { SenderName } from './sender-name';
@@ -191,18 +194,18 @@ export const MessageListItem: FC<any> = ({
 						context: { mailId: id, folderId },
 						title: ''
 					});
-				} else {
-					// Display mail in a separate window
-					const createWindowParams: ExtraWindowCreationParams = {
-						name: `${item.id}`,
-						returnComponent: false,
-						children: <MailPreview message={item} expanded={false} isAlone isMessageView />,
-						title: item.subject,
-						closeOnUnmount: false
-					};
-					if (createWindow) {
-						createWindow(createWindowParams);
-					}
+					// } else {
+					// 	// Display mail in a separate window
+					// 	const createWindowParams: ExtraWindowCreationParams = {
+					// 		name: `${item.id}`,
+					// 		returnComponent: false,
+					// 		children: <MailPreview message={item} expanded={false} isAlone isMessageView />,
+					// 		title: item.subject,
+					// 		closeOnUnmount: false
+					// 	};
+					// 	if (createWindow) {
+					// 		createWindow(createWindowParams);
+					// 	}
 				}
 			}
 		},

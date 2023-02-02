@@ -7,7 +7,7 @@ import React, { FC, useEffect } from 'react';
 import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useExtraWindowsManager } from '../extra-window';
+import { useExtraWindowsManager } from '../extra-windows/extra-window';
 import PreviewPanelHeader from './preview/preview-panel-header';
 import MailPreview from './preview/mail-preview';
 import { getMsg } from '../../../store/actions';
