@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.0.0...v1.1.0) (2023-02-02)
+
+
+### Features
+
+* added download section to preview-eml ([#291](https://github.com/zextras/carbonio-mails-ui/issues/291)) ([55491d6](https://github.com/zextras/carbonio-mails-ui/commit/55491d68a232f381dfd8fdc024264fbaa0a27e3e))
+
+
+### Bug Fixes
+
+* block download for untrusted images ([#295](https://github.com/zextras/carbonio-mails-ui/issues/295)) ([16c8176](https://github.com/zextras/carbonio-mails-ui/commit/16c8176f5d2bfebff252aaae78fe82237502f7f2))
+* force draft opening on board ([89d5c25](https://github.com/zextras/carbonio-mails-ui/commit/89d5c25465bbd8069c741512a6c45bd05ab1da92))
+* keep sender set on draft ([5198b55](https://github.com/zextras/carbonio-mails-ui/commit/5198b55cb00172a1c7efe4c4db8d9bc7953ebc8c))
+* tag search not working issue fixed ([#288](https://github.com/zextras/carbonio-mails-ui/issues/288)) ([92532f7](https://github.com/zextras/carbonio-mails-ui/commit/92532f75a49f1c02b2d62209eda317e4066b5323))
+
 ## [1.0.0](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.56...v1.0.0) (2023-01-18)
 
 ### [0.1.56](https://github.com/zextras/carbonio-mails-ui/compare/v0.1.55...v0.1.56) (2023-01-10)
