@@ -88,11 +88,6 @@ function copyStyles(source, target) {
 			console.error(err);
 		}
 
-		// For @font-face rule, it must be loaded via <link href=''> because the
-		// rule contains relative path from the css file.
-		const isFontFaceRule =
-			rules && Object.values(rules).some((r) => r instanceof CSSFontFaceRule) && styleSheet.href;
-
 		if (rules) {
 			// IE11 is very slow for appendChild, so use plain string here
 			const ruleText = [];
@@ -106,7 +101,7 @@ function copyStyles(source, target) {
 					return;
 				}
 
-				let returnText = '';
+				let returnText;
 
 				if (type === CSSRule.KEYFRAMES_RULE) {
 					// IE11 will throw error when trying to access cssText property, so we
@@ -233,7 +228,7 @@ class NewWindow extends React.PureComponent {
 
 		// Open a new window.
 		this.window = window.open(url, name, toWindowFeatures(features));
-		this.container = this.window.document.createElement('div');
+
 		// When a new window use content from a cross-origin there's no way we can attach event
 		// to it. Therefore, we need to detect in a interval when the new window was destroyed
 		// or was closed.
