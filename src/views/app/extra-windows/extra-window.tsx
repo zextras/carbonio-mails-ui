@@ -376,7 +376,7 @@ const ExtraWindowsManager: FC = ({ children }) => {
 					focusedExtraWindow?.window?.document?.title
 				);
 				const closeModal = createModal({
-					title: 'Zio ken!',
+					title: 'Window blocked!!!!',
 					// container: focusedExtraWindow?.window?.document.body,
 					confirmLabel: t('action.ok', 'Ok'),
 					showCloseIcon: false,
@@ -391,7 +391,7 @@ const ExtraWindowsManager: FC = ({ children }) => {
 					},
 					children: (
 						<Text overflow="break-word" style={{ paddingTop: '1rem' }}>
-							Zio billy, sblocca i popup!
+							The browser blocked the window opening!
 						</Text>
 					)
 				});
