@@ -51,11 +51,12 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
+import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import MailMsgPreviewActions from '../../../../../ui-actions/mail-message-preview-actions';
 import { useMessageActions } from '../../../../../hooks/use-message-actions';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
-import { getTimeLabel, ParticipantRole, participantToString } from '../../../../../commons/utils';
+import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import MessageContactsList from './message-contact-list';
 import { MailMessage } from '../../../../../types';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';

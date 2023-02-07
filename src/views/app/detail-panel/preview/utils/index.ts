@@ -1,4 +1,17 @@
-import { includes } from 'lodash';
+/*
+ * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+import { includes, uniqBy } from 'lodash';
+import { DefaultTheme } from 'styled-components';
+import { calcColor, getFileExtension } from '../../../../../commons/utilities';
+import {
+	AttachmentPart,
+	EditorAttachmentFiles,
+	GetAttachmentsDownloadLinkProps,
+	IconColors
+} from '../../../../../types';
 
 type GetAttachmentsLinkProps = {
 	messageId: string;
@@ -47,21 +60,35 @@ export const getAttachmentsLink = ({
 	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(',')}&disp=a`;
 };
 
-type getAttachmentsDownloadLinkProps = {
-	messageId: string;
-	messageSubject: string;
-	attachments: Array<string | undefined>;
-};
-
 export const getAttachmentsDownloadLink = ({
 	messageId,
 	messageSubject,
 	attachments
-}: getAttachmentsDownloadLinkProps): string => {
-	if (attachments && attachments.length > 1) {
+}: GetAttachmentsDownloadLinkProps): string => {
+	if (attachments?.length > 1) {
 		return `/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
 			','
 		)}&disp=a&fmt=zip`;
 	}
 	return `/service/home/~/?auth=co&id=${messageId}&part=${attachments?.join(',')}&disp=a`;
 };
+
+export const getAttachmentIconColors = ({
+	attachments,
+	theme
+}: {
+	attachments: AttachmentPart[] | EditorAttachmentFiles[];
+	theme: DefaultTheme;
+}): IconColors =>
+	uniqBy(
+		attachments.map((att: AttachmentPart | EditorAttachmentFiles) => {
+			const fileExtn = getFileExtension(att).value;
+			const color = calcColor(att.contentType ?? '', theme);
+
+			return {
+				extension: fileExtn,
+				color
+			};
+		}),
+		'extension'
+	);

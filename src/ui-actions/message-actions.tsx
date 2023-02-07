@@ -23,10 +23,11 @@ import { sendMsg } from '../store/actions/send-msg';
 import MoveConvMessage from './move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
-import { getContentForPrint, getErrorPage } from '../commons/print-conversation';
+import { getContentForPrint } from '../commons/print-conversation';
 import { applyTag } from './tag-actions';
-import { MailMessage, MsgActionParameters, MsgActionResult } from '../types';
+import { BoardContext, MailMessage, MsgActionParameters, MsgActionResult } from '../types';
 import { StoreProvider } from '../store/redux';
+import { errorPage } from '../commons/preview-eml/error-page';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -207,7 +208,7 @@ export function printMsg({
 					}
 				})
 				.catch(() => {
-					const errorContent = getErrorPage(t);
+					const errorContent = errorPage;
 					if (printWindow) printWindow.document.write(errorContent);
 				});
 		}
@@ -420,9 +421,9 @@ export function replyMsg({
 		label: t('action.reply', 'Reply'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard({
+			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY}`,
-				context: { mailId: id },
+				context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -439,9 +440,9 @@ export function replyAllMsg({
 		label: t('action.reply_all', 'Reply all'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard({
+			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY_ALL}`,
-				context: { mailId: id },
+				context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -458,9 +459,9 @@ export function forwardMsg({
 		label: t('action.forward', 'Forward'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard({
+			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.FORWARD}`,
-				context: { mailId: id },
+				context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -477,9 +478,9 @@ export function editAsNewMsg({
 		label: t('action.edit_as_new', 'Edit as new'),
 		click: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard({
+			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_NEW}`,
-				context: { mailId: id },
+				context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -505,9 +506,9 @@ export function editDraft({
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						closeModal();
-						addBoard({
+						addBoard<BoardContext>({
 							url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
-							context: { mailId: id },
+							context: { mailId: id, folderId },
 							title: ''
 						});
 					},
@@ -529,9 +530,9 @@ export function editDraft({
 					)
 				});
 			} else {
-				addBoard({
+				addBoard<BoardContext>({
 					url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
-					context: { mailId: id },
+					context: { mailId: id, folderId },
 					title: ''
 				});
 			}
@@ -828,6 +829,15 @@ export const getActions = ({
 					replyMsg({ id: message.id, folderId }),
 					replyAllMsg({ id: message.id, folderId }),
 					forwardMsg({ id: message.id, folderId }),
+					setMsgRead({
+						ids: [message.id],
+						value: message.read,
+
+						dispatch,
+						folderId,
+						shouldReplaceHistory: true,
+						deselectAll
+					}),
 					moveMsgToTrash({
 						ids: [message.id],
 
@@ -838,15 +848,7 @@ export const getActions = ({
 						conversationId: message.conversation,
 						closeEditor
 					}),
-					setMsgRead({
-						ids: [message.id],
-						value: message.read,
 
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
 					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch })
 				],
 				[

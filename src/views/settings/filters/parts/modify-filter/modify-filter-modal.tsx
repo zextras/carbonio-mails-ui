@@ -33,6 +33,8 @@ import FilterActionConditions from '../new-filter-action-conditions';
 import FilterTestConditionRow from '../filter-test-condition-row';
 import { getTestComponent, findRowKey } from '../get-test-component';
 import { capitalise } from '../../../../sidebar/utils';
+import { FilterActions } from '../../../../../types';
+import { getButtonInfo } from '../utils';
 
 type FilterType = {
 	active: boolean;
@@ -129,8 +131,8 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? [{ ...omit(finalActions, 'id'), actionStop: [{}] }]
-				: [{ ...omit(finalActions, 'id') }],
+				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions[])
+				: ([{ ...omit(finalActions, 'id') }] as FilterActions[]),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
@@ -143,10 +145,13 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		[activeFilter, filterName, condition, requiredFilterTest, dontProcessAddFilters, finalActions]
 	);
 
-	const createFilterDisabled = useMemo(
-		() => filterName.length === 0 || isEqual(copyRequiredFilters, requiredFilters),
-		[copyRequiredFilters, filterName.length, requiredFilters]
-	);
+	const [createFilterDisabled, buttonTooltip] = useMemo(() => {
+		if (isEqual(copyRequiredFilters, requiredFilters)) {
+			return [true, t('settings.label.not_changed_anything', 'No change was made')];
+		}
+		return getButtonInfo(filterName, requiredFilters, t, false);
+	}, [copyRequiredFilters, filterName, requiredFilters, t]);
+
 	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice(), [incomingFilters]);
 
 	const toggleCheckBox = useCallback(() => {
@@ -353,11 +358,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 				</Row>
 				<ModalFooter
 					label={t('label.edit', 'Edit')}
-					toolTipText={
-						createFilterDisabled
-							? t('settings.label.not_changed_anything', 'You haven’t changed anything')
-							: t('label.edit', 'Edit')
-					}
+					toolTipText={buttonTooltip}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}

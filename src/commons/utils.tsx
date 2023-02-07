@@ -68,6 +68,7 @@ export enum LineType {
 	ORIG_HEADER = 'HEADER',
 	ORIG_LINE = 'LINE',
 	HTML_SEP_ID = 'zwchr',
+	PLAINTEXT_SEP = '---------------------------',
 	NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*'
 }
 
@@ -82,18 +83,6 @@ export enum FolderActionsType {
 	SHARES_INFO = 'sharesInfo',
 	SHARE = 'share',
 	MARK_ALL_READ = 'read'
-}
-
-// eslint-disable-next-line no-shadow
-export enum ParticipantRole {
-	FROM = 'f',
-	TO = 't',
-	CARBON_COPY = 'c',
-	BLIND_CARBON_COPY = 'b',
-	REPLY_TO = 'r',
-	SENDER = 's',
-	READ_RECEIPT_NOTIFICATION = 'n',
-	RESENT_FROM = 'rf'
 }
 
 // eslint-disable-next-line no-shadow

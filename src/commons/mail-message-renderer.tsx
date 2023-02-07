@@ -26,7 +26,9 @@ import React, {
 } from 'react';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
+import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';
+
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
 
@@ -142,7 +144,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 	const [showQuotedText, setShowQuotedText] = useState(false);
 
 	const settingsPref = useUserSettings()?.prefs;
-	const from = filter(participants, { type: 'f' })[0]?.address;
+	const from = filter(participants, { type: ParticipantRole.FROM })[0]?.address;
 	const domain = from?.substring(from.lastIndexOf('@') + 1);
 
 	const [showExternalImage, setShowExternalImage] = useState(false);
@@ -183,7 +185,9 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 	const calculateHeight = (): void => {
 		if (!isNull(iframeRef.current)) {
 			iframeRef.current.style.height = '0';
-			iframeRef.current.style.height = `${iframeRef?.current?.contentDocument?.body?.scrollHeight}px`;
+			iframeRef.current.style.height = `${
+				(iframeRef?.current?.contentDocument?.body?.scrollHeight || 0) / 16 + 24 / 16
+			}rem`;
 		}
 	};
 
@@ -276,6 +280,9 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				max-width: 100% !important;
 				overflow-wrap: anywhere !important;
 			}
+			#bodyTable {
+				height: fit-content
+			}
 		`;
 		styleTag.textContent = styles;
 		if (!isNull(iframeRef.current) && !isNull(iframeRef.current.contentDocument))
@@ -311,9 +318,8 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 			iframeRef.current.contentDocument.body.getElementsByTagName('img');
 		if (images)
 			forEach(images, (p: HTMLImageElement) => {
-				if (p.hasAttribute('dfsrc')) {
+				if (p.hasAttribute('dfsrc') && showImage) {
 					p.setAttribute('src', p.getAttribute('dfsrc') ?? '');
-					p.setAttribute('style', showImage ? 'display: block' : 'display: none');
 				}
 				if (!_CI_SRC_REGEX.test(p.src)) return;
 				const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';
@@ -405,11 +411,10 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				</BannerContainer>
 			)}
 			<iframe
+				data-testid="message-renderer-iframe"
 				title={msgId}
 				ref={iframeRef}
 				onLoad={calculateHeight}
-				scrolling="no"
-				frameBorder="0"
 				style={{
 					border: 'none',
 					width: '100%',

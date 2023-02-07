@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -23,10 +23,10 @@ import {
 	openComposerSharedFunction,
 	openPrefilledComposerSharedFunction
 } from './integrations/shared-functions';
-import { ParticipantRole } from './commons/utils';
 import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
 import { StoreProvider } from './store/redux';
+import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
 
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
@@ -147,6 +147,7 @@ const App = () => {
 						addBoard({
 							url: `${MAILS_ROUTE}/new?action=new`,
 							title: t('label.new_email', 'New E-mail')
+							// TODO provide the context filled with the current folder id
 						});
 					},
 					disabled: false,

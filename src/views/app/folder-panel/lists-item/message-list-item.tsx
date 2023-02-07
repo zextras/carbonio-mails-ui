@@ -14,6 +14,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import {
+	addBoard,
 	FOLDERS,
 	replaceHistory,
 	t,
@@ -22,6 +23,7 @@ import {
 	useFolder,
 	useTags,
 	useUserAccounts,
+	useUserSettings,
 	ZIMBRA_STANDARD_COLORS
 } from '@zextras/carbonio-shell-ui';
 import { find, includes, isEmpty, reduce } from 'lodash';
@@ -29,7 +31,8 @@ import moment from 'moment';
 import React, { FC, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { getTimeLabel, participantToString } from '../../../../commons/utils';
+import { ActionsType, getTimeLabel, participantToString } from '../../../../commons/utils';
+import { MAILS_ROUTE } from '../../../../constants';
 
 import { AppContext, MsgListDraggableItemType, TextReadValuesType } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
@@ -101,6 +104,7 @@ export const MessageListItem: FC<any> = ({
 	const ids = useMemo(() => Object.keys(selectedItems ?? []), [selectedItems]);
 	const dispatch = useDispatch();
 	const tagsFromStore = useTags();
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const tags = useMemo(
 		() =>
@@ -166,19 +170,25 @@ export const MessageListItem: FC<any> = ({
 	const _onClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
-				if (item.read === false) {
+				if (item.read === false && zimbraPrefMarkMsgRead) {
 					setMsgRead({ ids: [item.id], value: false, dispatch }).click();
 				}
 				replaceHistory(`/folder/${folderId}/message/${item.id}`);
 			}
 		},
-		[folderId, item.id, item.read, dispatch]
+		[item.read, item.id, zimbraPrefMarkMsgRead, folderId, dispatch]
 	);
 	const _onDoubleClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				const { id, isDraft } = item;
-				if (isDraft) replaceHistory(`/folder/${folderId}/edit/${id}?action=editAsDraft`);
+				if (isDraft) {
+					addBoard({
+						url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
+						context: { mailId: id, folderId },
+						title: ''
+					});
+				}
 			}
 		},
 		[folderId, item]
@@ -240,6 +250,7 @@ export const MessageListItem: FC<any> = ({
 			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
 			style={{ display: 'block' }}
 			onDragStart={(e): void => dragCheck(e, item.id)}
+			data-testid="MailItemContainer"
 		>
 			<DraggableItem
 				item={item}

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { find } from 'lodash';
+import { find, forEach } from 'lodash';
 
 export const domainOptions = (t) => [
 	{ label: t('label.all', 'all'), value: 'all' },
@@ -357,3 +357,57 @@ export const getStatusOptions = (t) => [
 
 export const findDefaultValue = (list, key) => find(list, { value: key });
 export const findDefaultObjectValue = (list, key) => find(list, { value: key });
+
+export const getButtonInfo = (filterName, filters, t, isCreate = true) => {
+	const keys = Object.keys(filters.filterActions[0]);
+	const actions = filters.filterActions[0];
+	if (filterName.length === 0) {
+		return [true, t('settings.label.filter_name_required', 'Filter name is required')];
+	}
+	if (keys.includes('actionTag')) {
+		let isEmpty = false;
+		forEach(actions.actionTag, (action) => {
+			if (action.tagName === '') isEmpty = true;
+		});
+		if (isEmpty) {
+			return [
+				true,
+				t(
+					'settings.tag_name_required',
+					'Fill in the "Tag" field in order to complete the action "Tag with".'
+				)
+			];
+		}
+	}
+	if (keys.includes('actionFileInto')) {
+		let isEmpty = false;
+		forEach(actions.actionFileInto, (files) => {
+			if (files.folderPath === '') isEmpty = true;
+		});
+		if (isEmpty) {
+			return [
+				true,
+				t(
+					'settings.folder_path_required',
+					'Select a destination folder in order to complete the action "Move into folder".'
+				)
+			];
+		}
+	}
+	if (keys.includes('actionRedirect')) {
+		let isEmpty = false;
+		forEach(actions.actionRedirect, (address) => {
+			if (address.a === '') isEmpty = true;
+		});
+		if (isEmpty) {
+			return [
+				true,
+				t(
+					'settings.address_required',
+					'Fill in the "Address" field in order to complete the action "Redirect to Address".'
+				)
+			];
+		}
+	}
+	return [false, isCreate ? t('label.create', 'Create') : t('label.edit', 'Edit')];
+};

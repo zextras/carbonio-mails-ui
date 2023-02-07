@@ -41,6 +41,7 @@ type CreateEditorPayload = {
 	original: MailMessage;
 	id?: string;
 	action: string | undefined;
+	change?: string;
 	accounts: Array<Account>;
 	settings: AccountSettings;
 	boardContext: Partial<{ compositionData: MailsEditor; contacts: Array<Participant> }>;

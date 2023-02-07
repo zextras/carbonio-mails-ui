@@ -49,3 +49,43 @@ export type ListPropsType = {
 	toggle: (arg: string) => void;
 	unSelect: () => void;
 };
+
+export type FilterActions = {
+	actionFileInto?: [
+		{
+			folderPath: string;
+			index: string;
+		}
+	];
+	actionRedirect?: [
+		{
+			a: string;
+			index: string;
+		}
+	];
+	actionFlag?: [
+		{
+			flagName: string;
+			index: string;
+		}
+	];
+	actionStop?: [
+		{
+			index?: string;
+		}
+	];
+	actionTag?: [
+		{
+			index?: string;
+			tagName: string | undefined;
+		}
+	];
+	actionDiscard?: {
+		index: string;
+	};
+	actionKeep?: [
+		{
+			index?: string;
+		}
+	];
+};

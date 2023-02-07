@@ -3,15 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { map } from 'lodash';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { Dispatch } from 'redux';
-import { map } from 'lodash';
-import { mountSharedCalendar } from '../../../store/actions/mount-share-calendar';
+import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { msgAction } from '../../../store/actions';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCalendarReply';
+import { mountSharedCalendar } from '../../../store/actions/mount-share-calendar';
+import { MailsEditor, Participant } from '../../../types';
 
 type accept = {
 	zid: string;
@@ -25,7 +27,7 @@ type accept = {
 	msgId: Array<string> | any;
 	sharedCalendarName: string;
 	owner: string;
-	participants: any;
+	participants: Participant[];
 	grantee: string;
 	customMessage: string;
 	createSnackbar: any;
@@ -53,7 +55,7 @@ type acceptSharedCalendarType = {
 	dispatch: Dispatch;
 	sharedCalendarName: string;
 	owner: string;
-	participants: any;
+	participants: Participant[];
 	grantee: string;
 	customMessage: string;
 	role: string;
@@ -68,7 +70,7 @@ type declineType = {
 	msgId: string;
 	sharedCalendarName: string;
 	owner: string;
-	participants: any;
+	participants: Participant[];
 	grantee: string;
 	customMessage: string;
 	role: string;
@@ -122,10 +124,10 @@ const sharedCalendarReplyFunc = ({
 					? `Share Accepted: ${sharedCalendarName} shared by ${owner}`
 					: `Share Declined: ${sharedCalendarName} shared by ${owner}`,
 				participants: map(participants, (p) => {
-					if (p.type === 'f') {
-						return { ...p, type: 't' };
+					if (p.type === ParticipantRole.FROM) {
+						return { ...p, type: ParticipantRole.TO };
 					}
-					return { ...p, type: 'f' };
+					return { ...p, type: ParticipantRole.FROM };
 				}),
 				text: [
 					isAccepted
@@ -136,7 +138,7 @@ const sharedCalendarReplyFunc = ({
 								customMessage?.length > 0 ? customMessage : ''
 						  }`
 				]
-			}
+			} as MailsEditor
 		})
 	);
 

@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { MailMessage } from '../messages';
+
 export type EditorAttachmentFiles = {
 	contentType: string;
 	disposition: string;
@@ -65,6 +67,10 @@ type FindDefaultIdentityType = {
 	list: Array<IdentityType>;
 	allAccounts: Record<string, Folder & { owner: string }>;
 	folderId: string;
+	currentMessage?: MailMessage;
+	originalMessage?: MailMessage;
+	account: Account;
+	settings: AccountSettings;
 };
 
 type ThrottledSaveToDraftType = (data: Partial<MailsEditor>) => void;

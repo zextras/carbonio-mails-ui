@@ -15,6 +15,8 @@ import { CreateFilterContext } from './create-filter-context';
 import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
 import FilterActionConditions from './new-filter-action-conditions';
 import FilterTestConditionRow from './filter-test-condition-row';
+import { getButtonInfo } from './utils';
+import { FilterActions } from '../../../../types';
 
 type ComponentProps = {
 	t: TFunction;
@@ -91,12 +93,20 @@ const CreateFilterModal: FC<ComponentProps> = ({
 			{}
 		);
 	}, [newFilters]);
-
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? [{ ...omit(finalActions, 'id'), actionStop: [{}] }]
-				: [{ ...omit(finalActions, 'id') }],
+				? ([
+						{
+							...omit(finalActions, 'id'),
+							actionStop: [{}]
+						}
+				  ] as FilterActions[])
+				: ([
+						{
+							...omit(finalActions, 'id')
+						}
+				  ] as FilterActions[]),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
@@ -109,9 +119,12 @@ const CreateFilterModal: FC<ComponentProps> = ({
 		[activeFilter, filterName, condition, requiredFilterTest, finalActions, dontProcessAddFilters]
 	);
 
-	const createFilterDisabled = useMemo(() => filterName.length === 0, [filterName]);
-	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice() || [], [incomingFilters]);
+	const [createFilterDisabled, buttonTooltip] = useMemo(
+		() => getButtonInfo(filterName, requiredFilters, t),
+		[filterName, requiredFilters, t]
+	);
 
+	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice() || [], [incomingFilters]);
 	const onConfirm = useCallback(() => {
 		const toSend = [...incomingFiltersCopy, requiredFilters];
 		setIncomingFilters?.(toSend);
@@ -119,7 +132,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 			setFetchIncomingFilters?.(true);
 		});
 		onClose();
-	}, [incomingFiltersCopy, requiredFilters, setIncomingFilters, onClose, setFetchIncomingFilters]);
+	}, [incomingFiltersCopy, onClose, requiredFilters, setFetchIncomingFilters, setIncomingFilters]);
 
 	const toggleCheckBox = useCallback(() => {
 		setDontProcessAddFilters(!dontProcessAddFilters);
@@ -176,11 +189,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 				</Row>
 				<ModalFooter
 					label={t('label.create', 'Create')}
-					toolTipText={
-						createFilterDisabled
-							? t('settings.label.filter_name_required', 'Filter name is required')
-							: t('label.create', 'Create')
-					}
+					toolTipText={buttonTooltip}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}

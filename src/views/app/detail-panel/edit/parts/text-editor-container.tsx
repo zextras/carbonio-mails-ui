@@ -54,10 +54,7 @@ const TextEditorContainer: FC<PropType> = ({
 	const { prefs } = useUserSettings();
 
 	const defaultFontFamily = useMemo<string>(
-		// TODO: Once the Typescript branch is merged it can be removed
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		() => prefs?.zimbraPrefHtmlEditorDefaultFontFamily ?? 'sans-serif',
+		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontFamily) ?? 'sans-serif',
 		[prefs]
 	);
 	const [inputValue, setInputValue] = useState(editor?.text ?? ['', '']);
