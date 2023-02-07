@@ -5,8 +5,8 @@
  */
 import { Accordion, Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
 import {
-	Folder,
 	FOLDERS,
+	Folder,
 	getFolder,
 	t,
 	useFoldersByView,
@@ -49,8 +49,6 @@ export const FolderSelector = ({
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const accountName = useUserAccount().name;
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	const folders = useFoldersByView(FOLDER_VIEW.message);
 	const folder = getFolder(folderId);
 
