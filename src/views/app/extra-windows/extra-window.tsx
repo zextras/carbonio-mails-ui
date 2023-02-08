@@ -377,7 +377,7 @@ const ExtraWindowsManager: FC = ({ children }) => {
 				);
 				const closeModal = createModal({
 					title: 'Window blocked!!!!',
-					// container: focusedExtraWindow?.window?.document.body,
+					containerWindow: focusedExtraWindow?.window,
 					confirmLabel: t('action.ok', 'Ok'),
 					showCloseIcon: false,
 					onConfirm: () => {

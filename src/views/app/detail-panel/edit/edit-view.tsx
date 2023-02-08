@@ -42,7 +42,6 @@ import {
 import { selectMessages } from '../../../../store/messages-slice';
 import { StoreProvider } from '../../../../store/redux';
 import { EditViewContextType, MailsEditor, StateType } from '../../../../types';
-import { useExtraWindowsManager } from '../../extra-windows/extra-window';
 import DropZoneAttachment from './dropzone-attachment';
 import EditAttachmentsBlock from './edit-attachments-block';
 import { addAttachments } from './edit-utils';
