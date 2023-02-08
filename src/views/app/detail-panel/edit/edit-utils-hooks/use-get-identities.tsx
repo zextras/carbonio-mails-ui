@@ -257,7 +257,7 @@ export const useGetIdentities = ({
 					</Container>
 				)
 			})),
-		[accounts, activeFrom, list, noName, setOpen, updateEditorCb]
+		[accounts, activeFrom, list, noName, onFromChange, setOpen, updateEditorCb]
 	);
 	const hasIdentity = useMemo(() => list.length > 1, [list]);
 
