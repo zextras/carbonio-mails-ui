@@ -469,7 +469,7 @@
             "visualization_options": "Görsel Seçenekler",
             "unsend_time": "Gönderim zamanı ayarla",
             "not_changed_anything": "Değişiklik yapılmadı",
-            "mark_reading_panel": "Okundu Olarak İşaretle",
+            "mark_reading_panel": "Okundu olarak işaretle",
             "mark_manually": "Manuel olarak işaretle",
             "filter_name_required": "Filtre adı gerekiyor",
             "default": "Varsayılan"
@@ -606,9 +606,11 @@
             "no_delay": "Gecikme yok"
         },
         "tag_name_required": "\"Etiketle\" işlemini tamamlamak için \"Etiket\" alanını doldurun.",
-        "folder_path_required": "\"Klasöre Taşı\" işlemini tamamlamak için \"Hedef Klasör\" alanını doldurun.",
+        "folder_path_required": "\"Klasöre Taşı\" işlemini tamamlamak için hedef klasör seçin.",
         "address_required": "\"Adrese Yönlendir\" işlemini tamamlamak için \"Adres\" alanını doldurun.",
-        "address": "Adres"
+        "address": "Adres",
+        "remove_action": "Bu eylemi kaldır",
+        "add_action": "Yeni bir eylem ekle"
     },
     "displayer": {
         "description6": "Bu e-postayı yanıtlayın veya diğer kullanıcılara yönlendirin.",

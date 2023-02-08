@@ -333,7 +333,7 @@
         "invalid_query": "Nie udało się przetworzyć filtrów, wyczyść wyszukiwanie i spróbuj ponownie",
         "download_and_delete": "Pobierz i usuń",
         "enter_name": "Wprowadź nazwę",
-        "mark_read_message_manually": "Oznaczaj wiadomości jako przeczytane manualnie klikając ikonkę",
+        "mark_read_message_manually": "Manualnie oznaczaj wiadomości jako przeczytane klikając w tą ikonkę",
         "no_signature": "Brak podpisu",
         "mark_read_message_immediately": "Natychmiastowo oznaczaj wiadomości jako przeczytane"
     },
@@ -561,9 +561,9 @@
             "message_selection": "Wybór wiadomości",
             "search_query": "Domyślne kryterium",
             "visualization_options": "Opcje wyświetlania",
-            "unsend_time": "Ustaw czas cofnięcia wysyłania",
+            "unsend_time": "Ustaw czas wysłania",
             "not_changed_anything": "Nie wprowadzono żadnych zmian",
-            "mark_reading_panel": "Ustawienia oznaczania jako przeczytane",
+            "mark_reading_panel": "Oznaczone jako przeczytane",
             "mark_manually": "Oznaczaj manualnie",
             "filter_name_required": "Nazwa filtra jest wymagana",
             "default": "Domyślne"
@@ -701,9 +701,9 @@
             "second_2": "{{count}} sekund",
             "no_delay": "Brak opóźnienia"
         },
-        "folder_path_required": "W czynności \"Przenieś do folderu\" brakuje jednej lub więcej wartości.",
-        "tag_name_required": "W czynności \"Umiesc tag\" brakuje jednej lub więcej wartości.",
-        "address_required": "W czynności \"Przekieruj na adres\" brakuje jednej lub więcej wartości.",
+        "folder_path_required": "Wybierz folder docelowy, aby wykonać czynność \"Przenieś do folderu\".",
+        "tag_name_required": "Uzupełnij pole \"Tag\", aby wykonać czynność \"Umieść tag\".",
+        "address_required": "Uzupełnij pole \"Adres\", aby wykonać czynność \"Przekieruj na adres\".",
         "address": "Adres"
     },
     "signatures": {
