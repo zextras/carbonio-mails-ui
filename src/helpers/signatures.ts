@@ -83,8 +83,8 @@ const composeMailBodyWithSignature = (
 	}
 
 	return isRichText
-		? `<br/><br/>${signatureValue}`
-		: `\n\n${convertHtmlToPlainText(signatureValue)}`;
+		? `<br/><br/><div class="signature-div">${signatureValue}</div>`
+		: `\n\n---${convertHtmlToPlainText(signatureValue)}`;
 };
 
 export {

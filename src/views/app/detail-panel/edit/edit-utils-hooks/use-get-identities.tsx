@@ -76,6 +76,7 @@ export const findDefaultIdentity = ({
 type UseGetIdentitiesPropType = {
 	updateEditorCb: (arg: Partial<MailsEditor>) => void;
 	setOpen: (arg: boolean) => void;
+	onFromChange?: (arg: Partial<IdentityType> | undefined) => void;
 	editorId: string;
 	currentMessage?: MailMessage;
 	originalMessage?: MailMessage;
@@ -84,6 +85,7 @@ type UseGetIdentitiesPropType = {
 export const useGetIdentities = ({
 	updateEditorCb,
 	setOpen,
+	onFromChange,
 	editorId,
 	currentMessage,
 	originalMessage,
@@ -113,9 +115,10 @@ export const useGetIdentities = ({
 			fullname: item._attrs?.zimbraPrefFromDisplay ?? '',
 			type: item._attrs.zimbraPrefFromAddressType,
 			identityName: item.name ?? '',
-			displayName: item._attrs?.zimbraPrefIdentityName ?? ''
+			displayName: item._attrs?.zimbraPrefIdentityName ?? '',
+			zimbraPrefDefaultSignatureId: item._attrs?.zimbraPrefDefaultSignatureId,
+			zimbraPrefForwardReplySignatureId: item._attrs?.zimbraPrefForwardReplySignatureId
 		}));
-
 		const rightsList = flatten(
 			map(
 				filter(
@@ -135,7 +138,9 @@ export const useGetIdentities = ({
 						fullname: item.d,
 						type: ele.right,
 						identityName: '',
-						displayName: ''
+						displayName: '',
+						zimbraPrefDefaultSignatureId: '',
+						zimbraPrefForwardReplySignatureId: ''
 					}))
 			)
 		);
@@ -175,6 +180,7 @@ export const useGetIdentities = ({
 			setDefaultIdentity(def);
 			setActiveFrom(def);
 			setFrom(def);
+			onFromChange && onFromChange(def);
 			setIsIdentitySet(true);
 		}
 	}, [
@@ -188,9 +194,9 @@ export const useGetIdentities = ({
 		originalMessage,
 		account,
 		settings,
-		currentMessage
+		currentMessage,
+		onFromChange
 	]);
-
 	const identitiesList = useMemo(
 		() =>
 			list.map((el: IdentityType) => ({
@@ -210,7 +216,9 @@ export const useGetIdentities = ({
 						name: el.address,
 						type: ParticipantRole.FROM,
 						identityName: el.identityName,
-						displayName: el.displayName
+						displayName: el.displayName,
+						zimbraPrefDefaultSignatureId: el?.zimbraPrefDefaultSignatureId,
+						zimbraPrefForwardReplySignatureId: el?.zimbraPrefForwardReplySignatureId
 					};
 
 					updateEditorCb({ from: data });
@@ -226,6 +234,7 @@ export const useGetIdentities = ({
 						});
 					}
 					setFrom(data);
+					onFromChange && onFromChange(data);
 					setOpen(false);
 				},
 				selected: el === activeFrom,

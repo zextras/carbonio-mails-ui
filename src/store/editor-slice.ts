@@ -73,15 +73,23 @@ function createEditorReducer(
 		String(payload.settings.prefs.zimbraPrefForwardReplySignatureId)
 	);
 
+	// const textWithSignatureRepliesForwards =
+	// 	payload.labels && payload.original
+	// 		? [
+	// 				`${composeMailBodyWithSignature(signatureRepliesForwardsValue, false)} ${
+	// 					generateReplyText(payload.original, payload.labels)[0]
+	// 				}`,
+	// 				`${composeMailBodyWithSignature(signatureRepliesForwardsValue, true)} ${
+	// 					generateReplyText(payload.original, payload.labels)[1]
+	// 				}`
+	// 		  ]
+	// 		: ['', ''];
+
 	const textWithSignatureRepliesForwards =
 		payload.labels && payload.original
 			? [
-					`${composeMailBodyWithSignature(signatureRepliesForwardsValue, false)} ${
-						generateReplyText(payload.original, payload.labels)[0]
-					}`,
-					`${composeMailBodyWithSignature(signatureRepliesForwardsValue, true)} ${
-						generateReplyText(payload.original, payload.labels)[1]
-					}`
+					`${generateReplyText(payload.original, payload.labels)[0]}`,
+					`${generateReplyText(payload.original, payload.labels)[1]}`
 			  ]
 			: ['', ''];
 

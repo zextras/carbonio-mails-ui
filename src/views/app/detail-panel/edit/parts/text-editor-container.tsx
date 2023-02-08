@@ -32,6 +32,7 @@ type PropType = {
 	updateEditorCb: (data: Partial<MailsEditor>) => void;
 	updateSubjectField: (mod: Partial<MailsEditor>) => void;
 	saveDraftCb: (data: MailsEditor, signal?: AbortSignal) => SaveDraftResponse;
+	textValue: [string, string];
 };
 
 type FileSelectProps = {
@@ -45,7 +46,8 @@ const TextEditorContainer: FC<PropType> = ({
 	setValue,
 	updateEditorCb,
 	updateSubjectField,
-	saveDraftCb
+	saveDraftCb,
+	textValue
 }) => {
 	const { control } = useForm();
 	const { editor, throttledSaveToDraft } = useContext<EditViewContextType>(EditViewContext);
@@ -71,6 +73,11 @@ const TextEditorContainer: FC<PropType> = ({
 			}, 1500);
 		}, 1500);
 	}, []);
+
+	useEffect(() => {
+		console.log('===$$# call to update the input...==>', textValue);
+		setInputValue(textValue);
+	}, [textValue]);
 
 	useEffect(() => {
 		const controller = new AbortController();
