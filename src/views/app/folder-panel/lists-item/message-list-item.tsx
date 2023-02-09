@@ -37,11 +37,6 @@ import { MAILS_ROUTE } from '../../../../constants';
 import { AppContext, MsgListDraggableItemType, TextReadValuesType } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
-import MailPreview from '../../detail-panel/preview/mail-preview';
-import {
-	ExtraWindowCreationParams,
-	useExtraWindowsManager
-} from '../../extra-windows/extra-window';
 import { ItemAvatar } from './item-avatar';
 import { ListItemActionWrapper } from './list-item-actions-wrapper';
 import { SenderName } from './sender-name';
@@ -110,7 +105,6 @@ export const MessageListItem: FC<any> = ({
 	const dispatch = useDispatch();
 	const tagsFromStore = useTags();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-	const { createWindow } = useExtraWindowsManager();
 
 	const tags = useMemo(
 		() =>
@@ -129,7 +123,7 @@ export const MessageListItem: FC<any> = ({
 		[item.tags, tagsFromStore]
 	);
 
-	const [date, participantsString] = useMemo(() => {
+	const [date] = useMemo(() => {
 		if (item) {
 			const sender = find(item.participants, ['type', 'f']);
 			return [getTimeLabel(item.date), participantToString(sender, accounts)];

@@ -198,7 +198,6 @@ const Attachment: FC<AttachmentType> = ({
 	const showEMLPreview = useCallback(() => {
 		getMsgsForPrint({ ids: [message.id], part: att?.name })
 			.then((res) => {
-				console.log('******** showEMLPreview', openEmlPreview);
 				openEmlPreview && openEmlPreview(message.id, att?.name, res[0]);
 			})
 			.catch(() => {

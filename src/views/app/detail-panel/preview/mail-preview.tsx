@@ -26,6 +26,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
+import { errorPage } from '../../../../commons/preview-eml/error-page';
 import {
 	ExtraWindowCreationParams,
 	useExtraWindowsManager
