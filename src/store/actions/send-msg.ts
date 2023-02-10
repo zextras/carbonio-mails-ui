@@ -13,7 +13,7 @@ import { getMsg } from './get-msg';
 
 export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 	'sendMsg',
-	async ({ editorId, msg, prefs }, { getState, dispatch }) => {
+	async ({ editorId, msg, prefs }, { rejectWithValue, getState, dispatch }) => {
 		const editor = (getState() as StateType).editors.editors[editorId];
 		let toSend = editor && generateRequest(editor, prefs);
 
@@ -28,15 +28,21 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 			})) as SaveDraftResponse;
 		} catch (e) {
 			console.error(e);
+			return rejectWithValue(e);
 		}
 
-		if (resp?.m && resp?.m[0]?.id) {
-			dispatch(getMsg({ msgId: resp.m[0].id }));
+		const response = resp?.Fault ? { ...resp.Fault, error: true } : resp;
+		if (response?.error) {
+			return rejectWithValue(response);
+		}
+
+		if (response?.m && response?.m[0]?.id) {
+			dispatch(getMsg({ msgId: response.m[0].id }));
 			dispatch(closeEditor(editorId));
 		}
-		if (resp?.m && resp?.m[0]?.cid) {
-			dispatch(getConv({ conversationId: resp.m[0].cid }));
+		if (response?.m && response?.m[0]?.cid) {
+			dispatch(getConv({ conversationId: response.m[0].cid }));
 		}
-		return { resp, editor };
+		return { response, editor };
 	}
 );
