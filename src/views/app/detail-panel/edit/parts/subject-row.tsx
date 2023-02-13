@@ -28,7 +28,7 @@ const SubjectRow: FC<PropType> = ({ updateSubjectField }) => {
 				name="subject"
 				control={control}
 				defaultValue={editor?.subject ?? ''}
-				render={({ onChange, value }): ReactElement => (
+				render={({ field: { onChange, value } }): ReactElement => (
 					<Container
 						orientation="horizontal"
 						background="gray5"

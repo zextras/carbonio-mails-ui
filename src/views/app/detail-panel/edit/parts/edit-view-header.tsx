@@ -525,7 +525,7 @@ const EditViewHeader: FC<PropType> = ({
 						name="attach"
 						control={control}
 						defaultValue={editor.attach || {}}
-						render={({ onChange, value }): ReactElement => (
+						render={({ field: { onChange, value } }): ReactElement => (
 							<StyledComp.FileInput
 								type="file"
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
