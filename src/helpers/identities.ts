@@ -162,7 +162,7 @@ const getAvailableAddresses = (
 };
 
 /**
- * Returns the list of all the identities for the account. For each identity a typnpm e
+ * Returns the list of all the identities for the account. For each identity a type
  * is give, by matching the email address with all the available addresses, or by
  * setting a default one if the address does not match any of the available addresses.
  *
