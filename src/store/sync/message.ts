@@ -24,6 +24,7 @@ import {
 	find,
 	reject
 } from 'lodash';
+import { MAILS_ROUTE } from '../../constants';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { SoapIncompleteMessage, MsgStateType, IncompleteMessage, Payload } from '../../types';
 
@@ -71,7 +72,10 @@ const triggerNotification = (m: Array<SoapIncompleteMessage>): void => {
 		showPopup: isShowNotificationEnabled === 'TRUE',
 		onClick: (): void => {
 			window.focus();
-			replaceHistory(`/folder/${msg.parent}/message/${msg.id}`);
+			replaceHistory({
+				path: `/folder/${msg.parent}/message/${msg.id}`,
+				route: MAILS_ROUTE
+			});
 		}
 	}));
 
