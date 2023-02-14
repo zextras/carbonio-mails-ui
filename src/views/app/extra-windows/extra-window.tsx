@@ -12,25 +12,45 @@ import { DefaultTheme } from 'styled-components';
 import { ExtraWindowContextType, ExtraWindowProps } from '../../../types';
 import NewWindow from './new-window';
 
+// Enable debug console output
+const DEBUG = false;
+
 /**
- * Create a MutationObserver to monitors changes on the parent window document
+ * Debug output
+ * @param text console message
+ * @param args console message arguments
+ */
+const debug = (text: string, ...args: unknown[]): void => {
+	// eslint-disable-next-line no-console
+	if (DEBUG) console.debug(`**** extra-window **** ${text}`, args);
+};
+
+/**
+ * Create a MutationObserver to monitors changes on the parent window document's styles
  * and clones those changes inside the new window's document.
  * This will keep consistence in the style even when some new style element
- * will be added to a component rendered inside a separate window.
+ * will be added to a component rendered inside a separate window (i.e. rendering of
+ * a Preview component)
  *
  * @param parentWindowDoc
  * @param newWindowObj
  */
 const createStyleObserver = (parentWindowDoc: Document, newWindowObj: Window): MutationObserver => {
+	debug('creation of observer for', parentWindowDoc);
 	const observer = new MutationObserver((mutationList) => {
+		debug('mutation detected!', mutationList);
 		mutationList
 			.flatMap((mutation) => Array.from(mutation.addedNodes))
-			.filter((node) => node instanceof HTMLStyleElement)
+			.filter((node) => node.parentNode instanceof HTMLStyleElement)
 			.forEach((style) => {
-				newWindowObj.document.head.appendChild(style.cloneNode(true));
+				if (!style.parentNode) {
+					return;
+				}
+				newWindowObj.document.head.appendChild(style.parentNode.cloneNode(true));
+				debug('new style added', style);
 			});
 	});
-	observer.observe(parentWindowDoc.head, { childList: true });
+	observer.observe(parentWindowDoc.head, { subtree: true, childList: true });
 	return observer;
 };
 

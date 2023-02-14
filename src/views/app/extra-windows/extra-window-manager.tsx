@@ -18,19 +18,19 @@ import { ExtraWindow } from './extra-window';
 const DEBUG = false;
 
 /**
- * Context for providing extra windows' related functions
- */
-const ExtraWindowsContext = React.createContext<ExtraWindowsContextType>({});
-
-/**
  * Debug output
  * @param text console message
  * @param args console message arguments
  */
 const debug = (text: string, ...args: unknown[]): void => {
 	// eslint-disable-next-line no-console
-	if (DEBUG) console.debug(`************* ${text}`, args);
+	if (DEBUG) console.debug(`**** extra-window-manager **** ${text}`, args);
 };
+
+/**
+ * Context for providing extra windows' related functions
+ */
+const ExtraWindowsContext = React.createContext<ExtraWindowsContextType>({});
 
 /**
  * A wrapper for the ExtraWindow context provider

@@ -7,7 +7,6 @@ import { Container, List, Padding, Text } from '@zextras/carbonio-design-system'
 import { FOLDERS, t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { find, map, reduce } from 'lodash';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import NewWindow from 'react-new-window';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -19,9 +18,6 @@ import { selectFolderMsgSearchStatus } from '../../../store/messages-slice';
 import { AppContext, MailMessage } from '../../../types';
 import SelectMessagesPanelActions from '../../../ui-actions/select-panel-action-message';
 import ShimmerList from '../../search/shimmer-list';
-import message from '../../settings/filters/parts/create-filters-conditions/message';
-import MessagePreviewPanel from '../detail-panel/message-preview-panel';
-import MailPreview from '../detail-panel/preview/mail-preview';
 import { Breadcrumbs } from './breadcrumbs';
 import { MessageListItem } from './lists-item/message-list-item';
 
