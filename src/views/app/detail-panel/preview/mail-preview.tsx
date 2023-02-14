@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -26,18 +26,14 @@ import {
 import { useDispatch } from 'react-redux';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
-import { errorPage } from '../../../../commons/preview-eml/error-page';
-import {
-	ExtraWindowCreationParams,
-	useExtraWindowsManager
-} from '../../extra-windows/extra-window';
+import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
 import AttachmentsBlock from './attachments-block';
 import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
 import { getMsg, msgAction } from '../../../../store/actions';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 import ReadReceiptModal from './read-receipt-modal';
 import PreviewHeader from './parts/preview-header';
-import { MailMessage, OpenEmlPreviewType } from '../../../../types';
+import { ExtraWindowCreationParams, MailMessage, OpenEmlPreviewType } from '../../../../types';
 
 const MailContent: FC<{
 	message: MailMessage;

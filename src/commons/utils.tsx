@@ -6,7 +6,7 @@
 import moment from 'moment';
 import { find, isArray } from 'lodash';
 import { Account, t } from '@zextras/carbonio-shell-ui';
-import { Participant } from '../types/participant';
+import { Participant } from '../types';
 
 export const getTimeLabel = (date: number): string => {
 	const momentDate = moment(date);
@@ -113,10 +113,4 @@ export const omitBy = (obj: any, check: (arg: unknown) => boolean): any => {
 	// eslint-disable-next-line no-param-reassign
 	Object.entries(obj).forEach(([key, value]) => check(value) && delete obj[key]);
 	return obj;
-};
-
-export const getCurrentDocumentBody = (): HTMLElement => {
-	const result = document.body;
-	console.log('*********** getCurrentDocumentBody', result);
-	return result;
 };

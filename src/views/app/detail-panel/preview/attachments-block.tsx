@@ -21,7 +21,6 @@ import { filter, find, map, noop } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { errorPage } from '../../../../commons/preview-eml/error-page';
 import { getFileExtension } from '../../../../commons/utilities';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
@@ -30,6 +29,16 @@ import { AttachmentPart, AttachmentType, MailMessage, OpenEmlPreviewType } from 
 import DeleteAttachmentModal from './delete-attachment-modal';
 import { humanFileSize, previewType } from './file-preview';
 import { getAttachmentIconColors, getAttachmentsDownloadLink, getAttachmentsLink } from './utils';
+
+/**
+ * The BE currently doesn't support the preview of PDF attachments
+ * whose part name consists in more than 2 numbers (which is common
+ * for attachments nested inside an EML. Example: 1.3.2)
+ *
+ * As a workaround we intercept those cases and handle them
+ * with the browser pdf preview
+ */
+const UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN = /\d+\.\d+\../;
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
@@ -105,6 +114,14 @@ const Attachment: FC<AttachmentType> = ({
 			inputRef.current.click();
 		}
 	}, [inputRef]);
+
+	const browserPdfPreview = useCallback(() => {
+		if (inputRef2.current) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			inputRef2.current.click();
+		}
+	}, [inputRef2]);
 
 	const onDeleteAttachment = useCallback(() => {
 		dispatch(deleteAttachments({ id: message.id, attachments: [part] }));
@@ -201,8 +218,17 @@ const Attachment: FC<AttachmentType> = ({
 				openEmlPreview && openEmlPreview(message.id, att?.name, res[0]);
 			})
 			.catch(() => {
-				// TODO show a snackbar
-				// const errorContent = errorPage;
+				getBridgedFunctions()?.createSnackbar({
+					key: `eml-attachment-failed-download`,
+					replace: true,
+					type: 'error',
+					hideButton: true,
+					label: t(
+						'message.snackbar.eml_download_failed',
+						'The EML attachment could not be downloaded. Try later'
+					),
+					autoHideTimeout: 3000
+				});
 			});
 	}, [att?.name, message.id, openEmlPreview]);
 
@@ -212,32 +238,35 @@ const Attachment: FC<AttachmentType> = ({
 			const pType = previewType(att.contentType);
 
 			if (pType) {
-				createPreview({
-					src: link,
-					previewType: pType,
-					// container: getCurrentDocumentBody(),
-					/** Left Action for the preview */
-					closeAction: {
-						id: 'close',
-						icon: 'ArrowBack',
-						tooltipLabel: t('preview.close', 'Close Preview')
-					},
-					/** Actions for the preview */
-					actions: [
-						{
-							icon: 'DownloadOutline',
-							tooltipLabel: t('label.download', 'Download'),
-							id: 'DownloadOutline',
-							onClick: downloadAttachment
-						}
-					],
-					/** Extension of the file, shown as info */
-					extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
-					/** Name of the file, shown as info */
-					filename: att.filename,
-					/** Size of the file, shown as info */
-					size: humanFileSize(att.size)
-				});
+				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
+					browserPdfPreview();
+				} else {
+					createPreview({
+						src: link,
+						previewType: pType,
+						/** Left Action for the preview */
+						closeAction: {
+							id: 'close',
+							icon: 'ArrowBack',
+							tooltipLabel: t('preview.close', 'Close Preview')
+						},
+						/** Actions for the preview */
+						actions: [
+							{
+								icon: 'DownloadOutline',
+								tooltipLabel: t('label.download', 'Download'),
+								id: 'DownloadOutline',
+								onClick: downloadAttachment
+							}
+						],
+						/** Extension of the file, shown as info */
+						extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
+						/** Name of the file, shown as info */
+						filename: att.filename,
+						/** Size of the file, shown as info */
+						size: humanFileSize(att.size)
+					});
+				}
 			} else if (extension === 'EML') {
 				showEMLPreview();
 			} else if (inputRef2.current) {
@@ -250,7 +279,9 @@ const Attachment: FC<AttachmentType> = ({
 		[
 			att.contentType,
 			att.filename,
+			att.name,
 			att.size,
+			browserPdfPreview,
 			createPreview,
 			downloadAttachment,
 			extension,

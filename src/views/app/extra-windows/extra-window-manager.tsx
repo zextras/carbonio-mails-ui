@@ -5,7 +5,7 @@
  */
 import { Text, useModal } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import React, { FC, memo, ReactNode, useCallback, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import {
 	ExtraWindowCreationParams,
@@ -14,17 +14,24 @@ import {
 } from '../../../types';
 import { ExtraWindow } from './extra-window';
 
+// Enable debug console output
+const DEBUG = false;
+
 /**
  * Context for providing extra windows' related functions
  */
 const ExtraWindowsContext = React.createContext<ExtraWindowsContextType>({});
 
-const MemoizedExtraWindow = memo(ExtraWindow);
-const ExtraWindowManagerChildren: FC = ({ children }) => children;
-
-const debug = (text: string, ...args: any[]): void => {
-	console.debug(`************* ${text}`, args);
+/**
+ * Debug output
+ * @param text console message
+ * @param args console message arguments
+ */
+const debug = (text: string, ...args: unknown[]): void => {
+	// eslint-disable-next-line no-console
+	if (DEBUG) console.debug(`************* ${text}`, args);
 };
+
 /**
  * A wrapper for the ExtraWindow context provider
  *
@@ -134,7 +141,7 @@ const ExtraWindowsManager: FC = ({ children }) => {
 		(params: ExtraWindowCreationParams): ExtraWindowsCreationResult => {
 			// Check if a window with the same name already exists
 			const existingWindow = getWindow({ windowName: params.name });
-			debug('check existing window** check existing window', existingWindow);
+			debug('check existing window', existingWindow);
 			if (existingWindow && existingWindow.window) {
 				// Get the current focused extra window
 				const currentWindow = getFocusedWindow();
@@ -199,7 +206,7 @@ const ExtraWindowsManager: FC = ({ children }) => {
 				 * FIXME texts
 				 */
 				const closeModal = createModal({
-					title: 'Window blocked!!!!',
+					title: t('label.extra_windows.opening_blocked.title', 'Cannot open new window'),
 					containerWindow: focusedExtraWindow?.window,
 					confirmLabel: t('action.ok', 'Ok'),
 					showCloseIcon: false,
@@ -213,8 +220,11 @@ const ExtraWindowsManager: FC = ({ children }) => {
 						closeModal();
 					},
 					children: (
-						<Text overflow="break-word" style={{ paddingTop: '1rem' }}>
-							The browser blocked the window opening!
+						<Text overflow="break-word">
+							{t(
+								'messages.extra_windows.opening_blocked',
+								'To complete the operation, Carbonio needs to open a new window. Check your browser settings'
+							)}
 						</Text>
 					)
 				});
@@ -275,39 +285,16 @@ const ExtraWindowsManager: FC = ({ children }) => {
 		[getWindow, removeWindow]
 	);
 
-	/**
-	 * Internal component for wrapping the list of the extra window components
-	 * @param windows
-	 * @constructor
-	 */
-	const ExtraWindowsContainer: FC<{ windows: Array<ExtraWindowsCreationResult> }> = ({
-		windows
-	}) => (
-		<>
-			{Object.values(windows).map((window) =>
-				window && !window.windowProps?.returnComponent ? (
-					<ExtraWindow key={window.id} {...window.windowProps} />
-				) : null
-			)}
-		</>
-	);
-
-	const MemoizedChildren = memo(function RenderChildren(): ReactNode {
-		return children;
-	});
-
 	return (
 		<ExtraWindowsContext.Provider
 			value={{ createWindow, closeWindow, listWindows, getWindow, getFocusedWindow }}
 		>
 			{Object.values(windowsData).map((window) =>
-				window && !window.windowProps?.returnComponent ? (
+				window && window.windowProps ? (
 					<ExtraWindow key={window.id} {...window.windowProps} />
 				) : null
 			)}
-			{/* <ExtraWindowsContainer windows={windowsData} /> */}
-			{/* {memoizedChildren} */}
-			<MemoizedChildren></MemoizedChildren>
+			{children}
 		</ExtraWindowsContext.Provider>
 	);
 };

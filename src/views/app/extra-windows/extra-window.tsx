@@ -4,13 +4,40 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ThemeProvider } from '@zextras/carbonio-design-system';
+import { ModalManager, ThemeProvider } from '@zextras/carbonio-design-system';
 import { PreviewManager } from '@zextras/carbonio-ui-preview';
 import { omit } from 'lodash';
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { createContext, FC, useCallback, useMemo, useRef, useState } from 'react';
 import { DefaultTheme } from 'styled-components';
-import { ExtraWindowProps } from '../../../types';
+import { ExtraWindowContextType, ExtraWindowProps } from '../../../types';
 import NewWindow from './new-window';
+
+/**
+ * Create a MutationObserver to monitors changes on the parent window document
+ * and clones those changes inside the new window's document.
+ * This will keep consistence in the style even when some new style element
+ * will be added to a component rendered inside a separate window.
+ *
+ * @param parentWindowDoc
+ * @param newWindowObj
+ */
+const createStyleObserver = (parentWindowDoc: Document, newWindowObj: Window): MutationObserver => {
+	const observer = new MutationObserver((mutationList) => {
+		mutationList
+			.flatMap((mutation) => Array.from(mutation.addedNodes))
+			.filter((node) => node instanceof HTMLStyleElement)
+			.forEach((style) => {
+				newWindowObj.document.head.appendChild(style.cloneNode(true));
+			});
+	});
+	observer.observe(parentWindowDoc.head, { childList: true });
+	return observer;
+};
+
+/**
+ * The context data of an extra window
+ */
+const ExtraWindowContext = createContext<ExtraWindowContextType | undefined>(undefined);
 
 /**
  * Renders the given children inside a new window/tab
@@ -18,6 +45,8 @@ import NewWindow from './new-window';
  */
 const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 	const [windowObj, setWindowObj] = useState<Window | null>(null);
+
+	const stylesObserverRef = useRef<MutationObserver | null>(null);
 
 	/*
 	 * Creates the new window's props in order to:
@@ -41,6 +70,7 @@ const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 			onOpen: (newWindowObj: Window): void => {
 				newWindowObj.focus();
 				setWindowObj(newWindowObj);
+				stylesObserverRef.current = createStyleObserver(window.document, newWindowObj);
 				props.onOpen && props.onOpen(newWindowObj);
 			},
 
@@ -52,9 +82,10 @@ const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 			/*
 			 * Intercept the closing event
 			 * Since this event is based on the beforeUnload DOM event
-			 * it is not reliable
+			 * it is not 100% reliable
 			 */
 			onUnload: (): void => {
+				stylesObserverRef.current?.disconnect();
 				props.onUnload && props.onUnload();
 			}
 		}),
@@ -87,11 +118,17 @@ const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 
 	return !windowIsClosed ? (
 		<NewWindow {...newWindowProps}>
-			<ThemeProvider extension={themeExtension}>
-				<PreviewManager>{props.children}</PreviewManager>
-			</ThemeProvider>
+			<ExtraWindowContext.Provider value={{ windowId: props.id }}>
+				{windowObj && (
+					<ThemeProvider extension={themeExtension}>
+						<PreviewManager>
+							<ModalManager>{props.children}</ModalManager>
+						</PreviewManager>
+					</ThemeProvider>
+				)}
+			</ExtraWindowContext.Provider>
 		</NewWindow>
 	) : null;
 };
 
-export { ExtraWindow };
+export { ExtraWindowContext, ExtraWindow };

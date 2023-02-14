@@ -84,6 +84,10 @@ export type ExtraWindowCreationParams = {
 
 export type ExtraWindowProps = ExtraWindowCreationParams & { id: string };
 
+export type ExtraWindowContextType = {
+	windowId: string | undefined;
+};
+
 export type ExtraWindowsContextType = {
 	createWindow?: (props: ExtraWindowCreationParams) => ExtraWindowsCreationResult;
 	closeWindow?: (windowId: string) => void;

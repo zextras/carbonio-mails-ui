@@ -18,9 +18,8 @@ import { map, noop } from 'lodash';
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { MAILS_ROUTE } from '../constants';
 import { getMsgsForPrint, msgAction } from '../store/actions';
-import { ActionsType, getCurrentDocumentBody } from '../commons/utils';
+import { ActionsType } from '../commons/utils';
 import { sendMsg } from '../store/actions/send-msg';
-import { useExtraWindowsManager } from '../views/app/extra-windows/extra-window';
 import MoveConvMessage from './move-conv-msg';
 import DeleteConvConfirm from './delete-conv-modal';
 import RedirectAction from './redirect-message-action';
@@ -209,8 +208,7 @@ export function printMsg({
 					}
 				})
 				.catch(() => {
-					const errorContent = errorPage;
-					if (printWindow) printWindow.document.write(errorContent);
+					if (printWindow) printWindow.document.write(errorPage);
 				});
 		}
 	};
