@@ -75,7 +75,6 @@ const TextEditorContainer: FC<PropType> = ({
 	}, []);
 
 	useEffect(() => {
-		console.log('===$$# call to update the input...==>', textValue);
 		setInputValue(textValue);
 	}, [textValue]);
 
@@ -151,12 +150,12 @@ const TextEditorContainer: FC<PropType> = ({
 						<Controller
 							name="text"
 							control={control}
-							defaultValue={editor?.text}
-							render={({ onChange, value }): ReactElement => (
+							defaultValue={inputValue}
+							render={({ onChange }): ReactElement => (
 								<Container background="gray6" height="fit">
 									<StyledComp.TextArea
 										data-testid="MailPlainTextEditor"
-										value={value[0]}
+										value={inputValue[0]}
 										style={{ fontFamily: defaultFontFamily }}
 										onChange={(ev): void => {
 											// eslint-disable-next-line no-param-reassign
@@ -173,6 +172,7 @@ const TextEditorContainer: FC<PropType> = ({
 											throttledSaveToDraft({ text: data });
 											updateSubjectField({ text: data });
 											onChange(data);
+											setInputValue(data);
 											toggleStickyTime();
 										}}
 									/>

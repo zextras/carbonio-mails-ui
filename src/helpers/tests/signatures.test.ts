@@ -18,29 +18,31 @@ describe('Signatures', () => {
 	describe('composeMailBodyWithSignature', () => {
 		test('composeMailBodyWithSignature with plain text', () => {
 			expect(composeMailBodyWithSignature('', false)).toBe('');
-			expect(composeMailBodyWithSignature('lorem ipsum', false)).toBe('\n\nlorem ipsum');
+			expect(composeMailBodyWithSignature('lorem ipsum', false)).toBe('\n\n---\nlorem ipsum');
 			expect(composeMailBodyWithSignature('lorem ipsum\nlorem ipsum', false)).toBe(
-				'\n\nlorem ipsum\nlorem ipsum'
+				'\n\n---\nlorem ipsum\nlorem ipsum'
 			);
 		});
 
 		test('composeMailBodyWithSignature in plain text with html signature', () => {
-			expect(composeMailBodyWithSignature('lorem ipsum', false)).toBe('\n\nlorem ipsum');
+			expect(composeMailBodyWithSignature('lorem ipsum', false)).toBe('\n\n---\nlorem ipsum');
 			expect(composeMailBodyWithSignature('lorem ipsum<br/>lore ipsum', false)).toBe(
-				'\n\nlorem ipsum\nlore ipsum'
+				'\n\n---\nlorem ipsum\nlore ipsum'
 			);
 			expect(
 				composeMailBodyWithSignature(
 					'lorem ipsum<img src="./placeholder.png" alt="placeholder.png"/> lorem ipsum',
 					false
 				)
-			).toBe('\n\nlorem ipsum lorem ipsum');
+			).toBe('\n\n---\nlorem ipsum lorem ipsum');
 		});
 
 		test('composeMailBodyWithSignature in rich text with html signature', () => {
-			expect(composeMailBodyWithSignature('lorem ipsum', true)).toBe('<br/><br/>lorem ipsum');
+			expect(composeMailBodyWithSignature('lorem ipsum', true)).toBe(
+				'<br/><br/><div class="signature-div">lorem ipsum</div>'
+			);
 			expect(composeMailBodyWithSignature('lorem ipsum<br/>lore ipsum', true)).toBe(
-				'<br/><br/>lorem ipsum<br/>lore ipsum'
+				'<br/><br/><div class="signature-div">lorem ipsum<br/>lore ipsum</div>'
 			);
 			expect(
 				composeMailBodyWithSignature(
@@ -48,7 +50,7 @@ describe('Signatures', () => {
 					true
 				)
 			).toBe(
-				'<br/><br/>lorem ipsum<img src="./placeholder.png" alt="placeholder.png"/> lorem ipsum'
+				'<br/><br/><div class="signature-div">lorem ipsum<img src="./placeholder.png" alt="placeholder.png"/> lorem ipsum</div>'
 			);
 		});
 	});

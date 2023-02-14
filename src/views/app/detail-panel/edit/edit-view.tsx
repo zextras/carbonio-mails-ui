@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { CleaningServices } from '@mui/icons-material';
 import { Button, Catcher, Container, useModal } from '@zextras/carbonio-design-system';
 import {
 	t,
@@ -77,7 +76,6 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 
 	const editors = useSelector(selectEditors);
 	const dispatch = useDispatch();
-	console.log('====$$#############>>>>>>>', { editors });
 	const accounts = useUserAccounts();
 	const messages = useSelector(selectMessages);
 
@@ -136,17 +134,11 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 		return uuid();
 	}, [board?.context?.mailId]);
 
-	const getEditor = (): MailsEditor => {
-		console.log('=====>>>>');
-		return editors[editorId];
-	};
 	const [editor, setEditor] = useState<MailsEditor>(editors[editorId]);
 	const [textValue, setTextValue] = useState(editor?.text ?? ['', '']);
-	const onIdentityChange = (text: [string, string]): void => {
-		// setTimeout(() => {
-		console.log('=====$$# onIdentityChange...>>', { text, editors });
+
+	const changeEditorText = (text: [string, string]): void => {
 		setTextValue(text);
-		// }, 1000);
 	};
 
 	const draftId = useSelector((s: StateType) => selectDraftId(s, editor?.editorId));
@@ -434,7 +426,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 									saveDraftCb={saveDraftCb}
 									editorId={editorId}
 									setSending={setSending}
-									onIdentityChange={onIdentityChange}
+									changeEditorText={changeEditorText}
 									editor={editor}
 								/>
 								{isSendingToYourself && <WarningBanner />}
