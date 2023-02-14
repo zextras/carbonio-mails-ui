@@ -13,7 +13,7 @@ import {
 	IconColors
 } from '../../../../../types';
 
-const getOrigin = (): string => window.location.origin;
+export const getLocationOrigin = (): string => window.location.origin;
 
 type GetAttachmentsLinkProps = {
 	messageId: string;
@@ -29,15 +29,19 @@ export const getAttachmentsLink = ({
 	attachmentType
 }: GetAttachmentsLinkProps): string => {
 	if (attachments.length > 1) {
-		return `${getOrigin()}/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
+		return `${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
 			','
 		)}&disp=a&fmt=zip`;
 	}
 	if (includes(['image/gif', 'image/png', 'image/jpeg', 'image/jpg'], attachmentType)) {
-		return `${getOrigin()}/service/preview/image/${messageId}/${attachments[0]}/0x0/?quality=high`;
+		return `${getLocationOrigin()}/service/preview/image/${messageId}/${
+			attachments[0]
+		}/0x0/?quality=high`;
 	}
 	if (includes(['application/pdf'], attachmentType)) {
-		return `${getOrigin()}/service/preview/pdf/${messageId}/${attachments[0]}/?first_page=1`;
+		return `${getLocationOrigin()}/service/preview/pdf/${messageId}/${
+			attachments[0]
+		}/?first_page=1`;
 	}
 	if (
 		includes(
@@ -57,9 +61,9 @@ export const getAttachmentsLink = ({
 			attachmentType
 		)
 	) {
-		return `${getOrigin()}/service/preview/document/${messageId}/${attachments.join(',')}`;
+		return `${getLocationOrigin()}/service/preview/document/${messageId}/${attachments.join(',')}`;
 	}
-	return `${getOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(
+	return `${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(
 		','
 	)}&disp=a`;
 };
@@ -70,11 +74,11 @@ export const getAttachmentsDownloadLink = ({
 	attachments
 }: GetAttachmentsDownloadLinkProps): string => {
 	if (attachments?.length > 1) {
-		return `${getOrigin()}/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
+		return `${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
 			','
 		)}&disp=a&fmt=zip`;
 	}
-	return `${getOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${attachments?.join(
+	return `${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${attachments?.join(
 		','
 	)}&disp=a`;
 };

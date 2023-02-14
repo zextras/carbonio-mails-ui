@@ -26,9 +26,15 @@ import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
 import { AttachmentPart, AttachmentType, MailMessage, OpenEmlPreviewType } from '../../../../types';
+import { useExtraWindow } from '../../extra-windows/use-extra-window';
 import DeleteAttachmentModal from './delete-attachment-modal';
 import { humanFileSize, previewType } from './file-preview';
-import { getAttachmentIconColors, getAttachmentsDownloadLink, getAttachmentsLink } from './utils';
+import {
+	getAttachmentIconColors,
+	getAttachmentsDownloadLink,
+	getAttachmentsLink,
+	getLocationOrigin
+} from './utils';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments
@@ -99,7 +105,9 @@ const Attachment: FC<AttachmentType> = ({
 	openEmlPreview
 }) => {
 	const { createPreview } = useContext(PreviewsManagerContext);
+	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
+	// const isInsideExtraWindow = false;
 
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
@@ -329,16 +337,26 @@ const Attachment: FC<AttachmentType> = ({
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
 					{isUploadIntegrationAvailable && (
-						<Tooltip key={uploadIntegration?.id} label={t('label.save_to_files', 'Save to Files')}>
+						<Tooltip
+							key={uploadIntegration?.id}
+							label={
+								isInsideExtraWindow
+									? t(
+											'label.extra_window.save_to_files_disabled',
+											'Files’ attachments saving is available only from the main tab'
+									  )
+									: t('label.save_to_files', 'Save to Files')
+							}
+						>
 							<IconButton
 								size="medium"
 								icon={uploadIntegration?.icon ?? ''}
 								onClick={uploadIntegration?.click ?? noop}
+								disabled={isInsideExtraWindow}
 							/>
 						</Tooltip>
 					)}
 
-					{/* <FilePreview att={att} link={link} /> */}
 					<Padding right="small">
 						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
 							<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
@@ -364,7 +382,7 @@ const Attachment: FC<AttachmentType> = ({
 				rel="noopener"
 				ref={inputRef2}
 				target="_blank"
-				href={`https://localhost:9000/service/home/~/?auth=co&id=${message.id}&part=${part}`}
+				href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${message.id}&part=${part}`}
 			/>
 			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
 		</AttachmentContainer>
@@ -472,6 +490,44 @@ const AttachmentsBlock: FC<{
 		actionTarget
 	);
 
+	const { isInsideExtraWindow } = useExtraWindow();
+
+	const getSaveToFilesLink = useCallback((): ReactElement | null => {
+		if (!isUploadIntegrationAvailable) {
+			return null;
+		}
+
+		const link = (
+			<Link
+				size="medium"
+				onClick={uploadIntegration && !isInsideExtraWindow ? uploadIntegration.click : noop}
+				style={{ paddingLeft: '0.5rem' }}
+				disabled={isInsideExtraWindow}
+			>
+				{t('label.save_to_files', 'Save to Files')}
+			</Link>
+		);
+
+		if (!isInsideExtraWindow) {
+			return link;
+		}
+		return (
+			<Tooltip
+				key={uploadIntegration?.id}
+				label={
+					isInsideExtraWindow
+						? t(
+								'label.extra_window.save_to_files_disabled',
+								'Files’ attachments saving is available only from the main tab'
+						  )
+						: ''
+				}
+			>
+				{link}
+			</Tooltip>
+		);
+	}, [isInsideExtraWindow, isUploadIntegrationAvailable, uploadIntegration]);
+
 	return attachmentsCount > 0 ? (
 		<Container crossAlignment="flex-start" padding={{ horizontal: 'medium' }}>
 			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
@@ -550,15 +606,7 @@ const AttachmentsBlock: FC<{
 						defaultValue_plural: 'Download all'
 					})}
 				</Link>
-				{isUploadIntegrationAvailable && (
-					<Link
-						size="medium"
-						onClick={uploadIntegration && uploadIntegration.click}
-						style={{ paddingLeft: '0.5rem' }}
-					>
-						{t('label.save_to_files', 'Save to Files')}
-					</Link>
-				)}
+				{getSaveToFilesLink()}
 			</Row>
 		</Container>
 	) : (

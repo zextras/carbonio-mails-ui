@@ -295,6 +295,9 @@
         "error_try_again": "Something went wrong, please try again",
         "expand": "Expand",
         "expand_receivers_list": "Expand recipients list",
+        "extra_window": {
+            "save_to_files_disabled": "Save to Files"
+        },
         "extra_windows": {
             "opening_blocked": {
                 "title": "Cannot open new window"
