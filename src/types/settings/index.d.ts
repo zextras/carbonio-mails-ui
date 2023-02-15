@@ -220,10 +220,11 @@ type AccountIdentity = {
 type SignatureSettingsPropsType = {
 	updatedIdentities: AccountIdentity[];
 	updateIdentities: (arg: {
-		target: {
+		target?: {
 			name: string;
 			value: string;
 		};
+		_attrs?: IdentityProps;
 	}) => void;
 	setDisabled: (arg: boolean) => void;
 	signatures: SignItemType[];
