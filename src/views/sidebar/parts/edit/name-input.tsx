@@ -6,8 +6,8 @@
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import React, { ChangeEvent, FC } from 'react';
+import { NameInputRowProps } from '../../../../carbonio-ui-commons/types/sidebar';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
-import { NameInputRowProps } from '../../../../types/sidebar';
 
 const NameInputRow: FC<NameInputRowProps> = ({
 	setInputValue,

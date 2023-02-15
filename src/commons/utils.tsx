@@ -98,14 +98,6 @@ export enum ActionsType {
 	PREFILL_COMPOSE = 'prefillCompose'
 }
 
-// eslint-disable-next-line no-shadow
-export enum TagsActionsType {
-	NEW = 'new',
-	DELETE = 'delete',
-	EDIT = 'edit',
-	Apply = 'apply'
-}
-
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const omitBy = (obj: any, check: (arg: unknown) => boolean): any => {
 	// eslint-disable-next-line no-param-reassign
