@@ -5,6 +5,7 @@
  */
 import { Account, getUserAccount, getUserAccounts } from '@zextras/carbonio-shell-ui';
 import { cloneDeep } from 'lodash';
+import { LineType } from '../../commons/utils';
 import {
 	composeMailBodyWithSignature,
 	getSignature,
@@ -18,31 +19,35 @@ describe('Signatures', () => {
 	describe('composeMailBodyWithSignature', () => {
 		test('composeMailBodyWithSignature with plain text', () => {
 			expect(composeMailBodyWithSignature('', false)).toBe('');
-			expect(composeMailBodyWithSignature('lorem ipsum', false)).toBe('\n\n---\nlorem ipsum');
+			expect(composeMailBodyWithSignature('lorem ipsum', false)).toBe(
+				`\n\n${LineType.SIGNATURE_PRE_SEP}\nlorem ipsum`
+			);
 			expect(composeMailBodyWithSignature('lorem ipsum\nlorem ipsum', false)).toBe(
-				'\n\n---\nlorem ipsum\nlorem ipsum'
+				`\n\n${LineType.SIGNATURE_PRE_SEP}\nlorem ipsum\nlorem ipsum`
 			);
 		});
 
 		test('composeMailBodyWithSignature in plain text with html signature', () => {
-			expect(composeMailBodyWithSignature('lorem ipsum', false)).toBe('\n\n---\nlorem ipsum');
+			expect(composeMailBodyWithSignature('lorem ipsum', false)).toBe(
+				`\n\n${LineType.SIGNATURE_PRE_SEP}\nlorem ipsum`
+			);
 			expect(composeMailBodyWithSignature('lorem ipsum<br/>lore ipsum', false)).toBe(
-				'\n\n---\nlorem ipsum\nlore ipsum'
+				`\n\n${LineType.SIGNATURE_PRE_SEP}\nlorem ipsum\nlore ipsum`
 			);
 			expect(
 				composeMailBodyWithSignature(
 					'lorem ipsum<img src="./placeholder.png" alt="placeholder.png"/> lorem ipsum',
 					false
 				)
-			).toBe('\n\n---\nlorem ipsum lorem ipsum');
+			).toBe(`\n\n${LineType.SIGNATURE_PRE_SEP}\nlorem ipsum lorem ipsum`);
 		});
 
 		test('composeMailBodyWithSignature in rich text with html signature', () => {
 			expect(composeMailBodyWithSignature('lorem ipsum', true)).toBe(
-				'<br/><br/><div class="signature-div">lorem ipsum</div>'
+				`<br/><br/><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum</div>`
 			);
 			expect(composeMailBodyWithSignature('lorem ipsum<br/>lore ipsum', true)).toBe(
-				'<br/><br/><div class="signature-div">lorem ipsum<br/>lore ipsum</div>'
+				`<br/><br/><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum<br/>lore ipsum</div>`
 			);
 			expect(
 				composeMailBodyWithSignature(
@@ -50,7 +55,7 @@ describe('Signatures', () => {
 					true
 				)
 			).toBe(
-				'<br/><br/><div class="signature-div">lorem ipsum<img src="./placeholder.png" alt="placeholder.png"/> lorem ipsum</div>'
+				`<br/><br/><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum<img src="./placeholder.png" alt="placeholder.png"/> lorem ipsum</div>`
 			);
 		});
 	});
