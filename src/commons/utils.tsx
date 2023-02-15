@@ -69,7 +69,9 @@ export enum LineType {
 	ORIG_LINE = 'LINE',
 	HTML_SEP_ID = 'zwchr',
 	PLAINTEXT_SEP = '---------------------------',
-	NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*'
+	NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*',
+	SIGNATURE_CLASS = 'signature-div',
+	SIGNATURE_PRE_SEP = '---'
 }
 
 // eslint-disable-next-line no-shadow

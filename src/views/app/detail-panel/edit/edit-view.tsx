@@ -76,7 +76,6 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 
 	const editors = useSelector(selectEditors);
 	const dispatch = useDispatch();
-
 	const accounts = useUserAccounts();
 	const messages = useSelector(selectMessages);
 
@@ -136,6 +135,12 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 	}, [board?.context?.mailId]);
 
 	const [editor, setEditor] = useState<MailsEditor>(editors[editorId]);
+	const [textValue, setTextValue] = useState(editor?.text ?? ['', '']);
+
+	const changeEditorText = (text: [string, string]): void => {
+		setTextValue(text);
+	};
+
 	const draftId = useSelector((s: StateType) => selectDraftId(s, editor?.editorId));
 
 	const isSameAction = useMemo(() => {
@@ -421,6 +426,8 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 									saveDraftCb={saveDraftCb}
 									editorId={editorId}
 									setSending={setSending}
+									changeEditorText={changeEditorText}
+									editor={editor}
 								/>
 								{isSendingToYourself && <WarningBanner />}
 
@@ -446,6 +453,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 								updateEditorCb={updateEditorCb}
 								updateSubjectField={updateSubjectField}
 								saveDraftCb={saveDraftCb}
+								textValue={textValue}
 							/>
 						</Container>
 					</Container>
