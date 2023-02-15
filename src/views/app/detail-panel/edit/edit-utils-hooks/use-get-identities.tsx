@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -52,10 +52,10 @@ export const findDefaultIdentity = ({
 	}
 
 	/*
-	 * if the message is a draft and the sender is already set in it, the identity is
+	 * If the message is a draft and the sender is already set in it, the identity is
 	 * chosen within the list of identities based on the info of the sender of the draft.
 	 */
-	if (!predicate && currentMessage?.participants) {
+	if (!predicate && currentMessage?.isDraft && currentMessage?.participants) {
 		const sender = find(currentMessage.participants, { type: ParticipantRole.FROM });
 		if (sender) {
 			predicate = {
