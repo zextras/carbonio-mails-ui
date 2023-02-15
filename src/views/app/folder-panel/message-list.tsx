@@ -135,7 +135,7 @@ const MessageList: FC = () => {
 						active={isActive}
 						background={message.read ? 'gray6' : 'gray5'}
 					>
-						{(isVisible): JSX.Element => (
+						{(isVisible: boolean): JSX.Element => (
 							<MessageListItem
 								item={message}
 								folderId={folderId}

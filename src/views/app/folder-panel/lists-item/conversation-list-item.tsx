@@ -93,7 +93,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = ({
 						key={message.id}
 						background={'transparent'}
 					>
-						{(isVisible): JSX.Element => (
+						{(isVisible: boolean): JSX.Element => (
 							<MessageListItem
 								folderId={folderId}
 								isConvChildren

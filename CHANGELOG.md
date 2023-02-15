@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.1.1...v1.1.2) (2023-02-10)
+
+
+### Bug Fixes
+
+* handle errors during message sending ([95ddeea](https://github.com/zextras/carbonio-mails-ui/commit/95ddeeae9df8662c9c7fff4b80cea8c9f6bf06e3))
+
+### [1.1.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.1.0...v1.1.1) (2023-02-10)
+
+
+### Bug Fixes
+
+* default identity selection where replying ([98c6745](https://github.com/zextras/carbonio-mails-ui/commit/98c67456890bd1c648516c4a5a0393558713ecf9))
+
 ## [1.1.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.0.0...v1.1.0) (2023-02-02)
 
 
