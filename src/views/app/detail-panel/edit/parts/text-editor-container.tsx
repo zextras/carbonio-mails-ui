@@ -32,6 +32,7 @@ type PropType = {
 	updateEditorCb: (data: Partial<MailsEditor>) => void;
 	updateSubjectField: (mod: Partial<MailsEditor>) => void;
 	saveDraftCb: (data: MailsEditor, signal?: AbortSignal) => SaveDraftResponse;
+	textValue: [string, string];
 };
 
 type FileSelectProps = {
@@ -45,7 +46,8 @@ const TextEditorContainer: FC<PropType> = ({
 	setValue,
 	updateEditorCb,
 	updateSubjectField,
-	saveDraftCb
+	saveDraftCb,
+	textValue
 }) => {
 	const { control } = useForm();
 	const { editor, throttledSaveToDraft } = useContext<EditViewContextType>(EditViewContext);
@@ -71,6 +73,10 @@ const TextEditorContainer: FC<PropType> = ({
 			}, 1500);
 		}, 1500);
 	}, []);
+
+	useEffect(() => {
+		setInputValue(textValue);
+	}, [textValue]);
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -144,12 +150,12 @@ const TextEditorContainer: FC<PropType> = ({
 						<Controller
 							name="text"
 							control={control}
-							defaultValue={editor?.text}
-							render={({ onChange, value }): ReactElement => (
+							defaultValue={inputValue}
+							render={({ onChange }): ReactElement => (
 								<Container background="gray6" height="fit">
 									<StyledComp.TextArea
 										data-testid="MailPlainTextEditor"
-										value={value[0]}
+										value={inputValue[0]}
 										style={{ fontFamily: defaultFontFamily }}
 										onChange={(ev): void => {
 											// eslint-disable-next-line no-param-reassign
@@ -166,6 +172,7 @@ const TextEditorContainer: FC<PropType> = ({
 											throttledSaveToDraft({ text: data });
 											updateSubjectField({ text: data });
 											onChange(data);
+											setInputValue(data);
 											toggleStickyTime();
 										}}
 									/>
