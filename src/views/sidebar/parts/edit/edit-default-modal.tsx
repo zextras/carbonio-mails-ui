@@ -16,7 +16,7 @@ import { FolderDetails } from './folder-details';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
 import { translatedSystemFolders } from '../../utils';
-import { MainEditModalPropType } from '../../../../types/sidebar';
+import { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
 
 const retentionPeriod = [
 	{

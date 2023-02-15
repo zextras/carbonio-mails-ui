@@ -5,13 +5,14 @@
  */
 import { Accordion, Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
 import {
-	Folder,
 	FOLDERS,
+	Folder,
 	getFolder,
 	t,
 	useFoldersByView,
 	useUserAccount
 } from '@zextras/carbonio-shell-ui';
+import { filter, startsWith } from 'lodash';
 import React, {
 	ChangeEvent,
 	ReactElement,
@@ -21,10 +22,9 @@ import React, {
 	useRef,
 	useState
 } from 'react';
-import { filter, startsWith } from 'lodash';
 import styled from 'styled-components';
-import { FOLDER_VIEW } from '../../../constants';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
+import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { getFolderTranslatedName } from '../utils';
 
 const ContainerEl = styled(Container)`
@@ -49,8 +49,6 @@ export const FolderSelector = ({
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const accountName = useUserAccount().name;
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	const folders = useFoldersByView(FOLDER_VIEW.message);
 	const folder = getFolder(folderId);
 

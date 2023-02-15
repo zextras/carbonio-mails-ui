@@ -26,6 +26,7 @@ import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
 import {
 	findLabel,
 	ShareCalendarRoleOptions,
@@ -33,7 +34,6 @@ import {
 } from '../../integrations/shared-invite-reply/parts/utils';
 import { sendShareNotification } from '../../store/actions/send-share-notification';
 import { shareFolder } from '../../store/actions/share-folder';
-import { EditPermissionsModalProps } from '../../types/sidebar';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
 
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({

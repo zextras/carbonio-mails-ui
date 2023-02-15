@@ -41,13 +41,3 @@ export interface ItemType extends AccordionItemType<T> {
 	open: boolean;
 	actions?: Array<unknown>;
 }
-
-export type TagsAccordionItems = {
-	items: ItemType[];
-	id: string;
-	label: string;
-	active: false;
-	open: boolean;
-	onClick: (e: SyntheticEvent<Element, Event> | KeyboardEvent) => void;
-	CustomComponent: ComponentType<any>;
-};
