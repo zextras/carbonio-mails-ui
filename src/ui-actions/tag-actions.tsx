@@ -24,11 +24,11 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
 import { ArgumentType, ReturnType, TagsFromStoreType, ItemType } from '../types';
-import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
-import DeleteTagModal from '../views/sidebar/parts/tags/delete-tag-modal';
 import { convAction, msgAction } from '../store/actions';
-import { TagsActionsType } from '../commons/utils';
 import { StoreProvider } from '../store/redux';
+import DeleteTagModal from '../carbonio-ui-commons/components/tags/delete-tag-modal';
+import { TagsActionsType } from '../carbonio-ui-commons/constants';
+import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 
 export const createTag = ({ createModal }: ArgumentType): ReturnType => ({
 	id: TagsActionsType.NEW,

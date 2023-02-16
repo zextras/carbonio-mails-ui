@@ -19,17 +19,6 @@ export type ShareCalendarModalProps = {
 	allCalendars: any;
 };
 
-export type EditPermissionsModalProps = {
-	openModal: () => void;
-	setModal: (a: any) => void;
-	dispatch: Dispatch;
-	t: (...args: any[]) => string;
-	createSnackbar: (obj: any) => void;
-	folder: any;
-	folders: any;
-	allFolders: any;
-};
-
 export type ResponseActionsProps = {
 	dispatch: Dispatch;
 	t: (...args: any[]) => string;
