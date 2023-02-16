@@ -38,7 +38,7 @@ import { AccountIdentity, PropsType, SignItemType } from '../../types';
 const SettingsView: FC = () => {
 	const { prefs, props } = useUserSettings();
 	const account = useUserAccount();
-	const { identity } = account.identities;
+	const { identity } = cloneDeep(account.identities);
 	const defaultAccount = remove(identity, (acc: AccountIdentity) => acc.name === 'DEFAULT');
 	const identities = defaultAccount.concat(identity);
 
