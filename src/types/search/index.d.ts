@@ -59,6 +59,7 @@ export type SearchPanelProps = {
 export type SearchMessageListItemProps = {
 	item: IncompleteMessage;
 	isConvChildren?: boolean;
+	active?: boolean;
 };
 
 export type SearchConversationListItemProps = {
