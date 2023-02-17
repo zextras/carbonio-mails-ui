@@ -8,7 +8,7 @@ import fetchMock from 'jest-fetch-mock';
 import { getMsg } from '../actions';
 import { selectMessage, selectMessages } from '../messages-slice';
 import { generateStore } from '../../tests/generators/store';
-import { getSetupServerApi } from '../../carbonio-ui-commons/test/jest-setup';
+import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 
 describe('Messages Slice', () => {
 	describe('GetMsg', () => {

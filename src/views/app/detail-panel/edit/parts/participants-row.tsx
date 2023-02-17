@@ -61,7 +61,7 @@ const ParticipantsRow: FC<{
 						name="to"
 						control={control}
 						defaultValue={editor.to ?? []}
-						render={({ onChange, value }): ReactElement => (
+						render={({ field: { onChange, value } }): ReactElement => (
 							<Container
 								orientation="horizontal"
 								background="gray5"
@@ -127,7 +127,7 @@ const ParticipantsRow: FC<{
 						name="to"
 						control={control}
 						defaultValue={editor.to ?? []}
-						render={({ onChange, value }): ReactElement => (
+						render={({ field: { onChange, value } }): ReactElement => (
 							<Container orientation="horizontal" background="gray5">
 								<Container background="gray5">
 									<ChipInput
@@ -194,7 +194,7 @@ const ParticipantsRow: FC<{
 							name="cc"
 							control={control}
 							defaultValue={editor.cc ?? []}
-							render={({ onChange, value }): ReactElement => (
+							render={({ field: { onChange, value } }): ReactElement => (
 								<ContactInput
 									data-testid="RecipientCc"
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -227,7 +227,7 @@ const ParticipantsRow: FC<{
 							name="cc"
 							control={control}
 							defaultValue={editor.cc ?? []}
-							render={({ onChange, value }): ReactElement => (
+							render={({ field: { onChange, value } }): ReactElement => (
 								<ChipInput
 									data-testid="RecipientCc"
 									placeholder={t('label.cc', 'Cc')}
@@ -275,7 +275,7 @@ const ParticipantsRow: FC<{
 							name="bcc"
 							control={control}
 							defaultValue={editor.bcc ?? []}
-							render={({ onChange, value }): ReactElement => (
+							render={({ field: { onChange, value } }): ReactElement => (
 								<ContactInput
 									data-testid="RecipientBcc"
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -308,7 +308,7 @@ const ParticipantsRow: FC<{
 							name="bcc"
 							control={control}
 							defaultValue={editor.bcc ?? []}
-							render={({ onChange, value }): ReactElement => (
+							render={({ field: { onChange, value } }): ReactElement => (
 								<ChipInput
 									data-testid="RecipientBcc"
 									placeholder={t('label.bcc', 'Bcc')}

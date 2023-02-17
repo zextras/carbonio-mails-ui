@@ -150,8 +150,8 @@ const TextEditorContainer: FC<PropType> = ({
 						<Controller
 							name="text"
 							control={control}
-							defaultValue={inputValue}
-							render={({ onChange }): ReactElement => (
+							defaultValue={editor?.text}
+							render={({ field: { onChange } }): ReactElement => (
 								<Container background="gray6" height="fit">
 									<StyledComp.TextArea
 										data-testid="MailPlainTextEditor"
