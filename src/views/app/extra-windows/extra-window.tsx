@@ -10,10 +10,10 @@ import { omit } from 'lodash';
 import React, { createContext, FC, useCallback, useMemo, useRef, useState } from 'react';
 import { DefaultTheme } from 'styled-components';
 import { ExtraWindowContextType, ExtraWindowProps } from '../../../types';
-import NewWindow from './new-window';
+import NewWindow, { copyStyles } from './new-window';
 
 // Enable debug console output
-const DEBUG = false;
+const DEBUG = true;
 
 /**
  * Debug output
@@ -50,6 +50,29 @@ const createStyleObserver = (parentWindowDoc: Document, newWindowObj: Window): M
 				debug('new style added', style);
 			});
 	});
+	observer.observe(parentWindowDoc, { subtree: true, attributes: true, childList: true });
+	return observer;
+};
+
+const createStyleSheetObserver = (
+	parentWindowDoc: Document,
+	newWindowObj: Window
+): MutationObserver => {
+	debug('creation of STYLESHEETS observer for', parentWindowDoc);
+	const observer = new MutationObserver((mutationList) => {
+		debug('STYLESHEETS mutation detected!', mutationList);
+		copyStyles(parentWindowDoc, newWindowObj.document);
+		// mutationList
+		// 	.flatMap((mutation) => Array.from(mutation.addedNodes))
+		// 	.filter((node) => node.parentNode instanceof HTMLStyleElement)
+		// 	.forEach((style) => {
+		// 		if (!style.parentNode) {
+		// 			return;
+		// 		}
+		// 		newWindowObj.document.head.appendChild(style.parentNode.cloneNode(true));
+		// 		debug('new style added', style);
+		// 	});
+	});
 	observer.observe(parentWindowDoc.head, { subtree: true, childList: true });
 	return observer;
 };
@@ -67,6 +90,7 @@ const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 	const [windowObj, setWindowObj] = useState<Window | null>(null);
 
 	const stylesObserverRef = useRef<MutationObserver | null>(null);
+	const stylesheetsObserverRef = useRef<MutationObserver | null>(null);
 
 	/*
 	 * Creates the new window's props in order to:
@@ -91,6 +115,7 @@ const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 				newWindowObj.focus();
 				setWindowObj(newWindowObj);
 				stylesObserverRef.current = createStyleObserver(window.document, newWindowObj);
+				// stylesheetsObserverRef.current = createStyleSheetObserver(window.document, newWindowObj);
 				props.onOpen && props.onOpen(newWindowObj);
 			},
 
@@ -106,6 +131,7 @@ const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 			 */
 			onUnload: (): void => {
 				stylesObserverRef.current?.disconnect();
+				// stylesheetsObserverRef.current?.disconnect();
 				props.onUnload && props.onUnload();
 			}
 		}),

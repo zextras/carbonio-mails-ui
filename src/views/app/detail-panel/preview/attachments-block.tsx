@@ -43,6 +43,8 @@ import {
  *
  * As a workaround we intercept those cases and handle them
  * with the browser pdf preview
+ *
+ * TODO remove it when IRIS-3918 will be implemented
  */
 const UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN = /\d+\.\d+\../;
 
@@ -123,6 +125,7 @@ const Attachment: FC<AttachmentType> = ({
 		}
 	}, [inputRef]);
 
+	// TODO remove it when IRIS-3918 will be implemented
 	const browserPdfPreview = useCallback(() => {
 		if (inputRef2.current) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -246,6 +249,7 @@ const Attachment: FC<AttachmentType> = ({
 			const pType = previewType(att.contentType);
 
 			if (pType) {
+				// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
 				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
 					browserPdfPreview();
 				} else {

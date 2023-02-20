@@ -209,7 +209,7 @@ class NewWindow extends React.PureComponent {
 		// causing openChild to get called twice
 		if (!this.window && !this.container) {
 			this.openChild();
-			this.setState({ mounted: true });
+			// this.setState({ mounted: true });
 		}
 	}
 
@@ -252,6 +252,7 @@ class NewWindow extends React.PureComponent {
 		}
 
 		// Open a new window.
+
 		this.window = window.open(url, name, toWindowFeatures(features));
 
 		// When a new window use content from a cross-origin there's no way we can attach event
@@ -263,7 +264,7 @@ class NewWindow extends React.PureComponent {
 			}
 		}, 50);
 
-		// Check if the new window was succesfully opened.
+		// Check if the new window was successfully opened.
 		if (this.window) {
 			this.window.document.title = title;
 
@@ -290,6 +291,7 @@ class NewWindow extends React.PureComponent {
 
 			// Release anything bound to this component before the new window unload.
 			this.window.addEventListener('beforeunload', () => this.release());
+			this.setState({ mounted: true });
 		} else {
 			// Handle error on opening of new window.
 			// eslint-disable-next-line no-lonely-if
@@ -368,3 +370,4 @@ NewWindow.propTypes = {
  */
 
 export default NewWindow;
+export { copyStyles };
