@@ -77,7 +77,7 @@ const DragItems: FC<{
 
 const ConversationList: FC = () => {
 	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
-	const { setCount } = useAppContext<AppContext>();
+	const { setCount, count } = useAppContext<AppContext>();
 	const conversations = useConversationListItems();
 
 	const [isDragging, setIsDragging] = useState(false);
@@ -92,10 +92,18 @@ const ConversationList: FC = () => {
 		selectFolderSearchStatus(store, folderId)
 	);
 
-	const { selected, isSelecting, toggle, deselectAll } = useSelection(folderId, setCount);
+	const {
+		selected,
+		toggle,
+		deselectAll,
+		isSelectModeOn,
+		setIsSelectModeOn,
+		selectAll,
+		isAllSelected,
+		selectAllModeOff
+	} = useSelection(folderId, setCount, count, conversations);
 
 	const folder = useFolder(folderId);
-
 	const hasMore = useMemo(() => status === 'hasMore', [status]);
 
 	const loadMore = useCallback(
@@ -171,30 +179,35 @@ const ConversationList: FC = () => {
 								setIsDragging={setIsDragging}
 								selectedItems={selected}
 								dragImageRef={dragImageRef}
-								selecting={isSelecting}
+								selecting={isSelectModeOn}
 								active={isActive}
 							/>
 						)}
 					</CustomListItem>
 				);
 			}),
-		[conversations, folderId, isSelecting, itemId, selected, toggle]
+		[conversations, folderId, isSelectModeOn, itemId, selected, toggle]
 	);
 
 	return (
 		<>
-			{isSelecting ? (
+			{isSelectModeOn ? (
 				<SelectPanelActions
 					conversation={conversations}
 					folderId={folderId}
 					selectedIds={selected}
 					deselectAll={deselectAll}
+					selectAll={selectAll}
+					isAllSelected={isAllSelected}
+					selectAllModeOff={selectAllModeOff}
 				/>
 			) : (
 				<Breadcrumbs
 					folderPath={folder?.absFolderPath}
 					folderId={folderId}
 					itemsCount={folder?.n}
+					isSelectModeOn={isSelectModeOn}
+					setIsSelectModeOn={setIsSelectModeOn}
 				/>
 			)}
 			{conversationListStatus === 'complete' ? (

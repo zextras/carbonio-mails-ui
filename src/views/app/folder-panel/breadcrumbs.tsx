@@ -3,7 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Divider, Row, Text, Padding } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	Divider,
+	Row,
+	Text,
+	Padding,
+	IconCheckbox
+} from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import React, { FC, useMemo } from 'react';
 
@@ -11,7 +18,9 @@ export const Breadcrumbs: FC<{
 	folderPath: string;
 	itemsCount: number;
 	folderId: string | number;
-}> = ({ folderPath, itemsCount, folderId }) => {
+	isSelectModeOn: boolean;
+	setIsSelectModeOn: (ev: boolean) => void;
+}> = ({ folderPath, itemsCount, folderId, isSelectModeOn, setIsSelectModeOn }) => {
 	const folderTitle = useMemo(
 		() =>
 			folderId === FOLDERS.SPAM ? t('label.spam', 'Spam') : folderPath?.split('/')?.join(' / '),
@@ -27,17 +36,23 @@ export const Breadcrumbs: FC<{
 			<Row
 				height="100%"
 				width="fill"
-				padding={{ all: 'small' }}
+				padding={{ all: 'extrasmall' }}
 				mainAlignment="space-between"
 				takeAvailableSpace
 			>
-				<Row
-					mainAlignment="flex-start"
-					takeAvailableSpace
-					padding={{ all: 'small', right: 'medium' }}
-				>
-					<Text size="medium" data-testid="BreadcrumbPath">
-						{folderTitle}
+				<Row mainAlignment="flex-start" takeAvailableSpace padding={{ right: 'medium' }}>
+					<IconCheckbox
+						borderRadius="regular"
+						icon="CheckmarkSquare"
+						defaultChecked={isSelectModeOn}
+						size="regular"
+						onChange={(): null => null}
+						onClick={(): void => {
+							setIsSelectModeOn(!isSelectModeOn);
+						}}
+					/>
+					<Text size="medium" style={{ marginLeft: '0.5rem' }} data-testid="BreadcrumbPath">
+						{t('label.path', 'Path') + folderTitle}
 					</Text>
 				</Row>
 				<Text size="extrasmall" data-testid="BreadcrumbCount">

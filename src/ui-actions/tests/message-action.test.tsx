@@ -7,7 +7,7 @@
 import { act } from '@testing-library/react';
 import { rest } from 'msw';
 import { generateStore } from '../../tests/generators/store';
-import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
+import { getSetupServerApi } from '../../carbonio-ui-commons/test/jest-setup';
 import { MsgActionRequest } from '../../types';
 import { dispatchMsgMove } from '../message-actions';
 
@@ -17,7 +17,7 @@ describe('Message Action', () => {
 		const store = generateStore();
 		const msgActionInterceptor = new Promise<MsgActionRequest>((resolve, reject) => {
 			// Register a handler for the REST call
-			getSetupServer().use(
+			getSetupServerApi().use(
 				rest.post('/service/soap/MsgActionRequest', async (req, res, ctx) => {
 					if (!req) {
 						reject(new Error('Empty request'));
