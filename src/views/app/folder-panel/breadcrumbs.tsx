@@ -13,6 +13,13 @@ import {
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import React, { FC, useMemo } from 'react';
+import styled from 'styled-components';
+
+const SelectIconCheckbox = styled(IconCheckbox)`
+	svg {
+		color: ${(props): string => props.theme.palette.gray0.disabled};
+	}
+`;
 
 export const Breadcrumbs: FC<{
 	folderPath: string;
@@ -23,7 +30,9 @@ export const Breadcrumbs: FC<{
 }> = ({ folderPath, itemsCount, folderId, isSelectModeOn, setIsSelectModeOn }) => {
 	const folderTitle = useMemo(
 		() =>
-			folderId === FOLDERS.SPAM ? t('label.spam', 'Spam') : folderPath?.split('/')?.join(' / '),
+			folderId === FOLDERS.SPAM
+				? `/ ${t('label.spam', 'Spam')}`
+				: folderPath?.split('/')?.join(' / '),
 		[folderId, folderPath]
 	);
 	return (
@@ -41,7 +50,7 @@ export const Breadcrumbs: FC<{
 				takeAvailableSpace
 			>
 				<Row mainAlignment="flex-start" takeAvailableSpace padding={{ right: 'medium' }}>
-					<IconCheckbox
+					<SelectIconCheckbox
 						borderRadius="regular"
 						icon="CheckmarkSquare"
 						defaultChecked={isSelectModeOn}
@@ -51,8 +60,16 @@ export const Breadcrumbs: FC<{
 							setIsSelectModeOn(!isSelectModeOn);
 						}}
 					/>
-					<Text size="medium" style={{ marginLeft: '0.5rem' }} data-testid="BreadcrumbPath">
-						{t('label.path', 'Path') + folderTitle}
+					<Text
+						size="medium"
+						color="secondary"
+						style={{ marginLeft: '0.5rem' }}
+						data-testid="BreadcrumbPath"
+					>
+						{t('label.path', 'Path')}
+					</Text>
+					<Text size="medium" style={{ marginLeft: '0.25rem' }} data-testid="BreadcrumbFolderPath">
+						{folderTitle}
 					</Text>
 				</Row>
 				<Text size="extrasmall" data-testid="BreadcrumbCount">
