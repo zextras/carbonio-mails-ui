@@ -17,7 +17,7 @@ import styled from 'styled-components';
 
 const SelectIconCheckbox = styled(IconCheckbox)`
 	svg {
-		color: ${(props): string => props.theme.palette.gray0.disabled};
+		color: ${(props): string => props.theme.palette.primary.regular};
 	}
 `;
 
