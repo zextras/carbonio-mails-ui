@@ -163,7 +163,7 @@ export const emailStatusItemsConstant = (t: TFunction): Array<EmailStatusItemsCo
 		searchString: 'is:ccme'
 	},
 	{
-		label: t('email_status.tofromme', 'to me, from me or in copy to me'),
+		label: t('email_status.tofromme', 'to me or from me'),
 		searchString: 'is:tofromme'
 	},
 	{
@@ -171,7 +171,7 @@ export const emailStatusItemsConstant = (t: TFunction): Array<EmailStatusItemsCo
 		searchString: 'is:toccme'
 	},
 	{
-		label: t('email_status.fromccme', 'from me'),
+		label: t('email_status.fromccme', 'from me or in copy to me'),
 		searchString: 'is:fromccme'
 	},
 	{
