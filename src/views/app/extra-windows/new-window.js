@@ -99,7 +99,6 @@ function toWindowFeatures(obj) {
  * @param {Object} target
  * @private
  */
-
 function copyStyles(source, target) {
 	// Store style tags, avoid reflow in the loop
 	const headFrag = target.createDocumentFragment();
@@ -157,6 +156,20 @@ function copyStyles(source, target) {
 	});
 
 	target.head.appendChild(headFrag);
+}
+
+/**
+ * Replace completely the styles in the target document
+ * using a fresh copy from the styles of the source document
+ * @param source
+ * @param target
+ */
+function replaceStyles(source, target) {
+	// Remove all existing styles
+	const elements = target.head.getElementsByTagName('style');
+	while (elements[0]) elements[0].parentNode.removeChild(elements[0]);
+
+	copyStyles(source, target);
 }
 
 /**
@@ -370,4 +383,4 @@ NewWindow.propTypes = {
  */
 
 export default NewWindow;
-export { copyStyles };
+export { copyStyles, replaceStyles };

@@ -603,7 +603,7 @@ const AttachmentsBlock: FC<{
 						))}{' '}
 				</Padding>
 
-				<Link size="medium" href={actionsDownloadLink}>
+				<Link target="_blank" size="medium" href={actionsDownloadLink}>
 					{t('label.download', {
 						count: attachmentsCount,
 						defaultValue: 'Download',

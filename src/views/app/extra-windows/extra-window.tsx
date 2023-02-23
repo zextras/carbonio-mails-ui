@@ -10,10 +10,10 @@ import { omit } from 'lodash';
 import React, { createContext, FC, useCallback, useMemo, useRef, useState } from 'react';
 import { DefaultTheme } from 'styled-components';
 import { ExtraWindowContextType, ExtraWindowProps } from '../../../types';
-import NewWindow, { copyStyles } from './new-window';
+import NewWindow, { replaceStyles } from './new-window';
 
 // Enable debug console output
-const DEBUG = true;
+const DEBUG = false;
 
 /**
  * Debug output
@@ -26,54 +26,35 @@ const debug = (text: string, ...args: unknown[]): void => {
 };
 
 /**
- * Create a MutationObserver to monitors changes on the parent window document's styles
- * and clones those changes inside the new window's document.
- * This will keep consistence in the style even when some new style element
- * will be added to a component rendered inside a separate window (i.e. rendering of
- * a Preview component)
+ * Create a MutationObserver that monitors changes or additions of elements
+ * with the class attribute inside the child window DOM tree.
+ * When such a change occurs a fresh copy of the styles will be taken from the
+ * parent window, and it will completely replace the styles in the child window.
+ * This trick will ensure that also newly added components will have their
+ * related style which didn't exist at the time of the child window opening
+ *
+ * Note: observing changes for "style" tags inside the parent window document head
+ * is not possible since styled-component applies changes using CSSOM, so those
+ * changes are not intercepted by MutationObserver.
  *
  * @param parentWindowDoc
  * @param newWindowObj
  */
-const createStyleObserver = (parentWindowDoc: Document, newWindowObj: Window): MutationObserver => {
-	debug('creation of observer for', parentWindowDoc);
-	const observer = new MutationObserver((mutationList) => {
-		debug('mutation detected!', mutationList);
-		mutationList
-			.flatMap((mutation) => Array.from(mutation.addedNodes))
-			.filter((node) => node.parentNode instanceof HTMLStyleElement)
-			.forEach((style) => {
-				if (!style.parentNode) {
-					return;
-				}
-				newWindowObj.document.head.appendChild(style.parentNode.cloneNode(true));
-				debug('new style added', style);
-			});
-	});
-	observer.observe(parentWindowDoc, { subtree: true, attributes: true, childList: true });
-	return observer;
-};
-
-const createStyleSheetObserver = (
+const createStyledElementsObserver = (
 	parentWindowDoc: Document,
 	newWindowObj: Window
 ): MutationObserver => {
-	debug('creation of STYLESHEETS observer for', parentWindowDoc);
+	debug('creation of STYLED ELEMENTS observer for', parentWindowDoc);
 	const observer = new MutationObserver((mutationList) => {
-		debug('STYLESHEETS mutation detected!', mutationList);
-		copyStyles(parentWindowDoc, newWindowObj.document);
-		// mutationList
-		// 	.flatMap((mutation) => Array.from(mutation.addedNodes))
-		// 	.filter((node) => node.parentNode instanceof HTMLStyleElement)
-		// 	.forEach((style) => {
-		// 		if (!style.parentNode) {
-		// 			return;
-		// 		}
-		// 		newWindowObj.document.head.appendChild(style.parentNode.cloneNode(true));
-		// 		debug('new style added', style);
-		// 	});
+		debug('STYLED ELEMENTS mutation detected!', mutationList);
+		setTimeout(replaceStyles(parentWindowDoc, newWindowObj.document), 10);
 	});
-	observer.observe(parentWindowDoc.head, { subtree: true, childList: true });
+	observer.observe(newWindowObj.document.body, {
+		subtree: true,
+		childList: true,
+		attributes: true,
+		attributeFilter: ['class']
+	});
 	return observer;
 };
 
@@ -89,8 +70,7 @@ const ExtraWindowContext = createContext<ExtraWindowContextType | undefined>(und
 const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 	const [windowObj, setWindowObj] = useState<Window | null>(null);
 
-	const stylesObserverRef = useRef<MutationObserver | null>(null);
-	const stylesheetsObserverRef = useRef<MutationObserver | null>(null);
+	const styledElementsObserverRef = useRef<MutationObserver | null>(null);
 
 	/*
 	 * Creates the new window's props in order to:
@@ -114,8 +94,10 @@ const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 			onOpen: (newWindowObj: Window): void => {
 				newWindowObj.focus();
 				setWindowObj(newWindowObj);
-				stylesObserverRef.current = createStyleObserver(window.document, newWindowObj);
-				// stylesheetsObserverRef.current = createStyleSheetObserver(window.document, newWindowObj);
+				styledElementsObserverRef.current = createStyledElementsObserver(
+					window.document,
+					newWindowObj
+				);
 				props.onOpen && props.onOpen(newWindowObj);
 			},
 
@@ -130,8 +112,7 @@ const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 			 * it is not 100% reliable
 			 */
 			onUnload: (): void => {
-				stylesObserverRef.current?.disconnect();
-				// stylesheetsObserverRef.current?.disconnect();
+				styledElementsObserverRef.current?.disconnect();
 				props.onUnload && props.onUnload();
 			}
 		}),
