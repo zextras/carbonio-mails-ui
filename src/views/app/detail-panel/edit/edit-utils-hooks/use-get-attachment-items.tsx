@@ -72,8 +72,6 @@ export const useGetAttachItems = ({
 		}),
 		[getLink]
 	);
-	const [filesSelectFilesAction, filesSelectFilesActionAvailable] =
-		getIntegratedFunction('select-nodes');
 	const [getFilesAction, getFilesActionAvailable] = getIntegratedFunction('select-nodes');
 
 	return useMemo(() => {
@@ -101,12 +99,12 @@ export const useGetAttachItems = ({
 			disabled: true
 		};
 		const driveItem =
-			filesSelectFilesActionAvailable && getFilesAvailable
+			getFilesActionAvailable && getFilesAvailable
 				? {
 						label: t('composer.attachment.files', 'Add from Files'),
 						icon: 'DriveOutline',
 						click: (): void => {
-							filesSelectFilesAction(actionTarget);
+							getFilesAction(actionTarget);
 						}
 				  }
 				: undefined;
@@ -124,9 +122,7 @@ export const useGetAttachItems = ({
 		return compact([localItem, driveItem, fileUrl, contactItem]);
 	}, [
 		onFileClick,
-		filesSelectFilesActionAvailable,
 		getFilesAvailable,
-		filesSelectFilesAction,
 		actionTarget,
 		getFilesActionAvailable,
 		getLinkAvailable,
