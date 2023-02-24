@@ -3,10 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Dropdown, IconButton } from '@zextras/carbonio-design-system';
-import { FOLDERS, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
+import {
+	Button,
+	Container,
+	Dropdown,
+	IconButton,
+	SnackbarManagerContext
+} from '@zextras/carbonio-design-system';
+import { FOLDERS, t, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { every, filter, map, some } from 'lodash';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useContext, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { Conversation } from '../types';
 
@@ -25,15 +31,22 @@ type SelectPanelActionsPropType = {
 	folderId: string;
 	selectedIds: Array<string>;
 	deselectAll: () => void;
+	selectAll: () => void;
+	isAllSelected: boolean;
+	selectAllModeOff: () => void;
 };
 const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 	conversation,
 	folderId,
 	selectedIds,
-	deselectAll
+	deselectAll,
+	selectAll,
+	isAllSelected,
+	selectAllModeOff
 }) => {
 	const dispatch = useDispatch();
 	const account = useUserAccount();
+	const createSnackbar = useContext(SnackbarManagerContext);
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);
 	const selectedConversation = filter(conversation, (convo) => ids.indexOf(convo.id) !== -1);
 	const tags = useTags();
@@ -258,8 +271,16 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 					onClick={deselectAll}
 					data-testid="action-button-deselect-all"
 				/>
-				{/* Uncomment this line to show the `Select all` Button */}
-				{/* <Button type='ghost' label='Select all' color='primary' /> */}
+				<Button
+					type="ghost"
+					label={
+						isAllSelected
+							? t('label.deselect_all', 'DESELECT all')
+							: t('label.select_all', 'SELECT all')
+					}
+					color="primary"
+					onClick={isAllSelected ? selectAllModeOff : selectAll}
+				/>
 			</Container>
 			<Container background="gray5" orientation="horizontal" mainAlignment="flex-end">
 				{map(filter(primaryActions), (action) => {
@@ -274,9 +295,24 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 							iconColor="primary"
 							onClick={(ev): void => {
 								if (ev) ev.preventDefault();
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								action.click(ev);
+
+								if (ids.length === 0) {
+									createSnackbar({
+										key: `edit`,
+										replace: true,
+										type: 'info',
+										label: t(
+											'label.need_to_select_atleast_one_item',
+											'You need to select at least one item to perform the action'
+										),
+										autoHideTimeout: 3000,
+										hideButton: true
+									});
+								} else {
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
+									action.click(ev);
+								}
 							}}
 							size="large"
 						/>
@@ -308,9 +344,24 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 						label: action.label,
 						click: (ev): void => {
 							if (ev) ev.preventDefault();
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							action.click();
+
+							if (ids.length === 0) {
+								createSnackbar({
+									key: `edit`,
+									replace: true,
+									type: 'info',
+									label: t(
+										'label.need_to_select_atleast_one_item',
+										'You need to select at least one item to perform the action'
+									),
+									autoHideTimeout: 3000,
+									hideButton: true
+								});
+							} else {
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								action.click();
+							}
 						},
 						customComponent: action.customComponent,
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment

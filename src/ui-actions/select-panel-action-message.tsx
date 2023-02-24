@@ -3,9 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useMemo } from 'react';
-import { Container, Dropdown, IconButton } from '@zextras/carbonio-design-system';
-import { FOLDERS, useTags } from '@zextras/carbonio-shell-ui';
+import React, { FC, ReactElement, useContext, useMemo } from 'react';
+import {
+	Button,
+	Container,
+	Dropdown,
+	IconButton,
+	SnackbarManagerContext
+} from '@zextras/carbonio-design-system';
+import { FOLDERS, t, useTags } from '@zextras/carbonio-shell-ui';
 import { map, every, filter, some } from 'lodash';
 import { useDispatch } from 'react-redux';
 
@@ -25,14 +31,21 @@ type SelectMessagesPanelActionsPropType = {
 	folderId: string;
 	selectedIds: Array<string>;
 	deselectAll: () => void;
+	selectAll: () => void;
+	isAllSelected: boolean;
+	selectAllModeOff: () => void;
 };
 const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 	messages,
 	folderId,
 	selectedIds,
-	deselectAll
+	deselectAll,
+	selectAll,
+	isAllSelected,
+	selectAllModeOff
 }) => {
 	const dispatch = useDispatch();
+	const createSnackbar = useContext(SnackbarManagerContext);
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);
 	const selectedConversation = filter(messages, (convo) => ids.indexOf(convo.id ?? '') !== -1);
 	const tags = useTags();
@@ -197,8 +210,16 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 					onClick={deselectAll}
 					data-testid="action-button-deselect-all"
 				/>
-				{/* Uncomment this line to show the `Select all` Button */}
-				{/* <Button type='ghost' label='Select all' color='primary' /> */}
+				<Button
+					type="ghost"
+					label={
+						isAllSelected
+							? t('label.deselect_all', 'DESELECT all')
+							: t('label.select_all', 'SELECT all')
+					}
+					color="primary"
+					onClick={isAllSelected ? selectAllModeOff : selectAll}
+				/>
 			</Container>
 			<Container background="gray5" orientation="horizontal" mainAlignment="flex-end">
 				{map(
@@ -210,7 +231,21 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 							iconColor="primary"
 							onClick={(ev): void => {
 								if (ev) ev.preventDefault();
-								action.click && action.click();
+								if (ids.length === 0) {
+									createSnackbar({
+										key: `edit`,
+										replace: true,
+										type: 'info',
+										label: t(
+											'label.need_to_select_atleast_one_item',
+											'You need to select at least one item to perform the action'
+										),
+										autoHideTimeout: 3000,
+										hideButton: true
+									});
+								} else {
+									action.click && action.click();
+								}
 							}}
 							size="large"
 						/>
@@ -239,7 +274,21 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 						label: action.label,
 						click: (ev: Event): void => {
 							if (ev) ev.preventDefault();
-							action.click && action.click();
+							if (ids.length === 0) {
+								createSnackbar({
+									key: `edit`,
+									replace: true,
+									type: 'info',
+									label: t(
+										'label.need_to_select_atleast_one_item',
+										'You need to select at least one item to perform the action'
+									),
+									autoHideTimeout: 3000,
+									hideButton: true
+								});
+							} else {
+								action.click && action.click();
+							}
 						},
 						customComponent: action.customComponent,
 						items: action.items
