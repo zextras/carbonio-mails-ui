@@ -196,13 +196,35 @@ export type SignItemType = {
 		}
 	];
 };
+
+type IdentityProps = {
+	zimbraPrefForwardReplySignatureId: string;
+	zimbraPrefWhenSentToEnabled: string;
+	zimbraPrefWhenInFoldersEnabled: string;
+	zimbraPrefFromAddressType: string;
+	objectClass: string;
+	zimbraPrefFromAddress: string;
+	zimbraPrefFromDisplay: string;
+	zimbraPrefIdentityId: string;
+	zimbraPrefDefaultSignatureId: string;
+	zimbraCreateTimestamp: string;
+	zimbraPrefIdentityName: string;
+	zimbraPrefReplyToEnabled: string;
+};
+
+type AccountIdentity = {
+	name: string;
+	id: string;
+	_attrs: IdentityProps;
+};
 type SignatureSettingsPropsType = {
-	settingsObj: PrefsType;
-	updateSettings: (arg: {
-		target: {
+	updatedIdentities: AccountIdentity[];
+	updateIdentities: (arg: {
+		target?: {
 			name: string;
 			value: string;
 		};
+		_attrs?: IdentityProps;
 	}) => void;
 	setDisabled: (arg: boolean) => void;
 	signatures: SignItemType[];

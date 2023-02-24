@@ -5,9 +5,10 @@
  */
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, List, Padding, Text, Tooltip } from '@zextras/carbonio-design-system';
-import { isEmpty, sortBy } from 'lodash';
+import { Container, ListV2, Padding, Text } from '@zextras/carbonio-design-system';
+import { isEmpty, map, sortBy } from 'lodash';
 import { t } from '@zextras/carbonio-shell-ui';
+import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import ShimmerList from './shimmer-list';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import { SearchMessageListItem } from './search-message-list-item';
@@ -65,6 +66,26 @@ const SearchMessageList: FC<SearchListProps> = ({
 		() => sortBy(Object.values(searchResults?.messages ?? []), 'date').reverse(),
 		[searchResults?.messages]
 	);
+
+	const listItems = useMemo(
+		() =>
+			map(messageList, (message) => {
+				const isActive = itemId === message.id;
+				return (
+					<CustomListItem
+						key={message.id}
+						active={isActive}
+						background={message.read ? 'gray6' : 'gray5'}
+					>
+						{(): JSX.Element => (
+							<SearchMessageListItem item={message} isConvChildren={false} active={isActive} />
+						)}
+					</CustomListItem>
+				);
+			}),
+		[itemId, messageList]
+	);
+
 	return (
 		<Container
 			background="gray6"
@@ -80,18 +101,13 @@ const SearchMessageList: FC<SearchListProps> = ({
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>
 			{searchResults?.messages ? (
-				<List
+				<ListV2
 					style={{ paddingBottom: '0.25rem' }}
-					background="gray6"
-					active={itemId}
-					items={messageList}
-					itemProps={{
-						isConvChildren: false
-					}}
-					ItemComponent={SearchMessageListItem}
 					onListBottom={canLoadMore ? loadMore : undefined}
 					data-testid={`search-message-list`}
-				/>
+				>
+					{listItems}
+				</ListV2>
 			) : (
 				<Container>
 					<Padding top="medium">

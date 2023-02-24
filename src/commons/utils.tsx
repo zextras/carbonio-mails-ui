@@ -69,7 +69,9 @@ export enum LineType {
 	ORIG_LINE = 'LINE',
 	HTML_SEP_ID = 'zwchr',
 	PLAINTEXT_SEP = '---------------------------',
-	NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*'
+	NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*',
+	SIGNATURE_CLASS = 'signature-div',
+	SIGNATURE_PRE_SEP = '---'
 }
 
 // eslint-disable-next-line no-shadow
@@ -96,14 +98,6 @@ export enum ActionsType {
 	MAIL_TO = 'mailTo',
 	COMPOSE = 'compose',
 	PREFILL_COMPOSE = 'prefillCompose'
-}
-
-// eslint-disable-next-line no-shadow
-export enum TagsActionsType {
-	NEW = 'new',
-	DELETE = 'delete',
-	EDIT = 'edit',
-	Apply = 'apply'
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

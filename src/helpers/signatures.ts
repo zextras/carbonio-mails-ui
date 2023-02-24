@@ -5,8 +5,8 @@
  */
 import { Account } from '@zextras/carbonio-shell-ui';
 import { find, map } from 'lodash';
-import convert from 'lodash/fp/convert';
 import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
+import { LineType } from '../commons/utils';
 import { SignatureDescriptor } from '../types/signatures';
 
 const NO_SIGNATURE_ID = '11111111-1111-1111-1111-111111111111';
@@ -83,8 +83,8 @@ const composeMailBodyWithSignature = (
 	}
 
 	return isRichText
-		? `<br/><br/>${signatureValue}`
-		: `\n\n${convertHtmlToPlainText(signatureValue)}`;
+		? `<br/><br/><div class="${LineType.SIGNATURE_CLASS}">${signatureValue}</div>`
+		: `\n\n${LineType.SIGNATURE_PRE_SEP}\n${convertHtmlToPlainText(signatureValue)}`;
 };
 
 export {

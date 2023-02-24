@@ -17,8 +17,9 @@ import {
 	ModalManagerContext
 } from '@zextras/carbonio-design-system';
 import { reduce } from 'lodash';
+import { TagsAccordionItems } from '../carbonio-ui-commons/types/tags';
 import { createTag, useGetTagsActions } from '../ui-actions/tag-actions';
-import { ItemType, TagsAccordionItems } from '../types';
+import { ItemType } from '../types';
 
 type ItemProps = {
 	item: ItemType;

@@ -15,10 +15,10 @@ import {
 	getBridgedFunctions
 } from '@zextras/carbonio-shell-ui';
 import { useDispatch } from 'react-redux';
-import { map, forEach, isEqual, filter, find, cloneDeep, isEmpty, reduce } from 'lodash';
+import { map, forEach, isEqual, filter, find, cloneDeep, isEmpty, reduce, remove } from 'lodash';
 import { Container, FormSection } from '@zextras/carbonio-design-system';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
-import { getPropsDiff, differenceObject } from './components/utils';
+import { getPropsDiff, differenceObject, differenceIdentities } from './components/utils';
 import DisplayMessagesSettings from './displaying-messages-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
 import SignatureSettings from './signature-settings';
@@ -26,7 +26,7 @@ import FilterModule from './filters';
 import TrusteeAddresses from './trustee-addresses';
 import { SignatureRequest } from '../../store/actions/signatures';
 import ComposeMessage from './compose-msg-settings';
-import { PropsType, SignItemType } from '../../types';
+import { AccountIdentity, PropsType, SignItemType } from '../../types';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -37,8 +37,11 @@ import { PropsType, SignItemType } from '../../types';
  *   */
 const SettingsView: FC = () => {
 	const { prefs, props } = useUserSettings();
-
 	const account = useUserAccount();
+	const { identity } = cloneDeep(account.identities);
+	const defaultAccount = remove(identity, (acc: AccountIdentity) => acc.name === 'DEFAULT');
+	const identities = defaultAccount.concat(identity);
+
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	const [settingsObj, setSettingsObj] = useState<PrefsType>({ ...prefs });
@@ -56,13 +59,15 @@ const SettingsView: FC = () => {
 	const [updatedProps, setUpdatedProps] = useState<PropsType | Record<string, unknown>>(
 		originalProps
 	);
+
+	const [currentIdentities, setCurrentIdentities] = useState(identities);
+	const [updatedIdentities, setUpdatedIdentities] = useState(identities);
 	const [signatures, setSignatures] = useState<SignItemType[]>(() => []);
 	const [originalSignatures, setOriginalSignatures] = useState(() => []);
 	const [disabled, setDisabled] = useState(true);
 	const [flag, setFlag] = useState(false);
 
 	const dispatch = useDispatch();
-	// const [fetchSigns, setFetchSigns] = useState(true);
 
 	const oldSettings = useMemo(() => {
 		const s = cloneDeep(prefs);
@@ -85,7 +90,8 @@ const SettingsView: FC = () => {
 		setUpdatedSettings({});
 		// we discard only latest updates keeping successfully saved changes
 		setUpdatedProps(currentProps);
-	}, [currentProps, prefs]);
+		setUpdatedIdentities(identities);
+	}, [currentProps, identities, prefs]);
 
 	const updateSettings = useCallback(
 		(e) => {
@@ -102,6 +108,19 @@ const SettingsView: FC = () => {
 		[updatedProps]
 	);
 
+	const updateIdentities = useCallback(
+		(e) => {
+			const data = map(updatedIdentities, (item: AccountIdentity) => {
+				if (item.id === e.id) {
+					return e;
+				}
+				return item;
+			});
+			setUpdatedIdentities(data);
+		},
+		[updatedIdentities]
+	);
+
 	const settingsToUpdate = useMemo(
 		() => differenceObject(updatedSettings, oldSettings),
 		[updatedSettings, oldSettings]
@@ -111,13 +130,18 @@ const SettingsView: FC = () => {
 		() => getPropsDiff(currentProps, updatedProps),
 		[currentProps, updatedProps]
 	);
+	const identitiesToUpdate = useMemo(
+		() => differenceIdentities(currentIdentities, updatedIdentities),
+		[currentIdentities, updatedIdentities]
+	);
 
 	const isDisabled = useMemo(
 		() =>
 			Object.keys(settingsToUpdate).length === 0 &&
 			disabled &&
-			Object.keys(propsToUpdate).length === 0,
-		[settingsToUpdate, disabled, propsToUpdate]
+			Object.keys(propsToUpdate).length === 0 &&
+			Object.keys(identitiesToUpdate).length === 0,
+		[settingsToUpdate, disabled, propsToUpdate, identitiesToUpdate]
 	);
 	const setNewOrForwardSignatureId = useCallback(
 		(itemsAdd, resp, oldSignatureId, isFowardSignature): void => {
@@ -145,7 +169,6 @@ const SettingsView: FC = () => {
 		},
 		[]
 	);
-
 	// eslint-disable-next-line consistent-return
 	const saveChanges = useCallback(() => {
 		let changes = {};
@@ -254,7 +277,9 @@ const SettingsView: FC = () => {
 		if (Object.keys(propsToUpdate).length > 0) {
 			changes = { ...changes, props: propsToUpdate };
 		}
-
+		if (Object.keys(identitiesToUpdate).length > 0) {
+			changes = { ...changes, identity: { modifyList: identitiesToUpdate } };
+		}
 		if (!isEmpty(changes)) {
 			editSettings(changes).then((res) => {
 				if (res.type.includes('fulfilled')) {
@@ -285,6 +310,7 @@ const SettingsView: FC = () => {
 		originalSignatures,
 		settingsToUpdate,
 		propsToUpdate,
+		identitiesToUpdate,
 		dispatch,
 		account,
 		setNewOrForwardSignatureId,
@@ -324,7 +350,8 @@ const SettingsView: FC = () => {
 						// @ts-ignore
 						setOriginalSignatures={setOriginalSignatures}
 						updateSettings={updateSettings}
-						// disabled={disabled}
+						updatedIdentities={updatedIdentities}
+						updateIdentities={updateIdentities}
 						setDisabled={setDisabled}
 						signatures={signatures}
 						flag={flag}

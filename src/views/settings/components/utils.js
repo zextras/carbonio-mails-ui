@@ -5,7 +5,7 @@
  */
 /* eslint-disable no-nested-ternary */
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, isEqual, isObject, reduce, transform } from 'lodash';
+import { filter, find, isEqual, isObject, map, reduce, transform } from 'lodash';
 
 export const differenceObject = (object, base) => {
 	// eslint-disable-next-line no-shadow
@@ -19,6 +19,23 @@ export const differenceObject = (object, base) => {
 	}
 
 	return changes(object, base);
+};
+
+export const differenceIdentities = (original, modified) => {
+	const matched = [];
+	map(modified, (acc) => {
+		if (!isEqual(acc, find(original, ['id', acc.id]))) {
+			matched.push({
+				id: acc.id,
+				name: acc.name,
+				prefs: {
+					zimbraPrefDefaultSignatureId: acc._attrs.zimbraPrefDefaultSignatureId,
+					zimbraPrefForwardReplySignatureId: acc._attrs.zimbraPrefForwardReplySignatureId
+				}
+			});
+		}
+	});
+	return matched;
 };
 
 export const getPropsDiff = (original, modified) =>

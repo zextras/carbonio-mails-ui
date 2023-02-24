@@ -37,8 +37,11 @@ import { useDispatch } from 'react-redux';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import { createMountpoint } from '../../store/actions/create-mountpoint';
-
-import { GroupedShare, SharedObject, ShareModalProps } from '../../types/sidebar';
+import {
+	GroupedShare,
+	SharedObject,
+	ShareModalProps
+} from '../../carbonio-ui-commons/types/sidebar';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;

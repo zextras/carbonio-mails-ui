@@ -54,6 +54,8 @@ type IdentityType = {
 	type: string;
 	identityName: string;
 	displayName?: string;
+	zimbraPrefDefaultSignatureId?: string;
+	zimbraPrefForwardReplySignatureId?: string;
 };
 
 type UseGetIdentitiesReturnType = {

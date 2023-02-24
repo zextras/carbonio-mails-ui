@@ -203,9 +203,6 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 			}
 
 			editSettings({
-				// FIXME remove the ts-ignore after the implementation of IRIS-3521
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				prefs: { zimbraPrefMailTrustedSenderList: [...trusteeAddress, trustee] }
 			}).then((res) => {
 				if (res.type?.includes('fulfilled')) {

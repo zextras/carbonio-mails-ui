@@ -17,7 +17,7 @@ type RouteParams = {
 	folderId: string;
 };
 
-export const useMessageList = (): Array<Partial<MailMessage>> => {
+export const useMessageList = (): Array<MailMessage> => {
 	const { folderId } = <RouteParams>useParams();
 	const dispatch = useDispatch();
 

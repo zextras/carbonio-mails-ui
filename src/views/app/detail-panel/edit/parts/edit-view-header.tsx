@@ -22,6 +22,7 @@ import {
 	FOLDERS,
 	getBridgedFunctions,
 	getCurrentRoute,
+	getUserAccount,
 	minimizeBoards,
 	reopenBoards,
 	replaceHistory,
@@ -36,9 +37,16 @@ import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useS
 import { Controller, SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
+import { CleaningServices } from '@mui/icons-material';
 import { ActionsType, LineType } from '../../../../../commons/utils';
 import { sendMsg } from '../../../../../store/actions/send-msg';
-import { BoardContext, EditViewContextType, MailAttachment } from '../../../../../types';
+import {
+	BoardContext,
+	EditViewContextType,
+	MailAttachment,
+	MailsEditor,
+	IdentityType
+} from '../../../../../types';
 import { addAttachments } from '../edit-utils';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
 import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
@@ -46,6 +54,8 @@ import { EditViewContext } from './edit-view-context';
 import * as StyledComp from './edit-view-styled-components';
 import SendLaterModal from './send-later-modal';
 import { StoreProvider } from '../../../../../store/redux';
+import { getSignatureValue } from '../../../../../helpers/signatures';
+import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils/text/html';
 
 const FromItem = styled(Row)`
 	border-radius: 4px;
@@ -76,7 +86,9 @@ type PropType = {
 	editorId: string;
 	saveDraftCb: (arg: any) => any;
 	setSending: (arg: boolean) => void;
+	changeEditorText: (text: [string, string]) => void;
 	action: string | undefined;
+	editor: MailsEditor;
 };
 const EditViewHeader: FC<PropType> = ({
 	setShowRouteGuard,
@@ -87,12 +99,14 @@ const EditViewHeader: FC<PropType> = ({
 	editorId,
 	saveDraftCb,
 	setSending,
-	action
+	changeEditorText,
+	action,
+	editor
 }) => {
 	const { folderId } = useParams<{ folderId: string }>();
 	const { prefs, props, attrs } = useUserSettings();
 	const { control } = useForm();
-	const { setSendLater, editor } = useContext<EditViewContextType>(EditViewContext);
+	const { setSendLater } = useContext<EditViewContextType>(EditViewContext);
 	const [open, setOpen] = useState(false);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [openDD, setOpenDD] = useState(false);
@@ -105,7 +119,6 @@ const EditViewHeader: FC<PropType> = ({
 	const [showRichText, setShowRichtext] = useState(editor?.richText ?? false);
 	const [isUrgent, setIsUrgent] = useState(editor?.urgent ?? false);
 	const [isReceiptRequested, setIsReceiptRequested] = useState(editor?.requestReadReceipt ?? false);
-
 	// needs to be replaced with correct type
 	const boardContext = useBoard<BoardContext>()?.context;
 
@@ -114,9 +127,60 @@ const EditViewHeader: FC<PropType> = ({
 		return isDisabled || participants.length === 0 || some(participants, { error: true });
 	}, [isDisabled, editor]);
 
+	const changeSignature = (isNew: boolean, id = ''): void => {
+		const editorText = editor.text;
+		const signatureValue = id !== '' ? getSignatureValue(getUserAccount(), id) : '';
+		const htmlContent = isNew
+			? editorText[1].substring(
+					0,
+					editorText[1].indexOf(`<div class="${LineType.SIGNATURE_CLASS}">`) +
+						`<div class="${LineType.SIGNATURE_CLASS}">`.length
+			  ) +
+			  signatureValue +
+			  editorText[1].substring(editorText[1].length - 6)
+			: `${
+					editorText[1].substring(
+						0,
+						editorText[1].indexOf(`<div class="${LineType.SIGNATURE_CLASS}">`) +
+							`<div class="${LineType.SIGNATURE_CLASS}">`.length
+					) + signatureValue
+			  }<br>${editorText[1].substring(editorText[1].indexOf(`<hr id="${LineType.HTML_SEP_ID}`))}`;
+		const plainSignatureValue =
+			signatureValue !== '' ? `\n${convertHtmlToPlainText(signatureValue)}\n\n` : '';
+		const plainContent = isNew
+			? editorText[0].substring(
+					0,
+					editorText[0].indexOf(`${LineType.SIGNATURE_PRE_SEP}`) +
+						`${LineType.SIGNATURE_PRE_SEP}`.length
+			  ) +
+			  plainSignatureValue +
+			  editorText[0].substring(editorText[0].length)
+			: editorText[0].substring(
+					0,
+					editorText[0].indexOf(`${LineType.SIGNATURE_PRE_SEP}`) +
+						`${LineType.SIGNATURE_PRE_SEP}`.length
+			  ) +
+			  plainSignatureValue +
+			  editorText[0].substring(editorText[0].indexOf(`${LineType.PLAINTEXT_SEP}`));
+		updateEditorCb({
+			text: [plainContent, htmlContent]
+		});
+		changeEditorText([plainContent, htmlContent]);
+	};
+
+	const onFromChange = (fr: Partial<IdentityType> | undefined): void => {
+		if (fr) {
+			if (action === ActionsType.NEW) {
+				changeSignature(true, fr.zimbraPrefDefaultSignatureId);
+			} else {
+				changeSignature(false, fr?.zimbraPrefForwardReplySignatureId);
+			}
+		}
+	};
 	const { from, activeFrom, identitiesList, hasIdentity } = useGetIdentities({
 		updateEditorCb,
 		setOpen,
+		onFromChange,
 		editorId: editor?.editorId,
 		currentMessage: editor?.original,
 		originalMessage:
@@ -127,7 +191,6 @@ const EditViewHeader: FC<PropType> = ({
 				: undefined,
 		folderId: boardContext?.folderId ?? FOLDERS.INBOX
 	});
-
 	const inputRef = useRef<any>();
 	const onFileClick = useCallback(() => {
 		if (inputRef.current) {
@@ -525,7 +588,7 @@ const EditViewHeader: FC<PropType> = ({
 						name="attach"
 						control={control}
 						defaultValue={editor.attach || {}}
-						render={({ onChange, value }): ReactElement => (
+						render={({ field: { onChange, value } }): ReactElement => (
 							<StyledComp.FileInput
 								type="file"
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment

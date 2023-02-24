@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
-import { Button, ModalManagerContext, Container } from '@zextras/carbonio-design-system';
-import { filter, isEqual, uniqWith } from 'lodash';
+import { Button, Container, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { filter, isEqual, uniqWith } from 'lodash';
+import React, { FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { getShareInfo } from '../../store/actions/get-share-info';
+import { ResFolder } from '../../carbonio-ui-commons/utils';
 import { StoreProvider } from '../../store/redux';
-import { ResFolder } from '../../types';
 import { SharesModal } from './shares-modal';
 
 export const ButtonFindShares: FC = () => {
