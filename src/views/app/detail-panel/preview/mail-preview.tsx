@@ -282,6 +282,23 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 				</Container>
 			)}
 			{message && <PreviewHeader compProps={compProps} />}
+
+			{/* External message disclaimer */}
+			{isExternalMessage && (
+				<Row takeAvailableSpace>
+					<Padding all="medium">
+						<Padding right="medium">
+							<Icon icon="AlertCircleOutline" size="large" />
+						</Padding>
+						<Text>
+							{t(
+								'label.attachments_disclaimer',
+								'You are viewing an attached message. The authenticity of the attached messages can not be verified.'
+							)}
+						</Text>
+					</Padding>
+				</Row>
+			)}
 		</>
 	);
 };

@@ -1,6 +1,7 @@
 {
     "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
     "action": {
+        "click_open": "Click to open",
         "click_preview": "Click to preview",
         "edit_anyway": "Edit anyway",
         "edit_as_new": "Edit as new",

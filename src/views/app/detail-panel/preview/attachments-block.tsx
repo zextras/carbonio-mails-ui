@@ -134,6 +134,12 @@ const Attachment: FC<AttachmentType> = ({
 		}
 	}, [inputRef2]);
 
+	const isEML = extension === 'EML';
+
+	const actionTooltipText = isEML
+		? t('action.click_open', 'Click to open')
+		: t('action.click_preview', 'Click to preview');
+
 	const onDeleteAttachment = useCallback(() => {
 		dispatch(deleteAttachments({ id: message.id, attachments: [part] }));
 	}, [dispatch, message.id, part]);
@@ -279,7 +285,7 @@ const Attachment: FC<AttachmentType> = ({
 						size: humanFileSize(att.size)
 					});
 				}
-			} else if (extension === 'EML') {
+			} else if (isEML) {
 				showEMLPreview();
 			} else if (inputRef2.current) {
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -310,7 +316,7 @@ const Attachment: FC<AttachmentType> = ({
 			background="gray3"
 			data-testid={`attachment-container-${filename}`}
 		>
-			<Tooltip key={`${message.id}-Preview`} label={t('action.click_preview', 'Click to preview')}>
+			<Tooltip key={`${message.id}-Preview`} label={actionTooltipText}>
 				<Row
 					padding={{ all: 'small' }}
 					mainAlignment="flex-start"
