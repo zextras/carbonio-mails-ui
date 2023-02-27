@@ -9,13 +9,11 @@ import { useDispatch } from 'react-redux';
 import { getBridgedFunctions, useUserAccounts, t } from '@zextras/carbonio-shell-ui';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
-
 import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite-reply/parts/utils';
 import { GranteeInfo } from './share-folder-properties';
 import { sendShareNotification } from '../../../../store/actions/send-share-notification';
 import { folderAction } from '../../../../store/actions/folder-action';
-
-import { ShareRevokeModalType } from '../../../../types/sidebar';
+import { ShareRevokeModalType } from '../../../../carbonio-ui-commons/types/sidebar';
 
 const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, goBack }) => {
 	const [sendNotification, setSendNotification] = useState(false);

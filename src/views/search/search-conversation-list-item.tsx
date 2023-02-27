@@ -35,13 +35,14 @@ import {
 } from '../app/folder-panel/lists-item/conversation-list-item';
 import { SenderName } from '../app/folder-panel/lists-item/sender-name';
 import { selectMessages } from '../../store/messages-slice';
-import {
-	selectConversation,
-	selectConversationExpandedStatus,
-	selectConversations
-} from '../../store/conversations-slice';
+import { selectConversationExpandedStatus } from '../../store/conversations-slice';
 import { searchConv } from '../../store/actions';
-import { StateType, MailMessage, SearchConversationListItemProps } from '../../types';
+import {
+	StateType,
+	SearchConversationListItemProps,
+	ConvMessage,
+	IncompleteMessage
+} from '../../types';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -116,19 +117,17 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 	const messagesToRender = useMemo(
 		() =>
 			uniqBy(
-				reduce(
+				reduce<ConvMessage, IncompleteMessage[]>(
 					item.messages,
-					(acc: Array<Partial<MailMessage>>, v) => {
-						const msg = find(messages, ['id', v.id]);
+					(accumulator, message) => {
+						const msg = find(messages, ['id', message.id]);
 						if (msg) {
-							return [...acc, msg];
+							return [...accumulator, msg];
 						}
-						return acc;
+						return accumulator;
 					},
 					[]
-				).sort((a: Partial<MailMessage>, b: Partial<MailMessage>) =>
-					a.date && b.date ? sortSign * (a.date - b.date) : 1
-				),
+				).sort((a, b) => (a.date && b.date ? sortSign * (a.date - b.date) : 1)),
 				'id'
 			),
 		[item.messages, messages, sortSign]
@@ -169,11 +168,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 	return !searchInTrash && allMessagesInTrash ? (
 		<></>
 	) : (
-		<Container
-			background={active ? 'highlight' : 'transparent'}
-			mainAlignment="flex-start"
-			data-testid={`SearchConversationListItem-${item.id}`}
-		>
+		<Container mainAlignment="flex-start" data-testid={`SearchConversationListItem-${item.id}`}>
 			<ListItemActionWrapper item={item} current={active} onClick={_onClick} isConversation>
 				<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
 					<ItemAvatar

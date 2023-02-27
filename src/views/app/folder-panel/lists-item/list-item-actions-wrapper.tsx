@@ -3,19 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, SyntheticEvent, useContext, useMemo } from 'react';
-import {
-	Container,
-	Tooltip,
-	Dropdown,
-	IconButton,
-	ContainerProps
-} from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
+import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
+import React, { FC, useContext, useMemo } from 'react';
+import styled, { DefaultTheme } from 'styled-components';
 import { ActionsContext } from '../../../../commons/actions-context';
-import { Conversation, IncompleteMessage, ListItemActionWrapperProps } from '../../../../types';
+import { ListItemActionWrapperProps } from '../../../../types';
 
-const HoverBarContainer = styled(Container)`
+const HoverBarContainer = styled(Container)<{ background: keyof DefaultTheme['palette'] }>`
 	top: 0;
 	right: 0;
 	display: none;
@@ -23,25 +17,28 @@ const HoverBarContainer = styled(Container)`
 	background: linear-gradient(
 		to right,
 		transparent,
-		${({ theme }): string => theme.palette.gray6.hover}
+		${({ background, theme }): string => theme.palette[background].hover}
 	);
 	width: calc(100% - 4rem);
 	height: 45%;
+
 	& > * {
 		margin-top: ${({ theme }): string => theme.sizes.padding.small};
 		margin-right: ${({ theme }): string => theme.sizes.padding.small};
 	}
 `;
 
-const HoverContainer = styled(Container)<ContainerProps & { current: boolean }>`
+const HoverContainer = styled(Container).attrs(() => ({
+	background: 'transparent'
+}))<{ $hoverBackground: keyof DefaultTheme['palette'] }>`
 	width: 100%;
 	position: relative;
 	cursor: pointer;
 	text-decoration: none;
-	background: ${({ current, theme }): string =>
-		theme.palette[current ? 'highlight' : 'transparent']?.regular};
+
 	&:hover {
-		background: ${({ theme }): string => theme.palette.gray6.hover};
+		background: ${({ $hoverBackground, theme }): string => theme.palette[$hoverBackground].hover};
+
 		& ${HoverBarContainer} {
 			display: flex;
 		}
@@ -62,22 +59,15 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	const [hoverActions, dropdownActions] = useMemo(() => {
 		if (isConversation) {
 			return messagesToRender && messagesToRender?.length === 1
-				? getMessageActions(
-						{ ...(item as IncompleteMessage), ...messagesToRender?.[0], tags: item.tags },
-						true
-				  )
-				: getConversationActions(item as Conversation, false);
+				? getMessageActions({ ...item, ...messagesToRender?.[0], tags: item.tags }, true)
+				: getConversationActions(item, false);
 		}
-		return getMessageActions(
-			item as IncompleteMessage,
-			messagesToRender ? messagesToRender?.length > 1 : false
-		);
+		return getMessageActions(item, messagesToRender ? messagesToRender?.length > 1 : false);
 	}, [isConversation, getMessageActions, item, messagesToRender, getConversationActions]);
+
 	return (
 		<Dropdown
 			contextMenu
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			items={dropdownActions}
 			display="block"
 			style={{ width: '100%', height: '4rem' }}
@@ -87,9 +77,9 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 				orientation="horizontal"
 				mainAlignment="flex-start"
 				crossAlignment="unset"
-				current={current ?? false}
 				onClick={onClick}
 				onDoubleClick={onDoubleClick}
+				$hoverBackground={current ? 'highlight' : 'gray6'}
 			>
 				{children}
 				{/* <Tooltip label={hoverTooltipLabel} overflow="break-word" maxWidth="50vw"> */}
@@ -97,16 +87,15 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 					orientation="horizontal"
 					mainAlignment="flex-end"
 					crossAlignment="center"
+					background={current ? 'highlight' : 'gray6'}
 				>
 					{hoverActions.map((action, index) => (
 						<Tooltip key={action.id ?? index} label={action.label}>
 							<IconButton
 								key={action.id}
 								icon={action.icon}
-								onClick={(ev: SyntheticEvent<HTMLButtonElement, Event> | KeyboardEvent): void => {
+								onClick={(ev): void => {
 									ev.stopPropagation();
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
 									action.click(ev);
 								}}
 								size="small"
