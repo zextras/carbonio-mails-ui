@@ -539,7 +539,7 @@ const AttachmentsBlock: FC<{
 	}, [isInsideExtraWindow, isUploadIntegrationAvailable, uploadIntegration]);
 
 	return attachmentsCount > 0 ? (
-		<Container crossAlignment="flex-start" padding={{ horizontal: 'medium' }}>
+		<Container crossAlignment="flex-start">
 			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
 				{map(expanded ? attachments : attachments?.slice(0, 2), (att, index) => (
 					<Attachment

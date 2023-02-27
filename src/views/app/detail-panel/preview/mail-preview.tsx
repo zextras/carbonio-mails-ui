@@ -40,8 +40,15 @@ const MailContent: FC<{
 	message: MailMessage;
 	isMailPreviewOpen: boolean;
 	isExternalMessage?: boolean;
+	isStandaloneComponent?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
-}> = ({ message, isMailPreviewOpen, isExternalMessage = false, openEmlPreview }) => {
+}> = ({
+	message,
+	isMailPreviewOpen,
+	isExternalMessage = false,
+	openEmlPreview,
+	isStandaloneComponent = false
+}) => {
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
 	const [showModal, setShowModal] = useState(true);
 	const dispatch = useDispatch();
@@ -144,7 +151,9 @@ const MailContent: FC<{
 				width="100%"
 				height="fit"
 				crossAlignment="stretch"
-				padding={{ horizontal: 'large', vertical: 'small' }}
+				padding={
+					isStandaloneComponent ? { vertical: 'small' } : { horizontal: 'large', vertical: 'small' }
+				}
 				background="gray6"
 			>
 				<Row>
@@ -197,6 +206,7 @@ const MailContent: FC<{
 	}, [
 		showAppointmentInvite,
 		message,
+		isStandaloneComponent,
 		isExternalMessage,
 		openEmlPreview,
 		InviteResponse,
@@ -226,20 +236,22 @@ type MailPreviewBlockType = {
 	onClick: () => void;
 	isAlone: boolean;
 	isExternalMessage?: boolean;
+	isStandaloneComponent?: boolean;
 };
 const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	message,
 	open,
 	onClick,
 	isAlone,
-	isExternalMessage = false
+	isExternalMessage = false,
+	isStandaloneComponent = false
 }) => {
 	const { folderId } = useParams<{ folderId: string }>();
 
 	const dispatch = useDispatch();
 	const compProps = useMemo(
-		() => ({ message, onClick, open, isAlone, isExternalMessage }),
-		[message, onClick, open, isAlone, isExternalMessage]
+		() => ({ message, onClick, open, isAlone, isExternalMessage, isStandaloneComponent }),
+		[message, onClick, open, isAlone, isExternalMessage, isStandaloneComponent]
 	);
 	const markAsNotSpam = useCallback(
 		() =>
@@ -290,8 +302,13 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 
 			{/* External message disclaimer */}
 			{isExternalMessage && (
-				<Container background="transparent">
-					<Row width="fill" padding={{ all: 'large' }} mainAlignment="flex-start">
+				<Container background="white" padding={{ top: 'large', bottom: 'large' }}>
+					<Row
+						background="gray2"
+						width="fill"
+						padding={{ all: 'large' }}
+						mainAlignment="flex-start"
+					>
 						<Padding right="large">
 							<Icon icon="AlertCircleOutline" size="large" />
 						</Padding>
@@ -315,6 +332,7 @@ type MailPreviewType = {
 	isAlone: boolean;
 	isMessageView: boolean;
 	isExternalMessage?: boolean;
+	isStandaloneComponent?: boolean;
 };
 
 const MailPreview: FC<MailPreviewType> = ({
@@ -322,7 +340,8 @@ const MailPreview: FC<MailPreviewType> = ({
 	expanded,
 	isAlone,
 	isMessageView,
-	isExternalMessage = false
+	isExternalMessage = false,
+	isStandaloneComponent = false
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(expanded || isAlone);
@@ -353,6 +372,7 @@ const MailPreview: FC<MailPreviewType> = ({
 						isAlone
 						isMessageView
 						isExternalMessage
+						isStandaloneComponent
 					/>
 				),
 				title: emlMessage.subject,
@@ -366,13 +386,20 @@ const MailPreview: FC<MailPreviewType> = ({
 	);
 
 	return (
-		<Container ref={mailContainerRef} height="fit" data-testid={`MailPreview-${message.id}`}>
+		<Container
+			ref={mailContainerRef}
+			height="fit"
+			data-testid={`MailPreview-${message.id}`}
+			padding={isStandaloneComponent ? { all: 'large' } : undefined}
+			background="white"
+		>
 			<MailPreviewBlock
 				onClick={onClick}
 				message={message}
 				open={isMailPreviewOpen}
 				isAlone={isAlone}
 				isExternalMessage={isExternalMessage}
+				isStandaloneComponent={isStandaloneComponent}
 			/>
 
 			<Container
@@ -388,6 +415,7 @@ const MailPreview: FC<MailPreviewType> = ({
 						isMailPreviewOpen={isMailPreviewOpen}
 						openEmlPreview={openEmlPreview}
 						isExternalMessage={isExternalMessage}
+						isStandaloneComponent={isStandaloneComponent}
 					/>
 				)}
 			</Container>
