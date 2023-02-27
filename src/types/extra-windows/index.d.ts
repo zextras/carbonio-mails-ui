@@ -5,6 +5,10 @@
  */
 import React from 'react';
 
+/**
+ * Descriptor of the new window/tab characteristics.
+ * @see Window.open
+ */
 export type ExtraWindowFeatures = {
 	popup?: boolean;
 	width?: number;

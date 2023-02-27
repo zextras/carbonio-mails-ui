@@ -195,18 +195,6 @@ export const MessageListItem: FC<MessageListItemProps> = ({
 						context: { mailId: id, folderId },
 						title: ''
 					});
-					// } else {
-					// 	// Display mail in a separate window
-					// 	const createWindowParams: ExtraWindowCreationParams = {
-					// 		name: `${item.id}`,
-					// 		returnComponent: false,
-					// 		children: <MailPreview message={item} expanded={false} isAlone isMessageView />,
-					// 		title: item.subject,
-					// 		closeOnUnmount: false
-					// 	};
-					// 	if (createWindow) {
-					// 		createWindow(createWindowParams);
-					// 	}
 				}
 			}
 		},

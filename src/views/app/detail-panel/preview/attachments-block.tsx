@@ -222,7 +222,6 @@ const Attachment: FC<AttachmentType> = ({
 		[confirmAction, isAValidDestination]
 	);
 
-	// FIXME
 	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
 		'carbonio_files_action',
 		'files-select-nodes',
