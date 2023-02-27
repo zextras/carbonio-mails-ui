@@ -302,7 +302,7 @@ const Attachment: FC<AttachmentType> = ({
 			browserPdfPreview,
 			createPreview,
 			downloadAttachment,
-			extension,
+			isEML,
 			link,
 			showEMLPreview
 		]

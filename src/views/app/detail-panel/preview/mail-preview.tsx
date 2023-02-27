@@ -21,7 +21,8 @@ import {
 	Icon,
 	Padding,
 	Button,
-	Row
+	Row,
+	Divider
 } from '@zextras/carbonio-design-system';
 import { useDispatch } from 'react-redux';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
@@ -281,13 +282,17 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 					</Container>
 				</Container>
 			)}
-			{message && <PreviewHeader compProps={compProps} />}
+			{message && (
+				<Row width="fill">
+					<PreviewHeader compProps={compProps} />
+				</Row>
+			)}
 
 			{/* External message disclaimer */}
 			{isExternalMessage && (
-				<Row takeAvailableSpace>
-					<Padding all="medium">
-						<Padding right="medium">
+				<Container background="transparent">
+					<Row width="fill" padding={{ all: 'large' }} mainAlignment="flex-start">
+						<Padding right="large">
 							<Icon icon="AlertCircleOutline" size="large" />
 						</Padding>
 						<Text>
@@ -296,8 +301,9 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 								'You are viewing an attached message. The authenticity of the attached messages can not be verified.'
 							)}
 						</Text>
-					</Padding>
-				</Row>
+					</Row>
+					<Divider color="gray1" />
+				</Container>
 			)}
 		</>
 	);
