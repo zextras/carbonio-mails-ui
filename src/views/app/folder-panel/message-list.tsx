@@ -75,14 +75,23 @@ const MessageList: FC = () => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const folder = useFolder(activeFolder);
 	const dispatch = useAppDispatch();
-	const { setCount } = useAppContext<AppContext>();
+	const { setCount, count } = useAppContext<AppContext>();
 	const [isDragging, setIsDragging] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 	const dragImageRef = useRef(null);
 	const status = useAppSelector(selectConversationStatus);
-	const { selected, isSelecting, toggle, deselectAll } = useSelection(folderId, setCount);
 	const messages = useMessageList();
+	const {
+		selected,
+		toggle,
+		deselectAll,
+		isSelectModeOn,
+		setIsSelectModeOn,
+		selectAll,
+		isAllSelected,
+		selectAllModeOff
+	} = useSelection(folderId, setCount, count, messages);
 
 	const messageListStatus = useSelector(selectFolderMsgSearchStatus(folderId));
 
@@ -97,7 +106,7 @@ const MessageList: FC = () => {
 				});
 			}
 		},
-		[hasMore, isLoading, dispatch, folderId]
+		[isLoading, hasMore, dispatch, folderId]
 	);
 
 	const displayerTitle = useMemo(() => {
@@ -140,7 +149,7 @@ const MessageList: FC = () => {
 								item={message}
 								folderId={folderId}
 								selected={isSelected}
-								selecting={isSelecting}
+								selecting={isSelectModeOn}
 								draggedIds={draggedIds}
 								setDraggedIds={setDraggedIds}
 								setIsDragging={setIsDragging}
@@ -155,30 +164,37 @@ const MessageList: FC = () => {
 					</CustomListItem>
 				);
 			}),
-		[draggedIds, folderId, isSelecting, itemId, messages, selected, toggle]
+		[draggedIds, folderId, isSelectModeOn, itemId, messages, selected, toggle]
 	);
 
 	return (
 		<>
-			{isSelecting ? (
+			{isSelectModeOn ? (
 				<SelectMessagesPanelActions
 					messages={messages}
 					selectedIds={selected}
 					folderId={folderId}
 					deselectAll={deselectAll}
+					selectAll={selectAll}
+					isAllSelected={isAllSelected}
+					selectAllModeOff={selectAllModeOff}
 				/>
 			) : (
 				<Breadcrumbs
 					folderId={folderId}
-					folderPath={folder?.path}
+					folderPath={folder?.absFolderPath}
 					itemsCount={folder?.itemsCount}
+					isSelectModeOn={isSelectModeOn}
+					setIsSelectModeOn={setIsSelectModeOn}
 				/>
 			)}
 			{messageListStatus === 'complete' ? (
 				<>
 					{messages?.length > 0 ? (
 						<CustomList
-							onListBottom={(): void => loadMore(messages?.[messages.length - 1]?.date)}
+							onListBottom={(): void => {
+								loadMore(messages?.[messages.length - 1]?.date);
+							}}
 							data-testid={`message-list-${folderId}`}
 						>
 							{listItems}
