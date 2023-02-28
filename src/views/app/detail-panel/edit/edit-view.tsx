@@ -372,8 +372,6 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 		[action, editor?.attach?.mp?.length, editor?.original]
 	);
 
-	// const showAttachments = true;
-
 	const context: EditViewContextType = useMemo(
 		() => ({
 			editor,

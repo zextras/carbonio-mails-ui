@@ -344,12 +344,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 									{showMultiTagIcon && (
 										<Dropdown items={tags} forceOpen={showDropdown} onClose={onDropdownClose}>
 											<Padding left="small">
-												<IconButton
-													data-testid="TagIcon"
-													icon={tagIcon}
-													onClick={onIconClick}
-													//	color={`${tagIconColor}`}
-												/>
+												<IconButton data-testid="TagIcon" icon={tagIcon} onClick={onIconClick} />
 											</Padding>
 										</Dropdown>
 									)}

@@ -15,7 +15,12 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getAction, getBridgedFunctions, soapFetch, t } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	getIntegratedFunction,
+	soapFetch,
+	t
+} from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, find, map, noop } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
@@ -109,7 +114,6 @@ const Attachment: FC<AttachmentType> = ({
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
-	// const isInsideExtraWindow = false;
 
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
@@ -222,11 +226,7 @@ const Attachment: FC<AttachmentType> = ({
 		[confirmAction, isAValidDestination]
 	);
 
-	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
-		'carbonio_files_action',
-		'files-select-nodes',
-		actionTarget
-	);
+	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const showEMLPreview = useCallback(() => {
 		getMsgsForPrint({ ids: [message.id], part: att?.name })
@@ -347,7 +347,7 @@ const Attachment: FC<AttachmentType> = ({
 				<AttachmentHoverBarContainer orientation="horizontal">
 					{isUploadIntegrationAvailable && (
 						<Tooltip
-							key={uploadIntegration?.id}
+							key={`${message.id}-DriveOutline`}
 							label={
 								isInsideExtraWindow
 									? t(
@@ -359,8 +359,10 @@ const Attachment: FC<AttachmentType> = ({
 						>
 							<IconButton
 								size="medium"
-								icon={uploadIntegration?.icon ?? ''}
-								onClick={uploadIntegration?.click ?? noop}
+								icon="DriveOutline"
+								onClick={(): void => {
+									uploadIntegration && uploadIntegration(actionTarget);
+								}}
 								disabled={isInsideExtraWindow}
 							/>
 						</Tooltip>
@@ -493,11 +495,7 @@ const AttachmentsBlock: FC<{
 		[confirmAction, isAValidDestination]
 	);
 
-	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
-		'carbonio_files_action',
-		'files-select-nodes',
-		actionTarget
-	);
+	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const { isInsideExtraWindow } = useExtraWindow();
 
@@ -509,7 +507,9 @@ const AttachmentsBlock: FC<{
 		const link = (
 			<Link
 				size="medium"
-				onClick={uploadIntegration && !isInsideExtraWindow ? uploadIntegration.click : noop}
+				onClick={(): void => {
+					uploadIntegration && uploadIntegration(actionTarget);
+				}}
 				style={{ paddingLeft: '0.5rem' }}
 				disabled={isInsideExtraWindow}
 			>
@@ -522,7 +522,7 @@ const AttachmentsBlock: FC<{
 		}
 		return (
 			<Tooltip
-				key={uploadIntegration?.id}
+				key={`${message.id}-files-saving-disabled`}
 				label={
 					isInsideExtraWindow
 						? t(
@@ -535,7 +535,13 @@ const AttachmentsBlock: FC<{
 				{link}
 			</Tooltip>
 		);
-	}, [isInsideExtraWindow, isUploadIntegrationAvailable, uploadIntegration]);
+	}, [
+		actionTarget,
+		isInsideExtraWindow,
+		isUploadIntegrationAvailable,
+		message.id,
+		uploadIntegration
+	]);
 
 	return attachmentsCount > 0 ? (
 		<Container crossAlignment="flex-start">
