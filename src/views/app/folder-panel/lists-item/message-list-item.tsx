@@ -130,7 +130,7 @@ export const MessageListItem: FC<MessageListItemProps> = ({
 		[item.tags, tagsFromStore]
 	);
 
-	const [date, participantsString] = useMemo(() => {
+	const [date] = useMemo(() => {
 		if (item) {
 			const sender = find(item.participants, ['type', 'f']);
 			return [getTimeLabel(item.date), participantToString(sender, accounts)];

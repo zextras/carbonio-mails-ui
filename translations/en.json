@@ -1,5 +1,7 @@
 {
+    "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
     "action": {
+        "click_open": "Click to open",
         "click_preview": "Click to preview",
         "edit_anyway": "Edit anyway",
         "edit_as_new": "Edit as new",
@@ -296,6 +298,14 @@
         "error_try_again": "Something went wrong, please try again",
         "expand": "Expand",
         "expand_receivers_list": "Expand recipients list",
+        "extra_window": {
+            "save_to_files_disabled": "Save to Files"
+        },
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "Cannot open new window"
+            }
+        },
         "filter_folders": "Filter folders",
         "filter_modified": "Filter modified succesfully",
         "filter_user": "Filter users",
@@ -443,6 +453,7 @@
         "composing_messages": "Composing Messages"
     },
     "message": {
+        "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
         "admin_rights": "View,Edit,Add,Remove,Administer",
         "delete_attachment_message1": "Your attachment will be permanently deleted from Carbonio.",
         "delete_attachment_message2": "Do you want to download it before?",
@@ -465,6 +476,7 @@
             "att_err_adding": "There seems to be a problem when adding attachments, please try again",
             "att_saved": "Attachment saved in the selected folder",
             "calendar_edits_saved": "Edits saved correctly",
+            "eml_download_failed": "Attachment saved in the selected folder",
             "link_copying_error": "There seems to be a problem while generating public link, please try again",
             "settings_saved": "Edits saved correctly",
             "share": {
@@ -482,6 +494,11 @@
         "check_and_try_again": "Please, check Carbonio and try again",
         "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
         "edit_schedule_warning": "By editing this e-mail, the time and date previously set for delayed sending will be reset.",
+        "extra_windows": {
+            "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
+            "opening_blocked": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
+            "popup_blocked": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings"
+        },
         "invalid_address": "The following address appears to be invalid",
         "invalid_trustee_address": "Please enter only e-mail addresses or domains",
         "modal": {
