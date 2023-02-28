@@ -15,7 +15,12 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getAction, getBridgedFunctions, soapFetch, t } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	getIntegratedFunction,
+	soapFetch,
+	t
+} from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, find, map, noop } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
@@ -188,11 +193,7 @@ const Attachment: FC<AttachmentType> = ({
 		[confirmAction, isAValidDestination]
 	);
 
-	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
-		'carbonio_files_action',
-		'files-select-nodes',
-		actionTarget
-	);
+	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const showEMLPreview = useCallback(() => {
 		const conversations = map([message], (msg) => ({
@@ -312,11 +313,16 @@ const Attachment: FC<AttachmentType> = ({
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
 					{isUploadIntegrationAvailable && (
-						<Tooltip key={uploadIntegration?.id} label={t('label.save_to_files', 'Save to Files')}>
+						<Tooltip
+							key={`${message.id}-DriveOutline`}
+							label={t('label.save_to_files', 'Save to Files')}
+						>
 							<IconButton
 								size="medium"
-								icon={uploadIntegration?.icon ?? ''}
-								onClick={uploadIntegration?.click ?? noop}
+								icon="DriveOutline"
+								onClick={(): void => {
+									uploadIntegration && uploadIntegration(actionTarget);
+								}}
 							/>
 						</Tooltip>
 					)}
@@ -443,11 +449,7 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 		[confirmAction, isAValidDestination]
 	);
 
-	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
-		'carbonio_files_action',
-		'files-select-nodes',
-		actionTarget
-	);
+	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	return attachmentsCount > 0 ? (
 		<Container crossAlignment="flex-start" padding={{ horizontal: 'medium' }}>
@@ -528,7 +530,9 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 				{isUploadIntegrationAvailable && (
 					<Link
 						size="medium"
-						onClick={uploadIntegration && uploadIntegration.click}
+						onClick={(): void => {
+							uploadIntegration && uploadIntegration(actionTarget);
+						}}
 						style={{ paddingLeft: '0.5rem' }}
 					>
 						{t('label.save_to_files', 'Save to Files')}
