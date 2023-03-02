@@ -267,7 +267,9 @@
         "enter_name": "Nueva firma",
         "invalid_query": "No se puede analizar la consulta de la búsqueda, bórrala y prueba de nuevo",
         "not_in_list": "{{name}} - No está en tu lista de firmas",
-        "no_signature": "Ninguna firma"
+        "no_signature": "Ninguna firma",
+        "mark_read_message_manually": "Marcar manualmente como leídos haciendo clic en este icono",
+        "mark_read_message_immediately": "Marcar los mensajes en el expositor como leídos inmediatamente"
     },
     "messages": {
         "modal": {
@@ -467,7 +469,10 @@
             "visualization_options": "Opciones de visualización",
             "unsend_time": "Ajustar tiempo de envío",
             "mark_reading_panel": "Marcar como leído",
-            "default": "Predeterminado"
+            "default": "Predeterminado",
+            "not_changed_anything": "No se hicieron cambios",
+            "mark_manually": "Marcar manualmente",
+            "filter_name_required": "Nombre de filtro requerido"
         },
         "msg_from_optn": {
             "discard": "Descartar mensaje",
@@ -600,7 +605,12 @@
             "second_plural": "{{count}} segundos",
             "no_delay": "Sin demora"
         },
-        "address": "Dirección"
+        "address": "Dirección",
+        "tag_name_required": "Rellenar el campo \"Etiqueta\" para completar la acción \"Etiquetar con\".",
+        "remove_action": "Eliminar esta acción",
+        "folder_path_required": "Elige una carpeta de destino para completar la acción \"Mover a carpeta\".",
+        "address_required": "Rellenar el campo \"Dirección\" para completar la acción \"Redirigir a dirección\".",
+        "add_action": "Añadir nueva acción"
     },
     "folder_panel": {
         "modal": {

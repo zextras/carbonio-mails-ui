@@ -70,7 +70,7 @@
         "save": "保存する",
         "send": "送信",
         "share": "シェアする",
-        "edit_access": "{{name}}のアクセス権を編集する",
+        "edit_access": "アクセスを編集する",
         "edit_folder_properties": "{{name}}のプロパティを編集する",
         "add_custom_message": "カスタムメッセージを追加する",
         "allowed_actions": "許可された操作",
@@ -90,7 +90,7 @@
         "revoke": "取り消す",
         "revoke_access_tooltip": "標準通知の送信へのアクセスを取り消す",
         "revoke_access_without_notification": "通知を送信せずにアクセスを取り消す",
-        "revoke_share": "{{title}}の共有を取り消す",
+        "revoke_share": "シェアを解除する",
         "no_subject": "件名なし",
         "owner": "所有者: ",
         "receive_message": "メッセージの受信",
@@ -266,7 +266,9 @@
         "invalid_query": "検索クエリを解析できません。クリアして再びお試しください",
         "not_in_list": "{{name}} - タグリストにありません",
         "enter_name": "名前を入力する",
-        "no_signature": "署名なし"
+        "no_signature": "署名なし",
+        "mark_read_message_immediately": "ディスプレイヤーのメッセージをすぐに既読にする",
+        "mark_read_message_manually": "このアイコンをクリックして手動で既読にする"
     },
     "messages": {
         "modal": {
@@ -436,7 +438,11 @@
             "set_message_color": "タグの色に合わせてメッセージや会話の色を設定します。",
             "visualization_options": "視覚化オプション",
             "unsend_time": "未送信時間の設定",
-            "default": "デフォルト"
+            "default": "デフォルト",
+            "filter_name_required": "フィルタ名は必須です",
+            "mark_manually": "手動でマークする",
+            "not_changed_anything": "変更はありませんでした",
+            "mark_reading_panel": "既読にする"
         },
         "msg_from_optn": {
             "discard": "メッセージを自動的に破棄する",
@@ -553,11 +559,11 @@
             "terminal": "Terminal",
             "serif": "Serif",
             "sans_serif": "Sans Serif",
-            "professional": "Professional",
-            "monospaced": "Monospaced",
+            "professional": "プロフェッショナル",
+            "monospaced": "等幅",
             "modern": "モダン",
-            "garamond": "Garamond",
-            "elegant": "Elegant",
+            "garamond": "ガラモンド",
+            "elegant": "エレガント",
             "console": "Console",
             "comic": "Comic"
         },
@@ -565,7 +571,12 @@
             "no_delay": "遅延なし",
             "second": "{{count}}秒"
         },
-        "address": "アドレス"
+        "address": "アドレス",
+        "address_required": "操作「アドレスにリダイレクト」を完了するために、[アドレス]欄に入力してください。",
+        "folder_path_required": "操作「フォルダに移動」を完了するために、宛先フォルダを選択してください。",
+        "remove_action": "この操作を削除する",
+        "add_action": "新しいアクションを追加する",
+        "tag_name_required": "操作「タグ付けする」を完了するために、[タグ]欄に入力してください。"
     },
     "snackbar": {
         "share_resend": "送信された招待を共有する",
