@@ -286,7 +286,7 @@
         "download_and_delete": "Scarica e Elimina",
         "not_in_list": "{{name}} - Non presente nella tua lista di tag",
         "mark_read_message_immediately": "Contrassegna immediatamente i messaggi come letti nel riquadro di lettura",
-        "mark_read_message_manually": "Contrassegna come letto manualmente cliccando su questa icona",
+        "mark_read_message_manually": "Contrassegna manualmente come letto cliccando su questa icona",
         "no_signature": "Nessuna firma"
     },
     "tooltip": {
@@ -597,7 +597,9 @@
         "folder_path_required": "Seleziona una cartella di destinazione per completare l'azione \"Sposta nella cartella\".",
         "tag_name_required": "Completa il campo \"Tag\" per completare l'azione \"Tagga con\".",
         "address_required": "Completa il campo \"Indirizzo\" per completare l'azione \"Reindirizza a Indirizzo\".",
-        "address": "Indirizzo"
+        "address": "Indirizzo",
+        "remove_action": "Rimuovi questa azione",
+        "add_action": "Aggiungi nuova azione"
     },
     "search": {
         "attachment_note": "Cerca tutte le e-mail che hanno un allegato.",

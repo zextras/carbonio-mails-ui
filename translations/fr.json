@@ -81,7 +81,7 @@
         "download_plural": "Télécharger tout",
         "draft_folder": "[BROUILLON]",
         "edit": "Modifier",
-        "edit_access": "Modifier les accès de {{name}}",
+        "edit_access": "Modifier les accès",
         "edit_folder_properties": "Modifier les propriétés de {{name}}",
         "filter_user": "Utilisateurs du filtre",
         "find_shares": "Trouver les partages",
@@ -99,7 +99,7 @@
         "retention_policy": "Politique de rétention",
         "revoke": "Révoquer",
         "revoke_access_tooltip": "Révoquer les accès en envoyant une notification",
-        "revoke_share": "Révoquer le partage de {{title}}",
+        "revoke_share": "Révoquer le partage",
         "role": "Rôle : ",
         "save": "Enregistrer",
         "select_folder": "Sélectionner le dossier",
@@ -278,7 +278,10 @@
         "not_in_list": "{{name}} - N'est pas dans votre liste d'étiquettes",
         "invalid_query": "Impossible d'analyser la requête de recherche, supprimez la et réessayez",
         "download_and_delete": "Télécharger et Supprimer",
-        "enter_name": "Saisir le nom"
+        "enter_name": "Saisir le nom",
+        "no_signature": "Pas de signature",
+        "mark_read_message_immediately": "Marquer les messages comme lu immédiatement",
+        "mark_read_message_manually": "Marquer les message lu manuellement en cliquant sur l'icone"
     },
     "message": {
         "snackbar": {
@@ -416,7 +419,12 @@
             "message_color": "Couleur du message",
             "message_selection": "Sélection du message",
             "visualization_options": "Options d'affichage",
-            "unsend_time": "Définir le temps pour annuler un envoi"
+            "unsend_time": "Définir le temps avant envoi",
+            "filter_name_required": "Un nom de filtre est requis",
+            "mark_manually": "Marquer manuellement",
+            "not_changed_anything": "Aucun changement n'a été réalisé",
+            "default": "Par défaut",
+            "mark_reading_panel": "Marquer comme lu"
         },
         "msg_from_optn": {
             "discard": "Rejeter le message automatiquement",
@@ -548,7 +556,13 @@
             "second": "{{count}} seconde",
             "second_plural": "{{count}} secondes",
             "no_delay": "Sans délai"
-        }
+        },
+        "add_action": "Ajouter une nouvelle action",
+        "address": "Adresse",
+        "folder_path_required": "Sélectionner un dossier de destination pour terminer l'action \"Déplacer dans le dossier\".",
+        "address_required": "Remplir le champ adresse pour terminer l'action \"Redirection à l'adresse\".",
+        "remove_action": "Supprimer cette action",
+        "tag_name_required": "Remplir le champ \"Étiquette\" pour terminer l'action \"Étiqueter avec\"."
     },
     "share": {
         "options": {
@@ -588,7 +602,7 @@
         "add_attachments": "Ajouter des pièces jointes",
         "disable_rich_text": "Désactiver l'éditeur de texte riche",
         "disable_urgent": "Désactiver urgent",
-        "edit": "Modifier les propriétés du partage",
+        "edit": "Modifier les propriétés de partage",
         "enable_urgent": "Activer urgent",
         "resend": "Renvoyez la notification email de ce partage",
         "revoke": "Révoquer les accès",

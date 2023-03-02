@@ -178,7 +178,7 @@
         "filter_folders": "Filtruj foldery",
         "filter_user": "Znajdź użytkowników",
         "find_mail_shares": "Znajdź udostępnione foldery",
-        "find_shares": "Dodaj folder",
+        "find_shares": "Znajdź folder",
         "flash_browser_title": "Podświetl tytuł strony w przeglądarce",
         "forwarded": "Przekazano dalej",
         "freebusy": "WolnyZajęty",
@@ -333,7 +333,7 @@
         "invalid_query": "Nie udało się przetworzyć filtrów, wyczyść wyszukiwanie i spróbuj ponownie",
         "download_and_delete": "Pobierz i usuń",
         "enter_name": "Wprowadź nazwę",
-        "mark_read_message_manually": "Manualnie oznaczaj wiadomości jako przeczytane klikając w tą ikonkę",
+        "mark_read_message_manually": "Manualnie oznaczaj wiadomości jako przeczytane klikając w tę ikonkę",
         "no_signature": "Brak podpisu",
         "mark_read_message_immediately": "Natychmiastowo oznaczaj wiadomości jako przeczytane"
     },
@@ -691,9 +691,9 @@
             "console": "Konsola",
             "comic": "Komiksowa"
         },
-        "font_size_0": "{{count}} pkt",
-        "font_size_1": "{{count}} pkt",
-        "font_size_2": "{{count}} pkt",
+        "font_size_0": "{{count}} pt",
+        "font_size_1": "{{count}} pt",
+        "font_size_2": "{{count}} pt",
         "font": "Czcionka",
         "mail_unsend_time": {
             "second_0": "{{count}} sekunda",
@@ -704,7 +704,9 @@
         "folder_path_required": "Wybierz folder docelowy, aby wykonać czynność \"Przenieś do folderu\".",
         "tag_name_required": "Uzupełnij pole \"Tag\", aby wykonać czynność \"Umieść tag\".",
         "address_required": "Uzupełnij pole \"Adres\", aby wykonać czynność \"Przekieruj na adres\".",
-        "address": "Adres"
+        "address": "Adres",
+        "remove_action": "Usuń tę czynność",
+        "add_action": "Dodaj nową czynność"
     },
     "signatures": {
         "signature_heading": "Podpisy",

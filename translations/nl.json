@@ -89,7 +89,7 @@
         "revoke": "Intrekken",
         "revoke_access_tooltip": "Toegang intrekken met een standaardkennisgeving",
         "revoke_access_without_notification": "Toegang intrekken zonder een melding te sturen",
-        "revoke_share": "Delen van {{title}} intrekken",
+        "revoke_share": "Teilen widerrufen",
         "role": "Rol: ",
         "select_folder": "Map selecteren",
         "send_notification": "Een kennisgeving sturen naar",
@@ -267,7 +267,9 @@
         "download_and_delete": "Downloaden en verwijderen",
         "invalid_query": "Kan de zoekopdracht niet parseren, wis deze en probeer opnieuw",
         "enter_name": "Naam invullen",
-        "no_signature": "Geen handtekening"
+        "no_signature": "Geen handtekening",
+        "mark_read_message_immediately": "Markeer berichten in displayer als onmiddellijk lezen",
+        "mark_read_message_manually": "Handmatig als gelezen markeren door op dit pictogram te klikken"
     },
     "messages": {
         "invalid_address": "Het volgende adres lijkt ongeldig te zijn",
@@ -452,7 +454,11 @@
             "set_message_color": "De setkleur van berichten en gesprekken instellen volgens de kleur van de tag.",
             "visualization_options": "Visualisatie-opties",
             "unsend_time": "Tijd voor afmelden instellen",
-            "default": "Standaard"
+            "default": "Standaard",
+            "mark_reading_panel": "Als gelezen markeren",
+            "filter_name_required": "Filternaam is verplicht",
+            "mark_manually": "Handmatig markeren",
+            "not_changed_anything": "Er is geen verandering aangebracht"
         },
         "msg_from_optn": {
             "discard": "Bericht automatisch verwijderen",
@@ -585,7 +591,12 @@
             "second": "{{count}} seconde",
             "second_plural": "{{count}} seconden"
         },
-        "address": "Adres"
+        "address": "Adres",
+        "address_required": "Vul het veld \"Adres\" in om de actie \"Omleiden naar adres\" te voltooien.",
+        "folder_path_required": "Selecteer een bestemmingsmap om de actie \"Verplaatsen naar map\" te voltooien.",
+        "add_action": "Nieuwe actie toevoegen",
+        "remove_action": "Deze actie verwijderen",
+        "tag_name_required": "Vul het veld \"Tag\" in om de actie \"Tag met\" te voltooien."
     },
     "tooltip": {
         "revoke": "Toegang intrekken",
