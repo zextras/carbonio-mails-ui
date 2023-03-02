@@ -3,7 +3,3 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-describe('Identities selection', () => {
-	describe('Primary account', () => {});
-});

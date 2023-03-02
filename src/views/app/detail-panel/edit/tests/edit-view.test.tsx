@@ -18,9 +18,13 @@ import { find, noop } from 'lodash';
 import React from 'react';
 import { rest } from 'msw';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
+import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { ActionsType } from '../../../../../commons/utils';
+import { MAILS_ROUTE } from '../../../../../constants';
 import * as useQueryParam from '../../../../../hooks/useQueryParam';
 import * as saveDraftAction from '../../../../../store/actions/save-draft';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import { saveDraftResult } from '../../../../../tests/mocks/network/msw/cases/saveDraft/saveDraft-1';
 import { SoapDraftMessageObj } from '../../../../../types';
@@ -653,5 +657,188 @@ describe('Edit view', () => {
 			// 1 after the upload of the attachment
 			expect(callTester).toBeCalledTimes(2);
 		}, 50000);
+	});
+
+	describe('Identities selection', () => {
+		test('identity selector must be visible when multiple identities are present', async () => {
+			const store = generateStore();
+
+			// Mock the "action" query param
+			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+				if (param === 'action') {
+					return 'new';
+				}
+				return undefined;
+			});
+
+			const props = {
+				mailId: 'new-1',
+				folderId: FOLDERS.INBOX,
+				setHeader: noop,
+				toggleAppBoard: false
+			};
+
+			// Create and wait for the component to be rendered
+			setupTest(<EditView {...props} />, { store });
+			await waitFor(
+				() => {
+					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				},
+				{ timeout: 10000 }
+			);
+
+			expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();
+			expect(screen.getByTestId('from-dropdown')).toBeVisible();
+		});
+
+		describe('New mail', () => {
+			test('user default identity is selected', async () => {
+				// Get the default identity
+				const defaultIdentity = find(getUserAccount().identities.identity, ['name', 'DEFAULT']);
+
+				const store = generateStore();
+
+				// Mock the "action" query param
+				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+					if (param === 'action') {
+						return 'new';
+					}
+					return undefined;
+				});
+
+				const props = {
+					mailId: 'new-1',
+					folderId: FOLDERS.INBOX,
+					setHeader: noop,
+					toggleAppBoard: false
+				};
+
+				// Create and wait for the component to be rendered
+				setupTest(<EditView {...props} />, { store });
+				await waitFor(
+					() => {
+						expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+					},
+					{ timeout: 10000 }
+				);
+
+				expect(screen.getByTestId('from-identity-address')).toHaveTextContent(
+					defaultIdentity._attrs.zimbraPrefFromAddress
+				);
+			});
+		});
+		describe('Reply mail', () => {
+			describe('fallback selection', () => {
+				test("user default identity is selected when the message' recipients don't include any user's address", async () => {
+					// Get the default identity
+					const defaultIdentity = find(getUserAccount().identities.identity, ['name', 'DEFAULT']);
+
+					// Generate the message
+					const msg = generateMessage({ isComplete: true });
+
+					const store = generateStore({
+						messages: {
+							searchedInFolder: {},
+							messages: {
+								[msg.id]: msg
+							},
+							status: {}
+						}
+					});
+
+					// Mock the "action" query param
+					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+						if (param === 'action') {
+							return ActionsType.REPLY;
+						}
+						return undefined;
+					});
+
+					// Mock the board context
+					mockedUseBoard.mockImplementation(() => ({
+						url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY}`,
+						context: { mailId: msg.id, folderId: FOLDERS.INBOX },
+						title: ''
+					}));
+
+					const props = {
+						setHeader: noop
+					};
+
+					// Create and wait for the component to be rendered
+					setupTest(<EditView {...props} />, { store });
+					await waitFor(
+						() => {
+							expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+						},
+
+						{ timeout: 10000 }
+					);
+
+					expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();
+					expect(screen.getByTestId('from-identity-address')).toHaveTextContent(
+						defaultIdentity._attrs.zimbraPrefFromAddress
+					);
+				});
+
+				// describe('priority by opening folder', () => {
+				// 	test('user primary account identity is selected when message is open from a primary account\'s folder', () => {
+				// 		// Get the default identity
+				// 		const defaultIdentity = find(getUserAccount().identities.identity, ['name', 'DEFAULT']);
+				// 		const sharedAccountIdentity =
+				//
+				// 		// Generate the message
+				// 		const msg = generateMessage({ folderId: FOLDERS.INBOX, isComplete: true });
+				//
+				// 		const store = generateStore({
+				// 			messages: {
+				// 				searchedInFolder: {},
+				// 				messages: {
+				// 					[msg.id]: msg
+				// 				},
+				// 				status: {}
+				// 			}
+				// 		});
+				//
+				// 		// Mock the "action" query param
+				// 		jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+				// 			if (param === 'action') {
+				// 				return ActionsType.REPLY;
+				// 			}
+				// 			return undefined;
+				// 		});
+				//
+				// 		// Mock the board context
+				// 		mockedUseBoard.mockImplementation(() => ({
+				// 			url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY}`,
+				// 			context: { mailId: msg.id, folderId: FOLDERS.INBOX },
+				// 			title: ''
+				// 		}));
+				//
+				// 		const props = {
+				// 			setHeader: noop
+				// 		};
+				//
+				// 		// Create and wait for the component to be rendered
+				// 		setupTest(<EditView {...props} />, { store });
+				// 		await waitFor(
+				// 			() => {
+				// 				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				// 			},
+				//
+				// 			{ timeout: 10000 }
+				// 		);
+				//
+				// 		expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();
+				// 		expect(screen.getByTestId('from-identity-address')).toHaveTextContent(
+				// 			defaultIdentity._attrs.zimbraPrefFromAddress
+				// 		);
+				// 	});
+				//
+				// 	// test('shared account identity is selected when message is open from a shared account\'s folder', {} => {
+				// 	//
+				// 	// });
+			});
+		});
 	});
 });

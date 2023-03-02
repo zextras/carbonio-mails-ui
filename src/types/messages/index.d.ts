@@ -50,7 +50,7 @@ export type MailMessagePart = {
 	parts?: Array<MailMessagePart>;
 	ci?: string;
 	cd?: string;
-	disposition: 'inline' | 'attachment';
+	disposition?: 'inline' | 'attachment';
 };
 
 export type AttachmentPart = {

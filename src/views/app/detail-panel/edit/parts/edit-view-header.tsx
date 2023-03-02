@@ -551,6 +551,7 @@ const EditViewHeader: FC<PropType> = ({
 								forceOpen={open}
 								onClose={onFromDropdownClose}
 								selectedBackgroundColor="highlight"
+								data-testid="from-dropdown"
 							>
 								<Row
 									onClick={toggleOpen}
@@ -567,10 +568,10 @@ const EditViewHeader: FC<PropType> = ({
 										height="fit"
 										padding={{ left: 'medium', right: 'medium' }}
 									>
-										<Text weight="bold">
+										<Text weight="bold" data-testid="from-identity-display-name">
 											{from?.displayName || from?.fullName || from?.address}
 										</Text>
-										<Text color="gray1" size="small">
+										<Text color="gray1" size="small" data-testid="from-identity-address">
 											{from?.address}
 										</Text>
 									</Container>
