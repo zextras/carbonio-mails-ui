@@ -74,7 +74,9 @@ const SettingsView = () => (
 const SearchView = (props) => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
-			<LazySearchView {...props} />
+			<ExtraWindowsManager>
+				<LazySearchView {...props} />
+			</ExtraWindowsManager>
 		</StoreProvider>
 	</Suspense>
 );
