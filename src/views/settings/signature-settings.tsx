@@ -7,7 +7,6 @@ import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement } fr
 import {
 	Container,
 	FormSubSection,
-	Select,
 	TextWithTooltip,
 	Input,
 	List,
@@ -19,13 +18,13 @@ import {
 import styled from 'styled-components';
 
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import { map, escape, unescape, reject, find, concat } from 'lodash';
+import { map, unescape, reject, concat } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
-import Heading from './components/settings-heading';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
 import { SignatureSettingsPropsType, SignItemType } from '../../types';
+import SelectIdentitySignature from './components/select-identity-signature';
 
 const Signature = styled(Row)`
 	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
@@ -44,8 +43,8 @@ const EditorWrapper = styled.div`
 `;
 
 const SignatureSettings: FC<SignatureSettingsPropsType> = ({
-	settingsObj,
-	updateSettings,
+	updatedIdentities,
+	updateIdentities,
 	setDisabled,
 	signatures,
 	setSignatures,
@@ -109,20 +108,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		setCurrentSignature(newSignature);
 	};
 
-	// Gets the signatures by the given id. If "fallbackOnFirst" and if no
-	// signature is found it returns the first of the list
-	const getSignature = useCallback(
-		(id: string, fallbackOnFirst = false) => {
-			const result = find(signatures, ['id', id]);
-			if (!result && fallbackOnFirst && signatures.length > 0) {
-				return signatures[0];
-			}
-
-			return result;
-		},
-		[signatures]
-	);
-
 	// Create the fake signature for the "no signature"
 	const noSignature: SignItemType = useMemo(
 		() => ({
@@ -132,20 +117,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			id: NO_SIGNATURE_ID
 		}),
 		[]
-	);
-
-	// Get the selected signatures for the new message and for the replies
-	const [signatureNewMessage, signatureRepliesForwards] = useMemo(
-		() => [
-			getSignature(settingsObj.zimbraPrefDefaultSignatureId) ?? noSignature,
-			getSignature(String(settingsObj.zimbraPrefForwardReplySignatureId)) ?? noSignature
-		],
-		[
-			getSignature,
-			noSignature,
-			settingsObj.zimbraPrefDefaultSignatureId,
-			settingsObj.zimbraPrefForwardReplySignatureId
-		]
 	);
 
 	// Composes the SelectItem array for the signature selects
@@ -320,84 +291,21 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					</Container>
 				</Container>
 			</FormSubSection>
-			<FormSubSection label={sectionTitleSetSignatures.label} id={sectionTitleSetSignatures.id}>
+			<FormSubSection
+				label={sectionTitleSetSignatures.label}
+				id={sectionTitleSetSignatures.id}
+				padding={{ all: 'large' }}
+			>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-					<Heading title={t('title.new_messages', 'New Messages')} />
-					{signaturesLoaded && (
-						<Select
-							items={signatureSelectItems}
-							label={t('label.select_signature', 'Select a signature')}
-							selection={
-								{
-									label: signatureNewMessage?.label,
-									value: signatureNewMessage?.id
-								} as SelectItem
-							}
-							onChange={(selectedId: any): void => {
-								if (selectedId === signatureNewMessage?.id) {
-									return;
-								}
-								updateSettings({
-									target: {
-										name: 'zimbraPrefDefaultSignatureId',
-										value: selectedId
-									}
-								});
-							}}
-						/>
-					)}
-					{signatureNewMessage?.description && (
-						<Container
-							crossAlignment="baseline"
-							padding={{ all: 'large' }}
-							background="gray5"
-							dangerouslySetInnerHTML={{ __html: signatureNewMessage.description }}
-						/>
-					)}
-				</Container>
-				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-					<Heading title={t('title.replies_forwards', 'Replies & Forwards')} />
-					{signaturesLoaded && (
-						<Select
-							items={concat(
-								{
-									label: t('label.no_signature', NO_SIGNATURE_LABEL),
-									value: NO_SIGNATURE_ID
-								},
-								signatures.map((signature) => ({
-									label: signature.label,
-									value: signature.id
-								}))
-							)}
-							label={t('label.select_signature', 'Select a signature')}
-							selection={
-								{
-									label: signatureRepliesForwards?.label,
-									value: signatureRepliesForwards?.id
-								} as SelectItem
-							}
-							onChange={(selectedId: any): void => {
-								if (selectedId === signatureRepliesForwards?.id) {
-									return;
-								}
-
-								updateSettings({
-									target: {
-										name: 'zimbraPrefForwardReplySignatureId',
-										value: selectedId
-									}
-								});
-							}}
-						/>
-					)}
-					{signatureRepliesForwards?.description && (
-						<Container
-							crossAlignment="baseline"
-							padding={{ all: 'large' }}
-							background="gray5"
-							dangerouslySetInnerHTML={{ __html: signatureRepliesForwards.description }}
-						/>
-					)}
+					{signaturesLoaded &&
+						map(updatedIdentities, (acc) => (
+							<SelectIdentitySignature
+								acc={acc}
+								signatures={signatures}
+								signatureSelectItems={signatureSelectItems}
+								updateIdentities={updateIdentities}
+							/>
+						))}
 				</Container>
 			</FormSubSection>
 		</>

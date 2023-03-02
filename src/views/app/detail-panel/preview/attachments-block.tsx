@@ -15,22 +15,43 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getAction, getBridgedFunctions, soapFetch, t } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	getIntegratedFunction,
+	soapFetch,
+	t
+} from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, find, map, noop } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { errorPage } from '../../../../commons/preview-eml/error-page';
-import { getEMLContent } from '../../../../commons/preview-eml/get-eml-content';
 import { getFileExtension } from '../../../../commons/utilities';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
-import { AttachmentPart, AttachmentType, MailMessage } from '../../../../types';
+import { AttachmentPart, AttachmentType, MailMessage, OpenEmlPreviewType } from '../../../../types';
+import { useExtraWindow } from '../../extra-windows/use-extra-window';
 import DeleteAttachmentModal from './delete-attachment-modal';
 import { humanFileSize, previewType } from './file-preview';
-import { getAttachmentIconColors, getAttachmentsDownloadLink, getAttachmentsLink } from './utils';
+import {
+	getAttachmentIconColors,
+	getAttachmentsDownloadLink,
+	getAttachmentsLink,
+	getLocationOrigin
+} from './utils';
+
+/**
+ * The BE currently doesn't support the preview of PDF attachments
+ * whose part name consists in more than 2 numbers (which is common
+ * for attachments nested inside an EML. Example: 1.3.2)
+ *
+ * As a workaround we intercept those cases and handle them
+ * with the browser pdf preview
+ *
+ * TODO remove it when IRIS-3918 will be implemented
+ */
+const UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN = /\d+\.\d+\../;
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
@@ -84,13 +105,15 @@ const Attachment: FC<AttachmentType> = ({
 	link,
 	downloadlink,
 	message,
+	isExternalMessage = false,
 	part,
 	iconColors,
-	att
+	att,
+	openEmlPreview
 }) => {
 	const { createPreview } = useContext(PreviewsManagerContext);
+	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
-	const theme = useTheme();
 
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
@@ -105,6 +128,21 @@ const Attachment: FC<AttachmentType> = ({
 			inputRef.current.click();
 		}
 	}, [inputRef]);
+
+	// TODO remove it when IRIS-3918 will be implemented
+	const browserPdfPreview = useCallback(() => {
+		if (inputRef2.current) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			inputRef2.current.click();
+		}
+	}, [inputRef2]);
+
+	const isEML = extension === 'EML';
+
+	const actionTooltipText = isEML
+		? t('action.click_open', 'Click to open')
+		: t('action.click_preview', 'Click to preview');
 
 	const onDeleteAttachment = useCallback(() => {
 		dispatch(deleteAttachments({ id: message.id, attachments: [part] }));
@@ -188,38 +226,27 @@ const Attachment: FC<AttachmentType> = ({
 		[confirmAction, isAValidDestination]
 	);
 
-	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
-		'carbonio_files_action',
-		'files-select-nodes',
-		actionTarget
-	);
+	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const showEMLPreview = useCallback(() => {
-		const conversations = map([message], (msg) => ({
-			conversation: msg.conversation,
-			subject: msg.subject
-		}));
-
-		const printWindow = window.open('', '_blank');
 		getMsgsForPrint({ ids: [message.id], part: att?.name })
 			.then((res) => {
-				const content = getEMLContent({
-					messages: res,
-					conversations,
-					isMsg: true,
-					theme
-				});
-				if (printWindow && printWindow.top && printWindow.document) {
-					printWindow.top.document.title = 'Carbonio';
-					printWindow.document.write(content);
-					printWindow.focus();
-				}
+				openEmlPreview && openEmlPreview(message.id, att?.name, res[0]);
 			})
 			.catch(() => {
-				const errorContent = errorPage;
-				printWindow && printWindow.document.write(errorContent);
+				getBridgedFunctions()?.createSnackbar({
+					key: `eml-attachment-failed-download`,
+					replace: true,
+					type: 'error',
+					hideButton: true,
+					label: t(
+						'message.snackbar.eml_download_failed',
+						'The EML attachment could not be downloaded. Try later'
+					),
+					autoHideTimeout: 3000
+				});
 			});
-	}, [att?.name, message, theme]);
+	}, [att?.name, message.id, openEmlPreview]);
 
 	const preview = useCallback(
 		(ev) => {
@@ -227,32 +254,37 @@ const Attachment: FC<AttachmentType> = ({
 			const pType = previewType(att.contentType);
 
 			if (pType) {
-				createPreview({
-					src: link,
-					previewType: pType,
-					/** Left Action for the preview */
-					closeAction: {
-						id: 'close',
-						icon: 'ArrowBack',
-						tooltipLabel: t('preview.close', 'Close Preview')
-					},
-					/** Actions for the preview */
-					actions: [
-						{
-							icon: 'DownloadOutline',
-							tooltipLabel: t('label.download', 'Download'),
-							id: 'DownloadOutline',
-							onClick: downloadAttachment
-						}
-					],
-					/** Extension of the file, shown as info */
-					extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
-					/** Name of the file, shown as info */
-					filename: att.filename,
-					/** Size of the file, shown as info */
-					size: humanFileSize(att.size)
-				});
-			} else if (extension === 'EML') {
+				// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
+				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
+					browserPdfPreview();
+				} else {
+					createPreview({
+						src: link,
+						previewType: pType,
+						/** Left Action for the preview */
+						closeAction: {
+							id: 'close',
+							icon: 'ArrowBack',
+							tooltipLabel: t('preview.close', 'Close Preview')
+						},
+						/** Actions for the preview */
+						actions: [
+							{
+								icon: 'DownloadOutline',
+								tooltipLabel: t('label.download', 'Download'),
+								id: 'DownloadOutline',
+								onClick: downloadAttachment
+							}
+						],
+						/** Extension of the file, shown as info */
+						extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
+						/** Name of the file, shown as info */
+						filename: att.filename,
+						/** Size of the file, shown as info */
+						size: humanFileSize(att.size)
+					});
+				}
+			} else if (isEML) {
 				showEMLPreview();
 			} else if (inputRef2.current) {
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -264,10 +296,12 @@ const Attachment: FC<AttachmentType> = ({
 		[
 			att.contentType,
 			att.filename,
+			att.name,
 			att.size,
+			browserPdfPreview,
 			createPreview,
 			downloadAttachment,
-			extension,
+			isEML,
 			link,
 			showEMLPreview
 		]
@@ -281,7 +315,7 @@ const Attachment: FC<AttachmentType> = ({
 			background="gray3"
 			data-testid={`attachment-container-${filename}`}
 		>
-			<Tooltip key={`${message.id}-Preview`} label={t('action.click_preview', 'Click to preview')}>
+			<Tooltip key={`${message.id}-Preview`} label={actionTooltipText}>
 				<Row
 					padding={{ all: 'small' }}
 					mainAlignment="flex-start"
@@ -312,40 +346,54 @@ const Attachment: FC<AttachmentType> = ({
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
 					{isUploadIntegrationAvailable && (
-						<Tooltip key={uploadIntegration?.id} label={t('label.save_to_files', 'Save to Files')}>
+						<Tooltip
+							key={`${message.id}-DriveOutline`}
+							label={
+								isInsideExtraWindow
+									? t(
+											'label.extra_window.save_to_files_disabled',
+											'Files’ attachments saving is available only from the main tab'
+									  )
+									: t('label.save_to_files', 'Save to Files')
+							}
+						>
 							<IconButton
 								size="medium"
-								icon={uploadIntegration?.icon ?? ''}
-								onClick={uploadIntegration?.click ?? noop}
+								icon="DriveOutline"
+								onClick={(): void => {
+									uploadIntegration && uploadIntegration(actionTarget);
+								}}
+								disabled={isInsideExtraWindow}
 							/>
 						</Tooltip>
 					)}
 
-					{/* <FilePreview att={att} link={link} /> */}
 					<Padding right="small">
 						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
 							<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
 						</Tooltip>
 					</Padding>
-					<Padding right="small">
-						<Tooltip
-							key={`${message.id}-DeletePermanentlyOutline`}
-							label={t('label.delete', 'Delete')}
-						>
-							<IconButton
-								size="medium"
-								icon="DeletePermanentlyOutline"
-								onClick={removeAttachment}
-							/>
-						</Tooltip>
-					</Padding>
+					{!isExternalMessage && (
+						<Padding right="small">
+							<Tooltip
+								key={`${message.id}-DeletePermanentlyOutline`}
+								label={t('label.delete', 'Delete')}
+							>
+								<IconButton
+									size="medium"
+									icon="DeletePermanentlyOutline"
+									onClick={removeAttachment}
+								/>
+							</Tooltip>
+						</Padding>
+					)}
 				</AttachmentHoverBarContainer>
 			</Row>
 			<AttachmentLink
 				rel="noopener"
 				ref={inputRef2}
 				target="_blank"
-				href={`/service/home/~/?auth=co&id=${message.id}&part=${part}`}
+				href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${message.id}&part=${part}`}
 			/>
 			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
 		</AttachmentContainer>
@@ -360,7 +408,11 @@ const copyToFiles = (att: AttachmentPart, message: MailMessage, nodes: any): Pro
 		destinationFolderId: nodes?.[0]?.id
 	});
 
-const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactElement => {
+const AttachmentsBlock: FC<{
+	message: MailMessage;
+	isExternalMessage?: boolean;
+	openEmlPreview?: OpenEmlPreviewType;
+}> = ({ message, isExternalMessage = false, openEmlPreview }): ReactElement => {
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(
 		() => filter(message?.attachments, { cd: 'attachment' }),
@@ -443,14 +495,56 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 		[confirmAction, isAValidDestination]
 	);
 
-	const [uploadIntegration, isUploadIntegrationAvailable] = getAction(
-		'carbonio_files_action',
-		'files-select-nodes',
-		actionTarget
-	);
+	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
+
+	const { isInsideExtraWindow } = useExtraWindow();
+
+	const getSaveToFilesLink = useCallback((): ReactElement | null => {
+		if (!isUploadIntegrationAvailable) {
+			return null;
+		}
+
+		const link = (
+			<Link
+				size="medium"
+				onClick={(): void => {
+					uploadIntegration && uploadIntegration(actionTarget);
+				}}
+				style={{ paddingLeft: '0.5rem' }}
+				disabled={isInsideExtraWindow}
+			>
+				{t('label.save_to_files', 'Save to Files')}
+			</Link>
+		);
+
+		if (!isInsideExtraWindow) {
+			return link;
+		}
+		return (
+			<Tooltip
+				key={`${message.id}-files-saving-disabled`}
+				label={
+					isInsideExtraWindow
+						? t(
+								'label.extra_window.save_to_files_disabled',
+								'Files’ attachments saving is available only from the main tab'
+						  )
+						: ''
+				}
+			>
+				{link}
+			</Tooltip>
+		);
+	}, [
+		actionTarget,
+		isInsideExtraWindow,
+		isUploadIntegrationAvailable,
+		message.id,
+		uploadIntegration
+	]);
 
 	return attachmentsCount > 0 ? (
-		<Container crossAlignment="flex-start" padding={{ horizontal: 'medium' }}>
+		<Container crossAlignment="flex-start">
 			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
 				{map(expanded ? attachments : attachments?.slice(0, 2), (att, index) => (
 					<Attachment
@@ -469,9 +563,11 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 							attachments: [att.name]
 						})}
 						message={message}
+						isExternalMessage={isExternalMessage}
 						part={att?.name ?? ''}
 						iconColors={getAttachmentIconColors({ attachments, theme })}
 						att={att}
+						openEmlPreview={openEmlPreview}
 					/>
 				))}
 			</Container>
@@ -518,22 +614,14 @@ const AttachmentsBlock: FC<{ message: MailMessage }> = ({ message }): ReactEleme
 						))}{' '}
 				</Padding>
 
-				<Link size="medium" href={actionsDownloadLink}>
+				<Link target="_blank" size="medium" href={actionsDownloadLink}>
 					{t('label.download', {
 						count: attachmentsCount,
 						defaultValue: 'Download',
 						defaultValue_plural: 'Download all'
 					})}
 				</Link>
-				{isUploadIntegrationAvailable && (
-					<Link
-						size="medium"
-						onClick={uploadIntegration && uploadIntegration.click}
-						style={{ paddingLeft: '0.5rem' }}
-					>
-						{t('label.save_to_files', 'Save to Files')}
-					</Link>
-				)}
+				{getSaveToFilesLink()}
 			</Row>
 		</Container>
 	) : (

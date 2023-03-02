@@ -4,6 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { MailMessage } from '../messages';
+
+type OpenEmlPreviewType = (
+	parentMessageId: string,
+	attachmentName: string,
+	emlMessage: MailMessage
+) => void;
+
 export type MailEditHeaderType = {
 	folderId: string | number;
 	header: string | undefined;
@@ -20,9 +28,11 @@ export type AttachmentType = {
 	link: string;
 	downloadlink: string;
 	message: MailMessage;
+	isExternalMessage?: boolean;
 	part: string;
 	iconColors: IconColors;
 	att: EditorAttachmentFiles;
+	openEmlPreview?: OpenEmlPreviewType;
 };
 
 export type PreviewPanelActionsType = {

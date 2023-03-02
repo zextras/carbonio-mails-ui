@@ -3,19 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, List, Padding, Text } from '@zextras/carbonio-design-system';
+import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
-import { find, map, reduce } from 'lodash';
+import { find, map, noop, reduce } from 'lodash';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { CustomList } from '../../../carbonio-ui-commons/components/list/list';
+import { CustomListItem } from '../../../carbonio-ui-commons/components/list/list-item';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useMessageList } from '../../../hooks/use-message-list';
 import { useSelection } from '../../../hooks/useSelection';
 import { search } from '../../../store/actions';
 import { selectConversationStatus } from '../../../store/conversations-slice';
 import { selectFolderMsgSearchStatus } from '../../../store/messages-slice';
-import { AppContext, MailMessage } from '../../../types';
+import { AppContext, IncompleteMessage, MessageListItemProps } from '../../../types';
 import SelectMessagesPanelActions from '../../../ui-actions/select-panel-action-message';
 import ShimmerList from '../../search/shimmer-list';
 import { Breadcrumbs } from './breadcrumbs';
@@ -30,12 +33,12 @@ const DragImageContainer = styled.div`
 `;
 
 const DragItems: FC<{
-	messages: Partial<MailMessage>[];
-	draggedIds: Array<string> | undefined;
+	messages: IncompleteMessage[];
+	draggedIds: Record<string, boolean>;
 }> = ({ messages, draggedIds }) => {
-	const items = reduce(
+	const items = reduce<typeof draggedIds, MessageListItemProps['item'][]>(
 		draggedIds,
-		(acc: Partial<MailMessage>[], v, k) => {
+		(acc, v, k) => {
 			const obj = find(messages, ['id', k]);
 			if (obj) {
 				return [...acc, obj];
@@ -48,9 +51,19 @@ const DragItems: FC<{
 	return (
 		<>
 			{map(items, (item) => (
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				<MessageListItem item={item} key={item.id} draggedIds={draggedIds} />
+				<MessageListItem
+					item={item}
+					key={item.id}
+					draggedIds={draggedIds}
+					folderId={''}
+					isConvChildren={false}
+					selected={false}
+					selectedItems={{}}
+					selecting={false}
+					setDraggedIds={noop}
+					setIsDragging={noop}
+					visible={false}
+				/>
 			))}
 		</>
 	);
@@ -61,15 +74,24 @@ const MessageList: FC = () => {
 	const activeFolder = history?.location?.pathname?.split?.('/')?.[3];
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const folder = useFolder(activeFolder);
-	const dispatch = useDispatch();
-	const { setCount } = useAppContext<AppContext>();
+	const dispatch = useAppDispatch();
+	const { setCount, count } = useAppContext<AppContext>();
 	const [isDragging, setIsDragging] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
-	const [draggedIds, setDraggedIds] = useState();
+	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 	const dragImageRef = useRef(null);
-	const status = useSelector(selectConversationStatus);
-	const { selected, isSelecting, toggle, deselectAll } = useSelection(folderId, setCount);
+	const status = useAppSelector(selectConversationStatus);
 	const messages = useMessageList();
+	const {
+		selected,
+		toggle,
+		deselectAll,
+		isSelectModeOn,
+		setIsSelectModeOn,
+		selectAll,
+		isAllSelected,
+		selectAllModeOff
+	} = useSelection(folderId, setCount, count, messages);
 
 	const messageListStatus = useSelector(selectFolderMsgSearchStatus(folderId));
 
@@ -79,14 +101,12 @@ const MessageList: FC = () => {
 			if (hasMore && !isLoading) {
 				setIsLoading(true);
 				const dateOrNull = date ? new Date(date) : null;
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				dispatch(search({ folderId, before: dateOrNull, limit: 50, types: 'message' })).then(() => {
 					setIsLoading(false);
 				});
 			}
 		},
-		[hasMore, isLoading, dispatch, folderId]
+		[isLoading, hasMore, dispatch, folderId]
 	);
 
 	const displayerTitle = useMemo(() => {
@@ -112,45 +132,73 @@ const MessageList: FC = () => {
 		setDraggedIds(selected);
 	}, [selected]);
 
+	const listItems = useMemo(
+		() =>
+			map(messages, (message) => {
+				const isSelected = selected[message.id];
+				const isActive = itemId === message.id;
+				return (
+					<CustomListItem
+						key={message.id}
+						selected={isSelected}
+						active={isActive}
+						background={message.read ? 'gray6' : 'gray5'}
+					>
+						{(isVisible: boolean): JSX.Element => (
+							<MessageListItem
+								item={message}
+								folderId={folderId}
+								selected={isSelected}
+								selecting={isSelectModeOn}
+								draggedIds={draggedIds}
+								setDraggedIds={setDraggedIds}
+								setIsDragging={setIsDragging}
+								selectedItems={selected}
+								visible={isVisible}
+								isConvChildren={false}
+								toggle={toggle}
+								dragImageRef={dragImageRef}
+								active={isActive}
+							/>
+						)}
+					</CustomListItem>
+				);
+			}),
+		[draggedIds, folderId, isSelectModeOn, itemId, messages, selected, toggle]
+	);
+
 	return (
 		<>
-			{isSelecting ? (
+			{isSelectModeOn ? (
 				<SelectMessagesPanelActions
 					messages={messages}
 					selectedIds={selected}
 					folderId={folderId}
 					deselectAll={deselectAll}
+					selectAll={selectAll}
+					isAllSelected={isAllSelected}
+					selectAllModeOff={selectAllModeOff}
 				/>
 			) : (
 				<Breadcrumbs
 					folderId={folderId}
-					folderPath={folder?.path}
+					folderPath={folder?.absFolderPath}
 					itemsCount={folder?.itemsCount}
+					isSelectModeOn={isSelectModeOn}
+					setIsSelectModeOn={setIsSelectModeOn}
 				/>
 			)}
 			{messageListStatus === 'complete' ? (
 				<>
 					{messages?.length > 0 ? (
-						<List
-							style={{ paddingBottom: '0.25rem' }}
-							background="gray6"
-							selected={selected}
-							active={itemId}
-							items={messages}
-							itemProps={{
-								toggle,
-								folderId,
-								setDraggedIds,
-								setIsDragging,
-								selectedItems: selected,
-								dragImageRef
+						<CustomList
+							onListBottom={(): void => {
+								loadMore(messages?.[messages.length - 1]?.date);
 							}}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							ItemComponent={MessageListItem}
-							onListBottom={(): void => loadMore(messages?.[messages.length - 1]?.date)}
 							data-testid={`message-list-${folderId}`}
-						/>
+						>
+							{listItems}
+						</CustomList>
 					) : (
 						<Container>
 							<Padding top="medium">

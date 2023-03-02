@@ -33,7 +33,6 @@ export type Contact = {
 
 export type SidebarComponentProps = {
 	accordions: Array<AccordionFolder>;
-	openIds: Array<string>;
 };
 
 export type SidebarProps = {
@@ -100,25 +99,6 @@ export type OnDropActionProps = {
 	event: React.DragEvent;
 	type: string;
 	data: DataProps;
-};
-
-export type DeleteTagModalPropsType = {
-	onClose: () => void;
-	tag?: {
-		CustomComponent?: ComponentType;
-		active: boolean;
-		color?: number;
-		id: string;
-		label: string;
-		name: string;
-		open: boolean;
-	};
-};
-
-export type CreateUpdateTagModalPropType = {
-	onClose: () => void;
-	editMode?: boolean;
-	tag?: ItemType;
 };
 
 export type ShareRevokeModalType = {

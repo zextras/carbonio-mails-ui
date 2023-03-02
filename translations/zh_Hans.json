@@ -364,7 +364,8 @@
         "not_in_list": "{{name}} - 不在您的标签列表中",
         "enter_name": "输入名称",
         "mark_read_message_immediately": "立即将阅读窗格中的邮件标记为已读",
-        "no_signature": "无签名"
+        "no_signature": "无签名",
+        "mark_read_message_manually": "点击此图标以手动标记为已读"
     },
     "search": {
         "unread": "未读",
@@ -426,7 +427,10 @@
             "visualization_options": "可视化选项",
             "unsend_time": "设置未发送时间",
             "mark_reading_panel": "标记为已读",
-            "default": "默认"
+            "default": "默认",
+            "not_changed_anything": "无需更改",
+            "mark_manually": "手动标记",
+            "filter_name_required": "筛选条件名称为必要信息"
         },
         "msg_from_optn": {
             "discard": "自动丢弃消息",
@@ -556,7 +560,12 @@
             "no_delay": "无延迟",
             "second": "{{count}} 秒"
         },
-        "address": "地址"
+        "address": "地址",
+        "tag_name_required": "填写“标签”字段以补全“标记为”操作。",
+        "remove_action": "移除此操作",
+        "folder_path_required": "选择目标文件夹以补全“移动至文件夹”操作。",
+        "address_required": "填写“地址”字段以补全“重定向至地址”操作。",
+        "add_action": "新增操作"
     },
     "snackbar": {
         "folder_shared": "文件夹已共享",

@@ -38,7 +38,7 @@ const DeleteAttachmentModal: FC<DeleteAttachmentModalPropsType> = ({
 				<Text overflow="break-word">
 					{t(
 						'message.delete_attachment_message1',
-						'Your attachment will be definetly deleted from Carbonio.'
+						'Your attachment will be permanently deleted from Carbonio.'
 					)}
 				</Text>
 				<Text overflow="break-word" style={{ textAlign: 'left' }}>

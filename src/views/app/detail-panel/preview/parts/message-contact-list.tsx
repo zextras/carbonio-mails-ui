@@ -29,10 +29,10 @@ import { selectFolders } from '../../../../../store/folders-slice';
 import ContactNames from './contact-names';
 import { MailMessage, TextReadValuesProps } from '../../../../../types';
 
-const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
-	message,
-	folderId
-}): ReactElement => {
+const MessageContactList: FC<{
+	message: MailMessage;
+	folderId: string;
+}> = ({ message, folderId }): ReactElement => {
 	const [open, setOpen] = useState(false);
 
 	const toggleOpen = useCallback((e) => {
@@ -63,7 +63,7 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 	}, [message.read]);
 
 	const messageFolder = useMemo(
-		() => folders[message.parent.includes(':') ? folderId : message.parent],
+		() => folders[message.parent?.includes(':') ? folderId : message.parent],
 		[folderId, folders, message.parent]
 	);
 	const labelTo = useMemo(() => `${t('label.to', 'To')}: `, []);
@@ -71,7 +71,7 @@ const MessageContactList: FC<{ message: MailMessage; folderId: string }> = ({
 	const labelBcc = useMemo(() => `${t('label.bcc', 'BCC')}: `, []);
 
 	const showBadge = useMemo(
-		() => messageFolder?.name && messageFolder.id !== folderId,
+		() => messageFolder?.name && messageFolder?.id !== folderId,
 		[folderId, messageFolder]
 	);
 	const [isOverflow, setIsOverflow] = useState(false);

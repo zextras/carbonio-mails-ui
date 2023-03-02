@@ -18,10 +18,10 @@ import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { find } from 'lodash';
+import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import ColorSelect from './color-select';
 import { ResponseActionsProps } from '../../../types';
 import { accept, decline } from './share-calendar-actions';
-import { FOLDER_VIEW } from '../../../constants';
 
 const ResponseActions: FC<ResponseActionsProps> = ({
 	dispatch,

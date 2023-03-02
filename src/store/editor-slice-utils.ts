@@ -53,8 +53,8 @@ export const emptyEditor = (
 		composeMailBodyWithSignature(signatureNewMessageValue, false),
 		composeMailBodyWithSignature(signatureNewMessageValue, true)
 	];
-	const isRichText = settings?.prefs?.zimbraPrefComposeFormat === 'html';
 
+	const isRichText = settings?.prefs?.zimbraPrefComposeFormat === 'html';
 	return {
 		richText: isRichText,
 		text: textWithSignatureNewMessage,
