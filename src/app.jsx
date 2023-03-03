@@ -27,6 +27,7 @@ import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
 import { StoreProvider } from './store/redux';
 import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
+import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-manager';
 
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
@@ -49,7 +50,9 @@ const LazySidebarView = lazy(() =>
 const AppView = () => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
-			<LazyAppView />
+			<ExtraWindowsManager>
+				<LazyAppView />
+			</ExtraWindowsManager>
 		</StoreProvider>
 	</Suspense>
 );
@@ -71,7 +74,9 @@ const SettingsView = () => (
 const SearchView = (props) => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
-			<LazySearchView {...props} />
+			<ExtraWindowsManager>
+				<LazySearchView {...props} />
+			</ExtraWindowsManager>
 		</StoreProvider>
 	</Suspense>
 );

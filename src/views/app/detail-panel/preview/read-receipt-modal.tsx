@@ -23,7 +23,7 @@ type CompProps = {
 	open: boolean;
 	onClose: () => void;
 	message: MailMessage;
-	readReceiptSetting: string | undefined | number;
+	readReceiptSetting: string | undefined | number | Array<string | number>;
 };
 
 const ReadReceiptModal: FC<CompProps> = ({

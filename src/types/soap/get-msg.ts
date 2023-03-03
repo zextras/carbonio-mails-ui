@@ -9,6 +9,7 @@ import { ZimbraRequest } from './zimbra-request';
 export type GetMsgRequest = ZimbraRequest & {
 	m: {
 		id: string;
+		part?: string;
 		html: 0 | 1;
 		needExp: 0 | 1;
 	};
