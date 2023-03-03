@@ -96,7 +96,7 @@
         "advanced_filters_plural": "Filtros avançados",
         "create": "Criar",
         "delete": "Apagar",
-        "delete_permanently": "Excluir permanentemente",
+        "delete_permanently": "Excluir",
         "move": "Mover",
         "single_advanced_filter": "Filtros avançados",
         "add": "Adicionar",
@@ -251,7 +251,9 @@
         "send_scheduled": "Enviar Programado",
         "download_and_delete": "Baixar e Excluir",
         "not_in_list": "{{name}} - Não está na sua lista de etiquetas",
-        "no_signature": "Sem assinatura"
+        "no_signature": "Sem assinatura",
+        "mark_read_message_immediately": "Marcar a mensagen selecionada como lida imediatamente",
+        "mark_read_message_manually": "Marcar manualmente como lida, clicando neste ícone"
     },
     "title": {
         "new_messages": "Novas mensagens",
@@ -335,7 +337,7 @@
         },
         "new_email": "Novo e-mail",
         "no_content": "Essa mensagem não possui conteúdo de texto",
-        "permanent_delete_title": "Tem certeza que deseja excluir permanentemente este elemento?",
+        "permanent_delete_title": "Tem certeza que deseja excluir este elemento?",
         "permanent_delete_body": "Se você excluir permanentemente este elemento, você não poderá mais recuperá-lo. Continuar?",
         "powered_by": "powered by",
         "check_and_try_again": "Por favor, verifique o Carbonio e tente novamente",
@@ -401,7 +403,10 @@
             "visualization_options": "Opções de visualização",
             "unsend_time": "Definir tempo para cancelar o envio",
             "mark_reading_panel": "Marcar como lida",
-            "default": "Padrão"
+            "default": "Padrão",
+            "filter_name_required": "O nome do filtro é necessário",
+            "mark_manually": "Marcar manualmente",
+            "not_changed_anything": "Nenhuma alteração foi feita"
         },
         "msg_from_optn": {
             "discard": "Descartar mensagem automaticamente",
@@ -530,7 +535,12 @@
             "second": "{{count}} segundo",
             "second_plural": "{{count}} segundos"
         },
-        "address": "Endereço"
+        "address": "Endereço",
+        "address_required": "Preencha o campo \"Endereço\" para completar a ação \"Redirecionar para Endereço\".",
+        "tag_name_required": "Preencha o campo \"Etiqueta\" a fim de completar a ação \"Etiquetar com\".",
+        "folder_path_required": "Selecione uma pasta de destino a fim de completar a ação \" Mover para pasta\".",
+        "add_action": "Adicionar nova ação",
+        "remove_action": "Remover esta ação"
     },
     "composer": {
         "attachment": {

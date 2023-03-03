@@ -71,7 +71,7 @@
         "bcc": "Bcc",
         "calendar_color": "Warna item",
         "cc": "Cc",
-        "edit_access": "Edit akses {{name}}",
+        "edit_access": "Edit akses",
         "edit_folder_properties": "Edit properti {{name}}",
         "draft_folder": "[DRAF]",
         "from": "Dari",
@@ -86,7 +86,7 @@
         "revoke": "Batalkan",
         "revoke_access_without_notification": "Batalkan akses tanpa mengirim pemberitahuan",
         "revoke_access_tooltip": "Batalkan akses dengan mengirim pemberitahuan standar",
-        "revoke_share": "Batalkan berbagi {{title}}",
+        "revoke_share": "Hapus berbagi",
         "role": "Peran: ",
         "select_folder": "Pilih folder",
         "send_notification": "Kirim pesan pemberitahuan ke",
@@ -262,7 +262,9 @@
         "download_and_delete": "Unduh dan Hapus",
         "invalid_query": "Tidak dapat mengurai kueri pencarian. Hapus dan coba lagi",
         "not_in_list": "{{name}} - Tidak ada di daftar tag Anda",
-        "no_signature": "Tidak ada tanda tangan"
+        "no_signature": "Tidak ada tanda tangan",
+        "mark_read_message_manually": "Tandai sebaca telah dibaca secara manual dengan mengklik ikon ini",
+        "mark_read_message_immediately": "Tandai pesan di penampil sebagai langsung dibaca"
     },
     "messages": {
         "snackbar": {
@@ -355,7 +357,7 @@
         "options": {
             "share_calendar_role": {
                 "admin": "Admin",
-                "none": "Tidak ada",
+                "none": "Tidak Ada",
                 "manager": "Pengelola",
                 "viewer": "Pemirsa"
             },
@@ -393,7 +395,11 @@
             "set_message_color": "Atur warna pesan dan percakapan menurut warna tag.",
             "visualization_options": "Opsi Visualisasi",
             "unsend_time": "Atur waktu belum kirim",
-            "default": "Default"
+            "default": "Default",
+            "mark_reading_panel": "Tandai sebagai dibaca",
+            "not_changed_anything": "Tidak membuat perubahan apa pun",
+            "mark_manually": "Tandai Secara Manual",
+            "filter_name_required": "Nama filter wajib diisi"
         },
         "msg_from_optn": {
             "discard": "Hapus pesan secara otomatis",
@@ -518,7 +524,12 @@
             "no_delay": "Tidak ada penundaan",
             "second": "{{count}} detik"
         },
-        "address": "Alamat"
+        "address": "Alamat",
+        "tag_name_required": "Isi kolom \"Tandai\" untuk menyelesaikan tindakan \"Tandai bersama\".",
+        "remove_action": "Hapus tindakan ini",
+        "folder_path_required": "Pilih folder tujuan untuk menyelesaikan tindakan \"Pindahkan ke folder\".",
+        "address_required": "Isi di kolom \"Alamat\" untuk menyelesaikan tindakan \"Alihkan ke Alamat\".",
+        "add_action": "Tambahkan tindakan baru"
     },
     "composer": {
         "attachment": {
