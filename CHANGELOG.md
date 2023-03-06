@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.1.2...v1.2.0) (2023-03-02)
+
+
+### Features
+
+* open EML attachments in a new tab  ([#310](https://github.com/zextras/carbonio-mails-ui/issues/310)) ([5321430](https://github.com/zextras/carbonio-mails-ui/commit/53214301c64ca936e2b7db046f6ac17fe2b153c9))
+* setting signatures for identities ([#299](https://github.com/zextras/carbonio-mails-ui/issues/299)) ([9cd49d7](https://github.com/zextras/carbonio-mails-ui/commit/9cd49d7e5a06e7737c92f7d9165ada1e7c4d1256))
+* updating files integration ([b083375](https://github.com/zextras/carbonio-mails-ui/commit/b083375f4f2cd71747ee4808be42ccf1693ec976))
+
+
+### Bug Fixes
+
+* clone the identity object ([59ddc03](https://github.com/zextras/carbonio-mails-ui/commit/59ddc03025fecbb4ec5d9cd78e9877f927a32689))
+* focus background not applied on list ([#298](https://github.com/zextras/carbonio-mails-ui/issues/298)) ([0cd4916](https://github.com/zextras/carbonio-mails-ui/commit/0cd4916c33b0e1727dbf1240c643542e3b869d0f))
+* proper redirection on notification popup click ([6dbf6ac](https://github.com/zextras/carbonio-mails-ui/commit/6dbf6acde88364206500ab4fa1cfb1d159b61ee2))
+* status label change in advance search ([2fe6fa1](https://github.com/zextras/carbonio-mails-ui/commit/2fe6fa153408712eedfd877b7443dbb8a1e51adb))
+
 ### [1.1.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.1.1...v1.1.2) (2023-02-10)
 
 
