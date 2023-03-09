@@ -533,6 +533,7 @@ export function replaceDuplicateDiv(text) {
 	}
 	return text;
 }
+
 function plainTextToHTML(str) {
 	if (str !== undefined && str !== null) {
 		return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
@@ -802,33 +803,6 @@ export function getQuotedText(body) {
 	return '';
 }
 
-// export function getLastMessageText(message, toSendOnly) {
-// 	const body = addClassToAnchor(replaceLinkToAnchor(getEmailBody(message)));
-// 	const parser = new DOMParser();
-// 	const htmlDoc = parser.parseFromString(body, 'text/html');
-// 	htmlDoc.getElementsByTagName('body')[0];
-// 	const htmlBody = htmlDoc.body.innerHTML;
-// 	if (/\s*--+\s*Original Message\s*--+\s*/gi.test(htmlBody)) {
-// 		const zimbraQuoted = htmlBody.split(/\s*--+\s*Original Message\s*--+\s*/gi);
-// 		htmlDoc.body.innerHTML = '';
-// 		const div = htmlDoc.createElement('div');
-// 		div.innerHTML = zimbraQuoted[0];
-// 		htmlDoc.body.appendChild(div);
-// 		return htmlDoc.body.innerHTML;
-// 	}
-// 	if (/\s*--+\s*Originalnachricht\s*--+\s*/gi.test(htmlBody)) {
-// 		const zimbraQuoted = htmlBody.split(/\s*--+\s*Originalnachricht\s*--+\s*/gi);
-// 		htmlDoc.body.innerHTML = '';
-// 		zimbraQuoted.splice(1).forEach((item) => {
-// 			const div = htmlDoc.createElement('div');
-// 			div.innerHTML = item;
-// 			htmlDoc.body.appendChild(div);
-// 		});
-// 		return htmlDoc.body.innerHTML;
-// 	}
-// 	return getEmailBody(message, toSendOnly);
-// }
-
 export function getOriginalQuotedText(body) {
 	if (body !== undefined && body !== null && body !== '') {
 		const parser = new DOMParser();
@@ -894,6 +868,7 @@ export function getOriginalQuotedText(body) {
 	return '';
 }
 
+// TODO move to commons submodule
 export function HTMLToPlainText(str) {
 	if (str !== undefined && str !== null) {
 		return str
@@ -1006,6 +981,7 @@ export function highLightWord(text, textWhiteSpace, regexp) {
 	return text;
 }
 
+// TODO move to commons submodule
 export function convertToHtml(str, quotePrefix, openTag, closeTag) {
 	openTag = openTag || '<blockquote>';
 	closeTag = closeTag || '</blockquote>';
@@ -1052,6 +1028,7 @@ export function convertToHtml(str, quotePrefix, openTag, closeTag) {
 	return str;
 }
 
+// TODO move to commons submodule
 export function htmlEncode(str, includeSpaces) {
 	if (!str) {
 		return '';
