@@ -5,7 +5,13 @@
  */
 import React, { FC, useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
-import { QueryChip, Spinner, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import {
+	replaceHistory,
+	Spinner,
+	t,
+	useUserSettings,
+	SEARCH_APP_ID
+} from '@zextras/carbonio-shell-ui';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { includes, map, reduce } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,8 +22,9 @@ import { findIconFromChip } from './parts/use-find-icon';
 import { search } from '../../store/actions/search';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
 import SearchMessageList from './search-message-list';
-import { FolderType, SearchProps, SearchResults } from '../../types';
+import { FolderType, SearchProps } from '../../types';
 import { selectFolders } from '../../store/folders-slice';
+import { MAILS_ROUTE } from '../../constants';
 
 const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -155,6 +162,10 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			setFilterCount(0);
 			setIsInvalidQuery(false);
 			dispatch(resetSearchResults());
+			replaceHistory({
+				path: MAILS_ROUTE,
+				route: SEARCH_APP_ID
+			});
 		}
 	}, [
 		query,
