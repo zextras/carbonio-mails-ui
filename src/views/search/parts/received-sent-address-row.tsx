@@ -127,14 +127,12 @@ const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): 
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						placeholder={t('label.from', 'From')}
-						// placeholder={t('label.received_from_address', 'Received from (address)')}
 						onChange={handleReceivedFromChange}
 						defaultValue={receivedFromAddress ?? []}
 					/>
 				) : (
 					<ChipInput
 						placeholder={t('label.from', 'From')}
-						// placeholder={t('label.received_from_address', 'Received from (address)')}
 						background={chipBackground}
 						value={receivedFromAddress}
 						onChange={recipOnChange}
@@ -151,14 +149,12 @@ const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): 
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						placeholder={t('label.to', 'To')}
-						// placeholder={t('label.sent_to_address', 'Sent to (address)')}
 						onChange={handleSendToChange}
 						defaultValue={sentFromAddress ?? []}
 					/>
 				) : (
 					<ChipInput
 						placeholder={t('label.to', 'To')}
-						// placeholder={t('label.sent_to_address', 'Sent to (address)')}
 						background={chipBackground}
 						value={sentFromAddress}
 						onChange={senderOnChange}
