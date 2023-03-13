@@ -13,12 +13,14 @@ import {
 	waitForElementToBeRemoved,
 	within
 } from '@testing-library/react';
-import { FOLDERS, getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
-import { find, identity, noop } from 'lodash';
+import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
+import { find, noop } from 'lodash';
 import React from 'react';
 import { rest } from 'msw';
+import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { ActionsType } from '../../../../../commons/utils';
 import { MAILS_ROUTE } from '../../../../../constants';
@@ -135,7 +137,7 @@ describe('Edit view', () => {
 			const toInputElement = within(toComponent).getByRole('textbox');
 			const subjectComponent = screen.getByTestId('subject');
 			const subjectInputElement = within(subjectComponent).getByRole('textbox');
-			const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
+			const editorTextareaElement = screen.getByTestId('MailPlainTextEditor') as HTMLInputElement;
 
 			// Check for the status of the "send" button to be disabled
 			expect(btnSend).toBeVisible();
@@ -157,25 +159,17 @@ describe('Edit view', () => {
 			await user.type(ccInputElement, ccAddress);
 
 			// Insert a subject
+			await user.click(subjectInputElement);
 			await user.type(subjectInputElement, subject);
 			act(() => {
 				jest.advanceTimersByTime(10000);
 			});
 
-			// Insert a text inside editor
-			await user.click(editorTextareaElement);
-			act(() => {
-				jest.advanceTimersByTime(10000);
-			});
-			await user.type(editorTextareaElement, body, {
-				skipClick: true,
-				initialSelectionStart: 0,
-				initialSelectionEnd: 0
-			});
+			// Workaround of typing problem in the preset textarea
+			await user.clear(editorTextareaElement);
 
-			act(() => {
-				jest.advanceTimersByTime(10000);
-			});
+			// Insert a text inside editor
+			await user.type(editorTextareaElement, body);
 
 			// Check for the status of the "send" button to be enabled
 			expect(btnSend).toBeEnabled();
@@ -340,6 +334,9 @@ describe('Edit view', () => {
 			act(() => {
 				jest.advanceTimersByTime(1000);
 			});
+
+			// Workaround of typing problem in the preset textarea
+			await user.clear(editorTextareaElement);
 
 			// Insert a text inside editor
 			await user.type(editorTextareaElement, body);
@@ -585,7 +582,8 @@ describe('Edit view', () => {
 
 			const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
 
-			// Reset the content of the "to" component and type the address
+			// Workaround of typing problem in the preset textarea
+			await user.clear(editorTextareaElement);
 
 			// Insert the text into the text area
 			await user.type(editorTextareaElement, body);
@@ -842,64 +840,130 @@ describe('Edit view', () => {
 						defaultIdentity._attrs.zimbraPrefFromAddress
 					);
 				});
+			});
 
-				// describe('priority by opening folder', () => {
-				// 	test('user primary account identity is selected when message is open from a primary account\'s folder', () => {
-				// 		// Get the default identity
-				// 		const defaultIdentity = find(getUserAccount().identities.identity, ['name', 'DEFAULT']);
-				// 		const sharedAccountIdentity =
+			describe('priority by opening folder', () => {
+				test("user primary account identity is selected when message, sent to a user account AND a shared account, is open from the primary account's folder", async () => {
+					// Get the identities
+					const mocksContext = getMocksContext();
+					const defaultIdentity = mocksContext.identities.primary.identity;
+					const sharedAccountIdentity = mocksContext.identities.sendAs[0].identity;
+
+					// Generate the message
+					const to = [
+						{
+							type: ParticipantRole.TO,
+							address: defaultIdentity.email,
+							fullName: defaultIdentity.fullName
+						},
+						{
+							type: ParticipantRole.TO,
+							address: sharedAccountIdentity.email,
+							fullName: sharedAccountIdentity.fullName
+						}
+					];
+					const msg = generateMessage({ to, folderId: FOLDERS.INBOX, isComplete: true });
+
+					const store = generateStore({
+						messages: {
+							searchedInFolder: {},
+							messages: {
+								[msg.id]: msg
+							},
+							status: {}
+						}
+					});
+
+					// Mock the "action" query param
+					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+						if (param === 'action') {
+							return ActionsType.REPLY;
+						}
+						return undefined;
+					});
+
+					// Mock the board context
+					mockedUseBoard.mockImplementation(() => ({
+						url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY}`,
+						context: { mailId: msg.id, folderId: FOLDERS.INBOX },
+						title: ''
+					}));
+
+					const props = {
+						setHeader: noop
+					};
+
+					// Create and wait for the component to be rendered
+					setupTest(<EditView {...props} />, { store });
+					expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
+
+					expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();
+					expect(screen.getByTestId('from-identity-address')).toHaveTextContent(
+						defaultIdentity.email
+					);
+				});
+
+				// test("shared account identity is selected when message, sent to a user account AND a shared account, is open from the shared account's folder", async () => {
+				// 	// Get the identities
+				// 	const mocksContext = getMocksContext();
+				// 	const defaultIdentity = mocksContext.identities.primary.identity;
+				// 	const sharedAccountIdentity = mocksContext.identities.sendAs[0].identity;
 				//
-				// 		// Generate the message
-				// 		const msg = generateMessage({ folderId: FOLDERS.INBOX, isComplete: true });
+				// 	// Generate the message
+				// 	const to = [
+				// 		{
+				// 			type: ParticipantRole.TO,
+				// 			address: defaultIdentity.email,
+				// 			fullName: defaultIdentity.fullName
+				// 		},
+				// 		{
+				// 			type: ParticipantRole.TO,
+				// 			address: sharedAccountIdentity.email,
+				// 			fullName: sharedAccountIdentity.fullName
+				// 		}
+				// 	];
+				// 	const msgId = `${sharedAccountIdentity.id}:1234`;
+				// 	const folderId = `${sharedAccountIdentity.id}:${FOLDERS.INBOX}`;
+				// 	const msg = generateMessage({ id: msgId, to, folderId, isComplete: true });
 				//
-				// 		const store = generateStore({
+				// 	const store = generateStore({
+				// 		messages: {
+				// 			searchedInFolder: {},
 				// 			messages: {
-				// 				searchedInFolder: {},
-				// 				messages: {
-				// 					[msg.id]: msg
-				// 				},
-				// 				status: {}
-				// 			}
-				// 		});
-				//
-				// 		// Mock the "action" query param
-				// 		jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-				// 			if (param === 'action') {
-				// 				return ActionsType.REPLY;
-				// 			}
-				// 			return undefined;
-				// 		});
-				//
-				// 		// Mock the board context
-				// 		mockedUseBoard.mockImplementation(() => ({
-				// 			url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY}`,
-				// 			context: { mailId: msg.id, folderId: FOLDERS.INBOX },
-				// 			title: ''
-				// 		}));
-				//
-				// 		const props = {
-				// 			setHeader: noop
-				// 		};
-				//
-				// 		// Create and wait for the component to be rendered
-				// 		setupTest(<EditView {...props} />, { store });
-				// 		await waitFor(
-				// 			() => {
-				// 				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				// 				[msg.id]: msg
 				// 			},
-				//
-				// 			{ timeout: 10000 }
-				// 		);
-				//
-				// 		expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();
-				// 		expect(screen.getByTestId('from-identity-address')).toHaveTextContent(
-				// 			defaultIdentity._attrs.zimbraPrefFromAddress
-				// 		);
+				// 			status: {}
+				// 		}
 				// 	});
 				//
-				// 	// test('shared account identity is selected when message is open from a shared account\'s folder', {} => {
-				// 	//
-				// 	// });
+				// 	// Mock the "action" query param
+				// 	jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+				// 		if (param === 'action') {
+				// 			return ActionsType.REPLY;
+				// 		}
+				// 		return undefined;
+				// 	});
+				//
+				// 	// Mock the board context
+				// 	mockedUseBoard.mockImplementation(() => ({
+				// 		url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY}`,
+				// 		context: { mailId: msg.id, folderId },
+				// 		title: ''
+				// 	}));
+				//
+				// 	const props = {
+				// 		setHeader: noop
+				// 	};
+				//
+				// 	// Create and wait for the component to be rendered
+				// 	setupTest(<EditView {...props} />, { store });
+				// 	expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
+				//
+				// 	expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();
+				// 	expect(screen.getByTestId('from-identity-address')).toHaveTextContent(
+				// 		defaultIdentity.email
+				// 	);
+				// });
 			});
 		});
 	});

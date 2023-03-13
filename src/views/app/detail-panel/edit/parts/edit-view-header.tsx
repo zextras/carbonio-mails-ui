@@ -37,7 +37,6 @@ import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useS
 import { Controller, SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
-import { CleaningServices } from '@mui/icons-material';
 import { ActionsType, LineType } from '../../../../../commons/utils';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import {
