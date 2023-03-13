@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.0...v1.2.1) (2023-03-13)
+
+
+### Bug Fixes
+
+* avoid content duplication when edit a draft ([4721831](https://github.com/zextras/carbonio-mails-ui/commit/472183172856414964b07b67bd29aa07ada4cec3))
+* escape possible html tags in reply/forward heading ([71af9fd](https://github.com/zextras/carbonio-mails-ui/commit/71af9fd9291ebdfbf1f33362f70c7a6093eac56f))
+
 ## [1.2.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.1.2...v1.2.0) (2023-03-02)
 
 
