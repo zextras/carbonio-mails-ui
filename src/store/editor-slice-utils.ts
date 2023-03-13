@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -12,6 +12,7 @@ import {
 } from '../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { LineType } from '../commons/utils';
+import { htmlEncode } from '../commons/get-quoted-text-util';
 import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import {
 	EditorAttachmentFiles,
@@ -183,7 +184,7 @@ export function retrieveCC(
 	);
 
 	if (original.parent !== FOLDERS.SENT && !original.isSentByMe) {
-		const uniqueParticipants = reduce(
+		return reduce(
 			concat(toEmails, reducedCcEmails),
 			(acc: Participant[], v: Participant) => {
 				if (!(finalTo.filter((x) => x.address === v.address).length > 0))
@@ -192,7 +193,6 @@ export function retrieveCC(
 			},
 			[]
 		);
-		return uniqueParticipants;
 	}
 
 	return changeTypeOfParticipants(reducedCcEmails, ParticipantRole.CARBON_COPY);
@@ -276,17 +276,21 @@ export function generateReplyText(
 
 	const textToRetArray = [
 		`\n\n${LineType.PLAINTEXT_SEP}\n${labels.from} ${headingFrom}\n${labels.to} ${headingTo}\n`,
-		`<br /><br /><hr id="${LineType.HTML_SEP_ID}" ><div style="color: black; font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${labels.from}</b> ${headingFrom} <br /> <b>${labels.to}</b> ${headingTo} <br />`
+		`<br /><br /><hr id="${
+			LineType.HTML_SEP_ID
+		}" ><div style="color: black; font-size: 12pt; font-family: tahoma, arial, helvetica, sans-serif;"><b>${
+			labels.from
+		}</b> ${htmlEncode(headingFrom)} <br /> <b>${labels.to}</b> ${htmlEncode(headingTo)} <br />`
 	];
 
 	if (headingCc.length > 0) {
-		textToRetArray[1] += `<b>${labels.cc}</b> ${headingCc}<br />`;
+		textToRetArray[1] += `<b>${labels.cc}</b> ${htmlEncode(headingCc)}<br />`;
 		textToRetArray[0] += `${labels.cc} ${headingCc}\n`;
 	}
 
-	textToRetArray[1] += `<b>${labels.sent}</b> ${date} <br /> <b>${labels.subject}</b> ${
+	textToRetArray[1] += `<b>${labels.sent}</b> ${date} <br /> <b>${labels.subject}</b> ${htmlEncode(
 		mail.subject
-	} <br /><br />${extractBody(mail)[1]}</div>`;
+	)} <br /><br />${extractBody(mail)[1]}</div>`;
 
 	textToRetArray[0] += `${labels.sent} ${date}\n${labels.subject} ${mail.subject}\n\n${
 		extractBody(mail)[0]

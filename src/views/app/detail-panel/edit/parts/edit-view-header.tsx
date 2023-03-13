@@ -57,6 +57,16 @@ import { StoreProvider } from '../../../../../store/redux';
 import { getSignatureValue } from '../../../../../helpers/signatures';
 import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils/text/html';
 
+/**
+ * Match the first string which is between a
+ * signature separator and either a quoted text
+ * delimiter or the end of the content
+ */
+const PLAINTEXT_SIGNATURE_REGEX = new RegExp(
+	`(?<=^${LineType.SIGNATURE_PRE_SEP}\\n)(((?!\\s${LineType.PLAINTEXT_SEP}$).)*)`,
+	'ms'
+);
+
 const FromItem = styled(Row)`
 	border-radius: 4px;
 	cursor: pointer;
@@ -90,6 +100,62 @@ type PropType = {
 	action: string | undefined;
 	editor: MailsEditor;
 };
+
+/**
+ * Replaces the signature in a HTML message body.
+ *
+ * @param body - HTML message body
+ * @param newSignature - content of the new signature
+ */
+const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string => {
+	const doc = new DOMParser().parseFromString(body, 'text/html');
+
+	// Get the element which wraps the signature
+	const signatureWrappers = doc.getElementsByClassName(LineType.SIGNATURE_CLASS);
+
+	let signatureWrapper = null;
+
+	// Locate the separator
+	const separator = doc.getElementById(LineType.HTML_SEP_ID);
+
+	// Locate the first signature. If no wrapper is found then the unchanged mail body is returned
+	signatureWrapper = signatureWrappers.item(0);
+	if (signatureWrapper == null) {
+		return body;
+	}
+
+	/*
+	 * If a separator is present it should be located after the signature
+	 * (the content after the separator is quoted text which shouldn't be altered).
+	 * Otherwise the original body content is returned
+	 */
+	if (
+		separator &&
+		signatureWrapper.compareDocumentPosition(separator) !== Node.DOCUMENT_POSITION_FOLLOWING
+	) {
+		return body;
+	}
+
+	signatureWrapper.innerHTML = newSignature;
+	return doc.documentElement.innerHTML;
+};
+
+/**
+ * Replaces the signature in a plain text message body
+ *
+ * @param body - plain text message body
+ * @param newSignature - signature content
+ */
+const replaceSignatureOnPlainTextBody = (body: string, newSignature: string): string => {
+	// If no eligible signature is found the original body is returned
+	if (!body.match(PLAINTEXT_SIGNATURE_REGEX)) {
+		return body;
+	}
+
+	// Replace the target signature
+	return body.replace(PLAINTEXT_SIGNATURE_REGEX, newSignature);
+};
+
 const EditViewHeader: FC<PropType> = ({
 	setShowRouteGuard,
 	setValue,
@@ -130,38 +196,10 @@ const EditViewHeader: FC<PropType> = ({
 	const changeSignature = (isNew: boolean, id = ''): void => {
 		const editorText = editor.text;
 		const signatureValue = id !== '' ? getSignatureValue(getUserAccount(), id) : '';
-		const htmlContent = isNew
-			? editorText[1].substring(
-					0,
-					editorText[1].indexOf(`<div class="${LineType.SIGNATURE_CLASS}">`) +
-						`<div class="${LineType.SIGNATURE_CLASS}">`.length
-			  ) +
-			  signatureValue +
-			  editorText[1].substring(editorText[1].length - 6)
-			: `${
-					editorText[1].substring(
-						0,
-						editorText[1].indexOf(`<div class="${LineType.SIGNATURE_CLASS}">`) +
-							`<div class="${LineType.SIGNATURE_CLASS}">`.length
-					) + signatureValue
-			  }<br>${editorText[1].substring(editorText[1].indexOf(`<hr id="${LineType.HTML_SEP_ID}`))}`;
 		const plainSignatureValue =
 			signatureValue !== '' ? `\n${convertHtmlToPlainText(signatureValue)}\n\n` : '';
-		const plainContent = isNew
-			? editorText[0].substring(
-					0,
-					editorText[0].indexOf(`${LineType.SIGNATURE_PRE_SEP}`) +
-						`${LineType.SIGNATURE_PRE_SEP}`.length
-			  ) +
-			  plainSignatureValue +
-			  editorText[0].substring(editorText[0].length)
-			: editorText[0].substring(
-					0,
-					editorText[0].indexOf(`${LineType.SIGNATURE_PRE_SEP}`) +
-						`${LineType.SIGNATURE_PRE_SEP}`.length
-			  ) +
-			  plainSignatureValue +
-			  editorText[0].substring(editorText[0].indexOf(`${LineType.PLAINTEXT_SEP}`));
+		const htmlContent = replaceSignatureOnHtmlBody(editorText[1], signatureValue);
+		const plainContent = replaceSignatureOnPlainTextBody(editorText[0], plainSignatureValue);
 		updateEditorCb({
 			text: [plainContent, htmlContent]
 		});
