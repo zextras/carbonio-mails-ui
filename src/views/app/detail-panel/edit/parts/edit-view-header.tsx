@@ -63,7 +63,7 @@ import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils
  * delimiter or the end of the content
  */
 const PLAINTEXT_SIGNATURE_REGEX = new RegExp(
-	`(?<=^${LineType.SIGNATURE_PRE_SEP}\\n)(((?!\\s${LineType.PLAINTEXT_SEP}$).)*)`,
+	`^(${LineType.SIGNATURE_PRE_SEP}\\n)(((?!\\s${LineType.PLAINTEXT_SEP}$).)*)`,
 	'ms'
 );
 
@@ -152,8 +152,23 @@ const replaceSignatureOnPlainTextBody = (body: string, newSignature: string): st
 		return body;
 	}
 
+	// Locate the first quoted text separator
+	const quotedTextSeparatorPos = body.indexOf(LineType.PLAINTEXT_SEP);
+
+	const match = body.match(PLAINTEXT_SIGNATURE_REGEX);
+
+	/*
+	 * If the body content doesn't match the regex or if it matches it
+	 * but after a quoted-text separator (= the target signature is
+	 * located inside the quoted text. This could happen when the user
+	 * will manually remove the preset signature inside the UNquoted text.
+	 */
+	if (!match || (quotedTextSeparatorPos >= 0 && quotedTextSeparatorPos < (match.index ?? 0))) {
+		return body;
+	}
+
 	// Replace the target signature
-	return body.replace(PLAINTEXT_SIGNATURE_REGEX, newSignature);
+	return body.replace(PLAINTEXT_SIGNATURE_REGEX, `$1${newSignature}`);
 };
 
 const EditViewHeader: FC<PropType> = ({
