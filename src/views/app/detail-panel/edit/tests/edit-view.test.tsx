@@ -903,67 +903,67 @@ describe('Edit view', () => {
 					);
 				});
 
-				// test("shared account identity is selected when message, sent to a user account AND a shared account, is open from the shared account's folder", async () => {
-				// 	// Get the identities
-				// 	const mocksContext = getMocksContext();
-				// 	const defaultIdentity = mocksContext.identities.primary.identity;
-				// 	const sharedAccountIdentity = mocksContext.identities.sendAs[0].identity;
-				//
-				// 	// Generate the message
-				// 	const to = [
-				// 		{
-				// 			type: ParticipantRole.TO,
-				// 			address: defaultIdentity.email,
-				// 			fullName: defaultIdentity.fullName
-				// 		},
-				// 		{
-				// 			type: ParticipantRole.TO,
-				// 			address: sharedAccountIdentity.email,
-				// 			fullName: sharedAccountIdentity.fullName
-				// 		}
-				// 	];
-				// 	const msgId = `${sharedAccountIdentity.id}:1234`;
-				// 	const folderId = `${sharedAccountIdentity.id}:${FOLDERS.INBOX}`;
-				// 	const msg = generateMessage({ id: msgId, to, folderId, isComplete: true });
-				//
-				// 	const store = generateStore({
-				// 		messages: {
-				// 			searchedInFolder: {},
-				// 			messages: {
-				// 				[msg.id]: msg
-				// 			},
-				// 			status: {}
-				// 		}
-				// 	});
-				//
-				// 	// Mock the "action" query param
-				// 	jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-				// 		if (param === 'action') {
-				// 			return ActionsType.REPLY;
-				// 		}
-				// 		return undefined;
-				// 	});
-				//
-				// 	// Mock the board context
-				// 	mockedUseBoard.mockImplementation(() => ({
-				// 		url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY}`,
-				// 		context: { mailId: msg.id, folderId },
-				// 		title: ''
-				// 	}));
-				//
-				// 	const props = {
-				// 		setHeader: noop
-				// 	};
-				//
-				// 	// Create and wait for the component to be rendered
-				// 	setupTest(<EditView {...props} />, { store });
-				// 	expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
-				//
-				// 	expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();
-				// 	expect(screen.getByTestId('from-identity-address')).toHaveTextContent(
-				// 		defaultIdentity.email
-				// 	);
-				// });
+				test("shared account identity is selected when message, sent to a user account AND a shared account, is open from the shared account's folder", async () => {
+					// Get the identities
+					const mocksContext = getMocksContext();
+					const defaultIdentity = mocksContext.identities.primary.identity;
+					const sharedAccountIdentity = mocksContext.identities.sendAs[0].identity;
+
+					// Generate the message
+					const to = [
+						{
+							type: ParticipantRole.TO,
+							address: defaultIdentity.email,
+							fullName: defaultIdentity.fullName
+						},
+						{
+							type: ParticipantRole.TO,
+							address: sharedAccountIdentity.email,
+							fullName: sharedAccountIdentity.fullName
+						}
+					];
+					const msgId = `${sharedAccountIdentity.id}:1234`;
+					const folderId = `${sharedAccountIdentity.id}:${FOLDERS.INBOX}`;
+					const msg = generateMessage({ id: msgId, to, folderId, isComplete: true });
+
+					const store = generateStore({
+						messages: {
+							searchedInFolder: {},
+							messages: {
+								[msg.id]: msg
+							},
+							status: {}
+						}
+					});
+
+					// Mock the "action" query param
+					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+						if (param === 'action') {
+							return ActionsType.REPLY;
+						}
+						return undefined;
+					});
+
+					// Mock the board context
+					mockedUseBoard.mockImplementation(() => ({
+						url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY}`,
+						context: { mailId: msg.id, folderId },
+						title: ''
+					}));
+
+					const props = {
+						setHeader: noop
+					};
+
+					// Create and wait for the component to be rendered
+					setupTest(<EditView {...props} />, { store });
+					expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
+
+					expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();
+					expect(screen.getByTestId('from-identity-address')).toHaveTextContent(
+						sharedAccountIdentity.email
+					);
+				});
 			});
 		});
 	});
