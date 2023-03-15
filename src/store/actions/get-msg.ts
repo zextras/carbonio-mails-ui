@@ -20,6 +20,7 @@ export const getMsg = createAsyncThunk<MailMessage, GetMsgParameters>(
 			}
 		})) as GetMsgResponse;
 		const msg = result?.m[0];
-		return normalizeMailMessageFromSoap(msg, true) as MailMessage;
+		const normalizedMsg = normalizeMailMessageFromSoap(msg, true) as MailMessage;
+		return normalizedMsg;
 	}
 );

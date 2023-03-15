@@ -5,7 +5,7 @@
  */
 import { MailsEditor } from '../../types';
 
-export const createEditorCase = async (id: number): Promise<MailsEditor> => {
+export const generateEditorCase = async (id: number): Promise<MailsEditor> => {
 	const { editorCase } = await import(`./editorCases/editorCase-${id}`);
 	return editorCase;
 };

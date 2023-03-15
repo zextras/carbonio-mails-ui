@@ -7,7 +7,7 @@ import { MailMessage } from '../messages';
 
 export type EditorAttachmentFiles = {
 	contentType: string;
-	disposition: string;
+	disposition?: string;
 	fileName?: string;
 	filename: string;
 	name: string;
