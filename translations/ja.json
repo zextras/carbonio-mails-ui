@@ -163,8 +163,6 @@
         "choose_folder": "フォルダを選択してください",
         "error_address": "有効なメールアドレスが必要です",
         "loading_results": "結果を読み込んでいます…",
-        "received_from_address": "（アドレス）から受信",
-        "sent_to_address": "（アドレス）に送信する",
         "size_smaller": "(MB)以下のサイズ",
         "any": "あらゆる",
         "hide": "非表示にする",
