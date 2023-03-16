@@ -19,6 +19,7 @@ type UseGetAttachItemsPropType = {
 	updateEditorCb: (arg: Partial<MailsEditor>) => void;
 	saveDraftCb: (arg: Partial<MailsEditor>) => void;
 	setValue: (arg1: string, arg2: string) => void;
+	changeEditorText: (text: [string, string]) => void;
 };
 type UseGetAttachItemsReturnType = {
 	customComponent?: ReactElement;
@@ -37,7 +38,8 @@ export const useGetAttachItems = ({
 	editorId,
 	updateEditorCb,
 	saveDraftCb,
-	setValue
+	setValue,
+	changeEditorText
 }: UseGetAttachItemsPropType): Array<UseGetAttachItemsReturnType> => {
 	const [getFilesFromDrive, getFilesAvailable] = useGetFilesFromDrive({
 		editorId,
@@ -48,7 +50,8 @@ export const useGetAttachItems = ({
 		editorId,
 		updateEditorCb,
 		saveDraftCb,
-		setValue
+		setValue,
+		changeEditorText
 	});
 
 	const actionTarget = useMemo(
