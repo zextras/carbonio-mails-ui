@@ -259,7 +259,13 @@
         "invalid_query": "Die Suche kann nicht geparst werden, löschen Sie sie und versuchen Sie es erneut",
         "not_in_list": "{{name}} - Nicht in Ihrer Etiketten Liste",
         "enter_name": "Namen eingeben",
-        "no_signature": "Keine Signatur"
+        "no_signature": "Keine Signatur",
+        "choose_file": "Datei auswählen",
+        "path": "Pfad",
+        "using_signatures": "Verwendung von Signaturen",
+        "extra_window": {
+            "save_to_files_disabled": "Speichern unter Dateien"
+        }
     },
     "share": {
         "options": {
@@ -413,7 +419,8 @@
             "att_err_adding": "Es scheint ein Problem beim Hinzufügen von Anhängen zu geben, bitte versuchen Sie es erneut",
             "all_link_copied": "Öffentlicher Link erfolgreich kopiert",
             "some_link_copying_error": "Es scheint ein Problem bei der Erstellung des öffentlichen URLS für einige Dateien zu geben, bitte versuchen Sie es erneut",
-            "link_copying_error": "Es scheint ein Problem bei der Erstellung des öffentlichen Links zu geben, bitte versuchen Sie es erneut"
+            "link_copying_error": "Es scheint ein Problem bei der Erstellung des öffentlichen Links zu geben, bitte versuchen Sie es erneut",
+            "eml_download_failed": "Im ausgewählten Ordner gespeicherte Anhänge"
         },
         "invalid_search_message": "Wir haben keine Übereinstimmung gefunden",
         "email_saved_at": "E-Mail gespeichert als Entwurf um {{time}}",

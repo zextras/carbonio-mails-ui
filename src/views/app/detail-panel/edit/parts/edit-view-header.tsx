@@ -258,7 +258,8 @@ const EditViewHeader: FC<PropType> = ({
 		editorId,
 		updateEditorCb,
 		saveDraftCb,
-		setValue
+		setValue,
+		changeEditorText
 	});
 
 	const onClick = (): void => {

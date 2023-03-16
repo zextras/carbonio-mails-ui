@@ -16,12 +16,14 @@ type InputProps = {
 	updateEditorCb: (arg: any) => void;
 	saveDraftCb: (arg: any) => void;
 	setValue: (arg: any, arg2: any) => void;
+	changeEditorText: (text: [string, string]) => void;
 };
 export const useGetPublicUrl = ({
 	editorId,
 	updateEditorCb,
 	saveDraftCb,
-	setValue
+	setValue,
+	changeEditorText
 }: InputProps): [(nodes: any) => void, boolean] => {
 	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
 	const createSnackbar = useContext(SnackbarManagerContext);
@@ -77,9 +79,10 @@ export const useGetPublicUrl = ({
 				updateEditorCb(newEditor);
 				saveDraftCb(newEditor);
 				setValue('text', newEditor.text);
+				changeEditorText(newEditor.text);
 			});
 		},
-		[createSnackbar, editor, getLink, saveDraftCb, setValue, updateEditorCb]
+		[changeEditorText, createSnackbar, editor, getLink, saveDraftCb, setValue, updateEditorCb]
 	);
 
 	return [getPublicUrl, getLinkAvailable];

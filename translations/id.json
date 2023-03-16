@@ -17,7 +17,7 @@
         "mark_as_non_spam": "Bukan spam",
         "print": "Cetak",
         "reply_all": "Balas semua",
-        "reset": "Atur Ulang",
+        "reset": "Reset",
         "send_anyway": "Tetap kirim",
         "show_details": "Tampilkan detail",
         "unflag": "Hapus bendera",
@@ -27,7 +27,8 @@
         "preview_new_tab": "Klik untuk melihat pratinjau di tab lain",
         "click_preview": "Klik untuk melihat pratinjau",
         "mark_all_read": "Tandai semua sebagai telah dibaca",
-        "edit_anyway": "Tetap edit"
+        "edit_anyway": "Tetap edit",
+        "click_open": "Klik untuk membuka"
     },
     "folder": {
         "modal": {
@@ -130,7 +131,7 @@
         "revoke_with_custom_message": "Batalkan akses dengan mengirim pemberitahuan kustom",
         "shared_folders": "Folder Bersama",
         "shares_info": "Info folder bersama",
-        "single_advanced_filter": "Filter Tingkat Lanjut",
+        "single_advanced_filter": "Filter Lanjutan",
         "size": "Ukuran",
         "tag": "Tag",
         "wipe": "Hapus",
@@ -264,7 +265,23 @@
         "not_in_list": "{{name}} - Tidak ada di daftar tag Anda",
         "no_signature": "Tidak ada tanda tangan",
         "mark_read_message_manually": "Tandai sebaca telah dibaca secara manual dengan mengklik ikon ini",
-        "mark_read_message_immediately": "Tandai pesan di penampil sebagai langsung dibaca"
+        "mark_read_message_immediately": "Tandai pesan di penampil sebagai langsung dibaca",
+        "attachment_with_count": "{{count}} Lampiran",
+        "attachments_disclaimer": "Anda sedang meliaht pesan terlampir. Keaslian pesan terlampir tidak dapat diverifikasi.",
+        "choose_file": "Pilih file",
+        "deselect_all": "BATAL PILIH semua",
+        "extra_window": {
+            "save_to_files_disabled": "Simpan ke File"
+        },
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "Tidak bisa membuka jendela baru"
+            }
+        },
+        "need_to_select_atleast_one_item": "Anda harus memilih minimal satu item untuk melakukan tindakan",
+        "path": "Jalur",
+        "select_all": "PILIH semua",
+        "using_signatures": "Penggunaan tanda tangan"
     },
     "messages": {
         "snackbar": {
@@ -337,7 +354,12 @@
         "invalid_trustee_address": "Masukkan alamat email atau domain saja",
         "read_receipt_2": "Anda ingin mengubah pengirim?",
         "cal_name_exist_warning": "Kalender dengan nama yang sama sudah ada di jalur ini",
-        "read_receipt_1": "Pengirim pesan ini meminta untuk dikirimi notifikasi saat Anda membaca pesan ini."
+        "read_receipt_1": "Pengirim pesan ini meminta untuk dikirimi notifikasi saat Anda membaca pesan ini.",
+        "extra_windows": {
+            "": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda",
+            "opening_blocked": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda",
+            "popup_blocked": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda"
+        }
     },
     "placeholder": {
         "add_new_recipients": "Tambahkan penerima baru"
@@ -561,7 +583,8 @@
             "some_att_fails": "Tampaknya ada masalah saat menambahkan beberapa file, coba lagi",
             "some_link_copying_error": "Tampaknya ada masalah saat membuat url publik untuk beberapa file, coba lagi",
             "link_copying_error": "Tampaknya ada masalah saat membuat tautan publik, coba lagi",
-            "all_link_copied": "Tautan publik berhasil disalin"
+            "all_link_copied": "Tautan publik berhasil disalin",
+            "eml_download_failed": "Lampiran disimpan di folder yang dipilih"
         },
         "invalid_search_message": "Kami tidak menemukan kecocokan",
         "email_saved_at": "Email disimpan sebagai draf pada {{time}}",
@@ -576,7 +599,8 @@
         "schedule_time": "untuk {{date}} pukul {{time}}",
         "send_later_success": "Email Anda akan dikirim pada {{date}} pukul {{time}}",
         "delete_attachment_message1": "Lampiran Anda akan dihapus permanen dari Carbonio.",
-        "delete_attachment_message2": "Ingin mengunduhnya dulu?"
+        "delete_attachment_message2": "Ingin mengunduhnya dulu?",
+        "": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda"
     },
     "snackbar": {
         "share_resend": "Undangan berbagi dikirim ulang",
@@ -725,12 +749,12 @@
         "received": "diterima saya",
         "read": "dibaca",
         "fromme": "dari saya",
-        "fromccme": "dari saya",
+        "fromccme": "dari saya atau disalin ke saya",
         "forwarded": "diteruskan",
         "flagged": "dibenderai",
         "draft": "draf",
         "unreplied": "tidak dijawab oleh saya",
-        "tofromme": "kepada saya, dari saya, atau disalin kepada saya",
+        "tofromme": "kepada saya atau dari saya",
         "tofromccme": "kepada saya, dari saya, atau disalin kepada saya",
         "toccme": "kepada atau disalin ke saya",
         "solo": "percakapan dengan satu pesan",
@@ -764,5 +788,6 @@
         "delete_draft": {
             "message1": "Anda ingin menyimpan draf ini atau menghapusnya?"
         }
-    }
+    },
+    "": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda"
 }
