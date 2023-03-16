@@ -72,7 +72,12 @@
         "read_receipt_1": "Il mittente di questa e-mail ha chiesto di ricevere una notifica al momento della lettura del messaggio.",
         "invalid_trustee_address": "Inserisci sono indirizzi e-mail o domini",
         "trustee_addresses": "La posta proveniente da questi indirizzi o domini verrà considerata affidabile e le immagini saranno visualizzate automaticamente.",
-        "edit_schedule_warning": "Modificando questa e-mail, l'ora e il giorno impostati per l'invio ritardato del messaggio saranno resettati."
+        "edit_schedule_warning": "Modificando questa e-mail, l'ora e il giorno impostati per l'invio ritardato del messaggio saranno resettati.",
+        "extra_windows": {
+            "": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser",
+            "popup_blocked": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser",
+            "opening_blocked": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser"
+        }
     },
     "label": {
         "cc": "Cc",
@@ -287,7 +292,24 @@
         "not_in_list": "{{name}} - Non presente nella tua lista di tag",
         "mark_read_message_immediately": "Contrassegna immediatamente i messaggi come letti nel riquadro di lettura",
         "mark_read_message_manually": "Contrassegna manualmente come letto cliccando su questa icona",
-        "no_signature": "Nessuna firma"
+        "no_signature": "Nessuna firma",
+        "attachments_disclaimer": "Stai visualizzando un messaggio allegato. L'autenticità di questo messaggio non può essere verificata.",
+        "choose_file": "Scegli file",
+        "deselect_all": "DESELEZIONA tutto",
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "Impossibile aprire una nuova finestra"
+            }
+        },
+        "need_to_select_atleast_one_item": "È necessario selezionare almeno un elemento per effettuare questa azione",
+        "path": "Path",
+        "select_all": "SELEZIONA tutto",
+        "using_signatures": "Utilizzo delle firme",
+        "attachment_with_count": "{{count}} Allegato",
+        "attachment_with_count_plural": "{{count}} Allegati",
+        "extra_window": {
+            "save_to_files_disabled": "Salva su Files"
+        }
     },
     "tooltip": {
         "add_attachments": "Aggiungi allegati",
@@ -338,11 +360,12 @@
         "print": "Stampa",
         "show_original": "Mostra originale",
         "goto_folder": "VAI ALLA CARTELLA",
-        "reset": "Ripristina",
+        "reset": "Reimposta",
         "preview_new_tab": "Clicca per l'anteprima in altra scheda",
         "click_preview": "Clicca per visualizzare l'anteprima",
         "edit_anyway": "Modifica comunque",
-        "mark_all_read": "Segna tutti come letti"
+        "mark_all_read": "Segna tutti come letti",
+        "click_open": "Clicca per aprire"
     },
     "folder": {
         "modal": {
@@ -392,7 +415,8 @@
             "att_saved": "Allegato salvato nella cartella selezionata",
             "all_link_copied": "Link pubblico copiato con successo",
             "link_copying_error": "Sembra esserci stato un problema durante la generazione del link pubblico, riprova",
-            "some_link_copying_error": "Sembra esserci stato un problema durante la generazione dell'url pubblico di alcuni file, riprova"
+            "some_link_copying_error": "Sembra esserci stato un problema durante la generazione dell'url pubblico di alcuni file, riprova",
+            "eml_download_failed": "Allegato salvato nella cartella selezionata"
         },
         "sending_mail_to_self": "Ti stai auto inviando una e-mail",
         "invalid_search_message": "Nessuna corrispondenza trovata",
@@ -408,7 +432,8 @@
         "send_later_success": "La tua e-mail verrà inviata il {{date}} alle {{time}}",
         "select_date_time": "Seleziona la data e l’ora di invio di questo messaggio",
         "delete_attachment_message1": "L'allegato verrà eliminato permanentemente da Carbonio.",
-        "delete_attachment_message2": "Vuoi scaricarlo prima?"
+        "delete_attachment_message2": "Vuoi scaricarlo prima?",
+        "": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser"
     },
     "snackbar": {
         "share_resend": "Invito condivisione inviato",
@@ -732,7 +757,7 @@
         "toccme": "indirizzata a me oppure sono in copia",
         "ccme": "sono in copia",
         "unreplied": "non risposta da me",
-        "tofromme": "da parte mia, per me oppure sono in copia",
+        "tofromme": "da parte mia o per me",
         "tofromccme": "da parte mia, per me oppure sono in copia",
         "solo": "conversazioni che contengono solo un messaggio",
         "replied": "risposto da me",
@@ -748,7 +773,7 @@
         "received": "ricevuti da me",
         "read": "letti",
         "fromme": "da me",
-        "fromccme": "da me",
+        "fromccme": "da me oppure sono in cc",
         "forwarded": "inoltrati",
         "flagged": "contrassegnati",
         "draft": "bozza"
@@ -776,5 +801,6 @@
         "compose_colin": "Componi :",
         "composing_messages": "Composizione messaggi"
     },
-    "go_back": "Indietro"
+    "go_back": "Indietro",
+    "": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser"
 }

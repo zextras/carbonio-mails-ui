@@ -76,7 +76,8 @@
         "show_original": "Pokaż oryginał",
         "click_preview": "Kliknij aby zobaczyć podgląd",
         "edit_anyway": "Edytuj mimo to",
-        "mark_all_read": "Oznacz wszystkie jako przeczytane"
+        "mark_all_read": "Oznacz wszystkie jako przeczytane",
+        "click_open": "Kliknij, aby otworzyć"
     },
     "composer": {
         "attachment": {
@@ -267,8 +268,8 @@
         "create_tag": "Stwórz Tag",
         "delete_tag": "Usuń Tag",
         "delete_tag_name": "Usuń Tag \"{{name}}\"",
-        "edit_tag": "Edytuj Tag",
-        "edit_tag_name": "Edytuj Tag \"{{name}}\"",
+        "edit_tag": "Edytuj tag",
+        "edit_tag_name": "Edytuj tag \"{{name}}\"",
         "no_special_char_allowed": "Nazwa nie może zawierać żadnych znaków specjalnych",
         "select_color": "Wybierz kolor",
         "invalid_destination": "Ten węzeł nie jest prawidłowym celem",
@@ -335,7 +336,25 @@
         "enter_name": "Wprowadź nazwę",
         "mark_read_message_manually": "Manualnie oznaczaj wiadomości jako przeczytane klikając w tę ikonkę",
         "no_signature": "Brak podpisu",
-        "mark_read_message_immediately": "Natychmiastowo oznaczaj wiadomości jako przeczytane"
+        "mark_read_message_immediately": "Natychmiastowo oznaczaj wiadomości jako przeczytane",
+        "attachment_with_count_0": "{{count}} załącznik",
+        "attachment_with_count_1": "{{count}} załączniki",
+        "attachment_with_count_2": "{{count}} załączników",
+        "choose_file": "Wybierz plik",
+        "deselect_all": "ODZNACZ wszystkie",
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "Nie udało się otworzyć nowego okna"
+            }
+        },
+        "path": "Ścieżka",
+        "select_all": "ZAZNACZ wszystkie",
+        "using_signatures": "Użycie podpisów",
+        "attachments_disclaimer": "Nie możemy potwierdzić wiarygodności oglądanych załączników.",
+        "extra_window": {
+            "save_to_files_disabled": "Zapisz do Files"
+        },
+        "need_to_select_atleast_one_item": "Musisz wybrać co najmniej jeden element, aby móc wykonać tę czynność"
     },
     "message": {
         "snackbar": {
@@ -354,7 +373,8 @@
             "some_att_fails": "Wystąpił problem przy zapisywaniu niektórych z plików, spróbuj ponownie",
             "all_link_copied": "Publiczny link został skopiowany",
             "link_copying_error": "Wygląda na to, że wystąpił problem przy generowaniu linku, spróbuj ponownie",
-            "some_link_copying_error": "Wygląda na to, że wystąpił problem przy generowaniu publicznego url dla niektórych plików, spróbuj ponownie"
+            "some_link_copying_error": "Wygląda na to, że wystąpił problem przy generowaniu publicznego url dla niektórych plików, spróbuj ponownie",
+            "eml_download_failed": "Załącznik został zapisany w wybranym folderze"
         },
         "invalid_search_message": "Nie znaleźliśmy niczego pasującego do kryteriów wyszukiwania",
         "sending_mail_to_self": "Wygląda na to, że wysyłasz e-maila do siebie",
@@ -370,7 +390,8 @@
         "send_later_success": "Twój e-mail zostanie wysłany {{date}} o {{time}}",
         "select_date_time": "Wybierz datę i godzinę, o której ta wiadomość zostanie wysłana",
         "delete_attachment_message2": "Czy chcesz pobrać go przed tym?",
-        "delete_attachment_message1": "Załącznik zostanie trwale usunięty z Carbonio."
+        "delete_attachment_message1": "Załącznik zostanie trwale usunięty z Carbonio.",
+        "": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień"
     },
     "search": {
         "flagged_note": "Wyszukaj wszystkie oflagowane e-maile.",
@@ -546,7 +567,12 @@
         "read_receipt_1": "Nadawca tej wiadomości poprosił o powiadomienie go kiedy przeczytasz tą wiadomość.",
         "invalid_trustee_address": "Wprowadź tylko adresy e-mail i domeny",
         "cal_name_exist_warning": "Kalendarz z wybraną nazwą już istnieje w tej ścieżce",
-        "edit_schedule_warning": "Edytując ten e-mail, poprzednio ustawiona data i czas opóźnionego wysyłania zostanie zresetowana."
+        "edit_schedule_warning": "Edytując ten e-mail, poprzednio ustawiona data i czas opóźnionego wysyłania zostanie zresetowana.",
+        "extra_windows": {
+            "": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień",
+            "popup_blocked": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień",
+            "opening_blocked": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień"
+        }
     },
     "settings": {
         "conv_is_participated": "w konwersacjach, w których uczestniczyłem",
@@ -748,7 +774,7 @@
         "unflagged": "nie oflagowano",
         "flagged": "oflagowano",
         "tome": "do mnie",
-        "tofromme": "do mnie, ode mnie lub DW/UDW do mnie",
+        "tofromme": "do mnie lub ode mnie",
         "tofromccme": "do mnie, ode mnie lub DW/UDW do mnie",
         "toccme": "do mnie lub DW/UDW do mnie",
         "solo": "konwersacje z jedną wiadomością",
@@ -760,7 +786,7 @@
         "local": "w moich folderach",
         "invitations": "zaproszenia",
         "fromme": "ode mnie",
-        "fromccme": "ode mnie",
+        "fromccme": "ode mnie lub DW/UDW do mnie",
         "forwarded": "przekazano dalej",
         "draft": "wersja robocza",
         "ccme": "DW/UDW do mnie",
@@ -784,5 +810,6 @@
         "composing_messages": "Tworzenie wiadomości",
         "compose_colin": "Stwórz:"
     },
-    "go_back": "Powrót"
+    "go_back": "Powrót",
+    "": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień"
 }
