@@ -81,7 +81,12 @@
         "read_receipt_1": "此消息的发送者已请求在您阅读此消息时接收通知。",
         "invalid_trustee_address": "请仅输入邮件地址或域",
         "edit_schedule_warning": "编辑此邮件时将重置之前为延迟发送设置的时间和日期。",
-        "cal_name_exist_warning": "此路径中已存在带有相同名称的日历"
+        "cal_name_exist_warning": "此路径中已存在带有相同名称的日历",
+        "extra_windows": {
+            "": "为完成此操作，Carbonio将需要打开一个新窗口。\n检查您的浏览器设置",
+            "opening_blocked": "为完成此操作，Carbonio将需要打开一个新窗口。\n检查您的浏览器设置",
+            "popup_blocked": "为完成此操作，Carbonio将需要打开一个新窗口。\n检查您的浏览器设置"
+        }
     },
     "placeholder": {
         "add_new_recipients": "新增收件人"
@@ -139,7 +144,8 @@
         "preview_new_tab": "点击以在另一标签页中预览",
         "click_preview": "点击预览",
         "mark_all_read": "全部标记为已读",
-        "edit_anyway": "仍然编辑"
+        "edit_anyway": "仍然编辑",
+        "click_open": "点击打开"
     },
     "folders": {
         "trash": "回收站",
@@ -363,7 +369,23 @@
         "enter_name": "输入名称",
         "mark_read_message_immediately": "立即将阅读窗格中的邮件标记为已读",
         "no_signature": "无签名",
-        "mark_read_message_manually": "点击此图标以手动标记为已读"
+        "mark_read_message_manually": "点击此图标以手动标记为已读",
+        "attachments_disclaimer": "您正在查看已附加的消息。附加消息的真实性无法验证。",
+        "attachment_with_count": "{{count}}附件",
+        "choose_file": "选择文件",
+        "deselect_all": "取消全选",
+        "extra_window": {
+            "save_to_files_disabled": "保存至文件"
+        },
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "无法打开新窗口"
+            }
+        },
+        "need_to_select_atleast_one_item": "您需要选择至少一个项目以执行此操作",
+        "path": "路径",
+        "select_all": "全选",
+        "using_signatures": "签名使用情况"
     },
     "search": {
         "unread": "未读",
@@ -393,7 +415,8 @@
             "some_att_fails": "保存一些文件时似乎出现错误，请重试",
             "some_link_copying_error": "为部分文件生成公开 URL 时似乎发生错误，请重试",
             "link_copying_error": "生成公开链接时似乎发生错误，请重试",
-            "all_link_copied": "公开链接已复制成功"
+            "all_link_copied": "公开链接已复制成功",
+            "eml_download_failed": "附件已保存在所选文件夹中"
         },
         "sending_mail_to_self": "似乎您即将向自己发送邮件",
         "invalid_search_message": "我们没有找到任何匹配",
@@ -409,7 +432,8 @@
         "schedule_time": "{{date}}，{{time}}",
         "schedule_mail": "发送时间：{{date}}，{{time}}",
         "delete_attachment_message1": "您的附件将从Carbonio中永久删除。",
-        "delete_attachment_message2": "此前是否想要下载？"
+        "delete_attachment_message2": "此前是否想要下载？",
+        "": "为完成此操作，Carbonio将需要打开一个新窗口。\n检查您的浏览器设置"
     },
     "settings": {
         "label": {
@@ -724,12 +748,12 @@
         "received": "由我收到",
         "read": "已读",
         "fromme": "由我发出",
-        "fromccme": "由我发出",
+        "fromccme": "由我发出或抄送给我",
         "forwarded": "已转发",
         "flagged": "已标记",
         "draft": "草稿",
         "unreplied": "不是由我回答",
-        "tofromme": "发给我、来自我或抄送给我",
+        "tofromme": "发给我或由我发出",
         "tofromccme": "发给我、来自我或抄送给我",
         "toccme": "发给我或抄送给我",
         "solo": "带有单一消息的对话",
@@ -763,5 +787,6 @@
         "delete_draft": {
             "message1": "是否保留此草稿或将其删除？"
         }
-    }
+    },
+    "": "为完成此操作，Carbonio将需要打开一个新窗口。\n检查您的浏览器设置"
 }
