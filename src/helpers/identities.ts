@@ -252,7 +252,7 @@ const checkMatchingAddress = (
 /**
  * Computes the weight of the recipient based on its role in the message, the type of
  * the matching identity, and the matching between the accounts that own the identity and
- * the the message's folder
+ * the message's folder
  *
  * @param recipients
  * @param identities
@@ -266,7 +266,7 @@ const computeIdentityWeight = (
 ): Array<RecipientWeight> => {
 	const result: Array<RecipientWeight> = [];
 
-	// Cicle for every recipient in the message
+	// Cycle for every recipient in the message
 	recipients.forEach((recipient) => {
 		// Check if the recipient has a matching identity
 		const matchingIdentity = identities.find(

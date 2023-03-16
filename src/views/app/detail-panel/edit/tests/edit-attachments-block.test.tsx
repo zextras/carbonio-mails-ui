@@ -8,7 +8,7 @@ import { screen } from '@testing-library/react';
 import { noop } from 'lodash';
 import React from 'react';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { createEditorCase } from '../../../../../tests/generators/editors';
+import { generateEditorCase } from '../../../../../tests/generators/editors';
 import { generateStore } from '../../../../../tests/generators/store';
 
 import EditAttachmentsBlock from '../edit-attachments-block';
@@ -19,7 +19,7 @@ describe('Attachments visualization', () => {
 		${'1'}   | ${'Various format attachments'}
 	`(`$attachmentType attachments are visible in email editor`, async ({ editorId }) => {
 		// Generate editor info for the store
-		const editor = await createEditorCase(editorId);
+		const editor = await generateEditorCase(editorId);
 		const editors = {
 			status: 'idle',
 			editors: {

@@ -88,6 +88,7 @@ const ConversationList: FC = () => {
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const status = useSelector(selectConversationStatus);
 
+	const listRef = useRef<HTMLDivElement>(null);
 	const conversationListStatus = useAppSelector((store) =>
 		selectFolderSearchStatus(store, folderId)
 	);
@@ -118,6 +119,15 @@ const ConversationList: FC = () => {
 		},
 		[hasMore, isLoading, dispatch, folderId]
 	);
+	useEffect(() => {
+		if (
+			listRef.current &&
+			listRef.current.children[0] &&
+			listRef.current.children[0].scrollTop !== 0
+		) {
+			listRef.current.children[0].scrollTop = 0;
+		}
+	}, [folderId]);
 
 	useEffect(() => {
 		const handler = (event: KeyboardEvent): void =>
@@ -232,6 +242,7 @@ const ConversationList: FC = () => {
 								loadMore(conversations?.[(conversations?.length ?? 1) - 1]?.date)
 							}
 							data-testid={`conversation-list-${folderId}`}
+							ref={listRef}
 						>
 							{listItems}
 						</CustomList>
