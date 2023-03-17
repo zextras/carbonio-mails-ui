@@ -80,9 +80,17 @@ export type MailMessage = IncompleteMessage & {
 	isReadReceiptRequested?: boolean;
 };
 
+/**
+ * Parameters' type for the SendMsgRequest API command
+ */
 export type SendMsgParameters = {
 	editorId: string;
 	msg?: MailMessage;
 	message?: MailMessage;
 	prefs?: PrefsType;
+
+	/**
+	 * The name of the account from which the message is sent, if different from the primary one
+	 */
+	otherAccount?: string;
 };

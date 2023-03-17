@@ -7,6 +7,7 @@ import { Account, AccountSettings, Folder, Roots } from '@zextras/carbonio-shell
 import { find, isArray } from 'lodash';
 import { MailMessage } from '../types';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
+import { getMessageOwnerAccountName } from './folders';
 
 /**
  * The name of the primary identity
@@ -305,35 +306,6 @@ const filterMatchingRecipients = (recipients: Array<RecipientWeight>): Array<Rec
 	return result;
 };
 
-const getMessageOwnerAccount = (
-	message: MailMessage,
-	account: Account,
-	folderRoots: Record<string, Folder & { owner: string }>
-): string => {
-	/*
-	 * Get the message parent folder's id and the optional zid, based on the format:
-	 *
-	 * [<zid>:]<folderId>
-	 *
-	 * e.g. a79fa996-e90e-4f04-97c4-c84209bb8277:2
-	 */
-	const folderId = message.parent;
-	const zid = folderId?.split(':')?.[0];
-
-	// If the id doesn't contain the zid the primary account is considered the owner
-	if (!zid) {
-		return account.name;
-	}
-
-	// If the id contains the zid, the account is considered the owner if the zid matches the account id
-	const matchingFolderRoot = find(folderRoots, { zid });
-	if (!matchingFolderRoot) {
-		return account.name;
-	}
-
-	return matchingFolderRoot?.owner ?? account.name;
-};
-
 /**
  * Analyze the message and return the identity that should be used to reply it.
  * @param folderRoots - The list of all the folder roots
@@ -350,7 +322,7 @@ const getRecipientReplyIdentity = (
 	// Get all the available identities for the account
 	const identities = getIdentities(account, settings);
 
-	const messageFolderOwnerAccount = getMessageOwnerAccount(message, account, folderRoots);
+	const messageFolderOwnerAccount = getMessageOwnerAccountName(message, account, folderRoots);
 
 	// Extract all the recipients addresses from the message
 	const recipients = getRecipients(message);

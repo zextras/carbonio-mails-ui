@@ -13,7 +13,7 @@ import { getMsg } from './get-msg';
 
 export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 	'sendMsg',
-	async ({ editorId, msg, prefs }, { rejectWithValue, getState, dispatch }) => {
+	async ({ editorId, msg, prefs, otherAccount }, { rejectWithValue, getState, dispatch }) => {
 		const editor = (getState() as StateType).editors.editors[editorId];
 		let toSend = editor && generateRequest(editor, prefs);
 
@@ -22,10 +22,14 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 		}
 		let resp;
 		try {
-			resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>('SendMsg', {
-				_jsns: 'urn:zimbraMail',
-				m: toSend
-			})) as SaveDraftResponse;
+			resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>(
+				'SendMsg',
+				{
+					_jsns: 'urn:zimbraMail',
+					m: toSend
+				},
+				otherAccount
+			)) as SaveDraftResponse;
 		} catch (e) {
 			console.error(e);
 			return rejectWithValue(e);
