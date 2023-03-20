@@ -27,7 +27,8 @@
         "preview_new_tab": "Clique para pré-visualizar em outra aba",
         "click_preview": "Clique para pré-visualizar",
         "mark_all_read": "Marcar tudo como lido",
-        "edit_anyway": "Editar mesmo assim"
+        "edit_anyway": "Editar mesmo assim",
+        "click_open": "Clique para abrir"
     },
     "folder": {
         "modal": {
@@ -98,7 +99,7 @@
         "delete": "Apagar",
         "delete_permanently": "Excluir",
         "move": "Mover",
-        "single_advanced_filter": "Filtros avançados",
+        "single_advanced_filter": "Filtros Avançados",
         "add": "Adicionar",
         "administer": "Administrar",
         "back": "Voltar",
@@ -251,7 +252,24 @@
         "not_in_list": "{{name}} - Não está na sua lista de etiquetas",
         "no_signature": "Sem assinatura",
         "mark_read_message_immediately": "Marcar a mensagen selecionada como lida imediatamente",
-        "mark_read_message_manually": "Marcar manualmente como lida, clicando neste ícone"
+        "mark_read_message_manually": "Marcar manualmente como lida, clicando neste ícone",
+        "attachment_with_count": "{{count}} Anexo",
+        "attachment_with_count_plural": "{{count}} Anexos",
+        "attachments_disclaimer": "Você está visualizando uma mensagem anexada. A autenticidade das mensagens anexadas não pode ser verificada.",
+        "choose_file": "Escolher arquivo",
+        "deselect_all": "DESMARCAR tudo",
+        "extra_window": {
+            "save_to_files_disabled": "Salvar no Files"
+        },
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "Não foi possível abrir uma nova janela"
+            }
+        },
+        "need_to_select_atleast_one_item": "Você precisa selecionar ao menos um item para realizar esta ação",
+        "path": "Caminho",
+        "select_all": "SELECIONAR tudo",
+        "using_signatures": "Uso de assinaturas"
     },
     "title": {
         "new_messages": "Novas mensagens",
@@ -346,7 +364,12 @@
         "read_receipt_1": "O remetente solicitou uma confirmação de leitura desta mensagem.",
         "read_receipt_2": "Deseja confirmar a leitura ao remetente?",
         "cal_name_exist_warning": "Já existe um calendário com o mesmo nome neste caminho",
-        "edit_schedule_warning": "Ao editar este e-mail, a hora e a data previamente definidas para envio agendado serão redefinidas."
+        "edit_schedule_warning": "Ao editar este e-mail, a hora e a data previamente definidas para envio agendado serão redefinidas.",
+        "extra_windows": {
+            "": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador",
+            "popup_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador",
+            "opening_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador"
+        }
     },
     "placeholder": {
         "add_new_recipients": "Adicionar novos destinatários"
@@ -569,7 +592,8 @@
             "some_att_fails": "Parece que há um problema ao salvar alguns arquivos. Tente novamente",
             "link_copying_error": "Parece que há um problema ao gerar o link público. Tente de novo",
             "some_link_copying_error": "Parece que há um problema ao gerar o link público para alguns arquivos. Tente de novo",
-            "all_link_copied": "Link público foi copiado com êxito"
+            "all_link_copied": "Link público foi copiado com êxito",
+            "eml_download_failed": "Anexo salvo na pasta selecionada"
         },
         "sending_mail_to_self": "Parece que você vai enviar um e-mail a si mesmo",
         "invalid_search_message": "Não encontramos nenhuma correspondência",
@@ -585,7 +609,8 @@
         "send_later_success": "Seu e-mail será enviado em {{date}} às {{time}}",
         "schedule_mail": "Será enviado em: {{date}} às {{time}}",
         "delete_attachment_message1": "Seu anexo será excluído permanentemente do Carbonio.",
-        "delete_attachment_message2": "Deseja baixá-lo antes?"
+        "delete_attachment_message2": "Deseja baixá-lo antes?",
+        "": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador"
     },
     "snackbar": {
         "share_resend": "Convite do compartilhamento reenviado",
@@ -735,12 +760,12 @@
         "received": "recebidas por mim",
         "read": "lidas",
         "fromme": "vindas de mim",
-        "fromccme": "vindas de mim",
+        "fromccme": "de mim ou copiadas para mim",
         "forwarded": "encaminhadas",
         "flagged": "sinalizadas",
         "draft": "rascunho",
         "unreplied": "não respondido por mim",
-        "tofromme": "para mim, de mim ou em cópia para mim",
+        "tofromme": "para mim ou de mim",
         "tofromccme": "para mim, de mim ou em cópia para mim",
         "toccme": "para mim ou em cópia para mim",
         "solo": "conversas com uma única mensagem",
@@ -774,5 +799,6 @@
         "delete_draft": {
             "message1": "Deseja manter ou excluir este rascunho?"
         }
-    }
+    },
+    "": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador"
 }

@@ -56,6 +56,7 @@ const AppView = () => (
 		</StoreProvider>
 	</Suspense>
 );
+
 const EditView = () => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>

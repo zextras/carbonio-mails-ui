@@ -28,7 +28,7 @@
         "mark_as_unread": "未読にする",
         "ok": "Ok",
         "reply": "返信する",
-        "search": "検索する",
+        "search": "検索",
         "edit_share": "共有を編集する",
         "edit_as_new": "新規として編集する",
         "flag": "フラグを追加する",
@@ -39,7 +39,7 @@
         "print": "印刷",
         "redirect": "リダイレクトする",
         "reply_all": "全員に返信する",
-        "reset": "リセットする",
+        "reset": "リセット",
         "share_folder": "フォルダを共有する",
         "send_anyway": "とにかく送信する",
         "show_details": "詳細を表示する",
@@ -50,7 +50,8 @@
         "preview_new_tab": "クリックして別のタブでプレビューする",
         "click_preview": "クリックしてプレビューする",
         "mark_all_read": "すべて既読にする",
-        "edit_anyway": "とにかく編集する"
+        "edit_anyway": "とにかく編集する",
+        "click_open": "クリックして開きます"
     },
     "folders": {
         "trash": "ゴミ箱",
@@ -266,7 +267,23 @@
         "enter_name": "名前を入力する",
         "no_signature": "署名なし",
         "mark_read_message_immediately": "ディスプレイヤーのメッセージをすぐに既読にする",
-        "mark_read_message_manually": "このアイコンをクリックして手動で既読にする"
+        "mark_read_message_manually": "このアイコンをクリックして手動で既読にする",
+        "attachment_with_count": "{{count}} 個の添付ファイル",
+        "attachments_disclaimer": "添付メッセージを表示しています。添付されたメッセージの信憑性は確認できません。",
+        "choose_file": "ファイルを選ぶ",
+        "deselect_all": "すべての選択を解除",
+        "extra_window": {
+            "save_to_files_disabled": "ファイルに保存する"
+        },
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "新しいウィンドウを開くことができません"
+            }
+        },
+        "need_to_select_atleast_one_item": "アクションを実行するには、少なくとも項目を一つ選択する必要があります",
+        "path": "パス",
+        "select_all": "すべて選択",
+        "using_signatures": "署名の使用"
     },
     "messages": {
         "modal": {
@@ -339,7 +356,12 @@
         "read_receipt_1": "このメッセージの送信者は、あなたがこのメッセージを読んだときに通知を受けるようにリクエストしています。",
         "invalid_trustee_address": "メールアドレスまたはドメインのみを入力してください",
         "edit_schedule_warning": "このメールを編集すると、以前に設定された遅延送信の日時がリセットされます。",
-        "cal_name_exist_warning": "同じ名前のカレンダーがこのパスにすでに存在しています"
+        "cal_name_exist_warning": "同じ名前のカレンダーがこのパスにすでに存在しています",
+        "extra_windows": {
+            "": "操作を完了するには、Carbonioで新しいウィンドウを開く必要があります。\nブラウザの設定を確認してください",
+            "opening_blocked": "操作を完了するには、Carbonioで新しいウィンドウを開く必要があります。\nブラウザの設定を確認してください",
+            "popup_blocked": "操作を完了するには、Carbonioで新しいウィンドウを開く必要があります。\nブラウザの設定を確認してください"
+        }
     },
     "placeholder": {
         "add_new_recipients": "新しい受信者を追加する"
@@ -405,7 +427,8 @@
             "calendar_edits_saved": "編集内容が保存されました",
             "some_link_copying_error": "一部のファイルのパブリックURLの生成中に問題が発生したようです。再度お試しください",
             "link_copying_error": "パブリックリンクの生成中に問題が発生したようです。再度お試しください",
-            "all_link_copied": "パブリックリンクがコピーされました"
+            "all_link_copied": "パブリックリンクがコピーされました",
+            "eml_download_failed": "選択したフォルダに添付ファイルが保存されました"
         },
         "sending_mail_to_self": "自分にメールを送信しようとしているようです",
         "invalid_search_message": "一致するものが見つかりませんでした",
@@ -421,7 +444,8 @@
         "schedule_time": "{{date}}、{{time}}",
         "schedule_mail": "送信予定日: {{date}} {{time}}",
         "delete_attachment_message1": "添付ファイルが Carbonio から完全に削除されます。",
-        "delete_attachment_message2": "事前にダウンロードしますか？"
+        "delete_attachment_message2": "事前にダウンロードしますか？",
+        "": "操作を完了するには、Carbonioで新しいウィンドウを開く必要があります。\nブラウザの設定を確認してください"
     },
     "settings": {
         "label": {
@@ -723,12 +747,12 @@
         "received": "自分が受信済み",
         "read": "読み取り",
         "fromme": "自分から",
-        "fromccme": "自分から",
+        "fromccme": "自分から、または自分にコピーする",
         "forwarded": "転送済み",
         "flagged": "フラグ付き",
         "draft": "下書き",
         "unreplied": "回答済み項目がありません",
-        "tofromme": "受信、送信、コピー",
+        "tofromme": "自分へ、または自分から",
         "tofromccme": "受信、送信、コピー",
         "toccme": "受信またはコピー",
         "solo": "単一のメッセージでの会話",
@@ -762,5 +786,6 @@
         "delete_draft": {
             "message1": "この下書きを保持しますか、それとも削除しますか？"
         }
-    }
+    },
+    "": "操作を完了するには、Carbonioで新しいウィンドウを開く必要があります。\nブラウザの設定を確認してください"
 }

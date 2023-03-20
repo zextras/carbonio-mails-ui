@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.2...v1.2.3) (2023-03-16)
+
+
+### Bug Fixes
+
+* editor not reflacted with the add public link from files ([3fcbbbb](https://github.com/zextras/carbonio-mails-ui/commit/3fcbbbbe5ceae2a0390efd20074d907ef95b4fa2))
+
 ### [1.2.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.1...v1.2.2) (2023-03-15)
 
 ### [1.2.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.0...v1.2.1) (2023-03-13)
