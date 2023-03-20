@@ -147,7 +147,7 @@ const getAvailableAddresses = (
 	// Adds the email addresses of all the shared accounts
 	if (account.rights?.targets) {
 		account.rights?.targets.forEach((target) => {
-			if (target.right === 'sendAs' && target.target) {
+			if (target.target && (target.right === 'sendAs' || target.right === 'sendOnBehalfOf')) {
 				target.target.forEach((user) => {
 					if (user.type === 'account' && user.email) {
 						user.email.forEach((email) => {
@@ -160,6 +160,30 @@ const getAvailableAddresses = (
 	}
 
 	return result;
+};
+
+/**
+ *
+ * @param address
+ * @param primaryAccount
+ * @param settings
+ */
+const getAddressOwnerAccount = (
+	address: string,
+	primaryAccount: Account,
+	settings: AccountSettings
+): string | undefined => {
+	if (!address) {
+		return undefined;
+	}
+	const addressInfo = getAvailableAddresses(primaryAccount, settings).filter(
+		(info) => info.address === address
+	);
+	if (addressInfo.length === 0) {
+		return undefined;
+	}
+
+	return addressInfo[0].ownerAccount;
 };
 
 /**
@@ -358,14 +382,55 @@ const getRecipientReplyIdentity = (
 	};
 };
 
+/**
+ * Returns the message's sender obtained from the message's participants
+ * @param message
+ */
+const getMessageSenderAddress = (message: MailMessage): string | undefined => {
+	if (!message || !message.participants) {
+		return undefined;
+	}
+
+	const senders = message.participants.filter(
+		(participant) => participant.type === ParticipantRole.FROM
+	);
+	if (senders.length === 0) {
+		return undefined;
+	}
+
+	return senders[0].address;
+};
+
+/**
+ * Returns the account of the message's sender obtained from the message's participants
+ * @param message
+ * @param primaryAccount
+ * @param settings
+ */
+const getMessageSenderAccount = (
+	message: MailMessage,
+	primaryAccount: Account,
+	settings: AccountSettings
+): string | undefined => {
+	const address = getMessageSenderAddress(message);
+	if (!address) {
+		return undefined;
+	}
+
+	return getAddressOwnerAccount(address, primaryAccount, settings);
+};
+
 export {
 	MatchingReplyIdentity,
 	RecipientWeight,
 	getRecipientReplyIdentity,
 	getIdentities,
 	getAvailableAddresses,
+	getAddressOwnerAccount,
 	getRecipients,
 	computeIdentityWeight,
 	checkMatchingAddress,
-	filterMatchingRecipients
+	filterMatchingRecipients,
+	getMessageSenderAddress,
+	getMessageSenderAccount
 };

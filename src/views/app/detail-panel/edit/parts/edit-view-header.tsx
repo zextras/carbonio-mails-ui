@@ -307,7 +307,7 @@ const EditViewHeader: FC<PropType> = ({
 					hideButton,
 					actionLabel: t('label.undo', 'Undo'),
 					onActionClick: () => {
-						reopenBoards();CMVX<>? dfsbcm,./ dfbm,./ dfsm,/
+						reopenBoards();
 						notCanceled = false;
 						setTimeout(() => updateEditorCb({ ...oldEditor }, editorId), 10);
 						replaceHistory(undoURL);
@@ -345,7 +345,7 @@ const EditViewHeader: FC<PropType> = ({
 					}
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					dispatch(sendMsg({ editorId, prefs,  })).then((res) => {
+					dispatch(sendMsg({ editorId, prefs })).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							createSnackbar({
 								key: `mail-${editorId}`,

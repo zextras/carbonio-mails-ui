@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { getUserAccount, getUserSettings, soapFetch } from '@zextras/carbonio-shell-ui';
+import { getAddressOwnerAccount, getMessageSenderAccount } from '../../helpers/identities';
 import { StateType, SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { closeEditor } from '../editor-slice';
 import { generateMailRequest, generateRequest } from '../editor-slice-utils';
@@ -13,13 +14,20 @@ import { getMsg } from './get-msg';
 
 export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 	'sendMsg',
-	async ({ editorId, msg, prefs, otherAccount }, { rejectWithValue, getState, dispatch }) => {
+	async ({ editorId, msg, prefs }, { rejectWithValue, getState, dispatch }) => {
 		const editor = (getState() as StateType).editors.editors[editorId];
 		let toSend = editor && generateRequest(editor, prefs);
 
 		if (msg) {
 			toSend = generateMailRequest(msg);
 		}
+
+		// Get the sender account. If not determined then undefined is passed to the soapFetch which will use the default one
+		const account = getAddressOwnerAccount(
+			editor.from.address,
+			getUserAccount(),
+			getUserSettings()
+		);
 		let resp;
 		try {
 			resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>(
@@ -28,7 +36,7 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 					_jsns: 'urn:zimbraMail',
 					m: toSend
 				},
-				otherAccount
+				account
 			)) as SaveDraftResponse;
 		} catch (e) {
 			console.error(e);

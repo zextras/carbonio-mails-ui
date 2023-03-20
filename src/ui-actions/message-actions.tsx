@@ -561,8 +561,7 @@ export function sendDraft({
 				// @ts-ignore
 				sendMsg({
 					editorId: id,
-					msg: message,
-					otherAccount: getFolderOtherOwnerAccountName(message.parent, getRoots())
+					msg: message
 				})
 			);
 		}

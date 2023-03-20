@@ -88,9 +88,4 @@ export type SendMsgParameters = {
 	msg?: MailMessage;
 	message?: MailMessage;
 	prefs?: PrefsType;
-
-	/**
-	 * The name of the account from which the message is sent, if different from the primary one
-	 */
-	otherAccount?: string;
 };

@@ -3,31 +3,123 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, getRoots, getUserAccount } from '@zextras/carbonio-shell-ui';
+import { faker } from '@faker-js/faker';
+import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
+import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { getFolderOwnerAccountName } from '../folders';
+import { generateMessage } from '../../tests/generators/generateMessage';
+import {
+	getAddressOwnerAccount,
+	getMessageSenderAccount,
+	getMessageSenderAddress
+} from '../identities';
 
-describe('Folder owner', () => {
+describe('Message sender address', () => {
+	test('returns the address if sender is a participant of type FROM', () => {
+		const from = { type: ParticipantRole.FROM, address: faker.internet.email() };
+		const msg = generateMessage({ from });
+		expect(getMessageSenderAddress(msg)).toBe(from.address);
+	});
+
+	test('returns undefined if there is no participant of type FROM', () => {
+		const from = { type: undefined, address: faker.internet.email() };
+		const msg = generateMessage({ from });
+		expect(getMessageSenderAddress(msg)).toBeUndefined();
+	});
+
+	test('returns undefined if there is no participants', () => {
+		const msg = generateMessage({});
+		msg.participants = [];
+		expect(getMessageSenderAddress(msg)).toBeUndefined();
+	});
+});
+
+describe('Address owner account', () => {
 	const mocksContext = getMocksContext();
-	const roots = getRoots();
 	const primaryAccount = getUserAccount();
-	const sharedAccount = mocksContext.identities.sendAs[0];
+	const settings = getUserSettings();
 
-	test('For a folder with an id without the zid, the primary account name is returned', () => {
-		const folderId = FOLDERS.INBOX;
-		const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
-		expect(ownerAccountName).toBe(primaryAccount.name);
+	test('returns the primary account if address is the primary address', () => {
+		const inputAddress = mocksContext.identities.primary.identity.email;
+		expect(getAddressOwnerAccount(inputAddress, primaryAccount, settings)).toBe(inputAddress);
 	});
 
-	test("For a folder with an id containing the zid, the name of the shared account owning that folder's root is returned", () => {
-		const folderId = `${sharedAccount.identity.id}:${FOLDERS.INBOX}`;
-		const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
-		expect(ownerAccountName).toBe(sharedAccount.identity.email);
+	test('returns the primary account if address is an alias of the primary address', () => {
+		const inputaddress = mocksContext.identities.aliases[0].identity.email;
+		expect(getAddressOwnerAccount(inputaddress, primaryAccount, settings)).toBe(
+			mocksContext.identities.primary.identity.email
+		);
 	});
 
-	test('For a folder with an id containing an unknown zid, the primary account name is returned', () => {
-		const folderId = `TheAnswerIs42:${FOLDERS.INBOX}`;
-		const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
-		expect(ownerAccountName).toBe(primaryAccount.name);
+	test('returns the shared account if address is an address belongs to an account on which the user has the "sendAs" right', () => {
+		const inputAddress = mocksContext.identities.sendAs[0].identity.email;
+		expect(getAddressOwnerAccount(inputAddress, primaryAccount, settings)).toBe(inputAddress);
+	});
+
+	test('returns the shared account if address belongs to an account on which the user has the "sendOnBehalf" right', () => {
+		const inputAddress = mocksContext.identities.sendOnBehalf[0].identity.email;
+		expect(getAddressOwnerAccount(inputAddress, primaryAccount, settings)).toBe(inputAddress);
+	});
+
+	test("returns undefined if the address isn't within the primary, the aliases or the shared account", () => {
+		const inputAddress = faker.internet.email();
+		expect(getAddressOwnerAccount(inputAddress, primaryAccount, settings)).toBeUndefined();
+	});
+});
+
+describe('Message sender account', () => {
+	const mocksContext = getMocksContext();
+	const primaryAccount = getUserAccount();
+	const settings = getUserSettings();
+
+	test('returns the primary account if sender is the primary address', () => {
+		const from = {
+			type: ParticipantRole.FROM,
+			address: mocksContext.identities.primary.identity.email
+		};
+		const msg = generateMessage({ from });
+		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBe(
+			mocksContext.identities.primary.identity.email
+		);
+	});
+
+	test('returns the primary account if sender is an alias of the primary address', () => {
+		const from = {
+			type: ParticipantRole.FROM,
+			address: mocksContext.identities.aliases[0].identity.email
+		};
+		const msg = generateMessage({ from });
+		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBe(
+			mocksContext.identities.primary.identity.email
+		);
+	});
+
+	test('returns the shared account if sender is an address on which the user has the "sendAs" right', () => {
+		const targetAddress = mocksContext.identities.sendAs[0].identity.email;
+		const from = {
+			type: ParticipantRole.FROM,
+			address: targetAddress
+		};
+		const msg = generateMessage({ from });
+		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBe(targetAddress);
+	});
+
+	test('returns the shared account if sender is an address on which the user has the "sendOnBehalf" right', () => {
+		const targetAddress = mocksContext.identities.sendOnBehalf[0].identity.email;
+		const from = {
+			type: ParticipantRole.FROM,
+			address: targetAddress
+		};
+		const msg = generateMessage({ from });
+		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBe(targetAddress);
+	});
+
+	test("returns undefined if sender address isn't within the primary, the aliases or the shared account", () => {
+		const from = {
+			type: ParticipantRole.FROM,
+			address: mocksContext.otherUsersIdentities[0].email
+		};
+		const msg = generateMessage({ from });
+		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBeUndefined();
 	});
 });
