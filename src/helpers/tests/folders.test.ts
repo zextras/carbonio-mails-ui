@@ -16,20 +16,20 @@ describe('Folder id', () => {
 
 	test('without zid', () => {
 		const parts = getFolderIdParts('1087');
-		expect(parts.zid).toBeUndefined();
+		expect(parts.zid).toBeNull();
 		expect(parts.id).toBe('1087');
 	});
 
 	test('without id', () => {
 		const parts = getFolderIdParts('a79fa996-e90e-4f04-97c4-c84209bb8277:');
-		expect(parts.zid).toBeUndefined();
-		expect(parts.id).toBeUndefined();
+		expect(parts.zid).toBeNull();
+		expect(parts.id).toBeNull();
 	});
 
 	test('with zid only', () => {
 		const parts = getFolderIdParts('a79fa996-e90e-4f04-97c4-c84209bb8277');
-		expect(parts.zid).toBeUndefined();
-		expect(parts.id).toBeUndefined();
+		expect(parts.zid).toBeNull();
+		expect(parts.id).toBeNull();
 	});
 });
 

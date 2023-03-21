@@ -16,14 +16,14 @@ import { MailMessage } from '../types';
  */
 const FOLDERID_REGEX = /^([^:]+(?=:))*:?(\d+)$/;
 
-type FolderIdType = { zid: string | undefined; id: string | undefined };
+type FolderIdType = { zid: string | null; id: string | null };
 
 /**
  * Parse the given folder id and returns on object with the composing parts of the folder id
  * @param folderId
  */
 const getFolderIdParts = (folderId: string): FolderIdType => {
-	const result: FolderIdType = { zid: undefined, id: undefined };
+	const result: FolderIdType = { zid: null, id: null };
 
 	if (!folderId || !folderId.match(FOLDERID_REGEX)) {
 		return result;
@@ -34,7 +34,7 @@ const getFolderIdParts = (folderId: string): FolderIdType => {
 		return result;
 	}
 
-	[, result.zid, result.id] = parts;
+	[, result.zid = null, result.id = null] = parts;
 	return result;
 };
 
