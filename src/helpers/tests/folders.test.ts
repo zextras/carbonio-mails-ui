@@ -5,7 +5,33 @@
  */
 import { FOLDERS, getRoots, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { getFolderOwnerAccountName } from '../folders';
+import { getFolderIdParts, getFolderOwnerAccountName } from '../folders';
+
+describe('Folder id', () => {
+	test('with zid', () => {
+		const parts = getFolderIdParts('a79fa996-e90e-4f04-97c4-c84209bb8277:1087');
+		expect(parts.zid).toBe('a79fa996-e90e-4f04-97c4-c84209bb8277');
+		expect(parts.id).toBe('1087');
+	});
+
+	test('without zid', () => {
+		const parts = getFolderIdParts('1087');
+		expect(parts.zid).toBeUndefined();
+		expect(parts.id).toBe('1087');
+	});
+
+	test('without id', () => {
+		const parts = getFolderIdParts('a79fa996-e90e-4f04-97c4-c84209bb8277:');
+		expect(parts.zid).toBeUndefined();
+		expect(parts.id).toBeUndefined();
+	});
+
+	test('with zid only', () => {
+		const parts = getFolderIdParts('a79fa996-e90e-4f04-97c4-c84209bb8277');
+		expect(parts.zid).toBeUndefined();
+		expect(parts.id).toBeUndefined();
+	});
+});
 
 describe('Folder owner', () => {
 	const mocksContext = getMocksContext();
