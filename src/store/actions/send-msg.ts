@@ -36,7 +36,7 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 					_jsns: 'urn:zimbraMail',
 					m: toSend
 				},
-				account
+				account ?? undefined
 			)) as SaveDraftResponse;
 		} catch (e) {
 			console.error(e);

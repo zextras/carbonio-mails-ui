@@ -21,16 +21,16 @@ describe('Message sender address', () => {
 		expect(getMessageSenderAddress(msg)).toBe(from.address);
 	});
 
-	test('returns undefined if there is no participant of type FROM', () => {
+	test('returns null if there is no participant of type FROM', () => {
 		const from = { type: undefined, address: faker.internet.email() };
 		const msg = generateMessage({ from });
-		expect(getMessageSenderAddress(msg)).toBeUndefined();
+		expect(getMessageSenderAddress(msg)).toBeNull();
 	});
 
-	test('returns undefined if there is no participants', () => {
+	test('returns null if there is no participants', () => {
 		const msg = generateMessage({});
 		msg.participants = [];
-		expect(getMessageSenderAddress(msg)).toBeUndefined();
+		expect(getMessageSenderAddress(msg)).toBeNull();
 	});
 });
 
@@ -61,9 +61,9 @@ describe('Address owner account', () => {
 		expect(getAddressOwnerAccount(inputAddress, primaryAccount, settings)).toBe(inputAddress);
 	});
 
-	test("returns undefined if the address isn't within the primary, the aliases or the shared account", () => {
+	test("returns null if the address isn't within the primary, the aliases or the shared account", () => {
 		const inputAddress = faker.internet.email();
-		expect(getAddressOwnerAccount(inputAddress, primaryAccount, settings)).toBeUndefined();
+		expect(getAddressOwnerAccount(inputAddress, primaryAccount, settings)).toBeNull();
 	});
 });
 
@@ -114,12 +114,12 @@ describe('Message sender account', () => {
 		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBe(targetAddress);
 	});
 
-	test("returns undefined if sender address isn't within the primary, the aliases or the shared account", () => {
+	test("returns null if sender address isn't within the primary, the aliases or the shared account", () => {
 		const from = {
 			type: ParticipantRole.FROM,
 			address: mocksContext.otherUsersIdentities[0].email
 		};
 		const msg = generateMessage({ from });
-		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBeUndefined();
+		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBeNull();
 	});
 });

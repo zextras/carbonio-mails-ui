@@ -10,7 +10,6 @@ import {
 	addBoard,
 	FOLDERS,
 	getBridgedFunctions,
-	getRoots,
 	replaceHistory,
 	t,
 	Tags
@@ -18,7 +17,6 @@ import {
 import { map, noop } from 'lodash';
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { MAILS_ROUTE } from '../constants';
-import { getFolderOtherOwnerAccountName } from '../helpers/folders';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { ActionsType } from '../commons/utils';
 import { sendMsg } from '../store/actions/send-msg';

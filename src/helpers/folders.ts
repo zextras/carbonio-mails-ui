@@ -41,27 +41,27 @@ const getFolderIdParts = (folderId: string): FolderIdType => {
 /**
  * Get the account name of the owner of the given folder, if the owner is an
  * "other" account, different from the primary account of the current user.
- * If the owner is the primary account then <code>undefined</code> is returned
+ * If the owner is the primary account then <code>null</code> is returned
  * @param folderId
  * @param folderRoots
  */
 const getFolderOtherOwnerAccountName = (
 	folderId: string,
 	folderRoots: Record<string, Folder & { owner: string }>
-): string | undefined => {
+): string | null => {
 	if (!folderId) {
-		return undefined;
+		return null;
 	}
 
 	const { zid } = getFolderIdParts(folderId);
 	if (!zid) {
-		return undefined;
+		return null;
 	}
 
 	// If the id contains the zid, the account is considered the owner if the zid matches the account id
 	const matchingFolderRoot = find(folderRoots, { zid });
 	if (!matchingFolderRoot) {
-		return undefined;
+		return null;
 	}
 
 	return matchingFolderRoot.owner;

@@ -172,15 +172,15 @@ const getAddressOwnerAccount = (
 	address: string,
 	primaryAccount: Account,
 	settings: AccountSettings
-): string | undefined => {
+): string | null => {
 	if (!address) {
-		return undefined;
+		return null;
 	}
 	const addressInfo = getAvailableAddresses(primaryAccount, settings).filter(
 		(info) => info.address === address
 	);
 	if (addressInfo.length === 0) {
-		return undefined;
+		return null;
 	}
 
 	return addressInfo[0].ownerAccount;
@@ -386,16 +386,16 @@ const getRecipientReplyIdentity = (
  * Returns the message's sender obtained from the message's participants
  * @param message
  */
-const getMessageSenderAddress = (message: MailMessage): string | undefined => {
+const getMessageSenderAddress = (message: MailMessage): string | null => {
 	if (!message || !message.participants) {
-		return undefined;
+		return null;
 	}
 
 	const senders = message.participants.filter(
 		(participant) => participant.type === ParticipantRole.FROM
 	);
 	if (senders.length === 0) {
-		return undefined;
+		return null;
 	}
 
 	return senders[0].address;
@@ -411,10 +411,10 @@ const getMessageSenderAccount = (
 	message: MailMessage,
 	primaryAccount: Account,
 	settings: AccountSettings
-): string | undefined => {
+): string | null => {
 	const address = getMessageSenderAddress(message);
 	if (!address) {
-		return undefined;
+		return null;
 	}
 
 	return getAddressOwnerAccount(address, primaryAccount, settings);
