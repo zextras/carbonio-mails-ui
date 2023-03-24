@@ -15,8 +15,7 @@ import {
 	LinkFolderFields
 } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
-
-const folderIdRegex = /^(.+:)*(\d+)$/;
+import { getFolderIdParts } from '../../helpers/folders';
 
 export const normalizeFolder = (
 	folder: Folder & Partial<LinkFolderFields>
@@ -242,7 +241,7 @@ export const getSystemFolderTranslatedName = ({ folderName }: GetSystemFolderPro
 };
 
 export const getFolderTranslatedName = ({ folderId, folderName }: GetSystemFolderProps): string => {
-	const id = folderIdRegex.exec(folderId ?? '')?.[2];
+	const { id } = getFolderIdParts(folderId ?? '');
 	if (id && Object.values(FOLDERS).includes(id)) {
 		return getSystemFolderTranslatedName({ folderName });
 	}
