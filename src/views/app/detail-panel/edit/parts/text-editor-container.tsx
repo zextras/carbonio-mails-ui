@@ -157,6 +157,9 @@ const TextEditorContainer: FC<PropType> = ({
 										data-testid="MailPlainTextEditor"
 										value={inputValue[0]}
 										style={{ fontFamily: defaultFontFamily }}
+										onFocus={(ev): void => {
+											ev.currentTarget.setSelectionRange(0, null);
+										}}
 										onChange={(ev): void => {
 											// eslint-disable-next-line no-param-reassign
 											ev.target.style.height = 'auto';

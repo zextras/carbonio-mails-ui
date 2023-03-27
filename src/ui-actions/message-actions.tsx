@@ -207,8 +207,7 @@ export function printMsg({
 					}
 				})
 				.catch(() => {
-					const errorContent = errorPage;
-					if (printWindow) printWindow.document.write(errorContent);
+					if (printWindow) printWindow.document.write(errorPage);
 				});
 		}
 	};

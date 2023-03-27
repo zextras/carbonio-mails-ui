@@ -80,7 +80,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 	const messages = useAppSelector(selectMessages);
 
 	const { handleSubmit, setValue } = useForm();
-	const { prefs } = useUserSettings();
+	const { prefs } = settings;
 	const [dropZoneEnable, setDropZoneEnable] = useState(false);
 
 	const saveDraftCb = useCallback(

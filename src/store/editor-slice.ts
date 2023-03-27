@@ -6,7 +6,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { drop, find } from 'lodash';
+import { drop } from 'lodash';
 import { ActionsType } from '../commons/utils';
 import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';

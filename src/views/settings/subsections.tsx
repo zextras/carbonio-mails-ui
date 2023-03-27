@@ -23,7 +23,7 @@ export const signaturesSubSection = (): SettingsSubSection => ({
 	id: 'signatures'
 });
 export const setDefaultSignaturesSubSection = (): SettingsSubSection => ({
-	label: t('label.using_signatures', 'Using signatures'),
+	label: t('label.using_signatures', 'Signatures Usage'),
 	id: 'using_signatures'
 });
 export const filtersSubSection = (): SettingsSubSection => ({

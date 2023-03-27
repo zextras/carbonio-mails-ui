@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -9,6 +9,7 @@ export * from './actions';
 export * from './conversations';
 export * from './details-pannel';
 export * from './editor';
+export * from './extra-windows';
 export * from './filters';
 export * from './folder';
 export * from './messages';

@@ -4,10 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Container } from '@zextras/carbonio-design-system';
-import { Spinner, setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import {
+	SEARCH_APP_ID,
+	Spinner,
+	replaceHistory,
+	setAppContext,
+	t,
+	useUserSettings
+} from '@zextras/carbonio-shell-ui';
 import { includes, map, reduce } from 'lodash';
 import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
 import { selectFolders } from '../../store/folders-slice';
@@ -160,6 +168,10 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			setFilterCount(0);
 			setIsInvalidQuery(false);
 			dispatch(resetSearchResults());
+			replaceHistory({
+				path: MAILS_ROUTE,
+				route: SEARCH_APP_ID
+			});
 		}
 	}, [
 		query,

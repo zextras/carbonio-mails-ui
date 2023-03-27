@@ -8,9 +8,12 @@ import { SoapMailParticipant } from './soap-mail-participant';
 export type SoapIncompleteMessage = {
 	readonly id: string;
 	/** Conversation id */ cid: string;
+	/** Message id */ mid?: string;
 	/** Folder id */ l: string;
 	/** Size */ s: number;
 	/** Date */ d: number;
+	/** Send date */ sd?: number;
+	/** Revision */ rev?: number;
 	// Flags. (u)nread, (f)lagged, has (a)ttachment, (r)eplied, (s)ent by me,
 	// for(w)arded, calendar in(v)ite, (d)raft, IMAP-\Deleted (x), (n)otification sent,
 	// urgent (!), low-priority (?), priority (+)
@@ -31,7 +34,6 @@ export type SoapMailMessage = SoapIncompleteMessage & {
 	/** Subject */ su: string;
 	/** Fragment */ fr: string;
 	/** Parts */ mp: Array<SoapMailMessagePart>;
-	/** Flags */ f: string;
 };
 
 export type SoapMailMessagePart = {
@@ -39,9 +41,10 @@ export type SoapMailMessagePart = {
 	/**	Content Type  */ ct: 'multipart/alternative' | string;
 	/**	Size  */ s?: number;
 	/**	Content id (for inline images)  */ ci?: string;
-	/** Content disposition */ cd: 'inline' | 'attachment';
+	/** Content disposition */ cd?: 'inline' | 'attachment';
 	/**	Parts  */ mp?: Array<SoapMailMessagePart>;
 	/**	Set if is the body of the message  */ body?: true;
 	filename?: string;
+	// FIXME see IRIS-4029 Based on the compose settings the content could be a string or an object of type { _content: string }
 	content?: string;
 };

@@ -9,13 +9,12 @@ import {
 	Folder,
 	LinkFolder,
 	LinkFolderFields,
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	ROOT_NAME,
 	ZIMBRA_STANDARD_COLORS,
 	t
 } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
+import { getFolderIdParts } from '../../helpers/folders';
 import { MailMessage } from '../../types';
 
 const folderIdRegex = /^(.+:)*(\d+)$/;
@@ -244,7 +243,7 @@ export const getSystemFolderTranslatedName = ({ folderName }: GetSystemFolderPro
 };
 
 export const getFolderTranslatedName = ({ folderId, folderName }: GetSystemFolderProps): string => {
-	const id = folderIdRegex.exec(folderId ?? '')?.[2];
+	const { id } = getFolderIdParts(folderId ?? '');
 	if (id && Object.values(FOLDERS).includes(id)) {
 		return getSystemFolderTranslatedName({ folderName });
 	}

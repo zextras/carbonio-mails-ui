@@ -5,7 +5,7 @@
  */
 
 import { Icon, Padding, Text } from '@zextras/carbonio-design-system';
-import { getAction, t } from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { compact } from 'lodash';
 import React, { ReactElement, useMemo } from 'react';
 import { useGetPublicUrl } from './use-get-public-url';
@@ -19,6 +19,7 @@ type UseGetAttachItemsPropType = {
 	updateEditorCb: (arg: Partial<MailsEditor>) => void;
 	saveDraftCb: (arg: Partial<MailsEditor>) => void;
 	setValue: (arg1: string, arg2: string) => void;
+	changeEditorText: (text: [string, string]) => void;
 };
 type UseGetAttachItemsReturnType = {
 	customComponent?: ReactElement;
@@ -37,7 +38,8 @@ export const useGetAttachItems = ({
 	editorId,
 	updateEditorCb,
 	saveDraftCb,
-	setValue
+	setValue,
+	changeEditorText
 }: UseGetAttachItemsPropType): Array<UseGetAttachItemsReturnType> => {
 	const [getFilesFromDrive, getFilesAvailable] = useGetFilesFromDrive({
 		editorId,
@@ -48,11 +50,13 @@ export const useGetAttachItems = ({
 		editorId,
 		updateEditorCb,
 		saveDraftCb,
-		setValue
+		setValue,
+		changeEditorText
 	});
 
 	const actionTarget = useMemo(
 		() => ({
+			title: t('label.choose_file', 'Choose file'),
 			confirmAction: getFilesFromDrive,
 			confirmLabel: t('label.select', 'Select'),
 			allowFiles: true,
@@ -63,6 +67,7 @@ export const useGetAttachItems = ({
 
 	const actionURLTarget = useMemo(
 		() => ({
+			title: t('label.choose_file', 'Choose file'),
 			confirmAction: getLink,
 			confirmLabel: t('label.share_public_link', 'Share Public Link'),
 			allowFiles: true,
@@ -70,16 +75,7 @@ export const useGetAttachItems = ({
 		}),
 		[getLink]
 	);
-	const [filesSelectFilesAction, filesSelectFilesActionAvailable] = getAction(
-		'carbonio_files_action',
-		'files-select-nodes',
-		actionTarget
-	);
-	const [getFilesAction, getFilesActionAvailable] = getAction(
-		'carbonio_files_action',
-		'files-select-nodes',
-		actionURLTarget
-	);
+	const [getFilesAction, getFilesActionAvailable] = getIntegratedFunction('select-nodes');
 
 	return useMemo(() => {
 		const localItem = {
@@ -106,30 +102,35 @@ export const useGetAttachItems = ({
 			disabled: true
 		};
 		const driveItem =
-			filesSelectFilesActionAvailable && getFilesAvailable
+			getFilesActionAvailable && getFilesAvailable
 				? {
-						...filesSelectFilesAction,
-						label: t('composer.attachment.files', 'Add from Files')
+						label: t('composer.attachment.files', 'Add from Files'),
+						icon: 'DriveOutline',
+						click: (): void => {
+							getFilesAction(actionTarget);
+						}
 				  }
 				: undefined;
 		const fileUrl =
 			getFilesActionAvailable && getLinkAvailable
 				? {
-						...getFilesAction,
 						label: t('composer.attachment.url', 'Add public link from Files'),
-						icon: 'Link2'
+						icon: 'Link2',
+						click: (): void => {
+							getFilesAction(actionURLTarget);
+						}
 				  }
 				: undefined;
 
 		return compact([localItem, driveItem, fileUrl, contactItem]);
 	}, [
 		onFileClick,
-		filesSelectFilesActionAvailable,
 		getFilesAvailable,
-		filesSelectFilesAction,
+		actionTarget,
 		getFilesActionAvailable,
 		getLinkAvailable,
 		getFilesAction,
+		actionURLTarget,
 		setOpenDD
 	]);
 };
