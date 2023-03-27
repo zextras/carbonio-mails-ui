@@ -89,18 +89,6 @@ export type FolderActionsProps = {
 	disabled?: boolean;
 };
 
-export type DragEnterAction =
-	| undefined
-	| {
-			success: false;
-	  };
-
-export type OnDropActionProps = {
-	event: React.DragEvent;
-	type: string;
-	data: DataProps;
-};
-
 export type ShareRevokeModalType = {
 	folder: Folder;
 	onClose?: () => void;

@@ -13,8 +13,8 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { startsWith } from 'lodash';
 import React, { SyntheticEvent, useContext, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
 import { FolderActionsType } from '../../commons/utils';
+import { useAppDispatch } from '../../hooks/redux';
 import { folderAction } from '../../store/actions/folder-action';
 import { StoreProvider } from '../../store/redux';
 import { DeleteModal } from './delete-modal';
@@ -34,7 +34,7 @@ type FolderActionsProps = {
 };
 
 export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createModal = useContext(ModalManagerContext) as Function;
 

@@ -6,7 +6,6 @@
 import React, { useMemo, useEffect, FC, ReactElement, useCallback } from 'react';
 import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
 import { FOLDERS, useCurrentRoute, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { map, sortBy, find, filter } from 'lodash';
 import PreviewPanelHeader from './preview/preview-panel-header';
@@ -19,6 +18,7 @@ import { getConv, searchConv } from '../../../store/actions';
 import MailPreview from './preview/mail-preview';
 import { selectMessages } from '../../../store/messages-slice';
 import { Conversation, StateType } from '../../../types';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 
 const MessagesComponent = ({
 	conversation
@@ -27,8 +27,8 @@ const MessagesComponent = ({
 }): ReactElement => {
 	const { conversationId, folderId } = useParams<{ conversationId: string; folderId: string }>();
 	const settings = useUserSettings();
-	const messages = useSelector(selectMessages);
-	const conversationStatus = useSelector(selectCurrentFolderExpandedStatus)[conversationId];
+	const messages = useAppSelector(selectMessages);
+	const conversationStatus = useAppSelector(selectCurrentFolderExpandedStatus)[conversationId];
 	const activeRoute = useCurrentRoute();
 	const convMessages = useMemo(() => {
 		const msgs =
@@ -88,9 +88,9 @@ const ConversationPreviewPanel: FC = () => {
 	const { conversationId, folderId } = useParams<{ conversationId: string; folderId: string }>();
 	const tagsFromStore = useTags();
 
-	const dispatch = useDispatch();
-	const conversations = useSelector(selectConversationsArray);
-	const conversationsStatus = useSelector((state: StateType) =>
+	const dispatch = useAppDispatch();
+	const conversations = useAppSelector(selectConversationsArray);
+	const conversationsStatus = useAppSelector((state: StateType) =>
 		selectConversationExpandedStatus(state, conversationId)
 	);
 

@@ -19,11 +19,11 @@ import { getAction, getBridgedFunctions, soapFetch, t } from '@zextras/carbonio-
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, find, map, noop } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { errorPage } from '../../../../commons/preview-eml/error-page';
 import { getEMLContent } from '../../../../commons/preview-eml/get-eml-content';
 import { getFileExtension } from '../../../../commons/utilities';
+import { useAppDispatch } from '../../../../hooks/redux';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
@@ -95,7 +95,7 @@ const Attachment: FC<AttachmentType> = ({
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {

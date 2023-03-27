@@ -5,12 +5,12 @@
  */
 import { orderBy, reduce, some } from 'lodash';
 import { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { getFolder } from '@zextras/carbonio-shell-ui';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import { Conversation, StateType } from '../types';
+import { useAppDispatch, useAppSelector } from './redux';
 
 type RouteParams = {
 	folderId: string;
@@ -18,9 +18,11 @@ type RouteParams = {
 
 export const useConversationListItems = (): Array<Conversation> => {
 	const { folderId } = <RouteParams>useParams();
-	const dispatch = useDispatch();
-	const folderStatus = useSelector((state) => selectFolderSearchStatus(<StateType>state, folderId));
-	const conversations = useSelector(selectConversationsArray);
+	const dispatch = useAppDispatch();
+	const folderStatus = useAppSelector((state: StateType) =>
+		selectFolderSearchStatus(<StateType>state, folderId)
+	);
+	const conversations = useAppSelector(selectConversationsArray);
 	const folder = getFolder(folderId);
 
 	/* NOTE: Need to comment out when need to sort as per the configured sort order */

@@ -9,17 +9,16 @@ import { Container } from '@zextras/carbonio-design-system';
 import { FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 import React, { FC, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { ActionsContextProvider } from '../../commons/actions-context';
+import { useAppDispatch } from '../../hooks/redux';
 import { AppContext } from '../../types';
 import ShimmerList from '../search/shimmer-list';
-import ConversationList from './folder-panel/conversation-list';
-import MessageList from './folder-panel/message-list';
+import { MessageList } from './folder-panel/messages/message-list';
+import ConversationList from './folder-panel/conversations/conversation-list';
 
 const FolderPanel: FC = () => {
 	const { folderId } = useParams<{ folderId: string }>();
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const { isMessageView } = useAppContext<AppContext>();
 
 	useEffect(() => {
@@ -34,23 +33,21 @@ const FolderPanel: FC = () => {
 	return isNil(isMessageView) ? (
 		<ShimmerList />
 	) : (
-		<ActionsContextProvider isConversation={!isMessageView} folderId={folderId}>
-			<Container
-				orientation="row"
-				crossAlignment="flex-start"
-				mainAlignment="flex-start"
-				width="fill"
-				background="gray6"
-				borderRadius="none"
-				style={{
-					maxHeight: '100%'
-				}}
-			>
-				<Container mainAlignment="flex-start" borderRadius="none" data-testid="list-wrapper">
-					{isMessageView || folderId === FOLDERS.DRAFTS ? <MessageList /> : <ConversationList />}
-				</Container>
+		<Container
+			orientation="row"
+			crossAlignment="flex-start"
+			mainAlignment="flex-start"
+			width="fill"
+			background="gray6"
+			borderRadius="none"
+			style={{
+				maxHeight: '100%'
+			}}
+		>
+			<Container mainAlignment="flex-start" borderRadius="none" data-testid="list-wrapper">
+				{isMessageView || folderId === FOLDERS.DRAFTS ? <MessageList /> : <ConversationList />}
 			</Container>
-		</ActionsContextProvider>
+		</Container>
 	);
 };
 

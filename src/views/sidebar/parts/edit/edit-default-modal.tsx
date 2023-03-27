@@ -7,16 +7,16 @@ import { Container, SnackbarManagerContext } from '@zextras/carbonio-design-syst
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { filter, includes, isEmpty } from 'lodash';
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { folderAction } from '../../../../store/actions/folder-action';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import NameInputRow from './name-input';
+import { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
+import { useAppDispatch } from '../../../../hooks/redux';
+import { folderAction } from '../../../../store/actions/folder-action';
+import { translatedSystemFolders } from '../../utils';
 import { FolderDetails } from './folder-details';
+import NameInputRow from './name-input';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
-import { translatedSystemFolders } from '../../utils';
-import { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
 
 const retentionPeriod = [
 	{
@@ -39,7 +39,7 @@ const retentionPeriod = [
 const numberRegex = /^\d+$/;
 
 const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveModal }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const [inputValue, setInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);

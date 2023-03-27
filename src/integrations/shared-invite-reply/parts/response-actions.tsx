@@ -4,23 +4,23 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable import/extensions */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import {
-	Padding,
 	Button,
-	Divider,
-	Row,
 	Checkbox,
+	Divider,
 	Input,
+	Padding,
+	Row,
 	Text
 } from '@zextras/carbonio-design-system';
 import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { find } from 'lodash';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
-import ColorSelect from './color-select';
 import { ResponseActionsProps } from '../../../types';
+import ColorSelect from './color-select';
 import { accept, decline } from './share-calendar-actions';
 
 const ResponseActions: FC<ResponseActionsProps> = ({

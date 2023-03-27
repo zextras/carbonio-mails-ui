@@ -59,6 +59,7 @@ export type FetchConversationsReturn = {
 	messages?: Record<string, IncompleteMessage>;
 	hasMore: boolean;
 	types: string;
+	Detail: { Error: { Code: string; Message: string } };
 };
 
 export type DeleteAttachmentsReturn = {

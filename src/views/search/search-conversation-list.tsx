@@ -3,17 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { Container, ListV2, Padding, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { Container, Padding, Text } from '@zextras/carbonio-design-system';
+import { t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { filter, isEmpty, map, sortBy } from 'lodash';
+import React, { FC, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { filter, isEmpty, map, sortBy } from 'lodash';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
-import SearchConversationListItem from './search-conversation-list-item';
-import ShimmerList from './shimmer-list';
+import { useSelection } from '../../hooks/use-selection';
+import { AppContext, SearchListProps } from '../../types';
+import { ConversationListComponent } from '../app/folder-panel/conversations/conversation-list-component';
+import { ConversationListItemComponent } from '../app/folder-panel/conversations/conversation-list-item-component';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
-import { SearchListProps } from '../../types';
+import ShimmerList from './shimmer-list';
 
 const InvalidSearchMessage = styled(Text)`
 	text-align: center;
@@ -31,7 +33,28 @@ const SearchConversationList: FC<SearchListProps> = ({
 	searchDisabled,
 	invalidQueryTooltip
 }) => {
-	const { itemId } = useParams<{ itemId: string }>();
+	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
+	const { setCount, count } = useAppContext<AppContext>();
+
+	const {
+		selected,
+		toggle,
+		deselectAll,
+		isSelectModeOn,
+		setIsSelectModeOn,
+		selectAll,
+		isAllSelected,
+		selectAllModeOff
+	} = useSelection({
+		currentFolderId: folderId,
+		setCount,
+		count,
+		items: [...Object.values(searchResults.conversations ?? {})]
+	});
+
+	// selectedIds is an array of the ids of the selected conversations for multiple selection actions
+	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+
 	const loadMore = useCallback(() => {
 		if (searchResults && !isEmpty(searchResults.conversations) && searchResults.more) {
 			search(query, false);
@@ -42,18 +65,17 @@ const SearchConversationList: FC<SearchListProps> = ({
 		() => !loading && searchResults && !isEmpty(searchResults.conversations) && searchResults.more,
 		[loading, searchResults]
 	);
-	const [randomListIndex, setRandomListIndex] = useState(0);
-	useEffect(() => {
-		if (randomListIndex === 0) {
-			setRandomListIndex(1);
-		} else {
-			setRandomListIndex(0);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [searchResults.conversations, query]);
+
+	// This line of code assigns a random integer between 0 and 1 to the const randomListIndex
+	const randomListIndex = useMemo(() => Math.floor(Math.random() * 2), []);
 
 	const displayerTitle = useMemo(() => {
-		if (!isInvalidQuery && isEmpty(searchResults.conversations)) {
+		// If the query is invalid, don't return a title
+		if (isInvalidQuery) {
+			return null;
+		}
+		// If there are no results, return a title
+		if (isEmpty(searchResults.conversations)) {
 			if (randomListIndex === 0) {
 				return t(
 					'displayer.search_list_title1',
@@ -62,36 +84,59 @@ const SearchConversationList: FC<SearchListProps> = ({
 			}
 			return t('displayer.search_list_title2', 'None of your items matches your search.');
 		}
+		// If there are results, don't return a title
 		return null;
 	}, [isInvalidQuery, searchResults.conversations, randomListIndex]);
 
+	// Sorts the conversation list by date and reverses it to show the most recent ones first
 	const conversationList = useMemo(
 		() => sortBy(filter(Object.values(searchResults?.conversations ?? [])), 'date').reverse(),
 		[searchResults?.conversations]
 	);
 
-	const tooltipDisabled = !searchDisabled || !invalidQueryTooltip;
+	// totalConversations: length of conversations object
+	const totalConversations = useMemo(
+		() => Object.keys(searchResults?.conversations ?? {}).length ?? 0,
+		[searchResults?.conversations]
+	);
 
+	// If the search results have completed loading, we can display the search results.
+	// Otherwise, we display a loading indicator.
+	const conversationsLoadingCompleted = useMemo(
+		() => searchResults?.status === 'fulfilled',
+		[searchResults?.status]
+	);
+
+	const conversations = useMemo(
+		() => Object.values(searchResults?.conversations ?? {}),
+		[searchResults?.conversations]
+	);
+
+	// This is used to render the list items. It maps the conversationList array and returns a list item for each conversation.
 	const listItems = useMemo(
 		() =>
 			map(conversationList, (conversation) => {
 				const isActive = itemId === conversation.id;
-				const isSelected = false;
+				const isSelected = selected[conversation.id];
+
 				return (
 					<CustomListItem active={isActive} selected={isSelected} key={conversation.id}>
 						{(): JSX.Element => (
-							<SearchConversationListItem
-								itemId={conversation.id}
+							<ConversationListItemComponent
 								item={conversation}
 								selected={isSelected}
-								selecting={false}
+								selecting={isSelectModeOn}
 								active={isActive}
+								toggle={toggle}
+								activeItemId={itemId}
+								isSearchModule
+								deselectAll={deselectAll}
 							/>
 						)}
 					</CustomListItem>
 				);
 			}),
-		[conversationList, itemId]
+		[conversationList, deselectAll, isSelectModeOn, itemId, selected, toggle]
 	);
 
 	return (
@@ -102,23 +147,25 @@ const SearchConversationList: FC<SearchListProps> = ({
 				searchDisabled={searchDisabled}
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>
-			{isInvalidQuery && (
-				<Container maxHeight="fill" crossAlignment="center">
-					<Text color="secondary" size="large" weight="bold">
-						{t('label.no_search_results_found', 'No results found')}
-					</Text>
-					<Padding value="medium extralarge extralarge extralarge">
-						<InvalidSearchMessage color="secondary" overflow="break-word">
-							{t(`message.invalid_search_message`, `We didn't find any match`)}
-						</InvalidSearchMessage>
-					</Padding>
-				</Container>
-			)}
-			{loading && <ShimmerList count={33} delay={0} />}
-			{!isInvalidQuery && !isEmpty(searchResults?.conversations) && !loading && (
-				<Container style={{ overflowY: 'auto' }} mainAlignment="flex-start">
-					<ListV2 onListBottom={canLoadMore ? loadMore : undefined}>{listItems}</ListV2>
-				</Container>
+			{!isInvalidQuery && (
+				<ConversationListComponent
+					displayerTitle={displayerTitle}
+					listItems={listItems}
+					totalConversations={totalConversations}
+					conversationsLoadingCompleted={conversationsLoadingCompleted}
+					selectedIds={selectedIds}
+					folderId={folderId}
+					conversations={conversations}
+					isSelectModeOn={isSelectModeOn}
+					selected={selected}
+					deselectAll={deselectAll}
+					selectAll={selectAll}
+					isAllSelected={isAllSelected}
+					selectAllModeOff={selectAllModeOff}
+					setIsSelectModeOn={setIsSelectModeOn}
+					loadMore={loadMore}
+					isSearchModule
+				/>
 			)}
 			{!isInvalidQuery && isEmpty(searchResults?.conversations) && !loading && (
 				<Container>
@@ -134,6 +181,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 					</Padding>
 				</Container>
 			)}
+			{loading && <ShimmerList count={33} delay={0} />}
 		</Container>
 	);
 };

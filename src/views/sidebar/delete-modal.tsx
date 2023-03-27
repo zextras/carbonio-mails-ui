@@ -3,24 +3,29 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useContext } from 'react';
+import {
+	Container,
+	Divider,
+	SnackbarManagerContext,
+	Text,
+	useSnackbar
+} from '@zextras/carbonio-design-system';
 import { FOLDERS, report, t } from '@zextras/carbonio-shell-ui';
-import { Container, Text, Divider, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { useDispatch } from 'react-redux';
 import { startsWith } from 'lodash';
+import React, { FC, useCallback, useContext } from 'react';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import { FOLDER_ACTIONS } from '../../commons/utilities';
+import { useAppDispatch } from '../../hooks/redux';
 import { folderAction } from '../../store/actions/folder-action';
 import { ModalProps } from '../../types';
-import { FOLDER_ACTIONS } from '../../commons/utilities';
 
 export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const dispatch = useDispatch();
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createSnackbar = useContext(SnackbarManagerContext) as Function;
+	const dispatch = useAppDispatch();
+	const createSnackbar = useSnackbar();
 	const onConfirm = useCallback(() => {
 		let inTrash = false;
-		const restoreFolder = (): void =>
+		const restoreFolder = (): Promise<void> =>
 			dispatch(
 				folderAction({
 					folder,
@@ -28,8 +33,6 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 					op: FOLDER_ACTIONS.MOVE
 				})
 			)
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				.then((res) => {
 					if (res.type.includes('fulfilled')) {
 						createSnackbar({

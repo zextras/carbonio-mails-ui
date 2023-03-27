@@ -17,9 +17,9 @@ import {
 import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
+import { useAppDispatch } from '../../../../hooks/redux';
 import {
 	findLabel,
 	ShareCalendarRoleOptions
@@ -70,7 +70,7 @@ const Actions: FC<ActionProps> = ({
 	const accounts = useUserAccounts();
 	const { setActiveGrant } = useContext(Context);
 	// eslint-disable-next-line @typescript-eslint/ban-types
-	const dispatch = useDispatch() as Function;
+	const dispatch = useAppDispatch() as Function;
 	const onRevoke = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('revoke');

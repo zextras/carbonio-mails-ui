@@ -3,31 +3,38 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback, useContext, useMemo, useState } from 'react';
 import {
-	ModalManagerContext,
-	SnackbarManagerContext,
-	Row,
-	Text,
-	Padding,
+	Checkbox,
 	Icon,
-	Checkbox
+	ModalManagerContext,
+	Padding,
+	Row,
+	SnackbarManagerContext,
+	Text
 } from '@zextras/carbonio-design-system';
+import React, { ReactElement, useCallback, useContext, useMemo, useState } from 'react';
 
-import { every, find, includes, map, reduce, some } from 'lodash';
 import {
+	Tag,
 	ZIMBRA_STANDARD_COLORS,
 	replaceHistory,
-	useTags,
-	Tag,
-	t
+	t,
+	useTags
 } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
-import { ArgumentType, ReturnType, TagsFromStoreType, ItemType } from '../types';
-import { convAction, msgAction } from '../store/actions';
-import { StoreProvider } from '../store/redux';
+import { every, find, includes, map, reduce, some } from 'lodash';
 import DeleteTagModal from '../carbonio-ui-commons/components/tags/delete-tag-modal';
 import { TagsActionsType } from '../carbonio-ui-commons/constants';
+import { useAppDispatch } from '../hooks/redux';
+import { convAction, msgAction } from '../store/actions';
+import { StoreProvider } from '../store/redux';
+import {
+	ArgumentType,
+	Conversation,
+	ItemType,
+	MailMessage,
+	ReturnType,
+	TagsFromStoreType
+} from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 
 export const createTag = ({ createModal }: ArgumentType): ReturnType => ({
@@ -109,7 +116,7 @@ export const TagsDropdownItem = ({
 	isMessage?: boolean;
 }): ReactElement => {
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const [checked, setChecked] = useState(includes(conversation.tags, tag.id));
 	const [isHovering, setIsHovering] = useState(false);
 	const toggleCheck = useCallback(
@@ -208,7 +215,7 @@ export const MultiSelectTagsDropdownItem = ({
 	isMessage?: boolean;
 }): ReactElement => {
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const [isHovering, setIsHovering] = useState(false);
 	const tagsToShow = reduce(
 		tags,
@@ -365,7 +372,7 @@ export const applyTag = ({
 	tags,
 	isMessage
 }: {
-	conversation: any;
+	conversation: Conversation | MailMessage;
 	tags: TagsFromStoreType;
 	isMessage?: boolean;
 }): {
@@ -377,7 +384,7 @@ export const applyTag = ({
 } => {
 	const tagItem = reduce(
 		tags,
-		(acc, v) => {
+		(acc: Array<ItemType>, v) => {
 			const item = {
 				id: v.id,
 				label: v.name,

@@ -19,13 +19,13 @@ import React from 'react';
 import { rest } from 'msw';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import * as useQueryParam from '../../../../../hooks/useQueryParam';
+import * as useQueryParam from '../../../../../hooks/use-query-param';
 import * as saveDraftAction from '../../../../../store/actions/save-draft';
 import { generateStore } from '../../../../../tests/generators/store';
 import { saveDraftResult } from '../../../../../tests/mocks/network/msw/cases/saveDraft/saveDraft-1';
 import { SoapDraftMessageObj } from '../../../../../types';
 import EditView from '../edit-view';
-import { getSetupServerApi } from '../../../../../carbonio-ui-commons/test/jest-setup';
+import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
 
 /**
  * Test the EditView component in different scenarios
@@ -120,7 +120,7 @@ describe('Edit view', () => {
 
 			const sendMsgPromise = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
-				getSetupServerApi().use(
+				getSetupServer().use(
 					rest.post('/service/soap/SendMsgRequest', async (req, res, ctx) => {
 						if (!req) {
 							reject(new Error('Empty request'));
@@ -220,7 +220,7 @@ describe('Edit view', () => {
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
-				getSetupServerApi().use(
+				getSetupServer().use(
 					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
 						if (!req) {
 							reject(new Error('Empty request'));
@@ -367,7 +367,7 @@ describe('Edit view', () => {
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
-				getSetupServerApi().use(
+				getSetupServer().use(
 					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
 						if (!req) {
 							reject(new Error('Empty request'));
@@ -428,7 +428,7 @@ describe('Edit view', () => {
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
-				getSetupServerApi().use(
+				getSetupServer().use(
 					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
 						if (!req) {
 							reject(new Error('Empty request'));
@@ -500,7 +500,7 @@ describe('Edit view', () => {
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
-				getSetupServerApi().use(
+				getSetupServer().use(
 					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
 						if (!req) {
 							reject(new Error('Empty request'));
@@ -608,7 +608,7 @@ describe('Edit view', () => {
 
 			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
 				// Register a handler for the REST call
-				getSetupServerApi().use(
+				getSetupServer().use(
 					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
 						callTester();
 

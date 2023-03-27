@@ -3,25 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
-import {
-	FOLDERS,
-	replaceHistory,
-	t,
-	getBridgedFunctions,
-	Tags,
-	Account
-} from '@zextras/carbonio-shell-ui';
+import { Account, getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { forEach, isArray, map } from 'lodash';
-import { Dispatch } from '@reduxjs/toolkit';
+import React from 'react';
+import { errorPage } from '../commons/preview-eml/error-page';
+import { getContentForPrint } from '../commons/print-conversation';
 import { convAction, getMsgsForPrint } from '../store/actions';
+import { AppDispatch, StoreProvider } from '../store/redux';
+import { ConvActionReturnType, Conversation, MailMessage } from '../types';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg';
-import { getContentForPrint } from '../commons/print-conversation';
-import { applyTag } from './tag-actions';
-import { StoreProvider } from '../store/redux';
-import { Conversation, MailMessage } from '../types';
-import { errorPage } from '../commons/preview-eml/error-page';
 
 type ConvActionIdsType = Array<string>;
 type ConvActionValueType = string | boolean;
@@ -31,7 +22,7 @@ type ConvActionPropType = {
 	ids: ConvActionIdsType;
 	id: string | ConvActionIdsType;
 	value: ConvActionValueType;
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 	folderId: string;
 	shouldReplaceHistory: boolean;
 	deselectAll: DeselectAllType;
@@ -40,15 +31,6 @@ type ConvActionPropType = {
 	isRestore: boolean;
 	message: MailMessage;
 	disabled: boolean;
-};
-
-type ConvActionReturnType = {
-	id: string;
-	icon: string;
-	label: string;
-	disabled?: boolean;
-	click: (ev: MouseEvent) => void;
-	customComponent?: JSX.Element;
 };
 
 export function setConversationsFlag({
@@ -60,7 +42,7 @@ export function setConversationsFlag({
 		id: 'flag-conversation',
 		icon: value ? 'Flag' : 'FlagOutline',
 		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
-		click: (): void => {
+		onClick: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -83,7 +65,7 @@ export function setMultipleConversationsFlag({
 		icon: 'Flag',
 		label: t('action.flag', 'Add flag'),
 		disabled,
-		click: (): void => {
+		onClick: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -106,7 +88,7 @@ export function unSetMultipleConversationsFlag({
 		icon: 'FlagOutline',
 		label: t('action.unflag', 'Remove flag'),
 		disabled,
-		click: (): void => {
+		onClick: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -137,7 +119,7 @@ export function setConversationsRead({
 		label: value
 			? t('action.mark_as_unread', 'Mark as unread')
 			: t('action.mark_as_read', 'Mark as read'),
-		click: (): void => {
+		onClick: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -182,7 +164,7 @@ export function printConversation({
 		id: 'print-conversations',
 		icon: 'PrinterOutline',
 		label: t('action.print', 'Print'),
-		click: (): void => {
+		onClick: (): void => {
 			const printWindow = window.open('', '_blank');
 			getMsgsForPrint({ ids: messageIds })
 				.then((res) => {
@@ -216,7 +198,7 @@ export function setConversationsSpam({
 		label: value
 			? t('action.mark_as_non_spam', 'Not spam')
 			: t('action.mark_as_spam', 'Mark as spam'),
-		click: (): void => {
+		onClick: (): void => {
 			let notCanceled = true;
 
 			const infoSnackbar = (hideButton = false): void => {
@@ -280,8 +262,8 @@ export function moveConversationToTrash({
 		id: 'trash-conversations',
 		icon: 'Trash2Outline',
 		label: t('label.delete', 'Delete'),
-		// first click, delete email
-		click: (): void => {
+		// first onClick, delete email
+		onClick: (): void => {
 			const restoreConversation = (): void => {
 				dispatch(
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -370,7 +352,7 @@ export function moveConversationToFolder({
 		id: 'move-conversations',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
 		label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
-		click: (): void => {
+		onClick: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
 					maxHeight: '90vh',
@@ -404,7 +386,7 @@ export function deleteConversationPermanently({
 		id: 'delete-conversations',
 		icon: 'DeletePermanentlyOutline',
 		label: t('label.delete_permanently', 'Delete permanently'),
-		click: (): void => {
+		onClick: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
 					children: (
@@ -425,207 +407,3 @@ export function deleteConversationPermanently({
 		}
 	};
 }
-
-type GetConvActionsType = {
-	folderId: string;
-	dispatch: Dispatch;
-	deselectAll: () => void;
-	account: Account;
-	tags: Tags;
-};
-export const getActions = ({
-	folderId,
-	dispatch,
-	deselectAll,
-	account,
-	tags
-}: GetConvActionsType): any => {
-	switch (folderId) {
-		case FOLDERS.TRASH:
-			return (conversation: Conversation): Array<any> => [
-				[setConversationsFlag({ ids: [conversation.id], value: conversation.flagged, dispatch })],
-				[
-					setConversationsRead({
-						ids: [conversation.id],
-						value: conversation.read,
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
-					setConversationsFlag({
-						ids: [conversation.id],
-						value: conversation.flagged,
-
-						dispatch
-					}),
-					applyTag({ tags, conversation }),
-					setConversationsSpam({
-						ids: [conversation.id],
-						value: false,
-						dispatch,
-						deselectAll
-					}),
-					printConversation({
-						conversation: [conversation],
-						account
-					}),
-					moveConversationToFolder({
-						ids: [conversation.id],
-						folderId,
-						dispatch,
-						isRestore: true,
-						deselectAll
-					}),
-					deleteConversationPermanently({
-						ids: [conversation.id],
-						deselectAll
-					})
-				]
-			];
-		case FOLDERS.SPAM:
-			return (conversation: Conversation): Array<any> => [
-				[
-					moveConversationToTrash({
-						ids: [conversation.id],
-						dispatch,
-						deselectAll,
-						folderId
-					}),
-					setConversationsFlag({ ids: [conversation.id], value: conversation.flagged, dispatch })
-				],
-				[
-					setConversationsRead({
-						ids: [conversation.id],
-						value: conversation.read,
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
-					setConversationsFlag({
-						ids: [conversation.id],
-						value: conversation.flagged,
-						dispatch
-					}),
-					applyTag({ tags, conversation }),
-					setConversationsSpam({
-						ids: [conversation.id],
-						value: true,
-
-						dispatch,
-
-						deselectAll
-					}),
-
-					printConversation({
-						conversation: [conversation],
-						account
-					}),
-					moveConversationToTrash({
-						ids: [conversation.id],
-
-						dispatch,
-
-						deselectAll,
-						folderId
-					})
-				]
-			];
-
-		case FOLDERS.DRAFTS:
-			return (conversation: Conversation): Array<any> => [
-				[
-					moveConversationToTrash({
-						ids: [conversation.id],
-
-						dispatch,
-
-						deselectAll,
-						folderId
-					}),
-					setConversationsFlag({ ids: [conversation.id], value: conversation.flagged, dispatch })
-				],
-				[
-					setConversationsFlag({
-						ids: [conversation.id],
-						value: conversation.flagged,
-
-						dispatch
-					}),
-					applyTag({ tags, conversation }),
-					moveConversationToTrash({
-						ids: [conversation.id],
-						dispatch,
-						deselectAll,
-						folderId
-					}),
-					printConversation({
-						conversation: [conversation],
-						account
-					})
-				]
-			];
-		case FOLDERS.INBOX:
-		case FOLDERS.SENT:
-		default:
-			return (conversation: Conversation): Array<any> => [
-				[
-					setConversationsRead({
-						ids: [conversation.id],
-						value: conversation.read,
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
-					moveConversationToTrash({
-						ids: [conversation.id],
-						dispatch,
-						deselectAll,
-						folderId
-					}),
-					setConversationsFlag({ ids: [conversation.id], value: conversation.flagged, dispatch })
-				],
-				[
-					applyTag({ tags, conversation }),
-					setConversationsRead({
-						ids: [conversation.id],
-						value: conversation.read,
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
-					setConversationsFlag({
-						ids: [conversation.id],
-						value: conversation.flagged,
-						dispatch
-					}),
-					setConversationsSpam({
-						ids: [conversation.id],
-						value: false,
-						dispatch,
-						deselectAll
-					}),
-					printConversation({
-						conversation: [conversation],
-						account
-					}),
-					moveConversationToFolder({
-						ids: [conversation.id],
-						folderId,
-						dispatch,
-						isRestore: false,
-						deselectAll
-					}),
-					moveConversationToTrash({
-						ids: [conversation.id],
-						dispatch,
-						deselectAll,
-						folderId
-					})
-				]
-			];
-	}
-};

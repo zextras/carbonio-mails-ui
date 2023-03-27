@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { useEffect, useState, useMemo, FC, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { Prompt, useHistory } from 'react-router-dom';
 import { Padding, Text, useModal } from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
-import { StoreProvider } from '../../../../../store/redux';
-import { moveMsgToTrash } from '../../../../../ui-actions/message-actions';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { Prompt, useHistory } from 'react-router-dom';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
+import { useAppDispatch } from '../../../../../hooks/redux';
+import { StoreProvider } from '../../../../../store/redux';
+import { moveMsgToTrash } from '../../../../../ui-actions/message-actions';
 
 type DeleteDraftModalProps = {
 	ids: Array<string>;
@@ -27,7 +27,7 @@ export const DeleteDraftModal = ({
 	onConfirm,
 	onDelete
 }: DeleteDraftModalProps): React.ReactElement => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const onCloseModal = useCallback(() => {
 		onClose?.();
@@ -43,7 +43,7 @@ export const DeleteDraftModal = ({
 			ids,
 			dispatch,
 			folderId: FOLDERS.TRASH
-		})?.click();
+		})?.onClick();
 		onDelete?.();
 		onClose?.();
 	}, [dispatch, ids, onClose, onDelete]);

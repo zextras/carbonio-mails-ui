@@ -56,12 +56,6 @@ export type SearchPanelProps = {
 	query: Array<QueryChip>;
 };
 
-export type SearchMessageListItemProps = {
-	item: IncompleteMessage;
-	isConvChildren?: boolean;
-	active?: boolean;
-};
-
 export type SearchConversationListItemProps = {
 	itemId?: string;
 	item: Conversation;
@@ -72,7 +66,6 @@ export type SearchConversationListItemProps = {
 };
 
 export type AdvancedFilterModalProps = {
-	id: string;
 	open: boolean;
 	onClose: () => void;
 	query: Array<{

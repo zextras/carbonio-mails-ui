@@ -23,14 +23,14 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
+import { useAppDispatch } from '../../hooks/redux';
 import {
-	findLabel,
 	ShareCalendarRoleOptions,
-	ShareCalendarWithOptions
+	ShareCalendarWithOptions,
+	findLabel
 } from '../../integrations/shared-invite-reply/parts/utils';
 import { sendShareNotification } from '../../store/actions/send-share-notification';
 import { shareFolder } from '../../store/actions/share-folder';
@@ -43,7 +43,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	grant,
 	goBack
 }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);

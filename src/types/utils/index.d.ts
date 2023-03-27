@@ -71,7 +71,7 @@ export type TextReadValuesProps = {
 export type AppContext = {
 	isMessageView: boolean;
 	count: number;
-	setCount: (arg: number) => void;
+	setCount: (arg: number | ((prevState: number) => number)) => void;
 };
 
 export type BoardContext = {
@@ -130,4 +130,13 @@ export type GetAttachmentsDownloadLinkProps = {
 	messageId: string;
 	messageSubject: string;
 	attachments: Array<string | undefined>;
+};
+
+export type DragItemWrapperProps = {
+	item: IncompleteMessage;
+	selectedIds: Array<string>;
+	selectedItems: Record<string, boolean>;
+	setDraggedIds: (ids: Record<string, boolean>) => void;
+	dragImageRef: React.RefObject<HTMLElement> | undefined;
+	dragAndDropIsDisabled: boolean;
 };

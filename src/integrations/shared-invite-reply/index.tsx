@@ -16,12 +16,12 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import LabelRow from './parts/label-row';
 import ResponseActions from './parts/response-actions';
 import { ShareCalendarRoleOptions, findLabel } from './parts/utils';
 import { MailMessage } from '../../types';
+import { useAppDispatch } from '../../hooks/redux';
 
 const InviteContainer = styled(Container)`
 	border: 0.0625rem solid ${({ theme }: any): string => theme.palette.gray2.regular};
@@ -46,7 +46,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 		}
 	}, [mailMsg.read, onLoadChange]);
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const rights = useMemo(
 		() => sharedContent?.split('<link ')[1].split('perm="')[1].split('" ')[0],

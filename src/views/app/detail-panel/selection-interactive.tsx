@@ -3,18 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../../hooks/redux';
 import { selectConversationsArray } from '../../../store/conversations-slice';
 import {
 	DraftMessages,
 	EmptyFieldMessages,
 	EmptyListMessages,
-	SpamMessages,
 	SentMessages,
+	SpamMessages,
 	TrashMessages
 } from './utils';
 
@@ -23,7 +23,7 @@ const generateFieldRandomNumber = (): number => Math.floor(Math.random() * 5);
 
 export const SelectionInteractive: FC<{ count: number }> = ({ count }) => {
 	const { folderId } = useParams<{ folderId: string }>();
-	const conversations = useSelector(selectConversationsArray);
+	const conversations = useAppSelector(selectConversationsArray);
 	const emptyListMessages = useMemo(() => EmptyListMessages(), []);
 	const emptyFieldMessages = useMemo(() => EmptyFieldMessages(), []);
 	const spamMessages = useMemo(() => SpamMessages(), []);

@@ -6,7 +6,9 @@
 
 import { ItemType as AccordionItemType } from '@zextras/carbonio-design-system';
 import { Tag } from '@zextras/carbonio-shell-ui';
-import React, { ComponentType, SyntheticEvent } from 'react';
+import React, { ComponentType } from 'react';
+
+export type TagActionItemType = { id: string; items: ItemType[]; customComponent: ReactElement };
 
 export type ReturnType = {
 	id: string;

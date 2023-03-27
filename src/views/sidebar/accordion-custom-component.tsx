@@ -19,25 +19,25 @@ import {
 } from '@zextras/carbonio-design-system';
 import {
 	AppLink,
-	Folder,
 	FOLDERS,
-	getBridgedFunctions,
-	pushHistory,
-	replaceHistory,
+	Folder,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	ROOT_NAME,
+	getBridgedFunctions,
+	pushHistory,
+	replaceHistory,
 	t,
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import React, { FC, useCallback, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
+import { useAppDispatch } from '../../hooks/redux';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
-import { DataProps } from '../../types';
 import { useFolderActions } from './use-folder-actions';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 
@@ -66,22 +66,11 @@ const DropDenyOverlayContainer = styled(Container)<ContainerProps & { folder: Fo
 	opacity: 0.4;
 `;
 
-export type DragEnterAction =
-	| undefined
-	| {
-			success: false;
-	  };
-export type OnDropActionProps = {
-	event: React.DragEvent;
-	type: string;
-	data: DataProps;
-};
-
 const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);
 
 const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const accountName = useUserAccount().name;
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
 
 	const onDragEnterAction = useCallback(

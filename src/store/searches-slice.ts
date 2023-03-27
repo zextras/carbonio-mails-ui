@@ -5,10 +5,11 @@
  */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import { ErrorSoapResponse, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { createSlice } from '@reduxjs/toolkit';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { includes, map } from 'lodash';
+import { forEach } from 'lodash';
+import { CONVACTIONS } from '../commons/utilities';
 import {
 	ConvActionParameters,
 	FetchConversationsReturn,
@@ -19,21 +20,24 @@ import { msgAction, search } from './actions';
 import {
 	handleAddMessagesInConversationReducer,
 	handleCreatedConversationsReducer,
+	handleCreatedMessagesInConversationsReducer,
 	handleDeletedConversationsReducer,
 	handleDeletedMessagesInConversationReducer,
 	handleDeletedMessagesReducer,
 	handleModifiedConversationsReducer,
-	handleModifiedMessagesInConversationReducer,
-	handleCreatedMessagesInConversationsReducer
+	handleModifiedMessagesInConversationReducer
 } from './search-slice-reducers';
+import { extractIds, isItemInSearches } from './utils';
 
 export const getSearchSliceInitialiState = (): SearchesStateType =>
 	({
 		searchResults: undefined,
+		searchResultsIds: [],
 		conversations: [],
 		messages: [],
 		more: false,
 		offset: 0,
+		limit: 100,
 		sortBy: 'dateDesc',
 		query: '',
 		status: 'empty',
@@ -63,6 +67,7 @@ const fetchSearchesFulfilled = (
 		state.offset = (meta?.arg.offset ?? 0) + 100;
 		state.sortBy = meta?.arg.sortBy ?? 'dateDesc';
 		state.error = undefined;
+		state.searchResultsIds = extractIds(payload) ?? [];
 	}
 };
 
@@ -77,31 +82,55 @@ const fetchSearchesRejected = (state: SearchesStateType, { payload }): void => {
 	};
 };
 
+type GetSearchesActionProps = {
+	state: SearchesStateType;
+	meta: { arg: ConvActionParameters; requestId: string; requestStatus: string };
+	action: string;
+	result: unknown;
+};
+
 const msgActionFulfilled = (
 	state: SearchesStateType,
 	{ meta }: { meta: { arg: ConvActionParameters; requestId: string; requestStatus: string } }
 ): void => {
-	if (meta.arg.ids) {
+	const itemIsInSearches = isItemInSearches({
+		ids: meta.arg.ids,
+		searchResultsIds: state.searchResultsIds
+	});
+
+	if (meta.arg.ids && itemIsInSearches) {
+		const { ids, operation } = meta.arg;
 		state.error = undefined;
-		state.conversations = state.conversations
-			? map(state.conversations, (conv) => ({
-					...conv,
-					messages: map(conv.messages, (msg) => {
-						if (includes(meta.arg.ids, msg.id)) {
-							return { ...msg, parent: FOLDERS.TRASH };
-						}
-						return msg;
-					})
-			  }))
-			: [];
-		state.messages = state.messages
-			? map(state.messages, (msg) => {
-					if (includes(meta.arg.ids, msg.id)) {
-						return { ...msg, parent: FOLDERS.TRASH };
+		forEach(ids, (id) => {
+			const message = state?.messages?.[id];
+			const conversations = state?.conversations;
+			if (message) {
+				if (operation.includes(CONVACTIONS.FLAG)) {
+					message.flagged = !operation.startsWith('!');
+				} else if (operation.includes(CONVACTIONS.MARK_READ)) {
+					message.read = !operation.startsWith('!');
+				} else if (operation === CONVACTIONS.TRASH) {
+					message.parent = FOLDERS.TRASH;
+				} else if (operation === CONVACTIONS.DELETE) {
+					delete message[id];
+				} else if (operation === CONVACTIONS.MOVE) {
+					message.parent = meta.arg.parent;
+				} else if (operation === CONVACTIONS.MARK_SPAM) {
+					message.parent = FOLDERS.SPAM;
+				} else if (operation === CONVACTIONS.MARK_NOT_SPAM) {
+					message.parent = FOLDERS.INBOX;
+				}
+			}
+			if (conversations) {
+				if (conversations?.[id]) {
+					if (operation.includes(CONVACTIONS.FLAG)) {
+						conversations[id].flagged = !operation.startsWith('!');
+					} else if (operation.includes(CONVACTIONS.MARK_READ)) {
+						conversations[id].read = !operation.startsWith('!');
 					}
-					return msg;
-			  })
-			: [];
+				}
+			}
+		});
 	}
 };
 

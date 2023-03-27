@@ -21,7 +21,7 @@ import React, {
 	useMemo,
 	useState
 } from 'react';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../../../../hooks/redux';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
 import { FilterContext } from './filter-context';
@@ -55,7 +55,7 @@ const FilterTabs: FC = (): ReactElement => {
 	const onChange = useCallback<TabBarProps['onChange']>((ev, selectedId) => {
 		setSelectedFilterType(selectedId);
 	}, []);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const [incomingFilters, setIncomingFilters] = useState<Array<Item>>([]);
 	const [incomingLoading, setIncomingLoading] = useState(true);
 	const [outgoingLoading, setOutgoingLoading] = useState(true);

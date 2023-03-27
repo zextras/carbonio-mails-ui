@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useContext, FC } from 'react';
 import { Container, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
-import { convAction, msgAction } from '../store/actions';
-import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
+import React, { FC, useCallback, useContext } from 'react';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
+import { useAppDispatch } from '../hooks/redux';
+import { convAction, msgAction } from '../store/actions';
 
 type DeleteConvConfirmPropType = {
 	selectedIDs: Array<string>;
@@ -23,22 +23,20 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 	deselectAll,
 	onClose
 }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
 
 	const onConfirmConvDelete = useCallback(() => {
 		dispatch(
 			isMessageView
 				? msgAction({
-						operation: `delete`,
+						operation: 'delete',
 						ids: selectedIDs
 				  })
 				: convAction({
-						operation: `delete`,
+						operation: 'delete',
 						ids: selectedIDs
 				  })
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 		).then((res) => {
 			if (res.type.includes('fulfilled')) {
 				deselectAll && deselectAll();

@@ -8,7 +8,6 @@ import React, { FC, useMemo } from 'react';
 import { map } from 'lodash';
 import styled from 'styled-components';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
 import {
 	deleteMsg,
 	editDraft,
@@ -19,6 +18,7 @@ import {
 	setMsgFlag,
 	setMsgRead
 } from './message-actions';
+import { useAppDispatch } from '../hooks/redux';
 
 const ButtonBar = styled(Row)`
 	position: absolute;
@@ -40,7 +40,7 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 	folderId,
 	showReplyAll
 }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const ids = useMemo(() => [messageId], [messageId]);
 
 	const actions = useMemo(() => {
@@ -94,14 +94,14 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 
 	return (
 		<ButtonBar orientation="horizontal">
-			{map(actions, (action: { icon: string; label: string; click: () => void }) => (
+			{map(actions, (action) => (
 				<Tooltip key={`${messageId}-${action.icon}`} label={action.label}>
 					<IconButton
 						size="medium"
 						icon={action.icon}
 						onClick={(ev): void => {
 							ev.preventDefault();
-							action.click();
+							action.onClick();
 						}}
 					/>
 				</Tooltip>

@@ -42,24 +42,21 @@ export type GrantType = { gt: string; perm: string; zid: string; d?: string };
 
 export type SenderNameProps = {
 	item: Conversation | IncompleteMessage;
-	isFromSearch?: boolean;
+	isSearchModule?: boolean;
 	textValues?: TextReadValuesProps;
 };
 
 export type MessageListItemProps = {
-	item: IncompleteMessage & { isFromSearch?: boolean };
-	folderId: string;
+	item: IncompleteMessage & { isSearchModule?: boolean };
 	selected: boolean;
 	selecting: boolean;
-	toggle?: () => void;
-	draggedIds: Record<string, boolean>;
-	setDraggedIds: (ids: Record<string, boolean>) => void;
-	setIsDragging: (isDragging: boolean) => void;
-	selectedItems: Record<string, boolean>;
-	dragImageRef?: React.RefObject<HTMLElement>;
+	toggle: (id: string) => void;
 	visible: boolean;
 	isConvChildren: boolean;
 	active?: boolean;
+	isSearchModule?: boolean;
+	isConversation?: boolean;
+	deselectAll: () => void;
 };
 
 export type TextReadValuesType = {
@@ -83,10 +80,11 @@ export type ListItemActionWrapperProps = {
 	onDoubleClick?: ContainerProps['onDoubleClick'];
 	messagesToRender?: Array<IncompleteMessage>;
 	hoverTooltipLabel?: string;
-} & (
-	| { isConversation: true; item: Conversation }
-	| { isConversation?: false; item: IncompleteMessage }
-);
+	actionIsVisible?: boolean;
+	active?: boolean;
+	item: Conversation | MailMessage;
+	deselectAll: () => void;
+};
 
 export type ItemAvatarType = {
 	item: any;
@@ -94,10 +92,9 @@ export type ItemAvatarType = {
 	selecting: boolean;
 	toggle: (arg: string) => void;
 	folderId: string;
-	isSearch?: boolean;
 };
 
-export type CustomListItem = Partial<MailMessage> & { id: string; isFromSearch?: boolean };
+export type CustomListItem = Partial<MailMessage> & { id: string; isSearchModule?: boolean };
 
 export type ConversationMessagesListProps = {
 	active: string;
@@ -105,5 +102,23 @@ export type ConversationMessagesListProps = {
 	messages: Array<IncompleteMessage>;
 	folderId: string;
 	length: number;
-	isFromSearch?: boolean;
+	isSearchModule?: boolean;
+	dragImageRef?: React.RefObject<HTMLDivElement>;
+};
+
+export type ConversationListItemProps = {
+	item: Conversation;
+	selected: boolean;
+	selecting: boolean;
+	toggle: (id: string) => void;
+	visible?: boolean;
+	isConvChildren: boolean;
+	active?: boolean;
+	isSearchModule?: boolean;
+	activeItemId: string;
+	dragImageRef?: React.RefObject<HTMLInputElement>;
+	setDraggedIds?: (ids: Record<string, boolean>) => void;
+	draggedIds?: Record<string, boolean> | undefined;
+	selectedItems?: Record<string, boolean>;
+	deselectAll: () => void;
 };

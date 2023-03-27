@@ -4,36 +4,35 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
-import React, { useMemo, useState, useRef, useCallback, useEffect, FC } from 'react';
-import { filter, find } from 'lodash';
 import {
-	useUserAccounts,
-	useIntegratedComponent,
-	useUserSettings,
-	FOLDERS,
-	t,
-	useCurrentRoute
-} from '@zextras/carbonio-shell-ui';
-import { useParams } from 'react-router-dom';
-import {
-	Container,
-	Text,
+	Button,
 	Collapse,
+	Container,
 	Icon,
 	Padding,
-	Button,
-	Row
+	Row,
+	Text
 } from '@zextras/carbonio-design-system';
-import { useDispatch } from 'react-redux';
+import {
+	FOLDERS,
+	t,
+	useIntegratedComponent,
+	useUserAccounts,
+	useUserSettings
+} from '@zextras/carbonio-shell-ui';
+import { filter, find } from 'lodash';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
-import AttachmentsBlock from './attachments-block';
-import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
-import { getMsg, msgAction } from '../../../../store/actions';
+import { useAppDispatch } from '../../../../hooks/redux';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
-import ReadReceiptModal from './read-receipt-modal';
-import PreviewHeader from './parts/preview-header';
+import { getMsg, msgAction } from '../../../../store/actions';
 import { MailMessage } from '../../../../types';
+import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
+import AttachmentsBlock from './attachments-block';
+import PreviewHeader from './parts/preview-header';
+import ReadReceiptModal from './read-receipt-modal';
 
 const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
 	message,
@@ -41,7 +40,7 @@ const MailContent: FC<{ message: MailMessage; isMailPreviewOpen: boolean }> = ({
 }) => {
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
 	const [showModal, setShowModal] = useState(true);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const accounts = useUserAccounts();
 	const { prefs } = useUserSettings();
 	const moveToTrash = useCallback(() => {
@@ -220,7 +219,7 @@ type MailPreviewBlockType = {
 const MailPreviewBlock: FC<MailPreviewBlockType> = ({ message, open, onClick, isAlone }) => {
 	const { folderId } = useParams<{ folderId: string }>();
 
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const compProps = useMemo(
 		() => ({ message, onClick, open, isAlone }),
 		[message, onClick, open, isAlone]
@@ -233,7 +232,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({ message, open, onClick, is
 				dispatch,
 				shouldReplaceHistory: true,
 				folderId
-			}).click(),
+			}).onClick(),
 		[dispatch, folderId, message.id]
 	);
 	return (

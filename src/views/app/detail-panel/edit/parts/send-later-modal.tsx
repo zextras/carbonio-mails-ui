@@ -3,25 +3,25 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
 import {
 	getBridgedFunctions,
-	useUserSettings,
+	replaceHistory,
 	t,
-	replaceHistory
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
-import { Dispatch } from '@reduxjs/toolkit';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { saveDraft } from '../../../../../store/actions/save-draft';
+import { AppDispatch } from '../../../../../store/redux';
 import { MailsEditor } from '../../../../../types';
 import DatePickerCustomComponent from './date-picker-custom-component';
 
 type SendLaterModalPropTypes = {
 	onClose: () => void;
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 	editor: MailsEditor;
 	closeBoard: () => void;
 	folderId?: string;

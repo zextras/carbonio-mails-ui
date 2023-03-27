@@ -24,11 +24,9 @@ import React, {
 	useState
 } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { ActionsType } from '../../../../commons/utils';
-import { useQueryParam } from '../../../../hooks/useQueryParam';
 import { getMsg } from '../../../../store/actions';
 import { saveDraft } from '../../../../store/actions/save-draft';
 import { uploadAttachments } from '../../../../store/actions/upload-attachments';
@@ -53,6 +51,8 @@ import ParticipantsRow from './parts/participants-row';
 import SubjectRow from './parts/subject-row';
 import TextEditorContainer from './parts/text-editor-container';
 import WarningBanner from './parts/warning-banner';
+import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
+import { useQueryParam } from '../../../../hooks/use-query-param';
 
 let counter = 0;
 
@@ -74,10 +74,10 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 	const action = useQueryParam('action');
 	const change = useQueryParam('change');
 
-	const editors = useSelector(selectEditors);
-	const dispatch = useDispatch();
+	const editors = useAppSelector(selectEditors);
+	const dispatch = useAppDispatch();
 	const accounts = useUserAccounts();
-	const messages = useSelector(selectMessages);
+	const messages = useAppSelector(selectMessages);
 
 	const { handleSubmit, setValue } = useForm();
 	const { prefs } = useUserSettings();
@@ -141,7 +141,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 		setTextValue(text);
 	};
 
-	const draftId = useSelector((s: StateType) => selectDraftId(s, editor?.editorId));
+	const draftId = useAppSelector((s: StateType) => selectDraftId(s, editor?.editorId));
 
 	const isSameAction = useMemo(() => {
 		if (editors[editorId]) {
@@ -420,6 +420,8 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 									setShowRouteGuard={setShowRouteGuard}
 									setValue={setValue}
 									handleSubmit={handleSubmit}
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									uploadAttachmentsCb={uploadAttachmentsCb}
 									updateEditorCb={updateEditorCb}
 									action={action}

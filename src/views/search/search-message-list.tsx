@@ -3,18 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { Container, Padding, Text } from '@zextras/carbonio-design-system';
+import { t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { isArray, isEmpty, map, sortBy } from 'lodash';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, ListV2, Padding, Text } from '@zextras/carbonio-design-system';
-import { isEmpty, map, sortBy } from 'lodash';
-import { t } from '@zextras/carbonio-shell-ui';
-import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
-import ShimmerList from './shimmer-list';
+import { useSelection } from '../../hooks/use-selection';
+import { AppContext, SearchListProps } from '../../types';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
-import { SearchMessageListItem } from './search-message-list-item';
-import { SearchListProps } from '../../types';
+import ShimmerList from './shimmer-list';
+import { MessageListItemComponent } from '../app/folder-panel/messages/message-list-item-component';
+import { MessageListComponent } from '../app/folder-panel/messages/message-list-component';
 
-const SearchMessageList: FC<SearchListProps> = ({
+export const SearchMessageList: FC<SearchListProps> = ({
 	searchDisabled,
 	searchResults,
 	search,
@@ -25,7 +26,24 @@ const SearchMessageList: FC<SearchListProps> = ({
 	isInvalidQuery,
 	invalidQueryTooltip
 }) => {
-	const { itemId } = useParams<{ itemId: string; folderId: string }>();
+	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
+	const { setCount, count } = useAppContext<AppContext>();
+
+	const {
+		selected,
+		toggle,
+		deselectAll,
+		isSelectModeOn,
+		setIsSelectModeOn,
+		selectAll,
+		isAllSelected,
+		selectAllModeOff
+	} = useSelection({
+		currentFolderId: folderId,
+		setCount,
+		count,
+		items: [...Object.values(searchResults.messages ?? {})]
+	});
 
 	const canLoadMore = useMemo(
 		() => !loading && searchResults && !isEmpty(searchResults.messages) && searchResults.more,
@@ -61,7 +79,6 @@ const SearchMessageList: FC<SearchListProps> = ({
 		return null;
 	}, [isInvalidQuery, searchResults.messages, randomListIndex]);
 
-	const tooltipDisabled = !searchDisabled || !invalidQueryTooltip;
 	const messageList = useMemo(
 		() => sortBy(Object.values(searchResults?.messages ?? []), 'date').reverse(),
 		[searchResults?.messages]
@@ -71,19 +88,38 @@ const SearchMessageList: FC<SearchListProps> = ({
 		() =>
 			map(messageList, (message) => {
 				const isActive = itemId === message.id;
+				const isSelected = selected[message.id];
 				return (
-					<CustomListItem
-						key={message.id}
-						active={isActive}
-						background={message.read ? 'gray6' : 'gray5'}
-					>
-						{(): JSX.Element => (
-							<SearchMessageListItem item={message} isConvChildren={false} active={isActive} />
-						)}
-					</CustomListItem>
+					<MessageListItemComponent
+						message={message}
+						selected={selected}
+						isSelected={isSelected}
+						isActive={isActive}
+						toggle={toggle}
+						isSelectModeOn={isSelectModeOn}
+						isSearchModule
+						deselectAll={deselectAll}
+					/>
 				);
 			}),
-		[itemId, messageList]
+		[deselectAll, isSelectModeOn, itemId, messageList, selected, toggle]
+	);
+
+	const totalMessages = useMemo(() => {
+		if (searchResults && searchResults.messages) {
+			return Object.keys(searchResults.messages).length;
+		}
+		return 0;
+	}, [searchResults]);
+
+	const messagesLoadingCompleted = useMemo(
+		() => !isArray(searchResults?.messages),
+		[searchResults?.messages]
+	);
+	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+	const messages = useMemo(
+		() => Object.values(searchResults?.messages ?? {}),
+		[searchResults?.messages]
 	);
 
 	return (
@@ -101,13 +137,23 @@ const SearchMessageList: FC<SearchListProps> = ({
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>
 			{searchResults?.messages ? (
-				<ListV2
-					style={{ paddingBottom: '0.25rem' }}
-					onListBottom={canLoadMore ? loadMore : undefined}
-					data-testid={`search-message-list`}
-				>
-					{listItems}
-				</ListV2>
+				<MessageListComponent
+					totalMessages={totalMessages}
+					displayerTitle={displayerTitle}
+					listItems={listItems}
+					messagesLoadingCompleted={messagesLoadingCompleted}
+					selectedIds={selectedIds}
+					folderId={folderId}
+					messages={messages}
+					isSelectModeOn={isSelectModeOn}
+					setIsSelectModeOn={setIsSelectModeOn}
+					isAllSelected={isAllSelected}
+					selectAll={selectAll}
+					deselectAll={deselectAll}
+					selected={selected}
+					selectAllModeOff={selectAllModeOff}
+					isSearchModule
+				/>
 			) : (
 				<Container>
 					<Padding top="medium">
@@ -126,4 +172,3 @@ const SearchMessageList: FC<SearchListProps> = ({
 		</Container>
 	);
 };
-export default SearchMessageList;

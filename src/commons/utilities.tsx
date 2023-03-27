@@ -5,7 +5,8 @@
  */
 import { isNil } from 'lodash';
 import { DefaultTheme } from 'styled-components';
-import { AttachmentPart, EditorAttachmentFiles } from '../types';
+import { EditorAttachmentFiles } from '../types/editor';
+import { AttachmentPart } from '../types/messages';
 
 const FileExtensionRegex = /^.+\.([^.]+)$/;
 

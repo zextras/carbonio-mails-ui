@@ -6,16 +6,16 @@
 import { map } from 'lodash';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { Dispatch } from 'redux';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { msgAction } from '../../../store/actions';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCalendarReply';
 import { mountSharedCalendar } from '../../../store/actions/mount-share-calendar';
+import { AppDispatch } from '../../../store/redux';
 import { MailsEditor, Participant } from '../../../types';
 
-type accept = {
+type Accept = {
 	zid: string;
 	view: string;
 	rid: string;
@@ -23,7 +23,7 @@ type accept = {
 	color: number;
 	accounts: any;
 	t: (...args: any[]) => string;
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 	msgId: Array<string> | any;
 	sharedCalendarName: string;
 	owner: string;
@@ -36,23 +36,23 @@ type accept = {
 	notifyOrganizer: boolean;
 };
 
-type moveInviteToTrashType = {
+type MoveInviteToTrashType = {
 	t: (...args: any[]) => string;
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 	msgId: string;
 };
 
-type mountSharedCalendarType = {
+type MountSharedCalendarType = {
 	zid: string;
 	view: string;
 	rid: string;
 	calendarName: string;
 	color: number;
 	accounts: any;
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 };
-type acceptSharedCalendarType = {
-	dispatch: Dispatch;
+type AcceptSharedCalendarType = {
+	dispatch: AppDispatch;
 	sharedCalendarName: string;
 	owner: string;
 	participants: Participant[];
@@ -63,8 +63,8 @@ type acceptSharedCalendarType = {
 	isAccepted: boolean;
 };
 
-type declineType = {
-	dispatch: Dispatch;
+type DeclineType = {
+	dispatch: AppDispatch;
 	t: (...args: any[]) => string;
 	createSnackbar: any;
 	msgId: string;
@@ -85,7 +85,7 @@ const mountSharedCalendarFunc = ({
 	color,
 	accounts,
 	dispatch
-}: mountSharedCalendarType): any =>
+}: MountSharedCalendarType): any =>
 	dispatch(
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -109,7 +109,7 @@ const sharedCalendarReplyFunc = ({
 	role,
 	allowedActions,
 	isAccepted
-}: acceptSharedCalendarType): any =>
+}: AcceptSharedCalendarType): any =>
 	dispatch(
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -142,7 +142,7 @@ const sharedCalendarReplyFunc = ({
 		})
 	);
 
-const moveInviteToTrashFunc = ({ msgId, dispatch, t }: moveInviteToTrashType): any =>
+const moveInviteToTrashFunc = ({ msgId, dispatch, t }: MoveInviteToTrashType): any =>
 	dispatch(
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -150,20 +150,23 @@ const moveInviteToTrashFunc = ({ msgId, dispatch, t }: moveInviteToTrashType): a
 			operation: `trash`,
 			ids: [msgId]
 		})
-	).then((res2: any): void => {
-		if (!res2.type.includes('fulfilled')) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
-				key: `share`,
-				replace: true,
-				hideButton: true,
-				type: 'error',
-				label: t('label.error_try_again', 'Something went wrong, please try again'),
-				autoHideTimeout: 3000
-			});
-		}
-	});
+	)
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		.then((res2: any): void => {
+			if (!res2.type.includes('fulfilled')) {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				createSnackbar({
+					key: `share`,
+					replace: true,
+					hideButton: true,
+					type: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: 3000
+				});
+			}
+		});
 
 export const accept = ({
 	zid,
@@ -184,7 +187,7 @@ export const accept = ({
 	allowedActions,
 	notifyOrganizer,
 	createSnackbar
-}: accept): void =>
+}: Accept): void =>
 	mountSharedCalendarFunc({
 		zid,
 		view,
@@ -247,7 +250,7 @@ export const decline = ({
 	role,
 	allowedActions,
 	notifyOrganizer
-}: declineType): any =>
+}: DeclineType): any =>
 	dispatch(
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -255,39 +258,42 @@ export const decline = ({
 			operation: `trash`,
 			ids: [msgId]
 		})
-	).then((res: any): void => {
-		if (res.type.includes('fulfilled')) {
-			notifyOrganizer &&
-				sharedCalendarReplyFunc({
-					dispatch,
-					sharedCalendarName,
-					owner,
-					participants,
-					grantee,
-					customMessage,
-					role,
-					allowedActions,
-					isAccepted: false
-				});
+	)
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		.then((res: any): void => {
+			if (res.type.includes('fulfilled')) {
+				notifyOrganizer &&
+					sharedCalendarReplyFunc({
+						dispatch,
+						sharedCalendarName,
+						owner,
+						participants,
+						grantee,
+						customMessage,
+						role,
+						allowedActions,
+						isAccepted: false
+					});
 
-			createSnackbar({
-				key: `share_declined`,
-				replace: true,
-				type: 'info',
-				label: t('message.snackbar.share.declined', 'You have declined the share request'),
-				autoHideTimeout: 3000,
-				hideButton: true
-			});
-		} else {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
-				key: `share`,
-				replace: true,
-				type: 'error',
-				label: t('label.error_try_again', 'Something went wrong, please try again'),
-				autoHideTimeout: 3000,
-				hideButton: true
-			});
-		}
-	});
+				createSnackbar({
+					key: `share_declined`,
+					replace: true,
+					type: 'info',
+					label: t('message.snackbar.share.declined', 'You have declined the share request'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			} else {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				createSnackbar({
+					key: `share`,
+					replace: true,
+					type: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			}
+		});

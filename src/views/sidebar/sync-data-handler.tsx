@@ -11,7 +11,6 @@ import {
 	getTags
 } from '@zextras/carbonio-shell-ui';
 import React, { FC, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty, map, keyBy, find, filter, forEach, sortBy, reduce } from 'lodash';
 import {
 	handleCreatedFolders,
@@ -52,9 +51,10 @@ import {
 	handleDeletedSearchMessages
 } from '../../store/searches-slice';
 import { Conversation } from '../../types';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 
 const InboxBadgeUpdater = (): null => {
-	const folder = useSelector(selectFolder(FOLDERS.INBOX));
+	const folder = useAppSelector(selectFolder(FOLDERS.INBOX));
 	useEffect(() => {
 		updatePrimaryBadge(
 			{
@@ -72,10 +72,10 @@ export const SyncDataHandler: FC = () => {
 	const refresh = useRefresh();
 	const notifyList = useNotify();
 	const [seq, setSeq] = useState(-1);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const [initialized, setInitialized] = useState(false);
-	const currentFolder = useSelector(selectCurrentFolder);
-	const messagesState = useSelector(selectMessages);
+	const currentFolder = useAppSelector(selectCurrentFolder);
+	const messagesState = useAppSelector(selectMessages);
 
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {

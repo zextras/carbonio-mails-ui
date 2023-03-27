@@ -4,17 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import {
-	ZIMBRA_STANDARD_COLORS,
+	AccordionFolder,
 	FOLDERS,
-	t,
+	Folder,
+	LinkFolder,
+	LinkFolderFields,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	ROOT_NAME,
-	AccordionFolder,
-	Folder,
-	LinkFolderFields
+	ZIMBRA_STANDARD_COLORS,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
+import { MailMessage } from '../../types';
 
 const folderIdRegex = /^(.+:)*(\d+)$/;
 
@@ -248,4 +250,48 @@ export const getFolderTranslatedName = ({ folderId, folderName }: GetSystemFolde
 	}
 
 	return folderName;
+};
+
+/**
+ * Returns the root account name for a given folder
+ * @param folder a Folder or LinkFolder
+ * @returns the root account name or null if the folder is not a link or the root folder
+ */
+export const getRootAccountName = (folder: Folder | LinkFolder): string | null => {
+	if (
+		folder?.isLink &&
+		folder?.owner &&
+		folder.parent?.parent === undefined &&
+		folder.oname === ROOT_NAME
+	) {
+		return folder?.owner;
+	}
+	if (folder?.parent) {
+		return getRootAccountName(folder?.parent);
+	}
+	return null;
+};
+
+/**
+ * Returns the parent folder id for a given folder
+ * @param message a Folder or LinkFolder
+ * @returns the parent folder id or null if the folder is not a link or the root folder
+ */
+export const getParentId = (message: Partial<MailMessage>): string =>
+	(message.parent?.includes(':') ? message.parent?.split(':')[1] : message.parent) ?? '0';
+
+/**
+ * Returns the parent folder id for a given folder
+ * @param folder a Folder or LinkFolder
+ * @returns the path to pass down as props to the Breadcrumb component
+ */
+export const getFolderPathForBreadcrumb = (
+	folderPath: string
+): { folderPathFirstPart: string; folderPathLastPart: string } => {
+	if (folderPath === '') return { folderPathFirstPart: '', folderPathLastPart: '' };
+	const folderPathArray = folderPath.split('/');
+	const folderPathLastPart = `/ ${folderPathArray[folderPathArray.length - 1]}`;
+	folderPathArray.pop();
+	const folderPathFirstPart = folderPathArray.join('/');
+	return { folderPathFirstPart, folderPathLastPart };
 };

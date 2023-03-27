@@ -3,41 +3,46 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text } from '@zextras/carbonio-design-system';
 import {
 	Account,
-	addBoard,
 	FOLDERS,
+	Tags,
+	addBoard,
 	getBridgedFunctions,
 	replaceHistory,
-	t,
-	Tags
+	t
 } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
-import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
+import React from 'react';
+import { errorPage } from '../commons/preview-eml/error-page';
+import { getContentForPrint } from '../commons/print-conversation';
+import { ActionsType } from '../commons/utils';
 import { MAILS_ROUTE } from '../constants';
 import { getMsgsForPrint, msgAction } from '../store/actions';
-import { ActionsType } from '../commons/utils';
 import { sendMsg } from '../store/actions/send-msg';
-import MoveConvMessage from './move-conv-msg';
+import { AppDispatch, StoreProvider } from '../store/redux';
+import {
+	BoardContext,
+	MailMessage,
+	MessageActionReturnType,
+	MsgActionParameters,
+	MsgActionResult
+} from '../types';
 import DeleteConvConfirm from './delete-conv-modal';
+import MoveConvMessage from './move-conv-msg';
 import RedirectAction from './redirect-message-action';
-import { getContentForPrint } from '../commons/print-conversation';
-import { applyTag } from './tag-actions';
-import { BoardContext, MailMessage, MsgActionParameters, MsgActionResult } from '../types';
-import { StoreProvider } from '../store/redux';
-import { errorPage } from '../commons/preview-eml/error-page';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
 type DeselectAllType = () => void;
-// type CloseEditorType = () => void;
+
 type MessageActionPropType = {
 	ids: MessageActionIdsType;
 	id?: string | MessageActionIdsType;
 	value?: MessageActionValueType;
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 	folderId?: string;
 	shouldReplaceHistory?: boolean;
 	deselectAll?: DeselectAllType;
@@ -47,12 +52,6 @@ type MessageActionPropType = {
 	message?: MailMessage;
 };
 
-export type MessageActionReturnType = {
-	id: string;
-	icon: string;
-	label: string;
-	click: (ev?: MouseEvent) => void;
-};
 export const setMsgRead = ({
 	ids,
 	value,
@@ -66,7 +65,7 @@ export const setMsgRead = ({
 	label: value
 		? t('action.mark_as_unread', 'Mark as unread')
 		: t('action.mark_as_read', 'Mark as read'),
-	click: (ev): void => {
+	onClick: (ev): void => {
 		if (ev) ev.preventDefault();
 		dispatch(
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -98,7 +97,7 @@ export function setMsgFlag({
 		id: 'message-flag',
 		icon: value ? 'Flag' : 'FlagOutline',
 		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -125,7 +124,7 @@ export function setMsgAsSpam({
 		label: value
 			? t('action.mark_as_non_spam', 'Not spam')
 			: t('action.mark_as_spam', 'Mark as spam'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			let notCanceled = true;
 
@@ -140,7 +139,7 @@ export function setMsgAsSpam({
 					autoHideTimeout: 3000,
 					hideButton,
 					actionLabel: t('label.undo', 'Undo'),
-					onActionClick: () => {
+					onActiononClick: () => {
 						notCanceled = false;
 					}
 				});
@@ -192,7 +191,7 @@ export function printMsg({
 		id: 'message-print',
 		icon: 'PrinterOutline',
 		label: t('action.print', 'Print'),
-		click: (): void => {
+		onClick: (): void => {
 			const printWindow = window.open('', '_blank');
 			getMsgsForPrint({ ids: [message.id] })
 				.then((res) => {
@@ -220,7 +219,7 @@ export function showOriginalMsg({ id }: { id: string }): MessageActionReturnType
 		id: 'message-show_original',
 		icon: 'CodeOutline',
 		label: t('action.show_original', 'Show original'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			window.open(`/service/home/~/?auth=co&view=text&id=${id}`, '_blank');
 		}
@@ -241,7 +240,7 @@ export const dispatchMsgMove = (
 	);
 
 const restoreMessage = (
-	dispatch: Dispatch<any>,
+	dispatch: AppDispatch,
 	ids: MessageActionIdsType,
 	folderId: string,
 	closeEditor: boolean | undefined,
@@ -290,14 +289,14 @@ export function moveMsgToTrash({
 		id: 'message-trash',
 		icon: 'Trash2Outline',
 		label: t('label.delete', 'Delete'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				msgAction({
-					operation: `trash`,
+					operation: 'trash',
 					ids
 				}) // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -313,7 +312,7 @@ export function moveMsgToTrash({
 						autoHideTimeout: 5000,
 						hideButton: false,
 						actionLabel: t('label.undo', 'Undo'),
-						onActionClick: () =>
+						onActiononClick: () =>
 							restoreMessage(dispatch, ids, folderId, closeEditor, conversationId)
 					});
 				} else {
@@ -339,7 +338,7 @@ export function deleteMsg({
 		id: 'message-delete',
 		icon: 'Trash2Outline',
 		label: t('label.delete', 'Delete'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			const closeModal = getBridgedFunctions()?.createModal({
 				title: t('header.delete_email', 'Delete e-mail'),
@@ -419,7 +418,7 @@ export function replyMsg({
 		id: 'message-reply',
 		icon: 'UndoOutline',
 		label: t('action.reply', 'Reply'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY}`,
@@ -438,7 +437,7 @@ export function replyAllMsg({
 		id: 'message-reply_all',
 		icon: 'ReplyAll',
 		label: t('action.reply_all', 'Reply all'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY_ALL}`,
@@ -457,7 +456,7 @@ export function forwardMsg({
 		id: 'message-forward',
 		icon: 'Forward',
 		label: t('action.forward', 'Forward'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.FORWARD}`,
@@ -476,7 +475,7 @@ export function editAsNewMsg({
 		id: 'message-edit_as_new',
 		icon: 'Edit2Outline',
 		label: t('action.edit_as_new', 'Edit as new'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_NEW}`,
@@ -496,7 +495,7 @@ export function editDraft({
 		id: 'message-edit_as_draft',
 		icon: 'Edit2Outline',
 		label: t('label.edit', 'Edit'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			if (message?.isScheduled) {
 				const closeModal = getBridgedFunctions()?.createModal({
@@ -547,17 +546,15 @@ export function sendDraft({
 }: {
 	id: string;
 	message: MailMessage;
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 }): MessageActionReturnType {
 	return {
 		id: 'message-send',
 		icon: 'PaperPlaneOutline',
 		label: t('label.send', 'Send'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				sendMsg({
 					editorId: id,
 					msg: message
@@ -572,7 +569,7 @@ export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
 		id: 'message-redirect',
 		icon: 'CornerUpRight',
 		label: t('action.redirect', 'Redirect'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
@@ -606,7 +603,7 @@ export function moveMessageToFolder({
 		id: 'message-restore',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
 		label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
-		click: (): void => {
+		onClick: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
 					maxHeight: '90vh',
@@ -641,7 +638,7 @@ export function deleteMessagePermanently({
 		id: 'message-delete-permanently',
 		icon: 'DeletePermanentlyOutline',
 		label: t('label.delete_permanently', 'Delete Permanently'),
-		click: (): void => {
+		onClick: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
 					children: (
@@ -665,229 +662,9 @@ export function deleteMessagePermanently({
 }
 
 type GetMessageActionsType = {
-	folderId: string;
+	item: MailMessage;
 	dispatch: Dispatch;
 	deselectAll: () => void;
 	account: Account;
 	tags: Tags;
-};
-export const getActions = ({
-	folderId,
-	dispatch,
-	deselectAll,
-	account,
-	tags
-}: GetMessageActionsType): any => {
-	switch (folderId) {
-		case FOLDERS.TRASH:
-			return (message: MailMessage): any => [
-				[
-					setMsgRead({
-						ids: [message.id],
-						value: message.read,
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
-					replyMsg({ id: message.id, folderId }),
-					forwardMsg({ id: message.id, folderId }),
-					deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }),
-					moveMessageToFolder({
-						id: [message.id],
-						folderId,
-						dispatch,
-						isRestore: true,
-						deselectAll
-					})
-				],
-				[
-					setMsgRead({
-						ids: [message.id],
-						value: message.read,
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
-					applyTag({ tags, conversation: message, isMessage: true }),
-					setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }),
-					printMsg({ message, account }),
-					deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }),
-					moveMessageToFolder({
-						id: [message.id],
-						folderId,
-						dispatch,
-						isRestore: true,
-						deselectAll
-					}),
-					replyMsg({ id: message.id, folderId }),
-					replyAllMsg({ id: message.id, folderId }),
-					forwardMsg({ id: message.id, folderId }),
-					editAsNewMsg({ id: message.id, folderId }),
-					sendDraft({ id: message.id, message, dispatch }),
-					redirectMsg({ id: message.id })
-				]
-			];
-		case FOLDERS.SPAM:
-			return (message: MailMessage, closeEditor: boolean): any => [
-				[
-					setMsgRead({
-						ids: [message.id],
-						value: message.read,
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
-					setMsgAsSpam({
-						ids: [message.id],
-						value: true,
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true
-					}),
-					deleteMsg({ ids: [message.id], dispatch })
-				],
-				[
-					setMsgRead({
-						ids: [message.id],
-						value: message.read,
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
-					applyTag({ tags, conversation: message, isMessage: true }),
-					setMsgAsSpam({
-						ids: [message.id],
-						value: true,
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true
-					}),
-					printMsg({ message, account }),
-					showOriginalMsg({ id: message.id }),
-					moveMsgToTrash({
-						ids: [message.id],
-						dispatch,
-						deselectAll,
-						folderId,
-						conversationId: message.conversation,
-						closeEditor
-					}),
-					replyMsg({ id: message.id, folderId }),
-					replyAllMsg({ id: message.id, folderId }),
-					forwardMsg({ id: message.id, folderId }),
-					editAsNewMsg({ id: message.id, folderId }),
-					sendDraft({ id: message.id, message, dispatch }),
-					redirectMsg({ id: message.id })
-				]
-			];
-		case FOLDERS.DRAFTS:
-			return (message: MailMessage, closeEditor: boolean) => [
-				[
-					editDraft({ id: message.id, folderId }),
-					sendDraft({ id: message.id, message, dispatch }),
-					moveMsgToTrash({
-						ids: [message.id],
-						dispatch,
-						deselectAll,
-						folderId,
-						conversationId: message.conversation,
-						closeEditor
-					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch })
-				],
-				[
-					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
-					applyTag({ tags, conversation: message, isMessage: true }),
-					moveMsgToTrash({
-						ids: [message.id],
-
-						dispatch,
-
-						deselectAll,
-						folderId,
-						conversationId: message.conversation,
-						closeEditor
-					}),
-					editDraft({ id: message.id, folderId }),
-					sendDraft({ id: message.id, message, dispatch }),
-					printMsg({ message, account })
-				]
-			];
-		case FOLDERS.SENT:
-		case FOLDERS.INBOX:
-		default:
-			return (message: MailMessage, closeEditor: boolean) => [
-				[
-					replyMsg({ id: message.id, folderId }),
-					replyAllMsg({ id: message.id, folderId }),
-					forwardMsg({ id: message.id, folderId }),
-					setMsgRead({
-						ids: [message.id],
-						value: message.read,
-
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
-					moveMsgToTrash({
-						ids: [message.id],
-
-						dispatch,
-
-						deselectAll,
-						folderId,
-						conversationId: message.conversation,
-						closeEditor
-					}),
-
-					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch })
-				],
-				[
-					setMsgRead({
-						ids: [message.id],
-						value: message.read,
-
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true,
-						deselectAll
-					}),
-					setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }),
-
-					applyTag({ tags, conversation: message, isMessage: true }),
-					setMsgAsSpam({
-						ids: [message.id],
-						value: false,
-						dispatch,
-						folderId,
-						shouldReplaceHistory: true
-					}),
-					printMsg({ message, account }),
-					showOriginalMsg({ id: message.id }),
-					moveMsgToTrash({
-						ids: [message.id],
-						dispatch,
-						deselectAll,
-						folderId,
-						conversationId: message.conversation,
-						closeEditor
-					}),
-					replyMsg({ id: message.id, folderId }),
-					replyAllMsg({ id: message.id, folderId }),
-					forwardMsg({ id: message.id, folderId }),
-					editAsNewMsg({ id: message.id, folderId }),
-					sendDraft({ id: message.id, message, dispatch }),
-					redirectMsg({ id: message.id })
-				]
-			];
-	}
 };
