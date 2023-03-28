@@ -19,13 +19,13 @@ import {
 } from '@zextras/carbonio-design-system';
 import {
 	FOLDERS,
+	Tag,
+	ZIMBRA_STANDARD_COLORS,
 	pushHistory,
 	t,
-	Tag,
 	useTags,
 	useUserAccounts,
-	useUserSettings,
-	ZIMBRA_STANDARD_COLORS
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import {
 	filter,
@@ -40,18 +40,18 @@ import {
 	uniqBy
 } from 'lodash';
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
+import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
 import { selectMessages } from '../../../../store/messages-slice';
 import {
+	ConvMessage,
 	Conversation,
 	ConversationMessagesListProps,
-	ConvMessage,
 	IncompleteMessage,
 	MessageListItemProps,
 	StateType,
@@ -208,11 +208,11 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 	selectedItems,
 	dragImageRef
 }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const [open, setOpen] = useState(false);
 	const accounts = useUserAccounts();
-	const messages = useSelector(selectMessages);
-	const conversationStatus = useSelector((state: StateType) =>
+	const messages = useAppSelector(selectMessages);
+	const conversationStatus = useAppSelector((state: StateType) =>
 		selectConversationExpandedStatus(state, item.id)
 	);
 	const tagsFromStore = useTags();

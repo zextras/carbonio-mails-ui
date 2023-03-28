@@ -7,7 +7,6 @@ import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { find, map, noop, reduce } from 'lodash';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { CustomList } from '../../../carbonio-ui-commons/components/list/list';
@@ -94,7 +93,7 @@ const MessageList: FC = () => {
 	} = useSelection(folderId, setCount, count, messages);
 
 	const listRef = useRef<HTMLDivElement>(null);
-	const messageListStatus = useSelector(selectFolderMsgSearchStatus(folderId));
+	const messageListStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 
 	const hasMore = useMemo(() => status === 'hasMore', [status]);
 	const loadMore = useCallback(

@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Input, Container, Checkbox, Padding, Divider, Row } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
 import ModalFooter from './create-filter-modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';

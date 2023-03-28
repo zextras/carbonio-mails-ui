@@ -55,6 +55,7 @@ import SendLaterModal from './send-later-modal';
 import { StoreProvider } from '../../../../../store/redux';
 import { getSignatureValue } from '../../../../../helpers/signatures';
 import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils/text/html';
+import { useAppDispatch } from '../../../../../hooks/redux';
 
 /**
  * Match the first string which is between a
@@ -193,7 +194,7 @@ const EditViewHeader: FC<PropType> = ({
 	const [btnLabel, setBtnLabel] = useState<string>(t('label.send', 'Send'));
 	const [isDisabled, setIsDisabled] = useState(false);
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const boardUtilities = useBoardHooks();
 	const [showRichText, setShowRichtext] = useState(editor?.richText ?? false);

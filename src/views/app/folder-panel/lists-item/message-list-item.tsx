@@ -45,6 +45,7 @@ import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { ItemAvatar } from './item-avatar';
 import { ListItemActionWrapper } from './list-item-actions-wrapper';
 import { SenderName } from './sender-name';
+import { useAppDispatch } from '../../../../hooks/redux';
 
 type Preview = {
 	src?: string | null | ArrayBuffer;
@@ -109,7 +110,7 @@ export const MessageListItem: FC<MessageListItemProps> = ({
 	const { isMessageView } = useAppContext<AppContext>();
 	const messageFolder = useFolder(item.parent);
 	const ids = useMemo(() => Object.keys(selectedItems ?? []), [selectedItems]);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const tagsFromStore = useTags();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
