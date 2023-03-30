@@ -20,14 +20,15 @@
         "show_details": "Afficher les détails",
         "show_original": "Afficher l'original",
         "mark_as_unread": "Marqué comme non lu",
-        "reset": "Réinitialiser",
+        "reset": "Réinitialisation",
         "goto_drafts": "Aller aux brouillons",
         "goto_folder": "ALLER AU DOSSIER",
-        "search": "Recherche",
+        "search": "Rechercher",
         "preview_new_tab": "Cliquez pour afficher un aperçu dans un autre onglet",
         "click_preview": "Cliquer pour prévisualiser",
         "edit_anyway": "Éditer malgré tout",
-        "mark_all_read": "Définir comme lu"
+        "mark_all_read": "Définir comme lu",
+        "click_open": "Cliquer pour ouvrir"
     },
     "composer": {
         "attachment": {
@@ -81,7 +82,7 @@
         "download_plural": "Télécharger tout",
         "draft_folder": "[BROUILLON]",
         "edit": "Modifier",
-        "edit_access": "Modifier les accès de {{name}}",
+        "edit_access": "Modifier les accès",
         "edit_folder_properties": "Modifier les propriétés de {{name}}",
         "filter_user": "Utilisateurs du filtre",
         "find_shares": "Trouver les partages",
@@ -99,7 +100,7 @@
         "retention_policy": "Politique de rétention",
         "revoke": "Révoquer",
         "revoke_access_tooltip": "Révoquer les accès en envoyant une notification",
-        "revoke_share": "Révoquer le partage de {{title}}",
+        "revoke_share": "Révoquer le partage",
         "role": "Rôle : ",
         "save": "Enregistrer",
         "select_folder": "Sélectionner le dossier",
@@ -118,7 +119,7 @@
         "with_you": "avec vous",
         "would_like_to_share": "a partagé son",
         "automatically_delete_duplicates": "Supprimer automatiquement les doublons du même message lorsqu'il est reçu",
-        "keywords": "Mots clés",
+        "keywords": "Mots-clé",
         "revoke_access_without_notification": "Révoquer les accès sans envoyer de notification",
         "error_try_again": "Quelque chose s'est mal passé, veuillez recommencer",
         "restore": "Restaurer",
@@ -242,7 +243,7 @@
         "trusted_addresses": "Adresses de confiance",
         "time_zone": "Fuseau horaire",
         "send_later": "Envoyer plus tard",
-        "searching": "En cours de recherche...",
+        "searching": "En cours de recherche…",
         "request_receipt": "Demander un accusé de lecture",
         "remove_request_receipt": "Enlever la demande d'accusé de lecture",
         "read_receipt_sent": "Un accusé de lecture a été envoyé pour ce message",
@@ -278,7 +279,27 @@
         "not_in_list": "{{name}} - N'est pas dans votre liste d'étiquettes",
         "invalid_query": "Impossible d'analyser la requête de recherche, supprimez la et réessayez",
         "download_and_delete": "Télécharger et Supprimer",
-        "enter_name": "Saisir le nom"
+        "enter_name": "Saisir le nom",
+        "no_signature": "Pas de signature",
+        "mark_read_message_immediately": "Marquer les messages comme lu immédiatement",
+        "mark_read_message_manually": "Marquer les message lu manuellement en cliquant sur l'icone",
+        "attachment_with_count": "{{count}} pièce jointe",
+        "attachment_with_count_plural": "{{count}} pièces jointes",
+        "attachments_disclaimer": "Vous consultez un message joint. L'authenticité des messages joints ne peut être vérifiée.",
+        "choose_file": "Choisir un fichier",
+        "deselect_all": "Tout DÉSÉLECTIONNER",
+        "extra_window": {
+            "save_to_files_disabled": "Enregistrer dans Files"
+        },
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "Impossible d'ouvrir une nouvelle fenêtre"
+            }
+        },
+        "need_to_select_atleast_one_item": "Vous devez sélectionner au moins un élément pour réaliser l'action",
+        "path": "Chemin",
+        "select_all": "Tout SÉLECTIONNER",
+        "using_signatures": "Utilisation des signatures"
     },
     "message": {
         "snackbar": {
@@ -297,7 +318,8 @@
             "some_att_fails": "Il semble qu'il y ai eu une erreur lors de l'enregistrement de certaines pièces jointes, merci de réessayer",
             "all_link_copied": "Le lien public a été copié avec succès",
             "link_copying_error": "Il semble y avoir un problème lors de la génération du lien public, veuillez réessayer",
-            "some_link_copying_error": "Il semble y avoir un problème lors de la génération de l'url publique pour certains fichiers, veuillez réessayer"
+            "some_link_copying_error": "Il semble y avoir un problème lors de la génération de l'url publique pour certains fichiers, veuillez réessayer",
+            "eml_download_failed": "Les pièces jointes ont été enregistrées dans le dossier choisi"
         },
         "sending_mail_to_self": "Il semblerait que vous soyez sur le point de vous envoyer un email",
         "invalid_search_message": "Nous n'avons pas trouvé de correspondance",
@@ -313,7 +335,8 @@
         "send_later_success": "Votre email sera envoyé le {{date}} à {{time}}",
         "select_date_time": "Sélectionner une date et une heure pour envoyer le message",
         "delete_attachment_message2": "Souhaitez-vous le télécharger avant ?",
-        "delete_attachment_message1": "Votre pièce jointe sera définitivement supprimée de Carbonio."
+        "delete_attachment_message1": "Votre pièce jointe sera définitivement supprimée de Carbonio.",
+        "": "Pour compléter l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur"
     },
     "messages": {
         "invalid_address": "L'adresse suivante semble être invalide",
@@ -388,7 +411,12 @@
         "read_receipt_1": "L'expéditeur de ce message a demandé une notification de lecture de ce message.",
         "invalid_trustee_address": "Merci de ne saisir que des adresses email ou des domaines",
         "cal_name_exist_warning": "Un calendrier porte déjà ce nom sur ce point de montage",
-        "edit_schedule_warning": "En éditant cet email, l'heure et la date définie précédemment pour l'envoi planifiées seront annulées."
+        "edit_schedule_warning": "En éditant cet email, l'heure et la date définie précédemment pour l'envoi planifiées seront annulées.",
+        "extra_windows": {
+            "": "Pour terminer l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur",
+            "opening_blocked": "Pour terminer l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur",
+            "popup_blocked": "Pour terminer l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur"
+        }
     },
     "placeholder": {
         "add_new_recipients": "Ajouter de nouveaux destinataires"
@@ -416,7 +444,12 @@
             "message_color": "Couleur du message",
             "message_selection": "Sélection du message",
             "visualization_options": "Options d'affichage",
-            "unsend_time": "Définir le temps pour annuler un envoi"
+            "unsend_time": "Définir le temps avant envoi",
+            "filter_name_required": "Un nom de filtre est requis",
+            "mark_manually": "Marquer manuellement",
+            "not_changed_anything": "Aucun changement n'a été réalisé",
+            "default": "Par défaut",
+            "mark_reading_panel": "Marquer comme lu"
         },
         "msg_from_optn": {
             "discard": "Rejeter le message automatiquement",
@@ -542,13 +575,19 @@
             "comic": "Comic"
         },
         "font_size": "{{count}} pt",
-        "font_size_plural": "",
+        "font_size_plural": "{{count}} pts",
         "font": "Police",
         "mail_unsend_time": {
             "second": "{{count}} seconde",
             "second_plural": "{{count}} secondes",
             "no_delay": "Sans délai"
-        }
+        },
+        "add_action": "Ajouter une nouvelle action",
+        "address": "Adresse",
+        "folder_path_required": "Sélectionner un dossier de destination pour terminer l'action \"Déplacer dans le dossier\".",
+        "address_required": "Remplir le champ adresse pour terminer l'action \"Redirection à l'adresse\".",
+        "remove_action": "Supprimer cette action",
+        "tag_name_required": "Remplir le champ \"Étiquette\" pour terminer l'action \"Étiqueter avec\"."
     },
     "share": {
         "options": {
@@ -588,7 +627,7 @@
         "add_attachments": "Ajouter des pièces jointes",
         "disable_rich_text": "Désactiver l'éditeur de texte riche",
         "disable_urgent": "Désactiver urgent",
-        "edit": "Modifier les propriétés du partage",
+        "edit": "Modifier les propriétés de partage",
         "enable_urgent": "Activer urgent",
         "resend": "Renvoyez la notification email de ce partage",
         "revoke": "Révoquer les accès",
@@ -725,7 +764,7 @@
         "unforwarded": "non transféré",
         "unflagged": "non étiquetté",
         "tome": "pour moi",
-        "tofromme": "Pour moi, de moi ou avec moi en copie",
+        "tofromme": "pour moi ou de moi",
         "tofromccme": "qui m'est envoyé, pour moi ou avec moi en copie",
         "toccme": "qui m'est envoyé ou avec moi en copie",
         "solo": "conversation avec un seul message",
@@ -737,7 +776,7 @@
         "local": "dans mes dossiers",
         "invitations": "invitations",
         "fromme": "de ma part",
-        "fromccme": "de ma part",
+        "fromccme": "de moi ou en copie pour moi",
         "forwarded": "transféré",
         "flagged": "étiquetté",
         "draft": "brouillon",
@@ -762,5 +801,6 @@
         "composing_messages": "Composition des messages",
         "compose_colin": "Composer :"
     },
-    "go_back": "Retour"
+    "go_back": "Retour",
+    "": "Pour compléter l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur"
 }

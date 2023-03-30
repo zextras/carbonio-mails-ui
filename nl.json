@@ -19,7 +19,7 @@
         "print": "Afdrukken",
         "redirect": "Doorsturen",
         "reply_all": "Alle beantwoorden",
-        "reset": "Resetten",
+        "reset": "Opnieuw instellen",
         "send_anyway": "Toch sturen",
         "show_details": "Details weergeven",
         "show_original": "Origineel weergeven",
@@ -27,7 +27,8 @@
         "preview_new_tab": "Klik om te bekijken in een ander tabblad",
         "click_preview": "Klik om te bekijken",
         "mark_all_read": "Alles als gelezen markeren",
-        "edit_anyway": "Toch bewerken"
+        "edit_anyway": "Toch bewerken",
+        "click_open": "Klik om te openen"
     },
     "folder": {
         "modal": {
@@ -89,7 +90,7 @@
         "revoke": "Intrekken",
         "revoke_access_tooltip": "Toegang intrekken met een standaardkennisgeving",
         "revoke_access_without_notification": "Toegang intrekken zonder een melding te sturen",
-        "revoke_share": "Delen van {{title}} intrekken",
+        "revoke_share": "Teilen widerrufen",
         "role": "Rol: ",
         "select_folder": "Map selecteren",
         "send_notification": "Een kennisgeving sturen naar",
@@ -228,7 +229,7 @@
         "always_allow_domain": "Altijd toestaan van <strong>{{domain}}</strong> domein",
         "always_allow_address": "Altijd toestaan van <strong>{{from}}</strong>",
         "time_zone": "Tijdzone",
-        "searching": "Bezig met zoeken...",
+        "searching": "Bezig met zoeken…",
         "notify": "Waarschuwen",
         "do_not_notify": "Niet melden",
         "trusted_addresses": "Vertrouwde adressen",
@@ -267,7 +268,26 @@
         "download_and_delete": "Downloaden en verwijderen",
         "invalid_query": "Kan de zoekopdracht niet parseren, wis deze en probeer opnieuw",
         "enter_name": "Naam invullen",
-        "no_signature": "Geen handtekening"
+        "no_signature": "Geen handtekening",
+        "mark_read_message_immediately": "Markeer berichten in displayer als onmiddellijk lezen",
+        "mark_read_message_manually": "Handmatig als gelezen markeren door op dit pictogram te klikken",
+        "attachment_with_count": "{{count}} Bijlage",
+        "attachment_with_count_plural": "{{count}} Bijlagen",
+        "attachments_disclaimer": "U bekijkt een bijgevoegd bericht. De authenticiteit van de bijgevoegde berichten kan niet worden gecontroleerd.",
+        "choose_file": "Bestand kiezen",
+        "deselect_all": "Alles DESELECTEREN",
+        "extra_window": {
+            "save_to_files_disabled": "Opslaan in Bestanden"
+        },
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "Kan geen nieuw venster openen"
+            }
+        },
+        "need_to_select_atleast_one_item": "U moet ten minste één item selecteren om de actie uit te voeren",
+        "path": "Traject",
+        "select_all": "Alles SELECTEREN",
+        "using_signatures": "Handtekeningen gebruik"
     },
     "messages": {
         "invalid_address": "Het volgende adres lijkt ongeldig te zijn",
@@ -342,7 +362,12 @@
         "read_receipt_1": "De afzender van dit bericht heeft verzocht te worden geïnformeerd wanneer u dit bericht leest.",
         "invalid_trustee_address": "Vul alleen e-mailadressen of domeinen in",
         "edit_schedule_warning": "Door deze e-mail te bewerken, worden de eerder ingestelde tijd en datum voor uitgestelde verzending opnieuw ingesteld.",
-        "cal_name_exist_warning": "Een kalender met dezelfde naam bestaat al in dit traject"
+        "cal_name_exist_warning": "Een kalender met dezelfde naam bestaat al in dit traject",
+        "extra_windows": {
+            "": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen",
+            "opening_blocked": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen",
+            "popup_blocked": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen"
+        }
     },
     "placeholder": {
         "add_new_recipients": "Nieuwe ontvangers toevoegen"
@@ -409,7 +434,8 @@
             "some_att_fails": "Er lijkt een probleem te zijn tijdens het opslaan van enkele bijlagen, probeer het opnieuw",
             "some_link_copying_error": "Er lijkt een probleem te zijn met het genereren van de publieke url voor sommige bestanden, probeer het opnieuw",
             "link_copying_error": "Er lijkt een probleem te zijn tijdens het genereren van de publieke link, probeer het opnieuw",
-            "all_link_copied": "Publieke link met succes gekopieerd"
+            "all_link_copied": "Publieke link met succes gekopieerd",
+            "eml_download_failed": "Bijlage opgeslagen in de geselecteerde map"
         },
         "sending_mail_to_self": "Het lijkt erop dat je op het punt staat een e-mail naar uzelf te sturen",
         "invalid_search_message": "We hebben geen match gevonden",
@@ -425,7 +451,8 @@
         "schedule_time": "voor {{date}} om {{time}}",
         "schedule_mail": "Zal worden verstuurd op: {{date}} om {{time}}",
         "delete_attachment_message1": "Uw bijlage wordt permanent verwijderd uit Carbonio.",
-        "delete_attachment_message2": "Wilt u het eerst downloaden?"
+        "delete_attachment_message2": "Wilt u het eerst downloaden?",
+        "": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen"
     },
     "composer": {
         "attachment": {
@@ -452,7 +479,11 @@
             "set_message_color": "De setkleur van berichten en gesprekken instellen volgens de kleur van de tag.",
             "visualization_options": "Visualisatie-opties",
             "unsend_time": "Tijd voor afmelden instellen",
-            "default": "Standaard"
+            "default": "Standaard",
+            "mark_reading_panel": "Als gelezen markeren",
+            "filter_name_required": "Filternaam is verplicht",
+            "mark_manually": "Handmatig markeren",
+            "not_changed_anything": "Er is geen verandering aangebracht"
         },
         "msg_from_optn": {
             "discard": "Bericht automatisch verwijderen",
@@ -585,7 +616,12 @@
             "second": "{{count}} seconde",
             "second_plural": "{{count}} seconden"
         },
-        "address": "Adres"
+        "address": "Adres",
+        "address_required": "Vul het veld \"Adres\" in om de actie \"Omleiden naar adres\" te voltooien.",
+        "folder_path_required": "Selecteer een bestemmingsmap om de actie \"Verplaatsen naar map\" te voltooien.",
+        "add_action": "Nieuwe actie toevoegen",
+        "remove_action": "Deze actie verwijderen",
+        "tag_name_required": "Vul het veld \"Tag\" in om de actie \"Tag met\" te voltooien."
     },
     "tooltip": {
         "revoke": "Toegang intrekken",
@@ -726,12 +762,12 @@
         "received": "ontvangen door mij",
         "read": "lezen",
         "fromme": "van mij",
-        "fromccme": "van mij",
+        "fromccme": "van mij of in kopie aan mij",
         "forwarded": "doorgestuurd",
         "flagged": "Markiert",
         "draft": "concept",
         "unreplied": "niet door mij beantwoord",
-        "tofromme": "aan mij, van mij of in kopie aan mij",
+        "tofromme": "aan mij of van mij",
         "tofromccme": "aan mij, van mij of in kopie aan mij",
         "toccme": "aan mij of in kopie aan mij",
         "solo": "gesprekken met één bericht",
@@ -765,5 +801,6 @@
         "delete_draft": {
             "message1": "Wilt u dit ontwerp behouden of verwijderen?"
         }
-    }
+    },
+    "": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen"
 }

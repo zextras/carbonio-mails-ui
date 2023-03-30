@@ -1,5 +1,7 @@
 {
+    "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
     "action": {
+        "click_open": "Click to open",
         "click_preview": "Click to preview",
         "edit_anyway": "Edit anyway",
         "edit_as_new": "Edit as new",
@@ -101,7 +103,7 @@
         "draft": "draft",
         "flagged": "flagged",
         "forwarded": "forwarded",
-        "fromccme": "from me",
+        "fromccme": "from me or in copy to me",
         "fromme": "from me",
         "invitations": "invitations",
         "local": "on my folders",
@@ -113,7 +115,7 @@
         "solo": "conversations with a single message",
         "toccme": "to me or in copy to me",
         "tofromccme": "to me, from me or in copy to me",
-        "tofromme": "to me, from me or in copy to me",
+        "tofromme": "to me or from me",
         "tome": "to me",
         "unflagged": "not flagged",
         "unforwarded": "not forwarded",
@@ -238,6 +240,9 @@
         "attachment_plural": "Attachments",
         "attachment_status": "Status of e-mail item",
         "attachment_type": "Attachment type",
+        "attachment_with_count": "{{count}} Attachment",
+        "attachment_with_count_plural": "{{count}} Attachments",
+        "attachments_disclaimer": "You are viewing an attached message. The authenticity of the attached messages can not be verified.",
         "automatically_delete_duplicates": "Automatically delete duplicate copies of the same message when received",
         "back": "Back",
         "bcc": "Bcc",
@@ -250,6 +255,7 @@
         "cancel": "Cancel",
         "cc": "Cc",
         "cc_bcc": "Cc Bcc",
+        "choose_file": "Choose file",
         "choose_folder": "Choose folder",
         "collapse_receivers_list": "Collapse recipients list",
         "confirm": "Confirm",
@@ -265,6 +271,7 @@
         "delete_permanently": "Delete Permanently",
         "delete_tag": "Delete Tag",
         "delete_tag_name": "Delete \"{{name}}\" tag",
+        "deselect_all": "DESELECT all",
         "destination_folder": "Destination Folder",
         "discard_changes": "DISCARD CHANGES",
         "disposal_threshold": "Disposal Threshold",
@@ -291,6 +298,14 @@
         "error_try_again": "Something went wrong, please try again",
         "expand": "Expand",
         "expand_receivers_list": "Expand recipients list",
+        "extra_window": {
+            "save_to_files_disabled": "Save to Files"
+        },
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "Cannot open new window"
+            }
+        },
         "filter_folders": "Filter folders",
         "filter_modified": "Filter modified succesfully",
         "filter_user": "Filter users",
@@ -329,6 +344,7 @@
         "message_from_me": "Messages from me",
         "messages": "Messages",
         "move": "Move",
+        "need_to_select_atleast_one_item": "You need to select at least one item to perform the action",
         "new_email": "New E-mail",
         "new_folder": "New Folder",
         "no_name": "<No Name>",
@@ -345,6 +361,7 @@
         "of": "of",
         "on_behalf_of": "on behalf of",
         "owner": "Owner: ",
+        "path": "Path",
         "preview": "Preview",
         "private": "Private",
         "read": "Read",
@@ -376,8 +393,9 @@
         "save_to_files": "Save to Files",
         "schedule_send": "Schedule send",
         "search_activate_selection_mode": "Selection mode isn’t available yet on search results",
-        "searching": "Searching...",
+        "searching": "Searching…",
         "select": "Select",
+        "select_all": "SELECT all",
         "select_color": "Select Color",
         "select_date_time": "Select date and time",
         "select_folder": "Select folder",
@@ -421,6 +439,7 @@
         "type_name_here": "Item name",
         "undo": "Undo",
         "upload_from_files": "Upload from Files",
+        "using_signatures": "Signatures usage",
         "view_images": "VIEW IMAGES",
         "warning": "Warning",
         "wipe": "Wipe",
@@ -434,6 +453,7 @@
         "composing_messages": "Composing Messages"
     },
     "message": {
+        "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
         "admin_rights": "View,Edit,Add,Remove,Administer",
         "delete_attachment_message1": "Your attachment will be permanently deleted from Carbonio.",
         "delete_attachment_message2": "Do you want to download it before?",
@@ -456,6 +476,7 @@
             "att_err_adding": "There seems to be a problem when adding attachments, please try again",
             "att_saved": "Attachment saved in the selected folder",
             "calendar_edits_saved": "Edits saved correctly",
+            "eml_download_failed": "Attachment saved in the selected folder",
             "link_copying_error": "There seems to be a problem while generating public link, please try again",
             "settings_saved": "Edits saved correctly",
             "share": {
@@ -473,6 +494,11 @@
         "check_and_try_again": "Please, check Carbonio and try again",
         "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
         "edit_schedule_warning": "By editing this e-mail, the time and date previously set for delayed sending will be reset.",
+        "extra_windows": {
+            "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
+            "opening_blocked": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
+            "popup_blocked": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings"
+        },
         "invalid_address": "The following address appears to be invalid",
         "invalid_trustee_address": "Please enter only e-mail addresses or domains",
         "modal": {

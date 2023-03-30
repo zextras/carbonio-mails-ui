@@ -36,16 +36,8 @@
                 "threshold_message": "As mensagens nesta pasta mais antigas que o limite de descarte estarão sujeitas a limpeza e exclusão automáticas.",
                 "add_share": "Adicionar partilha"
             },
-            "move": {
-                "title_modal": "Mover Conversa"
-            },
             "new": {
                 "title": "Criar nova pasta"
-            },
-            "wipe": {
-                "body": {
-                    "message2": "Ao limpá-la, todo conteúdo relacionado será excluído permanentemente."
-                }
             }
         },
         "action": {
@@ -68,7 +60,7 @@
         "add_custom_message": "Adicionar mensagem personalizada",
         "allowed_actions": "Ações permitidas",
         "draft_folder": "[RASCUNHO]",
-        "edit_access": "Editar acesso de {{name}}",
+        "edit_access": "Editar acesso",
         "edit_folder_properties": "Editar propriedades de {{name}}",
         "automatically_delete_duplicates": "Excluir automaticamente as cópias duplicadas da mesma mensagem após o recebimento",
         "bcc": "Cco",
@@ -88,7 +80,7 @@
         "owner": "Proprietário: ",
         "receive_message": "A receber mensagens",
         "retention_policy": "Política de retenção",
-        "revoke_share": "Revogar partilha de {{title}}",
+        "revoke_share": "Revogar partilha",
         "role": "Função: ",
         "select_folder": "Selecionar pasta",
         "send_notification": "Enviar mensagem de notificação para",

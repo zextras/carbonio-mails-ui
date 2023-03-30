@@ -27,7 +27,8 @@
         "preview_new_tab": "Başka sekmede görüntülemek için tıklayın",
         "click_preview": "Önizleme için tıklayın",
         "edit_anyway": "Yine de düzenle",
-        "mark_all_read": "Tümünü okundu olarak işaretle"
+        "mark_all_read": "Tümünü okundu olarak işaretle",
+        "click_open": "Açmak için tıklayın"
     },
     "composer": {
         "attachment": {
@@ -69,7 +70,8 @@
             "some_att_fails": "Bazı dosyaları kaydederken bir sorun oluştu, lütfen tekrar deneyin",
             "all_link_copied": "Genel bağlantı başarıyla kopyalandı",
             "link_copying_error": "Genel bağlantı oluşturulurken bir sorun oluştu, lütfen tekrar deneyin",
-            "some_link_copying_error": "Bazı dosyalar için genel bağlantı oluşturulurken bir sorun oluştu, lütfen tekrar deneyin"
+            "some_link_copying_error": "Bazı dosyalar için genel bağlantı oluşturulurken bir sorun oluştu, lütfen tekrar deneyin",
+            "eml_download_failed": "Ek seçilen klasöre kaydedildi"
         },
         "sending_mail_to_self": "Kendinize e-posta göndermek üzeresiniz",
         "invalid_search_message": "Eşleşen hiçbir öğe bulunamadı",
@@ -85,7 +87,8 @@
         "send_later_success": "Mesajınız {{date}} - {{time}} tarih ve saatinde gönderilecek",
         "select_date_time": "Bu mesajı göndermek için tarih ve saati seçin",
         "delete_attachment_message2": "Önce indirmek ister misiniz?",
-        "delete_attachment_message1": "Ekiniz, Carbonio'dan tamamen silinecek."
+        "delete_attachment_message1": "Ekiniz, Carbonio'dan tamamen silinecek.",
+        "": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin"
     },
     "snackbar": {
         "share_resend": "Paylaşım davetini yeniden gönder",
@@ -309,7 +312,24 @@
         "enter_name": "Ad Girin",
         "mark_read_message_manually": "Bu simgeye tıklayınca okundu olarak işaretle",
         "mark_read_message_immediately": "Okuma bölmesindeki mesajları hemen okundu olarak işaretle",
-        "no_signature": "İmza yok"
+        "no_signature": "İmza yok",
+        "attachments_disclaimer": "Eklenmiş mesajı görüntülüyorsunuz. Ekli mesajların gerçekliği belirlenemez.",
+        "choose_file": "Dosya seçin",
+        "extra_window": {
+            "save_to_files_disabled": "Dosyalara Kaydet"
+        },
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "Yeni pencere açılamıyor"
+            }
+        },
+        "path": "Yol",
+        "attachment_with_count": "{{count}} Ek",
+        "attachment_with_count_plural": "{{count}} Ek",
+        "deselect_all": "TÜM SEÇİMİ KALDIR",
+        "need_to_select_atleast_one_item": "İşlemi yapabilmek için en az bir öğe seçmeniz gerekir",
+        "select_all": "Tümünü SEÇ",
+        "using_signatures": "İmza kullanımı"
     },
     "share": {
         "options": {
@@ -435,7 +455,12 @@
         "read_receipt_1": "Bu mesajı gönderen kişi mesaj okunduğunda bildirim almak istedi.",
         "invalid_trustee_address": "Lütfen sadece e-posta adresleri veya alanadları yazınız",
         "cal_name_exist_warning": "Aynı ad kullanılmış takvim zaten burada var",
-        "edit_schedule_warning": "Bu e-postayı düzenlediğinizde ertelenmiş gönderim için önceden belirlenen tarih ve saat sıfırlanacak."
+        "edit_schedule_warning": "Bu e-postayı düzenlediğinizde ertelenmiş gönderim için önceden belirlenen tarih ve saat sıfırlanacak.",
+        "extra_windows": {
+            "opening_blocked": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin",
+            "": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin",
+            "popup_blocked": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin"
+        }
     },
     "placeholder": {
         "add_new_recipients": "Yeni alıcılar ekle"
@@ -739,7 +764,7 @@
         "unforwarded": "iletilmedi",
         "unflagged": "bayrak yok",
         "tome": "bana",
-        "tofromme": "bana, benden veya bana kopya olan",
+        "tofromme": "bana veya benden",
         "tofromccme": "bana, benden veya bana kopya olan",
         "toccme": "bana veya bana kopya olan",
         "solo": "tek mesajdan oluşan görüşmeler",
@@ -751,7 +776,7 @@
         "local": "klasörlerimde",
         "invitations": "davetler",
         "fromme": "benden",
-        "fromccme": "benden",
+        "fromccme": "benden veya bana kopya olan",
         "forwarded": "iletildi",
         "flagged": "bayraklı",
         "draft": "taslak",
@@ -776,5 +801,6 @@
         "composing_messages": "Mesaj Oluşturma",
         "compose_colin": "Oluştur:"
     },
-    "go_back": "Geriye git"
+    "go_back": "Geriye git",
+    "": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin"
 }
