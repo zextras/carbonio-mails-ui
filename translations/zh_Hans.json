@@ -328,7 +328,7 @@
         "always_allow_domain": "总是允许 <strong>{{domain}}</strong> 域",
         "always_allow_address": "总是允许 <strong>{{from}}</strong>",
         "time_zone": "时区",
-        "searching": "正在搜索...",
+        "searching": "正在搜索…",
         "notify": "通知",
         "do_not_notify": "不通知",
         "keep_draft": "保存草稿",

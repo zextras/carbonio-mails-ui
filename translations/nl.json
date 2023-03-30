@@ -227,7 +227,7 @@
         "always_allow_domain": "Altijd toestaan van <strong>{{domain}}</strong> domein",
         "always_allow_address": "Altijd toestaan van <strong>{{from}}</strong>",
         "time_zone": "Tijdzone",
-        "searching": "Bezig met zoeken...",
+        "searching": "Bezig met zoeken…",
         "notify": "Waarschuwen",
         "do_not_notify": "Niet melden",
         "trusted_addresses": "Vertrouwde adressen",

@@ -222,7 +222,7 @@
         "always_allow_domain": "Selalu izinkan dari domain<strong>{{domain}}</strong>",
         "always_allow_address": "Selalu izinkan dari <strong>{{from}}</strong>",
         "time_zone": "Zona Waktu",
-        "searching": "Mencari...",
+        "searching": "Mencari…",
         "notify": "Beri tahu",
         "do_not_notify": "Jangan kirim notifikasi",
         "trusted_addresses": "Alamat tepercaya",

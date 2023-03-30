@@ -211,7 +211,7 @@
         "always_allow_domain": "Permitir sempre do domínio <strong>{{domain}}</strong>",
         "always_allow_address": "Permitir sempre de <strong>{{from}}</strong>",
         "time_zone": "Fuso horário",
-        "searching": "Buscando...",
+        "searching": "Buscando…",
         "notify": "Avisar",
         "do_not_notify": "Não notificar",
         "trusted_addresses": "Endereços confiáveis",
