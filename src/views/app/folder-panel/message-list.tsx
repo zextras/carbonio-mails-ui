@@ -93,6 +93,7 @@ const MessageList: FC = () => {
 		selectAllModeOff
 	} = useSelection(folderId, setCount, count, messages);
 
+	const listRef = useRef<HTMLDivElement>(null);
 	const messageListStatus = useSelector(selectFolderMsgSearchStatus(folderId));
 
 	const hasMore = useMemo(() => status === 'hasMore', [status]);
@@ -108,6 +109,16 @@ const MessageList: FC = () => {
 		},
 		[isLoading, hasMore, dispatch, folderId]
 	);
+
+	useEffect(() => {
+		if (
+			listRef.current &&
+			listRef.current.children[0] &&
+			listRef.current.children[0].scrollTop !== 0
+		) {
+			listRef.current.children[0].scrollTop = 0;
+		}
+	}, [folderId]);
 
 	const displayerTitle = useMemo(() => {
 		if (messages?.length === 0) {
@@ -196,6 +207,7 @@ const MessageList: FC = () => {
 								loadMore(messages?.[messages.length - 1]?.date);
 							}}
 							data-testid={`message-list-${folderId}`}
+							ref={listRef}
 						>
 							{listItems}
 						</CustomList>

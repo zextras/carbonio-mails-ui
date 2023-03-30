@@ -243,7 +243,7 @@
         "trusted_addresses": "Adresses de confiance",
         "time_zone": "Fuseau horaire",
         "send_later": "Envoyer plus tard",
-        "searching": "En cours de recherche...",
+        "searching": "En cours de recherche…",
         "request_receipt": "Demander un accusé de lecture",
         "remove_request_receipt": "Enlever la demande d'accusé de lecture",
         "read_receipt_sent": "Un accusé de lecture a été envoyé pour ce message",

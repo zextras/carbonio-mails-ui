@@ -50,7 +50,7 @@ export type MailMessagePart = {
 	parts?: Array<MailMessagePart>;
 	ci?: string;
 	cd?: string;
-	disposition: 'inline' | 'attachment';
+	disposition?: 'inline' | 'attachment';
 };
 
 export type AttachmentPart = {
@@ -80,6 +80,9 @@ export type MailMessage = IncompleteMessage & {
 	isReadReceiptRequested?: boolean;
 };
 
+/**
+ * Parameters' type for the SendMsgRequest API command
+ */
 export type SendMsgParameters = {
 	editorId: string;
 	msg?: MailMessage;

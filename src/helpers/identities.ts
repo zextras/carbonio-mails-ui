@@ -7,6 +7,7 @@ import { Account, AccountSettings, Folder, Roots } from '@zextras/carbonio-shell
 import { find, isArray } from 'lodash';
 import { MailMessage } from '../types';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
+import { getMessageOwnerAccountName } from './folders';
 
 /**
  * The name of the primary identity
@@ -146,7 +147,7 @@ const getAvailableAddresses = (
 	// Adds the email addresses of all the shared accounts
 	if (account.rights?.targets) {
 		account.rights?.targets.forEach((target) => {
-			if (target.right === 'sendAs' && target.target) {
+			if (target.target && (target.right === 'sendAs' || target.right === 'sendOnBehalfOf')) {
 				target.target.forEach((user) => {
 					if (user.type === 'account' && user.email) {
 						user.email.forEach((email) => {
@@ -159,6 +160,30 @@ const getAvailableAddresses = (
 	}
 
 	return result;
+};
+
+/**
+ *
+ * @param address
+ * @param primaryAccount
+ * @param settings
+ */
+const getAddressOwnerAccount = (
+	address: string,
+	primaryAccount: Account,
+	settings: AccountSettings
+): string | null => {
+	if (!address) {
+		return null;
+	}
+	const addressInfo = getAvailableAddresses(primaryAccount, settings).filter(
+		(info) => info.address === address
+	);
+	if (addressInfo.length === 0) {
+		return null;
+	}
+
+	return addressInfo[0].ownerAccount;
 };
 
 /**
@@ -252,7 +277,7 @@ const checkMatchingAddress = (
 /**
  * Computes the weight of the recipient based on its role in the message, the type of
  * the matching identity, and the matching between the accounts that own the identity and
- * the the message's folder
+ * the message's folder
  *
  * @param recipients
  * @param identities
@@ -266,7 +291,7 @@ const computeIdentityWeight = (
 ): Array<RecipientWeight> => {
 	const result: Array<RecipientWeight> = [];
 
-	// Cicle for every recipient in the message
+	// Cycle for every recipient in the message
 	recipients.forEach((recipient) => {
 		// Check if the recipient has a matching identity
 		const matchingIdentity = identities.find(
@@ -305,35 +330,6 @@ const filterMatchingRecipients = (recipients: Array<RecipientWeight>): Array<Rec
 	return result;
 };
 
-const getMessageOwnerAccount = (
-	message: MailMessage,
-	account: Account,
-	folderRoots: Record<string, Folder & { owner: string }>
-): string => {
-	/*
-	 * Get the message parent folder's id and the optional zid, based on the format:
-	 *
-	 * [<zid>:]<folderId>
-	 *
-	 * e.g. a79fa996-e90e-4f04-97c4-c84209bb8277:2
-	 */
-	const folderId = message.parent;
-	const zid = folderId?.split(':')?.[0];
-
-	// If the id doesn't contain the zid the primary account is considered the owner
-	if (!zid) {
-		return account.name;
-	}
-
-	// If the id contains the zid, the account is considered the owner if the zid matches the account id
-	const matchingFolderRoot = find(folderRoots, { zid });
-	if (!matchingFolderRoot) {
-		return account.name;
-	}
-
-	return matchingFolderRoot?.owner ?? account.name;
-};
-
 /**
  * Analyze the message and return the identity that should be used to reply it.
  * @param folderRoots - The list of all the folder roots
@@ -350,7 +346,7 @@ const getRecipientReplyIdentity = (
 	// Get all the available identities for the account
 	const identities = getIdentities(account, settings);
 
-	const messageFolderOwnerAccount = getMessageOwnerAccount(message, account, folderRoots);
+	const messageFolderOwnerAccount = getMessageOwnerAccountName(message, account, folderRoots);
 
 	// Extract all the recipients addresses from the message
 	const recipients = getRecipients(message);
@@ -386,14 +382,55 @@ const getRecipientReplyIdentity = (
 	};
 };
 
+/**
+ * Returns the message's sender obtained from the message's participants
+ * @param message
+ */
+const getMessageSenderAddress = (message: MailMessage): string | null => {
+	if (!message || !message.participants) {
+		return null;
+	}
+
+	const senders = message.participants.filter(
+		(participant) => participant.type === ParticipantRole.FROM
+	);
+	if (senders.length === 0) {
+		return null;
+	}
+
+	return senders[0].address;
+};
+
+/**
+ * Returns the account of the message's sender obtained from the message's participants
+ * @param message
+ * @param primaryAccount
+ * @param settings
+ */
+const getMessageSenderAccount = (
+	message: MailMessage,
+	primaryAccount: Account,
+	settings: AccountSettings
+): string | null => {
+	const address = getMessageSenderAddress(message);
+	if (!address) {
+		return null;
+	}
+
+	return getAddressOwnerAccount(address, primaryAccount, settings);
+};
+
 export {
 	MatchingReplyIdentity,
 	RecipientWeight,
 	getRecipientReplyIdentity,
 	getIdentities,
 	getAvailableAddresses,
+	getAddressOwnerAccount,
 	getRecipients,
 	computeIdentityWeight,
 	checkMatchingAddress,
-	filterMatchingRecipients
+	filterMatchingRecipients,
+	getMessageSenderAddress,
+	getMessageSenderAccount
 };
