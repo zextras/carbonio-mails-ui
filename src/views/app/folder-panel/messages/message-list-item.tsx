@@ -44,9 +44,10 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	isConvChildren,
 	active,
 	isSearchModule,
-	deselectAll
+	deselectAll,
+	currentFolderId
 }) {
-	const folderId = item.parent;
+	const firstChildFolderId = currentFolderId ?? item.parent;
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
@@ -56,10 +57,10 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				if (item.read === false && zimbraPrefMarkMsgRead) {
 					setMsgRead({ ids: [item.id], value: false, dispatch }).onClick();
 				}
-				replaceHistory(`/folder/${folderId}/message/${item.id}`);
+				replaceHistory(`/folder/${firstChildFolderId}/message/${item.id}`);
 			}
 		},
-		[item.read, item.id, zimbraPrefMarkMsgRead, folderId, dispatch]
+		[item.read, item.id, zimbraPrefMarkMsgRead, firstChildFolderId, dispatch]
 	);
 	const onDoubleClick = useCallback(
 		(e) => {
@@ -68,13 +69,13 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				if (isDraft) {
 					addBoard({
 						url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
-						context: { mailId: id, folderId },
+						context: { mailId: id, folderId: firstChildFolderId },
 						title: ''
 					});
 				}
 			}
 		},
-		[folderId, item]
+		[firstChildFolderId, item]
 	);
 
 	const [actionIsVisible, setActionIsVisible] = useState(false);
@@ -212,7 +213,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 							selected={selected}
 							selecting={selecting}
 							toggle={onToggle}
-							folderId={folderId}
+							folderId={firstChildFolderId}
 						/>
 						<Padding horizontal="extrasmall" />
 					</div>
@@ -322,7 +323,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 										</Text>
 									</Tooltip>
 								)}
-								{((messageFolder && messageFolder.id !== folderId) || isSearchModule) && (
+								{((messageFolder && messageFolder.id !== firstChildFolderId) || isSearchModule) && (
 									<Padding left="small">
 										<Badge
 											data-testid="FolderBadge"

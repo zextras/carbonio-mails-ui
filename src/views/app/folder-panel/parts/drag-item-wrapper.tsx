@@ -6,12 +6,64 @@
 
 import { Drag } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
-import React, { FC, useCallback } from 'react';
+import React, { FC } from 'react';
 import { AppContext, DragItemWrapperProps, MsgListDraggableItemType } from '../../../../types';
+
+type DragCheckProps = {
+	e: React.DragEvent;
+	id: string;
+	dragImageRef?: React.RefObject<HTMLElement>;
+	selectedItems: Record<string, boolean>;
+	setDraggedIds: (ids: Record<string, boolean>) => void;
+};
+
+const dragCheck = ({ e, id, dragImageRef, selectedItems, setDraggedIds }: DragCheckProps): void => {
+	if (dragImageRef?.current) {
+		e.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
+	}
+	if (selectedItems[id]) {
+		setDraggedIds(selectedItems);
+	} else {
+		setDraggedIds({ [id]: true });
+	}
+};
+
+type DraggableItemProps = {
+	dragImageRef?: React.RefObject<HTMLElement>;
+	selectedItems: Record<string, boolean>;
+	setDraggedIds: (ids: Record<string, boolean>) => void;
+	item: MsgListDraggableItemType['item'];
+	folderId: string;
+	isMessageView: boolean;
+	selectedIds: string[];
+};
+const DraggableItem: FC<DraggableItemProps> = ({
+	item,
+	folderId,
+	isMessageView,
+	selectedIds,
+	dragImageRef,
+	selectedItems,
+	setDraggedIds,
+	children
+}) =>
+	isMessageView ? (
+		<Drag
+			type="message"
+			data={{ ...item, parentFolderId: folderId, selectedIDs: selectedIds }}
+			style={{ display: 'block' }}
+			onDragStart={(e): void =>
+				dragCheck({ e, id: item.id, dragImageRef, selectedItems, setDraggedIds })
+			}
+		>
+			{children}
+		</Drag>
+	) : (
+		<>{children}</>
+	);
 
 export const DragItemWrapper: FC<DragItemWrapperProps> = ({
 	item,
-	selectedIds,
 	selectedItems,
 	setDraggedIds,
 	dragImageRef,
@@ -20,34 +72,6 @@ export const DragItemWrapper: FC<DragItemWrapperProps> = ({
 }) => {
 	const folderId = item.parent;
 	const { isMessageView } = useAppContext<AppContext>();
-
-	const dragCheck = useCallback(
-		(e: React.DragEvent, id: string) => {
-			if (dragImageRef?.current) {
-				e.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
-			}
-			if (selectedItems[id]) {
-				setDraggedIds(selectedItems);
-			} else {
-				setDraggedIds({ [id]: true });
-			}
-		},
-		[dragImageRef, selectedItems, setDraggedIds]
-	);
-
-	const DraggableItem: FC<MsgListDraggableItemType> = () =>
-		isMessageView ? (
-			<Drag
-				type="message"
-				data={{ ...item, parentFolderId: folderId, selectedIDs: selectedIds }}
-				style={{ display: 'block' }}
-				onDragStart={(e): void => dragCheck(e, item.id)}
-			>
-				{children}
-			</Drag>
-		) : (
-			<>{children}</>
-		);
 
 	const ids = Object.keys(selectedItems ?? []);
 
@@ -58,15 +82,19 @@ export const DragItemWrapper: FC<DragItemWrapperProps> = ({
 			type="message"
 			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
 			style={{ display: 'block' }}
-			onDragStart={(e): void => dragCheck(e, item.id)}
+			onDragStart={(e): void =>
+				dragCheck({ e, id: item.id, selectedItems, setDraggedIds, dragImageRef })
+			}
 			data-testid="MailItemContainer"
 		>
 			<DraggableItem
 				item={item}
 				folderId={folderId}
 				isMessageView={isMessageView}
-				dragCheck={dragCheck}
 				selectedIds={ids}
+				dragImageRef={dragImageRef}
+				selectedItems={selectedItems}
+				setDraggedIds={setDraggedIds}
 			>
 				{children}
 			</DraggableItem>

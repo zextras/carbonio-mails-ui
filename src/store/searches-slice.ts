@@ -82,13 +82,6 @@ const fetchSearchesRejected = (state: SearchesStateType, { payload }): void => {
 	};
 };
 
-type GetSearchesActionProps = {
-	state: SearchesStateType;
-	meta: { arg: ConvActionParameters; requestId: string; requestStatus: string };
-	action: string;
-	result: unknown;
-};
-
 const msgActionFulfilled = (
 	state: SearchesStateType,
 	{ meta }: { meta: { arg: ConvActionParameters; requestId: string; requestStatus: string } }
@@ -98,40 +91,45 @@ const msgActionFulfilled = (
 		searchResultsIds: state.searchResultsIds
 	});
 
-	if (meta.arg.ids && itemIsInSearches) {
-		const { ids, operation } = meta.arg;
-		state.error = undefined;
-		forEach(ids, (id) => {
-			const message = state?.messages?.[id];
-			const conversations = state?.conversations;
-			if (message) {
-				if (operation.includes(CONVACTIONS.FLAG)) {
-					message.flagged = !operation.startsWith('!');
-				} else if (operation.includes(CONVACTIONS.MARK_READ)) {
-					message.read = !operation.startsWith('!');
-				} else if (operation === CONVACTIONS.TRASH) {
-					message.parent = FOLDERS.TRASH;
-				} else if (operation === CONVACTIONS.DELETE) {
-					delete message[id];
-				} else if (operation === CONVACTIONS.MOVE) {
-					message.parent = meta.arg.parent;
-				} else if (operation === CONVACTIONS.MARK_SPAM) {
-					message.parent = FOLDERS.SPAM;
-				} else if (operation === CONVACTIONS.MARK_NOT_SPAM) {
-					message.parent = FOLDERS.INBOX;
-				}
-			}
-			if (conversations) {
-				if (conversations?.[id]) {
-					if (operation.includes(CONVACTIONS.FLAG)) {
-						conversations[id].flagged = !operation.startsWith('!');
-					} else if (operation.includes(CONVACTIONS.MARK_READ)) {
-						conversations[id].read = !operation.startsWith('!');
-					}
-				}
-			}
-		});
+	if (!itemIsInSearches) {
+		return;
 	}
+	const { ids, operation } = meta.arg;
+	state.error = undefined;
+	forEach(ids, (id) => {
+		const message = state?.messages?.[id];
+		const { conversations } = state;
+
+		if (operation.includes(CONVACTIONS.FLAG)) {
+			message.flagged = !operation.startsWith('!');
+			if (conversations) conversations[id].flagged = !operation.startsWith('!');
+		}
+
+		if (operation.includes(CONVACTIONS.MARK_READ)) {
+			message.read = !operation.startsWith('!');
+			if (conversations) conversations[id].read = !operation.startsWith('!');
+		}
+
+		if (operation === CONVACTIONS.TRASH) {
+			message.parent = FOLDERS.TRASH;
+		}
+
+		if (operation === CONVACTIONS.DELETE) {
+			delete message[id];
+		}
+
+		if (operation === CONVACTIONS.MOVE) {
+			message.parent = meta.arg.parent;
+		}
+
+		if (operation === CONVACTIONS.MARK_SPAM) {
+			message.parent = FOLDERS.SPAM;
+		}
+
+		if (operation === CONVACTIONS.MARK_NOT_SPAM) {
+			message.parent = FOLDERS.INBOX;
+		}
+	});
 };
 
 export const searchesSlice = createSlice({

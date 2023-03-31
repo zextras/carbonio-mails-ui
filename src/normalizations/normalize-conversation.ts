@@ -52,8 +52,6 @@ export const normalizeConversation = ({
 			tags: getTagIds(c.t, c.tn, tags),
 			id: c.id,
 			date: c.d,
-			msgCount: c.n,
-			unreadMsgCount: c.u,
 			messages,
 			participants: c.e ? map(c.e, normalizeParticipantsFromSoap) : undefined,
 			subject: c.su,

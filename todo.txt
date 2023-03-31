@@ -1,0 +1,2 @@
+-- overlapping of action wrappers in conversations and messages
+-- clicks on a message conversation that is not in inbox changes the path

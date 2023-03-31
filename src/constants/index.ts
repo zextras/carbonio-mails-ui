@@ -211,7 +211,7 @@ export const MessageActionsDescriptors = {
 	},
 	MOVE_TO_TRASH: {
 		id: 'message-trash',
-		desc: 'Delete'
+		desc: 'Move to trash'
 	},
 	DELETE: {
 		id: 'message-delete',

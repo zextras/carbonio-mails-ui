@@ -109,8 +109,9 @@ const sharedCalendarReplyFunc = ({
 	role,
 	allowedActions,
 	isAccepted
-}: AcceptSharedCalendarType): any =>
-	dispatch(
+}: AcceptSharedCalendarType): any => {
+	const displayMessage = customMessage?.length > 0 ? customMessage : '';
+	return dispatch(
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		acceptSharedCalendarReply({
@@ -131,16 +132,13 @@ const sharedCalendarReplyFunc = ({
 				}),
 				text: [
 					isAccepted
-						? `Accepted: ${grantee} has accepted the sharing of "${sharedCalendarName}"\n\n----------------------------------------------\n\nShared item: ${sharedCalendarName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${
-								customMessage?.length > 0 ? customMessage : ''
-						  }`
-						: `Declined: ${grantee} has declined the sharing of "${sharedCalendarName}"\n\n----------------------------------------------\n\nShared item: ${sharedCalendarName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${
-								customMessage?.length > 0 ? customMessage : ''
-						  }`
+						? `Accepted: ${grantee} has accepted the sharing of "${sharedCalendarName}"\n\n----------------------------------------------\n\nShared item: ${sharedCalendarName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
+						: `Declined: ${grantee} has declined the sharing of "${sharedCalendarName}"\n\n----------------------------------------------\n\nShared item: ${sharedCalendarName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
 				]
 			} as MailsEditor
 		})
 	);
+};
 
 const moveInviteToTrashFunc = ({ msgId, dispatch, t }: MoveInviteToTrashType): any =>
 	dispatch(

@@ -44,6 +44,7 @@ export type SenderNameProps = {
 	item: Conversation | IncompleteMessage;
 	isSearchModule?: boolean;
 	textValues?: TextReadValuesProps;
+	folderId?: string;
 };
 
 export type MessageListItemProps = {
@@ -57,6 +58,7 @@ export type MessageListItemProps = {
 	isSearchModule?: boolean;
 	isConversation?: boolean;
 	deselectAll: () => void;
+	currentFolderId?: string;
 };
 
 export type TextReadValuesType = {

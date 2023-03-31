@@ -16,8 +16,6 @@ export type ConvMessage = {
 export type Conversation = {
 	readonly id: string;
 	date: number;
-	msgCount: number;
-	unreadMsgCount: number;
 	messages: Array<ConvMessage>;
 	participants: Participant[];
 	subject: string;

@@ -156,7 +156,7 @@ describe('Actions visibility', () => {
 					account,
 					tags: {}
 				});
-				const [primaryActions] = actionsFactory(msg);
+				const [primaryActions] = actionsFactory();
 				expect(existsActionById(action.id, primaryActions)).toBe(assertion.value);
 			}
 		);
@@ -205,7 +205,7 @@ describe('Actions visibility', () => {
 					account,
 					tags: {}
 				});
-				const [primaryActions] = actionsFactory(msg);
+				const [primaryActions] = actionsFactory();
 				expect(existsActionById(action.id, primaryActions)).toBe(assertion.value);
 			}
 		);
@@ -254,7 +254,7 @@ describe('Actions visibility', () => {
 					account,
 					tags: {}
 				});
-				const [primaryActions] = actionsFactory(msg);
+				const [primaryActions] = actionsFactory();
 				expect(existsActionById(action.id, primaryActions)).toBe(assertion.value);
 			}
 		);

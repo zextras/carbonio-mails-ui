@@ -30,8 +30,6 @@ export type Crumb = {
 export type DataProps = {
 	id: string;
 	date: number;
-	msgCount: number;
-	unreadMsgCount: number;
 	messages: [
 		{
 			id: string;

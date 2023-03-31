@@ -29,13 +29,13 @@ const InviteContainer = styled(Container)`
 	margin: ${({ theme }: any): string => theme.sizes.padding.extrasmall};
 `;
 
-type SharedCalendarResponse = {
+type SharedCalendarResponseReturnType = {
 	sharedContent: string;
 	mailMsg: MailMessage;
 	onLoadChange?: () => void;
 };
 
-const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
+const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 	sharedContent,
 	mailMsg,
 	onLoadChange
