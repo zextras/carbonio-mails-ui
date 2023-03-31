@@ -14,10 +14,8 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { find } from 'lodash';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { ResponseActionsProps } from '../../../types';
 import ColorSelect from './color-select';
@@ -26,7 +24,6 @@ import { accept, decline } from './share-calendar-actions';
 const ResponseActions: FC<ResponseActionsProps> = ({
 	dispatch,
 	t,
-	createSnackbar,
 	zid,
 	view,
 	rid,
@@ -75,8 +72,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				customMessage,
 				role,
 				allowedActions,
-				notifyOrganizer,
-				createSnackbar
+				notifyOrganizer
 			}),
 		[
 			zid,
@@ -95,8 +91,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 			customMessage,
 			role,
 			allowedActions,
-			notifyOrganizer,
-			createSnackbar
+			notifyOrganizer
 		]
 	);
 
@@ -104,7 +99,6 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 		decline({
 			dispatch,
 			t,
-			createSnackbar,
 			msgId,
 			sharedCalendarName,
 			owner,
@@ -118,7 +112,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	}, [
 		dispatch,
 		t,
-		createSnackbar,
+
 		msgId,
 		sharedCalendarName,
 		owner,

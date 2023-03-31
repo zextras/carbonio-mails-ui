@@ -44,8 +44,6 @@ export function setConversationsFlag({
 		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
 		onClick: (): void => {
 			dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				convAction({
 					operation: `${value ? '!' : ''}flag`,
 					ids
@@ -67,8 +65,6 @@ export function setMultipleConversationsFlag({
 		disabled,
 		onClick: (): void => {
 			dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				convAction({
 					operation: `flag`,
 					ids
@@ -90,8 +86,6 @@ export function unSetMultipleConversationsFlag({
 		disabled,
 		onClick: (): void => {
 			dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				convAction({
 					operation: `!flag`,
 					ids
@@ -112,7 +106,6 @@ export function setConversationsRead({
 	ConvActionPropType,
 	'ids' | 'dispatch' | 'value' | 'folderId' | 'shouldReplaceHistory' | 'deselectAll'
 >): ConvActionReturnType {
-	// eslint-disable-next-line react-hooks/rules-of-hooks
 	return {
 		id: `read-conversations-${value}`,
 		icon: value ? 'EmailOutline' : 'EmailReadOutline',
@@ -121,14 +114,10 @@ export function setConversationsRead({
 			: t('action.mark_as_read', 'Mark as read'),
 		onClick: (): void => {
 			dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				convAction({
 					operation: `${value ? '!' : ''}read`,
 					ids
 				})
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 			).then((res) => {
 				deselectAll && deselectAll();
 				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
@@ -155,9 +144,7 @@ export function printConversation({
 			});
 		});
 	} else {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		messageIds = map(conversation?.messages, (m) => m.id);
+		messageIds = map((conversation as Conversation)?.messages, (m) => m.id);
 	}
 
 	return {
@@ -221,15 +208,10 @@ export function setConversationsSpam({
 			setTimeout((): void => {
 				if (notCanceled) {
 					dispatch(
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						convAction({
 							operation: `${value ? '!' : ''}spam`,
-							// operation: `spam`,
 							ids
 						})
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 					).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							deselectAll();
@@ -262,19 +244,14 @@ export function moveConversationToTrash({
 		id: 'trash-conversations',
 		icon: 'Trash2Outline',
 		label: t('label.delete', 'Delete'),
-		// first onClick, delete email
 		onClick: (): void => {
 			const restoreConversation = (): void => {
 				dispatch(
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
 					convAction({
 						operation: `move`,
 						ids,
 						parent: folderId
 					})
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
 				).then((res) => {
 					if (res.type.includes('fulfilled')) {
 						deselectAll();
@@ -300,14 +277,10 @@ export function moveConversationToTrash({
 				});
 			};
 			dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				convAction({
 					operation: `trash`,
 					ids
 				})
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll();
@@ -319,9 +292,7 @@ export function moveConversationToTrash({
 						actionLabel: t('label.undo', 'Undo'),
 						label: t('snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
 						autoHideTimeout: 5000,
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						onActionClick: (): void => restoreConversation(ids, dispatch, deselectAll)
+						onActionClick: (): void => restoreConversation()
 					});
 				} else {
 					getBridgedFunctions()?.createSnackbar({

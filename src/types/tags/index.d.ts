@@ -27,7 +27,6 @@ export type TagsFromStoreType = Record<string, Tag>;
 
 export type ArgumentType = {
 	createModal?: (...args: any) => () => void;
-	createSnackbar?: (...args: any) => void;
 	items?: ReturnType;
 	tag?: ItemType;
 };

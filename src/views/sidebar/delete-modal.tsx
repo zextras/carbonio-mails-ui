@@ -3,16 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	Container,
-	Divider,
-	SnackbarManagerContext,
-	Text,
-	useSnackbar
-} from '@zextras/carbonio-design-system';
-import { FOLDERS, report, t } from '@zextras/carbonio-shell-ui';
+import { Container, Divider, Text } from '@zextras/carbonio-design-system';
+import { FOLDERS, getBridgedFunctions, report, t } from '@zextras/carbonio-shell-ui';
 import { startsWith } from 'lodash';
-import React, { FC, useCallback, useContext } from 'react';
+import React, { FC, useCallback } from 'react';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { FOLDER_ACTIONS } from '../../commons/utilities';
@@ -22,7 +16,6 @@ import { ModalProps } from '../../types';
 
 export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const dispatch = useAppDispatch();
-	const createSnackbar = useSnackbar();
 	const onConfirm = useCallback(() => {
 		let inTrash = false;
 		const restoreFolder = (): Promise<void> =>
@@ -35,7 +28,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 			)
 				.then((res) => {
 					if (res.type.includes('fulfilled')) {
-						createSnackbar({
+						getBridgedFunctions()?.createSnackbar({
 							key: `trash-folder`,
 							replace: true,
 							type: 'success',
@@ -44,7 +37,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 							hideButton: true
 						});
 					} else {
-						createSnackbar({
+						getBridgedFunctions()?.createSnackbar({
 							key: `trash`,
 							replace: true,
 							type: 'error',
@@ -66,11 +59,9 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 				op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
 			})
 		)
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			.then((res: { type: string }) => {
 				if (res.type.includes('fulfilled')) {
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `trash-folder`,
 						replace: true,
 						type: 'info',
@@ -83,7 +74,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 						onActionClick: () => restoreFolder()
 					});
 				} else {
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `trash`,
 						replace: true,
 						type: 'error',
@@ -95,7 +86,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 			})
 			.catch(report);
 		onClose();
-	}, [folder, dispatch, onClose, createSnackbar]);
+	}, [folder, dispatch, onClose]);
 
 	return folder ? (
 		<Container

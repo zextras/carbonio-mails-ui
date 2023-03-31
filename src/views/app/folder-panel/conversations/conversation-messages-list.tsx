@@ -75,6 +75,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 										isConvChildren
 										deselectAll={deselectAll}
 										currentFolderId={folderId}
+										isSearchModule={isSearchModule}
 									/>
 								</DragItemWrapper>
 							)}

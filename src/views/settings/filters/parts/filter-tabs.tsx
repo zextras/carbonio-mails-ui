@@ -3,24 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	Container,
-	Divider,
-	Padding,
-	SnackbarManagerContext,
-	TabBar,
-	TabBarProps
-} from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
-import React, {
-	FC,
-	ReactElement,
-	useCallback,
-	useContext,
-	useEffect,
-	useMemo,
-	useState
-} from 'react';
+import { Container, Divider, Padding, TabBar, TabBarProps } from '@zextras/carbonio-design-system';
+import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
@@ -37,7 +22,6 @@ type Item = {
 };
 
 const FilterTabs: FC = (): ReactElement => {
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const [selectedFilterType, setSelectedFilterType] = useState('incoming-messages');
 	const tabs = useMemo(
 		() => [
@@ -72,9 +56,7 @@ const FilterTabs: FC = (): ReactElement => {
 					setFetchIncomingFilters(false);
 				})
 				.catch((error) => {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `share`,
 						replace: true,
 						hideButton: true,
@@ -88,12 +70,10 @@ const FilterTabs: FC = (): ReactElement => {
 					setFetchIncomingFilters(false);
 				});
 		}
-	}, [dispatch, fetchIncomingFilters, createSnackbar]);
+	}, [dispatch, fetchIncomingFilters]);
 
 	useEffect(() => {
 		if (fetchOutgoingFilters) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			dispatch(getOutgoingFilters()).then((res) => {
 				setOutgoingLoading(false);
 				setOutgoingFilters(res?.payload?.filterRules?.[0]?.filterRule);

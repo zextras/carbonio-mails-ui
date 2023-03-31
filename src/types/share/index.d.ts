@@ -22,7 +22,6 @@ export type ShareCalendarModalProps = {
 export type ResponseActionsProps = {
 	dispatch: AppDispatch;
 	t: (...args: any[]) => string;
-	createSnackbar: any;
 	zid: string;
 	view: string;
 	rid: string;

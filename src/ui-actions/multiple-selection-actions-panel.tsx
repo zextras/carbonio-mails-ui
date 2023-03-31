@@ -9,12 +9,11 @@ import {
 	Dropdown,
 	IconButton,
 	Row,
-	SnackbarManagerContext,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
 import { every, filter, includes, map } from 'lodash';
-import React, { FC, ReactElement, useCallback, useContext, useEffect, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect, useState } from 'react';
 
 import { useAppDispatch } from '../hooks/redux';
 import {
@@ -82,7 +81,6 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	}, [currentFolderId, folderId, folderParentId, setIsSelectModeOn]);
 
 	const dispatch = useAppDispatch();
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const ids = Object.values(selectedIds ?? []);
 	const selectedConversation = filter(items, (item: MsgOrConv) => ids.includes(item.id ?? '0'));
 	const tags = useTags();
@@ -322,7 +320,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			onClick: (ev: Event): void => {
 				if (ev) ev.preventDefault();
 				if (ids.length === 0) {
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',

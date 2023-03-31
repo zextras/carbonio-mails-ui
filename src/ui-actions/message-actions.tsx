@@ -8,7 +8,6 @@ import { Text } from '@zextras/carbonio-design-system';
 import {
 	Account,
 	FOLDERS,
-	Tags,
 	addBoard,
 	getBridgedFunctions,
 	replaceHistory,
@@ -148,14 +147,10 @@ export function setMsgAsSpam({
 			setTimeout(() => {
 				if (notCanceled) {
 					dispatch(
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						msgAction({
 							operation: `${value ? '!' : ''}spam`,
-							// operation: `spam`,
 							ids
-						}) // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
+						})
 					).then((res) => {
 						if (res.type.includes('fulfilled') && shouldReplaceHistory) {
 							replaceHistory(`/folder/${folderId}`);
@@ -292,13 +287,10 @@ export function moveMsgToTrash({
 			if (ev) ev.preventDefault();
 
 			dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				msgAction({
 					operation: 'trash',
 					ids
-				}) // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
+				})
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll && deselectAll();
@@ -344,13 +336,10 @@ export function deleteMsg({
 				confirmLabel: t('action.ok', 'Ok'),
 				onConfirm: () => {
 					dispatch(
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						msgAction({
 							operation: 'delete',
 							ids
-						}) // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
+						})
 					).then((res) => {
 						// TODO: Fix it in DS
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -659,11 +648,3 @@ export function deleteMessagePermanently({
 		}
 	};
 }
-
-type GetMessageActionsType = {
-	item: MailMessage;
-	dispatch: Dispatch;
-	deselectAll: () => void;
-	account: Account;
-	tags: Tags;
-};

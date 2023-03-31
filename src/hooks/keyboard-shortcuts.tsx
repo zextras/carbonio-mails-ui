@@ -5,10 +5,10 @@
  */
 import { noop } from 'lodash';
 import {
-	setConversationsSpam,
 	moveConversationToTrash,
 	setConversationsFlag,
-	setConversationsRead
+	setConversationsRead,
+	setConversationsSpam
 } from '../ui-actions/conversation-actions';
 
 type handleKeyboardShortcutsProps = {
@@ -17,7 +17,6 @@ type handleKeyboardShortcutsProps = {
 	folderId: any;
 	dispatch: any;
 	deselectAll: any;
-	createSnackbar: any;
 	conversations: Array<any>;
 };
 

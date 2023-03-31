@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
-import React, { FC, useCallback, useContext } from 'react';
+import { Container, Text } from '@zextras/carbonio-design-system';
+import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import React, { FC, useCallback } from 'react';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { useAppDispatch } from '../hooks/redux';
@@ -24,7 +24,6 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 	onClose
 }) => {
 	const dispatch = useAppDispatch();
-	const createSnackbar = useContext(SnackbarManagerContext);
 
 	const onConfirmConvDelete = useCallback(() => {
 		dispatch(
@@ -40,31 +39,26 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 		).then((res) => {
 			if (res.type.includes('fulfilled')) {
 				deselectAll && deselectAll();
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `trash-${selectedIDs}`,
 					replace: true,
 					type: 'info',
-					label: isMessageView
-						? t('label.email_perm_deleted', 'E-mail permanently deleted')
-						: t('label.email_perm_deleted', 'E-mail permanently deleted'),
+					label: t('label.email_perm_deleted', 'E-mail permanently deleted'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
 			} else {
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `edit`,
 					replace: true,
 					type: 'error',
-					label: isMessageView
-						? t('label.error_try_again', 'Something went wrong, please try again')
-						: t('label.error_try_again', 'Something went wrong, please try again'),
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000
 				});
 			}
-			// setOpenConfirm(false);
 			onClose();
 		});
-	}, [dispatch, isMessageView, selectedIDs, onClose, createSnackbar, deselectAll]);
+	}, [dispatch, isMessageView, selectedIDs, onClose, deselectAll]);
 
 	return (
 		<>

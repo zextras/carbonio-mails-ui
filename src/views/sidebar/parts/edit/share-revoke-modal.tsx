@@ -32,11 +32,7 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 					folder,
 					accounts
 				})
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 			).then(() => {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				dispatch(folderAction({ folder, zid: grant.zid, op: '!grant' })).then((res) => {
 					if (res.type.includes('fulfilled')) {
 						getBridgedFunctions()?.createSnackbar({
@@ -52,8 +48,6 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 				});
 			});
 		} else {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			dispatch(folderAction({ folder, zid: grant.zid, op: '!grant' })).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					getBridgedFunctions()?.createSnackbar({

@@ -3,10 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { SnackbarManagerContext } from '@zextras/carbonio-design-system';
 import { FOLDERS, t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { handleKeyboardShortcuts } from '../../../../hooks/keyboard-shortcuts';
@@ -31,7 +30,6 @@ const ConversationList: FC = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const dragImageRef = useRef(null);
 	const dispatch = useAppDispatch();
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const status = useAppSelector(selectConversationStatus);
 
 	const conversationListStatus = useAppSelector((store) =>
@@ -73,14 +71,13 @@ const ConversationList: FC = () => {
 				itemId,
 				conversations,
 				dispatch,
-				deselectAll,
-				createSnackbar
+				deselectAll
 			});
 		document.addEventListener('keydown', handler);
 		return () => {
 			document.removeEventListener('keydown', handler);
 		};
-	}, [folderId, itemId, conversations, dispatch, deselectAll, createSnackbar]);
+	}, [folderId, itemId, conversations, dispatch, deselectAll]);
 
 	const displayerTitle = useMemo(() => {
 		if (conversations?.length === 0) {
