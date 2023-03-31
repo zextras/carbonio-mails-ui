@@ -42,7 +42,6 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 	setSendLater
 }) => {
 	const [time, setTime] = useState();
-	const bridgedFn = getBridgedFunctions();
 	const modalTitle = useMemo(() => t('label.send_later', 'Send Later'), []);
 	const datePickerLabel = useMemo(() => t('label.select_date_time', 'Select date and time'), []);
 
@@ -55,11 +54,9 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 	const onConfirm = useCallback(() => {
 		setSendLater(true);
 		const autoSendTime = moment(time).valueOf();
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		dispatch(saveDraft({ data: { ...editor, autoSendTime }, prefs })).then((res: any) => {
 			if (res.type.includes('fulfilled')) {
-				bridgedFn?.createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: 'send_later',
 					replace: true,
 					hideButton: true,
@@ -83,7 +80,6 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 			}
 		});
 	}, [
-		bridgedFn,
 		closeBoard,
 		dispatch,
 		editor,

@@ -27,6 +27,8 @@ import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { ActionsType } from '../../../../commons/utils';
+import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
+import { useQueryParam } from '../../../../hooks/use-query-param';
 import { getMsg } from '../../../../store/actions';
 import { saveDraft } from '../../../../store/actions/save-draft';
 import { uploadAttachments } from '../../../../store/actions/upload-attachments';
@@ -39,7 +41,7 @@ import {
 } from '../../../../store/editor-slice';
 import { selectMessages } from '../../../../store/messages-slice';
 import { StoreProvider } from '../../../../store/redux';
-import { EditViewContextType, MailsEditor, StateType } from '../../../../types';
+import type { EditViewContextType, MailsEditor, StateType } from '../../../../types';
 import DropZoneAttachment from './dropzone-attachment';
 import EditAttachmentsBlock from './edit-attachments-block';
 import { addAttachments } from './edit-utils';
@@ -51,8 +53,6 @@ import ParticipantsRow from './parts/participants-row';
 import SubjectRow from './parts/subject-row';
 import TextEditorContainer from './parts/text-editor-container';
 import WarningBanner from './parts/warning-banner';
-import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
-import { useQueryParam } from '../../../../hooks/use-query-param';
 
 let counter = 0;
 

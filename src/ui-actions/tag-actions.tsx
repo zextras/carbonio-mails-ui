@@ -9,7 +9,6 @@ import {
 	ModalManagerContext,
 	Padding,
 	Row,
-	SnackbarManagerContext,
 	Text
 } from '@zextras/carbonio-design-system';
 import React, { ReactElement, useCallback, useContext, useMemo, useState } from 'react';
@@ -17,6 +16,7 @@ import React, { ReactElement, useCallback, useContext, useMemo, useState } from 
 import {
 	Tag,
 	ZIMBRA_STANDARD_COLORS,
+	getBridgedFunctions,
 	replaceHistory,
 	t,
 	useTags
@@ -45,18 +45,18 @@ export const createTag = ({ createModal }: ArgumentType): ReturnType => ({
 		if (e) {
 			e.stopPropagation();
 		}
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const closeModal = createModal(
-			{
-				children: (
-					<StoreProvider>
-						<CreateUpdateTagModal onClose={(): void => closeModal()} />
-					</StoreProvider>
-				)
-			},
-			true
-		);
+		const closeModal =
+			createModal &&
+			createModal(
+				{
+					children: (
+						<StoreProvider>
+							<CreateUpdateTagModal onClose={(): void => closeModal && closeModal()} />
+						</StoreProvider>
+					)
+				},
+				true
+			);
 	}
 });
 
@@ -68,18 +68,22 @@ export const editTag = ({ createModal, tag }: ArgumentType): ReturnType => ({
 		if (e) {
 			e.stopPropagation();
 		}
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const closeModal = createModal(
-			{
-				children: (
-					<StoreProvider>
-						<CreateUpdateTagModal onClose={(): void => closeModal()} tag={tag} editMode />
-					</StoreProvider>
-				)
-			},
-			true
-		);
+		const closeModal =
+			createModal &&
+			createModal(
+				{
+					children: (
+						<StoreProvider>
+							<CreateUpdateTagModal
+								onClose={(): void => closeModal && closeModal()}
+								tag={tag}
+								editMode
+							/>
+						</StoreProvider>
+					)
+				},
+				true
+			);
 	}
 });
 
@@ -91,18 +95,18 @@ export const deleteTag = ({ createModal, tag }: ArgumentType): ReturnType => ({
 		if (e) {
 			e.stopPropagation();
 		}
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const closeModal = createModal(
-			{
-				children: (
-					<StoreProvider>
-						<DeleteTagModal onClose={(): void => closeModal()} tag={tag} />
-					</StoreProvider>
-				)
-			},
-			true
-		);
+		const closeModal =
+			createModal &&
+			createModal(
+				{
+					children: (
+						<StoreProvider>
+							<DeleteTagModal onClose={(): void => closeModal && closeModal()} tag={tag} />
+						</StoreProvider>
+					)
+				},
+				true
+			);
 	}
 });
 
@@ -115,7 +119,6 @@ export const TagsDropdownItem = ({
 	conversation: any;
 	isMessage?: boolean;
 }): ReactElement => {
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useAppDispatch();
 	const [checked, setChecked] = useState(includes(conversation.tags, tag.id));
 	const [isHovering, setIsHovering] = useState(false);
@@ -134,13 +137,9 @@ export const TagsDropdownItem = ({
 							ids: [conversation.id],
 							tagName: tag.name
 					  })
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 			).then((res: any) => {
 				if (res.type.includes('fulfilled')) {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `tag`,
 						replace: true,
 						hideButton: true,
@@ -154,9 +153,7 @@ export const TagsDropdownItem = ({
 						autoHideTimeout: 3000
 					});
 				} else {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `tag`,
 						replace: true,
 						type: 'error',
@@ -167,7 +164,7 @@ export const TagsDropdownItem = ({
 				}
 			});
 		},
-		[conversation.id, createSnackbar, dispatch, isMessage, tag.name]
+		[conversation.id, dispatch, isMessage, tag.name]
 	);
 	const tagColor = useMemo(() => ZIMBRA_STANDARD_COLORS[tag.color || 0].hex, [tag.color]);
 	const tagIcon = useMemo(() => (checked ? 'Tag' : 'TagOutline'), [checked]);
@@ -214,7 +211,6 @@ export const MultiSelectTagsDropdownItem = ({
 	folderId?: string;
 	isMessage?: boolean;
 }): ReactElement => {
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useAppDispatch();
 	const [isHovering, setIsHovering] = useState(false);
 	const tagsToShow = reduce(
@@ -243,15 +239,11 @@ export const MultiSelectTagsDropdownItem = ({
 							ids,
 							tagName: tag.name
 					  })
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 			).then((res: any) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll && deselectAll();
 					replaceHistory(`/folder/${folderId}/`);
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `tag`,
 						replace: true,
 						hideButton: true,
@@ -265,9 +257,7 @@ export const MultiSelectTagsDropdownItem = ({
 						autoHideTimeout: 3000
 					});
 				} else {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `tag`,
 						replace: true,
 						type: 'error',
@@ -278,7 +268,7 @@ export const MultiSelectTagsDropdownItem = ({
 				}
 			});
 		},
-		[dispatch, isMessage, ids, tag.name, deselectAll, folderId, createSnackbar]
+		[dispatch, isMessage, ids, tag.name, deselectAll, folderId]
 	);
 
 	const tagIcon = useMemo(() => (checked ? 'Tag' : 'TagOutline'), [checked]);
@@ -424,14 +414,13 @@ export const applyTag = ({
 
 export const useGetTagsActions = ({ tag }: ArgumentType): Array<ReturnType> => {
 	const createModal = useContext(ModalManagerContext) as () => () => void;
-	const createSnackbar = useContext(SnackbarManagerContext) as () => void;
 	return useMemo(
 		() => [
 			createTag({ createModal }),
 			editTag({ createModal, tag }),
-			deleteTag({ tag, createSnackbar, createModal })
+			deleteTag({ tag, createModal })
 		],
-		[createModal, createSnackbar, tag]
+		[createModal, tag]
 	);
 };
 

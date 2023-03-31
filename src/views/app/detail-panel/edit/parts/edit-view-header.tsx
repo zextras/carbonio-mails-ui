@@ -13,7 +13,6 @@ import {
 	MultiButton,
 	Padding,
 	Row,
-	SnackbarManagerContext,
 	Text,
 	Tooltip,
 	useModal
@@ -205,7 +204,6 @@ const EditViewHeader: FC<PropType> = ({
 	const [openDD, setOpenDD] = useState(false);
 	const [btnLabel, setBtnLabel] = useState<string>(t('label.send', 'Send'));
 	const [isDisabled, setIsDisabled] = useState(false);
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useAppDispatch();
 
 	const boardUtilities = useBoardHooks();
@@ -308,7 +306,7 @@ const EditViewHeader: FC<PropType> = ({
 			let notCanceled = true;
 			const oldEditor = { ...editor };
 			const infoSnackbar = (remainingTime: number, hideButton = false): void => {
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: 'send',
 					replace: true,
 					type: 'info',
@@ -357,11 +355,9 @@ const EditViewHeader: FC<PropType> = ({
 					} else {
 						boardUtilities?.closeBoard();
 					}
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
 					dispatch(sendMsg({ editorId, prefs })).then((res) => {
 						if (res.type.includes('fulfilled')) {
-							createSnackbar({
+							getBridgedFunctions()?.createSnackbar({
 								key: `mail-${editorId}`,
 								replace: true,
 								type: 'success',
@@ -370,7 +366,7 @@ const EditViewHeader: FC<PropType> = ({
 								hideButton: true
 							});
 						} else {
-							createSnackbar({
+							getBridgedFunctions()?.createSnackbar({
 								key: `mail-${editorId}`,
 								replace: true,
 								type: 'error',
@@ -382,7 +378,7 @@ const EditViewHeader: FC<PropType> = ({
 						}
 					});
 				}
-			}, (countdownSeconds as number) * 1000);
+			}, countdownSeconds * 1000);
 		}
 	}, [
 		setSending,
@@ -392,7 +388,6 @@ const EditViewHeader: FC<PropType> = ({
 		editor,
 		props,
 		onBoardClose,
-		createSnackbar,
 		undoURL,
 		updateEditorCb,
 		editorId,
@@ -470,7 +465,7 @@ const EditViewHeader: FC<PropType> = ({
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
-		createSnackbar({
+		getBridgedFunctions()?.createSnackbar({
 			key: 'send',
 			replace: true,
 			type: 'info',
@@ -484,7 +479,7 @@ const EditViewHeader: FC<PropType> = ({
 				boardUtilities?.closeBoard();
 			}
 		});
-	}, [boardUtilities, createSnackbar, editor, saveDraftCb]);
+	}, [boardUtilities, editor, saveDraftCb]);
 
 	const onDropdownClose = useCallback((): void => {
 		setShowDropdown(false);

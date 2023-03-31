@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useContext, useEffect, useMemo, useState } from 'react';
 import {
 	Button,
 	Collapse,
@@ -12,16 +11,16 @@ import {
 	Icon,
 	Padding,
 	Row,
-	SnackbarManagerContext,
 	Text
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { useAppDispatch } from '../../hooks/redux';
+import { MailMessage } from '../../types';
 import LabelRow from './parts/label-row';
 import ResponseActions from './parts/response-actions';
 import { ShareCalendarRoleOptions, findLabel } from './parts/utils';
-import { MailMessage } from '../../types';
-import { useAppDispatch } from '../../hooks/redux';
 
 const InviteContainer = styled(Container)`
 	border: 0.0625rem solid ${({ theme }: any): string => theme.palette.gray2.regular};
@@ -45,7 +44,6 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 			onLoadChange && onLoadChange();
 		}
 	}, [mailMsg.read, onLoadChange]);
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useAppDispatch();
 
 	const rights = useMemo(
@@ -207,7 +205,6 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 					<>
 						<Divider />
 						<ResponseActions
-							createSnackbar={createSnackbar}
 							dispatch={dispatch}
 							t={t}
 							zid={zid}

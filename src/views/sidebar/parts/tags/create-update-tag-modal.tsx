@@ -4,9 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Input, Padding, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
-import { changeTagColor, createTag, renameTag, t } from '@zextras/carbonio-shell-ui';
-import React, { FC, ReactElement, useCallback, useContext, useMemo, useState } from 'react';
+import { Input, Padding, Text } from '@zextras/carbonio-design-system';
+import {
+	changeTagColor,
+	createTag,
+	getBridgedFunctions,
+	renameTag,
+	t
+} from '@zextras/carbonio-shell-ui';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { CreateUpdateTagModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
@@ -18,7 +24,6 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 	editMode = false,
 	tag
 }): ReactElement => {
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const [name, setName] = useState(tag?.name || '');
 	const [color, setColor] = useState(tag?.color || 0);
 	const title = useMemo(
@@ -45,9 +50,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 		() =>
 			createTag({ name, color }).then((res: any) => {
 				if (res.tag) {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `new-tag`,
 						replace: true,
 						type: 'info',
@@ -61,15 +64,13 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 				}
 				onClose();
 			}),
-		[name, color, onClose, createSnackbar]
+		[name, color, onClose]
 	);
 	const onUpdate = useCallback(() => {
 		Promise.all([renameTag(`${tag?.id}`, name), changeTagColor(`${tag?.id}`, Number(color))])
 			.then(() => {
 				onClose();
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `update-tag`,
 					replace: true,
 					type: 'info',
@@ -80,9 +81,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 			})
 			.catch(() => {
 				onClose();
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `update-tag-error`,
 					replace: true,
 					type: 'error',
@@ -94,7 +93,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 					hideButton: true
 				});
 			});
-	}, [color, createSnackbar, name, onClose, tag]);
+	}, [color, name, onClose, tag]);
 
 	return (
 		<>

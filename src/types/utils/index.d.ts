@@ -6,17 +6,6 @@
 import { TextProps } from '@zextras/carbonio-design-system';
 import { Folder } from '@zextras/carbonio-shell-ui';
 
-export type CreateSnackbar = (arg: {
-	key: string;
-	replace?: boolean;
-	type: string;
-	hideButton?: boolean;
-	label: string;
-	autoHideTimeout: number;
-	actionLabel?: string;
-	onActionClick?: () => void;
-}) => void;
-
 export type ModalProps = {
 	folder: Folder;
 	onClose: () => void;

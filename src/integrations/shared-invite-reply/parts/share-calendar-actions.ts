@@ -3,13 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { msgAction } from '../../../store/actions';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCalendarReply';
 import { mountSharedCalendar } from '../../../store/actions/mount-share-calendar';
 import { AppDispatch } from '../../../store/redux';
@@ -30,7 +27,6 @@ type Accept = {
 	participants: Participant[];
 	grantee: string;
 	customMessage: string;
-	createSnackbar: any;
 	role: string;
 	allowedActions: string;
 	notifyOrganizer: boolean;
@@ -66,7 +62,6 @@ type AcceptSharedCalendarType = {
 type DeclineType = {
 	dispatch: AppDispatch;
 	t: (...args: any[]) => string;
-	createSnackbar: any;
 	msgId: string;
 	sharedCalendarName: string;
 	owner: string;
@@ -87,8 +82,6 @@ const mountSharedCalendarFunc = ({
 	dispatch
 }: MountSharedCalendarType): any =>
 	dispatch(
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		mountSharedCalendar({
 			zid,
 			view,
@@ -112,8 +105,6 @@ const sharedCalendarReplyFunc = ({
 }: AcceptSharedCalendarType): any => {
 	const displayMessage = customMessage?.length > 0 ? customMessage : '';
 	return dispatch(
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		acceptSharedCalendarReply({
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
@@ -142,29 +133,22 @@ const sharedCalendarReplyFunc = ({
 
 const moveInviteToTrashFunc = ({ msgId, dispatch, t }: MoveInviteToTrashType): any =>
 	dispatch(
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		msgAction({
 			operation: `trash`,
 			ids: [msgId]
 		})
-	)
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		.then((res2: any): void => {
-			if (!res2.type.includes('fulfilled')) {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				createSnackbar({
-					key: `share`,
-					replace: true,
-					hideButton: true,
-					type: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000
-				});
-			}
-		});
+	).then((res2: any): void => {
+		if (!res2.type.includes('fulfilled')) {
+			getBridgedFunctions()?.createSnackbar({
+				key: `share`,
+				replace: true,
+				hideButton: true,
+				type: 'error',
+				label: t('label.error_try_again', 'Something went wrong, please try again'),
+				autoHideTimeout: 3000
+			});
+		}
+	});
 
 export const accept = ({
 	zid,
@@ -183,8 +167,7 @@ export const accept = ({
 	customMessage,
 	role,
 	allowedActions,
-	notifyOrganizer,
-	createSnackbar
+	notifyOrganizer
 }: Accept): void =>
 	mountSharedCalendarFunc({
 		zid,
@@ -195,8 +178,6 @@ export const accept = ({
 		accounts,
 		dispatch
 	}).then((res: any): void => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		if (res.type.includes('fulfilled')) {
 			notifyOrganizer &&
 				sharedCalendarReplyFunc({
@@ -211,9 +192,7 @@ export const accept = ({
 					isAccepted: true
 				});
 			moveInviteToTrashFunc({ msgId, dispatch, t });
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: `share_accepted`,
 				replace: true,
 				type: 'info',
@@ -222,9 +201,7 @@ export const accept = ({
 				hideButton: true
 			});
 		} else {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: `share`,
 				replace: true,
 				type: 'error',
@@ -238,7 +215,6 @@ export const accept = ({
 export const decline = ({
 	dispatch,
 	t,
-	createSnackbar,
 	msgId,
 	sharedCalendarName,
 	owner,
@@ -250,48 +226,40 @@ export const decline = ({
 	notifyOrganizer
 }: DeclineType): any =>
 	dispatch(
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		msgAction({
 			operation: `trash`,
 			ids: [msgId]
 		})
-	)
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		.then((res: any): void => {
-			if (res.type.includes('fulfilled')) {
-				notifyOrganizer &&
-					sharedCalendarReplyFunc({
-						dispatch,
-						sharedCalendarName,
-						owner,
-						participants,
-						grantee,
-						customMessage,
-						role,
-						allowedActions,
-						isAccepted: false
-					});
-
-				createSnackbar({
-					key: `share_declined`,
-					replace: true,
-					type: 'info',
-					label: t('message.snackbar.share.declined', 'You have declined the share request'),
-					autoHideTimeout: 3000,
-					hideButton: true
+	).then((res: any): void => {
+		if (res.type.includes('fulfilled')) {
+			notifyOrganizer &&
+				sharedCalendarReplyFunc({
+					dispatch,
+					sharedCalendarName,
+					owner,
+					participants,
+					grantee,
+					customMessage,
+					role,
+					allowedActions,
+					isAccepted: false
 				});
-			} else {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				createSnackbar({
-					key: `share`,
-					replace: true,
-					type: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			}
-		});
+			getBridgedFunctions()?.createSnackbar({
+				key: `share_declined`,
+				replace: true,
+				type: 'info',
+				label: t('message.snackbar.share.declined', 'You have declined the share request'),
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
+		} else {
+			getBridgedFunctions()?.createSnackbar({
+				key: `share`,
+				replace: true,
+				type: 'error',
+				label: t('label.error_try_again', 'Something went wrong, please try again'),
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
+		}
+	});

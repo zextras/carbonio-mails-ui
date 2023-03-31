@@ -218,12 +218,12 @@ describe('Edit view', () => {
 			await user.click(btnSend);
 
 			// Check if a snackbar (countdown) will appear
-			await screen.findByText('messages.snackbar.sending_mail_in_count', {}, { timeout: 4000 });
+			await screen.findByText('messages.snackbar.sending_mail_in_count', {}, { timeout: 4_000 });
 
 			// Wait for the snackbar to disappear
 			await waitForElementToBeRemoved(
 				() => screen.queryByText('messages.snackbar.sending_mail_in_count'),
-				{ timeout: 10000 }
+				{ timeout: 10_000 }
 			);
 
 			// Obtain the message from the rest handler

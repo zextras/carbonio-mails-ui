@@ -3,19 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Input, Container, Checkbox, Padding, Divider, Row } from '@zextras/carbonio-design-system';
+import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
+import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
-import ModalFooter from './create-filter-modal-footer';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import DefaultCondition from './create-filters-conditions/default';
-import { CreateFilterContext } from './create-filter-context';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
-import FilterActionConditions from './new-filter-action-conditions';
-import FilterTestConditionRow from './filter-test-condition-row';
-import { getButtonInfo } from './utils';
 import { FilterActions } from '../../../../types';
+import { CreateFilterContext } from './create-filter-context';
+import ModalFooter from './create-filter-modal-footer';
+import DefaultCondition from './create-filters-conditions/default';
+import FilterTestConditionRow from './filter-test-condition-row';
+import FilterActionConditions from './new-filter-action-conditions';
+import { getButtonInfo } from './utils';
 
 type ComponentProps = {
 	t: TFunction;
@@ -118,16 +119,12 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 	const onConfirm = useCallback(() => {
 		const toSend = [...outgoingFiltersCopy, requiredFilters];
 		setOutgoingFilters(toSend);
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		modifyOutgoingFilterRules(toSend)
 			.then(() => {
 				setFetchOutgoingFilters(true);
 			})
 			.catch((error) => {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `share`,
 					replace: true,
 					hideButton: true,

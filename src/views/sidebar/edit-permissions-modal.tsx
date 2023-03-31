@@ -82,8 +82,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 				folder,
 				accounts
 			})
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 		).then((res: { type: string }) => {
 			if (res.type.includes('fulfilled')) {
 				getBridgedFunctions()?.createSnackbar({
@@ -107,8 +105,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 							folder,
 							accounts
 						})
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 					).then((res2: { type: string }) => {
 						if (!res2.type.includes('fulfilled')) {
 							getBridgedFunctions()?.createSnackbar({

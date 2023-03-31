@@ -22,7 +22,7 @@ import {
 	t
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
-import { filter, find, map, noop } from 'lodash';
+import { filter, find, map } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { getFileExtension } from '../../../../commons/utilities';

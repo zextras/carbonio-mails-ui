@@ -114,28 +114,27 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		}
 
 		if (data.type === 'folder') {
-			dispatch(folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }))
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				.then((res) => {
-					if (res.type.includes('fulfilled')) {
-						getBridgedFunctions().createSnackbar({
-							key: `move`,
-							replace: true,
-							type: 'success',
-							label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
-							autoHideTimeout: 3000
-						});
-					} else {
-						getBridgedFunctions().createSnackbar({
-							key: `move`,
-							replace: true,
-							type: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again.'),
-							autoHideTimeout: 3000
-						});
-					}
-				});
+			dispatch(
+				folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' })
+			).then((res) => {
+				if (res.type.includes('fulfilled')) {
+					getBridgedFunctions()?.createSnackbar({
+						key: `move`,
+						replace: true,
+						type: 'success',
+						label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
+						autoHideTimeout: 3000
+					});
+				} else {
+					getBridgedFunctions()?.createSnackbar({
+						key: `move`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again.'),
+						autoHideTimeout: 3000
+					});
+				}
+			});
 		} else if (data.type === 'conversation') {
 			dispatch(
 				convAction({
@@ -143,34 +142,31 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 					ids: convMsgsIds,
 					parent: item.id
 				})
-			)
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				.then((res) => {
-					if (res.type.includes('fulfilled')) {
-						replaceHistory(`/folder/${folderId}`);
-						getBridgedFunctions().createSnackbar({
-							key: `edit`,
-							replace: true,
-							type: 'info',
-							label: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
-							autoHideTimeout: 3000,
-							actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
-							onActionClick: () => {
-								replaceHistory(`/folder/${item.id}`);
-							}
-						});
-					} else {
-						getBridgedFunctions().createSnackbar({
-							key: `edit`,
-							replace: true,
-							type: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again'),
-							autoHideTimeout: 3000,
-							hideButton: true
-						});
-					}
-				});
+			).then((res) => {
+				if (res.type.includes('fulfilled')) {
+					replaceHistory(`/folder/${folderId}`);
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'info',
+						label: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
+						autoHideTimeout: 3000,
+						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
+						onActionClick: () => {
+							replaceHistory(`/folder/${item.id}`);
+						}
+					});
+				} else {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			});
 		} else {
 			dispatch(
 				msgAction({
@@ -178,33 +174,30 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 					ids: convMsgsIds,
 					parent: item.id
 				})
-			)
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				.then((res) => {
-					if (res.type.includes('fulfilled')) {
-						getBridgedFunctions().createSnackbar({
-							key: `edit`,
-							replace: true,
-							type: 'info',
-							label: t('messages.snackbar.message_move', 'Message successfully moved'),
-							autoHideTimeout: 3000,
-							actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
-							onActionClick: () => {
-								replaceHistory(`/folder/${item.id}`);
-							}
-						});
-					} else {
-						getBridgedFunctions().createSnackbar({
-							key: `edit`,
-							replace: true,
-							type: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again'),
-							autoHideTimeout: 3000,
-							hideButton: true
-						});
-					}
-				});
+			).then((res) => {
+				if (res.type.includes('fulfilled')) {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'info',
+						label: t('messages.snackbar.message_move', 'Message successfully moved'),
+						autoHideTimeout: 3000,
+						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
+						onActionClick: () => {
+							replaceHistory(`/folder/${item.id}`);
+						}
+					});
+				} else {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			});
 		}
 	};
 
