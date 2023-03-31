@@ -42,11 +42,6 @@ export const useMessageList = (): Array<MailMessage> => {
 	// 	[folderId, zimbraPrefSortOrder]
 	// );
 
-	// const sortedMessages = useMemo(
-	// 	() => orderBy(messages, 'date', sorting === 'dateDesc' ? 'desc' : 'asc'),
-	// 	[messages, sorting]
-	// );
-
 	const sortedMessages = useMemo(
 		() => orderBy(filteredMessages, 'date', 'desc'),
 		[filteredMessages]

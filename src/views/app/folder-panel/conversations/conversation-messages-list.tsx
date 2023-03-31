@@ -74,6 +74,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 										active={isActive}
 										isConvChildren
 										deselectAll={deselectAll}
+										currentFolderId={folderId}
 									/>
 								</DragItemWrapper>
 							)}
@@ -84,6 +85,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 				active,
 				deselectAll,
 				dragImageRef,
+				folderId,
 				isSearchModule,
 				isSelectModeOn,
 				messagesToRender,

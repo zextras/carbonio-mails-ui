@@ -5,7 +5,7 @@
  */
 
 import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
-import { Dispatch } from 'react';
+import { AppDispatch } from '../store/redux';
 import {
 	ActionReturnType,
 	ConvActionReturnType,
@@ -42,7 +42,6 @@ import {
 	showOriginalMsg
 } from './message-actions';
 import { applyTag } from './tag-actions';
-import { AppDispatch } from '../store/redux';
 
 type GetMessageActionsProps = {
 	item: MailMessage | Conversation;
@@ -63,29 +62,28 @@ export function getHoverActions({
 	deselectAll,
 	account,
 	tags
-}: GetMessageActionsProps): (
-	_item: MailMessage | Conversation,
-	closeEditor?: boolean
-) => MsgConvActionsReturnType {
+}: GetMessageActionsProps): () => MsgConvActionsReturnType {
 	const isConversation = 'messages' in (item || {});
+	const folderId = isConversation ? (item as Conversation)?.messages?.[0].parent : item.parent;
+	const firstConversationMessageId = isConversation
+		? (item as Conversation)?.messages?.[0]?.id
+		: item.id;
+	const isSingleMessageConversation =
+		isConversation && (item as Conversation).messages.length === 1;
 
-	const folderId = item.parent;
 	const { id } = item;
 
 	const foldersExcludedMarkReadUnread = [FOLDERS.DRAFTS, FOLDERS.SPAM, FOLDERS.TRASH];
 	const foldersExcludedTrash = [FOLDERS.TRASH];
 	const foldersIncludedDeletePermanently = [FOLDERS.TRASH];
-	const foldersExcludedFlag: Array<string> = [];
 	const foldersExcludedTags = [FOLDERS.SPAM];
 	const foldersExcludedMarkUnmarkSpam = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const folderExcludedPrintMessage = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const folderExcludedShowOriginal = [FOLDERS.DRAFTS, FOLDERS.TRASH];
-	const foldersIncludesMoveToFolder = [FOLDERS.TRASH];
-
 	const folderIncludeEditDraft = [FOLDERS.DRAFTS];
-	const folderExcludedReply = [FOLDERS.DRAFTS, FOLDERS.TRASH];
-	const folderExcludedReplyAll = [FOLDERS.DRAFTS, FOLDERS.TRASH];
-	const folderExcludedForward = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+	const folderExcludedReply = [FOLDERS.DRAFTS, FOLDERS.SPAM];
+	const folderExcludedReplyAll = [FOLDERS.DRAFTS, FOLDERS.SPAM];
+	const folderExcludedForward = [FOLDERS.DRAFTS, FOLDERS.SPAM];
 	const folderExcludedEditAsNew = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const folderIncludedSendDraft = [FOLDERS.DRAFTS];
 	const folderExcludedRedirect = [FOLDERS.DRAFTS, FOLDERS.TRASH];
@@ -94,7 +92,7 @@ export function getHoverActions({
 		const action = isConversation
 			? setConversationsFlag({ ids: [id], value: item.flagged, dispatch })
 			: setMsgFlag({ ids: [id], value: item.flagged, dispatch });
-		return !foldersExcludedFlag.includes(folderId) && action;
+		return action;
 	};
 
 	const setMsgReadUnreadAction = (): ActionReturnType => {
@@ -108,21 +106,21 @@ export function getHoverActions({
 					shouldReplaceHistory: false
 			  })
 			: setMsgRead({ ids: [id], value: item.read, dispatch, folderId });
-		return !foldersExcludedMarkReadUnread.includes(getParentId(item) ?? '0') && action;
+		return !foldersExcludedMarkReadUnread.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const getMoveToTrashAction = (): false | ConvActionReturnType | MessageActionReturnType => {
 		const action = isConversation
 			? moveConversationToTrash({ ids: [id], dispatch, folderId, deselectAll })
 			: moveMsgToTrash({ ids: [id], dispatch, deselectAll });
-		return !foldersExcludedTrash.includes(getParentId(item) ?? '0') && action;
+		return !foldersExcludedTrash.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const deletePermanentlyAction = (): ActionReturnType => {
 		const action = isConversation
 			? deleteConversationPermanently({ ids: [id], deselectAll })
 			: deleteMessagePermanently({ ids: [id], dispatch, deselectAll });
-		return foldersIncludedDeletePermanently.includes(getParentId(item) ?? '0') && action;
+		return foldersIncludedDeletePermanently.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const moveToFolderAction = (): ActionReturnType => {
@@ -131,17 +129,17 @@ export function getHoverActions({
 					ids: [id],
 					dispatch,
 					folderId,
-					isRestore: false,
+					isRestore: folderId === FOLDERS.TRASH,
 					deselectAll
 			  })
 			: moveMessageToFolder({
 					id: [id],
 					folderId,
 					dispatch,
-					isRestore: true,
+					isRestore: folderId === FOLDERS.TRASH,
 					deselectAll
 			  });
-		return foldersIncludesMoveToFolder.includes(getParentId(item) ?? '0') && action;
+		return action;
 	};
 
 	const printAction = (): ActionReturnType => {
@@ -151,12 +149,12 @@ export function getHoverActions({
 					account
 			  })
 			: printMsg({ message: item as MailMessage, account });
-		return !folderExcludedPrintMessage.includes(getParentId(item) ?? '0') && action;
+		return !folderExcludedPrintMessage.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const applyTagAction = (): false | TagActionItemType => {
 		const action = applyTag({ tags, conversation: item, isMessage: !isConversation });
-		return !foldersExcludedTags.includes(getParentId(item) ?? '0') && action;
+		return !foldersExcludedTags.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const markRemoveSpam = (): ActionReturnType => {
@@ -173,70 +171,57 @@ export function getHoverActions({
 					dispatch,
 					folderId
 			  });
-		return !foldersExcludedMarkUnmarkSpam.includes(getParentId(item) ?? '0') && action;
+		return !foldersExcludedMarkUnmarkSpam.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const showOriginalAction = (): ActionReturnType => {
 		const action = isConversation ? false : showOriginalMsg({ id });
 
-		return !folderExcludedShowOriginal.includes(getParentId(item) ?? '0') && action;
+		return !folderExcludedShowOriginal.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const editDraftAction = (): ActionReturnType => {
 		const action = isConversation ? false : editDraft({ id, folderId });
-		return folderIncludeEditDraft.includes(getParentId(item) ?? '0') && action;
+		return folderIncludeEditDraft.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const replyMsgAction = (): ActionReturnType => {
-		const action = isConversation ? false : replyMsg({ id, folderId });
-		return !folderExcludedReply.includes(getParentId(item) ?? '0') && action;
+		const action = isConversation
+			? isSingleMessageConversation && replyMsg({ id: firstConversationMessageId, folderId })
+			: replyMsg({ id, folderId });
+		return !folderExcludedReply.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const replyAllMsgAction = (): ActionReturnType => {
-		const action = isConversation ? false : replyAllMsg({ id, folderId });
-		return !folderExcludedReplyAll.includes(getParentId(item) ?? '0') && action;
+		const action = isConversation
+			? isSingleMessageConversation && replyAllMsg({ id: firstConversationMessageId, folderId })
+			: replyAllMsg({ id, folderId });
+		return !folderExcludedReplyAll.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const forwardMsgAction = (): ActionReturnType => {
-		const action = isConversation ? false : forwardMsg({ id, folderId });
-		return !folderExcludedForward.includes(getParentId(item) ?? '0') && action;
+		const action = isConversation
+			? isSingleMessageConversation && forwardMsg({ id: firstConversationMessageId, folderId })
+			: forwardMsg({ id, folderId });
+		return !folderExcludedForward.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const editAsNewAction = (): ActionReturnType => {
 		const action = isConversation ? false : editAsNewMsg({ id, folderId });
-		return !folderExcludedEditAsNew.includes(getParentId(item) ?? '0') && action;
+		return !folderExcludedEditAsNew.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const sendDraftAction = (): ActionReturnType => {
 		const action = isConversation
 			? false
 			: sendDraft({ id, message: item as MailMessage, dispatch });
-		return folderIncludedSendDraft.includes(getParentId(item) ?? '0') && action;
+		return folderIncludedSendDraft.includes(getParentId(folderId) ?? '0') && action;
 	};
 
 	const redirectMsgAction = (): ActionReturnType => {
 		const action = isConversation ? false : redirectMsg({ id });
-		return !folderExcludedRedirect.includes(getParentId(item) ?? '0') && action;
+		return !folderExcludedRedirect.includes(getParentId(folderId) ?? '0') && action;
 	};
-
-	// const markMsgAsNotSpam = (): ActionReturnType => {
-	// 	const selectedItems = filter(
-	// 		items,
-	// 		(item: MsgOrConv) =>
-	// 			ids.includes(id ?? '0') &&
-	// 			foldersIncludedMarkNotSpam.includes(getParentId(item) ?? '0')
-	// 	);
-	// 	const action = isConversation
-	// 		? setConversationsSpam({
-	// 				ids: [id],
-	// 				value: true,
-	// 				dispatch,
-	// 				deselectAll
-	// 		  })
-	// 		: setMsgAsSpam({ ids: [id], value: true, dispatch, folderId: folderId });
-
-	// 	return selectedItems.length > 0 && selectedItems.length === ids.length && action;
-	// };
 
 	/**
 	 * Primary actions are the ones that are shown when the user hovers over a message
@@ -248,7 +233,8 @@ export function getHoverActions({
 		forwardMsgAction(),
 		setMsgReadUnreadAction(),
 		getMoveToTrashAction(),
-		deletePermanentlyAction()
+		deletePermanentlyAction(),
+		addRemoveFlagAction()
 	].reduce((acc: Array<ActionReturnType>, action) => {
 		if (action) {
 			acc.push(action);
@@ -284,15 +270,5 @@ export function getHoverActions({
 		return acc;
 	}, []);
 
-	/**
-	 * Returns the actions for the message or conversation based on the type of the item and whether the editor is open or not (for conversations)
-	 * @param _item the message or conversation
-	 * @param closeEditor whether to close the editor or not
-	 */
-	const result = (
-		_item: Conversation | MailMessage,
-		closeEditor?: boolean
-	): MsgConvActionsReturnType => [primaryActions, secondaryActions];
-
-	return result;
+	return () => [primaryActions, secondaryActions];
 }

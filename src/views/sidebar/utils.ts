@@ -15,7 +15,6 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
 import { getFolderIdParts } from '../../helpers/folders';
-import { MailMessage } from '../../types';
 
 const folderIdRegex = /^(.+:)*(\d+)$/;
 
@@ -272,12 +271,12 @@ export const getRootAccountName = (folder: Folder | LinkFolder): string | null =
 };
 
 /**
- * Returns the parent folder id for a given folder
- * @param message a Folder or LinkFolder
- * @returns the parent folder id or null if the folder is not a link or the root folder
+ * Removes the uuid and colon from a folder id (e.g. 123456:2 -> 2)
+ * @param folderId a folder id
+ * @returns the folder id without the uuid and colon
  */
-export const getParentId = (message: Partial<MailMessage>): string =>
-	(message.parent?.includes(':') ? message.parent?.split(':')[1] : message.parent) ?? '0';
+export const getParentId = (folderId: string): string =>
+	(folderId.includes(':') ? folderId?.split(':')[1] : folderId) ?? '0';
 
 /**
  * Returns the parent folder id for a given folder

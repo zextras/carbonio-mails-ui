@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
-import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
+import { Container, Icon, Padding, Row, Select, Text } from '@zextras/carbonio-design-system';
 import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
+import React, { useMemo } from 'react';
 import { ColorContainer, Square, TextUpperCase } from './styled-components';
 
 const LabelFactory = ({ selected, label, open, focus }) => (
@@ -49,7 +49,7 @@ export default function ColorSelect({ onChange, defaultColor = 0, label }) {
 	const colors = useMemo(
 		() =>
 			ZIMBRA_STANDARD_COLORS.map((el, index) => ({
-				label: t(el.zLabel),
+				label: t(el.zLabel, 'banane'),
 				value: index.toString(),
 				customComponent: (
 					<Container

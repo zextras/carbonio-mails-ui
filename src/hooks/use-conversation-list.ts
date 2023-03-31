@@ -35,11 +35,6 @@ export const useConversationListItems = (): Array<Conversation> => {
 	// 	[folderId, zimbraPrefSortOrder]
 	// );
 
-	// const sortedConversations = useMemo(
-	// 	() => orderBy(conversations, 'date', sorting === 'dateDesc' ? 'desc' : 'asc'),
-	// 	[conversations, sorting]
-	// );
-
 	const filteredConversations = useMemo(
 		() =>
 			folder
