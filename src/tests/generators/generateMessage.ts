@@ -29,6 +29,7 @@ type MessageGenerationParams = {
 	subject?: string;
 	body?: string;
 	isRead?: boolean;
+	isFlagged?: boolean;
 	isComplete?: boolean;
 	isDeleted?: boolean;
 	isDraft?: boolean;
@@ -43,12 +44,25 @@ type MessageGenerationParams = {
 /**
  *
  * @param id
- * @param folder
+ * @param folderId
  * @param sendDate
  * @param receiveDate
- * @param participants
+ * @param to
+ * @param cc
+ * @param from
  * @param subject
  * @param body
+ * @param isRead
+ * @param isFlagged
+ * @param isComplete
+ * @param isDeleted
+ * @param isDraft
+ * @param isForwarded
+ * @param isInvite
+ * @param isReadReceiptRequested
+ * @param isReplied
+ * @param isScheduled
+ * @param isSentByMe
  */
 const generateMessage = ({
 	id = faker.datatype.number().toString(),
@@ -61,6 +75,7 @@ const generateMessage = ({
 	subject = faker.lorem.word(6),
 	body = faker.lorem.paragraph(4),
 	isRead = false,
+	isFlagged = false,
 	isComplete = false,
 	isDeleted = false,
 	isDraft = false,
@@ -77,7 +92,7 @@ const generateMessage = ({
 	conversation: '',
 	date: receiveDate,
 	did: '',
-	flagged: false,
+	flagged: isFlagged,
 	fragment: '',
 	hasAttachment: false,
 	id,

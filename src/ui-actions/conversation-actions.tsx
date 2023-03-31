@@ -8,6 +8,7 @@ import { forEach, isArray, map } from 'lodash';
 import React from 'react';
 import { errorPage } from '../commons/preview-eml/error-page';
 import { getContentForPrint } from '../commons/print-conversation';
+import { ConversationActionsDescriptors } from '../constants';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import { ConvActionReturnType, Conversation, MailMessage } from '../types';
@@ -38,10 +39,13 @@ export function setConversationsFlag({
 	value,
 	dispatch
 }: Pick<ConvActionPropType, 'ids' | 'value' | 'dispatch'>): ConvActionReturnType {
+	const actDescriptor = value
+		? ConversationActionsDescriptors.UNFLAG
+		: ConversationActionsDescriptors.FLAG;
 	return {
-		id: 'flag-conversation',
+		id: actDescriptor.id,
 		icon: value ? 'Flag' : 'FlagOutline',
-		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
+		label: value ? t('action.unflag', actDescriptor.desc) : t('action.flag', actDescriptor.desc),
 		onClick: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -112,13 +116,15 @@ export function setConversationsRead({
 	ConvActionPropType,
 	'ids' | 'dispatch' | 'value' | 'folderId' | 'shouldReplaceHistory' | 'deselectAll'
 >): ConvActionReturnType {
-	// eslint-disable-next-line react-hooks/rules-of-hooks
+	const actDescriptor = value
+		? ConversationActionsDescriptors.MARK_AS_UNREAD
+		: ConversationActionsDescriptors.MARK_AS_READ;
 	return {
-		id: `read-conversations-${value}`,
+		id: actDescriptor.id,
 		icon: value ? 'EmailOutline' : 'EmailReadOutline',
 		label: value
-			? t('action.mark_as_unread', 'Mark as unread')
-			: t('action.mark_as_read', 'Mark as read'),
+			? t('action.mark_as_unread', actDescriptor.desc)
+			: t('action.mark_as_read', actDescriptor.desc),
 		onClick: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment

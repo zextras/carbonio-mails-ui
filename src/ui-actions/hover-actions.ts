@@ -53,10 +53,11 @@ type GetMessageActionsProps = {
 };
 
 type MsgConvActionsReturnType = [
-	Array<Omit<ActionReturnType, 'false'>>,
-	Array<Omit<ActionReturnType, 'false'>>
+	Array<Exclude<ActionReturnType, false>>,
+	Array<Exclude<ActionReturnType, false>>
 ];
 
+// TODO maybe the name of the function should be getMessageActions
 export function getHoverActions({
 	item,
 	dispatch,
@@ -83,9 +84,9 @@ export function getHoverActions({
 	const foldersIncludesMoveToFolder = [FOLDERS.TRASH];
 
 	const folderIncludeEditDraft = [FOLDERS.DRAFTS];
-	const folderExcludedReply = [FOLDERS.DRAFTS, FOLDERS.TRASH];
-	const folderExcludedReplyAll = [FOLDERS.DRAFTS, FOLDERS.TRASH];
-	const folderExcludedForward = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+	const folderExcludedReply = [FOLDERS.DRAFTS, FOLDERS.SPAM];
+	const folderExcludedReplyAll = [FOLDERS.DRAFTS, FOLDERS.SPAM];
+	const folderExcludedForward = [FOLDERS.DRAFTS, FOLDERS.SPAM];
 	const folderExcludedEditAsNew = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const folderIncludedSendDraft = [FOLDERS.DRAFTS];
 	const folderExcludedRedirect = [FOLDERS.DRAFTS, FOLDERS.TRASH];
@@ -242,14 +243,14 @@ export function getHoverActions({
 	 * Primary actions are the ones that are shown when the user hovers over a message
 	 * @returns an array of arrays of actions
 	 */
-	const primaryActions: Array<Omit<ActionReturnType, 'false'>> = [
+	const primaryActions: Array<Exclude<ActionReturnType, false>> = [
 		replyMsgAction(),
 		replyAllMsgAction(),
 		forwardMsgAction(),
 		setMsgReadUnreadAction(),
 		getMoveToTrashAction(),
 		deletePermanentlyAction()
-	].reduce((acc: Array<ActionReturnType>, action) => {
+	].reduce((acc: Array<Exclude<ActionReturnType, false>>, action) => {
 		if (action) {
 			acc.push(action);
 		}
@@ -260,7 +261,7 @@ export function getHoverActions({
 	 * Secondary actions are the ones that are shown when the user right-clicks on the message
 	 * @returns an array of arrays of actions
 	 */
-	const secondaryActions: Array<Omit<ActionReturnType, 'false'>> = [
+	const secondaryActions: Array<Exclude<ActionReturnType, false>> = [
 		replyMsgAction(),
 		replyAllMsgAction(),
 		forwardMsgAction(),
@@ -277,7 +278,7 @@ export function getHoverActions({
 		editAsNewAction(),
 		sendDraftAction(),
 		redirectMsgAction()
-	].reduce((acc: Array<ActionReturnType>, action) => {
+	].reduce((acc: Array<Exclude<ActionReturnType, false>>, action) => {
 		if (action) {
 			acc.push(action);
 		}
@@ -289,6 +290,7 @@ export function getHoverActions({
 	 * @param _item the message or conversation
 	 * @param closeEditor whether to close the editor or not
 	 */
+	// TODO why?
 	const result = (
 		_item: Conversation | MailMessage,
 		closeEditor?: boolean

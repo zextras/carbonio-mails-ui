@@ -19,7 +19,7 @@ import React from 'react';
 import { errorPage } from '../commons/preview-eml/error-page';
 import { getContentForPrint } from '../commons/print-conversation';
 import { ActionsType } from '../commons/utils';
-import { MAILS_ROUTE } from '../constants';
+import { MAILS_ROUTE, MessageActionsDescriptors } from '../constants';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg } from '../store/actions/send-msg';
 import { AppDispatch, StoreProvider } from '../store/redux';
@@ -59,31 +59,37 @@ export const setMsgRead = ({
 	folderId,
 	shouldReplaceHistory = false,
 	deselectAll
-}: MessageActionPropType): MessageActionReturnType => ({
-	id: 'message-mark_as_read',
-	icon: value ? 'EmailOutline' : 'EmailReadOutline',
-	label: value
-		? t('action.mark_as_unread', 'Mark as unread')
-		: t('action.mark_as_read', 'Mark as read'),
-	onClick: (ev): void => {
-		if (ev) ev.preventDefault();
-		dispatch(
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			msgAction({
-				operation: `${value ? '!' : ''}read`,
-				ids
-			})
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-		).then((res) => {
-			deselectAll && deselectAll();
-			if (res.type.includes('fulfilled') && shouldReplaceHistory) {
-				replaceHistory(`/folder/${folderId}`);
-			}
-		});
-	}
-});
+}: MessageActionPropType): MessageActionReturnType => {
+	const actDescriptor = value
+		? MessageActionsDescriptors.MARK_AS_UNREAD
+		: MessageActionsDescriptors.MARK_AS_READ;
+
+	return {
+		id: actDescriptor.id,
+		icon: value ? 'EmailOutline' : 'EmailReadOutline',
+		label: value
+			? t('action.mark_as_unread', 'Mark as unread')
+			: t('action.mark_as_read', 'Mark as read'),
+		onClick: (ev): void => {
+			if (ev) ev.preventDefault();
+			dispatch(
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				msgAction({
+					operation: `${value ? '!' : ''}read`,
+					ids
+				})
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+			).then((res) => {
+				deselectAll && deselectAll();
+				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+					replaceHistory(`/folder/${folderId}`);
+				}
+			});
+		}
+	};
+};
 
 export function setMsgFlag({
 	ids,
@@ -93,8 +99,10 @@ export function setMsgFlag({
 	MessageActionPropType,
 	'folderId' | 'shouldReplaceHistory' | 'deselectAll'
 >): MessageActionReturnType {
+	const actDescriptor = value ? MessageActionsDescriptors.UNFLAG : MessageActionsDescriptors.FLAG;
+
 	return {
-		id: 'message-flag',
+		id: actDescriptor.id,
 		icon: value ? 'Flag' : 'FlagOutline',
 		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
 		onClick: (ev): void => {
@@ -118,8 +126,12 @@ export function setMsgAsSpam({
 	shouldReplaceHistory = true,
 	folderId
 }: MessageActionPropType): MessageActionReturnType {
+	const actDescriptor = value
+		? MessageActionsDescriptors.MARK_AS_NOT_SPAM
+		: MessageActionsDescriptors.MARK_AS_SPAM;
+
 	return {
-		id: 'message-mark_as_spam',
+		id: actDescriptor.id,
 		icon: value ? 'AlertCircleOutline' : 'AlertCircle',
 		label: value
 			? t('action.mark_as_non_spam', 'Not spam')
@@ -187,8 +199,11 @@ export function printMsg({
 		conversation: msg.conversation,
 		subject: msg.subject
 	}));
+
+	const actDescriptor = MessageActionsDescriptors.PRINT;
+
 	return {
-		id: 'message-print',
+		id: actDescriptor.id,
 		icon: 'PrinterOutline',
 		label: t('action.print', 'Print'),
 		onClick: (): void => {
@@ -214,8 +229,10 @@ export function printMsg({
 }
 
 export function showOriginalMsg({ id }: { id: string }): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.SHOW_SOURCE;
+
 	return {
-		id: 'message-show_original',
+		id: actDescriptor.id,
 		icon: 'CodeOutline',
 		label: t('action.show_original', 'Show original'),
 		onClick: (ev): void => {
@@ -225,7 +242,7 @@ export function showOriginalMsg({ id }: { id: string }): MessageActionReturnType
 	};
 }
 
-export const dispatchMsgMove = (
+const dispatchMsgMove = (
 	dispatch: Dispatch<any>,
 	ids: MessageActionIdsType,
 	folderId: string
@@ -284,8 +301,10 @@ export function moveMsgToTrash({
 	conversationId,
 	closeEditor
 }: MessageActionPropType): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.MOVE_TO_TRASH;
+
 	return {
-		id: 'message-trash',
+		id: actDescriptor.id,
 		icon: 'Trash2Outline',
 		label: t('label.delete', 'Delete'),
 		onClick: (ev): void => {
@@ -333,8 +352,10 @@ export function deleteMsg({
 	ids,
 	dispatch
 }: Pick<MessageActionPropType, 'ids' | 'dispatch'>): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.DELETE;
+
 	return {
-		id: 'message-delete',
+		id: actDescriptor.id,
 		icon: 'Trash2Outline',
 		label: t('label.delete', 'Delete'),
 		onClick: (ev): void => {
@@ -413,8 +434,9 @@ export function replyMsg({
 	id,
 	folderId
 }: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.REPLY;
 	return {
-		id: 'message-reply',
+		id: actDescriptor.id,
 		icon: 'UndoOutline',
 		label: t('action.reply', 'Reply'),
 		onClick: (ev): void => {
@@ -432,8 +454,9 @@ export function replyAllMsg({
 	id,
 	folderId
 }: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.REPLY_ALL;
 	return {
-		id: 'message-reply_all',
+		id: actDescriptor.id,
 		icon: 'ReplyAll',
 		label: t('action.reply_all', 'Reply all'),
 		onClick: (ev): void => {
@@ -451,8 +474,9 @@ export function forwardMsg({
 	id,
 	folderId
 }: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.FORWARD;
 	return {
-		id: 'message-forward',
+		id: actDescriptor.id,
 		icon: 'Forward',
 		label: t('action.forward', 'Forward'),
 		onClick: (ev): void => {
@@ -470,8 +494,9 @@ export function editAsNewMsg({
 	id,
 	folderId
 }: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.EDIT_AS_NEW;
 	return {
-		id: 'message-edit_as_new',
+		id: actDescriptor.id,
 		icon: 'Edit2Outline',
 		label: t('action.edit_as_new', 'Edit as new'),
 		onClick: (ev): void => {
@@ -490,8 +515,9 @@ export function editDraft({
 	folderId,
 	message
 }: Pick<MessageActionPropType, 'id' | 'folderId' | 'message'>): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.EDIT_DRAFT;
 	return {
-		id: 'message-edit_as_draft',
+		id: actDescriptor.id,
 		icon: 'Edit2Outline',
 		label: t('label.edit', 'Edit'),
 		onClick: (ev): void => {
@@ -547,8 +573,9 @@ export function sendDraft({
 	message: MailMessage;
 	dispatch: AppDispatch;
 }): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.SEND;
 	return {
-		id: 'message-send',
+		id: actDescriptor.id,
 		icon: 'PaperPlaneOutline',
 		label: t('label.send', 'Send'),
 		onClick: (ev): void => {
@@ -564,8 +591,9 @@ export function sendDraft({
 }
 
 export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.REDIRECT;
 	return {
-		id: 'message-redirect',
+		id: actDescriptor.id,
 		icon: 'CornerUpRight',
 		label: t('action.redirect', 'Redirect'),
 		onClick: (ev): void => {
@@ -598,8 +626,11 @@ export function moveMessageToFolder({
 	MessageActionPropType,
 	'id' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId'
 >): MessageActionReturnType {
+	const actDescriptor = isRestore
+		? MessageActionsDescriptors.RESTORE
+		: MessageActionsDescriptors.MOVE;
 	return {
-		id: 'message-restore',
+		id: actDescriptor.id,
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
 		label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 		onClick: (): void => {
@@ -633,8 +664,9 @@ export function deleteMessagePermanently({
 	ids,
 	deselectAll
 }: MessageActionPropType): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.DELETE_PERMANENTLY;
 	return {
-		id: 'message-delete-permanently',
+		id: actDescriptor.id,
 		icon: 'DeletePermanentlyOutline',
 		label: t('label.delete_permanently', 'Delete Permanently'),
 		onClick: (): void => {
@@ -659,11 +691,3 @@ export function deleteMessagePermanently({
 		}
 	};
 }
-
-type GetMessageActionsType = {
-	item: MailMessage;
-	dispatch: Dispatch;
-	deselectAll: () => void;
-	account: Account;
-	tags: Tags;
-};

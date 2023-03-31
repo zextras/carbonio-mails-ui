@@ -1,41 +1,262 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { FOLDERS as FOLDERSID, getUserAccount } from '@zextras/carbonio-shell-ui';
+import { MessageActionsDescriptors } from '../../constants';
+import { generateMessage } from '../../tests/generators/generateMessage';
+import { getHoverActions } from '../hover-actions';
+import { existsActionById } from './actions-tests-utils';
 
-import { act } from '@testing-library/react';
-import { rest } from 'msw';
-import { generateStore } from '../../tests/generators/store';
-import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
-import { MsgActionRequest } from '../../types';
-import { dispatchMsgMove } from '../message-actions';
+describe('Actions visibility', () => {
+	const MESSAGES_STATUS = {
+		FLAGGED: {
+			value: true,
+			desc: 'flagged'
+		},
+		NOT_FLAGGED: {
+			value: false,
+			desc: 'not flagged'
+		},
+		READ: {
+			value: true,
+			desc: 'read'
+		},
+		NOT_READ: {
+			value: false,
+			desc: 'not read'
+		}
+	};
 
-describe('Message Action', () => {
-	// Test for restore the trashed mail
-	test('restore trashed email', async () => {
-		const store = generateStore();
-		const msgActionInterceptor = new Promise<MsgActionRequest>((resolve, reject) => {
-			// Register a handler for the REST call
-			getSetupServer().use(
-				rest.post('/service/soap/MsgActionRequest', async (req, res, ctx) => {
-					if (!req) {
-						reject(new Error('Empty request'));
-					}
-					const action = (await req.json()).Body.MsgActionRequest;
-					resolve(action);
+	const FOLDERS = {
+		INBOX: {
+			id: FOLDERSID.INBOX,
+			desc: 'inbox'
+		},
+		SENT: {
+			id: FOLDERSID.SENT,
+			desc: 'sent'
+		},
+		DRAFTS: {
+			id: FOLDERSID.DRAFTS,
+			desc: 'drafts'
+		},
+		SPAM: {
+			id: FOLDERSID.SPAM,
+			desc: 'junk'
+		},
+		TRASH: {
+			id: FOLDERSID.TRASH,
+			desc: 'trash'
+		},
+		USER_DEFINED: {
+			id: '1234567',
+			desc: 'user defined'
+		}
+	};
 
-					// Don't care about the actual response
-					return res(ctx.json({}));
-				})
-			);
-		});
-		act(() => {
-			dispatchMsgMove(store.dispatch, ['1', '2'], '2');
-		});
-		const req = await msgActionInterceptor;
-		expect(req.action.op).toBe('move');
-		expect(req.action.id).toBe('1,2');
-		expect(req.action.l).toBe('2');
+	const ASSERTION = {
+		CONTAIN: {
+			value: true,
+			desc: 'contain'
+		},
+		NOT_CONTAIN: {
+			value: false,
+			desc: 'not contain'
+		}
+	};
+
+	describe('Primary actions', () => {
+		/**
+		 * 1.  primary actions for a message in any folder except drafts and junk contain the reply action
+		 * 2.  primary actions for a message in any folder except drafts and junk contain the reply all action
+		 * 3.  primary actions for a message in any folder except drafts and junk contain the forward action
+		 * 6.  primary actions for a message in any folder except trash and junk contain the trash action
+		 * 7.  primary actions for a message in the trash or junk folder contain the delete permanently action
+		 * 10. primary actions for a message in any folder except junk contain the mark as spam action
+		 * 11. primary actions for a message in the junk folder contain the not spam action
+		 * 12. primary actions for a message in the drafts folder contain the edit action
+		 * 13. primary actions for a message in the drafts folder contain the send action
+		 * 14. primary actions for a message in the trash folder contain the restore action
+		 */
+		test.each`
+			case  | folder                  | assertion                | action
+			${1}  | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
+			${1}  | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
+			${1}  | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.REPLY}
+			${1}  | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
+			${1}  | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.REPLY}
+			${1}  | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
+			${2}  | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY_ALL}
+			${2}  | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY_ALL}
+			${2}  | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.REPLY_ALL}
+			${2}  | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY_ALL}
+			${2}  | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.REPLY_ALL}
+			${2}  | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY_ALL}
+			${3}  | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.FORWARD}
+			${3}  | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.FORWARD}
+			${3}  | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.FORWARD}
+			${3}  | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.FORWARD}
+			${3}  | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.FORWARD}
+			${3}  | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.FORWARD}
+			${6}  | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
+			${6}  | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
+			${6}  | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
+			${6}  | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MOVE_TO_TRASH}
+			${6}  | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MOVE_TO_TRASH}
+			${6}  | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
+			${7}  | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
+			${7}  | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
+			${7}  | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
+			${7}  | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
+			${7}  | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
+			${7}  | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
+			${10} | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_SPAM}
+			${10} | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_SPAM}
+			${10} | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_SPAM}
+			${10} | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_SPAM}
+			${10} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_SPAM}
+			${10} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_SPAM}
+			${11} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
+			${11} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
+			${11} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
+			${11} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
+			${11} | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
+			${11} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
+			${12} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.EDIT_DRAFT}
+			${12} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.EDIT_DRAFT}
+			${12} | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.EDIT_DRAFT}
+			${12} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.EDIT_DRAFT}
+			${12} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.EDIT_DRAFT}
+			${12} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.EDIT_DRAFT}
+			${13} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.SEND}
+			${13} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.SEND}
+			${13} | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.SEND}
+			${13} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.SEND}
+			${13} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.SEND}
+			${13} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.SEND}
+			${14} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.RESTORE}
+			${14} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.RESTORE}
+			${14} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.RESTORE}
+			${14} | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.RESTORE}
+			${14} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.RESTORE}
+			${14} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.RESTORE}
+		`(
+			`(case #$case) primary actions for a message in $folder.desc folder $assertion.desc the $action.desc action`,
+			async ({ folder, assertion, action }) => {
+				const msg = generateMessage({ folderId: folder.id });
+				const dispatch = jest.fn();
+				const deselectAll = jest.fn();
+				const account = getUserAccount();
+				const actionsFactory = getHoverActions({
+					item: msg,
+					dispatch,
+					deselectAll,
+					account,
+					tags: {}
+				});
+				const [primaryActions] = actionsFactory(msg);
+				expect(existsActionById(action.id, primaryActions)).toBe(assertion.value);
+			}
+		);
+
+		/**
+		 * 4. primary actions for an unread message in any folder except draft contain the mark as read action
+		 * 5. primary actions for a read message in any folder except draft contain the mark as unread action
+		 */
+		test.each`
+			case | read                        | folder                  | assertion                | action
+			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
+			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
+			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
+			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
+			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
+			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
+			${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
+			${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
+			${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
+			${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
+			${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
+			${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
+		`(
+			`(case #$case) primary actions for a $read.desc message in $folder.desc folder $assertion.desc the $action.desc action`,
+			async ({ folder, read, assertion, action }) => {
+				const msg = generateMessage({ folderId: folder.id, isRead: read.value });
+				const dispatch = jest.fn();
+				const deselectAll = jest.fn();
+				const account = getUserAccount();
+				const actionsFactory = getHoverActions({
+					item: msg,
+					dispatch,
+					deselectAll,
+					account,
+					tags: {}
+				});
+				const [primaryActions] = actionsFactory(msg);
+				expect(existsActionById(action.id, primaryActions)).toBe(assertion.value);
+			}
+		);
+
+		/**
+		 * 8. primary actions for a flagged message in any folder contain the unflag action
+		 * 9. primary actions for an unflagged message in any folder contain the flag action
+		 */
+		test.each`
+			case | flagged                        | folder                  | assertion                | action
+			${8} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.UNFLAG}
+			${8} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.UNFLAG}
+			${8} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.UNFLAG}
+			${8} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.UNFLAG}
+			${8} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.UNFLAG}
+			${8} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.UNFLAG}
+			${8} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.UNFLAG}
+			${8} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.UNFLAG}
+			${8} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.UNFLAG}
+			${8} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.UNFLAG}
+			${8} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.UNFLAG}
+			${8} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.UNFLAG}
+			${9} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.FLAG}
+			${9} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.FLAG}
+			${9} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.FLAG}
+			${9} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.FLAG}
+			${9} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.FLAG}
+			${9} | ${MESSAGES_STATUS.NOT_FLAGGED} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.FLAG}
+			${9} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.FLAG}
+			${9} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.FLAG}
+			${9} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.FLAG}
+			${9} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.FLAG}
+			${9} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.FLAG}
+			${9} | ${MESSAGES_STATUS.FLAGGED}     | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.FLAG}
+		`(
+			`(case #$case) primary actions for a $flagged.desc message in $folder.desc folder $assertion.desc the $action.desc action`,
+			async ({ folder, flagged, assertion, action }) => {
+				const msg = generateMessage({ folderId: folder.id, isFlagged: flagged.value });
+				const dispatch = jest.fn();
+				const deselectAll = jest.fn();
+				const account = getUserAccount();
+				const actionsFactory = getHoverActions({
+					item: msg,
+					dispatch,
+					deselectAll,
+					account,
+					tags: {}
+				});
+				const [primaryActions] = actionsFactory(msg);
+				expect(existsActionById(action.id, primaryActions)).toBe(assertion.value);
+			}
+		);
 	});
 });
