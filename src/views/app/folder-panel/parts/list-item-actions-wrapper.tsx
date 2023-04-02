@@ -11,7 +11,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
-import React, { useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import styled, { DefaultTheme } from 'styled-components';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { ListItemActionWrapperProps, MailMessage } from '../../../../types';
@@ -62,15 +62,14 @@ type ActionList = Array<ActionObj>;
 
 type GetMsgActionsFunction = (item: MailMessage, closeEditor: boolean) => [ActionList, ActionList];
 
-export const ListItemActionWrapper = ({
+export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	children,
-	actionIsVisible,
-	active,
-	item,
 	onClick,
 	onDoubleClick,
+	item,
+	active,
 	deselectAll
-}: ListItemActionWrapperProps): JSX.Element => {
+}) => {
 	const isConversation = 'messages' in item && item.messages.length > 1;
 	const dispatch = useAppDispatch();
 	const account = useUserAccount();
@@ -96,7 +95,6 @@ export const ListItemActionWrapper = ({
 			msgConvActionsCallback(item, closeEditor),
 		[item, msgConvActionsCallback]
 	);
-
 	const [hoverActions, dropdownActions] = useMemo(
 		// TODO fix me
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -105,7 +103,7 @@ export const ListItemActionWrapper = ({
 		[account, deselectAll, dispatch, getMsgConvHoverActions, item, tags]
 	);
 
-	return actionIsVisible ? (
+	return (
 		<Dropdown
 			contextMenu
 			items={dropdownActions}
@@ -122,12 +120,12 @@ export const ListItemActionWrapper = ({
 				$hoverBackground={active ? 'highlight' : 'gray6'}
 			>
 				{children}
+				{/* <Tooltip label={hoverTooltipLabel} overflow="break-word" maxWidth="50vw"> */}
 				<HoverBarContainer
 					orientation="horizontal"
 					mainAlignment="flex-end"
 					crossAlignment="center"
 					background={active ? 'highlight' : 'gray6'}
-					style={{ display: actionIsVisible ? 'flex' : 'none' }}
 				>
 					{hoverActions.map((action, index) => (
 						<Tooltip key={action.id ?? index} label={action.label}>
@@ -139,25 +137,12 @@ export const ListItemActionWrapper = ({
 									action.onClick(ev);
 								}}
 								size="small"
-								backgroundColor="transparent"
 							/>
 						</Tooltip>
 					))}
 				</HoverBarContainer>
+				{/* </Tooltip> */}
 			</HoverContainer>
 		</Dropdown>
-	) : (
-		<HoverContainer
-			data-testid={isConversation ? `ConversationRow` : `MessageListItem-${item.id}`}
-			orientation="horizontal"
-			mainAlignment="flex-start"
-			crossAlignment="unset"
-			$hoverBackground={active ? 'highlight' : 'gray6'}
-			onClick={onClick}
-			onDoubleClick={onDoubleClick}
-			height="4rem"
-		>
-			{children}
-		</HoverContainer>
 	);
 };

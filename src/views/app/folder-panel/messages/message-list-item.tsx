@@ -25,7 +25,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
-import React, { FC, memo, useCallback, useMemo, useState } from 'react';
+import React, { FC, memo, useCallback, useMemo } from 'react';
 import { ActionsType, getTimeLabel, participantToString } from '../../../../commons/utils';
 import { MAILS_ROUTE } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
@@ -77,14 +77,6 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 		},
 		[firstChildFolderId, item]
 	);
-
-	const [actionIsVisible, setActionIsVisible] = useState(false);
-	const onMouseEnter = useCallback(() => {
-		setActionIsVisible(true);
-	}, []);
-	const onMouseLeave = useCallback(() => {
-		setActionIsVisible(false);
-	}, []);
 
 	const accounts = useUserAccounts();
 	const tagsFromStore = useTags();
@@ -191,16 +183,9 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	const onToggle = useMemo(() => (isConvChildren ? noop : toggle), [isConvChildren, toggle]);
 
 	return (
-		<Container
-			mainAlignment="flex-start"
-			data-testid={`MessageListItem-${item.id}`}
-			onMouseEnter={onMouseEnter}
-			onMouseLeave={onMouseLeave}
-			onMouseOver={onMouseEnter}
-		>
+		<Container mainAlignment="flex-start" data-testid={`MessageListItem-${item.id}`}>
 			<ListItemActionWrapper
 				item={item}
-				actionIsVisible={actionIsVisible}
 				active={active}
 				onClick={onClick}
 				onDoubleClick={onDoubleClick}

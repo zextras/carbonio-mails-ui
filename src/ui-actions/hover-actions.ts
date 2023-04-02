@@ -51,7 +51,7 @@ type GetMessageActionsProps = {
 	tags: Tags;
 };
 
-type MsgConvActionsReturnType = [
+export type MsgConvActionsReturnType = [
 	Array<Exclude<ActionReturnType, false>>,
 	Array<Exclude<ActionReturnType, false>>
 ];

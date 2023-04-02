@@ -33,13 +33,14 @@ import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
 import { selectMessages } from '../../../../store/messages-slice';
-import {
+import type {
 	ConvMessage,
 	ConversationListItemProps,
 	IncompleteMessage,
 	StateType,
 	TextReadValuesProps
 } from '../../../../types';
+import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { RowInfo } from '../parts/row-info';
@@ -64,7 +65,6 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 	}) {
 		const dispatch = useAppDispatch();
 		const [open, setOpen] = useState(false);
-		const [actionIsVisible, setActionIsVisible] = useState(false);
 		const accounts = useUserAccounts();
 		const messages = useAppSelector(selectMessages);
 		const folderId = useMemo(() => item?.messages?.[0]?.parent, [item?.messages]);
@@ -140,20 +140,21 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			(e) => {
 				if (!e.isDefaultPrevented()) {
 					if (item?.read === false && zimbraPrefMarkMsgRead) {
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						setConversationsRead({
 							ids: [item.id],
 							value: false,
-							dispatch
+							dispatch,
+							folderId,
+							deselectAll,
+							shouldReplaceHistory: false
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
-						})?.onClick();
+						}).onClick();
 					}
 					pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 				}
 			},
-			[item?.read, item.id, zimbraPrefMarkMsgRead, folderId, dispatch]
+			[item?.read, item.id, zimbraPrefMarkMsgRead, folderId, dispatch, deselectAll]
 		);
 
 		const _onDoubleClick = useCallback(
@@ -242,28 +243,14 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			return item?.messages?.length > 0;
 		}, [item?.messages?.length, textReadValues.badge]);
 
-		const onMouseEnter = useCallback(() => {
-			setActionIsVisible(true);
-		}, []);
-		const onMouseLeave = useCallback(() => {
-			setActionIsVisible(false);
-		}, []);
-
 		return (
-			<Container
-				mainAlignment="flex-start"
-				data-testid={`ConversationListItem-${item.id}`}
-				onMouseEnter={onMouseEnter}
-				onMouseLeave={onMouseLeave}
-				onMouseOver={onMouseEnter}
-			>
+			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
 				<ListItemActionWrapper
 					item={item}
 					current={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
 					hoverTooltipLabel={participantsString}
-					actionIsVisible={actionIsVisible}
 					deselectAll={deselectAll}
 				>
 					<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
