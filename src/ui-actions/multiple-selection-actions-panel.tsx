@@ -401,12 +401,10 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 						<Dropdown
 							placement="right-end"
 							data-testid="secondary-actions-dropdown"
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
 							items={secondaryActionsArray}
 						>
 							<IconButton
-								size="medium"
+								size="large"
 								iconColor="primary"
 								icon="MoreVertical"
 								data-testid="secondary-actions-open-button"

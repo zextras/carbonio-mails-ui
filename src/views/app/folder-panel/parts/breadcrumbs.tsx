@@ -13,6 +13,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import styled from 'styled-components';
 import { getFolderPathForBreadcrumb } from '../../../sidebar/utils';
 
 export const Breadcrumbs: FC<{
@@ -63,6 +64,12 @@ export const Breadcrumbs: FC<{
 
 	const { folderPathFirstPart, folderPathLastPart } = getFolderPathForBreadcrumb(folderPath);
 
+	const SelectIconCheckbox = styled(IconCheckbox)`
+		svg {
+			color: ${(props): string => props.theme.palette.primary.regular};
+		}
+	`;
+
 	return (
 		<Container
 			background="gray5"
@@ -80,7 +87,7 @@ export const Breadcrumbs: FC<{
 			>
 				<Row mainAlignment="flex-start" padding={{ right: 'medium' }} takeAvailableSpace>
 					<Tooltip label={iconCheckboxLabel} maxWidth="100%">
-						<IconCheckbox
+						<SelectIconCheckbox
 							borderRadius="regular"
 							icon="CheckmarkSquare"
 							defaultChecked={isSelectModeOn}
