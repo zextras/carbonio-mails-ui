@@ -226,7 +226,7 @@
         "always_allow_domain": "常に<strong>{{domain}}</strong>ドメインから許可する",
         "always_allow_address": "常に<strong>{{from}}</strong>から許可する",
         "time_zone": "タイムゾーン",
-        "searching": "検索中...",
+        "searching": "検索中…",
         "notify": "通知",
         "do_not_notify": "通知しない",
         "trusted_addresses": "信頼できるアドレス",

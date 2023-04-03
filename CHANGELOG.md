@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.3...v1.2.4) (2023-03-30)
+
+
+### Bug Fixes
+
+* close displayer on clear search ([73362cb](https://github.com/zextras/carbonio-mails-ui/commit/73362cb6ae4666cff7e0eca3faf51f1f4fbdd6f6))
+* scrollbar is not resetting between different folders ([8ba2de3](https://github.com/zextras/carbonio-mails-ui/commit/8ba2de3470911db37ba337b6bb1f8ea7f3d73151))
+
 ### [1.2.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.2...v1.2.3) (2023-03-16)
 
 

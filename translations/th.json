@@ -222,7 +222,7 @@
         "always_allow_domain": "อนุญาตจากโดเมน <strong>{{domain}}</strong> เสมอ",
         "always_allow_address": "อนุญาตจาก <strong>{{from}}</strong> เสมอ",
         "time_zone": "โซนเวลา",
-        "searching": "กำลังค้นหา...",
+        "searching": "กำลังค้นหา…",
         "notify": "แจ้งให้ทราบ",
         "do_not_notify": "ไม่แจ้งเตือน",
         "trusted_addresses": "ที่อยู่ที่เชื่อถือได้",
