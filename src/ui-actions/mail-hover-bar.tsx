@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
-import React, { FC, useMemo } from 'react';
-import { map } from 'lodash';
-import styled from 'styled-components';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
+import { map } from 'lodash';
+import React, { FC, useMemo } from 'react';
+import styled from 'styled-components';
+import { useAppDispatch } from '../hooks/redux';
 import {
 	deleteMsg,
 	editDraft,
@@ -40,7 +40,7 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 	folderId,
 	showReplyAll
 }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const ids = useMemo(() => [messageId], [messageId]);
 
 	const actions = useMemo(() => {

@@ -15,7 +15,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { filter, find, map, uniqBy } from 'lodash';
+import { filter, find, map } from 'lodash';
 import React, {
 	FC,
 	ReactElement,
@@ -28,7 +28,8 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import styled, { SimpleInterpolation } from 'styled-components';
-import { calcColor, getFileExtension } from '../../../../commons/utilities';
+import { getFileExtension } from '../../../../commons/utilities';
+import { useAppDispatch } from '../../../../hooks/redux';
 import { updateEditor } from '../../../../store/editor-slice';
 import {
 	EditorAttachmentFiles,
@@ -120,7 +121,7 @@ const Attachment: FC<AttachmentType> = ({
 	const [t] = useTranslation();
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const removeAttachment = useCallback(() => {
 		dispatch(
@@ -212,7 +213,7 @@ const EditAttachmentsBlock: FC<{
 }> = ({ editor, throttledSaveToDraft }): ReactElement => {
 	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const theme = useTheme();
 
 	const removeAllAttachments = useCallback(() => {

@@ -86,7 +86,7 @@ const ConversationList: FC = () => {
 	const dragImageRef = useRef(null);
 	const dispatch = useAppDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const status = useSelector(selectConversationStatus);
+	const status = useAppSelector(selectConversationStatus);
 
 	const listRef = useRef<HTMLDivElement>(null);
 	const conversationListStatus = useAppSelector((store) =>

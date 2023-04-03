@@ -40,6 +40,7 @@ import { folderAction } from '../../store/actions/folder-action';
 import { DataProps } from '../../types';
 import { useFolderActions } from './use-folder-actions';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
+import { useAppDispatch } from '../../hooks/redux';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
@@ -81,7 +82,7 @@ const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefin
 
 const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const accountName = useUserAccount().name;
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
 
 	const onDragEnterAction = useCallback(

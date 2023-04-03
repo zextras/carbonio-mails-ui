@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { concat, filter, findIndex } from 'lodash';
-import { TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 
 type FilterListType = {
 	active: boolean;

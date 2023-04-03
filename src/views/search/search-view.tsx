@@ -3,35 +3,35 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import {
-	replaceHistory,
+	SEARCH_APP_ID,
 	Spinner,
+	replaceHistory,
 	t,
-	useUserSettings,
-	SEARCH_APP_ID
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { includes, map, reduce } from 'lodash';
-import { useDispatch, useSelector } from 'react-redux';
-import SearchPanel from './search-panel';
-import SearchConversationList from './search-conversation-list';
+import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { MAILS_ROUTE } from '../../constants';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { search } from '../../store/actions/search';
+import { selectFolders } from '../../store/folders-slice';
+import { resetSearchResults, selectSearches } from '../../store/searches-slice';
+import { FolderType, SearchProps } from '../../types';
 import AdvancedFilterModal from './advance-filter-modal';
 import { findIconFromChip } from './parts/use-find-icon';
-import { search } from '../../store/actions/search';
-import { resetSearchResults, selectSearches } from '../../store/searches-slice';
+import SearchConversationList from './search-conversation-list';
 import SearchMessageList from './search-message-list';
-import { FolderType, SearchProps } from '../../types';
-import { selectFolders } from '../../store/folders-slice';
-import { MAILS_ROUTE } from '../../constants';
+import SearchPanel from './search-panel';
 
 const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
 	const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
-	const folders = useSelector(selectFolders);
+	const folders = useAppSelector(selectFolders);
 
 	const searchInFolders = useMemo(
 		() =>
@@ -53,13 +53,13 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		[searchInFolders]
 	);
 
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(true);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
-	const searchResults = useSelector(selectSearches);
+	const searchResults = useAppSelector(selectSearches);
 
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),

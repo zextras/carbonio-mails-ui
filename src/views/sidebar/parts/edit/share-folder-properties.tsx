@@ -17,9 +17,9 @@ import {
 import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
+import { useAppDispatch } from '../../../../hooks/redux';
 import {
 	findLabel,
 	ShareCalendarRoleOptions
@@ -69,8 +69,7 @@ const Actions: FC<ActionProps> = ({
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 	const accounts = useUserAccounts();
 	const { setActiveGrant } = useContext(Context);
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const dispatch = useDispatch() as Function;
+	const dispatch = useAppDispatch();
 	const onRevoke = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('revoke');
@@ -84,18 +83,21 @@ const Actions: FC<ActionProps> = ({
 				folder,
 				accounts
 			})
-		).then((res: Response) => {
-			if (res.type.includes('fulfilled')) {
-				createSnackbar({
-					key: `resend-${folder.id}`,
-					replace: true,
-					type: 'info',
-					label: t('snackbar.share_resend', 'Share invite resent'),
-					autoHideTimeout: 2000,
-					hideButton: true
-				});
-			}
-		});
+		)
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			.then((res: Response) => {
+				if (res.type.includes('fulfilled')) {
+					createSnackbar({
+						key: `resend-${folder.id}`,
+						replace: true,
+						type: 'info',
+						label: t('snackbar.share_resend', 'Share invite resent'),
+						autoHideTimeout: 2000,
+						hideButton: true
+					});
+				}
+			});
 	}, [accounts, dispatch, folder, grant.d, createSnackbar]);
 	const onEdit = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);

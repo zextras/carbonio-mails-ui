@@ -35,6 +35,7 @@ import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 import ReadReceiptModal from './read-receipt-modal';
 import PreviewHeader from './parts/preview-header';
 import { ExtraWindowCreationParams, MailMessage, OpenEmlPreviewType } from '../../../../types';
+import { useAppDispatch } from '../../../../hooks/redux';
 
 const MailContent: FC<{
 	message: MailMessage;
@@ -51,7 +52,7 @@ const MailContent: FC<{
 }) => {
 	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
 	const [showModal, setShowModal] = useState(true);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const accounts = useUserAccounts();
 	const { prefs } = useUserSettings();
 	const moveToTrash = useCallback(() => {
@@ -248,7 +249,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 }) => {
 	const { folderId } = useParams<{ folderId: string }>();
 
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const compProps = useMemo(
 		() => ({ message, onClick, open, isAlone, isExternalMessage, isStandaloneComponent }),
 		[message, onClick, open, isAlone, isExternalMessage, isStandaloneComponent]
