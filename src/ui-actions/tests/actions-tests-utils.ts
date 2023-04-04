@@ -3,43 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ActionReturnType } from '../../types';
-
-/**
- * Find and returns the valid action with the given id. If no action is found <code>null</code> is returned.
- *
- * @param id
- * @param actions
- */
-const findActionById = (
-	id: string,
-	actions: Array<ActionReturnType>
-): Exclude<ActionReturnType, false> | null => {
-	if (!id || !actions || !actions.length) {
-		return null;
-	}
-
-	const result = actions.reduce((previousValue, action) => {
-		if (!action) {
-			return previousValue;
-		}
-
-		if (action.id === id) {
-			return action;
-		}
-
-		return previousValue;
-	}, false);
-
-	return result || null;
-};
+import { MsgConvActionsReturnType } from '../get-msg-conv-actions';
 
 /**
  *
  * @param id
  * @param actions
+ * @param type - 'primary' | 'secondary'. If not specified, the primary actions are checked.
  */
-const existsActionById = (id: string, actions: Array<ActionReturnType>): boolean =>
-	findActionById(id, actions) !== null;
-
-export { findActionById, existsActionById };
+export const existsActionById = ({
+	id,
+	actions,
+	type
+}: {
+	id: string;
+	actions: MsgConvActionsReturnType;
+	type?: 'primary' | 'secondary';
+}): boolean =>
+	type === 'secondary'
+		? actions[1]?.find((action) => action.id === id) !== undefined
+		: actions[0]?.find((action) => action.id === id) !== undefined;

@@ -12,7 +12,7 @@ export type TagActionItemType = {
 	id: string;
 	items: ItemType[];
 	customComponent: ReactElement;
-	onClick: (ev: MouseEvent) => void;
+	onClick?: (ev: MouseEvent) => void;
 };
 
 export type ReturnType = {

@@ -233,6 +233,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					deselectAll
 			  })
 			: setMsgAsSpam({ ids, value: false, dispatch, folderId: folderParentId });
+
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
 

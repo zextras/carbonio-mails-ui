@@ -15,7 +15,7 @@ import React, { FC, useCallback, useMemo } from 'react';
 import styled, { DefaultTheme } from 'styled-components';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { ListItemActionWrapperProps, MailMessage } from '../../../../types';
-import { getHoverActions } from '../../../../ui-actions/hover-actions';
+import { getMsgConvActions } from '../../../../ui-actions/get-msg-conv-actions';
 
 const HoverBarContainer = styled(Container)<{ background: keyof DefaultTheme['palette'] }>`
 	top: 0;
@@ -77,7 +77,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 
 	const msgConvActionsCallback = useMemo(
 		() =>
-			getHoverActions({
+			getMsgConvActions({
 				item,
 				dispatch,
 				account,
