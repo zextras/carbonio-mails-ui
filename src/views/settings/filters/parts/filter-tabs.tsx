@@ -12,7 +12,6 @@ import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filte
 import { FilterContext } from './filter-context';
 import IncomingMessageFilterTab from './incoming-message-filter-tab';
 import OutgoingMessageFilterTab from './outgoing-message-filter-tab';
-import { useAppDispatch } from '../../../../hooks/redux';
 
 type Item = {
 	active: boolean;

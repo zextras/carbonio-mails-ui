@@ -35,7 +35,6 @@ import {
 import { sendShareNotification } from '../../store/actions/send-share-notification';
 import { shareFolder } from '../../store/actions/share-folder';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
-import { useAppDispatch } from '../../hooks/redux';
 
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	onClose,
