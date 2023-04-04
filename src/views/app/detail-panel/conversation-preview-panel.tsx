@@ -3,22 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useEffect, FC, ReactElement, useCallback } from 'react';
 import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
 import { FOLDERS, useCurrentRoute, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { filter, find, map, sortBy } from 'lodash';
+import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { map, sortBy, find, filter } from 'lodash';
-import PreviewPanelHeader from './preview/preview-panel-header';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { getConv, searchConv } from '../../../store/actions';
 import {
 	selectConversationExpandedStatus,
 	selectConversationsArray,
 	selectCurrentFolderExpandedStatus
 } from '../../../store/conversations-slice';
-import { getConv, searchConv } from '../../../store/actions';
-import MailPreview from './preview/mail-preview';
 import { selectMessages } from '../../../store/messages-slice';
 import { Conversation, StateType } from '../../../types';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import MailPreview from './preview/mail-preview';
+import PreviewPanelHeader from './preview/preview-panel-header';
 
 const MessagesComponent = ({
 	conversation

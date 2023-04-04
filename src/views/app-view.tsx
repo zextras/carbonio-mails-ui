@@ -3,14 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { Suspense, lazy, useState, useEffect, useMemo, FC } from 'react';
-import { Redirect, Switch, Route, useRouteMatch } from 'react-router-dom';
-import { FOLDERS, setAppContext, Spinner, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Container } from '@zextras/carbonio-design-system';
+import { FOLDERS, Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import moment from 'moment';
-import { selectCurrentFolder } from '../store/conversations-slice';
+import React, { FC, Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import { useAppSelector } from '../hooks/redux';
+import { selectCurrentFolder } from '../store/conversations-slice';
 
 const LazyFolderView = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/folder-panel')

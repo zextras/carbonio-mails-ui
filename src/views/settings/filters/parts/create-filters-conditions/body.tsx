@@ -3,20 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { Container, Input } from '@zextras/carbonio-design-system';
+import type { TFunction } from 'i18next';
 import React, {
 	FC,
 	ReactElement,
-	useMemo,
-	useContext,
-	useState,
 	useCallback,
-	useEffect
+	useContext,
+	useEffect,
+	useMemo,
+	useState
 } from 'react';
-import { Input, Container } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import { CreateFilterContext } from '../create-filter-context';
 import CustomSelect from '../custom-select';
 import { getBodyOptions } from '../utils';
-import { CreateFilterContext } from '../create-filter-context';
 
 type ComponentProps = {
 	t: TFunction;
@@ -82,7 +82,7 @@ const BodyCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 			<Container minWidth="30%" padding={{ right: 'small' }}>
 				<Input
 					onChange={handleValueChange}
-					placeholder={t('settings.keyword', 'Keyword')}
+					placeholder={t('settings.keyword', 'Keyword') as string}
 					backgroundColor="gray5"
 					value={value}
 				/>

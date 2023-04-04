@@ -4,17 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Container, CustomModal, Input, Text, Icon } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import { Container, CustomModal, Icon, Input, Text } from '@zextras/carbonio-design-system';
+import type { TFunction } from 'i18next';
 import { filter, isEmpty, reduce, startsWith } from 'lodash';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import FolderItem from '../../../sidebar/commons/folder-item';
-import { selectFolders } from '../../../../store/folders-slice';
-import { getFolderIconColor, getFolderIconName } from '../../../sidebar/utils';
-import { FolderType } from '../../../../types/folder';
 import { useAppSelector } from '../../../../hooks/redux';
+import { selectFolders } from '../../../../store/folders-slice';
+import { FolderType } from '../../../../types/folder';
+import FolderItem from '../../../sidebar/commons/folder-item';
+import { getFolderIconColor, getFolderIconName } from '../../../sidebar/utils';
 
 type ComponentProps = {
 	compProps: {

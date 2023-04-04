@@ -40,6 +40,7 @@ import {
 	getAttachmentsLink,
 	getLocationOrigin
 } from './utils';
+import { useAppDispatch } from '../../../../hooks/redux';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments

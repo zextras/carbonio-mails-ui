@@ -4,6 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import {
+	Badge,
+	Container,
+	Icon,
+	IconButton,
+	Padding,
+	Row,
+	Tooltip
+} from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
+import { filter } from 'lodash';
 import React, {
 	FC,
 	ReactElement,
@@ -13,21 +24,10 @@ import React, {
 	useRef,
 	useState
 } from 'react';
-import { filter } from 'lodash';
-import {
-	Container,
-	Row,
-	IconButton,
-	Icon,
-	Padding,
-	Tooltip,
-	Badge
-} from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
-import { selectFolders } from '../../../../../store/folders-slice';
-import ContactNames from './contact-names';
-import { MailMessage, TextReadValuesProps } from '../../../../../types';
 import { useAppSelector } from '../../../../../hooks/redux';
+import { selectFolders } from '../../../../../store/folders-slice';
+import { MailMessage, TextReadValuesProps } from '../../../../../types';
+import ContactNames from './contact-names';
 
 const MessageContactList: FC<{
 	message: MailMessage;

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { TFunction } from 'react-i18next';
+import { TFunction } from 'i18next';
 
 export const MAILS_ROUTE = 'mails';
 

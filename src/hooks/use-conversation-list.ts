@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { getFolder } from '@zextras/carbonio-shell-ui';
 import { orderBy, reduce, some } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { getFolder } from '@zextras/carbonio-shell-ui';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import { Conversation, StateType } from '../types';

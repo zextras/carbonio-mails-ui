@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
-import React, { FC, useMemo } from 'react';
-import { map } from 'lodash';
-import styled from 'styled-components';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
+import React, { FC, useMemo } from 'react';
+import styled from 'styled-components';
+import { useAppDispatch } from '../hooks/redux';
 import {
 	deleteMsg,
 	editDraft,
@@ -18,7 +19,6 @@ import {
 	setMsgFlag,
 	setMsgRead
 } from './message-actions';
-import { useAppDispatch } from '../hooks/redux';
 
 const ButtonBar = styled(Row)`
 	position: absolute;

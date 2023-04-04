@@ -4,13 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { ModalManagerContext } from '@zextras/carbonio-design-system';
-import {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	Folder,
-	FOLDERS,
-	t
-} from '@zextras/carbonio-shell-ui';
+import { Folder, FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { startsWith } from 'lodash';
 import React, { SyntheticEvent, useContext, useMemo } from 'react';
 import { FolderActionsType } from '../../commons/utils';

@@ -356,6 +356,8 @@ const SettingsView: FC = () => {
 						signatures={signatures}
 						flag={flag}
 					/>
+					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+					{/* @ts-ignore */}
 					<ComposeMessage settingsObj={settingsObj} updateSettings={updateSettings} />
 					<FilterModule />
 					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
