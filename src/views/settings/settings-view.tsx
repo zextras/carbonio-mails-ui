@@ -366,3 +366,5 @@ const SettingsView: FC = () => {
 		</>
 	);
 };
+
+export default SettingsView;
