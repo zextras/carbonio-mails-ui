@@ -25,6 +25,7 @@ type ConversationListItemComponentProps = {
 	isSearchModule?: boolean;
 	selectedIds?: string[];
 	deselectAll: () => void;
+	folderId: string;
 };
 
 export const ConversationListItemComponent: FC<ConversationListItemComponentProps> = ({
@@ -40,7 +41,8 @@ export const ConversationListItemComponent: FC<ConversationListItemComponentProp
 	dragImageRef,
 	isSearchModule,
 	selectedIds = [],
-	deselectAll
+	deselectAll,
+	folderId
 }) => (
 	<DragItemWrapper
 		item={item}
@@ -64,6 +66,7 @@ export const ConversationListItemComponent: FC<ConversationListItemComponentProp
 			isSearchModule
 			isConvChildren
 			deselectAll={deselectAll}
+			folderId={folderId}
 		/>
 	</DragItemWrapper>
 );

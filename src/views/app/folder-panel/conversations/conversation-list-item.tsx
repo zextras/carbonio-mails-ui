@@ -61,13 +61,14 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		isSearchModule,
 		activeItemId,
 		dragImageRef,
-		deselectAll
+		deselectAll,
+		folderId
 	}) {
 		const dispatch = useAppDispatch();
 		const [open, setOpen] = useState(false);
 		const accounts = useUserAccounts();
 		const messages = useAppSelector(selectMessages);
-		const folderId = useMemo(() => item?.messages?.[0]?.parent, [item?.messages]);
+		const folderParent = folderId ?? item?.messages?.[0]?.parent;
 
 		const conversationStatus = useAppSelector((state: StateType) =>
 			selectConversationExpandedStatus(state, item.id)
@@ -128,12 +129,12 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 						conversationStatus !== 'complete' &&
 						conversationStatus !== 'pending'
 					) {
-						dispatch(searchConv({ folderId, conversationId: item.id, fetch: 'all' }));
+						dispatch(searchConv({ folderId: folderParent, conversationId: item.id, fetch: 'all' }));
 					}
 					return !currentlyOpen;
 				});
 			},
-			[conversationStatus, dispatch, folderId, item.id]
+			[conversationStatus, dispatch, folderParent, item.id]
 		);
 
 		const _onClick = useCallback(
@@ -144,17 +145,17 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							ids: [item.id],
 							value: false,
 							dispatch,
-							folderId,
+							folderId: folderParent,
 							deselectAll,
 							shouldReplaceHistory: false
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
 						}).onClick();
 					}
-					pushHistory(`/folder/${folderId}/conversation/${item.id}`);
+					pushHistory(`/folder/${folderParent}/conversation/${item.id}`);
 				}
 			},
-			[item?.read, item.id, zimbraPrefMarkMsgRead, folderId, dispatch, deselectAll]
+			[item?.read, item.id, zimbraPrefMarkMsgRead, folderParent, dispatch, deselectAll]
 		);
 
 		const _onDoubleClick = useCallback(
@@ -162,11 +163,11 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 				if (!e.isDefaultPrevented()) {
 					const { id, isDraft } = item.messages[0];
 
-					if (isDraft) pushHistory(`/folder/${folderId}/edit/${id}?action=editAsDraft`);
+					if (isDraft) pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
 				}
 			},
 
-			[folderId, item.messages]
+			[folderParent, item.messages]
 		);
 
 		const toggleExpandButtonLabel = useMemo(
@@ -193,14 +194,14 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							const msg = find(messages, ['id', v.id]);
 
 							if (msg) {
-								// in trash we show all messages of the conversation even if only one is deleted
-								if (folderId === FOLDERS.TRASH) {
+								// in trash, we show all messages of the conversation even if only one is deleted
+								if (folderParent === FOLDERS.TRASH) {
 									return [...acc, msg];
 								}
 								// deleted and spam messages are hidden in all folders except trash and spam
 								if (
-									(msg.parent === FOLDERS.TRASH && folderId !== FOLDERS.TRASH) ||
-									(msg.parent === FOLDERS.SPAM && folderId !== FOLDERS.SPAM)
+									(msg.parent === FOLDERS.TRASH && folderParent !== FOLDERS.TRASH) ||
+									(msg.parent === FOLDERS.SPAM && folderParent !== FOLDERS.SPAM)
 								) {
 									return acc;
 								}
@@ -213,20 +214,15 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 					).sort((a, b) => (a.date && b.date ? sortSign * (a.date - b.date) : 1)),
 					'id'
 				),
-			[item?.messages, folderId, messages, sortSign]
+			[item?.messages, folderParent, messages, sortSign]
 		);
 
-		const msgToDisplayCount = useMemo(
-			() =>
-				// eslint-disable-next-line no-nested-ternary
-				folderId === FOLDERS.TRASH
-					? item?.messages?.length
-					: [FOLDERS.TRASH, FOLDERS.SPAM].includes(folderId)
-					? item?.messages?.length
-					: filter(item?.messages, (msg) => ![FOLDERS.TRASH, FOLDERS.SPAM].includes(msg.parent))
-							?.length,
-			[folderId, item?.messages]
-		);
+		function getmsgToDisplayCount(): number {
+			if (folderParent === FOLDERS.TRASH) return item?.messages?.length;
+			if ([FOLDERS.TRASH, FOLDERS.SPAM].includes(folderParent)) return item?.messages?.length;
+			return filter(item?.messages, (msg) => ![FOLDERS.TRASH, FOLDERS.SPAM].includes(msg.parent))
+				?.length;
+		}
 
 		const textReadValues: TextReadValuesProps = useMemo(() => {
 			if (typeof item.read === 'undefined')
@@ -259,7 +255,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							selected={selected}
 							selecting={selecting}
 							toggle={toggle}
-							folderId={folderId}
+							folderId={folderParent}
 						/>
 						<Padding horizontal="extrasmall" />
 					</div>
@@ -277,7 +273,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							{renderBadge && (
 								<Row>
 									<Padding right="extrasmall">
-										<Badge value={msgToDisplayCount} type={textReadValues.badge} />
+										<Badge value={getmsgToDisplayCount()} type={textReadValues.badge} />
 									</Padding>
 								</Row>
 							)}
@@ -326,7 +322,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							length={item?.messages?.length}
 							messages={messagesToRender}
 							conversationStatus={conversationStatus}
-							folderId={folderId}
+							folderId={folderParent}
 							dragImageRef={dragImageRef}
 							isSearchModule={isSearchModule}
 						/>

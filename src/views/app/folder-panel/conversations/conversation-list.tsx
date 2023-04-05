@@ -125,6 +125,7 @@ const ConversationList: FC = () => {
 									active={isActive}
 									selectedIds={Object.keys(selected)}
 									deselectAll={deselectAll}
+									folderId={folderId}
 								/>
 							)}
 						</CustomListItem>
