@@ -4,37 +4,39 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
-import React, { useMemo, useState, useRef, useCallback, useEffect, FC } from 'react';
-import { filter, find } from 'lodash';
 import {
-	useUserAccounts,
-	useIntegratedComponent,
-	useUserSettings,
-	FOLDERS,
-	t
-} from '@zextras/carbonio-shell-ui';
-import { useParams } from 'react-router-dom';
-import {
-	Container,
-	Text,
+	Button,
 	Collapse,
+	Container,
+	Divider,
 	Icon,
 	Padding,
-	Button,
 	Row,
-	Divider
+	Text
 } from '@zextras/carbonio-design-system';
-import { useDispatch } from 'react-redux';
+import {
+	FOLDERS,
+	getIntegratedComponent,
+	t,
+	useUserAccounts,
+	useUserSettings
+} from '@zextras/carbonio-shell-ui';
+import { filter, find } from 'lodash';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
+import { useAppDispatch } from '../../../../hooks/redux';
+import SharedInviteReply from '../../../../integrations/shared-invite-reply';
+import { getMsg, msgAction } from '../../../../store/actions';
+import { ExtraWindowCreationParams, MailMessage, OpenEmlPreviewType } from '../../../../types';
+import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
 import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
 import AttachmentsBlock from './attachments-block';
-import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
-import { getMsg, msgAction } from '../../../../store/actions';
-import SharedInviteReply from '../../../../integrations/shared-invite-reply';
-import ReadReceiptModal from './read-receipt-modal';
 import PreviewHeader from './parts/preview-header';
-import { ExtraWindowCreationParams, MailMessage, OpenEmlPreviewType } from '../../../../types';
+import ReadReceiptModal from './read-receipt-modal';
+
+const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 
 const MailContent: FC<{
 	message: MailMessage;
@@ -49,9 +51,8 @@ const MailContent: FC<{
 	openEmlPreview,
 	isStandaloneComponent = false
 }) => {
-	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
 	const [showModal, setShowModal] = useState(true);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const accounts = useUserAccounts();
 	const { prefs } = useUserSettings();
 	const moveToTrash = useCallback(() => {
@@ -80,7 +81,7 @@ const MailContent: FC<{
 				message.invite?.[0]?.comp[0].method === 'COUNTER') &&
 			integrationAvailable &&
 			InviteResponse,
-		[integrationAvailable, InviteResponse, message]
+		[message]
 	);
 	const readReceiptRequester = useMemo(
 		() => find(message?.participants, { type: ParticipantRole.READ_RECEIPT_NOTIFICATION }),
@@ -209,7 +210,6 @@ const MailContent: FC<{
 		isStandaloneComponent,
 		isExternalMessage,
 		openEmlPreview,
-		InviteResponse,
 		moveToTrash,
 		isAttendee,
 		showShareInvite,
@@ -248,7 +248,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 }) => {
 	const { folderId } = useParams<{ folderId: string }>();
 
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const compProps = useMemo(
 		() => ({ message, onClick, open, isAlone, isExternalMessage, isStandaloneComponent }),
 		[message, onClick, open, isAlone, isExternalMessage, isStandaloneComponent]
