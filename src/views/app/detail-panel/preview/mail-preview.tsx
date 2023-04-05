@@ -16,8 +16,8 @@ import {
 } from '@zextras/carbonio-design-system';
 import {
 	FOLDERS,
+	getIntegratedComponent,
 	t,
-	useIntegratedComponent,
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
@@ -36,6 +36,8 @@ import AttachmentsBlock from './attachments-block';
 import PreviewHeader from './parts/preview-header';
 import ReadReceiptModal from './read-receipt-modal';
 
+const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
+
 const MailContent: FC<{
 	message: MailMessage;
 	isMailPreviewOpen: boolean;
@@ -49,7 +51,6 @@ const MailContent: FC<{
 	openEmlPreview,
 	isStandaloneComponent = false
 }) => {
-	const [InviteResponse, integrationAvailable] = useIntegratedComponent('invites-reply');
 	const [showModal, setShowModal] = useState(true);
 	const dispatch = useAppDispatch();
 	const accounts = useUserAccounts();
@@ -80,7 +81,7 @@ const MailContent: FC<{
 				message.invite?.[0]?.comp[0].method === 'COUNTER') &&
 			integrationAvailable &&
 			InviteResponse,
-		[integrationAvailable, InviteResponse, message]
+		[message]
 	);
 	const readReceiptRequester = useMemo(
 		() => find(message?.participants, { type: ParticipantRole.READ_RECEIPT_NOTIFICATION }),
@@ -209,7 +210,6 @@ const MailContent: FC<{
 		isStandaloneComponent,
 		isExternalMessage,
 		openEmlPreview,
-		InviteResponse,
 		moveToTrash,
 		isAttendee,
 		showShareInvite,

@@ -13,8 +13,8 @@ import { useParams } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks/redux';
 import { AppContext } from '../../types';
 import ShimmerList from '../search/shimmer-list';
-import ConversationList from './folder-panel/conversation-list';
-import MessageList from './folder-panel/message-list';
+import { MessageList } from './folder-panel/messages/message-list';
+import ConversationList from './folder-panel/conversations/conversation-list';
 
 const FolderPanel: FC = () => {
 	const { folderId } = useParams<{ folderId: string }>();
