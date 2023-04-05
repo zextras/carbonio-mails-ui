@@ -111,7 +111,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 			style={{ width: '100%', height: '4rem' }}
 		>
 			<HoverContainer
-				data-testid={isConversation ? `ConversationRow` : `MessageListItem-${item.id}`}
+				// data-testid={isConversation ? `ConversationRow` : `MessageListItem-${item.id}`} FIXME
 				orientation="horizontal"
 				mainAlignment="flex-start"
 				crossAlignment="unset"

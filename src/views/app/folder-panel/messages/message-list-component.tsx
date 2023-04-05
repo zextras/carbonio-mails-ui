@@ -57,7 +57,7 @@ const DragItems: FC<{
 	);
 };
 
-type MessageListComponentProps = {
+export type MessageListComponentProps = {
 	// the text to display in the side panel
 	displayerTitle: string | null;
 	// the list of messages to display

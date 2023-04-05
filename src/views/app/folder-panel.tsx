@@ -6,15 +6,15 @@
 /* eslint-disable no-nested-ternary */
 
 import { Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useAppContext, useFolder, useFolders } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks/redux';
 import { AppContext } from '../../types';
 import ShimmerList from '../search/shimmer-list';
-import ConversationList from './folder-panel/conversation-list';
-import MessageList from './folder-panel/message-list';
+import ConversationList from './folder-panel/conversations/conversation-list';
+import { MessageList } from './folder-panel/messages/message-list';
 
 const FolderPanel: FC = () => {
 	const { folderId } = useParams<{ folderId: string }>();
