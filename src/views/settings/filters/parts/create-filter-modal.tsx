@@ -8,6 +8,7 @@ import { Input, Container, Checkbox, Padding, Divider, Row } from '@zextras/carb
 import { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import ModalFooter from './create-filter-modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import DefaultCondition from './create-filters-conditions/default';
@@ -38,6 +39,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
 	const [tempActions, setTempActions] = useState([{ actionKeep: [{}], id: uuidv4() }]);
+	const { zimbraFeatureMailForwardingInFiltersEnabled } = useUserSettings().attrs;
 	const finalActions = useMemo(
 		() =>
 			reduce(
@@ -145,9 +147,10 @@ const CreateFilterModal: FC<ComponentProps> = ({
 			filterName,
 			isIncoming: true,
 			tempActions,
-			setTempActions
+			setTempActions,
+			zimbraFeatureMailForwardingInFiltersEnabled
 		}),
-		[t, activeFilter, filterName, tempActions, setTempActions]
+		[t, activeFilter, filterName, tempActions, zimbraFeatureMailForwardingInFiltersEnabled]
 	);
 	const filterTestConditionRowProps = useMemo(
 		() => ({ t, newFilters, setNewFilters, condition, setCondition, activeFilter, filterName }),
