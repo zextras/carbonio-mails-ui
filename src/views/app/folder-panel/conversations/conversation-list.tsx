@@ -132,7 +132,7 @@ const ConversationList: FC = () => {
 					</>
 				);
 			}),
-		[conversations, deselectAll, isSelectModeOn, itemId, selected, toggle]
+		[conversations, deselectAll, folderId, isSelectModeOn, itemId, selected, toggle]
 	);
 
 	const totalConversations = useMemo(() => folder?.n ?? 0, [folder]);

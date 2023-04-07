@@ -243,7 +243,7 @@ export function getMsgConvActions({
 		showOriginalAction
 	].reduce((acc: Array<Exclude<ActionReturnType, false>>, action) => {
 		if (action) {
-			acc.push(action as Exclude<ActionReturnType, false>);
+			acc.push(action);
 		}
 		return acc;
 	}, []);

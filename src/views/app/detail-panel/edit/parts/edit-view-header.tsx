@@ -273,7 +273,7 @@ const EditViewHeader: FC<PropType> = ({
 	});
 
 	const onClick = (): void => {
-		setOpenDD(!openDD);
+		setOpenDD(false);
 	};
 
 	const onFromDropdownClose = useCallback((): void => {

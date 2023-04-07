@@ -12,14 +12,14 @@ export type TagActionItemType = {
 	id: string;
 	items: ItemType[];
 	customComponent: ReactElement;
-	onClick?: (ev: MouseEvent) => void;
+	onClick?: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
 };
 
-export type ReturnType = {
+export type TagActionsReturnType = {
 	id: string;
 	icon: string;
 	label: string;
-	click?: (arg: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	click?: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
 	items?: Array<{
 		customComponent: ComponentType;
 		id: string;
@@ -32,7 +32,7 @@ export type TagsFromStoreType = Record<string, Tag>;
 
 export type ArgumentType = {
 	createModal?: (...args: any) => () => void;
-	items?: ReturnType;
+	items?: TagActionsReturnType;
 	tag?: ItemType;
 };
 

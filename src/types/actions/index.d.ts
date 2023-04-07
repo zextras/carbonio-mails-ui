@@ -18,7 +18,7 @@ export type MessageActionReturnType = {
 	id: string;
 	icon: string;
 	label: string;
-	onClick: (ev?: MouseEvent) => void;
+	onClick: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
 	items?: ItemType[];
 	customComponent?: React.ReactElement;
 };
@@ -28,8 +28,9 @@ export type ConvActionReturnType = {
 	icon: string;
 	label: string;
 	disabled?: boolean;
-	onClick: (ev: MouseEvent) => void;
+	onClick: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
 	customComponent?: JSX.Element;
+	items?: ItemType[];
 };
 
 export type ActionReturnType =

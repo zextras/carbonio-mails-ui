@@ -254,14 +254,14 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 		[message, onClick, open, isAlone, isExternalMessage, isStandaloneComponent]
 	);
 	const markAsNotSpam = useCallback(
-		() =>
+		(ev) =>
 			setMsgAsSpam({
 				ids: [message.id],
 				value: true,
 				dispatch,
 				shouldReplaceHistory: true,
 				folderId
-			}).onClick(),
+			}).onClick(ev),
 		[dispatch, folderId, message.id]
 	);
 

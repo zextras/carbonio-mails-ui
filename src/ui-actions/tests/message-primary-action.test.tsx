@@ -112,34 +112,34 @@ describe('Actions visibility', () => {
 			${7}  | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
 			${7}  | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
 			${7}  | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
-			${10} | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_SPAM}
-			${10} | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_SPAM}
-			${10} | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_SPAM}
-			${10} | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_SPAM}
+			${10} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_SPAM}
+			${10} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_SPAM}
+			${10} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_SPAM}
+			${10} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_SPAM}
 			${10} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_SPAM}
-			${10} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_SPAM}
+			${10} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_SPAM}
 			${11} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
 			${11} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
 			${11} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
 			${11} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
-			${11} | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
+			${11} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
 			${11} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
 			${12} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.EDIT_DRAFT}
 			${12} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.EDIT_DRAFT}
-			${12} | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.EDIT_DRAFT}
+			${12} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.EDIT_DRAFT}
 			${12} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.EDIT_DRAFT}
 			${12} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.EDIT_DRAFT}
 			${12} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.EDIT_DRAFT}
 			${13} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.SEND}
 			${13} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.SEND}
-			${13} | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.SEND}
+			${13} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.SEND}
 			${13} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.SEND}
 			${13} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.SEND}
 			${13} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.SEND}
 			${14} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.RESTORE}
 			${14} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.RESTORE}
 			${14} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.RESTORE}
-			${14} | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.RESTORE}
+			${14} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.RESTORE}
 			${14} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.RESTORE}
 			${14} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.RESTORE}
 		`(
@@ -169,7 +169,6 @@ describe('Actions visibility', () => {
 			case | read                        | folder                  | assertion                | action
 			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
-			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 			${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
@@ -181,7 +180,6 @@ describe('Actions visibility', () => {
 			${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
 			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
-			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
 			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
 			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
 			${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}

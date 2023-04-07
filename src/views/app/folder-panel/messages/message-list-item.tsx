@@ -55,7 +55,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (item.read === false && zimbraPrefMarkMsgRead) {
-					setMsgRead({ ids: [item.id], value: false, dispatch }).onClick();
+					setMsgRead({ ids: [item.id], value: false, dispatch }).onClick(e);
 				}
 				replaceHistory(`/folder/${firstChildFolderId}/message/${item.id}`);
 			}

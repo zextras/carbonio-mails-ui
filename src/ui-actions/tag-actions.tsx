@@ -32,12 +32,12 @@ import {
 	Conversation,
 	ItemType,
 	MailMessage,
-	ReturnType,
+	TagActionsReturnType,
 	TagsFromStoreType
 } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 
-export const createTag = ({ createModal }: ArgumentType): ReturnType => ({
+export const createTag = ({ createModal }: ArgumentType): TagActionsReturnType => ({
 	id: TagsActionsType.NEW,
 	icon: 'TagOutline',
 	label: t('label.create_tag', 'Create Tag'),
@@ -60,7 +60,7 @@ export const createTag = ({ createModal }: ArgumentType): ReturnType => ({
 	}
 });
 
-export const editTag = ({ createModal, tag }: ArgumentType): ReturnType => ({
+export const editTag = ({ createModal, tag }: ArgumentType): TagActionsReturnType => ({
 	id: TagsActionsType.EDIT,
 	icon: 'Edit2Outline',
 	label: t('label.edit_tag', 'Edit Tag'),
@@ -87,7 +87,7 @@ export const editTag = ({ createModal, tag }: ArgumentType): ReturnType => ({
 	}
 });
 
-export const deleteTag = ({ createModal, tag }: ArgumentType): ReturnType => ({
+export const deleteTag = ({ createModal, tag }: ArgumentType): TagActionsReturnType => ({
 	id: TagsActionsType.DELETE,
 	icon: 'Untag',
 	label: t('label.delete_tag', 'Delete Tag'),
@@ -412,7 +412,7 @@ export const applyTag = ({
 	};
 };
 
-export const useGetTagsActions = ({ tag }: ArgumentType): Array<ReturnType> => {
+export const useGetTagsActions = ({ tag }: ArgumentType): Array<TagActionsReturnType> => {
 	const createModal = useContext(ModalManagerContext) as () => () => void;
 	return useMemo(
 		() => [
