@@ -3,25 +3,25 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { Container, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
+import { FOLDERS, Folder, t } from '@zextras/carbonio-shell-ui';
 import { isNil, some } from 'lodash';
 import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
-import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { useDispatch } from 'react-redux';
-import { Folder, FOLDERS, t } from '@zextras/carbonio-shell-ui';
-import { folderAction } from '../../store/actions/folder-action';
-import { FolderSelector } from './commons/folder-selector';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import { useAppDispatch } from '../../hooks/redux';
+import { folderAction } from '../../store/actions/folder-action';
 import { ModalProps } from '../../types';
+import { FolderSelector } from './commons/folder-selector';
 
 export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
 
 	const onConfirm = useCallback(() => {
-		const restoreFolder = (): void =>
+		const restoreFolder = (): Promise<void> =>
 			dispatch(folderAction({ folder, l: folder.l, op: 'move' }))
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore

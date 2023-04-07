@@ -2,13 +2,6 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [1.2.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.4...v1.2.5) (2023-04-07)
-
-
-### Bug Fixes
-
-* hotfix mail preview flicker ([2531201](https://github.com/zextras/carbonio-mails-ui/commit/253120114e29a96c2642c7a7ebd2ac9f459a2feb))
-
 ### [1.2.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.3...v1.2.4) (2023-03-30)
 
 

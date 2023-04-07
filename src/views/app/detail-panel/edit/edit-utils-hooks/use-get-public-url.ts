@@ -10,6 +10,7 @@ import { filter, map } from 'lodash';
 import { useCallback, useContext, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectEditors } from '../../../../../store/editor-slice';
+import { useAppSelector } from '../../../../../hooks/redux';
 
 type InputProps = {
 	editorId: string;
@@ -27,7 +28,7 @@ export const useGetPublicUrl = ({
 }: InputProps): [(nodes: any) => void, boolean] => {
 	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
 	const createSnackbar = useContext(SnackbarManagerContext);
-	const editors = useSelector(selectEditors);
+	const editors = useAppSelector(selectEditors);
 	const editor = useMemo(() => editors[editorId], [editors, editorId]);
 
 	const getPublicUrl = useCallback(

@@ -3,8 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
-import { isEmpty, split, head, includes, reduce, uniqBy, find, filter, noop } from 'lodash';
 import {
 	Badge,
 	Container,
@@ -16,33 +14,35 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { useHistory, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import {
 	FOLDERS,
-	t,
 	Tag,
+	ZIMBRA_STANDARD_COLORS,
+	t,
 	useTags,
-	useUserSettings,
-	ZIMBRA_STANDARD_COLORS
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
+import { filter, find, head, includes, isEmpty, noop, reduce, split, uniqBy } from 'lodash';
+import React, { FC, useCallback, useMemo, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { ListItemActionWrapper } from '../app/folder-panel/lists-item/list-item-actions-wrapper';
-import { ItemAvatar } from '../app/folder-panel/lists-item/item-avatar';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { searchConv } from '../../store/actions';
+import { selectConversationExpandedStatus } from '../../store/conversations-slice';
+import { selectMessages } from '../../store/messages-slice';
+import {
+	ConvMessage,
+	IncompleteMessage,
+	SearchConversationListItemProps,
+	StateType
+} from '../../types';
 import {
 	ConversationMessagesList,
 	RowInfo
 } from '../app/folder-panel/lists-item/conversation-list-item';
+import { ItemAvatar } from '../app/folder-panel/lists-item/item-avatar';
+import { ListItemActionWrapper } from '../app/folder-panel/lists-item/list-item-actions-wrapper';
 import { SenderName } from '../app/folder-panel/lists-item/sender-name';
-import { selectMessages } from '../../store/messages-slice';
-import { selectConversationExpandedStatus } from '../../store/conversations-slice';
-import { searchConv } from '../../store/actions';
-import {
-	StateType,
-	SearchConversationListItemProps,
-	ConvMessage,
-	IncompleteMessage
-} from '../../types';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -56,10 +56,10 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 	active
 }) => {
 	const history = useHistory();
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const { pathname } = useLocation();
 	const parent = useMemo(() => item?.messages[0]?.parent, [item]);
-	const messages = useSelector(selectMessages);
+	const messages = useAppSelector(selectMessages);
 	const [open, setOpen] = useState(false);
 	const settings = useUserSettings();
 	const searchInTrash = useMemo(
@@ -100,7 +100,7 @@ const SearchConversationListItem: FC<SearchConversationListItemProps> = ({
 		[item.tags, tagsFromStore]
 	);
 
-	const conversationStatus = useSelector((state: StateType) =>
+	const conversationStatus = useAppSelector((state: StateType) =>
 		selectConversationExpandedStatus(state, item.id)
 	);
 

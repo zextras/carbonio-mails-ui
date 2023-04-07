@@ -17,6 +17,7 @@ import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
 import { translatedSystemFolders } from '../../utils';
 import { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
+import { useAppDispatch } from '../../../../hooks/redux';
 
 const retentionPeriod = [
 	{
@@ -39,7 +40,7 @@ const retentionPeriod = [
 const numberRegex = /^\d+$/;
 
 const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveModal }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const [inputValue, setInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);

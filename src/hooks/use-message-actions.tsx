@@ -6,7 +6,6 @@
 import { FOLDERS, useAppContext, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import { useMemo } from 'react';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { AppContext, MailMessage } from '../types';
 import {
@@ -28,11 +27,12 @@ import {
 	showOriginalMsg
 } from '../ui-actions/message-actions';
 import { applyTag } from '../ui-actions/tag-actions';
+import { useAppDispatch } from './redux';
 import { useSelection } from './useSelection';
 
 export const useMessageActions = (message: MailMessage, isAlone = false): Array<any> => {
 	const { folderId }: { folderId: string } = useParams();
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection(folderId, setCount);
 

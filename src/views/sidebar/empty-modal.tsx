@@ -3,17 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useContext, useMemo } from 'react';
-import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
+import { Container, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
+import React, { FC, useCallback, useContext, useMemo } from 'react';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import { folderAction } from '../../store/actions/folder-action';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import { useAppDispatch } from '../../hooks/redux';
+import { folderAction } from '../../store/actions/folder-action';
 import { ModalProps } from '../../types';
 
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 

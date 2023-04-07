@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useMemo, useContext } from 'react';
 import { List, Container } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { filter, map } from 'lodash';
 import FilterItem from './filter-item';
 import { useFilterSelection } from './use-filter-selection';

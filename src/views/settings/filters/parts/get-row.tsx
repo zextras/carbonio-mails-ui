@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import MessageCondition from './create-filters-conditions/message';
 import FromToCondition from './create-filters-conditions/from-to';
 import SizeCondition from './create-filters-conditions/size';

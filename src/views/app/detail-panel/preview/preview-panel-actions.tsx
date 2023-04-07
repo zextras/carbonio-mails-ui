@@ -17,6 +17,7 @@ import {
 	setConversationsRead
 } from '../../../../ui-actions/conversation-actions';
 import { replyAllMsg, replyMsg, setMsgRead } from '../../../../ui-actions/message-actions';
+import { useAppDispatch } from '../../../../hooks/redux';
 
 const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 	item,
@@ -24,7 +25,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 	isMessageView,
 	conversation
 }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const account = useUserAccount();
 
 	const { setCount } = useAppContext<AppContext>();

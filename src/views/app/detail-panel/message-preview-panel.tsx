@@ -3,21 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect } from 'react';
 import { Container, Padding } from '@zextras/carbonio-design-system';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import PreviewPanelHeader from './preview/preview-panel-header';
-import MailPreview from './preview/mail-preview';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getMsg } from '../../../store/actions';
 import { selectMessage } from '../../../store/messages-slice';
 import { StateType } from '../../../types';
+import MailPreview from './preview/mail-preview';
+import PreviewPanelHeader from './preview/preview-panel-header';
 
 const MessagePreviewPanel: FC = () => {
 	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
-	const message = useSelector((state: StateType) => selectMessage(state, messageId));
+	const message = useAppSelector((state: StateType) => selectMessage(state, messageId));
 
 	useEffect(() => {
 		if (!message?.isComplete) {
