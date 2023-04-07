@@ -15,7 +15,8 @@ import {
 	Row,
 	Text,
 	Tooltip,
-	useModal
+	useModal,
+	useSnackbar
 } from '@zextras/carbonio-design-system';
 import {
 	FOLDERS,
@@ -198,6 +199,7 @@ const EditViewHeader: FC<PropType> = ({
 	const { folderId } = useParams<{ folderId: string }>();
 	const { prefs, props, attrs } = useUserSettings();
 	const { control } = useForm();
+	const createSnackbar = useSnackbar();
 	const { setSendLater } = useContext<EditViewContextType>(EditViewContext);
 	const [open, setOpen] = useState(false);
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -306,7 +308,7 @@ const EditViewHeader: FC<PropType> = ({
 			let notCanceled = true;
 			const oldEditor = { ...editor };
 			const infoSnackbar = (remainingTime: number, hideButton = false): void => {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: 'send',
 					replace: true,
 					type: 'info',
@@ -357,7 +359,7 @@ const EditViewHeader: FC<PropType> = ({
 					}
 					dispatch(sendMsg({ editorId, prefs })).then((res) => {
 						if (res.type.includes('fulfilled')) {
-							getBridgedFunctions()?.createSnackbar({
+							createSnackbar({
 								key: `mail-${editorId}`,
 								replace: true,
 								type: 'success',
@@ -366,7 +368,7 @@ const EditViewHeader: FC<PropType> = ({
 								hideButton: true
 							});
 						} else {
-							getBridgedFunctions()?.createSnackbar({
+							createSnackbar({
 								key: `mail-${editorId}`,
 								replace: true,
 								type: 'error',
@@ -386,8 +388,9 @@ const EditViewHeader: FC<PropType> = ({
 		action,
 		boardContext,
 		editor,
-		props,
 		onBoardClose,
+		props,
+		createSnackbar,
 		undoURL,
 		updateEditorCb,
 		editorId,
@@ -465,7 +468,7 @@ const EditViewHeader: FC<PropType> = ({
 
 	const onSave = useCallback(() => {
 		saveDraftCb(editor);
-		getBridgedFunctions()?.createSnackbar({
+		createSnackbar({
 			key: 'send',
 			replace: true,
 			type: 'info',
@@ -479,7 +482,7 @@ const EditViewHeader: FC<PropType> = ({
 				boardUtilities?.closeBoard();
 			}
 		});
-	}, [boardUtilities, editor, saveDraftCb]);
+	}, [boardUtilities, createSnackbar, editor, saveDraftCb]);
 
 	const onDropdownClose = useCallback((): void => {
 		setShowDropdown(false);

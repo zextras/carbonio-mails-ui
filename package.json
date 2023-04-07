@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.2.4",
+	"version": "1.2.5",
 	"description": "Mails module",
 	"main": "src/app.jsx",
 	"scripts": {
@@ -77,7 +77,7 @@
 		"@mui/material": "^5.11.8",
 		"@reduxjs/toolkit": "^1.9.3",
 		"@zextras/carbonio-design-system": "^1.2.0",
-		"@zextras/carbonio-shell-ui": "^2.1.0",
+		"@zextras/carbonio-shell-ui": "^2.1.0-devel.1680612794388",
 		"@zextras/carbonio-ui-preview": "^1.1.0",
 		"babel-jest": "^29.4.3",
 		"core-js": "^3.27.2",
