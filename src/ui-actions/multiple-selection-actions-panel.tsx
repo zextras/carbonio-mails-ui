@@ -12,7 +12,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
-import { every, filter, includes, map } from 'lodash';
+import { every, filter, find, findIndex, includes, map } from 'lodash';
 import React, { FC, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 
 import { useAppDispatch } from '../hooks/redux';
@@ -53,8 +53,19 @@ type MultipleSelectionActionsPanelProps = {
 	setIsSelectModeOn: (value: boolean) => void;
 	folderId: string;
 };
-
 type MsgOrConv = Partial<MailMessage> | Conversation;
+
+type GetFolderParentIdProps = {
+	folderId: string;
+	isConversation: boolean;
+	items: Array<Partial<MailMessage>> | Array<Conversation>;
+};
+
+const getFolderParentId = ({ folderId, isConversation, items }: GetFolderParentIdProps): string => {
+	if (folderId) return folderId;
+	if (isConversation) return (items as Conversation[])?.[0]?.messages?.[0]?.parent;
+	return (items as MailMessage[])?.[0]?.parent;
+};
 
 export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProps> = ({
 	items,
@@ -67,10 +78,9 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	folderId
 }) => {
 	const isConversation = 'messages' in (items?.[0] || {});
-	const folderParentId =
-		folderId ?? isConversation
-			? (items as Conversation[])?.[0]?.messages?.[0]?.parent
-			: (items as MailMessage[])?.[0]?.parent;
+
+	const folderParentId = getFolderParentId({ folderId, isConversation, items });
+
 	const [currentFolderId] = useState(folderParentId);
 
 	// This useEffect is used to reset the select mode when the user navigates to a different folder
@@ -125,7 +135,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					shouldReplaceHistory: false
 			  })
 			: setMsgRead({ ids, value: false, dispatch, folderId: folderParentId });
-		return every(selectedItems, ['read', false]) && action;
+		return findIndex(selectedItems, ['read', false]) !== -1 && action;
 	};
 
 	const setMsgUnreadAction = (): ActionReturnType => {
