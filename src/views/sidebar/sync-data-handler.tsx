@@ -19,6 +19,9 @@ import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-mes
 import {
 	handleCreatedMessagesInConversation,
 	handleDeletedMessagesInConversation,
+	handleModifiedMessagesInConversation,
+	handleNotifyModifiedConversations,
+	handleNotifyCreatedConversations,
 	handleNotifyDeletedConversations,
 	selectCurrentFolder,
 	setSearchedInFolder

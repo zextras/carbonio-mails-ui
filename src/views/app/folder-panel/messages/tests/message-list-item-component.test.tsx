@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { act, fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import { noop } from 'lodash';
 import React from 'react';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
@@ -229,7 +229,7 @@ describe('Message list item component', () => {
 
 				setupTest(<MessageListItem {...props} />, { store });
 
-				const senderLabel = screen.queryByTestId('sender-name-label');
+				const senderLabel = screen.queryByTestId('participants-name-label');
 				if (assertion.value) {
 					expect(senderLabel).toBeVisible();
 				} else {
@@ -241,7 +241,6 @@ describe('Message list item component', () => {
 		test.each`
 			case | folder                              | senderAddress      | labelContent
 			${6} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${'luigi@foo.bar'} | ${'luigi'}
-			${6} | ${FOLDERS_DESCRIPTORS.SENT}         | ${'luigi@foo.bar'} | ${'luigi'}
 			${6} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${'luigi@foo.bar'} | ${'luigi'}
 			${6} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${'luigi@foo.bar'} | ${'luigi'}
 			${6} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${'luigi@foo.bar'} | ${'luigi'}
@@ -274,7 +273,7 @@ describe('Message list item component', () => {
 
 				setupTest(<MessageListItem {...props} />, { store });
 
-				const senderLabel = screen.queryByTestId('sender-name-label');
+				const senderLabel = screen.queryByTestId('participants-name-label');
 				expect(senderLabel).toHaveTextContent(labelContent);
 			}
 		);
@@ -353,42 +352,131 @@ describe('Message list item component', () => {
 				}
 			});
 
-			const { user } = setupTest(<MessageListItem {...props} />, { store });
+			setupTest(<MessageListItem {...props} />, { store });
+			const aRandomChild = await screen.findByTestId(`hover-container-${msgId}`);
 
-			// const actionsBar = await screen.findByTestId(`primary-actions-bar-${msgId}`);
-			const container = await screen.findByTestId(`hover-container-${msgId}`);
-			// eslint-disable-next-line testing-library/prefer-user-event
-			fireEvent.mouseOut(container);
-			// act(() => {
-			// 	user.unhover(container);
-			// });
-			expect(container).toBeInTheDocument();
-			expect(container).not.toBeVisible();
-			// act(() => {
-			// 	user.pointer({ target: container });
-			// });
-			// fireEvent.mouseOver(container);
-			act(() => {
-				user.hover(container);
-			});
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
-			expect(container).toBeVisible();
+			// Initally the context menu is not created
+			expect(screen.queryByTestId('dropdown-popper-list')).not.toBeInTheDocument();
+
+			// Trigger a right-click
+			fireEvent.contextMenu(aRandomChild);
+
+			const menu = await screen.findByTestId('dropdown-popper-list');
+			expect(menu).toBeVisible();
 		});
 	});
 
+	/**
+	 *
+	 * @param folderId
+	 */
+	const testRecipients = (folderId: string): void => {
+		const to = [
+			{ type: ParticipantRole.TO, address: 'mario@foo.bar' },
+			{ type: ParticipantRole.TO, address: 'luigi@foo.bar' }
+		];
+		const msg = generateMessage({ to, folderId });
+
+		const props: MessageListItemProps = {
+			item: msg,
+			selected: false,
+			selecting: false,
+			isConvChildren: false,
+			visible: true,
+			active: true,
+			toggle: noop,
+			deselectAll: noop,
+			currentFolderId: folderId
+		};
+
+		const store = generateStore({
+			messages: {
+				searchedInFolder: {},
+				messages: [msg],
+				status: {}
+			}
+		});
+
+		setupTest(<MessageListItem {...props} />, { store });
+		const participantsLabel = screen.getByTestId('participants-name-label');
+		expect(participantsLabel).toHaveTextContent('mario');
+		expect(participantsLabel).toHaveTextContent('luigi');
+	};
+
+	/**
+	 *
+	 * @param folderId
+	 */
+	const testFragment = (folderId: string): void => {
+		const body = 'Message body content';
+		const msg = generateMessage({ body, folderId });
+
+		const props: MessageListItemProps = {
+			item: msg,
+			selected: false,
+			selecting: false,
+			isConvChildren: false,
+			visible: true,
+			active: true,
+			toggle: noop,
+			deselectAll: noop,
+			currentFolderId: folderId
+		};
+
+		const store = generateStore({
+			messages: {
+				searchedInFolder: {},
+				messages: [msg],
+				status: {}
+			}
+		});
+
+		setupTest(<MessageListItem {...props} />, { store });
+		const fragment = screen.getByTestId('Fragment');
+		expect(fragment).toHaveTextContent(body);
+	};
+
 	describe('in the drafts folder', () => {
-		test.todo('the string [DRAFT] is visible');
+		test('(case #1) the string [DRAFT] is visible', async () => {
+			const folderId = FOLDERS.DRAFTS;
+			const msg = generateMessage({ folderId });
 
-		test.todo('the sender name is visible');
+			const props: MessageListItemProps = {
+				item: msg,
+				selected: false,
+				selecting: false,
+				isConvChildren: false,
+				visible: true,
+				active: true,
+				toggle: noop,
+				deselectAll: noop,
+				currentFolderId: folderId
+			};
 
-		test.todo('if the body content is set, the fragment is visible');
+			const store = generateStore({
+				messages: {
+					searchedInFolder: {},
+					messages: [msg],
+					status: {}
+				}
+			});
+
+			setupTest(<MessageListItem {...props} />, { store });
+			expect(screen.getByText('label.draft_folder')).toBeVisible();
+		});
+
+		test("(case #2) the recipients' names, if set, must be visible", () =>
+			testRecipients(FOLDERS.DRAFTS));
+
+		test('(case #3) if the body content is set, the fragment is visible', async () =>
+			testFragment(FOLDERS.DRAFTS));
 	});
 
 	describe('in the trash folder', () => {
-		test.todo('the sender name is visible');
+		test("(case #1) the recipients' names, if set, must be visible", () =>
+			testRecipients(FOLDERS.TRASH));
 
-		test.todo('if the body content is set, the fragment is visible');
+		test('(case #2) if the body content is set, the fragment is visible', async () =>
+			testFragment(FOLDERS.TRASH));
 	});
 });

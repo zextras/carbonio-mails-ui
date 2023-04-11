@@ -125,13 +125,14 @@ const ConversationList: FC = () => {
 									active={isActive}
 									selectedIds={Object.keys(selected)}
 									deselectAll={deselectAll}
+									folderId={folderId}
 								/>
 							)}
 						</CustomListItem>
 					</>
 				);
 			}),
-		[conversations, deselectAll, isSelectModeOn, itemId, selected, toggle]
+		[conversations, deselectAll, folderId, isSelectModeOn, itemId, selected, toggle]
 	);
 
 	const totalConversations = useMemo(() => folder?.n ?? 0, [folder]);

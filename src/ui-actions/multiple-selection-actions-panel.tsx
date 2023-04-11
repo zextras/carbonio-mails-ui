@@ -13,7 +13,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
 import { every, filter, includes, map } from 'lodash';
-import React, { FC, ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { FC, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 
 import { useAppDispatch } from '../hooks/redux';
 import {
@@ -84,7 +84,6 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	const ids = Object.values(selectedIds ?? []);
 	const selectedConversation = filter(items, (item: MsgOrConv) => ids.includes(item.id ?? '0'));
 	const tags = useTags();
-
 	const foldersExcludedMarkReadUnread = [FOLDERS.DRAFTS, FOLDERS.SPAM, FOLDERS.TRASH];
 	const foldersExcludedTrash = [FOLDERS.TRASH];
 	const foldersIncludedDeletePermanently = [FOLDERS.TRASH];
@@ -269,12 +268,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		return [];
 	};
 
-	const secondaryActions = (): (
-		| false
-		| MessageActionReturnType
-		| ConvActionReturnType
-		| TagActionItemType
-	)[] => {
+	const secondaryActions = (): ActionReturnType[] => {
 		if (messagesArrayIsNotEmpty)
 			return [
 				setMsgReadAction(),
@@ -289,57 +283,43 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		return [];
 	};
 
-	const primaryActionsArray = map(filter(primaryActions()), (action: MessageActionReturnType) => (
-		<div key={action.label}>
-			<Tooltip label={action.label} maxWidth="100%">
-				<IconButton
-					data-testid={`primary-action-button-${action.label}`}
-					icon={action.icon}
-					iconColor="primary"
-					onClick={(ev): void => {
-						if (ev) ev.preventDefault();
-						action.onClick && action.onClick();
-					}}
-					size="large"
-				/>
-			</Tooltip>
-		</div>
-	));
+	const primaryActionsArray = primaryActions()?.reduce((acc, action) => {
+		if (action)
+			acc.push(
+				<div key={action.id}>
+					<Tooltip label={'label' in action ? action.label : ''} maxWidth="100%">
+						<IconButton
+							data-testid={`primary-action-button-${'label' in action ? action.label : action.id}`}
+							icon={'icon' in action ? action.icon : ''}
+							iconColor="primary"
+							onClick={(ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>): void => {
+								if (ev) ev.preventDefault();
+								action.onClick && action.onClick(ev);
+							}}
+							size="large"
+						/>
+					</Tooltip>
+				</div>
+			);
+		return acc;
+	}, [] as Array<ReactElement>);
 
-	const secondaryActionsArray = map<MessageActionReturnType>(
-		filter(secondaryActions),
-		(action: {
-			label: string;
-			icon: string;
-			onClick?: () => void;
-			customComponent?: ReactElement;
-			items?: Array<any>;
-		}) => ({
-			id: action.label,
-			icon: action.icon,
-			label: action.label,
-			onClick: (ev: Event): void => {
-				if (ev) ev.preventDefault();
-				if (ids.length === 0) {
-					getBridgedFunctions()?.createSnackbar({
-						key: `edit`,
-						replace: true,
-						type: 'info',
-						label: t(
-							'label.need_to_select_atleast_one_item',
-							'You need to select at least one item to perform the action'
-						),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
-				} else {
-					action.onClick && action.onClick();
-				}
-			},
-			customComponent: action.customComponent,
-			items: action.items
-		})
-	);
+	const secondaryActionsArray: Array<Exclude<ActionReturnType, false> & { label: string }> =
+		secondaryActions()?.reduce((acc, action) => {
+			if (action)
+				acc.push({
+					id: 'label' in action ? action.label : action.id,
+					icon: 'icon' in action ? action.icon : '',
+					label: 'label' in action ? action.label : '',
+					onClick: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>): void => {
+						if (ev) ev.preventDefault();
+						action.onClick && action.onClick(ev);
+					},
+					customComponent: action.customComponent,
+					items: action.items
+				});
+			return acc;
+		}, [] as Array<Exclude<ActionReturnType, false> & { label: string }>);
 
 	const arrowBackOnClick = useCallback(() => {
 		deselectAll();

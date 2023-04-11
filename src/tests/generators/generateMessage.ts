@@ -7,6 +7,7 @@
 import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
+import { convertHtmlToPlainText } from '../../carbonio-ui-commons/utils/text/html';
 import { MailMessage, Participant } from '../../types';
 
 /**
@@ -87,7 +88,7 @@ const generateMessage = ({
 	date: receiveDate,
 	did: '',
 	flagged: isFlagged,
-	fragment: '',
+	fragment: convertHtmlToPlainText(body).substring(0, 40),
 	hasAttachment: false,
 	id,
 	invite: undefined,

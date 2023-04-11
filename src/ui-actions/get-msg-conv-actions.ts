@@ -53,7 +53,6 @@ export function getMsgConvActions({
 		: item.id;
 	const isSingleMessageConversation =
 		isConversation && (item as Conversation).messages.length === 1;
-
 	const { id } = item;
 
 	/**
@@ -243,7 +242,7 @@ export function getMsgConvActions({
 		showOriginalAction
 	].reduce((acc: Array<Exclude<ActionReturnType, false>>, action) => {
 		if (action) {
-			acc.push(action as Exclude<ActionReturnType, false>);
+			acc.push(action);
 		}
 		return acc;
 	}, []);

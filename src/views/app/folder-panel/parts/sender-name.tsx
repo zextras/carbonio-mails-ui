@@ -11,6 +11,7 @@ import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/parti
 import { participantToString } from '../../../../commons/utils';
 import { SenderNameProps } from '../../../../types';
 
+// TODO since it renders also the recipients we should rename it to ParticipantsName
 export const SenderName: FC<SenderNameProps> = ({ item, textValues, isSearchModule = false }) => {
 	const account = useUserAccount();
 	const folderId = item.parent;
@@ -44,7 +45,11 @@ export const SenderName: FC<SenderNameProps> = ({ item, textValues, isSearchModu
 				</Padding>
 			)}
 			<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
-				<Text data-testid="sender-name-label" color={textValues?.color} weight={textValues?.weight}>
+				<Text
+					data-testid="participants-name-label"
+					color={textValues?.color}
+					weight={textValues?.weight}
+				>
 					{participantsString}
 				</Text>
 			</Tooltip>

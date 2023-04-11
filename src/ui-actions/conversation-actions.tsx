@@ -40,12 +40,12 @@ export function setConversationsFlag({
 	dispatch
 }: Pick<ConvActionPropType, 'ids' | 'value' | 'dispatch'>): ConvActionReturnType {
 	const actDescriptor = value
-		? ConversationActionsDescriptors.UNFLAG
-		: ConversationActionsDescriptors.FLAG;
+		? ConversationActionsDescriptors.UNFLAG.id
+		: ConversationActionsDescriptors.FLAG.id;
 	return {
-		id: actDescriptor.id,
+		id: actDescriptor,
 		icon: value ? 'Flag' : 'FlagOutline',
-		label: value ? t('action.unflag', actDescriptor.desc) : t('action.flag', actDescriptor.desc),
+		label: value ? t('action.unflag', 'Add flag') : t('action.flag', 'Remove flag'),
 		onClick: (): void => {
 			dispatch(
 				convAction({
@@ -111,10 +111,10 @@ export function setConversationsRead({
 	'ids' | 'dispatch' | 'value' | 'folderId' | 'shouldReplaceHistory' | 'deselectAll'
 >): ConvActionReturnType {
 	const actDescriptor = value
-		? ConversationActionsDescriptors.MARK_AS_UNREAD
-		: ConversationActionsDescriptors.MARK_AS_READ;
+		? ConversationActionsDescriptors.MARK_AS_UNREAD.id
+		: ConversationActionsDescriptors.MARK_AS_READ.id;
 	return {
-		id: actDescriptor.id,
+		id: actDescriptor,
 		icon: value ? 'EmailOutline' : 'EmailReadOutline',
 		label: value
 			? t('action.mark_as_unread', 'Mark as unread')
@@ -247,8 +247,10 @@ export function moveConversationToTrash({
 	ConvActionPropType,
 	'ids' | 'dispatch' | 'folderId' | 'deselectAll'
 >): ConvActionReturnType {
+	const actDescriptor = ConversationActionsDescriptors.MOVE_TO_TRASH.id;
+
 	return {
-		id: 'trash-conversations',
+		id: actDescriptor,
 		icon: 'Trash2Outline',
 		label: t('label.delete', 'Delete'),
 		onClick: (): void => {

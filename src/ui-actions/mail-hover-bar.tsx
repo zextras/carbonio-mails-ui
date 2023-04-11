@@ -101,7 +101,7 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 						icon={action.icon}
 						onClick={(ev): void => {
 							ev.preventDefault();
-							action.onClick();
+							action.onClick(ev);
 						}}
 					/>
 				</Tooltip>

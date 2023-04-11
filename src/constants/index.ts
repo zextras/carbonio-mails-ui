@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
 export const MAILS_ROUTE = 'mails';
@@ -275,5 +276,66 @@ export const ConversationActionsDescriptors = {
 	MARK_AS_UNREAD: {
 		id: 'unread-conversation',
 		desc: 'Mark as unread'
+	},
+	MOVE_TO_TRASH: {
+		id: 'conversation-trash',
+		desc: 'Move to trash'
 	}
 } as const;
+
+export const MSG_CONV_STATUS = {
+	FLAGGED: {
+		value: true,
+		desc: 'flagged'
+	},
+	NOT_FLAGGED: {
+		value: false,
+		desc: 'not flagged'
+	},
+	READ: {
+		value: true,
+		desc: 'read'
+	},
+	NOT_READ: {
+		value: false,
+		desc: 'not read'
+	}
+};
+
+export const ASSERTION = {
+	CONTAIN: {
+		value: true,
+		desc: 'contain'
+	},
+	NOT_CONTAIN: {
+		value: false,
+		desc: 'not contain'
+	}
+};
+
+export const FOLDERIDS = {
+	INBOX: {
+		id: FOLDERS.INBOX,
+		desc: 'inbox'
+	},
+	SENT: {
+		id: FOLDERS.SENT,
+		desc: 'sent'
+	},
+	DRAFTS: {
+		id: FOLDERS.DRAFTS,
+		desc: 'drafts'
+	},
+	SPAM: {
+		id: FOLDERS.SPAM,
+		desc: 'junk'
+	},
+	TRASH: {
+		id: FOLDERS.TRASH,
+		desc: 'trash'
+	},
+	USER_DEFINED: {
+		id: '1234567',
+		desc: 'user defined'
+	}
+};

@@ -53,6 +53,7 @@ const DragItems: FC<{
 					toggle={noop}
 					selectedIds={[]}
 					deselectAll={noop}
+					folderId=""
 				/>
 			))}
 		</>

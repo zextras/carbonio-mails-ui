@@ -131,6 +131,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 								activeItemId={itemId}
 								isSearchModule
 								deselectAll={deselectAll}
+								folderId=""
 							/>
 						)}
 					</CustomListItem>

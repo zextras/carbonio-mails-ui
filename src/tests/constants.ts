@@ -5,7 +5,7 @@
  */
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 
-export const MESSAGES_STATUS_DESCRIPTORS = {
+export const MSG_CONV_STATUS_DESCRIPTORS = {
 	FLAGGED: {
 		value: true,
 		desc: 'flagged'
