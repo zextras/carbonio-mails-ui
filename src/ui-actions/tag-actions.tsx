@@ -36,6 +36,7 @@ import {
 	TagsFromStoreType
 } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
+import { MessageActionsDescriptors } from '../constants';
 
 export const createTag = ({ createModal }: ArgumentType): TagActionsReturnType => ({
 	id: TagsActionsType.NEW,

@@ -84,7 +84,6 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	const ids = Object.values(selectedIds ?? []);
 	const selectedConversation = filter(items, (item: MsgOrConv) => ids.includes(item.id ?? '0'));
 	const tags = useTags();
-
 	const foldersExcludedMarkReadUnread = [FOLDERS.DRAFTS, FOLDERS.SPAM, FOLDERS.TRASH];
 	const foldersExcludedTrash = [FOLDERS.TRASH];
 	const foldersIncludedDeletePermanently = [FOLDERS.TRASH];

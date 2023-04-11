@@ -257,35 +257,36 @@ const restoreMessage = (
 	closeEditor: boolean | undefined,
 	conversationId: string | undefined
 ): void => {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	dispatchMsgMove(dispatch, ids, folderId).then((res) => {
-		if (res.type.includes('fulfilled')) {
-			closeEditor &&
-				replaceHistory(
-					conversationId
-						? `/folder/${folderId}/conversation/${conversationId}`
-						: `/folder/${folderId}/conversation/-${ids[0]}`
-				);
-			getBridgedFunctions()?.createSnackbar({
-				key: `move-${ids}`,
-				replace: true,
-				type: 'success',
-				label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
-				autoHideTimeout: 3000,
-				hideButton: true
-			});
-		} else {
-			getBridgedFunctions()?.createSnackbar({
-				key: `move-${ids}`,
-				replace: true,
-				type: 'error',
-				label: t('label.error_try_again', 'Something went wrong, please try again'),
-				autoHideTimeout: 3000,
-				hideButton: true
-			});
-		}
-	});
+	dispatchMsgMove(dispatch, ids, folderId)
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		.then((res) => {
+			if (res.type.includes('fulfilled')) {
+				closeEditor &&
+					replaceHistory(
+						conversationId
+							? `/folder/${folderId}/conversation/${conversationId}`
+							: `/folder/${folderId}/conversation/-${ids[0]}`
+					);
+				getBridgedFunctions()?.createSnackbar({
+					key: `move-${ids}`,
+					replace: true,
+					type: 'success',
+					label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			} else {
+				getBridgedFunctions()?.createSnackbar({
+					key: `move-${ids}`,
+					replace: true,
+					type: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			}
+		});
 };
 
 export function moveMsgToTrash({

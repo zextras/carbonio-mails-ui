@@ -53,7 +53,6 @@ export function getMsgConvActions({
 		: item.id;
 	const isSingleMessageConversation =
 		isConversation && (item as Conversation).messages.length === 1;
-
 	const { id } = item;
 
 	/**

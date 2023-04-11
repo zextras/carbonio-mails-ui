@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { TagActionItemType } from '../../types';
 import { MsgConvActionsReturnType } from '../get-msg-conv-actions';
 
 /**
