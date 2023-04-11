@@ -11,12 +11,6 @@ import { MailMessage, Participant } from '../../types';
 
 /**
  *
- * @param date
- */
-const toUnixTimestamp = (date: Date): number => Math.floor(date.getTime() / 1000);
-
-/**
- *
  */
 type MessageGenerationParams = {
 	id?: string;
@@ -67,8 +61,8 @@ type MessageGenerationParams = {
 const generateMessage = ({
 	id = faker.datatype.number().toString(),
 	folderId = FOLDERS.INBOX,
-	sendDate = toUnixTimestamp(faker.date.recent(2)),
-	receiveDate = toUnixTimestamp(faker.date.recent(1)),
+	sendDate = faker.date.recent(2).valueOf(),
+	receiveDate = faker.date.recent(1).valueOf(),
 	to = [{ type: ParticipantRole.TO, address: faker.internet.email() }],
 	cc = [],
 	from = { type: ParticipantRole.FROM, address: faker.internet.email() },

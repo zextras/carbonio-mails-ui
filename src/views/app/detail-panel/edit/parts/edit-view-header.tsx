@@ -686,7 +686,7 @@ const EditViewHeader: FC<PropType> = ({
 								items={attachmentsItems}
 								display="inline-block"
 								width="fit"
-								forceOpen={openDD}
+								// forceOpen={openDD}
 							>
 								<StyledComp.ResizedIconCheckbox
 									onChange={(): null => null}

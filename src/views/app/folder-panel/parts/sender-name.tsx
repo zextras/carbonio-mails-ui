@@ -44,7 +44,7 @@ export const SenderName: FC<SenderNameProps> = ({ item, textValues, isSearchModu
 				</Padding>
 			)}
 			<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
-				<Text data-testid="ParticipantLabel" color={textValues?.color} weight={textValues?.weight}>
+				<Text data-testid="sender-name-label" color={textValues?.color} weight={textValues?.weight}>
 					{participantsString}
 				</Text>
 			</Tooltip>

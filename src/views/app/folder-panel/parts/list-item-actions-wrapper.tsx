@@ -70,7 +70,6 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	active,
 	deselectAll
 }) => {
-	const isConversation = 'messages' in item && item.messages.length > 1;
 	const dispatch = useAppDispatch();
 	const account = useUserAccount();
 	const tags = useTags();
@@ -109,9 +108,10 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 			items={dropdownActions}
 			display="block"
 			style={{ width: '100%', height: '4rem' }}
+			data-testid={`secondary-actions-menu-${item.id}`}
 		>
 			<HoverContainer
-				// data-testid={isConversation ? `ConversationRow` : `MessageListItem-${item.id}`} FIXME
+				data-testid={`hover-container-${item.id}`}
 				orientation="horizontal"
 				mainAlignment="flex-start"
 				crossAlignment="unset"
@@ -120,12 +120,12 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 				$hoverBackground={active ? 'highlight' : 'gray6'}
 			>
 				{children}
-				{/* <Tooltip label={hoverTooltipLabel} overflow="break-word" maxWidth="50vw"> */}
 				<HoverBarContainer
 					orientation="horizontal"
 					mainAlignment="flex-end"
 					crossAlignment="center"
 					background={active ? 'highlight' : 'gray6'}
+					data-testid={`primary-actions-bar-${item.id}`}
 				>
 					{hoverActions.map((action, index) => (
 						<Tooltip key={action.id ?? index} label={action.label}>
@@ -141,7 +141,6 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 						</Tooltip>
 					))}
 				</HoverBarContainer>
-				{/* </Tooltip> */}
 			</HoverContainer>
 		</Dropdown>
 	);

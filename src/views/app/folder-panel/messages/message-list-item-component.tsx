@@ -10,7 +10,7 @@ import { IncompleteMessage } from '../../../../types';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
 import { MessageListItem } from './message-list-item';
 
-type ListItemComponentProps = {
+export type ListItemComponentProps = {
 	message: IncompleteMessage;
 	selected: Record<string, boolean>;
 	isSelected: boolean;

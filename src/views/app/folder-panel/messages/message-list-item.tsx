@@ -192,7 +192,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				deselectAll={deselectAll}
 			>
 				<>
-					<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
+					<div style={{ alignSelf: 'center' }} data-testid={`message-list-item-avatar`}>
 						<ItemAvatar
 							item={item}
 							selected={selected}
