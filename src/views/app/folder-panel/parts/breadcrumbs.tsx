@@ -16,6 +16,12 @@ import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from
 import styled from 'styled-components';
 import { getFolderPathForBreadcrumb } from '../../../sidebar/utils';
 
+const SelectIconCheckbox = styled(IconCheckbox)`
+	svg {
+		color: ${(props): string => props.theme.palette.primary.regular};
+	}
+`;
+
 export const Breadcrumbs: FC<{
 	itemsCount: number;
 	isSelectModeOn: boolean;
@@ -63,12 +69,6 @@ export const Breadcrumbs: FC<{
 	);
 
 	const { folderPathFirstPart, folderPathLastPart } = getFolderPathForBreadcrumb(folderPath);
-
-	const SelectIconCheckbox = styled(IconCheckbox)`
-		svg {
-			color: ${(props): string => props.theme.palette.primary.regular};
-		}
-	`;
 
 	return (
 		<Container
