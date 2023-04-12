@@ -224,7 +224,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 						values={{ from }}
 					/>
 				),
-				click: () => saveTrustee(from)
+				onClick: () => saveTrustee(from)
 			},
 			{
 				id: 'always-allow-domain',
@@ -235,7 +235,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 						values={{ domain }}
 					/>
 				),
-				click: () => saveTrustee(domain)
+				onClick: () => saveTrustee(domain)
 			}
 		],
 		[from, domain, saveTrustee]

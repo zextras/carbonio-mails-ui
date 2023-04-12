@@ -96,7 +96,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 								icon={action.icon}
 								onClick={(ev): void => {
 									ev.stopPropagation();
-									action.click(ev);
+									action.onClick(ev);
 								}}
 								size="small"
 							/>

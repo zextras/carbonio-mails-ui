@@ -51,7 +51,7 @@ export type MessageActionReturnType = {
 	id: string;
 	icon: string;
 	label: string;
-	click: (ev?: MouseEvent) => void;
+	onClick: (ev?: MouseEvent) => void;
 };
 export const setMsgRead = ({
 	ids,
@@ -66,7 +66,7 @@ export const setMsgRead = ({
 	label: value
 		? t('action.mark_as_unread', 'Mark as unread')
 		: t('action.mark_as_read', 'Mark as read'),
-	click: (ev): void => {
+	onClick: (ev): void => {
 		if (ev) ev.preventDefault();
 		dispatch(
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -98,7 +98,7 @@ export function setMsgFlag({
 		id: 'message-flag',
 		icon: value ? 'Flag' : 'FlagOutline',
 		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -125,7 +125,7 @@ export function setMsgAsSpam({
 		label: value
 			? t('action.mark_as_non_spam', 'Not spam')
 			: t('action.mark_as_spam', 'Mark as spam'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			let notCanceled = true;
 
@@ -192,7 +192,7 @@ export function printMsg({
 		id: 'message-print',
 		icon: 'PrinterOutline',
 		label: t('action.print', 'Print'),
-		click: (): void => {
+		onClick: (): void => {
 			const printWindow = window.open('', '_blank');
 			getMsgsForPrint({ ids: [message.id] })
 				.then((res) => {
@@ -219,7 +219,7 @@ export function showOriginalMsg({ id }: { id: string }): MessageActionReturnType
 		id: 'message-show_original',
 		icon: 'CodeOutline',
 		label: t('action.show_original', 'Show original'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			window.open(`/service/home/~/?auth=co&view=text&id=${id}`, '_blank');
 		}
@@ -289,7 +289,7 @@ export function moveMsgToTrash({
 		id: 'message-trash',
 		icon: 'Trash2Outline',
 		label: t('label.delete', 'Delete'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 
 			dispatch(
@@ -338,7 +338,7 @@ export function deleteMsg({
 		id: 'message-delete',
 		icon: 'Trash2Outline',
 		label: t('label.delete', 'Delete'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			const closeModal = getBridgedFunctions()?.createModal({
 				title: t('header.delete_email', 'Delete e-mail'),
@@ -418,7 +418,7 @@ export function replyMsg({
 		id: 'message-reply',
 		icon: 'UndoOutline',
 		label: t('action.reply', 'Reply'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY}`,
@@ -437,7 +437,7 @@ export function replyAllMsg({
 		id: 'message-reply_all',
 		icon: 'ReplyAll',
 		label: t('action.reply_all', 'Reply all'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY_ALL}`,
@@ -456,7 +456,7 @@ export function forwardMsg({
 		id: 'message-forward',
 		icon: 'Forward',
 		label: t('action.forward', 'Forward'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.FORWARD}`,
@@ -475,7 +475,7 @@ export function editAsNewMsg({
 		id: 'message-edit_as_new',
 		icon: 'Edit2Outline',
 		label: t('action.edit_as_new', 'Edit as new'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_NEW}`,
@@ -495,7 +495,7 @@ export function editDraft({
 		id: 'message-edit_as_draft',
 		icon: 'Edit2Outline',
 		label: t('label.edit', 'Edit'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			if (message?.isScheduled) {
 				const closeModal = getBridgedFunctions()?.createModal({
@@ -552,7 +552,7 @@ export function sendDraft({
 		id: 'message-send',
 		icon: 'PaperPlaneOutline',
 		label: t('label.send', 'Send'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -571,7 +571,7 @@ export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
 		id: 'message-redirect',
 		icon: 'CornerUpRight',
 		label: t('action.redirect', 'Redirect'),
-		click: (ev): void => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
@@ -605,7 +605,7 @@ export function moveMessageToFolder({
 		id: 'message-restore',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
 		label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
-		click: (): void => {
+		onClick: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
 					maxHeight: '90vh',
@@ -640,7 +640,7 @@ export function deleteMessagePermanently({
 		id: 'message-delete-permanently',
 		icon: 'DeletePermanentlyOutline',
 		label: t('label.delete_permanently', 'Delete Permanently'),
-		click: (): void => {
+		onClick: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
 					children: (

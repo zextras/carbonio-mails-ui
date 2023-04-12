@@ -23,7 +23,7 @@ type FolderActionsProps = {
 	id: string;
 	icon: string;
 	label: string;
-	click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	disabled?: boolean;
 };
 
@@ -38,7 +38,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				id: FolderActionsType.NEW,
 				icon: 'FolderAddOutline',
 				label: t('label.new_folder', 'New Folder'),
-				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -61,7 +61,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				label: startsWith(folder.absFolderPath, '/Trash')
 					? t('label.restore', 'Restore')
 					: t('label.move', 'Move'),
-				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -86,7 +86,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						? t('folder_panel.action.empty.trash', 'Empty Trash')
 						: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
 				disabled: folder.n === 0 && folder.children?.length === 0,
-				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -108,7 +108,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				label: folder.isLink
 					? t('folder_panel.action.edit_properties', 'Edit Properties')
 					: t('label.edit', 'Edit'),
-				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -131,7 +131,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				label: startsWith(folder.absFolderPath, '/Trash')
 					? t('label.delete_permanently', 'Delete Permanently')
 					: t('label.delete', 'Delete'),
-				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -151,7 +151,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				id: FolderActionsType.SHARE,
 				icon: 'ShareOutline',
 				label: t('action.share_folder', 'Share folder'),
-				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -171,7 +171,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				id: FolderActionsType.REMOVE_FROM_LIST,
 				icon: 'CloseOutline',
 				label: t('label.remove_from_this_list', 'Remove from this list'),
-				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 						dispatch(folderAction({ folder, op: 'delete' }));
@@ -182,7 +182,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				id: FolderActionsType.SHARES_INFO,
 				icon: 'InfoOutline',
 				label: t('label.shares_info', `Shared folder's info`),
-				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
@@ -202,7 +202,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				id: FolderActionsType.MARK_ALL_READ,
 				icon: 'EmailReadOutline',
 				label: t('label.mark_all_as_read', 'Mark all as read'),
-				click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 						dispatch(folderAction({ folder, op: 'read', l: folder.id }));
