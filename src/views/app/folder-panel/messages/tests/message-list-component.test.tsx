@@ -16,9 +16,9 @@ import { MessageListItemComponent } from '../message-list-item-component';
 describe('Message list component', () => {
 	test('populate a message list and check that the messages are visible', async () => {
 		// Populate a message list
-		const MESSAGE_COUNT = 100;
+		const MESSAGES_COUNT = 100;
 		const folderId = FOLDERS.INBOX;
-		const messages = times(MESSAGE_COUNT, () => generateMessage({ folderId }));
+		const messages = times(MESSAGES_COUNT, () => generateMessage({ folderId }));
 
 		const listItems = messages.map((message) => (
 			<MessageListItemComponent
@@ -64,6 +64,13 @@ describe('Message list component', () => {
 
 		await screen.findByTestId(`message-list-${folderId}`);
 		const items = await screen.findAllByTestId(/MessageListItem-/);
+
+		// Test that there is a list item for each message
 		expect(items.length).toBe(messages.length);
+
+		// Test that every list item is visible
+		items.forEach((item) => {
+			expect(item).toBeVisible();
+		});
 	});
 });

@@ -278,6 +278,7 @@ describe('Message list item component', () => {
 			}
 		);
 
+		test.todo('(case #7) hovering on the message the primary actions container must be visible');
 		// test('(case #7) hovering on the message the primary actions container must be visible', async () => {
 		// 	const folderId = FOLDERS.INBOX;
 		// 	const msg = generateMessage({ folderId });
@@ -305,26 +306,20 @@ describe('Message list item component', () => {
 		//
 		// 	const { user } = setupTest(<MessageListItem {...props} />, { store });
 		//
-		// 	// const actionsBar = await screen.findByTestId(`primary-actions-bar-${msgId}`);
+		// 	const actionsBar = await screen.findByTestId(`primary-actions-bar-${msgId}`);
 		// 	const container = await screen.findByTestId(`hover-container-${msgId}`);
-		// 	// eslint-disable-next-line testing-library/prefer-user-event
-		// 	fireEvent.mouseOut(container);
-		// 	// act(() => {
-		// 	// 	user.unhover(container);
-		// 	// });
-		// 	expect(container).toBeInTheDocument();
-		// 	expect(container).not.toBeVisible();
+		// 	const aRandomChild = await screen.findByTestId('message-list-item-avatar');
+		//
+		// 	expect(actionsBar).not.toBeVisible();
 		// 	// act(() => {
 		// 	// 	user.pointer({ target: container });
 		// 	// });
-		// 	// fireEvent.mouseOver(container);
-		// 	act(() => {
-		// 		user.hover(container);
-		// 	});
-		// 	act(() => {
-		// 		jest.advanceTimersByTime(1000);
-		// 	});
-		// 	expect(container).toBeVisible();
+		// 	user.hover(aRandomChild);
+		//
+		// 	// act(() => {
+		// 	// 	user.hover(container);
+		// 	// });
+		// 	expect(actionsBar).toBeVisible();
 		// });
 
 		test('(case #8) when right-click the message the secondary actions contextual menu must be visible', async () => {

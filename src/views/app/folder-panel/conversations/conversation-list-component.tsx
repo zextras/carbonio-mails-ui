@@ -60,7 +60,7 @@ const DragItems: FC<{
 	);
 };
 
-type ConversationListComponentProps = {
+export type ConversationListComponentProps = {
 	// the text to display in the side panel
 	displayerTitle: string | null;
 	// the list of conversations to display
