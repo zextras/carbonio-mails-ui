@@ -6,7 +6,7 @@
 import { FOLDERS, Folder, t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useMessageList } from '../../../../hooks/use-message-list';
 import { useSelection } from '../../../../hooks/use-selection';
@@ -18,10 +18,8 @@ import { MessageListComponent } from './message-list-component';
 import { MessageListItemComponent } from './message-list-item-component';
 
 export const MessageList: FC = () => {
-	const history = useHistory();
-	const activeFolder = history?.location?.pathname?.split?.('/')?.[3];
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
-	const folder: Folder = useFolder(activeFolder);
+	const folder: Folder = useFolder(folderId);
 	const dispatch = useAppDispatch();
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});

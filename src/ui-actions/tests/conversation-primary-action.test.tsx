@@ -43,7 +43,7 @@ describe('Actions visibility', () => {
 					account,
 					tags: {}
 				});
-				const primaryActions = actionsFactory();
+				const primaryActions = actionsFactory;
 				expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 			}
 		);
@@ -96,7 +96,7 @@ describe('Actions visibility', () => {
 					account,
 					tags: {}
 				});
-				const primaryActions = actionsFactory();
+				const primaryActions = actionsFactory;
 				expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 			}
 		);
@@ -149,7 +149,7 @@ describe('Actions visibility', () => {
 					account,
 					tags: {}
 				});
-				const primaryActions = actionsFactory();
+				const primaryActions = actionsFactory;
 				expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 			}
 		);
