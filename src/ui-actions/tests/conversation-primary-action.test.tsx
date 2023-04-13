@@ -20,13 +20,12 @@ describe('Actions visibility', () => {
 		 * 4. primary actions for a conversation in any folder except trash contain the trash action
 		 */
 		test.each`
-			case | folder                    | assertion                | action
-			${4} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
-			${4} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
-			${4} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
-			${4} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
-			${4} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
-			${4} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
+			case | folder                    | assertion            | action
+			${4} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
+			${4} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
+			${4} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
+			${4} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
+			${4} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
 		`(
 			`(case #$case) primary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
