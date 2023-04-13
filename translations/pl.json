@@ -87,8 +87,8 @@
                 "content": "Upuść tutaj swoje załączniki, aby szybko dodać je do e-maila",
                 "title": "Tryb przeciągnij i upuść"
             },
-            "files": "Dodaj z Files",
-            "url": "Dodaj publiczny link z Files"
+            "files": "Dodaj z Plików",
+            "url": "Dodaj publiczny link z Plików"
         }
     },
     "board": {
@@ -273,10 +273,10 @@
         "invalid_destination": "Ten węzeł nie jest prawidłowym celem",
         "notification_audio": "Odtwórz dźwięk kiedy pojawi się nowe powiadomienie",
         "notification_folders": "Powiadomienia Folderów",
-        "save_to_files": "Zapisz do Files",
+        "save_to_files": "Zapisz do Plików",
         "tag_max_length": "Dozwolone max. 128 znaków",
         "tag_name": "Nazwa Tagu",
-        "upload_from_files": "Prześlij z Files",
+        "upload_from_files": "Prześlij z Plików",
         "notify_organizer": "Powiadom organizatora",
         "disposal_threshold": "Próg pozbywania się",
         "by_conversation": "Wg konwersacji",
@@ -350,7 +350,7 @@
         "using_signatures": "Użycie podpisów",
         "attachments_disclaimer": "Nie możemy potwierdzić wiarygodności oglądanych załączników.",
         "extra_window": {
-            "save_to_files_disabled": "Zapisz do Files"
+            "save_to_files_disabled": "Zapisz do Plików"
         },
         "need_to_select_atleast_one_item": "Musisz wybrać co najmniej jeden element, aby móc wykonać tę czynność"
     },
