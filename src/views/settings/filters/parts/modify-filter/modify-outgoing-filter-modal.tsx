@@ -21,7 +21,7 @@ import {
 	SnackbarManagerContext,
 	Row
 } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';

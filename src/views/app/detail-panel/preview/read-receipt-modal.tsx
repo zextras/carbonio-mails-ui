@@ -18,6 +18,7 @@ import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal
 import { msgAction } from '../../../../store/actions';
 import { sendDeliveryReport } from '../../../../store/actions/send-delivery-request';
 import { MailMessage } from '../../../../types';
+import { useAppDispatch } from '../../../../hooks/redux';
 
 type CompProps = {
 	open: boolean;
@@ -32,7 +33,7 @@ const ReadReceiptModal: FC<CompProps> = ({
 	message,
 	readReceiptSetting
 }): ReactElement => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const title = useMemo(() => t('label.read_receipt_req', 'Read receipt required'), []);

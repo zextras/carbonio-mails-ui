@@ -13,9 +13,9 @@ import {
 import { FOLDERS, t, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { every, filter, map, some } from 'lodash';
 import React, { FC, useContext, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
 import { Conversation } from '../types';
 
+import { useAppDispatch } from '../hooks/redux';
 import {
 	deleteConversationPermanently,
 	moveConversationToFolder,
@@ -44,7 +44,7 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 	isAllSelected,
 	selectAllModeOff
 }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const account = useUserAccount();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);

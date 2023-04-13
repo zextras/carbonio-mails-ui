@@ -3,30 +3,30 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useState, useMemo, useCallback, FC } from 'react';
+import { Container, FormSection } from '@zextras/carbonio-design-system';
 import {
-	useUserSettings,
-	useUserAccount,
-	editSettings,
-	t,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeader,
-	getBridgedFunctions
+	editSettings,
+	getBridgedFunctions,
+	t,
+	useUserAccount,
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
-import { map, forEach, isEqual, filter, find, cloneDeep, isEmpty, reduce, remove } from 'lodash';
-import { Container, FormSection } from '@zextras/carbonio-design-system';
+import { cloneDeep, filter, find, forEach, isEmpty, isEqual, map, reduce, remove } from 'lodash';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
-import { getPropsDiff, differenceObject, differenceIdentities } from './components/utils';
+import { useAppDispatch } from '../../hooks/redux';
+import { SignatureRequest } from '../../store/actions/signatures';
+import { AccountIdentity, PrefsType, PropsType, SignItemType } from '../../types';
+import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
+import ComposeMessage from './compose-msg-settings';
 import DisplayMessagesSettings from './displaying-messages-settings';
+import FilterModule from './filters';
 import ReceivingMessagesSettings from './receiving-messages-settings';
 import SignatureSettings from './signature-settings';
-import FilterModule from './filters';
 import TrusteeAddresses from './trustee-addresses';
-import { SignatureRequest } from '../../store/actions/signatures';
-import ComposeMessage from './compose-msg-settings';
-import { AccountIdentity, PropsType, SignItemType } from '../../types';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -67,7 +67,7 @@ const SettingsView: FC = () => {
 	const [disabled, setDisabled] = useState(true);
 	const [flag, setFlag] = useState(false);
 
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const oldSettings = useMemo(() => {
 		const s = cloneDeep(prefs);
@@ -356,6 +356,8 @@ const SettingsView: FC = () => {
 						signatures={signatures}
 						flag={flag}
 					/>
+					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+					{/* @ts-ignore */}
 					<ComposeMessage settingsObj={settingsObj} updateSettings={updateSettings} />
 					<FilterModule />
 					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
