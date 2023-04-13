@@ -35,9 +35,6 @@
                 "retention_message": "As mensagens nesta pasta que se enquadram no período de retenção necessitam de conformação expressa antes de serem excluídas",
                 "threshold_message": "As mensagens nesta pasta mais antigas que o limite de descarte estarão sujeitas a limpeza e exclusão automáticas.",
                 "add_share": "Adicionar partilha"
-            },
-            "new": {
-                "title": "Criar nova pasta"
             }
         },
         "action": {
