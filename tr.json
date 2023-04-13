@@ -277,7 +277,7 @@
         "trusted_addresses": "Güvenilir adresler",
         "time_zone": "Saat Dilimi",
         "send_later": "Sonra gönder",
-        "searching": "Aranıyor…",
+        "searching": "Aranıyor...",
         "request_receipt": "Okundu onayı iste",
         "remove_request_receipt": "Okundu onay isteğini kaldır",
         "read_receipt_sent": "Bu mesaj için okundu onayı gönderildi",
@@ -329,7 +329,7 @@
         "deselect_all": "TÜM SEÇİMİ KALDIR",
         "need_to_select_atleast_one_item": "İşlemi yapabilmek için en az bir öğe seçmeniz gerekir",
         "select_all": "Tümünü SEÇ",
-        "using_signatures": "İmza kullanımı"
+        "using_signatures": "İmza Kullanımı"
     },
     "share": {
         "options": {

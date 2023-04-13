@@ -81,7 +81,7 @@
     },
     "label": {
         "cc": "Cc",
-        "bcc": "Bcc",
+        "bcc": "Ccn",
         "to": "A",
         "subject": "Oggetto",
         "sent": "Inviato",
@@ -198,7 +198,7 @@
         "draft": "Bozza",
         "forwarded": "Inoltrato",
         "attachement_unknown": "Sconosciuto <{{mimeType}}>",
-        "cc_bcc": "Cc Bcc",
+        "cc_bcc": "Cc Ccn",
         "from_identity": "Da: {{identity}}",
         "new_email": "Nuova E-mail",
         "send_email": "Invia e-mail",
