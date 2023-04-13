@@ -109,7 +109,8 @@ const App = () => {
 		});
 		addSearchView({
 			route: MAILS_ROUTE,
-			component: SearchView
+			component: SearchView,
+			label: t('label.app_name', 'Mails')
 		});
 		addBoardView({
 			route: MAILS_ROUTE,
