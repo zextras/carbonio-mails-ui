@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
 import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { deleteOutgoingFilter } from './actions';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';

@@ -3,24 +3,24 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
-import { useDispatch } from 'react-redux';
-import { getBridgedFunctions, useUserAccounts, t } from '@zextras/carbonio-shell-ui';
-import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
+import { getBridgedFunctions, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
-import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite-reply/parts/utils';
-import { GranteeInfo } from './share-folder-properties';
-import { sendShareNotification } from '../../../../store/actions/send-share-notification';
-import { folderAction } from '../../../../store/actions/folder-action';
+import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { ShareRevokeModalType } from '../../../../carbonio-ui-commons/types/sidebar';
+import { useAppDispatch } from '../../../../hooks/redux';
+import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite-reply/parts/utils';
+import { folderAction } from '../../../../store/actions/folder-action';
+import { sendShareNotification } from '../../../../store/actions/send-share-notification';
+import { GranteeInfo } from './share-folder-properties';
 
 const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, goBack }) => {
 	const [sendNotification, setSendNotification] = useState(false);
 	const [standardMessage, setStandardMessage] = useState('');
 
 	const accounts = useUserAccounts();
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const onConfirm = useCallback(() => {
 		if (sendNotification) {

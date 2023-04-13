@@ -5,56 +5,56 @@
  */
 import {
 	FOLDERS,
-	useNotify,
-	useRefresh,
+	getTags,
 	updatePrimaryBadge,
-	getTags
+	useNotify,
+	useRefresh
 } from '@zextras/carbonio-shell-ui';
+import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'lodash';
 import React, { FC, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { isEmpty, map, keyBy, find, filter, forEach, sortBy, reduce } from 'lodash';
+import { MAILS_ROUTE } from '../../constants';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { normalizeConversation } from '../../normalizations/normalize-conversation';
+import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
+import {
+	handleAddMessagesInConversation,
+	handleCreatedMessagesInConversation,
+	handleDeletedMessagesInConversation,
+	handleModifiedMessagesInConversation,
+	handleNotifyCreatedConversations,
+	handleNotifyDeletedConversations,
+	handleNotifyModifiedConversations,
+	selectCurrentFolder,
+	setSearchedInFolder
+} from '../../store/conversations-slice';
 import {
 	handleCreatedFolders,
-	handleModifiedFolders,
 	handleDeletedFolders,
+	handleModifiedFolders,
 	handleRefresh,
 	selectFolder
 } from '../../store/folders-slice';
 import {
-	handleNotifyCreatedConversations,
-	handleNotifyModifiedConversations,
-	handleNotifyDeletedConversations,
-	handleModifiedMessagesInConversation,
-	handleDeletedMessagesInConversation,
-	setSearchedInFolder,
-	selectCurrentFolder,
-	handleCreatedMessagesInConversation,
-	handleAddMessagesInConversation
-} from '../../store/conversations-slice';
-import {
 	handleCreatedMessages,
-	handleModifiedMessages,
 	handleDeletedMessages,
+	handleModifiedMessages,
 	selectMessages
 } from '../../store/messages-slice';
-import { normalizeConversation } from '../../normalizations/normalize-conversation';
-import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import { extractFolders } from './utils';
-import { MAILS_ROUTE } from '../../constants';
 import {
-	handleNotifyCreatedSearchConversations,
-	handleNotifyDeletedSearchConversations,
-	handleNotifyModifiedSearchConversations,
 	handleAddMessagesInSearchConversation,
 	handleCreatedMessagesInSearchConversation,
 	handleDeletedMessagesInSearchConversation,
+	handleDeletedSearchMessages,
 	handleModifiedMessagesInSearchConversation,
-	handleDeletedSearchMessages
+	handleNotifyCreatedSearchConversations,
+	handleNotifyDeletedSearchConversations,
+	handleNotifyModifiedSearchConversations
 } from '../../store/searches-slice';
 import { Conversation } from '../../types';
+import { extractFolders } from './utils';
 
 const InboxBadgeUpdater = (): null => {
-	const folder = useSelector(selectFolder(FOLDERS.INBOX));
+	const folder = useAppSelector(selectFolder(FOLDERS.INBOX));
 	useEffect(() => {
 		updatePrimaryBadge(
 			{
@@ -72,10 +72,10 @@ export const SyncDataHandler: FC = () => {
 	const refresh = useRefresh();
 	const notifyList = useNotify();
 	const [seq, setSeq] = useState(-1);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const [initialized, setInitialized] = useState(false);
-	const currentFolder = useSelector(selectCurrentFolder);
-	const messagesState = useSelector(selectMessages);
+	const currentFolder = useAppSelector(selectCurrentFolder);
+	const messagesState = useAppSelector(selectMessages);
 
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {

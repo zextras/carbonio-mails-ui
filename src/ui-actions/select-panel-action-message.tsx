@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useContext, useMemo } from 'react';
 import {
 	Button,
 	Container,
@@ -12,19 +11,20 @@ import {
 	SnackbarManagerContext
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, t, useTags } from '@zextras/carbonio-shell-ui';
-import { map, every, filter, some } from 'lodash';
-import { useDispatch } from 'react-redux';
+import { every, filter, map, some } from 'lodash';
+import React, { FC, ReactElement, useContext, useMemo } from 'react';
 
+import { useAppDispatch } from '../hooks/redux';
+import { MailMessage } from '../types';
 import {
-	setMsgRead,
-	setMsgFlag,
-	moveMsgToTrash,
-	moveMessageToFolder,
+	MessageActionReturnType,
 	deleteMessagePermanently,
-	MessageActionReturnType
+	moveMessageToFolder,
+	moveMsgToTrash,
+	setMsgFlag,
+	setMsgRead
 } from './message-actions';
 import { applyMultiTag } from './tag-actions';
-import { MailMessage } from '../types';
 
 type SelectMessagesPanelActionsPropType = {
 	messages: Partial<MailMessage>[];
@@ -44,7 +44,7 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 	isAllSelected,
 	selectAllModeOff
 }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const createSnackbar = useContext(SnackbarManagerContext);
 	const ids = useMemo(() => Object.keys(selectedIds ?? []), [selectedIds]);
 	const selectedConversation = filter(messages, (convo) => ids.indexOf(convo.id ?? '') !== -1);

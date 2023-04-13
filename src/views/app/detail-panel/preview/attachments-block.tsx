@@ -40,6 +40,7 @@ import {
 	getAttachmentsLink,
 	getLocationOrigin
 } from './utils';
+import { useAppDispatch } from '../../../../hooks/redux';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments
@@ -118,7 +119,7 @@ const Attachment: FC<AttachmentType> = ({
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {

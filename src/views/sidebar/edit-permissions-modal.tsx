@@ -35,6 +35,7 @@ import {
 import { sendShareNotification } from '../../store/actions/send-share-notification';
 import { shareFolder } from '../../store/actions/share-folder';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
+import { useAppDispatch } from '../../hooks/redux';
 
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	onClose,
@@ -43,7 +44,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	grant,
 	goBack
 }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);

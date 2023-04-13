@@ -3,6 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import {
+	Container,
+	Input,
+	Padding,
+	SnackbarManagerContext,
+	Text
+} from '@zextras/carbonio-design-system';
 import React, {
 	ChangeEvent,
 	FC,
@@ -12,27 +19,20 @@ import React, {
 	useMemo,
 	useState
 } from 'react';
-import {
-	Container,
-	Input,
-	Text,
-	Padding,
-	SnackbarManagerContext
-} from '@zextras/carbonio-design-system';
 
-import { find, includes } from 'lodash';
 import { nanoid } from '@reduxjs/toolkit';
 import { Folder, t } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
-import { FolderSelector } from './commons/folder-selector';
+import { find, includes } from 'lodash';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import { useAppDispatch } from '../../hooks/redux';
 import { createFolder } from '../../store/actions/create-folder';
 import { ModalProps } from '../../types';
+import { FolderSelector } from './commons/folder-selector';
 import { translatedSystemFolders } from './utils';
 
 export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 	const [inputValue, setInputValue] = useState(() => t('new_folder', 'New Folder'));

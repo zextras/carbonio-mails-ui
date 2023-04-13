@@ -16,10 +16,11 @@ import { AppContext } from '../../types';
 import ShimmerList from '../search/shimmer-list';
 import ConversationList from './folder-panel/conversation-list';
 import MessageList from './folder-panel/message-list';
+import { useAppDispatch } from '../../hooks/redux';
 
 const FolderPanel: FC = () => {
 	const { folderId } = useParams<{ folderId: string }>();
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const { isMessageView } = useAppContext<AppContext>();
 
 	useEffect(() => {
