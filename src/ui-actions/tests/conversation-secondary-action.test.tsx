@@ -8,16 +8,18 @@ import {
 	ASSERTION,
 	ConversationActionsDescriptors,
 	FOLDERIDS,
-	MSG_CONV_STATUS
+	MSG_CONV_STATUS,
+	MessageActionsDescriptors
 } from '../../constants';
 import { getMsgConvActions } from '../get-msg-conv-actions';
 import { existsActionById } from './actions-tests-utils';
 import { generateConversation } from '../../tests/generators/generateConversation';
+import { generateMessage } from '../../tests/generators/generateMessage';
 
 describe('Actions visibility', () => {
-	describe('Conversation primary actions', () => {
+	describe('Conversation secondary actions', () => {
 		/**
-		 * 4. primary actions for a conversation in any folder except trash contain the trash action
+		 * 4. secondary actions for a conversation in any folder except trash contain the trash action
 		 */
 		test.each`
 			case | folder                    | assertion            | action
@@ -27,7 +29,7 @@ describe('Actions visibility', () => {
 			${4} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
 			${4} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
 		`(
-			`(case #$case) primary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
+			`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
@@ -36,7 +38,6 @@ describe('Actions visibility', () => {
 				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
 				const account = getUserAccount();
-
 				const actions = getMsgConvActions({
 					item: conv,
 					dispatch,
@@ -44,13 +45,48 @@ describe('Actions visibility', () => {
 					account,
 					tags: {}
 				});
-				expect(existsActionById({ id: action.id, actions })).toBe(assertion.value);
+				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
+					assertion.value
+				);
 			}
 		);
 
 		/**
-		 * 2. primary actions for an unread conversation in any folder except drafts contain the mark as read action
-		 * 3. primary actions for a read conversation in any folder except draft contain the mark as unread action
+		 * 11. secondary actions for a single message conversation in any folder except trash contain the reply action
+		 */
+		test.each`
+			case  | folder                    | assertion                | action
+			${11} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
+			${11} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
+			${11} | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
+			${11} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.REPLY}
+			${11} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.REPLY}
+			${11} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
+		`(
+			`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
+			async ({ folder, assertion, action }) => {
+				const conv = generateMessage({
+					folderId: folder.id
+				});
+				const dispatch = jest.fn();
+				const deselectAll = jest.fn();
+				const account = getUserAccount();
+				const actions = getMsgConvActions({
+					item: conv,
+					dispatch,
+					deselectAll,
+					account,
+					tags: {}
+				});
+				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
+					assertion.value
+				);
+			}
+		);
+
+		/**
+		 * 2. secondary actions for an unread conversation in any folder except drafts contain the mark as read action
+		 * 3. secondary actions for a read conversation in any folder except draft contain the mark as unread action
 		 */
 		test.each`
 			case | read                        | folder                    | assertion                | action
@@ -79,7 +115,7 @@ describe('Actions visibility', () => {
 			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_READ}
 			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_READ}
 		`(
-			`(case #$case) primary actions for a $read.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
+			`(case #$case) secondary actions for a $read.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, read, assertion, action }) => {
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
@@ -96,13 +132,15 @@ describe('Actions visibility', () => {
 					account,
 					tags: {}
 				});
-				expect(existsActionById({ id: action.id, actions })).toBe(assertion.value);
+				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
+					assertion.value
+				);
 			}
 		);
 
 		/**
-		 * 5. primary actions for a flagged conversation in any folder contain the unflag action
-		 * 6. primary actions for an unflagged conversation in any folder contain the flag action
+		 * 5. secondary actions for a flagged conversation in any folder contain the unflag action
+		 * 6. secondary actions for an unflagged conversation in any folder contain the flag action
 		 */
 		test.each`
 			case | flagged                        | folder                    | assertion                | action
@@ -131,7 +169,7 @@ describe('Actions visibility', () => {
 			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.FLAG}
 			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.FLAG}
 		`(
-			`(case #$case) primary actions for a $flagged.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
+			`(case #$case) secondary actions for a $flagged.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, flagged, assertion, action }) => {
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
@@ -148,7 +186,9 @@ describe('Actions visibility', () => {
 					account,
 					tags: {}
 				});
-				expect(existsActionById({ id: action.id, actions })).toBe(assertion.value);
+				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
+					assertion.value
+				);
 			}
 		);
 	});
