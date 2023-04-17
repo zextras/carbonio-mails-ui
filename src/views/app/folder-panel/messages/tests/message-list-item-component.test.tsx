@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { act, fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { noop } from 'lodash';
 import React from 'react';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';

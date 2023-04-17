@@ -6,8 +6,16 @@
 
 import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { Conversation, Participant } from '../../types';
+import { find, times } from 'lodash';
+import {
+	ParticipantRole,
+	ParticipantRoleType
+} from '../../carbonio-ui-commons/constants/participants';
+import {
+	collectParticipantsFromMessage,
+	collectParticipantsFromMessages
+} from '../../helpers/messages';
+import { Conversation, MailMessage, Participant } from '../../types';
 import { generateMessage } from './generateMessage';
 
 /**
@@ -16,44 +24,89 @@ import { generateMessage } from './generateMessage';
 type ConversationGenerationParams = {
 	id?: string;
 	folderId?: string;
-	from?: Participant;
+	from?: Array<Participant>;
 	to?: Array<Participant>;
 	cc?: Array<Participant>;
 	receiveDate?: number;
 	subject?: string;
 	isRead?: boolean;
 	isFlagged?: boolean;
-	isSingleMessageConversation: boolean;
+	isSingleMessageConversation?: boolean;
+	messages?: Array<MailMessage>;
+	messageGenerationCount?: number;
 };
 
-const singleMessage = generateMessage({});
+/**
+ *
+ */
+const generateRandomParticipants = (count: number, type: ParticipantRoleType): Array<Participant> =>
+	times(count, () => ({
+		type,
+		address: faker.internet.email()
+	}));
 
-const multipleMessages = [singleMessage, singleMessage, singleMessage];
-
+/**
+ *
+ * @param id
+ * @param folderId
+ * @param receiveDate
+ * @param to
+ * @param cc
+ * @param from
+ * @param subject
+ * @param isRead
+ * @param isFlagged
+ * @param isSingleMessageConversation
+ * @param messages
+ * @param messageGenerationCount
+ */
 const generateConversation = ({
 	id = faker.datatype.number().toString(),
 	folderId = FOLDERS.INBOX,
 	receiveDate = faker.date.recent(1).valueOf(),
-	to = [{ type: ParticipantRole.TO, address: faker.internet.email() }],
-	cc = [],
-	from = { type: ParticipantRole.FROM, address: faker.internet.email() },
+	to,
+	cc,
+	from,
 	subject = faker.lorem.word(6),
 	isRead = false,
 	isFlagged = false,
-	isSingleMessageConversation = true
-}: ConversationGenerationParams): Conversation => ({
-	date: receiveDate,
-	flagged: isFlagged,
-	fragment: '',
-	hasAttachment: false,
-	id,
-	parent: folderId,
-	participants: [from, ...to, ...cc],
-	read: isRead,
-	subject,
-	tags: [],
-	urgent: false,
-	messages: isSingleMessageConversation ? [singleMessage] : multipleMessages
-});
+	messages,
+	messageGenerationCount = 1
+}: ConversationGenerationParams): Conversation => {
+	const finalFrom =
+		from ??
+		(messages && messages.length
+			? collectParticipantsFromMessages(messages, ParticipantRole.FROM)
+			: generateRandomParticipants(messageGenerationCount, ParticipantRole.FROM));
+	const finalTo =
+		to ??
+		(messages && messages.length
+			? collectParticipantsFromMessages(messages, ParticipantRole.TO)
+			: generateRandomParticipants(messageGenerationCount, ParticipantRole.TO));
+	const finalCc =
+		cc ??
+		(messages && messages.length
+			? collectParticipantsFromMessages(messages, ParticipantRole.CARBON_COPY)
+			: generateRandomParticipants(messageGenerationCount, ParticipantRole.CARBON_COPY));
+	const finalMessages =
+		messages ?? times(messageGenerationCount, () => generateMessage({ folderId }));
+
+	const result = {
+		date: receiveDate,
+		flagged: isFlagged,
+		fragment: '',
+		hasAttachment: false,
+		id,
+		parent: folderId,
+		participants: [...finalFrom, ...finalTo, ...finalCc],
+		read: isRead,
+		subject,
+		tags: [],
+		urgent: false,
+		messages: finalMessages
+	};
+
+	return result;
+};
 
 export { ConversationGenerationParams, generateConversation };

@@ -249,7 +249,10 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 					hoverTooltipLabel={participantsString}
 					deselectAll={deselectAll}
 				>
-					<div style={{ alignSelf: 'center' }} data-testid={`AvatarContainer`}>
+					<div
+						style={{ alignSelf: 'center' }}
+						data-testid={`conversation-list-item-avatar-${item.id}`}
+					>
 						<ItemAvatar
 							item={item}
 							selected={selected}
@@ -273,7 +276,11 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							{renderBadge && (
 								<Row>
 									<Padding right="extrasmall">
-										<Badge value={getmsgToDisplayCount()} type={textReadValues.badge} />
+										<Badge
+											data-testid={`conversation-messages-count-${item.id}`}
+											value={getmsgToDisplayCount()}
+											type={textReadValues.badge}
+										/>
 									</Padding>
 								</Row>
 							)}

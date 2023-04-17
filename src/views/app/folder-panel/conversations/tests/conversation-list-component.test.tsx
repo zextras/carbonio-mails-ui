@@ -80,7 +80,7 @@ describe('Conversation list component', () => {
 				),
 				searchedInFolder: {},
 				conversations: {
-					...conversations.map((msg) => ({ [msg.id]: msg }))
+					...conversations.map((conversation) => ({ [conversation.id]: conversation }))
 				},
 				status: 'complete'
 			}
