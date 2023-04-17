@@ -3,18 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	Container,
-	Dropdown,
-	DropdownItem,
-	IconButton,
-	Tooltip
-} from '@zextras/carbonio-design-system';
+import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
 import { useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, ReactElement, SyntheticEvent, useCallback } from 'react';
 import styled, { DefaultTheme } from 'styled-components';
 import { useAppDispatch } from '../../../../hooks/redux';
-import { ListItemActionWrapperProps, MailMessage } from '../../../../types';
+import {
+	ConvActionReturnType,
+	Conversation,
+	ListItemActionWrapperProps,
+	MailMessage,
+	MessageActionReturnType,
+	TagActionItemType
+} from '../../../../types';
 import { getMsgConvActions } from '../../../../ui-actions/get-msg-conv-actions';
 
 const HoverBarContainer = styled(Container)<{ background: keyof DefaultTheme['palette'] }>`
@@ -53,14 +54,28 @@ const HoverContainer = styled(Container).attrs(() => ({
 	}
 `;
 
-export type ActionObj = DropdownItem & {
-	icon: NonNullable<DropdownItem['icon']>;
-	onClick: NonNullable<DropdownItem['onClick']>;
+const HoverActionComponent = ({
+	action,
+	item
+}: {
+	action: MessageActionReturnType | ConvActionReturnType | TagActionItemType;
+	item: Conversation | MailMessage;
+}): ReactElement => {
+	const label = 'label' in action ? action.label : '';
+	const icon = 'icon' in action ? action.icon : '';
+	const onClick = useCallback(
+		(ev: SyntheticEvent<Element, Event> | KeyboardEvent): void => {
+			ev.stopPropagation();
+			action.onClick && action.onClick(ev);
+		},
+		[action]
+	);
+	return (
+		<Tooltip label={label}>
+			<IconButton key={action.id} icon={icon} onClick={onClick} size="small" />
+		</Tooltip>
+	);
 };
-
-type ActionList = Array<ActionObj>;
-
-type GetMsgActionsFunction = (item: MailMessage, closeEditor: boolean) => [ActionList, ActionList];
 
 export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	children,
@@ -74,38 +89,26 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	const account = useUserAccount();
 	const tags = useTags();
 
-	const msgConvActionsCallback = useMemo(
-		() =>
-			getMsgConvActions({
-				item,
-				dispatch,
-				account,
-				tags,
-				deselectAll
-			}),
-		[account, deselectAll, dispatch, item, tags]
-	);
+	const [hoverActions, dropdownActions] = getMsgConvActions({
+		item,
+		dispatch,
+		deselectAll,
+		account,
+		tags
+	});
 
-	const getMsgConvHoverActions = useCallback<GetMsgActionsFunction>(
-		(_item: MailMessage, closeEditor: boolean): [ActionList, ActionList] =>
-			// TODO fix me
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			msgConvActionsCallback(item, closeEditor),
-		[item, msgConvActionsCallback]
-	);
-	const [hoverActions, dropdownActions] = useMemo(
-		// TODO fix me
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		() => getMsgConvHoverActions({ item, dispatch, deselectAll, account, tags }, false),
-		[account, deselectAll, dispatch, getMsgConvHoverActions, item, tags]
-	);
+	const dropdownActionsItems = dropdownActions.map((action) => ({
+		...action,
+		onClick: (ev: SyntheticEvent<Element, Event> | KeyboardEvent): void => {
+			action.onClick && action.onClick(ev);
+		},
+		label: 'label' in action ? action.label : ''
+	}));
 
 	return (
 		<Dropdown
 			contextMenu
-			items={dropdownActions}
+			items={dropdownActionsItems}
 			display="block"
 			style={{ width: '100%', height: '4rem' }}
 			data-testid={`secondary-actions-menu-${item.id}`}
@@ -128,17 +131,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 					data-testid={`primary-actions-bar-${item.id}`}
 				>
 					{hoverActions.map((action, index) => (
-						<Tooltip key={action.id ?? index} label={action.label}>
-							<IconButton
-								key={action.id}
-								icon={action.icon}
-								onClick={(ev): void => {
-									ev.stopPropagation();
-									action.onClick(ev);
-								}}
-								size="small"
-							/>
-						</Tooltip>
+						<HoverActionComponent key={action.id ?? index} action={action} item={item} />
 					))}
 				</HoverBarContainer>
 			</HoverContainer>

@@ -91,14 +91,13 @@ describe('Primary actions visibility', () => {
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
 			const account = getUserAccount();
-			const actionsFactory = getMsgConvActions({
+			const primaryActions = getMsgConvActions({
 				item: msg,
 				dispatch,
 				deselectAll,
 				account,
 				tags: {}
 			});
-			const primaryActions = actionsFactory();
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 		}
 	);
@@ -138,14 +137,13 @@ describe('Primary actions visibility', () => {
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
 			const account = getUserAccount();
-			const actionsFactory = getMsgConvActions({
+			const primaryActions = getMsgConvActions({
 				item: msg,
 				dispatch,
 				deselectAll,
 				account,
 				tags: {}
 			});
-			const primaryActions = actionsFactory();
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 		}
 	);
@@ -187,14 +185,13 @@ describe('Primary actions visibility', () => {
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
 			const account = getUserAccount();
-			const actionsFactory = getMsgConvActions({
+			const primaryActions = getMsgConvActions({
 				item: msg,
 				dispatch,
 				deselectAll,
 				account,
 				tags: {}
 			});
-			const primaryActions = actionsFactory();
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 		}
 	);

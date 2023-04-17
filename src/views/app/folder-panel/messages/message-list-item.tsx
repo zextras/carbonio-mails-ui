@@ -35,6 +35,7 @@ import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { SenderName } from '../parts/sender-name';
+import { getFolderTranslatedName } from '../../../sidebar/utils';
 
 export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
 	item,
@@ -90,37 +91,36 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	}, [item, accounts]);
 
 	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
-		if (item) {
-			if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
-				return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon', 'secondary'];
-			}
-			if (item.isDraft) {
-				return [true, 'FileOutline', t('label.draft', 'Draft'), 'DraftIcon', 'secondary'];
-			}
-			if (item.isReplied) {
-				return [true, 'UndoOutline', t('label.replied', 'Replied'), 'RepliedIcon', 'secondary'];
-			}
-			if (
-				item.read === false &&
-				!item.isReplied &&
-				!item.isDraft &&
-				!item.isSentByMe &&
-				!item.isForwarded
-			) {
-				return [true, 'EmailOutline', t('search.unread', 'Unread'), 'UnreadIcon', 'primary'];
-			}
-			if (
-				item.read !== false &&
-				!item.isReplied &&
-				!item.isDraft &&
-				!item.isSentByMe &&
-				!item.isForwarded
-			) {
-				return [true, 'EmailReadOutline', t('label.read', 'Read'), 'ReadIcon', 'secondary'];
-			}
-			if (item.isForwarded) {
-				return [true, 'Forward', t('label.forwarded', 'Forwarded'), 'ForwardedIcon', 'secondary'];
-			}
+		if (!item) return [false, '', '', '', ''];
+		if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
+			return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon', 'secondary'];
+		}
+		if (item.isDraft) {
+			return [true, 'FileOutline', t('label.draft', 'Draft'), 'DraftIcon', 'secondary'];
+		}
+		if (item.isReplied) {
+			return [true, 'UndoOutline', t('label.replied', 'Replied'), 'RepliedIcon', 'secondary'];
+		}
+		if (
+			item.read === false &&
+			!item.isReplied &&
+			!item.isDraft &&
+			!item.isSentByMe &&
+			!item.isForwarded
+		) {
+			return [true, 'EmailOutline', t('search.unread', 'Unread'), 'UnreadIcon', 'primary'];
+		}
+		if (
+			item.read !== false &&
+			!item.isReplied &&
+			!item.isDraft &&
+			!item.isSentByMe &&
+			!item.isForwarded
+		) {
+			return [true, 'EmailReadOutline', t('label.read', 'Read'), 'ReadIcon', 'secondary'];
+		}
+		if (item.isForwarded) {
+			return [true, 'Forward', t('label.forwarded', 'Forwarded'), 'ForwardedIcon', 'secondary'];
 		}
 		return [false, '', '', '', ''];
 	}, [item]);
@@ -131,7 +131,6 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				tagsFromStore,
 				(acc, v) => {
 					if (includes(item.tags, v.id))
-						// TODO fix color type
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[v.color ?? '0'].hex });
@@ -191,136 +190,137 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				onDoubleClick={onDoubleClick}
 				deselectAll={deselectAll}
 			>
-				<>
-					<div style={{ alignSelf: 'center' }} data-testid={`message-list-item-avatar-${item.id}`}>
-						<ItemAvatar
-							item={item}
-							selected={selected}
-							selecting={selecting}
-							toggle={onToggle}
-							folderId={firstChildFolderId}
-						/>
-						<Padding horizontal="extrasmall" />
-					</div>
-					<Row
-						wrap="wrap"
-						orientation="horizontal"
-						takeAvailableSpace
-						padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
-					>
-						<Container orientation="horizontal" height="fit" width="fill">
-							<SenderName item={item} textValues={textReadValues} isSearchModule={isSearchModule} />
-							<Row>
-								{showTagIcon && (
-									<Padding left="small">
-										<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
-									</Padding>
-								)}
-								{item.hasAttachment && (
-									<Padding left="small">
-										<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
-									</Padding>
-								)}
-								{item.flagged && (
-									<Padding left="small">
-										<Icon data-testid="FlagIcon" color="error" icon="Flag" />
-									</Padding>
-								)}
+				<div style={{ alignSelf: 'center' }} data-testid={`message-list-item-avatar-${item.id}`}>
+					<ItemAvatar
+						item={item}
+						selected={selected}
+						selecting={selecting}
+						toggle={onToggle}
+						folderId={firstChildFolderId}
+					/>
+					<Padding horizontal="extrasmall" />
+				</div>
+				<Row
+					wrap="wrap"
+					orientation="horizontal"
+					takeAvailableSpace
+					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
+				>
+					<Container orientation="horizontal" height="fit" width="fill">
+						<SenderName item={item} textValues={textReadValues} isSearchModule={isSearchModule} />
+						<Row>
+							{showTagIcon && (
 								<Padding left="small">
-									{item?.isScheduled ? (
-										<Row>
-											<Padding right="extrasmall">
-												<Icon data-testid={iconId} icon="SendDelayedOutline" color="primary" />
-											</Padding>
-											<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
-												{t('label.send_scheduled', 'Send Scheduled')}
-											</Text>
-										</Row>
-									) : (
-										<Text data-testid="DateLabel" size="extrasmall">
-											{date}
+									<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+								</Padding>
+							)}
+							{item.hasAttachment && (
+								<Padding left="small">
+									<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
+								</Padding>
+							)}
+							{item.flagged && (
+								<Padding left="small">
+									<Icon data-testid="FlagIcon" color="error" icon="Flag" />
+								</Padding>
+							)}
+							<Padding left="small">
+								{item?.isScheduled ? (
+									<Row>
+										<Padding right="extrasmall">
+											<Icon data-testid={iconId} icon="SendDelayedOutline" color="primary" />
+										</Padding>
+										<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
+											{t('label.send_scheduled', 'Send Scheduled')}
+										</Text>
+									</Row>
+								) : (
+									<Text data-testid="DateLabel" size="extrasmall">
+										{date}
+									</Text>
+								)}
+							</Padding>
+						</Row>
+					</Container>
+					<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
+						<Row
+							wrap="nowrap"
+							takeAvailableSpace
+							mainAlignment="flex-start"
+							crossAlignment="center"
+						>
+							{showIcon && (
+								<Tooltip label={iconTooltip} placement="bottom">
+									<Padding right="extrasmall">
+										<Icon data-testid={iconId} icon={icon} color={color} />
+									</Padding>
+								</Tooltip>
+							)}
+							<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
+								<Row
+									wrap="nowrap"
+									takeAvailableSpace
+									mainAlignment="flex-start"
+									crossAlignment="baseline"
+								>
+									{!isConvChildren && (
+										<Text
+											data-testid="Subject"
+											weight={textReadValues.weight}
+											color={item.subject ? 'text' : 'secondary'}
+										>
+											{subject}
 										</Text>
 									)}
-								</Padding>
-							</Row>
-						</Container>
-						<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-							<Row
-								wrap="nowrap"
-								takeAvailableSpace
-								mainAlignment="flex-start"
-								crossAlignment="center"
-							>
-								{showIcon && (
-									<Tooltip label={iconTooltip} placement="bottom">
-										<Padding right="extrasmall">
-											<Icon data-testid={iconId} icon={icon} color={color} />
-										</Padding>
-									</Tooltip>
-								)}
-								<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
-									<Row
-										wrap="nowrap"
-										takeAvailableSpace
-										mainAlignment="flex-start"
-										crossAlignment="baseline"
-									>
-										{!isConvChildren && (
+
+									{!isEmpty(item.fragment) && (
+										<Row
+											takeAvailableSpace
+											mainAlignment="flex-start"
+											padding={{ left: 'extrasmall' }}
+										>
 											<Text
-												data-testid="Subject"
+												data-testid="Fragment"
+												size="small"
+												color="secondary"
 												weight={textReadValues.weight}
-												color={item.subject ? 'text' : 'secondary'}
 											>
-												{subject}
+												{fragmentLabel}
 											</Text>
-										)}
+										</Row>
+									)}
+								</Row>
+							</Tooltip>
+						</Row>
+						<Row>
+							{item.urgent && (
+								<Padding left="extrasmall">
+									<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
+								</Padding>
+							)}
 
-										{!isEmpty(item.fragment) && (
-											<Row
-												takeAvailableSpace
-												mainAlignment="flex-start"
-												padding={{ left: 'extrasmall' }}
-											>
-												<Text
-													data-testid="Fragment"
-													size="small"
-													color="secondary"
-													weight={textReadValues.weight}
-												>
-													{fragmentLabel}
-												</Text>
-											</Row>
-										)}
-									</Row>
+							{item?.isScheduled && (
+								<Tooltip label={scheduledTime}>
+									<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
+										{scheduledTime}
+									</Text>
 								</Tooltip>
-							</Row>
-							<Row>
-								{item.urgent && (
-									<Padding left="extrasmall">
-										<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
-									</Padding>
-								)}
-
-								{item?.isScheduled && (
-									<Tooltip label={scheduledTime}>
-										<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
-											{scheduledTime}
-										</Text>
-									</Tooltip>
-								)}
-								{((messageFolder && messageFolder.id !== firstChildFolderId) || isSearchModule) && (
-									<Padding left="small">
-										<Badge
-											data-testid="FolderBadge"
-											value={messageFolder.name}
-											type={textReadValues.badge}
-										/>
-									</Padding>
-								)}
-							</Row>
-						</Container>
-					</Row>
-				</>
+							)}
+							{((messageFolder && messageFolder.id !== firstChildFolderId) || isSearchModule) && (
+								<Padding left="small">
+									<Badge
+										data-testid="FolderBadge"
+										value={getFolderTranslatedName({
+											folderId: firstChildFolderId,
+											folderName: messageFolder.name
+										})}
+										type={textReadValues.badge}
+									/>
+								</Padding>
+							)}
+						</Row>
+					</Container>
+				</Row>
 			</ListItemActionWrapper>
 		</Container>
 	);

@@ -280,6 +280,18 @@ export const ConversationActionsDescriptors = {
 	MOVE_TO_TRASH: {
 		id: 'conversation-trash',
 		desc: 'Move to trash'
+	},
+	REPLY: {
+		id: 'conversation-reply',
+		desc: 'Reply'
+	},
+	REPLY_ALL: {
+		id: 'conversation-reply_all',
+		desc: 'Reply all'
+	},
+	FORWARD: {
+		id: 'conversation-forward',
+		desc: 'Forward'
 	}
 } as const;
 

@@ -7,8 +7,8 @@ import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text } from '@zextras/carbonio-design-system';
 import {
 	Account,
-	FOLDERS,
 	addBoard,
+	FOLDERS,
 	getBridgedFunctions,
 	replaceHistory,
 	t
@@ -72,14 +72,10 @@ export const setMsgRead = ({
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				msgAction({
 					operation: `${value ? '!' : ''}read`,
 					ids
 				})
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 			).then((res) => {
 				deselectAll && deselectAll();
 				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
@@ -107,8 +103,6 @@ export function setMsgFlag({
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				msgAction({
 					operation: `${value ? '!' : ''}flag`,
 					ids
@@ -116,6 +110,44 @@ export function setMsgFlag({
 			);
 		}
 	};
+}
+
+type SetAsSpamProps = {
+	notCanceled: boolean;
+	value: MessageActionValueType | undefined;
+	dispatch: AppDispatch;
+	ids: Array<string>;
+	shouldReplaceHistory?: boolean;
+	folderId?: string;
+};
+function setAsSpam({
+	notCanceled,
+	value,
+	dispatch,
+	ids,
+	shouldReplaceHistory,
+	folderId
+}: SetAsSpamProps): void {
+	if (!notCanceled) return;
+	dispatch(
+		msgAction({
+			operation: `${value ? '!' : ''}spam`,
+			ids
+		})
+	).then((res) => {
+		if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+			replaceHistory(`/folder/${folderId}`);
+		}
+		if (!res.type.includes('fulfilled')) {
+			getBridgedFunctions()?.createSnackbar({
+				key: `trash-${ids}`,
+				replace: true,
+				type: 'error',
+				label: t('label.error_try_again', 'Something went wrong, please try again'),
+				autoHideTimeout: 3000
+			});
+		}
+	});
 }
 
 export function setMsgAsSpam({
@@ -157,27 +189,8 @@ export function setMsgAsSpam({
 			};
 			infoSnackbar();
 			setTimeout(() => {
-				if (notCanceled) {
-					dispatch(
-						msgAction({
-							operation: `${value ? '!' : ''}spam`,
-							ids
-						})
-					).then((res) => {
-						if (res.type.includes('fulfilled') && shouldReplaceHistory) {
-							replaceHistory(`/folder/${folderId}`);
-						}
-						if (!res.type.includes('fulfilled')) {
-							getBridgedFunctions()?.createSnackbar({
-								key: `trash-${ids}`,
-								replace: true,
-								type: 'error',
-								label: t('label.error_try_again', 'Something went wrong, please try again'),
-								autoHideTimeout: 3000
-							});
-						}
-					});
-				}
+				/** If the user has not clicked on the undo button, we can proceed with the action */
+				setAsSpam({ notCanceled, value, dispatch, ids, shouldReplaceHistory, folderId });
 			}, 3000);
 		}
 	};

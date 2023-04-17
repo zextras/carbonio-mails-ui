@@ -45,7 +45,7 @@ export function getMsgConvActions({
 	deselectAll,
 	account,
 	tags
-}: GetMessageActionsProps): () => MsgConvActionsReturnType {
+}: GetMessageActionsProps): MsgConvActionsReturnType {
 	const isConversation = 'messages' in (item || {});
 	const folderId = isConversation ? (item as Conversation)?.messages?.[0].parent : item.parent;
 	const firstConversationMessageId = isConversation
@@ -247,5 +247,5 @@ export function getMsgConvActions({
 		return acc;
 	}, []);
 
-	return () => [primaryActions, secondaryActions];
+	return [primaryActions, secondaryActions];
 }

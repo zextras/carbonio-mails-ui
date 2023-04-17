@@ -140,14 +140,13 @@ describe('Secondary actions visibility', () => {
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
 			const account = getUserAccount();
-			const actionsFactory = getMsgConvActions({
+			const secondaryActions = getMsgConvActions({
 				item: msg,
 				dispatch,
 				deselectAll,
 				account,
 				tags
 			});
-			const secondaryActions = actionsFactory();
 			expect(
 				existsActionById({ id: action.id, actions: secondaryActions, type: 'secondary' })
 			).toBe(assertion.value);
@@ -189,14 +188,13 @@ describe('Secondary actions visibility', () => {
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
 			const account = getUserAccount();
-			const actionsFactory = getMsgConvActions({
+			const secondaryActions = getMsgConvActions({
 				item: msg,
 				dispatch,
 				deselectAll,
 				account,
 				tags: {}
 			});
-			const secondaryActions = actionsFactory();
 			expect(
 				existsActionById({ id: action.id, actions: secondaryActions, type: 'secondary' })
 			).toBe(assertion.value);
@@ -240,14 +238,13 @@ describe('Secondary actions visibility', () => {
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
 			const account = getUserAccount();
-			const actionsFactory = getMsgConvActions({
+			const secondaryActions = getMsgConvActions({
 				item: msg,
 				dispatch,
 				deselectAll,
 				account,
 				tags: {}
 			});
-			const secondaryActions = actionsFactory();
 			expect(
 				existsActionById({ id: action.id, actions: secondaryActions, type: 'secondary' })
 			).toBe(assertion.value);
@@ -272,14 +269,13 @@ describe('Secondary actions visibility', () => {
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
 			const account = getUserAccount();
-			const actionsFactory = getMsgConvActions({
+			const secondaryActions = getMsgConvActions({
 				item: msg,
 				dispatch,
 				deselectAll,
 				account,
 				tags
 			});
-			const secondaryActions = actionsFactory();
 			expect(existsActionById({ id: action, actions: secondaryActions, type: 'secondary' })).toBe(
 				assertion.value
 			);

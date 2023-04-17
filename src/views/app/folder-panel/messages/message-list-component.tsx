@@ -6,7 +6,7 @@
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { Folder, useFolder } from '@zextras/carbonio-shell-ui';
 import { find, map, noop, reduce } from 'lodash';
-import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
+import React, { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { IncompleteMessage, MailMessage, MessageListItemProps } from '../../../../types';
@@ -121,6 +121,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		setIsSelectModeOn
 	}) {
 		const dragImageRef = useRef(null);
+		const listRef = useRef<HTMLDivElement>(null);
 
 		useEffect(() => {
 			setDraggedIds && setDraggedIds(selected);
@@ -142,6 +143,10 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 			}
 			return folder?.absFolderPath?.split('/')?.join(' / ') ?? '';
 		}, [folder?.absFolderPath, isSearchModule]);
+
+		const onListBottom = useCallback((): void => {
+			loadMore && loadMore(loadMoreDate ?? today);
+		}, [loadMore, loadMoreDate, today]);
 
 		return (
 			<>
@@ -170,10 +175,9 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 					<>
 						{totalMessages > 0 ? (
 							<CustomList
-								onListBottom={(): void => {
-									loadMore && loadMore(loadMoreDate ?? today);
-								}}
+								onListBottom={onListBottom}
 								data-testid={`message-list-${folderId}`}
+								ref={listRef}
 							>
 								{listItems}
 							</CustomList>
