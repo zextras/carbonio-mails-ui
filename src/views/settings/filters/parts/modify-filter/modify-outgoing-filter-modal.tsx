@@ -24,6 +24,7 @@ import {
 import type { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../create-filter-modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import DefaultCondition from '../create-filters-conditions/default';
@@ -33,6 +34,7 @@ import FilterActionConditions from '../new-filter-action-conditions';
 import FilterTestConditionRow from '../filter-test-condition-row';
 import { getTestComponent, findRowKey } from '../get-test-component';
 import { capitalise } from '../../../../sidebar/utils';
+import { FilterActions } from '../../../../../types';
 import { getButtonInfo } from '../utils';
 
 type FilterType = {
@@ -68,6 +70,8 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	const [copyRequiredFilters, setCopyRequiredFilters] = useState({});
 	const [updateRequiredFilters, setUpdateRequiredFilters] = useState(true);
 	const [reFetch, setReFetch] = useState(false);
+	const { zimbraFeatureMailForwardingInFiltersEnabled } = useUserSettings().attrs;
+
 	const [newFilters, setNewFilters] = useState([
 		{
 			filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
@@ -129,8 +133,8 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? [{ ...omit(finalActions, 'id'), actionStop: [{}] }]
-				: [{ ...omit(finalActions, 'id') }],
+				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions[])
+				: ([{ ...omit(finalActions, 'id') }] as FilterActions[]),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
@@ -162,9 +166,10 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 			activeFilter,
 			filterName,
 			tempActions,
-			setTempActions
+			setTempActions,
+			zimbraFeatureMailForwardingInFiltersEnabled
 		}),
-		[t, activeFilter, filterName, tempActions, setTempActions]
+		[t, activeFilter, filterName, tempActions, zimbraFeatureMailForwardingInFiltersEnabled]
 	);
 	const filterTestConditionRowProps = useMemo(
 		() => ({
@@ -354,7 +359,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 				</Row>
 
 				<ModalFooter
-					label={t('label.edit', 'Edit')}
+					label={t('label.save', 'Save')}
 					toolTipText={buttonTooltip}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}

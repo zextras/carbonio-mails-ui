@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.0...v1.3.1) (2023-04-13)
+
+## [1.3.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.5...v1.3.0) (2023-04-07)
+
+
+### Features
+
+* managed the redirectToAddress action in filters as per permission ([c6c3c17](https://github.com/zextras/carbonio-mails-ui/commit/c6c3c1718a7085c8881403bd6c8c62a147955122))
+
+### [1.2.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.4...v1.2.5) (2023-04-07)
+
+
+### Bug Fixes
+
+* hotfix mail preview flicker ([2531201](https://github.com/zextras/carbonio-mails-ui/commit/253120114e29a96c2642c7a7ebd2ac9f459a2feb))
+
 ### [1.2.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.3...v1.2.4) (2023-03-30)
 
 

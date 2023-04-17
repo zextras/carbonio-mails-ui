@@ -27,7 +27,8 @@
         "preview_new_tab": "Klicken zur Vorschau in einem anderen Reiter",
         "click_preview": "Klicken zur Vorschau",
         "mark_all_read": "Alle als gelesen markieren",
-        "edit_anyway": "Trotzdem bearbeiten"
+        "edit_anyway": "Trotzdem bearbeiten",
+        "click_open": "Zum Öffnen anklicken"
     },
     "folder": {
         "modal": {
@@ -75,7 +76,7 @@
         "keywords": "Schlüsselwörter",
         "resend": "Erneut senden",
         "revoke": "Widerrufen",
-        "revoke_share": "Delen herroepen",
+        "revoke_share": "Teilen widerrufen",
         "no_subject": "Kein Betreff",
         "owner": "Besitzer: ",
         "receive_message": "Nachrichten werden empfangen",
@@ -109,7 +110,7 @@
         "empty": "Leer",
         "error_try_again": "Etwas ist schiefgegangen, bitte versuchen Sie es erneut",
         "flagged": "Markiert",
-        "freebusy": "FreeBusy",
+        "freebusy": "Frei/Beschäftigt",
         "go_back": "Zurück",
         "insert": "Eingeben",
         "messages": "Nachrichten",
@@ -150,7 +151,7 @@
         "attachment_status": "Status des E-Mail-Elements",
         "attachment_type": "Art des Anhangs",
         "choose_folder": "Ordner auswählen",
-        "loading_results": "Ergebnisse laden…",
+        "loading_results": "Egebnisse laden…",
         "mail_folder": "E-Mail-Ordner",
         "mail_selected": "{{count}} E-Mail ausgewählt",
         "mail_selected_plural": "{{count}} ausgewählte E-Mails",
@@ -165,7 +166,7 @@
         "forwarded": "Weitergeleitet",
         "send_email": "E-Mail senden",
         "draft": "Entwurf",
-        "app_name": "Mails",
+        "app_name": "E-Mails",
         "folder_name": "Ordnernname",
         "add_task": "Wenn Sie eine Notiz machen müssen, können Sie eine Aufgabe zu Ihrer TO DO LIST hinzufügen",
         "accept": "Akzeptieren",
@@ -196,7 +197,7 @@
         "delete_tag_name": "Tag \"{{name}}\" löschen",
         "create_tag": "Tag erstellen",
         "delete_tag": "Delete tag",
-        "edit_tag": "Edit Tag",
+        "edit_tag": "Tag bearbeiten",
         "edit_tag_name": "Tag \"{{name}}\" bearbeiten",
         "no_special_char_allowed": "Der Name darf keine Sonderzeichen enthalten",
         "tag_max_length": "Maximal 128 Zeichen sind erlaubt",
@@ -245,7 +246,7 @@
         "read_receipt_req": "Lesebestätigung erforderlich",
         "mark_as_un_important": "Als unwichtig markieren",
         "mark_as_important": "Als wichtig markieren",
-        "include_shared_folders": "Geteilte Ordner inkludieren",
+        "include_shared_folders": "Freigabeordner berücksichtigen",
         "hide_more_info": "Mehr Informationen verbergen",
         "filter_modified": "Filter erfolgreich geändert",
         "expand_receivers_list": "Empfängerliste aufklappen",
@@ -263,7 +264,20 @@
         "using_signatures": "Verwendung von Signaturen",
         "extra_window": {
             "save_to_files_disabled": "Speichern unter Dateien"
-        }
+        },
+        "mark_read_message_immediately": "Meldungen im Display sofort als gelesen markieren",
+        "mark_read_message_manually": "Manuell als gelesen markieren, indem Sie auf dieses Symbol klicken",
+        "attachment_with_count": "{{count}} Anhang",
+        "attachment_with_count_plural": "{{count}} Anhänge",
+        "attachments_disclaimer": "Sie sehen eine angehängte Nachricht. Die Echtheit der angehängten Nachrichten kann nicht überprüft werden.",
+        "deselect_all": "Alle abwählen",
+        "extra_windows": {
+            "opening_blocked": {
+                "title": "Neues Fenster kann nicht geöffnet werden"
+            }
+        },
+        "need_to_select_atleast_one_item": "Sie müssen mindestens ein Element auswählen, um die Aktion auszuführen",
+        "select_all": "Alle auswählen"
     },
     "share": {
         "options": {
@@ -306,7 +320,7 @@
             },
             "redirect": {
                 "first": "Diese E-Mail wird an einen neuen Empfänger weitergesendet, während die E-Mail Adresse des ursprünglichen Absenders beibehalten wird.",
-                "second": "Die E-Mail wird so erscheinen, wie sie ursprünglich für den neuen Empfänger bestimmt war."
+                "second": "Die E-Mail wird so erscheinen, wie sie ursprünglich für den neuen Empfänger bestimmt war"
             },
             "send_anyway": {
                 "attachment": "anhang",
@@ -353,7 +367,7 @@
             "message_deleted": "Nachricht gelöscht",
             "folder_restored": "Ordner restauriert",
             "mail_saved_to_drafts": "In Entwürfen gespeicherte E-Mails",
-            "sending_mail_in_count": "Senden Sie Ihre Nachricht in {{count}} Sekunden",
+            "sending_mail_in_count": "Senden Sie Ihre Nachricht in {{count}} Sekunde",
             "sending_mail_in_count_plural": "Senden Sie Ihre Nachricht in {{count}} Sekunden",
             "tag_not_updated": "Etwas ist schief gelaufen, der Tag wurde nicht aktualisiert. Bitte versuchen Sie es erneut.",
             "tag_created": "Tag {{name}} erfolgreich erstellt",
@@ -362,7 +376,7 @@
         },
         "invalid_address": "Die folgende Adresse scheint ungültig zu sein",
         "invalid_address_plural": "Die folgenden Adressen scheinen ungültig zu sein",
-        "powered_by": "powered by",
+        "powered_by": "Betrieben von",
         "check_and_try_again": "Bitte überprüfen Sie Carbonio und versuchen Sie es erneut",
         "could_not_find_to_show": "Sorry, wir konnten nichts zum Anzeigen finden",
         "something_went_wrong": "ETWAS IST SCHIEFGELAUFEN",
@@ -371,7 +385,12 @@
         "read_receipt_1": "Der Absender dieser Nachricht hat angefordert benachrichtigt zu werden, sobald Sie diese Nachricht gelesen haben.",
         "invalid_trustee_address": "Bitte geben Sie nur E-Mail Adressen oder Domains ein",
         "edit_schedule_warning": "Durch das Bearbeiten dieser E-Mail werden zuvor eingestellte Zeit und Datum für das verzögerte Versenden zurückgesetzt.",
-        "cal_name_exist_warning": "Ein Kalender mit dem gleichen Namen existiert bereits in diesem Pfad"
+        "cal_name_exist_warning": "Ein Kalender mit dem gleichen Namen existiert bereits in diesem Pfad",
+        "extra_windows": {
+            "": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen",
+            "opening_blocked": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen",
+            "popup_blocked": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen"
+        }
     },
     "placeholder": {
         "add_new_recipients": "Neue Empfänger hinzufügen"
@@ -428,12 +447,13 @@
         "admin_rights": "Anzeigen, Bearbeiten, Hinzufügen, Entfernen, Verwalten",
         "manager_rights": "Anzeigen, Bearbeiten, Hinzufügen, Entfernen",
         "external_images_blocked": "Externe Bilder wurden geblockt, um Sie gegen möglichen Spam zu schützen",
-        "select_date_time": "Wählen Sie Datum und Uhrzeit aus, zu denen diese Mail gesendet werden soll.",
+        "select_date_time": "Wählen Sie Datum und Uhrzeit aus, zu denen diese Mail gesendet werden soll",
         "send_later_success": "Ihre E-Mail wird gesendet am {{date}} um {{time}}",
         "schedule_time": "für {{date}} um {{time}}",
         "schedule_mail": "Wird gesendet am: {{date}} um {{time}}",
         "delete_attachment_message1": "Ihr Anhang wird endgültig von Carbonio gelöscht.",
-        "delete_attachment_message2": "Möchten Sie ihn vorher herunterladen?"
+        "delete_attachment_message2": "Möchten Sie ihn vorher herunterladen?",
+        "": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen"
     },
     "tooltip": {
         "revoke": "Zugriff widerrufen",
@@ -472,7 +492,10 @@
             "visualization_options": "Visualisierungsoptionen",
             "unsend_time": "Zeit für das Zurückrufen einer Nachricht festlegen",
             "mark_reading_panel": "Als gelesen markieren",
-            "default": "Voreinstellung"
+            "default": "Voreinstellung",
+            "mark_manually": "Manuell markieren",
+            "not_changed_anything": "Keine Änderung vorgenommen",
+            "filter_name_required": "Filtername ist erforderlich"
         },
         "msg_from_optn": {
             "discard": "Nachricht automatisch verwerfen",
@@ -605,7 +628,12 @@
             "second_plural": "{{count}} Sekunden",
             "no_delay": "Keine Verzögerung"
         },
-        "address": "Adresse"
+        "address": "Adresse",
+        "add_action": "Neue Aktion hinzufügen",
+        "address_required": "Füllen Sie das Feld „Adresse“ aus, um die Aktion „Weiterleiten an Adresse“ abzuschließen.",
+        "remove_action": "Diese Aktion entfernen",
+        "folder_path_required": "Wählen Sie einen Zielordner aus, um die Aktion \"In Ordner verschieben\" abzuschließen.",
+        "tag_name_required": "Füllen Sie das Feld \"Erwähnen\" aus, um die Aktion \"Erwähnen mit\" abzuschließen."
     },
     "folder_panel": {
         "modal": {
@@ -732,12 +760,12 @@
         "received": "von mir erhalten",
         "read": "gelesen",
         "fromme": "von mir",
-        "fromccme": "von mir",
+        "fromccme": "An mich oder in Kopie an mich",
         "forwarded": "weitergeleitet",
         "flagged": "gevlagd",
         "draft": "Entwurf",
         "unreplied": "von mir nicht beantwortet",
-        "tofromme": "an mich, von mir oder in kopie an mich",
+        "tofromme": "Für mich oder von mir",
         "tofromccme": "an mich, von mir oder in kopie an mich",
         "toccme": "an mich oder in kopie an mich",
         "solo": "gespräche mit einer einzigen nachricht",
@@ -771,5 +799,6 @@
         "delete_draft": {
             "message1": "Möchten Sie diesen Entwurf behalten oder löschen?"
         }
-    }
+    },
+    "": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen"
 }

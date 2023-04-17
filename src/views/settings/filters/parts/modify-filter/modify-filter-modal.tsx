@@ -24,6 +24,7 @@ import {
 import type { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../create-filter-modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import DefaultCondition from '../create-filters-conditions/default';
@@ -69,6 +70,8 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const [copyRequiredFilters, setCopyRequiredFilters] = useState({});
 	const [reFetch, setReFetch] = useState(false);
 	const [updateRequiredFilters, setUpdateRequiredFilters] = useState(true);
+	const { zimbraFeatureMailForwardingInFiltersEnabled } = useUserSettings().attrs;
+
 	const [newFilters, setNewFilters] = useState([
 		{
 			filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
@@ -165,9 +168,10 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 			filterName,
 			isIncoming: true,
 			tempActions,
-			setTempActions
+			setTempActions,
+			zimbraFeatureMailForwardingInFiltersEnabled
 		}),
-		[t, activeFilter, filterName, tempActions, setTempActions]
+		[t, activeFilter, filterName, tempActions, zimbraFeatureMailForwardingInFiltersEnabled]
 	);
 	const filterTestConditionRowProps = useMemo(
 		() => ({
@@ -216,7 +220,6 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const setCopyOfFilter = (): void => {
 		setCopyRequiredFilters(requiredFilters);
 	};
-
 	useEffect(() => {
 		if (selectedFilter) {
 			if (updateRequiredFilters) {
@@ -357,7 +360,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 					<FilterActionConditions compProps={filterActionProps} />
 				</Row>
 				<ModalFooter
-					label={t('label.edit', 'Edit')}
+					label={t('label.save', 'Save')}
 					toolTipText={buttonTooltip}
 					onConfirm={onConfirm}
 					disabled={createFilterDisabled}
