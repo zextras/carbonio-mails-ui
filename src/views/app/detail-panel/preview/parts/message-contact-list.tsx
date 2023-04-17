@@ -28,6 +28,7 @@ import { useAppSelector } from '../../../../../hooks/redux';
 import { selectFolders } from '../../../../../store/folders-slice';
 import { MailMessage, TextReadValuesProps } from '../../../../../types';
 import ContactNames from './contact-names';
+import { getFolderTranslatedName } from '../../../../sidebar/utils';
 
 const MessageContactList: FC<{
 	message: MailMessage;
@@ -179,7 +180,10 @@ const MessageContactList: FC<{
 					<Padding left="small">
 						<Badge
 							data-testid="FolderBadge"
-							value={messageFolder.name}
+							value={getFolderTranslatedName({
+								folderId,
+								folderName: messageFolder.name
+							})}
 							type={textReadValues.badge}
 						/>
 					</Padding>

@@ -35,6 +35,7 @@ import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { SenderName } from '../parts/sender-name';
+import { getFolderTranslatedName } from '../../../sidebar/utils';
 
 export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
 	item,
@@ -309,7 +310,10 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 								<Padding left="small">
 									<Badge
 										data-testid="FolderBadge"
-										value={messageFolder.name}
+										value={getFolderTranslatedName({
+											folderId: firstChildFolderId,
+											folderName: messageFolder.name
+										})}
 										type={textReadValues.badge}
 									/>
 								</Padding>
