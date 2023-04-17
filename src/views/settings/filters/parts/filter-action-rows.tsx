@@ -14,7 +14,8 @@ import {
 	Tooltip,
 	IconButton,
 	ChipItem,
-	getColor
+	getColor,
+	Text
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { filter, omit } from 'lodash';
@@ -56,13 +57,23 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	compProps,
 	tagOptions
 }): ReactElement => {
-	const { t, isIncoming, tempActions, setTempActions } = compProps;
+	const {
+		t,
+		isIncoming,
+		tempActions,
+		setTempActions,
+		zimbraFeatureMailForwardingInFiltersEnabled
+	} = compProps;
 	const [open, setOpen] = useState(false);
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [folderDestination, setFolderDestination] = useState<Folder | any>({});
 	const [folder, setFolder] = useState<Folder | any>({});
+	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
 
-	const actionOptions = useMemo(() => getActionOptions(t, isIncoming ?? false), [t, isIncoming]);
+	const actionOptions = useMemo(
+		() => getActionOptions(t, zimbraFeatureMailForwardingInFiltersEnabled, isIncoming ?? false),
+		[t, zimbraFeatureMailForwardingInFiltersEnabled, isIncoming]
+	);
 	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
 	const [tag, setTag] = useState<Array<any>>([]);
 
@@ -119,6 +130,13 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 
 	const defaultValue = useMemo(() => {
 		const action = Object.keys(omit(tmpFilter, 'id'))[0];
+		if (action === 'actionRedirect' && zimbraFeatureMailForwardingInFiltersEnabled === 'FALSE') {
+			setIsRedirectToActionRemoved(true);
+			const previous = tempActions.slice();
+			previous[index] = { actionKeep: [{}], id: previous[index].id };
+			setTempActions(previous);
+			return actionOptions[0];
+		}
 		switch (action) {
 			case 'actionDiscard': {
 				return actionOptions[1];
@@ -165,7 +183,15 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			default:
 				return actionOptions[0];
 		}
-	}, [tmpFilter, actionOptions, setFolder, tagOptions]);
+	}, [
+		tmpFilter,
+		zimbraFeatureMailForwardingInFiltersEnabled,
+		tempActions,
+		index,
+		setTempActions,
+		actionOptions,
+		tagOptions
+	]);
 
 	const defaultMarkAsOption = useMemo(() => {
 		const action = Object.keys(omit(tmpFilter, 'id'))[0];
@@ -187,7 +213,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	);
 
 	const disableRemove = useMemo(() => tempActions.length === 1, [tempActions]);
-
 	const onRemove = useMemo(
 		() => (disableRemove ? (): null => null : removeFilterCondition(index)),
 		[disableRemove, removeFilterCondition, index]
@@ -259,9 +284,12 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				}
 				default:
 			}
+			if (isRedirectToActionRemoved) {
+				setIsRedirectToActionRemoved(false);
+			}
 			setActiveActionOption(str);
 		},
-		[index, setTempActions, tempActions]
+		[index, isRedirectToActionRemoved, setTempActions, tempActions]
 	);
 	const openFolderModalDisabled = useMemo(
 		() => activeActionOption !== 'moveIntoFolder',
@@ -332,6 +360,14 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 						defaultSelection={defaultValue}
 					/>
 				</Row>
+				{isRedirectToActionRemoved &&
+					(defaultValue.value === 'inbox' || defaultValue.value === 'sent') && (
+						<Row padding={{ right: 'small' }} minWidth="12.5rem">
+							<Text size="medium" color="info">
+								{t('label.admin_disabled_action', 'The Admin disabled the redirect action')}
+							</Text>
+						</Row>
+					)}
 				{showBrowseBtn && (
 					<>
 						{folder && Object.keys(folder).length > 0 && folder?.name !== '' && (

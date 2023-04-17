@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
+import { getBridgedFunctions, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
@@ -38,6 +38,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
 	const [tempActions, setTempActions] = useState([{ actionKeep: [{}] }]);
+	const { zimbraFeatureMailForwardingInFiltersEnabled } = useUserSettings().attrs;
 
 	const finalActions = useMemo(
 		() =>
@@ -155,9 +156,10 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 			filterName,
 			isIncoming: false,
 			tempActions,
-			setTempActions
+			setTempActions,
+			zimbraFeatureMailForwardingInFiltersEnabled
 		}),
-		[t, activeFilter, filterName, tempActions, setTempActions]
+		[t, activeFilter, filterName, tempActions, zimbraFeatureMailForwardingInFiltersEnabled]
 	);
 	const filterTestConditionRowProps = useMemo(
 		() => ({ t, newFilters, setNewFilters, condition, setCondition, activeFilter, filterName }),

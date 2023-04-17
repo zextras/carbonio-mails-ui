@@ -258,7 +258,23 @@ export const getSocialOptions = (t) => [
 	}
 ];
 
-export const getActionOptions = (t, isIncoming = true) => [
+const getConditionAction = (t, zimbraFeatureMailForwardingInFiltersEnabled) => {
+	if (zimbraFeatureMailForwardingInFiltersEnabled === 'TRUE') {
+		return [
+			{
+				label: t('settings.redirect_to_address', 'Redirect to address'),
+				value: 'redirectToAddress'
+			}
+		];
+	}
+	return [];
+};
+
+export const getActionOptions = (
+	t,
+	zimbraFeatureMailForwardingInFiltersEnabled,
+	isIncoming = true
+) => [
 	{
 		label: isIncoming
 			? t('settings.keep_in_inbox', 'Keep in Inbox')
@@ -281,10 +297,7 @@ export const getActionOptions = (t, isIncoming = true) => [
 		label: t('settings.mark_as', 'Mark as'),
 		value: 'markAs'
 	},
-	{
-		label: t('settings.redirect_to_address', 'Redirect to address'),
-		value: 'redirectToAddress'
-	}
+	...getConditionAction(t, zimbraFeatureMailForwardingInFiltersEnabled)
 ];
 
 export const getMarkAsOptions = (t) => [
@@ -409,5 +422,5 @@ export const getButtonInfo = (filterName, filters, t, isCreate = true) => {
 			];
 		}
 	}
-	return [false, isCreate ? t('label.create', 'Create') : t('label.edit', 'Edit')];
+	return [false, isCreate ? t('label.create', 'Create') : t('label.save', 'Save')];
 };
