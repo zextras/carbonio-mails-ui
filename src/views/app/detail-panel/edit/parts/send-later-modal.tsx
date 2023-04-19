@@ -124,6 +124,7 @@ const SendLaterModal: FC<SendLaterModalPropTypes> = ({
 						minDate={new Date()}
 						minTime={minTime}
 						maxTime={maxTime}
+						timeCaption={t('label.time', 'Time')}
 						customInput={<DatePickerCustomComponent label={datePickerLabel} value={time ?? ''} />}
 					/>
 				</Container>

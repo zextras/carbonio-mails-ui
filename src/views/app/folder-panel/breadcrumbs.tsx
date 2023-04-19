@@ -28,13 +28,22 @@ export const Breadcrumbs: FC<{
 	isSelectModeOn: boolean;
 	setIsSelectModeOn: (ev: boolean) => void;
 }> = ({ folderPath, itemsCount, folderId, isSelectModeOn, setIsSelectModeOn }) => {
-	const folderTitle = useMemo(
-		() =>
-			folderId === FOLDERS.SPAM
-				? `/ ${t('label.spam', 'Spam')}`
-				: folderPath?.split('/')?.join(' / '),
-		[folderId, folderPath]
-	);
+	const folderTitle = useMemo(() => {
+		switch (folderId) {
+			case FOLDERS.INBOX:
+				return `/ ${t('folders.inbox', 'Inbox')}`;
+			case FOLDERS.SPAM:
+				return `/ ${t('folders.spam', 'Spam')}`;
+			case FOLDERS.SENT:
+				return `/ ${t('folders.sent', 'Sent')}`;
+			case FOLDERS.DRAFTS:
+				return `/ ${t('folders.drafts', 'Drafts')}`;
+			case FOLDERS.TRASH:
+				return `/ ${t('folders.trash', 'Trash')}`;
+			default:
+				return folderPath?.split('/')?.join(' / ');
+		}
+	}, [folderId, folderPath]);
 	return (
 		<Container
 			background="gray5"

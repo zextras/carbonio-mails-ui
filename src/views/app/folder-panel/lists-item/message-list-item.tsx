@@ -46,6 +46,7 @@ import { ItemAvatar } from './item-avatar';
 import { ListItemActionWrapper } from './list-item-actions-wrapper';
 import { SenderName } from './sender-name';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { getSystemFolderTranslatedName } from '../../../sidebar/utils';
 
 type Preview = {
 	src?: string | null | ArrayBuffer;
@@ -405,7 +406,8 @@ export const MessageListItem: FC<MessageListItemProps> = ({
 										<Padding left="small">
 											<Badge
 												data-testid="FolderBadge"
-												value={messageFolder.name}
+												// eslint-disable-next-line max-len
+												value={getSystemFolderTranslatedName({ folderName: messageFolder.name })}
 												type={textReadValues.badge}
 											/>
 										</Padding>
