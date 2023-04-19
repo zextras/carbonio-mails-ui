@@ -46,7 +46,7 @@ describe('Primary actions visibility', () => {
 		${6}  | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
 		${6}  | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
 		${6}  | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MOVE_TO_TRASH}
-		${6}  | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MOVE_TO_TRASH}
+		${6}  | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
 		${6}  | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
 		${7}  | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
 		${7}  | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DELETE_PERMANENTLY}

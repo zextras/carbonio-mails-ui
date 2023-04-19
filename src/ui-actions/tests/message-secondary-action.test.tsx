@@ -59,7 +59,7 @@ describe('Secondary actions visibility', () => {
 		${6}  | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
 		${6}  | ${FOLDERS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
 		${6}  | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MOVE_TO_TRASH}
-		${6}  | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MOVE_TO_TRASH}
+		${6}  | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
 		${6}  | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MOVE_TO_TRASH}
 		${7}  | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
 		${7}  | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
@@ -159,28 +159,30 @@ describe('Secondary actions visibility', () => {
 	 */
 	test.each`
 		case | read                        | folder                  | assertion                | action
-		${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
-		${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
-		${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
-		${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
-		${4} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
-		${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
-		${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
-		${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
-		${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
-		${5} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
+		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
+		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
+		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
+		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
+		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
+		${4} | ${MESSAGES_STATUS.NOT_READ} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
 		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
 		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
 		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
 		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
 		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
 		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
+		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+		${5} | ${MESSAGES_STATUS.READ}     | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 	`(
 		`(case #$case) secondary actions for a $read.desc message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, read, assertion, action }) => {

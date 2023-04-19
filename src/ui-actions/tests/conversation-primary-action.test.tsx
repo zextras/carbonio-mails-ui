@@ -57,7 +57,7 @@ describe('Actions visibility', () => {
 			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_READ}
 			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_READ}
 			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_READ}
 			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_READ}
 			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_READ}
 			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
@@ -69,7 +69,7 @@ describe('Actions visibility', () => {
 			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
 			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
 			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
 			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
 			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
 			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_READ}

@@ -59,7 +59,7 @@ export function getMsgConvActions({
 	 * Folders where the actions are enabled or disabled
 	 */
 	const foldersExcludedMarkReadUnread = [FOLDERS.DRAFTS];
-	const foldersExcludedTrash = [FOLDERS.TRASH, FOLDERS.SPAM];
+	const foldersExcludedTrash = [FOLDERS.TRASH];
 	const foldersIncludedDeletePermanently = [FOLDERS.TRASH, FOLDERS.SPAM];
 	const foldersExcludedTags = [FOLDERS.SPAM];
 	const foldersExcludedMarkUnmarkSpam = [FOLDERS.DRAFTS];

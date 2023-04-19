@@ -370,7 +370,7 @@ describe('Conversation list item component', () => {
 			}
 		);
 
-		test("if the conversation contains more than 1 message then all the recipients' names are visible", async () => {
+		test("() if the conversation contains more than 1 message then all the recipients' names are visible", async () => {
 			const folderId = FOLDERS.INBOX;
 			const MESSAGES_COUNT = 3;
 			const me = getMocksContext().identities.primary.identity.email;
