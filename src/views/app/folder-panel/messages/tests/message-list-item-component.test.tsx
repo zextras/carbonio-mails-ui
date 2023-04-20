@@ -21,8 +21,6 @@ import { generateStore } from '../../../../../tests/generators/store';
 import { MessageListItemProps } from '../../../../../types';
 import { MessageListItem } from '../message-list-item';
 
-// TODO complete the tests for all the elements of the list item (i.e. folder name badge)
-
 describe.each`
 	type                     | isSearchModule
 	${'message list'}        | ${false}
@@ -439,10 +437,11 @@ describe('in the drafts folder', () => {
 		}
 	);
 
+	// TODO add the following test parameters:
+	// ${0} | ${'search message list'} | ${true}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
 	test.each`
-		case | listType                 | isSearchModule | assertion
-		${2} | ${'message list'}        | ${false}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-		${0} | ${'search message list'} | ${true}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+		case | listType          | isSearchModule | assertion
+		${2} | ${'message list'} | ${false}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
 	`(
 		"(case #$case) in a $listType item the recipients' names, if set, $assertion.desc",
 		async ({ isSearchModule, assertion }) => {
