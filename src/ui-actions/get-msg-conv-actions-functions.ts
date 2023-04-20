@@ -6,7 +6,7 @@
 
 import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
 import { AppDispatch } from '../store/redux';
-import { ActionReturnType, Conversation, MailMessage } from '../types';
+import type { ActionReturnType, Conversation, MailMessage } from '../types';
 import { getParentId } from '../views/sidebar/utils';
 import {
 	deleteConversationPermanently,

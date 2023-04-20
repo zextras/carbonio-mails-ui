@@ -12,7 +12,7 @@ import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS, VISIBILITY_ASSERTION } from '../../../../../tests/constants';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
-import { MessageListItemProps } from '../../../../../types';
+import type { MessageListItemProps } from '../../../../../types';
 import { MessageListItem } from '../message-list-item';
 
 describe('Message list item component', () => {

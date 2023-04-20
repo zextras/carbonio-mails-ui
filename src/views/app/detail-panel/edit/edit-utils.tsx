@@ -8,7 +8,7 @@ import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { reduce } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { retrieveAttachmentsType } from '../../../../store/editor-slice-utils';
-import { MailAttachmentParts, MailsEditor } from '../../../../types';
+import type { MailAttachmentParts, MailsEditor } from '../../../../types';
 
 type AddAttachmentsPayloadType = {
 	resp: {

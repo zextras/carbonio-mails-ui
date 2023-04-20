@@ -12,11 +12,11 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
-import { every, filter, find, findIndex, includes, map } from 'lodash';
+import { every, filter, findIndex } from 'lodash';
 import React, { FC, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 
 import { useAppDispatch } from '../hooks/redux';
-import {
+import type {
 	ActionReturnType,
 	ConvActionReturnType,
 	Conversation,
@@ -42,6 +42,7 @@ import {
 	setMsgRead
 } from './message-actions';
 import { applyMultiTag } from './tag-actions';
+import { getFolderParentId } from './utils';
 
 type MultipleSelectionActionsPanelProps = {
 	items: Array<Partial<MailMessage>> | Array<Conversation>;
@@ -54,18 +55,6 @@ type MultipleSelectionActionsPanelProps = {
 	folderId: string;
 };
 type MsgOrConv = Partial<MailMessage> | Conversation;
-
-type GetFolderParentIdProps = {
-	folderId: string;
-	isConversation: boolean;
-	items: Array<Partial<MailMessage>> | Array<Conversation>;
-};
-
-const getFolderParentId = ({ folderId, isConversation, items }: GetFolderParentIdProps): string => {
-	if (folderId) return folderId;
-	if (isConversation) return (items as Conversation[])?.[0]?.messages?.[0]?.parent;
-	return (items as MailMessage[])?.[0]?.parent;
-};
 
 export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProps> = ({
 	items,
@@ -123,7 +112,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!includes(foldersExcludedMarkReadUnread, getParentId(folderParentId) ?? '0')
+				!foldersExcludedMarkReadUnread.includes(getParentId(folderParentId) ?? '0')
 		);
 		const action = isConversation
 			? setConversationsRead({
@@ -155,7 +144,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					shouldReplaceHistory: false
 			  })
 			: setMsgRead({ ids, value: true, dispatch, folderId: folderParentId });
-		return every(selectedItems, ['read', true]) && action;
+		return selectedItems.length > 0 && every(selectedItems, ['read', true]) && action;
 	};
 
 	const getMoveToTrashAction = (): false | ConvActionReturnType | MessageActionReturnType => {
@@ -299,7 +288,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 				<div key={action.id}>
 					<Tooltip label={'label' in action ? action.label : ''} maxWidth="100%">
 						<IconButton
-							data-testid={`primary-action-button-${'label' in action ? action.label : action.id}`}
+							data-testid={`primary-multi-action-button-${action.id}`}
 							icon={'icon' in action ? action.icon : ''}
 							iconColor="primary"
 							onClick={(ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>): void => {

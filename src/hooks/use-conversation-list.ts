@@ -9,7 +9,7 @@ import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
-import { Conversation, StateType } from '../types';
+import type { Conversation, StateType } from '../types';
 import { useAppDispatch, useAppSelector } from './redux';
 
 type RouteParams = {

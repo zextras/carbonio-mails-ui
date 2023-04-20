@@ -46,6 +46,7 @@ import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { RowInfo } from '../parts/row-info';
 import { SenderName } from '../parts/sender-name';
 import { ConversationMessagesList } from './conversation-messages-list';
+import { getFolderParentId } from './utils';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -68,7 +69,9 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		const [open, setOpen] = useState(false);
 		const accounts = useUserAccounts();
 		const messages = useAppSelector(selectMessages);
-		const folderParent = folderId ?? item?.messages?.[0]?.parent;
+		const isConversation = 'messages' in (item || {});
+
+		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
 
 		const conversationStatus = useAppSelector((state: StateType) =>
 			selectConversationExpandedStatus(state, item.id)
@@ -243,7 +246,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
 				<ListItemActionWrapper
 					item={item}
-					current={active}
+					active={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
 					hoverTooltipLabel={participantsString}

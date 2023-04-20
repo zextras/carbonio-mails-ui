@@ -10,7 +10,7 @@ import { map, omit, reduce } from 'lodash';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
-import { FilterActions } from '../../../../types';
+import type { FilterActions } from '../../../../types';
 import { CreateFilterContext } from './create-filter-context';
 import ModalFooter from './create-filter-modal-footer';
 import DefaultCondition from './create-filters-conditions/default';

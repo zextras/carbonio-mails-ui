@@ -11,7 +11,7 @@ import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal
 import { useAppDispatch } from '../../../../hooks/redux';
 import { msgAction } from '../../../../store/actions';
 import { sendDeliveryReport } from '../../../../store/actions/send-delivery-request';
-import { MailMessage } from '../../../../types';
+import type { MailMessage } from '../../../../types';
 
 type CompProps = {
 	open: boolean;

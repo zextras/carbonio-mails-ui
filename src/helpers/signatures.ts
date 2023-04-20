@@ -7,7 +7,7 @@ import { Account } from '@zextras/carbonio-shell-ui';
 import { find, map } from 'lodash';
 import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { LineType } from '../commons/utils';
-import { SignatureDescriptor } from '../types/signatures';
+import type { SignatureDescriptor } from '../types/signatures';
 
 const NO_SIGNATURE_ID = '11111111-1111-1111-1111-111111111111';
 const NO_SIGNATURE_LABEL = 'No signature';
@@ -23,8 +23,6 @@ const getSignatures = (account: Account): Array<SignatureDescriptor> => {
 			value: { description: '', id: NO_SIGNATURE_ID }
 		}
 	];
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	map(account?.signatures?.signature, (item) =>
 		signatureArray.push({
 			// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)

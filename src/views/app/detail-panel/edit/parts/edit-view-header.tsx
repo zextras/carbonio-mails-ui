@@ -42,7 +42,7 @@ import { getSignatureValue } from '../../../../../helpers/signatures';
 import { useAppDispatch } from '../../../../../hooks/redux';
 import { sendMsg } from '../../../../../store/actions/send-msg';
 import { StoreProvider } from '../../../../../store/redux';
-import {
+import type {
 	BoardContext,
 	EditViewContextType,
 	IdentityType,

@@ -6,19 +6,19 @@
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isArray, isEmpty, map, sortBy } from 'lodash';
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelection } from '../../hooks/use-selection';
-import { AppContext, SearchListProps } from '../../types';
+import type { AppContext, SearchListProps } from '../../types';
+import { MessageListComponent } from '../app/folder-panel/messages/message-list-component';
+import { MessageListItemComponent } from '../app/folder-panel/messages/message-list-item-component';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import ShimmerList from './shimmer-list';
-import { MessageListItemComponent } from '../app/folder-panel/messages/message-list-item-component';
-import { MessageListComponent } from '../app/folder-panel/messages/message-list-component';
+import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 
 export const SearchMessageList: FC<SearchListProps> = ({
 	searchDisabled,
 	searchResults,
-	search,
 	query,
 	loading,
 	filterCount,
@@ -45,25 +45,10 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		items: [...Object.values(searchResults.messages ?? {})]
 	});
 
-	const canLoadMore = useMemo(
-		() => !loading && searchResults && !isEmpty(searchResults.messages) && searchResults.more,
-		[loading, searchResults]
-	);
-
-	const loadMore = useCallback(() => {
-		if (searchResults && !isEmpty(searchResults.conversations) && searchResults.more) {
-			search(query, false);
-		}
-	}, [query, search, searchResults]);
-
 	const [randomListIndex, setRandomListIndex] = useState(0);
+
 	useEffect(() => {
-		if (randomListIndex === 0) {
-			setRandomListIndex(1);
-		} else {
-			setRandomListIndex(0);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		setRandomListIndex(Math.round(Math.random()));
 	}, [searchResults.conversations, query]);
 
 	const displayerTitle = useMemo(() => {
@@ -87,19 +72,29 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	const listItems = useMemo(
 		() =>
 			map(messageList, (message) => {
-				const isActive = itemId === message.id;
+				const active = itemId === message.id;
 				const isSelected = selected[message.id];
 				return (
-					<MessageListItemComponent
-						message={message}
-						selected={selected}
-						isSelected={isSelected}
-						isActive={isActive}
-						toggle={toggle}
-						isSelectModeOn={isSelectModeOn}
-						isSearchModule
-						deselectAll={deselectAll}
-					/>
+					<CustomListItem
+						key={message.id}
+						selected={isSelected}
+						active={active}
+						background={message.read ? 'gray6' : 'gray5'}
+					>
+						{(visible: boolean): ReactElement => (
+							<MessageListItemComponent
+								message={message}
+								selected={selected}
+								isSelected={isSelected}
+								active={active}
+								toggle={toggle}
+								isSelectModeOn={isSelectModeOn}
+								isSearchModule
+								deselectAll={deselectAll}
+								visible={visible}
+							/>
+						)}
+					</CustomListItem>
 				);
 			}),
 		[deselectAll, isSelectModeOn, itemId, messageList, selected, toggle]

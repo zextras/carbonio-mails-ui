@@ -8,7 +8,7 @@ import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
-import { ItemAvatarType, Participant } from '../../../../types';
+import type { ItemAvatarType, Participant } from '../../../../types';
 
 const AvatarElement = styled(Avatar)`
 	width: 2.625rem !important;

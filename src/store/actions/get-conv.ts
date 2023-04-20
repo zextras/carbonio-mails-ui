@@ -8,7 +8,7 @@ import { getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import {
+import type {
 	Conversation,
 	GetConvParameters,
 	GetConvRequest,

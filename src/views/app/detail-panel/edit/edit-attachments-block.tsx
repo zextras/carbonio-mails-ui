@@ -30,7 +30,7 @@ import styled, { SimpleInterpolation } from 'styled-components';
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { updateEditor } from '../../../../store/editor-slice';
-import {
+import type {
 	EditorAttachmentFiles,
 	IconColors,
 	MailsEditor,

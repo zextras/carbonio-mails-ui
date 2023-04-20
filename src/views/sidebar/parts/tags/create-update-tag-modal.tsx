@@ -15,7 +15,7 @@ import {
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { CreateUpdateTagModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
+import type { CreateUpdateTagModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
 
 const NonSupportedCharacters = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;

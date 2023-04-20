@@ -30,7 +30,7 @@ import {
 	ShareCalendarRoleOptions
 } from '../../../../integrations/shared-invite-reply/parts/utils';
 import { sendShareNotification } from '../../../../store/actions/send-share-notification';
-import {
+import type {
 	ActionProps,
 	GranteeInfoProps,
 	GranteeProps,

@@ -8,7 +8,7 @@ import { Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { Tag } from '@zextras/carbonio-shell-ui';
 import React, { FC, useMemo } from 'react';
 import { getTimeLabel } from '../../../../commons/utils';
-import { Conversation } from '../../../../types';
+import type { Conversation } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 
 type RowInfoProps = {

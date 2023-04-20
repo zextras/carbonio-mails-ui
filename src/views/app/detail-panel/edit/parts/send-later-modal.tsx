@@ -16,7 +16,7 @@ import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/mo
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { saveDraft } from '../../../../../store/actions/save-draft';
 import { AppDispatch } from '../../../../../store/redux';
-import { MailsEditor } from '../../../../../types';
+import type { MailsEditor } from '../../../../../types';
 import DatePickerCustomComponent from './date-picker-custom-component';
 
 type SendLaterModalPropTypes = {

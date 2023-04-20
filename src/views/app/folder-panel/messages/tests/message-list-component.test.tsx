@@ -25,11 +25,12 @@ describe('Message list component', () => {
 				message={message}
 				selected={{}}
 				isSelected={false}
-				isActive
+				active
 				toggle={noop}
 				isSelectModeOn={false}
 				key={message.id}
 				deselectAll={noop}
+				visible
 			/>
 		));
 

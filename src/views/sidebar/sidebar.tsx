@@ -13,11 +13,11 @@ import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 import { SidebarAccordionMui } from '../../carbonio-ui-commons/components/sidebar/sidebar-accordion-mui';
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { themeMui } from '../../carbonio-ui-commons/theme/theme-mui';
-import { SidebarProps } from '../../carbonio-ui-commons/types/sidebar';
+import type { SidebarProps } from '../../carbonio-ui-commons/types/sidebar';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
 import AccordionCustomComponent from './accordion-custom-component';
 import CollapsedSideBarItems from './collapsed-sidebar-items';
-import { SidebarComponentProps } from '../../types/sidebar';
+import type { SidebarComponentProps } from '../../types/sidebar';
 import { ButtonFindShares } from './button-find-shares';
 
 const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarComponent({ accordions }) {

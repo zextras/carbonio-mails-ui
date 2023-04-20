@@ -10,7 +10,7 @@ import { map, noop } from 'lodash';
 import React, { FC, memo, useMemo } from 'react';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../../../hooks/use-selection';
-import { AppContext, ConversationMessagesListProps } from '../../../../types';
+import type { AppContext, ConversationMessagesListProps } from '../../../../types';
 import { MessageListItem } from '../messages/message-list-item';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
 
@@ -46,7 +46,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 							key={message.id}
 							background={'transparent'}
 						>
-							{(isVisible: boolean): JSX.Element => (
+							{(visible: boolean): JSX.Element => (
 								<DragItemWrapper
 									item={message}
 									selectedIds={[]}
@@ -59,7 +59,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 										item={message}
 										selected={isSelected}
 										selecting={isSelectModeOn}
-										visible={isVisible}
+										visible={visible}
 										toggle={toggle}
 										active={isActive}
 										isConvChildren

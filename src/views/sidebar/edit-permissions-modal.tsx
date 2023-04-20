@@ -25,7 +25,7 @@ import { map } from 'lodash';
 import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
+import type { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
 import { useAppDispatch } from '../../hooks/redux';
 import {
 	ShareCalendarRoleOptions,

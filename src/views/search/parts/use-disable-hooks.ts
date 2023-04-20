@@ -5,7 +5,7 @@
  */
 import { isEqualWith } from 'lodash';
 import { useMemo } from 'react';
-import { UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
+import type { UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
 
 export const useDisabled = ({
 	queryToBe,

@@ -7,7 +7,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 import { omitBy } from '../../commons/utils';
-import {
+import type {
 	ConvActionParameters,
 	ConvActionRequest,
 	ConvActionResponse,

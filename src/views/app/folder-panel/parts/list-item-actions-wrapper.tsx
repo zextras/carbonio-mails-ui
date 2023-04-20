@@ -8,7 +8,7 @@ import { useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, SyntheticEvent, useCallback } from 'react';
 import styled, { DefaultTheme } from 'styled-components';
 import { useAppDispatch } from '../../../../hooks/redux';
-import {
+import type {
 	ConvActionReturnType,
 	Conversation,
 	ListItemActionWrapperProps,

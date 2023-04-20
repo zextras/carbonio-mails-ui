@@ -14,7 +14,7 @@ import { FOLDERS_DESCRIPTORS, VISIBILITY_ASSERTION } from '../../../../../tests/
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
-import { ConversationListItemProps, MessageListItemProps } from '../../../../../types';
+import type { ConversationListItemProps, MessageListItemProps } from '../../../../../types';
 import { MessageListItem } from '../../messages/message-list-item';
 import { ConversationListItem } from '../conversation-list-item';
 

@@ -5,7 +5,7 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import {
+import type {
 	MailsEditor,
 	PrefsType,
 	SaveDraftNewParameters,

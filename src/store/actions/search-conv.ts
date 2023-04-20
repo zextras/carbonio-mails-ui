@@ -7,7 +7,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import {
+import type {
 	MailMessage,
 	SearchConvParameters,
 	SearchConvRequest,

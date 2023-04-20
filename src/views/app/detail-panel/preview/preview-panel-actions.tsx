@@ -9,7 +9,7 @@ import { map } from 'lodash';
 import React, { FC, useMemo } from 'react';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
-import { AppContext, PreviewPanelActionsType } from '../../../../types';
+import type { AppContext, PreviewPanelActionsType } from '../../../../types';
 import {
 	moveConversationToTrash,
 	printConversation,

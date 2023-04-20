@@ -17,7 +17,7 @@ import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
-import { ResponseActionsProps } from '../../../types';
+import type { ResponseActionsProps } from '../../../types';
 import ColorSelect from './color-select';
 import { accept, decline } from './share-calendar-actions';
 

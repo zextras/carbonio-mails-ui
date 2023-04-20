@@ -34,7 +34,7 @@ import {
 import React, { FC, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
+import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { useAppDispatch } from '../../hooks/redux';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';

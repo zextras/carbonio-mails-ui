@@ -10,7 +10,7 @@ import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach } from 'lodash';
 import { CONVACTIONS } from '../commons/utilities';
-import {
+import type {
 	ConvActionParameters,
 	FetchConversationsReturn,
 	SearchesStateType,

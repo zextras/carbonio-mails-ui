@@ -9,7 +9,7 @@ import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { search } from '../store/actions';
 import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
-import { MailMessage } from '../types';
+import type { MailMessage } from '../types';
 import { useAppDispatch, useAppSelector } from './redux';
 
 type RouteParams = {

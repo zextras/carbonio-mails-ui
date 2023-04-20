@@ -27,7 +27,7 @@ import { TagsActionsType } from '../carbonio-ui-commons/constants';
 import { useAppDispatch } from '../hooks/redux';
 import { convAction, msgAction } from '../store/actions';
 import { StoreProvider } from '../store/redux';
-import {
+import type {
 	ArgumentType,
 	Conversation,
 	ItemType,

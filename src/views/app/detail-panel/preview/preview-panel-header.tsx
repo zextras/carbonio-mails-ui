@@ -6,7 +6,7 @@
 import React, { useCallback, FC, useMemo } from 'react';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { Container, Divider, Icon, IconButton, Row, Text } from '@zextras/carbonio-design-system';
-import { Conversation, MailMessage } from '../../../../types';
+import type { Conversation, MailMessage } from '../../../../types';
 
 const PreviewPanelHeader: FC<{
 	item: Conversation | Partial<MailMessage | undefined>;

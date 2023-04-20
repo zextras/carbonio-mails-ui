@@ -10,7 +10,7 @@ import { ErrorSoapBodyResponse, getTags, soapFetch } from '@zextras/carbonio-she
 import { keyBy, map, reduce } from 'lodash';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import {
+import type {
 	Conversation,
 	FetchConversationsParameters,
 	FetchConversationsReturn,

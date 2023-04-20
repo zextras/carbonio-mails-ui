@@ -11,7 +11,7 @@ import ConversationPreviewPanel from '../app/detail-panel/conversation-preview-p
 import MailEditPanel from '../app/detail-panel/mail-edit-panel';
 import { EmptyFieldMessages, EmptyListMessages } from './utils';
 import MessagePreviewPanel from '../app/detail-panel/message-preview-panel';
-import { SearchPanelProps } from '../../types';
+import type { SearchPanelProps } from '../../types';
 
 const generateRandomNumber = (): number => Math.floor(Math.random() * 3);
 

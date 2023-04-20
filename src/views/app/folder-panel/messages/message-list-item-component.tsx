@@ -5,8 +5,7 @@
  */
 import { noop } from 'lodash';
 import React, { FC, memo } from 'react';
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
-import { IncompleteMessage } from '../../../../types';
+import type { IncompleteMessage } from '../../../../types';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
 import { MessageListItem } from './message-list-item';
 
@@ -14,13 +13,14 @@ export type ListItemComponentProps = {
 	message: IncompleteMessage;
 	selected: Record<string, boolean>;
 	isSelected: boolean;
-	isActive: boolean;
+	active: boolean;
 	toggle: (id: string) => void;
 	isSelectModeOn: boolean;
 	dragImageRef?: React.MutableRefObject<HTMLDivElement | null>;
 	draggedIds?: Record<string, boolean>;
 	isSearchModule?: boolean;
 	deselectAll: () => void;
+	visible: boolean;
 };
 
 export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
@@ -28,43 +28,35 @@ export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
 		message,
 		selected,
 		isSelected,
-		isActive,
+		active,
 		toggle,
 		isSelectModeOn,
 		dragImageRef,
 		isSearchModule,
-		deselectAll
+		deselectAll,
+		visible
 	}) {
 		return (
-			<CustomListItem
-				key={message.id}
-				selected={isSelected}
-				active={isActive}
-				background={message.read ? 'gray6' : 'gray5'}
+			<DragItemWrapper
+				item={message}
+				selectedIds={[]}
+				selectedItems={selected}
+				setDraggedIds={noop}
+				dragImageRef={dragImageRef}
+				dragAndDropIsDisabled={!!isSearchModule}
 			>
-				{(isVisible: boolean): JSX.Element => (
-					<DragItemWrapper
-						item={message}
-						selectedIds={[]}
-						selectedItems={selected}
-						setDraggedIds={noop}
-						dragImageRef={dragImageRef}
-						dragAndDropIsDisabled={!!isSearchModule}
-					>
-						<MessageListItem
-							item={message}
-							selected={isSelected}
-							selecting={isSelectModeOn}
-							isConvChildren={false}
-							toggle={toggle}
-							active={isActive}
-							visible={isVisible}
-							isSearchModule={isSearchModule}
-							deselectAll={deselectAll}
-						/>
-					</DragItemWrapper>
-				)}
-			</CustomListItem>
+				<MessageListItem
+					item={message}
+					selected={isSelected}
+					selecting={isSelectModeOn}
+					isConvChildren={false}
+					toggle={toggle}
+					active={active}
+					visible={visible}
+					isSearchModule={isSearchModule}
+					deselectAll={deselectAll}
+				/>
+			</DragItemWrapper>
 		);
 	}
 );

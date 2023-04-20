@@ -5,7 +5,7 @@
  */
 
 import { filter, find, forEach, map, merge, omit, reduce, some } from 'lodash';
-import { ConvMessage, Payload, SearchesStateType } from '../types';
+import type { ConvMessage, Payload, SearchesStateType } from '../types';
 
 export const handleCreatedConversationsReducer = (
 	state: SearchesStateType,

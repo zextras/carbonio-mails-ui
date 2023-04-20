@@ -223,6 +223,7 @@
         "add_custom_message": "Add a custom message",
         "add_task": "If you need to take a note, you can add a task to your TO DO LIST",
         "addresses_not_accepted": "One or more addresses were not accepted. Rejected addresses:",
+        "admin_disabled_action": "The Admin disabled the redirect action",
         "administer": "Administer",
         "advanced_filters": "Advanced Filter",
         "advanced_filters_plural": "Advanced Filters",

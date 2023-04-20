@@ -11,7 +11,7 @@ import { isNil } from 'lodash';
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks/redux';
-import { AppContext } from '../../types';
+import type { AppContext } from '../../types';
 import ShimmerList from '../search/shimmer-list';
 import ConversationList from './folder-panel/conversations/conversation-list';
 import { MessageList } from './folder-panel/messages/message-list';

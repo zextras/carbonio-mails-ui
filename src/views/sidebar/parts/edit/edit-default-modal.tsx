@@ -9,7 +9,7 @@ import { filter, includes, isEmpty } from 'lodash';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
+import type { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { folderAction } from '../../../../store/actions/folder-action';
 import { translatedSystemFolders } from '../../utils';

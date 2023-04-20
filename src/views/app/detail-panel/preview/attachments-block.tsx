@@ -30,7 +30,12 @@ import { useAppDispatch } from '../../../../hooks/redux';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
-import { AttachmentPart, AttachmentType, MailMessage, OpenEmlPreviewType } from '../../../../types';
+import type {
+	AttachmentPart,
+	AttachmentType,
+	MailMessage,
+	OpenEmlPreviewType
+} from '../../../../types';
 import { useExtraWindow } from '../../extra-windows/use-extra-window';
 import DeleteAttachmentModal from './delete-attachment-modal';
 import { humanFileSize, previewType } from './file-preview';

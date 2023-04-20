@@ -10,7 +10,7 @@ import { find, map, noop, reduce } from 'lodash';
 import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
-import { Conversation } from '../../../../types';
+import type { Conversation } from '../../../../types';
 import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';

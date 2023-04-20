@@ -6,7 +6,7 @@
 import { noop } from 'lodash';
 import React, { FC } from 'react';
 
-import { Conversation } from '../../../../types';
+import type { Conversation } from '../../../../types';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
 import { ConversationListItem } from './conversation-list-item';
 
@@ -17,7 +17,6 @@ type ConversationListItemComponentProps = {
 	selecting: boolean;
 	toggle: (id: string) => void;
 	active?: boolean;
-	visible?: boolean;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	draggedIds?: Record<string, boolean> | undefined;
 	selectedItems?: Record<string, boolean>;
@@ -26,6 +25,7 @@ type ConversationListItemComponentProps = {
 	selectedIds?: string[];
 	deselectAll: () => void;
 	folderId: string;
+	visible?: boolean;
 };
 
 export const ConversationListItemComponent: FC<ConversationListItemComponentProps> = ({
@@ -42,7 +42,8 @@ export const ConversationListItemComponent: FC<ConversationListItemComponentProp
 	isSearchModule,
 	selectedIds = [],
 	deselectAll,
-	folderId
+	folderId,
+	visible
 }) => (
 	<DragItemWrapper
 		item={item}
@@ -67,6 +68,7 @@ export const ConversationListItemComponent: FC<ConversationListItemComponentProp
 			isConvChildren
 			deselectAll={deselectAll}
 			folderId={folderId}
+			visible={visible}
 		/>
 	</DragItemWrapper>
 );

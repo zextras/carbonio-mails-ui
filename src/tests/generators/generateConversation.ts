@@ -6,16 +6,13 @@
 
 import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { find, times } from 'lodash';
+import { times } from 'lodash';
 import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../../carbonio-ui-commons/constants/participants';
-import {
-	collectParticipantsFromMessage,
-	collectParticipantsFromMessages
-} from '../../helpers/messages';
-import { Conversation, MailMessage, Participant } from '../../types';
+import { collectParticipantsFromMessages } from '../../helpers/messages';
+import type { Conversation, MailMessage, Participant } from '../../types';
 import { generateMessage } from './generateMessage';
 
 /**

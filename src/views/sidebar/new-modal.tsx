@@ -13,7 +13,7 @@ import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-foote
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { useAppDispatch } from '../../hooks/redux';
 import { createFolder } from '../../store/actions/create-folder';
-import { ModalProps } from '../../types';
+import type { ModalProps } from '../../types';
 import { FolderSelector } from './commons/folder-selector';
 import { translatedSystemFolders } from './utils';
 

@@ -5,13 +5,13 @@
  */
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { filter, isEmpty, map, sortBy } from 'lodash';
+import { filter, isEmpty, map, noop, sortBy } from 'lodash';
 import React, { FC, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../hooks/use-selection';
-import { AppContext, SearchListProps } from '../../types';
+import type { AppContext, SearchListProps } from '../../types';
 import { ConversationListComponent } from '../app/folder-panel/conversations/conversation-list-component';
 import { ConversationListItemComponent } from '../app/folder-panel/conversations/conversation-list-item-component';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
@@ -54,17 +54,6 @@ const SearchConversationList: FC<SearchListProps> = ({
 
 	// selectedIds is an array of the ids of the selected conversations for multiple selection actions
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
-
-	const loadMore = useCallback(() => {
-		if (searchResults && !isEmpty(searchResults.conversations) && searchResults.more) {
-			search(query, false);
-		}
-	}, [query, search, searchResults]);
-
-	const canLoadMore = useMemo(
-		() => !loading && searchResults && !isEmpty(searchResults.conversations) && searchResults.more,
-		[loading, searchResults]
-	);
 
 	// This line of code assigns a random integer between 0 and 1 to the const randomListIndex
 	const randomListIndex = useMemo(() => Math.floor(Math.random() * 2), []);
@@ -116,22 +105,28 @@ const SearchConversationList: FC<SearchListProps> = ({
 	const listItems = useMemo(
 		() =>
 			map(conversationList, (conversation) => {
-				const isActive = itemId === conversation.id;
+				const active = itemId === conversation.id;
 				const isSelected = selected[conversation.id];
 
 				return (
-					<CustomListItem active={isActive} selected={isSelected} key={conversation.id}>
-						{(): JSX.Element => (
+					<CustomListItem
+						active={active}
+						selected={isSelected}
+						key={conversation.id}
+						background={'transparent'}
+					>
+						{(visible: boolean): JSX.Element => (
 							<ConversationListItemComponent
 								item={conversation}
 								selected={isSelected}
 								selecting={isSelectModeOn}
-								active={isActive}
+								active={active}
 								toggle={toggle}
 								activeItemId={itemId}
 								isSearchModule
 								deselectAll={deselectAll}
 								folderId=""
+								visible={visible}
 							/>
 						)}
 					</CustomListItem>
@@ -164,7 +159,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 					isAllSelected={isAllSelected}
 					selectAllModeOff={selectAllModeOff}
 					setIsSelectModeOn={setIsSelectModeOn}
-					loadMore={loadMore}
+					loadMore={noop}
 					isSearchModule
 				/>
 			)}

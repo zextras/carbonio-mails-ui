@@ -5,7 +5,7 @@
  */
 import { FOLDERS, Folder, t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useMessageList } from '../../../../hooks/use-message-list';
@@ -13,9 +13,10 @@ import { useSelection } from '../../../../hooks/use-selection';
 import { search } from '../../../../store/actions';
 import { selectConversationStatus } from '../../../../store/conversations-slice';
 import { selectFolderMsgSearchStatus } from '../../../../store/messages-slice';
-import { AppContext } from '../../../../types';
+import type { AppContext } from '../../../../types';
 import { MessageListComponent } from './message-list-component';
 import { MessageListItemComponent } from './message-list-item-component';
+import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 
 export const MessageList: FC = () => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
@@ -82,20 +83,30 @@ export const MessageList: FC = () => {
 		() =>
 			map(messages, (message) => {
 				const isSelected = selected[message.id];
-				const isActive = itemId === message.id;
+				const active = itemId === message.id;
 				return (
-					<MessageListItemComponent
-						message={message}
-						selected={selected}
-						isSelected={isSelected}
-						isActive={isActive}
-						toggle={toggle}
-						isSelectModeOn={isSelectModeOn}
-						dragImageRef={dragImageRef}
-						draggedIds={draggedIds}
+					<CustomListItem
 						key={message.id}
-						deselectAll={deselectAll}
-					/>
+						selected={isSelected}
+						active={active}
+						background={message.read ? 'gray6' : 'gray5'}
+					>
+						{(visible: boolean): ReactElement => (
+							<MessageListItemComponent
+								message={message}
+								selected={selected}
+								isSelected={isSelected}
+								active={active}
+								toggle={toggle}
+								isSelectModeOn={isSelectModeOn}
+								dragImageRef={dragImageRef}
+								draggedIds={draggedIds}
+								key={message.id}
+								deselectAll={deselectAll}
+								visible={visible}
+							/>
+						)}
+					</CustomListItem>
 				);
 			}),
 		[deselectAll, draggedIds, isSelectModeOn, itemId, messages, selected, toggle]

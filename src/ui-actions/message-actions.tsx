@@ -22,7 +22,7 @@ import { MAILS_ROUTE, MessageActionsDescriptors } from '../constants';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg } from '../store/actions/send-msg';
 import { AppDispatch, StoreProvider } from '../store/redux';
-import {
+import type {
 	BoardContext,
 	MailMessage,
 	MessageActionReturnType,

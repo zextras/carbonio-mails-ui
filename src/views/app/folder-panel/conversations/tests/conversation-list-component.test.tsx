@@ -11,7 +11,7 @@ import React from 'react';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateStore } from '../../../../../tests/generators/store';
-import { Conversation, Status } from '../../../../../types';
+import type { Conversation, Status } from '../../../../../types';
 import {
 	MessageListComponent,
 	MessageListComponentProps

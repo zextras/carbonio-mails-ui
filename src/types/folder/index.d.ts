@@ -77,12 +77,10 @@ export type MsgListDraggableItemType = {
 };
 export type ListItemActionWrapperProps = {
 	children?: ReactNode;
-	current?: boolean;
 	onClick?: ContainerProps['onClick'];
 	onDoubleClick?: ContainerProps['onDoubleClick'];
 	messagesToRender?: Array<IncompleteMessage>;
 	hoverTooltipLabel?: string;
-	actionIsVisible?: boolean;
 	active?: boolean;
 	item: Conversation | MailMessage;
 	deselectAll: () => void;

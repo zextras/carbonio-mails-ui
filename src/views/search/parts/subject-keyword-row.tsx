@@ -7,7 +7,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback } from 'react';
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { isValidEmail } from './utils';
-import { SubjectKeywordRowProps } from '../../../types';
+import type { SubjectKeywordRowProps } from '../../../types';
 
 const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({ compProps }): ReactElement => {
 	const { otherKeywords, setOtherKeywords, subject, setSubject } = compProps;

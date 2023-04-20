@@ -27,7 +27,7 @@ import React, {
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';
+import type { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';
 
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
@@ -193,13 +193,10 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 
 	const saveTrustee = useCallback(
 		(trustee) => {
-			let trusteeAddress = [];
-			if (settingsPref.zimbraPrefMailTrustedSenderList) {
-				trusteeAddress = isArray(settingsPref.zimbraPrefMailTrustedSenderList)
-					? settingsPref.zimbraPrefMailTrustedSenderList
-					: // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					  // @ts-ignore
-					  settingsPref.zimbraPrefMailTrustedSenderList?.split(',');
+			let trusteeAddress: Array<string> = [];
+			const trustedList = settingsPref.zimbraPrefMailTrustedSenderList as string;
+			if (trustedList) {
+				trusteeAddress = isArray(trustedList) ? trustedList : trustedList?.split(',');
 			}
 
 			editSettings({
@@ -461,8 +458,6 @@ const MailMessageRenderer: FC<{ mailMsg: MailMessage; onLoadChange: () => void }
 	mailMsg,
 	onLoadChange
 }) => {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	const parts = findAttachments(mailMsg.parts ?? [], []);
 
 	useEffect(() => {

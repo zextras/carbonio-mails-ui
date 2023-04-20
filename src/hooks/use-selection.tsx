@@ -5,7 +5,7 @@
  */
 import { map, omit } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
-import { Conversation, IncompleteMessage } from '../types';
+import type { Conversation, IncompleteMessage } from '../types';
 
 export type useSelectionProps = {
 	currentFolderId: string;

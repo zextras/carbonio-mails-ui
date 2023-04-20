@@ -8,7 +8,7 @@ import { getBridgedFunctions, t, useUserAccounts } from '@zextras/carbonio-shell
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { ShareRevokeModalType } from '../../../../carbonio-ui-commons/types/sidebar';
+import type { ShareRevokeModalType } from '../../../../carbonio-ui-commons/types/sidebar';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite-reply/parts/utils';
 import { folderAction } from '../../../../store/actions/folder-action';

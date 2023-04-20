@@ -9,7 +9,7 @@ import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
 import React, { FC, useMemo } from 'react';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { participantToString } from '../../../../commons/utils';
-import { SenderNameProps } from '../../../../types';
+import type { SenderNameProps } from '../../../../types';
 
 // TODO since it renders also the recipients we should rename it to ParticipantsName
 export const SenderName: FC<SenderNameProps> = ({ item, textValues, isSearchModule = false }) => {

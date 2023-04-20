@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, AccountSettings, Folder, Roots } from '@zextras/carbonio-shell-ui';
-import { find, isArray } from 'lodash';
-import { MailMessage } from '../types';
+import { Account, AccountSettings, Folder } from '@zextras/carbonio-shell-ui';
+import { isArray } from 'lodash';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
+import type { MailMessage } from '../types';
 import { getMessageOwnerAccountName } from './folders';
 
 /**
@@ -423,14 +423,14 @@ const getMessageSenderAccount = (
 export {
 	MatchingReplyIdentity,
 	RecipientWeight,
-	getRecipientReplyIdentity,
-	getIdentities,
-	getAvailableAddresses,
-	getAddressOwnerAccount,
-	getRecipients,
-	computeIdentityWeight,
 	checkMatchingAddress,
+	computeIdentityWeight,
 	filterMatchingRecipients,
+	getAddressOwnerAccount,
+	getAvailableAddresses,
+	getIdentities,
+	getMessageSenderAccount,
 	getMessageSenderAddress,
-	getMessageSenderAccount
+	getRecipientReplyIdentity,
+	getRecipients
 };
