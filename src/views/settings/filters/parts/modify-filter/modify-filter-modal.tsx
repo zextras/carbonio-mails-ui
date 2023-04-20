@@ -11,7 +11,7 @@ import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } fr
 import { v4 as uuidv4 } from 'uuid';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { modifyFilterRules } from '../../../../../store/actions/modify-filter-rules';
-import { FilterActions } from '../../../../../types';
+import type { FilterActions } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
 import ModalFooter from '../create-filter-modal-footer';

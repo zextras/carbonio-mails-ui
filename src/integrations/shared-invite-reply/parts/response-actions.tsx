@@ -15,9 +15,9 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
-import { ResponseActionsProps } from '../../../types';
+import type { ResponseActionsProps } from '../../../types';
 import ColorSelect from './color-select';
 import { accept, decline } from './share-calendar-actions';
 
@@ -38,7 +38,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	const [customMessage, setCustomMessage] = useState('');
 	const [notifyOrganizer, setNotifyOrganizer] = useState(false);
 	const [calendarName, setCalendarName] = useState(sharedCalendarName);
-	const [selectedColor, setSelectedColor] = useState(0);
+	const [selectedColor, setSelectedColor] = useState<string | null>('0');
 	const accounts = useUserAccounts();
 	const calFolders = useFoldersByView(FOLDER_VIEW.appointment);
 	const showError = useMemo(
@@ -60,7 +60,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				view,
 				rid,
 				calendarName,
-				color: selectedColor,
+				color: parseInt(selectedColor ?? '0', 10),
 				accounts,
 				t,
 				dispatch,
@@ -154,7 +154,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 						backgroundColor="gray5"
 						value={calendarName}
 						hasError={!disabled}
-						onChange={(e: any): void => setCalendarName(e.target.value)}
+						onChange={(e: ChangeEvent<HTMLInputElement>): void => setCalendarName(e.target.value)}
 					/>
 				</Row>
 				<Row
@@ -163,8 +163,8 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					padding={{ horizontal: 'small', vertical: 'small' }}
 				>
 					<ColorSelect
-						onChange={(a: any): any => setSelectedColor(a)}
-						t={t}
+						onChange={(a: string | null): void => setSelectedColor(a)}
+						defaultColor={0}
 						label={t('label.calendar_color', `Item color`)}
 					/>
 				</Row>

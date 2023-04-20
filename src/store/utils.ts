@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { filter, find, includes, isNil, map, max, merge, omitBy, reduce, some } from 'lodash';
-import {
+import type {
 	Conversation,
 	FetchConversationsReturn,
 	FoldersStateType,

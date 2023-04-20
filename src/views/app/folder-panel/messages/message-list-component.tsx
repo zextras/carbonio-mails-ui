@@ -9,7 +9,7 @@ import { find, map, noop, reduce } from 'lodash';
 import React, { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
-import { IncompleteMessage, MailMessage, MessageListItemProps } from '../../../../types';
+import type { IncompleteMessage, MailMessage, MessageListItemProps } from '../../../../types';
 import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';

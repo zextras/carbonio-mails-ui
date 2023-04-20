@@ -29,12 +29,13 @@ describe.each`
 				message={message}
 				selected={{}}
 				isSelected={false}
-				isActive
+				active
 				toggle={noop}
 				isSelectModeOn={false}
 				key={message.id}
 				isSearchModule={isSearchModule}
 				deselectAll={noop}
+				visible
 			/>
 		));
 

@@ -10,7 +10,7 @@ import { msgAction } from '../../../store/actions';
 import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCalendarReply';
 import { mountSharedCalendar } from '../../../store/actions/mount-share-calendar';
 import { AppDispatch } from '../../../store/redux';
-import { MailsEditor, Participant } from '../../../types';
+import type { MailsEditor, Participant } from '../../../types';
 
 type Accept = {
 	zid: string;

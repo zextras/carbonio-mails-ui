@@ -6,7 +6,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy } from 'lodash';
-import {
+import type {
 	MsgActionRequest,
 	MsgActionResponse,
 	MsgActionResult,

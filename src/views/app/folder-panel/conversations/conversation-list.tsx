@@ -17,7 +17,7 @@ import {
 	selectConversationStatus,
 	selectFolderSearchStatus
 } from '../../../../store/conversations-slice';
-import { AppContext } from '../../../../types';
+import type { AppContext } from '../../../../types';
 import { ConversationListComponent } from './conversation-list-component';
 import { ConversationListItemComponent } from './conversation-list-item-component';
 
@@ -101,35 +101,33 @@ const ConversationList: FC = () => {
 	const listItems = useMemo(
 		() =>
 			map(conversations, (conversation) => {
-				const isActive = itemId === conversation.id;
+				const active = itemId === conversation.id;
 				const isSelected = selected[conversation.id];
 				return (
-					<>
-						<CustomListItem
-							active={isActive}
-							selected={isSelected}
-							background={conversation.read ? 'gray6' : 'gray5'}
-							key={conversation.id}
-						>
-							{(isVisible: boolean): JSX.Element => (
-								<ConversationListItemComponent
-									item={conversation}
-									visible={isVisible}
-									selected={isSelected}
-									activeItemId={itemId}
-									toggle={toggle}
-									setDraggedIds={setDraggedIds}
-									selectedItems={selected}
-									dragImageRef={dragImageRef}
-									selecting={isSelectModeOn}
-									active={isActive}
-									selectedIds={Object.keys(selected)}
-									deselectAll={deselectAll}
-									folderId={folderId}
-								/>
-							)}
-						</CustomListItem>
-					</>
+					<CustomListItem
+						active={active}
+						selected={isSelected}
+						background={conversation.read ? 'gray6' : 'gray5'}
+						key={conversation.id}
+					>
+						{(visible: boolean): JSX.Element => (
+							<ConversationListItemComponent
+								item={conversation}
+								visible={visible}
+								selected={isSelected}
+								activeItemId={itemId}
+								toggle={toggle}
+								setDraggedIds={setDraggedIds}
+								selectedItems={selected}
+								dragImageRef={dragImageRef}
+								selecting={isSelectModeOn}
+								active={active}
+								selectedIds={Object.keys(selected)}
+								deselectAll={deselectAll}
+								folderId={folderId}
+							/>
+						)}
+					</CustomListItem>
 				);
 			}),
 		[conversations, deselectAll, folderId, isSelectModeOn, itemId, selected, toggle]

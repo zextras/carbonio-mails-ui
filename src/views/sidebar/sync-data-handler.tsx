@@ -49,7 +49,7 @@ import {
 	handleNotifyDeletedSearchConversations,
 	handleNotifyModifiedSearchConversations
 } from '../../store/searches-slice';
-import { Conversation } from '../../types';
+import type { Conversation } from '../../types';
 import { extractFolders } from './utils';
 
 const InboxBadgeUpdater = (): null => {

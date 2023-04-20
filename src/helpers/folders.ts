@@ -5,7 +5,7 @@
  */
 import { Account, Folder } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
-import { MailMessage } from '../types';
+import type { MailMessage } from '../types';
 
 /*
  * Describe the folder id syntax

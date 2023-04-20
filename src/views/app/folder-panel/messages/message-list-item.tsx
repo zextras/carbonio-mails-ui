@@ -29,7 +29,7 @@ import React, { FC, memo, useCallback, useMemo } from 'react';
 import { ActionsType, getTimeLabel, participantToString } from '../../../../commons/utils';
 import { MAILS_ROUTE } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
-import { MessageListItemProps, TextReadValuesType } from '../../../../types';
+import type { MessageListItemProps, TextReadValuesType } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { ItemAvatar } from '../parts/item-avatar';

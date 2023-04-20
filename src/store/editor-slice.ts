@@ -10,7 +10,7 @@ import { drop } from 'lodash';
 import { ActionsType } from '../commons/utils';
 import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
-import {
+import type {
 	EditorsStateType,
 	MailsEditorMap,
 	StateType,

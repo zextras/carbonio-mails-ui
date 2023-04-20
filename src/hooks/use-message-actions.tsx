@@ -7,7 +7,7 @@ import { FOLDERS, useAppContext, useTags, useUserAccount } from '@zextras/carbon
 import { includes } from 'lodash';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { AppContext, MailMessage } from '../types';
+import type { AppContext, MailMessage } from '../types';
 import {
 	deleteMessagePermanently,
 	deleteMsg,

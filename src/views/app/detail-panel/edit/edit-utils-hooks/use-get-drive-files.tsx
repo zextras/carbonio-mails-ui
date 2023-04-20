@@ -8,7 +8,7 @@ import { filter, map } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useAppSelector } from '../../../../../hooks/redux';
 import { selectEditors } from '../../../../../store/editor-slice';
-import { MailsEditor } from '../../../../../types';
+import type { MailsEditor } from '../../../../../types';
 
 export const uploadToFiles = async (
 	node: { id: string },

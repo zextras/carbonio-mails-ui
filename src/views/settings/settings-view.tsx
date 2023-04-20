@@ -19,7 +19,7 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useAppDispatch } from '../../hooks/redux';
 import { SignatureRequest } from '../../store/actions/signatures';
-import { AccountIdentity, PropsType, SignItemType } from '../../types';
+import type { AccountIdentity, PropsType, SignItemType } from '../../types';
 import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
 import ComposeMessage from './compose-msg-settings';
 import DisplayMessagesSettings from './displaying-messages-settings';

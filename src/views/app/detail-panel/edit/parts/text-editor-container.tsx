@@ -19,7 +19,7 @@ import React, {
 } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
-import { EditViewContextType, MailsEditor, SaveDraftResponse } from '../../../../../types';
+import type { EditViewContextType, MailsEditor, SaveDraftResponse } from '../../../../../types';
 import { addInlineAttachments, getConvertedImageSources } from '../add-inline-attachment';
 import { EditViewContext } from './edit-view-context';
 import * as StyledComp from './edit-view-styled-components';

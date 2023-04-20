@@ -8,7 +8,7 @@ import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system'
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
 import { attachmentTypeItemsConstant, emailStatusItemsConstant } from '../../../constants';
-import { AttachTypeEmailStatusRowPropType, ChipOnAdd, ChipOnAddProps } from '../../../types';
+import type { AttachTypeEmailStatusRowPropType, ChipOnAdd, ChipOnAddProps } from '../../../types';
 
 const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	compProps

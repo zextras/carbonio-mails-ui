@@ -17,7 +17,7 @@ import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useAppDispatch } from '../../hooks/redux';
-import { MailMessage } from '../../types';
+import type { MailMessage } from '../../types';
 import LabelRow from './parts/label-row';
 import ResponseActions from './parts/response-actions';
 import { ShareCalendarRoleOptions, findLabel } from './parts/utils';

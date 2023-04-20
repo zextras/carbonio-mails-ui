@@ -14,7 +14,7 @@ import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { LineType } from '../commons/utils';
 import { htmlEncode } from '../commons/get-quoted-text-util';
 import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
-import {
+import type {
 	EditorAttachmentFiles,
 	InlineAttachedType,
 	MailAttachmentParts,

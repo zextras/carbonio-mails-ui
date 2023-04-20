@@ -10,8 +10,7 @@ import React from 'react';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateStore } from '../../../../../tests/generators/store';
-import { Status } from '../../../../../types';
-
+import type { Status } from '../../../../../types';
 import {
 	ConversationListComponent,
 	ConversationListComponentProps

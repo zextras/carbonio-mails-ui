@@ -11,7 +11,7 @@ import { getContentForPrint } from '../commons/print-conversation';
 import { ConversationActionsDescriptors } from '../constants';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import { AppDispatch, StoreProvider } from '../store/redux';
-import { ConvActionReturnType, Conversation, MailMessage } from '../types';
+import type { ConvActionReturnType, Conversation, MailMessage } from '../types';
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg';
 

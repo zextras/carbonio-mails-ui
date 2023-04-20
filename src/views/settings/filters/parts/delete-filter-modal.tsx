@@ -8,7 +8,7 @@ import { TFunction } from 'i18next';
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { FilterListType } from '../../../../types';
+import type { FilterListType } from '../../../../types';
 import { deleteFilter } from './actions';
 
 type ListType = {

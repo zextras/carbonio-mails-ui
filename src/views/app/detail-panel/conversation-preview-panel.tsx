@@ -16,7 +16,7 @@ import {
 	selectCurrentFolderExpandedStatus
 } from '../../../store/conversations-slice';
 import { selectMessages } from '../../../store/messages-slice';
-import { Conversation, StateType } from '../../../types';
+import type { Conversation, StateType } from '../../../types';
 import MailPreview from './preview/mail-preview';
 import PreviewPanelHeader from './preview/preview-panel-header';
 

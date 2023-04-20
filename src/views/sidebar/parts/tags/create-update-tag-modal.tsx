@@ -15,7 +15,7 @@ import {
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { CreateUpdateTagModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
+import type { CreateUpdateTagModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
 
 const NonSupportedCharacters = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
@@ -34,7 +34,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 		[editMode, tag?.name]
 	);
 	const label = useMemo(() => t('label.tag_name', 'Tag name'), []);
-	const handleColorChange = useCallback((c: number) => setColor(c), []);
+	const handleColorChange = useCallback((c: string | null) => setColor(c), []);
 	const handleNameChange = useCallback((ev) => setName(ev.target.value), []);
 
 	const showMaxLengthWarning = useMemo(() => name.length >= 128, [name]);
@@ -125,7 +125,6 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 			<Padding top="small" />
 			<ColorPicker
 				onChange={handleColorChange}
-				t={t}
 				label={t('label.select_color', 'Select Color')}
 				defaultColor={color}
 			/>

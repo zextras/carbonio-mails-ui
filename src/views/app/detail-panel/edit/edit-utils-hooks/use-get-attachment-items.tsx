@@ -10,7 +10,7 @@ import { compact } from 'lodash';
 import React, { ReactElement, useMemo } from 'react';
 import { useGetPublicUrl } from './use-get-public-url';
 import { useGetFilesFromDrive } from './use-get-drive-files';
-import { MailsEditor } from '../../../../../types';
+import type { MailsEditor } from '../../../../../types';
 
 type UseGetAttachItemsPropType = {
 	onFileClick: ((ev: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void) | undefined;

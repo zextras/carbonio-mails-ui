@@ -20,7 +20,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
 import { selectFolders } from '../../store/folders-slice';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
-import { FolderType, SearchProps } from '../../types';
+import type { FolderType, SearchProps } from '../../types';
 import AdvancedFilterModal from './advance-filter-modal';
 import { findIconFromChip } from './parts/use-find-icon';
 import SearchConversationList from './search-conversation-list';

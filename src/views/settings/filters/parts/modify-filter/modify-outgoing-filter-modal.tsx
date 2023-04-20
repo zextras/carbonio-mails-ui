@@ -18,7 +18,7 @@ import DefaultCondition from '../create-filters-conditions/default';
 import FilterTestConditionRow from '../filter-test-condition-row';
 import { findRowKey, getTestComponent } from '../get-test-component';
 import FilterActionConditions from '../new-filter-action-conditions';
-import { FilterActions } from '../../../../../types';
+import type { FilterActions } from '../../../../../types';
 import { getButtonInfo } from '../utils';
 
 type FilterType = {

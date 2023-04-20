@@ -26,7 +26,7 @@ import React, {
 } from 'react';
 import { useAppSelector } from '../../../../../hooks/redux';
 import { selectFolders } from '../../../../../store/folders-slice';
-import { MailMessage, TextReadValuesProps } from '../../../../../types';
+import type { MailMessage, TextReadValuesProps } from '../../../../../types';
 import ContactNames from './contact-names';
 import { getFolderTranslatedName } from '../../../../sidebar/utils';
 
