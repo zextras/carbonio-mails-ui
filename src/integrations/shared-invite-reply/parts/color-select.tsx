@@ -50,6 +50,16 @@ const LabelFactory = ({ selected, label, open, focus }: CustomLabelFactoryProps)
 	</ColorContainer>
 );
 
+function getColorLabel(color: string): string {
+	/* i18next-extract-disable-next-line */
+	return t(`color.${color}`, '{{color}}', {
+		context: ZIMBRA_STANDARD_COLORS,
+		replace: {
+			color
+		}
+	});
+}
+
 export default function ColorSelect({
 	onChange,
 	defaultColor = 0,
@@ -62,12 +72,7 @@ export default function ColorSelect({
 	const colors = useMemo(
 		() =>
 			ZIMBRA_STANDARD_COLORS.map((el, index) => ({
-				label: t(`color.${el.zLabel}`, '{{color}}', {
-					context: ZIMBRA_STANDARD_COLORS,
-					replace: {
-						color: el.zLabel
-					}
-				}),
+				label: getColorLabel(el.zLabel),
 				value: index.toString(),
 				customComponent: (
 					<Container
@@ -77,7 +82,7 @@ export default function ColorSelect({
 						height="fit"
 					>
 						<Padding left="small">
-							<TextUpperCase>{t(el.zLabel)}</TextUpperCase>
+							<TextUpperCase>{getColorLabel(el.zLabel)}</TextUpperCase>
 						</Padding>
 						<Square color={el.hex} />
 					</Container>
