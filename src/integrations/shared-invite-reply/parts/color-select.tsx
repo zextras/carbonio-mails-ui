@@ -62,7 +62,12 @@ export default function ColorSelect({
 	const colors = useMemo(
 		() =>
 			ZIMBRA_STANDARD_COLORS.map((el, index) => ({
-				label: t(el.zLabel, 'banane'),
+				label: t(`color.${el.zLabel}`, '{{color}}', {
+					context: ZIMBRA_STANDARD_COLORS,
+					replace: {
+						color: el.zLabel
+					}
+				}),
 				value: index.toString(),
 				customComponent: (
 					<Container
