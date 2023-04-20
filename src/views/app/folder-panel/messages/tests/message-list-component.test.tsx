@@ -13,7 +13,11 @@ import { generateStore } from '../../../../../tests/generators/store';
 import { MessageListComponent, MessageListComponentProps } from '../message-list-component';
 import { MessageListItemComponent } from '../message-list-item-component';
 
-describe('Message list component', () => {
+describe.each`
+	type                     | isSearchModule
+	${'message list'}        | ${false}
+	${'search message list'} | ${true}
+`('$type list component', ({ isSearchModule }) => {
 	test('populate a message list and check that the messages are visible', async () => {
 		// Populate a message list
 		const MESSAGES_COUNT = 100;
@@ -29,6 +33,7 @@ describe('Message list component', () => {
 				toggle={noop}
 				isSelectModeOn={false}
 				key={message.id}
+				isSearchModule={isSearchModule}
 				deselectAll={noop}
 			/>
 		));
@@ -47,6 +52,7 @@ describe('Message list component', () => {
 			selected: {},
 			selectedIds: [],
 			setIsSelectModeOn: noop,
+			isSearchModule,
 			totalMessages: messages.length
 		};
 

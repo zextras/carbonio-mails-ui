@@ -5,25 +5,24 @@
  */
 import { screen } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { noop, times } from 'lodash';
-import { string } from 'prop-types';
+import { times } from 'lodash';
 import React from 'react';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateStore } from '../../../../../tests/generators/store';
-import { Conversation, Status } from '../../../../../types';
-import {
-	MessageListComponent,
-	MessageListComponentProps
-} from '../../messages/message-list-component';
-import ConversationList from '../conversation-list';
+import { Status } from '../../../../../types';
+
 import {
 	ConversationListComponent,
 	ConversationListComponentProps
 } from '../conversation-list-component';
 import { ConversationListItemComponent } from '../conversation-list-item-component';
 
-describe('Conversation list component', () => {
+describe.each`
+	type                          | isSearchModule
+	${'conversation list'}        | ${false}
+	${'search conversation list'} | ${true}
+`('$type list component', ({ isSearchModule }) => {
 	test('populate a conversation list and check that the conversations are visible', async () => {
 		// Populate a conversation list
 		const CONVERSATIONS_COUNT = 100;
@@ -47,6 +46,7 @@ describe('Conversation list component', () => {
 				selecting={false}
 				toggle={toggle}
 				deselectAll={deselectAll}
+				isSearchModule={isSearchModule}
 				folderId={folderId}
 			/>
 		));
@@ -65,6 +65,7 @@ describe('Conversation list component', () => {
 			selectAll,
 			isAllSelected: false,
 			selectAllModeOff,
+			isSearchModule,
 			setIsSelectModeOn
 		};
 

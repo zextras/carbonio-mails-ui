@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { noop, times } from 'lodash';
 import React from 'react';
@@ -18,7 +18,11 @@ import { ConversationListItemProps, MessageListItemProps } from '../../../../../
 import { MessageListItem } from '../../messages/message-list-item';
 import { ConversationListItem } from '../conversation-list-item';
 
-describe('Conversation list item component', () => {
+describe.each`
+	type                          | isSearchModule
+	${'conversation list'}        | ${false}
+	${'search conversation list'} | ${true}
+`('$type list item component', ({ isSearchModule }) => {
 	describe('in any folders', () => {
 		test('if the conversation contains more than 1 message then a badge with the messages count is visible', async () => {
 			const folderId = FOLDERS.INBOX;
@@ -33,6 +37,7 @@ describe('Conversation list item component', () => {
 				isConvChildren: false,
 				activeItemId: '',
 				deselectAll: noop,
+				isSearchModule,
 				folderId
 			};
 
@@ -80,6 +85,7 @@ describe('Conversation list item component', () => {
 					isConvChildren: false,
 					activeItemId: '',
 					deselectAll: noop,
+					isSearchModule,
 					folderId: folder.id
 				};
 
@@ -131,6 +137,7 @@ describe('Conversation list item component', () => {
 					isConvChildren: false,
 					activeItemId: '',
 					deselectAll: noop,
+					isSearchModule,
 					folderId: folder.id
 				};
 
@@ -185,6 +192,7 @@ describe('Conversation list item component', () => {
 					isConvChildren: false,
 					activeItemId: '',
 					deselectAll: noop,
+					isSearchModule,
 					folderId: folder.id
 				};
 
@@ -240,6 +248,7 @@ describe('Conversation list item component', () => {
 					isConvChildren: false,
 					activeItemId: '',
 					deselectAll: noop,
+					isSearchModule,
 					folderId: folder.id
 				};
 
@@ -293,6 +302,7 @@ describe('Conversation list item component', () => {
 					isConvChildren: false,
 					activeItemId: '',
 					deselectAll: noop,
+					isSearchModule,
 					folderId: folder.id
 				};
 
@@ -346,6 +356,7 @@ describe('Conversation list item component', () => {
 					isConvChildren: false,
 					activeItemId: '',
 					deselectAll: noop,
+					isSearchModule,
 					folderId: folder.id
 				};
 
@@ -370,7 +381,7 @@ describe('Conversation list item component', () => {
 			}
 		);
 
-		test("() if the conversation contains more than 1 message then all the recipients' names are visible", async () => {
+		test("(case #9) if the conversation contains more than 1 message then all the recipients' names are visible", async () => {
 			const folderId = FOLDERS.INBOX;
 			const MESSAGES_COUNT = 3;
 			const me = getMocksContext().identities.primary.identity.email;
@@ -392,6 +403,7 @@ describe('Conversation list item component', () => {
 				isConvChildren: false,
 				activeItemId: '',
 				deselectAll: noop,
+				isSearchModule,
 				folderId
 			};
 
@@ -415,5 +427,49 @@ describe('Conversation list item component', () => {
 			expect(senderLabel).toHaveTextContent('luigi');
 			expect(senderLabel).toHaveTextContent('bowser');
 		});
+	});
+
+	test('(case #10) when right-click the message the secondary actions contextual menu must be visible', async () => {
+		const folderId = FOLDERS.INBOX;
+		const conversation = generateConversation({ folderId });
+		const conversationId = conversation.id;
+
+		const props: ConversationListItemProps = {
+			item: conversation,
+			selected: false,
+			selecting: false,
+			toggle: noop,
+			isConvChildren: false,
+			activeItemId: '',
+			deselectAll: noop,
+			isSearchModule,
+			folderId
+		};
+
+		const store = generateStore({
+			conversations: {
+				currentFolder: folderId,
+				expandedStatus: {
+					[conversation.id]: 'complete'
+				},
+				searchedInFolder: {},
+				conversations: {
+					[conversation.id]: conversation
+				},
+				status: 'complete'
+			}
+		});
+
+		setupTest(<ConversationListItem {...props} />, { store });
+		const aRandomChild = await screen.findByTestId(`hover-container-${conversationId}`);
+
+		// Initally the context menu is not created
+		expect(screen.queryByTestId('dropdown-popper-list')).not.toBeInTheDocument();
+
+		// Trigger a right-click
+		fireEvent.contextMenu(aRandomChild);
+
+		const menu = await screen.findByTestId('dropdown-popper-list');
+		expect(menu).toBeVisible();
 	});
 });

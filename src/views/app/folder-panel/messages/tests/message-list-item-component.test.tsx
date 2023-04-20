@@ -3,11 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { fireEvent, screen, within } from '@testing-library/react';
+import { faker } from '@faker-js/faker';
+import { fireEvent, screen } from '@testing-library/react';
+import { Folder } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import React from 'react';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import {
+	FOLDERS,
+	useFolder
+} from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS, VISIBILITY_ASSERTION } from '../../../../../tests/constants';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
@@ -15,7 +21,33 @@ import { generateStore } from '../../../../../tests/generators/store';
 import { MessageListItemProps } from '../../../../../types';
 import { MessageListItem } from '../message-list-item';
 
-describe('Message list item component', () => {
+// TODO complete the tests for all the elements of the list item (i.e. folder name badge)
+
+describe.each`
+	type                     | isSearchModule
+	${'message list'}        | ${false}
+	${'search message list'} | ${true}
+`('$type list item component', ({ isSearchModule }) => {
+	// Workaround
+	// FIXME extend the implementation in commons for the folders mocks
+	const userFolder: Folder = {
+		isLink: false,
+		id: FOLDERS_DESCRIPTORS.USER_DEFINED.id,
+		uuid: faker.datatype.uuid(),
+		name: FOLDERS_DESCRIPTORS.USER_DEFINED.desc,
+		activesyncdisabled: false,
+		recursive: false,
+		deletable: true,
+		depth: 1,
+		children: []
+	};
+	const folders = {
+		...generateFolders(),
+		[FOLDERS_DESCRIPTORS.USER_DEFINED.id]: userFolder
+	};
+
+	useFolder.mockImplementation((folderId) => folders[folderId]);
+
 	describe('in any folders', () => {
 		test.each`
 			case | folder                              | assertion
@@ -39,6 +71,7 @@ describe('Message list item component', () => {
 					active: true,
 					toggle: noop,
 					deselectAll: noop,
+					isSearchModule,
 					currentFolderId: folder.id
 				};
 
@@ -80,6 +113,7 @@ describe('Message list item component', () => {
 					active: true,
 					toggle: noop,
 					deselectAll: noop,
+					isSearchModule,
 					currentFolderId: folder.id
 				};
 
@@ -125,6 +159,7 @@ describe('Message list item component', () => {
 					active: true,
 					toggle: noop,
 					deselectAll: noop,
+					isSearchModule,
 					currentFolderId: folder.id
 				};
 
@@ -171,6 +206,7 @@ describe('Message list item component', () => {
 					active: true,
 					toggle: noop,
 					deselectAll: noop,
+					isSearchModule,
 					currentFolderId: folder.id
 				};
 
@@ -216,6 +252,7 @@ describe('Message list item component', () => {
 					active: true,
 					toggle: noop,
 					deselectAll: noop,
+					isSearchModule,
 					currentFolderId: folder.id
 				};
 
@@ -260,6 +297,7 @@ describe('Message list item component', () => {
 					active: true,
 					toggle: noop,
 					deselectAll: noop,
+					isSearchModule,
 					currentFolderId: folder.id
 				};
 
@@ -336,6 +374,7 @@ describe('Message list item component', () => {
 				active: true,
 				toggle: noop,
 				deselectAll: noop,
+				isSearchModule,
 				currentFolderId: folderId
 			};
 
@@ -360,12 +399,137 @@ describe('Message list item component', () => {
 			expect(menu).toBeVisible();
 		});
 	});
+});
 
-	/**
-	 *
-	 * @param folderId
-	 */
-	const testRecipients = (folderId: string): void => {
+describe('in the drafts folder', () => {
+	const folderId = FOLDERS.DRAFTS;
+	test.each`
+		case | listType                 | isSearchModule | assertion
+		${4} | ${'message list'}        | ${false}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+		${0} | ${'search message list'} | ${true}        | ${VISIBILITY_ASSERTION.IS_NOT_VISIBLE}
+	`(
+		'(case #$case) in a $listType item the string [DRAFT] $assertion.desc',
+		async ({ isSearchModule, assertion }) => {
+			const msg = generateMessage({ folderId });
+
+			const props: MessageListItemProps = {
+				item: msg,
+				selected: false,
+				selecting: false,
+				isConvChildren: false,
+				visible: true,
+				active: true,
+				toggle: noop,
+				deselectAll: noop,
+				isSearchModule,
+				currentFolderId: folderId
+			};
+
+			const store = generateStore({
+				messages: {
+					searchedInFolder: {},
+					messages: [msg],
+					status: {}
+				}
+			});
+
+			setupTest(<MessageListItem {...props} />, { store });
+			const matcher = expect(screen.queryByText('label.draft_folder'));
+			assertion.value ? matcher.toBeVisible() : matcher.not.toBeInTheDocument();
+		}
+	);
+
+	test.each`
+		case | listType                 | isSearchModule | assertion
+		${2} | ${'message list'}        | ${false}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+		${0} | ${'search message list'} | ${true}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+	`(
+		"(case #$case) in a $listType item the recipients' names, if set, $assertion.desc",
+		async ({ isSearchModule, assertion }) => {
+			const to = [
+				{ type: ParticipantRole.TO, address: 'mario@foo.bar' },
+				{ type: ParticipantRole.TO, address: 'luigi@foo.bar' }
+			];
+			const msg = generateMessage({ to, folderId });
+
+			const props: MessageListItemProps = {
+				item: msg,
+				selected: false,
+				selecting: false,
+				isConvChildren: false,
+				visible: true,
+				active: true,
+				toggle: noop,
+				deselectAll: noop,
+				isSearchModule,
+				currentFolderId: folderId
+			};
+
+			const store = generateStore({
+				messages: {
+					searchedInFolder: {},
+					messages: [msg],
+					status: {}
+				}
+			});
+
+			setupTest(<MessageListItem {...props} />, { store });
+			if (assertion.value) {
+				const participantsLabel = screen.getByTestId('participants-name-label');
+				expect(participantsLabel).toHaveTextContent('mario');
+				expect(participantsLabel).toHaveTextContent('luigi');
+			} else {
+				expect(screen.queryByTestId('participants-name-label')).not.toBeInTheDocument();
+			}
+		}
+	);
+
+	test.each`
+		case | listType                 | isSearchModule | assertion
+		${3} | ${'message list'}        | ${false}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+		${0} | ${'search message list'} | ${true}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+	`(
+		'(case #$case) in a $listType item, if the body content is set, the fragment $assertion.desc',
+		async ({ isSearchModule, assertion }) => {
+			const body = 'Message body content';
+			const msg = generateMessage({ body, folderId });
+
+			const props: MessageListItemProps = {
+				item: msg,
+				selected: false,
+				selecting: false,
+				isConvChildren: false,
+				visible: true,
+				active: true,
+				toggle: noop,
+				deselectAll: noop,
+				isSearchModule,
+				currentFolderId: folderId
+			};
+
+			const store = generateStore({
+				messages: {
+					searchedInFolder: {},
+					messages: [msg],
+					status: {}
+				}
+			});
+
+			setupTest(<MessageListItem {...props} />, { store });
+			if (assertion.value) {
+				const fragment = screen.getByTestId('Fragment');
+				expect(fragment).toHaveTextContent(body);
+			} else {
+				expect(screen.queryByTestId('Fragment')).not.toBeInTheDocument();
+			}
+		}
+	);
+});
+
+describe('in the trash folder', () => {
+	const folderId = FOLDERS.TRASH;
+
+	test("(case #2) in a message item the recipients' names, if set, is visible", async () => {
 		const to = [
 			{ type: ParticipantRole.TO, address: 'mario@foo.bar' },
 			{ type: ParticipantRole.TO, address: 'luigi@foo.bar' }
@@ -396,45 +560,17 @@ describe('Message list item component', () => {
 		const participantsLabel = screen.getByTestId('participants-name-label');
 		expect(participantsLabel).toHaveTextContent('mario');
 		expect(participantsLabel).toHaveTextContent('luigi');
-	};
+	});
 
-	/**
-	 *
-	 * @param folderId
-	 */
-	const testFragment = (folderId: string): void => {
-		const body = 'Message body content';
-		const msg = generateMessage({ body, folderId });
-
-		const props: MessageListItemProps = {
-			item: msg,
-			selected: false,
-			selecting: false,
-			isConvChildren: false,
-			visible: true,
-			active: true,
-			toggle: noop,
-			deselectAll: noop,
-			currentFolderId: folderId
-		};
-
-		const store = generateStore({
-			messages: {
-				searchedInFolder: {},
-				messages: [msg],
-				status: {}
-			}
-		});
-
-		setupTest(<MessageListItem {...props} />, { store });
-		const fragment = screen.getByTestId('Fragment');
-		expect(fragment).toHaveTextContent(body);
-	};
-
-	describe('in the drafts folder', () => {
-		test('(case #1) the string [DRAFT] is visible', async () => {
-			const folderId = FOLDERS.DRAFTS;
-			const msg = generateMessage({ folderId });
+	test.each`
+		case | listType                 | isSearchModule | assertion
+		${3} | ${'message list'}        | ${false}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+		${0} | ${'search message list'} | ${true}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+	`(
+		'(case #$case) in a $listType item, if the body content is set, the fragment $assertion.desc',
+		async ({ isSearchModule, assertion }) => {
+			const body = 'Message body content';
+			const msg = generateMessage({ body, folderId });
 
 			const props: MessageListItemProps = {
 				item: msg,
@@ -445,6 +581,7 @@ describe('Message list item component', () => {
 				active: true,
 				toggle: noop,
 				deselectAll: noop,
+				isSearchModule,
 				currentFolderId: folderId
 			};
 
@@ -457,21 +594,12 @@ describe('Message list item component', () => {
 			});
 
 			setupTest(<MessageListItem {...props} />, { store });
-			expect(screen.getByText('label.draft_folder')).toBeVisible();
-		});
-
-		test("(case #2) the recipients' names, if set, must be visible", () =>
-			testRecipients(FOLDERS.DRAFTS));
-
-		test('(case #3) if the body content is set, the fragment is visible', async () =>
-			testFragment(FOLDERS.DRAFTS));
-	});
-
-	describe('in the trash folder', () => {
-		test("(case #1) the recipients' names, if set, must be visible", () =>
-			testRecipients(FOLDERS.TRASH));
-
-		test('(case #2) if the body content is set, the fragment is visible', async () =>
-			testFragment(FOLDERS.TRASH));
-	});
+			if (assertion.value) {
+				const fragment = screen.getByTestId('Fragment');
+				expect(fragment).toHaveTextContent(body);
+			} else {
+				expect(screen.queryByTestId('Fragment')).not.toBeInTheDocument();
+			}
+		}
+	);
 });
