@@ -43,7 +43,7 @@ export const DeleteDraftModal = ({
 			ids,
 			dispatch,
 			folderId: FOLDERS.TRASH
-		})?.click();
+		})?.onClick();
 		onDelete?.();
 		onClose?.();
 	}, [dispatch, ids, onClose, onDelete]);

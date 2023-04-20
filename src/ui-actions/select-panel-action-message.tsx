@@ -224,7 +224,7 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 			<Container background="gray5" orientation="horizontal" mainAlignment="flex-end">
 				{map(
 					filter(primaryActions),
-					(action: { label: string; icon: string; click?: () => void }) => (
+					(action: { label: string; icon: string; onClick?: () => void }) => (
 						<IconButton
 							data-testid={`primary-action-button-${action.label}`}
 							icon={action.icon}
@@ -244,7 +244,7 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 										hideButton: true
 									});
 								} else {
-									action.click && action.click();
+									action.onClick && action.onClick();
 								}
 							}}
 							size="large"
@@ -265,14 +265,14 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 					(action: {
 						label: string;
 						icon: string;
-						click?: () => void;
+						onClick?: () => void;
 						customComponent?: ReactElement;
 						items?: Array<any>;
 					}) => ({
 						id: action.label,
 						icon: action.icon,
 						label: action.label,
-						click: (ev: Event): void => {
+						onClick: (ev: Event): void => {
 							if (ev) ev.preventDefault();
 							if (ids.length === 0) {
 								createSnackbar({
@@ -287,7 +287,7 @@ const SelectMessagesPanelActions: FC<SelectMessagesPanelActionsPropType> = ({
 									hideButton: true
 								});
 							} else {
-								action.click && action.click();
+								action.onClick && action.onClick();
 							}
 						},
 						customComponent: action.customComponent,

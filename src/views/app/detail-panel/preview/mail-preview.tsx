@@ -261,7 +261,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 				dispatch,
 				shouldReplaceHistory: true,
 				folderId
-			}).click(),
+			}).onClick(),
 		[dispatch, folderId, message.id]
 	);
 

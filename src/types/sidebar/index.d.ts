@@ -8,7 +8,7 @@ type RegisterActionType = {
 	id: string;
 	label: string;
 	icon: string;
-	click: (ev: React.SyntheticEvent) => void;
+	onClick: (ev: React.SyntheticEvent) => void;
 	disabled: boolean;
 };
 
@@ -16,7 +16,7 @@ export type ActionType = {
 	id: string;
 	label: string;
 	icon: string;
-	click: (ev: React.SyntheticEvent) => void;
+	onClick: (ev: React.SyntheticEvent) => void;
 	type?: string;
 	primary?: boolean;
 	group?: string;
@@ -85,7 +85,7 @@ export type FolderActionsProps = {
 	id: string;
 	icon: string;
 	label: string;
-	click: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	disabled?: boolean;
 };
 

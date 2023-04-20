@@ -47,7 +47,7 @@ type ConvActionReturnType = {
 	icon: string;
 	label: string;
 	disabled?: boolean;
-	click: (ev: MouseEvent) => void;
+	onClick: (ev: MouseEvent) => void;
 	customComponent?: JSX.Element;
 };
 
@@ -60,7 +60,7 @@ export function setConversationsFlag({
 		id: 'flag-conversation',
 		icon: value ? 'Flag' : 'FlagOutline',
 		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
-		click: (): void => {
+		onClick: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -83,7 +83,7 @@ export function setMultipleConversationsFlag({
 		icon: 'Flag',
 		label: t('action.flag', 'Add flag'),
 		disabled,
-		click: (): void => {
+		onClick: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -106,7 +106,7 @@ export function unSetMultipleConversationsFlag({
 		icon: 'FlagOutline',
 		label: t('action.unflag', 'Remove flag'),
 		disabled,
-		click: (): void => {
+		onClick: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -137,7 +137,7 @@ export function setConversationsRead({
 		label: value
 			? t('action.mark_as_unread', 'Mark as unread')
 			: t('action.mark_as_read', 'Mark as read'),
-		click: (): void => {
+		onClick: (): void => {
 			dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -182,7 +182,7 @@ export function printConversation({
 		id: 'print-conversations',
 		icon: 'PrinterOutline',
 		label: t('action.print', 'Print'),
-		click: (): void => {
+		onClick: (): void => {
 			const printWindow = window.open('', '_blank');
 			getMsgsForPrint({ ids: messageIds })
 				.then((res) => {
@@ -216,7 +216,7 @@ export function setConversationsSpam({
 		label: value
 			? t('action.mark_as_non_spam', 'Not spam')
 			: t('action.mark_as_spam', 'Mark as spam'),
-		click: (): void => {
+		onClick: (): void => {
 			let notCanceled = true;
 
 			const infoSnackbar = (hideButton = false): void => {
@@ -281,7 +281,7 @@ export function moveConversationToTrash({
 		icon: 'Trash2Outline',
 		label: t('label.delete', 'Delete'),
 		// first click, delete email
-		click: (): void => {
+		onClick: (): void => {
 			const restoreConversation = (): void => {
 				dispatch(
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -370,7 +370,7 @@ export function moveConversationToFolder({
 		id: 'move-conversations',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
 		label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
-		click: (): void => {
+		onClick: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
 					maxHeight: '90vh',
@@ -404,7 +404,7 @@ export function deleteConversationPermanently({
 		id: 'delete-conversations',
 		icon: 'DeletePermanentlyOutline',
 		label: t('label.delete_permanently', 'Delete permanently'),
-		click: (): void => {
+		onClick: (): void => {
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
 					children: (

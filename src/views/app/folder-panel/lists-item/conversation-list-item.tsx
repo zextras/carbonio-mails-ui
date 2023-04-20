@@ -292,7 +292,7 @@ const ConversationListItem: FC<ConversationListItemProps> = ({
 						dispatch
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-					})?.click();
+					})?.onClick();
 				}
 				pushHistory(`/folder/${folderId}/conversation/${item.id}`);
 			}

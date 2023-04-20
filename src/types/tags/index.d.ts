@@ -12,7 +12,7 @@ export type ReturnType = {
 	id: string;
 	icon: string;
 	label: string;
-	click?: (arg: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	onClick?: (arg: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	items?: Array<{
 		customComponent: ComponentType;
 		id: string;

@@ -24,7 +24,7 @@ type ACPProps = {
 
 type ActionObj = DropdownItem & {
 	icon: NonNullable<DropdownItem['icon']>;
-	click: NonNullable<DropdownItem['click']>;
+	onClick: NonNullable<DropdownItem['onClick']>;
 };
 
 type ActionList = Array<ActionObj>;

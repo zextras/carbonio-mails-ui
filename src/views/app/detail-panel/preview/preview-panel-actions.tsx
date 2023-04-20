@@ -130,7 +130,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 							if (ev) ev.preventDefault();
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
-							action?.click(ev);
+							action?.onClick(ev);
 						}}
 					/>
 				</Padding>
@@ -142,11 +142,11 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 						id: action.label,
 						icon: action.icon,
 						label: action.label,
-						click: (ev): void => {
+						onClick: (ev): void => {
 							if (ev) ev.preventDefault();
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
-							action.click(ev);
+							action.onClick(ev);
 						}
 					}))}
 				>

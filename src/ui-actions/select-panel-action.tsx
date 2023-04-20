@@ -311,7 +311,7 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 								} else {
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									action.click(ev);
+									action.onClick(ev);
 								}
 							}}
 							size="large"
@@ -342,7 +342,7 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						label: action.label,
-						click: (ev): void => {
+						onClick: (ev): void => {
 							if (ev) ev.preventDefault();
 
 							if (ids.length === 0) {
@@ -360,7 +360,7 @@ const SelectPanelActions: FC<SelectPanelActionsPropType> = ({
 							} else {
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
-								action.click();
+								action.onClick();
 							}
 						},
 						customComponent: action.customComponent,

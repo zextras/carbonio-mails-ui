@@ -179,7 +179,7 @@ export const MessageListItem: FC<MessageListItemProps> = ({
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (item.read === false && zimbraPrefMarkMsgRead) {
-					setMsgRead({ ids: [item.id], value: false, dispatch }).click();
+					setMsgRead({ ids: [item.id], value: false, dispatch }).onClick();
 				}
 				replaceHistory(`/folder/${folderId}/message/${item.id}`);
 			}
