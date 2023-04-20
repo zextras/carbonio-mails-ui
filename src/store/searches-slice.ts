@@ -37,7 +37,7 @@ export const getSearchSliceInitialiState = (): SearchesStateType =>
 		messages: [],
 		more: false,
 		offset: 0,
-		limit: 100,
+		limit: 500,
 		sortBy: 'dateDesc',
 		query: '',
 		status: 'empty',
