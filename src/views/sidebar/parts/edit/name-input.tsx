@@ -36,10 +36,9 @@ const NameInputRow: FC<NameInputRowProps> = ({
 		)}
 		<Padding top="small" />
 		<ColorPicker
-			onChange={(color: string): void => setFolderColor(color)}
-			t={t}
+			onChange={(color: string | null): void => setFolderColor(color ?? '')}
 			label={t('label.select_color', 'Select Color')}
-			defaultColor={folderColor}
+			defaultColor={parseInt(folderColor ?? '0', 10)}
 			data-testid="folder-color"
 		/>
 	</Container>

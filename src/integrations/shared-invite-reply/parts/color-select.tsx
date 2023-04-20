@@ -3,12 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import type {
+	MultipleSelectionOnChange,
+	SingleSelectionOnChange
+} from '@zextras/carbonio-design-system';
 import { Container, Icon, Padding, Row, Select, Text } from '@zextras/carbonio-design-system';
 import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import React, { useMemo } from 'react';
+import { CustomLabelFactoryProps } from '../../../carbonio-ui-commons/types/select';
 import { ColorContainer, Square, TextUpperCase } from './styled-components';
 
-const LabelFactory = ({ selected, label, open, focus }) => (
+const LabelFactory = ({ selected, label, open, focus }: CustomLabelFactoryProps): JSX.Element => (
 	<ColorContainer
 		orientation="horizontal"
 		width="fill"
@@ -45,7 +50,15 @@ const LabelFactory = ({ selected, label, open, focus }) => (
 	</ColorContainer>
 );
 
-export default function ColorSelect({ onChange, defaultColor = 0, label }) {
+export default function ColorSelect({
+	onChange,
+	defaultColor = 0,
+	label
+}: {
+	onChange: SingleSelectionOnChange;
+	defaultColor: number;
+	label: string;
+}): JSX.Element {
 	const colors = useMemo(
 		() =>
 			ZIMBRA_STANDARD_COLORS.map((el, index) => ({
