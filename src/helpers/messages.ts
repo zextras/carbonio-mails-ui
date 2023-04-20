@@ -7,7 +7,8 @@ import { ParticipantRoleType } from '../carbonio-ui-commons/constants/participan
 import type { MailMessage, Participant } from '../types';
 
 /**
- *
+ * Collect all the participants of the given type (or any type if the type params is not set)
+ * from the given message
  * @param message
  * @param type
  */
@@ -25,6 +26,8 @@ export const collectParticipantsFromMessage = (
 
 /**
  *
+ * Collect all the participants of the given type (or any type if the type params is not set)
+ * from the given messages
  * @param messages
  * @param type
  */
