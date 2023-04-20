@@ -42,7 +42,7 @@ export const createTag = ({ createModal }: ArgumentType): TagActionsReturnType =
 	id: TagsActionsType.NEW,
 	icon: 'TagOutline',
 	label: t('label.create_tag', 'Create Tag'),
-	click: (e: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+	onClick: (e: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 		if (e) {
 			e.stopPropagation();
 		}
@@ -65,7 +65,7 @@ export const editTag = ({ createModal, tag }: ArgumentType): TagActionsReturnTyp
 	id: TagsActionsType.EDIT,
 	icon: 'Edit2Outline',
 	label: t('label.edit_tag', 'Edit Tag'),
-	click: (e: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+	onClick: (e: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 		if (e) {
 			e.stopPropagation();
 		}
@@ -92,7 +92,7 @@ export const deleteTag = ({ createModal, tag }: ArgumentType): TagActionsReturnT
 	id: TagsActionsType.DELETE,
 	icon: 'Untag',
 	label: t('label.delete_tag', 'Delete Tag'),
-	click: (e: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+	onClick: (e: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 		if (e) {
 			e.stopPropagation();
 		}

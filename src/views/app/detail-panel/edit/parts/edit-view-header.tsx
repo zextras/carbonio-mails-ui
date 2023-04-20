@@ -520,21 +520,21 @@ const EditViewHeader: FC<PropType> = ({
 				label: showRichText
 					? t('tooltip.disable_rich_text', 'Disable rich text editor')
 					: t('tooltip.enable_rich_text', 'Enable rich text editor'),
-				click: toggleRichTextEditor
+				onClick: toggleRichTextEditor
 			},
 			{
 				id: 'urgent',
 				label: isUrgent
 					? t('label.mark_as_un_important', 'Mark as unimportant')
 					: t('label.mark_as_important', 'Mark as important'),
-				click: toggleImportant
+				onClick: toggleImportant
 			},
 			{
 				id: 'read_receipt',
 				label: isReceiptRequested
 					? t('label.remove_request_receipt', 'Remove read receipt request')
 					: t('label.request_receipt', 'Request read receipt'),
-				click: toggleReceiptRequest
+				onClick: toggleReceiptRequest
 			}
 		],
 		[
@@ -584,7 +584,7 @@ const EditViewHeader: FC<PropType> = ({
 							id: 'delayed_mail',
 							icon: 'ClockOutline',
 							label: t('label.send_later', 'Send later'),
-							click: openSendLaterModal
+							onClick: openSendLaterModal
 						}
 				  ]
 				: [])

@@ -19,7 +19,7 @@ export type TagActionsReturnType = {
 	id: string;
 	icon: string;
 	label: string;
-	click?: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
+	onClick?: (arg: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	items?: Array<{
 		customComponent: ComponentType;
 		id: string;
