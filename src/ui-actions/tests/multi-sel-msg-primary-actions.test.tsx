@@ -224,11 +224,11 @@ describe('Actions visibility', () => {
 				};
 
 				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
-				if (assertion === true)
+				if (assertion.value === true)
 					expect(
 						screen.getByTestId(`primary-multi-action-button-${action.id}`)
 					).toBeInTheDocument();
-				if (assertion === false)
+				if (assertion.value === false)
 					expect(
 						screen.queryByTestId(`primary-multi-action-button-${action.id}`)
 					).not.toBeInTheDocument();

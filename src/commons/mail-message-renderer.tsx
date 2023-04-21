@@ -193,10 +193,13 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 
 	const saveTrustee = useCallback(
 		(trustee) => {
-			let trusteeAddress: Array<string> = [];
-			const trustedList = settingsPref.zimbraPrefMailTrustedSenderList as string;
-			if (trustedList) {
-				trusteeAddress = isArray(trustedList) ? trustedList : trustedList?.split(',');
+			let trusteeAddress = [];
+			if (settingsPref.zimbraPrefMailTrustedSenderList) {
+				trusteeAddress = isArray(settingsPref.zimbraPrefMailTrustedSenderList)
+					? settingsPref.zimbraPrefMailTrustedSenderList
+					: // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					  // @ts-ignore
+					  settingsPref.zimbraPrefMailTrustedSenderList?.split(',');
 			}
 
 			editSettings({

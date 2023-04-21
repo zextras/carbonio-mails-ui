@@ -24,7 +24,6 @@ import type {
 	MessageActionReturnType,
 	TagActionItemType
 } from '../types';
-import { getParentId } from '../views/sidebar/utils';
 import {
 	deleteConversationPermanently,
 	moveConversationToFolder,
@@ -43,6 +42,7 @@ import {
 } from './message-actions';
 import { applyMultiTag } from './tag-actions';
 import { getFolderParentId } from './utils';
+import { getSystemFolderParentId } from '../helpers/folders';
 
 type MultipleSelectionActionsPanelProps = {
 	items: Array<Partial<MailMessage>> | Array<Conversation>;
@@ -112,7 +112,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMarkReadUnread.includes(getParentId(folderParentId) ?? '0')
+				!foldersExcludedMarkReadUnread.includes(getSystemFolderParentId(folderParentId) ?? '0')
 		);
 		const action = isConversation
 			? setConversationsRead({
@@ -132,7 +132,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMarkReadUnread.includes(getParentId(folderParentId) ?? '0')
+				!foldersExcludedMarkReadUnread.includes(getSystemFolderParentId(folderParentId) ?? '0')
 		);
 		const action = isConversation
 			? setConversationsRead({
@@ -152,7 +152,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedTrash.includes(getParentId(folderParentId) ?? '0')
+				!foldersExcludedTrash.includes(getSystemFolderParentId(folderParentId) ?? '0')
 		);
 		const action = isConversation
 			? moveConversationToTrash({ ids, dispatch, folderId, deselectAll })
@@ -165,7 +165,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				foldersIncludedDeletePermanently.includes(getParentId(folderParentId) ?? '0')
+				foldersIncludedDeletePermanently.includes(getSystemFolderParentId(folderParentId) ?? '0')
 		);
 		const action = isConversation
 			? deleteConversationPermanently({ ids, deselectAll })
@@ -178,7 +178,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMoveToFolder.includes(getParentId(folderParentId) ?? '0')
+				!foldersExcludedMoveToFolder.includes(getSystemFolderParentId(folderParentId) ?? '0')
 		);
 		const action = isConversation
 			? moveConversationToFolder({
@@ -203,7 +203,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedTags.includes(getParentId(folderParentId) ?? '0')
+				!foldersExcludedTags.includes(getSystemFolderParentId(folderParentId) ?? '0')
 		);
 		const action = applyMultiTag({
 			ids,
@@ -221,7 +221,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMarkSpam.includes(getParentId(folderParentId) ?? '0')
+				!foldersExcludedMarkSpam.includes(getSystemFolderParentId(folderParentId) ?? '0')
 		);
 		const action = isConversation
 			? setConversationsSpam({
@@ -240,7 +240,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				foldersIncludedMarkNotSpam.includes(getParentId(folderParentId) ?? '0')
+				foldersIncludedMarkNotSpam.includes(getSystemFolderParentId(folderParentId) ?? '0')
 		);
 		const action = isConversation
 			? setConversationsSpam({

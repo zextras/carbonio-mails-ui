@@ -7,7 +7,6 @@ import {
 	AccordionFolder,
 	FOLDERS,
 	Folder,
-	LinkFolder,
 	LinkFolderFields,
 	ROOT_NAME,
 	ZIMBRA_STANDARD_COLORS,
@@ -15,8 +14,6 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
 import { getFolderIdParts } from '../../helpers/folders';
-
-const folderIdRegex = /^(.+:)*(\d+)$/;
 
 export const normalizeFolder = (
 	folder: Folder & Partial<LinkFolderFields>
@@ -248,48 +245,4 @@ export const getFolderTranslatedName = ({ folderId, folderName }: GetSystemFolde
 	}
 
 	return folderName;
-};
-
-/**
- * Returns the root account name for a given folder
- * @param folder a Folder or LinkFolder
- * @returns the root account name or null if the folder is not a link or the root folder
- */
-export const getRootAccountName = (folder: Folder | LinkFolder): string | null => {
-	if (
-		folder?.isLink &&
-		folder?.owner &&
-		folder.parent?.parent === undefined &&
-		folder.oname === ROOT_NAME
-	) {
-		return folder?.owner;
-	}
-	if (folder?.parent) {
-		return getRootAccountName(folder?.parent);
-	}
-	return null;
-};
-
-/**
- * Removes the uuid and colon from a folder id (e.g. 123456:2 -> 2)
- * @param folderId a folder id
- * @returns the folder id without the uuid and colon
- */
-export const getParentId = (folderId: string): string =>
-	(folderId.includes(':') ? folderId?.split(':')[1] : folderId) ?? '0';
-
-/**
- * Returns the parent folder id for a given folder
- * @param folder a Folder or LinkFolder
- * @returns the path to pass down as props to the Breadcrumb component
- */
-export const getFolderPathForBreadcrumb = (
-	folderPath: string
-): { folderPathFirstPart: string; folderPathLastPart: string } => {
-	if (folderPath === '') return { folderPathFirstPart: '', folderPathLastPart: '' };
-	const folderPathArray = folderPath.split('/');
-	const folderPathLastPart = `/ ${folderPathArray[folderPathArray.length - 1]}`;
-	folderPathArray.pop();
-	const folderPathFirstPart = folderPathArray.join('/');
-	return { folderPathFirstPart, folderPathLastPart };
 };

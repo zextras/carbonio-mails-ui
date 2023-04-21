@@ -14,7 +14,7 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { getFolderPathForBreadcrumb } from '../../../sidebar/utils';
+import { getFolderPathForBreadcrumb } from '../../../../helpers/folders';
 
 const SelectIconCheckbox = styled(IconCheckbox)`
 	svg {

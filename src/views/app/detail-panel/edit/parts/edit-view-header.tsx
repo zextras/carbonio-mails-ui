@@ -275,7 +275,7 @@ const EditViewHeader: FC<PropType> = ({
 	});
 
 	const onClick = (): void => {
-		setOpenDD(false);
+		setOpenDD(!openDD);
 	};
 
 	const onFromDropdownClose = useCallback((): void => {
@@ -689,7 +689,7 @@ const EditViewHeader: FC<PropType> = ({
 								items={attachmentsItems}
 								display="inline-block"
 								width="fit"
-								// forceOpen={openDD}
+								forceOpen={openDD}
 							>
 								<StyledComp.ResizedIconCheckbox
 									onChange={(): null => null}
