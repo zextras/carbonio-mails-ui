@@ -24,7 +24,7 @@ import TagFolderRow from './parts/tag-folder-row';
 import SendReceivedDateRow from './parts/send-date-row';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
 import ReceivedSentAddressRow from './parts/received-sent-address-row';
-import { AdvancedFilterModalProps, KeywordState } from '../../types';
+import type { AdvancedFilterModalProps, KeywordState } from '../../types';
 
 const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	open,

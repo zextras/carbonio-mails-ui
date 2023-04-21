@@ -45,6 +45,7 @@ export type ConversationsStateType = {
 
 export type SearchesStateType = {
 	searchResults: any;
+	searchResultsIds: Array<string>;
 	conversations?: Record<string, Conversation>;
 	messages?: Record<string, Partial<MailMessage>>;
 	more: boolean;

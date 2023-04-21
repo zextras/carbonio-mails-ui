@@ -9,7 +9,7 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../carbonio-ui-commons/constants/participants';
-import {
+import type {
 	AttachmentPart,
 	IncompleteMessage,
 	MailMessagePart,

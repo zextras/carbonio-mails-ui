@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Dispatch } from '@reduxjs/toolkit';
 import { Grant } from '@zextras/carbonio-shell-ui';
+import type { AppDispatch } from '../../store/redux';
 import { Participant } from '../participant';
 
 export type ShareCalendarModalProps = {
 	openModal: () => void;
 	setModal: (a: any) => void;
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 	t: (...args: any[]) => string;
 	toggleSnackbar: () => void;
 	folder: string;
@@ -20,9 +20,8 @@ export type ShareCalendarModalProps = {
 };
 
 export type ResponseActionsProps = {
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 	t: (...args: any[]) => string;
-	createSnackbar: any;
 	zid: string;
 	view: string;
 	rid: string;

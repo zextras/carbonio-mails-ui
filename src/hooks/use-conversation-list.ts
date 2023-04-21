@@ -9,7 +9,7 @@ import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
-import { Conversation, StateType } from '../types';
+import type { Conversation, StateType } from '../types';
 import { useAppDispatch, useAppSelector } from './redux';
 
 type RouteParams = {
@@ -19,7 +19,7 @@ type RouteParams = {
 export const useConversationListItems = (): Array<Conversation> => {
 	const { folderId } = <RouteParams>useParams();
 	const dispatch = useAppDispatch();
-	const folderStatus = useAppSelector((state) =>
+	const folderStatus = useAppSelector((state: StateType) =>
 		selectFolderSearchStatus(<StateType>state, folderId)
 	);
 	const conversations = useAppSelector(selectConversationsArray);
@@ -33,11 +33,6 @@ export const useConversationListItems = (): Array<Conversation> => {
 	// 			':'
 	// 		)?.[1] as 'dateAsc' | 'dateDesc' | undefined) ?? 'dateDesc',
 	// 	[folderId, zimbraPrefSortOrder]
-	// );
-
-	// const sortedConversations = useMemo(
-	// 	() => orderBy(conversations, 'date', sorting === 'dateDesc' ? 'desc' : 'asc'),
-	// 	[conversations, sorting]
 	// );
 
 	const filteredConversations = useMemo(

@@ -26,12 +26,11 @@ import React, {
 	useState
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
 import styled, { SimpleInterpolation } from 'styled-components';
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { updateEditor } from '../../../../store/editor-slice';
-import {
+import type {
 	EditorAttachmentFiles,
 	IconColors,
 	MailsEditor,

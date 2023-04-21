@@ -1,5 +1,4 @@
 {
-    "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
     "action": {
         "click_open": "Click to open",
         "click_preview": "Click to preview",
@@ -82,6 +81,7 @@
         "search_description3": "Check the spelling and the filters options or try with another keyword.",
         "search_list_title1": "It looks like there are no results. Keep searching!",
         "search_list_title2": "None of your items matches your search.",
+        "search_result": "Search results",
         "search_title1": "Start another search",
         "search_title2": "We’re sorry but there are no results for your search",
         "search_title3": "There are no results for your search.",
@@ -228,6 +228,7 @@
         "advanced_filters": "Advanced Filter",
         "advanced_filters_plural": "Advanced Filters",
         "all": "all",
+        "all_items_selected": "All visible items have been selected",
         "allowed_actions": "Allowed actions",
         "always_allow_address": "Always allow from <strong>{{from}}</strong>",
         "always_allow_domain": "Always allow from <strong>{{domain}}</strong> domain",

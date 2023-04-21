@@ -5,8 +5,13 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getUserAccount, getUserSettings, soapFetch } from '@zextras/carbonio-shell-ui';
-import { getAddressOwnerAccount, getMessageSenderAccount } from '../../helpers/identities';
-import { StateType, SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
+import { getAddressOwnerAccount } from '../../helpers/identities';
+import type {
+	SaveDraftRequest,
+	SaveDraftResponse,
+	SendMsgParameters,
+	StateType
+} from '../../types';
 import { closeEditor } from '../editor-slice';
 import { generateMailRequest, generateRequest } from '../editor-slice-utils';
 import { getConv } from './get-conv';

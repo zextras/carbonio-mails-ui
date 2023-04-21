@@ -11,7 +11,7 @@ import { Row, Tooltip, Text } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 
 import { participantToString } from '../../../../../commons/utils';
-import { Participant } from '../../../../../types';
+import type { Participant } from '../../../../../types';
 
 const ContactSubText = styled(Text)`
 	padding: 0 0.125rem;

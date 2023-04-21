@@ -10,11 +10,16 @@ import {
 	Container,
 	Divider,
 	Padding,
-	SnackbarManagerContext,
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	Grant,
+	soapFetch,
+	t,
+	useUserAccounts
+} from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
@@ -25,7 +30,7 @@ import {
 	ShareCalendarRoleOptions
 } from '../../../../integrations/shared-invite-reply/parts/utils';
 import { sendShareNotification } from '../../../../store/actions/send-share-notification';
-import {
+import type {
 	ActionProps,
 	GranteeInfoProps,
 	GranteeProps,
@@ -66,10 +71,10 @@ const Actions: FC<ActionProps> = ({
 	onMouseEnter
 }) => {
 	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 	const accounts = useUserAccounts();
 	const { setActiveGrant } = useContext(Context);
-	const dispatch = useAppDispatch();
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	const dispatch = useAppDispatch() as Function;
 	const onRevoke = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('revoke');
@@ -83,22 +88,19 @@ const Actions: FC<ActionProps> = ({
 				folder,
 				accounts
 			})
-		)
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			.then((res: Response) => {
-				if (res.type.includes('fulfilled')) {
-					createSnackbar({
-						key: `resend-${folder.id}`,
-						replace: true,
-						type: 'info',
-						label: t('snackbar.share_resend', 'Share invite resent'),
-						autoHideTimeout: 2000,
-						hideButton: true
-					});
-				}
-			});
-	}, [accounts, dispatch, folder, grant.d, createSnackbar]);
+		).then((res: Response) => {
+			if (res.type.includes('fulfilled')) {
+				getBridgedFunctions()?.createSnackbar({
+					key: `resend-${folder.id}`,
+					replace: true,
+					type: 'info',
+					label: t('snackbar.share_resend', 'Share invite resent'),
+					autoHideTimeout: 2000,
+					hideButton: true
+				});
+			}
+		});
+	}, [accounts, dispatch, folder, grant.d]);
 	const onEdit = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('edit');

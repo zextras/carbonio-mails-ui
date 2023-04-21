@@ -7,7 +7,7 @@ import { Text, useModal } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import {
+import type {
 	ExtraWindowCreationParams,
 	ExtraWindowsContextType,
 	ExtraWindowsCreationResult

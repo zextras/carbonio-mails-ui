@@ -94,14 +94,14 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 
 	return (
 		<ButtonBar orientation="horizontal">
-			{map(actions, (action: { icon: string; label: string; onClick: () => void }) => (
+			{map(actions, (action) => (
 				<Tooltip key={`${messageId}-${action.icon}`} label={action.label}>
 					<IconButton
 						size="medium"
 						icon={action.icon}
 						onClick={(ev): void => {
 							ev.preventDefault();
-							action.onClick();
+							action.onClick(ev);
 						}}
 					/>
 				</Tooltip>

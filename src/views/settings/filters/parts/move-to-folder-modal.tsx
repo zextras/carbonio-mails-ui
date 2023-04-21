@@ -12,7 +12,7 @@ import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useAppSelector } from '../../../../hooks/redux';
 import { selectFolders } from '../../../../store/folders-slice';
-import { FolderType } from '../../../../types/folder';
+import type { FolderType } from '../../../../types/folder';
 import FolderItem from '../../../sidebar/commons/folder-item';
 import { getFolderIconColor, getFolderIconName } from '../../../sidebar/utils';
 

@@ -7,7 +7,7 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isNull, map, omitBy } from 'lodash';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import {
+import type {
 	GetMsgForPrintParameter,
 	GetMsgResponse as GetMsgResponseType,
 	MailMessage

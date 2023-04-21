@@ -7,7 +7,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import moment from 'moment';
-import { SendReceivedDateRowPropType } from '../../../types';
+import type { SendReceivedDateRowPropType } from '../../../types';
 
 const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): ReactElement => {
 	const { sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn } = compProps;

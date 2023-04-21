@@ -3,16 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useState } from 'react';
-import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
-import { some } from 'lodash';
 import { nanoid } from '@reduxjs/toolkit';
+import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { some } from 'lodash';
+import React, { useCallback, useMemo, useState } from 'react';
+import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { convAction, msgAction } from '../store/actions';
 import { createFolder } from '../store/actions/create-folder';
-import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
-import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 
 const MoveConvMessage = ({
 	selectedIDs,
@@ -45,7 +45,7 @@ const MoveConvMessage = ({
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll && deselectAll();
-					getBridgedFunctions().createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -59,7 +59,7 @@ const MoveConvMessage = ({
 						}
 					});
 				} else {
-					getBridgedFunctions().createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
@@ -86,7 +86,7 @@ const MoveConvMessage = ({
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll && deselectAll();
-					getBridgedFunctions().createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -97,7 +97,7 @@ const MoveConvMessage = ({
 						hideButton: true // todo: add Go to folder action
 					});
 				} else {
-					getBridgedFunctions().createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
@@ -146,7 +146,7 @@ const MoveConvMessage = ({
 					? onConfirmMessageMove(res.payload[0].id)
 					: onConfirmConvMove(res.payload[0].id);
 			} else {
-				getBridgedFunctions().createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `edit`,
 					replace: true,
 					type: 'error',

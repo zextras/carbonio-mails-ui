@@ -6,7 +6,7 @@
 
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import { MailMessage } from '../../types';
+import type { MailMessage } from '../../types';
 import { getAttachmentsDownloadLink } from '../../views/app/detail-panel/preview/utils';
 
 export const getActionsRow = ({ msg }: { msg: MailMessage }): string => `

@@ -7,7 +7,7 @@ import React, { FC, ReactElement, useCallback } from 'react';
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import { RcvdSentAddressRowPropType, SearchChipItem } from '../../../types';
+import type { RcvdSentAddressRowPropType, SearchChipItem } from '../../../types';
 import { isValidEmail } from './utils';
 
 const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): ReactElement => {

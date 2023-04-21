@@ -58,7 +58,7 @@ import { useMessageActions } from '../../../../../hooks/use-message-actions';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import MessageContactsList from './message-contact-list';
-import { MailMessage } from '../../../../../types';
+import type { MailMessage } from '../../../../../types';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean }>`

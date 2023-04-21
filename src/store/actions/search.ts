@@ -10,12 +10,12 @@ import { ErrorSoapBodyResponse, getTags, soapFetch } from '@zextras/carbonio-she
 import { keyBy, map, reduce } from 'lodash';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import {
+import type {
 	Conversation,
-	SearchRequest,
-	SearchResponse,
+	FetchConversationsParameters,
 	FetchConversationsReturn,
-	FetchConversationsParameters
+	SearchRequest,
+	SearchResponse
 } from '../../types';
 
 export const search = createAsyncThunk<
@@ -23,6 +23,8 @@ export const search = createAsyncThunk<
 	FetchConversationsParameters
 >(
 	'fetchConversations',
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	async (
 		{
 			folderId,
