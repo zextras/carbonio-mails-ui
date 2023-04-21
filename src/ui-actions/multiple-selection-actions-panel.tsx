@@ -339,6 +339,8 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 
 	const actionsIsNotEmpty = primaryActionsArray.length > 0 || secondaryActionsArray.length > 0;
 
+	const iconButtonTooltip = t('label.exit_selection_mode', 'Exit selection mode');
+
 	return (
 		<Container
 			background="gray5"
@@ -356,13 +358,15 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 				takeAvailableSpace
 			>
 				<Row mainAlignment="flex-start" width="fit" padding={{ right: 'medium' }}>
-					<IconButton
-						icon="ArrowBack"
-						iconColor="primary"
-						size="large"
-						onClick={arrowBackOnClick}
-						data-testid="action-button-deselect-all"
-					/>
+					<Tooltip label={iconButtonTooltip}>
+						<IconButton
+							icon="ArrowBack"
+							iconColor="primary"
+							size="large"
+							onClick={arrowBackOnClick}
+							data-testid="action-button-deselect-all"
+						/>
+					</Tooltip>
 					<Button
 						type="ghost"
 						label={
