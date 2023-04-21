@@ -18,7 +18,7 @@ import Heading from './components/settings-heading';
 import { NotifyFolderOpts, ReadReceiptOpts, MsgsFromMeOpts, findLabel } from './components/utils';
 import { receivingMessagesSubSection } from './subsections';
 import { MAIL_APP_ID } from '../../constants';
-import { ReceivingMessagesSettingsType } from '../../types';
+import type { ReceivingMessagesSettingsType } from '../../types';
 
 const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 	settingsObj,

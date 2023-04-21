@@ -27,7 +27,7 @@ import React, {
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';
+import type { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';
 
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
@@ -224,7 +224,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 						values={{ from }}
 					/>
 				),
-				click: () => saveTrustee(from)
+				onClick: () => saveTrustee(from)
 			},
 			{
 				id: 'always-allow-domain',
@@ -235,7 +235,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 						values={{ domain }}
 					/>
 				),
-				click: () => saveTrustee(domain)
+				onClick: () => saveTrustee(domain)
 			}
 		],
 		[from, domain, saveTrustee]
@@ -461,8 +461,6 @@ const MailMessageRenderer: FC<{ mailMsg: MailMessage; onLoadChange: () => void }
 	mailMsg,
 	onLoadChange
 }) => {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	const parts = findAttachments(mailMsg.parts ?? [], []);
 
 	useEffect(() => {

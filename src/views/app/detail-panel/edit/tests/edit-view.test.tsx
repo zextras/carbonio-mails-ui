@@ -15,28 +15,28 @@ import {
 } from '@testing-library/react';
 import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
-import React from 'react';
 import { rest } from 'msw';
+import React from 'react';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
+import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { ActionsType } from '../../../../../commons/utils';
 import { MAILS_ROUTE } from '../../../../../constants';
-import * as useQueryParam from '../../../../../hooks/useQueryParam';
+import * as useQueryParam from '../../../../../hooks/use-query-param';
 import * as saveDraftAction from '../../../../../store/actions/save-draft';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import { saveDraftResult } from '../../../../../tests/mocks/network/msw/cases/saveDraft/saveDraft-1';
-import {
+import type {
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
 	SoapMailMessage,
 	SoapMailMessagePart
 } from '../../../../../types';
 import EditView from '../edit-view';
-import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;

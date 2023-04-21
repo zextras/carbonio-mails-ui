@@ -10,7 +10,7 @@ import { compact } from 'lodash';
 import React, { ReactElement, useMemo } from 'react';
 import { useGetPublicUrl } from './use-get-public-url';
 import { useGetFilesFromDrive } from './use-get-drive-files';
-import { MailsEditor } from '../../../../../types';
+import type { MailsEditor } from '../../../../../types';
 
 type UseGetAttachItemsPropType = {
 	onFileClick: ((ev: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void) | undefined;
@@ -26,7 +26,7 @@ type UseGetAttachItemsReturnType = {
 	label: string;
 	id?: string | undefined;
 	icon?: string | undefined;
-	click?: ((ev: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void) | undefined;
+	onClick?: ((ev: React.SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void) | undefined;
 	type?: string | undefined;
 	primary?: boolean | undefined;
 	group?: string | undefined;
@@ -82,7 +82,7 @@ export const useGetAttachItems = ({
 			id: 'localAttachment',
 			icon: 'MonitorOutline',
 			label: t('composer.attachment.local', 'Add from local'),
-			click: onFileClick,
+			onClick: onFileClick,
 			customComponent: (
 				<>
 					<Icon icon="MonitorOutline" size="medium" />
@@ -96,7 +96,7 @@ export const useGetAttachItems = ({
 			id: 'contactsModAttachment',
 			icon: 'ContactsModOutline',
 			label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
-			click: (): void => {
+			onClick: (): void => {
 				setOpenDD(false);
 			},
 			disabled: true
@@ -106,7 +106,7 @@ export const useGetAttachItems = ({
 				? {
 						label: t('composer.attachment.files', 'Add from Files'),
 						icon: 'DriveOutline',
-						click: (): void => {
+						onClick: (): void => {
 							getFilesAction(actionTarget);
 						}
 				  }
@@ -116,7 +116,7 @@ export const useGetAttachItems = ({
 				? {
 						label: t('composer.attachment.url', 'Add public link from Files'),
 						icon: 'Link2',
-						click: (): void => {
+						onClick: (): void => {
 							getFilesAction(actionURLTarget);
 						}
 				  }

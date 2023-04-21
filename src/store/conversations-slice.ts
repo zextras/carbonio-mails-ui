@@ -10,7 +10,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
-import {
+import type {
 	FolderType,
 	ConversationsFolderStatus,
 	ConversationsStateType,

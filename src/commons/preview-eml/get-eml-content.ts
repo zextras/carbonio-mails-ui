@@ -6,7 +6,7 @@
 
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 import { DefaultTheme } from 'styled-components';
-import { MailMessage } from '../../types';
+import type { MailMessage } from '../../types';
 import {
 	findAttachments,
 	plainTextToHTML,

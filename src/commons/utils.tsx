@@ -6,7 +6,7 @@
 import moment from 'moment';
 import { find, isArray } from 'lodash';
 import { Account, t } from '@zextras/carbonio-shell-ui';
-import { Participant } from '../types';
+import type { Participant } from '../types';
 
 export const getTimeLabel = (date: number): string => {
 	const momentDate = moment(date);

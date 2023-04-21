@@ -17,13 +17,12 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
-	handleAddMessagesInConversation,
 	handleCreatedMessagesInConversation,
 	handleDeletedMessagesInConversation,
 	handleModifiedMessagesInConversation,
+	handleNotifyModifiedConversations,
 	handleNotifyCreatedConversations,
 	handleNotifyDeletedConversations,
-	handleNotifyModifiedConversations,
 	selectCurrentFolder,
 	setSearchedInFolder
 } from '../../store/conversations-slice';
@@ -50,7 +49,7 @@ import {
 	handleNotifyDeletedSearchConversations,
 	handleNotifyModifiedSearchConversations
 } from '../../store/searches-slice';
-import { Conversation } from '../../types';
+import type { Conversation } from '../../types';
 import { extractFolders } from './utils';
 
 const InboxBadgeUpdater = (): null => {

@@ -29,7 +29,7 @@ import MailMessageRenderer from '../../../../commons/mail-message-renderer';
 import { useAppDispatch } from '../../../../hooks/redux';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 import { getMsg, msgAction } from '../../../../store/actions';
-import { ExtraWindowCreationParams, MailMessage, OpenEmlPreviewType } from '../../../../types';
+import type { ExtraWindowCreationParams, MailMessage, OpenEmlPreviewType } from '../../../../types';
 import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
 import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
 import AttachmentsBlock from './attachments-block';
@@ -254,14 +254,14 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 		[message, onClick, open, isAlone, isExternalMessage, isStandaloneComponent]
 	);
 	const markAsNotSpam = useCallback(
-		() =>
+		(ev) =>
 			setMsgAsSpam({
 				ids: [message.id],
 				value: true,
 				dispatch,
 				shouldReplaceHistory: true,
 				folderId
-			}).click(),
+			}).onClick(ev),
 		[dispatch, folderId, message.id]
 	);
 

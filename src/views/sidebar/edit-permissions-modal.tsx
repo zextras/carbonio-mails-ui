@@ -23,19 +23,18 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
+import type { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
+import { useAppDispatch } from '../../hooks/redux';
 import {
-	findLabel,
 	ShareCalendarRoleOptions,
-	ShareCalendarWithOptions
+	ShareCalendarWithOptions,
+	findLabel
 } from '../../integrations/shared-invite-reply/parts/utils';
 import { sendShareNotification } from '../../store/actions/send-share-notification';
 import { shareFolder } from '../../store/actions/share-folder';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
-import { useAppDispatch } from '../../hooks/redux';
 
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	onClose,
@@ -83,8 +82,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 				folder,
 				accounts
 			})
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 		).then((res: { type: string }) => {
 			if (res.type.includes('fulfilled')) {
 				getBridgedFunctions()?.createSnackbar({
@@ -108,8 +105,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 							folder,
 							accounts
 						})
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 					).then((res2: { type: string }) => {
 						if (!res2.type.includes('fulfilled')) {
 							getBridgedFunctions()?.createSnackbar({

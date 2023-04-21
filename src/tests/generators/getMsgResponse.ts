@@ -7,7 +7,7 @@
 import { faker } from '@faker-js/faker';
 import { FOLDERS, SoapResponse } from '@zextras/carbonio-shell-ui';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { GetMsgResponse, Participant, SoapMailParticipant } from '../../types';
+import type { GetMsgResponse, Participant, SoapMailParticipant } from '../../types';
 
 /**
  *

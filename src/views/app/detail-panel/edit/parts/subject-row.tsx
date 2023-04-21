@@ -9,7 +9,7 @@ import { Container, Input, Padding, Tooltip, Icon } from '@zextras/carbonio-desi
 import { t } from '@zextras/carbonio-shell-ui';
 import * as StyledComp from './edit-view-styled-components';
 import { EditViewContext } from './edit-view-context';
-import { EditViewContextType } from '../../../../../types';
+import type { EditViewContextType } from '../../../../../types';
 
 type PropType = { updateSubjectField: ({ subject }: { subject: string }) => void };
 

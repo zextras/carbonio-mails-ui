@@ -5,7 +5,7 @@
  */
 import { Container } from '@zextras/carbonio-design-system';
 import React, { FC, useCallback, useState } from 'react';
-import { ModalProps } from '../../types';
+import type { ModalProps } from '../../types';
 import EditPermissionsModal from './edit-permissions-modal';
 import { Context } from './parts/edit/edit-context';
 import MainEditModal from './parts/edit/edit-default-modal';

@@ -10,7 +10,7 @@ import {
 	getUserSettings,
 	replaceHistory
 } from '@zextras/carbonio-shell-ui';
-import { NotificationConfig } from '@zextras/carbonio-shell-ui/types/notification';
+import type { NotificationConfig } from '@zextras/carbonio-shell-ui/types/notification';
 import {
 	forEach,
 	pick,
@@ -26,7 +26,7 @@ import {
 } from 'lodash';
 import { MAILS_ROUTE } from '../../constants';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import { SoapIncompleteMessage, MsgStateType, IncompleteMessage, Payload } from '../../types';
+import type { SoapIncompleteMessage, MsgStateType, IncompleteMessage, Payload } from '../../types';
 
 const triggerNotification = (m: Array<SoapIncompleteMessage>): void => {
 	const { props, prefs } = getUserSettings();

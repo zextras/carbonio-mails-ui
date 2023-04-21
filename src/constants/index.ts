@@ -4,27 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
-// TODO: update the shell constants with this and update the usages in other modules
-export const CORRESPONDING_COLORS = [
-	{ zValue: 0, uiRgb: '#000000', zLabel: 'black' },
-	{ zValue: 1, uiRgb: '#2b73d2', zLabel: 'blue' },
-	{ zValue: 2, uiRgb: '#2196d3', zLabel: 'cyan' },
-	{ zValue: 3, uiRgb: '#639030', zLabel: 'green' },
-	{ zValue: 4, uiRgb: '#1a75a7', zLabel: 'purple' },
-	{ zValue: 5, uiRgb: '#d74942', zLabel: 'red' },
-	{ zValue: 6, uiRgb: '#ffc107', zLabel: 'yellow' },
-	{ zValue: 7, uiRgb: '#edaeab', zLabel: 'pink' },
-	{ zValue: 8, uiRgb: '#828282', zLabel: 'gray' },
-	{ zValue: 9, uiRgb: '#ba8b00', zLabel: 'orange' }
-];
-
-/*
-reference: https://zextras.atlassian.net/wiki/spaces/IRIS/pages/223215854/UI+Guidelines+and+theming
-*/
-
 export const MAILS_ROUTE = 'mails';
+
+export const MAIL_APP_ID = 'carbonio-mails-ui';
 
 type AttachmentTypeItemsConstantProps = {
 	label: string;
@@ -192,4 +177,177 @@ export const emailStatusItemsConstant = (t: TFunction): Array<EmailStatusItemsCo
 	}
 ];
 
-export const MAIL_APP_ID = 'carbonio-mails-ui';
+export const MessageActionsDescriptors = {
+	FLAG: {
+		id: 'message-flag',
+		desc: 'Add flag'
+	},
+	UNFLAG: {
+		id: 'message-unflag',
+		desc: 'Remove flag'
+	},
+	MARK_AS_READ: {
+		id: 'message-mark_as_read',
+		desc: 'Mark as read'
+	},
+	MARK_AS_UNREAD: {
+		id: 'message-mark_as_unread',
+		desc: 'Mark as unread'
+	},
+	MARK_AS_SPAM: {
+		id: 'message-mark_as_spam',
+		desc: 'Mark as spam'
+	},
+	MARK_AS_NOT_SPAM: {
+		id: 'message-mark_as_not_spam',
+		desc: 'Not spam'
+	},
+	PRINT: {
+		id: 'message-print',
+		desc: 'Print'
+	},
+	SHOW_SOURCE: {
+		id: 'message-show_original',
+		desc: 'Show original'
+	},
+	MOVE_TO_TRASH: {
+		id: 'message-trash',
+		desc: 'Move to trash'
+	},
+	DELETE: {
+		id: 'message-delete',
+		desc: 'Delete'
+	},
+	REPLY: {
+		id: 'message-reply',
+		desc: 'Reply'
+	},
+	REPLY_ALL: {
+		id: 'message-reply_all',
+		desc: 'Reply all'
+	},
+	FORWARD: {
+		id: 'message-forward',
+		desc: 'Forward'
+	},
+	EDIT_AS_NEW: {
+		id: 'message-edit_as_new',
+		desc: 'Edit as new'
+	},
+	EDIT_DRAFT: {
+		id: 'message-edit_as_draft',
+		desc: 'Edit'
+	},
+	SEND: {
+		id: 'message-send',
+		desc: 'Send'
+	},
+	REDIRECT: {
+		id: 'message-redirect',
+		desc: 'Redirect'
+	},
+	MOVE: {
+		id: 'message-move',
+		desc: 'Move'
+	},
+	RESTORE: {
+		id: 'message-restore',
+		desc: 'Restore'
+	},
+	DELETE_PERMANENTLY: {
+		id: 'message-delete-permanently',
+		desc: 'Delete Permanently'
+	}
+} as const;
+
+export const ConversationActionsDescriptors = {
+	FLAG: {
+		id: 'flag-conversation',
+		desc: 'Add flag'
+	},
+	UNFLAG: {
+		id: 'unflag-conversation',
+		desc: 'Remove flag'
+	},
+	MARK_AS_READ: {
+		id: 'read-conversation',
+		desc: 'Mark as read'
+	},
+	MARK_AS_UNREAD: {
+		id: 'unread-conversation',
+		desc: 'Mark as unread'
+	},
+	MOVE_TO_TRASH: {
+		id: 'conversation-trash',
+		desc: 'Move to trash'
+	},
+	REPLY: {
+		id: 'conversation-reply',
+		desc: 'Reply'
+	},
+	REPLY_ALL: {
+		id: 'conversation-reply_all',
+		desc: 'Reply all'
+	},
+	FORWARD: {
+		id: 'conversation-forward',
+		desc: 'Forward'
+	}
+} as const;
+
+export const MSG_CONV_STATUS = {
+	FLAGGED: {
+		value: true,
+		desc: 'flagged'
+	},
+	NOT_FLAGGED: {
+		value: false,
+		desc: 'not flagged'
+	},
+	READ: {
+		value: true,
+		desc: 'read'
+	},
+	NOT_READ: {
+		value: false,
+		desc: 'not read'
+	}
+};
+
+export const ASSERTION = {
+	CONTAIN: {
+		value: true,
+		desc: 'contain'
+	},
+	NOT_CONTAIN: {
+		value: false,
+		desc: 'not contain'
+	}
+};
+
+export const FOLDERIDS = {
+	INBOX: {
+		id: FOLDERS.INBOX,
+		desc: 'inbox'
+	},
+	SENT: {
+		id: FOLDERS.SENT,
+		desc: 'sent'
+	},
+	DRAFTS: {
+		id: FOLDERS.DRAFTS,
+		desc: 'drafts'
+	},
+	SPAM: {
+		id: FOLDERS.SPAM,
+		desc: 'junk'
+	},
+	TRASH: {
+		id: FOLDERS.TRASH,
+		desc: 'trash'
+	},
+	USER_DEFINED: {
+		id: '1234567',
+		desc: 'user defined'
+	}
+};

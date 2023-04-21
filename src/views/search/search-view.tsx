@@ -8,6 +8,7 @@ import {
 	SEARCH_APP_ID,
 	Spinner,
 	replaceHistory,
+	setAppContext,
 	t,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
@@ -19,11 +20,11 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
 import { selectFolders } from '../../store/folders-slice';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
-import { FolderType, SearchProps } from '../../types';
+import type { FolderType, SearchProps } from '../../types';
 import AdvancedFilterModal from './advance-filter-modal';
 import { findIconFromChip } from './parts/use-find-icon';
 import SearchConversationList from './search-conversation-list';
-import SearchMessageList from './search-message-list';
+import { SearchMessageList } from './search-message-list';
 import SearchPanel from './search-panel';
 
 const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
@@ -32,6 +33,11 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const settings = useUserSettings();
 	const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
 	const folders = useAppSelector(selectFolders);
+	const [count, setCount] = useState(0);
+
+	useEffect(() => {
+		setAppContext({ isMessageView, count, setCount });
+	}, [count, isMessageView]);
 
 	const searchInFolders = useMemo(
 		() =>
@@ -93,7 +99,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			const resultAction = await dispatch(
 				search({
 					query: queryString,
-					limit: 100,
+					limit: 500,
 					sortBy: 'dateDesc',
 					types: isMessageView ? 'message' : 'conversation',
 					offset: reset ? 0 : searchResults.offset,
@@ -120,7 +126,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const findIcon = useCallback((chip) => findIconFromChip(chip), []);
 
 	useEffect(() => {
-		let count = 0;
+		let _count = 0;
 		if (query && query.length > 0 && queryToString !== searchResults.query && !isInvalidQuery) {
 			const modifiedQuery = map(query, (q) => {
 				if (
@@ -134,13 +140,13 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 					!includes(Object.keys(q), 'isGeneric') &&
 					!includes(Object.keys(q), 'isQueryFilter')
 				) {
-					count += 1;
+					_count += 1;
 					return findIcon(q);
 				}
 				return { ...q };
 			});
 
-			if (count > 0) {
+			if (_count > 0) {
 				updateQuery(modifiedQuery);
 			}
 		}
@@ -226,8 +232,6 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 					</Suspense>
 				</Container>
 			</Container>
-			{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-			{/* @ts-ignore */}
 			<AdvancedFilterModal
 				query={query}
 				updateQuery={updateQuery}

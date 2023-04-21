@@ -7,13 +7,8 @@
 import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { MailMessage, Participant } from '../../types';
-
-/**
- *
- * @param date
- */
-const toUnixTimestamp = (date: Date): number => Math.floor(date.getTime() / 1000);
+import { convertHtmlToPlainText } from '../../carbonio-ui-commons/utils/text/html';
+import type { MailMessage, Participant } from '../../types';
 
 /**
  *
@@ -29,6 +24,7 @@ type MessageGenerationParams = {
 	subject?: string;
 	body?: string;
 	isRead?: boolean;
+	isFlagged?: boolean;
 	isComplete?: boolean;
 	isDeleted?: boolean;
 	isDraft?: boolean;
@@ -43,24 +39,38 @@ type MessageGenerationParams = {
 /**
  *
  * @param id
- * @param folder
+ * @param folderId
  * @param sendDate
  * @param receiveDate
- * @param participants
+ * @param to
+ * @param cc
+ * @param from
  * @param subject
  * @param body
+ * @param isRead
+ * @param isFlagged
+ * @param isComplete
+ * @param isDeleted
+ * @param isDraft
+ * @param isForwarded
+ * @param isInvite
+ * @param isReadReceiptRequested
+ * @param isReplied
+ * @param isScheduled
+ * @param isSentByMe
  */
 const generateMessage = ({
 	id = faker.datatype.number().toString(),
 	folderId = FOLDERS.INBOX,
-	sendDate = toUnixTimestamp(faker.date.recent(2)),
-	receiveDate = toUnixTimestamp(faker.date.recent(1)),
+	sendDate = faker.date.recent(2).valueOf(),
+	receiveDate = faker.date.recent(1).valueOf(),
 	to = [{ type: ParticipantRole.TO, address: faker.internet.email() }],
 	cc = [],
 	from = { type: ParticipantRole.FROM, address: faker.internet.email() },
 	subject = faker.lorem.word(6),
 	body = faker.lorem.paragraph(4),
 	isRead = false,
+	isFlagged = false,
 	isComplete = false,
 	isDeleted = false,
 	isDraft = false,
@@ -77,8 +87,8 @@ const generateMessage = ({
 	conversation: '',
 	date: receiveDate,
 	did: '',
-	flagged: false,
-	fragment: '',
+	flagged: isFlagged,
+	fragment: convertHtmlToPlainText(body).substring(0, 40),
 	hasAttachment: false,
 	id,
 	invite: undefined,
