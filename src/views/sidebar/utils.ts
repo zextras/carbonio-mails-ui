@@ -4,15 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import {
-	ZIMBRA_STANDARD_COLORS,
-	FOLDERS,
-	t,
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	ROOT_NAME,
 	AccordionFolder,
+	FOLDERS,
 	Folder,
-	LinkFolderFields
+	LinkFolderFields,
+	ROOT_NAME,
+	ZIMBRA_STANDARD_COLORS,
+	t
 } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
 import { getFolderIdParts } from '../../helpers/folders';

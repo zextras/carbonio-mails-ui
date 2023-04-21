@@ -134,7 +134,7 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 								icon={action.icon}
 								onClick={(ev): void => {
 									if (ev) ev.preventDefault();
-									action.click();
+									action.onClick();
 								}}
 							/>
 						</Tooltip>

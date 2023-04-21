@@ -7,7 +7,7 @@
 import { filter } from 'lodash';
 import moment from 'moment';
 import { DefaultTheme } from 'styled-components';
-import { MailMessage } from '../../types';
+import type { MailMessage } from '../../types';
 import { getAvatarLabel } from '../useGetAvatarLabel';
 import { banner } from './banner';
 import { getActionsRow } from './get-actions-row';

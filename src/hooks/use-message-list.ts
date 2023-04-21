@@ -9,7 +9,7 @@ import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { search } from '../store/actions';
 import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
-import { MailMessage } from '../types';
+import type { MailMessage } from '../types';
 import { useAppDispatch, useAppSelector } from './redux';
 
 type RouteParams = {
@@ -40,11 +40,6 @@ export const useMessageList = (): Array<MailMessage> => {
 	// 			':'
 	// 		)?.[1] as 'dateAsc' | 'dateDesc' | undefined) ?? 'dateDesc',
 	// 	[folderId, zimbraPrefSortOrder]
-	// );
-
-	// const sortedMessages = useMemo(
-	// 	() => orderBy(messages, 'date', sorting === 'dateDesc' ? 'desc' : 'asc'),
-	// 	[messages, sorting]
 	// );
 
 	const sortedMessages = useMemo(

@@ -23,7 +23,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
-import { SignatureSettingsPropsType, SignItemType } from '../../types';
+import type { SignatureSettingsPropsType, SignItemType } from '../../types';
 import SelectIdentitySignature from './components/select-identity-signature';
 
 const Signature = styled(Row)`

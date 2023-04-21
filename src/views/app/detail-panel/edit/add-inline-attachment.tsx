@@ -7,7 +7,7 @@
 import { forEach, map, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { uploadInlineAttachments } from '../../../../store/actions/upload-inline-attachments';
-import {
+import type {
 	EditorAttachmentFiles,
 	InlineAttachedType,
 	MailMessage,

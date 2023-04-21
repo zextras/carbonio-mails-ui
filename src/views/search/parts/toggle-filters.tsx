@@ -9,7 +9,7 @@ import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-syste
 import { filter } from 'lodash';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { ToggleFiltersProps } from '../../../types';
+import type { ToggleFiltersProps } from '../../../types';
 
 const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 	const {

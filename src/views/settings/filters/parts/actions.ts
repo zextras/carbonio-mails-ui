@@ -3,8 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
+import { TFunction } from 'i18next';
 import { concat, filter, findIndex } from 'lodash';
-import type { TFunction } from 'i18next';
 
 type FilterListType = {
 	active: boolean;
@@ -39,7 +40,6 @@ type DeleteFilterCompProps = {
 	setFilters: (arg: Array<FilterListType>) => void;
 	setFetchFilters: (arg: boolean) => void;
 	modifierFunc: Promise<any>;
-	createSnackbar: any;
 	onClose: () => void;
 	selectedFilter: any;
 	incomingFilters: any;
@@ -52,7 +52,6 @@ type DeleteOutgoingFilterCompProps = {
 	setFilters: (arg: Array<FilterListType>) => void;
 	setFetchFilters: (arg: boolean) => void;
 	modifierFunc: Promise<any>;
-	createSnackbar: any;
 	onClose: () => void;
 	selectedFilter: any;
 	outgoingFilters: any;
@@ -80,9 +79,7 @@ export const removeFilter = ({
 			setFetchFilters(true);
 		})
 		.catch((error) => {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: `share`,
 				replace: true,
 				hideButton: true,
@@ -112,15 +109,11 @@ export const addFilter = ({
 	setFilters(newFilters);
 	availableList.unSelect();
 	modifierFunc(newFilters)
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		.then((res) => {
 			setFetchFilters(true);
 		})
 		.catch((error: { message: any }) => {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: 'filter-delete-error',
 				type: 'error',
 				label:
@@ -134,7 +127,6 @@ export const deleteOutgoingFilter = ({
 	t,
 	setFetchFilters,
 	modifierFunc,
-	createSnackbar,
 	onClose,
 	selectedFilter,
 	outgoingFilters
@@ -144,9 +136,7 @@ export const deleteOutgoingFilter = ({
 	// @ts-ignore
 	modifierFunc(newFilters)
 		.then(() => {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: 'filter-delete-success',
 				type: 'info',
 				label: t('settings.filter_deleted', 'Filter successfully deleted'),
@@ -155,9 +145,7 @@ export const deleteOutgoingFilter = ({
 			setFetchFilters(true);
 		})
 		.catch((error: { message: any }) => {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: 'filter-delete-error',
 				type: 'error',
 				label:
@@ -172,7 +160,6 @@ export const deleteFilter = ({
 	t,
 	setFetchFilters,
 	modifierFunc,
-	createSnackbar,
 	onClose,
 	selectedFilter,
 	incomingFilters
@@ -182,9 +169,7 @@ export const deleteFilter = ({
 	// @ts-ignore
 	modifierFunc(newFilters)
 		.then(() => {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: 'filter-delete-success',
 				type: 'info',
 				label: t('settings.filter_deleted', 'Filter successfully deleted'),
@@ -193,9 +178,7 @@ export const deleteFilter = ({
 			setFetchFilters(true);
 		})
 		.catch((error: { message: any }) => {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: 'filter-delete-error',
 				type: 'error',
 				label:

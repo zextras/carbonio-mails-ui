@@ -17,8 +17,6 @@ const useClickOutside = (ref: RefObject<HTMLInputElement>, handler: (arg: any) =
 			// Do nothing if `mousedown` or `touchstart` started inside ref element
 			if (startedInside || !startedWhenMounted) return;
 			// Do nothing if clicking ref's element or descendent elements
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			if (!ref.current || ref.current.contains(event.target)) return;
 
 			handler(event);

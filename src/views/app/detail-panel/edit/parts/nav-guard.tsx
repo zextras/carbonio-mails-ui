@@ -38,15 +38,18 @@ export const DeleteDraftModal = ({
 		onClose?.();
 	}, [onClose, onConfirm]);
 
-	const onDeleteAction = useCallback(() => {
-		moveMsgToTrash({
-			ids,
-			dispatch,
-			folderId: FOLDERS.TRASH
-		})?.click();
-		onDelete?.();
-		onClose?.();
-	}, [dispatch, ids, onClose, onDelete]);
+	const onDeleteAction = useCallback(
+		(ev) => {
+			moveMsgToTrash({
+				ids,
+				dispatch,
+				folderId: FOLDERS.TRASH
+			})?.onClick(ev);
+			onDelete?.();
+			onClose?.();
+		},
+		[dispatch, ids, onClose, onDelete]
+	);
 
 	return (
 		<>

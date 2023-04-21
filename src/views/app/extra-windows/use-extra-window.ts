@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { useContext } from 'react';
-import { ExtraWindowsCreationResult } from '../../../types';
+import type { ExtraWindowsCreationResult } from '../../../types';
 import { ExtraWindowContext } from './extra-window';
 import { useExtraWindowsManager } from './extra-window-manager';
 

@@ -3,12 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
-import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
+import type {
+	MultipleSelectionOnChange,
+	SingleSelectionOnChange
+} from '@zextras/carbonio-design-system';
+import { Container, Icon, Padding, Row, Select, Text } from '@zextras/carbonio-design-system';
 import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
+import React, { useMemo } from 'react';
+import { CustomLabelFactoryProps } from '../../../carbonio-ui-commons/types/select';
 import { ColorContainer, Square, TextUpperCase } from './styled-components';
 
-const LabelFactory = ({ selected, label, open, focus }) => (
+const LabelFactory = ({ selected, label, open, focus }: CustomLabelFactoryProps): JSX.Element => (
 	<ColorContainer
 		orientation="horizontal"
 		width="fill"
@@ -45,11 +50,29 @@ const LabelFactory = ({ selected, label, open, focus }) => (
 	</ColorContainer>
 );
 
-export default function ColorSelect({ onChange, defaultColor = 0, label }) {
+function getColorLabel(color: string): string {
+	/* i18next-extract-disable-next-line */
+	return t(`color.${color}`, '{{color}}', {
+		context: ZIMBRA_STANDARD_COLORS,
+		replace: {
+			color
+		}
+	});
+}
+
+export default function ColorSelect({
+	onChange,
+	defaultColor = 0,
+	label
+}: {
+	onChange: SingleSelectionOnChange;
+	defaultColor: number;
+	label: string;
+}): JSX.Element {
 	const colors = useMemo(
 		() =>
 			ZIMBRA_STANDARD_COLORS.map((el, index) => ({
-				label: t(el.zLabel),
+				label: getColorLabel(el.zLabel),
 				value: index.toString(),
 				customComponent: (
 					<Container
@@ -59,7 +82,7 @@ export default function ColorSelect({ onChange, defaultColor = 0, label }) {
 						height="fit"
 					>
 						<Padding left="small">
-							<TextUpperCase>{t(el.zLabel)}</TextUpperCase>
+							<TextUpperCase>{getColorLabel(el.zLabel)}</TextUpperCase>
 						</Padding>
 						<Square color={el.hex} />
 					</Container>

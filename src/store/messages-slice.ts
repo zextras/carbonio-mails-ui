@@ -13,7 +13,7 @@ import produce from 'immer';
 import { cloneDeep, forEach, merge, mergeWith, reduce } from 'lodash';
 import { CONVACTIONS } from '../commons/utilities';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
-import {
+import type {
 	MsgMap,
 	MsgStateType,
 	StateType,

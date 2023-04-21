@@ -5,7 +5,7 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import { FilterRules } from '../../types';
+import type { FilterRules } from '../../types';
 
 export const getOutgoingFilters = createAsyncThunk(
 	'filters/get_filters',

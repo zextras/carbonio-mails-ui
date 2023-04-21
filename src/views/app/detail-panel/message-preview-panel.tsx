@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getMsg } from '../../../store/actions';
 import { selectMessage } from '../../../store/messages-slice';
-import { StateType } from '../../../types';
+import type { StateType } from '../../../types';
 import MailPreview from './preview/mail-preview';
 import PreviewPanelHeader from './preview/preview-panel-header';
 

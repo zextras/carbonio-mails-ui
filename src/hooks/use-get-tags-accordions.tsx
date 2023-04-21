@@ -6,20 +6,20 @@
 import React, { FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { t, useTags, ZIMBRA_STANDARD_COLORS, runSearch } from '@zextras/carbonio-shell-ui';
 import {
 	AccordionItem,
 	Dropdown,
-	Row,
 	Icon,
+	ModalManagerContext,
 	Padding,
-	Tooltip,
-	ModalManagerContext
+	Row,
+	Tooltip
 } from '@zextras/carbonio-design-system';
+import { ZIMBRA_STANDARD_COLORS, runSearch, t, useTags } from '@zextras/carbonio-shell-ui';
 import { reduce } from 'lodash';
-import { TagsAccordionItems } from '../carbonio-ui-commons/types/tags';
+import type { TagsAccordionItems } from '../carbonio-ui-commons/types/tags';
+import type { ItemType } from '../types';
 import { createTag, useGetTagsActions } from '../ui-actions/tag-actions';
-import { ItemType } from '../types';
 
 type ItemProps = {
 	item: ItemType;

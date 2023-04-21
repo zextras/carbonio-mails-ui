@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { AsyncThunkAction } from '@reduxjs/toolkit';
+import { PayloadAction } from '@reduxjs/toolkit';
 import {
 	Avatar,
 	Button,
@@ -13,10 +13,10 @@ import {
 	MultiButton,
 	Padding,
 	Row,
-	SnackbarManagerContext,
 	Text,
 	Tooltip,
-	useModal
+	useModal,
+	useSnackbar
 } from '@zextras/carbonio-design-system';
 import {
 	FOLDERS,
@@ -31,20 +31,23 @@ import {
 	useBoardHooks,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
 import { concat, find, some } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Controller, SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
+import styled from 'styled-components';
+import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils/text/html';
 import { ActionsType, LineType } from '../../../../../commons/utils';
+import { getSignatureValue } from '../../../../../helpers/signatures';
+import { useAppDispatch } from '../../../../../hooks/redux';
 import { sendMsg } from '../../../../../store/actions/send-msg';
-import {
+import { StoreProvider } from '../../../../../store/redux';
+import type {
 	BoardContext,
 	EditViewContextType,
+	IdentityType,
 	MailAttachment,
-	MailsEditor,
-	IdentityType
+	MailsEditor
 } from '../../../../../types';
 import { addAttachments } from '../edit-utils';
 import { useGetAttachItems } from '../edit-utils-hooks/use-get-attachment-items';
@@ -52,10 +55,6 @@ import { useGetIdentities } from '../edit-utils-hooks/use-get-identities';
 import { EditViewContext } from './edit-view-context';
 import * as StyledComp from './edit-view-styled-components';
 import SendLaterModal from './send-later-modal';
-import { StoreProvider } from '../../../../../store/redux';
-import { getSignatureValue } from '../../../../../helpers/signatures';
-import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils/text/html';
-import { useAppDispatch } from '../../../../../hooks/redux';
 
 /**
  * Match the first string which is between a
@@ -91,7 +90,20 @@ type PropType = {
 		onValid: SubmitHandler<any>,
 		onInvalid?: SubmitErrorHandler<any>
 	) => (e?: React.BaseSyntheticEvent) => Promise<void>;
-	uploadAttachmentsCb: (files: any) => AsyncThunkAction<any, any, any>;
+	uploadAttachmentsCb: Promise<
+		| PayloadAction<any, string, { arg: any; requestId: string; requestStatus: 'fulfilled' }, never>
+		| PayloadAction<
+				unknown,
+				string,
+				{
+					arg: any;
+					requestId: string;
+					requestStatus: 'rejected';
+					aborted: boolean;
+					condition: boolean;
+				}
+		  >
+	>;
 	updateEditorCb: (data: any, editorId?: string) => void;
 	editorId: string;
 	saveDraftCb: (arg: any) => any;
@@ -187,13 +199,13 @@ const EditViewHeader: FC<PropType> = ({
 	const { folderId } = useParams<{ folderId: string }>();
 	const { prefs, props, attrs } = useUserSettings();
 	const { control } = useForm();
+	const createSnackbar = useSnackbar();
 	const { setSendLater } = useContext<EditViewContextType>(EditViewContext);
 	const [open, setOpen] = useState(false);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [openDD, setOpenDD] = useState(false);
 	const [btnLabel, setBtnLabel] = useState<string>(t('label.send', 'Send'));
 	const [isDisabled, setIsDisabled] = useState(false);
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const dispatch = useAppDispatch();
 
 	const boardUtilities = useBoardHooks();
@@ -345,8 +357,6 @@ const EditViewHeader: FC<PropType> = ({
 					} else {
 						boardUtilities?.closeBoard();
 					}
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
 					dispatch(sendMsg({ editorId, prefs })).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							createSnackbar({
@@ -370,7 +380,7 @@ const EditViewHeader: FC<PropType> = ({
 						}
 					});
 				}
-			}, (countdownSeconds as number) * 1000);
+			}, countdownSeconds * 1000);
 		}
 	}, [
 		setSending,
@@ -378,8 +388,8 @@ const EditViewHeader: FC<PropType> = ({
 		action,
 		boardContext,
 		editor,
-		props,
 		onBoardClose,
+		props,
 		createSnackbar,
 		undoURL,
 		updateEditorCb,
@@ -510,21 +520,21 @@ const EditViewHeader: FC<PropType> = ({
 				label: showRichText
 					? t('tooltip.disable_rich_text', 'Disable rich text editor')
 					: t('tooltip.enable_rich_text', 'Enable rich text editor'),
-				click: toggleRichTextEditor
+				onClick: toggleRichTextEditor
 			},
 			{
 				id: 'urgent',
 				label: isUrgent
 					? t('label.mark_as_un_important', 'Mark as unimportant')
 					: t('label.mark_as_important', 'Mark as important'),
-				click: toggleImportant
+				onClick: toggleImportant
 			},
 			{
 				id: 'read_receipt',
 				label: isReceiptRequested
 					? t('label.remove_request_receipt', 'Remove read receipt request')
 					: t('label.request_receipt', 'Request read receipt'),
-				click: toggleReceiptRequest
+				onClick: toggleReceiptRequest
 			}
 		],
 		[
@@ -574,7 +584,7 @@ const EditViewHeader: FC<PropType> = ({
 							id: 'delayed_mail',
 							icon: 'ClockOutline',
 							label: t('label.send_later', 'Send later'),
-							click: openSendLaterModal
+							onClick: openSendLaterModal
 						}
 				  ]
 				: [])
@@ -653,6 +663,8 @@ const EditViewHeader: FC<PropType> = ({
 								onChange={(): Promise<any> =>
 									addAttachments(
 										saveDraftCb,
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore
 										uploadAttachmentsCb,
 										editor,
 										inputRef?.current?.files

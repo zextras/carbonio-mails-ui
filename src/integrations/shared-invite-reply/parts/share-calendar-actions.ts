@@ -3,19 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { Dispatch } from 'redux';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { msgAction } from '../../../store/actions';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCalendarReply';
 import { mountSharedCalendar } from '../../../store/actions/mount-share-calendar';
-import { MailsEditor, Participant } from '../../../types';
+import { AppDispatch } from '../../../store/redux';
+import type { MailsEditor, Participant } from '../../../types';
 
-type accept = {
+type Accept = {
 	zid: string;
 	view: string;
 	rid: string;
@@ -23,36 +20,35 @@ type accept = {
 	color: number;
 	accounts: any;
 	t: (...args: any[]) => string;
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 	msgId: Array<string> | any;
 	sharedCalendarName: string;
 	owner: string;
 	participants: Participant[];
 	grantee: string;
 	customMessage: string;
-	createSnackbar: any;
 	role: string;
 	allowedActions: string;
 	notifyOrganizer: boolean;
 };
 
-type moveInviteToTrashType = {
+type MoveInviteToTrashType = {
 	t: (...args: any[]) => string;
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 	msgId: string;
 };
 
-type mountSharedCalendarType = {
+type MountSharedCalendarType = {
 	zid: string;
 	view: string;
 	rid: string;
 	calendarName: string;
 	color: number;
 	accounts: any;
-	dispatch: Dispatch;
+	dispatch: AppDispatch;
 };
-type acceptSharedCalendarType = {
-	dispatch: Dispatch;
+type AcceptSharedCalendarType = {
+	dispatch: AppDispatch;
 	sharedCalendarName: string;
 	owner: string;
 	participants: Participant[];
@@ -63,10 +59,9 @@ type acceptSharedCalendarType = {
 	isAccepted: boolean;
 };
 
-type declineType = {
-	dispatch: Dispatch;
+type DeclineType = {
+	dispatch: AppDispatch;
 	t: (...args: any[]) => string;
-	createSnackbar: any;
 	msgId: string;
 	sharedCalendarName: string;
 	owner: string;
@@ -85,10 +80,8 @@ const mountSharedCalendarFunc = ({
 	color,
 	accounts,
 	dispatch
-}: mountSharedCalendarType): any =>
+}: MountSharedCalendarType): any =>
 	dispatch(
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		mountSharedCalendar({
 			zid,
 			view,
@@ -109,10 +102,9 @@ const sharedCalendarReplyFunc = ({
 	role,
 	allowedActions,
 	isAccepted
-}: acceptSharedCalendarType): any =>
-	dispatch(
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
+}: AcceptSharedCalendarType): any => {
+	const displayMessage = customMessage?.length > 0 ? customMessage : '';
+	return dispatch(
 		acceptSharedCalendarReply({
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
@@ -131,30 +123,23 @@ const sharedCalendarReplyFunc = ({
 				}),
 				text: [
 					isAccepted
-						? `Accepted: ${grantee} has accepted the sharing of "${sharedCalendarName}"\n\n----------------------------------------------\n\nShared item: ${sharedCalendarName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${
-								customMessage?.length > 0 ? customMessage : ''
-						  }`
-						: `Declined: ${grantee} has declined the sharing of "${sharedCalendarName}"\n\n----------------------------------------------\n\nShared item: ${sharedCalendarName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${
-								customMessage?.length > 0 ? customMessage : ''
-						  }`
+						? `Accepted: ${grantee} has accepted the sharing of "${sharedCalendarName}"\n\n----------------------------------------------\n\nShared item: ${sharedCalendarName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
+						: `Declined: ${grantee} has declined the sharing of "${sharedCalendarName}"\n\n----------------------------------------------\n\nShared item: ${sharedCalendarName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
 				]
 			} as MailsEditor
 		})
 	);
+};
 
-const moveInviteToTrashFunc = ({ msgId, dispatch, t }: moveInviteToTrashType): any =>
+const moveInviteToTrashFunc = ({ msgId, dispatch, t }: MoveInviteToTrashType): any =>
 	dispatch(
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		msgAction({
 			operation: `trash`,
 			ids: [msgId]
 		})
 	).then((res2: any): void => {
 		if (!res2.type.includes('fulfilled')) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: `share`,
 				replace: true,
 				hideButton: true,
@@ -182,9 +167,8 @@ export const accept = ({
 	customMessage,
 	role,
 	allowedActions,
-	notifyOrganizer,
-	createSnackbar
-}: accept): void =>
+	notifyOrganizer
+}: Accept): void =>
 	mountSharedCalendarFunc({
 		zid,
 		view,
@@ -194,8 +178,6 @@ export const accept = ({
 		accounts,
 		dispatch
 	}).then((res: any): void => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		if (res.type.includes('fulfilled')) {
 			notifyOrganizer &&
 				sharedCalendarReplyFunc({
@@ -210,9 +192,7 @@ export const accept = ({
 					isAccepted: true
 				});
 			moveInviteToTrashFunc({ msgId, dispatch, t });
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: `share_accepted`,
 				replace: true,
 				type: 'info',
@@ -221,9 +201,7 @@ export const accept = ({
 				hideButton: true
 			});
 		} else {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: `share`,
 				replace: true,
 				type: 'error',
@@ -237,7 +215,6 @@ export const accept = ({
 export const decline = ({
 	dispatch,
 	t,
-	createSnackbar,
 	msgId,
 	sharedCalendarName,
 	owner,
@@ -247,10 +224,8 @@ export const decline = ({
 	role,
 	allowedActions,
 	notifyOrganizer
-}: declineType): any =>
+}: DeclineType): any =>
 	dispatch(
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		msgAction({
 			operation: `trash`,
 			ids: [msgId]
@@ -269,8 +244,7 @@ export const decline = ({
 					allowedActions,
 					isAccepted: false
 				});
-
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: `share_declined`,
 				replace: true,
 				type: 'info',
@@ -279,9 +253,7 @@ export const decline = ({
 				hideButton: true
 			});
 		} else {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: `share`,
 				replace: true,
 				type: 'error',

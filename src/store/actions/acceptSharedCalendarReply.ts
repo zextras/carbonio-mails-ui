@@ -5,7 +5,7 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import { ReplyShareParameters, SaveDraftRequest, SaveDraftResponse } from '../../types';
+import type { ReplyShareParameters, SaveDraftRequest, SaveDraftResponse } from '../../types';
 import { generateRequest } from '../editor-slice-utils';
 
 // TODO probably the owner account should be set also here

@@ -3,14 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { useIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
+import { getBridgedFunctions, t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
-import { useCallback, useContext, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { selectEditors } from '../../../../../store/editor-slice';
-import { MailsEditor } from '../../../../../types';
+import { useCallback, useMemo } from 'react';
 import { useAppSelector } from '../../../../../hooks/redux';
+import { selectEditors } from '../../../../../store/editor-slice';
+import type { MailsEditor } from '../../../../../types';
 
 export const uploadToFiles = async (
 	node: { id: string },
@@ -27,7 +25,6 @@ export const useGetFilesFromDrive = ({
 	updateEditorCb,
 	saveDraftCb
 }: UseGetFilesFromDrivePropType): [(arg: any) => void, boolean] => {
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const editors = useAppSelector(selectEditors);
 	const editor = useMemo(() => editors[editorId], [editors, editorId]);
 	const [uploadTo, isAvailable] = useIntegratedFunction('upload-to-target-and-get-target-id');
@@ -56,7 +53,7 @@ export const useGetFilesFromDrive = ({
 								'message.snackbar.some_att_add_fails',
 								'There seems to be a problem when adding some attachments, please try again'
 						  );
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `calendar-moved-root`,
 						replace: true,
 						type,
@@ -79,7 +76,7 @@ export const useGetFilesFromDrive = ({
 				});
 			}
 		},
-		[createSnackbar, editor, isAvailable, saveDraftCb, updateEditorCb, uploadTo]
+		[editor, isAvailable, saveDraftCb, updateEditorCb, uploadTo]
 	);
 
 	return [confirmAction, isAvailable];

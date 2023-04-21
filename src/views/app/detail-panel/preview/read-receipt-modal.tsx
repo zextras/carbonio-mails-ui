@@ -3,22 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useContext, useEffect, useMemo } from 'react';
-import {
-	CustomModal,
-	Text,
-	Container,
-	Padding,
-	SnackbarManagerContext
-} from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
+import { Container, CustomModal, Padding, Text } from '@zextras/carbonio-design-system';
+import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
+import { useAppDispatch } from '../../../../hooks/redux';
 import { msgAction } from '../../../../store/actions';
 import { sendDeliveryReport } from '../../../../store/actions/send-delivery-request';
-import { MailMessage } from '../../../../types';
-import { useAppDispatch } from '../../../../hooks/redux';
+import type { MailMessage } from '../../../../types';
 
 type CompProps = {
 	open: boolean;
@@ -35,7 +28,6 @@ const ReadReceiptModal: FC<CompProps> = ({
 }): ReactElement => {
 	const dispatch = useAppDispatch();
 
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const title = useMemo(() => t('label.read_receipt_req', 'Read receipt required'), []);
 	const onConfirm = useCallback(() => {
 		dispatch(
@@ -49,7 +41,7 @@ const ReadReceiptModal: FC<CompProps> = ({
 
 	const onNotify = useCallback(() => {
 		sendDeliveryReport(message.id).then(() => {
-			createSnackbar({
+			getBridgedFunctions()?.createSnackbar({
 				key: `read-receipt-sent`,
 				replace: true,
 				hideButton: true,
@@ -59,7 +51,7 @@ const ReadReceiptModal: FC<CompProps> = ({
 			});
 		});
 		onClose();
-	}, [createSnackbar, message.id, onClose]);
+	}, [message.id, onClose]);
 
 	useEffect(() => {
 		if (message?.isReadReceiptRequested && readReceiptSetting === 'always' && !message?.isSentByMe)
