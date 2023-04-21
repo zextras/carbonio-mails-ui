@@ -135,7 +135,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 					});
 				}
 			});
-		} else if (data.type === 'conversation') {
+		} else if ('messages' in data.data) {
 			dispatch(
 				convAction({
 					operation: `move`,
