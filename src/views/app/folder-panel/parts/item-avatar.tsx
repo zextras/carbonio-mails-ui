@@ -9,6 +9,7 @@ import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import type { ItemAvatarType, Participant } from '../../../../types';
+import { TooltipWrapper } from './tooltip-wrapper';
 
 const AvatarElement = styled(Avatar)`
 	width: 2.625rem !important;
@@ -36,10 +37,8 @@ export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, togg
 		[toggle]
 	);
 
-	const activateSelectionMode = useMemo(
-		() => t('label.activate_selection_mode', 'Activate selection mode'),
-		[]
-	);
+	const activateSelectionMode = t('label.activate_selection_mode', 'Activate selection mode');
+
 	return (
 		<Container
 			mainAlignment="center"
@@ -47,7 +46,7 @@ export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, togg
 			data-testid={`AvatarContainer`}
 			padding={{ all: 'small' }}
 		>
-			<Tooltip label={activateSelectionMode} disabled={selecting} maxWidth="100%">
+			<TooltipWrapper label={activateSelectionMode} enabled={!selecting} maxWidth="100%">
 				<AvatarElement
 					selecting={selecting}
 					selected={selected}
@@ -56,7 +55,7 @@ export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, togg
 					onClick={conversationSelect(item.id)}
 					size="large"
 				/>
-			</Tooltip>
+			</TooltipWrapper>
 		</Container>
 	);
 };
