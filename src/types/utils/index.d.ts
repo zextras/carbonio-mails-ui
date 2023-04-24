@@ -16,39 +16,6 @@ export type Crumb = {
 	tooltip: string;
 };
 
-export type DataProps = {
-	id: string;
-	date: number;
-	messages: [
-		{
-			id: string;
-			parent: string;
-			date: number;
-		}
-	];
-	participants: [
-		{
-			type: string;
-			address: string;
-			name: string;
-			fullName: string;
-		},
-		{
-			type: string;
-			address: string;
-			name: string;
-		}
-	];
-	subject: string;
-	fragment: string;
-	read: false;
-	hasAttachment: false;
-	flagged: false;
-	urgent: false;
-	parentFolderId: string;
-	selectedIDs: Array<string>;
-};
-
 export type TextReadValuesProps = {
 	color: string;
 	weight: TextProps['weight'];
@@ -120,7 +87,7 @@ export type GetAttachmentsDownloadLinkProps = {
 };
 
 export type DragItemWrapperProps = {
-	item: IncompleteMessage;
+	item: MailMessage | Conversation;
 	selectedIds: Array<string>;
 	selectedItems: Record<string, boolean>;
 	setDraggedIds: (ids: Record<string, boolean>) => void;
