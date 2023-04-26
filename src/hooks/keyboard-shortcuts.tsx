@@ -5,10 +5,10 @@
  */
 import { noop } from 'lodash';
 import {
-	setConversationsSpam,
 	moveConversationToTrash,
 	setConversationsFlag,
-	setConversationsRead
+	setConversationsRead,
+	setConversationsSpam
 } from '../ui-actions/conversation-actions';
 
 type handleKeyboardShortcutsProps = {
@@ -17,7 +17,6 @@ type handleKeyboardShortcutsProps = {
 	folderId: any;
 	dispatch: any;
 	deselectAll: any;
-	createSnackbar: any;
 	conversations: Array<any>;
 };
 
@@ -53,7 +52,7 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 						deselectAll: noop,
 						shouldReplaceHistory: false,
 						folderId
-					}).click(event);
+					}).onClick(event);
 				}
 				break;
 			case 'z': // Mark read
@@ -66,7 +65,7 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 						deselectAll: noop,
 						shouldReplaceHistory: false,
 						folderId
-					}).click(event);
+					}).onClick(event);
 				}
 				break;
 			case 'mu': // Mark unread
@@ -79,7 +78,7 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 						deselectAll: noop,
 						shouldReplaceHistory: false,
 						folderId
-					}).click(event);
+					}).onClick(event);
 				}
 				break;
 			case 'x': // Mark unread
@@ -92,13 +91,13 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 						deselectAll: noop,
 						shouldReplaceHistory: false,
 						folderId
-					}).click(event);
+					}).onClick(event);
 				}
 				break;
 			case 'mf': // Flag/Unflag messages
 				if (isGlobalContext && itemId) {
 					eventActions();
-					setConversationsFlag({ ids: [itemId], value: conversationFlag, dispatch }).click(event);
+					setConversationsFlag({ ids: [itemId], value: conversationFlag, dispatch }).onClick(event);
 				}
 				break;
 			case 'ms': // Report (mark as) spam
@@ -109,7 +108,7 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 						value: false,
 						dispatch,
 						deselectAll
-					}).click(event);
+					}).onClick(event);
 				}
 				break;
 			case '.t': // Move to Trash
@@ -120,7 +119,7 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 						dispatch,
 						deselectAll,
 						folderId
-					}).click(event);
+					}).onClick(event);
 				}
 				break;
 			case '.i': // Move to Inbox

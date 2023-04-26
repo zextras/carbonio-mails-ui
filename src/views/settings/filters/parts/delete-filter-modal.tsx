@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
-import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import type { TFunction } from 'i18next';
-import { deleteFilter } from './actions';
-import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
+import { Container, Text } from '@zextras/carbonio-design-system';
+import { TFunction } from 'i18next';
+import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
-import { FilterListType } from '../../../../types';
+import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
+import type { FilterListType } from '../../../../types';
+import { deleteFilter } from './actions';
 
 type ListType = {
 	isSelecting: boolean;
@@ -45,7 +45,6 @@ const DeleteFilterModal: FC<ComponentProps> = ({
 	incomingFilters
 }): ReactElement => {
 	const modalTitle = useMemo(() => t('settings.delete_filter', 'Delete filter'), [t]);
-	const createSnackbar = useContext(SnackbarManagerContext);
 
 	const onConfirmDelete = useCallback(() => {
 		deleteFilter({
@@ -56,14 +55,12 @@ const DeleteFilterModal: FC<ComponentProps> = ({
 			setFilters,
 			setFetchFilters,
 			modifierFunc,
-			createSnackbar,
 			selectedFilter,
 			incomingFilters
 		});
 	}, [
 		activeList,
 		availableList,
-		createSnackbar,
 		incomingFilters,
 		modifierFunc,
 		onClose,

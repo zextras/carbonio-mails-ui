@@ -7,7 +7,7 @@ import React, { FC } from 'react';
 import { Button, Container, Tooltip } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { t } from '@zextras/carbonio-shell-ui';
-import { AdvancedFilterButtonProps } from '../../../types';
+import type { AdvancedFilterButtonProps } from '../../../types';
 
 const BorderContainer = styled(Container)`
 	border-bottom: 0.0625rem solid ${({ theme }): string => theme?.palette?.gray2?.regular};

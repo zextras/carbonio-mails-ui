@@ -6,7 +6,7 @@
 
 import { find, map } from 'lodash';
 import { DefaultTheme } from 'styled-components';
-import { MailMessage } from '../../types';
+import type { MailMessage } from '../../types';
 import { humanFileSize } from '../../views/app/detail-panel/preview/file-preview';
 import { getAttachmentIconColors } from '../../views/app/detail-panel/preview/utils';
 import { getFileExtension } from '../utilities';

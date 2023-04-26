@@ -6,7 +6,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Folder, soapFetch } from '@zextras/carbonio-shell-ui';
 import { isEmpty, isNil, omitBy } from 'lodash';
-import { DataProps, FolderType } from '../../types';
+import type { FolderType } from '../../types';
+import type { DataProps } from '../../carbonio-ui-commons/types/sidebar';
 
 type FolderActionProps = {
 	folder: FolderType | DataProps | Omit<Folder, 'parent'>;

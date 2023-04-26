@@ -16,8 +16,6 @@ export type ConvMessage = {
 export type Conversation = {
 	readonly id: string;
 	date: number;
-	msgCount: number;
-	unreadMsgCount: number;
 	messages: Array<ConvMessage>;
 	participants: Participant[];
 	subject: string;
@@ -59,6 +57,7 @@ export type FetchConversationsReturn = {
 	messages?: Record<string, IncompleteMessage>;
 	hasMore: boolean;
 	types: string;
+	Detail: { Error: { Code: string; Message: string } };
 };
 
 export type DeleteAttachmentsReturn = {

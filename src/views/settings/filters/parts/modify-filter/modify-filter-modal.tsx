@@ -3,38 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	FC,
-	ReactElement,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-	useContext
-} from 'react';
-import {
-	Input,
-	Container,
-	Checkbox,
-	Padding,
-	Divider,
-	SnackbarManagerContext,
-	Row
-} from '@zextras/carbonio-design-system';
-import type { TFunction } from 'i18next';
+import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
+import { getBridgedFunctions, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
+import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import ModalFooter from '../create-filter-modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
-import DefaultCondition from '../create-filters-conditions/default';
-import { CreateFilterContext } from '../create-filter-context';
 import { modifyFilterRules } from '../../../../../store/actions/modify-filter-rules';
-import FilterActionConditions from '../new-filter-action-conditions';
-import FilterTestConditionRow from '../filter-test-condition-row';
-import { getTestComponent, findRowKey } from '../get-test-component';
+import type { FilterActions } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
-import { FilterActions } from '../../../../../types';
+import { CreateFilterContext } from '../create-filter-context';
+import ModalFooter from '../create-filter-modal-footer';
+import DefaultCondition from '../create-filters-conditions/default';
+import FilterTestConditionRow from '../filter-test-condition-row';
+import { findRowKey, getTestComponent } from '../get-test-component';
+import FilterActionConditions from '../new-filter-action-conditions';
 import { getButtonInfo } from '../utils';
 
 type FilterType = {
@@ -61,7 +45,6 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	setIncomingFilters,
 	selectedFilter
 }): ReactElement => {
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const [filterName, setFilterName] = useState('');
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
@@ -289,9 +272,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		modifyFilterRules(toSend)
 			.then(() => {
 				setFetchIncomingFilters(true);
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `share`,
 					replace: true,
 					hideButton: true,
@@ -301,9 +282,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 				});
 			})
 			.catch((error) => {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `share`,
 					replace: true,
 					hideButton: true,
@@ -321,7 +300,6 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		incomingFiltersCopy,
 		setIncomingFilters,
 		setFetchIncomingFilters,
-		createSnackbar,
 		t
 	]);
 

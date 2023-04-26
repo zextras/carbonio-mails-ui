@@ -5,7 +5,7 @@
  */
 import { addBoard } from '@zextras/carbonio-shell-ui';
 import { isNil, omit, omitBy } from 'lodash';
-import { Participant } from '../types';
+import type { Participant } from '../types';
 import { MAILS_ROUTE } from '../constants';
 import { ActionsType } from '../commons/utils';
 

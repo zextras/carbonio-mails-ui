@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { getRecipientReplyIdentity } from '../../../../../helpers/identities';
-import {
+import type {
 	FindDefaultIdentityType,
 	IdentityType,
 	MailMessage,

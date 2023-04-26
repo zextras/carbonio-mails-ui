@@ -7,7 +7,7 @@ import React, { FC } from 'react';
 import { Text, Tooltip } from '@zextras/carbonio-design-system';
 
 import { map } from 'lodash';
-import { Crumb } from '../../../../types';
+import type { Crumb } from '../../../../types';
 
 type BreadcrumbsProps = Array<Crumb>;
 

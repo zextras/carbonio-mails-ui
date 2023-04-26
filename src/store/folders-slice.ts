@@ -8,7 +8,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, reduce, cloneDeep, map, filter } from 'lodash';
-import { ISoapFolderObj, FolderType, FoldersStateType, MailsFolderMap, StateType } from '../types';
+import type {
+	ISoapFolderObj,
+	FolderType,
+	FoldersStateType,
+	MailsFolderMap,
+	StateType
+} from '../types';
 import { createFolder } from './actions/create-folder';
 import { folderAction } from './actions/folder-action';
 import { searchFolder } from './actions/search-folders';

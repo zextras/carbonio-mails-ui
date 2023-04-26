@@ -13,7 +13,7 @@ import { getFoldersSliceInitialState } from '../../store/folders-slice';
 import { getMessagesSliceInitialState } from '../../store/messages-slice';
 import { storeReducers } from '../../store/reducers';
 import { getSearchSliceInitialiState } from '../../store/searches-slice';
-import { StateType } from '../../types';
+import type { StateType } from '../../types';
 
 /**
  *

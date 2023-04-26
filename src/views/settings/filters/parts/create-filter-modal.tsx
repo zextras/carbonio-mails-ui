@@ -17,7 +17,7 @@ import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules
 import FilterActionConditions from './new-filter-action-conditions';
 import FilterTestConditionRow from './filter-test-condition-row';
 import { getButtonInfo } from './utils';
-import { FilterActions } from '../../../../types';
+import type { FilterActions } from '../../../../types';
 
 type ComponentProps = {
 	t: TFunction;

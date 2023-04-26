@@ -3,27 +3,27 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import {
+	Dropdown,
+	IconButton,
+	Padding,
+	Row,
+	RowProps,
+	ThemeContext,
+	Tooltip
+} from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { difference, map, noop, slice } from 'lodash';
 import React, {
-	useMemo,
 	FC,
 	ReactElement,
-	useRef,
-	useLayoutEffect,
-	useState,
 	useCallback,
-	useContext
+	useContext,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState
 } from 'react';
-import {
-	Row,
-	IconButton,
-	Tooltip,
-	Dropdown,
-	ThemeContext,
-	Padding,
-	RowProps
-} from '@zextras/carbonio-design-system';
-import { difference, map, noop, slice } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { useVisibleActionsCount } from '../hooks/use-visible-actions-count';
@@ -33,14 +33,6 @@ type MailMsgPreviewActionsType = {
 	maxActions?: number;
 	maxWidth?: string;
 	mainAlignment?: RowProps['mainAlignment'];
-};
-
-type ThemeContextProps = {
-	sizes: {
-		icon: {
-			large: string;
-		};
-	};
 };
 
 const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
@@ -134,7 +126,7 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 								icon={action.icon}
 								onClick={(ev): void => {
 									if (ev) ev.preventDefault();
-									action.click();
+									action.onClick();
 								}}
 							/>
 						</Tooltip>

@@ -3,21 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import { Container } from '@zextras/carbonio-design-system';
+import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
 import { filter, includes, isEmpty } from 'lodash';
-import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { folderAction } from '../../../../store/actions/folder-action';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import NameInputRow from './name-input';
+import type { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
+import { useAppDispatch } from '../../../../hooks/redux';
+import { folderAction } from '../../../../store/actions/folder-action';
+import { translatedSystemFolders } from '../../utils';
 import { FolderDetails } from './folder-details';
+import NameInputRow from './name-input';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
-import { translatedSystemFolders } from '../../utils';
-import { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
-import { useAppDispatch } from '../../../../hooks/redux';
 
 const retentionPeriod = [
 	{
@@ -41,7 +40,6 @@ const numberRegex = /^\d+$/;
 
 const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveModal }) => {
 	const dispatch = useAppDispatch();
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const [inputValue, setInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);
 	const [rtnValue, setRtnValue] = useState<number | string>(0);
@@ -101,8 +99,6 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 			folder.retentionPolicy[0].purge &&
 			Object.keys(folder.retentionPolicy[0].purge[0]).length !== 0
 		) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			const lifetime = folder.retentionPolicy[0]?.purge[0]?.policy[0]?.lifetime;
 			const d = parseInt(lifetime, 10);
 			setDsblMsgDis(true);
@@ -218,30 +214,27 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 							  }
 							: {}
 				})
-			)
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				.then((res) => {
-					if (res.type.includes('fulfilled')) {
-						createSnackbar({
-							key: `edit`,
-							replace: true,
-							type: 'info',
-							hideButton: true,
-							label: t('messages.snackbar.folder_edited', 'Changes correctly saved'),
-							autoHideTimeout: 3000
-						});
-					} else {
-						createSnackbar({
-							key: `edit`,
-							replace: true,
-							type: 'error',
-							hideButton: true,
-							label: t('label.error_try_again', 'Something went wrong, please try again'),
-							autoHideTimeout: 3000
-						});
-					}
-				});
+			).then((res) => {
+				if (res.type.includes('fulfilled')) {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'info',
+						hideButton: true,
+						label: t('messages.snackbar.folder_edited', 'Changes correctly saved'),
+						autoHideTimeout: 3000
+					});
+				} else {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'error',
+						hideButton: true,
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000
+					});
+				}
+			});
 		}
 		setInputValue('');
 		onClose();
@@ -256,8 +249,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 		dspYear,
 		dispatch,
 		folder,
-		folderColor,
-		createSnackbar
+		folderColor
 	]);
 
 	const title = t('label.edit_folder_properties', {

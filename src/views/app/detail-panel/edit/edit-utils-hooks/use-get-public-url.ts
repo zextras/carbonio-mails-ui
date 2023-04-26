@@ -4,13 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { useIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
+import { getBridgedFunctions, t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
-import { useCallback, useContext, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { selectEditors } from '../../../../../store/editor-slice';
+import { useCallback, useMemo } from 'react';
 import { useAppSelector } from '../../../../../hooks/redux';
+import { selectEditors } from '../../../../../store/editor-slice';
 
 type InputProps = {
 	editorId: string;
@@ -27,7 +25,6 @@ export const useGetPublicUrl = ({
 	changeEditorText
 }: InputProps): [(nodes: any) => void, boolean] => {
 	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const editors = useAppSelector(selectEditors);
 	const editor = useMemo(() => editors[editorId], [editors, editorId]);
 
@@ -54,7 +51,7 @@ export const useGetPublicUrl = ({
 							'message.snackbar.some_link_copying_error',
 							'There seems to be a problem while generating public url for some files, please try again'
 					  );
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `public-link`,
 					replace: true,
 					type,
@@ -83,7 +80,7 @@ export const useGetPublicUrl = ({
 				changeEditorText(newEditor.text);
 			});
 		},
-		[changeEditorText, createSnackbar, editor, getLink, saveDraftCb, setValue, updateEditorCb]
+		[changeEditorText, editor, getLink, saveDraftCb, setValue, updateEditorCb]
 	);
 
 	return [getPublicUrl, getLinkAvailable];

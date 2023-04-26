@@ -49,7 +49,7 @@ export const ButtonFindShares: FC = () => {
 	);
 
 	return (
-		<Container padding={{ horizontal: 'medium', vertical: 'small' }}>
+		<Container padding={{ horizontal: 'medium', vertical: 'small' }} key="button-find-shares">
 			<Button type="outlined" label={label} width="fill" color="primary" onClick={openFindShares} />
 		</Container>
 	);

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { map } from 'lodash';
-import { FolderType, FoldersStateType } from '../../types';
+import type { FolderType, FoldersStateType } from '../../types';
 import { extractFolders, normalizeFolder } from '../../views/sidebar/utils';
 import { addFoldersToStore, removeFoldersFromStore, updateFolders } from '../utils';
 

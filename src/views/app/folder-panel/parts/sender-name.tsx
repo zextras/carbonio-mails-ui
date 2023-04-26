@@ -3,23 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
-import { useParams } from 'react-router-dom';
-import React, { FC, useMemo } from 'react';
-import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
+import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
+import React, { FC, useMemo } from 'react';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { participantToString } from '../../../../commons/utils';
-import { SenderNameProps } from '../../../../types';
+import type { SenderNameProps } from '../../../../types';
 
-export const SenderName: FC<SenderNameProps> = ({ item, textValues, isFromSearch = false }) => {
+// TODO since it renders also the recipients we should rename it to ParticipantsName
+export const SenderName: FC<SenderNameProps> = ({ item, textValues, isSearchModule = false }) => {
 	const account = useUserAccount();
-	const { folderId } = useParams<{ folderId: string }>();
+	const folderId = item.parent;
 	const participantsString = useMemo(() => {
 		const participants = filter(item.participants, (p) => {
 			if (folderId === FOLDERS.INBOX) return p.type === ParticipantRole.FROM; // inbox
-			if (folderId === FOLDERS.SENT && !isFromSearch) return p.type === ParticipantRole.TO; // sent
-			if (isFromSearch) return p.type === ParticipantRole.FROM; // search module
+			if (folderId === FOLDERS.SENT && !isSearchModule) return p.type === ParticipantRole.TO; // sent
+			if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
 			return true; // keep all
 		});
 		const meIndex = findIndex(participants, ['address', account?.name]);
@@ -35,17 +35,21 @@ export const SenderName: FC<SenderNameProps> = ({ item, textValues, isFromSearch
 			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
 			''
 		);
-	}, [account, folderId, isFromSearch, item.participants]);
+	}, [account, folderId, isSearchModule, item.participants]);
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
-			{!isFromSearch && folderId === FOLDERS.DRAFTS && (
+			{!isSearchModule && folderId === FOLDERS.DRAFTS && (
 				<Padding right="small">
 					<Text color="error">{t('label.draft_folder', '[DRAFT]')}</Text>
 				</Padding>
 			)}
 			<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
-				<Text data-testid="ParticipantLabel" color={textValues?.color} weight={textValues?.weight}>
+				<Text
+					data-testid="participants-name-label"
+					color={textValues?.color}
+					weight={textValues?.weight}
+				>
 					{participantsString}
 				</Text>
 			</Tooltip>

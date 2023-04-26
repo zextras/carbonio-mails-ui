@@ -21,7 +21,7 @@ import Heading from './components/settings-heading';
 import { domainWhitelistSubSection } from './subsections';
 import TrusteeListItem from './components/trustee-list-item';
 import LoadingShimmer from './filters/parts/loading-shimmer';
-import { InputProps } from '../../types';
+import type { InputProps } from '../../types';
 
 const NonSupportedCharacters = /[!#$%^&*()+=[\]{};':"\\|,<>/?|/^\s*$/]+/;
 const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {

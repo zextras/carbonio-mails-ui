@@ -6,7 +6,7 @@
 import { Tags } from '@zextras/carbonio-shell-ui';
 import { filter, find, isNil, map } from 'lodash';
 import { omitBy } from '../commons/utils';
-import { Conversation, SoapIncompleteMessage, SoapConversation } from '../types';
+import type { Conversation, SoapIncompleteMessage, SoapConversation } from '../types';
 import { normalizeParticipantsFromSoap } from './normalize-message';
 
 const getTagIdsFromName = (names: string | undefined, tags?: Tags): Array<string | undefined> =>
@@ -52,8 +52,6 @@ export const normalizeConversation = ({
 			tags: getTagIds(c.t, c.tn, tags),
 			id: c.id,
 			date: c.d,
-			msgCount: c.n,
-			unreadMsgCount: c.u,
 			messages,
 			participants: c.e ? map(c.e, normalizeParticipantsFromSoap) : undefined,
 			subject: c.su,
