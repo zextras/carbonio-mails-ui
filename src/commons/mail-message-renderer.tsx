@@ -100,7 +100,10 @@ const _TextMessageRenderer: FC<{ body: { content: string; contentType: string } 
 	);
 
 	const convertedHTML = useMemo(
-		() => replaceLinkToAnchor(plainTextToHTML(contentToDisplay)),
+		() =>
+			replaceLinkToAnchor(
+				plainTextToHTML(contentToDisplay.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
+			),
 		[contentToDisplay]
 	);
 	return (
