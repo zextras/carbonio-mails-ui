@@ -5,6 +5,7 @@
  */
 
 import { TagActionItemType } from '../tags';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
 
 export type ActionProps = {
 	folder: Folder;

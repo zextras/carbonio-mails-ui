@@ -3,11 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, AccountSettings, Folder } from '@zextras/carbonio-shell-ui';
+import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import { isArray } from 'lodash';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import type { MailMessage } from '../types';
 import { getMessageOwnerAccountName } from './folders';
+import type { Folder, Roots } from '../carbonio-ui-commons/types/folder';
 
 /**
  * The name of the primary identity
@@ -338,7 +339,7 @@ const filterMatchingRecipients = (recipients: Array<RecipientWeight>): Array<Rec
  * @param message - The message to analyze
  */
 const getRecipientReplyIdentity = (
-	folderRoots: Record<string, Folder & { owner: string }>,
+	folderRoots: Roots,
 	account: Account,
 	settings: AccountSettings,
 	message: MailMessage
@@ -347,6 +348,7 @@ const getRecipientReplyIdentity = (
 	const identities = getIdentities(account, settings);
 
 	const messageFolderOwnerAccount = getMessageOwnerAccountName(message, account, folderRoots);
+	console.log('messageFolderOwnerAccount', messageFolderOwnerAccount);
 
 	// Extract all the recipients addresses from the message
 	const recipients = getRecipients(message);

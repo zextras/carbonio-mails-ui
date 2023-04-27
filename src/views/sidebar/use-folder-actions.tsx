@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { ModalManagerContext } from '@zextras/carbonio-design-system';
-import { Folder, FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { startsWith } from 'lodash';
 import React, { SyntheticEvent, useContext, useMemo } from 'react';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { FolderActionsType } from '../../commons/utils';
 import { useAppDispatch } from '../../hooks/redux';
 import { folderAction } from '../../store/actions/folder-action';

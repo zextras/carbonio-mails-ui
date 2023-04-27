@@ -7,6 +7,7 @@
 import { Grant } from '@zextras/carbonio-shell-ui';
 import type { AppDispatch } from '../../store/redux';
 import { Participant } from '../participant';
+import { Folder } from '../../carbonio-ui-commons/types/folder';
 
 export type ShareCalendarModalProps = {
 	openModal: () => void;

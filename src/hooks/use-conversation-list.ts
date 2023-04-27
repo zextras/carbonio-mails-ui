@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getFolder } from '@zextras/carbonio-shell-ui';
 import { orderBy, reduce, some } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
@@ -11,6 +10,7 @@ import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import type { Conversation, StateType } from '../types';
 import { useAppDispatch, useAppSelector } from './redux';
+import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 
 type RouteParams = {
 	folderId: string;
@@ -41,7 +41,10 @@ export const useConversationListItems = (): Array<Conversation> => {
 				? reduce(
 						conversations,
 						(acc, v) =>
-							some(v.messages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id])
+							some(v.messages, [
+								'parent',
+								'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id
+							])
 								? [...acc, v]
 								: acc,
 						[] as Array<Conversation>

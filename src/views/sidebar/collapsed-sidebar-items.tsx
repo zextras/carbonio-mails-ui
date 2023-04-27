@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useMemo } from 'react';
-import { AppLink, Folder } from '@zextras/carbonio-shell-ui';
+import { AppLink } from '@zextras/carbonio-shell-ui';
 import { Row, Padding, Tooltip, IconButton } from '@zextras/carbonio-design-system';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from './utils';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
 
 const CollapsedSideBarItems: FC<{ folder: Folder }> = ({ folder }) => {
 	const folderIconColor = useMemo(() => getFolderIconColor(folder), [folder]);

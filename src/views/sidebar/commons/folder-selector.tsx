@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Accordion, Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
-import {
-	FOLDERS,
-	Folder,
-	getFolder,
-	t,
-	useFoldersByView,
-	useUserAccount
-} from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { filter, startsWith } from 'lodash';
 import React, {
 	ChangeEvent,
@@ -23,8 +16,13 @@ import React, {
 	useState
 } from 'react';
 import styled from 'styled-components';
-import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
+import {
+	getFolder,
+	useFoldersByView
+} from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import type { Folder } from '../../../carbonio-ui-commons/types/folder';
+import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
 import { getFolderTranslatedName } from '../utils';
 
 const ContainerEl = styled(Container)`

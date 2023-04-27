@@ -7,10 +7,11 @@ import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system
 import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { nanoid } from '@reduxjs/toolkit';
-import { Folder, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
 import { find, includes } from 'lodash';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { useAppDispatch } from '../../hooks/redux';
 import { createFolder } from '../../store/actions/create-folder';
 import type { ModalProps } from '../../types';

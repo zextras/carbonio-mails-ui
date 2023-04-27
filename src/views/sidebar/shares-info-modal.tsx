@@ -5,8 +5,9 @@
  */
 import React, { FC, useMemo } from 'react';
 import { Container, Icon, Row, Text } from '@zextras/carbonio-design-system';
-import { Folder, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
 
 export const ShareInfoRow: FC<{
 	icon: string;
@@ -28,7 +29,7 @@ export const ShareInfoRow: FC<{
 
 type SharesInfoModalProps = {
 	onClose: () => void;
-	folder: Folder & { owner?: string };
+	folder: Folder;
 };
 
 export const SharesInfoModal: FC<SharesInfoModalProps> = ({ onClose, folder }) => {

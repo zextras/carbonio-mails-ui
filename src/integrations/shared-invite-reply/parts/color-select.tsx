@@ -38,7 +38,7 @@ const LabelFactory = ({ selected, label, open, focus }: CustomLabelFactoryProps)
 				<TextUpperCase>{selected[0].label}</TextUpperCase>
 			</Row>
 			<Padding right="small">
-				<Square color={ZIMBRA_STANDARD_COLORS[Number(selected[0].value)].hex} />
+				<Square color={ZIMBRA_STANDARD_COLORS[parseInt(selected[0].value, 10)].hex} />
 			</Padding>
 		</Row>
 		<Icon

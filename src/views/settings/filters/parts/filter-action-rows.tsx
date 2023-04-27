@@ -19,11 +19,12 @@ import {
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 import { filter, omit } from 'lodash';
-import { Folder, useIntegratedComponent, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { useIntegratedComponent, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import { v4 as uuidv4 } from 'uuid';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import CustomSelect from './custom-select';
 import MoveToFolderModal from './move-to-folder-modal';
+import type { Folder } from '../../../../carbonio-ui-commons/types/folder';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid

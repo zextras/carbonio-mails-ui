@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, getRoots, getUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
+import { getRoots } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { getFolderIdParts, getFolderOwnerAccountName } from '../folders';
 

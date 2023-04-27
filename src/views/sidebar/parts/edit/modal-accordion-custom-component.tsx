@@ -3,13 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Padding, Row, Icon, Container, TextWithTooltip } from '@zextras/carbonio-design-system';
-
-import { Folder } from '@zextras/carbonio-shell-ui';
+import { Container, Icon, Padding, Row, TextWithTooltip } from '@zextras/carbonio-design-system';
 import { indexOf, lastIndexOf, min } from 'lodash';
-import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
+import React, { FC, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import type { Crumb } from '../../../../types';
+import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
 import { Breadcrumbs } from './breadcrumbs';
 
 const ModalAccordionCustomComponent: FC<{

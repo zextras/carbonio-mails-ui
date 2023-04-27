@@ -3,11 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { handleKeyboardShortcuts } from '../../../../hooks/keyboard-shortcuts';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useConversationListItems } from '../../../../hooks/use-conversation-list';
