@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.1...v1.3.2) (2023-04-27)
+
+
+### Bug Fixes
+
+* fix export settings view ([#337](https://github.com/zextras/carbonio-mails-ui/issues/337)) ([b46f7ef](https://github.com/zextras/carbonio-mails-ui/commit/b46f7ef9856bc5d63715730ccba59b5fb4bbed7d))
+* fix onclick ([#356](https://github.com/zextras/carbonio-mails-ui/issues/356)) ([8218d08](https://github.com/zextras/carbonio-mails-ui/commit/8218d08891fc289e8d8b09160eb5a11a59189d75))
+* missing translations issus fixed ([#354](https://github.com/zextras/carbonio-mails-ui/issues/354)) ([aa03aa0](https://github.com/zextras/carbonio-mails-ui/commit/aa03aa0e7f7e6f98fb1fb6fb115c4aefd966d5b5))
+* translate label for search module selector ([aebfa02](https://github.com/zextras/carbonio-mails-ui/commit/aebfa028fa1c3e2f10fc508d2a7f128ae573792a))
+* truncated text in email displayer ([#355](https://github.com/zextras/carbonio-mails-ui/issues/355)) ([2d87d92](https://github.com/zextras/carbonio-mails-ui/commit/2d87d92c7fe00ddacfd4dfedcb26249a383b0685))
+
 ### [1.3.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.0...v1.3.1) (2023-04-13)
 
 ## [1.3.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.2.5...v1.3.0) (2023-04-07)
