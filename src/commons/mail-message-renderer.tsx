@@ -40,7 +40,7 @@ const LINE_BREAK_REGEX = /(?:\r\n|\r|\n)/g;
 
 export const plainTextToHTML = (str: string): string => {
 	if (str !== undefined && str !== null) {
-		return str.replace(LINE_BREAK_REGEX, '<br />');
+		return str.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(LINE_BREAK_REGEX, '<br />');
 	}
 	return '';
 };
