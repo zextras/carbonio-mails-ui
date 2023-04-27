@@ -130,12 +130,33 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		if (query && query.length > 0 && queryToString !== searchResults.query && !isInvalidQuery) {
 			const modifiedQuery = map(query, (q) => {
 				if (
+					// TODO: fix type definition
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					(includes(queryArray, q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^subject:/.test(q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^in:/.test(q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^before:/.test(q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^after:/.test(q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^tag:/.test(q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^date:/.test(q.label)) &&
 					!includes(Object.keys(q), 'isGeneric') &&
 					!includes(Object.keys(q), 'isQueryFilter')
@@ -233,6 +254,9 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 				</Container>
 			</Container>
 			<AdvancedFilterModal
+				// TODO: fix type definition
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				query={query}
 				updateQuery={updateQuery}
 				isSharedFolderIncluded={isSharedFolderIncluded}
