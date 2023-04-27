@@ -78,8 +78,9 @@
         "calendar_color": "Couleur de l'élément",
         "cancel": "Annuler",
         "cc": "Cc",
-        "download": "Télécharger",
-        "download_plural": "Télécharger tout",
+        "download_0": "Télécharger",
+        "download_1": "Télécharger tout",
+        "download_2": "Télécharger tout",
         "draft_folder": "[BROUILLON]",
         "edit": "Modifier",
         "edit_access": "Modifier les accès",
@@ -299,7 +300,8 @@
         "need_to_select_atleast_one_item": "Vous devez sélectionner au moins un élément pour réaliser l'action",
         "path": "Chemin",
         "select_all": "Tout SÉLECTIONNER",
-        "using_signatures": "Utilisation des signatures"
+        "using_signatures": "Utilisation des signatures",
+        "admin_disabled_action": "L'administrateur a désactivé l'action de redirection"
     },
     "message": {
         "snackbar": {
