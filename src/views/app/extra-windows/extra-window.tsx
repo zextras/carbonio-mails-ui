@@ -9,7 +9,7 @@ import { PreviewManager } from '@zextras/carbonio-ui-preview';
 import { omit } from 'lodash';
 import React, { createContext, FC, useCallback, useMemo, useRef, useState } from 'react';
 import { DefaultTheme } from 'styled-components';
-import { ExtraWindowContextType, ExtraWindowProps } from '../../../types';
+import type { ExtraWindowContextType, ExtraWindowProps } from '../../../types';
 import NewWindow, { replaceStyles } from './new-window';
 
 // Enable debug console output

@@ -22,15 +22,20 @@ import {
 	t
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
-import { filter, find, map, noop } from 'lodash';
+import { filter, find, map } from 'lodash';
 import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { getFileExtension } from '../../../../commons/utilities';
+import { useAppDispatch } from '../../../../hooks/redux';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
-import { AttachmentPart, AttachmentType, MailMessage, OpenEmlPreviewType } from '../../../../types';
+import type {
+	AttachmentPart,
+	AttachmentType,
+	MailMessage,
+	OpenEmlPreviewType
+} from '../../../../types';
 import { useExtraWindow } from '../../extra-windows/use-extra-window';
 import DeleteAttachmentModal from './delete-attachment-modal';
 import { humanFileSize, previewType } from './file-preview';
@@ -118,7 +123,7 @@ const Attachment: FC<AttachmentType> = ({
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {

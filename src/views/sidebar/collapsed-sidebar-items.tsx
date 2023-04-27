@@ -6,7 +6,7 @@
 import React, { FC, useMemo } from 'react';
 import { AppLink, Folder } from '@zextras/carbonio-shell-ui';
 import { Row, Padding, Tooltip, IconButton } from '@zextras/carbonio-design-system';
-import { getFolderIconColor, getFolderIconName } from './utils';
+import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from './utils';
 
 const CollapsedSideBarItems: FC<{ folder: Folder }> = ({ folder }) => {
 	const folderIconColor = useMemo(() => getFolderIconColor(folder), [folder]);
@@ -15,7 +15,10 @@ const CollapsedSideBarItems: FC<{ folder: Folder }> = ({ folder }) => {
 	return (
 		<AppLink to={`/folder/${folder.id}`} style={{ width: '100%', textDecoration: 'none' }}>
 			<Row mainAlignment="flex-start" takeAvailableSpace>
-				<Tooltip label={folder.name} placement="right">
+				<Tooltip
+					label={getSystemFolderTranslatedName({ folderName: folder.name })}
+					placement="right"
+				>
 					<Padding all="extrasmall">
 						<IconButton
 							customSize={{ iconSize: 'large', paddingSize: 'small' }}

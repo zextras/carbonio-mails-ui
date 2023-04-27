@@ -4,17 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ReactElement, useCallback, useState, useContext, useMemo } from 'react';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
+import { ChipInput, Container, Divider, Text } from '@zextras/carbonio-design-system';
+import { getBridgedFunctions, t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, some } from 'lodash';
-import {
-	Container,
-	Text,
-	ChipInput,
-	Divider,
-	SnackbarManagerContext
-} from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { redirectMessageAction } from '../store/actions';
@@ -36,7 +30,6 @@ type ContactType = {
 const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactElement => {
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const [contacts, setContacts] = useState<ContactType[]>([]);
-	const createSnackbar = useContext(SnackbarManagerContext);
 	const onChange = useCallback((users) => setContacts(users), []);
 	const disableRedirect = useMemo(() => some(contacts, { error: true }), [contacts]);
 	const onConfirm = useCallback(
@@ -49,9 +42,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 				}))
 			}).then((res) => {
 				if (res) {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `redirect-${id}`,
 						replace: true,
 						type: 'success',
@@ -59,9 +50,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 						autoHideTimeout: 3000
 					});
 				} else {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					createSnackbar({
+					getBridgedFunctions()?.createSnackbar({
 						key: `redirect-${id}`,
 						replace: true,
 						type: 'error',
@@ -71,7 +60,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 				}
 				onClose();
 			}),
-		[contacts, createSnackbar, id, onClose]
+		[contacts, id, onClose]
 	);
 
 	return (

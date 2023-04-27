@@ -10,22 +10,27 @@ import {
 	Container,
 	Divider,
 	Padding,
-	SnackbarManagerContext,
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import {
+	getBridgedFunctions,
+	Grant,
+	soapFetch,
+	t,
+	useUserAccounts
+} from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
+import { useAppDispatch } from '../../../../hooks/redux';
 import {
 	findLabel,
 	ShareCalendarRoleOptions
 } from '../../../../integrations/shared-invite-reply/parts/utils';
 import { sendShareNotification } from '../../../../store/actions/send-share-notification';
-import {
+import type {
 	ActionProps,
 	GranteeInfoProps,
 	GranteeProps,
@@ -66,11 +71,10 @@ const Actions: FC<ActionProps> = ({
 	onMouseEnter
 }) => {
 	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createSnackbar = useContext(SnackbarManagerContext) as Function;
 	const accounts = useUserAccounts();
 	const { setActiveGrant } = useContext(Context);
 	// eslint-disable-next-line @typescript-eslint/ban-types
-	const dispatch = useDispatch() as Function;
+	const dispatch = useAppDispatch() as Function;
 	const onRevoke = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('revoke');
@@ -86,7 +90,7 @@ const Actions: FC<ActionProps> = ({
 			})
 		).then((res: Response) => {
 			if (res.type.includes('fulfilled')) {
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `resend-${folder.id}`,
 					replace: true,
 					type: 'info',
@@ -96,7 +100,7 @@ const Actions: FC<ActionProps> = ({
 				});
 			}
 		});
-	}, [accounts, dispatch, folder, grant.d, createSnackbar]);
+	}, [accounts, dispatch, folder, grant.d]);
 	const onEdit = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('edit');

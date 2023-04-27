@@ -13,7 +13,7 @@ import React, {
 	useCallback
 } from 'react';
 import { Input, Container } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { includes } from 'lodash';
 import CustomSelect from '../custom-select';
 import { getSizeOptions, getSizeUnit, findDefaultValue } from '../utils';

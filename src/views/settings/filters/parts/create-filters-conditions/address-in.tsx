@@ -13,7 +13,7 @@ import React, {
 	useEffect
 } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import CustomSelect from '../custom-select';
 import { getFromOptions, getInOptions, getFolderOptions, findDefaultValue } from '../utils';
 import { CreateFilterContext } from '../create-filter-context';

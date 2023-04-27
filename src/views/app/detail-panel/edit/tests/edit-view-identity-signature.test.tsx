@@ -14,7 +14,7 @@ import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/u
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { ActionsType } from '../../../../../commons/utils';
 import { MAILS_ROUTE } from '../../../../../constants';
-import * as useQueryParam from '../../../../../hooks/useQueryParam';
+import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import EditView from '../edit-view';

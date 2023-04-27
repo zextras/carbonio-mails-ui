@@ -6,21 +6,21 @@
 
 import { ThemeProvider } from '@mui/material';
 import { Accordion, Container, Divider } from '@zextras/carbonio-design-system';
-import { Folder, useFoldersByView } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, Folder, useFoldersByView } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import React, { FC, useMemo } from 'react';
+import React, { FC, memo, useMemo } from 'react';
 import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 import { SidebarAccordionMui } from '../../carbonio-ui-commons/components/sidebar/sidebar-accordion-mui';
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { themeMui } from '../../carbonio-ui-commons/theme/theme-mui';
-import { SidebarProps } from '../../carbonio-ui-commons/types/sidebar';
+import type { SidebarProps } from '../../carbonio-ui-commons/types/sidebar';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
 import AccordionCustomComponent from './accordion-custom-component';
 import CollapsedSideBarItems from './collapsed-sidebar-items';
-import { SidebarComponentProps } from '../../types/sidebar';
+import type { SidebarComponentProps } from '../../types/sidebar';
 import { ButtonFindShares } from './button-find-shares';
 
-const SidebarComponent: FC<SidebarComponentProps> = ({ accordions }) => {
+const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarComponent({ accordions }) {
 	const { folderId } = useParams<{ folderId: string }>();
 	const tagsAccordionItems = useGetTagsAccordion();
 
@@ -42,16 +42,15 @@ const SidebarComponent: FC<SidebarComponentProps> = ({ accordions }) => {
 				folderId={folderId}
 				localStorageName="open_mails_folders"
 				AccordionCustomComponent={AccordionCustomComponent}
-				buttonFindShares={<ButtonFindShares />}
+				buttonFindShares={<ButtonFindShares key="button-find-shares" />}
+				initialExpanded={[FOLDERS.USER_ROOT]}
 			/>
 
 			<Divider />
 			<Accordion items={[tagsAccordionItems]} />
 		</Container>
 	);
-};
-
-const MemoSidebar: FC<SidebarComponentProps> = React.memo(SidebarComponent);
+});
 
 const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 	const { path } = useRouteMatch();
@@ -62,7 +61,7 @@ const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 				{expanded ? (
 					<Switch>
 						<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
-							<MemoSidebar accordions={accordions} />
+							<SidebarComponent accordions={accordions} />
 						</Route>
 					</Switch>
 				) : (

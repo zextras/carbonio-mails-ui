@@ -3,35 +3,41 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import {
-	replaceHistory,
+	SEARCH_APP_ID,
 	Spinner,
+	replaceHistory,
+	setAppContext,
 	t,
-	useUserSettings,
-	SEARCH_APP_ID
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { includes, map, reduce } from 'lodash';
-import { useDispatch, useSelector } from 'react-redux';
-import SearchPanel from './search-panel';
-import SearchConversationList from './search-conversation-list';
+import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { MAILS_ROUTE } from '../../constants';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { search } from '../../store/actions/search';
+import { selectFolders } from '../../store/folders-slice';
+import { resetSearchResults, selectSearches } from '../../store/searches-slice';
+import type { FolderType, SearchProps } from '../../types';
 import AdvancedFilterModal from './advance-filter-modal';
 import { findIconFromChip } from './parts/use-find-icon';
-import { search } from '../../store/actions/search';
-import { resetSearchResults, selectSearches } from '../../store/searches-slice';
-import SearchMessageList from './search-message-list';
-import { FolderType, SearchProps } from '../../types';
-import { selectFolders } from '../../store/folders-slice';
-import { MAILS_ROUTE } from '../../constants';
+import SearchConversationList from './search-conversation-list';
+import { SearchMessageList } from './search-message-list';
+import SearchPanel from './search-panel';
 
 const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
 	const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
-	const folders = useSelector(selectFolders);
+	const folders = useAppSelector(selectFolders);
+	const [count, setCount] = useState(0);
+
+	useEffect(() => {
+		setAppContext({ isMessageView, count, setCount });
+	}, [count, isMessageView]);
 
 	const searchInFolders = useMemo(
 		() =>
@@ -53,13 +59,13 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		[searchInFolders]
 	);
 
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(true);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
-	const searchResults = useSelector(selectSearches);
+	const searchResults = useAppSelector(selectSearches);
 
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
@@ -93,7 +99,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			const resultAction = await dispatch(
 				search({
 					query: queryString,
-					limit: 100,
+					limit: 500,
 					sortBy: 'dateDesc',
 					types: isMessageView ? 'message' : 'conversation',
 					offset: reset ? 0 : searchResults.offset,
@@ -120,27 +126,48 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const findIcon = useCallback((chip) => findIconFromChip(chip), []);
 
 	useEffect(() => {
-		let count = 0;
+		let _count = 0;
 		if (query && query.length > 0 && queryToString !== searchResults.query && !isInvalidQuery) {
 			const modifiedQuery = map(query, (q) => {
 				if (
+					// TODO: fix type definition
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					(includes(queryArray, q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^subject:/.test(q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^in:/.test(q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^before:/.test(q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^after:/.test(q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^tag:/.test(q.label) ||
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						/^date:/.test(q.label)) &&
 					!includes(Object.keys(q), 'isGeneric') &&
 					!includes(Object.keys(q), 'isQueryFilter')
 				) {
-					count += 1;
+					_count += 1;
 					return findIcon(q);
 				}
 				return { ...q };
 			});
 
-			if (count > 0) {
+			if (_count > 0) {
 				updateQuery(modifiedQuery);
 			}
 		}
@@ -226,9 +253,10 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 					</Suspense>
 				</Container>
 			</Container>
-			{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-			{/* @ts-ignore */}
 			<AdvancedFilterModal
+				// TODO: fix type definition
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				query={query}
 				updateQuery={updateQuery}
 				isSharedFolderIncluded={isSharedFolderIncluded}

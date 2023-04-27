@@ -58,7 +58,7 @@ import { useMessageActions } from '../../../../../hooks/use-message-actions';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import MessageContactsList from './message-contact-list';
-import { MailMessage } from '../../../../../types';
+import type { MailMessage } from '../../../../../types';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean }>`
@@ -238,6 +238,9 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						avatarIcon: 'Tag',
 						background: 'gray2',
 						hasAvatar: true,
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						isGeneric: false,
 						isQueryFilter: true,
 						label: `tag:${tagToSearch?.name}`,

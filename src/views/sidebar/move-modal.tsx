@@ -3,83 +3,75 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { Container, Text } from '@zextras/carbonio-design-system';
+import { FOLDERS, Folder, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
 import { isNil, some } from 'lodash';
-import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
-import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { useDispatch } from 'react-redux';
-import { Folder, FOLDERS, t } from '@zextras/carbonio-shell-ui';
-import { folderAction } from '../../store/actions/folder-action';
-import { FolderSelector } from './commons/folder-selector';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import { ModalProps } from '../../types';
+import { useAppDispatch } from '../../hooks/redux';
+import { folderAction } from '../../store/actions/folder-action';
+import type { ModalProps } from '../../types';
+import { FolderSelector } from './commons/folder-selector';
 
 export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const dispatch = useDispatch();
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createSnackbar = useContext(SnackbarManagerContext) as Function;
+	const dispatch = useAppDispatch();
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
 
 	const onConfirm = useCallback(() => {
-		const restoreFolder = (): void =>
-			dispatch(folderAction({ folder, l: folder.l, op: 'move' }))
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				.then((res) => {
-					if (res.type.includes('fulfilled')) {
-						createSnackbar({
-							key: `move-folder`,
-							replace: true,
-							type: 'success',
-							label: t('messages.snackbar.folder_restored', 'Folder restored'),
-							autoHideTimeout: 3000,
-							hideButton: true
-						});
-					} else {
-						createSnackbar({
-							key: `move`,
-							replace: true,
-							type: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again'),
-							autoHideTimeout: 3000,
-							hideButton: true
-						});
-					}
-				});
+		const restoreFolder = (): Promise<void> =>
+			dispatch(folderAction({ folder, l: folder.l, op: 'move' })).then((res) => {
+				if (res.type.includes('fulfilled')) {
+					getBridgedFunctions()?.createSnackbar({
+						key: `move-folder`,
+						replace: true,
+						type: 'success',
+						label: t('messages.snackbar.folder_restored', 'Folder restored'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				} else {
+					getBridgedFunctions()?.createSnackbar({
+						key: `move`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			});
 		dispatch(
 			folderAction({
 				folder,
 				l: folderDestination?.id || FOLDERS.USER_ROOT,
 				op: 'move'
 			})
-		)
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			.then((res) => {
-				if (res.type.includes('fulfilled')) {
-					createSnackbar({
-						key: `move`,
-						replace: true,
-						type: 'success',
-						label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
-						autoHideTimeout: 5000,
-						hideButton: false,
-						actionLabel: t('label.undo', 'Undo'),
-						onActionClick: () => restoreFolder()
-					});
-				} else {
-					createSnackbar({
-						key: `move`,
-						replace: true,
-						type: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again.'),
-						autoHideTimeout: 3000
-					});
-				}
-				setFolderDestination(undefined);
-				onClose();
-			});
-	}, [dispatch, folder, folderDestination?.id, createSnackbar, onClose]);
+		).then((res) => {
+			if (res.type.includes('fulfilled')) {
+				getBridgedFunctions()?.createSnackbar({
+					key: `move`,
+					replace: true,
+					type: 'success',
+					label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
+					autoHideTimeout: 5000,
+					hideButton: false,
+					actionLabel: t('label.undo', 'Undo'),
+					onActionClick: () => restoreFolder()
+				});
+			} else {
+				getBridgedFunctions()?.createSnackbar({
+					key: `move`,
+					replace: true,
+					type: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again.'),
+					autoHideTimeout: 3000
+				});
+			}
+			setFolderDestination(undefined);
+			onClose();
+		});
+	}, [dispatch, folder, folderDestination?.id, onClose]);
 
 	const isInputDisabled = useMemo(
 		() =>

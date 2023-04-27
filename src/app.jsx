@@ -32,6 +32,7 @@ import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-mana
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
 );
+
 const LazyEditView = lazy(() =>
 	import(/* webpackChunkName: "mails-edit-view" */ './views/app/detail-panel/edit/edit-view')
 );
@@ -109,7 +110,8 @@ const App = () => {
 		});
 		addSearchView({
 			route: MAILS_ROUTE,
-			component: SearchView
+			component: SearchView,
+			label: t('label.app_name', 'Mails')
 		});
 		addBoardView({
 			route: MAILS_ROUTE,
@@ -124,7 +126,7 @@ const App = () => {
 					id: 'mail-to',
 					label: 'Send Mail',
 					icon: 'MailModOutline',
-					click: (ev) => {
+					onClick: (ev) => {
 						ev?.preventDefault?.();
 						const participant =
 							!!contacts[0].email && Object.keys(contacts[0].email).length !== 0
@@ -148,7 +150,7 @@ const App = () => {
 					id: 'new-email',
 					label: t('label.new_email', 'New E-mail'),
 					icon: 'MailModOutline',
-					click: (ev) => {
+					onClick: (ev) => {
 						ev?.preventDefault?.();
 						addBoard({
 							url: `${MAILS_ROUTE}/new?action=new`,

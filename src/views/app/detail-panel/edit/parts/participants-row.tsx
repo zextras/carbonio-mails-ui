@@ -15,7 +15,7 @@ import {
 } from '../../../../../carbonio-ui-commons/constants/participants';
 import * as StyledComp from './edit-view-styled-components';
 import { EditViewContext } from './edit-view-context';
-import { EditViewContextType, MailsEditor } from '../../../../../types';
+import type { EditViewContextType, MailsEditor } from '../../../../../types';
 
 const emailRegex =
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars, max-len, no-control-regex
@@ -74,6 +74,7 @@ const ParticipantsRow: FC<{
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
 										placeholder={t('label.to', 'To')}
+										maxChips={999}
 										onChange={(contacts: Array<ContactType>): void => {
 											const data = map(contacts, (contact) =>
 												contact.email
@@ -133,6 +134,7 @@ const ParticipantsRow: FC<{
 									<ChipInput
 										data-testid="RecipientTo"
 										placeholder={t('label.to', 'To')}
+										maxChips={999}
 										onChange={(contacts: Array<ContactType>): void => {
 											const data = map(contacts, (contact) =>
 												contact.email
@@ -200,6 +202,7 @@ const ParticipantsRow: FC<{
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									placeholder={t('label.cc', 'Cc')}
+									maxChips={999}
 									onChange={(contacts: Array<ContactType>): void => {
 										const data = map(contacts, (contact) =>
 											contact.email
@@ -231,6 +234,7 @@ const ParticipantsRow: FC<{
 								<ChipInput
 									data-testid="RecipientCc"
 									placeholder={t('label.cc', 'Cc')}
+									maxChips={999}
 									onChange={(contacts: Array<ContactType>): void => {
 										const data = map(contacts, (contact) =>
 											contact.email
@@ -281,6 +285,7 @@ const ParticipantsRow: FC<{
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									placeholder={t('label.bcc', 'Bcc')}
+									maxChips={999}
 									onChange={(contacts: Array<ContactType>): void => {
 										const data = map(contacts, (contact) =>
 											contact.email
@@ -312,6 +317,7 @@ const ParticipantsRow: FC<{
 								<ChipInput
 									data-testid="RecipientBcc"
 									placeholder={t('label.bcc', 'Bcc')}
+									maxChips={999}
 									onChange={(contacts: Array<ContactType>): void => {
 										const data = map(contacts, (contact) =>
 											contact.email

@@ -3,45 +3,45 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import {
-	Container,
 	Accordion,
+	AccordionDivider,
 	AccordionItem,
-	Checkbox,
-	Padding,
-	Text,
-	Input,
-	Icon,
-	Row,
 	AccordionItemType,
-	AccordionDivider
+	Checkbox,
+	Container,
+	Icon,
+	Input,
+	Padding,
+	Row,
+	Text
 } from '@zextras/carbonio-design-system';
 import {
-	groupBy,
-	map,
-	split,
-	last,
-	values,
-	uniqWith,
-	isEqual,
 	filter,
+	groupBy,
+	isEmpty,
+	isEqual,
+	last,
+	map,
 	pickBy,
+	split,
 	startsWith,
 	toLower,
-	isEmpty
+	uniqWith,
+	values
 } from 'lodash';
-import styled from 'styled-components';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
-import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import styled from 'styled-components';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import { createMountpoint } from '../../store/actions/create-mountpoint';
-import {
+import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import type {
 	GroupedShare,
-	SharedObject,
-	ShareModalProps
+	ShareModalProps,
+	SharedObject
 } from '../../carbonio-ui-commons/types/sidebar';
+import { useAppDispatch } from '../../hooks/redux';
+import { createMountpoint } from '../../store/actions/create-mountpoint';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -90,7 +90,7 @@ const CustomItem: FC<any> = ({ item: folder }) => {
 export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const [links, setLinks] = useState([] as SharedObject[]);
 	const [data, setData] = useState({});
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const [t] = useTranslation();
 
 	const onConfirm = useCallback(() => {

@@ -30,7 +30,7 @@ import {
 	UnsendTimeOptions
 } from './components/utils';
 import { displayingMessagesSubSection } from './subsections';
-import { DisplayingMessagesSettingsProps } from '../../types';
+import type { DisplayingMessagesSettingsProps } from '../../types';
 import { MAIL_APP_ID } from '../../constants';
 
 const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({

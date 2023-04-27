@@ -8,7 +8,7 @@ import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { filter } from 'lodash';
 import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import FolderSelectModal from './folder-modal';
-import { TagFolderRowProps, ChipOnAdd } from '../../../types';
+import type { TagFolderRowProps, ChipOnAdd } from '../../../types';
 
 const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 	const { folder, setFolder, tagOptions, tag, setTag } = compProps;

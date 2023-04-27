@@ -6,7 +6,7 @@
 import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
-import { SizeLargerSizeSmallerRowProps } from '../../../types';
+import type { SizeLargerSizeSmallerRowProps } from '../../../types';
 
 const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 	compProps

@@ -3,8 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { max, map, filter, find, reduce, some, merge, isNil, omitBy } from 'lodash';
-import { FolderType, MailsFolderMap, FoldersStateType } from '../types';
+import { filter, find, includes, isNil, map, max, merge, omitBy, reduce, some } from 'lodash';
+import type {
+	Conversation,
+	FetchConversationsReturn,
+	FoldersStateType,
+	FolderType,
+	MailMessage,
+	MailsFolderMap
+} from '../types';
 
 export function findDepth(subFolder: FolderType, depth = 1): number {
 	if (subFolder && subFolder.items && subFolder.items.length) {
@@ -19,7 +26,7 @@ export function calcFolderItems(
 	id: string
 ): FolderType[] {
 	return map(
-		filter(folders, (item) => item.parent === id),
+		filter(folders, (item: FolderType) => item.parent === id),
 		(item) => ({
 			...item,
 			items: calcFolderItems(folders, subFolders, item.id),
@@ -128,3 +135,50 @@ export function removeFoldersFromStore(state: FoldersStateType, idsToDelete: any
 		{} as MailsFolderMap
 	);
 }
+
+/**
+ * Extracts all ids from conversations and messages
+ * @param items conversations or messages
+ * @returns array of ids
+ */
+export function extractIdsFromMessagesAndConversations(
+	items: Record<string, Conversation> | Record<string, MailMessage> | undefined
+): Array<string> {
+	return Object.keys(items ?? []).reduce((acc: Array<string>, itemId) => {
+		const item = items?.[itemId];
+		item && acc.push(itemId);
+		if (item && 'messages' in item) {
+			acc.push(...item.messages.map((msg) => msg.id));
+		}
+		return acc;
+	}, []);
+}
+
+/**
+ * Extracts all ids from conversations and messages from fetchConversations payload
+ * @param payload payload from fetchConversations
+ * @returns array of ids
+ */
+export function extractIds(payload: FetchConversationsReturn | undefined): Array<string> {
+	const ids = extractIdsFromMessagesAndConversations(payload?.conversations);
+	ids.push(...extractIdsFromMessagesAndConversations(payload?.messages));
+	return ids;
+}
+
+/**
+ * Checks if all items are in search results ids
+ * @param ids ids to check
+ * @param searchResultsIds ids alread present in search results
+ * @returns boolean
+ */
+export const isItemInSearches = ({
+	ids,
+	searchResultsIds
+}: {
+	ids: Array<string>;
+	searchResultsIds: Array<string>;
+}): boolean =>
+	!includes(
+		map(ids, (id) => searchResultsIds.includes(id)),
+		false
+	);

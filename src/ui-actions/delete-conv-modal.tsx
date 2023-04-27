@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useContext, FC } from 'react';
-import { Container, SnackbarManagerContext, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
-import { convAction, msgAction } from '../store/actions';
-import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
+import { Container, Text } from '@zextras/carbonio-design-system';
+import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import React, { FC, useCallback } from 'react';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
+import { useAppDispatch } from '../hooks/redux';
+import { convAction, msgAction } from '../store/actions';
 
 type DeleteConvConfirmPropType = {
 	selectedIDs: Array<string>;
@@ -23,50 +23,42 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 	deselectAll,
 	onClose
 }) => {
-	const dispatch = useDispatch();
-	const createSnackbar = useContext(SnackbarManagerContext);
+	const dispatch = useAppDispatch();
 
 	const onConfirmConvDelete = useCallback(() => {
 		dispatch(
 			isMessageView
 				? msgAction({
-						operation: `delete`,
+						operation: 'delete',
 						ids: selectedIDs
 				  })
 				: convAction({
-						operation: `delete`,
+						operation: 'delete',
 						ids: selectedIDs
 				  })
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 		).then((res) => {
 			if (res.type.includes('fulfilled')) {
 				deselectAll && deselectAll();
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `trash-${selectedIDs}`,
 					replace: true,
 					type: 'info',
-					label: isMessageView
-						? t('label.email_perm_deleted', 'E-mail permanently deleted')
-						: t('label.email_perm_deleted', 'E-mail permanently deleted'),
+					label: t('label.email_perm_deleted', 'E-mail permanently deleted'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
 			} else {
-				createSnackbar({
+				getBridgedFunctions()?.createSnackbar({
 					key: `edit`,
 					replace: true,
 					type: 'error',
-					label: isMessageView
-						? t('label.error_try_again', 'Something went wrong, please try again')
-						: t('label.error_try_again', 'Something went wrong, please try again'),
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000
 				});
 			}
-			// setOpenConfirm(false);
 			onClose();
 		});
-	}, [dispatch, isMessageView, selectedIDs, onClose, createSnackbar, deselectAll]);
+	}, [dispatch, isMessageView, selectedIDs, onClose, deselectAll]);
 
 	return (
 		<>

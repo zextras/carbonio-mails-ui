@@ -9,7 +9,7 @@ import { Padding, Row, Icon, Container, TextWithTooltip } from '@zextras/carboni
 import { Folder } from '@zextras/carbonio-shell-ui';
 import { indexOf, lastIndexOf, min } from 'lodash';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
-import { Crumb } from '../../../../types';
+import type { Crumb } from '../../../../types';
 import { Breadcrumbs } from './breadcrumbs';
 
 const ModalAccordionCustomComponent: FC<{

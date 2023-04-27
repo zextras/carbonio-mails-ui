@@ -6,12 +6,11 @@
 import { getFolder } from '@zextras/carbonio-shell-ui';
 import { filter, orderBy } from 'lodash';
 import { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { search } from '../store/actions';
-import { selectFolder } from '../store/folders-slice';
 import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
-import { MailMessage } from '../types';
+import type { MailMessage } from '../types';
+import { useAppDispatch, useAppSelector } from './redux';
 
 type RouteParams = {
 	folderId: string;
@@ -19,10 +18,10 @@ type RouteParams = {
 
 export const useMessageList = (): Array<MailMessage> => {
 	const { folderId } = <RouteParams>useParams();
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
-	const folderMsgStatus = useSelector(selectFolderMsgSearchStatus(folderId));
-	const messages = useSelector(selectMessagesArray);
+	const folderMsgStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
+	const messages = useAppSelector(selectMessagesArray);
 	const folder = getFolder(folderId);
 
 	const filteredMessages = useMemo(
@@ -41,11 +40,6 @@ export const useMessageList = (): Array<MailMessage> => {
 	// 			':'
 	// 		)?.[1] as 'dateAsc' | 'dateDesc' | undefined) ?? 'dateDesc',
 	// 	[folderId, zimbraPrefSortOrder]
-	// );
-
-	// const sortedMessages = useMemo(
-	// 	() => orderBy(messages, 'date', sorting === 'dateDesc' ? 'desc' : 'asc'),
-	// 	[messages, sorting]
 	// );
 
 	const sortedMessages = useMemo(

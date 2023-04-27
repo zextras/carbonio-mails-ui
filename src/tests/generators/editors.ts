@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { MailsEditor } from '../../types';
+import type { MailsEditor } from '../../types';
 
 export const generateEditorCase = async (id: number): Promise<MailsEditor> => {
 	const { editorCase } = await import(`./editorCases/editorCase-${id}`);

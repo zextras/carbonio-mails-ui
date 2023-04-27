@@ -16,7 +16,7 @@ import {
 	Select
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { RetentionPoliciesProps } from '../../../../carbonio-ui-commons/types/sidebar';
+import type { RetentionPoliciesProps } from '../../../../carbonio-ui-commons/types/sidebar';
 
 const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 	showPolicy,

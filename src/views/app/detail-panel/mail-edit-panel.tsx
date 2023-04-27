@@ -8,7 +8,7 @@ import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { Container, Divider, Icon, IconButton, Row, Text } from '@zextras/carbonio-design-system';
 import { useParams } from 'react-router-dom';
 import EditView from './edit/edit-view';
-import { MailEditHeaderType } from '../../../types';
+import type { MailEditHeaderType } from '../../../types';
 
 const MailEditHeader: FC<MailEditHeaderType> = ({ folderId, header }) => {
 	const onClose = useCallback(() => {

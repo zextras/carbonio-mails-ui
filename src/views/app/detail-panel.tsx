@@ -7,7 +7,7 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import React, { FC } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import { AppContext } from '../../types';
+import type { AppContext } from '../../types';
 import ConversationPreviewPanel from './detail-panel/conversation-preview-panel';
 import MailEditPanel from './detail-panel/mail-edit-panel';
 import MessagePreviewPanel from './detail-panel/message-preview-panel';

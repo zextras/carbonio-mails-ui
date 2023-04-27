@@ -9,7 +9,7 @@ import { Container, Text, Row, Select, SelectItem } from '@zextras/carbonio-desi
 import { t } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../../helpers/signatures';
-import { AccountIdentity, IdentityProps, SignItemType } from '../../../types';
+import type { AccountIdentity, IdentityProps, SignItemType } from '../../../types';
 
 type SelectIdentitySignProps = {
 	acc: AccountIdentity;

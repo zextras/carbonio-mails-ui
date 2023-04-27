@@ -7,9 +7,9 @@ import { Container, Dropdown, IconButton, Padding } from '@zextras/carbonio-desi
 import { FOLDERS, useAppContext, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { FC, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
-import { useSelection } from '../../../../hooks/useSelection';
-import { AppContext, PreviewPanelActionsType } from '../../../../types';
+import { useAppDispatch } from '../../../../hooks/redux';
+import { useSelection } from '../../../../hooks/use-selection';
+import type { AppContext, PreviewPanelActionsType } from '../../../../types';
 import {
 	moveConversationToTrash,
 	printConversation,
@@ -24,11 +24,11 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 	isMessageView,
 	conversation
 }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const account = useUserAccount();
-
 	const { setCount } = useAppContext<AppContext>();
-	const { deselectAll } = useSelection(folderId, setCount);
+
+	const { deselectAll } = useSelection({ currentFolderId: folderId, setCount, count: 0 });
 
 	const ids = useMemo(() => [item?.id], [item?.id]);
 
@@ -129,7 +129,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 							if (ev) ev.preventDefault();
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
-							action?.click(ev);
+							action?.onClick(ev);
 						}}
 					/>
 				</Padding>
@@ -141,11 +141,11 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 						id: action.label,
 						icon: action.icon,
 						label: action.label,
-						click: (ev): void => {
+						onClick: (ev): void => {
 							if (ev) ev.preventDefault();
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
-							action.click(ev);
+							action.onClick(ev);
 						}
 					}))}
 				>

@@ -19,25 +19,25 @@ import {
 } from '@zextras/carbonio-design-system';
 import {
 	AppLink,
-	Folder,
 	FOLDERS,
-	getBridgedFunctions,
-	pushHistory,
-	replaceHistory,
+	Folder,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	ROOT_NAME,
+	getBridgedFunctions,
+	pushHistory,
+	replaceHistory,
 	t,
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import React, { FC, useCallback, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
+import { useAppDispatch } from '../../hooks/redux';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
-import { DataProps } from '../../types';
 import { useFolderActions } from './use-folder-actions';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 
@@ -66,22 +66,11 @@ const DropDenyOverlayContainer = styled(Container)<ContainerProps & { folder: Fo
 	opacity: 0.4;
 `;
 
-export type DragEnterAction =
-	| undefined
-	| {
-			success: false;
-	  };
-export type OnDropActionProps = {
-	event: React.DragEvent;
-	type: string;
-	data: DataProps;
-};
-
 const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);
 
 const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const accountName = useUserAccount().name;
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
 
 	const onDragEnterAction = useCallback(
@@ -125,63 +114,59 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		}
 
 		if (data.type === 'folder') {
-			dispatch(folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }))
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				.then((res) => {
-					if (res.type.includes('fulfilled')) {
-						getBridgedFunctions().createSnackbar({
-							key: `move`,
-							replace: true,
-							type: 'success',
-							label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
-							autoHideTimeout: 3000
-						});
-					} else {
-						getBridgedFunctions().createSnackbar({
-							key: `move`,
-							replace: true,
-							type: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again.'),
-							autoHideTimeout: 3000
-						});
-					}
-				});
-		} else if (data.type === 'conversation') {
+			dispatch(
+				folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' })
+			).then((res) => {
+				if (res.type.includes('fulfilled')) {
+					getBridgedFunctions()?.createSnackbar({
+						key: `move`,
+						replace: true,
+						type: 'success',
+						label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
+						autoHideTimeout: 3000
+					});
+				} else {
+					getBridgedFunctions()?.createSnackbar({
+						key: `move`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again.'),
+						autoHideTimeout: 3000
+					});
+				}
+			});
+		} else if ('messages' in data.data) {
 			dispatch(
 				convAction({
 					operation: `move`,
 					ids: convMsgsIds,
 					parent: item.id
 				})
-			)
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				.then((res) => {
-					if (res.type.includes('fulfilled')) {
-						replaceHistory(`/folder/${folderId}`);
-						getBridgedFunctions().createSnackbar({
-							key: `edit`,
-							replace: true,
-							type: 'info',
-							label: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
-							autoHideTimeout: 3000,
-							actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
-							onActionClick: () => {
-								replaceHistory(`/folder/${item.id}`);
-							}
-						});
-					} else {
-						getBridgedFunctions().createSnackbar({
-							key: `edit`,
-							replace: true,
-							type: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again'),
-							autoHideTimeout: 3000,
-							hideButton: true
-						});
-					}
-				});
+			).then((res) => {
+				if (res.type.includes('fulfilled')) {
+					replaceHistory(`/folder/${folderId}`);
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'info',
+						label: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
+						autoHideTimeout: 3000,
+						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
+						onActionClick: () => {
+							replaceHistory(`/folder/${item.id}`);
+						}
+					});
+				} else {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			});
 		} else {
 			dispatch(
 				msgAction({
@@ -189,33 +174,30 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 					ids: convMsgsIds,
 					parent: item.id
 				})
-			)
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				.then((res) => {
-					if (res.type.includes('fulfilled')) {
-						getBridgedFunctions().createSnackbar({
-							key: `edit`,
-							replace: true,
-							type: 'info',
-							label: t('messages.snackbar.message_move', 'Message successfully moved'),
-							autoHideTimeout: 3000,
-							actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
-							onActionClick: () => {
-								replaceHistory(`/folder/${item.id}`);
-							}
-						});
-					} else {
-						getBridgedFunctions().createSnackbar({
-							key: `edit`,
-							replace: true,
-							type: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again'),
-							autoHideTimeout: 3000,
-							hideButton: true
-						});
-					}
-				});
+			).then((res) => {
+				if (res.type.includes('fulfilled')) {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'info',
+						label: t('messages.snackbar.message_move', 'Message successfully moved'),
+						autoHideTimeout: 3000,
+						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
+						onActionClick: () => {
+							replaceHistory(`/folder/${item.id}`);
+						}
+					});
+				} else {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			});
 		}
 	};
 

@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useContext, useEffect, useMemo, useState } from 'react';
 import {
 	Button,
 	Collapse,
@@ -12,16 +11,16 @@ import {
 	Icon,
 	Padding,
 	Row,
-	SnackbarManagerContext,
 	Text
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { useAppDispatch } from '../../hooks/redux';
+import type { MailMessage } from '../../types';
 import LabelRow from './parts/label-row';
 import ResponseActions from './parts/response-actions';
 import { ShareCalendarRoleOptions, findLabel } from './parts/utils';
-import { MailMessage } from '../../types';
 
 const InviteContainer = styled(Container)`
 	border: 0.0625rem solid ${({ theme }: any): string => theme.palette.gray2.regular};
@@ -29,13 +28,13 @@ const InviteContainer = styled(Container)`
 	margin: ${({ theme }: any): string => theme.sizes.padding.extrasmall};
 `;
 
-type SharedCalendarResponse = {
+type SharedCalendarResponseReturnType = {
 	sharedContent: string;
 	mailMsg: MailMessage;
 	onLoadChange?: () => void;
 };
 
-const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
+const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 	sharedContent,
 	mailMsg,
 	onLoadChange
@@ -45,8 +44,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 			onLoadChange && onLoadChange();
 		}
 	}, [mailMsg.read, onLoadChange]);
-	const createSnackbar = useContext(SnackbarManagerContext);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const rights = useMemo(
 		() => sharedContent?.split('<link ')[1].split('perm="')[1].split('" ')[0],
@@ -207,7 +205,6 @@ const SharedCalendarResponse: FC<SharedCalendarResponse> = ({
 					<>
 						<Divider />
 						<ResponseActions
-							createSnackbar={createSnackbar}
 							dispatch={dispatch}
 							t={t}
 							zid={zid}

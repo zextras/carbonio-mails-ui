@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Avatar, Container, Tooltip } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
-import React, { useCallback, useMemo, FC, SyntheticEvent } from 'react';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
-import { ItemAvatarType, Participant } from '../../../../types';
+import type { ItemAvatarType, Participant } from '../../../../types';
+import { TooltipWrapper } from './tooltip-wrapper';
 
 const AvatarElement = styled(Avatar)`
 	width: 2.625rem !important;
@@ -20,15 +21,8 @@ const AvatarElement = styled(Avatar)`
 	}
 `;
 
-export const ItemAvatar: FC<ItemAvatarType> = ({
-	item,
-	selected,
-	selecting,
-	toggle,
-	folderId,
-	isSearch = false
-}) => {
-	const targetParticipants = folderId === '5' ? ParticipantRole.TO : ParticipantRole.FROM;
+export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, toggle, folderId }) => {
+	const targetParticipants = folderId === FOLDERS.SPAM ? ParticipantRole.TO : ParticipantRole.FROM;
 	const [avatarLabel, avatarEmail] = useMemo(() => {
 		let sender = item?.participants?.find((p: Participant) => p.type === targetParticipants);
 		if (!sender) [sender] = item.participants ?? [];
@@ -43,16 +37,8 @@ export const ItemAvatar: FC<ItemAvatarType> = ({
 		[toggle]
 	);
 
-	const activateSelectionMode = useMemo(
-		() =>
-			isSearch
-				? t(
-						'label.search_activate_selection_mode',
-						'Selection mode isn’t available yet on search results'
-				  )
-				: t('label.activate_selection_mode', 'Activate selection mode'),
-		[isSearch]
-	);
+	const activateSelectionMode = t('label.activate_selection_mode', 'Activate selection mode');
+
 	return (
 		<Container
 			mainAlignment="center"
@@ -60,7 +46,7 @@ export const ItemAvatar: FC<ItemAvatarType> = ({
 			data-testid={`AvatarContainer`}
 			padding={{ all: 'small' }}
 		>
-			<Tooltip label={activateSelectionMode} disabled={selecting} maxWidth="100%">
+			<TooltipWrapper label={activateSelectionMode} enabled={!selecting} maxWidth="100%">
 				<AvatarElement
 					selecting={selecting}
 					selected={selected}
@@ -69,7 +55,7 @@ export const ItemAvatar: FC<ItemAvatarType> = ({
 					onClick={conversationSelect(item.id)}
 					size="large"
 				/>
-			</Tooltip>
+			</TooltipWrapper>
 		</Container>
 	);
 };

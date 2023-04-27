@@ -4,29 +4,26 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable import/extensions */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import {
-	Padding,
 	Button,
-	Divider,
-	Row,
 	Checkbox,
+	Divider,
 	Input,
+	Padding,
+	Row,
 	Text
 } from '@zextras/carbonio-design-system';
 import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { find } from 'lodash';
+import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
+import type { ResponseActionsProps } from '../../../types';
 import ColorSelect from './color-select';
-import { ResponseActionsProps } from '../../../types';
 import { accept, decline } from './share-calendar-actions';
 
 const ResponseActions: FC<ResponseActionsProps> = ({
 	dispatch,
 	t,
-	createSnackbar,
 	zid,
 	view,
 	rid,
@@ -41,7 +38,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	const [customMessage, setCustomMessage] = useState('');
 	const [notifyOrganizer, setNotifyOrganizer] = useState(false);
 	const [calendarName, setCalendarName] = useState(sharedCalendarName);
-	const [selectedColor, setSelectedColor] = useState(0);
+	const [selectedColor, setSelectedColor] = useState<string | null>('0');
 	const accounts = useUserAccounts();
 	const calFolders = useFoldersByView(FOLDER_VIEW.appointment);
 	const showError = useMemo(
@@ -63,7 +60,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				view,
 				rid,
 				calendarName,
-				color: selectedColor,
+				color: parseInt(selectedColor ?? '0', 10),
 				accounts,
 				t,
 				dispatch,
@@ -75,8 +72,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				customMessage,
 				role,
 				allowedActions,
-				notifyOrganizer,
-				createSnackbar
+				notifyOrganizer
 			}),
 		[
 			zid,
@@ -95,8 +91,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 			customMessage,
 			role,
 			allowedActions,
-			notifyOrganizer,
-			createSnackbar
+			notifyOrganizer
 		]
 	);
 
@@ -104,7 +99,6 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 		decline({
 			dispatch,
 			t,
-			createSnackbar,
 			msgId,
 			sharedCalendarName,
 			owner,
@@ -118,7 +112,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	}, [
 		dispatch,
 		t,
-		createSnackbar,
+
 		msgId,
 		sharedCalendarName,
 		owner,
@@ -159,8 +153,8 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 						label={t('label.type_name_here', 'Item name')}
 						backgroundColor="gray5"
 						value={calendarName}
-						hasError={disabled && false}
-						onChange={(e: any): void => setCalendarName(e.target.value)}
+						hasError={!disabled}
+						onChange={(e: ChangeEvent<HTMLInputElement>): void => setCalendarName(e.target.value)}
 					/>
 				</Row>
 				<Row
@@ -169,8 +163,8 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					padding={{ horizontal: 'small', vertical: 'small' }}
 				>
 					<ColorSelect
-						onChange={(a: any): any => setSelectedColor(a)}
-						t={t}
+						onChange={(a: string | null): void => setSelectedColor(a)}
+						defaultColor={0}
 						label={t('label.calendar_color', `Item color`)}
 					/>
 				</Row>

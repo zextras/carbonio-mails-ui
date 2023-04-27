@@ -3,50 +3,45 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useContext, useMemo } from 'react';
-import { Text, Container, SnackbarManagerContext } from '@zextras/carbonio-design-system';
-import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
-import { useDispatch } from 'react-redux';
+import { Container, Text } from '@zextras/carbonio-design-system';
+import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import React, { FC, useCallback, useMemo } from 'react';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import { folderAction } from '../../store/actions/folder-action';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import { ModalProps } from '../../types';
+import { useAppDispatch } from '../../hooks/redux';
+import { folderAction } from '../../store/actions/folder-action';
+import type { ModalProps } from '../../types';
 
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const dispatch = useDispatch();
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createSnackbar = useContext(SnackbarManagerContext) as Function;
+	const dispatch = useAppDispatch();
 
 	const onConfirm = useCallback(() => {
-		dispatch(folderAction({ folder, recursive: true, op: 'empty' }))
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			.then((res) => {
-				if (res.type.includes('fulfilled')) {
-					createSnackbar({
-						key: `trash`,
-						replace: true,
-						type: 'info',
-						label:
-							folder.id === FOLDERS.TRASH
-								? t('messages.snackbar.folder_empty', 'Trash successfully emptied')
-								: t('messages.snackbar.folder_wiped', 'Folder successfully wiped'),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
-				} else {
-					createSnackbar({
-						key: `trash`,
-						replace: true,
-						type: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again.'),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
-				}
-			});
+		dispatch(folderAction({ folder, recursive: true, op: 'empty' })).then((res) => {
+			if (res.type.includes('fulfilled')) {
+				getBridgedFunctions()?.createSnackbar({
+					key: `trash`,
+					replace: true,
+					type: 'info',
+					label:
+						folder.id === FOLDERS.TRASH
+							? t('messages.snackbar.folder_empty', 'Trash successfully emptied')
+							: t('messages.snackbar.folder_wiped', 'Folder successfully wiped'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			} else {
+				getBridgedFunctions()?.createSnackbar({
+					key: `trash`,
+					replace: true,
+					type: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again.'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			}
+		});
 		onClose();
-	}, [dispatch, folder, onClose, createSnackbar]);
+	}, [dispatch, folder, onClose]);
 
 	const title = useMemo(
 		() =>

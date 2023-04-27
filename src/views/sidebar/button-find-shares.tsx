@@ -8,14 +8,14 @@ import { Button, Container, ModalManagerContext } from '@zextras/carbonio-design
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, isEqual, uniqWith } from 'lodash';
 import React, { FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
-import { getShareInfo } from '../../store/actions/get-share-info';
 import { ResFolder } from '../../carbonio-ui-commons/utils';
+import { useAppDispatch } from '../../hooks/redux';
+import { getShareInfo } from '../../store/actions/get-share-info';
 import { StoreProvider } from '../../store/redux';
 import { SharesModal } from './shares-modal';
 
 export const ButtonFindShares: FC = () => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createModal = useContext(ModalManagerContext) as Function;
 
@@ -49,7 +49,7 @@ export const ButtonFindShares: FC = () => {
 	);
 
 	return (
-		<Container padding={{ horizontal: 'medium', vertical: 'small' }}>
+		<Container padding={{ horizontal: 'medium', vertical: 'small' }} key="button-find-shares">
 			<Button type="outlined" label={label} width="fill" color="primary" onClick={openFindShares} />
 		</Container>
 	);
