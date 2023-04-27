@@ -32,6 +32,7 @@ import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-mana
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
 );
+
 const LazyEditView = lazy(() =>
 	import(/* webpackChunkName: "mails-edit-view" */ './views/app/detail-panel/edit/edit-view')
 );
