@@ -3,10 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import type {
-	MultipleSelectionOnChange,
-	SingleSelectionOnChange
-} from '@zextras/carbonio-design-system';
+import type { SingleSelectionOnChange } from '@zextras/carbonio-design-system';
 import { Container, Icon, Padding, Row, Select, Text } from '@zextras/carbonio-design-system';
 import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import React, { useMemo } from 'react';

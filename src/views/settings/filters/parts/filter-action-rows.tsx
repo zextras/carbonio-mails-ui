@@ -3,28 +3,28 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useMemo, useCallback, useState } from 'react';
 import {
-	Container,
 	Button,
-	Row,
-	Padding,
 	ChipInput,
-	Input,
-	Tooltip,
-	IconButton,
 	ChipItem,
-	getColor,
-	Text
+	Container,
+	IconButton,
+	Input,
+	Padding,
+	Row,
+	Text,
+	Tooltip,
+	getColor
 } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
+import { ZIMBRA_STANDARD_COLORS, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { filter, omit } from 'lodash';
-import { useIntegratedComponent, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
-import { getActionOptions, getMarkAsOptions } from './utils';
+import type { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import CustomSelect from './custom-select';
 import MoveToFolderModal from './move-to-folder-modal';
-import type { Folder } from '../../../../carbonio-ui-commons/types/folder';
+import { getActionOptions, getMarkAsOptions } from './utils';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid

@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Grant } from '@zextras/carbonio-shell-ui';
+import type { Grant } from '@zextras/carbonio-shell-ui';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { AppDispatch } from '../../store/redux';
-import { Participant } from '../participant';
-import { Folder } from '../../carbonio-ui-commons/types/folder';
+import type { Participant } from '../participant';
 
 export type ShareCalendarModalProps = {
 	openModal: () => void;

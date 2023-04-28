@@ -10,7 +10,6 @@ import React from 'react';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { useFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-hooks';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import type { Folder } from '../../../../../carbonio-ui-commons/types/folder';
 import { FOLDERS_DESCRIPTORS, VISIBILITY_ASSERTION } from '../../../../../tests/constants';
@@ -41,7 +40,8 @@ describe.each`
 		...generateFolders(),
 		[FOLDERS_DESCRIPTORS.USER_DEFINED.id]: userFolder
 	};
-
+	const mockedFolders = generateFolders();
+	const useFolder = jest.fn((id: string) => mockedFolders[id]);
 	useFolder.mockImplementation((folderId) => folders[folderId]);
 
 	describe('in any folders', () => {

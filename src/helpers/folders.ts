@@ -85,7 +85,6 @@ export const getFolderOwnerAccountName = (
 	 * Try to get the account of the "other" owner, aka an owner which is not the primary account of the current user
 	 */
 	const otherOwnerAccount = getFolderOtherOwnerAccountName(folderId, folderRoots);
-	console.log({ otherOwnerAccount });
 
 	if (!otherOwnerAccount) {
 		return primaryAccount.name;

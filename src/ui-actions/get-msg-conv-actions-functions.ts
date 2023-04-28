@@ -5,6 +5,7 @@
  */
 
 import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
+import { getFolderIdParts } from '../helpers/folders';
 import { AppDispatch } from '../store/redux';
 import type { ActionReturnType, Conversation, MailMessage } from '../types';
 import {
@@ -34,7 +35,6 @@ import {
 	showOriginalMsg
 } from './message-actions';
 import { applyTag } from './tag-actions';
-import { getFolderIdParts } from '../helpers/folders';
 
 /**
  * get the action to be executed when the user clicks on the "Mark as read/unread" button

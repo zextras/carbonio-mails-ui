@@ -14,7 +14,7 @@ import {
 import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
 import { every, filter, findIndex } from 'lodash';
 import React, { FC, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
-
+import { getFolderIdParts } from '../helpers/folders';
 import { useAppDispatch } from '../hooks/redux';
 import type {
 	ActionReturnType,
@@ -42,7 +42,6 @@ import {
 } from './message-actions';
 import { applyMultiTag } from './tag-actions';
 import { getFolderParentId } from './utils';
-import { getFolderIdParts } from '../helpers/folders';
 
 type MultipleSelectionActionsPanelProps = {
 	items: Array<Partial<MailMessage>> | Array<Conversation>;

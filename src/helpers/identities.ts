@@ -6,9 +6,9 @@
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import { isArray } from 'lodash';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
+import type { Roots } from '../carbonio-ui-commons/types/folder';
 import type { MailMessage } from '../types';
 import { getMessageOwnerAccountName } from './folders';
-import type { Folder, Roots } from '../carbonio-ui-commons/types/folder';
 
 /**
  * The name of the primary identity
@@ -348,7 +348,6 @@ const getRecipientReplyIdentity = (
 	const identities = getIdentities(account, settings);
 
 	const messageFolderOwnerAccount = getMessageOwnerAccountName(message, account, folderRoots);
-	console.log('messageFolderOwnerAccount', messageFolderOwnerAccount);
 
 	// Extract all the recipients addresses from the message
 	const recipients = getRecipients(message);

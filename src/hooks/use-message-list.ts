@@ -6,11 +6,11 @@
 import { filter, orderBy } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { search } from '../store/actions';
 import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
 import type { MailMessage } from '../types';
 import { useAppDispatch, useAppSelector } from './redux';
-import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 
 type RouteParams = {
 	folderId: string;
