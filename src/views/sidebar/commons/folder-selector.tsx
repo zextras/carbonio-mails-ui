@@ -32,7 +32,7 @@ const ContainerEl = styled(Container)`
 	display: block;
 `;
 
-type FolderSelectorProps = {
+export type FolderSelectorProps = {
 	inputLabel?: string;
 	onNewFolderClick?: () => void;
 	folderId: string;
@@ -137,6 +137,7 @@ export const FolderSelector = ({
 	return folder ? (
 		<>
 			<Input
+				data-testid={'folder-name-filter'}
 				inputName={folder?.name}
 				label={inputLabel ?? t('label.filter_folders', 'Filter folders')}
 				backgroundColor="gray5"

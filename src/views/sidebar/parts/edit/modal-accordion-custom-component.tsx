@@ -103,6 +103,7 @@ const ModalAccordionCustomComponent: FC<{
 	}, [availableWidth, item, translatedSystemFolder]);
 	return (
 		<Container
+			data-testid={`folder-accordion-item-${item.id}`}
 			ref={containerRef}
 			width="fill"
 			main-alignment="flex-start"
