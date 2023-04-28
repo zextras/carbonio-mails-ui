@@ -238,6 +238,9 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						avatarIcon: 'Tag',
 						background: 'gray2',
 						hasAvatar: true,
+						// TODO: fix type definition
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
 						isGeneric: false,
 						isQueryFilter: true,
 						label: `tag:${tagToSearch?.name}`,
