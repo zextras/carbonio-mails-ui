@@ -318,7 +318,10 @@
         "need_to_select_atleast_one_item": "Вам нужно выбрать хотя бы один элемент, чтобы выполнить действие",
         "path": "Путь",
         "select_all": "ВЫБРАТЬ все",
-        "using_signatures": "Использование подписей"
+        "using_signatures": "Использование подписей",
+        "admin_disabled_action": "Администратор отключил возможность перенаправления",
+        "sent_to_address": "Отправлено (адрес)",
+        "received_from_address": "Получено от (адрес)"
     },
     "header": {
         "warning": "Предупреждение",

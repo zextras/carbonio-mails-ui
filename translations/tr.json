@@ -327,7 +327,10 @@
         "deselect_all": "TÜM SEÇİMİ KALDIR",
         "need_to_select_atleast_one_item": "İşlemi yapabilmek için en az bir öğe seçmeniz gerekir",
         "select_all": "Tümünü SEÇ",
-        "using_signatures": "İmza Kullanımı"
+        "using_signatures": "İmza Kullanımı",
+        "sent_to_address": "Gönderilen (adres)",
+        "received_from_address": "Gönderen (adres)",
+        "admin_disabled_action": "Yönetici yönlendirme eylemini devre dışı bıraktı"
     },
     "share": {
         "options": {
