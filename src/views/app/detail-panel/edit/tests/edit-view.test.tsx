@@ -843,7 +843,7 @@ describe('Edit view', () => {
 			});
 
 			describe('priority by opening folder', () => {
-				test("user primary account identity is selected when message, sent to a user account AND a shared account, is open from the primary account's folder", async () => {
+				test("user primary account identity is selected when message, sent to a user account AND a shared account, is opened from the primary account's folder", async () => {
 					// Get the identities
 					const mocksContext = getMocksContext();
 					const defaultIdentity = mocksContext.identities.primary.identity;
@@ -903,7 +903,7 @@ describe('Edit view', () => {
 					);
 				});
 
-				test("shared account identity is selected when message, sent to a user account AND a shared account, is open from the shared account's folder", async () => {
+				test("shared account identity is selected when message, sent to a user account AND a shared account, is opened from the shared account's folder", async () => {
 					// Get the identities
 					const mocksContext = getMocksContext();
 					const defaultIdentity = mocksContext.identities.primary.identity;
