@@ -29,6 +29,7 @@ import { StoreProvider } from './store/redux';
 import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
 import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
 import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-manager';
+import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
@@ -179,7 +180,7 @@ const App = () => {
 			}
 		);
 	}, []);
-
+	useFoldersController(FOLDER_VIEW.message);
 	return (
 		<StoreProvider>
 			<SyncDataHandler />

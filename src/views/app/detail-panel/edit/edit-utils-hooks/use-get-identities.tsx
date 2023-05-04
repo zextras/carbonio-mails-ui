@@ -9,7 +9,6 @@ import { filter, find, findIndex, flatten, isNull, map } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { useRoots } from '../../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getRecipientReplyIdentity } from '../../../../../helpers/identities';
 import type {
 	FindDefaultIdentityType,
@@ -18,6 +17,7 @@ import type {
 	MailsEditor,
 	UseGetIdentitiesReturnType
 } from '../../../../../types';
+import { useRootsMap } from '../../../../../carbonio-ui-commons/store/zustand/folder';
 
 export const findDefaultIdentity = ({
 	list,
@@ -98,7 +98,7 @@ export const useGetIdentities = ({
 	const [activeFrom, setActiveFrom] = useState<IdentityType>();
 	const [isIdentitySet, setIsIdentitySet] = useState(false);
 	const [defaultIdentity, setDefaultIdentity] = useState<IdentityType>();
-	const allAccounts = useRoots();
+	const allAccounts = useRootsMap();
 
 	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
 

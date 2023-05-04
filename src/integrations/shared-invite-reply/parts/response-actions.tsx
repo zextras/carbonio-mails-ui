@@ -12,11 +12,10 @@ import {
 	Row,
 	Text
 } from '@zextras/carbonio-design-system';
-import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
-import { useFoldersByView } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { ResponseActionsProps } from '../../../types';
 import ColorSelect from './color-select';
 import { accept, decline } from './share-calendar-actions';
