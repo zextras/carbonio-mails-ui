@@ -138,6 +138,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 			<ModalFooter
 				onConfirm={onConfirm}
 				secondaryAction={onClose}
+				secondaryLabel={t('label.cancel', 'cancel')}
 				label={t('action.ok', 'Ok')}
 				color="error"
 			/>
