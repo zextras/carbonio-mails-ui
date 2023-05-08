@@ -5,7 +5,7 @@
  */
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { isArray, isEmpty, map, sortBy } from 'lodash';
+import { isArray, isEmpty, map, noop, sortBy } from 'lodash';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelection } from '../../hooks/use-selection';
@@ -148,6 +148,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					selected={selected}
 					selectAllModeOff={selectAllModeOff}
 					isSearchModule
+					setDraggedIds={noop}
 				/>
 			) : (
 				<Container>
