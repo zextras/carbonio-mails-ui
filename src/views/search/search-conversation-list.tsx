@@ -16,16 +16,10 @@ import { ConversationListComponent } from '../app/folder-panel/conversations/con
 import { ConversationListItemComponent } from '../app/folder-panel/conversations/conversation-list-item-component';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import ShimmerList from './shimmer-list';
-
-const InvalidSearchMessage = styled(Text)`
-	text-align: center;
-	font-size: ${({ theme }): string => theme?.sizes?.font?.small};
-`;
+import { getFolderParentId } from '../../ui-actions/utils';
 
 const SearchConversationList: FC<SearchListProps> = ({
 	searchResults,
-	search,
-	query,
 	loading,
 	filterCount,
 	setShowAdvanceFilters,
@@ -35,6 +29,10 @@ const SearchConversationList: FC<SearchListProps> = ({
 }) => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
+
+	const items = [...Object.values(searchResults.conversations ?? {})];
+
+	const parentId = getFolderParentId({ folderId, isConversation: true, items });
 
 	const {
 		selected,
@@ -49,7 +47,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 		currentFolderId: folderId,
 		setCount,
 		count,
-		items: [...Object.values(searchResults.conversations ?? {})]
+		items
 	});
 
 	// selectedIds is an array of the ids of the selected conversations for multiple selection actions
@@ -150,7 +148,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 					totalConversations={totalConversations}
 					conversationsLoadingCompleted={conversationsLoadingCompleted}
 					selectedIds={selectedIds}
-					folderId={folderId}
+					folderId={parentId}
 					conversations={conversations}
 					isSelectModeOn={isSelectModeOn}
 					selected={selected}
