@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { TagActionItemType } from '../tags';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import type { TagActionItemType } from '../tags';
 
 export type ActionProps = {
 	folder: Folder;

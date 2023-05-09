@@ -4,6 +4,11 @@
 		"skipLibCheck": true,
 		"jsx": "react"
 	},
-	"include": ["src/**/*.ts", "src/**/*.tsx", "jest.config.js"],
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"jest.config.js",
+		"src/carbonio-ui-commons/worker/mock/workerMock.js"
+	],
 	"exclude": ["./node_modules/*", "./dist/*"]
 }

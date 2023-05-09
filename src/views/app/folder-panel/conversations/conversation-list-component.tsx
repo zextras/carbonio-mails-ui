@@ -5,11 +5,11 @@
  */
 
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
-import { useFolder } from '@zextras/carbonio-shell-ui';
 import { find, map, noop, reduce } from 'lodash';
 import React, { FC, RefObject, memo, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Conversation } from '../../../../types';
 import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import ShimmerList from '../../../search/shimmer-list';

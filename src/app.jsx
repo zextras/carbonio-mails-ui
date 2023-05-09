@@ -27,6 +27,7 @@ import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
 import { StoreProvider } from './store/redux';
 import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
+import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
 import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-manager';
 
 const LazyAppView = lazy(() =>
@@ -92,6 +93,7 @@ const SidebarView = (props) => (
 );
 
 const App = () => {
+	useFoldersController();
 	useEffect(() => {
 		addRoute({
 			route: MAILS_ROUTE,

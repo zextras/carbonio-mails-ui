@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import type { Folder, Folders } from '../../carbonio-ui-commons/types/folder';
+
 type RegisterActionType = {
 	id: string;
 	label: string;
@@ -32,7 +34,7 @@ export type Contact = {
 };
 
 export type SidebarComponentProps = {
-	accordions: Array<AccordionFolder>;
+	accordions: Array<Folder>;
 };
 
 export type SidebarProps = {
