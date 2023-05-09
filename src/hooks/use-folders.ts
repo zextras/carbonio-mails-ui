@@ -39,7 +39,7 @@ const sortFolders = ({
 	children: Folder[];
 	sortFunction: (folder: Folder) => number | string;
 }): Folder[] => {
-	const childrenSorted = sortFunction ? sortBy(children, sortFunction) : children;
+	const childrenSorted = sortBy(children, sortFunction);
 	return childrenSorted.map((folder) => ({
 		...folder,
 		children: sortFolders({ children: folder.children, sortFunction })
