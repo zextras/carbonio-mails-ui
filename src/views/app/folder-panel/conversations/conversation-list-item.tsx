@@ -63,7 +63,8 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		activeItemId,
 		dragImageRef,
 		deselectAll,
-		folderId
+		folderId,
+		setDraggedIds
 	}) {
 		const dispatch = useAppDispatch();
 		const [open, setOpen] = useState(false);
@@ -335,6 +336,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							folderId={folderParent}
 							dragImageRef={dragImageRef}
 							isSearchModule={isSearchModule}
+							setDraggedIds={setDraggedIds}
 						/>
 					</CollapseElement>
 				)}

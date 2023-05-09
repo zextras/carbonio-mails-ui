@@ -54,7 +54,8 @@ describe.each`
 			selectedIds: [],
 			setIsSelectModeOn: noop,
 			isSearchModule,
-			totalMessages: messages.length
+			totalMessages: messages.length,
+			setDraggedIds: noop
 		};
 
 		const store = generateStore({

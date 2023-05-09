@@ -6,7 +6,7 @@
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { filter, isEmpty, map, noop, sortBy } from 'lodash';
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
@@ -125,6 +125,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 								deselectAll={deselectAll}
 								folderId=""
 								visible={visible}
+								setDraggedIds={noop}
 							/>
 						)}
 					</CustomListItem>
@@ -159,6 +160,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 					setIsSelectModeOn={setIsSelectModeOn}
 					loadMore={noop}
 					isSearchModule
+					setDraggedIds={noop}
 				/>
 			)}
 			{!isInvalidQuery && isEmpty(searchResults?.conversations) && !loading && (
