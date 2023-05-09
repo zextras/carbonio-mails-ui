@@ -22,7 +22,8 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 		folderId,
 		length,
 		isSearchModule,
-		dragImageRef
+		dragImageRef,
+		setDraggedIds = noop
 	}) {
 		const { setCount, count } = useAppContext<AppContext>();
 
@@ -51,7 +52,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 									item={message}
 									selectedIds={[]}
 									selectedItems={{}}
-									setDraggedIds={noop}
+									setDraggedIds={setDraggedIds}
 									dragImageRef={dragImageRef}
 									dragAndDropIsDisabled={!!isSearchModule}
 								>
@@ -81,6 +82,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 				isSelectModeOn,
 				messages,
 				selected,
+				setDraggedIds,
 				toggle
 			]
 		);

@@ -6,7 +6,7 @@
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { filter, isEmpty, map, noop, sortBy } from 'lodash';
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
@@ -16,16 +16,10 @@ import { ConversationListComponent } from '../app/folder-panel/conversations/con
 import { ConversationListItemComponent } from '../app/folder-panel/conversations/conversation-list-item-component';
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import ShimmerList from './shimmer-list';
-
-const InvalidSearchMessage = styled(Text)`
-	text-align: center;
-	font-size: ${({ theme }): string => theme?.sizes?.font?.small};
-`;
+import { getFolderParentId } from '../../ui-actions/utils';
 
 const SearchConversationList: FC<SearchListProps> = ({
 	searchResults,
-	search,
-	query,
 	loading,
 	filterCount,
 	setShowAdvanceFilters,
@@ -35,6 +29,10 @@ const SearchConversationList: FC<SearchListProps> = ({
 }) => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
+
+	const items = [...Object.values(searchResults.conversations ?? {})];
+
+	const parentId = getFolderParentId({ folderId, isConversation: true, items });
 
 	const {
 		selected,
@@ -49,7 +47,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 		currentFolderId: folderId,
 		setCount,
 		count,
-		items: [...Object.values(searchResults.conversations ?? {})]
+		items
 	});
 
 	// selectedIds is an array of the ids of the selected conversations for multiple selection actions
@@ -127,6 +125,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 								deselectAll={deselectAll}
 								folderId=""
 								visible={visible}
+								setDraggedIds={noop}
 							/>
 						)}
 					</CustomListItem>
@@ -150,7 +149,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 					totalConversations={totalConversations}
 					conversationsLoadingCompleted={conversationsLoadingCompleted}
 					selectedIds={selectedIds}
-					folderId={folderId}
+					folderId={parentId}
 					conversations={conversations}
 					isSelectModeOn={isSelectModeOn}
 					selected={selected}
@@ -161,6 +160,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 					setIsSelectModeOn={setIsSelectModeOn}
 					loadMore={noop}
 					isSearchModule
+					setDraggedIds={noop}
 				/>
 			)}
 			{!isInvalidQuery && isEmpty(searchResults?.conversations) && !loading && (
