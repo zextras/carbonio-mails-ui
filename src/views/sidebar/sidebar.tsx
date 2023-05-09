@@ -11,7 +11,10 @@ import { map } from 'lodash';
 import React, { FC, memo, useMemo } from 'react';
 import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 import { SidebarAccordionMui } from '../../carbonio-ui-commons/components/sidebar/sidebar-accordion-mui';
-import { useFoldersArray } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
+import {
+	useFoldersArray,
+	useRootsArray
+} from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { themeMui } from '../../carbonio-ui-commons/theme/theme-mui';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { SidebarProps } from '../../carbonio-ui-commons/types/sidebar';
@@ -55,7 +58,7 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 
 const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 	const { path } = useRouteMatch();
-	const accordions = useFoldersArray();
+	const accordions = useRootsArray();
 	return (
 		<>
 			<ThemeProvider theme={themeMui}>
