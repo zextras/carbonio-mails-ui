@@ -35,6 +35,7 @@ describe.each`
 		const deselectAll = jest.fn();
 		const selectAllModeOff = jest.fn();
 		const setIsSelectModeOn = jest.fn();
+		const dragImageRef = React.createRef<HTMLInputElement>();
 
 		const listItems = conversations.map((conversation, index) => (
 			<ConversationListItemComponent
@@ -47,6 +48,7 @@ describe.each`
 				deselectAll={deselectAll}
 				isSearchModule={isSearchModule}
 				folderId={folderId}
+				setDraggedIds={jest.fn()}
 			/>
 		));
 
@@ -65,7 +67,8 @@ describe.each`
 			isAllSelected: false,
 			selectAllModeOff,
 			isSearchModule,
-			setIsSelectModeOn
+			setIsSelectModeOn,
+			dragImageRef
 		};
 
 		const store = generateStore({

@@ -40,7 +40,7 @@ export const FolderDetails: FC<{ folder: Folder }> = ({ folder }) => (
 			</Row>
 			<Row orientation="vertical" width="33.33%" crossAlignment="flex-start">
 				<Text size="small" color="secondary">
-					Size{t('label.size', 'Size')}
+					{t('label.size', 'Size')}
 				</Text>
 				<Padding top="extrasmall" />
 				<Text>{bytesToSize(folder.s || 0)}</Text>

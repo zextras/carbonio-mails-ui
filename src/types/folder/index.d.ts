@@ -104,6 +104,7 @@ export type ConversationMessagesListProps = {
 	length: number;
 	isSearchModule?: boolean;
 	dragImageRef?: React.RefObject<HTMLDivElement>;
+	setDraggedIds?: (ids: Record<string, boolean>) => void;
 };
 
 export type ConversationListItemProps = {

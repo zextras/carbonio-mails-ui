@@ -164,6 +164,7 @@ const ConversationList: FC = () => {
 			conversations={conversations}
 			selected={selected}
 			deselectAll={deselectAll}
+			dragImageRef={dragImageRef}
 		/>
 	);
 };

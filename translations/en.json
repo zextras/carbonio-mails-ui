@@ -227,6 +227,7 @@
 		"advanced_filters": "Advanced Filter",
 		"advanced_filters_plural": "Advanced Filters",
 		"all": "all",
+		"all_items_selected": "All visible items have been selected",
 		"allowed_actions": "Allowed actions",
 		"always_allow_address": "Always allow from <strong>{{from}}</strong>",
 		"always_allow_domain": "Always allow from <strong>{{domain}}</strong> domain",
@@ -296,6 +297,7 @@
 		"error": "Error",
 		"error_address": "A valid e-mail is required",
 		"error_try_again": "Something went wrong, please try again",
+		"exit_selection_mode": "Exit selection mode",
 		"expand": "Expand",
 		"expand_receivers_list": "Expand recipients list",
 		"extra_window": {
@@ -432,6 +434,7 @@
 		"tag_max_length": "Max 128 characters are allowed",
 		"tag_name": "Tag name",
 		"tags": "Tags",
+		"time": "Time",
 		"time_zone": "Time Zone",
 		"to": "To",
 		"trusted_addresses": "Trusted addresses",

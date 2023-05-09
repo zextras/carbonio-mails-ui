@@ -5,7 +5,7 @@
  */
 import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import React, { FC, ReactElement, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
@@ -105,6 +105,7 @@ export const MessageList: FC = () => {
 								key={message.id}
 								deselectAll={deselectAll}
 								visible={visible}
+								setDraggedIds={setDraggedIds}
 							/>
 						)}
 					</CustomListItem>
@@ -120,6 +121,10 @@ export const MessageList: FC = () => {
 		() => messageListStatus === 'complete',
 		[messageListStatus]
 	);
+
+	useEffect(() => {
+		setDraggedIds(selected);
+	}, [selected]);
 
 	return (
 		<MessageListComponent
@@ -141,6 +146,7 @@ export const MessageList: FC = () => {
 			deselectAll={deselectAll}
 			selected={selected}
 			selectAllModeOff={selectAllModeOff}
+			dragImageRef={dragImageRef}
 		/>
 	);
 };

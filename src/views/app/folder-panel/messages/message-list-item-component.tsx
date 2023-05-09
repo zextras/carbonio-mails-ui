@@ -21,6 +21,7 @@ export type ListItemComponentProps = {
 	isSearchModule?: boolean;
 	deselectAll: () => void;
 	visible: boolean;
+	setDraggedIds?: (ids: Record<string, boolean>) => void;
 };
 
 export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
@@ -34,14 +35,15 @@ export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
 		dragImageRef,
 		isSearchModule,
 		deselectAll,
-		visible
+		visible,
+		setDraggedIds = noop
 	}) {
 		return (
 			<DragItemWrapper
 				item={message}
 				selectedIds={[]}
 				selectedItems={selected}
-				setDraggedIds={noop}
+				setDraggedIds={setDraggedIds}
 				dragImageRef={dragImageRef}
 				dragAndDropIsDisabled={!!isSearchModule}
 			>
