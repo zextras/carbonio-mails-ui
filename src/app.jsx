@@ -94,7 +94,6 @@ const SidebarView = (props) => (
 );
 
 const App = () => {
-	useFoldersController();
 	useEffect(() => {
 		addRoute({
 			route: MAILS_ROUTE,
