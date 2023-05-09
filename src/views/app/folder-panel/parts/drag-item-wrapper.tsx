@@ -18,13 +18,13 @@ type DragCheckProps = {
 };
 
 const dragCheck = ({ e, id, dragImageRef, selectedItems, setDraggedIds }: DragCheckProps): void => {
-	if (dragImageRef?.current) {
+	if (dragImageRef && dragImageRef?.current) {
 		e.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
 	}
-	if (selectedItems[id]) {
-		setDraggedIds(selectedItems);
+	if (selectedItems && selectedItems[id]) {
+		setDraggedIds && setDraggedIds(selectedItems);
 	} else {
-		setDraggedIds({ [id]: true });
+		setDraggedIds && setDraggedIds({ [id]: true });
 	}
 };
 
@@ -42,7 +42,6 @@ const DraggableItem: FC<DraggableItemProps> = ({
 	folderId,
 	isMessageView,
 	selectedIds,
-	dragImageRef,
 	selectedItems,
 	setDraggedIds,
 	children
@@ -52,9 +51,7 @@ const DraggableItem: FC<DraggableItemProps> = ({
 			type="message"
 			data={{ ...item, parentFolderId: folderId, selectedIDs: selectedIds }}
 			style={{ display: 'block' }}
-			onDragStart={(e): void =>
-				dragCheck({ e, id: item.id, dragImageRef, selectedItems, setDraggedIds })
-			}
+			onDragStart={(e): void => dragCheck({ e, id: item.id, selectedItems, setDraggedIds })}
 		>
 			{children}
 		</Drag>
@@ -92,7 +89,6 @@ export const DragItemWrapper: FC<DragItemWrapperProps> = ({
 				folderId={folderId}
 				isMessageView={isMessageView}
 				selectedIds={ids}
-				dragImageRef={dragImageRef}
 				selectedItems={selectedItems}
 				setDraggedIds={setDraggedIds}
 			>

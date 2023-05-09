@@ -6,7 +6,7 @@
 
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
 import { find, map, noop, reduce } from 'lodash';
-import React, { FC, memo, useEffect, useMemo, useRef } from 'react';
+import React, { FC, RefObject, memo, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
@@ -54,6 +54,7 @@ const DragItems: FC<{
 					selectedIds={[]}
 					deselectAll={noop}
 					folderId=""
+					setDraggedIds={noop}
 				/>
 			))}
 		</>
@@ -99,6 +100,8 @@ export type ConversationListComponentProps = {
 	selectAllModeOff: () => void;
 	// the function to call when the user toggles select mode
 	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
+	// the reference to the dragged item
+	dragImageRef?: RefObject<HTMLInputElement>;
 };
 
 export const ConversationListComponent: FC<ConversationListComponentProps> = memo(
@@ -120,14 +123,14 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 		loadMore = noop,
 		listItems,
 		totalConversations,
-		loadMoreDate
+		loadMoreDate,
+		dragImageRef
 	}) {
 		useEffect(() => {
 			setDraggedIds && setDraggedIds(selected);
 		}, [selected, setDraggedIds]);
 
 		const folder = useFolder(folderId);
-		const dragImageRef = useRef(null);
 
 		const folderPath = useMemo(() => {
 			if (isSearchModule) {
