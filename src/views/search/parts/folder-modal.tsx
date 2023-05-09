@@ -25,7 +25,7 @@ import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-fo
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import {
-	useFolders,
+	useFoldersMap,
 	useFoldersAccordionByView
 } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { AccordionFolder } from '../../../carbonio-ui-commons/types/folder';
@@ -70,7 +70,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const [input, setInput] = useState('');
 	const [folderDestination, setFolderDestination] = useState<FolderType | any>({});
 
-	const foldersFromStore = useFolders();
+	const foldersFromStore = useFoldersMap();
 
 	const getFolderAbsPath = useCallback(
 		(fid: string) => {

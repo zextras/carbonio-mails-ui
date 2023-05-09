@@ -6,7 +6,7 @@
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import { isArray } from 'lodash';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import type { Roots } from '../carbonio-ui-commons/types/folder';
+import type { Folders } from '../carbonio-ui-commons/types/folder';
 import type { MailMessage } from '../types';
 import { getMessageOwnerAccountName } from './folders';
 
@@ -339,7 +339,7 @@ const filterMatchingRecipients = (recipients: Array<RecipientWeight>): Array<Rec
  * @param message - The message to analyze
  */
 const getRecipientReplyIdentity = (
-	folderRoots: Roots,
+	folderRoots: Folders,
 	account: Account,
 	settings: AccountSettings,
 	message: MailMessage

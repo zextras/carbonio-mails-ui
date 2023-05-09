@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
-import { getRoots } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
+import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { getFolderIdParts, getFolderOwnerAccountName } from '../folders';
 
@@ -38,7 +38,7 @@ describe('Folder id', () => {
 describe('Folder owner', () => {
 	populateFoldersStore();
 	const mocksContext = getMocksContext();
-	const roots = getRoots();
+	const roots = getRootsMap();
 	const primaryAccount = getUserAccount();
 	const sharedAccount = mocksContext.identities.sendAs[0];
 

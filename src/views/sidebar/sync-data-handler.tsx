@@ -80,10 +80,6 @@ export const SyncDataHandler: FC = () => {
 
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
-			folderWorker.postMessage({
-				op: 'refresh',
-				folder: refresh.folder ?? []
-			});
 			// this also normalize folders so no need to normalize it later
 			const extractedFolders = extractFolders([
 				...(refresh?.folder?.[0]?.folder ?? []),
@@ -108,11 +104,6 @@ export const SyncDataHandler: FC = () => {
 			if (notifyList.length > 0) {
 				forEach(sortBy(notifyList, 'seq'), (notify: any) => {
 					if (!isEmpty(notify) && (notify.seq > seq || (seq > 1 && notify.seq === 1))) {
-						folderWorker.postMessage({
-							op: 'notify',
-							notify,
-							state: useFolderStore.getState().folders
-						});
 						const tags = getTags();
 						if (notify.created) {
 							if (notify.created.folder || notify.created.link) {

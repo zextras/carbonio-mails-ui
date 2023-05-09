@@ -6,6 +6,7 @@
 import { Container, Icon, Padding, Row, TextWithTooltip } from '@zextras/carbonio-design-system';
 import { indexOf, lastIndexOf, min } from 'lodash';
 import React, { FC, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { getFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import type { Crumb } from '../../../../types';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
@@ -63,15 +64,15 @@ const ModalAccordionCustomComponent: FC<{
 
 	const crumbs: Array<Crumb> | undefined = useMemo(() => {
 		const result = [];
-		let crumbItem = item;
+		const crumbItem = item;
 		let exitLoop = false;
 		let stringRemainingWidth = availableWidth;
+		let parent = getFolder(crumbItem.parent ?? '');
 		while (
 			!(
 				exitLoop ||
-				crumbItem.parent?.absFolderPath === '/' ||
-				(crumbItem.parent?.isLink === true &&
-					crumbItem.parent?.absFolderPath?.lastIndexOf('/', 1) !== -1)
+				parent?.absFolderPath === '/' ||
+				(parent?.isLink === true && parent?.absFolderPath?.lastIndexOf('/', 1) !== -1)
 			)
 		) {
 			const value = crumbItem.absFolderPath?.slice(lastIndexOf(crumbItem.absFolderPath, '/') + 1);
@@ -82,8 +83,7 @@ const ModalAccordionCustomComponent: FC<{
 					tooltip: ''
 				});
 				if (crumbItem.parent) {
-					// eslint-disable-next-line no-param-reassign
-					crumbItem = crumbItem.parent;
+					parent = getFolder(crumbItem.parent);
 				}
 			} else {
 				result.push({
