@@ -64,7 +64,7 @@ const InboxBadgeUpdater = (): null => {
 			},
 			MAILS_ROUTE
 		);
-	}, [folder]);
+	}, [folder.unreadCount]);
 	return null;
 };
 
