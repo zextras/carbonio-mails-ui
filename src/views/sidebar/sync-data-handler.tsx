@@ -17,12 +17,13 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
+	handleAddMessagesInConversation,
 	handleCreatedMessagesInConversation,
 	handleDeletedMessagesInConversation,
 	handleModifiedMessagesInConversation,
-	handleNotifyModifiedConversations,
 	handleNotifyCreatedConversations,
 	handleNotifyDeletedConversations,
+	handleNotifyModifiedConversations,
 	selectCurrentFolder,
 	setSearchedInFolder
 } from '../../store/conversations-slice';
@@ -148,7 +149,6 @@ export const SyncDataHandler: FC = () => {
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								dispatch(handleNotifyModifiedSearchConversations(keyBy(conversations, 'id')));
-								//	dispatch(handleNotifyDeletedSearchConversations(keyBy(conversations, 'id')));
 							}
 							if (notify.modified.m) {
 								const messages = map(notify.modified.m, (obj) =>
@@ -198,7 +198,6 @@ export const SyncDataHandler: FC = () => {
 										},
 										[]
 									);
-									// this function add messages' in conversations. If conversation never changes it does not need to be called
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									dispatch(handleAddMessagesInConversation(msgsReference));
