@@ -18,7 +18,6 @@ import {
 	addBoard,
 	replaceHistory,
 	t,
-	useFolder,
 	useTags,
 	useUserAccounts,
 	useUserSettings
@@ -26,16 +25,17 @@ import {
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
 import React, { FC, memo, useCallback, useMemo } from 'react';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { ActionsType, getTimeLabel, participantToString } from '../../../../commons/utils';
 import { MAILS_ROUTE } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import type { MessageListItemProps, TextReadValuesType } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
+import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { SenderName } from '../parts/sender-name';
-import { getFolderTranslatedName } from '../../../sidebar/utils';
 
 export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
 	item,
@@ -312,7 +312,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 										data-testid="FolderBadge"
 										value={getFolderTranslatedName({
 											folderId: firstChildFolderId,
-											folderName: messageFolder.name
+											folderName: messageFolder?.name ?? ''
 										})}
 										type={textReadValues.badge}
 									/>

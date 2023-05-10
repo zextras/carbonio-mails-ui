@@ -6,19 +6,20 @@
 
 import { ThemeProvider } from '@mui/material';
 import { Accordion, Container, Divider } from '@zextras/carbonio-design-system';
-import { FOLDERS, Folder, useFoldersByView } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { FC, memo, useMemo } from 'react';
 import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 import { SidebarAccordionMui } from '../../carbonio-ui-commons/components/sidebar/sidebar-accordion-mui';
-import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { themeMui } from '../../carbonio-ui-commons/theme/theme-mui';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { SidebarProps } from '../../carbonio-ui-commons/types/sidebar';
+import { useFolders } from '../../hooks/use-folders';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
-import AccordionCustomComponent from './accordion-custom-component';
-import CollapsedSideBarItems from './collapsed-sidebar-items';
 import type { SidebarComponentProps } from '../../types/sidebar';
+import AccordionCustomComponent from './accordion-custom-component';
 import { ButtonFindShares } from './button-find-shares';
+import CollapsedSideBarItems from './collapsed-sidebar-items';
 
 const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarComponent({ accordions }) {
 	const { folderId } = useParams<{ folderId: string }>();
@@ -54,7 +55,7 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 
 const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 	const { path } = useRouteMatch();
-	const accordions = useFoldersByView(FOLDER_VIEW.message);
+	const accordions = useFolders();
 	return (
 		<>
 			<ThemeProvider theme={themeMui}>

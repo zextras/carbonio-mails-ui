@@ -3,9 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, Folder, LinkFolder, ROOT_NAME } from '@zextras/carbonio-shell-ui';
+import { Account, ROOT_NAME } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
+import type { Folder, Folders, LinkFolder } from '../carbonio-ui-commons/types/folder';
 import type { MailMessage } from '../types';
+import { getFolder } from '../carbonio-ui-commons/store/zustand/folder';
 
 /*
  * Describe the folder id syntax
@@ -22,7 +24,7 @@ type FolderIdType = { zid: string | null; id: string | null };
  * Parse the given folder id and returns on object with the composing parts of the folder id
  * @param folderId
  */
-const getFolderIdParts = (folderId: string): FolderIdType => {
+export const getFolderIdParts = (folderId: string): FolderIdType => {
 	const result: FolderIdType = { zid: null, id: null };
 
 	if (!folderId || !folderId.match(FOLDERID_REGEX)) {
@@ -45,9 +47,9 @@ const getFolderIdParts = (folderId: string): FolderIdType => {
  * @param folderId
  * @param folderRoots
  */
-const getFolderOtherOwnerAccountName = (
+export const getFolderOtherOwnerAccountName = (
 	folderId: string,
-	folderRoots: Record<string, Folder & { owner: string }>
+	folderRoots: Folders
 ): string | null => {
 	if (!folderId) {
 		return null;
@@ -64,7 +66,9 @@ const getFolderOtherOwnerAccountName = (
 		return null;
 	}
 
-	return matchingFolderRoot.owner;
+	return 'owner' in matchingFolderRoot && matchingFolderRoot.owner
+		? matchingFolderRoot.owner
+		: null;
 };
 
 /**
@@ -73,10 +77,10 @@ const getFolderOtherOwnerAccountName = (
  * @param primaryAccount
  * @param folderRoots
  */
-const getFolderOwnerAccountName = (
+export const getFolderOwnerAccountName = (
 	folderId: string,
 	primaryAccount: Account,
-	folderRoots: Record<string, Folder & { owner: string }>
+	folderRoots: Folders
 ): string => {
 	/*
 	 * Try to get the account of the "other" owner, aka an owner which is not the primary account of the current user
@@ -96,18 +100,11 @@ const getFolderOwnerAccountName = (
  * @param primaryAccount
  * @param folderRoots
  */
-const getMessageOwnerAccountName = (
+export const getMessageOwnerAccountName = (
 	message: MailMessage,
 	primaryAccount: Account,
-	folderRoots: Record<string, Folder & { owner: string }>
+	folderRoots: Folders
 ): string => getFolderOwnerAccountName(message.parent, primaryAccount, folderRoots);
-
-export {
-	getFolderIdParts,
-	getFolderOwnerAccountName,
-	getMessageOwnerAccountName,
-	getFolderOtherOwnerAccountName
-};
 
 /**
  * Returns the root account name for a given folder
@@ -115,27 +112,16 @@ export {
  * @returns the root account name or null if the folder is not a link or the root folder
  */
 export const getRootAccountName = (folder: Folder | LinkFolder): string | null => {
-	if (
-		folder?.isLink &&
-		folder?.owner &&
-		folder.parent?.parent === undefined &&
-		folder.oname === ROOT_NAME
-	) {
+	const parent = folder?.parent ? getFolder(folder.parent) : null;
+	if (folder?.isLink && folder?.owner && parent?.parent === null && folder.oname === ROOT_NAME) {
 		return folder?.owner;
 	}
 	if (folder?.parent) {
-		return getRootAccountName(folder?.parent);
+		const result = parent ? getRootAccountName(parent) : null;
+		return result;
 	}
 	return null;
 };
-
-/**
- * Removes the uuid and colon from a folder id (e.g. 123456:2 -> 2)
- * @param folderId a folder id
- * @returns the folder id without the uuid and colon
- */
-export const getSystemFolderParentId = (folderId: string): string =>
-	(folderId.includes(':') ? folderId?.split(':')[1] : folderId) ?? '0';
 
 /**
  * Returns the parent folder id for a given folder

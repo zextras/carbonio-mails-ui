@@ -80,6 +80,7 @@
 		"@zextras/carbonio-shell-ui": "^3.0.1",
 		"@zextras/carbonio-ui-preview": "^1.1.0",
 		"babel-jest": "^29.4.3",
+		"babel-plugin-transform-import-meta": "^2.2.0",
 		"core-js": "^3.27.2",
 		"i18next": "^22.4.13",
 		"immer": "^9.0.19",

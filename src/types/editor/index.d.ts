@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { MailMessage } from '../messages';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import type { MailMessage } from '../messages';
 
 export type EditorAttachmentFiles = {
 	contentType: string;
@@ -67,7 +68,7 @@ type UseGetIdentitiesReturnType = {
 
 type FindDefaultIdentityType = {
 	list: Array<IdentityType>;
-	allAccounts: Record<string, Folder & { owner: string }>;
+	allAccounts: Record<string, Folder>;
 	folderId: string;
 	currentMessage?: MailMessage;
 	originalMessage?: MailMessage;

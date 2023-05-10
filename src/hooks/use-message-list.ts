@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getFolder } from '@zextras/carbonio-shell-ui';
 import { filter, orderBy } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { search } from '../store/actions';
 import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
 import type { MailMessage } from '../types';
@@ -27,7 +27,10 @@ export const useMessageList = (): Array<MailMessage> => {
 	const filteredMessages = useMemo(
 		() =>
 			folder
-				? filter(messages, ['parent', folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id])
+				? filter(messages, [
+						'parent',
+						'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id
+				  ])
 				: [],
 		[folder, messages]
 	);
