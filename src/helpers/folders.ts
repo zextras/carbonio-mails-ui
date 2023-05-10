@@ -5,8 +5,9 @@
  */
 import { Account, ROOT_NAME } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
-import type { Folder, LinkFolder, Roots } from '../carbonio-ui-commons/types/folder';
+import type { Folder, Folders, LinkFolder } from '../carbonio-ui-commons/types/folder';
 import type { MailMessage } from '../types';
+import { getFolder } from '../carbonio-ui-commons/store/zustand/folder';
 
 /*
  * Describe the folder id syntax
@@ -48,7 +49,7 @@ export const getFolderIdParts = (folderId: string): FolderIdType => {
  */
 export const getFolderOtherOwnerAccountName = (
 	folderId: string,
-	folderRoots: Roots
+	folderRoots: Folders
 ): string | null => {
 	if (!folderId) {
 		return null;
@@ -79,7 +80,7 @@ export const getFolderOtherOwnerAccountName = (
 export const getFolderOwnerAccountName = (
 	folderId: string,
 	primaryAccount: Account,
-	folderRoots: Roots
+	folderRoots: Folders
 ): string => {
 	/*
 	 * Try to get the account of the "other" owner, aka an owner which is not the primary account of the current user
@@ -102,7 +103,7 @@ export const getFolderOwnerAccountName = (
 export const getMessageOwnerAccountName = (
 	message: MailMessage,
 	primaryAccount: Account,
-	folderRoots: Roots
+	folderRoots: Folders
 ): string => getFolderOwnerAccountName(message.parent, primaryAccount, folderRoots);
 
 /**
@@ -111,16 +112,13 @@ export const getMessageOwnerAccountName = (
  * @returns the root account name or null if the folder is not a link or the root folder
  */
 export const getRootAccountName = (folder: Folder | LinkFolder): string | null => {
-	if (
-		folder?.isLink &&
-		folder?.owner &&
-		folder.parent?.parent === undefined &&
-		folder.oname === ROOT_NAME
-	) {
+	const parent = folder?.parent ? getFolder(folder.parent) : null;
+	if (folder?.isLink && folder?.owner && parent?.parent === null && folder.oname === ROOT_NAME) {
 		return folder?.owner;
 	}
 	if (folder?.parent) {
-		return getRootAccountName(folder?.parent);
+		const result = parent ? getRootAccountName(parent) : null;
+		return result;
 	}
 	return null;
 };

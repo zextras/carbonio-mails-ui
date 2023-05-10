@@ -16,12 +16,9 @@ import React, {
 	useState
 } from 'react';
 import styled from 'styled-components';
-import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
-import {
-	getFolder,
-	useFoldersByView
-} from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
+import { useFolders } from '../../../hooks/use-folders';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
 import { getFolderTranslatedName } from '../utils';
 
@@ -47,7 +44,7 @@ export const FolderSelector = ({
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const accountName = useUserAccount().name;
-	const folders = useFoldersByView(FOLDER_VIEW.message);
+	const folders = useFolders();
 	const folder = getFolder(folderId);
 
 	const accordionRef = useRef<HTMLDivElement>();
