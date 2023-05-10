@@ -21,9 +21,9 @@ import {
 	handleCreatedMessagesInConversation,
 	handleDeletedMessagesInConversation,
 	handleModifiedMessagesInConversation,
-	handleNotifyModifiedConversations,
 	handleNotifyCreatedConversations,
 	handleNotifyDeletedConversations,
+	handleNotifyModifiedConversations,
 	selectCurrentFolder,
 	setSearchedInFolder
 } from '../../store/conversations-slice';
@@ -117,7 +117,11 @@ export const SyncDataHandler: FC = () => {
 								const conversations = map(notify.created.c, (i) =>
 									normalizeConversation({ c: i, m: notify.created.m, tags })
 								);
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
 								dispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
 								dispatch(handleNotifyCreatedSearchConversations(keyBy(conversations, 'id')));
 							}
 							if (notify.created.m) {
@@ -139,20 +143,30 @@ export const SyncDataHandler: FC = () => {
 								const conversations = map(notify.modified.c, (i) =>
 									normalizeConversation({ c: i, tags })
 								);
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
 								dispatch(handleNotifyModifiedConversations(keyBy(conversations, 'id')));
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
 								dispatch(handleNotifyModifiedSearchConversations(keyBy(conversations, 'id')));
 							}
 							if (notify.modified.m) {
 								const messages = map(notify.modified.m, (obj) =>
 									normalizeMailMessageFromSoap(obj, false)
 								);
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
 								dispatch(handleModifiedMessages(messages));
 
 								// the condition filters messages with parent property (the only ones we need to update)
 								const toUpdate = filter(messages, 'parent');
 								if (toUpdate?.length > 0) {
 									// this function updates messages' parent in conversations. If parent never changes it does not need to be called
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									dispatch(handleModifiedMessagesInConversation(toUpdate));
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									dispatch(handleModifiedMessagesInSearchConversation(toUpdate));
 								}
 								// the condition filters messages with conversation property (the only ones we need to add to conversation)
@@ -184,7 +198,11 @@ export const SyncDataHandler: FC = () => {
 										},
 										[]
 									);
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									dispatch(handleAddMessagesInConversation(msgsReference));
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									dispatch(handleAddMessagesInSearchConversation(msgsReference));
 								}
 							}
