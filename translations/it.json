@@ -127,7 +127,7 @@
         "type_name_here": "Nome elemento",
         "with_you": "con te",
         "flash_browser_title": "Alterna con il titolo del browser",
-        "retention_policy": "Regole di Ritenzione",
+        "retention_policy": "Regole di Conservazione",
         "shares_items": "cartelle condivise di {{value}}",
         "would_like_to_share": "ha condiviso",
         "create": "Crea",
@@ -218,7 +218,7 @@
         "retention_range": "Periodo di Retention",
         "attachment_status": "Stato e-mail",
         "enable_message_disposal": "Abilita la cancellazione dei messaggi",
-        "enable_message_retention": "Abilita la ritenzione dei messaggi",
+        "enable_message_retention": "Abilita la conservazione dei messaggi",
         "behalf_of": "per conto di",
         "preview": "Anteprima",
         "create_tag": "Crea Etichetta",
@@ -307,7 +307,10 @@
         "attachment_with_count_plural": "{{count}} Allegati",
         "extra_window": {
             "save_to_files_disabled": "Salva su Files"
-        }
+        },
+        "received_from_address": "Ricevuto da (address)",
+        "sent_to_address": "Inviato a (indirizzo)",
+        "admin_disabled_action": "L'amministratore ha disattivato l'opzione di reindirizzamento"
     },
     "tooltip": {
         "add_attachments": "Aggiungi allegati",
@@ -370,8 +373,8 @@
             "edit": {
                 "rename_warning": "Non puoi nominare una cartella come una di sistema.",
                 "add_share": "Aggiungi Condivisione",
-                "retention_duration_warning": "Il periodo di ritenzione dev'essere un numero positivo",
-                "retention_message": "All'interno di questa cartella, per i messaggi che rientrano nel periodo di ritenzione, verrà chiesta conferma per la cancellazione",
+                "retention_duration_warning": "Il periodo di conservazione dev'essere un numero positivo",
+                "retention_message": "All'interno di questa cartella, per i messaggi che rientrano nel periodo di conservazione, verrà chiesta conferma per la cancellazione",
                 "threshold_message": "In questa cartella, i messaggi più vecchi del limite consentito saranno soggetti a cancellazione automatica."
             }
         }
