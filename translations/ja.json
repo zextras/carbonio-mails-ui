@@ -194,7 +194,7 @@
         "folder_name": "フォルダー名",
         "select": "選択",
         "send_email": "メールを送信する",
-        "share_with": "シェア先",
+        "share_with": "共有する人",
         "draft": "下書き",
         "forwarded": "転送済み",
         "behalf_of": "代わりに",
@@ -226,7 +226,7 @@
         "always_allow_domain": "常に<strong>{{domain}}</strong>ドメインから許可する",
         "always_allow_address": "常に<strong>{{from}}</strong>から許可する",
         "time_zone": "タイムゾーン",
-        "searching": "検索中…",
+        "searching": "検索中...",
         "notify": "通知",
         "do_not_notify": "通知しない",
         "trusted_addresses": "信頼できるアドレス",
@@ -283,7 +283,10 @@
         "need_to_select_atleast_one_item": "アクションを実行するには、少なくとも項目を一つ選択する必要があります",
         "path": "パス",
         "select_all": "すべて選択",
-        "using_signatures": "署名の使用"
+        "using_signatures": "署名の使用",
+        "admin_disabled_action": "管理者がリダイレクト操作を無効にしました",
+        "received_from_address": "（アドレス）から受信",
+        "sent_to_address": "（アドレス）へ送信"
     },
     "messages": {
         "modal": {
@@ -598,7 +601,8 @@
         "folder_path_required": "操作「フォルダに移動」を完了するために、宛先フォルダを選択してください。",
         "remove_action": "この操作を削除する",
         "add_action": "新しいアクションを追加する",
-        "tag_name_required": "操作「タグ付けする」を完了するために、[タグ]欄に入力してください。"
+        "tag_name_required": "操作「タグ付けする」を完了するために、[タグ]欄に入力してください。",
+        "font_size_0": "{{count}} pt"
     },
     "snackbar": {
         "share_resend": "送信された招待を共有する",
