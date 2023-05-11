@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.4...v1.3.5) (2023-05-11)
+
+
+### Bug Fixes
+
+* fix move of list items in shared accounts ([5bb6230](https://github.com/zextras/carbonio-mails-ui/commit/5bb6230fca5dddeaa3547726fc2607b571eb82ce))
+
 ### [1.3.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.3...v1.3.4) (2023-05-10)
 
 
