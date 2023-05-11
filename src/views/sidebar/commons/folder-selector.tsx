@@ -26,6 +26,7 @@ import styled from 'styled-components';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { getFolderTranslatedName } from '../utils';
+import { getRootAccountName } from '../../../helpers/folders';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -65,20 +66,11 @@ export const FolderSelector = ({
 		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
 	}, [accordionRef]);
 
-	const getFolderRootName = useCallback((id: any): string | undefined => {
-		const _folder = getFolder(id);
-		if (_folder?.parent) {
-			return getFolderRootName(_folder.l);
-		}
-		if (_folder) {
-			return _folder.name;
-		}
-		return undefined;
-	}, []);
+	const rootName = useMemo(() => getRootAccountName(folder), [folder]);
 
-	const rootName = useMemo(() => getFolderRootName(folderId), [folderId, getFolderRootName]);
-
-	const filteredFolders = folders.filter((item) => item.name === rootName);
+	const filteredFolders = folders.filter((item) =>
+		rootName ? item.name === rootName : item.id === FOLDERS.USER_ROOT
+	);
 
 	const flattenFolders = useCallback(
 		(arr: Array<Folder>): Array<Folder> => {
