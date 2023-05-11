@@ -45,8 +45,9 @@
         "attachment": "Anexo",
         "attachment_plural": "Anexos",
         "cancel": "Cancelar",
-        "download": "Baixar",
-        "download_plural": "Baixar tudo",
+        "download_0": "Baixar",
+        "download_1": "Baixar tudo",
+        "download_2": "",
         "send": "Enviar",
         "share": "Compartilhar",
         "edit": "Editar",
@@ -187,7 +188,7 @@
         "create_tag": "Criar marcador",
         "edit_tag_name": "Editar o marcador \"{{name}}\"",
         "delete_tag": "Excluir marcador",
-        "delete_tag_name": "Excluir marcador",
+        "delete_tag_name": "Excluir marcador \"{{name}}\"",
         "edit_tag": "Editar marcador",
         "no_special_char_allowed": "O nome não pode conter caracteres especiais",
         "tag_max_length": "Máximo de 128 caracteres permitidos",
@@ -271,7 +272,8 @@
         "need_to_select_atleast_one_item": "Você precisa selecionar ao menos um item para realizar esta ação",
         "path": "Caminho",
         "select_all": "Selecionar tudo",
-        "using_signatures": "Uso de assinaturas"
+        "using_signatures": "Uso de assinaturas",
+        "admin_disabled_action": "O administrador desativou o redirecionamento"
     },
     "title": {
         "new_messages": "Novas mensagens",

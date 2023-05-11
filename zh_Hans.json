@@ -385,7 +385,10 @@
         "need_to_select_atleast_one_item": "您需要选择至少一个项目以执行此操作",
         "path": "路径",
         "select_all": "全选",
-        "using_signatures": "签名使用情况"
+        "using_signatures": "签名使用情况",
+        "admin_disabled_action": "管理员已禁用重定向操作",
+        "received_from_address": "接收自（地址）",
+        "sent_to_address": "发送至（地址）"
     },
     "search": {
         "unread": "未读",

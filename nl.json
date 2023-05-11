@@ -285,7 +285,10 @@
         "need_to_select_atleast_one_item": "U moet ten minste één item selecteren om de actie uit te voeren",
         "path": "Traject",
         "select_all": "Alles SELECTEREN",
-        "using_signatures": "Handtekeningen gebruik"
+        "using_signatures": "Handtekeningen gebruik",
+        "admin_disabled_action": "De Admin heeft de redirect-actie uitgeschakeld",
+        "received_from_address": "Ontvangen van (adres)",
+        "sent_to_address": "Verzonden naar (adres)"
     },
     "messages": {
         "invalid_address": "Het volgende adres lijkt ongeldig te zijn",
