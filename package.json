@@ -97,7 +97,8 @@
 		"react-router-dom": "^5.3.4",
 		"styled-components": "^5.3.6",
 		"ts-node": "^10.9.1",
-		"uuid": "^9.0.0"
+		"uuid": "^9.0.0",
+		"zustand": "^4.3.6"
 	},
 	"browserslist": [
 		">1%",

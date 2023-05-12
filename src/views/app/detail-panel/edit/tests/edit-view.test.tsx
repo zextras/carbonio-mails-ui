@@ -21,6 +21,7 @@ import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/pa
 import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { ActionsType } from '../../../../../commons/utils';
@@ -935,6 +936,8 @@ describe('Edit view', () => {
 							status: {}
 						}
 					});
+
+					populateFoldersStore();
 
 					// Mock the "action" query param
 					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
