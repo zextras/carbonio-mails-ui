@@ -107,23 +107,6 @@ export const getMessageOwnerAccountName = (
 ): string => getFolderOwnerAccountName(message.parent, primaryAccount, folderRoots);
 
 /**
- * Returns the root account name for a given folder
- * @param folder a Folder or LinkFolder
- * @returns the root account name or null if the folder is not a link or the root folder
- */
-export const getRootAccountName = (folder: Folder | LinkFolder): string | null => {
-	const parent = folder?.parent ? getFolder(folder.parent) : null;
-	if (folder?.isLink && folder?.owner && parent?.parent === null && folder.oname === ROOT_NAME) {
-		return folder?.owner;
-	}
-	if (folder?.parent) {
-		const result = parent ? getRootAccountName(parent) : null;
-		return result;
-	}
-	return null;
-};
-
-/**
  * Returns the parent folder id for a given folder
  * @param folder a Folder or LinkFolder
  * @returns the path to pass down as props to the Breadcrumb component
