@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.3...v1.3.4) (2023-05-10)
+
+
+### Bug Fixes
+
+* fix function import in sync ([515c94d](https://github.com/zextras/carbonio-mails-ui/commit/515c94d645f48802ab09816fa50742dfa208ee82))
+
 ### [1.3.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.2...v1.3.3) (2023-05-09)
 
 

@@ -16,7 +16,7 @@ import React, {
 	useState
 } from 'react';
 import styled from 'styled-components';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { getFolder, useRootsArray } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { useFolders } from '../../../hooks/use-folders';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
