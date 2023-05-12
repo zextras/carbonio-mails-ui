@@ -129,7 +129,7 @@
         "folder_name": "फोल्डर नाम",
         "select": "सिलेक्ट करें",
         "send_email": "ई-मेल भेजें",
-        "share_with": "इनके साथ शेयर",
+        "share_with": "इनके साथ शेयर करें",
         "draft": "प्रालेख",
         "forwarded": "फॉरवर्ड किया",
         "app_name": "मेल्स",
@@ -180,7 +180,7 @@
         "always_allow_domain": "<strong>{{domain}}</strong> डोमेन से हमेशा आने दें",
         "always_allow_address": "<strong>{{from}}</strong> से हमेशा आने दें",
         "time_zone": "समय क्षेत्र",
-        "searching": "खोज रहा है…",
+        "searching": "खोज रहा है...",
         "notify": "सूचित करें",
         "do_not_notify": "सूचित ना करें",
         "trusted_addresses": "विश्वसनीय पते",
@@ -238,7 +238,10 @@
         "path": "पाथ",
         "select_all": "सभी सिलेक्ट करें",
         "using_signatures": "सिग्नेचर इस्तेमाल",
-        "deselect_all": "सभी डीसिलेक्ट करें"
+        "deselect_all": "सभी डीसिलेक्ट करें",
+        "admin_disabled_action": "एडमिन ने रीडायरेक्ट कार्रवाई को अक्षम कर दिया",
+        "sent_to_address": "(एड्रेस) को भेजा गया",
+        "received_from_address": "इनसे प्राप्त (एड्रेस)"
     },
     "messages": {
         "invalid_address": "निम्नलिखित एड्रेस अमान्य लग रहा है",

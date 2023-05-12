@@ -16,7 +16,11 @@ import React, {
 	useState
 } from 'react';
 import styled from 'styled-components';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import {
+	getFolder,
+	getRoot,
+	useRoot
+} from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { useFolders } from '../../../hooks/use-folders';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
@@ -44,8 +48,8 @@ export const FolderSelector = ({
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const accountName = useUserAccount().name;
-	const folders = useFolders();
 	const folder = getFolder(folderId);
+	const accountRootFolder = getRoot(folderId);
 
 	const accordionRef = useRef<HTMLDivElement>();
 	const [accordionWidth, setAccordionWidth] = useState<number>();
@@ -60,23 +64,9 @@ export const FolderSelector = ({
 		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
 	}, [accordionRef]);
 
-	const getFolderRootName = useCallback((id: any): string | undefined => {
-		const _folder = getFolder(id);
-		if (_folder?.parent) {
-			return getFolderRootName(_folder.l);
-		}
-		if (_folder) {
-			return _folder.name;
-		}
-		return undefined;
-	}, []);
-
-	const rootName = useMemo(() => getFolderRootName(folderId), [folderId, getFolderRootName]);
-
-	const filteredFolders = folders.filter((item) => item.name === rootName);
-
 	const flattenFolders = useCallback(
-		(arr: Array<Folder>): Array<Folder> => {
+		(arr: Array<Folder> | undefined): Array<Folder> => {
+			if (!arr) return [];
 			const result: Array<Folder> = [];
 			arr.forEach((item) => {
 				const { children } = item;
@@ -116,8 +106,8 @@ export const FolderSelector = ({
 	);
 
 	const flattenedFolders = useMemo(
-		() => flattenFolders(filteredFolders),
-		[filteredFolders, flattenFolders]
+		() => flattenFolders(accountRootFolder && [accountRootFolder]),
+		[accountRootFolder, flattenFolders]
 	);
 
 	const filteredFromUserInput = useMemo(
