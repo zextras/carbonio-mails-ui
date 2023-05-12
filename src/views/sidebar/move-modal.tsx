@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Container, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, Folder, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
 import { isNil, some } from 'lodash';
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { useAppDispatch } from '../../hooks/redux';
 import { folderAction } from '../../store/actions/folder-action';
 import type { ModalProps } from '../../types';

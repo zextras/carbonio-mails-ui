@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { Folder, useFolder } from '@zextras/carbonio-shell-ui';
 import { find, map, noop, reduce } from 'lodash';
 import React, { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { IncompleteMessage, MailMessage, MessageListItemProps } from '../../../../types';
 import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import ShimmerList from '../../../search/shimmer-list';
@@ -79,7 +79,7 @@ export type MessageListComponentProps = {
 	// the ids of the messages being dragged
 	draggedIds?: Record<string, boolean>;
 	// the function to call when the user starts dragging a message
-	setDraggedIds?: (ids: Record<string, boolean>) => void;
+	setDraggedIds: (ids: Record<string, boolean>) => void;
 	// true if the component is in the search module
 	isSearchModule?: boolean;
 	// true if the user is in select mode
@@ -96,6 +96,8 @@ export type MessageListComponentProps = {
 	selectAllModeOff: () => void;
 	// the function to call when the user toggles select mode
 	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
+	// the ref to the item being dragged
+	dragImageRef?: React.RefObject<HTMLInputElement>;
 };
 
 export const MessageListComponent: FC<MessageListComponentProps> = memo(
@@ -118,16 +120,16 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		selectAll,
 		isAllSelected,
 		selectAllModeOff,
-		setIsSelectModeOn
+		setIsSelectModeOn,
+		dragImageRef
 	}) {
-		const dragImageRef = useRef(null);
 		const listRef = useRef<HTMLDivElement>(null);
 
 		useEffect(() => {
 			setDraggedIds && setDraggedIds(selected);
 		}, [selected, setDraggedIds]);
 
-		const folder: Folder = useFolder(folderId?.toString());
+		const folder = useFolder(folderId?.toString());
 		const today = useMemo(() => new Date().setHours(0, 0, 0, 0), []);
 		const showBreadcrumbs = useMemo(
 			() =>

@@ -3,8 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { noop } from 'lodash';
-import React, { FC } from 'react';
+import React, { FC, RefObject } from 'react';
 
 import type { Conversation } from '../../../../types';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
@@ -17,10 +16,10 @@ type ConversationListItemComponentProps = {
 	selecting: boolean;
 	toggle: (id: string) => void;
 	active?: boolean;
-	setDraggedIds?: (ids: Record<string, boolean>) => void;
-	draggedIds?: Record<string, boolean> | undefined;
+	setDraggedIds: (ids: Record<string, boolean>) => void;
+	draggedIds?: Record<string, boolean>;
 	selectedItems?: Record<string, boolean>;
-	dragImageRef?: React.RefObject<HTMLInputElement>;
+	dragImageRef?: RefObject<HTMLInputElement>;
 	isSearchModule?: boolean;
 	selectedIds?: string[];
 	deselectAll: () => void;
@@ -49,7 +48,7 @@ export const ConversationListItemComponent: FC<ConversationListItemComponentProp
 		item={item}
 		selectedIds={selectedIds}
 		selectedItems={selectedItems}
-		setDraggedIds={noop}
+		setDraggedIds={setDraggedIds}
 		dragImageRef={dragImageRef}
 		dragAndDropIsDisabled={!!isSearchModule}
 	>

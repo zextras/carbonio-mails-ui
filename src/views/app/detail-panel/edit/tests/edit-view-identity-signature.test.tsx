@@ -10,6 +10,7 @@ import { noop } from 'lodash';
 import React from 'react';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { ActionsType } from '../../../../../commons/utils';
@@ -113,6 +114,8 @@ describe('New and Replay email view', () => {
 					status: {}
 				}
 			});
+
+			populateFoldersStore();
 
 			// Mock the "action" query param
 			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {

@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.5...v1.3.6) (2023-05-11)
+
+### [1.3.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.4...v1.3.5) (2023-05-11)
+
+
+### Bug Fixes
+
+* fix move of list items in shared accounts ([5bb6230](https://github.com/zextras/carbonio-mails-ui/commit/5bb6230fca5dddeaa3547726fc2607b571eb82ce))
+
+### [1.3.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.3...v1.3.4) (2023-05-10)
+
+
+### Bug Fixes
+
+* fix function import in sync ([515c94d](https://github.com/zextras/carbonio-mails-ui/commit/515c94d645f48802ab09816fa50742dfa208ee82))
+
+### [1.3.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.2...v1.3.3) (2023-05-09)
+
+
+### Bug Fixes
+
+* fix drag and drop behavior ([3122c26](https://github.com/zextras/carbonio-mails-ui/commit/3122c26f4d8e251584b5eb236e1db09f00e1236b))
+* fix move of list items in search module ([a4c0c2e](https://github.com/zextras/carbonio-mails-ui/commit/a4c0c2e10a81c5b536c301b6ff40a9db1179e076))
+
 ### [1.3.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.1...v1.3.2) (2023-04-27)
 
 

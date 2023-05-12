@@ -61,8 +61,9 @@
         "attachment": "Adjunto",
         "attachment_plural": "Adjuntos",
         "cancel": "Cancelar",
-        "download": "Descargar",
-        "download_plural": "Descargar todo",
+        "download_0": "Descargar",
+        "download_1": "Descargar todo",
+        "download_2": "",
         "edit": "Editar",
         "me": "Yo",
         "remove": "Eliminar",
@@ -172,7 +173,7 @@
         "search_activate_selection_mode": "El modo de selección no está disponible para los resultados de la búsqueda",
         "addresses_not_accepted": "Una o más direcciones no han sido aceptadas. Direcciones rechazadas:",
         "received_from_address": "Recibido de (address)",
-        "results_for_error": "No se pudo realizar la búsqueda. Vuelve a intentarlo: ",
+        "results_for_error": "No se puede realizar la búsqueda. Vuelve a intentarlo: ",
         "attachement_unknown": "Desconocido <{{mimeType}}>",
         "draft": "Borrador",
         "forwarded": "Reenviado",
@@ -287,7 +288,8 @@
         "need_to_select_atleast_one_item": "Debes seleccionar al menos un elemento para realizar la acción",
         "path": "Ruta",
         "select_all": "Seleccionar todo",
-        "using_signatures": "Uso de firmas"
+        "using_signatures": "Uso de firmas",
+        "admin_disabled_action": "El administrador ha desactivado el redireccionamiento"
     },
     "messages": {
         "modal": {
@@ -435,7 +437,7 @@
             "att_err": "Ha habido un problema al guardar. Intenta nuevamente",
             "att_saved": "El adjunto se ha guardado en la carpeta seleccionada",
             "calendar_edits_saved": "Se han guardado los cambios",
-            "all_link_copied": "El enlace público se ha copiado al portapapeles",
+            "all_link_copied": "El enlace público ha sido copiado al portapapeles",
             "link_copying_error": "Error al generar el enlace público. Por favor intenta nuevamente",
             "some_link_copying_error": "Se produjo un problema al generar el enlace público para algunos archivos. Intenta nuevamente",
             "eml_download_failed": "El adjunto se ha guardado en la carpeta seleccionada"

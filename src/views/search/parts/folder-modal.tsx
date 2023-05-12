@@ -4,33 +4,31 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import {
-	Container,
-	CustomModal,
-	Input,
-	Text,
 	Accordion,
 	AccordionItem,
-	Tooltip,
 	Avatar,
+	Container,
+	CustomModal,
 	Icon,
+	Input,
+	Padding,
 	Row,
-	Padding
+	Text,
+	Tooltip
 } from '@zextras/carbonio-design-system';
+import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { filter, isEmpty, reduce, startsWith } from 'lodash';
-import {
-	AccordionFolder,
-	FOLDERS,
-	t,
-	useFolders,
-	useFoldersAccordionByView,
-	useUserAccount
-} from '@zextras/carbonio-shell-ui';
+import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
+import {
+	useFoldersMap,
+	useFoldersAccordionByView
+} from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import type { AccordionFolder } from '../../../carbonio-ui-commons/types/folder';
 import type { FolderType } from '../../../types';
 import { getFolderIconColor, getFolderTranslatedName } from '../../sidebar/utils';
 import AccordionCustomComponent from './folder-accordion-custom-comp';
@@ -72,7 +70,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const [input, setInput] = useState('');
 	const [folderDestination, setFolderDestination] = useState<FolderType | any>({});
 
-	const foldersFromStore = useFolders();
+	const foldersFromStore = useFoldersMap();
 
 	const getFolderAbsPath = useCallback(
 		(fid: string) => {

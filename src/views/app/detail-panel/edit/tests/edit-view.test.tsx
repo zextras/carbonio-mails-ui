@@ -21,6 +21,7 @@ import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/pa
 import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { ActionsType } from '../../../../../commons/utils';
@@ -843,7 +844,7 @@ describe('Edit view', () => {
 			});
 
 			describe('priority by opening folder', () => {
-				test("user primary account identity is selected when message, sent to a user account AND a shared account, is open from the primary account's folder", async () => {
+				test("user primary account identity is selected when message, sent to a user account AND a shared account, is opened from the primary account's folder", async () => {
 					// Get the identities
 					const mocksContext = getMocksContext();
 					const defaultIdentity = mocksContext.identities.primary.identity;
@@ -903,7 +904,7 @@ describe('Edit view', () => {
 					);
 				});
 
-				test("shared account identity is selected when message, sent to a user account AND a shared account, is open from the shared account's folder", async () => {
+				test("shared account identity is selected when message, sent to a user account AND a shared account, is opened from the shared account's folder", async () => {
 					// Get the identities
 					const mocksContext = getMocksContext();
 					const defaultIdentity = mocksContext.identities.primary.identity;
@@ -935,6 +936,8 @@ describe('Edit view', () => {
 							status: {}
 						}
 					});
+
+					populateFoldersStore();
 
 					// Mock the "action" query param
 					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {

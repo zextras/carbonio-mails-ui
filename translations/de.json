@@ -171,7 +171,7 @@
         "add_task": "Wenn Sie eine Notiz machen müssen, können Sie eine Aufgabe zu Ihrer TO DO LIST hinzufügen",
         "accept": "Akzeptieren",
         "select_color": "Farbe auswählen",
-        "share_with": "Teilen mit",
+        "share_with": "teilen mit",
         "cc_bcc": "Cc Bcc",
         "from_identity": "Von: {{identity}}",
         "attachement_unknown": "Unbekannt{{mimeType}}",
@@ -219,7 +219,7 @@
         "view_images": "BILDER ANSEHEN",
         "share_public_link": "Öffentlichen Link teilen",
         "time_zone": "Zeitzone",
-        "searching": "Suche …",
+        "searching": "Suche...",
         "notify": "Benachrichtigen",
         "do_not_notify": "Nicht benachrichtigen",
         "keep_draft": "Entwurf speichern",
@@ -277,7 +277,10 @@
             }
         },
         "need_to_select_atleast_one_item": "Sie müssen mindestens ein Element auswählen, um die Aktion auszuführen",
-        "select_all": "Alle auswählen"
+        "select_all": "Alle auswählen",
+        "admin_disabled_action": "Der Administrator hat die Weiterleitungsaktion deaktiviert",
+        "received_from_address": "Empfangen von (Adresse)",
+        "sent_to_address": "Gesendet an (Adresse)"
     },
     "share": {
         "options": {

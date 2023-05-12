@@ -5,16 +5,13 @@
  */
 import { faker } from '@faker-js/faker';
 import { fireEvent, screen } from '@testing-library/react';
-import { Folder } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import React from 'react';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import {
-	FOLDERS,
-	useFolder
-} from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import type { Folder } from '../../../../../carbonio-ui-commons/types/folder';
 import { FOLDERS_DESCRIPTORS, VISIBILITY_ASSERTION } from '../../../../../tests/constants';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
@@ -43,7 +40,8 @@ describe.each`
 		...generateFolders(),
 		[FOLDERS_DESCRIPTORS.USER_DEFINED.id]: userFolder
 	};
-
+	const mockedFolders = generateFolders();
+	const useFolder = jest.fn((id: string) => mockedFolders[id]);
 	useFolder.mockImplementation((folderId) => folders[folderId]);
 
 	describe('in any folders', () => {

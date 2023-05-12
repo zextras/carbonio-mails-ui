@@ -3,16 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	AccordionFolder,
-	FOLDERS,
-	Folder,
-	LinkFolderFields,
-	ROOT_NAME,
-	ZIMBRA_STANDARD_COLORS,
-	t
-} from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ROOT_NAME, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
+import type {
+	AccordionFolder,
+	Folder,
+	LinkFolderFields
+} from '../../carbonio-ui-commons/types/folder';
 import { getFolderIdParts } from '../../helpers/folders';
 
 export const normalizeFolder = (
@@ -108,7 +105,10 @@ export const getFolderIconNameForAccordionFolder = (folder: AccordionFolder): st
 		FOLDERS.SENT
 	];
 
-	if (folder.id === FOLDERS.USER_ROOT || folder.folder?.oname === ROOT_NAME) {
+	if (
+		folder.id === FOLDERS.USER_ROOT ||
+		('oname' in folder.folder && folder.folder?.oname === ROOT_NAME)
+	) {
 		return null;
 	}
 
