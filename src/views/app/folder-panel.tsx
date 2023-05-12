@@ -6,7 +6,7 @@
 /* eslint-disable no-nested-ternary */
 
 import { Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, useAppContext, useFolder, useFolders } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';

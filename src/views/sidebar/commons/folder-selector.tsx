@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Accordion, Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
-import {
-	FOLDERS,
-	Folder,
-	getFolder,
-	t,
-	useFoldersByView,
-	useUserAccount
-} from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { filter, startsWith } from 'lodash';
 import React, {
 	ChangeEvent,
@@ -23,10 +16,15 @@ import React, {
 	useState
 } from 'react';
 import styled from 'styled-components';
+import {
+	getFolder,
+	getRoot,
+	useRoot
+} from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import type { Folder } from '../../../carbonio-ui-commons/types/folder';
+import { useFolders } from '../../../hooks/use-folders';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
-import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { getFolderTranslatedName } from '../utils';
-import { getRootAccountName } from '../../../helpers/folders';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -50,8 +48,8 @@ export const FolderSelector = ({
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const accountName = useUserAccount().name;
-	const folders = useFoldersByView(FOLDER_VIEW.message);
 	const folder = getFolder(folderId);
+	const accountRootFolder = getRoot(folderId);
 
 	const accordionRef = useRef<HTMLDivElement>();
 	const [accordionWidth, setAccordionWidth] = useState<number>();
@@ -66,14 +64,9 @@ export const FolderSelector = ({
 		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
 	}, [accordionRef]);
 
-	const rootName = useMemo(() => getRootAccountName(folder), [folder]);
-
-	const filteredFolders = folders.filter((item) =>
-		rootName ? item.name === rootName : item.id === FOLDERS.USER_ROOT
-	);
-
 	const flattenFolders = useCallback(
-		(arr: Array<Folder>): Array<Folder> => {
+		(arr: Array<Folder> | undefined): Array<Folder> => {
+			if (!arr) return [];
 			const result: Array<Folder> = [];
 			arr.forEach((item) => {
 				const { children } = item;
@@ -113,8 +106,8 @@ export const FolderSelector = ({
 	);
 
 	const flattenedFolders = useMemo(
-		() => flattenFolders(filteredFolders),
-		[filteredFolders, flattenFolders]
+		() => flattenFolders(accountRootFolder && [accountRootFolder]),
+		[accountRootFolder, flattenFolders]
 	);
 
 	const filteredFromUserInput = useMemo(

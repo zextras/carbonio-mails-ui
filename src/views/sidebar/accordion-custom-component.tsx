@@ -20,9 +20,6 @@ import {
 import {
 	AppLink,
 	FOLDERS,
-	Folder,
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	ROOT_NAME,
 	getBridgedFunctions,
 	pushHistory,
@@ -34,6 +31,7 @@ import {
 import React, { FC, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { useAppDispatch } from '../../hooks/redux';
 import { convAction, msgAction, search } from '../../store/actions';

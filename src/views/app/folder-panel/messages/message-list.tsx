@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, Folder, t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useMessageList } from '../../../../hooks/use-message-list';
 import { useSelection } from '../../../../hooks/use-selection';
@@ -16,11 +18,10 @@ import { selectFolderMsgSearchStatus } from '../../../../store/messages-slice';
 import type { AppContext } from '../../../../types';
 import { MessageListComponent } from './message-list-component';
 import { MessageListItemComponent } from './message-list-item-component';
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 
 export const MessageList: FC = () => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
-	const folder: Folder = useFolder(folderId);
+	const folder = useFolder(folderId);
 	const dispatch = useAppDispatch();
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
