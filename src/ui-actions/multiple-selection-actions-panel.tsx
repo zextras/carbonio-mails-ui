@@ -13,7 +13,15 @@ import {
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
 import { every, filter, findIndex } from 'lodash';
-import React, { FC, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import React, {
+	FC,
+	MutableRefObject,
+	ReactElement,
+	SyntheticEvent,
+	useCallback,
+	useEffect,
+	useState
+} from 'react';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppDispatch } from '../hooks/redux';
 import type {
@@ -50,7 +58,7 @@ type MultipleSelectionActionsPanelProps = {
 	selectAll: () => void;
 	isAllSelected: boolean;
 	selectAllModeOff: () => void;
-	setIsSelectModeOn: (value: boolean) => void;
+	isSelectModeOn: MutableRefObject<boolean>;
 	folderId: string;
 };
 type MsgOrConv = Partial<MailMessage> | Conversation;
@@ -62,7 +70,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	selectAll,
 	isAllSelected,
 	selectAllModeOff,
-	setIsSelectModeOn,
+	isSelectModeOn,
 	folderId
 }) => {
 	const isConversation = 'messages' in (items?.[0] || {});
@@ -74,10 +82,11 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	// This useEffect is used to reset the select mode when the user navigates to a different folder
 	useEffect(() => {
 		if (folderId && currentFolderId !== folderParentId) {
-			setIsSelectModeOn(false);
+			// eslint-disable-next-line no-param-reassign
+			isSelectModeOn.current = false;
 			deselectAll();
 		}
-	}, [currentFolderId, deselectAll, folderId, folderParentId, setIsSelectModeOn]);
+	}, [currentFolderId, deselectAll, folderId, folderParentId, isSelectModeOn]);
 
 	const dispatch = useAppDispatch();
 	const ids = Object.values(selectedIds ?? []);
@@ -322,8 +331,9 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 
 	const arrowBackOnClick = useCallback(() => {
 		deselectAll();
-		setIsSelectModeOn(false);
-	}, [deselectAll, setIsSelectModeOn]);
+		// eslint-disable-next-line no-param-reassign
+		isSelectModeOn.current = false;
+	}, [deselectAll, isSelectModeOn]);
 
 	const selectAllOnClick = useCallback(() => {
 		selectAll();

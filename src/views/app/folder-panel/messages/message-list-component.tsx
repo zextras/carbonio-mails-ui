@@ -5,7 +5,7 @@
  */
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { find, map, noop, reduce } from 'lodash';
-import React, { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { FC, MutableRefObject, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
@@ -83,8 +83,7 @@ export type MessageListComponentProps = {
 	// true if the component is in the search module
 	isSearchModule?: boolean;
 	// true if the user is in select mode
-	isSelectModeOn: boolean;
-	// the selected messages
+	isSelectModeOn: MutableRefObject<boolean>; // the selected messages
 	selected: Record<string, boolean>;
 	// the function to call when the user deselects all messages
 	deselectAll: () => void;
@@ -94,8 +93,6 @@ export type MessageListComponentProps = {
 	isAllSelected: boolean;
 	// the function to call when the user deselects all messages
 	selectAllModeOff: () => void;
-	// the function to call when the user toggles select mode
-	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
 	// the ref to the item being dragged
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 };
@@ -120,7 +117,6 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		selectAll,
 		isAllSelected,
 		selectAllModeOff,
-		setIsSelectModeOn,
 		dragImageRef
 	}) {
 		const listRef = useRef<HTMLDivElement>(null);
@@ -160,8 +156,8 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 						selectAll={selectAll}
 						isAllSelected={isAllSelected}
 						selectAllModeOff={selectAllModeOff}
-						setIsSelectModeOn={setIsSelectModeOn}
 						folderId={folderId}
+						isSelectModeOn={isSelectModeOn}
 					/>
 				) : (
 					showBreadcrumbs && (
@@ -169,7 +165,6 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 							folderPath={folderPath}
 							itemsCount={totalMessages}
 							isSelectModeOn={isSelectModeOn}
-							setIsSelectModeOn={setIsSelectModeOn}
 						/>
 					)
 				)}

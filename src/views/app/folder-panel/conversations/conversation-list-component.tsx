@@ -6,7 +6,7 @@
 
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
 import { find, map, noop, reduce } from 'lodash';
-import React, { FC, RefObject, memo, useEffect, useMemo, useRef } from 'react';
+import React, { FC, MutableRefObject, RefObject, memo, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
@@ -87,8 +87,7 @@ export type ConversationListComponentProps = {
 	// true if the component is in the search module
 	isSearchModule?: boolean;
 	// true if the user is in select mode
-	isSelectModeOn: boolean;
-	// the selected conversations
+	isSelectModeOn: MutableRefObject<boolean>; // the selected conversations
 	selected: Record<string, boolean>;
 	// the function to call when the user deselects all conversations
 	deselectAll: () => void;
@@ -98,8 +97,6 @@ export type ConversationListComponentProps = {
 	isAllSelected: boolean;
 	// the function to call when the user deselects all conversations
 	selectAllModeOff: () => void;
-	// the function to call when the user toggles select mode
-	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
 	// the reference to the dragged item
 	dragImageRef?: RefObject<HTMLInputElement>;
 };
@@ -116,7 +113,6 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 		selectAll,
 		isAllSelected,
 		selectAllModeOff,
-		setIsSelectModeOn,
 		conversationsLoadingCompleted,
 		draggedIds,
 		setDraggedIds,
@@ -161,7 +157,7 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 						selectAll={selectAll}
 						isAllSelected={isAllSelected}
 						selectAllModeOff={selectAllModeOff}
-						setIsSelectModeOn={setIsSelectModeOn}
+						isSelectModeOn={isSelectModeOn}
 					/>
 				) : (
 					showBreadcrumbs && (
@@ -169,7 +165,6 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 							folderPath={folderPath}
 							itemsCount={totalConversations}
 							isSelectModeOn={isSelectModeOn}
-							setIsSelectModeOn={setIsSelectModeOn}
 						/>
 					)
 				)}

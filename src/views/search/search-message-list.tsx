@@ -34,7 +34,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		toggle,
 		deselectAll,
 		isSelectModeOn,
-		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
 		selectAllModeOff
@@ -141,7 +140,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					folderId={folderId}
 					messages={messages}
 					isSelectModeOn={isSelectModeOn}
-					setIsSelectModeOn={setIsSelectModeOn}
 					isAllSelected={isAllSelected}
 					selectAll={selectAll}
 					deselectAll={deselectAll}

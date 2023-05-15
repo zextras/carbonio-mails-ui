@@ -35,7 +35,6 @@ export const MessageList: FC = () => {
 		selected,
 		deselectAll,
 		isSelectModeOn,
-		setIsSelectModeOn,
 		selectAll,
 		toggle,
 		isAllSelected,
@@ -140,7 +139,6 @@ export const MessageList: FC = () => {
 			draggedIds={draggedIds}
 			setDraggedIds={setDraggedIds}
 			isSelectModeOn={isSelectModeOn}
-			setIsSelectModeOn={setIsSelectModeOn}
 			isAllSelected={isAllSelected}
 			selectAll={selectAll}
 			deselectAll={deselectAll}

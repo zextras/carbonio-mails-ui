@@ -31,7 +31,7 @@ describe.each`
 				isSelected={false}
 				active
 				toggle={noop}
-				isSelectModeOn={false}
+				isSelectModeOn={{ current: false }}
 				key={message.id}
 				isSearchModule={isSearchModule}
 				deselectAll={noop}
@@ -44,7 +44,7 @@ describe.each`
 			displayerTitle: 'test',
 			folderId,
 			isAllSelected: false,
-			isSelectModeOn: false,
+			isSelectModeOn: { current: false },
 			listItems,
 			messages,
 			messagesLoadingCompleted: true,
@@ -52,7 +52,6 @@ describe.each`
 			selectAllModeOff: noop,
 			selected: {},
 			selectedIds: [],
-			setIsSelectModeOn: noop,
 			isSearchModule,
 			totalMessages: messages.length,
 			setDraggedIds: noop

@@ -12,7 +12,15 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, {
+	FC,
+	MutableRefObject,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 import styled from 'styled-components';
 import { getFolderPathForBreadcrumb } from '../../../../helpers/folders';
 
@@ -24,10 +32,9 @@ const SelectIconCheckbox = styled(IconCheckbox)`
 
 export const Breadcrumbs: FC<{
 	itemsCount: number;
-	isSelectModeOn: boolean;
-	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
+	isSelectModeOn: MutableRefObject<boolean>;
 	folderPath: string;
-}> = ({ itemsCount, isSelectModeOn, setIsSelectModeOn, folderPath }) => {
+}> = ({ itemsCount, isSelectModeOn, folderPath }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const folderPathLastPartRef = useRef<HTMLDivElement>(null);
 
@@ -90,11 +97,12 @@ export const Breadcrumbs: FC<{
 						<SelectIconCheckbox
 							borderRadius="regular"
 							icon="CheckmarkSquare"
-							defaultChecked={isSelectModeOn}
+							defaultChecked={isSelectModeOn.current}
 							size="regular"
 							onChange={(): null => null}
 							onClick={(): void => {
-								setIsSelectModeOn((prev: boolean) => !prev);
+								// eslint-disable-next-line no-param-reassign
+								isSelectModeOn.current = !isSelectModeOn.current;
 							}}
 						/>
 					</Tooltip>

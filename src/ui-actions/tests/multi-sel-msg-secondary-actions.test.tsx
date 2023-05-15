@@ -69,7 +69,7 @@ const store = generateStore();
 const props = {
 	items: [],
 	selectAllModeOff: noop,
-	setIsSelectModeOn: noop,
+	isSelectModeOn: { current: true },
 	folderId: '',
 	isAllSelected: false,
 	selectedIds: [],
