@@ -42,6 +42,7 @@ const ConversationList: FC = () => {
 		toggle,
 		deselectAll,
 		isSelectModeOn,
+		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
 		selectAllModeOff
@@ -120,7 +121,7 @@ const ConversationList: FC = () => {
 								setDraggedIds={setDraggedIds}
 								selectedItems={selected}
 								dragImageRef={dragImageRef}
-								selecting={isSelectModeOn.current}
+								selecting={isSelectModeOn}
 								active={active}
 								selectedIds={Object.keys(selected)}
 								deselectAll={deselectAll}
@@ -163,6 +164,7 @@ const ConversationList: FC = () => {
 			selected={selected}
 			deselectAll={deselectAll}
 			dragImageRef={dragImageRef}
+			setIsSelectModeOn={setIsSelectModeOn}
 		/>
 	);
 };

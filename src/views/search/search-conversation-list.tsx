@@ -39,6 +39,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 		toggle,
 		deselectAll,
 		isSelectModeOn,
+		setIsSelectModeOn,
 		selectAll,
 		isAllSelected,
 		selectAllModeOff
@@ -116,7 +117,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 							<ConversationListItemComponent
 								item={conversation}
 								selected={isSelected}
-								selecting={isSelectModeOn.current}
+								selecting={isSelectModeOn}
 								active={active}
 								toggle={toggle}
 								activeItemId={itemId}
@@ -151,6 +152,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 					folderId={parentId}
 					conversations={conversations}
 					isSelectModeOn={isSelectModeOn}
+					setIsSelectModeOn={setIsSelectModeOn}
 					selected={selected}
 					deselectAll={deselectAll}
 					selectAll={selectAll}

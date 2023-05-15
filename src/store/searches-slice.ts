@@ -33,8 +33,8 @@ export const getSearchSliceInitialiState = (): SearchesStateType =>
 	({
 		searchResults: undefined,
 		searchResultsIds: [],
-		conversations: [],
-		messages: [],
+		conversations: {},
+		messages: {},
 		more: false,
 		offset: 0,
 		limit: 500,
@@ -51,8 +51,8 @@ const resetResultReducer = (state: SearchesStateType): SearchesStateType =>
 
 const fetchSearchesPending = (state: SearchesStateType): void => {
 	state.status = 'pending';
-	state.conversations = [];
-	state.messages = [];
+	state.conversations = {};
+	state.messages = {};
 };
 
 const fetchSearchesFulfilled = (
@@ -75,8 +75,8 @@ const fetchSearchesFulfilled = (
 // @ts-ignore
 const fetchSearchesRejected = (state: SearchesStateType, { payload }): void => {
 	state.status = 'error';
-	state.conversations = [];
-	state.messages = [];
+	state.conversations = {};
+	state.messages = {};
 	state.error = {
 		code: payload?.Detail.Error.Code ?? 'generic error'
 	};

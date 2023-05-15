@@ -25,7 +25,7 @@ export type TextReadValuesProps = {
 export type AppContext = {
 	isMessageView: boolean;
 	count: number;
-	setCount: (arg: number | ((prevState: number) => number)) => void;
+	setCount: (value: number | ((prevState: number) => number)) => void;
 };
 
 export type BoardContext = {

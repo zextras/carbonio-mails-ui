@@ -298,7 +298,7 @@ export const normalizeMailMessageFromSoap = (
 			autoSendTime: m.autoSendTime,
 			read: !isNil(m.f) ? !/u/.test(m.f) : true,
 			hasAttachment: !isNil(m.f) ? /a/.test(m.f) : undefined,
-			flagged: !isNil(m.f) ? /f/.test(m.f) : undefined,
+			flagged: !isNil(m.f) ? /f/.test(m.f) : false,
 			urgent: !isNil(m.f) ? /!/.test(m.f) : undefined,
 			isDeleted: !isNil(m.f) ? /x/.test(m.f) : undefined,
 			isDraft: !isNil(m.f) ? /d/.test(m.f) : undefined,

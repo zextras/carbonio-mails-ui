@@ -59,7 +59,8 @@ describe.each`
 			selectedIds: [],
 			folderId,
 			conversations,
-			isSelectModeOn: { current: false },
+			isSelectModeOn: false,
+			setIsSelectModeOn: jest.fn(),
 			selected: {},
 			deselectAll,
 			selectAll,
@@ -81,7 +82,10 @@ describe.each`
 				),
 				searchedInFolder: {},
 				conversations: {
-					...conversations.map((conversation) => ({ [conversation.id]: conversation }))
+					...conversations.reduce(
+						(result, conversation) => ({ ...result, [conversation.id]: conversation }),
+						{}
+					)
 				},
 				status: 'complete'
 			}

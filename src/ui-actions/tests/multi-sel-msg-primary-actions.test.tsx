@@ -65,6 +65,7 @@ const store = generateStore();
 const props = {
 	items: [],
 	selectAllModeOff: noop,
+	setIsSelectModeOn: noop,
 	folderId: '',
 	isAllSelected: false,
 	selectedIds: [],
@@ -93,7 +94,8 @@ describe('Actions visibility', () => {
 					items: messages,
 					folderId: excludedFolder,
 					selectedIds,
-					isSelectModeOn: { current: true }
+					isSelectModeOn: true,
+					setIsSelectModeOn: noop
 				};
 
 				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
@@ -115,7 +117,7 @@ describe('Actions visibility', () => {
 					items: messages,
 					folderId: folders.value[0],
 					selectedIds,
-					isSelectModeOn: { current: true }
+					setIsSelectModeOn: noop
 				};
 
 				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });

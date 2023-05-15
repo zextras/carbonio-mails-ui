@@ -5,7 +5,7 @@
  */
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { find, map, noop, reduce } from 'lodash';
-import React, { FC, MutableRefObject, memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
@@ -83,7 +83,10 @@ export type MessageListComponentProps = {
 	// true if the component is in the search module
 	isSearchModule?: boolean;
 	// true if the user is in select mode
-	isSelectModeOn: MutableRefObject<boolean>; // the selected messages
+	isSelectModeOn: boolean;
+	// the function to call when the user enters or exits select mode
+	setIsSelectModeOn: (value: boolean | ((prev: boolean) => boolean)) => void;
+	// the ids of the selected messages
 	selected: Record<string, boolean>;
 	// the function to call when the user deselects all messages
 	deselectAll: () => void;
@@ -112,6 +115,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		setDraggedIds,
 		isSearchModule,
 		isSelectModeOn,
+		setIsSelectModeOn,
 		selected,
 		deselectAll,
 		selectAll,
@@ -157,7 +161,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 						isAllSelected={isAllSelected}
 						selectAllModeOff={selectAllModeOff}
 						folderId={folderId}
-						isSelectModeOn={isSelectModeOn}
+						setIsSelectModeOn={setIsSelectModeOn}
 					/>
 				) : (
 					showBreadcrumbs && (
@@ -165,6 +169,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 							folderPath={folderPath}
 							itemsCount={totalMessages}
 							isSelectModeOn={isSelectModeOn}
+							setIsSelectModeOn={setIsSelectModeOn}
 						/>
 					)
 				)}

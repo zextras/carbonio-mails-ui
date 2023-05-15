@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { noop } from 'lodash';
-import React, { FC, MutableRefObject, memo } from 'react';
+import React, { FC, memo } from 'react';
 import type { IncompleteMessage } from '../../../../types';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
 import { MessageListItem } from './message-list-item';
@@ -15,7 +15,7 @@ export type ListItemComponentProps = {
 	isSelected: boolean;
 	active: boolean;
 	toggle: (id: string) => void;
-	isSelectModeOn: MutableRefObject<boolean>;
+	isSelectModeOn: boolean;
 	dragImageRef?: React.MutableRefObject<HTMLDivElement | null>;
 	draggedIds?: Record<string, boolean>;
 	isSearchModule?: boolean;
@@ -50,7 +50,7 @@ export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
 				<MessageListItem
 					item={message}
 					selected={isSelected}
-					selecting={isSelectModeOn.current}
+					selecting={isSelectModeOn}
 					isConvChildren={false}
 					toggle={toggle}
 					active={active}
