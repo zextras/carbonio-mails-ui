@@ -75,8 +75,9 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	useEffect(() => {
 		if (folderId && currentFolderId !== folderParentId) {
 			setIsSelectModeOn(false);
+			deselectAll();
 		}
-	}, [currentFolderId, folderId, folderParentId, setIsSelectModeOn]);
+	}, [currentFolderId, deselectAll, folderId, folderParentId, setIsSelectModeOn]);
 
 	const dispatch = useAppDispatch();
 	const ids = Object.values(selectedIds ?? []);
