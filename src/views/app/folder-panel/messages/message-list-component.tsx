@@ -115,12 +115,12 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		setDraggedIds,
 		isSearchModule,
 		isSelectModeOn,
-		setIsSelectModeOn,
 		selected,
 		deselectAll,
 		selectAll,
 		isAllSelected,
 		selectAllModeOff,
+		setIsSelectModeOn,
 		dragImageRef
 	}) {
 		const listRef = useRef<HTMLDivElement>(null);

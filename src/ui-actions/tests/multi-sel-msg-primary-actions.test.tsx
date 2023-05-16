@@ -93,9 +93,7 @@ describe('Actions visibility', () => {
 					...props,
 					items: messages,
 					folderId: excludedFolder,
-					selectedIds,
-					isSelectModeOn: true,
-					setIsSelectModeOn: noop
+					selectedIds
 				};
 
 				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
@@ -116,8 +114,7 @@ describe('Actions visibility', () => {
 					...props,
 					items: messages,
 					folderId: folders.value[0],
-					selectedIds,
-					setIsSelectModeOn: noop
+					selectedIds
 				};
 
 				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
@@ -150,8 +147,7 @@ describe('Actions visibility', () => {
 					...props,
 					items: messages,
 					folderId: excludedFolder,
-					selectedIds,
-					isSelectModeOn: { current: true }
+					selectedIds
 				};
 
 				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
@@ -171,8 +167,7 @@ describe('Actions visibility', () => {
 					...props,
 					items: messages,
 					folderId: folders.value[0],
-					selectedIds,
-					isSelectModeOn: { current: true }
+					selectedIds
 				};
 
 				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
@@ -205,8 +200,7 @@ describe('Actions visibility', () => {
 					...props,
 					items: messages,
 					folderId: excludedFolder,
-					selectedIds,
-					isSelectModeOn: { current: true }
+					selectedIds
 				};
 
 				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
@@ -226,8 +220,7 @@ describe('Actions visibility', () => {
 					...props,
 					items: messages,
 					folderId: folders.value[0],
-					selectedIds,
-					isSelectModeOn: { current: true }
+					selectedIds
 				};
 
 				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
