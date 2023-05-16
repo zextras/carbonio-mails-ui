@@ -88,9 +88,7 @@ export type ConversationListComponentProps = {
 	isSearchModule?: boolean;
 	// true if the user is in select mode
 	isSelectModeOn: boolean;
-	// the function to call when the user enters select mode
-	setIsSelectModeOn: (value: boolean | ((prev: boolean) => boolean)) => void;
-	// the ids of the selected conversations
+	// the selected conversations
 	selected: Record<string, boolean>;
 	// the function to call when the user deselects all conversations
 	deselectAll: () => void;
@@ -100,6 +98,8 @@ export type ConversationListComponentProps = {
 	isAllSelected: boolean;
 	// the function to call when the user deselects all conversations
 	selectAllModeOff: () => void;
+	// the function to call when the user toggles select mode
+	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
 	// the reference to the dragged item
 	dragImageRef?: RefObject<HTMLInputElement>;
 };
@@ -116,6 +116,7 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 		selectAll,
 		isAllSelected,
 		selectAllModeOff,
+		setIsSelectModeOn,
 		conversationsLoadingCompleted,
 		draggedIds,
 		setDraggedIds,
@@ -123,8 +124,7 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 		listItems,
 		totalConversations,
 		loadMoreDate,
-		dragImageRef,
-		setIsSelectModeOn
+		dragImageRef
 	}) {
 		useEffect(() => {
 			setDraggedIds && setDraggedIds(selected);

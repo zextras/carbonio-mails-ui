@@ -45,7 +45,6 @@ describe.each`
 			folderId,
 			isAllSelected: false,
 			isSelectModeOn: false,
-			setIsSelectModeOn: noop,
 			listItems,
 			messages,
 			messagesLoadingCompleted: true,
@@ -53,6 +52,7 @@ describe.each`
 			selectAllModeOff: noop,
 			selected: {},
 			selectedIds: [],
+			setIsSelectModeOn: noop,
 			isSearchModule,
 			totalMessages: messages.length,
 			setDraggedIds: noop

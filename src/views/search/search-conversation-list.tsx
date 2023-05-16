@@ -152,12 +152,12 @@ const SearchConversationList: FC<SearchListProps> = ({
 					folderId={parentId}
 					conversations={conversations}
 					isSelectModeOn={isSelectModeOn}
-					setIsSelectModeOn={setIsSelectModeOn}
 					selected={selected}
 					deselectAll={deselectAll}
 					selectAll={selectAll}
 					isAllSelected={isAllSelected}
 					selectAllModeOff={selectAllModeOff}
+					setIsSelectModeOn={setIsSelectModeOn}
 					loadMore={noop}
 					isSearchModule
 					setDraggedIds={noop}

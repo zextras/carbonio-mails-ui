@@ -76,7 +76,6 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		if (folderId && currentFolderId !== folderParentId) {
 			deselectAll();
 			setIsSelectModeOn(false);
-			deselectAll();
 		}
 	}, [currentFolderId, deselectAll, folderId, folderParentId, setIsSelectModeOn]);
 
@@ -97,9 +96,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		const action = isConversation
 			? setConversationsFlag({ ids, value: false, dispatch })
 			: setMsgFlag({ ids, value: false, dispatch });
-		// define a constant action to be returned if all selected items have false or undefined flagged property
-		const actionIsVisible = !some(selectedItems, ['flagged', true]);
-		return actionIsVisible && action;
+		return !some(selectedItems, ['flagged', true]) && action;
 	};
 
 	const removeFlagAction = (): ActionReturnType => {

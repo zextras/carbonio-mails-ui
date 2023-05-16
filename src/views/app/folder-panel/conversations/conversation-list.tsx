@@ -155,6 +155,7 @@ const ConversationList: FC = () => {
 			loadMoreDate={loadMoreDate}
 			selectedIds={selectedIds}
 			isSelectModeOn={isSelectModeOn}
+			setIsSelectModeOn={setIsSelectModeOn}
 			selectAll={selectAll}
 			isAllSelected={isAllSelected}
 			selectAllModeOff={selectAllModeOff}
@@ -164,7 +165,6 @@ const ConversationList: FC = () => {
 			selected={selected}
 			deselectAll={deselectAll}
 			dragImageRef={dragImageRef}
-			setIsSelectModeOn={setIsSelectModeOn}
 		/>
 	);
 };

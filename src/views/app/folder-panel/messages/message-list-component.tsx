@@ -84,9 +84,7 @@ export type MessageListComponentProps = {
 	isSearchModule?: boolean;
 	// true if the user is in select mode
 	isSelectModeOn: boolean;
-	// the function to call when the user enters or exits select mode
-	setIsSelectModeOn: (value: boolean | ((prev: boolean) => boolean)) => void;
-	// the ids of the selected messages
+	// the selected messages
 	selected: Record<string, boolean>;
 	// the function to call when the user deselects all messages
 	deselectAll: () => void;
@@ -96,6 +94,8 @@ export type MessageListComponentProps = {
 	isAllSelected: boolean;
 	// the function to call when the user deselects all messages
 	selectAllModeOff: () => void;
+	// the function to call when the user toggles select mode
+	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
 	// the ref to the item being dragged
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 };
@@ -160,8 +160,8 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 						selectAll={selectAll}
 						isAllSelected={isAllSelected}
 						selectAllModeOff={selectAllModeOff}
-						folderId={folderId}
 						setIsSelectModeOn={setIsSelectModeOn}
+						folderId={folderId}
 					/>
 				) : (
 					showBreadcrumbs && (

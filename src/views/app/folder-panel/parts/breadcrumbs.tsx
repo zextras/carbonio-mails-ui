@@ -25,9 +25,9 @@ const SelectIconCheckbox = styled(IconCheckbox)`
 export const Breadcrumbs: FC<{
 	itemsCount: number;
 	isSelectModeOn: boolean;
-	setIsSelectModeOn: (value: boolean | ((prev: boolean) => boolean)) => void;
+	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
 	folderPath: string;
-}> = ({ itemsCount, isSelectModeOn, folderPath, setIsSelectModeOn }) => {
+}> = ({ itemsCount, isSelectModeOn, setIsSelectModeOn, folderPath }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const folderPathLastPartRef = useRef<HTMLDivElement>(null);
 
