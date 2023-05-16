@@ -97,7 +97,10 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		const action = isConversation
 			? setConversationsFlag({ ids, value: false, dispatch })
 			: setMsgFlag({ ids, value: false, dispatch });
-		return every(selectedItems, ['flagged', false]) && action;
+		// define a constant action to be returned if all selected items have false or undefined flagged property
+		const actionIsVisible =
+			every(selectedItems, ['flagged', false]) || every(selectedItems, ['flagged', undefined]);
+		return actionIsVisible && action;
 	};
 
 	const removeFlagAction = (): ActionReturnType => {
