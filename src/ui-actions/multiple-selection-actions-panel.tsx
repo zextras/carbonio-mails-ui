@@ -12,7 +12,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
-import { every, filter, findIndex } from 'lodash';
+import { every, filter, findIndex, some } from 'lodash';
 import React, { FC, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppDispatch } from '../hooks/redux';
@@ -98,8 +98,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			? setConversationsFlag({ ids, value: false, dispatch })
 			: setMsgFlag({ ids, value: false, dispatch });
 		// define a constant action to be returned if all selected items have false or undefined flagged property
-		const actionIsVisible =
-			every(selectedItems, ['flagged', false]) || every(selectedItems, ['flagged', undefined]);
+		const actionIsVisible = !some(selectedItems, ['flagged', true]);
 		return actionIsVisible && action;
 	};
 
