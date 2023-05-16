@@ -7,7 +7,7 @@ import { Account, ROOT_NAME } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 import type { Folder, Folders, LinkFolder } from '../carbonio-ui-commons/types/folder';
 import type { MailMessage } from '../types';
-import { getFolder } from '../carbonio-ui-commons/store/zustand/folder';
+import { getFolder, getRoot } from '../carbonio-ui-commons/store/zustand/folder';
 
 /*
  * Describe the folder id syntax

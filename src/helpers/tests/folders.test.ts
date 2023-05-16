@@ -36,25 +36,29 @@ describe('Folder id', () => {
 });
 
 describe('Folder owner', () => {
-	populateFoldersStore();
 	const mocksContext = getMocksContext();
-	const roots = getRootsMap();
 	const primaryAccount = getUserAccount();
-	const sharedAccount = mocksContext.identities.sendAs[0];
 
 	test('For a folder with an id without the zid, the primary account name is returned', () => {
+		populateFoldersStore();
+		const roots = getRootsMap();
 		const folderId = FOLDERS.INBOX;
 		const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
 		expect(ownerAccountName).toBe(primaryAccount.name);
 	});
 
 	test("For a folder with an id containing the zid, the name of the shared account owning that folder's root is returned", () => {
+		populateFoldersStore();
+		const roots = getRootsMap();
+		const sharedAccount = mocksContext.identities.sendAs[0];
 		const folderId = `${sharedAccount.identity.id}:${FOLDERS.INBOX}`;
 		const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
 		expect(ownerAccountName).toBe(sharedAccount.identity.email);
 	});
 
 	test('For a folder with an id containing an unknown zid, the primary account name is returned', () => {
+		populateFoldersStore();
+		const roots = getRootsMap();
 		const folderId = `TheAnswerIs42:${FOLDERS.INBOX}`;
 		const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
 		expect(ownerAccountName).toBe(primaryAccount.name);
