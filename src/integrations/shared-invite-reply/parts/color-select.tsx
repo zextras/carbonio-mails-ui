@@ -98,6 +98,7 @@ export default function ColorSelect({
 			items={colors}
 			defaultSelection={defaultSelection}
 			LabelFactory={LabelFactory}
+			data-testid="color-select"
 		/>
 	);
 }
