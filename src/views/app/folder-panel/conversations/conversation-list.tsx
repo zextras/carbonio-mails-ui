@@ -134,7 +134,10 @@ const ConversationList: FC = () => {
 		[conversations, deselectAll, folderId, isSelectModeOn, itemId, selected, toggle]
 	);
 
-	const totalConversations = useMemo(() => folder?.n ?? 0, [folder]);
+	const totalConversations = useMemo(
+		() => conversations.length ?? folder?.n ?? 0,
+		[conversations.length, folder?.n]
+	);
 	const loadMoreDate = useMemo(
 		() => conversations?.[conversations.length - 1]?.date,
 		[conversations]
