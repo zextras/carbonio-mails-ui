@@ -3,124 +3,97 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Icon, Padding, Row, TextWithTooltip } from '@zextras/carbonio-design-system';
-import { indexOf, lastIndexOf, min } from 'lodash';
-import React, { FC, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { getFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import {
+	Breadcrumbs,
+	Container,
+	Crumb,
+	Icon,
+	Padding,
+	Row,
+	Text,
+	Tooltip
+} from '@zextras/carbonio-design-system';
+import { join } from 'lodash';
+import React, { FC } from 'react';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import type { Crumb } from '../../../../types';
+import { isRoot } from '../../../../helpers/folders';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
-import { Breadcrumbs } from './breadcrumbs';
+
+/**
+ * Process the absolute path of the given folder, removing
+ * the leading slash
+ *
+ * @param folder
+ * @return the array of the crumbs name of the path
+ */
+const getFolderAbsPathParts = (folder: Folder): Array<string> => {
+	if (!folder) {
+		return [];
+	}
+
+	// Exception for root folders
+	if (isRoot(folder?.id)) {
+		return [folder.name];
+	}
+	const reg = /^\/?(.*)$/gm;
+
+	const matches = reg.exec(folder.absFolderPath ?? '');
+	if (!matches) {
+		return [];
+	}
+
+	return matches[1].split('/');
+};
 
 const ModalAccordionCustomComponent: FC<{
 	item: Folder;
 }> = ({ item }) => {
-	const systemFolder = useMemo(() => {
-		let result = '';
-		if (item.absFolderPath) {
-			result =
-				item.absFolderPath.indexOf('/', 1) === -1
-					? item.absFolderPath.slice(1, item.absFolderPath.indexOf('/', 0))
-					: item.absFolderPath.slice(1, item.absFolderPath.indexOf('/', 1));
-		}
-		return result;
-	}, [item.absFolderPath]);
-	const translatedSystemFolder = getSystemFolderTranslatedName({ folderName: systemFolder });
-	const factor = 10;
-	const path = useMemo(
-		() =>
-			item.absFolderPath &&
-			item.absFolderPath
-				.slice(item.absFolderPath.indexOf('/', 1) + 1, item.absFolderPath.lastIndexOf('/'))
-				.split('/'),
-		[item.absFolderPath]
-	);
-	const targetFolder = useMemo(() => item.name, [item.name]);
-	const targetFolderWidth = useMemo(
-		() => min([targetFolder.length * factor + 18, 150]) || 0,
-		[targetFolder.length]
-	);
-	const containerRef = useRef<HTMLDivElement>(null);
-	const [availableWidth, setAvailableWidth] = useState(
-		(containerRef?.current?.clientWidth || 405) - targetFolderWidth
-	);
 	const iconName = getFolderIconName(item);
 	const iconColor = getFolderIconColor(item);
+	const parts = getFolderAbsPathParts(item);
 
-	const fullPath = useMemo(
-		() => (path ? [translatedSystemFolder, ...path].join(' / ') : ''),
-		[path, translatedSystemFolder]
-	);
+	/*
+	 * Remove the first part of the path and try to translate it, because:
+	 * - the Breadcrumbs component (currently) when need to collapse some crumbs
+	 *   start from the first element from the left. We need to keep it visible
+	 * - the first element usually is a system folder, and for those folders we
+	 *   have the translation
+	 */
+	const firstPart = getSystemFolderTranslatedName({ folderName: parts.shift() ?? '' });
+	const translatedTooltipText = join([firstPart, ...parts], '/');
+	const crumbs = parts.map<Crumb>((part, index) => ({
+		id: `${index}`,
+		label: part
+	}));
 
-	useLayoutEffect(() => {
-		const calculateAvailableWidth = (): void => {
-			if (containerRef && containerRef.current) {
-				setAvailableWidth(containerRef?.current?.clientWidth || 0 - targetFolderWidth);
-			}
-		};
-		window.addEventListener('resize', calculateAvailableWidth);
-		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
-	}, [containerRef?.current?.clientWidth, targetFolderWidth]);
-
-	const crumbs: Array<Crumb> | undefined = useMemo(() => {
-		const result = [];
-		const crumbItem = item;
-		let exitLoop = false;
-		let stringRemainingWidth = availableWidth;
-		let parent = getFolder(crumbItem.parent ?? '');
-		while (
-			!(
-				exitLoop ||
-				parent?.absFolderPath === '/' ||
-				(parent?.isLink === true && parent?.absFolderPath?.lastIndexOf('/', 1) !== -1)
-			)
-		) {
-			const value = crumbItem.absFolderPath?.slice(lastIndexOf(crumbItem.absFolderPath, '/') + 1);
-			stringRemainingWidth -= crumbItem.name.length * factor + 18;
-			if (value && value !== '' && stringRemainingWidth > 0) {
-				result.push({
-					label: value,
-					tooltip: ''
-				});
-				if (crumbItem.parent) {
-					parent = getFolder(crumbItem.parent);
-				}
-			} else {
-				result.push({
-					label: '...',
-					tooltip:
-						crumbItem.absFolderPath?.slice(indexOf(crumbItem.absFolderPath, '/', 2) + 1) || ''
-				});
-				exitLoop = true;
-			}
-		}
-		if (translatedSystemFolder) {
-			result.push({ label: translatedSystemFolder, tooltip: '' });
-		}
-		result.shift();
-		return result.reverse();
-	}, [availableWidth, item, translatedSystemFolder]);
 	return (
 		<Container
 			data-testid={`folder-accordion-item-${item.id}`}
-			ref={containerRef}
 			width="fill"
 			main-alignment="flex-start"
 			orientation="vertical"
 			crossAlignment="flex-start"
+			padding="medium"
+			wrap="nowrap"
 		>
-			<Padding all="medium">
-				<Row orientation="horizontal" width="fill" crossAlignment="flex-start">
-					<Icon color={iconColor} icon={iconName || 'FolderOutline'} size="large" />
-					<Padding right="medium" />
-					{crumbs && crumbs?.length > 0 && <Breadcrumbs breadcrumbs={crumbs} />}
-					<Container width="fit" maxWidth={availableWidth - fullPath.length + item.name.length}>
-						<TextWithTooltip overflow="ellipsis">&nbsp;{item.name}</TextWithTooltip>
+			<Tooltip label={translatedTooltipText}>
+				<Row mainAlignment="flex-start" wrap="nowrap" width="fill">
+					<Container width="fit">
+						<Icon color={iconColor} icon={iconName || 'FolderOutline'} size="large" />
+					</Container>
+					<Container
+						width="fit"
+						mainAlignment="flex-start"
+						padding={{ left: 'small', right: 'extrasmall' }}
+					>
+						<Text size="large">{firstPart}</Text>
+					</Container>
+					<Container mainAlignment="flex-start">
+						<Breadcrumbs crumbs={crumbs}></Breadcrumbs>
 					</Container>
 				</Row>
-			</Padding>
+			</Tooltip>
 		</Container>
 	);
 };
-
 export default ModalAccordionCustomComponent;
