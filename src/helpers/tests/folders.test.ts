@@ -7,7 +7,7 @@ import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { getFolderIdParts, getFolderOwnerAccountName } from '../folders';
+import { getFolderIdParts, getFolderOwnerAccountName, isRoot } from '../folders';
 
 describe('Folder id', () => {
 	test('with zid', () => {
@@ -62,5 +62,35 @@ describe('Folder owner', () => {
 		const folderId = `TheAnswerIs42:${FOLDERS.INBOX}`;
 		const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
 		expect(ownerAccountName).toBe(primaryAccount.name);
+	});
+});
+
+describe('isRoot', () => {
+	test('A folder with a id = 1 is recognized as a root', () => {
+		const folderId = '1';
+		expect(isRoot(folderId)).toBe(true);
+	});
+
+	test('A folder with a id != 1 is not recognized as a root', () => {
+		const folderId = '99';
+		expect(isRoot(folderId)).toBe(false);
+	});
+
+	test('If no folderId is specified false is returned', () => {
+		const folderId = undefined;
+		// Testing the case in which the parameter is undefined
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		expect(isRoot(folderId)).toBe(false);
+	});
+
+	test('A folder with a zid and an id = 1 is recognized as a root', () => {
+		const folderId = 'somelonghash:1';
+		expect(isRoot(folderId)).toBe(true);
+	});
+
+	test('A folder with a zid and an id != 1 is not recognized as a root', () => {
+		const folderId = 'anotherlonghash:99';
+		expect(isRoot(folderId)).toBe(false);
 	});
 });
