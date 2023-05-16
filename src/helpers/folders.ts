@@ -5,6 +5,7 @@
  */
 import { Account, ROOT_NAME } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
+import { FOLDERS } from '../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import type { Folder, Folders, LinkFolder } from '../carbonio-ui-commons/types/folder';
 import type { MailMessage } from '../types';
 import { getFolder, getRoot } from '../carbonio-ui-commons/store/zustand/folder';
@@ -120,4 +121,15 @@ export const getFolderPathForBreadcrumb = (
 	folderPathArray.pop();
 	const folderPathFirstPart = folderPathArray.join('/');
 	return { folderPathFirstPart, folderPathLastPart };
+};
+
+/**
+ * Tells if a given folder id belong to a root
+ * @param folder
+ */
+export const isRoot = (folderId: string): boolean => {
+	if (!folderId) {
+		return false;
+	}
+	return getFolderIdParts(folderId).id === FOLDERS.USER_ROOT;
 };
