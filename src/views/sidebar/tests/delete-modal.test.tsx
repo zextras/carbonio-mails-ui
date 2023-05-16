@@ -5,9 +5,10 @@
  */
 import React from 'react';
 import { screen } from '@testing-library/react';
-import { FOLDERS, Folder, FolderView } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { faker } from '@faker-js/faker';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
 import { DeleteModal } from '../delete-modal';
 
@@ -42,7 +43,7 @@ describe('delete-modal', () => {
 			depth: 2
 		};
 
-		const { user } = setupTest(<DeleteModal onClose={(): void => closeModal()} folder={folder} />, {
+		setupTest(<DeleteModal onClose={(): void => closeModal()} folder={folder} />, {
 			store
 		});
 

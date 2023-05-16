@@ -5,9 +5,10 @@
  */
 import React from 'react';
 import { screen } from '@testing-library/react';
-import { FOLDERS, Folder } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { faker } from '@faker-js/faker';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
 import { EmptyModal } from '../empty-modal';
 

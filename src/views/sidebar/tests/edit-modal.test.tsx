@@ -5,9 +5,10 @@
  */
 import React from 'react';
 import { screen, within } from '@testing-library/react';
-import { FOLDERS, Folder, FolderView, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { faker } from '@faker-js/faker';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
 import { EditModal } from '../edit-modal';
 
