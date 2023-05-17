@@ -3,12 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, ROOT_NAME } from '@zextras/carbonio-shell-ui';
+import { Account, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
-import { FOLDERS } from '../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
+import { getFolder } from '../carbonio-ui-commons/store/zustand/folder';
 import type { Folder, Folders, LinkFolder } from '../carbonio-ui-commons/types/folder';
 import type { MailMessage } from '../types';
-import { getFolder, getRoot } from '../carbonio-ui-commons/store/zustand/folder';
 
 /*
  * Describe the folder id syntax
@@ -124,12 +123,71 @@ export const getFolderPathForBreadcrumb = (
 };
 
 /**
- * Tells if a given folder id belong to a root
- * @param folder
+ * Tells if a folder with the given id is a spam folder
+ * @param folderId
  */
-export const isRoot = (folderId: string): boolean => {
+export const isA = (folderId: string, folderType: keyof Folders): boolean => {
 	if (!folderId) {
 		return false;
 	}
-	return getFolderIdParts(folderId).id === FOLDERS.USER_ROOT;
+	return getFolderIdParts(folderId).id === folderType;
+};
+
+/**
+ * Tells if a folder with the given id is a root folder
+ * @param folderId
+ */
+export const isRoot = (folderId: string): boolean => isA(folderId, FOLDERS.USER_ROOT);
+
+/**
+ * Tells if a folder with the given id is am inbox folder
+ * @param folderId
+ */
+export const isInbox = (folderId: string): boolean => isA(folderId, FOLDERS.INBOX);
+
+/**
+ * Tells if a folder with the given id is a trash folder
+ * @param folderId
+ */
+export const isTrash = (folderId: string): boolean => isA(folderId, FOLDERS.TRASH);
+
+/**
+ * Tells if a folder with the given id is a spam folder
+ * @param folderId
+ */
+export const isSpam = (folderId: string): boolean => isA(folderId, FOLDERS.SPAM);
+
+/**
+ * Tells if a folder with the given id is a spam folder
+ * @param folderId
+ */
+export const isSent = (folderId: string): boolean => isA(folderId, FOLDERS.SENT);
+
+/**
+ * Tells if a folder with the given id is a draft folder
+ * @param folderId
+ */
+export const isDraft = (folderId: string): boolean => isA(folderId, FOLDERS.DRAFT);
+
+/**
+ * Tells if a folder with the given id is a spam folder
+ * @param folderId
+ */
+export const isTrashed = ({
+	folder,
+	folderId
+}: {
+	folder?: Folder;
+	folderId?: string;
+}): boolean => {
+	if (!folder && !folderId) {
+		return false;
+	}
+
+	const path = folder ? folder.absFolderPath : getFolder(folderId ?? '')?.absFolderPath;
+	if (!path) {
+		return false;
+	}
+
+	return path.toLowerCase().startsWith('/trash');
 };

@@ -18,6 +18,7 @@ import React, {
 import styled from 'styled-components';
 import { getFolder, getRoot } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
+import { isSpam, isTrash, isTrashed } from '../../../helpers/folders';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
 import { getFolderTranslatedName } from '../utils';
 
@@ -64,35 +65,35 @@ export const FolderSelector = ({
 			if (!arr) return [];
 			const result: Array<Folder> = [];
 			arr.forEach((item) => {
+				if (isTrash(item.id) || isSpam(item.id) || isTrashed({ folder: item })) {
+					return;
+				}
+
 				const { children } = item;
-				if (
-					item.id !== FOLDERS.TRASH &&
-					item.id !== FOLDERS.SPAM &&
-					!startsWith(item.absFolderPath, '/Trash')
-				)
-					result.push({
-						...item,
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						CustomComponent: ModalAccordionCustomComponent,
-						onClick: () => {
-							setFolderDestination(item);
-						},
-						background:
-							typeof folderDestination !== 'undefined' && folderDestination.id === item.id
-								? 'highlight'
-								: undefined,
-						label:
-							item.id === FOLDERS.USER_ROOT
-								? accountName
-								: getFolderTranslatedName({
-										folderId: item.id,
-										folderName: item.name
-								  }),
-						activeId: item.id === folderId,
-						accordionWidth,
-						items: []
-					});
+
+				result.push({
+					...item,
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					CustomComponent: ModalAccordionCustomComponent,
+					onClick: () => {
+						setFolderDestination(item);
+					},
+					background:
+						typeof folderDestination !== 'undefined' && folderDestination.id === item.id
+							? 'highlight'
+							: undefined,
+					label:
+						item.id === FOLDERS.USER_ROOT
+							? accountName
+							: getFolderTranslatedName({
+									folderId: item.id,
+									folderName: item.name
+							  }),
+					activeId: item.id === folderId,
+					accordionWidth,
+					items: []
+				});
 				if (children?.length) result.push(...flattenFolders(children));
 			});
 			return result;

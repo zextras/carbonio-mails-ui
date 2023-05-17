@@ -14,7 +14,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { join } from 'lodash';
-import React, { FC } from 'react';
+import React, { FC, useLayoutEffect, useRef } from 'react';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import { isRoot } from '../../../../helpers/folders';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';

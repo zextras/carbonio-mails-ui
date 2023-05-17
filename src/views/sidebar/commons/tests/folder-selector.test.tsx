@@ -15,6 +15,7 @@ import {
 } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import { isSpam, isTrash, isTrashed } from '../../../../helpers/folders';
 import { FolderSelector, FolderSelectorProps } from '../folder-selector';
 import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { generateStore } from '../../../../tests/generators/store';
@@ -50,10 +51,7 @@ describe('Folder selector', () => {
 				// Get the folders and remove those that are excluded from the folder selector
 				const folders = reject(
 					getFoldersArrayByRoot(rootId),
-					(folder) =>
-						folder.id === FOLDERS.TRASH ||
-						folder.id === FOLDERS.SPAM ||
-						startsWith(folder.absFolderPath, '/Trash')
+					(folder) => isTrash(folder.id) || isSpam(folder.id) || isTrashed({ folder })
 				);
 
 				const props: FolderSelectorProps = {
