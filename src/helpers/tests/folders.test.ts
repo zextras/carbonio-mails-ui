@@ -3,11 +3,26 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
+import { getUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
+import {
+	getFolder,
+	getFoldersArray,
+	getRootsMap
+} from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { getFolderIdParts, getFolderOwnerAccountName, isRoot } from '../folders';
+import {
+	getFolderIdParts,
+	getFolderOwnerAccountName,
+	isDraft,
+	isInbox,
+	isInboxSubfolder,
+	isRoot,
+	isSent,
+	isTrash,
+	isTrashed
+} from '../folders';
 
 describe('Folder id', () => {
 	test('with zid', () => {
@@ -66,6 +81,18 @@ describe('Folder owner', () => {
 });
 
 describe('isRoot', () => {
+	test('If no folderId is specified false is returned', () => {
+		const folderId = undefined;
+		expect(
+			isRoot(
+				// Testing the case in which the parameter is undefined
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				folderId
+			)
+		).toBe(false);
+	});
+
 	test('A folder with a id = 1 is recognized as a root', () => {
 		const folderId = '1';
 		expect(isRoot(folderId)).toBe(true);
@@ -73,14 +100,6 @@ describe('isRoot', () => {
 
 	test('A folder with a id != 1 is not recognized as a root', () => {
 		const folderId = '99';
-		expect(isRoot(folderId)).toBe(false);
-	});
-
-	test('If no folderId is specified false is returned', () => {
-		const folderId = undefined;
-		// Testing the case in which the parameter is undefined
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		expect(isRoot(folderId)).toBe(false);
 	});
 
@@ -92,5 +111,219 @@ describe('isRoot', () => {
 	test('A folder with a zid and an id != 1 is not recognized as a root', () => {
 		const folderId = 'anotherlonghash:99';
 		expect(isRoot(folderId)).toBe(false);
+	});
+});
+
+describe('isInbox', () => {
+	test('If no folderId is specified false is returned', () => {
+		const folderId = undefined;
+		expect(
+			isInbox(
+				// Testing the case in which the parameter is undefined
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				folderId
+			)
+		).toBe(false);
+	});
+
+	test('A folder with a id = 2 is recognized as an inbox folder', () => {
+		const folderId = FOLDERS.INBOX;
+		expect(isInbox(folderId)).toBe(true);
+	});
+
+	test('A folder with a id != 2 is not recognized as an inbox folder', () => {
+		const folderId = '99';
+		expect(isInbox(folderId)).toBe(false);
+	});
+
+	test('A folder with a zid and an id = 2 is recognized as an inbox folder', () => {
+		const folderId = `somelonghash:${FOLDERS.INBOX}`;
+		expect(isInbox(folderId)).toBe(true);
+	});
+
+	test('A folder with a zid and an id != 2 is not recognized as an inbox folder', () => {
+		const folderId = 'anotherlonghash:99';
+		expect(isInbox(folderId)).toBe(false);
+	});
+});
+
+describe('isTrash', () => {
+	test('If no folderId is specified false is returned', () => {
+		const folderId = undefined;
+		expect(
+			isTrash(
+				// Testing the case in which the parameter is undefined
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				folderId
+			)
+		).toBe(false);
+	});
+
+	test('A folder with a id = 6 is recognized as a trash', () => {
+		const folderId = FOLDERS.TRASH;
+		expect(isTrash(folderId)).toBe(true);
+	});
+
+	test('A folder with a id != 6 is not recognized as a trash', () => {
+		const folderId = '99';
+		expect(isTrash(folderId)).toBe(false);
+	});
+
+	test('A folder with a zid and an id = 6 is recognized as a trash', () => {
+		const folderId = `somelonghash:${FOLDERS.TRASH}`;
+		expect(isTrash(folderId)).toBe(true);
+	});
+
+	test('A folder with a zid and an id != 6 is not recognized as a trash', () => {
+		const folderId = 'anotherlonghash:99';
+		expect(isTrash(folderId)).toBe(false);
+	});
+});
+
+describe('isSent', () => {
+	test('If no folderId is specified false is returned', () => {
+		const folderId = undefined;
+		expect(
+			isSent(
+				// Testing the case in which the parameter is undefined
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				folderId
+			)
+		).toBe(false);
+	});
+
+	test('A folder with a id = 5 is recognized as a sent folder', () => {
+		const folderId = FOLDERS.SENT;
+		expect(isSent(folderId)).toBe(true);
+	});
+
+	test('A folder with a id != 5 is not recognized as a sent folder', () => {
+		const folderId = '99';
+		expect(isSent(folderId)).toBe(false);
+	});
+
+	test('A folder with a zid and an id = 5 is recognized as a sent folder', () => {
+		const folderId = `somelonghash:${FOLDERS.SENT}`;
+		expect(isSent(folderId)).toBe(true);
+	});
+
+	test('A folder with a zid and an id != 5 is not recognized as a sent folder', () => {
+		const folderId = 'anotherlonghash:99';
+		expect(isSent(folderId)).toBe(false);
+	});
+});
+
+describe('isDraft', () => {
+	test('If no folderId is specified false is returned', () => {
+		const folderId = undefined;
+		expect(
+			isDraft(
+				// Testing the case in which the parameter is undefined
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				folderId
+			)
+		).toBe(false);
+	});
+
+	test('A folder with a id = 6 is recognized as a draft folder', () => {
+		const folderId = FOLDERS.DRAFTS;
+		expect(isDraft(folderId)).toBe(true);
+	});
+
+	test('A folder with a id != 6 is not recognized as a draft folder', () => {
+		const folderId = '99';
+		expect(isDraft(folderId)).toBe(false);
+	});
+
+	test('A folder with a zid and an id = 6 is recognized as a draft folder', () => {
+		const folderId = `somelonghash:${FOLDERS.DRAFTS}`;
+		expect(isDraft(folderId)).toBe(true);
+	});
+
+	test('A folder with a zid and an id != 6 is not recognized as a draft folder', () => {
+		const folderId = 'anotherlonghash:99';
+		expect(isDraft(folderId)).toBe(false);
+	});
+});
+
+describe('isInboxSubfolder', () => {
+	test('A folder inside the inbox (passed by ref) is recognized an inbox subfolder', () => {
+		populateFoldersStore();
+		const inbox = getFolder(FOLDERS.INBOX);
+		if (!inbox || !inbox.children.length) {
+			return;
+		}
+
+		expect(isInboxSubfolder({ folder: inbox.children[0] })).toBe(true);
+	});
+
+	test('A folder inside the trash (passed by id) is recognized as trashed', () => {
+		populateFoldersStore();
+		const inbox = getFolder(FOLDERS.INBOX);
+		if (!inbox || !inbox.children.length) {
+			return;
+		}
+
+		expect(isInboxSubfolder({ folderId: inbox.children[0].id })).toBe(true);
+	});
+
+	test('A trashed folder (passed by ref) is not recognized as an inbox folder', () => {
+		populateFoldersStore();
+		const trash = getFolder(FOLDERS.TRASH);
+		if (!trash || !trash.children.length) {
+			return;
+		}
+
+		expect(isInboxSubfolder({ folder: trash.children[0] })).toBe(false);
+	});
+
+	test('A trashed folder (passed by id) is not recognized as an inbox folder', () => {
+		populateFoldersStore();
+		const trash = getFolder(FOLDERS.TRASH);
+		if (!trash || !trash.children.length) {
+			return;
+		}
+
+		expect(isInboxSubfolder({ folderId: trash.children[0].id })).toBe(false);
+	});
+});
+
+describe('isTrashed', () => {
+	test('A folder inside the trash (passed by ref) is recognized as trashed', () => {
+		populateFoldersStore();
+		const trashFolder = getFoldersArray().find((folder) => isTrash(folder.id));
+		if (!trashFolder || !trashFolder.children.length) {
+			return;
+		}
+
+		expect(isTrashed({ folder: trashFolder.children[0] })).toBe(true);
+	});
+
+	test('A folder inside the trash (passed by id) is recognized as trashed', () => {
+		populateFoldersStore();
+		const trashFolder = getFoldersArray().find((folder) => isTrash(folder.id));
+		if (!trashFolder || !trashFolder.children.length) {
+			return;
+		}
+
+		expect(isTrashed({ folderId: trashFolder.children[0].id })).toBe(true);
+	});
+
+	test('The inbox folder (passed by ref) is not recognized as trashed', () => {
+		populateFoldersStore();
+		const folder = getFolder(FOLDERS.INBOX);
+		if (!folder) {
+			return;
+		}
+		expect(isTrashed({ folder })).toBe(false);
+	});
+
+	test('The inbox folder (passed by id) is not recognized as trashed', () => {
+		populateFoldersStore();
+		expect(isTrashed({ folderId: FOLDERS.INBOX })).toBe(false);
 	});
 });

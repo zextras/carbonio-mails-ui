@@ -167,10 +167,10 @@ export const isSent = (folderId: string): boolean => isA(folderId, FOLDERS.SENT)
  * Tells if a folder with the given id is a draft folder
  * @param folderId
  */
-export const isDraft = (folderId: string): boolean => isA(folderId, FOLDERS.DRAFT);
+export const isDraft = (folderId: string): boolean => isA(folderId, FOLDERS.DRAFTS);
 
 /**
- * Tells if a folder with the given id is a spam folder
+ * Tells if a folder is a trashed folder
  * @param folderId
  */
 export const isTrashed = ({
@@ -190,4 +190,27 @@ export const isTrashed = ({
 	}
 
 	return path.toLowerCase().startsWith('/trash');
+};
+
+/**
+ * Tells if a folder is a subfolder of the inbox folder
+ * @param folderId
+ */
+export const isInboxSubfolder = ({
+	folder,
+	folderId
+}: {
+	folder?: Folder;
+	folderId?: string;
+}): boolean => {
+	if (!folder && !folderId) {
+		return false;
+	}
+
+	const path = folder ? folder.absFolderPath : getFolder(folderId ?? '')?.absFolderPath;
+	if (!path) {
+		return false;
+	}
+
+	return path.toLowerCase().startsWith('/inbox');
 };
