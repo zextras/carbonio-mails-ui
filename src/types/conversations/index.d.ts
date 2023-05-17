@@ -26,6 +26,7 @@ export type Conversation = {
 	urgent: boolean;
 	tags: string[];
 	parent: string;
+	messagesInConversation: number;
 };
 
 export type ConvActionParameters = {
