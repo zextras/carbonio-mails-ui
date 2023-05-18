@@ -12,8 +12,6 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'lodash';
 import React, { FC, useEffect, useState } from 'react';
-import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder/store';
-import { folderWorker } from '../../carbonio-ui-commons/worker';
 import { MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';

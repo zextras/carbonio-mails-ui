@@ -83,7 +83,10 @@ describe.each`
 				),
 				searchedInFolder: {},
 				conversations: {
-					...conversations.map((conversation) => ({ [conversation.id]: conversation }))
+					...conversations.reduce(
+						(result, conversation) => ({ ...result, [conversation.id]: conversation }),
+						{}
+					)
 				},
 				status: 'complete'
 			}
