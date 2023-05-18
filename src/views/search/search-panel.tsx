@@ -25,11 +25,11 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults, query }) => {
 		setRandomIndex(random);
 	}, [searchResults?.conversations?.length, query]);
 	const displayerMessage = useMemo(() => {
-		if (searchResults?.conversations?.length === 0) {
+		if (!searchResults?.conversations) {
 			return emptyListMessages[randomIndex];
 		}
 		return emptyFieldMessages[0];
-	}, [randomIndex, emptyListMessages, emptyFieldMessages, searchResults?.conversations?.length]);
+	}, [searchResults?.conversations, emptyFieldMessages, emptyListMessages, randomIndex]);
 
 	const displayerTitle = useMemo(() => displayerMessage?.title, [displayerMessage?.title]);
 	const displayerDescription = useMemo(

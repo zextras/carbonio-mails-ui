@@ -12,7 +12,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
-import { every, filter, findIndex } from 'lodash';
+import { every, filter, findIndex, some } from 'lodash';
 import React, { FC, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppDispatch } from '../hooks/redux';
@@ -71,12 +71,13 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 
 	const [currentFolderId] = useState(folderParentId);
 
-	// This useEffect is used to reset the select mode when the user navigates to a different folder
+	// This useEffect is required to reset the select mode when the user navigates to a different folder
 	useEffect(() => {
 		if (folderId && currentFolderId !== folderParentId) {
+			deselectAll();
 			setIsSelectModeOn(false);
 		}
-	}, [currentFolderId, folderId, folderParentId, setIsSelectModeOn]);
+	}, [currentFolderId, deselectAll, folderId, folderParentId, setIsSelectModeOn]);
 
 	const dispatch = useAppDispatch();
 	const ids = Object.values(selectedIds ?? []);
@@ -95,7 +96,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		const action = isConversation
 			? setConversationsFlag({ ids, value: false, dispatch })
 			: setMsgFlag({ ids, value: false, dispatch });
-		return every(selectedItems, ['flagged', false]) && action;
+		return !some(selectedItems, ['flagged', true]) && action;
 	};
 
 	const removeFlagAction = (): ActionReturnType => {
