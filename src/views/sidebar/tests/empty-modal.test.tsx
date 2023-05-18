@@ -6,6 +6,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
+import { rest } from 'msw';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
@@ -14,7 +15,18 @@ import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/st
 import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
-import { rest } from 'msw';
+
+// TODO move on commons
+export type FolderAction = {
+	op: string;
+	id: string;
+	l?: string;
+	recursive?: boolean;
+	name?: string;
+	color?: number;
+	f?: string;
+	zid?: string;
+};
 
 describe('empty-modal', () => {
 	test('empty the folder except the trash folder', async () => {
@@ -119,7 +131,7 @@ describe('empty-modal', () => {
 			name: /label\.empty/i
 		});
 
-		const wipeInterceptor = new Promise<any>((resolve, reject) => {
+		const wipeInterceptor = new Promise<FolderAction>((resolve, reject) => {
 			// Register a handler for the REST call
 			getSetupServer().use(
 				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
