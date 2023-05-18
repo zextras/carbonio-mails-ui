@@ -15,18 +15,7 @@ import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/st
 import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
-
-// TODO move on commons
-export type FolderAction = {
-	op: string;
-	id: string;
-	l?: string;
-	recursive?: boolean;
-	name?: string;
-	color?: number;
-	f?: string;
-	zid?: string;
-};
+import { FolderAction } from '../../../types';
 
 describe('empty-modal', () => {
 	test('empty the folder except the trash folder', async () => {
