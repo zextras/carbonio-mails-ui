@@ -214,6 +214,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
 					padding={{ vertical: 'medium' }}
+					data-testid={'sendNotificationCheckboxContainer'}
 				>
 					<Checkbox
 						value={sendNotification}

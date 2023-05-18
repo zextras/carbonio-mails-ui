@@ -17,12 +17,14 @@ describe.each`
 	type                     | isSearchModule
 	${'message list'}        | ${false}
 	${'search message list'} | ${true}
-`('$type list component', ({ isSearchModule }) => {
+`('$type component', ({ isSearchModule }) => {
 	test('populate a message list and check that the messages are visible', async () => {
 		// Populate a message list
 		const MESSAGES_COUNT = 100;
 		const folderId = FOLDERS.INBOX;
-		const messages = times(MESSAGES_COUNT, () => generateMessage({ folderId }));
+		const messages = times(MESSAGES_COUNT, (index) =>
+			generateMessage({ id: `${index}`, folderId })
+		);
 
 		const listItems = messages.map((message) => (
 			<MessageListItemComponent
