@@ -15,6 +15,7 @@ import { useConversationListItems } from '../../../../hooks/use-conversation-lis
 import { useSelection } from '../../../../hooks/use-selection';
 import { search } from '../../../../store/actions';
 import {
+	selectConversations,
 	selectConversationStatus,
 	selectFolderSearchStatus
 } from '../../../../store/conversations-slice';
@@ -111,23 +112,27 @@ const ConversationList: FC = () => {
 						background={conversation.read ? 'gray6' : 'gray5'}
 						key={conversation.id}
 					>
-						{(visible: boolean): JSX.Element => (
-							<ConversationListItemComponent
-								item={conversation}
-								visible={visible}
-								selected={isSelected}
-								activeItemId={itemId}
-								toggle={toggle}
-								setDraggedIds={setDraggedIds}
-								selectedItems={selected}
-								dragImageRef={dragImageRef}
-								selecting={isSelectModeOn}
-								active={active}
-								selectedIds={Object.keys(selected)}
-								deselectAll={deselectAll}
-								folderId={folderId}
-							/>
-						)}
+						{(visible: boolean): JSX.Element =>
+							visible ? (
+								<ConversationListItemComponent
+									item={conversation}
+									visible={visible}
+									selected={isSelected}
+									activeItemId={itemId}
+									toggle={toggle}
+									setDraggedIds={setDraggedIds}
+									selectedItems={selected}
+									dragImageRef={dragImageRef}
+									selecting={isSelectModeOn}
+									active={active}
+									selectedIds={Object.keys(selected)}
+									deselectAll={deselectAll}
+									folderId={folderId}
+								/>
+							) : (
+								<div style={{ height: '4rem' }} />
+							)
+						}
 					</CustomListItem>
 				);
 			}),

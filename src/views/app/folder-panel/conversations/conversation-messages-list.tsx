@@ -47,29 +47,33 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 							key={message.id}
 							background={'transparent'}
 						>
-							{(visible: boolean): JSX.Element => (
-								<DragItemWrapper
-									item={message}
-									selectedIds={[]}
-									selectedItems={{}}
-									setDraggedIds={setDraggedIds}
-									dragImageRef={dragImageRef}
-									dragAndDropIsDisabled={!!isSearchModule}
-								>
-									<MessageListItem
+							{(visible: boolean): JSX.Element =>
+								visible ? (
+									<DragItemWrapper
 										item={message}
-										selected={isSelected}
-										selecting={isSelectModeOn}
-										visible={visible}
-										toggle={toggle}
-										active={isActive}
-										isConvChildren
-										deselectAll={deselectAll}
-										currentFolderId={folderId}
-										isSearchModule={isSearchModule}
-									/>
-								</DragItemWrapper>
-							)}
+										selectedIds={[]}
+										selectedItems={{}}
+										setDraggedIds={setDraggedIds}
+										dragImageRef={dragImageRef}
+										dragAndDropIsDisabled={!!isSearchModule}
+									>
+										<MessageListItem
+											item={message}
+											selected={isSelected}
+											selecting={isSelectModeOn}
+											visible={visible}
+											toggle={toggle}
+											active={isActive}
+											isConvChildren
+											deselectAll={deselectAll}
+											currentFolderId={folderId}
+											isSearchModule={isSearchModule}
+										/>
+									</DragItemWrapper>
+								) : (
+									<div style={{ height: '4rem' }} />
+								)
+							}
 						</CustomListItem>
 					);
 				}),
