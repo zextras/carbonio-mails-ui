@@ -15,6 +15,8 @@ import {
 } from '@zextras/carbonio-design-system';
 import { join } from 'lodash';
 import React, { FC, useLayoutEffect, useRef } from 'react';
+import styled from 'styled-components';
+import { StaticBreadcrumbs } from '../../../../carbonio-ui-commons/components/breadcrumbs/static-breadcrumbs';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import { isRoot } from '../../../../helpers/folders';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
@@ -45,6 +47,8 @@ const getFolderAbsPathParts = (folder: Folder): Array<string> => {
 	return matches[1].split('/');
 };
 
+const CustomBreadcrumbs = styled(Breadcrumbs)``;
+
 const ModalAccordionCustomComponent: FC<{
 	item: Folder;
 }> = ({ item }) => {
@@ -53,17 +57,13 @@ const ModalAccordionCustomComponent: FC<{
 	const parts = getFolderAbsPathParts(item);
 
 	/*
-	 * Remove the first part of the path and try to translate it, because:
-	 * - the Breadcrumbs component (currently) when need to collapse some crumbs
-	 *   start from the first element from the left. We need to keep it visible
-	 * - the first element usually is a system folder, and for those folders we
-	 *   have the translation
+	 * Create the crumbs array and try to get the translations
+	 * for the first part which usually represent a system folder
+	 * for which a translated name is available
 	 */
-	const firstPart = getSystemFolderTranslatedName({ folderName: parts.shift() ?? '' });
-	const translatedTooltipText = join([firstPart, ...parts], '/');
-	const crumbs = parts.map<Crumb>((part, index) => ({
+	const crumbs = parts.map((part, index) => ({
 		id: `${index}`,
-		label: part
+		label: index === 0 ? getSystemFolderTranslatedName({ folderName: part }) : part
 	}));
 
 	return (
@@ -73,26 +73,15 @@ const ModalAccordionCustomComponent: FC<{
 			main-alignment="flex-start"
 			orientation="vertical"
 			crossAlignment="flex-start"
-			padding="medium"
+			padding="small"
 			wrap="nowrap"
 		>
-			<Tooltip label={translatedTooltipText}>
-				<Row mainAlignment="flex-start" wrap="nowrap" width="fill">
-					<Container width="fit">
-						<Icon color={iconColor} icon={iconName || 'FolderOutline'} size="large" />
-					</Container>
-					<Container
-						width="fit"
-						mainAlignment="flex-start"
-						padding={{ left: 'small', right: 'extrasmall' }}
-					>
-						<Text size="large">{firstPart}</Text>
-					</Container>
-					<Container mainAlignment="flex-start">
-						<Breadcrumbs crumbs={crumbs}></Breadcrumbs>
-					</Container>
-				</Row>
-			</Tooltip>
+			<Row mainAlignment="flex-start" wrap="nowrap" width="fill">
+				<Container width="fit">
+					<Icon color={iconColor} icon={iconName || 'FolderOutline'} size="large" />
+				</Container>
+				<StaticBreadcrumbs crumbs={crumbs} size="large" />
+			</Row>
 		</Container>
 	);
 };

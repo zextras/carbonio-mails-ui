@@ -73,23 +73,19 @@ export const FolderSelector = ({
 
 				result.push({
 					...item,
+					name: FOLDERS.USER_ROOT ? accountName : item.name,
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					CustomComponent: ModalAccordionCustomComponent,
 					onClick: () => {
 						setFolderDestination(item);
 					},
+					id: item.id,
 					background:
 						typeof folderDestination !== 'undefined' && folderDestination.id === item.id
 							? 'highlight'
 							: undefined,
-					label:
-						item.id === FOLDERS.USER_ROOT
-							? accountName
-							: getFolderTranslatedName({
-									folderId: item.id,
-									folderName: item.name
-							  }),
+
 					activeId: item.id === folderId,
 					accordionWidth,
 					items: []
