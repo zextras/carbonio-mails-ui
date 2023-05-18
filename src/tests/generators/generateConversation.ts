@@ -100,7 +100,8 @@ const generateConversation = ({
 		subject,
 		tags: [],
 		urgent: false,
-		messages: finalMessages
+		messages: finalMessages,
+		messagesInConversation: finalMessages.length
 	};
 
 	return result;

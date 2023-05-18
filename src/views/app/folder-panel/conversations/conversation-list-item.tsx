@@ -29,6 +29,7 @@ import { filter, find, forEach, includes, isEmpty, reduce, trimStart, uniqBy } f
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { participantToString } from '../../../../commons/utils';
+import { getFolderIdParts } from '../../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
@@ -221,12 +222,16 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			[item?.messages, folderParent, messages, sortSign]
 		);
 
-		function getmsgToDisplayCount(): number {
-			if (folderParent === FOLDERS.TRASH) return item?.messages?.length;
-			if ([FOLDERS.TRASH, FOLDERS.SPAM].includes(folderParent)) return item?.messages?.length;
-			return filter(item?.messages, (msg) => ![FOLDERS.TRASH, FOLDERS.SPAM].includes(msg.parent))
-				?.length;
-		}
+		const getmsgToDisplayCount = useCallback((): number => {
+			if (item.messagesInConversation) return item.messagesInConversation;
+			if (getFolderIdParts(folderParent).id === FOLDERS.TRASH) return item?.messages?.length;
+			if ([FOLDERS.TRASH, FOLDERS.SPAM].includes(getFolderIdParts(folderParent).id ?? ''))
+				return item?.messages?.length;
+			return filter(
+				item?.messages,
+				(msg) => ![FOLDERS.TRASH, FOLDERS.SPAM].includes(getFolderIdParts(msg.parent).id ?? '')
+			)?.length;
+		}, [folderParent, item?.messages, item.messagesInConversation]);
 
 		const textReadValues: TextReadValuesProps = useMemo(() => {
 			if (typeof item.read === 'undefined')
@@ -237,11 +242,13 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		}, [item.read]);
 
 		const renderBadge = useMemo(() => {
+			if (item.messagesInConversation === 1) return textReadValues.badge === 'unread';
+			if (item.messagesInConversation > 0) return true;
 			if (item?.messages?.length === 1) {
 				return textReadValues.badge === 'unread';
 			}
 			return item?.messages?.length > 0;
-		}, [item?.messages?.length, textReadValues.badge]);
+		}, [item?.messages?.length, item.messagesInConversation, textReadValues.badge]);
 
 		return (
 			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
