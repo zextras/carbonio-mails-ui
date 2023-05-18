@@ -92,22 +92,26 @@ export const MessageList: FC = () => {
 						active={active}
 						background={message.read ? 'gray6' : 'gray5'}
 					>
-						{(visible: boolean): ReactElement => (
-							<MessageListItemComponent
-								message={message}
-								selected={selected}
-								isSelected={isSelected}
-								active={active}
-								toggle={toggle}
-								isSelectModeOn={isSelectModeOn}
-								dragImageRef={dragImageRef}
-								draggedIds={draggedIds}
-								key={message.id}
-								deselectAll={deselectAll}
-								visible={visible}
-								setDraggedIds={setDraggedIds}
-							/>
-						)}
+						{(visible: boolean): ReactElement =>
+							visible ? (
+								<MessageListItemComponent
+									message={message}
+									selected={selected}
+									isSelected={isSelected}
+									active={active}
+									toggle={toggle}
+									isSelectModeOn={isSelectModeOn}
+									dragImageRef={dragImageRef}
+									draggedIds={draggedIds}
+									key={message.id}
+									deselectAll={deselectAll}
+									visible={visible}
+									setDraggedIds={setDraggedIds}
+								/>
+							) : (
+								<div style={{ height: '4rem' }} />
+							)
+						}
 					</CustomListItem>
 				);
 			}),
