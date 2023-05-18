@@ -5,12 +5,16 @@
  */
 import React from 'react';
 import { screen } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { faker } from '@faker-js/faker';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
 import { EmptyModal } from '../empty-modal';
+import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
+import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
+import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
+import { rest } from 'msw';
 
 describe('empty-modal', () => {
 	test('empty the folder except the trash folder', async () => {
@@ -96,5 +100,48 @@ describe('empty-modal', () => {
 			name: /label\.empty/i
 		});
 		expect(wipeButton).toBeEnabled();
+	});
+
+	test('API is called with the proper parameters', async () => {
+		const closeModal = jest.fn();
+		const store = generateStore();
+		populateFoldersStore();
+		const folder = getFolder(FOLDERS.TRASH);
+		if (!folder) {
+			return;
+		}
+
+		const { user } = setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {
+			store
+		});
+
+		const wipeButton = screen.getByRole('button', {
+			name: /label\.empty/i
+		});
+
+		const wipeInterceptor = new Promise<any>((resolve, reject) => {
+			// Register a handler for the REST call
+			getSetupServer().use(
+				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
+					if (!req) {
+						reject(new Error('Empty request'));
+					}
+
+					const msg = (await req.json()).Body.FolderActionRequest.action;
+					resolve(msg);
+
+					// Don't care about the actual response
+					return res(ctx.json({}));
+				})
+			);
+		});
+
+		await user.click(wipeButton);
+
+		const action = await wipeInterceptor;
+
+		expect(action.id).toBe(FOLDERS.TRASH);
+		expect(action.op).toBe('empty');
+		expect(action.recursive).toBe(true);
 	});
 });
