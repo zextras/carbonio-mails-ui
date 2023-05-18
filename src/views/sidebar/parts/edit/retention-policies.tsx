@@ -52,6 +52,7 @@ const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 				style={{ padding: 0, margin: 0 }}
 				onClick={(): void => setShowPolicy(!showPolicy)}
 				icon={showPolicy ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+				data-testid="retention_policy-icon"
 			/>
 		</Row>
 		<Collapse orientation="vertical" open={showPolicy}>
@@ -63,6 +64,7 @@ const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 						setDsblMsgRet(!dsblMsgRet);
 					}}
 					label={t('label.enable_message_retention', 'Enable Message Retention')}
+					data-testid="enableMsgRetention"
 				/>
 				<Container padding={{ all: 'small' }}>
 					<Text overflow="break-word">
@@ -128,6 +130,7 @@ const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 							setDsblMsgDis(!dsblMsgDis);
 						}}
 						label={t('label.enable_message_disposal', 'Enable Message Disposal')}
+						data-testid="enableMsgDisposal"
 					/>
 					<Container padding={{ all: 'small' }}>
 						<Text overflow="break-word">
