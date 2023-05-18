@@ -15,7 +15,6 @@ import { useConversationListItems } from '../../../../hooks/use-conversation-lis
 import { useSelection } from '../../../../hooks/use-selection';
 import { search } from '../../../../store/actions';
 import {
-	selectConversations,
 	selectConversationStatus,
 	selectFolderSearchStatus
 } from '../../../../store/conversations-slice';
