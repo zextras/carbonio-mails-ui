@@ -26,8 +26,8 @@ describe.each`
 		// Populate a conversation list
 		const CONVERSATIONS_COUNT = 100;
 		const folderId = FOLDERS.INBOX;
-		const conversations = times(CONVERSATIONS_COUNT, () =>
-			generateConversation({ folderId, isSingleMessageConversation: false })
+		const conversations = times(CONVERSATIONS_COUNT, (index) =>
+			generateConversation({ id: `${index}`, folderId, isSingleMessageConversation: false })
 		);
 
 		const toggle = jest.fn();
