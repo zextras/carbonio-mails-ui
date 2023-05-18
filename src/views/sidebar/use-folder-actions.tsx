@@ -4,14 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { ModalManagerContext } from '@zextras/carbonio-design-system';
-import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { startsWith } from 'lodash';
 import React, { SyntheticEvent, useContext, useMemo } from 'react';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { FolderActionsType } from '../../commons/utils';
-import { useAppDispatch } from '../../hooks/redux';
+import { getFolderIdParts } from '../../helpers/folders';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { useSelection } from '../../hooks/use-selection';
 import { folderAction } from '../../store/actions/folder-action';
+import { selectMessagesArray } from '../../store/messages-slice';
 import { StoreProvider } from '../../store/redux';
+import { AppContext } from '../../types';
+import MoveConvMessage from '../../ui-actions/move-conv-msg';
 import { DeleteModal } from './delete-modal';
 import { EditModal } from './edit-modal';
 import EditPermissionsModal from './edit-permissions-modal';
@@ -32,6 +37,18 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	const dispatch = useAppDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	const createModal = useContext(ModalManagerContext) as Function;
+	const folderIsTrash = getFolderIdParts(folder.id ?? '0').id === FOLDERS.TRASH;
+	const messages = useAppSelector(selectMessagesArray);
+	const trashMessages = messages.filter(
+		(message) => getFolderIdParts(message.parent).id === FOLDERS.TRASH
+	);
+	const moveMessagesIds = useMemo(
+		() => trashMessages.map((message) => message.id),
+		[trashMessages]
+	);
+	const { setCount } = useAppContext<AppContext>();
+
+	const { deselectAll } = useSelection({ currentFolderId: folder.id, setCount, count: 0 });
 
 	const actions = useMemo(
 		() => [
@@ -58,25 +75,49 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.MOVE,
-				icon: 'MoveOutline',
-				label: startsWith(folder.absFolderPath, '/Trash')
-					? t('label.restore', 'Restore')
-					: t('label.move', 'Move'),
+				icon: folderIsTrash ? 'RestoreOutline' : 'MoveOutline',
+				label: folderIsTrash ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
-						{
-							maxHeight: '90vh',
-							children: (
-								<StoreProvider>
-									<MoveModal folder={folder} onClose={(): void => closeModal()} />
-								</StoreProvider>
-							)
-						},
-						true
-					);
+
+					if (folderIsTrash) {
+						const closeModal = createModal(
+							{
+								maxHeight: '90vh',
+								children: (
+									<StoreProvider>
+										<MoveConvMessage
+											folderId={folder.id}
+											selectedIDs={moveMessagesIds}
+											// TODO: Fix it in DS
+											// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+											// @ts-ignore
+											onClose={(): void => closeModal()}
+											isMessageView
+											isRestore
+											deselectAll={deselectAll}
+											dispatch={dispatch}
+										/>
+									</StoreProvider>
+								)
+							},
+							true
+						);
+					} else {
+						const closeModal = createModal(
+							{
+								maxHeight: '90vh',
+								children: (
+									<StoreProvider>
+										<MoveModal folder={folder} onClose={(): void => closeModal()} />
+									</StoreProvider>
+								)
+							},
+							true
+						);
+					}
 				}
 			},
 			{
@@ -211,7 +252,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				}
 			}
 		],
-		[createModal, dispatch, folder]
+		[createModal, deselectAll, dispatch, folder, folderIsTrash, moveMessagesIds]
 	);
 
 	const defaultFolderActions = useMemo(
@@ -254,7 +295,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			);
 		case FOLDERS.TRASH:
 			return defaultFolderActions.map((action) =>
-				action.id === FolderActionsType.MOVE ||
+				(action.id === FolderActionsType.MOVE && trashMessages.length === 0) ||
 				action.id === FolderActionsType.DELETE ||
 				action.id === FolderActionsType.EDIT ||
 				action.id === FolderActionsType.SHARE
