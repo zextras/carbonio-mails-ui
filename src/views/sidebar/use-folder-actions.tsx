@@ -75,7 +75,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.MOVE,
-				icon: 'MoveOutline',
+				icon: folderIsTrash ? 'RestoreOutline' : 'MoveOutline',
 				label: folderIsTrash ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
