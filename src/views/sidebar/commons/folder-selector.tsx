@@ -16,11 +16,11 @@ import React, {
 	useState
 } from 'react';
 import styled from 'styled-components';
-import { getFolder, getRoot } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { isSpam, isTrash, isTrashed } from '../../../helpers/folders';
+import { useFolders } from '../../../hooks/use-folders';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
-import { getFolderTranslatedName } from '../utils';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -45,7 +45,7 @@ export const FolderSelector = ({
 	const [inputValue, setInputValue] = useState('');
 	const accountName = useUserAccount().name;
 	const folder = getFolder(folderId);
-	const accountRootFolder = getRoot(folderId);
+	const folders = useFolders();
 
 	const accordionRef = useRef<HTMLDivElement>();
 	const [accordionWidth, setAccordionWidth] = useState<number>();
@@ -73,7 +73,7 @@ export const FolderSelector = ({
 
 				result.push({
 					...item,
-					name: FOLDERS.USER_ROOT ? accountName : item.name,
+					name: item.id === FOLDERS.USER_ROOT ? accountName : item.name,
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					CustomComponent: ModalAccordionCustomComponent,
@@ -97,10 +97,7 @@ export const FolderSelector = ({
 		[folderDestination, accountName, folderId, accordionWidth, setFolderDestination]
 	);
 
-	const flattenedFolders = useMemo(
-		() => flattenFolders(accountRootFolder && [accountRootFolder]),
-		[accountRootFolder, flattenFolders]
-	);
+	const flattenedFolders = useMemo(() => flattenFolders(folders), [folders, flattenFolders]);
 
 	const filteredFromUserInput = useMemo(
 		() =>
@@ -130,7 +127,7 @@ export const FolderSelector = ({
 			>
 				<Accordion
 					background="gray6"
-					items={filteredFromUserInput as any[]}
+					items={filteredFromUserInput}
 					style={{ overflowY: 'hidden' }}
 				/>
 			</ContainerEl>

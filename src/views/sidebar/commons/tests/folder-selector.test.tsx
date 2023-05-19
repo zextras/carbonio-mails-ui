@@ -3,23 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { reject, startsWith } from 'lodash';
-import React from 'react';
 import { screen } from '@testing-library/react';
-import { Folder, useFoldersByView } from '@zextras/carbonio-shell-ui';
+import { reject } from 'lodash';
+import React from 'react';
 import {
-	getFoldersArray,
 	getFoldersArrayByRoot,
-	getRootsArray,
 	getRootsMap
 } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { isSpam, isTrash, isTrashed } from '../../../../helpers/folders';
-import { FolderSelector, FolderSelectorProps } from '../folder-selector';
-import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { generateStore } from '../../../../tests/generators/store';
-import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
+import { FolderSelector, FolderSelectorProps } from '../folder-selector';
 
 describe('Folder selector', () => {
 	const store = generateStore();
@@ -42,8 +38,8 @@ describe('Folder selector', () => {
 	 */
 	describe('Folders accordion items', () => {
 		populateFoldersStore();
-		const rootsId = Object.keys(getRootsMap());
-		test.each(rootsId)(
+		const rootIds = Object.keys(getRootsMap());
+		test.each(rootIds)(
 			'Exists a folder accordion item for each folder of the root %s',
 			(rootId) => {
 				populateFoldersStore();

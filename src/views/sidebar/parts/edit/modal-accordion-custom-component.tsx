@@ -3,19 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	Breadcrumbs,
-	Container,
-	Crumb,
-	Icon,
-	Padding,
-	Row,
-	Text,
-	Tooltip
-} from '@zextras/carbonio-design-system';
-import { join } from 'lodash';
-import React, { FC, useLayoutEffect, useRef } from 'react';
-import styled from 'styled-components';
+import { Container, Icon, Row } from '@zextras/carbonio-design-system';
+import React, { FC } from 'react';
 import { StaticBreadcrumbs } from '../../../../carbonio-ui-commons/components/breadcrumbs/static-breadcrumbs';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import { isRoot } from '../../../../helpers/folders';
@@ -46,8 +35,6 @@ const getFolderAbsPathParts = (folder: Folder): Array<string> => {
 
 	return matches[1].split('/');
 };
-
-const CustomBreadcrumbs = styled(Breadcrumbs)``;
 
 const ModalAccordionCustomComponent: FC<{
 	item: Folder;
