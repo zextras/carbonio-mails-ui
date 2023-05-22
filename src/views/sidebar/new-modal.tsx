@@ -103,6 +103,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					hasError={hasError}
 					defaultValue={inputValue}
 					onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
+					data-testid={'new-folder-name'}
 				/>
 				{showWarning && (
 					<Padding all="small">
