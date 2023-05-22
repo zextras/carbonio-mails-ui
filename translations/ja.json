@@ -637,7 +637,7 @@
                 }
             },
             "move": {
-                "title_modal": "会話を移動する",
+                "title_modal_conversation": "会話を移動する",
                 "body": {
                     "message1": "検討対象のフォルダを次の場所に移動するフォルダを選択します:",
                     "message2": "復元するフォルダを選択します:"

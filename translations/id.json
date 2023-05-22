@@ -654,7 +654,7 @@
                 "name_exist_warning": "Nama sudah ada"
             },
             "move": {
-                "title_modal": "Pindahkan Percakapan",
+                "title_modal_conversation": "Pindahkan Percakapan",
                 "body": {
                     "message1": "Pilih satu folder sebagai tempat memindahkan file yang diinginkan:",
                     "message2": "Pilih folder sebagai tujuan pemulihan:"

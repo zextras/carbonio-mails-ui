@@ -454,7 +454,7 @@
                 }
             },
             "move": {
-                "title_modal": "Przenieś Konwersację",
+                "title_modal_conversation": "Przenieś Konwersację",
                 "body": {
                     "message1": "Wybierz folder, do którego chcesz przenieść wybrany element:",
                     "message2": "Wybierz folder, do którego trafią przywrócone elementy:"

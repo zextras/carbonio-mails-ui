@@ -722,7 +722,7 @@
                 }
             },
             "move": {
-                "title_modal": "Sposta Conversazione",
+                "title_modal_conversation": "Sposta Conversazione",
                 "body": {
                     "message1": "Seleziona una cartella in cui spostare quella selezionata:",
                     "message2": "Seleziona la cartella da ripristinare in:"
