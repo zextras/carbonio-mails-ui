@@ -173,7 +173,7 @@ const MoveConvMessage = ({
 				return t('label.restore', 'Restore');
 			}
 			return isMessageView
-				? t('folder_panel.modal.move.title_modal_message', 'Move message')
+				? t('folder_panel.modal.move.title_modal_message', 'Move Message')
 				: t('folder_panel.modal.move.title_modal_conversation', 'Move Conversation');
 		}
 		return t('folder_panel.modal.new.title', 'Create a new folder');
