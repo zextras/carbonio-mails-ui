@@ -8,6 +8,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { Folder, useFoldersByView } from '@zextras/carbonio-shell-ui';
 import {
+	getFolder,
 	getFoldersArray,
 	getFoldersArrayByRoot,
 	getRootsArray,
@@ -65,5 +66,65 @@ describe('Folder selector', () => {
 				});
 			}
 		);
+	});
+
+	describe('Filter', () => {
+		test('if the user type "inbox" in the filter only the Inbox folder is displayed', async () => {
+			populateFoldersStore();
+
+			const props: FolderSelectorProps = {
+				folderId: FOLDERS.INBOX,
+				folderDestination: undefined,
+				setFolderDestination: jest.fn()
+			};
+			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			const filterInput = screen.getByTestId('folder-name-filter');
+			await user.type(filterInput, 'inbox');
+			const accordionItems = screen.queryAllByTestId(/^folder-accordion-item-/);
+			expect(accordionItems.length).toBe(1);
+			expect(screen.getByTestId(`folder-accordion-item-${FOLDERS.INBOX}`)).toBeVisible();
+		});
+
+		test('if the user type "INBOX" in the filter only the Inbox folder is displayed', async () => {
+			populateFoldersStore();
+
+			const props: FolderSelectorProps = {
+				folderId: FOLDERS.INBOX,
+				folderDestination: undefined,
+				setFolderDestination: jest.fn()
+			};
+			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			const filterInput = screen.getByTestId('folder-name-filter');
+			await user.type(filterInput, 'INBOX');
+			const accordionItems = screen.queryAllByTestId(/^folder-accordion-item-/);
+			expect(accordionItems.length).toBe(1);
+			expect(screen.getByTestId(`folder-accordion-item-${FOLDERS.INBOX}`)).toBeVisible();
+		});
+
+		test('if the user type an Inbox subfolder name in the filter that subfolder is displayed', async () => {
+			populateFoldersStore();
+
+			const inboxFolder = getFolder(FOLDERS.INBOX);
+			if (!inboxFolder) {
+				return;
+			}
+
+			const { children: inboxChildren } = inboxFolder;
+			if (!inboxChildren.length) {
+				return;
+			}
+
+			const inboxFirstChild = inboxChildren[0];
+
+			const props: FolderSelectorProps = {
+				folderId: FOLDERS.INBOX,
+				folderDestination: undefined,
+				setFolderDestination: jest.fn()
+			};
+			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			const filterInput = screen.getByTestId('folder-name-filter');
+			await user.type(filterInput, inboxFirstChild.name);
+			expect(screen.getByTestId(`folder-accordion-item-${inboxFirstChild.id}`)).toBeVisible();
+		});
 	});
 });

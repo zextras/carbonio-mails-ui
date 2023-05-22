@@ -47,8 +47,6 @@ const getFolderAbsPathParts = (folder: Folder): Array<string> => {
 	return matches[1].split('/');
 };
 
-const CustomBreadcrumbs = styled(Breadcrumbs)``;
-
 const ModalAccordionCustomComponent: FC<{
 	item: Folder;
 }> = ({ item }) => {

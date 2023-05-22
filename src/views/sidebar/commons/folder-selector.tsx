@@ -73,7 +73,7 @@ export const FolderSelector = ({
 
 				result.push({
 					...item,
-					name: FOLDERS.USER_ROOT ? accountName : item.name,
+					name: item.id === FOLDERS.USER_ROOT ? accountName : item.name,
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					CustomComponent: ModalAccordionCustomComponent,
