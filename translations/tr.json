@@ -702,7 +702,7 @@
                 "title": "Yeni klasör oluştur"
             },
             "move": {
-                "title_modal": "Görüşmeyi taşı",
+                "title_modal_conversation": "Görüşmeyi taşı",
                 "body": {
                     "message1": "İçine taşınmasını istediğiniz bir klasör seçin:",
                     "message2": "İçine geri yüklemek istediğiniz bir klasör seçin:"

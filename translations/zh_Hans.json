@@ -633,7 +633,7 @@
                     "message1": "选择文件夹以将其移动至：",
                     "message2": "选择要恢复至的文件夹："
                 },
-                "title_modal": "移动会话"
+                "title_modal_conversation": "移动会话"
             },
             "new": {
                 "create_footer": "创建和移动",

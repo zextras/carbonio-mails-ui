@@ -671,7 +671,7 @@
                     "message1": "Elige la carpeta hacia donde moverás la seleccionada:",
                     "message2": "Selecciona la carpeta en dónde quieres restaurar:"
                 },
-                "title_modal": "Selecciona la carpeta de destino"
+                "title_modal_conversation": "Selecciona la carpeta de destino"
             },
             "wipe": {
                 "body": {
