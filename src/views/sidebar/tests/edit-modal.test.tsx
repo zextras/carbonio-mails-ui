@@ -152,7 +152,7 @@ describe('edit-modal', () => {
 			depth: 2
 		};
 
-		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
+		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
 			store
 		});
 
@@ -193,7 +193,7 @@ describe('edit-modal', () => {
 			depth: 2
 		};
 
-		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
+		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
 			store
 		});
 
@@ -253,5 +253,77 @@ describe('edit-modal', () => {
 		expect(action.op).toBe('update');
 		expect(action.color).toBe(folder?.color ?? 0);
 		expect(action.name).toBe(folder.name);
+	});
+
+	test('edited folder name should be pass in parameter', async () => {
+		const closeFn = jest.fn();
+		const store = generateStore();
+		const folder: Folder = {
+			id: '106',
+			uuid: faker.datatype.uuid(),
+			name: 'Confluence',
+			absFolderPath: '/Inbox/Confluence',
+			l: FOLDERS.INBOX,
+			luuid: faker.datatype.uuid(),
+			checked: false,
+			f: 'u',
+			u: 25,
+			view: 'message' as FolderView,
+			rev: 27896,
+			ms: 27896,
+			n: 101,
+			s: 5550022,
+			i4ms: 33607,
+			i4next: 17183,
+			activesyncdisabled: false,
+			webOfflineSyncDays: 0,
+			recursive: false,
+			deletable: true,
+			isLink: false,
+			children: [],
+			parent: undefined,
+			depth: 2
+		};
+		const { user } = setupTest(<EditModal onClose={closeFn} folder={folder} />, { store });
+
+		expect(screen.getByTestId('folder-name')).toBeInTheDocument();
+		const newFolder = screen.getByTestId('folder-name');
+		const folderInputElement = within(newFolder).getByRole('textbox');
+
+		expect(folderInputElement).toBeInTheDocument();
+		await user.clear(folderInputElement);
+
+		const editButton = screen.getByRole('button', {
+			name: /label\.edit/i
+		});
+		expect(editButton).toBeEnabled();
+
+		const folderName = faker.lorem.word();
+		// update the existing folder name into the text input
+		await user.type(folderInputElement, folderName);
+
+		const wipeInterceptor = new Promise<FolderAction>((resolve, reject) => {
+			// Register a handler for the REST call
+			getSetupServer().use(
+				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
+					if (!req) {
+						reject(new Error('Empty request'));
+					}
+
+					const msg = (await req.json()).Body.FolderActionRequest.action;
+					resolve(msg);
+
+					// Don't care about the actual response
+					return res(ctx.json({}));
+				})
+			);
+		});
+		await user.click(editButton);
+		const action = await wipeInterceptor;
+
+		expect(action.id).toBe(folder.id);
+		expect(action.op).toBe('update');
+		expect(action.color).toBe(folder?.color ?? 0);
+		expect(action.name).toBe(folderName);
 	});
 });
