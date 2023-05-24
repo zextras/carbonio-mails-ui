@@ -177,7 +177,9 @@
                     "message1": "Select a folder to move the considered one to:",
                     "message2": "Select a folder to restore to:"
                 },
-                "title_modal": "Move Conversation"
+                "title_modal": "Move Conversation",
+                "title_modal_conversation": "Move Conversation",
+                "title_modal_message": "Move Message"
             },
             "new": {
                 "create_footer": "Create and Move",

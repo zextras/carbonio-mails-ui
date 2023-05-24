@@ -676,7 +676,7 @@
                     "message1": "Einen Ordner als Ziel zum Verschieben aussuchen:",
                     "message2": "Wählen Sie einen Ordner für die Wiederherstellung aus:"
                 },
-                "title_modal": "Unterhaltung verschieben"
+                "title_modal_conversation": "Unterhaltung verschieben"
             }
         },
         "action": {

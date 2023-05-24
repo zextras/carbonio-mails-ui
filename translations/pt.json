@@ -670,7 +670,7 @@
                     "message1": "Selecione uma pasta onde mover a selecionada:",
                     "message2": "Selecione uma pasta para restaurar:"
                 },
-                "title_modal": "Selecione a pasta de destino"
+                "title_modal_conversation": "Selecione a pasta de destino"
             },
             "wipe": {
                 "body": {

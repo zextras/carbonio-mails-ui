@@ -701,7 +701,7 @@
         },
         "modal": {
             "move": {
-                "title_modal": "Déplacer la Conversation",
+                "title_modal_conversation": "Déplacer la Conversation",
                 "body": {
                     "message1": "Sélectionnez un dossier dans lequel le déplacer :",
                     "message2": "Sélectionnez un dossier à restaurer dans :"

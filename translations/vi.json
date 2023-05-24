@@ -662,7 +662,7 @@
                     "message1": "Chọn một thư mục mà bạn cân nhắc:",
                     "message2": "Chọn một thư mục để khôi phục:"
                 },
-                "title_modal": "Di chuyển cuộc trò chuyện"
+                "title_modal_conversation": "Di chuyển cuộc trò chuyện"
             },
             "empty": {
                 "body": {
