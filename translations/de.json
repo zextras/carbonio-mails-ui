@@ -676,7 +676,7 @@
                     "message1": "Einen Ordner als Ziel zum Verschieben aussuchen:",
                     "message2": "Wählen Sie einen Ordner für die Wiederherstellung aus:"
                 },
-                "title_modal": "Unterhaltung verschieben"
+                "title_modal_conversation": "Unterhaltung verschieben"
             }
         },
         "action": {
@@ -802,6 +802,5 @@
         "delete_draft": {
             "message1": "Möchten Sie diesen Entwurf behalten oder löschen?"
         }
-    },
-    "": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen"
+    }
 }

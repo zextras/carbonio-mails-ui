@@ -4,16 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Avatar, Container, Text } from '@zextras/carbonio-design-system';
-import {
-	useRoots,
-	useUserAccount,
-	useUserAccounts,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
-import { map, find, filter, findIndex, flatten, isNull } from 'lodash';
+import { useUserAccount, useUserAccounts, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { filter, find, findIndex, flatten, isNull, map } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { getRecipientReplyIdentity } from '../../../../../helpers/identities';
 import type {
@@ -23,6 +17,7 @@ import type {
 	MailsEditor,
 	UseGetIdentitiesReturnType
 } from '../../../../../types';
+import { useRootsMap } from '../../../../../carbonio-ui-commons/store/zustand/folder';
 
 export const findDefaultIdentity = ({
 	list,
@@ -66,7 +61,10 @@ export const findDefaultIdentity = ({
 
 	if (!predicate && folderId) {
 		const activeAcc = find(allAccounts, { zid: folderId?.split?.(':')?.[0] });
-		predicate = activeAcc?.owner ? { address: activeAcc?.owner } : { identityName: 'DEFAULT' };
+		predicate =
+			activeAcc && 'owner' in activeAcc && activeAcc?.owner
+				? { address: activeAcc?.owner }
+				: { identityName: 'DEFAULT' };
 	}
 
 	const result = find(list, predicate) as IdentityType | undefined;
@@ -100,7 +98,7 @@ export const useGetIdentities = ({
 	const [activeFrom, setActiveFrom] = useState<IdentityType>();
 	const [isIdentitySet, setIsIdentitySet] = useState(false);
 	const [defaultIdentity, setDefaultIdentity] = useState<IdentityType>();
-	const allAccounts = useRoots();
+	const allAccounts = useRootsMap();
 
 	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
 

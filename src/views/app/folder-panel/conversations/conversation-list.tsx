@@ -3,11 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, t, useAppContext, useFolder } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { handleKeyboardShortcuts } from '../../../../hooks/keyboard-shortcuts';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useConversationListItems } from '../../../../hooks/use-conversation-list';
@@ -110,30 +111,37 @@ const ConversationList: FC = () => {
 						background={conversation.read ? 'gray6' : 'gray5'}
 						key={conversation.id}
 					>
-						{(visible: boolean): JSX.Element => (
-							<ConversationListItemComponent
-								item={conversation}
-								visible={visible}
-								selected={isSelected}
-								activeItemId={itemId}
-								toggle={toggle}
-								setDraggedIds={setDraggedIds}
-								selectedItems={selected}
-								dragImageRef={dragImageRef}
-								selecting={isSelectModeOn}
-								active={active}
-								selectedIds={Object.keys(selected)}
-								deselectAll={deselectAll}
-								folderId={folderId}
-							/>
-						)}
+						{(visible: boolean): JSX.Element =>
+							visible ? (
+								<ConversationListItemComponent
+									item={conversation}
+									visible={visible}
+									selected={isSelected}
+									activeItemId={itemId}
+									toggle={toggle}
+									setDraggedIds={setDraggedIds}
+									selectedItems={selected}
+									dragImageRef={dragImageRef}
+									selecting={isSelectModeOn}
+									active={active}
+									selectedIds={Object.keys(selected)}
+									deselectAll={deselectAll}
+									folderId={folderId}
+								/>
+							) : (
+								<div style={{ height: '4rem' }} />
+							)
+						}
 					</CustomListItem>
 				);
 			}),
 		[conversations, deselectAll, folderId, isSelectModeOn, itemId, selected, toggle]
 	);
 
-	const totalConversations = useMemo(() => folder?.n ?? 0, [folder]);
+	const totalConversations = useMemo(
+		() => conversations.length ?? folder?.n ?? 0,
+		[conversations.length, folder?.n]
+	);
 	const loadMoreDate = useMemo(
 		() => conversations?.[conversations.length - 1]?.date,
 		[conversations]

@@ -5,6 +5,7 @@
  */
 
 import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
+import { getFolderIdParts } from '../helpers/folders';
 import { AppDispatch } from '../store/redux';
 import type { ActionReturnType, Conversation, MailMessage } from '../types';
 import {
@@ -34,7 +35,6 @@ import {
 	showOriginalMsg
 } from './message-actions';
 import { applyTag } from './tag-actions';
-import { getSystemFolderParentId } from '../helpers/folders';
 
 /**
  * get the action to be executed when the user clicks on the "Mark as read/unread" button
@@ -74,9 +74,7 @@ export function getReadUnreadAction({
 				shouldReplaceHistory: false
 		  })
 		: setMsgRead({ ids: [id], value: item.read, dispatch, folderId });
-	return (
-		!foldersExcludedMarkReadUnread.includes(getSystemFolderParentId(folderId) ?? '0') && action
-	);
+	return !foldersExcludedMarkReadUnread.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getReplyAction(
@@ -90,7 +88,7 @@ export function getReplyAction(
 	const action = isConversation
 		? isSingleMessageConversation && replyMsg({ id: firstConversationMessageId, folderId })
 		: replyMsg({ id, folderId });
-	return !folderExcludedReply.includes(getSystemFolderParentId(folderId) ?? '0') && action;
+	return !folderExcludedReply.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getReplyAllAction({
@@ -111,7 +109,7 @@ export function getReplyAllAction({
 	const action = isConversation
 		? isSingleMessageConversation && replyAllMsg({ id: firstConversationMessageId, folderId })
 		: replyAllMsg({ id, folderId });
-	return !folderExcludedReplyAll.includes(getSystemFolderParentId(folderId) ?? '0') && action;
+	return !folderExcludedReplyAll.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getForwardAction({
@@ -132,7 +130,7 @@ export function getForwardAction({
 	const action = isConversation
 		? isSingleMessageConversation && forwardMsg({ id: firstConversationMessageId, folderId })
 		: forwardMsg({ id, folderId });
-	return !folderExcludedForward.includes(getSystemFolderParentId(folderId) ?? '0') && action;
+	return !folderExcludedForward.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getMoveToTrashAction({
@@ -153,7 +151,7 @@ export function getMoveToTrashAction({
 	const action = isConversation
 		? moveConversationToTrash({ ids: [id], dispatch, folderId, deselectAll })
 		: moveMsgToTrash({ ids: [id], dispatch, deselectAll });
-	return !foldersExcludedTrash.includes(getSystemFolderParentId(folderId) ?? '0') && action;
+	return !foldersExcludedTrash.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getDeletePermanentlyAction({
@@ -174,9 +172,7 @@ export function getDeletePermanentlyAction({
 	const action = isConversation
 		? deleteConversationPermanently({ ids: [id], deselectAll })
 		: deleteMessagePermanently({ ids: [id], dispatch, deselectAll });
-	return (
-		foldersIncludedDeletePermanently.includes(getSystemFolderParentId(folderId) ?? '0') && action
-	);
+	return foldersIncludedDeletePermanently.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getAddRemoveFlagAction({
@@ -212,7 +208,7 @@ export function getSendDraftAction({
 	folderId: string;
 }): ActionReturnType {
 	const action = isConversation ? false : sendDraft({ id, message: item as MailMessage, dispatch });
-	return folderIncludedSendDraft.includes(getSystemFolderParentId(folderId) ?? '0') && action;
+	return folderIncludedSendDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getMarkRemoveSpam({
@@ -243,9 +239,7 @@ export function getMarkRemoveSpam({
 				dispatch,
 				folderId
 		  });
-	return (
-		!foldersExcludedMarkUnmarkSpam.includes(getSystemFolderParentId(folderId) ?? '0') && action
-	);
+	return !foldersExcludedMarkUnmarkSpam.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getApplyTagAction({
@@ -263,7 +257,7 @@ export function getApplyTagAction({
 }): ActionReturnType {
 	const action = applyTag({ tags, conversation: item, isMessage: !isConversation });
 	return (
-		!foldersExcludedTags.includes(getSystemFolderParentId(folderId) ?? '0') &&
+		!foldersExcludedTags.includes(getFolderIdParts(folderId).id ?? '0') &&
 		(action as ActionReturnType)
 	);
 }
@@ -318,7 +312,7 @@ export function getPrintAction({
 				account
 		  })
 		: printMsg({ message: item as MailMessage, account });
-	return !folderExcludedPrintMessage.includes(getSystemFolderParentId(folderId) ?? '0') && action;
+	return !folderExcludedPrintMessage.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getRedirectAction({
@@ -333,7 +327,7 @@ export function getRedirectAction({
 	folderId: string;
 }): ActionReturnType {
 	const action = isConversation ? false : redirectMsg({ id });
-	return !folderExcludedRedirect.includes(getSystemFolderParentId(folderId) ?? '0') && action;
+	return !folderExcludedRedirect.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getEditDraftAction({
@@ -348,7 +342,7 @@ export function getEditDraftAction({
 	folderIncludeEditDraft: string[];
 }): ActionReturnType {
 	const action = isConversation ? false : editDraft({ id, folderId });
-	return folderIncludeEditDraft.includes(getSystemFolderParentId(folderId) ?? '0') && action;
+	return folderIncludeEditDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getEditAsNewAction({
@@ -363,7 +357,7 @@ export function getEditAsNewAction({
 	folderExcludedEditAsNew: string[];
 }): ActionReturnType {
 	const action = isConversation ? false : editAsNewMsg({ id, folderId });
-	return !folderExcludedEditAsNew.includes(getSystemFolderParentId(folderId) ?? '0') && action;
+	return !folderExcludedEditAsNew.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
 export function getShowOriginalAction({
@@ -379,5 +373,5 @@ export function getShowOriginalAction({
 }): ActionReturnType {
 	const action = isConversation ? false : showOriginalMsg({ id });
 
-	return !folderExcludedShowOriginal.includes(getSystemFolderParentId(folderId) ?? '0') && action;
+	return !folderExcludedShowOriginal.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }

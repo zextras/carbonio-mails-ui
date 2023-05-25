@@ -27,7 +27,9 @@ import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
 import { StoreProvider } from './store/redux';
 import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
+import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
 import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-manager';
+import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
@@ -43,7 +45,6 @@ const LazySettingsView = lazy(() =>
 const LazySearchView = lazy(() =>
 	import(/* webpackChunkName: "mail-search-view" */ './views/search/search-view')
 );
-
 const LazySidebarView = lazy(() =>
 	import(/* webpackChunkName: "mail-sidebar-view" */ './views/sidebar/sidebar')
 );
@@ -177,7 +178,7 @@ const App = () => {
 			}
 		);
 	}, []);
-
+	useFoldersController(FOLDER_VIEW.message);
 	return (
 		<StoreProvider>
 			<SyncDataHandler />

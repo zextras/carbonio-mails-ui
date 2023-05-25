@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Accordion, Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
-import {
-	FOLDERS,
-	Folder,
-	getFolder,
-	t,
-	useFoldersByView,
-	useUserAccount
-} from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { filter, startsWith } from 'lodash';
 import React, {
 	ChangeEvent,
@@ -23,17 +16,18 @@ import React, {
 	useState
 } from 'react';
 import styled from 'styled-components';
+import { getFolder, getRoot } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import type { Folder } from '../../../carbonio-ui-commons/types/folder';
+import { isSpam, isTrash, isTrashed } from '../../../helpers/folders';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
-import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { getFolderTranslatedName } from '../utils';
-import { getRootAccountName } from '../../../helpers/folders';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
 	display: block;
 `;
 
-type FolderSelectorProps = {
+export type FolderSelectorProps = {
 	inputLabel?: string;
 	onNewFolderClick?: () => void;
 	folderId: string;
@@ -50,8 +44,8 @@ export const FolderSelector = ({
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const accountName = useUserAccount().name;
-	const folders = useFoldersByView(FOLDER_VIEW.message);
 	const folder = getFolder(folderId);
+	const accountRootFolder = getRoot(folderId);
 
 	const accordionRef = useRef<HTMLDivElement>();
 	const [accordionWidth, setAccordionWidth] = useState<number>();
@@ -66,45 +60,36 @@ export const FolderSelector = ({
 		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
 	}, [accordionRef]);
 
-	const rootName = useMemo(() => getRootAccountName(folder), [folder]);
-
-	const filteredFolders = folders.filter((item) =>
-		rootName ? item.name === rootName : item.id === FOLDERS.USER_ROOT
-	);
-
 	const flattenFolders = useCallback(
-		(arr: Array<Folder>): Array<Folder> => {
+		(arr: Array<Folder> | undefined): Array<Folder> => {
+			if (!arr) return [];
 			const result: Array<Folder> = [];
 			arr.forEach((item) => {
+				if (isTrash(item.id) || isSpam(item.id) || isTrashed({ folder: item })) {
+					return;
+				}
+
 				const { children } = item;
-				if (
-					item.id !== FOLDERS.TRASH &&
-					item.id !== FOLDERS.SPAM &&
-					!startsWith(item.absFolderPath, '/Trash')
-				)
-					result.push({
-						...item,
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						CustomComponent: ModalAccordionCustomComponent,
-						onClick: () => {
-							setFolderDestination(item);
-						},
-						background:
-							typeof folderDestination !== 'undefined' && folderDestination.id === item.id
-								? 'highlight'
-								: undefined,
-						label:
-							item.id === FOLDERS.USER_ROOT
-								? accountName
-								: getFolderTranslatedName({
-										folderId: item.id,
-										folderName: item.name
-								  }),
-						activeId: item.id === folderId,
-						accordionWidth,
-						items: []
-					});
+
+				result.push({
+					...item,
+					name: item.id === FOLDERS.USER_ROOT ? accountName : item.name,
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					CustomComponent: ModalAccordionCustomComponent,
+					onClick: () => {
+						setFolderDestination(item);
+					},
+					id: item.id,
+					background:
+						typeof folderDestination !== 'undefined' && folderDestination.id === item.id
+							? 'highlight'
+							: undefined,
+
+					activeId: item.id === folderId,
+					accordionWidth,
+					items: []
+				});
 				if (children?.length) result.push(...flattenFolders(children));
 			});
 			return result;
@@ -113,8 +98,8 @@ export const FolderSelector = ({
 	);
 
 	const flattenedFolders = useMemo(
-		() => flattenFolders(filteredFolders),
-		[filteredFolders, flattenFolders]
+		() => flattenFolders(accountRootFolder && [accountRootFolder]),
+		[accountRootFolder, flattenFolders]
 	);
 
 	const filteredFromUserInput = useMemo(
@@ -129,6 +114,7 @@ export const FolderSelector = ({
 	return folder ? (
 		<>
 			<Input
+				data-testid={'folder-name-filter'}
 				inputName={folder?.name}
 				label={inputLabel ?? t('label.filter_folders', 'Filter folders')}
 				backgroundColor="gray5"
