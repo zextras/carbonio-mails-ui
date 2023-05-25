@@ -49,7 +49,7 @@
         }
     },
     "action": {
-        "edit_as_new": "Edytuj jako nowe",
+        "edit_as_new": "Edytuj jako nowy",
         "edit_share": "Edytuj Udostępnienie",
         "flag": "Oflaguj",
         "forward": "Przekaż dalej",
@@ -201,7 +201,6 @@
         "owner": "Właściciel: ",
         "read": "Przeczytane",
         "receive_message": "Otrzymywanie wiadomości",
-        "received_from_address": "Otrzymano od (adres)",
         "remove_from_this_list": "Usuń z tej listy",
         "replied": "Odpisano",
         "results_for": "Wyniki dla: ",
@@ -219,7 +218,6 @@
         "send_notification": "Wyślij powiadomienie tekstowe do",
         "sending": "Wysyłanie",
         "sent": "Wysłane",
-        "sent_to_address": "Wysłane do (adres)",
         "shared_folders": "Udostępnione Foldery",
         "shared_item": "Udostępnione elementy",
         "shares_folder_edit": "Udostępnianie tego folderu",
@@ -354,16 +352,19 @@
         "extra_window": {
             "save_to_files_disabled": "Zapisz do Plików"
         },
-        "need_to_select_atleast_one_item": "Musisz wybrać co najmniej jeden element, aby móc wykonać tę czynność"
+        "need_to_select_atleast_one_item": "Musisz wybrać co najmniej jeden element, aby móc wykonać tę czynność",
+        "admin_disabled_action": "Administrator wyłączył przekierowywanie",
+        "received_from_address": "Otrzymano od (adres)",
+        "sent_to_address": "Wysłane do (adres)"
     },
     "message": {
         "snackbar": {
-            "settings_saved": "Zmiany zostały zapisane pomyślnie",
+            "settings_saved": "Zmiany zostały zapisane",
             "share": {
                 "accepted": "Zaakceptowano propozycję udostępnienia",
                 "declined": "Odrzucono propozycję udostępnienia"
             },
-            "calendar_edits_saved": "Zmiany zostały zapisane pomyślnie",
+            "calendar_edits_saved": "Zmiany zostały zapisane",
             "all_att_added": "Załączniki zostały dodane pomyślnie",
             "all_att_saved": "Złączniki zostały zapisane w wybranym folderze",
             "att_err": "Wystąpił problem przy zapisywaniu, spróbuj ponownie",
@@ -499,7 +500,7 @@
         "invalid_address": "Wygląda na to, że ten adres jest nieprawidłowy",
         "permanent_delete_body": "Jeśli trwale usuniesz ten element, nie będziesz w stanie go już odzyskać. Kontynuować?",
         "snackbar": {
-            "folder_edited": "Zmiany zostały zapisane pomyślnie",
+            "folder_edited": "Zmiany zostały zapisane",
             "folder_move_error": "Coś poszło nie tak, folder nie został przeniesiony. Spróbuj ponownie.",
             "marked_as_spam": "Oznaczyłeś ten e-mail jako Spam",
             "message_delete_error": "Coś poszło nie tak, wiadomość nie została usunięta. Spróbuj ponownie.",
@@ -810,6 +811,5 @@
         "composing_messages": "Tworzenie wiadomości",
         "compose_colin": "Stwórz:"
     },
-    "go_back": "Powrót",
-    "": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień"
+    "go_back": "Powrót"
 }

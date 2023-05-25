@@ -147,7 +147,6 @@
         "hide": "Sembunyikan",
         "loading_results": "Memuat Hasil…",
         "mail_folder": "Folder email",
-        "received_from_address": "Diterima dari (alamat)",
         "results_for": "Hasil untuk: ",
         "results_for_error": "Tidak dapat memulai pencarian. Hapus dan coba lagi: ",
         "select_signature": "Pilih tanda tangan",
@@ -163,7 +162,6 @@
         "search_activate_selection_mode": "Mode pemilihan belum tersedia di hasil pencarian",
         "addresses_not_accepted": "Satu atau beberapa alamat tidak diterima. Alamat yang ditolak:",
         "sending": "Mengirim",
-        "sent_to_address": "Dikirim ke (alamat)",
         "show_all": "Tampilkan semua",
         "signature_required": "Informasi tanda tangan dibutuhkan.",
         "size_larger": "Ukuran lebih besar dari (MB)",
@@ -174,7 +172,7 @@
         "decline": "Tolak",
         "folder_name": "Nama folder",
         "select": "Pilih",
-        "share_with": "Bagikan dengan",
+        "share_with": "Bagikan kepada",
         "forwarded": "Diteruskan",
         "cc_bcc": "Cc Bcc",
         "app_name": "Email",
@@ -224,7 +222,7 @@
         "always_allow_domain": "Selalu izinkan dari domain<strong>{{domain}}</strong>",
         "always_allow_address": "Selalu izinkan dari <strong>{{from}}</strong>",
         "time_zone": "Zona Waktu",
-        "searching": "Mencari…",
+        "searching": "Mencari...",
         "notify": "Beri tahu",
         "do_not_notify": "Jangan kirim notifikasi",
         "trusted_addresses": "Alamat tepercaya",
@@ -281,7 +279,10 @@
         "need_to_select_atleast_one_item": "Anda harus memilih minimal satu item untuk melakukan tindakan",
         "path": "Jalur",
         "select_all": "PILIH semua",
-        "using_signatures": "Penggunaan tanda tangan"
+        "using_signatures": "Penggunaan tanda tangan",
+        "admin_disabled_action": "Admin menonaktifkan tindakan mengalihkan",
+        "received_from_address": "Diterima dari (alamat)",
+        "sent_to_address": "Dikirim ke (alamat)"
     },
     "messages": {
         "snackbar": {
@@ -551,7 +552,8 @@
         "remove_action": "Hapus tindakan ini",
         "folder_path_required": "Pilih folder tujuan untuk menyelesaikan tindakan \"Pindahkan ke folder\".",
         "address_required": "Isi di kolom \"Alamat\" untuk menyelesaikan tindakan \"Alihkan ke Alamat\".",
-        "add_action": "Tambahkan tindakan baru"
+        "add_action": "Tambahkan tindakan baru",
+        "font_size_0": "{{count}} pt"
     },
     "composer": {
         "attachment": {
@@ -788,6 +790,5 @@
         "delete_draft": {
             "message1": "Anda ingin menyimpan draf ini atau menghapusnya?"
         }
-    },
-    "": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda"
+    }
 }

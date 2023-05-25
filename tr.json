@@ -188,12 +188,10 @@
         "no_search_results_found": "Sonuç bulunamadı",
         "on_behalf_of": "yerine",
         "read": "Okunmuş",
-        "received_from_address": "Gönderen (adres)",
         "remove_from_this_list": "Bu listeden kaldır",
         "results_for": "Sonuçlar: ",
         "results_for_error": "Arama sorgusu başlatılamadı, silip yeniden deneyin: ",
         "select_signature": "İmza seçin",
-        "sent_to_address": "Gönderilen (adres)",
         "shared_folders": "Paylaşılan Klasörler",
         "shares_info": "Paylaşılan klasör bilgisi",
         "show_all": "Hepsini göster",
@@ -329,7 +327,13 @@
         "deselect_all": "TÜM SEÇİMİ KALDIR",
         "need_to_select_atleast_one_item": "İşlemi yapabilmek için en az bir öğe seçmeniz gerekir",
         "select_all": "Tümünü SEÇ",
-        "using_signatures": "İmza Kullanımı"
+        "using_signatures": "İmza Kullanımı",
+        "sent_to_address": "Gönderilen (adres)",
+        "received_from_address": "Gönderen (adres)",
+        "admin_disabled_action": "Yönetici yönlendirme eylemini devre dışı bıraktı",
+        "time": "Zaman",
+        "exit_selection_mode": "Seçme modundan çık",
+        "all_items_selected": "Tüm görünür öğeler seçildi"
     },
     "share": {
         "options": {
@@ -801,6 +805,5 @@
         "composing_messages": "Mesaj Oluşturma",
         "compose_colin": "Oluştur:"
     },
-    "go_back": "Geriye git",
-    "": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin"
+    "go_back": "Geriye git"
 }

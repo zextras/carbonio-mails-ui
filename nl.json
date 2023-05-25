@@ -162,14 +162,12 @@
         "error_address": "Een geldig e-mailadres is vereist",
         "hide": "Verbergen",
         "addresses_not_accepted": "Een of meer adressen werden niet aanvaard. Afgewezen adressen:",
-        "received_from_address": "Ontvangen van (adres)",
         "sending": "Wordt verstuurd",
         "results_for_error": "Kan de zoekactie niet starten, wissen en opnieuw proberen: ",
         "results_for": "Resultaten voor: ",
         "shared_folders": "Gedeelde mappen",
         "show_all": "Alles weergeven",
         "select_signature": "Een handtekening selecteren",
-        "sent_to_address": "Verzonden naar (adres)",
         "signature_required": "Informatie over handtekening is vereist.",
         "mail_selected": "{{count}} e-mail geselecteerd",
         "mail_selected_plural": "{{count}} e-mails geselecteerd",
@@ -287,7 +285,10 @@
         "need_to_select_atleast_one_item": "U moet ten minste één item selecteren om de actie uit te voeren",
         "path": "Traject",
         "select_all": "Alles SELECTEREN",
-        "using_signatures": "Handtekeningen gebruik"
+        "using_signatures": "Handtekeningen gebruik",
+        "admin_disabled_action": "De Admin heeft de redirect-actie uitgeschakeld",
+        "received_from_address": "Ontvangen van (adres)",
+        "sent_to_address": "Verzonden naar (adres)"
     },
     "messages": {
         "invalid_address": "Het volgende adres lijkt ongeldig te zijn",
@@ -801,6 +802,5 @@
         "delete_draft": {
             "message1": "Wilt u dit ontwerp behouden of verwijderen?"
         }
-    },
-    "": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen"
+    }
 }
