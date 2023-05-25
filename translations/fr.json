@@ -803,6 +803,5 @@
         "composing_messages": "Composition des messages",
         "compose_colin": "Composer :"
     },
-    "go_back": "Retour",
-    "": "Pour compléter l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur"
+    "go_back": "Retour"
 }

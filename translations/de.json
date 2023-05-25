@@ -802,6 +802,5 @@
         "delete_draft": {
             "message1": "Möchten Sie diesen Entwurf behalten oder löschen?"
         }
-    },
-    "": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen"
+    }
 }
