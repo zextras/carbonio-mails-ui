@@ -3,18 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
+import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { reject } from 'lodash';
 import React from 'react';
 import {
 	getFolder,
 	getFoldersArrayByRoot,
-	getRootsMap
+	getRootsMap,
+	getUpdateFolder
 } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { isSpam, isTrash, isTrashed } from '../../../../helpers/folders';
+import { Folder } from '../../../../carbonio-ui-commons/types/folder';
+import { getFolderOwnerAccountName, isSpam, isTrash, isTrashed } from '../../../../helpers/folders';
 import { generateStore } from '../../../../tests/generators/store';
 import { FolderSelector, FolderSelectorProps } from '../folder-selector';
 
@@ -56,6 +60,30 @@ describe('Folder selector', () => {
 				folders.forEach((folder) => {
 					expect(screen.getByTestId(`folder-accordion-item-${folder.id}`)).toBeVisible();
 				});
+			}
+		);
+	});
+
+	describe('Folders accordion items', () => {
+		populateFoldersStore();
+		const rootIds = Object.keys(getRootsMap());
+		test.each(rootIds)(
+			'There is a folder accordion item for each root, with the account owner name',
+			() => {
+				populateFoldersStore();
+
+				const roots = getRootsMap();
+				const folderId = FOLDERS.INBOX;
+				const primaryAccount = getUserAccount();
+				const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
+
+				const props: FolderSelectorProps = {
+					folderId: FOLDERS.INBOX,
+					folderDestination: undefined,
+					setFolderDestination: jest.fn()
+				};
+				setupTest(<FolderSelector {...props} />, { store });
+				expect(screen.queryByText(ownerAccountName)).toBeVisible();
 			}
 		);
 	});
@@ -111,6 +139,42 @@ describe('Folder selector', () => {
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, inboxFirstChild.name);
 			expect(screen.getByTestId(`folder-accordion-item-${inboxFirstChild.id}`)).toBeVisible();
+		});
+		test('if the user type an Inbox folder name only the account with results is displayed', async () => {
+			populateFoldersStore();
+			const rootIds = Object.keys(getRootsMap());
+			const folders = getFoldersArrayByRoot(rootIds[0]);
+			const folderInPrimaryAccountOnly = folders.find(
+				(folder) => folder.name === 'Confluence'
+			) as Folder;
+			const props: FolderSelectorProps = {
+				folderId: FOLDERS.INBOX,
+				folderDestination: undefined,
+				setFolderDestination: jest.fn()
+			};
+			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			const filterInput = screen.getByTestId('folder-name-filter');
+			await user.type(filterInput, folderInPrimaryAccountOnly.name);
+			const roots = getRootsMap();
+			const primaryAccount = getUserAccount();
+			const ownerAccountName = getFolderOwnerAccountName(
+				folderInPrimaryAccountOnly.id,
+				primaryAccount,
+				roots
+			);
+
+			rootIds.forEach((rootId) => {
+				if (rootId === rootIds[0]) {
+					const accordionItems = screen.queryAllByTestId(/^folder-accordion-item-/);
+
+					expect(screen.queryByText(ownerAccountName)).toBeVisible();
+					expect(accordionItems.length).toBe(1);
+				}
+				if (rootId !== rootIds[0]) {
+					const nullResultsAccountName = getFolder(rootId)?.name as string;
+					expect(screen.queryByText(nullResultsAccountName)).not.toBeInTheDocument();
+				}
+			});
 		});
 	});
 });

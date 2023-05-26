@@ -70,7 +70,7 @@ const ModalAccordionCustomComponent: FC<{
 	}));
 
 	return isRoot(item.id) ? (
-		<FittedRow>
+		<FittedRow data-testid={`folder-accordion-root-${item.id}`}>
 			<Padding horizontal="small">
 				<Avatar label={item.label ?? ''} size="medium" />
 			</Padding>
