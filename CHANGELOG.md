@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.6...v1.4.0) (2023-05-25)
+
+
+### Features
+
+* added restore action to trash folder ([#376](https://github.com/zextras/carbonio-mails-ui/issues/376)) ([12a37ed](https://github.com/zextras/carbonio-mails-ui/commit/12a37edec46a9a7e9146112079a9731f0815a9c4))
+
+
+### Bug Fixes
+
+* fix badge update ([#374](https://github.com/zextras/carbonio-mails-ui/issues/374)) ([6dbc852](https://github.com/zextras/carbonio-mails-ui/commit/6dbc852f49c9a6aa7ee0bc4bf8aa2f04fcdb76ca))
+* fix display of messages in shared folders ([#373](https://github.com/zextras/carbonio-mails-ui/issues/373)) ([fd0fa71](https://github.com/zextras/carbonio-mails-ui/commit/fd0fa715abd078357d6cd96183867a1e1c06cb62))
+* fix the folder selector filter behaviour ([424f989](https://github.com/zextras/carbonio-mails-ui/commit/424f98961f591798449cddf6f6cb0183485bf5f0))
+* lists renders only visible items ([#377](https://github.com/zextras/carbonio-mails-ui/issues/377)) ([4f6c0d3](https://github.com/zextras/carbonio-mails-ui/commit/4f6c0d3a32f950ca2ac86adae02daa8a38ea7dae))
+
 ### [1.3.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.5...v1.3.6) (2023-05-11)
 
 ### [1.3.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.4...v1.3.5) (2023-05-11)
