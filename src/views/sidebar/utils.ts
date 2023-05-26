@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { AccordionItemType } from '@zextras/carbonio-design-system';
 import { FOLDERS, ROOT_NAME, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
 import type {
@@ -86,8 +87,8 @@ export const getFolderIconColorForAccordionFolder = (f: AccordionFolder): string
 	return ZIMBRA_STANDARD_COLORS[0].hex;
 };
 
-export const getFolderIconColor = (f: Folder): string => {
-	if (f?.color) {
+export const getFolderIconColor = (f: Folder | AccordionItemType): string => {
+	if ('color' in f && f?.color) {
 		return Number(f.color) < 10
 			? ZIMBRA_STANDARD_COLORS[Number(f.color)].hex
 			: f?.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex;
@@ -150,7 +151,7 @@ export const getFolderIconNameForAccordionFolder = (folder: AccordionFolder): st
 	return 'FolderOutline';
 };
 
-export const getFolderIconName = (folder: Folder): string | null => {
+export const getFolderIconName = (folder: Folder | AccordionItemType): string | null => {
 	const systemFolders = [
 		FOLDERS.USER_ROOT,
 		FOLDERS.INBOX,
@@ -160,7 +161,10 @@ export const getFolderIconName = (folder: Folder): string | null => {
 		FOLDERS.SENT
 	];
 
-	if (folder.id === FOLDERS.USER_ROOT || (folder.isLink && folder.oname === ROOT_NAME)) {
+	if (
+		folder.id === FOLDERS.USER_ROOT ||
+		('isLink' in folder && folder.isLink && folder.oname === ROOT_NAME)
+	) {
 		return null;
 	}
 

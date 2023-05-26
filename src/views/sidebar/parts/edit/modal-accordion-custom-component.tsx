@@ -3,10 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Icon, Row } from '@zextras/carbonio-design-system';
+import {
+	AccordionItem,
+	AccordionItemType,
+	Avatar,
+	Container,
+	Icon,
+	Padding,
+	Row,
+	Tooltip
+} from '@zextras/carbonio-design-system';
 import React, { FC } from 'react';
+import styled from 'styled-components';
 import { StaticBreadcrumbs } from '../../../../carbonio-ui-commons/components/breadcrumbs/static-breadcrumbs';
-import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import { isRoot } from '../../../../helpers/folders';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
 
@@ -17,14 +26,16 @@ import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } 
  * @param folder
  * @return the array of the crumbs name of the path
  */
-const getFolderAbsPathParts = (folder: Folder): Array<string> => {
+const getFolderAbsPathParts = (
+	folder: AccordionItemType & { absFolderPath?: string }
+): Array<string> => {
 	if (!folder) {
 		return [];
 	}
 
 	// Exception for root folders
 	if (isRoot(folder?.id)) {
-		return [folder.name];
+		return [folder.label ?? ''];
 	}
 	const reg = /^\/?(.*)$/gm;
 
@@ -36,8 +47,13 @@ const getFolderAbsPathParts = (folder: Folder): Array<string> => {
 	return matches[1].split('/');
 };
 
+const FittedRow = styled(Row)`
+	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
+	height: 3rem;
+`;
+
 const ModalAccordionCustomComponent: FC<{
-	item: Folder;
+	item: AccordionItemType;
 }> = ({ item }) => {
 	const iconName = getFolderIconName(item);
 	const iconColor = getFolderIconColor(item);
@@ -53,7 +69,16 @@ const ModalAccordionCustomComponent: FC<{
 		label: index === 0 ? getSystemFolderTranslatedName({ folderName: part }) : part
 	}));
 
-	return (
+	return isRoot(item.id) ? (
+		<FittedRow>
+			<Padding horizontal="small">
+				<Avatar label={item.label ?? ''} size="medium" />
+			</Padding>
+			<Tooltip label={item.label} placement="right" maxWidth="100%">
+				<AccordionItem item={item} />
+			</Tooltip>
+		</FittedRow>
+	) : (
 		<Container
 			data-testid={`folder-accordion-item-${item.id}`}
 			width="fill"

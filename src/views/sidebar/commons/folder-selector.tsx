@@ -3,22 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Accordion, Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
+import {
+	Accordion,
+	AccordionItemType,
+	Button,
+	Container,
+	Input,
+	Padding
+} from '@zextras/carbonio-design-system';
 import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { filter, startsWith } from 'lodash';
-import React, {
-	ChangeEvent,
-	ReactElement,
-	useCallback,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
+import React, { ChangeEvent, ReactElement, useState } from 'react';
 import styled from 'styled-components';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
-import { isSpam, isTrash, isTrashed } from '../../../helpers/folders';
+import { isRoot, isSpam, isTrash, isTrashed } from '../../../helpers/folders';
 import { useFolders } from '../../../hooks/use-folders';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
 
@@ -35,6 +34,91 @@ export type FolderSelectorProps = {
 	setFolderDestination: (arg: Folder) => void;
 };
 
+type FlattenFoldersProps = {
+	arr: Array<Folder> | undefined;
+	accountName: string;
+	folderId: string;
+	folderDestination: Folder | undefined;
+	setFolderDestination: (arg: Folder) => void;
+};
+
+export type FlattenedFoldersType = AccordionItemType & {
+	label: string;
+	items: Array<FlattenedFoldersType>;
+	absFolderPath: string;
+};
+
+function flattenFolders({
+	arr,
+	accountName,
+	folderId,
+	folderDestination,
+	setFolderDestination
+}: FlattenFoldersProps): Array<AccordionItemType> {
+	if (!arr) return [];
+	const result: Array<AccordionItemType> = [];
+	arr.forEach((item) => {
+		if (isTrash(item.id) || isSpam(item.id) || isTrashed({ folder: item })) {
+			return;
+		}
+
+		const { children } = item;
+
+		result.push({
+			...item,
+			label: item.id === FOLDERS.USER_ROOT ? accountName : item.name,
+			CustomComponent: ModalAccordionCustomComponent,
+			onClick: () => setFolderDestination(item),
+			id: item.id,
+			background: folderDestination && folderDestination.id === item.id ? 'highlight' : undefined,
+			active: item.id === folderId,
+			items: isRoot(item.id)
+				? flattenFolders({
+						arr: children,
+						accountName,
+						folderId,
+						folderDestination,
+						setFolderDestination
+				  })
+				: []
+		});
+		if (children?.length && !isRoot(item.id))
+			result.push(
+				...flattenFolders({
+					arr: children,
+					accountName,
+					folderId,
+					folderDestination,
+					setFolderDestination
+				})
+			);
+	});
+	return result;
+}
+
+function filterChildren(
+	items: Array<AccordionItemType>,
+	inputValue: string
+): Array<AccordionItemType> {
+	return filter(items, (item) => {
+		const folderName = item.label?.toLowerCase();
+		return startsWith(folderName, inputValue.toLowerCase());
+	});
+}
+
+function filterByUserInput(
+	flattenedFolders: Array<AccordionItemType>,
+	inputValue: string
+): Array<AccordionItemType> {
+	return flattenedFolders.reduce((acc, item) => {
+		if (isRoot(item.id)) {
+			acc.push({ ...item, items: item.items ? filterChildren(item.items, inputValue) : [] });
+		}
+		const result = acc.filter((accItem) => !!accItem.items?.length);
+		return result;
+	}, [] as Array<AccordionItemType>);
+}
+
 export const FolderSelector = ({
 	inputLabel,
 	onNewFolderClick,
@@ -47,66 +131,17 @@ export const FolderSelector = ({
 	const folder = getFolder(folderId);
 	const folders = useFolders();
 
-	const accordionRef = useRef<HTMLDivElement>();
-	const [accordionWidth, setAccordionWidth] = useState<number>();
+	const flattenedFolders = flattenFolders({
+		arr: folders,
+		accountName,
+		folderId,
+		folderDestination,
+		setFolderDestination
+	});
 
-	useLayoutEffect(() => {
-		const calculateAvailableWidth = (): void => {
-			if (accordionRef && accordionRef.current) {
-				setAccordionWidth(accordionRef?.current?.clientWidth);
-			}
-		};
-		window.addEventListener('resize', calculateAvailableWidth);
-		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
-	}, [accordionRef]);
+	const filteredByUserInput = filterByUserInput(flattenedFolders, inputValue);
 
-	const flattenFolders = useCallback(
-		(arr: Array<Folder> | undefined): Array<Folder> => {
-			if (!arr) return [];
-			const result: Array<Folder> = [];
-			arr.forEach((item) => {
-				if (isTrash(item.id) || isSpam(item.id) || isTrashed({ folder: item })) {
-					return;
-				}
-
-				const { children } = item;
-
-				result.push({
-					...item,
-					name: item.id === FOLDERS.USER_ROOT ? accountName : item.name,
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					CustomComponent: ModalAccordionCustomComponent,
-					onClick: () => {
-						setFolderDestination(item);
-					},
-					id: item.id,
-					background:
-						typeof folderDestination !== 'undefined' && folderDestination.id === item.id
-							? 'highlight'
-							: undefined,
-
-					activeId: item.id === folderId,
-					accordionWidth,
-					items: []
-				});
-				if (children?.length) result.push(...flattenFolders(children));
-			});
-			return result;
-		},
-		[folderDestination, accountName, folderId, accordionWidth, setFolderDestination]
-	);
-
-	const flattenedFolders = useMemo(() => flattenFolders(folders), [folders, flattenFolders]);
-
-	const filteredFromUserInput = useMemo(
-		() =>
-			filter(flattenedFolders, (item) => {
-				const folderName = item.name.toLowerCase();
-				return startsWith(folderName, inputValue.toLowerCase());
-			}),
-		[flattenedFolders, inputValue]
-	);
+	const openIds = flattenedFolders.map((item) => item.id);
 
 	return folder ? (
 		<>
@@ -127,8 +162,9 @@ export const FolderSelector = ({
 			>
 				<Accordion
 					background="gray6"
-					items={filteredFromUserInput}
+					items={filteredByUserInput}
 					style={{ overflowY: 'hidden' }}
+					openIds={openIds}
 				/>
 			</ContainerEl>
 			{onNewFolderClick && (
