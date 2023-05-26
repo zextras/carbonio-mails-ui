@@ -790,6 +790,5 @@
         "delete_draft": {
             "message1": "Anda ingin menyimpan draf ini atau menghapusnya?"
         }
-    },
-    "": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda"
+    }
 }

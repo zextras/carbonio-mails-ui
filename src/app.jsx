@@ -45,7 +45,6 @@ const LazySettingsView = lazy(() =>
 const LazySearchView = lazy(() =>
 	import(/* webpackChunkName: "mail-search-view" */ './views/search/search-view')
 );
-
 const LazySidebarView = lazy(() =>
 	import(/* webpackChunkName: "mail-sidebar-view" */ './views/sidebar/sidebar')
 );
