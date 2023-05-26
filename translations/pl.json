@@ -811,6 +811,5 @@
         "composing_messages": "Tworzenie wiadomości",
         "compose_colin": "Stwórz:"
     },
-    "go_back": "Powrót",
-    "": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień"
+    "go_back": "Powrót"
 }

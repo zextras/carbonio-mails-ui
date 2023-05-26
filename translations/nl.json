@@ -802,6 +802,5 @@
         "delete_draft": {
             "message1": "Wilt u dit ontwerp behouden of verwijderen?"
         }
-    },
-    "": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen"
+    }
 }

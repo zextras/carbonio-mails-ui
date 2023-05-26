@@ -804,6 +804,5 @@
         "delete_draft": {
             "message1": "Deseja manter ou excluir este rascunho?"
         }
-    },
-    "": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador"
+    }
 }

@@ -18,12 +18,12 @@
         "redirect": "ارجاع",
         "print": "چاپ",
         "preview_new_tab": "برای مشاهده در یک سربرگ جداگانه کلیک کنید",
-        "show_original": "نمایش اصلی",
+        "show_original": "نمایش نسخه اصلی",
         "show_details": "نمایش جزئیات",
         "share_folder": "اشتراک گذاری فولدر",
         "send_anyway": "بفرست",
         "search": "جستجو",
-        "reset": "تنظیم مجدد",
+        "reset": "ریست",
         "reply_all": "پاسخ به همه",
         "unflag": "حذف پرچم"
     },
@@ -49,9 +49,9 @@
     },
     "composer": {
         "attachment": {
-            "url": "افزودن لینک عمومی از Files",
+            "url": "پیوند عمومی را از Files اضافه کنید",
             "local": "افزودن از حافظه دستگاه",
-            "files": "افزودن از Files",
+            "files": "از Files اضافه کنید",
             "drag_and_drop": {
                 "title": "حالت Drag&Drop",
                 "content": "پیوست‌های خود را اینجا رها کنید تا به سرعت آنها را به این ایمیل اضافه کنید"
