@@ -13,11 +13,13 @@ import { generateStore } from '../../../tests/generators/store';
 import { NewModal } from '../new-modal';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
+import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 
 describe('new-modal', () => {
 	test('add folder name and create button should enabled', async () => {
 		const closeFn = jest.fn();
 		const store = generateStore();
+		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.datatype.uuid(),
@@ -72,6 +74,7 @@ describe('new-modal', () => {
 	test('create button should be disabled on blank folder name', async () => {
 		const closeFn = jest.fn();
 		const store = generateStore();
+		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.datatype.uuid(),
@@ -123,6 +126,7 @@ describe('new-modal', () => {
 	test('API is called with the proper parameters to create new folder', async () => {
 		const closeFn = jest.fn();
 		const store = generateStore();
+		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.datatype.uuid(),

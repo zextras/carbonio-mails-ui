@@ -7,7 +7,7 @@
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { sortBy } from 'lodash';
 import { useMemo } from 'react';
-import { useRootsArray } from '../carbonio-ui-commons/store/zustand/folder/hooks';
+import { getRootsArray, useRootsArray } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { Folder } from '../carbonio-ui-commons/types/folder';
 import { getFolderIdParts } from '../helpers/folders';
 
@@ -53,4 +53,13 @@ const sortFolders = ({
 export const useFolders = (): Array<Folder> => {
 	const roots = useRootsArray();
 	return useMemo(() => sortFolders({ children: roots, sortFunction: getSortCriteria }), [roots]);
+};
+
+/**
+ * sorts the children of the getRootsArray hook according to the specified sort function
+ * @returns the sorted children
+ */
+export const getFolders = (): Array<Folder> => {
+	const roots = getRootsArray();
+	return sortFolders({ children: roots, sortFunction: getSortCriteria });
 };

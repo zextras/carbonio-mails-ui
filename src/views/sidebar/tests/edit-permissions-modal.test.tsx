@@ -3,10 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { rest } from 'msw';
 import React from 'react';
-import { screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { faker } from '@faker-js/faker';
+import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
+import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
+import { FolderAction } from '../../../carbonio-ui-commons/types';
 import EditPermissionsModal from '../edit-permissions-modal';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../tests/generators/store';
@@ -54,7 +59,7 @@ describe('edit-permissions-modal', () => {
 		const { user } = setupTest(
 			<EditPermissionsModal
 				folder={folder}
-				closeFn={closeFn}
+				onClose={closeFn}
 				goBack={goBack}
 				grant={grant}
 				editMode={false}
@@ -126,7 +131,7 @@ describe('edit-permissions-modal', () => {
 		const { user } = setupTest(
 			<EditPermissionsModal
 				folder={folder}
-				closeFn={closeFn}
+				onClose={closeFn}
 				goBack={goBack}
 				grant={grant}
 				editMode={false}
@@ -201,7 +206,7 @@ describe('edit-permissions-modal', () => {
 		const { user } = setupTest(
 			<EditPermissionsModal
 				folder={folder}
-				closeFn={closeFn}
+				onClose={closeFn}
 				goBack={goBack}
 				grant={grant}
 				editMode={false}
@@ -278,7 +283,7 @@ describe('edit-permissions-modal', () => {
 		const { user } = setupTest(
 			<EditPermissionsModal
 				folder={folder}
-				closeFn={closeFn}
+				onClose={closeFn}
 				goBack={goBack}
 				grant={grant}
 				editMode={false}
@@ -349,7 +354,7 @@ describe('edit-permissions-modal', () => {
 		const { user } = setupTest(
 			<EditPermissionsModal
 				folder={folder}
-				closeFn={closeFn}
+				onClose={closeFn}
 				goBack={goBack}
 				grant={grant}
 				editMode={false}
@@ -368,5 +373,75 @@ describe('edit-permissions-modal', () => {
 		}
 		expect(screen.getByText('ale@test.com')).toBeInTheDocument();
 		expect(confirmButton).toBeEnabled();
+	});
+
+	describe('API calls', () => {
+		test.skip('Share the inbox folder with a user giving the viewer role', async () => {
+			const closeFn = jest.fn();
+			const goBack = jest.fn();
+			const grant = [
+				{
+					zid: '1',
+					gt: 'usr',
+					perm: 'r'
+				} as const
+			];
+			const store = generateStore();
+			populateFoldersStore();
+			const folder = getFolder(FOLDERS.INBOX);
+			const { user } = setupTest(
+				<EditPermissionsModal
+					folder={folder}
+					onClose={closeFn}
+					goBack={goBack}
+					grant={{}}
+					editMode={false}
+				/>,
+				{ store }
+			);
+			const userInput = screen.getByRole('textbox', {
+				name: /share\.recipients_address/i
+			});
+			const confirmButton = screen.getByRole('button', {
+				name: /action\.share_folder/i
+			});
+
+			const viewer = faker.internet.email();
+
+			// Select viewer role
+			const roleSelector = screen.getByTestId('share-role');
+			await user.click(roleSelector);
+			const roleItem = within(roleSelector).getByText('share.options.share_calendar_role.viewer');
+			await user.click(roleItem);
+			await user.type(userInput, viewer);
+			await user.tab();
+
+			// const interceptor = new Promise<string>((resolve, reject) => {
+			// 	// Register a handler for the REST call
+			// 	getSetupServer().use(
+			// 		rest.post('/service/soap/BatchRequest', async (req, res, ctx) => {
+			// 			// if (!req) {
+			// 			// 	reject(new Error('Empty request'));
+			// 			// }
+			//
+			// 			// const action = req.body;
+			// 			resolve(req);
+			//
+			// 			// Don't care about the actual response
+			// 			return res(ctx.json({}));
+			// 		})
+			// 	);
+			// });
+
+			// jest.advanceTimersByTime(10_000);
+
+			expect(confirmButton).toBeEnabled();
+			await user.click(confirmButton);
+
+			// screen.logTestingPlaygroundURL();
+
+			// const action = await interceptor;
+			// expect(action).not.toBeNull();
+		});
 	});
 });

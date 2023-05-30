@@ -10,7 +10,7 @@ import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { DataProps } from '../../carbonio-ui-commons/types/sidebar';
 import type { FolderType } from '../../types';
 
-type FolderActionProps = {
+export type FolderActionProps = {
 	folder: FolderType | DataProps | Omit<Folder, 'parent'>;
 	color?: number;
 	zid?: string;

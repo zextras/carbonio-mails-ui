@@ -36,6 +36,7 @@ import { sendShareNotification } from '../../store/actions/send-share-notificati
 import { shareFolder } from '../../store/actions/share-folder';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
 
+// TODO refactor IRIS-4324
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	onClose,
 	folder,
@@ -197,6 +198,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 
 				<Container height="fit">
 					<Select
+						data-testid={'share-role'}
 						items={shareCalendarRoleOptions}
 						background="gray5"
 						label={t('label.role', 'Role')}

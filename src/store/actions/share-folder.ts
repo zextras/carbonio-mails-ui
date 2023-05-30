@@ -4,11 +4,25 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { Account } from '@zextras/carbonio-shell-ui';
 import { map, trim } from 'lodash';
+import { Folder } from '../../carbonio-ui-commons/types/folder';
 
-export const shareFolder = createAsyncThunk('mail/shareFolder', async (data: any, { getState }) => {
-	const requests: any = {};
-	requests.ShareCalendarRequest = `<BatchRequest xmlns="urn:zimbra" onerror="stop">
+export type ShareFolderDataType = {
+	sendNotification?: boolean;
+	standardMessage?: string;
+	contacts: Array<{ email: string }>;
+	folder: Folder;
+	shareWithUserRole: string;
+	shareWithUserType?: string;
+	accounts: Array<Account>;
+};
+
+export const shareFolder = createAsyncThunk(
+	'mail/shareFolder',
+	async (data: ShareFolderDataType, { getState }) => {
+		const requests: any = {};
+		requests.ShareCalendarRequest = `<BatchRequest xmlns="urn:zimbra" onerror="stop">
         ${map(
 					data.contacts,
 					(
@@ -23,12 +37,12 @@ export const shareFolder = createAsyncThunk('mail/shareFolder', async (data: any
 				).join('')}    
         </BatchRequest>`;
 
-	const res = await fetch('/service/soap/BatchRequest', {
-		method: 'POST',
-		headers: {
-			'content-type': 'application/soap+xml'
-		},
-		body: `<?xml version="1.0" encoding="utf-8"?>
+		const res = await fetch('/service/soap/BatchRequest', {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/soap+xml'
+			},
+			body: `<?xml version="1.0" encoding="utf-8"?>
 			<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
 				<soap:Header>
 					<context xmlns="urn:zimbra">
@@ -41,11 +55,12 @@ export const shareFolder = createAsyncThunk('mail/shareFolder', async (data: any
 				</soap:Body>
 			</soap:Envelope>
 		`
-	});
-	const response = await res.json();
-	if (response.Body.Fault) {
-		throw new Error(response.Body.Fault.Reason.Text);
-	}
+		});
+		const response = await res.json();
+		if (response.Body.Fault) {
+			throw new Error(response.Body.Fault.Reason.Text);
+		}
 
-	return { response };
-});
+		return { response };
+	}
+);
