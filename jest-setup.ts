@@ -22,20 +22,7 @@ failOnConsole({
 });
 
 beforeAll(() => {
-	const h = [
-		rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest),
-		rest.post('*/service/soap/BatchRequest', async (req, res, ctx) => {
-			// if (!req) {
-			// 	reject(new Error('Empty request'));
-			// }
-
-			// const action = req.body;
-			console.log(await req.text());
-
-			// Don't care about the actual response
-			return res(ctx.json({}));
-		})
-	];
+	const h = [rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest)];
 	registerRestHandler(...h);
 	defaultBeforeAllTests();
 });
