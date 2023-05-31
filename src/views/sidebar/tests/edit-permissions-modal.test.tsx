@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { rest } from 'msw';
 import React from 'react';
 import { act, screen, within } from '@testing-library/react';
@@ -12,6 +13,8 @@ import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { FolderAction } from '../../../carbonio-ui-commons/types';
+import { ShareFolderDataType } from '../../../store/actions/share-folder';
+import * as shareFolderModule from '../../../store/actions/share-folder';
 import EditPermissionsModal from '../edit-permissions-modal';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../tests/generators/store';
@@ -377,6 +380,7 @@ describe('edit-permissions-modal', () => {
 
 	describe('API calls', () => {
 		test.skip('Share the inbox folder with a user giving the viewer role', async () => {
+			const folderId = FOLDERS.INBOX;
 			const closeFn = jest.fn();
 			const goBack = jest.fn();
 			const grant = [
@@ -388,7 +392,7 @@ describe('edit-permissions-modal', () => {
 			];
 			const store = generateStore();
 			populateFoldersStore();
-			const folder = getFolder(FOLDERS.INBOX);
+			const folder = getFolder(folderId);
 			const { user } = setupTest(
 				<EditPermissionsModal
 					folder={folder}
@@ -416,32 +420,17 @@ describe('edit-permissions-modal', () => {
 			await user.type(userInput, viewer);
 			await user.tab();
 
-			const interceptor = new Promise<string>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/BatchRequest', async (req, res, ctx) => {
-						// if (!req) {
-						// 	reject(new Error('Empty request'));
-						// }
+			const mockedImplementation = (data: ShareFolderDataType): void => {
+				expect(data.folder.id).toBe(folderId);
+			};
 
-						// const action = req.body;
-						resolve(await req.text());
+			jest.spyOn(shareFolderModule, 'shareFolder').mockImplementationOnce(
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				mockedImplementation
+			);
 
-						// Don't care about the actual response
-						return res(ctx.json({}));
-					})
-				);
-			});
-
-			// jest.advanceTimersByTime(10_000);
-
-			expect(confirmButton).toBeEnabled();
 			await user.click(confirmButton);
-
-			// screen.logTestingPlaygroundURL();
-
-			const action = await interceptor;
-			// expect(action).not.toBeNull();
 		});
 	});
 });
