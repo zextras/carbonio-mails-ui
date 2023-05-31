@@ -376,7 +376,7 @@ describe('edit-permissions-modal', () => {
 	});
 
 	describe('API calls', () => {
-		test.skip('Share the inbox folder with a user giving the viewer role', async () => {
+		test('Share the inbox folder with a user giving the viewer role', async () => {
 			const closeFn = jest.fn();
 			const goBack = jest.fn();
 			const grant = [
@@ -419,13 +419,13 @@ describe('edit-permissions-modal', () => {
 			// const interceptor = new Promise<string>((resolve, reject) => {
 			// 	// Register a handler for the REST call
 			// 	getSetupServer().use(
-			// 		rest.post('/service/soap/BatchRequest', async (req, res, ctx) => {
+			// 		rest.post('*/service/soap/BatchRequest', async (req, res, ctx) => {
 			// 			// if (!req) {
 			// 			// 	reject(new Error('Empty request'));
 			// 			// }
 			//
 			// 			// const action = req.body;
-			// 			resolve(req);
+			// 			resolve(await req.text());
 			//
 			// 			// Don't care about the actual response
 			// 			return res(ctx.json({}));

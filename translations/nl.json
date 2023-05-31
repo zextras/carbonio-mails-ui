@@ -666,7 +666,7 @@
                 "name_exist_warning": "Naam bestaat al"
             },
             "move": {
-                "title_modal": "Gesprek verplaatsen",
+                "title_modal_conversation": "Gesprek verplaatsen",
                 "body": {
                     "message1": "Selecteer een map om de overwogene naar te verplaatsen:",
                     "message2": "Selecteer een map om naar te herstellen:"
@@ -802,6 +802,5 @@
         "delete_draft": {
             "message1": "Wilt u dit ontwerp behouden of verwijderen?"
         }
-    },
-    "": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen"
+    }
 }

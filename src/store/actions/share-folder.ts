@@ -37,6 +37,7 @@ export const shareFolder = createAsyncThunk(
 				).join('')}    
         </BatchRequest>`;
 
+		// const res = await fetch(new URL('/service/soap/BatchRequest', 'http://localhost'), {
 		const res = await fetch('/service/soap/BatchRequest', {
 			method: 'POST',
 			headers: {

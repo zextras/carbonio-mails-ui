@@ -701,7 +701,7 @@
         },
         "modal": {
             "move": {
-                "title_modal": "Déplacer la Conversation",
+                "title_modal_conversation": "Déplacer la Conversation",
                 "body": {
                     "message1": "Sélectionnez un dossier dans lequel le déplacer :",
                     "message2": "Sélectionnez un dossier à restaurer dans :"
@@ -803,6 +803,5 @@
         "composing_messages": "Composition des messages",
         "compose_colin": "Composer :"
     },
-    "go_back": "Retour",
-    "": "Pour compléter l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur"
+    "go_back": "Retour"
 }
