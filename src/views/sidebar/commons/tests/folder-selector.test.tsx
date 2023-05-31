@@ -27,7 +27,7 @@ describe('Folder selector', () => {
 	test('The selector is visible', () => {
 		populateFoldersStore();
 		const props: FolderSelectorProps = {
-			folderId: FOLDERS.INBOX,
+			preselectedFolderId: FOLDERS.INBOX,
 			folderDestination: undefined,
 			setFolderDestination: jest.fn()
 		};
@@ -52,7 +52,7 @@ describe('Folder selector', () => {
 					(folder) => isTrash(folder.id) || isSpam(folder.id) || isTrashed({ folder })
 				);
 				const props: FolderSelectorProps = {
-					folderId: FOLDERS.INBOX,
+					preselectedFolderId: FOLDERS.INBOX,
 					folderDestination: undefined,
 					setFolderDestination: jest.fn()
 				};
@@ -78,7 +78,7 @@ describe('Folder selector', () => {
 				const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
 
 				const props: FolderSelectorProps = {
-					folderId: FOLDERS.INBOX,
+					preselectedFolderId: FOLDERS.INBOX,
 					folderDestination: undefined,
 					setFolderDestination: jest.fn()
 				};
@@ -92,7 +92,7 @@ describe('Folder selector', () => {
 		test('if the user type "inbox" in the filter only the Inbox folder is displayed', async () => {
 			populateFoldersStore();
 			const props: FolderSelectorProps = {
-				folderId: FOLDERS.INBOX,
+				preselectedFolderId: FOLDERS.INBOX,
 				folderDestination: undefined,
 				setFolderDestination: jest.fn()
 			};
@@ -107,7 +107,7 @@ describe('Folder selector', () => {
 		test('if the user type "INBOX" in the filter only the Inbox folder is displayed', async () => {
 			populateFoldersStore();
 			const props: FolderSelectorProps = {
-				folderId: FOLDERS.INBOX,
+				preselectedFolderId: FOLDERS.INBOX,
 				folderDestination: undefined,
 				setFolderDestination: jest.fn()
 			};
@@ -131,7 +131,7 @@ describe('Folder selector', () => {
 			}
 			const inboxFirstChild = inboxChildren[0];
 			const props: FolderSelectorProps = {
-				folderId: FOLDERS.INBOX,
+				preselectedFolderId: FOLDERS.INBOX,
 				folderDestination: undefined,
 				setFolderDestination: jest.fn()
 			};
@@ -148,7 +148,7 @@ describe('Folder selector', () => {
 				(folder) => folder.name === 'Confluence'
 			) as Folder;
 			const props: FolderSelectorProps = {
-				folderId: FOLDERS.INBOX,
+				preselectedFolderId: FOLDERS.INBOX,
 				folderDestination: undefined,
 				setFolderDestination: jest.fn()
 			};

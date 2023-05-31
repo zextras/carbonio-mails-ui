@@ -3,12 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Container, ChipInput } from '@zextras/carbonio-design-system';
-import { filter } from 'lodash';
+import { ChipInput, Container, CustomModal } from '@zextras/carbonio-design-system';
 import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
-import FolderSelectModal from './folder-modal';
-import type { TagFolderRowProps, ChipOnAdd } from '../../../types';
+import { filter } from 'lodash';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import type { ChipOnAdd, TagFolderRowProps } from '../../../types';
+import { SelectFolderModal } from '../../sidebar/select-folder-modal';
+import { getFolderIconColor } from '../../sidebar/utils';
 
 const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 	const { folder, setFolder, tagOptions, tag, setTag } = compProps;
@@ -60,14 +61,6 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 	);
 	const folderOnChange = useCallback((folderChips) => setFolder(folderChips), [setFolder]);
 
-	const modalProps = useMemo(
-		() => ({
-			open,
-			onClose,
-			setFolder
-		}),
-		[open, onClose, setFolder]
-	);
 	const tagPlaceholder = useMemo(() => t('label.tag', 'Tag'), []);
 	const onTagChange = useCallback(
 		(chip) => {
@@ -75,6 +68,34 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 		},
 		[setTag]
 	);
+
+	const headerTitle = t('share.is_contained_in', 'Is contained in');
+	const actionLabel = t('label.choose_folder', 'Choose folder');
+	const inputLabel = t(
+		'share.filter_folder_message',
+		'Select a folder where to start your advanced search'
+	);
+
+	const confirmAction = useCallback(
+		(folderDestination, setFolderDestination, _onClose) => {
+			setFolder([
+				{
+					label: `in:${folder?.absFolderPath}/${folderDestination?.name}`,
+					hasAvatar: true,
+					maxWidth: '12.5rem',
+					isGeneric: false,
+					background: 'gray2',
+					avatarBackground: getFolderIconColor(folderDestination),
+					avatarIcon: 'FolderOutline',
+					isQueryFilter: true,
+					value: `in:"${folder?.absFolderPath}/${folderDestination?.name}"`
+				}
+			]);
+			_onClose();
+		},
+		[setFolder, folder?.absFolderPath]
+	);
+
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
@@ -103,7 +124,15 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 					iconAction={openFolderModal}
 					requireUniqueChips
 				/>
-				<FolderSelectModal compProps={modalProps} />
+				<CustomModal open={open} onClose={onClose} maxHeight="90vh">
+					<SelectFolderModal
+						onClose={onClose}
+						headerTitle={headerTitle}
+						actionLabel={actionLabel}
+						inputLabel={inputLabel}
+						confirmAction={confirmAction}
+					/>
+				</CustomModal>
 			</Container>
 		</Container>
 	);
