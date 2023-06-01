@@ -119,7 +119,10 @@ export const MessageList: FC = () => {
 	);
 
 	const loadMoreDate = useMemo(() => messages?.[messages.length - 1]?.date, [messages]);
-	const totalMessages = useMemo(() => folder?.n ?? 0, [folder]);
+	const totalMessages = useMemo(
+		() => folder?.n ?? messages.length ?? 0,
+		[folder?.n, messages?.length]
+	);
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 	const messagesLoadingCompleted = useMemo(
 		() => messageListStatus === 'complete',
