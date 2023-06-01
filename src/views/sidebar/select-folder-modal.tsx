@@ -48,6 +48,9 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 	);
 
 	const preselectedFolderId = folder && folder.id;
+	const modalFooterTooltip =
+		isInputDisabled &&
+		t('label.folder_not_valid_destination', 'The selected folder is not a valid destination');
 
 	return (
 		<Container
@@ -78,6 +81,7 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 					setFolderDestination={setFolderDestination}
 				/>
 				<ModalFooter
+					tooltip={modalFooterTooltip}
 					onConfirm={onConfirm}
 					secondaryAction={onClose}
 					label={actionLabel}

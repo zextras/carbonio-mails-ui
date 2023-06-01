@@ -215,6 +215,10 @@ const MoveConvMessage = ({
 			: t('folder_panel.modal.new.create_footer', 'Create and Move');
 	}, [isRestore, moveConvModal]);
 
+	const modalFooterTooltip =
+		isDisabled &&
+		t('label.folder_not_valid_destination', 'The selected folder is not a valid destination');
+
 	return (
 		<Container
 			padding={{ all: 'large' }}
@@ -264,12 +268,14 @@ const MoveConvMessage = ({
 					</Text>
 				</Container>
 				<FolderSelector
-					onNewFolderClick={moveConvModal ? () => setMoveConvModal(false) : undefined}
+					// TODO: once the product team confirms the behavior of the new folder button, we can uncomment the following line
+					// onNewFolderClick={moveConvModal ? () => setMoveConvModal(false) : undefined}
 					folderId={folderId}
 					folderDestination={folderDestination}
 					setFolderDestination={setFolderDestination}
 				/>
 				<ModalFooter
+					tooltip={modalFooterTooltip}
 					onConfirm={footerConfirm}
 					secondaryAction={footerSecondary}
 					label={footerLabel}

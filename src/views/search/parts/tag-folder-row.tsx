@@ -77,10 +77,10 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 	);
 
 	const confirmAction = useCallback(
-		(folderDestination, setFolderDestination, _onClose) => {
+		(folderDestination, _setFolderDestination, _onClose) => {
 			setFolder([
 				{
-					label: `in:${folder?.absFolderPath}/${folderDestination?.name}`,
+					label: `in:${folderDestination?.absFolderPath}`,
 					hasAvatar: true,
 					maxWidth: '12.5rem',
 					isGeneric: false,
@@ -88,12 +88,12 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 					avatarBackground: getFolderIconColor(folderDestination),
 					avatarIcon: 'FolderOutline',
 					isQueryFilter: true,
-					value: `in:"${folder?.absFolderPath}/${folderDestination?.name}"`
+					value: `in:"${folderDestination?.absFolderPath}"`
 				}
 			]);
 			_onClose();
 		},
-		[setFolder, folder?.absFolderPath]
+		[setFolder]
 	);
 
 	return (

@@ -218,6 +218,7 @@
         "warning": "Warning"
     },
     "label": {
+        "": "",
         "accept": "Accept",
         "activate_selection_mode": "Activate selection mode",
         "add": "Add",
@@ -318,6 +319,7 @@
         "flagged": "Flagged",
         "flash_browser_title": "Flash the browser title",
         "folder_name": "Folder name",
+        "folder_not_valid_destination": "The selected folder is not a valid destination",
         "forwarded": "Forwarded",
         "freebusy": "FreeBusy",
         "from": "From",

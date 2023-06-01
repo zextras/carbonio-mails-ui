@@ -63,7 +63,6 @@ function flattenFolders({
 		}
 
 		const { children } = item;
-
 		result.push({
 			...item,
 			label: item.id === FOLDERS.USER_ROOT ? accountName : item.name,
@@ -71,7 +70,7 @@ function flattenFolders({
 			onClick: () => setFolderDestination(item),
 			id: item.id,
 			background: folderDestination && folderDestination.id === item.id ? 'highlight' : undefined,
-			active: item.id === preselectedFolderId,
+			active: item.id === folderDestination?.id,
 			items: isRoot(item.id)
 				? flattenFolders({
 						arr: children,
