@@ -5,7 +5,7 @@
  */
 import { Container } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
-import { filter, includes, isEmpty } from 'lodash';
+import { includes, isEmpty } from 'lodash';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
@@ -129,11 +129,8 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 
 	const showWarning = useMemo(
 		() =>
-			includes(
-				filter(translatedSystemFolders, (f) => f !== folder.name),
-				inputValue
-			),
-		[inputValue, folder]
+			includes(translatedSystemFolders(), inputValue) || (inputValue && inputValue.includes('/')),
+		[inputValue]
 	);
 	const inpDisable = useMemo(
 		() =>
@@ -308,6 +305,11 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 				disabled={disableSubmit}
 				secondaryBtnType="outlined"
 				secondaryColor="primary"
+				tooltip={
+					disableSubmit
+						? t('folder.modal.edit.enter_valid_folder_name', 'Enter a valid folder name')
+						: ''
+				}
 			/>
 		</>
 	);

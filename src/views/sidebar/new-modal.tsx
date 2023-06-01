@@ -27,8 +27,27 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [label, setLabel] = useState<string>(
 		t('folder_panel.modal.new.input.name', 'Enter Folder Name')
 	);
-
-	const showWarning = useMemo(() => includes(translatedSystemFolders(), inputValue), [inputValue]);
+	const [errorMsg, setErrorMsg] = useState<string>(
+		t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one.')
+	);
+	const showWarning = useMemo(() => {
+		if (includes(translatedSystemFolders(), inputValue)) {
+			setErrorMsg(
+				t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one.')
+			);
+			return true;
+		}
+		if (inputValue && inputValue.includes('/')) {
+			setErrorMsg(
+				t(
+					'folder.modal.edit.special_chars_warning_msg',
+					'Special characters are not allowed in the folder name'
+				)
+			);
+			return true;
+		}
+		return false;
+	}, [inputValue]);
 	useEffect(() => {
 		if (!folderDestination || !inputValue.length || showWarning) {
 			setDisabled(true);
@@ -100,17 +119,14 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 				<Input
 					label={label}
 					backgroundColor="gray5"
-					hasError={hasError}
+					hasError={hasError || showWarning}
 					defaultValue={inputValue}
 					onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
 				/>
 				{showWarning && (
 					<Padding all="small">
 						<Text size="small" color="error">
-							{`${t(
-								'folder.modal.edit.rename_warning',
-								'You cannot rename a folder as a system one.'
-							)}`}
+							{errorMsg}
 						</Text>
 					</Padding>
 				)}
@@ -125,6 +141,11 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					label={t('label.create', 'Create')}
 					secondaryLabel={t('label.cancel', 'Cancel')}
 					disabled={disabled}
+					tooltip={
+						disabled
+							? t('folder.modal.edit.enter_valid_folder_name', 'Enter a valid folder name')
+							: ''
+					}
 				/>
 			</Container>
 		</Container>
