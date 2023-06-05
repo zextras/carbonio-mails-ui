@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.4.1...v1.4.2) (2023-06-05)
+
+
+### Bug Fixes
+
+* fixed undo button ([2553f46](https://github.com/zextras/carbonio-mails-ui/commit/2553f468408cac4ab6764a48f6ae4132415223f3))
+
 ### [1.4.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.4.0...v1.4.1) (2023-05-31)
 
 
