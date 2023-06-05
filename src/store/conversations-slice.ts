@@ -5,13 +5,12 @@
  */
 /* eslint-disable no-param-reassign */
 
-/* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state", "conversation", "message", "cache", "folder-panel"] }] */
+/* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state", "conversation", "message", "cache"] }] */
 
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
 import type {
-	FolderType,
 	ConversationsFolderStatus,
 	ConversationsStateType,
 	StateType,
@@ -158,14 +157,10 @@ function getConvFulfilled(state: ConversationsStateType, { payload }: any): void
 }
 
 function getConvPending(state: ConversationsStateType, { meta }: any): void {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	state.expandedStatus[meta.arg.conversationId] = 'pending';
 }
 
 function getConvRejected(state: ConversationsStateType, { meta }: any): void {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	state.expandedStatus[meta.arg.conversationId] = 'error';
 }
 
@@ -235,10 +230,6 @@ export function selectConversationExpandedStatus(
 	id: string
 ): 'pending' | 'error' | 'complete' | undefined {
 	return conversations?.expandedStatus?.[id];
-}
-
-export function selectFolder({ folders }: StateType, id: string): FolderType {
-	return folders?.folders?.[id];
 }
 
 export function selectCurrentFolder({ conversations }: StateType): string {

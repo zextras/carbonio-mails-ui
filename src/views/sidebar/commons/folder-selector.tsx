@@ -130,7 +130,7 @@ export const FolderSelector = ({
 			>
 				<Accordion
 					background="gray6"
-					items={filteredFromUserInput as any[]}
+					items={filteredFromUserInput}
 					style={{ overflowY: 'hidden' }}
 				/>
 			</ContainerEl>

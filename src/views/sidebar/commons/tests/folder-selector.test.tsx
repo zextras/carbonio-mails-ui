@@ -34,7 +34,7 @@ describe('Folder selector', () => {
 		};
 		setupTest(<FolderSelector {...props} />, { store });
 
-		expect(screen.getByTestId('folder-name-filter')).toBeVisible;
+		expect(screen.getByTestId('folder-name-filter')).toBeVisible();
 	});
 
 	/**
