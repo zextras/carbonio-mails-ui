@@ -182,7 +182,7 @@ export function setMsgAsSpam({
 					autoHideTimeout: 3000,
 					hideButton,
 					actionLabel: t('label.undo', 'Undo'),
-					onActiononClick: () => {
+					onActionClick: () => {
 						notCanceled = false;
 					}
 				});
@@ -336,7 +336,7 @@ export function moveMsgToTrash({
 						autoHideTimeout: 5000,
 						hideButton: false,
 						actionLabel: t('label.undo', 'Undo'),
-						onActiononClick: () =>
+						onActionClick: () =>
 							restoreMessage(dispatch, ids, folderId, closeEditor, conversationId)
 					});
 				} else {
