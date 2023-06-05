@@ -6,11 +6,8 @@
 import type { Conversation } from '../conversations';
 
 export type StateType = {
-	// status: string;
-	folders: FoldersStateType;
 	editors: EditorsStateType;
 	conversations: ConversationsStateType;
-	// sync: SyncStateType;
 	messages: MsgStateType;
 	searches: SearchesStateType;
 };
@@ -18,11 +15,6 @@ export type StateType = {
 export type EditorsStateType = {
 	status: string;
 	editors: MailsEditorMap;
-};
-
-export type FoldersStateType = {
-	status: string;
-	folders: MailsFolderMap;
 };
 
 export type MsgStateType = {

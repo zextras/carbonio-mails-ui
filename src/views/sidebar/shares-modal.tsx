@@ -40,7 +40,6 @@ import type {
 	ShareModalProps,
 	SharedObject
 } from '../../carbonio-ui-commons/types/sidebar';
-import { useAppDispatch } from '../../hooks/redux';
 import { createMountpoint } from '../../store/actions/create-mountpoint';
 
 const ContainerEl = styled(Container)`
@@ -90,13 +89,12 @@ const CustomItem: FC<any> = ({ item: folder }) => {
 export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const [links, setLinks] = useState([] as SharedObject[]);
 	const [data, setData] = useState({});
-	const dispatch = useAppDispatch();
 	const [t] = useTranslation();
 
 	const onConfirm = useCallback(() => {
-		dispatch(createMountpoint(links));
+		createMountpoint(links);
 		onClose();
-	}, [dispatch, links, onClose]);
+	}, [links, onClose]);
 
 	const shared = map(
 		folders,

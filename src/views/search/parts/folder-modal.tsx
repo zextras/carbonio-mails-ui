@@ -31,7 +31,7 @@ import {
 import type { AccordionFolder } from '../../../carbonio-ui-commons/types/folder';
 import type { FolderType } from '../../../types';
 import { getFolderIconColor, getFolderTranslatedName } from '../../sidebar/utils';
-import AccordionCustomComponent from './folder-accordion-custom-comp';
+import { AccordionCustomComponent } from './folder-accordion-custom-comp';
 
 type ComponentProps = {
 	compProps: { open: boolean; onClose: () => void; setFolder: (arg: any) => void };
@@ -64,7 +64,7 @@ const CustomComponent: FC<{ item: any }> = ({ item }): ReactElement => (
 	</FittedRow>
 );
 
-const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
+export const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { open, onClose, setFolder } = compProps;
 
 	const [input, setInput] = useState('');
@@ -242,5 +242,3 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		</CustomModal>
 	);
 };
-
-export default FolderSelectModal;

@@ -643,8 +643,8 @@ export function moveMessageToFolder({
 					children: (
 						<StoreProvider>
 							<MoveConvMessage
-								folderId={folderId}
-								selectedIDs={id}
+								folderId={folderId ?? ''}
+								selectedIDs={[id as string]}
 								// TODO: Fix it in DS
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
