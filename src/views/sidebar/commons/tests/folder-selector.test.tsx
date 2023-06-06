@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { reject } from 'lodash';
@@ -11,8 +10,7 @@ import React from 'react';
 import {
 	getFolder,
 	getFoldersArrayByRoot,
-	getRootsMap,
-	getUpdateFolder
+	getRootsMap
 } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';

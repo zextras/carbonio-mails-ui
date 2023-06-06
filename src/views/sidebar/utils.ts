@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { AccordionItemType } from '@zextras/carbonio-design-system';
+import { type AccordionItemType } from '@zextras/carbonio-design-system';
 import { FOLDERS, ROOT_NAME, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
-import type {
-	AccordionFolder,
-	Folder,
-	LinkFolderFields
+import {
+	type AccordionFolder,
+	type Folder,
+	type LinkFolderFields
 } from '../../carbonio-ui-commons/types/folder';
 import { getFolderIdParts } from '../../helpers/folders';
 

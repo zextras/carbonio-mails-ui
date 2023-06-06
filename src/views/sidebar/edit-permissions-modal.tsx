@@ -47,7 +47,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
-	const [sendNotification, setSendNotification] = useState(false);
+	const [sendNotification, setSendNotification] = useState(true);
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<any>([]);
 	const [shareWithUserType, setshareWithUserType] = useState('usr');

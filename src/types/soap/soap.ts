@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui/types/network/soap';
+import { Folder } from '../../carbonio-ui-commons/types/folder';
 import { MailsEditor } from '../editor';
 import { PrefsType } from '../settings';
 import { EmailAddresses } from './redirect-message-action';
@@ -161,9 +163,9 @@ export type FolderActionRequest = {
 
 export type CreateFolderRequest = unknown;
 
-export type CreateFolderResponse = {
-	folder: Array<SyncResponseContactFolder>;
-};
+export type CreateFolderResponse = Promise<
+	{ folder: Array<Partial<Folder>> } | ErrorSoapBodyResponse
+>;
 
 export type CreateContactRequestAttr =
 	| { n: 'firstName'; _content: string }

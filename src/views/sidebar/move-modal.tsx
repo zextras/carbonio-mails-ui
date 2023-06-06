@@ -10,18 +10,16 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { useAppDispatch } from '../../hooks/redux';
 import { folderAction } from '../../store/actions/folder-action';
 import type { ModalProps } from '../../types';
 import { FolderSelector } from './commons/folder-selector';
 
 export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const dispatch = useAppDispatch();
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
 
 	const onConfirm = useCallback(() => {
 		const restoreFolder = (): Promise<void> =>
-			dispatch(folderAction({ folder, l: folder.l, op: 'move' })).then((res) => {
+			folderAction({ folder, l: folder.l, op: 'move' }).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					getBridgedFunctions()?.createSnackbar({
 						key: `move-folder`,
@@ -42,13 +40,11 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 					});
 				}
 			});
-		dispatch(
-			folderAction({
-				folder,
-				l: folderDestination?.id || FOLDERS.USER_ROOT,
-				op: 'move'
-			})
-		).then((res) => {
+		folderAction({
+			folder,
+			l: folderDestination?.id || FOLDERS.USER_ROOT,
+			op: 'move'
+		}).then((res) => {
 			if (res.type.includes('fulfilled')) {
 				getBridgedFunctions()?.createSnackbar({
 					key: `move`,
@@ -72,7 +68,7 @@ export const MoveModal: FC<ModalProps> = ({ folder, onClose }) => {
 			setFolderDestination(undefined);
 			onClose();
 		});
-	}, [dispatch, folder, folderDestination?.id, onClose]);
+	}, [folder, folderDestination?.id, onClose]);
 
 	const isInputDisabled = useMemo(
 		() =>

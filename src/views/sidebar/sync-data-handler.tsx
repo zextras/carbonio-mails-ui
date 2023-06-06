@@ -12,6 +12,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'lodash';
 import React, { FC, useEffect, useState } from 'react';
+import { useFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
@@ -27,13 +28,6 @@ import {
 	selectCurrentFolder,
 	setSearchedInFolder
 } from '../../store/conversations-slice';
-import {
-	handleCreatedFolders,
-	handleDeletedFolders,
-	handleModifiedFolders,
-	handleRefresh,
-	selectFolder
-} from '../../store/folders-slice';
 import {
 	handleCreatedMessages,
 	handleDeletedMessages,
@@ -51,25 +45,24 @@ import {
 	handleNotifyModifiedSearchConversations
 } from '../../store/searches-slice';
 import type { Conversation } from '../../types';
-import { extractFolders } from './utils';
 
 const InboxBadgeUpdater = (): null => {
-	const folder = useAppSelector(selectFolder(FOLDERS.INBOX));
+	const inbox = useFolder(FOLDERS.INBOX);
 	useEffect(() => {
-		updatePrimaryBadge(
-			{
-				show: folder.unreadCount > 0,
-				count: folder.unreadCount,
-				showCount: true
-			},
-			MAILS_ROUTE
-		);
-	}, [folder.unreadCount]);
+		if (inbox)
+			updatePrimaryBadge(
+				{
+					show: !!inbox.u,
+					count: inbox.u,
+					showCount: true
+				},
+				MAILS_ROUTE
+			);
+	}, [inbox]);
 	return null;
 };
 
 export const SyncDataHandler: FC = () => {
-	const refresh = useRefresh();
 	const notifyList = useNotify();
 	const [seq, setSeq] = useState(-1);
 	const dispatch = useAppDispatch();
@@ -77,14 +70,9 @@ export const SyncDataHandler: FC = () => {
 	const currentFolder = useAppSelector(selectCurrentFolder);
 	const messagesState = useAppSelector(selectMessages);
 
+	const refresh = useRefresh();
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
-			// this also normalize folders so no need to normalize it later
-			const extractedFolders = extractFolders([
-				...(refresh?.folder?.[0]?.folder ?? []),
-				...(refresh?.folder?.[0]?.link ?? [])
-			]);
-			dispatch(handleRefresh(extractedFolders));
 			setInitialized(true);
 		}
 	}, [dispatch, initialized, refresh]);
@@ -105,14 +93,6 @@ export const SyncDataHandler: FC = () => {
 					if (!isEmpty(notify) && (notify.seq > seq || (seq > 1 && notify.seq === 1))) {
 						const tags = getTags();
 						if (notify.created) {
-							if (notify.created.folder || notify.created.link) {
-								dispatch(
-									handleCreatedFolders([
-										...(notify.created.folder ?? []),
-										...(notify.created.link ?? [])
-									])
-								);
-							}
 							if (notify.created.c && notify.created.m) {
 								const conversations = map(notify.created.c, (i) =>
 									normalizeConversation({ c: i, m: notify.created.m, tags })
@@ -131,14 +111,6 @@ export const SyncDataHandler: FC = () => {
 							}
 						}
 						if (notify.modified) {
-							if (notify.modified.folder || notify.modified.link) {
-								dispatch(
-									handleModifiedFolders([
-										...(notify.modified.folder ?? []),
-										...(notify.modified.link ?? [])
-									])
-								);
-							}
 							if (notify.modified.c) {
 								const conversations = map(notify.modified.c, (i) =>
 									normalizeConversation({ c: i, tags })
@@ -208,7 +180,6 @@ export const SyncDataHandler: FC = () => {
 							}
 						}
 						if (notify.deleted) {
-							dispatch(handleDeletedFolders(notify.deleted));
 							dispatch(handleNotifyDeletedConversations(notify.deleted));
 							dispatch(handleNotifyDeletedSearchConversations(notify.deleted));
 							dispatch(handleDeletedMessages(notify.deleted));

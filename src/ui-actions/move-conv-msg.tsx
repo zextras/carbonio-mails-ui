@@ -3,16 +3,27 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { nanoid } from '@reduxjs/toolkit';
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { convAction, msgAction } from '../store/actions';
 import { createFolder } from '../store/actions/create-folder';
+import { AppDispatch } from '../store/redux';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
+import { Folder } from '../carbonio-ui-commons/types/folder';
+
+type MoveConvMessageProps = {
+	selectedIDs: string[];
+	isMessageView: boolean;
+	isRestore?: boolean;
+	deselectAll?: () => void;
+	onClose: () => void;
+	folderId: string;
+	dispatch: AppDispatch;
+};
 
 const MoveConvMessage = ({
 	selectedIDs,
@@ -22,15 +33,15 @@ const MoveConvMessage = ({
 	onClose,
 	folderId,
 	dispatch
-}) => {
+}: MoveConvMessageProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
-	const [folderDestination, setFolderDestination] = useState();
+	const [folderDestination, setFolderDestination] = useState<Folder | undefined>();
 	const [moveConvModal, setMoveConvModal] = useState(true);
 
 	const onCloseModal = useCallback(() => {
 		setMoveConvModal(true);
 		setInputValue('');
-		setFolderDestination('');
+		setFolderDestination(undefined);
 		onClose();
 	}, [onClose]);
 
@@ -138,13 +149,14 @@ const MoveConvMessage = ({
 	);
 
 	const onConfirm = useCallback(() => {
-		dispatch(
-			createFolder({ parentFolder: folderDestination, name: inputValue, id: nanoid() })
-		).then((res) => {
-			if (res.type.includes('fulfilled')) {
+		createFolder({
+			parentFolderId: folderDestination?.parent ?? '',
+			name: inputValue
+		}).then((res) => {
+			if (!('Fault' in res) && 'folder' in res) {
 				isMessageView
-					? onConfirmMessageMove(res.payload[0].id)
-					: onConfirmConvMove(res.payload[0].id);
+					? onConfirmMessageMove(res.folder[0].id)
+					: onConfirmConvMove(res.folder[0].id);
 			} else {
 				getBridgedFunctions()?.createSnackbar({
 					key: `edit`,
@@ -157,15 +169,8 @@ const MoveConvMessage = ({
 			}
 		});
 		setInputValue('');
-		setFolderDestination('');
-	}, [
-		dispatch,
-		folderDestination,
-		inputValue,
-		isMessageView,
-		onConfirmConvMove,
-		onConfirmMessageMove
-	]);
+		setFolderDestination(undefined);
+	}, [folderDestination, inputValue, isMessageView, onConfirmConvMove, onConfirmMessageMove]);
 
 	const headerTitle = useMemo(() => {
 		if (moveConvModal) {
@@ -182,13 +187,13 @@ const MoveConvMessage = ({
 	const footerConfirm = useMemo(() => {
 		if (moveConvModal) {
 			if (isMessageView) {
-				return () => onConfirmMessageMove(folderDestination.id);
+				return () => onConfirmMessageMove(folderDestination && folderDestination.id);
 			}
-			return () => onConfirmConvMove(folderDestination.id);
+			return () => onConfirmConvMove(folderDestination && folderDestination.id);
 		}
 		return onConfirm;
 	}, [
-		folderDestination?.id,
+		folderDestination,
 		isMessageView,
 		moveConvModal,
 		onConfirm,
@@ -200,7 +205,7 @@ const MoveConvMessage = ({
 		() =>
 			moveConvModal
 				? onClose
-				: () => {
+				: (): void => {
 						setMoveConvModal(true);
 				  },
 		[moveConvModal, onClose]
@@ -242,7 +247,9 @@ const MoveConvMessage = ({
 							backgroundColor="gray5"
 							hasError={hasSameName}
 							defaultValue={inputValue}
-							onChange={(e) => setInputValue(e.target.value)}
+							onChange={(e): void => {
+								setInputValue(e.target.value);
+							}}
 						/>
 						{hasSameName && (
 							<Padding all="small">
@@ -264,7 +271,13 @@ const MoveConvMessage = ({
 					</Text>
 				</Container>
 				<FolderSelector
-					onNewFolderClick={moveConvModal ? () => setMoveConvModal(false) : undefined}
+					onNewFolderClick={
+						moveConvModal
+							? (): void => {
+									setMoveConvModal(false);
+							  }
+							: undefined
+					}
 					folderId={folderId}
 					folderDestination={folderDestination}
 					setFolderDestination={setFolderDestination}
