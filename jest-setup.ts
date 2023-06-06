@@ -22,8 +22,8 @@ failOnConsole({
 });
 
 beforeAll(() => {
-	const h = [rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest)];
-	registerRestHandler(...h);
+	const h = rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
+	registerRestHandler(h);
 	defaultBeforeAllTests();
 });
 

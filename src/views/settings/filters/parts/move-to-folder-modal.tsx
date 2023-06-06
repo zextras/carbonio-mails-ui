@@ -10,9 +10,9 @@ import { filter, isEmpty, reduce, startsWith } from 'lodash';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { useAppSelector } from '../../../../hooks/redux';
-import { selectFolders } from '../../../../store/folders-slice';
-import type { FolderType } from '../../../../types/folder';
+import { useFoldersMap } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { Folder } from '../../../../carbonio-ui-commons/types/folder';
+import { isSpam, isTrash } from '../../../../helpers/folders';
 import FolderItem from '../../../sidebar/commons/folder-item';
 import { getFolderIconColor, getFolderIconName } from '../../../sidebar/utils';
 
@@ -25,14 +25,14 @@ type ComponentProps = {
 		activeIndex: number;
 		tempActions: any;
 		setTempActions: (arg: any) => void;
-		folderDestination: FolderType;
+		folderDestination: Folder;
 		setFolderDestination: (arg: any) => void;
-		folder: FolderType;
+		folder: Folder;
 		setFolder: (arg: any) => void;
 	};
 };
 
-const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
+export const MoveToFolderModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const {
 		open,
 		setOpen,
@@ -45,7 +45,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		setFolderDestination,
 		setFolder
 	} = compProps;
-	const folders = useAppSelector(selectFolders);
+	const folders = useFoldersMap();
 	const [input, setInput] = useState('');
 
 	const filterFromInput = useMemo(
@@ -61,14 +61,18 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	);
 
 	const nestFilteredFolders: any = useCallback(
-		(items: Array<FolderType>, id: string, results: Array<FolderType>, getSharedFolder: boolean) =>
+		(items: Array<Folder>, id: string, results: Array<Folder>, getSharedFolder: boolean) =>
 			reduce(
 				filter(items, (item) =>
 					getSharedFolder
-						? item.parent === id && item.isSharedFolder
-						: item.parent === id && item.id !== '4' && item.id !== '3' && !item.isSharedFolder
+						? 'isSharedFolder' in item && item.parent === id && item.isSharedFolder
+						: 'isSharedFolder' in item &&
+						  item.parent === id &&
+						  !isSpam(item.id) &&
+						  !isTrash(item.id) &&
+						  !item.isSharedFolder
 				),
-				(acc: Array<FolderType>, item: any) => {
+				(acc: Array<Folder>, item: any) => {
 					const match = filter(results, (result) => result.id === item.id);
 					if (match && match.length) {
 						return [
@@ -117,7 +121,7 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const requiredData = useMemo(() => nestedData.concat(shareFolders), [nestedData, shareFolders]);
 	const onConfirm = useCallback(() => {
 		const previous = tempActions.slice();
-		previous[activeIndex] = {
+		previous[activeIndex] = 'path' in folderDestination && {
 			id: previous[activeIndex]?.id,
 			actionFileInto: [{ folderPath: `${folderDestination.path}` }]
 		};
@@ -178,5 +182,3 @@ const FolderSelectModal: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		</CustomModal>
 	);
 };
-
-export default FolderSelectModal;

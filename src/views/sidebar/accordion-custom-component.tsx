@@ -112,27 +112,27 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		}
 
 		if (data.type === 'folder') {
-			dispatch(
-				folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' })
-			).then((res) => {
-				if (res.type.includes('fulfilled')) {
-					getBridgedFunctions()?.createSnackbar({
-						key: `move`,
-						replace: true,
-						type: 'success',
-						label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
-						autoHideTimeout: 3000
-					});
-				} else {
-					getBridgedFunctions()?.createSnackbar({
-						key: `move`,
-						replace: true,
-						type: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again.'),
-						autoHideTimeout: 3000
-					});
+			folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }).then(
+				(res) => {
+					if (res.type.includes('fulfilled')) {
+						getBridgedFunctions()?.createSnackbar({
+							key: `move`,
+							replace: true,
+							type: 'success',
+							label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
+							autoHideTimeout: 3000
+						});
+					} else {
+						getBridgedFunctions()?.createSnackbar({
+							key: `move`,
+							replace: true,
+							type: 'error',
+							label: t('label.error_try_again', 'Something went wrong, please try again.'),
+							autoHideTimeout: 3000
+						});
+					}
 				}
-			});
+			);
 		} else if ('messages' in data.data) {
 			dispatch(
 				convAction({

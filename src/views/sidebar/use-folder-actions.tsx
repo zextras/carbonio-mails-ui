@@ -223,7 +223,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
-						dispatch(folderAction({ folder, op: 'delete' }));
+						folderAction({ folder, op: 'delete' });
 					}
 				}
 			},
@@ -256,7 +256,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
-						dispatch(folderAction({ folder, op: 'read', l: folder.id }));
+						folderAction({ folder, op: 'read', l: folder.id });
 					}
 				}
 			}

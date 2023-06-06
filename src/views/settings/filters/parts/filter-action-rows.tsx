@@ -23,7 +23,7 @@ import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 import type { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import CustomSelect from './custom-select';
-import MoveToFolderModal from './move-to-folder-modal';
+import { MoveToFolderModal } from './move-to-folder-modal';
 import { getActionOptions, getMarkAsOptions } from './utils';
 
 export const StyledIconButton = styled(IconButton)`
