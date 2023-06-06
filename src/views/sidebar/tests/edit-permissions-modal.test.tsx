@@ -288,22 +288,22 @@ describe('edit-permissions-modal', () => {
 
 		const sendNotificationUnCheckbox = within(
 			screen.getByTestId('sendNotificationCheckboxContainer')
-		).getByTestId('icon: Square');
+		).getByTestId('icon: CheckmarkSquare');
 
 		expect(sendNotificationUnCheckbox).toBeInTheDocument();
 
 		const standardMessage = screen.getByRole('textbox', {
 			name: /share\.standard_message/i
 		});
-		expect(standardMessage).toBeDisabled();
+		expect(standardMessage).toBeEnabled();
 
 		await user.click(sendNotificationUnCheckbox);
 		const sendNotificationCheckbox = within(
 			screen.getByTestId('sendNotificationCheckboxContainer')
-		).getByTestId('icon: CheckmarkSquare');
+		).getByTestId('icon: Square');
 		expect(sendNotificationCheckbox).toBeInTheDocument();
 
-		expect(standardMessage).toBeEnabled();
+		expect(standardMessage).toBeDisabled();
 		expect(standardMessage).toHaveValue('');
 	});
 	test.todo('when chips inside chipInput have errors, the confirm button is disabled');

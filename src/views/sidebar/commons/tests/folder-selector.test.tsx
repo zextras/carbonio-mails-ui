@@ -11,8 +11,7 @@ import React from 'react';
 import {
 	getFolder,
 	getFoldersArrayByRoot,
-	getRootsMap,
-	getUpdateFolder
+	getRootsMap
 } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
@@ -78,7 +77,6 @@ describe('Folder selector', () => {
 				const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
 
 				const props: FolderSelectorProps = {
-					preselectedFolderId: FOLDERS.INBOX,
 					folderDestination: undefined,
 					setFolderDestination: jest.fn()
 				};
@@ -148,7 +146,6 @@ describe('Folder selector', () => {
 				(folder) => folder.name === 'Confluence'
 			) as Folder;
 			const props: FolderSelectorProps = {
-				preselectedFolderId: FOLDERS.INBOX,
 				folderDestination: undefined,
 				setFolderDestination: jest.fn()
 			};

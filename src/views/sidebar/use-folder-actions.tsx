@@ -116,7 +116,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							onClose: () => void
 						): void => {
 							const restoreFolder = (): Promise<void> =>
-								dispatch(folderAction({ folder, l: folder.l, op: 'move' })).then((res) => {
+								folderAction({ folder, l: folder.l, op: 'move' }).then((res) => {
 									if (res.type.includes('fulfilled')) {
 										getBridgedFunctions()?.createSnackbar({
 											key: `move-folder`,
@@ -137,13 +137,11 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 										});
 									}
 								});
-							dispatch(
-								folderAction({
-									folder,
-									l: folderDestination?.id ?? FOLDERS.USER_ROOT,
-									op: 'move'
-								})
-							)
+							folderAction({
+								folder,
+								l: folderDestination?.id ?? FOLDERS.USER_ROOT,
+								op: 'move'
+							})
 								.then((res) => {
 									if (res.type.includes('fulfilled')) {
 										getBridgedFunctions()?.createSnackbar({
@@ -287,7 +285,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
-						dispatch(folderAction({ folder, op: 'delete' })).catch(() => noop);
+						folderAction({ folder, op: 'delete' });
 					}
 				}
 			},
@@ -318,7 +316,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
-						dispatch(folderAction({ folder, op: 'read', l: folder.id })).catch(() => noop);
+						folderAction({ folder, op: 'read', l: folder.id });
 					}
 				}
 			}

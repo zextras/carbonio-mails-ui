@@ -9,7 +9,6 @@ import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 import { MAIL_APP_ID } from '../../constants';
 import { getConversationsSliceInitialState } from '../../store/conversations-slice';
 import { getEditorsSliceInitialState } from '../../store/editor-slice';
-import { getFoldersSliceInitialState } from '../../store/folders-slice';
 import { getMessagesSliceInitialState } from '../../store/messages-slice';
 import { storeReducers } from '../../store/reducers';
 import { getSearchSliceInitialiState } from '../../store/searches-slice';
@@ -23,10 +22,6 @@ export const generateState = (state?: Partial<StateType>): StateType => ({
 	editors: {
 		...getEditorsSliceInitialState(),
 		...state?.editors
-	},
-	folders: {
-		...getFoldersSliceInitialState(),
-		...state?.folders
 	},
 	searches: {
 		...getSearchSliceInitialiState(),

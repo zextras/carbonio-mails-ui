@@ -24,11 +24,10 @@ import React, {
 	useRef,
 	useState
 } from 'react';
-import { useAppSelector } from '../../../../../hooks/redux';
-import { selectFolders } from '../../../../../store/folders-slice';
 import type { MailMessage, TextReadValuesProps } from '../../../../../types';
 import ContactNames from './contact-names';
 import { getFolderTranslatedName } from '../../../../sidebar/utils';
+import { useFoldersMap } from '../../../../../carbonio-ui-commons/store/zustand/folder';
 
 const MessageContactList: FC<{
 	message: MailMessage;
@@ -40,7 +39,7 @@ const MessageContactList: FC<{
 		e.preventDefault();
 		setOpen((o) => !o);
 	}, []);
-	const folders = useAppSelector(selectFolders);
+	const folders = useFoldersMap();
 
 	const toContacts = useMemo(
 		() => filter(message.participants, ['type', 't']),

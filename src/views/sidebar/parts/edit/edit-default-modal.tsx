@@ -180,41 +180,39 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 			else if (dspYear === 'y') pr = Number(purgeValue) * 365;
 			else pr = Number(purgeValue);
 
-			dispatch(
-				folderAction({
-					folder: {
-						...folder,
-						parent: folder.l || '',
-						path: folder.absFolderPath,
-						absParent: '2',
-						children: []
-					},
-					name: inputValue,
-					op: 'update',
-					color: Number(folderColor),
-					retentionPolicy:
-						dsblMsgRet || dsblMsgDis || folder?.retentionPolicy
-							? {
-									keep: dsblMsgRet
-										? {
-												policy: {
-													lifetime: `${lt}d`,
-													type: 'user'
-												}
-										  }
-										: {},
-									purge: dsblMsgDis
-										? {
-												policy: {
-													lifetime: `${pr}d`,
-													type: 'user'
-												}
-										  }
-										: {}
-							  }
-							: {}
-				})
-			).then((res) => {
+			folderAction({
+				folder: {
+					...folder,
+					parent: folder.l || '',
+					path: folder.absFolderPath,
+					absParent: '2',
+					children: []
+				},
+				name: inputValue,
+				op: 'update',
+				color: Number(folderColor),
+				retentionPolicy:
+					dsblMsgRet || dsblMsgDis || folder?.retentionPolicy
+						? {
+								keep: dsblMsgRet
+									? {
+											policy: {
+												lifetime: `${lt}d`,
+												type: 'user'
+											}
+									  }
+									: {},
+								purge: dsblMsgDis
+									? {
+											policy: {
+												lifetime: `${pr}d`,
+												type: 'user'
+											}
+									  }
+									: {}
+						  }
+						: {}
+			}).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					getBridgedFunctions()?.createSnackbar({
 						key: `edit`,
@@ -247,7 +245,6 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 		purgeValue,
 		rtnYear,
 		dspYear,
-		dispatch,
 		folder,
 		folderColor
 	]);

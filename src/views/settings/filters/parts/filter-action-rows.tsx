@@ -17,20 +17,14 @@ import {
 	Tooltip,
 	getColor
 } from '@zextras/carbonio-design-system';
-import {
-	ZIMBRA_STANDARD_COLORS,
-	useIntegratedComponent,
-	FOLDERS,
-	getFolder
-} from '@zextras/carbonio-shell-ui';
+import { ZIMBRA_STANDARD_COLORS, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { filter, omit } from 'lodash';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
-import type { Folder } from '../../../../carbonio-ui-commons/types/folder';
+import { SelectFolderModal } from '../../../sidebar/select-folder-modal';
 import CustomSelect from './custom-select';
 import { getActionOptions, getMarkAsOptions } from './utils';
-import { SelectFolderModal } from '../../../sidebar/select-folder-modal';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
@@ -222,7 +216,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				}
 				case 'tagWith': {
 					const previous = tempActions.slice();
-					let tagDetails = [{}];
+					let tagDetails;
 					if (!previous[index].actionTag) {
 						tagDetails = [
 							{
