@@ -7,7 +7,7 @@ import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system
 import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
-import { find, includes } from 'lodash';
+import { find, includes, noop } from 'lodash';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
@@ -45,27 +45,29 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		createFolder({
 			parentFolderId: folderDestination?.parent ?? '',
 			name: inputValue
-		}).then((res) => {
-			if (!('Fault' in res)) {
-				getBridgedFunctions()?.createSnackbar({
-					key: `edit`,
-					replace: true,
-					type: 'success',
-					label: t('messages.snackbar.folder_created', 'New folder created'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			} else {
-				getBridgedFunctions()?.createSnackbar({
-					key: `edit`,
-					replace: true,
-					type: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			}
-		});
+		})
+			.then((res) => {
+				if (!('Fault' in res)) {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'success',
+						label: t('messages.snackbar.folder_created', 'New folder created'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				} else {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			})
+			.catch(() => noop);
 		setInputValue('');
 		setLabel(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
 		setFolderDestination(undefined);
@@ -113,7 +115,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					</Padding>
 				)}
 				<FolderSelector
-					folderId={folder.id}
+					preselectedFolderId={folder.id}
 					folderDestination={folderDestination}
 					setFolderDestination={setFolderDestination}
 				/>

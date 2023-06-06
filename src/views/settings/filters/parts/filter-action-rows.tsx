@@ -8,6 +8,7 @@ import {
 	ChipInput,
 	ChipItem,
 	Container,
+	CustomModal,
 	IconButton,
 	Input,
 	Padding,
@@ -21,9 +22,8 @@ import { filter, omit } from 'lodash';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
-import type { Folder } from '../../../../carbonio-ui-commons/types/folder';
+import { SelectFolderModal } from '../../../sidebar/select-folder-modal';
 import CustomSelect from './custom-select';
-import { MoveToFolderModal } from './move-to-folder-modal';
 import { getActionOptions, getMarkAsOptions } from './utils';
 
 export const StyledIconButton = styled(IconButton)`
@@ -67,8 +67,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	} = compProps;
 	const [open, setOpen] = useState(false);
 	const [activeIndex, setActiveIndex] = useState(0);
-	const [folderDestination, setFolderDestination] = useState<Folder | any>({});
-	const [folder, setFolder] = useState<Folder | any>({});
+	const [destination, setDestination] = useState<{ name?: string }>({});
 	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
 
 	const actionOptions = useMemo(
@@ -107,27 +106,9 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	);
 
 	const onModalClose = useCallback(() => {
-		setFolder({});
+		setDestination({});
 		setOpen(false);
 	}, []);
-
-	const modalProps = useMemo(
-		() => ({
-			open,
-			onClose: onModalClose,
-			t,
-			setOpen,
-			activeIndex,
-			setActiveIndex,
-			tempActions,
-			setTempActions,
-			folderDestination,
-			setFolderDestination,
-			folder,
-			setFolder
-		}),
-		[open, onModalClose, t, activeIndex, tempActions, setTempActions, folderDestination, folder]
-	);
 
 	const defaultValue = useMemo(() => {
 		const action = Object.keys(omit(tmpFilter, 'id'))[0];
@@ -147,7 +128,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			}
 			case 'actionFileInto': {
 				setActiveActionOption('moveIntoFolder');
-				setFolder({ name: tmpFilter[action][0].folderPath });
+				setDestination({ name: tmpFilter[action][0].folderPath });
 				return actionOptions[2];
 			}
 			case 'actionFlag': {
@@ -235,7 +216,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				}
 				case 'tagWith': {
 					const previous = tempActions.slice();
-					let tagDetails = [{}];
+					let tagDetails;
 					if (!previous[index].actionTag) {
 						tagDetails = [
 							{
@@ -268,7 +249,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 						};
 					}
 					setTempActions(previous);
-					setFolder(folderDetail);
+					setDestination(folderDetail[0]);
 					break;
 				}
 				case 'redirectToAddress': {
@@ -344,6 +325,25 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		},
 		[tempActions, index, setTempActions]
 	);
+
+	const confirmAction = useCallback(
+		(folderDestination, setFolderDestination, _onModalClose) => {
+			const previous = tempActions.slice();
+			previous[activeIndex] = {
+				id: previous[activeIndex]?.id,
+				actionFileInto: [{ folderPath: `${folderDestination.absFolderPath}` }]
+			};
+			setTempActions(previous);
+			setDestination({ name: folderDestination.name });
+			setOpen(false);
+		},
+		[tempActions, activeIndex, setTempActions, setDestination, setOpen]
+	);
+
+	const headerTitle = t('label.choose_folder', 'Choose Folder');
+	const actionLabel = t('settings.choose', 'Choose');
+	const inputLabel = t('settings.filter_folder_message', 'Select a folder to apply your filter:');
+
 	return (
 		<Container
 			mainAlignment="space-between"
@@ -371,12 +371,12 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					)}
 				{showBrowseBtn && (
 					<>
-						{folder && Object.keys(folder).length > 0 && folder?.name !== '' && (
+						{destination && Object.keys(destination).length > 0 && destination?.name !== '' && (
 							<Row padding={{ right: 'small' }}>
 								<Input
 									label={t('label.destination_folder', 'Destination Folder')}
 									backgroundColor="gray5"
-									value={folder?.name}
+									value={destination?.name}
 									disabled
 								/>
 							</Row>
@@ -444,7 +444,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					</Row>
 				)}
 			</Row>
-
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
 				<Tooltip label={t('settings.add_action', 'Add new action')} placement="top">
 					<StyledIconButton icon="PlusOutline" onClick={addFilterCondition} iconColor="primary" />
@@ -460,7 +459,15 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					</Tooltip>
 				</Padding>
 			</Container>
-			<MoveToFolderModal compProps={modalProps} />
+			<CustomModal open={open} onClose={onModalClose} maxHeight="90vh" size="medium">
+				<SelectFolderModal
+					onClose={onModalClose}
+					headerTitle={headerTitle}
+					actionLabel={actionLabel}
+					inputLabel={inputLabel}
+					confirmAction={confirmAction}
+				/>
+			</CustomModal>
 		</Container>
 	);
 };

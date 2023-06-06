@@ -318,6 +318,7 @@
         "flagged": "Flagged",
         "flash_browser_title": "Flash the browser title",
         "folder_name": "Folder name",
+        "folder_not_valid_destination": "The selected folder is not a valid destination",
         "forwarded": "Forwarded",
         "freebusy": "FreeBusy",
         "from": "From",
@@ -458,7 +459,6 @@
         "composing_messages": "Composing Messages"
     },
     "message": {
-        "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
         "admin_rights": "View,Edit,Add,Remove,Administer",
         "delete_attachment_message1": "Your attachment will be permanently deleted from Carbonio.",
         "delete_attachment_message2": "Do you want to download it before?",
@@ -500,7 +500,6 @@
         "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
         "edit_schedule_warning": "By editing this e-mail, the time and date previously set for delayed sending will be reset.",
         "extra_windows": {
-            "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
             "opening_blocked": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
             "popup_blocked": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings"
         },
