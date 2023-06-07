@@ -6,20 +6,17 @@
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { nanoid } from '@reduxjs/toolkit';
 import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
-import { find, includes } from 'lodash';
+import { find, includes, noop } from 'lodash';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { useAppDispatch } from '../../hooks/redux';
 import { createFolder } from '../../store/actions/create-folder';
 import type { ModalProps } from '../../types';
 import { FolderSelector } from './commons/folder-selector';
 import { translatedSystemFolders } from './utils';
 
 export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const dispatch = useAppDispatch();
 	const [inputValue, setInputValue] = useState(() => t('new_folder', 'New Folder'));
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
 	const [disabled, setDisabled] = useState(true);
@@ -45,35 +42,38 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	}, [folderDestination, inputValue, showWarning]);
 
 	const onConfirm = useCallback(() => {
-		dispatch(
-			createFolder({ parentFolder: folderDestination, name: inputValue, id: nanoid() })
-		).then((res: unknown & { type: string }) => {
-			if (res.type.includes('fulfilled')) {
-				getBridgedFunctions()?.createSnackbar({
-					key: `edit`,
-					replace: true,
-					type: 'success',
-					label: t('messages.snackbar.folder_created', 'New folder created'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			} else {
-				getBridgedFunctions()?.createSnackbar({
-					key: `edit`,
-					replace: true,
-					type: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			}
-		});
+		createFolder({
+			parentFolderId: folderDestination?.parent ?? '',
+			name: inputValue
+		})
+			.then((res) => {
+				if (!('Fault' in res)) {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'success',
+						label: t('messages.snackbar.folder_created', 'New folder created'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				} else {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			})
+			.catch(() => noop);
 		setInputValue('');
 		setLabel(t('folder_panel.modal.new.input.name', 'Enter Folder Name'));
 		setFolderDestination(undefined);
 		setHasError(false);
 		onClose();
-	}, [dispatch, folderDestination, inputValue, onClose]);
+	}, [folderDestination, inputValue, onClose]);
 
 	return folder ? (
 		<Container
@@ -115,7 +115,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					</Padding>
 				)}
 				<FolderSelector
-					folderId={folder.id}
+					preselectedFolderId={folder.id}
 					folderDestination={folderDestination}
 					setFolderDestination={setFolderDestination}
 				/>
