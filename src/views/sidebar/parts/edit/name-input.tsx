@@ -17,20 +17,24 @@ const NameInputRow: FC<NameInputRowProps> = ({
 	folderColor,
 	setFolderColor
 }) => (
-	<Container>
+	<Container mainAlignment="center" crossAlignment="flex-start">
 		<Input
 			label={t('label.folder_name', 'Folder name')}
 			onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
 			disabled={inpDisable}
 			value={inputValue}
-			borderColor={showWarning ? 'error' : 'gray2'}
-			textColor={showWarning ? 'error' : 'text'}
+			hasError={showWarning}
 			data-testid="folder-name"
 		/>
 		{showWarning && (
 			<Padding all="small">
 				<Text size="small" color="error">
-					{t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one')}
+					{inputValue && inputValue.includes('/')
+						? t(
+								'folder.modal.edit.special_chars_warning_msg',
+								'Special characters are not allowed in the folder name'
+						  )
+						: t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one')}
 				</Text>
 			</Padding>
 		)}
