@@ -10,6 +10,7 @@ import { reject } from 'lodash';
 import React from 'react';
 import {
 	getFolder,
+	getFoldersArray,
 	getFoldersArrayByRoot,
 	getRootsMap
 } from '../../../../carbonio-ui-commons/store/zustand/folder';
@@ -17,7 +18,13 @@ import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-she
 import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { getFolderOwnerAccountName, isSpam, isTrash, isTrashed } from '../../../../helpers/folders';
+import {
+	getFolderOwnerAccountName,
+	isInbox,
+	isSpam,
+	isTrash,
+	isTrashed
+} from '../../../../helpers/folders';
 import { generateStore } from '../../../../tests/generators/store';
 import { FolderSelector, FolderSelectorProps } from '../folder-selector';
 
@@ -89,6 +96,10 @@ describe('Folder selector', () => {
 	describe('Filter', () => {
 		test('if the user type "inbox" in the filter only the Inbox folder is displayed', async () => {
 			populateFoldersStore();
+			const inboxCount = getFoldersArray().reduce<number>(
+				(result, folder) => (isInbox(folder.id) ? result + 1 : result),
+				0
+			);
 			const props: FolderSelectorProps = {
 				preselectedFolderId: FOLDERS.INBOX,
 				folderDestination: undefined,
@@ -98,12 +109,16 @@ describe('Folder selector', () => {
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, 'inbox');
 			const accordionItems = screen.queryAllByTestId(/^folder-accordion-item-/);
-			expect(accordionItems.length).toBe(1);
+			expect(accordionItems.length).toBe(inboxCount);
 			expect(screen.getByTestId(`folder-accordion-item-${FOLDERS.INBOX}`)).toBeVisible();
 		});
 
 		test('if the user type "INBOX" in the filter only the Inbox folder is displayed', async () => {
 			populateFoldersStore();
+			const inboxCount = getFoldersArray().reduce<number>(
+				(result, folder) => (isInbox(folder.id) ? result + 1 : result),
+				0
+			);
 			const props: FolderSelectorProps = {
 				preselectedFolderId: FOLDERS.INBOX,
 				folderDestination: undefined,
@@ -113,7 +128,7 @@ describe('Folder selector', () => {
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, 'INBOX');
 			const accordionItems = screen.queryAllByTestId(/^folder-accordion-item-/);
-			expect(accordionItems.length).toBe(1);
+			expect(accordionItems.length).toBe(inboxCount);
 			expect(screen.getByTestId(`folder-accordion-item-${FOLDERS.INBOX}`)).toBeVisible();
 		});
 
