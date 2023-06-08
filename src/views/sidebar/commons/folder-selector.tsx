@@ -29,7 +29,7 @@ const ContainerEl = styled(Container)`
 export type FolderSelectorProps = {
 	inputLabel?: string;
 	onNewFolderClick?: () => void;
-	folderId: string;
+	preselectedFolderId?: string;
 	folderDestination: Folder | undefined;
 	setFolderDestination: (arg: Folder) => void;
 };
@@ -37,7 +37,7 @@ export type FolderSelectorProps = {
 type FlattenFoldersProps = {
 	arr: Array<Folder> | undefined;
 	accountName: string;
-	folderId: string;
+	preselectedFolderId?: string;
 	folderDestination: Folder | undefined;
 	setFolderDestination: (arg: Folder) => void;
 };
@@ -51,7 +51,7 @@ export type FlattenedFoldersType = AccordionItemType & {
 function flattenFolders({
 	arr,
 	accountName,
-	folderId,
+	preselectedFolderId,
 	folderDestination,
 	setFolderDestination
 }: FlattenFoldersProps): Array<AccordionItemType> {
@@ -63,7 +63,6 @@ function flattenFolders({
 		}
 
 		const { children } = item;
-
 		result.push({
 			...item,
 			label: item.id === FOLDERS.USER_ROOT ? accountName : item.name,
@@ -71,12 +70,12 @@ function flattenFolders({
 			onClick: () => setFolderDestination(item),
 			id: item.id,
 			background: folderDestination && folderDestination.id === item.id ? 'highlight' : undefined,
-			active: item.id === folderId,
+			active: item.id === folderDestination?.id,
 			items: isRoot(item.id)
 				? flattenFolders({
 						arr: children,
 						accountName,
-						folderId,
+						preselectedFolderId,
 						folderDestination,
 						setFolderDestination
 				  })
@@ -87,7 +86,7 @@ function flattenFolders({
 				...flattenFolders({
 					arr: children,
 					accountName,
-					folderId,
+					preselectedFolderId,
 					folderDestination,
 					setFolderDestination
 				})
@@ -122,19 +121,19 @@ function filterByUserInput(
 export const FolderSelector = ({
 	inputLabel,
 	onNewFolderClick,
-	folderId,
+	preselectedFolderId,
 	folderDestination,
 	setFolderDestination
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const accountName = useUserAccount().name;
-	const folder = getFolder(folderId);
+	const folder = preselectedFolderId && getFolder(preselectedFolderId);
 	const folders = useFolders();
 
 	const flattenedFolders = flattenFolders({
 		arr: folders,
 		accountName,
-		folderId,
+		preselectedFolderId,
 		folderDestination,
 		setFolderDestination
 	});
@@ -142,12 +141,12 @@ export const FolderSelector = ({
 	const filteredByUserInput = filterByUserInput(flattenedFolders, inputValue);
 
 	const openIds = flattenedFolders.map((item) => item.id);
-
-	return folder ? (
+	const inputName = folder ? folder.name : '';
+	return (
 		<>
 			<Input
 				data-testid={'folder-name-filter'}
-				inputName={folder?.name}
+				inputName={inputName}
 				label={inputLabel ?? t('label.filter_folders', 'Filter folders')}
 				backgroundColor="gray5"
 				value={inputValue}
@@ -182,7 +181,5 @@ export const FolderSelector = ({
 				</Container>
 			)}
 		</>
-	) : (
-		<></>
 	);
 };

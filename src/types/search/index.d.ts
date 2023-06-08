@@ -156,7 +156,7 @@ export type SubjectKeywordRowProps = {
 
 export type TagFolderRowProps = {
 	compProps: {
-		folder: Array<any>;
+		folder: Folder;
 		setFolder: (arg: any) => void;
 		tagOptions: Array<any>;
 		tag: Array<any>;

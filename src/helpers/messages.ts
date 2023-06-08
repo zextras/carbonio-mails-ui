@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { ParticipantRoleType } from '../carbonio-ui-commons/constants/participants';
-import type { MailMessage, Participant } from '../types';
+import type { Conversation, MailMessage, Participant } from '../types';
 
 /**
  * Collect all the participants of the given type (or any type if the type params is not set)
@@ -45,3 +45,16 @@ export const collectParticipantsFromMessages = (
 		return result;
 	}, []);
 };
+
+/**
+ * @param item
+ */
+export const isConversation = (item: MailMessage | Conversation): item is Conversation =>
+	'messages' in (item || {});
+
+/**
+ *
+ * @param item
+ */
+export const isSingleMessageConversation = (item: MailMessage | Conversation): boolean =>
+	isConversation(item) && item.messages.length === 1;

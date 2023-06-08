@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { ModalManagerContext } from '@zextras/carbonio-design-system';
-import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { startsWith } from 'lodash';
-import React, { SyntheticEvent, useContext, useMemo } from 'react';
+import { FOLDERS, getBridgedFunctions, t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { noop, startsWith } from 'lodash';
+import React, { SyntheticEvent, useCallback, useContext, useMemo, useState } from 'react';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { FolderActionsType } from '../../commons/utils';
 import { getFolderIdParts } from '../../helpers/folders';
@@ -21,9 +21,9 @@ import { DeleteModal } from './delete-modal';
 import { EditModal } from './edit-modal';
 import EditPermissionsModal from './edit-permissions-modal';
 import { EmptyModal } from './empty-modal';
-import { MoveModal } from './move-modal';
 import { NewModal } from './new-modal';
 import { SharesInfoModal } from './shares-info-modal';
+import { SelectFolderModal } from './select-folder-modal';
 
 type FolderActionsProps = {
 	id: string;
@@ -106,12 +106,81 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							true
 						);
 					} else {
+						const inputLabel = t(
+							'folder_panel.modal.move.body.message1',
+							'Select a folder to move the considered one to:'
+						);
+						const confirmAction = (
+							folderDestination: Folder | undefined,
+							setFolderDestination: (_folder: Folder | undefined) => void,
+							onClose: () => void
+						): void => {
+							const restoreFolder = (): Promise<void> =>
+								folderAction({ folder, l: folder.l, op: 'move' }).then((res) => {
+									if (res.type.includes('fulfilled')) {
+										getBridgedFunctions()?.createSnackbar({
+											key: `move-folder`,
+											replace: true,
+											type: 'success',
+											label: t('messages.snackbar.folder_restored', 'Folder restored'),
+											autoHideTimeout: 3000,
+											hideButton: true
+										});
+									} else {
+										getBridgedFunctions()?.createSnackbar({
+											key: `move`,
+											replace: true,
+											type: 'error',
+											label: t('label.error_try_again', 'Something went wrong, please try again'),
+											autoHideTimeout: 3000,
+											hideButton: true
+										});
+									}
+								});
+							folderAction({
+								folder,
+								l: folderDestination?.id ?? FOLDERS.USER_ROOT,
+								op: 'move'
+							})
+								.then((res) => {
+									if (res.type.includes('fulfilled')) {
+										getBridgedFunctions()?.createSnackbar({
+											key: `move`,
+											replace: true,
+											type: 'success',
+											label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
+											autoHideTimeout: 5000,
+											hideButton: false,
+											actionLabel: t('label.undo', 'Undo'),
+											onActionClick: () => restoreFolder()
+										});
+									} else {
+										getBridgedFunctions()?.createSnackbar({
+											key: `move`,
+											replace: true,
+											type: 'error',
+											label: t('label.error_try_again', 'Something went wrong, please try again.'),
+											autoHideTimeout: 3000
+										});
+									}
+									setFolderDestination(undefined);
+									onClose();
+								})
+								.catch(() => noop);
+						};
 						const closeModal = createModal(
 							{
 								maxHeight: '90vh',
 								children: (
 									<StoreProvider>
-										<MoveModal folder={folder} onClose={(): void => closeModal()} />
+										<SelectFolderModal
+											folder={folder}
+											onClose={(): void => closeModal()}
+											headerTitle={`${t('label.move', 'Move')} ${folder?.name}`}
+											actionLabel={t('label.move', 'Move')}
+											inputLabel={inputLabel}
+											confirmAction={confirmAction}
+										/>
 									</StoreProvider>
 								)
 							},
