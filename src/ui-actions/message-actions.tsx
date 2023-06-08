@@ -15,8 +15,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
 import React from 'react';
-import { errorPage } from '../commons/preview-eml/error-page';
-import { getContentForPrint } from '../commons/print-conversation';
+import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { ActionsType } from '../commons/utils';
 import { MAILS_ROUTE, MessageActionsDescriptors } from '../constants';
 import { getMsgsForPrint, msgAction } from '../store/actions';
@@ -24,6 +23,7 @@ import { sendMsg } from '../store/actions/send-msg';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
 	BoardContext,
+	Conversation,
 	MailMessage,
 	MessageActionReturnType,
 	MsgActionParameters,
@@ -32,6 +32,7 @@ import type {
 import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg';
 import RedirectAction from './redirect-message-action';
+import { errorPage } from './error-page';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -224,7 +225,7 @@ export function printMsg({
 						conversations,
 						isMsg: true
 					});
-					if (printWindow && printWindow?.top) {
+					if (printWindow?.top) {
 						printWindow.top.document.title = 'Carbonio';
 						printWindow.document.write(content);
 					}
