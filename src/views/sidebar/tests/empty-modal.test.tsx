@@ -63,6 +63,7 @@ describe('empty-modal', () => {
 
 		expect(wipeButton).toBeEnabled();
 	});
+
 	test('empty the trash folder', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -132,7 +133,13 @@ describe('empty-modal', () => {
 					resolve(msg);
 
 					// Don't care about the actual response
-					return res(ctx.json({}));
+					return res(
+						ctx.json({
+							Body: {
+								Fault: {}
+							}
+						})
+					);
 				})
 			);
 		});

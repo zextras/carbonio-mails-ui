@@ -71,6 +71,7 @@ describe('edit-modal', () => {
 		});
 		expect(editButton).toBeEnabled();
 	});
+
 	test('edit the system folder', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -122,6 +123,7 @@ describe('edit-modal', () => {
 		});
 		expect(editButton).toBeEnabled();
 	});
+
 	test('edit the folder with default retention policy is collapse', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -163,6 +165,7 @@ describe('edit-modal', () => {
 		);
 		expect(retentionPolicy).toBeInTheDocument();
 	});
+
 	test('Enable message retention and enable message disposal are uncheck by default', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -213,6 +216,7 @@ describe('edit-modal', () => {
 		);
 		expect(enableMsgDisposal).toBeInTheDocument();
 	});
+
 	test('API is called with the proper parameters', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -242,7 +246,13 @@ describe('edit-modal', () => {
 					resolve(msg);
 
 					// Don't care about the actual response
-					return res(ctx.json({}));
+					return res(
+						ctx.json({
+							Body: {
+								Fault: {}
+							}
+						})
+					);
 				})
 			);
 		});
@@ -314,7 +324,13 @@ describe('edit-modal', () => {
 					resolve(msg);
 
 					// Don't care about the actual response
-					return res(ctx.json({}));
+					return res(
+						ctx.json({
+							Body: {
+								Fault: {}
+							}
+						})
+					);
 				})
 			);
 		});

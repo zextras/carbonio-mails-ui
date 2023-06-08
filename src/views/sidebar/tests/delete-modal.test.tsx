@@ -113,6 +113,7 @@ describe('delete-modal', () => {
 		expect(cancelButton).toBeEnabled();
 		await user.click(cancelButton);
 	});
+
 	test('API is called with the proper parameters to delete normal folder excepting trash', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -142,7 +143,13 @@ describe('delete-modal', () => {
 					resolve(msg);
 
 					// Don't care about the actual response
-					return res(ctx.json({}));
+					return res(
+						ctx.json({
+							Body: {
+								Fault: {}
+							}
+						})
+					);
 				})
 			);
 		});
@@ -152,6 +159,7 @@ describe('delete-modal', () => {
 		expect(action.id).toBe(FOLDERS.INBOX);
 		expect(action.op).toBe('move');
 	});
+
 	test('API is called with the proper parameters to delete folder of trash', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -181,7 +189,13 @@ describe('delete-modal', () => {
 					resolve(msg);
 
 					// Don't care about the actual response
-					return res(ctx.json({}));
+					return res(
+						ctx.json({
+							Body: {
+								Fault: {}
+							}
+						})
+					);
 				})
 			);
 		});

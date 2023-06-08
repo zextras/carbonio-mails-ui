@@ -1,4 +1,5 @@
 /*
+/*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
@@ -84,7 +85,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 				accounts
 			})
 		).then((res: { type: string }) => {
-			if (res.type.includes('fulfilled')) {
+			if (!('Fault' in res)) {
 				getBridgedFunctions()?.createSnackbar({
 					key: `share-${folder.id}`,
 					replace: true,

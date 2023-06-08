@@ -55,7 +55,13 @@ describe('Mark all as read', () => {
 
 						const { action } = (await req.json()).Body.FolderActionRequest;
 						resolve(action);
-						return res(ctx.json('foo'));
+						return res(
+							ctx.json({
+								Body: {
+									Fault: {}
+								}
+							})
+						);
 					})
 				);
 			}

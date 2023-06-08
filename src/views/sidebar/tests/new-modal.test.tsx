@@ -71,6 +71,7 @@ describe('new-modal', () => {
 		});
 		expect(cancelButton).toBeEnabled();
 	});
+
 	test('create button should be disabled on blank folder name', async () => {
 		const closeFn = jest.fn();
 		const store = generateStore();
@@ -185,7 +186,13 @@ describe('new-modal', () => {
 					resolve(msg);
 
 					// Don't care about the actual response
-					return res(ctx.json({}));
+					return res(
+						ctx.json({
+							Body: {
+								Fault: {}
+							}
+						})
+					);
 				})
 			);
 		});
