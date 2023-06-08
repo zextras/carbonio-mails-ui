@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { reject } from 'lodash';
@@ -27,6 +26,7 @@ import {
 } from '../../../../helpers/folders';
 import { generateStore } from '../../../../tests/generators/store';
 import { FolderSelector, FolderSelectorProps } from '../folder-selector';
+import { getSystemFolderTranslatedName } from '../../utils';
 
 describe('Folder selector', () => {
 	const store = generateStore();
@@ -105,9 +105,10 @@ describe('Folder selector', () => {
 				folderDestination: undefined,
 				setFolderDestination: jest.fn()
 			};
+			const inboxFolderName = getSystemFolderTranslatedName({ folderName: 'Inbox' });
 			const { user } = setupTest(<FolderSelector {...props} />, { store });
 			const filterInput = screen.getByTestId('folder-name-filter');
-			await user.type(filterInput, 'inbox');
+			await user.type(filterInput, inboxFolderName);
 			const accordionItems = screen.queryAllByTestId(/^folder-accordion-item-/);
 			expect(accordionItems.length).toBe(inboxCount);
 			expect(screen.getByTestId(`folder-accordion-item-${FOLDERS.INBOX}`)).toBeVisible();
@@ -115,6 +116,7 @@ describe('Folder selector', () => {
 
 		test('if the user type "INBOX" in the filter only the Inbox folder is displayed', async () => {
 			populateFoldersStore();
+			const inboxFolderName = getSystemFolderTranslatedName({ folderName: 'Inbox' });
 			const inboxCount = getFoldersArray().reduce<number>(
 				(result, folder) => (isInbox(folder.id) ? result + 1 : result),
 				0
@@ -126,7 +128,7 @@ describe('Folder selector', () => {
 			};
 			const { user } = setupTest(<FolderSelector {...props} />, { store });
 			const filterInput = screen.getByTestId('folder-name-filter');
-			await user.type(filterInput, 'INBOX');
+			await user.type(filterInput, inboxFolderName);
 			const accordionItems = screen.queryAllByTestId(/^folder-accordion-item-/);
 			expect(accordionItems.length).toBe(inboxCount);
 			expect(screen.getByTestId(`folder-accordion-item-${FOLDERS.INBOX}`)).toBeVisible();
