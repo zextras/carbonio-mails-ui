@@ -161,6 +161,10 @@ export type FolderActionRequest = {
 	action: FolderActionRename | FolderActionMove | FolderActionDelete;
 };
 
+export type FolderActionResponse = {
+	folder: Array<ISoapFolderObj> | ErrorSoapBodyResponse;
+};
+
 export type CreateFolderRequest = unknown;
 
 export type CreateFolderResponse = Promise<

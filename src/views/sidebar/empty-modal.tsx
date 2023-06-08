@@ -14,7 +14,7 @@ import type { ModalProps } from '../../types';
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const onConfirm = useCallback(() => {
 		folderAction({ folder, recursive: true, op: 'empty' }).then((res) => {
-			if (res.type.includes('fulfilled')) {
+			if (!('Fault' in res)) {
 				getBridgedFunctions()?.createSnackbar({
 					key: `trash`,
 					replace: true,

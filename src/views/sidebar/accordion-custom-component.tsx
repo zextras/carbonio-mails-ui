@@ -114,7 +114,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		if (data.type === 'folder') {
 			folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }).then(
 				(res) => {
-					if (res.type.includes('fulfilled')) {
+					if (!('Fault' in res)) {
 						getBridgedFunctions()?.createSnackbar({
 							key: `move`,
 							replace: true,
