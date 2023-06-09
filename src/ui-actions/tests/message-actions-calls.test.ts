@@ -36,12 +36,14 @@ describe('Messages actions calls', () => {
 		test('Single id', async () => {
 			populateFoldersStore();
 			const msg = generateMessage({});
-			const store = generateStore();
-			// const store = generateStore({
-			// 	messages: {
-			// 		[msg.id]: msg
-			// 	}
-			// });
+			const store = generateStore({
+				messages: {
+					searchedInFolder: {},
+					messages: [msg],
+					status: {}
+				}
+			});
+
 			const action = setMsgFlag({
 				ids: [msg.id],
 				dispatch: store.dispatch,
