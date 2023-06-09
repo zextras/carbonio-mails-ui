@@ -10,7 +10,7 @@ import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
 import { MsgActionRequest } from '../../types';
-import { setMsgFlag } from '../message-actions';
+import { setMsgFlag, setMsgRead } from '../message-actions';
 
 const createAPIInterceptor = <T>(apiAction: string): Promise<T> =>
 	new Promise<T>((resolve, reject) => {
@@ -66,19 +66,82 @@ describe('Messages actions calls', () => {
 	});
 
 	describe('Remove flag action', () => {
-		test.todo('Single id');
+		test('Single id', async () => {
+			populateFoldersStore();
+			const msg = generateMessage({});
+			const store = generateStore();
+
+			const action = setMsgFlag({
+				ids: [msg.id],
+				dispatch: store.dispatch,
+				value: true
+			});
+
+			act(() => {
+				action.onClick(undefined);
+			});
+
+			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			expect(requestParameter.action.id).toBe(msg.id);
+			expect(requestParameter.action.op).toBe('!flag');
+			expect(requestParameter.action.l).toBeUndefined();
+			expect(requestParameter.action.f).toBeUndefined();
+			expect(requestParameter.action.tn).toBeUndefined();
+		});
 
 		test.todo('Multiple ids');
 	});
 
 	describe('Mark as read action', () => {
-		test.todo('Single id');
+		test('Single id', async () => {
+			populateFoldersStore();
+			const msg = generateMessage({});
+			const store = generateStore();
+			const action = setMsgRead({
+				ids: [msg.id],
+				dispatch: store.dispatch,
+				value: false,
+				folderId: msg.parent
+			});
+
+			act(() => {
+				action.onClick(undefined);
+			});
+
+			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			expect(requestParameter.action.id).toBe(msg.id);
+			expect(requestParameter.action.op).toBe('read');
+			expect(requestParameter.action.l).toBeUndefined();
+			expect(requestParameter.action.f).toBeUndefined();
+			expect(requestParameter.action.tn).toBeUndefined();
+		});
 
 		test.todo('Multiple ids');
 	});
 
 	describe('Mark as unread action', () => {
-		test.todo('Single id');
+		test('Single id', async () => {
+			populateFoldersStore();
+			const msg = generateMessage({});
+			const store = generateStore();
+			const action = setMsgRead({
+				ids: [msg.id],
+				dispatch: store.dispatch,
+				value: true,
+				folderId: msg.parent
+			});
+
+			act(() => {
+				action.onClick(undefined);
+			});
+
+			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			expect(requestParameter.action.id).toBe(msg.id);
+			expect(requestParameter.action.op).toBe('!read');
+			expect(requestParameter.action.l).toBeUndefined();
+			expect(requestParameter.action.f).toBeUndefined();
+			expect(requestParameter.action.tn).toBeUndefined();
+		});
 
 		test.todo('Multiple ids');
 	});
