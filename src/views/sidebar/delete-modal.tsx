@@ -54,7 +54,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 			op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
 		})
 			.then((res: { type: string }) => {
-				if (res.type.includes('fulfilled')) {
+				if (!('Fault' in res)) {
 					getBridgedFunctions()?.createSnackbar({
 						key: `trash-folder`,
 						replace: true,

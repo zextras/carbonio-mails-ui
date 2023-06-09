@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+// TODO refactor IRIS-4324
 import { isEqual, transform, isObject, filter } from 'lodash';
 
 export const ShareCalendarWithOptions = (t) => [

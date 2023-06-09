@@ -210,7 +210,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 						  }
 						: {}
 			}).then((res) => {
-				if (res.type.includes('fulfilled')) {
+				if (!('Fault' in res)) {
 					getBridgedFunctions()?.createSnackbar({
 						key: `edit`,
 						replace: true,
