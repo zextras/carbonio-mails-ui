@@ -351,3 +351,7 @@ export const FOLDERIDS = {
 		desc: 'user defined'
 	}
 };
+
+export const TIMEOUTS = {
+	SET_AS_SPAM: 3000
+};
