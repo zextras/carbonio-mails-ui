@@ -10,22 +10,18 @@ import React, { FC, useCallback } from 'react';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { FOLDER_ACTIONS } from '../../commons/utilities';
-import { useAppDispatch } from '../../hooks/redux';
 import { folderAction } from '../../store/actions/folder-action';
 import type { ModalProps } from '../../types';
 
 export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const dispatch = useAppDispatch();
 	const onConfirm = useCallback(() => {
 		let inTrash = false;
 		const restoreFolder = (): Promise<void> =>
-			dispatch(
-				folderAction({
-					folder,
-					l: folder.parent as unknown as string,
-					op: FOLDER_ACTIONS.MOVE
-				})
-			)
+			folderAction({
+				folder,
+				l: folder.parent as unknown as string,
+				op: FOLDER_ACTIONS.MOVE
+			})
 				.then((res) => {
 					if (res.type.includes('fulfilled')) {
 						getBridgedFunctions()?.createSnackbar({
@@ -52,13 +48,11 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 		if (startsWith(folder.absFolderPath, '/Trash')) {
 			inTrash = true;
 		}
-		dispatch(
-			folderAction({
-				folder,
-				l: FOLDERS.TRASH,
-				op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
-			})
-		)
+		folderAction({
+			folder,
+			l: FOLDERS.TRASH,
+			op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
+		})
 			.then((res: { type: string }) => {
 				if (res.type.includes('fulfilled')) {
 					getBridgedFunctions()?.createSnackbar({
@@ -86,7 +80,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 			})
 			.catch(report);
 		onClose();
-	}, [folder, dispatch, onClose]);
+	}, [folder, onClose]);
 
 	return folder ? (
 		<Container

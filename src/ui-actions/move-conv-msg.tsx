@@ -3,16 +3,27 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { nanoid } from '@reduxjs/toolkit';
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
-import { some } from 'lodash';
-import React, { useCallback, useMemo, useState } from 'react';
+import { noop, some } from 'lodash';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { convAction, msgAction } from '../store/actions';
 import { createFolder } from '../store/actions/create-folder';
+import { AppDispatch } from '../store/redux';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
+import { Folder } from '../carbonio-ui-commons/types/folder';
+
+type MoveConvMessageProps = {
+	selectedIDs: string[];
+	isMessageView: boolean;
+	isRestore?: boolean;
+	deselectAll?: () => void;
+	onClose: () => void;
+	folderId: string;
+	dispatch: AppDispatch;
+};
 
 const MoveConvMessage = ({
 	selectedIDs,
@@ -22,15 +33,15 @@ const MoveConvMessage = ({
 	onClose,
 	folderId,
 	dispatch
-}) => {
+}: MoveConvMessageProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
-	const [folderDestination, setFolderDestination] = useState();
+	const [folderDestination, setFolderDestination] = useState<Folder | undefined>();
 	const [moveConvModal, setMoveConvModal] = useState(true);
 
 	const onCloseModal = useCallback(() => {
 		setMoveConvModal(true);
 		setInputValue('');
-		setFolderDestination('');
+		setFolderDestination(undefined);
 		onClose();
 	}, [onClose]);
 
@@ -42,35 +53,37 @@ const MoveConvMessage = ({
 					ids: selectedIDs,
 					parent: id
 				})
-			).then((res) => {
-				if (res.type.includes('fulfilled')) {
-					deselectAll && deselectAll();
-					getBridgedFunctions()?.createSnackbar({
-						key: `edit`,
-						replace: true,
-						type: 'info',
-						label: isRestore
-							? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
-							: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
-						autoHideTimeout: 3000,
-						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
-						onActionClick: () => {
-							replaceHistory(`/folder/${id}`);
-						}
-					});
-				} else {
-					getBridgedFunctions()?.createSnackbar({
-						key: `edit`,
-						replace: true,
-						type: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
-				}
-				setMoveConvModal(false);
-				onCloseModal();
-			});
+			)
+				.then((res) => {
+					if (res.type.includes('fulfilled')) {
+						deselectAll?.();
+						getBridgedFunctions()?.createSnackbar({
+							key: `edit`,
+							replace: true,
+							type: 'info',
+							label: isRestore
+								? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
+								: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
+							autoHideTimeout: 3000,
+							actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
+							onActionClick: () => {
+								replaceHistory(`/folder/${id}`);
+							}
+						});
+					} else {
+						getBridgedFunctions()?.createSnackbar({
+							key: `edit`,
+							replace: true,
+							type: 'error',
+							label: t('label.error_try_again', 'Something went wrong, please try again'),
+							autoHideTimeout: 3000,
+							hideButton: true
+						});
+					}
+					setMoveConvModal(false);
+					onCloseModal();
+				})
+				.catch(() => noop);
 		},
 		[dispatch, selectedIDs, onCloseModal, deselectAll, isRestore]
 	);
@@ -83,32 +96,34 @@ const MoveConvMessage = ({
 					ids: selectedIDs,
 					parent: newFolderId
 				})
-			).then((res) => {
-				if (res.type.includes('fulfilled')) {
-					deselectAll && deselectAll();
-					getBridgedFunctions()?.createSnackbar({
-						key: `edit`,
-						replace: true,
-						type: 'info',
-						label: isRestore
-							? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
-							: t('messages.snackbar.message_move', 'Message successfully moved'),
-						autoHideTimeout: 3000,
-						hideButton: true // todo: add Go to folder action
-					});
-				} else {
-					getBridgedFunctions()?.createSnackbar({
-						key: `edit`,
-						replace: true,
-						type: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
-				}
-				setMoveConvModal(false);
-				onCloseModal();
-			});
+			)
+				.then((res) => {
+					if (res.type.includes('fulfilled')) {
+						deselectAll?.();
+						getBridgedFunctions()?.createSnackbar({
+							key: `edit`,
+							replace: true,
+							type: 'info',
+							label: isRestore
+								? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
+								: t('messages.snackbar.message_move', 'Message successfully moved'),
+							autoHideTimeout: 3000,
+							hideButton: true // todo: add Go to folder action
+						});
+					} else {
+						getBridgedFunctions()?.createSnackbar({
+							key: `edit`,
+							replace: true,
+							type: 'error',
+							label: t('label.error_try_again', 'Something went wrong, please try again'),
+							autoHideTimeout: 3000,
+							hideButton: true
+						});
+					}
+					setMoveConvModal(false);
+					onCloseModal();
+				})
+				.catch(() => noop);
 		},
 		[onCloseModal, dispatch, selectedIDs, isRestore, deselectAll]
 	);
@@ -138,34 +153,30 @@ const MoveConvMessage = ({
 	);
 
 	const onConfirm = useCallback(() => {
-		dispatch(
-			createFolder({ parentFolder: folderDestination, name: inputValue, id: nanoid() })
-		).then((res) => {
-			if (res.type.includes('fulfilled')) {
-				isMessageView
-					? onConfirmMessageMove(res.payload[0].id)
-					: onConfirmConvMove(res.payload[0].id);
-			} else {
-				getBridgedFunctions()?.createSnackbar({
-					key: `edit`,
-					replace: true,
-					type: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			}
-		});
+		createFolder({
+			parentFolderId: folderDestination?.parent ?? '',
+			name: inputValue
+		})
+			.then((res) => {
+				if (!('Fault' in res) && 'folder' in res) {
+					isMessageView
+						? onConfirmMessageMove(res.folder[0].id)
+						: onConfirmConvMove(res.folder[0].id);
+				} else {
+					getBridgedFunctions()?.createSnackbar({
+						key: `edit`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			})
+			.catch(() => noop);
 		setInputValue('');
-		setFolderDestination('');
-	}, [
-		dispatch,
-		folderDestination,
-		inputValue,
-		isMessageView,
-		onConfirmConvMove,
-		onConfirmMessageMove
-	]);
+		setFolderDestination(undefined);
+	}, [folderDestination, inputValue, isMessageView, onConfirmConvMove, onConfirmMessageMove]);
 
 	const headerTitle = useMemo(() => {
 		if (moveConvModal) {
@@ -182,13 +193,13 @@ const MoveConvMessage = ({
 	const footerConfirm = useMemo(() => {
 		if (moveConvModal) {
 			if (isMessageView) {
-				return () => onConfirmMessageMove(folderDestination.id);
+				return () => onConfirmMessageMove(folderDestination?.id);
 			}
-			return () => onConfirmConvMove(folderDestination.id);
+			return () => onConfirmConvMove(folderDestination?.id);
 		}
 		return onConfirm;
 	}, [
-		folderDestination?.id,
+		folderDestination,
 		isMessageView,
 		moveConvModal,
 		onConfirm,
@@ -200,7 +211,7 @@ const MoveConvMessage = ({
 		() =>
 			moveConvModal
 				? onClose
-				: () => {
+				: (): void => {
 						setMoveConvModal(true);
 				  },
 		[moveConvModal, onClose]
@@ -214,6 +225,10 @@ const MoveConvMessage = ({
 			? t('folder_panel.modal.new.restore_create_footer', 'Create and Restore')
 			: t('folder_panel.modal.new.create_footer', 'Create and Move');
 	}, [isRestore, moveConvModal]);
+
+	const modalFooterTooltip =
+		isDisabled &&
+		t('label.folder_not_valid_destination', 'The selected folder is not a valid destination');
 
 	return (
 		<Container
@@ -242,7 +257,9 @@ const MoveConvMessage = ({
 							backgroundColor="gray5"
 							hasError={hasSameName}
 							defaultValue={inputValue}
-							onChange={(e) => setInputValue(e.target.value)}
+							onChange={(e): void => {
+								setInputValue(e.target.value);
+							}}
 						/>
 						{hasSameName && (
 							<Padding all="small">
@@ -264,12 +281,13 @@ const MoveConvMessage = ({
 					</Text>
 				</Container>
 				<FolderSelector
-					onNewFolderClick={moveConvModal ? () => setMoveConvModal(false) : undefined}
-					folderId={folderId}
+					// TODO: once the product team confirms the behavior of the new folder button, we can uncomment the following line
+					// onNewFolderClick={moveConvModal ? () => setMoveConvModal(false) : undefined}
 					folderDestination={folderDestination}
 					setFolderDestination={setFolderDestination}
 				/>
 				<ModalFooter
+					tooltip={modalFooterTooltip}
 					onConfirm={footerConfirm}
 					secondaryAction={footerSecondary}
 					label={footerLabel}

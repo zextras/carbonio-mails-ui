@@ -95,19 +95,23 @@ export const SearchMessageList: FC<SearchListProps> = ({
 						active={active}
 						background={message.read ? 'gray6' : 'gray5'}
 					>
-						{(visible: boolean): ReactElement => (
-							<MessageListItemComponent
-								message={message}
-								selected={selected}
-								isSelected={isSelected}
-								active={active}
-								toggle={toggle}
-								isSelectModeOn={isSelectModeOn}
-								isSearchModule
-								deselectAll={deselectAll}
-								visible={visible}
-							/>
-						)}
+						{(visible: boolean): ReactElement =>
+							visible ? (
+								<MessageListItemComponent
+									message={message}
+									selected={selected}
+									isSelected={isSelected}
+									active={active}
+									toggle={toggle}
+									isSelectModeOn={isSelectModeOn}
+									isSearchModule
+									deselectAll={deselectAll}
+									visible={visible}
+								/>
+							) : (
+								<div style={{ height: '4rem' }} />
+							)
+						}
 					</CustomListItem>
 				);
 			}),

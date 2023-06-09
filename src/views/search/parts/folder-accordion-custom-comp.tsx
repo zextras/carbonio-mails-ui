@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useMemo } from 'react';
+import { AccordionItem, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { FOLDERS, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { AccordionItem, Tooltip, Row, Padding } from '@zextras/carbonio-design-system';
+import React, { FC, useMemo } from 'react';
 import {
-	getFolderIconColorForAccordionFolder,
-	getFolderIconNameForAccordionFolder,
+	getFolderIconColor,
+	getFolderIconName,
 	getFolderTranslatedName
 } from '../../sidebar/utils';
 
-const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
+export const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 	const { folder } = item;
 	const accountName = useUserAccount().name;
 
@@ -24,8 +24,8 @@ const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 				item.id === FOLDERS.USER_ROOT
 					? accountName
 					: getFolderTranslatedName({ folderId: item.id, folderName: item.label }),
-			icon: getFolderIconNameForAccordionFolder(item),
-			iconColor: getFolderIconColorForAccordionFolder(item),
+			icon: getFolderIconName(item),
+			iconColor: getFolderIconColor(item),
 			textProps: { size: 'small' }
 		}),
 		[item, accountName]
@@ -58,5 +58,3 @@ const AccordionCustomComponent: FC<{ item: any }> = ({ item }) => {
 		</Row>
 	);
 };
-
-export default AccordionCustomComponent;

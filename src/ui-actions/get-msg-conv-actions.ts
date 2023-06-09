@@ -5,6 +5,8 @@
  */
 
 import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
+import { getParentFolderId } from '../helpers/folders';
+import { isConversation, isSingleMessageConversation } from '../helpers/messages';
 import { AppDispatch } from '../store/redux';
 import type { ActionReturnType, Conversation, MailMessage } from '../types';
 import {
@@ -46,13 +48,13 @@ export function getMsgConvActions({
 	account,
 	tags
 }: GetMessageActionsProps): MsgConvActionsReturnType {
-	const isConversation = 'messages' in (item || {});
-	const folderId = isConversation ? (item as Conversation)?.messages?.[0].parent : item.parent;
-	const firstConversationMessageId = isConversation
-		? (item as Conversation)?.messages?.[0]?.id
-		: item.id;
-	const isSingleMessageConversation =
-		isConversation && (item as Conversation).messages.length === 1;
+	const isConv = isConversation(item);
+	const folderId = getParentFolderId(item);
+	if (!folderId) {
+		return [[], []];
+	}
+	const firstConversationMessageId = isConv ? item?.messages?.[0]?.id : item.id;
+	const isSingleMsgConv = isSingleMessageConversation(item);
 	const { id } = item;
 
 	/**
@@ -73,10 +75,15 @@ export function getMsgConvActions({
 	const folderIncludedSendDraft = [FOLDERS.DRAFTS];
 	const folderExcludedRedirect = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 
-	const addRemoveFlagAction = getAddRemoveFlagAction({ isConversation, id, item, dispatch });
+	const addRemoveFlagAction = getAddRemoveFlagAction({
+		isConversation: isConv,
+		id,
+		item,
+		dispatch
+	});
 
 	const msgReadUnreadAction = getReadUnreadAction({
-		isConversation,
+		isConversation: isConv,
 		id,
 		item,
 		dispatch,
@@ -86,7 +93,7 @@ export function getMsgConvActions({
 	});
 
 	const moveToTrashAction = getMoveToTrashAction({
-		isConversation,
+		isConversation: isConv,
 		id,
 		dispatch,
 		folderId,
@@ -95,7 +102,7 @@ export function getMsgConvActions({
 	});
 
 	const deletePermanentlyAction = getDeletePermanentlyAction({
-		isConversation,
+		isConversation: isConv,
 		id,
 		deselectAll,
 		dispatch,
@@ -104,7 +111,7 @@ export function getMsgConvActions({
 	});
 
 	const moveToFolderAction = getMoveToFolderAction({
-		isConversation,
+		isConversation: isConv,
 		id,
 		dispatch,
 		folderId,
@@ -112,7 +119,7 @@ export function getMsgConvActions({
 	});
 
 	const printAction = getPrintAction({
-		isConversation,
+		isConversation: isConv,
 		item,
 		account,
 		folderExcludedPrintMessage,
@@ -122,13 +129,13 @@ export function getMsgConvActions({
 	const applyTagAction = getApplyTagAction({
 		tags,
 		item,
-		isConversation,
+		isConversation: isConv,
 		foldersExcludedTags,
 		folderId
 	});
 
 	const markRemoveSpam = getMarkRemoveSpam({
-		isConversation,
+		isConversation: isConv,
 		id,
 		folderId,
 		dispatch,
@@ -137,22 +144,22 @@ export function getMsgConvActions({
 	});
 
 	const showOriginalAction = getShowOriginalAction({
-		isConversation,
+		isConversation: isConv,
 		id,
 		folderExcludedShowOriginal,
 		folderId
 	});
 
 	const editDraftAction = getEditDraftAction({
-		isConversation,
+		isConversation: isConv,
 		id,
 		folderId,
 		folderIncludeEditDraft
 	});
 
 	const replyAction = getReplyAction(
-		isConversation,
-		isSingleMessageConversation,
+		isConv,
+		isSingleMsgConv,
 		firstConversationMessageId,
 		folderId,
 		id,
@@ -160,8 +167,8 @@ export function getMsgConvActions({
 	);
 
 	const replyAllAction = getReplyAllAction({
-		isConversation,
-		isSingleMessageConversation,
+		isConversation: isConv,
+		isSingleMessageConversation: isSingleMsgConv,
 		firstConversationMessageId,
 		folderId,
 		id,
@@ -169,8 +176,8 @@ export function getMsgConvActions({
 	});
 
 	const forwardAction = getForwardAction({
-		isConversation,
-		isSingleMessageConversation,
+		isConversation: isConv,
+		isSingleMessageConversation: isSingleMsgConv,
 		firstConversationMessageId,
 		folderId,
 		id,
@@ -178,14 +185,14 @@ export function getMsgConvActions({
 	});
 
 	const editAsNewAction = getEditAsNewAction({
-		isConversation,
+		isConversation: isConv,
 		id,
 		folderId,
 		folderExcludedEditAsNew
 	});
 
 	const sendDraftAction = getSendDraftAction({
-		isConversation,
+		isConversation: isConv,
 		id,
 		item,
 		dispatch,
@@ -194,7 +201,7 @@ export function getMsgConvActions({
 	});
 
 	const redirectAction = getRedirectAction({
-		isConversation,
+		isConversation: isConv,
 		id,
 		folderExcludedRedirect,
 		folderId

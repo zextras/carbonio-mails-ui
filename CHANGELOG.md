@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.4.2...v1.5.0) (2023-06-07)
+
+
+### Features
+
+* add messages helper functions ([c6ec53e](https://github.com/zextras/carbonio-mails-ui/commit/c6ec53e36ac151eaba20976a8ecc219b90e4d934))
+
+
+### Bug Fixes
+
+* avoid crash when selecting the move action on a linked folder message ([0d84af9](https://github.com/zextras/carbonio-mails-ui/commit/0d84af95be27b22ad06cfad75b274e0ca9c2e52c))
+
+### [1.4.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.4.1...v1.4.2) (2023-06-05)
+
+
+### Bug Fixes
+
+* fixed undo button ([2553f46](https://github.com/zextras/carbonio-mails-ui/commit/2553f468408cac4ab6764a48f6ae4132415223f3))
+
+### [1.4.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.4.0...v1.4.1) (2023-05-31)
+
+
+### Bug Fixes
+
+* fixed messages not displaying in shared with me folders ([bbe4fcb](https://github.com/zextras/carbonio-mails-ui/commit/bbe4fcbf5f1bdda6c19e87dc29d1506d44d7563f))
+
 ## [1.4.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.3.6...v1.4.0) (2023-05-25)
 
 

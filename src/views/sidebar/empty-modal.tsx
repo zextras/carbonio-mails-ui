@@ -8,15 +8,12 @@ import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
 import React, { FC, useCallback, useMemo } from 'react';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import { useAppDispatch } from '../../hooks/redux';
 import { folderAction } from '../../store/actions/folder-action';
 import type { ModalProps } from '../../types';
 
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
-	const dispatch = useAppDispatch();
-
 	const onConfirm = useCallback(() => {
-		dispatch(folderAction({ folder, recursive: true, op: 'empty' })).then((res) => {
+		folderAction({ folder, recursive: true, op: 'empty' }).then((res) => {
 			if (res.type.includes('fulfilled')) {
 				getBridgedFunctions()?.createSnackbar({
 					key: `trash`,
@@ -41,7 +38,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 			}
 		});
 		onClose();
-	}, [dispatch, folder, onClose]);
+	}, [folder, onClose]);
 
 	const title = useMemo(
 		() =>

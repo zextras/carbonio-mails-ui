@@ -116,7 +116,10 @@ export const MessageList: FC = () => {
 		[deselectAll, draggedIds, isSelectModeOn, itemId, messages, selected, toggle]
 	);
 
-	const totalMessages = useMemo(() => folder?.n ?? 0, [folder]);
+	const totalMessages = useMemo(
+		() => folder?.n ?? messages.length ?? 0,
+		[folder?.n, messages?.length]
+	);
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 	const messagesLoadingCompleted = useMemo(
 		() => messageListStatus === 'complete',
