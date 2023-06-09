@@ -48,18 +48,16 @@ export const MessageList: FC = () => {
 	});
 
 	const hasMore = useMemo(() => convListStatus === 'hasMore', [convListStatus]);
-	const loadMore = useCallback(
-		(date) => {
-			if (hasMore && !isLoading) {
-				setIsLoading(true);
-				const dateOrNull = date ? new Date(date) : null;
-				dispatch(search({ folderId, before: dateOrNull, limit: 50, types: 'message' })).then(() => {
-					setIsLoading(false);
-				});
-			}
-		},
-		[isLoading, hasMore, dispatch, folderId]
-	);
+	const loadMore = useCallback(() => {
+		if (hasMore && !isLoading) {
+			setIsLoading(true);
+			const date = messages?.[messages.length - 1]?.date ?? new Date().setHours(0, 0, 0, 0);
+			const dateOrNull = date ? new Date(date) : null;
+			dispatch(search({ folderId, before: dateOrNull, limit: 50, types: 'message' })).then(() => {
+				setIsLoading(false);
+			});
+		}
+	}, [hasMore, isLoading, messages, dispatch, folderId]);
 
 	const displayerTitle = useMemo(() => {
 		if (messages?.length === 0) {
@@ -118,7 +116,6 @@ export const MessageList: FC = () => {
 		[deselectAll, draggedIds, isSelectModeOn, itemId, messages, selected, toggle]
 	);
 
-	const loadMoreDate = useMemo(() => messages?.[messages.length - 1]?.date, [messages]);
 	const totalMessages = useMemo(() => folder?.n ?? 0, [folder]);
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 	const messagesLoadingCompleted = useMemo(
@@ -136,7 +133,6 @@ export const MessageList: FC = () => {
 			displayerTitle={displayerTitle}
 			listItems={listItems}
 			loadMore={loadMore}
-			loadMoreDate={loadMoreDate}
 			messagesLoadingCompleted={messagesLoadingCompleted}
 			selectedIds={selectedIds}
 			folderId={folderId}

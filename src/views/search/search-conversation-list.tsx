@@ -3,12 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Padding, Text } from '@zextras/carbonio-design-system';
+import { Container } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { filter, isEmpty, map, noop, sortBy } from 'lodash';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../hooks/use-selection';
 import type { AppContext, SearchListProps } from '../../types';
@@ -17,9 +16,12 @@ import { ConversationListItemComponent } from '../app/folder-panel/conversations
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import ShimmerList from './shimmer-list';
 import { getFolderParentId } from '../../ui-actions/utils';
+import { useAppDispatch } from '../../hooks/redux';
+import { search } from '../../store/actions';
 
 const SearchConversationList: FC<SearchListProps> = ({
 	searchResults,
+	query,
 	loading,
 	filterCount,
 	setShowAdvanceFilters,
@@ -29,10 +31,10 @@ const SearchConversationList: FC<SearchListProps> = ({
 }) => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
-
 	const items = [...Object.values(searchResults.conversations ?? {})];
-
+	const dispatch = useAppDispatch();
 	const parentId = getFolderParentId({ folderId, isConversation: true, items });
+	const [isLoading, setIsLoading] = useState(false);
 
 	const {
 		selected,
@@ -55,6 +57,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 
 	// This line of code assigns a random integer between 0 and 1 to the const randomListIndex
 	const randomListIndex = useMemo(() => Math.floor(Math.random() * 2), []);
+	const listRef = useRef<HTMLDivElement>(null);
 
 	const displayerTitle = useMemo(() => {
 		// If the query is invalid, don't return a title
@@ -99,6 +102,27 @@ const SearchConversationList: FC<SearchListProps> = ({
 		[searchResults?.conversations]
 	);
 
+	useLayoutEffect(() => {
+		listRef?.current && (listRef.current.children[0].scrollTop = 0);
+	}, [searchResults.query]);
+
+	const onScrollBottom = useCallback(() => {
+		if (searchResults.more && !isLoading) {
+			setIsLoading(true);
+			dispatch(
+				search({
+					query,
+					limit: 50,
+					sortBy: 'dateDesc',
+					types: 'conversation',
+					offset: totalConversations,
+					recip: '0'
+				})
+			).then(() => {
+				setIsLoading(false);
+			});
+		}
+	}, [dispatch, isLoading, query, searchResults, totalConversations]);
 	// This is used to render the list items. It maps the conversationList array and returns a list item for each conversation.
 	const listItems = useMemo(
 		() =>
@@ -147,7 +171,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 					displayerTitle={displayerTitle}
 					listItems={listItems}
 					totalConversations={totalConversations}
-					conversationsLoadingCompleted={conversationsLoadingCompleted}
+					conversationsLoadingCompleted
 					selectedIds={selectedIds}
 					folderId={parentId}
 					conversations={conversations}
@@ -158,24 +182,11 @@ const SearchConversationList: FC<SearchListProps> = ({
 					isAllSelected={isAllSelected}
 					selectAllModeOff={selectAllModeOff}
 					setIsSelectModeOn={setIsSelectModeOn}
-					loadMore={noop}
+					loadMore={onScrollBottom}
 					isSearchModule
 					setDraggedIds={noop}
+					listRef={listRef}
 				/>
-			)}
-			{!isInvalidQuery && isEmpty(searchResults?.conversations) && !loading && (
-				<Container>
-					<Padding top="medium">
-						<Text
-							color="gray1"
-							overflow="break-word"
-							size="small"
-							style={{ whiteSpace: 'pre-line', textAlign: 'center' }}
-						>
-							{displayerTitle}
-						</Text>
-					</Padding>
-				</Container>
 			)}
 			{loading && <ShimmerList count={33} delay={0} />}
 		</Container>

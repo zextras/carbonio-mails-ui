@@ -3,10 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Padding, Text } from '@zextras/carbonio-design-system';
+import { Container } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isArray, isEmpty, map, noop, sortBy } from 'lodash';
-import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import React, {
+	FC,
+	ReactElement,
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelection } from '../../hooks/use-selection';
 import type { AppContext, SearchListProps } from '../../types';
@@ -15,6 +24,8 @@ import { MessageListItemComponent } from '../app/folder-panel/messages/message-l
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import ShimmerList from './shimmer-list';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
+import { useAppDispatch } from '../../hooks/redux';
+import { search } from '../../store/actions';
 
 export const SearchMessageList: FC<SearchListProps> = ({
 	searchDisabled,
@@ -46,6 +57,9 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	});
 
 	const [randomListIndex, setRandomListIndex] = useState(0);
+	const [isLoading, setIsLoading] = useState(false);
+	const listRef = useRef<HTMLDivElement>(null);
+	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		setRandomListIndex(Math.round(Math.random()));
@@ -107,6 +121,28 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		return 0;
 	}, [searchResults]);
 
+	useLayoutEffect(() => {
+		listRef?.current && (listRef.current.children[0].scrollTop = 0);
+	}, [searchResults.query]);
+
+	const onScrollBottom = useCallback(() => {
+		if (searchResults.more && !isLoading) {
+			setIsLoading(true);
+			dispatch(
+				search({
+					query,
+					limit: 50,
+					sortBy: 'dateDesc',
+					types: 'message',
+					offset: totalMessages,
+					recip: '0'
+				})
+			).then(() => {
+				setIsLoading(false);
+			});
+		}
+	}, [dispatch, isLoading, query, searchResults, totalMessages]);
+
 	const messagesLoadingCompleted = useMemo(
 		() => !isArray(searchResults?.messages),
 		[searchResults?.messages]
@@ -131,39 +167,26 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				searchDisabled={searchDisabled}
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>
-			{searchResults?.messages ? (
-				<MessageListComponent
-					totalMessages={totalMessages}
-					displayerTitle={displayerTitle}
-					listItems={listItems}
-					messagesLoadingCompleted={messagesLoadingCompleted}
-					selectedIds={selectedIds}
-					folderId={folderId}
-					messages={messages}
-					isSelectModeOn={isSelectModeOn}
-					setIsSelectModeOn={setIsSelectModeOn}
-					isAllSelected={isAllSelected}
-					selectAll={selectAll}
-					deselectAll={deselectAll}
-					selected={selected}
-					selectAllModeOff={selectAllModeOff}
-					isSearchModule
-					setDraggedIds={noop}
-				/>
-			) : (
-				<Container>
-					<Padding top="medium">
-						<Text
-							color="gray1"
-							overflow="break-word"
-							size="small"
-							style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '2rem' }}
-						>
-							{displayerTitle}
-						</Text>
-					</Padding>
-				</Container>
-			)}
+			<MessageListComponent
+				totalMessages={totalMessages}
+				displayerTitle={displayerTitle}
+				listItems={listItems}
+				messagesLoadingCompleted={messagesLoadingCompleted}
+				selectedIds={selectedIds}
+				folderId={folderId}
+				messages={messages}
+				isSelectModeOn={isSelectModeOn}
+				setIsSelectModeOn={setIsSelectModeOn}
+				isAllSelected={isAllSelected}
+				selectAll={selectAll}
+				deselectAll={deselectAll}
+				selected={selected}
+				selectAllModeOff={selectAllModeOff}
+				isSearchModule
+				setDraggedIds={noop}
+				loadMore={onScrollBottom}
+				listRef={listRef}
+			/>
 			{loading && <ShimmerList count={33} delay={0} />}
 		</Container>
 	);

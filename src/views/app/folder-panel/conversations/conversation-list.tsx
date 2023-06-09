@@ -51,18 +51,17 @@ const ConversationList: FC = () => {
 	const folder = useFolder(folderId);
 	const hasMore = useMemo(() => status === 'hasMore', [status]);
 
-	const loadMore = useCallback(
-		(date) => {
-			if (hasMore && !isLoading) {
-				setIsLoading(true);
-				const dateOrNull = date ? new Date(date) : null;
-				dispatch(search({ folderId, before: dateOrNull, limit: 50 })).then(() => {
-					setIsLoading(false);
-				});
-			}
-		},
-		[hasMore, isLoading, dispatch, folderId]
-	);
+	const loadMore = useCallback(() => {
+		if (hasMore && !isLoading) {
+			const date =
+				conversations?.[conversations.length - 1]?.date ?? new Date().setHours(0, 0, 0, 0);
+			setIsLoading(true);
+			const dateOrNull = date ? new Date(date) : null;
+			dispatch(search({ folderId, before: dateOrNull, limit: 50 })).then(() => {
+				setIsLoading(false);
+			});
+		}
+	}, [hasMore, isLoading, conversations, dispatch, folderId]);
 
 	useEffect(() => {
 		const handler = (event: KeyboardEvent): void =>
@@ -142,10 +141,6 @@ const ConversationList: FC = () => {
 		() => conversations.length ?? folder?.n ?? 0,
 		[conversations.length, folder?.n]
 	);
-	const loadMoreDate = useMemo(
-		() => conversations?.[conversations.length - 1]?.date,
-		[conversations]
-	);
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 	const conversationsLoadingCompleted = useMemo(
 		() => conversationListStatus === 'complete',
@@ -159,7 +154,6 @@ const ConversationList: FC = () => {
 			totalConversations={totalConversations}
 			conversationsLoadingCompleted={conversationsLoadingCompleted}
 			loadMore={loadMore}
-			loadMoreDate={loadMoreDate}
 			selectedIds={selectedIds}
 			isSelectModeOn={isSelectModeOn}
 			setIsSelectModeOn={setIsSelectModeOn}
