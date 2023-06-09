@@ -38,6 +38,7 @@ describe('Folder selector', () => {
 			setFolderDestination: jest.fn()
 		};
 		setupTest(<FolderSelector {...props} />, { store });
+
 		expect(screen.getByTestId('folder-name-filter')).toBeVisible();
 	});
 

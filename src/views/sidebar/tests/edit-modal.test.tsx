@@ -7,10 +7,15 @@ import React from 'react';
 import { screen, within } from '@testing-library/react';
 import { FOLDERS, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { faker } from '@faker-js/faker';
+import { rest } from 'msw';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
 import { EditModal } from '../edit-modal';
+import { FolderAction } from '../../../types';
+import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
+import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
+import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 
 describe('edit-modal', () => {
 	test('edit the folder excepting the system folders', async () => {
@@ -66,6 +71,7 @@ describe('edit-modal', () => {
 		});
 		expect(editButton).toBeEnabled();
 	});
+
 	test('edit the system folder', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -117,6 +123,7 @@ describe('edit-modal', () => {
 		});
 		expect(editButton).toBeEnabled();
 	});
+
 	test('edit the folder with default retention policy is collapse', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -147,7 +154,7 @@ describe('edit-modal', () => {
 			depth: 2
 		};
 
-		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
+		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
 			store
 		});
 
@@ -158,6 +165,7 @@ describe('edit-modal', () => {
 		);
 		expect(retentionPolicy).toBeInTheDocument();
 	});
+
 	test('Enable message retention and enable message disposal are uncheck by default', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -188,7 +196,7 @@ describe('edit-modal', () => {
 			depth: 2
 		};
 
-		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
+		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
 			store
 		});
 
@@ -207,5 +215,131 @@ describe('edit-modal', () => {
 			'icon: Square'
 		);
 		expect(enableMsgDisposal).toBeInTheDocument();
+	});
+
+	test('API is called with the proper parameters', async () => {
+		const closeModal = jest.fn();
+		const store = generateStore();
+		populateFoldersStore();
+		const folder = getFolder(FOLDERS.TRASH);
+		if (!folder) {
+			return;
+		}
+
+		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
+			store
+		});
+
+		const editButton = screen.getByRole('button', {
+			name: /label\.edit/i
+		});
+
+		const wipeInterceptor = new Promise<FolderAction>((resolve, reject) => {
+			// Register a handler for the REST call
+			getSetupServer().use(
+				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
+					if (!req) {
+						reject(new Error('Empty request'));
+					}
+
+					const msg = (await req.json()).Body.FolderActionRequest.action;
+					resolve(msg);
+
+					// Don't care about the actual response
+					return res(
+						ctx.json({
+							Body: {
+								Fault: {}
+							}
+						})
+					);
+				})
+			);
+		});
+		await user.click(editButton);
+		const action = await wipeInterceptor;
+
+		expect(action.id).toBe(FOLDERS.TRASH);
+		expect(action.op).toBe('update');
+		expect(action.color).toBe(folder?.color ?? 0);
+		expect(action.name).toBe(folder.name);
+	});
+
+	test('edited folder name should be pass in parameter', async () => {
+		const closeFn = jest.fn();
+		const store = generateStore();
+		const folder: Folder = {
+			id: '106',
+			uuid: faker.datatype.uuid(),
+			name: 'Confluence',
+			absFolderPath: '/Inbox/Confluence',
+			l: FOLDERS.INBOX,
+			luuid: faker.datatype.uuid(),
+			checked: false,
+			f: 'u',
+			u: 25,
+			view: 'message' as FolderView,
+			rev: 27896,
+			ms: 27896,
+			n: 101,
+			s: 5550022,
+			i4ms: 33607,
+			i4next: 17183,
+			activesyncdisabled: false,
+			webOfflineSyncDays: 0,
+			recursive: false,
+			deletable: true,
+			isLink: false,
+			children: [],
+			parent: undefined,
+			depth: 2
+		};
+		const { user } = setupTest(<EditModal onClose={closeFn} folder={folder} />, { store });
+
+		expect(screen.getByTestId('folder-name')).toBeInTheDocument();
+		const newFolder = screen.getByTestId('folder-name');
+		const folderInputElement = within(newFolder).getByRole('textbox');
+
+		expect(folderInputElement).toBeInTheDocument();
+		await user.clear(folderInputElement);
+
+		const editButton = screen.getByRole('button', {
+			name: /label\.edit/i
+		});
+		expect(editButton).toBeEnabled();
+
+		const folderName = faker.lorem.word();
+		// update the existing folder name into the text input
+		await user.type(folderInputElement, folderName);
+
+		const wipeInterceptor = new Promise<FolderAction>((resolve, reject) => {
+			// Register a handler for the REST call
+			getSetupServer().use(
+				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
+					if (!req) {
+						reject(new Error('Empty request'));
+					}
+
+					const msg = (await req.json()).Body.FolderActionRequest.action;
+					resolve(msg);
+
+					// Don't care about the actual response
+					return res(
+						ctx.json({
+							Body: {
+								Fault: {}
+							}
+						})
+					);
+				})
+			);
+		});
+		await user.click(editButton);
+		const action = await wipeInterceptor;
+
+		expect(action.id).toBe(folder.id);
+		expect(action.op).toBe('update');
+		expect(action.color).toBe(folder?.color ?? 0);
+		expect(action.name).toBe(folderName);
 	});
 });
