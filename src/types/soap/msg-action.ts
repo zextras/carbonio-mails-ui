@@ -25,6 +25,7 @@ export type MsgActionRequest = ZimbraRequest & {
 		op?: MsgActionOperation;
 		tn?: string;
 		l?: string;
+		f?: string;
 	};
 };
 
