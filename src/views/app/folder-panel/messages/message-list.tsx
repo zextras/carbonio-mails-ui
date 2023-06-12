@@ -18,6 +18,7 @@ import { selectFolderMsgSearchStatus } from '../../../../store/messages-slice';
 import type { AppContext } from '../../../../types';
 import { MessageListComponent } from './message-list-component';
 import { MessageListItemComponent } from './message-list-item-component';
+import { LIST_LIMIT } from '../../../../constants';
 
 export const MessageList: FC = () => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
@@ -53,7 +54,14 @@ export const MessageList: FC = () => {
 			setIsLoading(true);
 			const date = messages?.[messages.length - 1]?.date ?? new Date().setHours(0, 0, 0, 0);
 			const dateOrNull = date ? new Date(date) : null;
-			dispatch(search({ folderId, before: dateOrNull, limit: 50, types: 'message' })).then(() => {
+			dispatch(
+				search({
+					folderId,
+					before: dateOrNull,
+					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+					types: 'message'
+				})
+			).then(() => {
 				setIsLoading(false);
 			});
 		}

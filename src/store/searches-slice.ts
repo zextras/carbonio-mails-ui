@@ -28,6 +28,7 @@ import {
 	handleModifiedMessagesInConversationReducer
 } from './search-slice-reducers';
 import { extractIds, isItemInSearches } from './utils';
+import { LIST_LIMIT } from '../constants';
 
 export const getSearchSliceInitialiState = (): SearchesStateType =>
 	({
@@ -37,7 +38,7 @@ export const getSearchSliceInitialiState = (): SearchesStateType =>
 		messages: {},
 		more: false,
 		offset: 0,
-		limit: 100,
+		limit: LIST_LIMIT.INITIAL_LIMIT,
 		sortBy: 'dateDesc',
 		query: '',
 		status: 'empty',

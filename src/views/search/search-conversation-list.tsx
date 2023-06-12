@@ -18,6 +18,7 @@ import ShimmerList from './shimmer-list';
 import { getFolderParentId } from '../../ui-actions/utils';
 import { useAppDispatch } from '../../hooks/redux';
 import { search } from '../../store/actions';
+import { LIST_LIMIT } from '../../constants';
 
 const SearchConversationList: FC<SearchListProps> = ({
 	searchResults,
@@ -112,7 +113,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 			dispatch(
 				search({
 					query,
-					limit: 50,
+					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 					sortBy: 'dateDesc',
 					types: 'conversation',
 					offset: totalConversations,

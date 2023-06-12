@@ -26,6 +26,7 @@ import ShimmerList from './shimmer-list';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import { useAppDispatch } from '../../hooks/redux';
 import { search } from '../../store/actions';
+import { LIST_LIMIT } from '../../constants';
 
 export const SearchMessageList: FC<SearchListProps> = ({
 	searchDisabled,
@@ -135,7 +136,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 			dispatch(
 				search({
 					query,
-					limit: 50,
+					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 					sortBy: 'dateDesc',
 					types: 'message',
 					offset: totalMessages,

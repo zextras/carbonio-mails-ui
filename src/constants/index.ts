@@ -351,3 +351,8 @@ export const FOLDERIDS = {
 		desc: 'user defined'
 	}
 };
+
+export const LIST_LIMIT = {
+	INITIAL_LIMIT: 100,
+	LOAD_MORE_LIMIT: 50
+};

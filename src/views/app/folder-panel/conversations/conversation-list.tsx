@@ -21,6 +21,7 @@ import {
 import type { AppContext } from '../../../../types';
 import { ConversationListComponent } from './conversation-list-component';
 import { ConversationListItemComponent } from './conversation-list-item-component';
+import { LIST_LIMIT } from '../../../../constants';
 
 const ConversationList: FC = () => {
 	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
@@ -57,9 +58,11 @@ const ConversationList: FC = () => {
 				conversations?.[conversations.length - 1]?.date ?? new Date().setHours(0, 0, 0, 0);
 			setIsLoading(true);
 			const dateOrNull = date ? new Date(date) : null;
-			dispatch(search({ folderId, before: dateOrNull, limit: 50 })).then(() => {
-				setIsLoading(false);
-			});
+			dispatch(search({ folderId, before: dateOrNull, limit: LIST_LIMIT.LOAD_MORE_LIMIT })).then(
+				() => {
+					setIsLoading(false);
+				}
+			);
 		}
 	}, [hasMore, isLoading, conversations, dispatch, folderId]);
 
