@@ -54,6 +54,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 		() => [
 			{
 				id: FolderActionsType.NEW,
+				'data-testid': `folder-action-${FolderActionsType.NEW}`,
 				icon: 'FolderAddOutline',
 				label: t('label.new_folder', 'New Folder'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
@@ -75,6 +76,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.MOVE,
+				'data-testid': `folder-action-${FolderActionsType.MOVE}`,
 				icon: folderIsTrash ? 'RestoreOutline' : 'MoveOutline',
 				label: folderIsTrash ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
@@ -191,6 +193,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.EMPTY,
+				'data-testid': `folder-action-${FolderActionsType.EMPTY}`,
 				icon: folder.id === FOLDERS.TRASH ? 'DeletePermanentlyOutline' : 'EmptyFolderOutline',
 				label:
 					folder.id === FOLDERS.TRASH
@@ -215,6 +218,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.EDIT,
+				'data-testid': `folder-action-${FolderActionsType.EDIT}`,
 				icon: 'Edit2Outline',
 				label: folder.isLink
 					? t('folder_panel.action.edit_properties', 'Edit Properties')
@@ -238,6 +242,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.DELETE,
+				'data-testid': `folder-action-${FolderActionsType.DELETE}`,
 				icon: 'Trash2Outline',
 				label: startsWith(folder.absFolderPath, '/Trash')
 					? t('label.delete_permanently', 'Delete Permanently')
@@ -260,6 +265,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.SHARE,
+				'data-testid': `folder-action-${FolderActionsType.SHARE}`,
 				icon: 'ShareOutline',
 				label: t('action.share_folder', 'Share folder'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
@@ -280,6 +286,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.REMOVE_FROM_LIST,
+				'data-testid': `folder-action-${FolderActionsType.REMOVE_FROM_LIST}`,
 				icon: 'CloseOutline',
 				label: t('label.remove_from_this_list', 'Remove from this list'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
@@ -291,6 +298,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.SHARES_INFO,
+				'data-testid': `folder-action-${FolderActionsType.SHARES_INFO}`,
 				icon: 'InfoOutline',
 				label: t('label.shares_info', `Shared folder's info`),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
@@ -311,6 +319,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.MARK_ALL_READ,
+				'data-testid': `folder-action-${FolderActionsType.MARK_ALL_READ}`,
 				icon: 'EmailReadOutline',
 				label: t('label.mark_all_as_read', 'Mark all as read'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
