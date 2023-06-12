@@ -588,7 +588,9 @@ export function sendDraft({
 					editorId: id,
 					msg: message
 				})
-			);
+			)
+				.then() // TODO IRIS-4400
+				.catch(); // TODO IRIS-4400
 		}
 	};
 }

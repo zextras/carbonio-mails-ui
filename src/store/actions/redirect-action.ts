@@ -16,5 +16,9 @@ export const redirectMessageAction = async ({ id, e }: MessageSpecification): Pr
 		}
 	});
 
+	// if ('Fault' in res) {
+	// 	return Promise.reject(res.)
+	// }
+
 	return res;
 };

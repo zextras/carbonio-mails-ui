@@ -3,22 +3,37 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { act, screen } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import { times } from 'lodash';
 import React from 'react';
 import { rest } from 'msw';
+import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
+import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { TIMEOUTS } from '../../constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
-import { MailMessage, MsgActionRequest } from '../../types';
+import {
+	MailMessage,
+	MsgActionRequest,
+	RedirectMessageActionRequest,
+	SaveDraftRequest,
+	SendMsgParameters
+} from '../../types';
 import DeleteConvConfirm from '../delete-conv-modal';
-import { moveMsgToTrash, setMsgAsSpam, setMsgFlag, setMsgRead } from '../message-actions';
+import {
+	moveMsgToTrash,
+	sendDraft,
+	setMsgAsSpam,
+	setMsgFlag,
+	setMsgRead
+} from '../message-actions';
 import MoveConvMessage from '../move-conv-msg';
+import RedirectMessageAction from '../redirect-message-action';
 
 function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
@@ -34,7 +49,13 @@ function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 				resolve(params);
 
 				// Don't care about the actual response
-				return res(ctx.json({}));
+				return res(
+					ctx.json({
+						Body: {
+							[`${apiAction}Response`]: {}
+						}
+					})
+				);
 			})
 		);
 	});
@@ -685,7 +706,75 @@ describe('Messages actions calls', () => {
 
 	test.todo('Edit draft action');
 
-	test.todo('Send action');
+	test('Send draft action', async () => {
+		populateFoldersStore();
+		const msg = generateMessage({ folderId: FOLDERS.DRAFTS });
+		const store = generateStore({
+			messages: {
+				searchedInFolder: {},
+				messages: [msg],
+				status: {}
+			}
+		});
 
-	test.todo('Redirect action');
+		const action = sendDraft({
+			id: msg.id, // FIXME this should be an editor Id
+			message: msg,
+			dispatch: store.dispatch
+		});
+
+		act(() => {
+			action.onClick(undefined);
+		});
+
+		const requestParameter = await createAPIInterceptor<SaveDraftRequest>('SendMsg');
+		expect(requestParameter.m.id).toBe(msg.id);
+		expect(requestParameter.m.su).not.toBeUndefined();
+		expect(requestParameter.m.e).not.toBeUndefined();
+		expect(requestParameter.m.mp).not.toBeUndefined();
+	});
+
+	test('Redirect action', async () => {
+		populateFoldersStore('message');
+		const msg = generateMessage({});
+		const store = generateStore({
+			messages: {
+				searchedInFolder: {},
+				messages: [msg],
+				status: {}
+			}
+		});
+
+		const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
+
+		const interceptor = createAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
+
+		const { user } = setupTest(component, { store });
+
+		const recipient = createFakeIdentity().email;
+		const recipientsInputElement = within(
+			screen.getByTestId('redirect-recipients-address')
+		).getByRole('textbox');
+
+		await user.click(recipientsInputElement);
+		await user.clear(recipientsInputElement);
+		await user.type(recipientsInputElement, recipient);
+
+		const button = screen.getByRole('button', {
+			name: /action\.redirect/i
+		});
+		await user.click(button);
+
+		const requestParameter = await interceptor;
+		expect(requestParameter.m.id).toBe(msg.id);
+		expect(requestParameter.m.e).toHaveLength(1);
+		expect(requestParameter.m.e[0].t).toBe(ParticipantRole.TO);
+		expect(requestParameter.m.e[0].a).toBe(recipient);
+	});
+
+	describe('Tag action', () => {
+		test.todo('Single message');
+
+		test.todo('Multiple messages');
+	});
 });
