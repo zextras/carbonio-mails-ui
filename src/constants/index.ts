@@ -355,3 +355,8 @@ export const FOLDERIDS = {
 export const TIMEOUTS = {
 	SET_AS_SPAM: 3000
 };
+
+export const LIST_LIMIT = {
+	INITIAL_LIMIT: 100,
+	LOAD_MORE_LIMIT: 50
+};

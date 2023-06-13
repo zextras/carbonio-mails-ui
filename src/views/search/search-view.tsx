@@ -17,7 +17,7 @@ import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from '
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { MAILS_ROUTE } from '../../constants';
+import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
@@ -100,7 +100,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			const resultAction = await dispatch(
 				search({
 					query: queryString,
-					limit: 500,
+					limit: LIST_LIMIT.INITIAL_LIMIT,
 					sortBy: 'dateDesc',
 					types: isMessageView ? 'message' : 'conversation',
 					offset: reset ? 0 : searchResults.offset,

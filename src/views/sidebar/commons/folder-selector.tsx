@@ -20,6 +20,7 @@ import type { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { isRoot, isSpam, isTrash, isTrashed } from '../../../helpers/folders';
 import { useFolders } from '../../../hooks/use-folders';
 import ModalAccordionCustomComponent from '../parts/edit/modal-accordion-custom-component';
+import { getSystemFolderTranslatedName } from '../utils';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -65,7 +66,10 @@ function flattenFolders({
 		const { children } = item;
 		result.push({
 			...item,
-			label: item.id === FOLDERS.USER_ROOT ? accountName : item.name,
+			label:
+				item.id === FOLDERS.USER_ROOT
+					? accountName
+					: getSystemFolderTranslatedName({ folderName: item.name }),
 			CustomComponent: ModalAccordionCustomComponent,
 			onClick: () => setFolderDestination(item),
 			id: item.id,

@@ -5,8 +5,8 @@
  */
 
 import { t } from '@zextras/carbonio-shell-ui';
-import productLogo from '../../assets/logo-product-grey.png';
-import logo from '../../assets/zextras-logo-gray.png';
+import productLogo from '../assets/logo-product-grey.png';
+import logo from '../assets/zextras-logo-gray.png';
 
 export const errorPage = `<!DOCTYPE html>
 <html>

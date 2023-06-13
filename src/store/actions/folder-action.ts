@@ -8,7 +8,7 @@ import { isEmpty, isNil, omitBy } from 'lodash';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { DataProps } from '../../carbonio-ui-commons/types/sidebar';
 
-type FolderActionProps = {
+export type FolderActionProps = {
 	folder: Folder | DataProps | Omit<Folder, 'parent'>;
 	color?: number;
 	zid?: string;

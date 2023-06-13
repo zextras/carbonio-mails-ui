@@ -38,6 +38,7 @@ import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
 import { useFolderActions } from './use-folder-actions';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
+import { LIST_LIMIT } from '../../constants';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
@@ -226,7 +227,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		dispatch(
 			search({
 				folderId: item.id,
-				limit: 101,
+				limit: LIST_LIMIT.INITIAL_LIMIT,
 				sortBy: 'dateDesc',
 				// folder.id === FOLDERS.DRAFTS ? 'message' : zimbraPrefGroupMailBy
 				types:
@@ -299,60 +300,74 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		return <></>;
 	}
 
-	return item.id === FOLDERS.USER_ROOT || (item.isLink && item.oname === ROOT_NAME) ? (
-		<FittedRow>
-			<Padding left="small">
-				<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
-			</Padding>
-			<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-				<AccordionItem item={accordionItem} />
-			</Tooltip>
-		</FittedRow>
-	) : (
-		<Row width="fill" minWidth={0}>
-			<Drop
-				acceptType={['message', 'conversation', 'folder']}
-				onDrop={(data: DragObj): void => {
-					onDropAction({
-						type: data.type ?? '',
-						data: data.data,
-						event: data.event
-					} as OnDropActionProps);
-				}}
-				onDragEnter={(data: DragObj): { success: boolean } | undefined =>
-					onDragEnterAction({
-						type: data.type ?? '',
-						data: data.data,
-						event: data.event
-					} as OnDropActionProps)
-				}
-				overlayAcceptComponent={<DropOverlayContainer folder={item} />}
-				overlayDenyComponent={<DropDenyOverlayContainer folder={item} />}
-			>
-				<Drag
-					type="folder"
-					data={item}
-					dragDisabled={dragFolderDisable}
-					style={{ display: 'block' }}
+	const result =
+		item.id === FOLDERS.USER_ROOT || (item.isLink && item.oname === ROOT_NAME) ? (
+			<FittedRow>
+				<Padding left="small">
+					<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
+				</Padding>
+				<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+					<AccordionItem data-testid={`accordion-folder-item-${item.id}`} item={accordionItem} />
+				</Tooltip>
+			</FittedRow>
+		) : (
+			<Row width="fill" minWidth={0}>
+				<Drop
+					acceptType={['message', 'conversation', 'folder']}
+					onDrop={(data: DragObj): void => {
+						onDropAction({
+							type: data.type ?? '',
+							data: data.data,
+							event: data.event
+						} as OnDropActionProps);
+					}}
+					onDragEnter={(data: DragObj): { success: boolean } | undefined =>
+						onDragEnterAction({
+							type: data.type ?? '',
+							data: data.data,
+							event: data.event
+						} as OnDropActionProps)
+					}
+					overlayAcceptComponent={<DropOverlayContainer folder={item} />}
+					overlayDenyComponent={<DropDenyOverlayContainer folder={item} />}
 				>
-					<AppLink
-						onClick={onClick}
-						to={`/folder/${item.id}`}
-						style={{ width: '100%', height: '100%', textDecoration: 'none' }}
+					<Drag
+						type="folder"
+						data={item}
+						dragDisabled={dragFolderDisable}
+						style={{ display: 'block' }}
 					>
-						<Dropdown contextMenu items={dropdownItems} display="block" width="100%">
-							<Row>
-								<Padding left="small" />
-								<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-									<AccordionItem item={accordionItem}>{statusIcon}</AccordionItem>
-								</Tooltip>
-							</Row>
-						</Dropdown>
-					</AppLink>
-				</Drag>
-			</Drop>
-		</Row>
-	);
+						<AppLink
+							onClick={onClick}
+							to={`/folder/${item.id}`}
+							style={{ width: '100%', height: '100%', textDecoration: 'none' }}
+						>
+							<Dropdown
+								data-testid={`folder-context-menu-${item.id}`}
+								contextMenu
+								items={dropdownItems}
+								display="block"
+								width="100%"
+							>
+								<Row>
+									<Padding left="small" />
+									<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+										<AccordionItem
+											data-testid={`accordion-folder-item-${item.id}`}
+											item={accordionItem}
+										>
+											{statusIcon}
+										</AccordionItem>
+									</Tooltip>
+								</Row>
+							</Dropdown>
+						</AppLink>
+					</Drag>
+				</Drop>
+			</Row>
+		);
+
+	return result;
 };
 
 export default AccordionCustomComponent;

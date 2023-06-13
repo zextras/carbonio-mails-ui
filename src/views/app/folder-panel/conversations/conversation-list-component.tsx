@@ -67,9 +67,7 @@ export type ConversationListComponentProps = {
 	// the list of conversations to display
 	listItems: JSX.Element[];
 	// the function to call when the list is scrolled to the bottom
-	loadMore?: (date: number) => void;
-	// the date of the last conversation in the list
-	loadMoreDate?: number;
+	loadMore?: () => void;
 	// the total number of conversations in the list
 	totalConversations: number;
 	// true if the call has been fulfilled
@@ -102,6 +100,7 @@ export type ConversationListComponentProps = {
 	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
 	// the reference to the dragged item
 	dragImageRef?: RefObject<HTMLInputElement>;
+	listRef?: React.RefObject<HTMLDivElement>;
 };
 
 export const ConversationListComponent: FC<ConversationListComponentProps> = memo(
@@ -123,8 +122,8 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 		loadMore = noop,
 		listItems,
 		totalConversations,
-		loadMoreDate,
-		dragImageRef
+		dragImageRef,
+		listRef
 	}) {
 		useEffect(() => {
 			setDraggedIds && setDraggedIds(selected);
@@ -147,7 +146,6 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 			[isSearchModule, totalConversations]
 		);
 
-		const today = useMemo(() => new Date().setHours(0, 0, 0, 0), []);
 		const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
 		return (
@@ -179,9 +177,10 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 						{totalConversations > 0 ? (
 							<CustomList
 								onListBottom={(): void => {
-									loadMore && loadMore(loadMoreDate ?? today);
+									loadMore && loadMore();
 								}}
 								data-testid={`conversation-list-${folderId}`}
+								ref={listRef}
 							>
 								{listItems}
 							</CustomList>

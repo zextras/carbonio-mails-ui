@@ -56,6 +56,7 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 	const { path } = useRouteMatch();
 	const accordions = useFolders();
+
 	return (
 		<>
 			<ThemeProvider theme={themeMui}>

@@ -63,9 +63,7 @@ export type MessageListComponentProps = {
 	// the list of messages to display
 	listItems: JSX.Element[];
 	// the function to call when the list is scrolled to the bottom
-	loadMore?: (date: number) => void;
-	// the date of the last message in the list
-	loadMoreDate?: number;
+	loadMore?: () => void;
 	// the total number of messages in the list
 	totalMessages: number;
 	// true if the call has been fulfilled
@@ -98,6 +96,7 @@ export type MessageListComponentProps = {
 	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
 	// the ref to the item being dragged
 	dragImageRef?: React.RefObject<HTMLInputElement>;
+	listRef?: React.RefObject<HTMLDivElement>;
 };
 
 export const MessageListComponent: FC<MessageListComponentProps> = memo(
@@ -105,7 +104,6 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		displayerTitle,
 		listItems,
 		loadMore,
-		loadMoreDate,
 		totalMessages,
 		messagesLoadingCompleted,
 		selectedIds,
@@ -121,16 +119,14 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		isAllSelected,
 		selectAllModeOff,
 		setIsSelectModeOn,
-		dragImageRef
+		dragImageRef,
+		listRef
 	}) {
-		const listRef = useRef<HTMLDivElement>(null);
-
 		useEffect(() => {
 			setDraggedIds && setDraggedIds(selected);
 		}, [selected, setDraggedIds]);
 
 		const folder = useFolder(folderId?.toString());
-		const today = useMemo(() => new Date().setHours(0, 0, 0, 0), []);
 		const showBreadcrumbs = useMemo(
 			() =>
 				!isSearchModule ||
@@ -147,8 +143,8 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		}, [folder?.absFolderPath, isSearchModule]);
 
 		const onListBottom = useCallback((): void => {
-			loadMore && loadMore(loadMoreDate ?? today);
-		}, [loadMore, loadMoreDate, today]);
+			loadMore && loadMore();
+		}, [loadMore]);
 
 		return (
 			<>
