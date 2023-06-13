@@ -3,7 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
+import { addBoard, getTag } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 import React from 'react';
 import { rest } from 'msw';
@@ -11,10 +13,13 @@ import { ParticipantRole } from '../../carbonio-ui-commons/constants/participant
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
+import { getTags, getUserAccount } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { TIMEOUTS } from '../../constants';
+import { ActionsType } from '../../commons/utils';
+import { MAILS_ROUTE, TIMEOUTS } from '../../constants';
+import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
 import {
@@ -25,14 +30,22 @@ import {
 } from '../../types';
 import DeleteConvConfirm from '../delete-conv-modal';
 import {
+	editAsNewMsg,
+	editDraft,
+	forwardMsg,
 	moveMsgToTrash,
+	printMsg,
+	replyAllMsg,
+	replyMsg,
 	sendDraft,
 	setMsgAsSpam,
 	setMsgFlag,
-	setMsgRead
+	setMsgRead,
+	showOriginalMsg
 } from '../message-actions';
 import MoveConvMessage from '../move-conv-msg';
 import RedirectMessageAction from '../redirect-message-action';
+import { TagsDropdownItem } from '../tag-actions';
 
 function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
@@ -444,9 +457,58 @@ describe('Messages actions calls', () => {
 		});
 	});
 
-	test.todo('Print action');
+	test('Print action', () => {
+		populateFoldersStore();
+		const msg = generateMessage({});
+		const store = generateStore({
+			messages: {
+				searchedInFolder: {},
+				messages: [msg],
+				status: {}
+			}
+		});
 
-	test.todo('Show source');
+		window.open = jest.fn();
+
+		const printGeneratorMock = jest.spyOn(getMsgsForPrint, 'getMsgsForPrint');
+		const action = printMsg({
+			message: msg,
+			account: getUserAccount()
+		});
+
+		act(() => {
+			action.onClick(undefined);
+		});
+
+		// Check that the getMsgsForPrint and the window.oepn functions are called
+		expect(printGeneratorMock).toHaveBeenCalledWith(expect.objectContaining({ ids: [msg.id] }));
+		expect(window.open).toBeCalled();
+	});
+
+	test('Show source', () => {
+		populateFoldersStore();
+		const msg = generateMessage({});
+		const store = generateStore({
+			messages: {
+				searchedInFolder: {},
+				messages: [msg],
+				status: {}
+			}
+		});
+
+		window.open = jest.fn();
+
+		const action = showOriginalMsg({
+			id: msg.id
+		});
+
+		act(() => {
+			action.onClick(undefined);
+		});
+
+		// Check that the getMsgsForPrint and the window.oepn functions are called
+		expect(window.open).toBeCalledWith(`/service/home/~/?auth=co&view=text&id=${msg.id}`, '_blank');
+	});
 
 	describe('Move to trash action', () => {
 		test('Single id', async () => {
@@ -695,15 +757,149 @@ describe('Messages actions calls', () => {
 		});
 	});
 
-	test.todo('Reply action');
+	test('Reply action', () => {
+		populateFoldersStore();
 
-	test.todo('Reply all action');
+		const msg: MailMessage = generateMessage({});
 
-	test.todo('Forward action');
+		generateStore({
+			messages: {
+				searchedInFolder: {},
+				messages: [msg],
+				status: {}
+			}
+		});
 
-	test.todo('Edit as new action');
+		const action = replyMsg({
+			id: msg.id,
+			folderId: msg.parent
+		});
 
-	test.todo('Edit draft action');
+		act(() => {
+			action.onClick(undefined);
+		});
+
+		expect(addBoard).toBeCalledWith(
+			expect.objectContaining({
+				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY}`,
+				context: { mailId: msg.id, folderId: msg.parent }
+			})
+		);
+	});
+
+	test('Reply all action', () => {
+		populateFoldersStore();
+
+		const msg: MailMessage = generateMessage({});
+
+		generateStore({
+			messages: {
+				searchedInFolder: {},
+				messages: [msg],
+				status: {}
+			}
+		});
+
+		const action = replyAllMsg({
+			id: msg.id,
+			folderId: msg.parent
+		});
+
+		act(() => {
+			action.onClick(undefined);
+		});
+
+		expect(addBoard).toBeCalledWith(
+			expect.objectContaining({
+				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY_ALL}`,
+				context: { mailId: msg.id, folderId: msg.parent }
+			})
+		);
+	});
+
+	test('Forward action', () => {
+		populateFoldersStore();
+		const msg: MailMessage = generateMessage({});
+		generateStore({
+			messages: {
+				searchedInFolder: {},
+				messages: [msg],
+				status: {}
+			}
+		});
+
+		const action = forwardMsg({
+			id: msg.id,
+			folderId: msg.parent
+		});
+
+		act(() => {
+			action.onClick(undefined);
+		});
+
+		expect(addBoard).toBeCalledWith(
+			expect.objectContaining({
+				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.FORWARD}`,
+				context: { mailId: msg.id, folderId: msg.parent }
+			})
+		);
+	});
+
+	test('Edit as new action', () => {
+		populateFoldersStore();
+		const msg: MailMessage = generateMessage({});
+		generateStore({
+			messages: {
+				searchedInFolder: {},
+				messages: [msg],
+				status: {}
+			}
+		});
+
+		const action = editDraft({
+			id: msg.id,
+			folderId: msg.parent
+		});
+
+		act(() => {
+			action.onClick(undefined);
+		});
+
+		expect(addBoard).toBeCalledWith(
+			expect.objectContaining({
+				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.EDIT_AS_DRAFT}`,
+				context: { mailId: msg.id, folderId: msg.parent }
+			})
+		);
+	});
+
+	test('Edit as new action', () => {
+		populateFoldersStore();
+		const msg: MailMessage = generateMessage({});
+		generateStore({
+			messages: {
+				searchedInFolder: {},
+				messages: [msg],
+				status: {}
+			}
+		});
+
+		const action = editAsNewMsg({
+			id: msg.id,
+			folderId: msg.parent
+		});
+
+		act(() => {
+			action.onClick(undefined);
+		});
+
+		expect(addBoard).toBeCalledWith(
+			expect.objectContaining({
+				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.EDIT_AS_NEW}`,
+				context: { mailId: msg.id, folderId: msg.parent }
+			})
+		);
+	});
 
 	test('Send draft action', async () => {
 		populateFoldersStore();
@@ -874,8 +1070,63 @@ describe('Messages actions calls', () => {
 	});
 
 	describe('Tag action', () => {
-		test.todo('Single message');
+		test('Add a tag to a message', async () => {
+			populateFoldersStore('message');
+			const msg = generateMessage({});
+			const store = generateStore({
+				messages: {
+					searchedInFolder: {},
+					messages: [msg],
+					status: {}
+				}
+			});
 
-		test.todo('Multiple messages');
+			const tagKey = faker.helpers.arrayElement(Object.keys(getTags()));
+			const tag = getTag(tagKey);
+
+			const component = <TagsDropdownItem tag={tag} conversation={msg} isMessage />;
+
+			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const { user } = setupTest(component, { store });
+
+			const tagElement = screen.getByTestId(`tag-item-${tag.id}`);
+			await user.click(tagElement);
+
+			const requestParameter = await interceptor;
+			expect(requestParameter.action.id).toBe(msg.id);
+			expect(requestParameter.action.op).toBe('tag');
+			expect(requestParameter.action.l).toBeUndefined();
+			expect(requestParameter.action.f).toBeUndefined();
+			expect(requestParameter.action.tn).toBe(tag.name);
+		});
+
+		test('Remove a tag from a message', async () => {
+			populateFoldersStore('message');
+			const tagKey = faker.helpers.arrayElement(Object.keys(getTags()));
+			const tag = getTag(tagKey);
+			const msg = generateMessage({ tags: [tag.id] });
+			const store = generateStore({
+				messages: {
+					searchedInFolder: {},
+					messages: [msg],
+					status: {}
+				}
+			});
+
+			const component = <TagsDropdownItem tag={tag} conversation={msg} isMessage />;
+
+			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const { user } = setupTest(component, { store });
+
+			const tagElement = screen.getByTestId(`tag-item-${tag.id}`);
+			await user.click(tagElement);
+
+			const requestParameter = await interceptor;
+			expect(requestParameter.action.id).toBe(msg.id);
+			expect(requestParameter.action.op).toBe('!tag');
+			expect(requestParameter.action.l).toBeUndefined();
+			expect(requestParameter.action.f).toBeUndefined();
+			expect(requestParameter.action.tn).toBe(tag.name);
+		});
 	});
 });

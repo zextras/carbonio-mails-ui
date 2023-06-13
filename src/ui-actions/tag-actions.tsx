@@ -173,6 +173,7 @@ export const TagsDropdownItem = ({
 
 	return (
 		<Row
+			data-testid={`tag-item-${tag.id}`}
 			takeAvailableSpace
 			mainAlignment="flex-start"
 			onClick={(): void => toggleCheck(checked)}
