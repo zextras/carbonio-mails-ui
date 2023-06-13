@@ -28,6 +28,7 @@ import {
 	handleModifiedMessagesInConversationReducer
 } from './search-slice-reducers';
 import { extractIds, isItemInSearches } from './utils';
+import { LIST_LIMIT } from '../constants';
 
 export const getSearchSliceInitialiState = (): SearchesStateType =>
 	({
@@ -37,7 +38,7 @@ export const getSearchSliceInitialiState = (): SearchesStateType =>
 		messages: {},
 		more: false,
 		offset: 0,
-		limit: 500,
+		limit: LIST_LIMIT.INITIAL_LIMIT,
 		sortBy: 'dateDesc',
 		query: '',
 		status: 'empty',
@@ -51,8 +52,6 @@ const resetResultReducer = (state: SearchesStateType): SearchesStateType =>
 
 const fetchSearchesPending = (state: SearchesStateType): void => {
 	state.status = 'pending';
-	state.conversations = {};
-	state.messages = {};
 };
 
 const fetchSearchesFulfilled = (
@@ -61,13 +60,20 @@ const fetchSearchesFulfilled = (
 ): void => {
 	if (meta.arg.query) {
 		state.status = meta.requestStatus;
-		state.conversations = payload?.conversations ?? {};
-		state.messages = payload?.messages ?? {};
+		if (state.query === meta.arg.query) {
+			state.messages = { ...state.messages, ...payload?.messages };
+			state.conversations = { ...state.conversations, ...payload?.conversations };
+			state.searchResultsIds.concat(extractIds(payload) ?? []);
+		} else {
+			state.conversations = payload?.conversations ?? {};
+			state.messages = payload?.messages ?? {};
+			state.searchResultsIds = extractIds(payload) ?? [];
+		}
 		state.more = payload?.hasMore === true;
-		state.offset = (meta?.arg.offset ?? 0) + 100;
+		state.offset = meta?.arg.offset ?? 0;
 		state.sortBy = meta?.arg.sortBy ?? 'dateDesc';
 		state.error = undefined;
-		state.searchResultsIds = extractIds(payload) ?? [];
+		state.query = meta.arg.query;
 	}
 };
 
@@ -78,7 +84,7 @@ const fetchSearchesRejected = (state: SearchesStateType, { payload }): void => {
 	state.conversations = {};
 	state.messages = {};
 	state.error = {
-		code: payload?.Detail.Error.Code ?? 'generic error'
+		code: payload?.Detail?.Error?.Code ?? 'generic error'
 	};
 };
 
