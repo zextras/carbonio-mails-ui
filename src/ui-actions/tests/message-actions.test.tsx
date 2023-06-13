@@ -809,8 +809,6 @@ describe('Messages actions calls', () => {
 				screen.getByTestId('redirect-recipients-address')
 			).getByRole('textbox');
 
-			await user.click(recipientsInputElement);
-			await user.clear(recipientsInputElement);
 			await user.type(recipientsInputElement, recipient);
 
 			const button = screen.getByRole('button', {
@@ -848,8 +846,6 @@ describe('Messages actions calls', () => {
 			).getByRole('textbox');
 			const title = screen.getByText(/header\.redirect_email/i);
 
-			await user.click(recipientsInputElement);
-			await user.clear(recipientsInputElement);
 			await user.type(recipientsInputElement, recipients[0]);
 			await user.click(title);
 			await user.type(recipientsInputElement, recipients[1]);
