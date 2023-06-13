@@ -21,8 +21,7 @@ import {
 	MailMessage,
 	MsgActionRequest,
 	RedirectMessageActionRequest,
-	SaveDraftRequest,
-	SendMsgParameters
+	SaveDraftRequest
 } from '../../types';
 import DeleteConvConfirm from '../delete-conv-modal';
 import {
@@ -734,42 +733,148 @@ describe('Messages actions calls', () => {
 		expect(requestParameter.m.mp).not.toBeUndefined();
 	});
 
-	test('Redirect action', async () => {
-		populateFoldersStore('message');
-		const msg = generateMessage({});
-		const store = generateStore({
-			messages: {
-				searchedInFolder: {},
-				messages: [msg],
-				status: {}
-			}
+	describe('Redirect action', () => {
+		test('Redirect button is disabled when no recipients address is set', async () => {
+			populateFoldersStore('message');
+			const msg = generateMessage({});
+			const store = generateStore({
+				messages: {
+					searchedInFolder: {},
+					messages: [msg],
+					status: {}
+				}
+			});
+
+			const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
+			setupTest(component, { store });
+
+			const button = screen.getByRole('button', {
+				name: /action\.redirect/i
+			});
+
+			expect(button).toBeDisabled();
 		});
 
-		const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
+		test('Redirect button is enabled when at least one recipient address is set', async () => {
+			populateFoldersStore('message');
+			const msg = generateMessage({});
+			const store = generateStore({
+				messages: {
+					searchedInFolder: {},
+					messages: [msg],
+					status: {}
+				}
+			});
 
-		const interceptor = createAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
+			const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
+			const { user } = setupTest(component, { store });
 
-		const { user } = setupTest(component, { store });
+			const recipient = createFakeIdentity().email;
+			const title = screen.getByText(/header\.redirect_email/i);
 
-		const recipient = createFakeIdentity().email;
-		const recipientsInputElement = within(
-			screen.getByTestId('redirect-recipients-address')
-		).getByRole('textbox');
+			const recipientsInputElement = within(
+				screen.getByTestId('redirect-recipients-address')
+			).getByRole('textbox');
+			await user.click(recipientsInputElement);
+			await user.clear(recipientsInputElement);
+			await user.type(recipientsInputElement, recipient);
+			await user.click(title);
 
-		await user.click(recipientsInputElement);
-		await user.clear(recipientsInputElement);
-		await user.type(recipientsInputElement, recipient);
+			const button = screen.getByRole('button', {
+				name: /action\.redirect/i
+			});
 
-		const button = screen.getByRole('button', {
-			name: /action\.redirect/i
+			expect(button).toBeEnabled();
 		});
-		await user.click(button);
 
-		const requestParameter = await interceptor;
-		expect(requestParameter.m.id).toBe(msg.id);
-		expect(requestParameter.m.e).toHaveLength(1);
-		expect(requestParameter.m.e[0].t).toBe(ParticipantRole.TO);
-		expect(requestParameter.m.e[0].a).toBe(recipient);
+		test('API call for one recipients', async () => {
+			populateFoldersStore('message');
+			const msg = generateMessage({});
+			const store = generateStore({
+				messages: {
+					searchedInFolder: {},
+					messages: [msg],
+					status: {}
+				}
+			});
+
+			const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
+
+			const interceptor = createAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
+
+			const { user } = setupTest(component, { store });
+
+			const recipient = createFakeIdentity().email;
+			const recipientsInputElement = within(
+				screen.getByTestId('redirect-recipients-address')
+			).getByRole('textbox');
+
+			await user.click(recipientsInputElement);
+			await user.clear(recipientsInputElement);
+			await user.type(recipientsInputElement, recipient);
+
+			const button = screen.getByRole('button', {
+				name: /action\.redirect/i
+			});
+			await user.click(button);
+
+			const requestParameter = await interceptor;
+			expect(requestParameter.m.id).toBe(msg.id);
+			expect(requestParameter.m.e).toHaveLength(1);
+			expect(requestParameter.m.e[0].t).toBe(ParticipantRole.TO);
+			expect(requestParameter.m.e[0].a).toBe(recipient);
+		});
+
+		test('API call for 5 recipients', async () => {
+			populateFoldersStore('message');
+			const msg = generateMessage({});
+			const store = generateStore({
+				messages: {
+					searchedInFolder: {},
+					messages: [msg],
+					status: {}
+				}
+			});
+
+			const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
+
+			const interceptor = createAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
+
+			const { user } = setupTest(component, { store });
+
+			const recipients = times(5, () => createFakeIdentity().email);
+			const recipientsInputElement = within(
+				screen.getByTestId('redirect-recipients-address')
+			).getByRole('textbox');
+			const title = screen.getByText(/header\.redirect_email/i);
+
+			await user.click(recipientsInputElement);
+			await user.clear(recipientsInputElement);
+			await user.type(recipientsInputElement, recipients[0]);
+			await user.click(title);
+			await user.type(recipientsInputElement, recipients[1]);
+			await user.click(title);
+			await user.type(recipientsInputElement, recipients[2]);
+			await user.click(title);
+			await user.type(recipientsInputElement, recipients[3]);
+			await user.click(title);
+			await user.type(recipientsInputElement, recipients[4]);
+			await user.click(title);
+
+			const button = screen.getByRole('button', {
+				name: /action\.redirect/i
+			});
+			expect(button).toBeEnabled();
+			await user.click(button);
+
+			const requestParameter = await interceptor;
+			expect(requestParameter.m.id).toBe(msg.id);
+			expect(requestParameter.m.e).toHaveLength(recipients.length);
+			requestParameter.m.e.forEach((participant) => {
+				expect(participant.t).toBe(ParticipantRole.TO);
+				expect(recipients).toContain(participant.a);
+			});
+		});
 	});
 
 	describe('Tag action', () => {

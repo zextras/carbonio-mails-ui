@@ -40,7 +40,10 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 		);
 	}, []);
 	const onContactChange = useCallback((users: ContactType[]) => setContacts(users), []);
-	const disableRedirect = useMemo(() => some(contacts, { error: true }), [contacts]);
+	const disableRedirect = useMemo(
+		() => contacts?.length === 0 || some(contacts, { error: true }),
+		[contacts]
+	);
 	const onConfirm = useCallback(
 		() =>
 			redirectMessageAction({
@@ -50,7 +53,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 					t: 't'
 				}))
 			}).then((res) => {
-				if (res) {
+				if (!('Fault' in res)) {
 					getBridgedFunctions()?.createSnackbar({
 						key: `redirect-${id}`,
 						replace: true,
