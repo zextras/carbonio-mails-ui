@@ -8,6 +8,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import React, { ChangeEvent, FC } from 'react';
 import type { NameInputRowProps } from '../../../../carbonio-ui-commons/types/sidebar';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
+import { isValidFolderName } from '../../../../carbonio-ui-commons/utils/utils';
 
 const NameInputRow: FC<NameInputRowProps> = ({
 	setInputValue,
@@ -29,7 +30,7 @@ const NameInputRow: FC<NameInputRowProps> = ({
 		{showWarning && (
 			<Padding all="small">
 				<Text size="small" color="error">
-					{inputValue && inputValue.includes('/')
+					{inputValue && !isValidFolderName(inputValue)
 						? t(
 								'folder.modal.edit.special_chars_warning_msg',
 								'Special characters are not allowed in the folder name'

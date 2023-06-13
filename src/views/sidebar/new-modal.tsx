@@ -15,6 +15,7 @@ import { createFolder } from '../../store/actions/create-folder';
 import type { ModalProps } from '../../types';
 import { FolderSelector } from './commons/folder-selector';
 import { translatedSystemFolders } from './utils';
+import { isValidFolderName } from '../../carbonio-ui-commons/utils/utils';
 
 export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [inputValue, setInputValue] = useState(() => t('new_folder', 'New Folder'));
@@ -34,7 +35,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 			);
 			return true;
 		}
-		if (inputValue && inputValue.includes('/')) {
+		if (inputValue && !isValidFolderName(inputValue)) {
 			setErrorMsg(
 				t(
 					'folder.modal.edit.special_chars_warning_msg',
