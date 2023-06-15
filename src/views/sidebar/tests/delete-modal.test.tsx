@@ -16,6 +16,8 @@ import { FolderAction } from '../../../types';
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
+import { FOLDER_ACTIONS } from '../../../commons/utilities';
+import { getFolders } from '../../../hooks/use-folders';
 
 describe('delete-modal', () => {
 	test('delete the folder except the child of trash folder', async () => {
@@ -157,7 +159,7 @@ describe('delete-modal', () => {
 		const action = await wipeInterceptor;
 
 		expect(action.id).toBe(FOLDERS.INBOX);
-		expect(action.op).toBe('move');
+		expect(action.op).toBe(FOLDER_ACTIONS.MOVE);
 	});
 
 	test('API is called with the proper parameters to delete folder of trash', async () => {
@@ -203,6 +205,57 @@ describe('delete-modal', () => {
 		const action = await wipeInterceptor;
 
 		expect(action.id).toBe(FOLDERS.TRASH);
-		expect(action.op).toBe('delete');
+		expect(action.op).toBe(FOLDER_ACTIONS.DELETE);
+	});
+
+	test('API is called with the proper parameters to delete a folder in a shared account', async () => {
+		const closeModal = jest.fn();
+		const store = generateStore();
+		populateFoldersStore();
+		const folders = getFolders();
+		const { children } = folders[1];
+		const sharedAccountSecondFolder = children[1];
+		if (!sharedAccountSecondFolder) {
+			return;
+		}
+		const { user } = setupTest(
+			<DeleteModal onClose={(): void => closeModal()} folder={sharedAccountSecondFolder} />,
+			{
+				store
+			}
+		);
+
+		const okButton = screen.getByRole('button', {
+			name: /action\.ok/i
+		});
+		expect(okButton).toBeEnabled();
+
+		const wipeInterceptor = new Promise<FolderAction>((resolve, reject) => {
+			// Register a handler for the REST call
+			getSetupServer().use(
+				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
+					if (!req) {
+						reject(new Error('Empty request'));
+					}
+
+					const msg = (await req.json()).Body.FolderActionRequest.action;
+					resolve(msg);
+
+					// Don't care about the actual response
+					return res(
+						ctx.json({
+							Body: {
+								Fault: {}
+							}
+						})
+					);
+				})
+			);
+		});
+		await user.click(okButton);
+		const action = await wipeInterceptor;
+
+		expect(action.id).toBe(sharedAccountSecondFolder.id);
+		expect(action.op).toBe(FOLDER_ACTIONS.TRASH);
 	});
 });
