@@ -17,7 +17,7 @@ import { map, noop } from 'lodash';
 import React from 'react';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { ActionsType } from '../commons/utils';
-import { MAILS_ROUTE, MessageActionsDescriptors } from '../constants';
+import { MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg } from '../store/actions/send-msg';
 import { AppDispatch, StoreProvider } from '../store/redux';
@@ -180,7 +180,7 @@ export function setMsgAsSpam({
 					label: value
 						? t('messages.snackbar.marked_as_non_spam', 'You’ve marked this e-mail as Not Spam')
 						: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
-					autoHideTimeout: 3000,
+					autoHideTimeout: TIMEOUTS.SET_AS_SPAM,
 					hideButton,
 					actionLabel: t('label.undo', 'Undo'),
 					onActionClick: () => {
@@ -192,7 +192,7 @@ export function setMsgAsSpam({
 			setTimeout(() => {
 				/** If the user has not clicked on the undo button, we can proceed with the action */
 				setAsSpam({ notCanceled, value, dispatch, ids, shouldReplaceHistory, folderId });
-			}, 3000);
+			}, TIMEOUTS.SET_AS_SPAM);
 		}
 	};
 }
@@ -589,7 +589,9 @@ export function sendDraft({
 					editorId: id,
 					msg: message
 				})
-			);
+			)
+				.then() // TODO IRIS-4400
+				.catch(); // TODO IRIS-4400
 		}
 	};
 }

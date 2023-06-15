@@ -5,7 +5,7 @@
  */
 
 import { faker } from '@faker-js/faker';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, Tag } from '@zextras/carbonio-shell-ui';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../../carbonio-ui-commons/utils/text/html';
 import type { MailMessage, Participant } from '../../types';
@@ -34,6 +34,7 @@ type MessageGenerationParams = {
 	isReplied?: boolean;
 	isScheduled?: boolean;
 	isSentByMe?: boolean;
+	tags?: Array<string>;
 };
 
 /**
@@ -79,7 +80,8 @@ const generateMessage = ({
 	isReadReceiptRequested = false,
 	isReplied = false,
 	isScheduled = false,
-	isSentByMe = false
+	isSentByMe = false,
+	tags = []
 }: MessageGenerationParams): MailMessage => ({
 	attachments: undefined,
 	autoSendTime: 0,
@@ -130,7 +132,7 @@ const generateMessage = ({
 	shr: undefined,
 	size: 0,
 	subject,
-	tags: [],
+	tags,
 	urgent: false
 });
 

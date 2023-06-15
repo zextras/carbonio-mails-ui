@@ -6,17 +6,15 @@
 
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { ChipInput, Container, Divider, Text } from '@zextras/carbonio-design-system';
+import { ChipInput, ChipItem, Container, Divider, Text } from '@zextras/carbonio-design-system';
 import { getBridgedFunctions, t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, some } from 'lodash';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
+import { TIMEOUTS } from '../constants';
 import { redirectMessageAction } from '../store/actions';
 
 type RedirectActionProps = { onClose: () => void; id: string };
-
-const getChipLabel = (participant: { fullName?: string; address: string; name?: string }): string =>
-	participant.fullName ?? participant.name ?? participant.address;
 
 type ContactType = {
 	company?: string;
@@ -27,11 +25,37 @@ type ContactType = {
 	label?: string;
 	lastName?: string;
 };
+
 const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactElement => {
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const [contacts, setContacts] = useState<ContactType[]>([]);
-	const onChange = useCallback((users) => setContacts(users), []);
-	const disableRedirect = useMemo(() => some(contacts, { error: true }), [contacts]);
+	const onChipInputChange = useCallback((items: ChipItem[]) => {
+		setContacts(
+			items.map<ContactType>(
+				(item) =>
+					({
+						address: item.label,
+						email: item.label
+					} as ContactType)
+			)
+		);
+	}, []);
+	const onContactChange = useCallback((users: ContactType[]) => setContacts(users), []);
+	const disableRedirect = useMemo(
+		() => contacts?.length === 0 || some(contacts, { error: true }),
+		[contacts]
+	);
+
+	const onRedirectError = useCallback(() => {
+		getBridgedFunctions()?.createSnackbar({
+			key: `redirect-${id}`,
+			replace: true,
+			type: 'error',
+			label: t('label.error_try_again', 'Something went wrong, please try again'),
+			autoHideTimeout: TIMEOUTS.REDIRECT
+		});
+	}, [id]);
+
 	const onConfirm = useCallback(
 		() =>
 			redirectMessageAction({
@@ -40,27 +64,25 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 					a: p.email,
 					t: 't'
 				}))
-			}).then((res) => {
-				if (res) {
-					getBridgedFunctions()?.createSnackbar({
-						key: `redirect-${id}`,
-						replace: true,
-						type: 'success',
-						label: t('messages.snackbar.message_redirected', 'The message has been redirected'),
-						autoHideTimeout: 3000
-					});
-				} else {
-					getBridgedFunctions()?.createSnackbar({
-						key: `redirect-${id}`,
-						replace: true,
-						type: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 3000
-					});
-				}
-				onClose();
-			}),
-		[contacts, id, onClose]
+			})
+				.then((res) => {
+					if (!('Fault' in res)) {
+						getBridgedFunctions()?.createSnackbar({
+							key: `redirect-${id}`,
+							replace: true,
+							type: 'success',
+							label: t('messages.snackbar.message_redirected', 'The message has been redirected'),
+							autoHideTimeout: TIMEOUTS.REDIRECT
+						});
+						onClose();
+					} else {
+						onRedirectError();
+					}
+				})
+				.catch(() => {
+					onRedirectError();
+				}),
+		[contacts, id, onClose, onRedirectError]
 	);
 
 	return (
@@ -100,17 +122,19 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 						<Container height="fit" padding={{ top: 'medium' }}>
 							{integrationAvailable ? (
 								<ContactInput
+									data-testid={'redirect-recipients-address'}
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									placeholder={t('placeholder.add_new_recipients', 'Add new recipients')}
-									onChange={onChange}
+									onChange={onContactChange}
 									defaultValue={contacts}
 									disablePortal
 								/>
 							) : (
 								<ChipInput
+									data-testid={'redirect-recipients-address'}
 									placeholder={t('label.to', 'To')}
-									onChange={onChange}
+									onChange={onChipInputChange}
 									defaultValue={contacts}
 								/>
 							)}
