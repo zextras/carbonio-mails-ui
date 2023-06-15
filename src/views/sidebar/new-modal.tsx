@@ -38,8 +38,8 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		if (inputValue && !isValidFolderName(inputValue)) {
 			setErrorMsg(
 				t(
-					'folder.modal.edit.special_chars_warning_msg',
-					'Special characters are not allowed in the folder name'
+					'folder.modal.edit.invalid_folder_name_warning_msg',
+					'Special characters not allowed. Max lenght is 128 characters.'
 				)
 			);
 			return true;

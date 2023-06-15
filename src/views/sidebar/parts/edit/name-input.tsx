@@ -32,8 +32,8 @@ const NameInputRow: FC<NameInputRowProps> = ({
 				<Text size="small" color="error">
 					{inputValue && !isValidFolderName(inputValue)
 						? t(
-								'folder.modal.edit.special_chars_warning_msg',
-								'Special characters are not allowed in the folder name'
+								'folder.modal.edit.invalid_folder_name_warning_msg',
+								'Special characters not allowed. Max lenght is 128 characters.'
 						  )
 						: t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one')}
 				</Text>
