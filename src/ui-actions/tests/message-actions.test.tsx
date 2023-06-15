@@ -81,7 +81,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -110,7 +110,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: { ...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {}) },
 					status: {}
 				}
 			});
@@ -143,7 +143,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -172,7 +172,9 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -205,7 +207,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -235,7 +237,9 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -268,7 +272,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -298,7 +302,9 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -332,7 +338,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -363,7 +369,9 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -398,7 +406,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -429,7 +437,9 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -463,7 +473,7 @@ describe('Messages actions calls', () => {
 		const store = generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -491,7 +501,7 @@ describe('Messages actions calls', () => {
 		const store = generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -517,7 +527,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -546,7 +556,9 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -579,7 +591,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -613,7 +625,9 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -655,7 +669,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -765,7 +779,7 @@ describe('Messages actions calls', () => {
 		generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -795,7 +809,7 @@ describe('Messages actions calls', () => {
 		generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -823,7 +837,7 @@ describe('Messages actions calls', () => {
 		generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -851,7 +865,7 @@ describe('Messages actions calls', () => {
 		generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -879,7 +893,7 @@ describe('Messages actions calls', () => {
 		generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -907,7 +921,7 @@ describe('Messages actions calls', () => {
 		const store = generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -936,7 +950,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -957,7 +971,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -989,7 +1003,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -1025,7 +1039,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -1076,7 +1090,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -1108,7 +1122,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
