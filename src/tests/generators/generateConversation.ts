@@ -31,6 +31,7 @@ type ConversationGenerationParams = {
 	isSingleMessageConversation?: boolean;
 	messages?: Array<MailMessage>;
 	messageGenerationCount?: number;
+	tags?: Array<string>;
 };
 
 /**
@@ -68,7 +69,8 @@ const generateConversation = ({
 	isRead = false,
 	isFlagged = false,
 	messages,
-	messageGenerationCount = 1
+	messageGenerationCount = 1,
+	tags = []
 }: ConversationGenerationParams): Conversation => {
 	const finalFrom =
 		from ??
@@ -98,7 +100,7 @@ const generateConversation = ({
 		participants: [...finalFrom, ...finalTo, ...finalCc],
 		read: isRead,
 		subject,
-		tags: [],
+		tags,
 		urgent: false,
 		messages: finalMessages,
 		messagesInConversation: finalMessages.length

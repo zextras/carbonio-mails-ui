@@ -10,20 +10,21 @@ import React, { FC, useCallback } from 'react';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { FOLDER_ACTIONS } from '../../commons/utilities';
+import { isSharedAccountFolder, isTrashed } from '../../helpers/folders';
 import { folderAction } from '../../store/actions/folder-action';
 import type { ModalProps } from '../../types';
 
 export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const onConfirm = useCallback(() => {
-		let inTrash = false;
+		const inTrash = isTrashed({ folder });
 		const restoreFolder = (): Promise<void> =>
 			folderAction({
 				folder,
-				l: folder.parent as unknown as string,
+				l: folder.parent,
 				op: FOLDER_ACTIONS.MOVE
 			})
 				.then((res) => {
-					if (res.type.includes('fulfilled')) {
+					if (!('Fault' in res)) {
 						getBridgedFunctions()?.createSnackbar({
 							key: `trash-folder`,
 							replace: true,
@@ -45,25 +46,27 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 				})
 				.catch(report);
 
-		if (startsWith(folder.absFolderPath, '/Trash')) {
-			inTrash = true;
-		}
-		folderAction({
-			folder,
-			l: FOLDERS.TRASH,
-			op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
-		})
-			.then((res: { type: string }) => {
+		folderAction(
+			isSharedAccountFolder(folder.id) && !inTrash
+				? { folder, op: FOLDER_ACTIONS.TRASH }
+				: {
+						folder,
+						l: FOLDERS.TRASH,
+						op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
+				  }
+		)
+			.then((res) => {
 				if (!('Fault' in res)) {
 					getBridgedFunctions()?.createSnackbar({
 						key: `trash-folder`,
 						replace: true,
 						type: 'info',
-						label: inTrash
-							? t('messages.snackbar.folder_deleted', 'Folder permanently deleted.')
-							: t('messages.snackbar.folder_moved_to_trash', 'Folder moved to trash'),
+						label:
+							inTrash || isSharedAccountFolder(folder.id)
+								? t('messages.snackbar.folder_deleted', 'Folder permanently deleted.')
+								: t('messages.snackbar.folder_moved_to_trash', 'Folder moved to trash'),
 						autoHideTimeout: 5000,
-						hideButton: false,
+						hideButton: inTrash || isSharedAccountFolder(folder.id),
 						actionLabel: t('label.undo', 'Undo'),
 						onActionClick: () => restoreFolder()
 					});

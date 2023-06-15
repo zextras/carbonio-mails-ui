@@ -5,7 +5,9 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getUserAccount, getUserSettings, soapFetch } from '@zextras/carbonio-shell-ui';
+import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAddressOwnerAccount } from '../../helpers/identities';
+import { collectParticipantsFromMessage } from '../../helpers/messages';
 import type {
 	SaveDraftRequest,
 	SaveDraftResponse,
@@ -27,12 +29,13 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 			toSend = generateMailRequest(msg);
 		}
 
+		let from = editor?.from?.address;
+		if (!from && msg) {
+			from = collectParticipantsFromMessage(msg, ParticipantRole.FROM)?.[0].address;
+		}
+
 		// Get the sender account. If not determined then undefined is passed to the soapFetch which will use the default one
-		const account = getAddressOwnerAccount(
-			editor.from.address,
-			getUserAccount(),
-			getUserSettings()
-		);
+		const account = getAddressOwnerAccount(from, getUserAccount(), getUserSettings());
 		let resp;
 		try {
 			resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>(
