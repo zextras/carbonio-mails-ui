@@ -7,6 +7,7 @@ import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isEmpty, isNil, omitBy } from 'lodash';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { DataProps } from '../../carbonio-ui-commons/types/sidebar';
+import { FolderActionResponse } from '../../types';
 
 export type FolderActionProps = {
 	folder: Folder | DataProps | Omit<Folder, 'parent'>;
@@ -28,7 +29,7 @@ export async function folderAction({
 	l,
 	recursive,
 	retentionPolicy
-}: FolderActionProps): Promise<{ type: string }> {
+}: FolderActionProps): Promise<FolderActionResponse> {
 	const result = !isEmpty(retentionPolicy)
 		? await soapFetch('Batch', {
 				FolderActionRequest: [
@@ -69,5 +70,5 @@ export async function folderAction({
 				),
 				_jsns: 'urn:zimbraMail'
 		  });
-	return result as { type: string };
+	return result as FolderActionResponse;
 }

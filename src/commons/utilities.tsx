@@ -220,33 +220,32 @@ export const getFileExtension = (
 	}
 };
 
-// eslint-disable-next-line no-shadow
-export enum FOLDER_ACTIONS {
-	MOVE = 'move',
-	EMPTY_TRASH = 'emptyTrash',
-	REMOVE_FROM_LIST = 'removeFromList',
-	SHARES_INFO = 'sharesInfo',
-	EDIT = 'edit',
-	NEW = 'new',
-	DELETE = 'delete',
-	SHARE = 'share',
-	SHARE_URL = 'share_url'
-}
+export const FOLDER_ACTIONS = {
+	MOVE: 'move',
+	EMPTY_TRASH: 'emptyTrash',
+	REMOVE_FROM_LIST: 'removeFromList',
+	SHARES_INFO: 'sharesInfo',
+	EDIT: 'edit',
+	NEW: 'new',
+	DELETE: 'delete',
+	SHARE: 'share',
+	SHARE_URL: 'share_url',
+	TRASH: 'trash'
+} as const;
 
-// eslint-disable-next-line no-shadow
-export enum CONVACTIONS {
-	MOVE = 'move',
-	FLAG = 'flag',
-	UNFLAG = '!flag',
-	MARK_READ = 'read',
-	MARK_UNREAD = '!read',
-	TAG = 'tag',
-	UNTAG = '!tag',
-	TRASH = 'trash',
-	DELETE = 'delete',
-	MARK_SPAM = 'spam',
-	MARK_NOT_SPAM = '!spam'
-}
+export const CONVACTIONS = {
+	MOVE: 'move',
+	FLAG: 'flag',
+	UNFLAG: '!flag',
+	MARK_READ: 'read',
+	MARK_UNREAD: '!read',
+	TAG: 'tag',
+	UNTAG: '!tag',
+	TRASH: 'trash',
+	DELETE: 'delete',
+	MARK_SPAM: 'spam',
+	MARK_NOT_SPAM: '!spam'
+} as const;
 
 export const convertToDecimal = (source: string): string => {
 	let result = '';

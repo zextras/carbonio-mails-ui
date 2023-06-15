@@ -257,3 +257,11 @@ export const getParentFolderId = (item: MailMessage | Conversation): string | nu
 	const state = useFolderStore.getState();
 	return state.linksIdMap[parentId] ?? null;
 };
+
+/*
+ * Tells if a folder is a folder of a shared account
+ * @param folderId
+ */
+export function isSharedAccountFolder(folderId: string): boolean {
+	return getFolderIdParts(folderId).zid !== null;
+}
