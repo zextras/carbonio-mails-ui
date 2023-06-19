@@ -152,7 +152,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 						label={t('label.type_name_here', 'Item name')}
 						backgroundColor="gray5"
 						value={calendarName}
-						hasError={!disabled}
+						hasError={disabled}
 						onChange={(e: ChangeEvent<HTMLInputElement>): void => setCalendarName(e.target.value)}
 					/>
 				</Row>
