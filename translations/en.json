@@ -135,7 +135,6 @@
             "edit": {
                 "add_share": "Add Share",
                 "enter_valid_folder_name": "Enter a valid folder name",
-                "invalid_folder_name_warning_msg": "Special characters not allowed. Max lenght is 128 characters.",
                 "rename_warning": "You cannot rename a folder as a system one.",
                 "retention_duration_warning": "The retention duration must be a positive number",
                 "retention_message": "Messages in this folder which fall within the retention range will require explicit confirmation before being deleted",
