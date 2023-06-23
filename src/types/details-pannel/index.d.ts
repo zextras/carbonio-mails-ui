@@ -41,3 +41,8 @@ export type PreviewPanelActionsType = {
 	isMessageView: boolean;
 	conversation: Conversation;
 };
+
+export type CopyToFileResponse = {
+	status?: string;
+	value?: Record<string, unknown>;
+};
