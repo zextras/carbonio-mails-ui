@@ -292,10 +292,6 @@ export const ConversationActionsDescriptors = {
 	FORWARD: {
 		id: 'conversation-forward',
 		desc: 'Forward'
-	},
-	SHOW_SOURCE: {
-		id: 'conversation-show_original',
-		desc: 'Show Original'
 	}
 } as const;
 
