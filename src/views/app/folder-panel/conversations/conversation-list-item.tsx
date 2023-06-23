@@ -222,16 +222,22 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			[item?.messages, folderParent, messages, sortSign]
 		);
 
+		/**
+		 * This is the number of messages to display in the conversation badge.
+		 * In trash, we show all messages of the conversation even if only one is deleted
+		 * In spam, we show all messages of the conversation even if only one is spam
+		 * In all other folders, we show only messages that are not deleted or spam
+		 * @returns {number}
+		 */
+
 		const getmsgToDisplayCount = useCallback((): number => {
-			if (item.messagesInConversation) return item.messagesInConversation;
-			if (getFolderIdParts(folderParent).id === FOLDERS.TRASH) return item?.messages?.length;
 			if ([FOLDERS.TRASH, FOLDERS.SPAM].includes(getFolderIdParts(folderParent).id ?? ''))
 				return item?.messages?.length;
 			return filter(
 				item?.messages,
 				(msg) => ![FOLDERS.TRASH, FOLDERS.SPAM].includes(getFolderIdParts(msg.parent).id ?? '')
 			)?.length;
-		}, [folderParent, item?.messages, item.messagesInConversation]);
+		}, [folderParent, item?.messages]);
 
 		const textReadValues: TextReadValuesProps = useMemo(() => {
 			if (typeof item.read === 'undefined')

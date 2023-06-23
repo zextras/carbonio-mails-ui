@@ -60,6 +60,7 @@ export const normalizeConversation = ({
 			hasAttachment: !isNil(c.f) ? /a/.test(c.f) : undefined,
 			flagged: !isNil(c.f) ? /f/.test(c.f) : undefined,
 			urgent: !isNil(c.f) ? /!/.test(c.f) : undefined,
+			// Number of (nondeleted) messages. messages in trash or spam are in the count
 			messagesInConversation: c.n
 		},
 		isNil

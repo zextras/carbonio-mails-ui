@@ -361,7 +361,6 @@ export function getEditAsNewAction({
 }
 
 export function getShowOriginalAction({
-	isConversation,
 	id,
 	folderExcludedShowOriginal,
 	folderId
@@ -371,7 +370,7 @@ export function getShowOriginalAction({
 	folderExcludedShowOriginal: string[];
 	folderId: string;
 }): ActionReturnType {
-	const action = isConversation ? false : showOriginalMsg({ id });
+	const action = showOriginalMsg({ id });
 
 	return !folderExcludedShowOriginal.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
