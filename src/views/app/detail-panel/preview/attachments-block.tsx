@@ -33,6 +33,7 @@ import { StoreProvider } from '../../../../store/redux';
 import type {
 	AttachmentPart,
 	AttachmentType,
+	CopyToFileResponse,
 	MailMessage,
 	OpenEmlPreviewType
 } from '../../../../types';
@@ -187,15 +188,29 @@ const Attachment: FC<AttachmentType> = ({
 				part: att.name,
 				destinationFolderId: nodes[0].id
 			})
-				.then(() => {
-					getBridgedFunctions()?.createSnackbar({
-						key: `calendar-moved-root`,
-						replace: true,
-						type: 'info',
-						hideButton: true,
-						label: t('message.snackbar.att_saved', 'Attachment saved in the selected folder'),
-						autoHideTimeout: 3000
-					});
+				.then((res: any) => {
+					if (!res?.Fault) {
+						getBridgedFunctions()?.createSnackbar({
+							key: `mail-moved-root`,
+							replace: true,
+							type: 'info',
+							hideButton: true,
+							label: t('message.snackbar.att_saved', 'Attachment saved in the selected folder'),
+							autoHideTimeout: 3000
+						});
+					} else {
+						getBridgedFunctions()?.createSnackbar({
+							key: `mail-moved-root`,
+							replace: true,
+							type: 'warning',
+							hideButton: true,
+							label: t(
+								'message.snackbar.att_err',
+								'There seems to be a problem when saving, please try again'
+							),
+							autoHideTimeout: 3000
+						});
+					}
 				})
 				.catch(() => {
 					getBridgedFunctions()?.createSnackbar({
@@ -211,7 +226,7 @@ const Attachment: FC<AttachmentType> = ({
 					});
 				});
 		},
-		[att.name, message.id]
+		[att, message]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
@@ -405,7 +420,11 @@ const Attachment: FC<AttachmentType> = ({
 	);
 };
 
-const copyToFiles = (att: AttachmentPart, message: MailMessage, nodes: any): Promise<any> =>
+const copyToFiles = (
+	att: AttachmentPart,
+	message: MailMessage,
+	nodes: any
+): Promise<CopyToFileResponse> =>
 	soapFetch('CopyToFiles', {
 		_jsns: 'urn:zimbraMail',
 		mid: message.id,
@@ -465,8 +484,11 @@ const AttachmentsBlock: FC<{
 	const confirmAction = useCallback(
 		(nodes) => {
 			const promises = map(attachments, (att) => copyToFiles(att, message, nodes));
-			Promise.allSettled(promises).then((res) => {
-				const allSuccess = res.length === filter(res, ['status', 'fulfilled'])?.length;
+			Promise.allSettled(promises).then((res: CopyToFileResponse[]) => {
+				const isFault = res.length === filter(res, (r) => r?.value?.Fault)?.length;
+				const allSuccess = isFault
+					? false
+					: res.length === filter(res, ['status', 'fulfilled'])?.length;
 				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
 				const type = allSuccess ? 'info' : 'warning';
 				const label = getLabel({ allSuccess, allFails });

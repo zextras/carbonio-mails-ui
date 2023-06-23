@@ -502,6 +502,7 @@
         "check_and_try_again": "Please, check Carbonio and try again",
         "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
         "edit_schedule_warning": "By editing this e-mail, the time and date previously set for delayed sending will be reset.",
+        "enter_calendar_name": "Enter a name to accept the calendar",
         "extra_windows": {
             "opening_blocked": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
             "popup_blocked": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings"
