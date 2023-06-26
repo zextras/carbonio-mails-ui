@@ -9,6 +9,7 @@ import { includes } from 'lodash';
 import moment from 'moment';
 import React, { FC, Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
 import { selectCurrentFolder } from '../store/conversations-slice';
 
@@ -28,10 +29,8 @@ const AppView: FC = () => {
 
 	const isMessageView = useMemo(
 		() =>
-			zimbraPrefGroupMailBy
-				? zimbraPrefGroupMailBy === 'message' ||
-				  includes([FOLDERS.DRAFTS, FOLDERS.TRASH], currentFolderId)
-				: undefined,
+			(zimbraPrefGroupMailBy && zimbraPrefGroupMailBy === 'message') ||
+			includes([FOLDERS.DRAFTS, FOLDERS.TRASH], getFolderIdParts(currentFolderId).id),
 		[currentFolderId, zimbraPrefGroupMailBy]
 	);
 
