@@ -5,7 +5,7 @@
  */
 import type { Conversation } from '../conversations';
 
-export type StateType = {
+export type MailsStateType = {
 	editors: EditorsStateType;
 	conversations: ConversationsStateType;
 	messages: MsgStateType;
@@ -15,6 +15,11 @@ export type StateType = {
 export type EditorsStateType = {
 	status: string;
 	editors: MailsEditorMap;
+};
+
+export type NewEditorsStateType = {
+	editors: MailsEditorMap;
+	updateEditor: (id: string, opt: Partial<MailsEditor>) => void;
 };
 
 export type MsgStateType = {

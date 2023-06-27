@@ -38,7 +38,7 @@ import type {
 	ConvMessage,
 	ConversationListItemProps,
 	IncompleteMessage,
-	StateType,
+	MailsStateType,
 	TextReadValuesProps
 } from '../../../../types';
 import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
@@ -75,7 +75,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 
 		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
 
-		const conversationStatus = useAppSelector((state: StateType) =>
+		const conversationStatus = useAppSelector((state: MailsStateType) =>
 			selectConversationExpandedStatus(state, item.id)
 		);
 		const tagsFromStore = useTags();

@@ -16,7 +16,7 @@ import { normalizeMailMessageFromSoap } from '../normalizations/normalize-messag
 import type {
 	MsgMap,
 	MsgStateType,
-	StateType,
+	MailsStateType,
 	Conversation,
 	MailMessage,
 	FetchConversationsReturn,
@@ -181,25 +181,25 @@ export const { handleCreatedMessages, handleModifiedMessages, handleDeletedMessa
 	messagesSlice.actions;
 export const messageSliceReducer = messagesSlice.reducer;
 
-export function selectMessage(state: StateType, id: string): MailMessage {
+export function selectMessage(state: MailsStateType, id: string): MailMessage {
 	return state?.messages?.messages?.[id];
 }
 
-export function selectMessages(state: StateType): MsgMap {
+export function selectMessages(state: MailsStateType): MsgMap {
 	return state?.messages?.messages;
 }
 
-export function selectMessagesArray(state: StateType): Array<MailMessage> {
+export function selectMessagesArray(state: MailsStateType): Array<MailMessage> {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	return Object.values(state?.messages?.messages ?? []);
 }
 
-export function selectMessagesStatus(state: StateType): Record<string, string> {
+export function selectMessagesStatus(state: MailsStateType): Record<string, string> {
 	return state?.messages?.status;
 }
 
 export const selectFolderMsgSearchStatus =
-	(id: string): (({ messages }: StateType) => string | undefined) =>
-	({ messages }: StateType): string | undefined =>
+	(id: string): (({ messages }: MailsStateType) => string | undefined) =>
+	({ messages }: MailsStateType): string | undefined =>
 		messages?.searchedInFolder?.[id];

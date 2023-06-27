@@ -41,7 +41,7 @@ import {
 } from '../../../../store/editor-slice';
 import { selectMessages } from '../../../../store/messages-slice';
 import { StoreProvider } from '../../../../store/redux';
-import type { EditViewContextType, MailsEditor, StateType } from '../../../../types';
+import type { EditViewContextType, MailsEditor, MailsStateType } from '../../../../types';
 import DropZoneAttachment from './dropzone-attachment';
 import EditAttachmentsBlock from './edit-attachments-block';
 import { addAttachments } from './edit-utils';
@@ -141,7 +141,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 		setTextValue(text);
 	};
 
-	const draftId = useAppSelector((s: StateType) => selectDraftId(s, editor?.editorId));
+	const draftId = useAppSelector((s: MailsStateType) => selectDraftId(s, editor?.editorId));
 
 	const isSameAction = useMemo(() => {
 		if (editors[editorId]) {

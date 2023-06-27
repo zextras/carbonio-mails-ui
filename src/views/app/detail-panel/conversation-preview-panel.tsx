@@ -16,7 +16,7 @@ import {
 	selectCurrentFolderExpandedStatus
 } from '../../../store/conversations-slice';
 import { selectMessages } from '../../../store/messages-slice';
-import type { Conversation, StateType } from '../../../types';
+import type { Conversation, MailsStateType } from '../../../types';
 import MailPreview from './preview/mail-preview';
 import PreviewPanelHeader from './preview/preview-panel-header';
 
@@ -90,7 +90,7 @@ const ConversationPreviewPanel: FC = () => {
 
 	const dispatch = useAppDispatch();
 	const conversations = useAppSelector(selectConversationsArray);
-	const conversationsStatus = useAppSelector((state: StateType) =>
+	const conversationsStatus = useAppSelector((state: MailsStateType) =>
 		selectConversationExpandedStatus(state, conversationId)
 	);
 

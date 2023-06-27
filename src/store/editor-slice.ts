@@ -13,7 +13,7 @@ import { normalizeMailMessageFromSoap } from '../normalizations/normalize-messag
 import type {
 	EditorsStateType,
 	MailsEditorMap,
-	StateType,
+	MailsStateType,
 	Participant,
 	MailsEditor,
 	MailMessage,
@@ -286,8 +286,11 @@ export const { createEditor, closeEditor, updateEditor } = editorsSlice.actions;
 
 export const editorSliceReducer = editorsSlice.reducer;
 
-export function selectEditors({ editors }: StateType): MailsEditorMap {
+export function selectEditors({ editors }: MailsStateType): MailsEditorMap {
 	return editors ? editors.editors : {};
 }
-export const selectDraftId = ({ editors }: StateType, id: string | undefined): string | undefined =>
+export const selectDraftId = (
+	{ editors }: MailsStateType,
+	id: string | undefined
+): string | undefined =>
 	id ? editors?.editors?.[id]?.id ?? editors?.editors?.[id]?.did : undefined;

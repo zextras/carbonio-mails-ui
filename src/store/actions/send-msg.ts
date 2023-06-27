@@ -12,7 +12,7 @@ import type {
 	SaveDraftRequest,
 	SaveDraftResponse,
 	SendMsgParameters,
-	StateType
+	MailsStateType
 } from '../../types';
 import { closeEditor } from '../editor-slice';
 import { generateMailRequest, generateRequest } from '../editor-slice-utils';
@@ -22,7 +22,7 @@ import { getMsg } from './get-msg';
 export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 	'sendMsg',
 	async ({ editorId, msg, prefs }, { rejectWithValue, getState, dispatch }) => {
-		const editor = (getState() as StateType).editors.editors[editorId];
+		const editor = (getState() as MailsStateType).editors.editors[editorId];
 		let toSend = editor && generateRequest(editor, prefs);
 
 		if (msg) {

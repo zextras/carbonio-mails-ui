@@ -12,13 +12,13 @@ import { getEditorsSliceInitialState } from '../../store/editor-slice';
 import { getMessagesSliceInitialState } from '../../store/messages-slice';
 import { storeReducers } from '../../store/reducers';
 import { getSearchSliceInitialiState } from '../../store/searches-slice';
-import type { StateType } from '../../types';
+import type { MailsStateType } from '../../types';
 
 /**
  *
  * @param state
  */
-export const generateState = (state?: Partial<StateType>): StateType => ({
+export const generateState = (state?: Partial<MailsStateType>): MailsStateType => ({
 	editors: {
 		...getEditorsSliceInitialState(),
 		...state?.editors
@@ -41,7 +41,9 @@ export const generateState = (state?: Partial<StateType>): StateType => ({
  *
  * @param initialState
  */
-export const generateStore = (initialState?: Partial<StateType>): EnhancedStore<StateType> => {
+export const generateStore = (
+	initialState?: Partial<MailsStateType>
+): EnhancedStore<MailsStateType> => {
 	const store = configureStore({
 		devTools: {
 			name: MAIL_APP_ID
