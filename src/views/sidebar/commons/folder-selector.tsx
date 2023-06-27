@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { getFolder, useRootsArray } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { isRoot, isSpam, isTrash, isTrashed } from '../../../helpers/folders';
+import { getSortCriteria, sortFolders } from '../../../hooks/use-folders';
 import { getSystemFolderTranslatedName } from '../utils';
 import { FlatFoldersAccordion } from './flat-folders-accordion/flat-folders-accordion';
 
@@ -28,7 +29,9 @@ export type FolderSelectorProps = {
 
 const flattenFolders = (folders: Array<Folder>): Array<Folder> => {
 	const result: Array<Folder> = [];
-	folders.forEach((folder) => {
+	const sortedFolders = sortFolders({ children: folders, sortFunction: getSortCriteria });
+
+	sortedFolders.forEach((folder) => {
 		if (isTrash(folder.id) || isSpam(folder.id) || isTrashed({ folder })) {
 			return;
 		}
