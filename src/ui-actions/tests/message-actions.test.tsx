@@ -77,12 +77,12 @@ function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 describe('Messages actions calls', () => {
 	describe('Add flag action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -106,12 +106,12 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: { ...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {}) },
 					status: {}
 				}
 			});
@@ -139,12 +139,12 @@ describe('Messages actions calls', () => {
 
 	describe('Remove flag action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -168,12 +168,14 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -201,12 +203,12 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as read action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -231,12 +233,14 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -264,12 +268,12 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as unread action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -294,12 +298,14 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -328,12 +334,12 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as spam action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -359,12 +365,14 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -394,12 +402,12 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as not spam action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -425,12 +433,14 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -459,12 +469,12 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Print action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg = generateMessage({});
 		const store = generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -487,12 +497,12 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Show source', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg = generateMessage({});
 		const store = generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -513,12 +523,12 @@ describe('Messages actions calls', () => {
 
 	describe('Move to trash action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -542,12 +552,14 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -575,12 +587,12 @@ describe('Messages actions calls', () => {
 
 	describe('Delete permanently action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -609,12 +621,14 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: msgs,
+					messages: {
+						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
+					},
 					status: {}
 				}
 			});
@@ -647,7 +661,7 @@ describe('Messages actions calls', () => {
 
 	describe('Move action', () => {
 		test('Single id', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore(FOLDER_VIEW.message);
 			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 			const sourceFolder = inboxChildren?.[0].id ?? '';
 			const destinationFolder = FOLDERS.INBOX;
@@ -656,7 +670,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -677,7 +691,6 @@ describe('Messages actions calls', () => {
 
 			const { user } = setupTest(component, { store });
 			makeListItemsVisible();
-
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`
 			);
@@ -747,9 +760,7 @@ describe('Messages actions calls', () => {
 				jest.advanceTimersByTime(1000);
 			});
 
-			await act(async () => {
-				await user.click(inboxFolderListItem);
-			});
+			await user.click(inboxFolderListItem);
 
 			const button = screen.getByRole('button', {
 				name: /label\.move/i
@@ -767,14 +778,14 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Reply action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 
 		const msg: MailMessage = generateMessage({});
 
 		generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -797,14 +808,14 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Reply all action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 
 		const msg: MailMessage = generateMessage({});
 
 		generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -827,12 +838,12 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Forward action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg: MailMessage = generateMessage({});
 		generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -855,12 +866,12 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Edit as new action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg: MailMessage = generateMessage({});
 		generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -883,12 +894,12 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Edit as new action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg: MailMessage = generateMessage({});
 		generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -911,12 +922,12 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Send draft action', async () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg = generateMessage({ folderId: FOLDERS.DRAFTS });
 		const store = generateStore({
 			messages: {
 				searchedInFolder: {},
-				messages: [msg],
+				messages: { [msg.id]: msg },
 				status: {}
 			}
 		});
@@ -945,7 +956,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -966,7 +977,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -998,7 +1009,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -1034,7 +1045,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -1085,7 +1096,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});
@@ -1117,7 +1128,7 @@ describe('Messages actions calls', () => {
 			const store = generateStore({
 				messages: {
 					searchedInFolder: {},
-					messages: [msg],
+					messages: { [msg.id]: msg },
 					status: {}
 				}
 			});

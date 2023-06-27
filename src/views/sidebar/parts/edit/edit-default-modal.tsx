@@ -17,6 +17,7 @@ import { FolderDetails } from './folder-details';
 import NameInputRow from './name-input';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
+import { isValidFolderName } from '../../../../carbonio-ui-commons/utils/utils';
 
 const retentionPeriod = [
 	{
@@ -39,7 +40,6 @@ const retentionPeriod = [
 const numberRegex = /^\d+$/;
 
 const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveModal }) => {
-	const dispatch = useAppDispatch();
 	const [inputValue, setInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);
 	const [rtnValue, setRtnValue] = useState<number | string>(0);
@@ -129,7 +129,8 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 
 	const showWarning = useMemo(
 		() =>
-			includes(translatedSystemFolders(), inputValue) || (inputValue && inputValue.includes('/')),
+			includes(translatedSystemFolders(), inputValue) ||
+			(inputValue && !isValidFolderName(inputValue)),
 		[inputValue]
 	);
 	const inpDisable = useMemo(

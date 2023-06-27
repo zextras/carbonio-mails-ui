@@ -11,6 +11,7 @@ import { getBridgedFunctions, t, useIntegratedComponent } from '@zextras/carboni
 import { map, some } from 'lodash';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
+import { TIMEOUTS } from '../constants';
 import { redirectMessageAction } from '../store/actions';
 
 type RedirectActionProps = { onClose: () => void; id: string };
@@ -44,6 +45,17 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 		() => contacts?.length === 0 || some(contacts, { error: true }),
 		[contacts]
 	);
+
+	const onRedirectError = useCallback(() => {
+		getBridgedFunctions()?.createSnackbar({
+			key: `redirect-${id}`,
+			replace: true,
+			type: 'error',
+			label: t('label.error_try_again', 'Something went wrong, please try again'),
+			autoHideTimeout: TIMEOUTS.REDIRECT
+		});
+	}, [id]);
+
 	const onConfirm = useCallback(
 		() =>
 			redirectMessageAction({
@@ -52,27 +64,25 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 					a: p.email,
 					t: 't'
 				}))
-			}).then((res) => {
-				if (!('Fault' in res)) {
-					getBridgedFunctions()?.createSnackbar({
-						key: `redirect-${id}`,
-						replace: true,
-						type: 'success',
-						label: t('messages.snackbar.message_redirected', 'The message has been redirected'),
-						autoHideTimeout: 3000
-					});
-				} else {
-					getBridgedFunctions()?.createSnackbar({
-						key: `redirect-${id}`,
-						replace: true,
-						type: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 3000
-					});
-				}
-				onClose();
-			}),
-		[contacts, id, onClose]
+			})
+				.then((res) => {
+					if (!('Fault' in res)) {
+						getBridgedFunctions()?.createSnackbar({
+							key: `redirect-${id}`,
+							replace: true,
+							type: 'success',
+							label: t('messages.snackbar.message_redirected', 'The message has been redirected'),
+							autoHideTimeout: TIMEOUTS.REDIRECT
+						});
+						onClose();
+					} else {
+						onRedirectError();
+					}
+				})
+				.catch(() => {
+					onRedirectError();
+				}),
+		[contacts, id, onClose, onRedirectError]
 	);
 
 	return (

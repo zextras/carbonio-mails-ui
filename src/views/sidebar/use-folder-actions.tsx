@@ -119,7 +119,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						): void => {
 							const restoreFolder = (): Promise<void> =>
 								folderAction({ folder, l: folder.l, op: 'move' }).then((res) => {
-									if (res.type.includes('fulfilled')) {
+									if (!('Fault' in res)) {
 										getBridgedFunctions()?.createSnackbar({
 											key: `move-folder`,
 											replace: true,
@@ -145,7 +145,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 								op: 'move'
 							})
 								.then((res) => {
-									if (res.type.includes('fulfilled')) {
+									if (!('Fault' in res)) {
 										getBridgedFunctions()?.createSnackbar({
 											key: `move`,
 											replace: true,

@@ -113,6 +113,10 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			[item.tags, tagsFromStore]
 		);
 
+		const showTrashedMessagesInSearch =
+			useUserSettings()?.prefs?.zimbraPrefIncludeTrashInSearch === 'TRUE';
+		const showSpamMessagesInSearch =
+			useUserSettings()?.prefs?.zimbraPrefIncludeSpamInSearch === 'TRUE';
 		const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 		const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 		const participantsString = useMemo(
@@ -222,16 +226,29 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			[item?.messages, folderParent, messages, sortSign]
 		);
 
+		/**
+		 * This is the number of messages to display in the conversation badge.
+		 * In search module we check if the user has enabled the option to show trashed and/or spam messages
+		 * @returns {number}
+		 */
 		const getmsgToDisplayCount = useCallback((): number => {
-			if (item.messagesInConversation) return item.messagesInConversation;
-			if (getFolderIdParts(folderParent).id === FOLDERS.TRASH) return item?.messages?.length;
-			if ([FOLDERS.TRASH, FOLDERS.SPAM].includes(getFolderIdParts(folderParent).id ?? ''))
+			if (isSearchModule && showTrashedMessagesInSearch && showSpamMessagesInSearch)
 				return item?.messages?.length;
+			if (isSearchModule && showTrashedMessagesInSearch)
+				return filter(
+					item?.messages,
+					(msg) => ![FOLDERS.SPAM].includes(getFolderIdParts(msg.parent).id ?? '')
+				)?.length;
+			if (isSearchModule && showSpamMessagesInSearch)
+				return filter(
+					item?.messages,
+					(msg) => ![FOLDERS.TRASH].includes(getFolderIdParts(msg.parent).id ?? '')
+				)?.length;
 			return filter(
 				item?.messages,
 				(msg) => ![FOLDERS.TRASH, FOLDERS.SPAM].includes(getFolderIdParts(msg.parent).id ?? '')
 			)?.length;
-		}, [folderParent, item?.messages, item.messagesInConversation]);
+		}, [isSearchModule, item?.messages, showSpamMessagesInSearch, showTrashedMessagesInSearch]);
 
 		const textReadValues: TextReadValuesProps = useMemo(() => {
 			if (typeof item.read === 'undefined')
