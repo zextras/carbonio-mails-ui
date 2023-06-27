@@ -114,14 +114,14 @@ export function getMsgConvActions({
 		deselectAll,
 		dispatch,
 		foldersIncludedDeletePermanently,
-		folderId
+		folderId: firstConversationMessage.parent
 	});
 
 	const moveToFolderAction = getMoveToFolderAction({
 		isConversation: isConv,
 		id,
 		dispatch,
-		folderId,
+		folderId: firstConversationMessage.parent,
 		deselectAll
 	});
 
