@@ -9,6 +9,7 @@ import { addBoard, getTag } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 import React from 'react';
 import { rest } from 'msw';
+import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
@@ -16,7 +17,7 @@ import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/account
 import { getTags, getUserAccount } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { ActionsType } from '../../commons/utils';
 import { MAILS_ROUTE, TIMEOUTS } from '../../constants';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
@@ -675,6 +676,8 @@ describe('Messages actions calls', () => {
 			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			const { user } = setupTest(component, { store });
+			makeListItemsVisible();
+
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`
 			);
@@ -700,7 +703,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 
 			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 			const sourceFolder = inboxChildren?.[0].id ?? '';
@@ -732,15 +735,21 @@ describe('Messages actions calls', () => {
 			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			const { user } = setupTest(component, { store });
+			makeListItemsVisible();
+
 			const inboxFolderListItem = await screen.findByTestId(
-				`folder-accordion-item-${destinationFolder}`
+				`folder-accordion-item-${destinationFolder}`,
+				{},
+				{ timeout: 10000 }
 			);
 
 			act(() => {
 				jest.advanceTimersByTime(1000);
 			});
 
-			await user.click(inboxFolderListItem);
+			await act(async () => {
+				await user.click(inboxFolderListItem);
+			});
 
 			const button = screen.getByRole('button', {
 				name: /label\.move/i
