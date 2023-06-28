@@ -10,14 +10,17 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import type { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
-import { useAppDispatch } from '../../../../hooks/redux';
 import { folderAction } from '../../../../store/actions/folder-action';
 import { translatedSystemFolders } from '../../utils';
 import { FolderDetails } from './folder-details';
 import NameInputRow from './name-input';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
-import { isValidFolderName } from '../../../../carbonio-ui-commons/utils/utils';
+import {
+	allowedActionOnSharedAccount,
+	isValidFolderName
+} from '../../../../carbonio-ui-commons/utils/utils';
+import { FolderActionsType } from '../../../../carbonio-ui-commons/constants/folders';
 
 const retentionPeriod = [
 	{
@@ -301,6 +304,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 				secondaryAction={(): void => setActiveModal('share')}
 				secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
 				disabled={disableSubmit}
+				secondaryDisabled={!allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)}
 				secondaryBtnType="outlined"
 				secondaryColor="primary"
 				tooltip={
