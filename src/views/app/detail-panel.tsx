@@ -9,7 +9,7 @@ import React, { FC } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import type { AppContext } from '../../types';
 import ConversationPreviewPanel from './detail-panel/conversation-preview-panel';
-import MailEditPanel from './detail-panel/mail-edit-panel';
+import { MailEditPanel } from './detail-panel/mail-edit-panel';
 import MessagePreviewPanel from './detail-panel/message-preview-panel';
 import { SelectionInteractive } from './detail-panel/selection-interactive';
 

@@ -21,10 +21,36 @@ export type InlineAttachedType =
 			attach: { aid: string };
 	  }>
 	| Array[];
+
 export type MailsEditor = {
 	inline: InlineAttachedType;
 	autoSendTime?: number;
 	id: string | undefined;
+	did?: string | undefined;
+	oldId?: string | undefined;
+	editorId: string;
+	richText: boolean;
+	text: [string, string];
+	subject: string;
+	original?: MailMessage;
+	attach: mailAttachment;
+	to: Array<Participant>;
+	bcc: Array<Participant>;
+	cc: Array<Participant>;
+	participants?: Array<Participant> | undefined;
+	from: Participant;
+	sender?: Participant | any;
+	urgent: boolean;
+	requestReadReceipt?: boolean;
+	attachmentFiles: Array<EditorAttachmentFiles>;
+	rt?: string | undefined;
+	origid?: string | undefined;
+};
+
+export type MailsEditorV2 = {
+	inline: InlineAttachedType;
+	autoSendTime?: number;
+	id: string;
 	did?: string | undefined;
 	oldId?: string | undefined;
 	editorId: string;

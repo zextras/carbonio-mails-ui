@@ -8,7 +8,7 @@ import { useRouteMatch, Switch, Route } from 'react-router-dom';
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import ConversationPreviewPanel from '../app/detail-panel/conversation-preview-panel';
-import MailEditPanel from '../app/detail-panel/mail-edit-panel';
+import { MailEditPanel } from '../app/detail-panel/mail-edit-panel';
 import { EmptyFieldMessages, EmptyListMessages } from './utils';
 import MessagePreviewPanel from '../app/detail-panel/message-preview-panel';
 import type { SearchPanelProps } from '../../types';

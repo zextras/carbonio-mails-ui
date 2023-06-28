@@ -17,9 +17,11 @@ export type EditorsStateType = {
 	editors: MailsEditorMap;
 };
 
-export type NewEditorsStateType = {
+export type EditorsStateTypeV2 = {
 	editors: MailsEditorMap;
 	updateEditor: (id: string, opt: Partial<MailsEditor>) => void;
+	updateSubject: (id: string, subject: string) => void;
+	createEditor: (id: string, editor: MailsEditor) => void;
 };
 
 export type MsgStateType = {

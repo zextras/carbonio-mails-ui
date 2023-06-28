@@ -5,12 +5,12 @@
  */
 import produce from 'immer';
 import { create } from 'zustand';
-import { MailsEditor, NewEditorsStateType } from '../../../types';
+import { EditorsStateTypeV2, MailsEditorV2 } from '../../../types';
 
 // extra currying as suggested in https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#basic-usage
-export const useEditorsStore = create<NewEditorsStateType>()((set) => ({
+export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	editors: {},
-	updateEditor: (id: string, opt: Partial<MailsEditor>): void => {
+	updateEditor: (id: string, opt: Partial<MailsEditorV2>): void => {
 		set(
 			produce((state) => {
 				if (state?.editors?.[id]) {
@@ -19,6 +19,22 @@ export const useEditorsStore = create<NewEditorsStateType>()((set) => ({
 						...opt
 					};
 				}
+			})
+		);
+	},
+	updateSubject: (id: string, subject: string): void => {
+		set(
+			produce((state) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].subject = subject;
+				}
+			})
+		);
+	},
+	createEditor: (id: string, editor: MailsEditorV2): void => {
+		set(
+			produce((state) => {
+				state.editors[id] = editor;
 			})
 		);
 	}
