@@ -16,7 +16,7 @@ import { htmlEncode } from '../commons/get-quoted-text-util';
 import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import type {
 	EditorAttachmentFiles,
-	InlineAttachedType,
+	InlineAttachments,
 	MailAttachmentParts,
 	MailMessage,
 	MailMessagePart,
@@ -345,13 +345,13 @@ export const getHtmlWithPreAppliedStyled = (
 ): string =>
 	`<html><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
 
-export const findCidFromPart = (inline: InlineAttachedType | undefined, part: string): string => {
+export const findCidFromPart = (inline: InlineAttachments | undefined, part: string): string => {
 	const ci = find(inline, (i) => i.attach?.mp?.[0]?.part === part)?.ci;
 	return `cid:${ci}`;
 };
 export const replaceLinkWithParts = (
 	content: string,
-	inline: InlineAttachedType | undefined
+	inline: InlineAttachments | undefined
 ): string => {
 	const parser = new DOMParser();
 	const htmlDoc = parser.parseFromString(content, 'text/html');

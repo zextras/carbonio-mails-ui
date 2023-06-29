@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { uploadInlineAttachments } from '../../../../store/actions/upload-inline-attachments';
 import type {
 	EditorAttachmentFiles,
-	InlineAttachedType,
+	InlineAttachments,
 	MailMessage,
 	MailMessagePart,
 	MailsEditor
@@ -35,7 +35,7 @@ export const addInlineAttachments = async ({
 }: InputProps): Promise<any> => {
 	const aids = await uploadInlineAttachments({ files });
 
-	const attachAids: InlineAttachedType = editor?.inline ? [...editor.inline] : [];
+	const attachAids: InlineAttachments = editor?.inline ? [...editor.inline] : [];
 	const imageTextArray: Array<string> = [];
 
 	forEach(aids, (aid, index) => {
