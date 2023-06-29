@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type { Conversation } from '../conversations';
+import { MailsEditorV2 } from '../editor';
 
 export type MailsStateType = {
 	editors: EditorsStateType;
@@ -18,10 +19,14 @@ export type EditorsStateType = {
 };
 
 export type EditorsStateTypeV2 = {
-	editors: MailsEditorMap;
+	editors: MailsEditorMapV2;
 	updateEditor: (id: string, opt: Partial<MailsEditor>) => void;
 	updateSubject: (id: string, subject: string) => void;
 	createEditor: (id: string, editor: MailsEditor) => void;
+	updateText: (id: string, text: [string, string]) => void;
+	updateRecipients: (id: string, recipients: Recipients) => void;
+	deleteEditor: (id: string) => void;
+	clearEditors: () => void;
 };
 
 export type MsgStateType = {
@@ -61,6 +66,7 @@ export type SearchesStateType = {
 export type MailsFolderMap = Record<string, FolderType>;
 
 export type MailsEditorMap = Record<string, MailsEditor>;
+export type MailsEditorMapV2 = Record<string, MailsEditorV2>;
 
 export type MsgMap = Record<string, Partial<MailMessage>>;
 
