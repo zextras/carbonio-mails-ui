@@ -141,7 +141,11 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 			),
 		[folder]
 	);
-	const disableSubmit = useMemo(() => showWarning || emptyRtnValue, [showWarning, emptyRtnValue]);
+
+	const disableSubmit = useMemo(
+		() => (showWarning || emptyRtnValue) && !inpDisable,
+		[showWarning, emptyRtnValue, inpDisable]
+	);
 
 	const onConfirm = useCallback(() => {
 		let submit = true;

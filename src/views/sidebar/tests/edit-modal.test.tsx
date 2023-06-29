@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { screen, within } from '@testing-library/react';
-import { FOLDERS, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 import { faker } from '@faker-js/faker';
 import { rest } from 'msw';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
@@ -78,7 +78,7 @@ describe('edit-modal', () => {
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.datatype.uuid(),
-			name: 'Inbox',
+			name: 'folders.inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
 			luuid: faker.datatype.uuid(),
@@ -341,5 +341,122 @@ describe('edit-modal', () => {
 		expect(action.op).toBe('update');
 		expect(action.color).toBe(folder?.color ?? 0);
 		expect(action.name).toBe(folderName);
+	});
+
+	test('folder name disable when edit system folder', async () => {
+		const closeModal = jest.fn();
+		const store = generateStore();
+		const folder: Folder = {
+			id: FOLDERS.INBOX,
+			uuid: faker.datatype.uuid(),
+			name: 'folders.inbox',
+			absFolderPath: '/Inbox',
+			l: FOLDERS.USER_ROOT,
+			luuid: faker.datatype.uuid(),
+			checked: false,
+			f: 'ui',
+			u: 37,
+			rev: 1,
+			ms: 2633,
+			n: 889,
+			s: 174031840,
+			i4ms: 33663,
+			i4next: 17222,
+			activesyncdisabled: false,
+			webOfflineSyncDays: 30,
+			recursive: false,
+			deletable: false,
+			isLink: false,
+			children: [],
+			parent: undefined,
+			depth: 1
+		};
+
+		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
+			store
+		});
+
+		expect(screen.getByTestId('folder-name')).toBeInTheDocument();
+		const newFolder = screen.getByTestId('folder-name');
+		const folderInputElement = within(newFolder).getByRole('textbox');
+		expect(folderInputElement).toBeDisabled();
+		expect(newFolder).toBeInTheDocument();
+
+		const selectColor = screen.getByText(/label\.select_color/i);
+		expect(selectColor).toBeInTheDocument();
+		await user.click(selectColor);
+		ZIMBRA_STANDARD_COLORS.forEach((el) => {
+			within(screen.getByTestId('dropdown-popper-list')).getByText(`color.${el.zLabel}`);
+		});
+		const addShareButton = screen.getByRole('button', {
+			name: /folder\.modal\.edit\.add_share/i
+		});
+		expect(addShareButton).toBeEnabled();
+
+		const editButton = screen.getByRole('button', {
+			name: /label\.edit/i
+		});
+		expect(editButton).toBeEnabled();
+	});
+
+	test('error message display and edit button disable if syatem folder name use', async () => {
+		const closeModal = jest.fn();
+		const store = generateStore();
+		const folder: Folder = {
+			id: '106',
+			uuid: faker.datatype.uuid(),
+			name: 'Confluence',
+			absFolderPath: '/Inbox/Confluence',
+			l: FOLDERS.INBOX,
+			luuid: faker.datatype.uuid(),
+			checked: false,
+			f: 'u',
+			u: 25,
+			view: 'message' as FolderView,
+			rev: 27896,
+			ms: 27896,
+			n: 101,
+			s: 5550022,
+			i4ms: 33607,
+			i4next: 17183,
+			activesyncdisabled: false,
+			webOfflineSyncDays: 0,
+			recursive: false,
+			deletable: true,
+			isLink: false,
+			children: [],
+			parent: undefined,
+			depth: 2
+		};
+
+		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
+			store
+		});
+
+		expect(screen.getByTestId('folder-name')).toBeInTheDocument();
+		const newFolder = screen.getByTestId('folder-name');
+		const folderInputElement = within(newFolder).getByRole('textbox');
+		expect(folderInputElement).toBeEnabled();
+		expect(newFolder).toBeInTheDocument();
+
+		// Insert the new folder name into the text input with system folder name
+		await user.type(folderInputElement, '/folders.inbox/i');
+		expect(screen.getByTestId('rename-error-msg')).toBeVisible();
+
+		const selectColor = screen.getByText(/label\.select_color/i);
+		expect(selectColor).toBeInTheDocument();
+		await user.click(selectColor);
+		ZIMBRA_STANDARD_COLORS.forEach((el) => {
+			within(screen.getByTestId('dropdown-popper-list')).getByText(`color.${el.zLabel}`);
+		});
+		const addShareButton = screen.getByRole('button', {
+			name: /folder\.modal\.edit\.add_share/i
+		});
+		expect(addShareButton).toBeEnabled();
+
+		const editButton = screen.getByRole('button', {
+			name: /label\.edit/i
+		});
+		expect(editButton).toBeDisabled();
 	});
 });
