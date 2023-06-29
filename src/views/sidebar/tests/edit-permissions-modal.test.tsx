@@ -607,5 +607,82 @@ describe('edit-permissions-modal', () => {
 			);
 			expect(shareFolderMock).toHaveBeenCalledWith(expect.objectContaining({ folder }));
 		});
+		test('Share the inbox folder with a user giving the manager role and without send notification message', async () => {
+			const folderId = FOLDERS.INBOX;
+			const closeFn = jest.fn();
+			const goBack = jest.fn();
+
+			const store = generateStore();
+			populateFoldersStore();
+			const folder = getFolder(folderId);
+			const { user } = setupTest(
+				<EditPermissionsModal
+					folder={folder}
+					onClose={closeFn}
+					goBack={goBack}
+					grant={{}}
+					editMode={false}
+				/>,
+				{ store }
+			);
+			const userInput = screen.getByRole('textbox', {
+				name: /share\.recipients_address/i
+			});
+			const confirmButton = screen.getByRole('button', {
+				name: /action\.share_folder/i
+			});
+
+			const viewer = faker.internet.email();
+
+			// Select manager role from role select
+			const roleLabel = screen.getByText(/share\.options\.share_calendar_role\.viewer/i);
+			expect(roleLabel).toBeInTheDocument();
+			await user.click(roleLabel);
+
+			const managerRoleOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
+				/share\.options\.share_calendar_role\.manager/i
+			);
+			await user.click(managerRoleOption);
+			await user.type(userInput, viewer);
+			await user.tab();
+
+			const sendNotificationUnCheckbox = within(
+				screen.getByTestId('sendNotificationCheckboxContainer')
+			).getByTestId('icon: CheckmarkSquare');
+
+			expect(sendNotificationUnCheckbox).toBeInTheDocument();
+
+			const standardMessage = screen.getByRole('textbox', {
+				name: /share\.standard_message/i
+			});
+			expect(standardMessage).toBeEnabled();
+
+			await user.click(sendNotificationUnCheckbox);
+			const sendNotificationCheckbox = within(
+				screen.getByTestId('sendNotificationCheckboxContainer')
+			).getByTestId('icon: Square');
+			expect(sendNotificationCheckbox).toBeInTheDocument();
+
+			expect(standardMessage).toBeDisabled();
+
+			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+			await user.click(confirmButton);
+
+			// Check that the shareFolder and the data passed
+			expect(shareFolderMock).toBeCalled();
+			expect(shareFolderMock).toHaveBeenCalledWith(
+				expect.objectContaining({ sendNotification: false })
+			);
+			expect(shareFolderMock).toHaveBeenCalledWith(
+				expect.objectContaining({ shareWithUserRole: 'rwidx' })
+			);
+			expect(shareFolderMock).toHaveBeenCalledWith(
+				expect.objectContaining({ shareWithUserType: 'usr' })
+			);
+			expect(shareFolderMock).toHaveBeenCalledWith(
+				expect.objectContaining({ standardMessage: '' })
+			);
+			expect(shareFolderMock).toHaveBeenCalledWith(expect.objectContaining({ folder }));
+		});
 	});
 });
