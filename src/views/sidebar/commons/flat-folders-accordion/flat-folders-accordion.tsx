@@ -24,7 +24,6 @@ import React, { FC, ReactElement, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { StaticBreadcrumbs } from '../../../../carbonio-ui-commons/components/breadcrumbs/static-breadcrumbs';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { LOCAL_STORAGES } from '../../../../constants';
 import { isRoot } from '../../../../helpers/folders';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
 
@@ -243,12 +242,6 @@ export const FlatFoldersAccordion: FC<FlatFoldersAccordionProps> = ({
 	onFolderSelected,
 	selectedFolderId
 }) => (
-	// const [openIds, setOpenIds] = useLocalStorage<Array<string>>(LOCAL_STORAGES.EXPANDED_FOLDERS, [
-	// 	FOLDERS.USER_ROOT
-	// ]);
-
-	// const updateExpandedFoldersStatus = (isOpen) =>
-
 	<Container orientation={'vertical'} style={{ overflowY: 'auto' }}>
 		{roots.map<ReactElement>((root, index) => (
 			<FlatFoldersAccordionRoot
