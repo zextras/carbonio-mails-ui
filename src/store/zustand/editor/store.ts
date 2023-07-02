@@ -10,7 +10,7 @@ import { AttachmentPart, EditorsStateTypeV2, MailsEditorV2 } from '../../../type
 // extra currying as suggested in https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#basic-usage
 export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	editors: {},
-	createEditor: (id: MailsEditorV2['id'], editor: MailsEditorV2): void => {
+	addEditor: (id: MailsEditorV2['id'], editor: MailsEditorV2): void => {
 		set(
 			produce((state) => {
 				state.editors[id] = editor;
