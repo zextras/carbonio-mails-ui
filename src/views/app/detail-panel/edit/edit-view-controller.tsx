@@ -3,12 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
-import { Text } from '@zextras/carbonio-design-system';
 import React, { FC } from 'react';
 import { EditViewActions, EditViewActionsType } from '../../../../constants';
 import { useQueryParam } from '../../../../hooks/use-query-param';
-import { generateEditor, resumeEditor } from '../../../../store/zustand/editor/editor-generators';
+import { addEditor } from '../../../../store/zustand/editor';
+import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
 import { EditView } from './edit-view-v2';
 
 const parseAndValidateParams = (
@@ -27,20 +26,18 @@ const parseAndValidateParams = (
 const EditViewController: FC = (x) => {
 	const { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
 
-	// TODO Create editor
-	// The  editor can be created from scratch or
-	// can be resumed (i.e. resuming the editor after
-	// clicking on the undo button while sending an
-	// email)
-
+	// Create or resume editor
 	const editor = generateEditor(action, id);
 	if (!editor) {
 		throw new Error('No editor provided');
 	}
 
+	// Add the editor to the store
+	addEditor(editor.editorId, editor);
+
 	// TODO handle board title change
 
-	// TODO render the editor component passing the editor
+	// Render the editor component passing the editor
 	return <EditView editorId={editor.editorId} />;
 };
 
