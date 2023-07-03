@@ -37,7 +37,8 @@ import { Controller, SubmitErrorHandler, SubmitHandler, useForm } from 'react-ho
 import { useHistory, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils/text/html';
-import { ActionsType, LineType } from '../../../../../commons/utils';
+import { LineType } from '../../../../../commons/utils';
+import { EditViewActions } from '../../../../../constants';
 import { getSignatureValue } from '../../../../../helpers/signatures';
 import { useAppDispatch } from '../../../../../hooks/redux';
 import { sendMsg } from '../../../../../store/actions/send-msg';
@@ -235,7 +236,7 @@ const EditViewHeader: FC<PropType> = ({
 
 	const onFromChange = (fr: Partial<IdentityType> | undefined): void => {
 		if (fr) {
-			if (action === ActionsType.NEW) {
+			if (action === EditViewActions.NEW) {
 				changeSignature(true, fr.zimbraPrefDefaultSignatureId);
 			} else {
 				changeSignature(false, fr?.zimbraPrefForwardReplySignatureId);
@@ -249,9 +250,9 @@ const EditViewHeader: FC<PropType> = ({
 		editorId: editor?.editorId,
 		currentMessage: editor?.original,
 		originalMessage:
-			action === ActionsType.REPLY_ALL ||
-			action === ActionsType.REPLY ||
-			action === ActionsType.FORWARD
+			action === EditViewActions.REPLY_ALL ||
+			action === EditViewActions.REPLY ||
+			action === EditViewActions.FORWARD
 				? editor?.original
 				: undefined,
 		folderId: boardContext?.folderId ?? FOLDERS.INBOX
@@ -297,7 +298,7 @@ const EditViewHeader: FC<PropType> = ({
 		setIsDisabled(true);
 		setShowRouteGuard(false);
 		if (
-			action === ActionsType.COMPOSE &&
+			action === EditViewActions.COMPOSE &&
 			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm
 		) {
 			(boardContext as unknown as { onConfirm: (arg: any) => void })?.onConfirm({
@@ -681,7 +682,7 @@ const EditViewHeader: FC<PropType> = ({
 							/>
 						)}
 					/>
-					{action !== ActionsType.COMPOSE && (
+					{action !== EditViewActions.COMPOSE && (
 						<Tooltip label={t('tooltip.add_attachments', 'Add attachments')}>
 							<Dropdown
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -707,7 +708,7 @@ const EditViewHeader: FC<PropType> = ({
 					>
 						<IconButton size="large" icon="MoreVertical" onClick={onIconClick} />
 					</Dropdown>
-					{action !== ActionsType.COMPOSE && (
+					{action !== EditViewActions.COMPOSE && (
 						<Padding left="large">
 							<Button
 								data-testid="BtnSaveMail"

@@ -26,7 +26,7 @@ import React, {
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import { ActionsType } from '../../../../commons/utils';
+import { EditViewActions } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
 import { getMsg } from '../../../../store/actions';
@@ -257,10 +257,10 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 	useEffect(() => {
 		if (
 			(activeMailId && messages?.[activeMailId]?.isComplete) ||
-			action === ActionsType.NEW ||
-			action === ActionsType.PREFILL_COMPOSE ||
-			action === ActionsType.COMPOSE ||
-			action === ActionsType.MAIL_TO
+			action === EditViewActions.NEW ||
+			action === EditViewActions.PREFILL_COMPOSE ||
+			action === EditViewActions.COMPOSE ||
+			action === EditViewActions.MAIL_TO
 		) {
 			if (!editors[editorId] || isSameAction === false) {
 				setLoading(true);
@@ -268,7 +268,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 					createEditor({
 						settings,
 						editorId,
-						id: action === ActionsType.EDIT_AS_DRAFT ? activeMailId : undefined,
+						id: action === EditViewActions.EDIT_AS_DRAFT ? activeMailId : undefined,
 						original: messages?.[activeMailId ?? editorId],
 						boardContext: board?.context,
 						action,
@@ -310,7 +310,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 	useEffect(() => {
 		if (editor) {
 			if (
-				action === ActionsType.PREFILL_COMPOSE &&
+				action === EditViewActions.PREFILL_COMPOSE &&
 				!isUploading &&
 				editor?.attach?.aid &&
 				!saveFirstDraft
@@ -354,7 +354,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 	);
 
 	useEffect(() => {
-		if (action === ActionsType.REPLY || action === ActionsType.REPLY_ALL) {
+		if (action === EditViewActions.REPLY || action === EditViewActions.REPLY_ALL) {
 			dispatch(
 				updateEditor({
 					editorId: editor?.editorId,
@@ -368,7 +368,7 @@ const EditView: FC<EditViewPropType> = ({ setHeader }) => {
 	}, [action, dispatch, editor?.editorId]);
 
 	const showAttachments = useMemo(
-		() => editor?.original && editor?.attach?.mp?.length > 0 && action !== ActionsType.COMPOSE,
+		() => editor?.original && editor?.attach?.mp?.length > 0 && action !== EditViewActions.COMPOSE,
 		[action, editor?.attach?.mp?.length, editor?.original]
 	);
 

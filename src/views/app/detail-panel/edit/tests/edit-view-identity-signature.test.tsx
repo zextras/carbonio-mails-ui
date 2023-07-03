@@ -13,8 +13,7 @@ import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/t
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { ActionsType } from '../../../../../commons/utils';
-import { MAILS_ROUTE } from '../../../../../constants';
+import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
@@ -120,14 +119,14 @@ describe('New and Replay email view', () => {
 			// Mock the "action" query param
 			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 				if (param === 'action') {
-					return ActionsType.REPLY;
+					return EditViewActions.REPLY;
 				}
 				return undefined;
 			});
 
 			// Mock the board context
 			mockedUseBoard.mockImplementation(() => ({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY}`,
+				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.REPLY}`,
 				context: { mailId: msg.id, folderId },
 				title: ''
 			}));

@@ -6,8 +6,7 @@
 import { addBoard } from '@zextras/carbonio-shell-ui';
 import { isNil, omit, omitBy } from 'lodash';
 import type { Participant } from '../types';
-import { MAILS_ROUTE } from '../constants';
-import { ActionsType } from '../commons/utils';
+import { EditViewActions, MAILS_ROUTE } from '../constants';
 
 export const mailToSharedFunction: (contacts: Array<Partial<Participant>>) => void = (contacts) => {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -64,7 +63,7 @@ export const openPrefilledComposerSharedFunction: (
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	addBoard({
-		url: `${MAILS_ROUTE}/new?action=${ActionsType.PREFILL_COMPOSE}`,
+		url: `${MAILS_ROUTE}/new?action=${EditViewActions.PREFILL_COMPOSE}`,
 		context: {
 			compositionData: editor,
 			...rest

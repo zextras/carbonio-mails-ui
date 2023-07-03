@@ -7,7 +7,7 @@ import React, { FC, useCallback, useState } from 'react';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { Container, Divider, Icon, IconButton, Row, Text } from '@zextras/carbonio-design-system';
 import { useParams } from 'react-router-dom';
-import EditView from './edit/edit-view-v2';
+import EditView from './edit/edit-view';
 import type { MailEditHeaderType } from '../../../types';
 
 const MailEditHeader: FC<MailEditHeaderType> = ({ folderId, header }) => {

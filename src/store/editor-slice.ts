@@ -7,7 +7,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { drop } from 'lodash';
-import { ActionsType } from '../commons/utils';
+import { EditViewActions } from '../constants';
 import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import type {
@@ -88,10 +88,10 @@ function createEditorReducer(
 	if (payload.action) {
 		const editorWithAction = { ...empty, action: payload.action };
 		switch (payload.action) {
-			case ActionsType.NEW:
+			case EditViewActions.NEW:
 				state.editors[payload.editorId] = editorWithAction;
 				break;
-			case ActionsType.MAIL_TO:
+			case EditViewActions.MAIL_TO:
 				if (payload?.boardContext?.contacts && payload?.boardContext?.contacts?.length > 0) {
 					state.editors[payload.editorId] = {
 						...editorWithAction,
@@ -101,7 +101,7 @@ function createEditorReducer(
 				}
 
 				break;
-			case ActionsType.EDIT_AS_DRAFT:
+			case EditViewActions.EDIT_AS_DRAFT:
 				if (payload.original) {
 					state.editors[payload.editorId] = {
 						...editorWithAction,
@@ -119,7 +119,7 @@ function createEditorReducer(
 				}
 
 				break;
-			case ActionsType.EDIT_AS_NEW:
+			case EditViewActions.EDIT_AS_NEW:
 				if (payload.original) {
 					state.editors[payload.editorId] = {
 						...editorWithAction,
@@ -136,7 +136,7 @@ function createEditorReducer(
 				}
 
 				break;
-			case ActionsType.REPLY:
+			case EditViewActions.REPLY:
 				if (payload.original) {
 					state.editors[payload.editorId] = {
 						...editorWithAction,
@@ -154,7 +154,7 @@ function createEditorReducer(
 				}
 
 				break;
-			case ActionsType.REPLY_ALL:
+			case EditViewActions.REPLY_ALL:
 				if (payload.original && payload.accounts) {
 					state.editors[payload.editorId] = {
 						...editorWithAction,
@@ -172,7 +172,7 @@ function createEditorReducer(
 				}
 				break;
 
-			case ActionsType.FORWARD:
+			case EditViewActions.FORWARD:
 				if (payload.original) {
 					state.editors[payload.editorId] = {
 						...editorWithAction,
@@ -187,13 +187,13 @@ function createEditorReducer(
 					};
 				}
 				break;
-			case ActionsType.COMPOSE:
+			case EditViewActions.COMPOSE:
 				state.editors[payload.editorId] = {
 					...editorWithAction,
 					...(payload.boardContext?.compositionData ?? {})
 				};
 				break;
-			case ActionsType.PREFILL_COMPOSE:
+			case EditViewActions.PREFILL_COMPOSE:
 				state.editors[payload.editorId] = {
 					...editorWithAction,
 					...(payload.boardContext?.compositionData ?? {})

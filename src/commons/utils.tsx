@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import moment from 'moment';
-import { find, isArray } from 'lodash';
 import { Account, t } from '@zextras/carbonio-shell-ui';
+import { find, isArray } from 'lodash';
+import moment from 'moment';
 import type { Participant } from '../types';
 
 export const getTimeLabel = (date: number): string => {
@@ -85,19 +85,6 @@ export enum FolderActionsType {
 	SHARES_INFO = 'sharesInfo',
 	SHARE = 'share',
 	MARK_ALL_READ = 'read'
-}
-
-// eslint-disable-next-line no-shadow
-export enum ActionsType {
-	NEW = 'new',
-	EDIT_AS_DRAFT = 'editAsDraft',
-	EDIT_AS_NEW = 'editAsNew',
-	REPLY = 'reply',
-	REPLY_ALL = 'replyAll',
-	FORWARD = 'forward',
-	MAIL_TO = 'mailTo',
-	COMPOSE = 'compose',
-	PREFILL_COMPOSE = 'prefillCompose'
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

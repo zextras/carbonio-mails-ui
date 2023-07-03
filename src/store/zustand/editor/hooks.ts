@@ -36,5 +36,5 @@ export const useUpdateSubject = (id: string, subject: string): void =>
 export const getUpdateSubject = (id: string, subject: string): void =>
 	useEditorsStore.getState().updateSubject(id, subject);
 
-export const createNewEditor = (id: string, editor: MailsEditorV2): void =>
+export const addEditor = (id: string, editor: MailsEditorV2): void =>
 	useEditorsStore.getState().createEditor(id, editor);

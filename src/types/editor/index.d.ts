@@ -55,8 +55,10 @@ export type Recipients = {
 };
 
 export type MailsEditorV2 = {
+	// the id of the editor
+	editorId: string;
 	// the id of the message being edited
-	id: string;
+	id: string; // TODO can be changed to messageId?
 	// the array of inline attachments
 	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
 	inlineAttachments: InlineAttachments;

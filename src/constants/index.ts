@@ -6,6 +6,7 @@
 
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
+import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 
 export const MAILS_ROUTE = 'mails';
 
@@ -363,3 +364,18 @@ export const LIST_LIMIT = {
 	INITIAL_LIMIT: 100,
 	LOAD_MORE_LIMIT: 50
 };
+
+export const EditViewActions = {
+	NEW: 'new',
+	EDIT_AS_DRAFT: 'editAsDraft',
+	EDIT_AS_NEW: 'editAsNew',
+	REPLY: 'reply',
+	REPLY_ALL: 'replyAll',
+	FORWARD: 'forward',
+	MAIL_TO: 'mailTo',
+	COMPOSE: 'compose',
+	PREFILL_COMPOSE: 'prefillCompose',
+	RESUME: 'resume'
+} as const;
+
+export type EditViewActionsType = (typeof EditViewActions)[keyof typeof EditViewActions];

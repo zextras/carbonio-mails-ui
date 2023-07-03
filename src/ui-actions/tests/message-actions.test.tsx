@@ -17,8 +17,7 @@ import { getTags, getUserAccount } from '../../carbonio-ui-commons/test/mocks/ca
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { ActionsType } from '../../commons/utils';
-import { MAILS_ROUTE, TIMEOUTS } from '../../constants';
+import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../constants';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
@@ -795,7 +794,7 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY}`,
+				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.REPLY}`,
 				context: { mailId: msg.id, folderId: msg.parent }
 			})
 		);
@@ -825,7 +824,7 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY_ALL}`,
+				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.REPLY_ALL}`,
 				context: { mailId: msg.id, folderId: msg.parent }
 			})
 		);
@@ -853,7 +852,7 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.FORWARD}`,
+				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.FORWARD}`,
 				context: { mailId: msg.id, folderId: msg.parent }
 			})
 		);
@@ -881,7 +880,7 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.EDIT_AS_DRAFT}`,
+				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.EDIT_AS_DRAFT}`,
 				context: { mailId: msg.id, folderId: msg.parent }
 			})
 		);
@@ -909,7 +908,7 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.EDIT_AS_NEW}`,
+				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.EDIT_AS_NEW}`,
 				context: { mailId: msg.id, folderId: msg.parent }
 			})
 		);

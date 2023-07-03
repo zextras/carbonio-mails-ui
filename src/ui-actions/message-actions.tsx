@@ -16,8 +16,7 @@ import {
 import { map, noop } from 'lodash';
 import React from 'react';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
-import { ActionsType } from '../commons/utils';
-import { MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
+import { EditViewActions, MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg } from '../store/actions/send-msg';
 import { AppDispatch, StoreProvider } from '../store/redux';
@@ -446,8 +445,8 @@ export function replyMsg({
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY}`,
-				context: { mailId: id, folderId },
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY}&id=${id}`,
+				// context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -466,8 +465,8 @@ export function replyAllMsg({
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY_ALL}`,
-				context: { mailId: id, folderId },
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY_ALL}&id=${id}`,
+				// context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -486,8 +485,8 @@ export function forwardMsg({
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.FORWARD}`,
-				context: { mailId: id, folderId },
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.FORWARD}&id=${id}`,
+				// context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -506,8 +505,8 @@ export function editAsNewMsg({
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_NEW}`,
-				context: { mailId: id, folderId },
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_NEW}&id=${id}`,
+				// context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -535,8 +534,8 @@ export function editDraft({
 						// @ts-ignore
 						closeModal();
 						addBoard<BoardContext>({
-							url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
-							context: { mailId: id, folderId },
+							url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${id}`,
+							// context: { mailId: id, folderId },
 							title: ''
 						});
 					},
@@ -559,8 +558,8 @@ export function editDraft({
 				});
 			} else {
 				addBoard<BoardContext>({
-					url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
-					context: { mailId: id, folderId },
+					url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${id}`,
+					// context: { mailId: id, folderId },
 					title: ''
 				});
 			}
