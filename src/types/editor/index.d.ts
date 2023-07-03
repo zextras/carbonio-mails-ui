@@ -55,10 +55,8 @@ export type Recipients = {
 };
 
 export type MailsEditorV2 = {
-	// the id of the editor
-	editorId: string;
-	// the id of the message being edited
-	id: string; // TODO can be changed to messageId?
+	// the id of the editor (used to identify the editor in the store)
+	id: string;
 	// the array of inline attachments
 	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
 	inlineAttachments: InlineAttachments;
@@ -67,7 +65,7 @@ export type MailsEditorV2 = {
 	// user defined delayed send timer
 	autoSendTime?: number;
 	// the saved draft id
-	did: string;
+	did?: string;
 	// true if the message is rich text
 	isRichText: boolean;
 	// the text of the editor (html, plain)
@@ -75,9 +73,9 @@ export type MailsEditorV2 = {
 	// the subject of the message
 	subject: string;
 	// Message id of the message being replied to/forwarded (outbound messages only)
-	originalId: string;
+	originalId?: string;
 	// the whole message being replied to/forwarded (outbound messages only)
-	originalMessage: MailMessage;
+	originalMessage?: MailMessage;
 	// the sender of the message being replied to/forwarded (outbound messages only)
 	from: Participant;
 	// the recipients of the message being replied to/forwarded (outbound messages only)

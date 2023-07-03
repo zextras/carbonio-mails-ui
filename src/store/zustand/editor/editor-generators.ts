@@ -11,28 +11,30 @@ import { getEditor } from './hooks';
 /**
  *
  */
-const generateNewMessageEditor = (): MailsEditorV2 => ({
-	attachments: [],
-	from: undefined,
-	id: uuid(),
-	inlineAttachments: [],
-	isRichText: false,
-	isUrgent: false,
-	recipients: {
-		to: [],
-		cc: [],
-		bcc: []
-	},
-	subject: 'dummy and wrong default subject', // FIXME
-	text: ['', '']
-});
+const generateNewMessageEditor = (): MailsEditorV2 =>
+	({
+		attachments: [],
+		from: undefined,
+		id: uuid(),
+		inlineAttachments: [],
+		isRichText: false,
+		isUrgent: false,
+		recipients: {
+			to: [],
+			cc: [],
+			bcc: []
+		},
+		subject: 'dummy and wrong default subject', // FIXME
+		text: ['', ''],
+		requestReadReceipt: false
+	} as MailsEditorV2);
 
 /**
  *
  * @param editorId
  */
-export const resumeEditor = (editorId: string): MailsEditorV2 | null => {
-	const editor = getEditor(editorId);
+export const resumeEditor = (id: string): MailsEditorV2 | null => {
+	const editor = getEditor({ id });
 	return editor ?? null;
 };
 

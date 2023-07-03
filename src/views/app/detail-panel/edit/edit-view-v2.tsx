@@ -13,7 +13,7 @@ export type EditViewProp = {
 };
 
 export const EditView: FC<EditViewProp> = ({ editorId }) => {
-	const editor = useEditor(editorId);
+	const editor = useEditor({ id: editorId });
 
 	return (
 		<>

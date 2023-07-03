@@ -38,7 +38,7 @@ const EditViewController: FC = (x) => {
 	// TODO handle board title change
 
 	// Render the editor component passing the editor
-	return <EditView editorId={editor.editorId} />;
+	return <EditView editorId={editor.id} />;
 };
 
 export default EditViewController;
