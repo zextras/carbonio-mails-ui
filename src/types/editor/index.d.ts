@@ -67,7 +67,7 @@ export type MailsEditorV2 = {
 	// user defined delayed send timer
 	autoSendTime?: number;
 	// the saved draft id
-	did?: string;
+	did: string;
 	// true if the message is rich text
 	isRichText: boolean;
 	// the text of the editor (html, plain)
@@ -75,9 +75,9 @@ export type MailsEditorV2 = {
 	// the subject of the message
 	subject: string;
 	// Message id of the message being replied to/forwarded (outbound messages only)
-	originalId?: string;
+	originalId: string;
 	// the whole message being replied to/forwarded (outbound messages only)
-	originalMessage?: MailMessage;
+	originalMessage: MailMessage;
 	// the sender of the message being replied to/forwarded (outbound messages only)
 	from: Participant;
 	// the recipients of the message being replied to/forwarded (outbound messages only)
@@ -85,7 +85,7 @@ export type MailsEditorV2 = {
 	// flag to mark the message as urgent
 	isUrgent: boolean;
 	// flag to request a read receipt
-	requestReadReceipt?: boolean;
+	requestReadReceipt: boolean;
 	// reply type
 	replyType?: ReplyType;
 };
