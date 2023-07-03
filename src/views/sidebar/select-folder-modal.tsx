@@ -47,7 +47,6 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 		[folder?.l, folder?.name, folderDestination]
 	);
 
-	const preselectedFolderId = folder && folder.id;
 	const modalFooterTooltip =
 		isInputDisabled &&
 		t('label.folder_not_valid_destination', 'The selected folder is not a valid destination');
@@ -76,9 +75,8 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 					<Text overflow="break-word">{inputLabel}</Text>
 				</Container>
 				<FolderSelector
-					preselectedFolderId={preselectedFolderId}
-					folderDestination={folderDestination}
-					setFolderDestination={setFolderDestination}
+					selectedFolderId={folderDestination?.id}
+					onFolderSelected={setFolderDestination}
 				/>
 				<ModalFooter
 					tooltip={modalFooterTooltip}

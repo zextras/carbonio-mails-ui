@@ -9,6 +9,7 @@ import { addBoard, getTag } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 import React from 'react';
 import { rest } from 'msw';
+import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
@@ -16,7 +17,7 @@ import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/account
 import { getTags, getUserAccount } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { ActionsType } from '../../commons/utils';
 import { MAILS_ROUTE, TIMEOUTS } from '../../constants';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
@@ -76,7 +77,7 @@ function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 describe('Messages actions calls', () => {
 	describe('Add flag action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -105,7 +106,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -138,7 +139,7 @@ describe('Messages actions calls', () => {
 
 	describe('Remove flag action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -167,7 +168,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -202,7 +203,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as read action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -232,7 +233,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -267,7 +268,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as unread action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -297,7 +298,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -333,7 +334,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as spam action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -364,7 +365,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -401,7 +402,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as not spam action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -432,7 +433,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -468,7 +469,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Print action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg = generateMessage({});
 		const store = generateStore({
 			messages: {
@@ -496,7 +497,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Show source', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg = generateMessage({});
 		const store = generateStore({
 			messages: {
@@ -522,7 +523,7 @@ describe('Messages actions calls', () => {
 
 	describe('Move to trash action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -551,7 +552,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -586,7 +587,7 @@ describe('Messages actions calls', () => {
 
 	describe('Delete permanently action', () => {
 		test('Single id', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -620,7 +621,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -660,7 +661,7 @@ describe('Messages actions calls', () => {
 
 	describe('Move action', () => {
 		test('Single id', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore(FOLDER_VIEW.message);
 			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 			const sourceFolder = inboxChildren?.[0].id ?? '';
 			const destinationFolder = FOLDERS.INBOX;
@@ -689,6 +690,7 @@ describe('Messages actions calls', () => {
 			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			const { user } = setupTest(component, { store });
+			makeListItemsVisible();
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`
 			);
@@ -714,7 +716,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 
 			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 			const sourceFolder = inboxChildren?.[0].id ?? '';
@@ -746,8 +748,12 @@ describe('Messages actions calls', () => {
 			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			const { user } = setupTest(component, { store });
+			makeListItemsVisible();
+
 			const inboxFolderListItem = await screen.findByTestId(
-				`folder-accordion-item-${destinationFolder}`
+				`folder-accordion-item-${destinationFolder}`,
+				{},
+				{ timeout: 10000 }
 			);
 
 			act(() => {
@@ -772,7 +778,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Reply action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 
 		const msg: MailMessage = generateMessage({});
 
@@ -802,7 +808,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Reply all action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 
 		const msg: MailMessage = generateMessage({});
 
@@ -832,7 +838,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Forward action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg: MailMessage = generateMessage({});
 		generateStore({
 			messages: {
@@ -860,7 +866,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Edit as new action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg: MailMessage = generateMessage({});
 		generateStore({
 			messages: {
@@ -888,7 +894,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Edit as new action', () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg: MailMessage = generateMessage({});
 		generateStore({
 			messages: {
@@ -916,7 +922,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Send draft action', async () => {
-		populateFoldersStore();
+		populateFoldersStore(FOLDER_VIEW.message);
 		const msg = generateMessage({ folderId: FOLDERS.DRAFTS });
 		const store = generateStore({
 			messages: {
