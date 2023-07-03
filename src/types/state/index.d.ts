@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type { Conversation } from '../conversations';
-import { MailsEditorV2 } from '../editor';
+import { MailsEditor, MailsEditorV2, Recipients } from '../editor';
+import { AttachmentPart, MailMessage } from '../messages';
 
 export type MailsStateType = {
 	editors: EditorsStateType;
@@ -26,10 +27,10 @@ export type EditorsStateTypeV2 = {
 	updateSubject: (id: string, subject: string) => void;
 	updateText: (id: string, text: [string, string]) => void;
 	updateAutoSendTime: (id: string, autoSendTime: number | undefined) => void;
-	setDid: (id: string, did: string) => void;
+	setDid: (id: string, did: string | undefined) => void;
 	setIsRichText: (id: string, isRichText: boolean) => void;
-	setOriginalId: (id: string, originalId: string) => void;
-	setOriginalMessage: (id: string, originalMessage: MailMessage) => void;
+	setOriginalId: (id: string, originalId: string | undefined) => void;
+	setOriginalMessage: (id: string, originalMessage: MailMessage | undefined) => void;
 	updateRecipients: (id: string, recipients: Recipients) => void;
 	deleteEditor: (id: string) => void;
 	updateFrom: (id: string, from: Recipient) => void;
