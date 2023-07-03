@@ -24,7 +24,7 @@ const generateNewMessageEditor = (): MailsEditorV2 =>
 			cc: [],
 			bcc: []
 		},
-		subject: 'dummy and wrong default subject', // FIXME
+		subject: '',
 		text: ['', ''],
 		requestReadReceipt: false
 	} as MailsEditorV2);
@@ -33,7 +33,7 @@ const generateNewMessageEditor = (): MailsEditorV2 =>
  *
  * @param editorId
  */
-export const resumeEditor = (id: string): MailsEditorV2 | null => {
+export const resumeEditor = (id: MailsEditorV2['id']): MailsEditorV2 | null => {
 	const editor = getEditor({ id });
 	return editor ?? null;
 };
