@@ -55,7 +55,7 @@ export type Recipients = {
 };
 
 export type MailsEditorV2 = {
-	// the id of the message being edited
+	// the id of the editor (used to identify the editor in the store)
 	id: string;
 	// the array of inline attachments
 	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
