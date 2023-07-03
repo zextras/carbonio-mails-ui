@@ -14,7 +14,7 @@ import { getEditor } from './hooks';
 const generateNewMessageEditor = (): MailsEditorV2 => ({
 	attachments: [],
 	from: undefined,
-	id: '',
+	id: uuid(),
 	inlineAttachments: [],
 	isRichText: false,
 	isUrgent: false,
@@ -24,8 +24,7 @@ const generateNewMessageEditor = (): MailsEditorV2 => ({
 		bcc: []
 	},
 	subject: 'dummy and wrong default subject', // FIXME
-	text: ['', ''],
-	editorId: uuid()
+	text: ['', '']
 });
 
 /**

@@ -33,7 +33,7 @@ const EditViewController: FC = (x) => {
 	}
 
 	// Add the editor to the store
-	addEditor(editor.editorId, editor);
+	addEditor({ id: editor.id, editor });
 
 	// TODO handle board title change
 

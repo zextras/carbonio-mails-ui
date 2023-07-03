@@ -365,6 +365,10 @@ export const LIST_LIMIT = {
 	LOAD_MORE_LIMIT: 50
 };
 
+export const LOCAL_STORAGES = {
+	EXPANDED_FOLDERS: 'open_mails_folders'
+};
+
 export const EditViewActions = {
 	NEW: 'new',
 	EDIT_AS_DRAFT: 'editAsDraft',
