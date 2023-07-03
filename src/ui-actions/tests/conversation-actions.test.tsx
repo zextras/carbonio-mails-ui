@@ -12,7 +12,7 @@ import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { TIMEOUTS } from '../../constants';
 import { generateStore } from '../../tests/generators/store';
 import { ConvActionRequest, Conversation, Status } from '../../types';
@@ -775,6 +775,7 @@ describe('Conversation actions calls', () => {
 			const interceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			const { user } = setupTest(component, { store });
+			makeListItemsVisible();
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`
 			);
@@ -842,6 +843,7 @@ describe('Conversation actions calls', () => {
 			const interceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			const { user } = setupTest(component, { store });
+			makeListItemsVisible();
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`
 			);

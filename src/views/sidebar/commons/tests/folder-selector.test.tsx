@@ -3,10 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { reject } from 'lodash';
 import React from 'react';
+import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
 import {
 	getFolder,
 	getFoldersArray,
@@ -15,7 +16,7 @@ import {
 } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import { makeListItemsVisible, setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import {
 	getFolderOwnerAccountName,
@@ -33,9 +34,8 @@ describe('Folder selector', () => {
 	test('The selector is visible', () => {
 		populateFoldersStore();
 		const props: FolderSelectorProps = {
-			preselectedFolderId: FOLDERS.INBOX,
-			folderDestination: undefined,
-			setFolderDestination: jest.fn()
+			selectedFolderId: FOLDERS.INBOX,
+			onFolderSelected: jest.fn()
 		};
 		setupTest(<FolderSelector {...props} />, { store });
 
@@ -59,11 +59,11 @@ describe('Folder selector', () => {
 					(folder) => isTrash(folder.id) || isSpam(folder.id) || isTrashed({ folder })
 				);
 				const props: FolderSelectorProps = {
-					preselectedFolderId: FOLDERS.INBOX,
-					folderDestination: undefined,
-					setFolderDestination: jest.fn()
+					selectedFolderId: FOLDERS.INBOX,
+					onFolderSelected: jest.fn()
 				};
 				setupTest(<FolderSelector {...props} />, { store });
+				makeListItemsVisible();
 				folders.forEach((folder) => {
 					expect(screen.getByTestId(`folder-accordion-item-${folder.id}`)).toBeVisible();
 				});
@@ -85,10 +85,10 @@ describe('Folder selector', () => {
 				const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
 
 				const props: FolderSelectorProps = {
-					folderDestination: undefined,
-					setFolderDestination: jest.fn()
+					onFolderSelected: jest.fn()
 				};
 				setupTest(<FolderSelector {...props} />, { store });
+				makeListItemsVisible();
 				expect(screen.queryByText(ownerAccountName)).toBeVisible();
 			}
 		);
@@ -96,21 +96,22 @@ describe('Folder selector', () => {
 
 	describe('Filter', () => {
 		test('if the user type "inbox" in the filter only the Inbox folder is displayed', async () => {
-			populateFoldersStore();
+			populateFoldersStore(FOLDER_VIEW.message);
 			const inboxCount = getFoldersArray().reduce<number>(
 				(result, folder) => (isInbox(folder.id) ? result + 1 : result),
 				0
 			);
 			const props: FolderSelectorProps = {
-				preselectedFolderId: FOLDERS.INBOX,
-				folderDestination: undefined,
-				setFolderDestination: jest.fn()
+				selectedFolderId: FOLDERS.INBOX,
+				onFolderSelected: jest.fn()
 			};
 			const inboxFolderName = getSystemFolderTranslatedName({ folderName: 'Inbox' });
 			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, inboxFolderName);
-			const accordionItems = screen.queryAllByTestId(/^folder-accordion-item-/);
+
+			const accordionItems = await screen.findAllByTestId(/^folder-accordion-item-/);
 			expect(accordionItems.length).toBe(inboxCount);
 			expect(screen.getByTestId(`folder-accordion-item-${FOLDERS.INBOX}`)).toBeVisible();
 		});
@@ -123,11 +124,11 @@ describe('Folder selector', () => {
 				0
 			);
 			const props: FolderSelectorProps = {
-				preselectedFolderId: FOLDERS.INBOX,
-				folderDestination: undefined,
-				setFolderDestination: jest.fn()
+				selectedFolderId: FOLDERS.INBOX,
+				onFolderSelected: jest.fn()
 			};
 			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, inboxFolderName);
 			const accordionItems = screen.queryAllByTestId(/^folder-accordion-item-/);
@@ -147,15 +148,16 @@ describe('Folder selector', () => {
 			}
 			const inboxFirstChild = inboxChildren[0];
 			const props: FolderSelectorProps = {
-				preselectedFolderId: FOLDERS.INBOX,
-				folderDestination: undefined,
-				setFolderDestination: jest.fn()
+				selectedFolderId: FOLDERS.INBOX,
+				onFolderSelected: jest.fn()
 			};
 			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, inboxFirstChild.name);
 			expect(screen.getByTestId(`folder-accordion-item-${inboxFirstChild.id}`)).toBeVisible();
 		});
+
 		test('if the user type an Inbox folder name only the account with results is displayed', async () => {
 			populateFoldersStore();
 			const rootIds = Object.keys(getRootsMap());
@@ -164,10 +166,10 @@ describe('Folder selector', () => {
 				(folder) => folder.name === 'Confluence'
 			) as Folder;
 			const props: FolderSelectorProps = {
-				folderDestination: undefined,
-				setFolderDestination: jest.fn()
+				onFolderSelected: jest.fn()
 			};
 			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, folderInPrimaryAccountOnly.name);
 			const roots = getRootsMap();
