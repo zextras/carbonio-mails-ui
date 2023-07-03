@@ -63,7 +63,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 
 	const onConfirm = useCallback(() => {
 		createFolder({
-			parentFolderId: folderDestination?.parent ?? '',
+			parentFolderId: folderDestination?.id ?? '',
 			name: inputValue
 		})
 			.then((res) => {
@@ -133,9 +133,8 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					</Padding>
 				)}
 				<FolderSelector
-					preselectedFolderId={folder.id}
-					folderDestination={folderDestination}
-					setFolderDestination={setFolderDestination}
+					selectedFolderId={folderDestination?.id}
+					onFolderSelected={setFolderDestination}
 				/>
 				<ModalFooter
 					onConfirm={onConfirm}
