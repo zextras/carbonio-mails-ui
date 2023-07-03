@@ -13,7 +13,6 @@ import { useEditorsStore } from './store';
  * */
 export const useEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | undefined =>
 	useEditorsStore((s) => s.editors?.[id]);
-
 export const getEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | undefined =>
 	useEditorsStore.getState()?.editors?.[id];
 
@@ -27,7 +26,6 @@ export const useUpdateEditor = ({
 	id: MailsEditorV2['id'];
 	opt: Partial<MailsEditorV2>;
 }): void => useEditorsStore((s) => s.updateEditor(id, opt));
-
 export const getUpdateEditor = ({ id, opt }: { id: string; opt: Partial<MailsEditorV2> }): void =>
 	useEditorsStore.getState().updateEditor(id, opt);
 
@@ -43,7 +41,6 @@ export const useUpdateSubject = ({
 	id: MailsEditorV2['id'];
 	subject: MailsEditorV2['subject'];
 }): void => useEditorsStore((s) => s.updateSubject(id, subject));
-
 export const getUpdateSubject = ({
 	id,
 	subject
@@ -57,7 +54,14 @@ export const getUpdateSubject = ({
  * @params id
  * @params editor
  * */
-export const addEditor = ({
+export const useAddEditor = ({
+	id,
+	editor
+}: {
+	id: MailsEditorV2['id'];
+	editor: MailsEditorV2;
+}): void => useEditorsStore((s) => s.addEditor(id, editor));
+export const getAddEditor = ({
 	id,
 	editor
 }: {

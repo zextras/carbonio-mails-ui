@@ -20,30 +20,42 @@ export type EditorsStateType = {
 
 export type EditorsStateTypeV2 = {
 	editors: MailsEditorMapV2;
-	addEditor: (id: string, editor: MailsEditor) => void;
-	deleteEditor: (id: string) => void;
-	updateEditor: (id: string, opt: Partial<MailsEditor>) => void;
-	updateSubject: (id: string, subject: string) => void;
-	updateText: (id: string, text: [string, string]) => void;
-	updateAutoSendTime: (id: string, autoSendTime: number | undefined) => void;
-	setDid: (id: string, did: string) => void;
-	setIsRichText: (id: string, isRichText: boolean) => void;
-	setOriginalId: (id: string, originalId: string) => void;
-	setOriginalMessage: (id: string, originalMessage: MailMessage) => void;
-	updateRecipients: (id: string, recipients: Recipients) => void;
-	deleteEditor: (id: string) => void;
-	updateFrom: (id: string, from: Recipient) => void;
-	updateIsUrgent: (id: string, isUrgent: boolean) => void;
-	addAttachments: (id: string, attachments: AttachmentPart[]) => void;
-	removeAttachments: (id: string, attachments: AttachmentPart[]) => void;
-	addInlineAttachments: (id: string, inlineAttachments: AttachmentPart[]) => void;
-	removeInlineAttachments: (id: string, inlineAttachments: AttachmentPart[]) => void;
+	addEditor: (id: MailsEditorV2['id'], editor: MailsEditorV2) => void;
+	deleteEditor: (id: MailsEditorV2['id']) => void;
+	updateEditor: (id: MailsEditorV2['id'], opt: Partial<MailsEditorV2>) => void;
+	updateSubject: (id: MailsEditorV2['id'], subject: MailsEditorV2['subject']) => void;
+	updateText: (id: MailsEditorV2['id'], text: MailsEditorV2['text']) => void;
+	updateAutoSendTime: (
+		id: MailsEditorV2['id'],
+		autoSendTime: MailsEditorV2['autoSendTime']
+	) => void;
+	setDid: (id: MailsEditorV2['id'], did: MailsEditorV2['did']) => void;
+	setIsRichText: (id: MailsEditorV2['id'], isRichText: MailsEditorV2['isRichText']) => void;
+	setOriginalId: (id: MailsEditorV2['id'], originalId: MailsEditorV2['originalId']) => void;
+	setOriginalMessage: (
+		id: MailsEditorV2['id'],
+		originalMessage: MailsEditorV2['originalMessage']
+	) => void;
+	updateRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']) => void;
+	deleteEditor: (id: MailsEditorV2['id']) => void;
+	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']) => void;
+	updateIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
+	addAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
+	removeAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
+	addInlineAttachments: (
+		id: MailsEditorV2['id'],
+		inlineAttachments: MailsEditorV2['inlineAttachments']
+	) => void;
+	removeInlineAttachments: (
+		id: MailsEditorV2['id'],
+		inlineAttachments: MailsEditorV2['inlineAttachments']
+	) => void;
 	clearEditors: () => void;
-	clearSubject: (id: string) => void;
-	clearAutoSendTime: (id: string) => void;
-	clearText: (id: string) => void;
-	clearAttachments: (id: string) => void;
-	clearInlineAttachments: (id: string) => void;
+	clearSubject: (id: MailsEditorV2['id']) => void;
+	clearAutoSendTime: (id: MailsEditorV2['id']) => void;
+	clearText: (id: MailsEditorV2['id']) => void;
+	clearAttachments: (id: MailsEditorV2['id']) => void;
+	clearInlineAttachments: (id: MailsEditorV2['id']) => void;
 };
 
 export type MsgStateType = {
