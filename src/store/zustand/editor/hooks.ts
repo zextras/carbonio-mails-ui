@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { MailsEditorV2 } from '../../../types';
+import { DraftSaveEndListener, DraftSaveStartListener, MailsEditorV2 } from '../../../types';
+import { saveDraft } from '../../actions/save-draft';
 import { useEditorsStore } from './store';
 
 /**
@@ -13,7 +14,6 @@ import { useEditorsStore } from './store';
  * */
 export const useEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | undefined =>
 	useEditorsStore((s) => s.editors?.[id]);
-
 export const getEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | undefined =>
 	useEditorsStore.getState()?.editors?.[id];
 
@@ -27,7 +27,6 @@ export const useUpdateEditor = ({
 	id: MailsEditorV2['id'];
 	opt: Partial<MailsEditorV2>;
 }): void => useEditorsStore((s) => s.updateEditor(id, opt));
-
 export const getUpdateEditor = ({ id, opt }: { id: string; opt: Partial<MailsEditorV2> }): void =>
 	useEditorsStore.getState().updateEditor(id, opt);
 
@@ -43,7 +42,6 @@ export const useUpdateSubject = ({
 	id: MailsEditorV2['id'];
 	subject: MailsEditorV2['subject'];
 }): void => useEditorsStore((s) => s.updateSubject(id, subject));
-
 export const getUpdateSubject = ({
 	id,
 	subject
@@ -57,7 +55,14 @@ export const getUpdateSubject = ({
  * @params id
  * @params editor
  * */
-export const addEditor = ({
+export const useAddEditor = ({
+	id,
+	editor
+}: {
+	id: MailsEditorV2['id'];
+	editor: MailsEditorV2;
+}): void => useEditorsStore((s) => s.addEditor(id, editor));
+export const getAddEditor = ({
 	id,
 	editor
 }: {
@@ -379,3 +384,53 @@ export const useClearInlineAttachments = ({ id }: { id: MailsEditorV2['id'] }): 
 	useEditorsStore((s) => s.clearInlineAttachments(id));
 export const getClearInlineAttachments = ({ id }: { id: MailsEditorV2['id'] }): void =>
 	useEditorsStore.getState().clearInlineAttachments(id);
+
+/**
+ *
+ * @param editorId
+ * @param saveStartListener
+ * @param saveEndListener
+ */
+export const useAddDraftListeners = ({
+	editorId,
+	saveStartListener,
+	saveEndListener
+}: {
+	editorId: MailsEditorV2['id'];
+	saveStartListener?: DraftSaveStartListener;
+	saveEndListener?: DraftSaveEndListener;
+}): void => {
+	useEditorsStore((s) => {
+		saveStartListener && s.addDraftSaveStartListener(editorId, saveStartListener);
+	});
+	useEditorsStore((s) => {
+		saveEndListener && s.addDraftSaveEndListener(editorId, saveEndListener);
+	});
+};
+
+/**
+ *
+ * @param editorId
+ * @param saveStartListener
+ * @param saveEndListener
+ */
+export const useRemoveDraftListeners = ({
+	editorId,
+	saveStartListener,
+	saveEndListener
+}: {
+	editorId: MailsEditorV2['id'];
+	saveStartListener?: DraftSaveStartListener;
+	saveEndListener?: DraftSaveEndListener;
+}): void => {
+	useEditorsStore((s) => {
+		saveStartListener && s.removeDraftSaveStartListener(editorId, saveStartListener);
+	});
+	useEditorsStore((s) => {
+		saveEndListener && s.removeDraftSaveEndListener(editorId, saveEndListener);
+	});
+};
+
+const saveEditor = (editor: MailsEditorV2): void => {
+	saveDraft;
+};

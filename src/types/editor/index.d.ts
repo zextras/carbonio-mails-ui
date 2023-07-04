@@ -5,6 +5,7 @@
  */
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { MailMessage, AttachmentPart } from '../messages';
+import { Participant } from '../participant';
 
 export type EditorAttachmentFiles = {
 	contentType: string;
@@ -54,13 +55,22 @@ export type Recipients = {
 	bcc: Array<Participant>;
 };
 
+export type DraftSaveStartListener = (params: { editorId: string }) => void;
+
+export type DraftSaveResultType = { draftId: string } | { error: string };
+
+export type DraftSaveEndListener = (params: {
+	editorId: string;
+	result: DraftSaveResultType;
+}) => void;
+
 export type MailsEditorV2 = {
 	// the id of the editor (used to identify the editor in the store)
 	id: string;
 	// the array of inline attachments
 	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
 	inlineAttachments: InlineAttachments;
-	// the array of non inline attachments
+	// the array of non-inline attachments
 	attachments: Array<AttachmentPart>;
 	// user defined delayed send timer
 	autoSendTime?: number;
@@ -77,7 +87,7 @@ export type MailsEditorV2 = {
 	// the whole message being replied to/forwarded (outbound messages only)
 	originalMessage?: MailMessage;
 	// the sender of the message being replied to/forwarded (outbound messages only)
-	from: Participant;
+	from?: Participant;
 	// the recipients of the message being replied to/forwarded (outbound messages only)
 	recipients: Recipients;
 	// flag to mark the message as urgent
@@ -86,6 +96,11 @@ export type MailsEditorV2 = {
 	requestReadReceipt: boolean;
 	// reply type
 	replyType?: ReplyType;
+
+	listeners: {
+		draftSaveStartListeners: Array<DraftSaveStartListener>;
+		draftSaveEndListeners: Array<DraftSaveEndListener>;
+	};
 };
 
 type IdentityType = {

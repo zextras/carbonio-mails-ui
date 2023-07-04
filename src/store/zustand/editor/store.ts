@@ -4,29 +4,36 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import produce from 'immer';
+import { remove } from 'lodash';
 import { create } from 'zustand';
-import { AttachmentPart, EditorsStateTypeV2, MailsEditorV2 } from '../../../types';
+import {
+	AttachmentPart,
+	DraftSaveEndListener,
+	DraftSaveStartListener,
+	EditorsStateTypeV2,
+	MailsEditorV2
+} from '../../../types';
 
 // extra currying as suggested in https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#basic-usage
 export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	editors: {},
 	addEditor: (id: MailsEditorV2['id'], editor: MailsEditorV2): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				state.editors[id] = editor;
 			})
 		);
 	},
 	deleteEditor: (id: MailsEditorV2['id']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				delete state.editors[id];
 			})
 		);
 	},
 	updateEditor: (id: MailsEditorV2['id'], opt: Partial<MailsEditorV2>): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id] = {
 						...state.editors[id],
@@ -38,7 +45,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	},
 	updateSubject: (id: MailsEditorV2['id'], subject: MailsEditorV2['subject']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].subject = subject;
 				}
@@ -47,7 +54,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	},
 	updateText: (id: MailsEditorV2['id'], text: MailsEditorV2['text']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].text = text;
 				}
@@ -59,7 +66,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 		autoSendTime: MailsEditorV2['autoSendTime']
 	): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].autoSendTime = autoSendTime;
 				}
@@ -68,7 +75,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	},
 	setDid: (id: MailsEditorV2['id'], did: MailsEditorV2['did']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].did = did;
 				}
@@ -77,16 +84,16 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	},
 	setIsRichText: (id: MailsEditorV2['id'], value: MailsEditorV2['isRichText']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].richText = value;
+					state.editors[id].isRichText = value;
 				}
 			})
 		);
 	},
 	setOriginalId: (id: MailsEditorV2['id'], originalId: MailsEditorV2['originalId']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].originalId = originalId;
 				}
@@ -98,7 +105,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 		originalMessage: MailsEditorV2['originalMessage']
 	): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].originalMessage = originalMessage;
 				}
@@ -107,7 +114,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	},
 	updateRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id] && !!recipients.to) {
 					state.editors[id].recipients.to = recipients.to;
 				}
@@ -122,7 +129,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	},
 	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].from = from;
 				}
@@ -131,7 +138,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	},
 	updateIsUrgent: (id: MailsEditorV2['id'], value: MailsEditorV2['isUrgent']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].isUrgent = value;
 				}
@@ -140,7 +147,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	},
 	addAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].attachments = [...state.editors[id].attachments, ...attachments];
 				}
@@ -149,7 +156,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	},
 	removeAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].attachments = state.editors[id].attachments.filter(
 						(attachment: AttachmentPart) => !attachments.includes(attachment)
@@ -163,7 +170,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 		attachments: MailsEditorV2['inlineAttachments']
 	): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].inlineAttachments = [
 						...state.editors[id].inlineAttachments,
@@ -178,7 +185,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 		attachments: MailsEditorV2['inlineAttachments']
 	): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].inlineAttachments = state.editors[id].inlineAttachments.filter(
 						(attachment: { ci: string; attach: { aid: string } }) =>
@@ -193,14 +200,14 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 
 	clearEditors: (): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				state.editors = {};
 			})
 		);
 	},
 	clearSubject: (id: MailsEditorV2['id']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].subject = '';
 				}
@@ -209,25 +216,25 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	},
 	clearAutoSendTime: (id: MailsEditorV2['id']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].autoSendTime = null;
+					state.editors[id].autoSendTime = undefined;
 				}
 			})
 		);
 	},
 	clearText: (id: MailsEditorV2['id']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].text = '';
+					state.editors[id].text = ['', ''];
 				}
 			})
 		);
 	},
 	clearAttachments: (id: MailsEditorV2['id']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].attachments = [];
 					state.editors[id].inlineAttachments = [];
@@ -237,9 +244,48 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	},
 	clearInlineAttachments: (id: MailsEditorV2['id']): void => {
 		set(
-			produce((state) => {
+			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].inlineAttachments = [];
+				}
+			})
+		);
+	},
+	addDraftSaveStartListener: (id: MailsEditorV2['id'], listener: DraftSaveStartListener): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].listeners.draftSaveStartListeners.push(listener);
+				}
+			})
+		);
+	},
+	removeDraftSaveStartListener: (
+		id: MailsEditorV2['id'],
+		listener: DraftSaveStartListener
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					remove(state.editors[id].listeners.draftSaveStartListeners, (elem) => listener === elem);
+				}
+			})
+		);
+	},
+	addDraftSaveEndListener: (id: MailsEditorV2['id'], listener: DraftSaveEndListener): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].listeners.draftSaveEndListeners.push(listener);
+				}
+			})
+		);
+	},
+	removeDraftSaveEndListener: (id: MailsEditorV2['id'], listener: DraftSaveEndListener): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					remove(state.editors[id].listeners.draftSaveEndListeners, (elem) => listener === elem);
 				}
 			})
 		);

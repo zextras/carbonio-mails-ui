@@ -6,8 +6,8 @@
 import React, { FC } from 'react';
 import { EditViewActions, EditViewActionsType } from '../../../../constants';
 import { useQueryParam } from '../../../../hooks/use-query-param';
-import { addEditor } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
+import { useAddEditor } from '../../../../store/zustand/editor/hooks';
 import { EditView } from './edit-view-v2';
 
 const parseAndValidateParams = (
@@ -33,7 +33,7 @@ const EditViewController: FC = (x) => {
 	}
 
 	// Add the editor to the store
-	addEditor({ id: editor.id, editor });
+	useAddEditor({ id: editor.id, editor });
 
 	// TODO handle board title change
 

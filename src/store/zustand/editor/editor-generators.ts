@@ -26,7 +26,11 @@ const generateNewMessageEditor = (): MailsEditorV2 =>
 		},
 		subject: '',
 		text: ['', ''],
-		requestReadReceipt: false
+		requestReadReceipt: false,
+		listeners: {
+			draftSaveStartListeners: [],
+			draftSaveEndListeners: []
+		}
 	} as MailsEditorV2);
 
 /**
