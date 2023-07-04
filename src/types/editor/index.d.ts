@@ -17,9 +17,9 @@ export type EditorAttachmentFiles = {
 
 export type InlineAttachments =
 	| Array<{
-			ci: string;
-			attach: { aid: string };
-	  }>
+		ci: string;
+		attach: { aid: string };
+	}>
 	| Array[];
 
 export type MailsEditor = {
@@ -55,6 +55,11 @@ export type Recipients = {
 	bcc: Array<Participant>;
 };
 
+export type EditorText = {
+	plainText: string;
+	richText: string;
+};
+
 export type MailsEditorV2 = {
 	// the id of the editor (used to identify the editor in the store)
 	id: string;
@@ -72,7 +77,7 @@ export type MailsEditorV2 = {
 	// true if the message is rich text
 	isRichText: boolean;
 	// the text of the editor (html, plain)
-	text: [string, string];
+	text: EditorText;
 	// the subject of the message
 	subject: string;
 	// Messagej id of the message being replied to/forwarded (outbound messages only)
@@ -125,8 +130,8 @@ type ThrottledSaveToDraftType = (data: Partial<MailsEditor>) => void;
 
 type EditViewContextType =
 	| {
-			throttledSaveToDraft: ThrottledSaveToDraftType;
-			editor: MailsEditor;
-			setSendLater: (arg: boolean) => void;
-	  }
+		throttledSaveToDraft: ThrottledSaveToDraftType;
+		editor: MailsEditor;
+		setSendLater: (arg: boolean) => void;
+	}
 	| Record<string, never>;
