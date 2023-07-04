@@ -11,11 +11,11 @@ import * as shellMock from '../../../carbonio-ui-commons/test/mocks/carbonio-she
 import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { FolderActionsType } from '../../../commons/utils';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
 import { useLocalStorage } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import Sidebar from '../sidebar';
+import { FolderActionsType } from '../../../carbonio-ui-commons/constants/folders';
 
 describe('Mark all as read', () => {
 	shellMock.getCurrentRoute.mockReturnValue({

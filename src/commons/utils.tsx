@@ -75,19 +75,6 @@ export enum LineType {
 }
 
 // eslint-disable-next-line no-shadow
-export enum FolderActionsType {
-	NEW = 'new',
-	MOVE = 'move',
-	DELETE = 'delete',
-	EDIT = 'edit',
-	EMPTY = 'empty',
-	REMOVE_FROM_LIST = 'removeFromList',
-	SHARES_INFO = 'sharesInfo',
-	SHARE = 'share',
-	MARK_ALL_READ = 'read'
-}
-
-// eslint-disable-next-line no-shadow
 export enum ActionsType {
 	NEW = 'new',
 	EDIT_AS_DRAFT = 'editAsDraft',
