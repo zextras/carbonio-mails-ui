@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import type { MailMessage, AttachmentPart } from '../messages';
+import type { MailMessage } from '../messages';
+import type { MailAttachment } from '../soap';
 
 export type EditorAttachmentFiles = {
 	contentType: string;
@@ -61,7 +62,9 @@ export type MailsEditorV2 = {
 	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
 	inlineAttachments: InlineAttachments;
 	// the array of non inline attachments
-	attachments: Array<AttachmentPart>;
+	attachments: MailAttachment;
+	// the array of attachment files
+	attachmentFiles: Array<EditorAttachmentFiles>;
 	// user defined delayed send timer
 	autoSendTime?: number;
 	// the saved draft id
@@ -72,7 +75,7 @@ export type MailsEditorV2 = {
 	text: [string, string];
 	// the subject of the message
 	subject: string;
-	// Message id of the message being replied to/forwarded (outbound messages only)
+	// Messagej id of the message being replied to/forwarded (outbound messages only)
 	originalId?: string;
 	// the whole message being replied to/forwarded (outbound messages only)
 	originalMessage?: MailMessage;

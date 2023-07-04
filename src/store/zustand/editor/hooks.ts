@@ -8,13 +8,13 @@ import { MailsEditorV2 } from '../../../types';
 import { useEditorsStore } from './store';
 
 /**
- * Returns the editor with given ID or undefined
+ * Returns the editor with given ID or null if not found.
  * @params id
  * */
-export const useEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | undefined =>
-	useEditorsStore((s) => s.editors?.[id]);
-export const getEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | undefined =>
-	useEditorsStore.getState()?.editors?.[id];
+export const useEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | null =>
+	useEditorsStore((s) => s.editors?.[id] ?? null);
+export const getEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | null =>
+	useEditorsStore.getState()?.editors?.[id] ?? null;
 
 /**
  * Update a specific editor.
@@ -269,14 +269,14 @@ export const useAddAttachments = ({
 }: {
 	id: MailsEditorV2['id'];
 	attachments: MailsEditorV2['attachments'];
-}): void => useEditorsStore((s) => s.addAttachments(id, attachments));
+}): void => useEditorsStore((s) => s.addAttachment(id, attachments));
 export const getAddAttachments = ({
 	id,
 	attachments
 }: {
 	id: MailsEditorV2['id'];
 	attachments: MailsEditorV2['attachments'];
-}): void => useEditorsStore.getState().addAttachments(id, attachments);
+}): void => useEditorsStore.getState().addAttachment(id, attachments);
 
 /**
  * remove attachments from a specific editor.
@@ -285,18 +285,18 @@ export const getAddAttachments = ({
  * */
 export const useRemoveAttachments = ({
 	id,
-	attachments
+	action
 }: {
 	id: MailsEditorV2['id'];
-	attachments: MailsEditorV2['attachments'];
-}): void => useEditorsStore((s) => s.removeAttachments(id, attachments));
+	action: any; // TODO type this action properly
+}): void => useEditorsStore((s) => s.updateAttachments(id, action));
 export const getRemoveAttachments = ({
 	id,
-	attachments
+	action
 }: {
 	id: MailsEditorV2['id'];
-	attachments: MailsEditorV2['attachments'];
-}): void => useEditorsStore.getState().removeAttachments(id, attachments);
+	action: any; // TODO type this action properly
+}): void => useEditorsStore.getState().updateAttachments(id, action);
 
 /**
  * add inline attachments to a specific editor.

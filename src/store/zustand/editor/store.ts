@@ -5,7 +5,9 @@
  */
 import produce from 'immer';
 import { create } from 'zustand';
-import { AttachmentPart, EditorsStateTypeV2, MailsEditorV2 } from '../../../types';
+import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
+import { EditorsStateTypeV2, MailsEditorV2 } from '../../../types';
+import { retrieveAttachmentsType } from '../../editor-slice-utils';
 
 // extra currying as suggested in https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#basic-usage
 export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
@@ -138,22 +140,26 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	addAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']): void => {
+	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments']): void => {
 		set(
 			produce((state) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].attachments = [...state.editors[id].attachments, ...attachments];
+					state.editors[id].attachments = [...state.editors[id].attachments, attachment];
 				}
 			})
 		);
 	},
-	removeAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']): void => {
+	// TODO: properly type action
+	updateAttachments: (id: MailsEditorV2['id'], action: any): void => {
 		set(
 			produce((state) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].attachments = state.editors[id].attachments.filter(
-						(attachment: AttachmentPart) => !attachments.includes(attachment)
-					);
+					state.editors[id].attachments = {
+						mp: retrieveAttachmentsType(
+							normalizeMailMessageFromSoap(action.payload.res.m[0], true),
+							'attachment'
+						)
+					};
 				}
 			})
 		);
@@ -229,7 +235,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 		set(
 			produce((state) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].attachments = [];
+					state.editors[id].attachments = {};
 					state.editors[id].inlineAttachments = [];
 				}
 			})
