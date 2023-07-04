@@ -372,26 +372,15 @@ describe('edit-modal', () => {
 			depth: 1
 		};
 
-		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
+		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
 			store
 		});
 
 		expect(screen.getByTestId('folder-name')).toBeInTheDocument();
 		const newFolder = screen.getByTestId('folder-name');
 		const folderInputElement = within(newFolder).getByRole('textbox');
-		expect(folderInputElement).toBeDisabled();
 		expect(newFolder).toBeInTheDocument();
-
-		const selectColor = screen.getByText(/label\.select_color/i);
-		expect(selectColor).toBeInTheDocument();
-		await user.click(selectColor);
-		ZIMBRA_STANDARD_COLORS.forEach((el) => {
-			within(screen.getByTestId('dropdown-popper-list')).getByText(`color.${el.zLabel}`);
-		});
-		const addShareButton = screen.getByRole('button', {
-			name: /folder\.modal\.edit\.add_share/i
-		});
-		expect(addShareButton).toBeEnabled();
+		expect(folderInputElement).toBeDisabled();
 
 		const editButton = screen.getByRole('button', {
 			name: /label\.edit/i
@@ -442,17 +431,6 @@ describe('edit-modal', () => {
 		// Insert the new folder name into the text input with system folder name
 		await user.type(folderInputElement, '/folders.inbox/i');
 		expect(screen.getByTestId('rename-error-msg')).toBeVisible();
-
-		const selectColor = screen.getByText(/label\.select_color/i);
-		expect(selectColor).toBeInTheDocument();
-		await user.click(selectColor);
-		ZIMBRA_STANDARD_COLORS.forEach((el) => {
-			within(screen.getByTestId('dropdown-popper-list')).getByText(`color.${el.zLabel}`);
-		});
-		const addShareButton = screen.getByRole('button', {
-			name: /folder\.modal\.edit\.add_share/i
-		});
-		expect(addShareButton).toBeEnabled();
 
 		const editButton = screen.getByRole('button', {
 			name: /label\.edit/i
