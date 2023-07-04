@@ -47,7 +47,6 @@ import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { RowInfo } from '../parts/row-info';
 import { SenderName } from '../parts/sender-name';
 import { ConversationMessagesList } from './conversation-messages-list';
-import { getFolderParentId } from './utils';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -69,15 +68,31 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 	}) {
 		const dispatch = useAppDispatch();
 		const [open, setOpen] = useState(false);
+
 		const accounts = useUserAccounts();
 		const messages = useAppSelector(selectMessages);
-		const isConversation = 'messages' in (item || {});
 
-		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
+		// Real folder id "zimbraAccountId:folderId" obtained by parent folder of the first message
+		// we will remove zimbraAccountId and use only folderId ( useful to test against FOLDERS id )
+		let convFolderId = '';
+		const folderParts = getFolderIdParts(item?.messages?.[0]?.parent);
+		if (folderParts.id !== null) {
+			convFolderId = folderParts.id;
+		}
+
+		// Original folderId of conversation passed by searchRequest
+		let convFolderLink = '';
+		if (folderId !== undefined) {
+			convFolderLink = folderId;
+		}
+		if (convFolderLink === '') {
+			convFolderLink = item?.messages?.[0]?.parent;
+		}
 
 		const conversationStatus = useAppSelector((state: StateType) =>
 			selectConversationExpandedStatus(state, item.id)
 		);
+
 		const tagsFromStore = useTags();
 		const tags = useMemo(
 			() =>
@@ -138,12 +153,14 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 						conversationStatus !== 'complete' &&
 						conversationStatus !== 'pending'
 					) {
-						dispatch(searchConv({ folderId: folderParent, conversationId: item.id, fetch: 'all' }));
+						dispatch(
+							searchConv({ folderId: convFolderLink, conversationId: item.id, fetch: 'all' })
+						);
 					}
 					return !currentlyOpen;
 				});
 			},
-			[conversationStatus, dispatch, folderParent, item.id]
+			[conversationStatus, dispatch, convFolderLink, item.id]
 		);
 
 		const _onClick = useCallback(
@@ -154,17 +171,17 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							ids: [item.id],
 							value: false,
 							dispatch,
-							folderId: folderParent,
+							folderId: convFolderLink,
 							deselectAll,
 							shouldReplaceHistory: false
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
 						}).onClick();
 					}
-					pushHistory(`/folder/${folderParent}/conversation/${item.id}`);
+					pushHistory(`/folder/${convFolderLink}/conversation/${item.id}`);
 				}
 			},
-			[item?.read, item.id, zimbraPrefMarkMsgRead, folderParent, dispatch, deselectAll]
+			[item?.read, item.id, zimbraPrefMarkMsgRead, dispatch, deselectAll, convFolderLink]
 		);
 
 		const _onDoubleClick = useCallback(
@@ -172,11 +189,11 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 				if (!e.isDefaultPrevented()) {
 					const { id, isDraft } = item.messages[0];
 
-					if (isDraft) pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
+					if (isDraft) pushHistory(`/folder/${convFolderLink}/edit/${id}?action=editAsDraft`);
 				}
 			},
 
-			[folderParent, item.messages]
+			[convFolderLink, item.messages]
 		);
 
 		const toggleExpandButtonLabel = useMemo(
@@ -204,13 +221,13 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 
 							if (msg) {
 								// in trash, we show all messages of the conversation even if only one is deleted
-								if (folderParent === FOLDERS.TRASH) {
+								if (convFolderId === FOLDERS.TRASH) {
 									return [...acc, msg];
 								}
 								// deleted and spam messages are hidden in all folders except trash and spam
 								if (
-									(msg.parent === FOLDERS.TRASH && folderParent !== FOLDERS.TRASH) ||
-									(msg.parent === FOLDERS.SPAM && folderParent !== FOLDERS.SPAM)
+									(msg.parent === FOLDERS.TRASH && convFolderId !== FOLDERS.TRASH) ||
+									(msg.parent === FOLDERS.SPAM && convFolderId !== FOLDERS.SPAM)
 								) {
 									return acc;
 								}
@@ -223,7 +240,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 					).sort((a, b) => (a.date && b.date ? sortSign * (a.date - b.date) : 1)),
 					'id'
 				),
-			[item?.messages, folderParent, messages, sortSign]
+			[item?.messages, messages, sortSign, convFolderId]
 		);
 
 		/**
@@ -233,22 +250,32 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		 */
 		const getmsgToDisplayCount = useCallback((): number => {
 			if (isSearchModule && showTrashedMessagesInSearch && showSpamMessagesInSearch)
-				return item?.messages?.length;
-			if (isSearchModule && showTrashedMessagesInSearch)
+				return item.messagesInConversation;
+			if (isSearchModule && showTrashedMessagesInSearch && folderParts.zid == null)
 				return filter(
 					item?.messages,
 					(msg) => ![FOLDERS.SPAM].includes(getFolderIdParts(msg.parent).id ?? '')
 				)?.length;
-			if (isSearchModule && showSpamMessagesInSearch)
+			if (isSearchModule && showSpamMessagesInSearch && folderParts.zid == null)
 				return filter(
 					item?.messages,
 					(msg) => ![FOLDERS.TRASH].includes(getFolderIdParts(msg.parent).id ?? '')
 				)?.length;
+			if (folderParts.zid !== null) {
+				return item.messagesInConversation;
+			}
 			return filter(
 				item?.messages,
 				(msg) => ![FOLDERS.TRASH, FOLDERS.SPAM].includes(getFolderIdParts(msg.parent).id ?? '')
 			)?.length;
-		}, [isSearchModule, item?.messages, showSpamMessagesInSearch, showTrashedMessagesInSearch]);
+		}, [
+			isSearchModule,
+			item?.messages,
+			showSpamMessagesInSearch,
+			showTrashedMessagesInSearch,
+			folderParts.zid,
+			item.messagesInConversation
+		]);
 
 		const textReadValues: TextReadValuesProps = useMemo(() => {
 			if (typeof item.read === 'undefined')
@@ -286,7 +313,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							selected={selected}
 							selecting={selecting}
 							toggle={toggle}
-							folderId={folderParent}
+							folderId={convFolderId}
 						/>
 						<Padding horizontal="extrasmall" />
 					</div>
@@ -357,7 +384,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							length={item.messagesInConversation}
 							messages={messagesToRender}
 							conversationStatus={conversationStatus}
-							folderId={folderParent}
+							folderId={convFolderLink}
 							dragImageRef={dragImageRef}
 							isSearchModule={isSearchModule}
 							setDraggedIds={setDraggedIds}
