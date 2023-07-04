@@ -22,6 +22,7 @@ export type ListItemComponentProps = {
 	deselectAll: () => void;
 	visible: boolean;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
+	currentFolderId?: string;
 };
 
 export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
@@ -36,7 +37,8 @@ export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
 		isSearchModule,
 		deselectAll,
 		visible,
-		setDraggedIds = noop
+		setDraggedIds = noop,
+		currentFolderId
 	}) {
 		return (
 			<DragItemWrapper
@@ -57,6 +59,7 @@ export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
 					visible={visible}
 					isSearchModule={isSearchModule}
 					deselectAll={deselectAll}
+					currentFolderId={currentFolderId}
 				/>
 			</DragItemWrapper>
 		);
