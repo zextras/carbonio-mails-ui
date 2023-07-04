@@ -18,7 +18,7 @@ import { getFolderIdParts } from '../helpers/folders';
  * @param folder
  * @returns the sorting criteria
  */
-const getSortCriteria = (folder: Folder): string => {
+export const getSortCriteria = (folder: Folder): string => {
 	const { id } = getFolderIdParts(folder.id);
 	if (id === FOLDERS.TRASH) {
 		return FOLDERS.LAST_SYSTEM_FOLDER_POSITION;
@@ -32,7 +32,7 @@ const getSortCriteria = (folder: Folder): string => {
  * @param sortFunction
  * @returns the sorted children
  */
-const sortFolders = ({
+export const sortFolders = ({
 	children,
 	sortFunction
 }: {

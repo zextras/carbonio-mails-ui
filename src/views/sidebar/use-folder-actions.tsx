@@ -6,9 +6,8 @@
 import { ModalManagerContext } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { noop, startsWith } from 'lodash';
-import React, { SyntheticEvent, useCallback, useContext, useMemo, useState } from 'react';
+import React, { SyntheticEvent, useContext, useMemo } from 'react';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { FolderActionsType } from '../../commons/utils';
 import { getFolderIdParts } from '../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
@@ -24,6 +23,8 @@ import { EmptyModal } from './empty-modal';
 import { NewModal } from './new-modal';
 import { SharesInfoModal } from './shares-info-modal';
 import { SelectFolderModal } from './select-folder-modal';
+import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/utils';
+import { FolderActionsType } from '../../carbonio-ui-commons/constants/folders';
 
 type FolderActionsProps = {
 	id: string;
@@ -72,7 +73,11 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						},
 						true
 					);
-				}
+				},
+				tooltipLabel: !allowedActionOnSharedAccount(folder, FolderActionsType.NEW)
+					? t('label.do_not_have_perm', `You don't have permission`)
+					: '',
+				disabled: !allowedActionOnSharedAccount(folder, FolderActionsType.NEW)
 			},
 			{
 				id: FolderActionsType.MOVE,
@@ -282,7 +287,11 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						},
 						true
 					);
-				}
+				},
+				tooltipLabel: !allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)
+					? t('label.do_not_have_perm', `You don't have permission`)
+					: '',
+				disabled: !allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)
 			},
 			{
 				id: FolderActionsType.REMOVE_FROM_LIST,
