@@ -16,6 +16,7 @@ const generateNewMessageEditor = (): MailsEditorV2 =>
 		attachmentFiles: [],
 		from: undefined,
 		id: uuid(),
+		attachments: [],
 		inlineAttachments: [],
 		isRichText: false,
 		isUrgent: false,

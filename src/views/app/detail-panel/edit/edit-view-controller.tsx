@@ -39,6 +39,7 @@ const EditViewController: FC = (x) => {
 
 	// Render the editor component passing the editor
 	return <EditView editorId={editor.id} />;
+	// return <></>;
 };
 
 export default EditViewController;

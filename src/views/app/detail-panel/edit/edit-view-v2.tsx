@@ -5,8 +5,8 @@
  */
 
 import { Text } from '@zextras/carbonio-design-system';
-import React, { FC } from 'react';
-import { useEditor } from '../../../../store/zustand/editor';
+import React, { FC, useCallback } from 'react';
+import { useAddDraftListeners, useEditor } from '../../../../store/zustand/editor';
 
 export type EditViewProp = {
 	editorId: string;
@@ -14,6 +14,20 @@ export type EditViewProp = {
 
 export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	const editor = useEditor({ id: editorId });
+	//
+	// const onDraftSaveStart = useCallback(({ editorId: string }) => {
+	// 	console.log('Save draft started....');
+	// }, []);
+	//
+	// const onDraftSaveEnd = useCallback(({ editorId: string }) => {
+	// 	console.log('Save draft ended....');
+	// }, []);
+	//
+	// useAddDraftListeners({
+	// 	editorId,
+	// 	saveStartListener: onDraftSaveStart,
+	// 	saveEndListener: onDraftSaveEnd
+	// });
 
 	return (
 		<>

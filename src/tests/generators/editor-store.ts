@@ -7,9 +7,9 @@ import { useEditorsStore } from '../../store/zustand/editor/store';
 import { MailsEditorV2 } from '../../types';
 
 export function setupEditorStore({ editors }: { editors?: Array<MailsEditorV2> }): void {
-	if (editors && editors?.length > 0) {
-		editors.forEach((editor, index) => {
-			useEditorsStore.getState().addEditor(index.toString(), editor);
+	if (editors) {
+		editors.forEach((editor) => {
+			useEditorsStore.getState().addEditor(editor.id, editor);
 		});
 	}
 }
