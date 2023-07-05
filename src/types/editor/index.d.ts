@@ -6,6 +6,7 @@
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { MailMessage } from '../messages';
 import type { MailAttachment } from '../soap';
+import type { Participant } from '../participant';
 
 export type EditorAttachmentFiles = {
 	contentType: string;
@@ -17,9 +18,9 @@ export type EditorAttachmentFiles = {
 
 export type InlineAttachments =
 	| Array<{
-		ci: string;
-		attach: { aid: string };
-	}>
+			ci: string;
+			attach: { aid: string };
+	  }>
 	| Array[];
 
 export type MailsEditor = {
@@ -67,7 +68,7 @@ export type MailsEditorV2 = {
 	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
 	inlineAttachments: InlineAttachments;
 	// the array of non inline attachments
-	attachments: MailAttachment;
+	attachments: Array<MailAttachment>;
 	// the array of attachment files
 	attachmentFiles: Array<EditorAttachmentFiles>;
 	// user defined delayed send timer
@@ -130,8 +131,8 @@ type ThrottledSaveToDraftType = (data: Partial<MailsEditor>) => void;
 
 type EditViewContextType =
 	| {
-		throttledSaveToDraft: ThrottledSaveToDraftType;
-		editor: MailsEditor;
-		setSendLater: (arg: boolean) => void;
-	}
+			throttledSaveToDraft: ThrottledSaveToDraftType;
+			editor: MailsEditor;
+			setSendLater: (arg: boolean) => void;
+	  }
 	| Record<string, never>;

@@ -263,27 +263,27 @@ export const getUpdateIsUrgent = ({
  * @params id
  * @params attachments
  * */
-export const useAddAttachments = ({
+export const useAddAttachment = ({
 	id,
-	attachments
+	attachment
 }: {
 	id: MailsEditorV2['id'];
-	attachments: MailsEditorV2['attachments'];
-}): void => useEditorsStore((s) => s.addAttachment(id, attachments));
-export const getAddAttachments = ({
+	attachment: MailsEditorV2['attachments'][0];
+}): void => useEditorsStore((s) => s.addAttachment(id, attachment));
+export const getAddAttachment = ({
 	id,
-	attachments
+	attachment
 }: {
 	id: MailsEditorV2['id'];
-	attachments: MailsEditorV2['attachments'];
-}): void => useEditorsStore.getState().addAttachment(id, attachments);
+	attachment: MailsEditorV2['attachments'][0];
+}): void => useEditorsStore.getState().addAttachment(id, attachment);
 
 /**
  * remove attachments from a specific editor.
  * @params id
  * @params attachments
  * */
-export const useRemoveAttachments = ({
+export const useRemoveAttachment = ({
 	id,
 	action
 }: {
@@ -303,20 +303,20 @@ export const getRemoveAttachments = ({
  * @params id
  * @params inlineAttachments
  * */
-export const useAddInlineAttachments = ({
+export const useAddInlineAttachment = ({
 	id,
-	inlineAttachments
+	inlineAttachment
 }: {
 	id: MailsEditorV2['id'];
-	inlineAttachments: MailsEditorV2['inlineAttachments'];
-}): void => useEditorsStore((s) => s.addInlineAttachments(id, inlineAttachments));
-export const getAddInlineAttachments = ({
+	inlineAttachment: MailsEditorV2['inlineAttachments'][0];
+}): void => useEditorsStore((s) => s.addInlineAttachment(id, inlineAttachment));
+export const getAddInlineAttachment = ({
 	id,
-	inlineAttachments
+	inlineAttachment
 }: {
 	id: MailsEditorV2['id'];
-	inlineAttachments: MailsEditorV2['inlineAttachments'];
-}): void => useEditorsStore.getState().addInlineAttachments(id, inlineAttachments);
+	inlineAttachment: MailsEditorV2['inlineAttachments'][0];
+}): void => useEditorsStore.getState().addInlineAttachment(id, inlineAttachment);
 
 /**
  * remove inline attachments from a specific editor.
@@ -329,14 +329,14 @@ export const useRemoveInlineAttachments = ({
 }: {
 	id: MailsEditorV2['id'];
 	inlineAttachments: MailsEditorV2['inlineAttachments'];
-}): void => useEditorsStore((s) => s.removeInlineAttachments(id, inlineAttachments));
+}): void => useEditorsStore((s) => s.removeInlineAttachment(id, inlineAttachments));
 export const getRemoveInlineAttachments = ({
 	id,
 	inlineAttachments
 }: {
 	id: MailsEditorV2['id'];
 	inlineAttachments: MailsEditorV2['inlineAttachments'];
-}): void => useEditorsStore.getState().removeInlineAttachments(id, inlineAttachments);
+}): void => useEditorsStore.getState().removeInlineAttachment(id, inlineAttachments);
 
 /**
  * Remove all editors.

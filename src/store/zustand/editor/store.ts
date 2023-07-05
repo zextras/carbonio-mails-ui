@@ -81,7 +81,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 		set(
 			produce((state) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].richText = value;
+					state.editors[id].isRichText = value;
 				}
 			})
 		);
@@ -110,14 +110,8 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	updateRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']): void => {
 		set(
 			produce((state) => {
-				if (state?.editors?.[id] && !!recipients.to) {
-					state.editors[id].recipients.to = recipients.to;
-				}
-				if (state?.editors?.[id] && !!recipients.cc) {
-					state.editors[id].recipients.cc = recipients.cc;
-				}
-				if (state?.editors?.[id] && !!recipients.bcc) {
-					state.editors[id].recipients.bcc = recipients.bcc;
+				if (state?.editors?.[id]) {
+					state.editors[id].recipients = recipients;
 				}
 			})
 		);
@@ -140,7 +134,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments']): void => {
+	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments'][0]): void => {
 		set(
 			produce((state) => {
 				if (state?.editors?.[id]) {
@@ -164,31 +158,30 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	addInlineAttachments: (
+	addInlineAttachment: (
 		id: MailsEditorV2['id'],
-		attachments: MailsEditorV2['inlineAttachments']
+		attachment: MailsEditorV2['inlineAttachments'][0]
 	): void => {
 		set(
 			produce((state) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].inlineAttachments = [
 						...state.editors[id].inlineAttachments,
-						...attachments
+						attachment
 					];
 				}
 			})
 		);
 	},
-	removeInlineAttachments: (
+	removeInlineAttachment: (
 		id: MailsEditorV2['id'],
-		attachments: MailsEditorV2['inlineAttachments']
+		attachment: MailsEditorV2['inlineAttachments'][0]
 	): void => {
 		set(
 			produce((state) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].inlineAttachments = state.editors[id].inlineAttachments.filter(
-						(attachment: { ci: string; attach: { aid: string } }) =>
-							!attachments.includes(attachment)
+						(att: { ci: string; attach: { aid: string } }) => att.ci !== attachment.ci
 					);
 				}
 			})
