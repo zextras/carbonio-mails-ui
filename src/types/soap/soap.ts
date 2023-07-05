@@ -5,7 +5,7 @@
  */
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui/types/network/soap';
 import { Folder } from '../../carbonio-ui-commons/types/folder';
-import { MailsEditor } from '../editor';
+import { MailsEditor, MailsEditorV2 } from '../editor';
 import { PrefsType } from '../settings';
 import { EmailAddresses } from './redirect-message-action';
 import { SaveDraftResponse } from './save-draft';
@@ -275,5 +275,14 @@ export type SaveDraftNewParameters = {
 };
 
 export type saveDraftNewResult = {
+	resp: SaveDraftResponse;
+};
+
+export type SaveDraftParameters = {
+	editor: MailsEditorV2;
+	signal?: AbortSignal;
+};
+
+export type saveDraftResult = {
 	resp: SaveDraftResponse;
 };

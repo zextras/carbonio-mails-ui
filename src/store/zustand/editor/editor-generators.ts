@@ -13,7 +13,7 @@ import { getEditor } from './hooks';
  */
 const generateNewMessageEditor = (): MailsEditorV2 =>
 	({
-		attachments: [],
+		attachmentFiles: [],
 		from: undefined,
 		id: uuid(),
 		inlineAttachments: [],
@@ -25,7 +25,10 @@ const generateNewMessageEditor = (): MailsEditorV2 =>
 			bcc: []
 		},
 		subject: '',
-		text: ['', ''],
+		text: {
+			plainText: '',
+			richText: ''
+		},
 		requestReadReceipt: false,
 		listeners: {
 			draftSaveStartListeners: [],

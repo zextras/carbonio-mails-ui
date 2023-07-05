@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import type { MailMessage, AttachmentPart } from '../messages';
+import type { MailMessage } from '../messages';
+import type { MailAttachment } from '../soap';
 import { Participant } from '../participant';
 
 export type EditorAttachmentFiles = {
@@ -55,6 +56,11 @@ export type Recipients = {
 	bcc: Array<Participant>;
 };
 
+export type EditorText = {
+	plainText: string;
+	richText: string;
+};
+
 export type DraftSaveStartListener = (params: { editorId: string }) => void;
 
 export type DraftSaveResultType = { draftId: string } | { error: string };
@@ -69,9 +75,11 @@ export type MailsEditorV2 = {
 	id: string;
 	// the array of inline attachments
 	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
-	inlineAttachments: InlineAttachments;
+	inlineAttachments?: InlineAttachments;
 	// the array of non-inline attachments
-	attachments: Array<AttachmentPart>;
+	attachments?: MailAttachment;
+	// the array of attachment files
+	attachmentFiles: Array<EditorAttachmentFiles>;
 	// user defined delayed send timer
 	autoSendTime?: number;
 	// the saved draft id
@@ -79,10 +87,10 @@ export type MailsEditorV2 = {
 	// true if the message is rich text
 	isRichText: boolean;
 	// the text of the editor (html, plain)
-	text: [string, string];
+	text: EditorText;
 	// the subject of the message
 	subject: string;
-	// Message id of the message being replied to/forwarded (outbound messages only)
+	// Messagej id of the message being replied to/forwarded (outbound messages only)
 	originalId?: string;
 	// the whole message being replied to/forwarded (outbound messages only)
 	originalMessage?: MailMessage;

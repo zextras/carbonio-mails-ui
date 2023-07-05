@@ -10,10 +10,13 @@ import type {
 	PrefsType,
 	SaveDraftNewParameters,
 	saveDraftNewResult,
+	SaveDraftParameters,
 	SaveDraftRequest,
-	SaveDraftResponse
+	SaveDraftResponse,
+	saveDraftResult
 } from '../../types';
 import { generateRequest } from '../editor-slice-utils';
+import { createSoapDraftRequestFromEditor } from '../zustand/editor/editor-transformations';
 
 type SaveDraftProps = {
 	data: MailsEditor;
@@ -31,7 +34,27 @@ export const saveDraft = createAsyncThunk<saveDraftNewResult, SaveDraftNewParame
 				m: generateRequest(data, prefs)
 			},
 			null,
-			// disabling eslint until the a new shell version is imported
+			// FIXME remove the ts-ignore when SHELL-133 will be merged
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			signal
+		)) as SaveDraftResponse;
+
+		return { resp };
+	}
+);
+
+export const saveDraftV2 = createAsyncThunk<saveDraftResult, SaveDraftParameters>(
+	'saveDraft',
+	async ({ editor, signal }) => {
+		const resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>(
+			'SaveDraft',
+			{
+				_jsns: 'urn:zimbraMail',
+				m: createSoapDraftRequestFromEditor(editor)
+			},
+			null,
+			// FIXME remove the ts-ignore when SHELL-133 will be merged
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			signal

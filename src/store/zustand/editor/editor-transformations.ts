@@ -69,7 +69,10 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize as string,
 		color: prefs?.zimbraPrefHtmlEditorDefaultFontColor as string
 	};
-	const contentWithBodyParts = replaceLinkWithParts(editor?.text?.[1], editor?.inlineAttachments);
+	const contentWithBodyParts = replaceLinkWithParts(
+		editor.text.richText,
+		editor?.inlineAttachments
+	);
 	if (editor.isRichText) {
 		if (editor?.inlineAttachments && editor?.inlineAttachments?.length > 0) {
 			return [
@@ -78,7 +81,7 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 					mp: [
 						{
 							ct: 'text/plain',
-							content: { _content: editor?.text[0] ?? '' }
+							content: { _content: editor.text.plainText ?? '' }
 						},
 						{
 							ct: 'multipart/related',
@@ -103,11 +106,11 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 					{
 						ct: 'text/html',
 						body: true,
-						content: { _content: getHtmlWithPreAppliedStyled(editor?.text[1], style) ?? '' }
+						content: { _content: getHtmlWithPreAppliedStyled(editor.text.richText, style) ?? '' }
 					},
 					{
 						ct: 'text/plain',
-						content: { _content: editor?.text[0] ?? '' }
+						content: { _content: editor.text.plainText ?? '' }
 					}
 				]
 			}
@@ -117,7 +120,7 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 		{
 			ct: 'text/plain',
 			body: true,
-			content: { _content: editor?.text[0] ?? '' }
+			content: { _content: editor.text.plainText ?? '' }
 		}
 	];
 };
@@ -148,7 +151,7 @@ export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDra
 	return {
 		autoSendTime: editor.autoSendTime,
 		did: editor.did,
-		attach: editor.attachments,
+		attach: editor.attachments ?? { mp: [] }, // FIXME maybe attach should be optional
 		su: { _content: editor.subject ?? '' },
 		rt: editor.replyType,
 		origid: editor.originalId,

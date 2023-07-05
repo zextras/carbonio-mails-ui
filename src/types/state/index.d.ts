@@ -49,8 +49,8 @@ export type EditorsStateTypeV2 = {
 	deleteEditor: (id: MailsEditorV2['id']) => void;
 	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']) => void;
 	updateIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
-	addAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
-	removeAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
+	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments']) => void;
+	updateAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
 	addInlineAttachments: (
 		id: MailsEditorV2['id'],
 		inlineAttachments: MailsEditorV2['inlineAttachments']
