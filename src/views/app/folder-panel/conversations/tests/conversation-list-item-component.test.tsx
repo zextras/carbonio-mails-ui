@@ -381,7 +381,7 @@ describe.each`
 			}
 		);
 
-		test("(case #9) if the conversation contains more than 1 message then all the recipients' names are visible", async () => {
+		test("(case #8) if the conversation contains more than 1 message then all the recipients' names are visible", async () => {
 			const folderId = FOLDERS.INBOX;
 			const MESSAGES_COUNT = 3;
 			const me = getMocksContext().identities.primary.identity.email;
@@ -428,9 +428,13 @@ describe.each`
 			expect(senderLabel).toHaveTextContent('bowser');
 		});
 
-		test('if the conversation contains more than 1 message then a chevron must be visible', async () => {
+		test('(case #9) if the conversation contains more than 1 message then a chevron must be visible', async () => {
 			const folderId = FOLDERS.INBOX;
-			const conversation = generateConversation({ folderId, isSingleMessageConversation: false });
+			const conversation = generateConversation({
+				folderId,
+				isSingleMessageConversation: false,
+				messageGenerationCount: 2
+			});
 
 			const props: ConversationListItemProps = {
 				item: conversation,
@@ -463,7 +467,7 @@ describe.each`
 			expect(chevron).toBeVisible();
 		});
 
-		test('if the conversation contains only 1 message then must be not visibile a chevron', async () => {
+		test('(case #10) if the conversation contains only 1 message then must be not visibile a chevron', async () => {
 			const folderId = FOLDERS.INBOX;
 			const conversation = generateConversation({ folderId, isSingleMessageConversation: true });
 
@@ -494,12 +498,11 @@ describe.each`
 			});
 
 			setupTest(<ConversationListItem {...props} />, { store });
-			const chevron = await screen.findByTestId(`ToggleExpand`);
-			expect(chevron).not.toBeVisible();
+			expect(screen.queryByTestId('ToggleExpand')).not.toBeInTheDocument();
 		});
 	});
 
-	test('(case #10) when right-click the message the secondary actions contextual menu must be visible', async () => {
+	test('(case #11) when right-click the message the secondary actions contextual menu must be visible', async () => {
 		const folderId = FOLDERS.INBOX;
 		const conversation = generateConversation({ folderId });
 		const conversationId = conversation.id;
