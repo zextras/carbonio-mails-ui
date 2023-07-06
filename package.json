@@ -3,6 +3,10 @@
 	"version": "1.5.0",
 	"description": "Mails module",
 	"main": "src/app.jsx",
+	"engines": {
+		"node": "v16",
+		"npm": "v8"
+	},
 	"scripts": {
 		"build": "sdk build",
 		"deploy": "sdk deploy",
@@ -76,8 +80,8 @@
 		"@mui/icons-material": "^5.11.0",
 		"@mui/material": "^5.11.8",
 		"@reduxjs/toolkit": "^1.9.3",
-		"@zextras/carbonio-design-system": "^2.1.0",
-		"@zextras/carbonio-shell-ui": "^3.1.0",
+		"@zextras/carbonio-design-system": "^2.2.0",
+		"@zextras/carbonio-shell-ui": "^3.2.0",
 		"@zextras/carbonio-ui-preview": "^1.1.0",
 		"babel-jest": "^29.4.3",
 		"babel-plugin-transform-import-meta": "^2.2.0",

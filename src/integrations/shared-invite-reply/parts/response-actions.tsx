@@ -152,7 +152,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 						label={t('label.type_name_here', 'Item name')}
 						backgroundColor="gray5"
 						value={calendarName}
-						hasError={!disabled}
+						hasError={disabled}
 						onChange={(e: ChangeEvent<HTMLInputElement>): void => setCalendarName(e.target.value)}
 					/>
 				</Row>
@@ -173,14 +173,19 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					mainAlignment="flex-start"
 					style={{ marginBottom: '0.5rem' }}
 				>
-					{showError && (
+					{(calendarName.length === 0 && (
 						<Text size="small" color="error">
-							{t(
-								'messages.cal_name_exist_warning',
-								'A calendar with the same name already exists in this path'
-							)}
+							{t('messages.enter_calendar_name', 'Enter a name to accept the calendar')}
 						</Text>
-					)}
+					)) ||
+						(showError && (
+							<Text size="small" color="error">
+								{t(
+									'messages.cal_name_exist_warning',
+									'A calendar with the same name already exists in this path'
+								)}
+							</Text>
+						))}
 				</Row>
 			</Row>
 			<Divider />

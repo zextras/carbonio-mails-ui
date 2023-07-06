@@ -14,6 +14,7 @@ import { SidebarAccordionMui } from '../../carbonio-ui-commons/components/sideba
 import { themeMui } from '../../carbonio-ui-commons/theme/theme-mui';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { SidebarProps } from '../../carbonio-ui-commons/types/sidebar';
+import { LOCAL_STORAGES } from '../../constants';
 import { useFolders } from '../../hooks/use-folders';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
 import type { SidebarComponentProps } from '../../types/sidebar';
@@ -41,7 +42,7 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 			<SidebarAccordionMui
 				accordions={accordionsWithFindShare}
 				folderId={folderId}
-				localStorageName="open_mails_folders"
+				localStorageName={LOCAL_STORAGES.EXPANDED_FOLDERS}
 				AccordionCustomComponent={AccordionCustomComponent}
 				buttonFindShares={<ButtonFindShares key="button-find-shares" />}
 				initialExpanded={[FOLDERS.USER_ROOT]}
@@ -56,6 +57,7 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 const Sidebar: FC<SidebarProps> = ({ expanded }) => {
 	const { path } = useRouteMatch();
 	const accordions = useFolders();
+
 	return (
 		<>
 			<ThemeProvider theme={themeMui}>

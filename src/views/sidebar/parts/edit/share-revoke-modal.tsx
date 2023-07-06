@@ -33,8 +33,8 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 					accounts
 				})
 			).then(() => {
-				dispatch(folderAction({ folder, zid: grant.zid, op: '!grant' })).then((res) => {
-					if (res.type.includes('fulfilled')) {
+				folderAction({ folder, zid: grant.zid, op: '!grant' }).then((res) => {
+					if (!('Fault' in res)) {
 						getBridgedFunctions()?.createSnackbar({
 							key: `remove-share-${folder.id}`,
 							replace: true,
@@ -48,8 +48,8 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 				});
 			});
 		} else {
-			dispatch(folderAction({ folder, zid: grant.zid, op: '!grant' })).then((res) => {
-				if (res.type.includes('fulfilled')) {
+			folderAction({ folder, zid: grant.zid, op: '!grant' }).then((res) => {
+				if (!('Fault' in res)) {
 					getBridgedFunctions()?.createSnackbar({
 						key: `remove-share-${folder.id}`,
 						replace: true,

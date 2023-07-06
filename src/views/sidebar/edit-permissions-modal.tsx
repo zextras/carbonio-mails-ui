@@ -1,4 +1,5 @@
 /*
+/*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
@@ -36,6 +37,7 @@ import { sendShareNotification } from '../../store/actions/send-share-notificati
 import { shareFolder } from '../../store/actions/share-folder';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
 
+// TODO refactor IRIS-4324
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	onClose,
 	folder,
@@ -47,7 +49,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
-	const [sendNotification, setSendNotification] = useState(false);
+	const [sendNotification, setSendNotification] = useState(true);
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<any>([]);
 	const [shareWithUserType, setshareWithUserType] = useState('usr');
@@ -83,7 +85,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 				accounts
 			})
 		).then((res: { type: string }) => {
-			if (res.type.includes('fulfilled')) {
+			if (!('Fault' in res)) {
 				getBridgedFunctions()?.createSnackbar({
 					key: `share-${folder.id}`,
 					replace: true,
@@ -197,6 +199,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 
 				<Container height="fit">
 					<Select
+						data-testid={'share-role'}
 						items={shareCalendarRoleOptions}
 						background="gray5"
 						label={t('label.role', 'Role')}

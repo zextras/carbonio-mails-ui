@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { Account } from '@zextras/carbonio-shell-ui';
+
 export type PrefsType = {
 	zimbraPrefCalendarReminderMobile: string;
 	zimbraPrefIMLogChats: string;
@@ -197,26 +199,24 @@ export type SignItemType = {
 	];
 };
 
-type IdentityProps = {
-	zimbraPrefForwardReplySignatureId: string;
-	zimbraPrefWhenSentToEnabled: string;
-	zimbraPrefWhenInFoldersEnabled: string;
-	zimbraPrefFromAddressType: string;
-	objectClass: string;
-	zimbraPrefFromAddress: string;
-	zimbraPrefFromDisplay: string;
-	zimbraPrefIdentityId: string;
-	zimbraPrefDefaultSignatureId: string;
-	zimbraCreateTimestamp: string;
-	zimbraPrefIdentityName: string;
-	zimbraPrefReplyToEnabled: string;
-};
+type AccountIdentity = Account['identities']['identity'][number];
 
-type AccountIdentity = {
-	name: string;
-	id: string;
-	_attrs: IdentityProps;
-};
+type IdentityProps = AccountIdentity['_attrs'];
+// 	{
+// 	zimbraPrefForwardReplySignatureId: string;
+// 	zimbraPrefWhenSentToEnabled: string;
+// 	zimbraPrefWhenInFoldersEnabled: string;
+// 	zimbraPrefFromAddressType: string;
+// 	objectClass: string;
+// 	zimbraPrefFromAddress: string;
+// 	zimbraPrefFromDisplay: string;
+// 	zimbraPrefIdentityId: string;
+// 	zimbraPrefDefaultSignatureId: string;
+// 	zimbraCreateTimestamp: string;
+// 	zimbraPrefIdentityName: string;
+// 	zimbraPrefReplyToEnabled: string;
+// };
+
 type SignatureSettingsPropsType = {
 	updatedIdentities: AccountIdentity[];
 	updateIdentities: (arg: {

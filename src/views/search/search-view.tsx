@@ -15,12 +15,13 @@ import {
 import { includes, map, reduce } from 'lodash';
 import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import { MAILS_ROUTE } from '../../constants';
+import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
+import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
-import { selectFolders } from '../../store/folders-slice';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
-import type { FolderType, SearchProps } from '../../types';
+import type { SearchProps } from '../../types';
 import AdvancedFilterModal from './advance-filter-modal';
 import { findIconFromChip } from './parts/use-find-icon';
 import SearchConversationList from './search-conversation-list';
@@ -32,7 +33,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
 	const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
-	const folders = useAppSelector(selectFolders);
+	const folders = useFoldersMap();
 	const [count, setCount] = useState(0);
 
 	useEffect(() => {
@@ -43,8 +44,8 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		() =>
 			reduce(
 				folders,
-				(acc: Array<string>, v: FolderType, k: string) => {
-					if (v.isShared || v.perm) {
+				(acc: Array<string>, v: Folder, k: string) => {
+					if (('isShared' in v && v.isShared) || v.perm) {
 						acc.push(k);
 					}
 					return acc;
@@ -99,7 +100,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			const resultAction = await dispatch(
 				search({
 					query: queryString,
-					limit: 500,
+					limit: LIST_LIMIT.INITIAL_LIMIT,
 					sortBy: 'dateDesc',
 					types: isMessageView ? 'message' : 'conversation',
 					offset: reset ? 0 : searchResults.offset,

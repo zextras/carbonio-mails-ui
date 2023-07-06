@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { ModalManagerContext } from '@zextras/carbonio-design-system';
-import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { startsWith } from 'lodash';
+import { FOLDERS, getBridgedFunctions, t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { noop, startsWith } from 'lodash';
 import React, { SyntheticEvent, useContext, useMemo } from 'react';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { FolderActionsType } from '../../commons/utils';
 import { getFolderIdParts } from '../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
@@ -21,9 +20,11 @@ import { DeleteModal } from './delete-modal';
 import { EditModal } from './edit-modal';
 import EditPermissionsModal from './edit-permissions-modal';
 import { EmptyModal } from './empty-modal';
-import { MoveModal } from './move-modal';
 import { NewModal } from './new-modal';
 import { SharesInfoModal } from './shares-info-modal';
+import { SelectFolderModal } from './select-folder-modal';
+import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/utils';
+import { FolderActionsType } from '../../carbonio-ui-commons/constants/folders';
 
 type FolderActionsProps = {
 	id: string;
@@ -54,6 +55,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 		() => [
 			{
 				id: FolderActionsType.NEW,
+				'data-testid': `folder-action-${FolderActionsType.NEW}`,
 				icon: 'FolderAddOutline',
 				label: t('label.new_folder', 'New Folder'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
@@ -71,10 +73,15 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						},
 						true
 					);
-				}
+				},
+				tooltipLabel: !allowedActionOnSharedAccount(folder, FolderActionsType.NEW)
+					? t('label.do_not_have_perm', `You don't have permission`)
+					: '',
+				disabled: !allowedActionOnSharedAccount(folder, FolderActionsType.NEW)
 			},
 			{
 				id: FolderActionsType.MOVE,
+				'data-testid': `folder-action-${FolderActionsType.MOVE}`,
 				icon: folderIsTrash ? 'RestoreOutline' : 'MoveOutline',
 				label: folderIsTrash ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
@@ -106,12 +113,81 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							true
 						);
 					} else {
+						const inputLabel = t(
+							'folder_panel.modal.move.body.message1',
+							'Select a folder to move the considered one to:'
+						);
+						const confirmAction = (
+							folderDestination: Folder | undefined,
+							setFolderDestination: (_folder: Folder | undefined) => void,
+							onClose: () => void
+						): void => {
+							const restoreFolder = (): Promise<void> =>
+								folderAction({ folder, l: folder.l, op: 'move' }).then((res) => {
+									if (!('Fault' in res)) {
+										getBridgedFunctions()?.createSnackbar({
+											key: `move-folder`,
+											replace: true,
+											type: 'success',
+											label: t('messages.snackbar.folder_restored', 'Folder restored'),
+											autoHideTimeout: 3000,
+											hideButton: true
+										});
+									} else {
+										getBridgedFunctions()?.createSnackbar({
+											key: `move`,
+											replace: true,
+											type: 'error',
+											label: t('label.error_try_again', 'Something went wrong, please try again'),
+											autoHideTimeout: 3000,
+											hideButton: true
+										});
+									}
+								});
+							folderAction({
+								folder,
+								l: folderDestination?.id ?? FOLDERS.USER_ROOT,
+								op: 'move'
+							})
+								.then((res) => {
+									if (!('Fault' in res)) {
+										getBridgedFunctions()?.createSnackbar({
+											key: `move`,
+											replace: true,
+											type: 'success',
+											label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
+											autoHideTimeout: 5000,
+											hideButton: false,
+											actionLabel: t('label.undo', 'Undo'),
+											onActionClick: () => restoreFolder()
+										});
+									} else {
+										getBridgedFunctions()?.createSnackbar({
+											key: `move`,
+											replace: true,
+											type: 'error',
+											label: t('label.error_try_again', 'Something went wrong, please try again.'),
+											autoHideTimeout: 3000
+										});
+									}
+									setFolderDestination(undefined);
+									onClose();
+								})
+								.catch(() => noop);
+						};
 						const closeModal = createModal(
 							{
 								maxHeight: '90vh',
 								children: (
 									<StoreProvider>
-										<MoveModal folder={folder} onClose={(): void => closeModal()} />
+										<SelectFolderModal
+											folder={folder}
+											onClose={(): void => closeModal()}
+											headerTitle={`${t('label.move', 'Move')} ${folder?.name}`}
+											actionLabel={t('label.move', 'Move')}
+											inputLabel={inputLabel}
+											confirmAction={confirmAction}
+										/>
 									</StoreProvider>
 								)
 							},
@@ -122,6 +198,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.EMPTY,
+				'data-testid': `folder-action-${FolderActionsType.EMPTY}`,
 				icon: folder.id === FOLDERS.TRASH ? 'DeletePermanentlyOutline' : 'EmptyFolderOutline',
 				label:
 					folder.id === FOLDERS.TRASH
@@ -146,6 +223,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.EDIT,
+				'data-testid': `folder-action-${FolderActionsType.EDIT}`,
 				icon: 'Edit2Outline',
 				label: folder.isLink
 					? t('folder_panel.action.edit_properties', 'Edit Properties')
@@ -169,6 +247,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.DELETE,
+				'data-testid': `folder-action-${FolderActionsType.DELETE}`,
 				icon: 'Trash2Outline',
 				label: startsWith(folder.absFolderPath, '/Trash')
 					? t('label.delete_permanently', 'Delete Permanently')
@@ -191,6 +270,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.SHARE,
+				'data-testid': `folder-action-${FolderActionsType.SHARE}`,
 				icon: 'ShareOutline',
 				label: t('action.share_folder', 'Share folder'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
@@ -207,21 +287,27 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						},
 						true
 					);
-				}
+				},
+				tooltipLabel: !allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)
+					? t('label.do_not_have_perm', `You don't have permission`)
+					: '',
+				disabled: !allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)
 			},
 			{
 				id: FolderActionsType.REMOVE_FROM_LIST,
+				'data-testid': `folder-action-${FolderActionsType.REMOVE_FROM_LIST}`,
 				icon: 'CloseOutline',
 				label: t('label.remove_from_this_list', 'Remove from this list'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
-						dispatch(folderAction({ folder, op: 'delete' }));
+						folderAction({ folder, op: 'delete' });
 					}
 				}
 			},
 			{
 				id: FolderActionsType.SHARES_INFO,
+				'data-testid': `folder-action-${FolderActionsType.SHARES_INFO}`,
 				icon: 'InfoOutline',
 				label: t('label.shares_info', `Shared folder's info`),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
@@ -242,12 +328,13 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			},
 			{
 				id: FolderActionsType.MARK_ALL_READ,
+				'data-testid': `folder-action-${FolderActionsType.MARK_ALL_READ}`,
 				icon: 'EmailReadOutline',
 				label: t('label.mark_all_as_read', 'Mark all as read'),
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
-						dispatch(folderAction({ folder, op: 'read', l: folder.id }));
+						folderAction({ folder, op: 'read', l: folder.id });
 					}
 				}
 			}

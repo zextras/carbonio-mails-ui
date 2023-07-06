@@ -5,10 +5,11 @@
  */
 
 import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
-import { getParentFolderId } from '../helpers/folders';
+import { filter } from 'lodash';
+import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
 import { isConversation, isSingleMessageConversation } from '../helpers/messages';
 import { AppDispatch } from '../store/redux';
-import type { ActionReturnType, Conversation, MailMessage } from '../types';
+import type { ActionReturnType, Conversation, ConvMessage, MailMessage } from '../types';
 import {
 	getAddRemoveFlagAction,
 	getApplyTagAction,
@@ -53,7 +54,13 @@ export function getMsgConvActions({
 	if (!folderId) {
 		return [[], []];
 	}
-	const firstConversationMessageId = isConv ? item?.messages?.[0]?.id : item.id;
+
+	const firstConversationMessage = isConv
+		? filter(
+				item?.messages,
+				(msg) => ![FOLDERS.TRASH, FOLDERS.DRAFTS].includes(getFolderIdParts(msg.parent).id ?? '')
+		  )?.[0] ?? {}
+		: item;
 	const isSingleMsgConv = isSingleMessageConversation(item);
 	const { id } = item;
 
@@ -96,7 +103,7 @@ export function getMsgConvActions({
 		isConversation: isConv,
 		id,
 		dispatch,
-		folderId,
+		folderId: firstConversationMessage.parent,
 		deselectAll,
 		foldersExcludedTrash
 	});
@@ -107,14 +114,14 @@ export function getMsgConvActions({
 		deselectAll,
 		dispatch,
 		foldersIncludedDeletePermanently,
-		folderId
+		folderId: firstConversationMessage.parent
 	});
 
 	const moveToFolderAction = getMoveToFolderAction({
 		isConversation: isConv,
 		id,
 		dispatch,
-		folderId,
+		folderId: firstConversationMessage.parent,
 		deselectAll
 	});
 
@@ -145,9 +152,9 @@ export function getMsgConvActions({
 
 	const showOriginalAction = getShowOriginalAction({
 		isConversation: isConv,
-		id,
+		id: firstConversationMessage.id,
 		folderExcludedShowOriginal,
-		folderId
+		folderId: firstConversationMessage.parent
 	});
 
 	const editDraftAction = getEditDraftAction({
@@ -160,7 +167,7 @@ export function getMsgConvActions({
 	const replyAction = getReplyAction(
 		isConv,
 		isSingleMsgConv,
-		firstConversationMessageId,
+		firstConversationMessage.id,
 		folderId,
 		id,
 		folderExcludedReply
@@ -169,7 +176,7 @@ export function getMsgConvActions({
 	const replyAllAction = getReplyAllAction({
 		isConversation: isConv,
 		isSingleMessageConversation: isSingleMsgConv,
-		firstConversationMessageId,
+		firstConversationMessageId: firstConversationMessage.id,
 		folderId,
 		id,
 		folderExcludedReplyAll
@@ -178,7 +185,7 @@ export function getMsgConvActions({
 	const forwardAction = getForwardAction({
 		isConversation: isConv,
 		isSingleMessageConversation: isSingleMsgConv,
-		firstConversationMessageId,
+		firstConversationMessageId: firstConversationMessage.id,
 		folderId,
 		id,
 		folderExcludedForward

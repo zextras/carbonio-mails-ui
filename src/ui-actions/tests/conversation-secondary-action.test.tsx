@@ -28,6 +28,10 @@ describe('Actions visibility', () => {
 			${4} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
 			${4} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
 			${4} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
+			${4} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${4} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${4} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${4} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
 		`(
 			`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {

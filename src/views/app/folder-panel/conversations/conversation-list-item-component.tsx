@@ -63,7 +63,7 @@ export const ConversationListItemComponent: FC<ConversationListItemComponentProp
 			draggedIds={draggedIds}
 			selectedItems={selectedItems}
 			dragImageRef={dragImageRef}
-			isSearchModule
+			isSearchModule={isSearchModule}
 			isConvChildren
 			deselectAll={deselectAll}
 			folderId={folderId}

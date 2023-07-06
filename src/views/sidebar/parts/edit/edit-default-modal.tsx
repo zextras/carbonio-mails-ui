@@ -5,18 +5,22 @@
  */
 import { Container } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
-import { filter, includes, isEmpty } from 'lodash';
+import { includes, isEmpty } from 'lodash';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import type { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
-import { useAppDispatch } from '../../../../hooks/redux';
 import { folderAction } from '../../../../store/actions/folder-action';
 import { translatedSystemFolders } from '../../utils';
 import { FolderDetails } from './folder-details';
 import NameInputRow from './name-input';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
+import {
+	allowedActionOnSharedAccount,
+	isValidFolderName
+} from '../../../../carbonio-ui-commons/utils/utils';
+import { FolderActionsType } from '../../../../carbonio-ui-commons/constants/folders';
 
 const retentionPeriod = [
 	{
@@ -39,7 +43,6 @@ const retentionPeriod = [
 const numberRegex = /^\d+$/;
 
 const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveModal }) => {
-	const dispatch = useAppDispatch();
 	const [inputValue, setInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);
 	const [rtnValue, setRtnValue] = useState<number | string>(0);
@@ -129,11 +132,9 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 
 	const showWarning = useMemo(
 		() =>
-			includes(
-				filter(translatedSystemFolders, (f) => f !== folder.name),
-				inputValue
-			),
-		[inputValue, folder]
+			includes(translatedSystemFolders(), inputValue) ||
+			(inputValue && !isValidFolderName(inputValue)),
+		[inputValue]
 	);
 	const inpDisable = useMemo(
 		() =>
@@ -143,7 +144,11 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 			),
 		[folder]
 	);
-	const disableSubmit = useMemo(() => showWarning || emptyRtnValue, [showWarning, emptyRtnValue]);
+
+	const disableSubmit = useMemo(
+		() => (showWarning || emptyRtnValue) && !inpDisable,
+		[showWarning, emptyRtnValue, inpDisable]
+	);
 
 	const onConfirm = useCallback(() => {
 		let submit = true;
@@ -180,42 +185,40 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 			else if (dspYear === 'y') pr = Number(purgeValue) * 365;
 			else pr = Number(purgeValue);
 
-			dispatch(
-				folderAction({
-					folder: {
-						...folder,
-						parent: folder.l || '',
-						path: folder.absFolderPath,
-						absParent: '2',
-						children: []
-					},
-					name: inputValue,
-					op: 'update',
-					color: Number(folderColor),
-					retentionPolicy:
-						dsblMsgRet || dsblMsgDis || folder?.retentionPolicy
-							? {
-									keep: dsblMsgRet
-										? {
-												policy: {
-													lifetime: `${lt}d`,
-													type: 'user'
-												}
-										  }
-										: {},
-									purge: dsblMsgDis
-										? {
-												policy: {
-													lifetime: `${pr}d`,
-													type: 'user'
-												}
-										  }
-										: {}
-							  }
-							: {}
-				})
-			).then((res) => {
-				if (res.type.includes('fulfilled')) {
+			folderAction({
+				folder: {
+					...folder,
+					parent: folder.l || '',
+					path: folder.absFolderPath,
+					absParent: '2',
+					children: []
+				},
+				name: inputValue,
+				op: 'update',
+				color: Number(folderColor),
+				retentionPolicy:
+					dsblMsgRet || dsblMsgDis || folder?.retentionPolicy
+						? {
+								keep: dsblMsgRet
+									? {
+											policy: {
+												lifetime: `${lt}d`,
+												type: 'user'
+											}
+									  }
+									: {},
+								purge: dsblMsgDis
+									? {
+											policy: {
+												lifetime: `${pr}d`,
+												type: 'user'
+											}
+									  }
+									: {}
+						  }
+						: {}
+			}).then((res) => {
+				if (!('Fault' in res)) {
 					getBridgedFunctions()?.createSnackbar({
 						key: `edit`,
 						replace: true,
@@ -247,7 +250,6 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 		purgeValue,
 		rtnYear,
 		dspYear,
-		dispatch,
 		folder,
 		folderColor
 	]);
@@ -306,8 +308,14 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 				secondaryAction={(): void => setActiveModal('share')}
 				secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
 				disabled={disableSubmit}
+				secondaryDisabled={!allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)}
 				secondaryBtnType="outlined"
 				secondaryColor="primary"
+				tooltip={
+					disableSubmit
+						? t('folder.modal.edit.enter_valid_folder_name', 'Enter a valid folder name')
+						: ''
+				}
 			/>
 		</>
 	);
