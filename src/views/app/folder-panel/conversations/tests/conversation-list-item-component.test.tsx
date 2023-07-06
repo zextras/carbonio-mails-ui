@@ -427,6 +427,76 @@ describe.each`
 			expect(senderLabel).toHaveTextContent('luigi');
 			expect(senderLabel).toHaveTextContent('bowser');
 		});
+
+		test('if the conversation contains more than 1 message then a chevron must be visible', async () => {
+			const folderId = FOLDERS.INBOX;
+			const conversation = generateConversation({ folderId, isSingleMessageConversation: false });
+
+			const props: ConversationListItemProps = {
+				item: conversation,
+				selected: false,
+				selecting: false,
+				toggle: noop,
+				isConvChildren: false,
+				activeItemId: '',
+				deselectAll: noop,
+				isSearchModule,
+				folderId
+			};
+
+			const store = generateStore({
+				conversations: {
+					currentFolder: folderId,
+					expandedStatus: {
+						[conversation.id]: 'complete'
+					},
+					searchedInFolder: {},
+					conversations: {
+						[conversation.id]: conversation
+					},
+					status: 'complete'
+				}
+			});
+
+			setupTest(<ConversationListItem {...props} />, { store });
+			const chevron = await screen.findByTestId(`ToggleExpand`);
+			expect(chevron).toBeVisible();
+		});
+
+		test('if the conversation contains only 1 message then must be not visibile a chevron', async () => {
+			const folderId = FOLDERS.INBOX;
+			const conversation = generateConversation({ folderId, isSingleMessageConversation: true });
+
+			const props: ConversationListItemProps = {
+				item: conversation,
+				selected: false,
+				selecting: false,
+				toggle: noop,
+				isConvChildren: false,
+				activeItemId: '',
+				deselectAll: noop,
+				isSearchModule,
+				folderId
+			};
+
+			const store = generateStore({
+				conversations: {
+					currentFolder: folderId,
+					expandedStatus: {
+						[conversation.id]: 'complete'
+					},
+					searchedInFolder: {},
+					conversations: {
+						[conversation.id]: conversation
+					},
+					status: 'complete'
+				}
+			});
+
+			setupTest(<ConversationListItem {...props} />, { store });
+			const chevron = await screen.findByTestId(`ToggleExpand`);
+			expect(chevron).not.toBeVisible();
+		});
 	});
 
 	test('(case #10) when right-click the message the secondary actions contextual menu must be visible', async () => {
