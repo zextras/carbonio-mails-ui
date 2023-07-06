@@ -112,8 +112,9 @@ describe('Edit view', () => {
 				return undefined;
 			});
 
-			const from = find(account.identities.identity, ['name', 'DEFAULT'])._attrs
-				.zimbraPrefFromAddress;
+			// Get the default identity address
+			const mocksContext = getMocksContext();
+			const from = mocksContext.identities.primary.identity.email;
 			const address = faker.internet.email();
 			const ccAddress = faker.internet.email();
 			const subject = faker.lorem.sentence(1);
@@ -297,8 +298,9 @@ describe('Edit view', () => {
 			});
 
 			const subject = faker.lorem.sentence(5);
-			const sender = find(getUserAccount().identities.identity, ['name', 'DEFAULT'])._attrs
-				.zimbraPrefFromAddress;
+			// Get the default identity address
+			const mocksContext = getMocksContext();
+			const sender = mocksContext.identities.primary.identity.email;
 			const recipient = faker.internet.email();
 			const cc = faker.internet.email();
 			const body = faker.lorem.paragraph(5);
@@ -754,8 +756,9 @@ describe('Edit view', () => {
 
 		describe('New mail', () => {
 			test('user default identity is selected', async () => {
-				// Get the default identity
-				const defaultIdentity = find(getUserAccount().identities.identity, ['name', 'DEFAULT']);
+				// Get the default identity address
+				const mocksContext = getMocksContext();
+				const defaultIdentityAddress = mocksContext.identities.primary.identity.email;
 
 				const store = generateStore();
 
@@ -784,15 +787,16 @@ describe('Edit view', () => {
 				);
 
 				expect(screen.getByTestId('from-identity-address')).toHaveTextContent(
-					defaultIdentity._attrs.zimbraPrefFromAddress
+					defaultIdentityAddress
 				);
 			});
 		});
 		describe('Reply mail', () => {
 			describe('fallback selection', () => {
 				test("user default identity is selected when the message' recipients don't include any user's address", async () => {
-					// Get the default identity
-					const defaultIdentity = find(getUserAccount().identities.identity, ['name', 'DEFAULT']);
+					// Get the default identity address
+					const mocksContext = getMocksContext();
+					const defaultIdentityAddress = mocksContext.identities.primary.identity.email;
 
 					// Generate the message
 					const msg = generateMessage({ isComplete: true });
@@ -838,7 +842,7 @@ describe('Edit view', () => {
 
 					expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();
 					expect(screen.getByTestId('from-identity-address')).toHaveTextContent(
-						defaultIdentity._attrs.zimbraPrefFromAddress
+						defaultIdentityAddress
 					);
 				});
 			});
