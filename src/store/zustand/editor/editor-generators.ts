@@ -6,15 +6,18 @@
 import { v4 as uuid } from 'uuid';
 import { EditViewActions, EditViewActionsType } from '../../../constants';
 import { MailsEditorV2 } from '../../../types';
+import { AppDispatch } from '../../redux';
 import { getEditor } from './hooks';
 
 /**
  *
  */
-const generateNewMessageEditor = (): MailsEditorV2 =>
+const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEditorV2 =>
 	({
+		action: EditViewActions.NEW,
 		attachmentFiles: [],
 		from: undefined,
+		sender: undefined,
 		id: uuid(),
 		attachments: [],
 		inlineAttachments: [],
@@ -31,6 +34,7 @@ const generateNewMessageEditor = (): MailsEditorV2 =>
 			richText: ''
 		},
 		requestReadReceipt: false,
+		messagesStoreDispatch,
 		listeners: {
 			draftSaveStartListeners: [],
 			draftSaveEndListeners: []
@@ -52,6 +56,7 @@ export const resumeEditor = (id: MailsEditorV2['id']): MailsEditorV2 | null => {
  * @param messageId - The id of the message associated with the action
  */
 export const generateEditor = (
+	messagesStoreDispatch: AppDispatch,
 	action: EditViewActionsType,
 	messageId?: string
 ): MailsEditorV2 | null => {
@@ -62,8 +67,7 @@ export const generateEditor = (
 			}
 			break;
 		case EditViewActions.NEW:
-			// TODO
-			return generateNewMessageEditor();
+			return generateNewMessageEditor(messagesStoreDispatch);
 		case EditViewActions.REPLY:
 			// TODO
 			if (!messageId) {

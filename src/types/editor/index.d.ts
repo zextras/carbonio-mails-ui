@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import { EditViewActionsType } from '../../constants';
+import { AppDispatch } from '../../store/redux';
 import type { MailMessage } from '../messages';
 import type { MailAttachment } from '../soap';
 import type { Participant } from '../participant';
@@ -78,6 +80,8 @@ export type DraftSaveEndListener = (params: {
 export type MailsEditorV2 = {
 	// the id of the editor (used to identify the editor in the store)
 	id: string;
+	// the type of action that generated the editor
+	action: EditViewActionsType;
 	// the array of inline attachments
 	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
 	inlineAttachments: Array<InlineAttachment>;
@@ -95,12 +99,14 @@ export type MailsEditorV2 = {
 	text: EditorText;
 	// the subject of the message
 	subject: string;
-	// Messagej id of the message being replied to/forwarded (outbound messages only)
+	// Message id of the message being replied to/forwarded (outbound messages only)
 	originalId?: string;
 	// the whole message being replied to/forwarded (outbound messages only)
 	originalMessage?: MailMessage;
-	// the sender of the message being replied to/forwarded (outbound messages only)
+	// the sender of the message
 	from?: Participant;
+	// the actual sender of the message. It will be set if the message is sent on behalf of the "from" sender
+	sender?: Participant;
 	// the recipients of the message being replied to/forwarded (outbound messages only)
 	recipients: Recipients;
 	// flag to mark the message as urgent
@@ -109,7 +115,9 @@ export type MailsEditorV2 = {
 	requestReadReceipt: boolean;
 	// reply type
 	replyType?: ReplyType;
-
+	// dispatch function for the messages store
+	messagesStoreDispatch: AppDispatch;
+	// listeners of the editor-related events
 	listeners: {
 		draftSaveStartListeners: Array<DraftSaveStartListener>;
 		draftSaveEndListeners: Array<DraftSaveEndListener>;

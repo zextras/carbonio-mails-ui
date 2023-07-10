@@ -5,6 +5,7 @@
  */
 import produce from 'immer';
 import { remove } from 'lodash';
+import { AppDispatch } from '../../store/redux';
 import type { Conversation } from '../conversations';
 import {
 	DraftSaveEndListener,
@@ -48,6 +49,7 @@ export type EditorsStateTypeV2 = {
 	updateRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']) => void;
 	deleteEditor: (id: MailsEditorV2['id']) => void;
 	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']) => void;
+	updateSender: (id: MailsEditorV2['id'], sender: MailsEditorV2['sender']) => void;
 	updateIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
 	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments'][0]) => void;
 	updateAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
@@ -65,6 +67,7 @@ export type EditorsStateTypeV2 = {
 	clearText: (id: MailsEditorV2['id']) => void;
 	clearAttachments: (id: MailsEditorV2['id']) => void;
 	clearInlineAttachments: (id: MailsEditorV2['id']) => void;
+	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
 	addDraftSaveStartListener: (id: MailsEditorV2['id'], listener: DraftSaveStartListener) => void;
 	removeDraftSaveStartListener: (id: MailsEditorV2['id'], listener: DraftSaveStartListener) => void;
 	addDraftSaveEndListener: (id: MailsEditorV2['id'], listener: DraftSaveEndListener) => void;

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import produce from 'immer';
+import { produce } from 'immer';
 import { remove } from 'lodash';
 import { create } from 'zustand';
 import {
@@ -14,6 +14,7 @@ import {
 } from '../../../types';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { retrieveAttachmentsType } from '../../editor-slice-utils';
+import { AppDispatch } from '../../redux';
 
 // extra currying as suggested in https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#basic-usage
 export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
@@ -40,6 +41,15 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 						...state.editors[id],
 						...opt
 					};
+				}
+			})
+		);
+	},
+	updateAction: (id: MailsEditorV2['id'], action: MailsEditorV2['action']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].action = action;
 				}
 			})
 		);
@@ -127,6 +137,15 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].from = from;
+				}
+			})
+		);
+	},
+	updateSender: (id: MailsEditorV2['id'], sender: MailsEditorV2['sender']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].sender = sender;
 				}
 			})
 		);
@@ -252,6 +271,24 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+
+	/**
+	 * Dispatch function for messages store
+	 * @param id
+	 * @param dispatch
+	 */
+	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].messagesStoreDispatch = dispatch;
+				}
+			})
+		);
+	},
+
+	// Listeners
+
 	addDraftSaveStartListener: (id: MailsEditorV2['id'], listener: DraftSaveStartListener): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
