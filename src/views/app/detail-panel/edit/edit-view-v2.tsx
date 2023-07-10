@@ -4,22 +4,35 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Input, Text } from '@zextras/carbonio-design-system';
-import produce from 'immer';
+import {
+	Container,
+	ContainerProps,
+	getPadding,
+	Input,
+	Text,
+	Theme
+} from '@zextras/carbonio-design-system';
 import { noop } from 'lodash';
 import React, { ChangeEvent, FC, useCallback, useState } from 'react';
-import { create } from 'zustand';
+import styled, { DefaultTheme, SimpleInterpolation } from 'styled-components';
 import {
-	getEditor,
-	getUpdateSubject,
 	useAddDraftListeners,
-	useEditor,
-	useEditorsStore,
+	useEditorIsRichText,
 	useEditorSubject,
-	useUpdateSubject
+	useEditorText
 } from '../../../../store/zustand/editor';
-import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
 import { DraftSaveEndListener, DraftSaveStartListener } from '../../../../types';
+import {
+	TextEditorContainer,
+	TextEditorContainerProps,
+	TextEditorContent
+} from './parts/text-editor-container-v2';
+
+const StyledGapContainer = styled(Container)<
+	ContainerProps & { gap?: keyof DefaultTheme['sizes']['padding'] }
+>`
+	gap: ${({ theme, gap }): SimpleInterpolation => gap && getPadding(gap, theme)};
+`;
 
 export type EditViewProp = {
 	editorId: string;
@@ -32,6 +45,8 @@ export type EditViewProp = {
 
 export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	const { subject, setSubject } = useEditorSubject(editorId);
+	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
+	const { text, setText } = useEditorText(editorId);
 
 	// console.count('render');
 	// console.log('editorId', editorId);
@@ -45,6 +60,13 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 			setSubject(event.target.value);
 		},
 		[setSubject]
+	);
+
+	const onBodyChange = useCallback(
+		(content: TextEditorContent): void => {
+			setText({ plainText: content.plainText, richText: content.richText });
+		},
+		[setText]
 	);
 
 	const onDraftSaveStart = useCallback<DraftSaveStartListener>(({ editorId: string }) => {
@@ -66,9 +88,43 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	});
 
 	return (
-		<>
-			<Input label={'temp subject'} value={subject} onChange={onSubjectChange}></Input>
-			<Text>draft status: {tempSaveDraftStatus}</Text>
-		</>
+		<Container
+			mainAlignment={'flex-start'}
+			crossAlignment={'flex-start'}
+			padding={{ all: 'large' }}
+			background={'gray5'}
+		>
+			<StyledGapContainer mainAlignment={'flex-start'} crossAlignment={'flex-start'} gap={'large'}>
+				<Text>Header</Text>
+				<StyledGapContainer
+					mainAlignment={'flex-start'}
+					crossAlignment={'flex-start'}
+					background={'white'}
+					padding={{ all: 'small' }}
+					gap={'small'}
+				>
+					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
+						<Text>Recipients</Text>
+					</Container>
+					<Input label={'temp subject'} value={subject} onChange={onSubjectChange}></Input>
+					<Text>draft status: {tempSaveDraftStatus}</Text>
+					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
+						<Text>Attachments</Text>
+					</Container>
+					{/* <Container mainAlignment={'flex-start'} crossAlignment={'flex-start'}> */}
+					{/*	<Text>Editor</Text> */}
+					{/* </Container> */}
+					<TextEditorContainer
+						onDragOver={noop}
+						onFilesSelected={noop}
+						onContentChanged={onBodyChange}
+						richTextMode={isRichText}
+						content={text}
+						minHeight={0}
+						disabled={false}
+					/>
+				</StyledGapContainer>
+			</StyledGapContainer>
+		</Container>
 	);
 };

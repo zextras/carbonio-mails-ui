@@ -128,7 +128,10 @@ export const useEditorText = (
 
 	return {
 		text: value,
-		setText: (val: MailsEditorV2['text']) => setter(id, val),
+		setText: (val: MailsEditorV2['text']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+		},
 		resetText: () => setter(id, { plainText: '', richText: '' })
 	};
 };

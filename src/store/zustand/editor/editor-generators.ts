@@ -21,7 +21,7 @@ const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEdit
 		id: uuid(),
 		attachments: [],
 		inlineAttachments: [],
-		isRichText: false,
+		isRichText: true,
 		isUrgent: false,
 		recipients: {
 			to: [],
