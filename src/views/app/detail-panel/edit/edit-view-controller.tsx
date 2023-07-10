@@ -7,9 +7,8 @@ import React, { FC } from 'react';
 import { EditViewActions, EditViewActionsType } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
-import { addEditor, getAddEditor, useEditorsStore } from '../../../../store/zustand/editor';
+import { addEditor } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
-import { useAddEditor } from '../../../../store/zustand/editor/hooks';
 import { EditView } from './edit-view-v2';
 
 const parseAndValidateParams = (
@@ -35,13 +34,10 @@ const EditViewController: FC = (x) => {
 		throw new Error('No editor provided');
 	}
 
-	// Add the editor to the store
-	useAddEditor({ id: editor.id, editor });
-	// useEditorsStore.getState().addEditor(editor?.id, editor);
+	addEditor({ id: editor.id, editor });
 
 	// TODO handle board title change
 
-	// Render the editor component passing the editor
 	return <EditView editorId={editor.id} />;
 };
 

@@ -30,26 +30,19 @@ export type EditViewProp = {
 // useEditorsStore.getState().addEditor(editor?.id, editor);
 
 export const EditView: FC<EditViewProp> = ({ editorId }) => {
-	// const editor = useEditor({ id: editorId });
-	const state1 = useEditorsStore.getState();
-	// editorId = editor?.id;
-	const { subject, updateSubject } = useEditorSubject(editorId);
-	// const subject = useEditorsStore((s) => s.editors[editorId].subject);
-	// const [subject, setSubject] = useState('foo');
+	const { subject, setSubject } = useEditorSubject(editorId);
+
 	console.count('render');
 	console.log('editorId', editorId);
 	console.log('subject', subject);
+	const state1 = useEditorsStore.getState();
 	console.dir(state1);
 
 	const onSubjectChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
-			// event.preventDefault();
-			// console.dir(event);
-			// setSubject(event.target.value);
-			updateSubject(event.target.value);
-			// getUpdateSubject({ id: editorId, subject: event.target.value });
+			setSubject(event.target.value);
 		},
-		[editorId]
+		[setSubject]
 	);
 
 	const onDraftSaveStart = useCallback(({ editorId: string }) => {
