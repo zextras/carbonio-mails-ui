@@ -245,19 +245,20 @@ type saveDraftAction = {
 
 function saveDraftFulfilled(state: EditorsStateType, action: saveDraftAction): void {
 	if (action.payload.resp.m) {
-		const message = normalizeMailMessageFromSoap(action.payload.resp.m[0], true);
-		const mp = retrieveAttachmentsType(message, 'attachment');
-		state.editors[action.meta.arg.data.editorId] = {
-			...state.editors[action.meta.arg.data.editorId],
-			id: message.id,
-			attach: { mp },
-			oldId:
-				state.editors[action.meta.arg.data.editorId]?.oldId ??
-				state.editors[action.meta.arg.data.editorId]?.original?.id,
-			did: message.id,
-			attachmentFiles: findAttachments(message.parts, []),
-			original: message
-		};
+		// TODO move it to the new store (if needed)
+		// const message = normalizeMailMessageFromSoap(action.payload.resp.m[0], true);
+		// const mp = retrieveAttachmentsType(message, 'attachment');
+		// state.editors[action.meta.arg.data.editorId] = {
+		// 	...state.editors[action.meta.arg.data.editorId],
+		// 	id: message.id,
+		// 	attach: { mp },
+		// 	oldId:
+		// 		state.editors[action.meta.arg.data.editorId]?.oldId ??
+		// 		state.editors[action.meta.arg.data.editorId]?.original?.id,
+		// 	did: message.id,
+		// 	attachmentFiles: findAttachments(message.parts, []),
+		// 	original: message
+		// };
 	}
 }
 

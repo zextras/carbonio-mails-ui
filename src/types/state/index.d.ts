@@ -46,7 +46,26 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		originalMessage: MailsEditorV2['originalMessage']
 	) => void;
-	updateRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']) => void;
+	updateToRecipients: (
+		id: MailsEditorV2['id'],
+		recipients: MailsEditorV2['recipients']['to']
+	) => void;
+	addToRecipient: (
+		id: MailsEditorV2['id'],
+		recipient: MailsEditorV2['recipients']['to'][number]
+	) => void;
+	removeToRecipient: (
+		id: MailsEditorV2['id'],
+		recipient: MailsEditorV2['recipients']['to'][number]
+	) => void;
+	updateCcRecipients: (
+		id: MailsEditorV2['id'],
+		recipients: MailsEditorV2['recipients']['cc']
+	) => void;
+	updateBccRecipients: (
+		id: MailsEditorV2['id'],
+		recipients: MailsEditorV2['recipients']['bcc']
+	) => void;
 	deleteEditor: (id: MailsEditorV2['id']) => void;
 	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']) => void;
 	updateSender: (id: MailsEditorV2['id'], sender: MailsEditorV2['sender']) => void;

@@ -6,6 +6,7 @@
 import { produce } from 'immer';
 import { remove } from 'lodash';
 import { create } from 'zustand';
+import { equalsParticipant } from '../../../helpers/participants';
 import {
 	DraftSaveEndListener,
 	DraftSaveStartListener,
@@ -123,11 +124,116 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']): void => {
+	updateToRecipients: (
+		id: MailsEditorV2['id'],
+		recipients: MailsEditorV2['recipients']['to']
+	): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].recipients = recipients;
+					state.editors[id].recipients.to = recipients;
+				}
+			})
+		);
+	},
+	addToRecipient: (
+		id: MailsEditorV2['id'],
+		recipient: MailsEditorV2['recipients']['to'][number]
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].recipients.to = [...state.editors[id].recipients.to, recipient];
+				}
+			})
+		);
+	},
+	removeToRecipient: (
+		id: MailsEditorV2['id'],
+		recipient: MailsEditorV2['recipients']['to'][number]
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					remove(state.editors[id].recipients.to, (participant) =>
+						equalsParticipant(participant, recipient)
+					);
+				}
+			})
+		);
+	},
+	updateCcRecipients: (
+		id: MailsEditorV2['id'],
+		recipients: MailsEditorV2['recipients']['cc']
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].recipients.cc = recipients;
+				}
+			})
+		);
+	},
+	addCcRecipient: (
+		id: MailsEditorV2['id'],
+		recipient: MailsEditorV2['recipients']['cc'][number]
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].recipients.cc = [...state.editors[id].recipients.cc, recipient];
+				}
+			})
+		);
+	},
+	removeCcRecipient: (
+		id: MailsEditorV2['id'],
+		recipient: MailsEditorV2['recipients']['cc'][number]
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					remove(state.editors[id].recipients.cc, (participant) =>
+						equalsParticipant(participant, recipient)
+					);
+				}
+			})
+		);
+	},
+	updateBccRecipients: (
+		id: MailsEditorV2['id'],
+		recipients: MailsEditorV2['recipients']['bcc']
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].recipients.cc = recipients;
+				}
+			})
+		);
+	},
+	addBccRecipient: (
+		id: MailsEditorV2['id'],
+		recipient: MailsEditorV2['recipients']['bcc'][number]
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].recipients.bcc = [...state.editors[id].recipients.bcc, recipient];
+				}
+			})
+		);
+	},
+	removeBccRecipient: (
+		id: MailsEditorV2['id'],
+		recipient: MailsEditorV2['recipients']['bcc'][number]
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					remove(state.editors[id].recipients.bcc, (participant) =>
+						equalsParticipant(participant, recipient)
+					);
 				}
 			})
 		);

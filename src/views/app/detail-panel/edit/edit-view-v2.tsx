@@ -19,6 +19,7 @@ import {
 	useUpdateSubject
 } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
+import { DraftSaveEndListener, DraftSaveStartListener } from '../../../../types';
 
 export type EditViewProp = {
 	editorId: string;
@@ -32,11 +33,12 @@ export type EditViewProp = {
 export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	const { subject, setSubject } = useEditorSubject(editorId);
 
-	console.count('render');
-	console.log('editorId', editorId);
-	console.log('subject', subject);
-	const state1 = useEditorsStore.getState();
-	console.dir(state1);
+	// console.count('render');
+	// console.log('editorId', editorId);
+	// console.log('subject', subject);
+	// const state1 = useEditorsStore.getState();
+	// console.dir(state1);
+	const [tempSaveDraftStatus, setTempSaveDraftStatus] = useState('');
 
 	const onSubjectChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
@@ -45,24 +47,28 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		[setSubject]
 	);
 
-	const onDraftSaveStart = useCallback(({ editorId: string }) => {
+	const onDraftSaveStart = useCallback<DraftSaveStartListener>(({ editorId: string }) => {
 		console.log('Save draft started....');
+		setTempSaveDraftStatus('Save draft started....');
 	}, []);
 
-	// const onDraftSaveEnd = useCallback(({ editorId: string }) => {
-	// 	console.log('Save draft ended....');
-	// }, []);
+	const onDraftSaveEnd = useCallback<DraftSaveEndListener>(({ editorId: string, result }) => {
+		console.log('Save draft ended');
+		setTempSaveDraftStatus(
+			`Save draft ended at ${new Date().toLocaleTimeString()} with result ${JSON.stringify(result)}`
+		);
+	}, []);
 
-	// useAddDraftListeners({
-	// 	editorId,
-	// 	saveStartListener: onDraftSaveStart
-	// 	// saveEndListener: onDraftSaveEnd
-	// });
+	useAddDraftListeners({
+		editorId,
+		saveStartListener: onDraftSaveStart,
+		saveEndListener: onDraftSaveEnd
+	});
 
 	return (
 		<>
-			<Input onChange={onSubjectChange}></Input>
-			<Text>subject: {subject}</Text>
+			<Input label={'temp subject'} value={subject} onChange={onSubjectChange}></Input>
+			<Text>draft status: {tempSaveDraftStatus}</Text>
 		</>
 	);
 };

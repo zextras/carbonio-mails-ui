@@ -5,21 +5,16 @@
  */
 
 import { debounce } from 'lodash';
+import { useEffect } from 'react';
 import { TIMEOUTS } from '../../../constants';
-import {
-	DraftSaveEndListener,
-	DraftSaveStartListener,
-	MailsEditorV2,
-	SaveDraftResponse,
-	saveDraftResult
-} from '../../../types';
+import { DraftSaveEndListener, DraftSaveStartListener, MailsEditorV2 } from '../../../types';
 import { saveDraftV2 } from '../../actions/save-draft';
 import { useEditorsStore } from './store';
 
 /**
  * Returns the editor with given ID or null if not found.
  * @params id
- * */
+ */
 export const useEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | null =>
 	useEditorsStore((s) => s.editors?.[id] ?? null);
 export const getEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | null =>
@@ -29,7 +24,7 @@ export const getEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | 
  *
  * @param editor
  */
-const _saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
+const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {
 		console.warn('Cannot find editor', editorId);
@@ -37,11 +32,25 @@ const _saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 	}
 
 	// Update messages store
-	editor.messagesStoreDispatch(saveDraftV2({ editor })).then((res) => {
-		// PayloadAction<saveDraftResult, string, {arg: SaveDraftParameters, requestId: string, requestStatus: "fulfilled"}, never> | PayloadAction<...>
-		const x = res.payload;
-		console.dir(x);
-	});
+	editor
+		.messagesStoreDispatch(saveDraftV2({ editor }))
+		.then((res) => {
+			// PayloadAction<saveDraftResult, string, {arg: SaveDraftParameters, requestId: string, requestStatus: "fulfilled"}, never> | PayloadAction<...>
+			const x = res.payload;
+			console.dir(x);
+
+			// Invoke end listeners
+			// TODO handle the response or the error
+			editor.listeners.draftSaveEndListeners.forEach((listener: DraftSaveEndListener) => {
+				listener({ editorId: editor.id, result: { draftId: 'fake DID' } });
+			});
+		})
+		.catch((err) => {
+			// Invoke end listeners
+			editor.listeners.draftSaveEndListeners.forEach((listener: DraftSaveEndListener) => {
+				listener({ editorId: editor.id, result: { error: err } });
+			});
+		});
 
 	// Invoke start listeners
 	editor.listeners.draftSaveStartListeners.forEach((listener: DraftSaveStartListener) => {
@@ -49,13 +58,7 @@ const _saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 	});
 };
 
-/**
- *
- * @param editor
- */
-const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
-	debounce(_saveDraftFromEditor, TIMEOUTS.DRAFT_SAVE_DELAY);
-};
+const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, TIMEOUTS.DRAFT_SAVE_DELAY);
 
 /**
  *
@@ -100,7 +103,13 @@ export const useEditorSubject = (
 	const value = useEditorsStore((state) => state.editors[id].subject);
 	const setter = useEditorsStore((state) => state.updateSubject);
 
-	return { subject: value, setSubject: (val: string) => setter(id, val) };
+	return {
+		subject: value,
+		setSubject: (val: string): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+		}
+	};
 };
 
 /**
@@ -109,11 +118,19 @@ export const useEditorSubject = (
  */
 export const useEditorText = (
 	id: MailsEditorV2['id']
-): { text: MailsEditorV2['text']; setText: (text: MailsEditorV2['text']) => void } => {
+): {
+	text: MailsEditorV2['text'];
+	setText: (text: MailsEditorV2['text']) => void;
+	resetText: () => void;
+} => {
 	const value = useEditorsStore((state) => state.editors[id].text);
 	const setter = useEditorsStore((state) => state.updateText);
 
-	return { text: value, setText: (val: MailsEditorV2['text']) => setter(id, val) };
+	return {
+		text: value,
+		setText: (val: MailsEditorV2['text']) => setter(id, val),
+		resetText: () => setter(id, { plainText: '', richText: '' })
+	};
 };
 
 /**
@@ -210,21 +227,59 @@ export const getSetOriginalMessage = ({
 }): void => useEditorsStore.getState().setOriginalMessage(id, originalMessage);
 
 /**
- * Returns reactive references to the text values and to their setter
+ * Returns reactive references to the "to" recipients values and to their setter
  * @param id
  */
-export const useEditorRecipients = (
+export const useEditorToRecipients = (
 	id: MailsEditorV2['id']
 ): {
-	recipients: MailsEditorV2['recipients'];
-	setRecipients: (text: MailsEditorV2['recipients']) => void;
+	toRecipients: MailsEditorV2['recipients']['to'];
+	setToRecipients: (text: MailsEditorV2['recipients']['to']) => void;
 } => {
-	const value = useEditorsStore((state) => state.editors[id].recipients);
-	const setter = useEditorsStore((state) => state.updateRecipients);
+	const value = useEditorsStore((state) => state.editors[id].recipients.to);
+	const setter = useEditorsStore((state) => state.updateToRecipients);
 
 	return {
-		recipients: value,
-		setRecipients: (val: MailsEditorV2['recipients']) => setter(id, val)
+		toRecipients: value,
+		setToRecipients: (val: MailsEditorV2['recipients']['to']) => setter(id, val)
+	};
+};
+
+/**
+ * Returns reactive references to the "cc" recipients values and to their setter
+ * @param id
+ */
+export const useEditorCcRecipients = (
+	id: MailsEditorV2['id']
+): {
+	ccRecipients: MailsEditorV2['recipients']['cc'];
+	setCcRecipients: (text: MailsEditorV2['recipients']['cc']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[id].recipients.cc);
+	const setter = useEditorsStore((state) => state.updateCcRecipients);
+
+	return {
+		ccRecipients: value,
+		setCcRecipients: (val: MailsEditorV2['recipients']['cc']) => setter(id, val)
+	};
+};
+
+/**
+ * Returns reactive references to the "bcc" recipients values and to their setter
+ * @param id
+ */
+export const useEditorBccRecipients = (
+	id: MailsEditorV2['id']
+): {
+	bccRecipients: MailsEditorV2['recipients']['bcc'];
+	setBccRecipients: (text: MailsEditorV2['recipients']['bcc']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[id].recipients.bcc);
+	const setter = useEditorsStore((state) => state.updateBccRecipients);
+
+	return {
+		bccRecipients: value,
+		setBccRecipients: (val: MailsEditorV2['recipients']['bcc']) => setter(id, val)
 	};
 };
 
@@ -248,7 +303,7 @@ export const useEditorFrom = (
 };
 
 /**
- * Returns reactive reference to the sender values and to its setter
+ * Returns reactive reference to the sender value and to its setter
  * @param id
  */
 export const useEditorSender = (
@@ -267,27 +322,23 @@ export const useEditorSender = (
 };
 
 /**
- * update the isUrgent of a specific editor.
- * @params id
- * @params isUrgent
- * */
-export const useUpdateIsUrgent = ({
-	id,
-	isUrgent
-}: {
-	id: MailsEditorV2['id'];
+ * Returns reactive reference to the isUrgent value and to its setter
+ * @param id
+ */
+export const useEditorIsUrgent = (
+	id: MailsEditorV2['id']
+): {
 	isUrgent: MailsEditorV2['isUrgent'];
-}): void => {
-	useEditorsStore((s) => s.updateIsUrgent(id, isUrgent));
-	// saveDraftFromEditor(id);
+	setIsUrgent: (text: MailsEditorV2['isUrgent']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[id].isUrgent);
+	const setter = useEditorsStore((state) => state.updateIsUrgent);
+
+	return {
+		isUrgent: value,
+		setIsUrgent: (val: MailsEditorV2['isUrgent']) => setter(id, val)
+	};
 };
-export const getUpdateIsUrgent = ({
-	id,
-	isUrgent
-}: {
-	id: MailsEditorV2['id'];
-	isUrgent: MailsEditorV2['isUrgent'];
-}): void => useEditorsStore.getState().updateIsUrgent(id, isUrgent);
 
 /**
  * add attachments to a specific editor.
@@ -430,33 +481,12 @@ export const useAddDraftListeners = ({
 	saveStartListener?: DraftSaveStartListener;
 	saveEndListener?: DraftSaveEndListener;
 }): void => {
-	useEditorsStore((s) => {
-		saveStartListener && s.addDraftSaveStartListener(editorId, saveStartListener);
-	});
-	useEditorsStore((s) => {
-		saveEndListener && s.addDraftSaveEndListener(editorId, saveEndListener);
-	});
-};
+	const addStartListener = useEditorsStore((s) => s.addDraftSaveStartListener);
+	const addEndListener = useEditorsStore((s) => s.addDraftSaveEndListener);
 
-/**
- *
- * @param editorId
- * @param saveStartListener
- * @param saveEndListener
- */
-export const useRemoveDraftListeners = ({
-	editorId,
-	saveStartListener,
-	saveEndListener
-}: {
-	editorId: MailsEditorV2['id'];
-	saveStartListener?: DraftSaveStartListener;
-	saveEndListener?: DraftSaveEndListener;
-}): void => {
-	useEditorsStore((s) => {
-		saveStartListener && s.removeDraftSaveStartListener(editorId, saveStartListener);
-	});
-	useEditorsStore((s) => {
-		saveEndListener && s.removeDraftSaveEndListener(editorId, saveEndListener);
-	});
+	// Invoke changes on the store only when the listeners are actually changed
+	useEffect(() => {
+		saveStartListener && addStartListener(editorId, saveStartListener);
+		saveEndListener && addEndListener(editorId, saveEndListener);
+	}, [editorId, saveStartListener, saveEndListener, addStartListener, addEndListener]);
 };
