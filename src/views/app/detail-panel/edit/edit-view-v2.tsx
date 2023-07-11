@@ -5,12 +5,13 @@
  */
 
 import {
+	Avatar,
 	Container,
-	ContainerProps,
-	getPadding,
-	Input,
+	ContainerProps, Dropdown,
+	getPadding, IconButton,
+	Input, Row,
 	Text,
-	Theme
+	Theme, Tooltip,
 } from '@zextras/carbonio-design-system';
 import { noop } from 'lodash';
 import React, { ChangeEvent, FC, useCallback, useState } from 'react';
@@ -96,6 +97,55 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		>
 			<StyledGapContainer mainAlignment={'flex-start'} crossAlignment={'flex-start'} gap={'large'}>
 				<Text>Header</Text>
+				<FromItem orientation="horizontal" mainAlignment="space-between">
+					<Tooltip label={activeFrom?.label} maxWidth="100%" placement="top-start">
+						<Dropdown
+							// eslint-disable-next-line @typescript-eslint/ban-ts-commentg
+							// @ts-ignore
+							items={identitiesList.map((identity, index) => ({
+								...identity,
+								id: index
+							}))}
+							width="fit"
+							maxWidth="100%"
+							forceOpen={open}
+							onClose={onFromDropdownClose}
+							selectedBackgroundColor="highlight"
+							data-testid="from-dropdown"
+							onSelect={(}
+						>
+							<Row
+								onClick={toggleOpen}
+								width="100%"
+								orientation="horizontal"
+								height="fit"
+								wrap="nowrap"
+								padding={{ all: 'small' }}
+							>
+								<Avatar label={from?.displayName || from?.fullName || noName} />
+								<Container
+									width="100%"
+									crossAlignment="flex-start"
+									height="fit"
+									padding={{ left: 'medium', right: 'medium' }}
+								>
+									<Text weight="bold" data-testid="from-identity-display-name">
+										{from?.displayName || from?.fullName || from?.address}
+									</Text>
+									<Text color="gray1" size="small" data-testid="from-identity-address">
+										{from?.address}
+									</Text>
+								</Container>
+								<IconButton
+									icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
+									onClick={(): null => null}
+								/>
+							</Row>
+						</Dropdown>
+					</Tooltip>
+				</FromItem>
+				)}
+
 				<StyledGapContainer
 					mainAlignment={'flex-start'}
 					crossAlignment={'flex-start'}
@@ -111,9 +161,6 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
 						<Text>Attachments</Text>
 					</Container>
-					{/* <Container mainAlignment={'flex-start'} crossAlignment={'flex-start'}> */}
-					{/*	<Text>Editor</Text> */}
-					{/* </Container> */}
 					<TextEditorContainer
 						onDragOver={noop}
 						onFilesSelected={noop}

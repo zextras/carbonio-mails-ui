@@ -605,7 +605,7 @@ const EditViewHeader: FC<PropType> = ({
 					<FromItem orientation="horizontal" mainAlignment="space-between">
 						<Tooltip label={activeFrom?.label} maxWidth="100%" placement="top-start">
 							<Dropdown
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// eslint-disable-next-line @typescript-eslint/ban-ts-commentg
 								// @ts-ignore
 								items={identitiesList.map((identity, index) => ({
 									...identity,

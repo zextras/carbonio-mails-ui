@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
+import { TFunction } from 'i18next';
 import { isArray } from 'lodash';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import type { Folders } from '../carbonio-ui-commons/types/folder';
@@ -42,7 +43,12 @@ type AccountOwnershipMatchType = 'match' | 'nomatch';
 /**
  * The type describe all the available addresses for an account
  */
-type AvailableAddress = { address: string; type: IdentityType; ownerAccount: string };
+type AvailableAddress = {
+	address: string;
+	type: IdentityType;
+	right?: string;
+	ownerAccount: string;
+};
 
 /**
  * The type describe the identity, its type and the addresses used to
@@ -55,6 +61,7 @@ type Identity = {
 	receivingAddress: string;
 	fromAddress: string;
 	type: IdentityType;
+	right?: string;
 };
 
 type MatchingReplyIdentity = {
@@ -152,7 +159,12 @@ const getAvailableAddresses = (
 				target.target.forEach((user) => {
 					if (user.type === 'account' && user.email) {
 						user.email.forEach((email) => {
-							result.push({ address: email.addr, type: 'shared', ownerAccount: email.addr });
+							result.push({
+								address: email.addr,
+								type: 'shared',
+								right: target.right,
+								ownerAccount: email.addr
+							});
 						});
 					}
 				});
@@ -216,13 +228,17 @@ const getIdentities = (account: Account, settings: AccountSettings): Array<Ident
 			? matchingReceivingAddress.type
 			: UNKNOWN_IDENTITY_DEFAULT_TYPE;
 
+		const right =
+			type === 'shared' && matchingReceivingAddress ? matchingReceivingAddress.right : undefined;
+
 		identities.push({
 			ownerAccount: matchingReceivingAddress?.ownerAccount ?? account.name,
 			receivingAddress,
 			id: identity._attrs.zimbraPrefIdentityId,
 			identityName: identity.name,
 			fromAddress,
-			type
+			type,
+			right
 		});
 	});
 
@@ -421,7 +437,28 @@ const getMessageSenderAccount = (
 	return getAddressOwnerAccount(address, primaryAccount, settings);
 };
 
+/**
+ *
+ * @param identity
+ * @param t
+ */
+const getIdentityDescription = (identity: Identity, t: TFunction): string | null => {
+	if (!identity) {
+		return null;
+	}
+
+	const result =
+		identity.right === 'sendOnBehalfOf'
+			? `${identity.ownerAccount} ${t('label.on_behalf_of', 'on behalf of')} ${
+					identity.identityName
+			  }<${identity.fromAddress}>`
+			: `${identity.identityName}<${identity.fromAddress}>`;
+
+	return result;
+};
+
 export {
+	Identity,
 	MatchingReplyIdentity,
 	RecipientWeight,
 	checkMatchingAddress,
@@ -433,5 +470,6 @@ export {
 	getMessageSenderAccount,
 	getMessageSenderAddress,
 	getRecipientReplyIdentity,
-	getRecipients
+	getRecipients,
+	getIdentityDescription
 };

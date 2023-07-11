@@ -147,6 +147,9 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 										onContentChanged({ plainText: ev[0], richText: ev[1] });
 									}}
 									onDragOver={onDragOver}
+									customInitOptions={{
+										toolbar_sticky: true
+									}}
 								/>
 							</StyledComp.EditorWrapper>
 						</Container>
@@ -202,7 +205,6 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 					{/*		</StyledComp.StickyTime> */}
 					{/*	</StyledComp.StickyTimeContainer> */}
 					{/* )} */}
-					<StyledComp.Divider />
 				</Container>
 			)}
 		</>

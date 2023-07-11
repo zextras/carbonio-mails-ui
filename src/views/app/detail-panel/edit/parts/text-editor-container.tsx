@@ -109,12 +109,7 @@ const TextEditorContainer: FC<PropType> = ({
 	return (
 		<>
 			{editor?.text && (
-				<Container
-					height="fit"
-					padding={{ all: 'small' }}
-					background="gray6"
-					crossAlignment="flex-end"
-				>
+				<Container height="fit" background="gray6" crossAlignment="flex-start">
 					{editor?.richText && composerIsAvailable ? (
 						<Container
 							background="gray6"
