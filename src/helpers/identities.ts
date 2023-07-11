@@ -8,7 +8,7 @@ import { TFunction } from 'i18next';
 import { isArray } from 'lodash';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import type { Folders } from '../carbonio-ui-commons/types/folder';
-import type { MailMessage } from '../types';
+import type { MailMessage, Participant } from '../types';
 import { getMessageOwnerAccountName } from './folders';
 
 /**
@@ -58,6 +58,7 @@ type Identity = {
 	id: string;
 	ownerAccount: string;
 	identityName: string;
+	displayName: string | undefined;
 	receivingAddress: string;
 	fromAddress: string;
 	type: IdentityType;
@@ -215,6 +216,7 @@ const getIdentities = (account: Account, settings: AccountSettings): Array<Ident
 
 	account.identities?.identity?.forEach((identity: any) => {
 		const fromAddress = identity._attrs.zimbraPrefFromAddress;
+		const displayName = identity._attrs.zimbraPrefFromDisplay;
 
 		// The receiving address for the primary identity is the account name
 		const receivingAddress = identity.name === PRIMARY_IDENTITY_NAME ? account.name : fromAddress;
@@ -236,6 +238,7 @@ const getIdentities = (account: Account, settings: AccountSettings): Array<Ident
 			receivingAddress,
 			id: identity._attrs.zimbraPrefIdentityId,
 			identityName: identity.name,
+			displayName,
 			fromAddress,
 			type,
 			right
@@ -400,6 +403,19 @@ const getRecipientReplyIdentity = (
 };
 
 /**
+ *
+ * @param participant
+ * @param primaryAccount
+ * @param settings
+ */
+const getIdentityFromParticipant = (
+	participant: Participant,
+	primaryAccount: Account,
+	settings: AccountSettings
+): Identity | null =>
+	// TODO implement
+	null;
+/**
  * Returns the message's sender obtained from the message's participants
  * @param message
  */
@@ -450,9 +466,9 @@ const getIdentityDescription = (identity: Identity, t: TFunction): string | null
 	const result =
 		identity.right === 'sendOnBehalfOf'
 			? `${identity.ownerAccount} ${t('label.on_behalf_of', 'on behalf of')} ${
-					identity.identityName
+					identity.displayName ?? identity.identityName
 			  }<${identity.fromAddress}>`
-			: `${identity.identityName}<${identity.fromAddress}>`;
+			: `${identity.displayName ?? identity.identityName}<${identity.fromAddress}>`;
 
 	return result;
 };
@@ -467,6 +483,7 @@ export {
 	getAddressOwnerAccount,
 	getAvailableAddresses,
 	getIdentities,
+	getIdentityFromParticipant,
 	getMessageSenderAccount,
 	getMessageSenderAddress,
 	getRecipientReplyIdentity,

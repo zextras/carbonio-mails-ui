@@ -7,22 +7,39 @@
 import {
 	Avatar,
 	Container,
-	ContainerProps, Dropdown,
-	getPadding, IconButton,
-	Input, Row,
+	ContainerProps,
+	Dropdown,
+	getPadding,
+	IconButton,
+	Input,
+	Row,
 	Text,
-	Theme, Tooltip,
+	Theme,
+	Tooltip
 } from '@zextras/carbonio-design-system';
+import { useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
-import React, { ChangeEvent, FC, useCallback, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import styled, { DefaultTheme, SimpleInterpolation } from 'styled-components';
 import {
+	ParticipantRole,
+	ParticipantRoleType
+} from '../../../../carbonio-ui-commons/constants/participants';
+import {
+	getIdentities,
+	getIdentityFromParticipant,
+	Identity
+} from '../../../../helpers/identities';
+import {
 	useAddDraftListeners,
+	useEditorFrom,
 	useEditorIsRichText,
+	useEditorSender,
 	useEditorSubject,
 	useEditorText
 } from '../../../../store/zustand/editor';
-import { DraftSaveEndListener, DraftSaveStartListener } from '../../../../types';
+import { DraftSaveEndListener, DraftSaveStartListener, Participant } from '../../../../types';
+import { EditViewIdentitySelector } from './parts/edit-view-identiy-selector';
 import {
 	TextEditorContainer,
 	TextEditorContainerProps,
@@ -44,10 +61,26 @@ export type EditViewProp = {
 //
 // useEditorsStore.getState().addEditor(editor?.id, editor);
 
+export const createParticipantFromIdentity = (
+	identity: Identity,
+	type: typeof ParticipantRole.FROM | typeof ParticipantRole.SENDER
+): Participant =>
+	({
+		type,
+		address: identity.fromAddress,
+		name: identity.identityName,
+		fullName: identity.displayName ?? identity.identityName
+	} as Participant);
+
 export const EditView: FC<EditViewProp> = ({ editorId }) => {
+	const account = useUserAccount();
+	const settings = useUserSettings();
+
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { text, setText } = useEditorText(editorId);
+	const { from, setFrom } = useEditorFrom(editorId);
+	const { sender, setSender } = useEditorSender(editorId);
 
 	// console.count('render');
 	// console.log('editorId', editorId);
@@ -55,6 +88,15 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	// const state1 = useEditorsStore.getState();
 	// console.dir(state1);
 	const [tempSaveDraftStatus, setTempSaveDraftStatus] = useState('');
+
+	const onIdentityChanged = useCallback((identity: Identity): void => {
+		console.log('**** identity changed', identity);
+		setFrom(createParticipantFromIdentity(identity, ParticipantRole.FROM));
+
+		// TODO handle the sender in case of sendOnBehalfOf
+
+		// TODO change signature accordingly
+	}, []);
 
 	const onSubjectChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
@@ -88,6 +130,21 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		saveEndListener: onDraftSaveEnd
 	});
 
+	const identitiesList = useMemo<Array<Identity>>(
+		() => getIdentities(account, settings),
+		[account, settings]
+	);
+
+	const selectedIdentity = useMemo<Identity | null>(() => {
+		if (from) {
+			return getIdentityFromParticipant(from, account, settings);
+		}
+
+		return null;
+
+		// TODO handle the sender scenario
+	}, [account, from, settings]);
+
 	return (
 		<Container
 			mainAlignment={'flex-start'}
@@ -97,54 +154,11 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		>
 			<StyledGapContainer mainAlignment={'flex-start'} crossAlignment={'flex-start'} gap={'large'}>
 				<Text>Header</Text>
-				<FromItem orientation="horizontal" mainAlignment="space-between">
-					<Tooltip label={activeFrom?.label} maxWidth="100%" placement="top-start">
-						<Dropdown
-							// eslint-disable-next-line @typescript-eslint/ban-ts-commentg
-							// @ts-ignore
-							items={identitiesList.map((identity, index) => ({
-								...identity,
-								id: index
-							}))}
-							width="fit"
-							maxWidth="100%"
-							forceOpen={open}
-							onClose={onFromDropdownClose}
-							selectedBackgroundColor="highlight"
-							data-testid="from-dropdown"
-							onSelect={(}
-						>
-							<Row
-								onClick={toggleOpen}
-								width="100%"
-								orientation="horizontal"
-								height="fit"
-								wrap="nowrap"
-								padding={{ all: 'small' }}
-							>
-								<Avatar label={from?.displayName || from?.fullName || noName} />
-								<Container
-									width="100%"
-									crossAlignment="flex-start"
-									height="fit"
-									padding={{ left: 'medium', right: 'medium' }}
-								>
-									<Text weight="bold" data-testid="from-identity-display-name">
-										{from?.displayName || from?.fullName || from?.address}
-									</Text>
-									<Text color="gray1" size="small" data-testid="from-identity-address">
-										{from?.address}
-									</Text>
-								</Container>
-								<IconButton
-									icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
-									onClick={(): null => null}
-								/>
-							</Row>
-						</Dropdown>
-					</Tooltip>
-				</FromItem>
-				)}
+				<EditViewIdentitySelector
+					selected={selectedIdentity}
+					identities={identitiesList}
+					onIdentitySelected={onIdentityChanged}
+				/>
 
 				<StyledGapContainer
 					mainAlignment={'flex-start'}

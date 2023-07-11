@@ -179,7 +179,7 @@ export const useEditorIsRichText = (
 	id: MailsEditorV2['id']
 ): {
 	isRichText: MailsEditorV2['isRichText'];
-	setIsRichText: (did: MailsEditorV2['isRichText']) => void;
+	setIsRichText: (isRichText: MailsEditorV2['isRichText']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].isRichText);
 	const setter = useEditorsStore((state) => state.setIsRichText);
@@ -198,7 +198,7 @@ export const useEditorOriginalId = (
 	id: MailsEditorV2['id']
 ): {
 	originalId: MailsEditorV2['originalId'];
-	setOriginalId: (did: MailsEditorV2['originalId']) => void;
+	setOriginalId: (originalId: MailsEditorV2['originalId']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].originalId);
 	const setter = useEditorsStore((state) => state.setOriginalId);
@@ -237,7 +237,7 @@ export const useEditorToRecipients = (
 	id: MailsEditorV2['id']
 ): {
 	toRecipients: MailsEditorV2['recipients']['to'];
-	setToRecipients: (text: MailsEditorV2['recipients']['to']) => void;
+	setToRecipients: (recipient: MailsEditorV2['recipients']['to']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].recipients.to);
 	const setter = useEditorsStore((state) => state.updateToRecipients);
@@ -256,7 +256,7 @@ export const useEditorCcRecipients = (
 	id: MailsEditorV2['id']
 ): {
 	ccRecipients: MailsEditorV2['recipients']['cc'];
-	setCcRecipients: (text: MailsEditorV2['recipients']['cc']) => void;
+	setCcRecipients: (recipient: MailsEditorV2['recipients']['cc']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].recipients.cc);
 	const setter = useEditorsStore((state) => state.updateCcRecipients);
@@ -275,7 +275,7 @@ export const useEditorBccRecipients = (
 	id: MailsEditorV2['id']
 ): {
 	bccRecipients: MailsEditorV2['recipients']['bcc'];
-	setBccRecipients: (text: MailsEditorV2['recipients']['bcc']) => void;
+	setBccRecipients: (recipient: MailsEditorV2['recipients']['bcc']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].recipients.bcc);
 	const setter = useEditorsStore((state) => state.updateBccRecipients);
@@ -294,7 +294,7 @@ export const useEditorFrom = (
 	id: MailsEditorV2['id']
 ): {
 	from: MailsEditorV2['from'];
-	setFrom: (text: MailsEditorV2['from']) => void;
+	setFrom: (from: MailsEditorV2['from']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].from);
 	const setter = useEditorsStore((state) => state.updateFrom);
@@ -313,7 +313,7 @@ export const useEditorSender = (
 	id: MailsEditorV2['id']
 ): {
 	sender: MailsEditorV2['sender'];
-	setSender: (text: MailsEditorV2['sender']) => void;
+	setSender: (sender: MailsEditorV2['sender']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].sender);
 	const setter = useEditorsStore((state) => state.updateSender);
@@ -332,7 +332,7 @@ export const useEditorIsUrgent = (
 	id: MailsEditorV2['id']
 ): {
 	isUrgent: MailsEditorV2['isUrgent'];
-	setIsUrgent: (text: MailsEditorV2['isUrgent']) => void;
+	setIsUrgent: (isUrgent: MailsEditorV2['isUrgent']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].isUrgent);
 	const setter = useEditorsStore((state) => state.updateIsUrgent);

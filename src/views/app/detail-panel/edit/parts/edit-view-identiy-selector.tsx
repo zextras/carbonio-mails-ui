@@ -7,12 +7,14 @@ import {
 	Avatar,
 	Container,
 	Dropdown,
+	DropdownItem,
 	IconButton,
 	Row,
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { noop } from 'lodash';
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { getIdentityDescription, Identity } from '../../../../../helpers/identities';
@@ -29,7 +31,7 @@ const SelectorContainer = styled(Row)`
  *
  */
 export type EditViewIdentitySelectorProps = {
-	selected: Identity;
+	selected: Identity | null;
 	identities: Array<Identity>;
 	onIdentitySelected: (selected: Identity) => void;
 };
@@ -47,24 +49,31 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({
 	onIdentitySelected
 }) => {
 	const [open, setOpen] = useState(false);
-	const selectedDescription = getIdentityDescription(selected, t);
+	const noName = useMemo(() => t('label.no_name', '<No Name>'), []);
+	const selectedDescription = selected ? getIdentityDescription(selected, t) : noName;
 
 	const toggleOpen = useCallback(() => {
 		setOpen((s) => !s);
 	}, []);
 
-	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
+	const dropdownEntries = useMemo<Array<DropdownItem>>(
+		() =>
+			identities.map((identity, index) => ({
+				id: identity.id,
+				label: getIdentityDescription(identity, t) ?? '',
+				// TODO complete implementation
+				onClick: (): void => {
+					onIdentitySelected(identity);
+				}
+			})),
+		[identities, onIdentitySelected]
+	);
 
 	return (
 		<SelectorContainer orientation="horizontal" mainAlignment="space-between">
 			<Tooltip label={selectedDescription} maxWidth="100%" placement="top-start">
 				<Dropdown
-					// eslint-disable-next-line @typescript-eslint/ban-ts-commentg
-					// @ts-ignore
-					items={identities.map((identity, index) => ({
-						...identity,
-						id: index
-					}))}
+					items={dropdownEntries}
 					width="fit"
 					maxWidth="100%"
 					forceOpen={open}
@@ -79,7 +88,7 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({
 						wrap="nowrap"
 						padding={{ all: 'small' }}
 					>
-						<Avatar label={selected.identityName || noName} />
+						<Avatar label={selected?.identityName || noName} />
 						<Container
 							width="100%"
 							crossAlignment="flex-start"
@@ -87,16 +96,13 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({
 							padding={{ left: 'medium', right: 'medium' }}
 						>
 							<Text weight="bold" data-testid="from-identity-display-name">
-								{from?.displayName || from?.fullName || from?.address}
+								{selected?.displayName || selected?.identityName || selected?.fromAddress}
 							</Text>
 							<Text color="gray1" size="small" data-testid="from-identity-address">
-								{from?.address}
+								{selected?.fromAddress}
 							</Text>
 						</Container>
-						<IconButton
-							icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'}
-							onClick={(): null => null}
-						/>
+						<IconButton icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'} onClick={noop} />
 					</Row>
 				</Dropdown>
 			</Tooltip>
