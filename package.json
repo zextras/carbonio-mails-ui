@@ -55,7 +55,7 @@
 		"@types/react-redux": "^7.1.25",
 		"@types/react-router-dom": "^5.3.3",
 		"@types/styled-components": "^5.1.26",
-		"@zextras/carbonio-ui-configs": "^0.1.11",
+		"@zextras/carbonio-ui-configs": "^0.1.12",
 		"@zextras/carbonio-ui-sdk": "^1.5.3",
 		"babel-plugin-i18next-extract": "^0.9.0",
 		"babel-plugin-styled-components": "^2.0.7",
