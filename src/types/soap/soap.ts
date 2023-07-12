@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui/types/network/soap';
 import { Folder } from '../../carbonio-ui-commons/types/folder';
 import { MailsEditor, MailsEditorV2 } from '../editor';
@@ -270,7 +271,7 @@ export type RedirectActionParameters = {
 
 export type SaveDraftNewParameters = {
 	data: MailsEditor;
-	prefs?: Partial<PrefsType>;
+	prefs?: Partial<AccountSettingsPrefs>;
 	signal?: AbortSignal;
 };
 

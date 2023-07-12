@@ -74,19 +74,6 @@ export enum LineType {
 	SIGNATURE_PRE_SEP = '---'
 }
 
-// eslint-disable-next-line no-shadow
-export enum FolderActionsType {
-	NEW = 'new',
-	MOVE = 'move',
-	DELETE = 'delete',
-	EDIT = 'edit',
-	EMPTY = 'empty',
-	REMOVE_FROM_LIST = 'removeFromList',
-	SHARES_INFO = 'sharesInfo',
-	SHARE = 'share',
-	MARK_ALL_READ = 'read'
-}
-
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const omitBy = (obj: any, check: (arg: unknown) => boolean): any => {
 	// eslint-disable-next-line no-param-reassign

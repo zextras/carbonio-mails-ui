@@ -24,12 +24,12 @@ const NameInputRow: FC<NameInputRowProps> = ({
 			onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
 			disabled={inpDisable}
 			value={inputValue}
-			hasError={showWarning}
+			hasError={showWarning && !inpDisable}
 			data-testid="folder-name"
 		/>
-		{showWarning && (
+		{showWarning && !inpDisable && (
 			<Padding all="small">
-				<Text size="small" color="error">
+				<Text size="small" color="error" data-testid="rename-error-msg">
 					{inputValue && !isValidFolderName(inputValue)
 						? t(
 								'folder.modal.edit.invalid_folder_name_warning_msg',

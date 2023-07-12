@@ -4,12 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC } from 'react';
+
+import { useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
+
+import { EditView } from './edit-view-v2';
 import { EditViewActions, EditViewActionsType } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
 import { addEditor } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
-import { EditView } from './edit-view-v2';
 
 const parseAndValidateParams = (
 	action?: string,
@@ -27,9 +30,17 @@ const parseAndValidateParams = (
 const EditViewController: FC = (x) => {
 	const { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
 	const messagesStoreDispatch = useAppDispatch();
+	const account = useUserAccount();
+	const settings = useUserSettings();
 
 	// Create or resume editor
-	const editor = generateEditor(messagesStoreDispatch, action, id);
+	const editor = generateEditor({
+		action,
+		messageId: id,
+		messagesStoreDispatch,
+		account,
+		settings
+	});
 	if (!editor) {
 		throw new Error('No editor provided');
 	}

@@ -4,31 +4,26 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
+
 import {
-	Avatar,
 	Container,
 	ContainerProps,
-	Dropdown,
 	getPadding,
-	IconButton,
 	Input,
-	Row,
-	Text,
-	Theme,
-	Tooltip
+	Text
 } from '@zextras/carbonio-design-system';
 import { useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
-import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import styled, { DefaultTheme, SimpleInterpolation } from 'styled-components';
-import {
-	ParticipantRole,
-	ParticipantRoleType
-} from '../../../../carbonio-ui-commons/constants/participants';
+
+import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
+import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
+import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import {
 	getIdentities,
 	getIdentityFromParticipant,
-	Identity
+	IdentityDescriptor
 } from '../../../../helpers/identities';
 import {
 	useAddDraftListeners,
@@ -39,12 +34,6 @@ import {
 	useEditorText
 } from '../../../../store/zustand/editor';
 import { DraftSaveEndListener, DraftSaveStartListener, Participant } from '../../../../types';
-import { EditViewIdentitySelector } from './parts/edit-view-identiy-selector';
-import {
-	TextEditorContainer,
-	TextEditorContainerProps,
-	TextEditorContent
-} from './parts/text-editor-container-v2';
 
 const StyledGapContainer = styled(Container)<
 	ContainerProps & { gap?: keyof DefaultTheme['sizes']['padding'] }
@@ -62,14 +51,14 @@ export type EditViewProp = {
 // useEditorsStore.getState().addEditor(editor?.id, editor);
 
 export const createParticipantFromIdentity = (
-	identity: Identity,
+	identity: IdentityDescriptor,
 	type: typeof ParticipantRole.FROM | typeof ParticipantRole.SENDER
 ): Participant =>
 	({
 		type,
 		address: identity.fromAddress,
-		name: identity.identityName,
-		fullName: identity.displayName ?? identity.identityName
+		name: identity.identityDisplayName,
+		fullName: identity.fromDisplay
 	} as Participant);
 
 export const EditView: FC<EditViewProp> = ({ editorId }) => {
@@ -89,14 +78,17 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	// console.dir(state1);
 	const [tempSaveDraftStatus, setTempSaveDraftStatus] = useState('');
 
-	const onIdentityChanged = useCallback((identity: Identity): void => {
-		console.log('**** identity changed', identity);
-		setFrom(createParticipantFromIdentity(identity, ParticipantRole.FROM));
+	const onIdentityChanged = useCallback(
+		(identity: IdentityDescriptor): void => {
+			console.log('**** identity changed', identity);
+			setFrom(createParticipantFromIdentity(identity, ParticipantRole.FROM));
 
-		// TODO handle the sender in case of sendOnBehalfOf
+			// TODO handle the sender in case of sendOnBehalfOf
 
-		// TODO change signature accordingly
-	}, []);
+			// TODO change signature accordingly
+		},
+		[setFrom]
+	);
 
 	const onSubjectChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
@@ -130,17 +122,21 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		saveEndListener: onDraftSaveEnd
 	});
 
-	const identitiesList = useMemo<Array<Identity>>(
+	const identitiesList = useMemo<Array<IdentityDescriptor>>(
 		() => getIdentities(account, settings),
 		[account, settings]
 	);
 
-	const selectedIdentity = useMemo<Identity | null>(() => {
+	const selectedIdentity = useMemo<IdentityDescriptor | null>(() => {
+		let result = null;
+
 		if (from) {
-			return getIdentityFromParticipant(from, account, settings);
+			result = getIdentityFromParticipant(from, account, settings);
 		}
 
-		return null;
+		console.log('**** selected identity is', result);
+
+		return result;
 
 		// TODO handle the sender scenario
 	}, [account, from, settings]);
@@ -153,7 +149,6 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 			background={'gray5'}
 		>
 			<StyledGapContainer mainAlignment={'flex-start'} crossAlignment={'flex-start'} gap={'large'}>
-				<Text>Header</Text>
 				<EditViewIdentitySelector
 					selected={selectedIdentity}
 					identities={identitiesList}

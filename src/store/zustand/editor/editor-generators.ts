@@ -3,20 +3,32 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
-import { EditViewActions, EditViewActionsType } from '../../../constants';
-import { MailsEditorV2 } from '../../../types';
-import { AppDispatch } from '../../redux';
+
 import { getEditor } from './hooks';
+import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
+import { EditViewActions, EditViewActionsType } from '../../../constants';
+import { getDefaultIdentity } from '../../../helpers/identities';
+import { MailsEditorV2 } from '../../../types';
+import { createParticipantFromIdentity } from '../../../views/app/detail-panel/edit/edit-view-v2';
+import { AppDispatch } from '../../redux';
 
 /**
  *
  */
-const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEditorV2 =>
+const generateNewMessageEditor = (
+	messagesStoreDispatch: AppDispatch,
+	account: Account,
+	settings: AccountSettings
+): MailsEditorV2 =>
 	({
 		action: EditViewActions.NEW,
 		attachmentFiles: [],
-		from: undefined,
+		from: createParticipantFromIdentity(
+			getDefaultIdentity(account, settings),
+			ParticipantRole.FROM
+		),
 		sender: undefined,
 		id: uuid(),
 		attachments: [],
@@ -50,16 +62,26 @@ export const resumeEditor = (id: MailsEditorV2['id']): MailsEditorV2 | null => {
 	return editor ?? null;
 };
 
+export type GenerateEditorParams = {
+	action: EditViewActionsType;
+	messageId?: string;
+	messagesStoreDispatch: AppDispatch;
+	account: Account;
+	settings: AccountSettings;
+};
+
 /**
  * Generate a new editor structure for the given action and message id
  * @param action - Edit action type
  * @param messageId - The id of the message associated with the action
  */
-export const generateEditor = (
-	messagesStoreDispatch: AppDispatch,
-	action: EditViewActionsType,
-	messageId?: string
-): MailsEditorV2 | null => {
+export const generateEditor = ({
+	action,
+	messageId,
+	messagesStoreDispatch,
+	account,
+	settings
+}: GenerateEditorParams): MailsEditorV2 | null => {
 	switch (action) {
 		case EditViewActions.RESUME:
 			if (!messageId) {
@@ -67,7 +89,7 @@ export const generateEditor = (
 			}
 			break;
 		case EditViewActions.NEW:
-			return generateNewMessageEditor(messagesStoreDispatch);
+			return generateNewMessageEditor(messagesStoreDispatch, account, settings);
 		case EditViewActions.REPLY:
 			// TODO
 			if (!messageId) {

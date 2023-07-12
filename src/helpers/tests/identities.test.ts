@@ -23,7 +23,13 @@ describe('Message sender address', () => {
 
 	test('returns null if there is no participant of type FROM', () => {
 		const from = { type: undefined, address: faker.internet.email() };
-		const msg = generateMessage({ from });
+
+		const msg = generateMessage({
+			// Testing the specific corner case
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			from
+		});
 		expect(getMessageSenderAddress(msg)).toBeNull();
 	});
 

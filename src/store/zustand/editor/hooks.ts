@@ -4,12 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { debounce } from 'lodash';
 import { useEffect } from 'react';
+
+import { debounce } from 'lodash';
+
+import { useEditorsStore } from './store';
 import { TIMEOUTS } from '../../../constants';
 import { DraftSaveEndListener, DraftSaveStartListener, MailsEditorV2 } from '../../../types';
 import { saveDraftV2 } from '../../actions/save-draft';
-import { useEditorsStore } from './store';
 
 /**
  * Returns the editor with given ID or null if not found.
@@ -301,7 +303,10 @@ export const useEditorFrom = (
 
 	return {
 		from: value,
-		setFrom: (val: MailsEditorV2['from']) => setter(id, val)
+		setFrom: (val: MailsEditorV2['from']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+		}
 	};
 };
 

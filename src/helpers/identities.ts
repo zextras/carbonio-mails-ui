@@ -6,10 +6,11 @@
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { isArray } from 'lodash';
+
+import { getMessageOwnerAccountName } from './folders';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import type { Folders } from '../carbonio-ui-commons/types/folder';
 import type { MailMessage, Participant } from '../types';
-import { getMessageOwnerAccountName } from './folders';
 
 /**
  * The name of the primary identity
@@ -54,11 +55,12 @@ type AvailableAddress = {
  * The type describe the identity, its type and the addresses used to
  * receive and send the message
  */
-type Identity = {
+type IdentityDescriptor = {
 	id: string;
 	ownerAccount: string;
 	identityName: string;
-	displayName: string | undefined;
+	identityDisplayName: string;
+	fromDisplay: string | undefined;
 	receivingAddress: string;
 	fromAddress: string;
 	type: IdentityType;
@@ -83,7 +85,7 @@ type RecipientWeight = {
 		| typeof ParticipantRole.TO
 		| typeof ParticipantRole.CARBON_COPY
 		| typeof ParticipantRole.BLIND_CARBON_COPY;
-	matchingIdentity?: Identity;
+	matchingIdentity?: IdentityDescriptor;
 	matchingAddress?: boolean;
 	weight?: number;
 };
@@ -208,15 +210,15 @@ const getAddressOwnerAccount = (
  * @param account
  * @param settings
  */
-const getIdentities = (account: Account, settings: AccountSettings): Array<Identity> => {
-	const identities: Array<Identity> = [];
+const getIdentities = (account: Account, settings: AccountSettings): Array<IdentityDescriptor> => {
+	const identities: Array<IdentityDescriptor> = [];
 
 	// Get the list of all the available email addresses for the account and their type
 	const availableEmailAddresses = getAvailableAddresses(account, settings);
 
-	account.identities?.identity?.forEach((identity: any) => {
-		const fromAddress = identity._attrs.zimbraPrefFromAddress;
-		const displayName = identity._attrs.zimbraPrefFromDisplay;
+	account.identities?.identity?.forEach((identity) => {
+		const fromAddress = identity._attrs?.zimbraPrefFromAddress ?? '';
+		const fromDisplay = identity._attrs?.zimbraPrefFromDisplay;
 
 		// The receiving address for the primary identity is the account name
 		const receivingAddress = identity.name === PRIMARY_IDENTITY_NAME ? account.name : fromAddress;
@@ -236,9 +238,10 @@ const getIdentities = (account: Account, settings: AccountSettings): Array<Ident
 		identities.push({
 			ownerAccount: matchingReceivingAddress?.ownerAccount ?? account.name,
 			receivingAddress,
-			id: identity._attrs.zimbraPrefIdentityId,
-			identityName: identity.name,
-			displayName,
+			id: identity._attrs?.zimbraPrefIdentityId ?? '',
+			identityName: identity.name ?? '',
+			identityDisplayName: identity._attrs?.zimbraPrefIdentityName ?? '',
+			fromDisplay,
 			fromAddress,
 			type,
 			right
@@ -306,7 +309,7 @@ const checkMatchingAddress = (
  */
 const computeIdentityWeight = (
 	recipients: Array<RecipientWeight>,
-	identities: Array<Identity>,
+	identities: Array<IdentityDescriptor>,
 	folderOwnerAccount: string
 ): Array<RecipientWeight> => {
 	const result: Array<RecipientWeight> = [];
@@ -405,16 +408,24 @@ const getRecipientReplyIdentity = (
 /**
  *
  * @param participant
- * @param primaryAccount
+ * @param 	account: Account,
  * @param settings
  */
 const getIdentityFromParticipant = (
 	participant: Participant,
-	primaryAccount: Account,
+	account: Account,
 	settings: AccountSettings
-): Identity | null =>
-	// TODO implement
-	null;
+): IdentityDescriptor | null =>
+	getIdentities(account, settings).reduce<IdentityDescriptor | null>((result, identity) => {
+		if (identity.fromAddress !== participant.address) {
+			return result;
+		}
+
+		// TODO maybe handle the scenario when 2 identity has the same address but they differ by the name
+
+		return identity;
+	}, null);
+
 /**
  * Returns the message's sender obtained from the message's participants
  * @param message
@@ -455,28 +466,45 @@ const getMessageSenderAccount = (
 
 /**
  *
+ * @param account
+ * @param settings
+ */
+const getDefaultIdentity = (account: Account, settings: AccountSettings): IdentityDescriptor =>
+	getIdentities(account, settings).reduce((result, identity) =>
+		identity.identityName === PRIMARY_IDENTITY_NAME ? identity : result
+	);
+
+/**
+ *
  * @param identity
+ * @param account
+ * @param settings
  * @param t
  */
-const getIdentityDescription = (identity: Identity, t: TFunction): string | null => {
+const getIdentityDescription = (
+	identity: IdentityDescriptor,
+	account: Account,
+	settings: AccountSettings,
+	t: TFunction
+): string | null => {
 	if (!identity) {
 		return null;
 	}
 
-	const result =
-		identity.right === 'sendOnBehalfOf'
-			? `${identity.ownerAccount} ${t('label.on_behalf_of', 'on behalf of')} ${
-					identity.displayName ?? identity.identityName
-			  }<${identity.fromAddress}>`
-			: `${identity.displayName ?? identity.identityName}<${identity.fromAddress}>`;
+	const defaultIdentity = getDefaultIdentity(account, settings);
 
-	return result;
+	return identity.right === 'sendOnBehalfOf'
+		? `${defaultIdentity.fromDisplay} ${t('label.on_behalf_of', 'on behalf of')} ${
+				identity.fromDisplay ?? identity.identityName
+		  } <${identity.fromAddress}>`
+		: `${identity.fromDisplay ?? identity.identityName} <${identity.fromAddress}>`;
 };
 
 export {
-	Identity,
+	IdentityDescriptor,
 	MatchingReplyIdentity,
 	RecipientWeight,
+	getDefaultIdentity,
 	checkMatchingAddress,
 	computeIdentityWeight,
 	filterMatchingRecipients,
