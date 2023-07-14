@@ -65,6 +65,8 @@ type IdentityDescriptor = {
 	fromAddress: string;
 	type: IdentityType;
 	right?: string;
+	zimbraPrefDefaultSignatureId?: string;
+	zimbraPrefForwardReplySignatureId?: string;
 };
 
 type MatchingReplyIdentity = {
@@ -244,7 +246,9 @@ const getIdentities = (account: Account, settings: AccountSettings): Array<Ident
 			fromDisplay,
 			fromAddress,
 			type,
-			right
+			right,
+			zimbraPrefDefaultSignatureId: identity._attrs?.zimbraPrefDefaultSignatureId,
+			zimbraPrefForwardReplySignatureId: identity._attrs?.zimbraPrefForwardReplySignatureId
 		});
 	});
 

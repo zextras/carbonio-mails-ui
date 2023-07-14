@@ -19,8 +19,10 @@ import { generateMessage } from '../../../../../tests/generators/generateMessage
 import { generateStore } from '../../../../../tests/generators/store';
 import EditView from '../edit-view';
 import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils/text/html';
-import { getSignatureValue } from '../../../../../helpers/signatures';
-import { replaceSignatureOnPlainTextBody } from '../parts/edit-view-header';
+import {
+	getSignatureValue,
+	replaceSignatureOnPlainTextBody
+} from '../../../../../helpers/signatures';
 
 /**
  * Test the EditView component for set signature for selected from identity

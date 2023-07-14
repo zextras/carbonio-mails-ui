@@ -13,6 +13,7 @@ import { getDefaultIdentity } from '../../../helpers/identities';
 import { MailsEditorV2 } from '../../../types';
 import { createParticipantFromIdentity } from '../../../views/app/detail-panel/edit/edit-view-v2';
 import { AppDispatch } from '../../redux';
+import { LineType } from '../../../commons/utils';
 
 /**
  *
@@ -42,8 +43,8 @@ const generateNewMessageEditor = (
 		},
 		subject: '',
 		text: {
-			plainText: '',
-			richText: ''
+			plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
+			richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
 		},
 		requestReadReceipt: false,
 		messagesStoreDispatch,

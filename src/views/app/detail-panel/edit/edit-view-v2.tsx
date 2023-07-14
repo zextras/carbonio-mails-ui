@@ -34,6 +34,7 @@ import {
 	useEditorText
 } from '../../../../store/zustand/editor';
 import { DraftSaveEndListener, DraftSaveStartListener, Participant } from '../../../../types';
+import { getMailBodyWithSignature } from '../../../../helpers/signatures';
 
 const StyledGapContainer = styled(Container)<
 	ContainerProps & { gap?: keyof DefaultTheme['sizes']['padding'] }
@@ -82,12 +83,17 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		(identity: IdentityDescriptor): void => {
 			console.log('**** identity changed', identity);
 			setFrom(createParticipantFromIdentity(identity, ParticipantRole.FROM));
+			const textWithSignature = getMailBodyWithSignature(
+				text,
+				identity.zimbraPrefDefaultSignatureId
+			);
 
+			setText(textWithSignature);
 			// TODO handle the sender in case of sendOnBehalfOf
 
 			// TODO change signature accordingly
 		},
-		[setFrom]
+		[setFrom, setText, text]
 	);
 
 	const onSubjectChange = useCallback(
