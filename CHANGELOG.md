@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.5.0...v1.6.0) (2023-07-06)
+
+
+### Features
+
+* added attachment list to print page ([#392](https://github.com/zextras/carbonio-mails-ui/issues/392)) ([c2bb2c0](https://github.com/zextras/carbonio-mails-ui/commit/c2bb2c0b3a68c5f949e291eb825ec218792064d8))
+* added test for deletion of folder in shared account ([a193d78](https://github.com/zextras/carbonio-mails-ui/commit/a193d78bee434f452ad25de4e006db410a01a0bd))
+* helper text in case of empty calendar name inside response-actions ([a2f3887](https://github.com/zextras/carbonio-mails-ui/commit/a2f3887e8471616daf23bf12cf8c13192bcbbc05))
+
+
+### Bug Fixes
+
+* add changes to update to latest types from Shell ([8d45734](https://github.com/zextras/carbonio-mails-ui/commit/8d45734613f0a9f88c94e332c4374b37ba4c6b6f))
+* displaying an error when user tries to create folder with non allowed characters ([#386](https://github.com/zextras/carbonio-mails-ui/issues/386)) ([ea9244e](https://github.com/zextras/carbonio-mails-ui/commit/ea9244ee11b8fb9ea6f7fa990cbabcf756ddea33))
+* fix conversation list prop ([#407](https://github.com/zextras/carbonio-mails-ui/issues/407)) ([69fc298](https://github.com/zextras/carbonio-mails-ui/commit/69fc2983c1394b57b163b6c5779b7c5250f6474a))
+* fix delete of folder in shared accounts ([0486f8e](https://github.com/zextras/carbonio-mails-ui/commit/0486f8eba4f397aa24d35a9a955bc3561dce3484))
+* fixed system folder translated name in move modal ([#394](https://github.com/zextras/carbonio-mails-ui/issues/394)) ([783d532](https://github.com/zextras/carbonio-mails-ui/commit/783d53291fe99e797f3fe3d1c51ac33bdcb34d51))
+* folder name validation should be skip on system folder edit ([f4c1a5f](https://github.com/zextras/carbonio-mails-ui/commit/f4c1a5f962efc38cb6018a1f1382e2e6f9616ca6))
+* managed shared account folder's actions as per rights ([b297db0](https://github.com/zextras/carbonio-mails-ui/commit/b297db037e5ee1aac84ffb40e36968cb59930b19))
+* response handling for 'save to files' ([d9fbb40](https://github.com/zextras/carbonio-mails-ui/commit/d9fbb400f7306c7d51373daa68d97440535b0bbf))
+* search results cannot be endlessly scrolled ([94dd274](https://github.com/zextras/carbonio-mails-ui/commit/94dd2742bd9ac5f5f1d6847b8724bfc3572bd5e7))
+* shared accounts view for draft and trash folder is set to message ([#402](https://github.com/zextras/carbonio-mails-ui/issues/402)) ([7c96927](https://github.com/zextras/carbonio-mails-ui/commit/7c96927dc515e095554b53a90ebe26068201c5f9))
+* sharing folder set 'send notification about this shared' is checked by default ([645b852](https://github.com/zextras/carbonio-mails-ui/commit/645b852014db3d6385eb8010142911e13c1fe2fc))
+* wrong condition of item name inside  share calendar mail ([0167e7b](https://github.com/zextras/carbonio-mails-ui/commit/0167e7bc418850f4395f14ae3ef4682080f156f1))
+
 ## [1.5.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.4.2...v1.5.0) (2023-06-07)
 
 
