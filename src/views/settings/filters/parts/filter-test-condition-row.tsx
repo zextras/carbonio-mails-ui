@@ -44,6 +44,7 @@ const FilterTestConditionRow: FC<FilterTestConditionRowProps> = ({ compProps }):
 							label={t('settings.field', 'Field')}
 							onChange={setCondition}
 							defaultSelection={defaultSelection}
+							data-testid={'filter-field'}
 						/>
 					</Row>
 					<Row padding={{ right: 'small' }}>

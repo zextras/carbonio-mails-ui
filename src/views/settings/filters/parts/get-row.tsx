@@ -43,7 +43,7 @@ export const getRowFunc =
 				tests = [
 					{
 						condition,
-						headerTest: [{ header: 'from', part: 'all', stringComparison: 'contains', value: '' }]
+						addressTest: [{ header: 'from', part: 'all', stringComparison: 'contains', value: '' }]
 					}
 				];
 				break;

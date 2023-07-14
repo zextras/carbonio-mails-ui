@@ -171,9 +171,15 @@ const CreateFilterModal: FC<ComponentProps> = ({
 					value={filterName}
 					onChange={onFilterNameChange}
 					backgroundColor="gray5"
+					data-testid="filter-name"
 				/>
 				<Padding top="small" />
-				<Checkbox value={activeFilter} onClick={toggleActiveFilter} label={activeFilterLabel} />
+				<Checkbox
+					value={activeFilter}
+					onClick={toggleActiveFilter}
+					label={activeFilterLabel}
+					data-testid={'active-filter'}
+				/>
 				<Row
 					padding={{ vertical: 'medium' }}
 					height="fit"
