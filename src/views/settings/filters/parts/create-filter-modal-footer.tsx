@@ -45,7 +45,7 @@ const ModalFooter: FC<ModalFooterProps> = ({
 						onClick={onConfirm}
 						label={label}
 						disabled={disabled}
-						test-dataid="create-button"
+						data-testid="create-button"
 					/>
 				</Padding>
 			</Tooltip>
