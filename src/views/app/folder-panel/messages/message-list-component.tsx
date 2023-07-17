@@ -26,7 +26,8 @@ const DragImageContainer = styled.div`
 const DragItems: FC<{
 	messages: IncompleteMessage[];
 	draggedIds: Record<string, boolean>;
-}> = ({ messages, draggedIds }) => {
+	folderId: string;
+}> = ({ messages, draggedIds, folderId }) => {
 	const items = reduce<typeof draggedIds, MessageListItemProps['item'][]>(
 		draggedIds,
 		(acc, v, k) => {
@@ -51,6 +52,7 @@ const DragItems: FC<{
 					selecting={false}
 					visible={false}
 					deselectAll={noop}
+					currentFolderId={folderId}
 				/>
 			))}
 		</>
@@ -194,7 +196,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 							</Container>
 						)}
 						<DragImageContainer ref={dragImageRef}>
-							<DragItems messages={messages} draggedIds={draggedIds ?? {}} />
+							<DragItems messages={messages} draggedIds={draggedIds ?? {}} folderId={folderId} />
 						</DragImageContainer>
 					</>
 				) : (
