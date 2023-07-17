@@ -103,20 +103,24 @@ export const useGetIdentities = ({
 	const noName = useMemo(() => t('label.no_name', '<No Name>'), [t]);
 
 	useEffect(() => {
-		const identityList = map(account.identities.identity, (item, idx) => ({
-			value: idx,
-			label: `${item.name ?? ''}(${item._attrs?.zimbraPrefFromDisplay ?? ''}  <${
-				item._attrs?.zimbraPrefFromAddress
-			}>)`,
-			address: item._attrs?.zimbraPrefFromAddress,
-			name: item.name,
-			fullname: item._attrs?.zimbraPrefFromDisplay ?? '',
-			type: item._attrs.zimbraPrefFromAddressType,
-			identityName: item.name ?? '',
-			displayName: item._attrs?.zimbraPrefIdentityName ?? '',
-			zimbraPrefDefaultSignatureId: item._attrs?.zimbraPrefDefaultSignatureId,
-			zimbraPrefForwardReplySignatureId: item._attrs?.zimbraPrefForwardReplySignatureId
-		}));
+		const identityList = map(
+			account.identities.identity,
+			(item, idx) =>
+				({
+					value: `${idx}`,
+					label: `${item.name ?? ''}(${item._attrs?.zimbraPrefFromDisplay ?? ''}  <${
+						item._attrs?.zimbraPrefFromAddress
+					}>)`,
+					address: item._attrs?.zimbraPrefFromAddress ?? '',
+					name: item.name,
+					fullname: item._attrs?.zimbraPrefFromDisplay ?? '',
+					type: item._attrs?.zimbraPrefFromAddressType,
+					identityName: item.name ?? '',
+					displayName: item._attrs?.zimbraPrefIdentityName ?? '',
+					zimbraPrefDefaultSignatureId: item._attrs?.zimbraPrefDefaultSignatureId,
+					zimbraPrefForwardReplySignatureId: item._attrs?.zimbraPrefForwardReplySignatureId
+				} as IdentityType)
+		);
 		const rightsList = flatten(
 			map(
 				filter(

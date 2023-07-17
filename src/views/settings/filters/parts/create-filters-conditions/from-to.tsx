@@ -47,7 +47,7 @@ const FromToCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): 
 				filterTests: [
 					{
 						...tmpFilters[activeIndex].filterTests[0],
-						headerTest: [{ header: tmpFilters[activeIndex].key, ...selectValue, value, part }]
+						addressTest: [{ header: tmpFilters[activeIndex].key, ...selectValue, value, part }]
 					}
 				]
 			};
