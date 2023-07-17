@@ -99,6 +99,7 @@ const CustomSelect: FC<{
 			LabelFactory={LabelFactory}
 			maxHeight="20vh"
 			dropdownWidth="auto"
+			data-testid="field-select"
 		/>
 	);
 };

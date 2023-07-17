@@ -3,7 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
+import {
+	Account,
+	AccountSettings,
+	AccountSettingsPrefs,
+	FOLDERS
+} from '@zextras/carbonio-shell-ui';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
 import {
@@ -433,7 +438,7 @@ export const getMP = ({
 
 export const generateRequest = (
 	data: MailsEditor,
-	prefs?: Partial<PrefsType>
+	prefs?: Partial<AccountSettingsPrefs>
 ): SoapDraftMessageObj => {
 	const style = {
 		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
