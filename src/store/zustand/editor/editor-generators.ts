@@ -11,6 +11,7 @@ import { ParticipantRole } from '../../../carbonio-ui-commons/constants/particip
 import { LineType } from '../../../commons/utils';
 import { EditViewActions, EditViewActionsType } from '../../../constants';
 import { getDefaultIdentity } from '../../../helpers/identities';
+import { getMailBodyWithSignature } from '../../../helpers/signatures';
 import { MailsEditorV2 } from '../../../types';
 import { createParticipantFromIdentity } from '../../../views/app/detail-panel/edit/edit-view-v2';
 import { AppDispatch } from '../../redux';
@@ -22,8 +23,17 @@ const generateNewMessageEditor = (
 	messagesStoreDispatch: AppDispatch,
 	account: Account,
 	settings: AccountSettings
-): MailsEditorV2 =>
-	({
+): MailsEditorV2 => {
+	const text = {
+		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
+		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+	};
+	const defaultIdentity = getDefaultIdentity(account, settings);
+	const textWithSignature = getMailBodyWithSignature(
+		text,
+		defaultIdentity.zimbraPrefDefaultSignatureId
+	);
+	return {
 		action: EditViewActions.NEW,
 		attachmentFiles: [],
 		from: createParticipantFromIdentity(
@@ -42,17 +52,15 @@ const generateNewMessageEditor = (
 			bcc: []
 		},
 		subject: '',
-		text: {
-			plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-			richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
-		},
+		text: textWithSignature,
 		requestReadReceipt: false,
 		messagesStoreDispatch,
 		listeners: {
 			draftSaveStartListeners: [],
 			draftSaveEndListeners: []
 		}
-	} as MailsEditorV2);
+	} as MailsEditorV2;
+};
 
 /**
  *
