@@ -70,10 +70,7 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	const onIdentityChanged = useCallback(
 		(identity: IdentityDescriptor): void => {
 			setFrom(createParticipantFromIdentity(identity, ParticipantRole.FROM));
-			const textWithSignature = getMailBodyWithSignature(
-				text,
-				identity.zimbraPrefDefaultSignatureId
-			);
+			const textWithSignature = getMailBodyWithSignature(text, identity.defaultSignatureId);
 
 			setText(textWithSignature);
 			// TODO handle the sender in case of sendOnBehalfOf

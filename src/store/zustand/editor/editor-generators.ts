@@ -29,10 +29,7 @@ const generateNewMessageEditor = (
 		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity(account, settings);
-	const textWithSignature = getMailBodyWithSignature(
-		text,
-		defaultIdentity.zimbraPrefDefaultSignatureId
-	);
+	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
 	return {
 		action: EditViewActions.NEW,
 		attachmentFiles: [],

@@ -67,19 +67,21 @@ export const RecipientsRows: FC<RecipientsRowsProps> = ({ recipients, onRecipien
 					padding={{ right: 'medium', left: 'extrasmall' }}
 					orientation="horizontal"
 				>
-					<Padding right="small">
+					<Padding right={'extrasmall'}>
 						<Button
 							label={t('label.cc', 'Cc')}
 							type="ghost"
-							style={{ color: '#282828', padding: 0 }}
+							style={{ color: '#282828' }} // FIXME create a styled component and use theme colors
 							onClick={toggleCc}
+							forceActive={showCc}
 							data-testid="BtnCc"
 						/>
 					</Padding>
 					<Button
 						label={t('label.bcc', 'Bcc')}
 						type="ghost"
-						style={{ color: '#282828', padding: 0 }}
+						style={{ color: '#282828' }} // FIXME create a styled component and use theme colors
+						forceActive={showBcc}
 						onClick={toggleBcc}
 					/>
 				</Container>
