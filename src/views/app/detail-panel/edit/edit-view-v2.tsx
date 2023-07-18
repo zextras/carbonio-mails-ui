@@ -35,15 +35,11 @@ import {
 	EditorRecipients,
 	Participant
 } from '../../../../types';
+import { getMailBodyWithSignature } from '../../../../helpers/signatures';
 
 export type EditViewProp = {
 	editorId: string;
 };
-//
-// const editor = generateEditor(noop, 'new');
-// editor.subject = 'Pluto';
-//
-// useEditorsStore.getState().addEditor(editor?.id, editor);
 
 export const createParticipantFromIdentity = (
 	identity: IdentityDescriptor,
@@ -73,12 +69,17 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		(identity: IdentityDescriptor): void => {
 			console.log('**** identity changed', identity);
 			setFrom(createParticipantFromIdentity(identity, ParticipantRole.FROM));
+			const textWithSignature = getMailBodyWithSignature(
+				text,
+				identity.zimbraPrefDefaultSignatureId
+			);
 
+			setText(textWithSignature);
 			// TODO handle the sender in case of sendOnBehalfOf
 
 			// TODO change signature accordingly
 		},
-		[setFrom]
+		[setFrom, setText, text]
 	);
 
 	const onRecipientsChanged = useCallback((updatedRecipients: EditorRecipients): void => {

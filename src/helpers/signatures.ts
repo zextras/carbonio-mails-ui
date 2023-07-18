@@ -3,14 +3,25 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account } from '@zextras/carbonio-shell-ui';
+import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find, map } from 'lodash';
 import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { LineType } from '../commons/utils';
 import type { SignatureDescriptor } from '../types/signatures';
+import type { EditorText } from '../types/editor';
 
 const NO_SIGNATURE_ID = '11111111-1111-1111-1111-111111111111';
 const NO_SIGNATURE_LABEL = 'No signature';
+
+/**
+ * Match the first string which is between a
+ * signature separator and either a quoted text
+ * delimiter or the end of the content
+ */
+const PLAINTEXT_SIGNATURE_REGEX = new RegExp(
+	`^(${LineType.SIGNATURE_PRE_SEP}\\n)(((?!\\s${LineType.PLAINTEXT_SEP}$).)*)`,
+	'ms'
+);
 
 /**
  * Returns signatures descriptors for the given account
@@ -85,11 +96,97 @@ const composeMailBodyWithSignature = (
 		: `\n\n${LineType.SIGNATURE_PRE_SEP}\n${convertHtmlToPlainText(signatureValue)}`;
 };
 
+/**
+ * Replaces the signature in a HTML message body.
+ *
+ * @param body - HTML message body
+ * @param newSignature - content of the new signature
+ */
+const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string => {
+	const doc = new DOMParser().parseFromString(body, 'text/html');
+
+	// Get the element which wraps the signature
+	const signatureWrappers = doc.getElementsByClassName(LineType.SIGNATURE_CLASS);
+
+	let signatureWrapper = null;
+
+	// Locate the separator
+	const separator = doc.getElementById(LineType.HTML_SEP_ID);
+
+	// Locate the first signature. If no wrapper is found then the unchanged mail body is returned
+	signatureWrapper = signatureWrappers.item(0);
+	if (signatureWrapper == null) {
+		return body;
+	}
+
+	/*
+	 * If a separator is present it should be located after the signature
+	 * (the content after the separator is quoted text which shouldn't be altered).
+	 * Otherwise the original body content is returned
+	 */
+	if (
+		separator &&
+		signatureWrapper.compareDocumentPosition(separator) !== Node.DOCUMENT_POSITION_FOLLOWING
+	) {
+		return body;
+	}
+
+	signatureWrapper.innerHTML = newSignature;
+	return doc.documentElement.innerHTML;
+};
+
+/**
+ * Replaces the signature in a plain text message body
+ *
+ * @param body - plain text message body
+ * @param newSignature - signature content
+ */
+const replaceSignatureOnPlainTextBody = (body: string, newSignature: string): string => {
+	// If no eligible signature is found the original body is returned
+	if (!body.match(PLAINTEXT_SIGNATURE_REGEX)) {
+		return body;
+	}
+
+	// Locate the first quoted text separator
+	const quotedTextSeparatorPos = body.indexOf(LineType.PLAINTEXT_SEP);
+
+	const match = body.match(PLAINTEXT_SIGNATURE_REGEX);
+
+	/*
+	 * If the body content doesn't match the regex or if it matches it
+	 * but after a quoted-text separator (= the target signature is
+	 * located inside the quoted text. This could happen when the user
+	 * will manually remove the preset signature inside the UNquoted text.
+	 */
+	if (!match || (quotedTextSeparatorPos >= 0 && quotedTextSeparatorPos < (match.index ?? 0))) {
+		return body;
+	}
+
+	// Replace the target signature
+	return body.replace(PLAINTEXT_SIGNATURE_REGEX, `$1${newSignature}`);
+};
+
+/**
+ * Composes the body of an email with signature of given signature id
+ * @param text
+ * @param signatureId
+ */
+const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorText => {
+	const signatureValue = signatureId !== '' ? getSignatureValue(getUserAccount(), signatureId) : '';
+	const plainSignatureValue =
+		signatureValue !== '' ? `\n${convertHtmlToPlainText(signatureValue)}\n\n` : '';
+	const richText = replaceSignatureOnHtmlBody(text.richText, signatureValue);
+	const plainText = replaceSignatureOnPlainTextBody(text.plainText, plainSignatureValue);
+	return { plainText, richText };
+};
+
 export {
 	NO_SIGNATURE_ID,
 	NO_SIGNATURE_LABEL,
 	getSignatures,
 	getSignature,
 	getSignatureValue,
-	composeMailBodyWithSignature
+	composeMailBodyWithSignature,
+	replaceSignatureOnPlainTextBody,
+	getMailBodyWithSignature
 };

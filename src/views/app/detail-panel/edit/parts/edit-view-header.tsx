@@ -159,7 +159,7 @@ const replaceSignatureOnHtmlBody = (body: string, newSignature: string): string 
  * @param body - plain text message body
  * @param newSignature - signature content
  */
-export const replaceSignatureOnPlainTextBody = (body: string, newSignature: string): string => {
+const replaceSignatureOnPlainTextBody = (body: string, newSignature: string): string => {
 	// If no eligible signature is found the original body is returned
 	if (!body.match(PLAINTEXT_SIGNATURE_REGEX)) {
 		return body;
