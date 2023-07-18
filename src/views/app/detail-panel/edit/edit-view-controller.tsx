@@ -3,9 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
-import { useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
+import {
+	updateBoardContext,
+	useBoard,
+	useUserAccount,
+	useUserSettings
+} from '@zextras/carbonio-shell-ui';
 
 import { EditView } from './edit-view-v2';
 import { EditViewActions, EditViewActionsType } from '../../../../constants';
@@ -13,6 +18,7 @@ import { useAppDispatch } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
 import { addEditor } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
+import { EditViewBoardContext } from '../../../../types';
 
 const parseAndValidateParams = (
 	action?: string,
@@ -27,11 +33,35 @@ const parseAndValidateParams = (
 	return { action: resultAction, id: resultId };
 };
 
+const MemoizedEditView = memo(EditView);
+
 const EditViewController: FC = (x) => {
-	const { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
 	const messagesStoreDispatch = useAppDispatch();
 	const account = useUserAccount();
 	const settings = useUserSettings();
+	const board = useBoard<EditViewBoardContext>();
+
+	// TODO check why the useQueryParams triggers 2 renders
+	let { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
+
+	console.count('****  controller render');
+	// console.log('**** board', board);
+
+	/*
+	 * If the current component is running inside a board
+	 * its context is examined to get an existing editor id
+	 * and to try to resume it. This will prevent the reset
+	 * of the editor when the board re-renders.
+	 *
+	 * Otherwise a new editor is generated and added using
+	 * the given parameters
+	 */
+	const existingEditorId = board.context?.editorId;
+	if (existingEditorId) {
+		action = EditViewActions.RESUME;
+		id = existingEditorId;
+	}
+	// console.log('**** final params', { action, id });
 
 	// Create or resume editor
 	const editor = generateEditor({
@@ -45,11 +75,20 @@ const EditViewController: FC = (x) => {
 		throw new Error('No editor provided');
 	}
 
-	addEditor({ id: editor.id, editor });
+	if (action !== EditViewActions.RESUME) {
+		addEditor({ id: editor.id, editor });
+	}
+
+	/*
+	 * Store the editor id inside the board context (if existing)
+	 * to retrieve the same editor if the board re-renders
+	 */
+	if (board && !board.context?.editorId) {
+		updateBoardContext(board.id, { ...board.context, editorId: editor.id });
+	}
 
 	// TODO handle board title change
 
-	return <EditView editorId={editor.id} />;
+	return <MemoizedEditView editorId={editor.id} />;
 };
-
 export default EditViewController;

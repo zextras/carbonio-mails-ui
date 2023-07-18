@@ -13,6 +13,10 @@ import { TIMEOUTS } from '../../../constants';
 import { DraftSaveEndListener, DraftSaveStartListener, MailsEditorV2 } from '../../../types';
 import { saveDraftV2 } from '../../actions/save-draft';
 
+const debugLog = (text: string): void => {
+	console.debug(`***** ${text}`);
+};
+
 /**
  * Returns the editor with given ID or null if not found.
  * @params id
@@ -110,6 +114,7 @@ export const useEditorSubject = (
 		setSubject: (val: string): void => {
 			setter(id, val);
 			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: subject');
 		}
 	};
 };
@@ -133,8 +138,13 @@ export const useEditorText = (
 		setText: (val: MailsEditorV2['text']): void => {
 			setter(id, val);
 			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: text');
 		},
-		resetText: () => setter(id, { plainText: '', richText: '' })
+		resetText: (): void => {
+			setter(id, { plainText: '', richText: '' });
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: text reset');
+		}
 	};
 };
 
@@ -153,7 +163,11 @@ export const useEditorAutoSendTime = (
 
 	return {
 		autoSendTime: value,
-		setAutoSendTime: (val: MailsEditorV2['autoSendTime']) => setter(id, val)
+		setAutoSendTime: (val: MailsEditorV2['autoSendTime']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: autoSendTime');
+		}
 	};
 };
 
@@ -170,7 +184,14 @@ export const useEditorDid = (
 	const value = useEditorsStore((state) => state.editors[id].did);
 	const setter = useEditorsStore((state) => state.setDid);
 
-	return { did: value, setDid: (val: MailsEditorV2['did']) => setter(id, val) };
+	return {
+		did: value,
+		setDid: (val: MailsEditorV2['did']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: did');
+		}
+	};
 };
 
 /**
@@ -188,7 +209,11 @@ export const useEditorIsRichText = (
 
 	return {
 		isRichText: value,
-		setIsRichText: (val: MailsEditorV2['isRichText']) => setter(id, val)
+		setIsRichText: (val: MailsEditorV2['isRichText']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: isRichText');
+		}
 	};
 };
 
@@ -249,6 +274,7 @@ export const useEditorRecipients = (
 		setRecipients: (val: MailsEditorV2['recipients']): void => {
 			setter(id, val);
 			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: recipients');
 		}
 	};
 };
@@ -268,7 +294,11 @@ export const useEditorToRecipients = (
 
 	return {
 		toRecipients: value,
-		setToRecipients: (val: MailsEditorV2['recipients']['to']) => setter(id, val)
+		setToRecipients: (val: MailsEditorV2['recipients']['to']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: to');
+		}
 	};
 };
 
@@ -287,7 +317,11 @@ export const useEditorCcRecipients = (
 
 	return {
 		ccRecipients: value,
-		setCcRecipients: (val: MailsEditorV2['recipients']['cc']) => setter(id, val)
+		setCcRecipients: (val: MailsEditorV2['recipients']['cc']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: cc');
+		}
 	};
 };
 
@@ -306,7 +340,11 @@ export const useEditorBccRecipients = (
 
 	return {
 		bccRecipients: value,
-		setBccRecipients: (val: MailsEditorV2['recipients']['bcc']) => setter(id, val)
+		setBccRecipients: (val: MailsEditorV2['recipients']['bcc']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: bcc');
+		}
 	};
 };
 
@@ -328,6 +366,7 @@ export const useEditorFrom = (
 		setFrom: (val: MailsEditorV2['from']): void => {
 			setter(id, val);
 			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: from');
 		}
 	};
 };
@@ -347,7 +386,11 @@ export const useEditorSender = (
 
 	return {
 		sender: value,
-		setSender: (val: MailsEditorV2['sender']) => setter(id, val)
+		setSender: (val: MailsEditorV2['sender']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: sender');
+		}
 	};
 };
 
@@ -366,7 +409,11 @@ export const useEditorIsUrgent = (
 
 	return {
 		isUrgent: value,
-		setIsUrgent: (val: MailsEditorV2['isUrgent']) => setter(id, val)
+		setIsUrgent: (val: MailsEditorV2['isUrgent']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: isUrgent');
+		}
 	};
 };
 

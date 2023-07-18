@@ -20,6 +20,7 @@ import {
 	getIdentityFromParticipant,
 	IdentityDescriptor
 } from '../../../../helpers/identities';
+import { getMailBodyWithSignature } from '../../../../helpers/signatures';
 import {
 	useAddDraftListeners,
 	useEditorFrom,
@@ -35,7 +36,6 @@ import {
 	EditorRecipients,
 	Participant
 } from '../../../../types';
-import { getMailBodyWithSignature } from '../../../../helpers/signatures';
 
 export type EditViewProp = {
 	editorId: string;
@@ -65,9 +65,10 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 
 	const [tempSaveDraftStatus, setTempSaveDraftStatus] = useState('');
 
+	console.count('**** edit view render');
+
 	const onIdentityChanged = useCallback(
 		(identity: IdentityDescriptor): void => {
-			console.log('**** identity changed', identity);
 			setFrom(createParticipantFromIdentity(identity, ParticipantRole.FROM));
 			const textWithSignature = getMailBodyWithSignature(
 				text,
@@ -82,9 +83,12 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		[setFrom, setText, text]
 	);
 
-	const onRecipientsChanged = useCallback((updatedRecipients: EditorRecipients): void => {
-		setRecipients(updatedRecipients);
-	}, []);
+	const onRecipientsChanged = useCallback(
+		(updatedRecipients: EditorRecipients): void => {
+			setRecipients(updatedRecipients);
+		},
+		[setRecipients]
+	);
 
 	const onSubjectChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
@@ -101,12 +105,10 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	);
 
 	const onDraftSaveStart = useCallback<DraftSaveStartListener>(({ editorId: string }) => {
-		console.log('Save draft started....');
 		setTempSaveDraftStatus('Save draft started....');
 	}, []);
 
 	const onDraftSaveEnd = useCallback<DraftSaveEndListener>(({ editorId: string, result }) => {
-		console.log('Save draft ended');
 		setTempSaveDraftStatus(
 			`Save draft ended at ${new Date().toLocaleTimeString()} with result ${JSON.stringify(result)}`
 		);
@@ -129,8 +131,6 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		if (from) {
 			result = getIdentityFromParticipant(from, account, settings);
 		}
-
-		console.log('**** selected identity is', result);
 
 		return result;
 

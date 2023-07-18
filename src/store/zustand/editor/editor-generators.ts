@@ -8,12 +8,12 @@ import { v4 as uuid } from 'uuid';
 
 import { getEditor } from './hooks';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
+import { LineType } from '../../../commons/utils';
 import { EditViewActions, EditViewActionsType } from '../../../constants';
 import { getDefaultIdentity } from '../../../helpers/identities';
 import { MailsEditorV2 } from '../../../types';
 import { createParticipantFromIdentity } from '../../../views/app/detail-panel/edit/edit-view-v2';
 import { AppDispatch } from '../../redux';
-import { LineType } from '../../../commons/utils';
 
 /**
  *
@@ -88,7 +88,7 @@ export const generateEditor = ({
 			if (!messageId) {
 				throw new Error('Cannot resume editor without an editor id');
 			}
-			break;
+			return getEditor({ id: messageId });
 		case EditViewActions.NEW:
 			return generateNewMessageEditor(messagesStoreDispatch, account, settings);
 		case EditViewActions.REPLY:
