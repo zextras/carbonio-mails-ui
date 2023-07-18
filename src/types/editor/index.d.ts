@@ -7,8 +7,8 @@ import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { EditViewActionsType } from '../../constants';
 import { AppDispatch } from '../../store/redux';
 import type { MailMessage } from '../messages';
-import type { MailAttachment } from '../soap';
 import type { Participant } from '../participant';
+import type { MailAttachment } from '../soap';
 
 export type EditorAttachmentFiles = {
 	contentType: string;
@@ -57,7 +57,15 @@ export type MailsEditor = {
 
 export type ReplyType = 'r' | 'w';
 
-export type Recipients = {
+export const DraftSaveStatus = {
+	PENDING: 'pending',
+	COMPLETE: 'completed',
+	ABORTED: 'aborted'
+} as const;
+
+export type DraftSaveStatusType = (typeof DraftSaveStatus)[keyof typeof DraftSaveStatus];
+
+export type EditorRecipients = {
 	to: Array<Participant>;
 	cc: Array<Participant>;
 	bcc: Array<Participant>;
@@ -108,20 +116,23 @@ export type MailsEditorV2 = {
 	// the actual sender of the message. It will be set if the message is sent on behalf of the "from" sender
 	sender?: Participant;
 	// the recipients of the message being replied to/forwarded (outbound messages only)
-	recipients: Recipients;
+	recipients: EditorRecipients;
 	// flag to mark the message as urgent
 	isUrgent: boolean;
 	// flag to request a read receipt
 	requestReadReceipt: boolean;
 	// reply type
 	replyType?: ReplyType;
+	// Status of the draft saving process
+	draftSaveStatus?: DraftSaveStatusType;
+	draft;
 	// dispatch function for the messages store
 	messagesStoreDispatch: AppDispatch;
 	// listeners of the editor-related events
-	listeners: {
-		draftSaveStartListeners: Array<DraftSaveStartListener>;
-		draftSaveEndListeners: Array<DraftSaveEndListener>;
-	};
+	// listeners: {
+	// 	draftSaveStartListeners: Array<DraftSaveStartListener>;
+	// 	draftSaveEndListeners: Array<DraftSaveEndListener>;
+	// };
 };
 
 type IdentityType = {

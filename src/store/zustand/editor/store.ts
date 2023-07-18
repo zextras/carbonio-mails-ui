@@ -6,14 +6,15 @@
 import { produce } from 'immer';
 import { remove } from 'lodash';
 import { create } from 'zustand';
+
 import { equalsParticipant } from '../../../helpers/participants';
+import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
 	DraftSaveEndListener,
 	DraftSaveStartListener,
 	EditorsStateTypeV2,
 	MailsEditorV2
 } from '../../../types';
-import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { retrieveAttachmentsType } from '../../editor-slice-utils';
 import { AppDispatch } from '../../redux';
 
@@ -120,6 +121,15 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].originalMessage = originalMessage;
+				}
+			})
+		);
+	},
+	updateRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].recipients = recipients;
 				}
 			})
 		);

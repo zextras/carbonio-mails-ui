@@ -3,18 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import produce from 'immer';
-import { remove } from 'lodash';
+
 import { AppDispatch } from '../../store/redux';
 import type { Conversation } from '../conversations';
 import {
 	DraftSaveEndListener,
 	DraftSaveStartListener,
 	MailsEditor,
-	MailsEditorV2,
-	Recipients
+	MailsEditorV2
 } from '../editor';
-import { AttachmentPart, MailMessage } from '../messages';
+import { MailMessage } from '../messages';
 
 export type MailsStateType = {
 	editors: EditorsStateType;
@@ -46,6 +44,7 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		originalMessage: MailsEditorV2['originalMessage']
 	) => void;
+	updateRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']) => void;
 	updateToRecipients: (
 		id: MailsEditorV2['id'],
 		recipients: MailsEditorV2['recipients']['to']
