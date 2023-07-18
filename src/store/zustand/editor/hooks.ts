@@ -235,6 +235,28 @@ export const getSetOriginalMessage = ({
  * Returns reactive references to the "to" recipients values and to their setter
  * @param id
  */
+export const useEditorRecipients = (
+	id: MailsEditorV2['id']
+): {
+	recipients: MailsEditorV2['recipients'];
+	setRecipients: (recipient: MailsEditorV2['recipients']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[id].recipients);
+	const setter = useEditorsStore((state) => state.updateRecipients);
+
+	return {
+		recipients: value,
+		setRecipients: (val: MailsEditorV2['recipients']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+		}
+	};
+};
+
+/**
+ * Returns reactive references to the "to" recipients values and to their setter
+ * @param id
+ */
 export const useEditorToRecipients = (
 	id: MailsEditorV2['id']
 ): {
