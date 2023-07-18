@@ -32,9 +32,9 @@ const UNKNOWN_ADDRESS_DEFAULT_TYPE = 'alias';
  * The type of the identities:
  * - primary: the identity is the primary identity of the account
  * - alias: the identity is an alias of the primary account
- * - shared: the identity is a shared account for which the user has the "sendAs" right
+ * - delegation: the identity is a shared account for which the user is a delegate
  */
-type IdentityType = 'primary' | 'alias' | 'shared';
+type IdentityType = 'primary' | 'alias' | 'delegation';
 
 /**
  * The type describe the possibility of a match between the account that owns the message's folder
@@ -118,7 +118,7 @@ const RoleWeights = {
 const IdentityTypeWeights = {
 	primary: 3,
 	alias: 2,
-	shared: 1
+	delegation: 1
 };
 
 /**
@@ -158,7 +158,7 @@ const getAvailableAddresses = (
 		}
 	}
 
-	// Adds the email addresses of all the shared accounts
+	// Adds the email addresses of all the delegation accounts
 	if (account.rights?.targets) {
 		account.rights?.targets.forEach((target) => {
 			if (target.target && (target.right === 'sendAs' || target.right === 'sendOnBehalfOf')) {
@@ -167,7 +167,7 @@ const getAvailableAddresses = (
 						user.email.forEach((email) => {
 							result.push({
 								address: email.addr,
-								type: 'shared',
+								type: 'delegation',
 								right: target.right,
 								ownerAccount: email.addr
 							});
@@ -233,7 +233,11 @@ const getIdentities = (account: Account, settings: AccountSettings): Array<Ident
 			return availableAddress.address === receivingAddress;
 		});
 
-		// If a match is found then the identity descriptor is added to the result
+		/*
+		 * If a match is found then the identity descriptor is added to the result
+		 * Otherwise if the identity is missing and the address type is 'delegation'
+		 * a virtual identity is created
+		 */
 		if (matchingIdentity) {
 			const fromDisplay = matchingIdentity._attrs?.zimbraPrefFromDisplay;
 
@@ -250,7 +254,7 @@ const getIdentities = (account: Account, settings: AccountSettings): Array<Ident
 				defaultSignatureId: matchingIdentity._attrs?.zimbraPrefDefaultSignatureId,
 				forwardReplySignatureId: matchingIdentity._attrs?.zimbraPrefForwardReplySignatureId
 			});
-		} else {
+		} else if (availableAddress.type === 'delegation') {
 			identities.push({
 				ownerAccount: availableAddress.ownerAccount ?? account.name,
 				receivingAddress: availableAddress.address,
