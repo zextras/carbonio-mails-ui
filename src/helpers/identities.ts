@@ -5,8 +5,7 @@
  */
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
-import { isArray } from 'lodash';
-import { v4 as uuid } from 'uuid';
+import { filter, findIndex, flatten, isArray, map } from 'lodash';
 
 import { getMessageOwnerAccountName } from './folders';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
@@ -221,56 +220,74 @@ const getIdentities = (account: Account, settings: AccountSettings): Array<Ident
 
 	// Get the list of all the available email addresses for the account and their type
 	const availableEmailAddresses = getAvailableAddresses(account, settings);
-	const availableIdentities = account.identities?.identity;
 
-	availableEmailAddresses.forEach((availableAddress) => {
-		// Find the first match between the current address and the identity receiving mail
-		const matchingIdentity = availableIdentities.find((identity) => {
-			const fromAddress = identity._attrs?.zimbraPrefFromAddress ?? '';
+	account.identities?.identity?.forEach((identity) => {
+		const fromAddress = identity._attrs?.zimbraPrefFromAddress ?? '';
+		const fromDisplay = identity._attrs?.zimbraPrefFromDisplay;
 
-			// The receiving address for the primary identity is the account name
-			const receivingAddress = identity.name === PRIMARY_IDENTITY_NAME ? account.name : fromAddress;
-			return availableAddress.address === receivingAddress;
+		// The receiving address for the primary identity is the account name
+		const receivingAddress = identity.name === PRIMARY_IDENTITY_NAME ? account.name : fromAddress;
+
+		// Find the first match between the identity receiving email address and the available email addresses
+		const matchingReceivingAddress = availableEmailAddresses.find(
+			(availableAddress) => availableAddress.address === receivingAddress
+		);
+
+		const type = matchingReceivingAddress
+			? matchingReceivingAddress.type
+			: UNKNOWN_IDENTITY_DEFAULT_TYPE;
+
+		const right =
+			type === 'delegation' && matchingReceivingAddress
+				? matchingReceivingAddress.right
+				: undefined;
+
+		identities.push({
+			ownerAccount: matchingReceivingAddress?.ownerAccount ?? account.name,
+			receivingAddress,
+			id: identity._attrs?.zimbraPrefIdentityId ?? '',
+			identityName: identity.name ?? '',
+			identityDisplayName: identity._attrs?.zimbraPrefIdentityName ?? '',
+			fromDisplay,
+			fromAddress,
+			type,
+			right,
+			defaultSignatureId: identity._attrs?.zimbraPrefDefaultSignatureId,
+			forwardReplySignatureId: identity._attrs?.zimbraPrefForwardReplySignatureId
 		});
-
-		/*
-		 * If a match is found then the identity descriptor is added to the result
-		 * Otherwise if the identity is missing and the address type is 'delegation'
-		 * a virtual identity is created
-		 */
-		if (matchingIdentity) {
-			const fromDisplay = matchingIdentity._attrs?.zimbraPrefFromDisplay;
-
-			identities.push({
-				ownerAccount: availableAddress.ownerAccount ?? account.name,
-				receivingAddress: availableAddress.address,
-				id: matchingIdentity._attrs?.zimbraPrefIdentityId ?? '',
-				identityName: matchingIdentity.name ?? '',
-				identityDisplayName: matchingIdentity._attrs?.zimbraPrefIdentityName ?? '',
-				fromDisplay,
-				fromAddress: availableAddress.address,
-				type: availableAddress.type,
-				right: availableAddress.right,
-				defaultSignatureId: matchingIdentity._attrs?.zimbraPrefDefaultSignatureId,
-				forwardReplySignatureId: matchingIdentity._attrs?.zimbraPrefForwardReplySignatureId
-			});
-		} else if (availableAddress.type === 'delegation') {
-			identities.push({
-				ownerAccount: availableAddress.ownerAccount ?? account.name,
-				receivingAddress: availableAddress.address,
-				id: uuid(),
-				identityName: availableAddress.address,
-				identityDisplayName: availableAddress.address,
-				fromDisplay: availableAddress.address,
-				fromAddress: availableAddress.address,
-				type: availableAddress.type,
-				right: availableAddress.right,
-				defaultSignatureId: '',
-				forwardReplySignatureId: ''
-			});
-		}
 	});
+	const rightsList = flatten(
+		map(
+			filter(
+				account?.rights?.targets,
+				(rts) => rts.right === 'sendAs' || rts.right === 'sendOnBehalfOf'
+			),
+			(ele, idx) =>
+				map(ele?.target, (item: { d: string; type: string; email: Array<{ addr: string }> }) => ({
+					ownerAccount: item.email[0].addr ?? account.name,
+					receivingAddress: item.email[0].addr,
+					id: idx + identities.length,
+					identityName: item.d,
+					identityDisplayName: item.d,
+					fromDisplay: item.d,
+					fromAddress: item.email[0].addr,
+					type: item.type,
+					right: ele.right,
+					zimbraPrefDefaultSignatureId: '',
+					zimbraPrefForwardReplySignatureId: ''
+				}))
+		)
+	);
 
+	const flattenList = flatten(rightsList);
+	const uniqueIdentityList: IdentityDescriptor[] = [...identities];
+	if (flattenList?.length) {
+		map(flattenList, (ele: IdentityDescriptor) => {
+			const uniqIdentity = findIndex(identities, { fromAddress: ele.fromAddress });
+			if (uniqIdentity < 0) uniqueIdentityList.push(ele);
+		});
+		return uniqueIdentityList;
+	}
 	return identities;
 };
 
