@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { AccountSettingsPrefs, soapFetch } from '@zextras/carbonio-shell-ui';
 import type {
 	MailsEditor,
 	PrefsType,
@@ -17,7 +17,7 @@ import { generateRequest } from '../editor-slice-utils';
 
 type SaveDraftProps = {
 	data: MailsEditor;
-	prefs?: Partial<PrefsType> | undefined;
+	prefs?: Partial<AccountSettingsPrefs> | undefined;
 	signal?: AbortSignal;
 };
 
@@ -30,10 +30,7 @@ export const saveDraft = createAsyncThunk<saveDraftNewResult, SaveDraftNewParame
 				_jsns: 'urn:zimbraMail',
 				m: generateRequest(data, prefs)
 			},
-			null,
-			// disabling eslint until the a new shell version is imported
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
+			undefined,
 			signal
 		)) as SaveDraftResponse;
 

@@ -49,6 +49,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	currentFolderId
 }) {
 	const firstChildFolderId = currentFolderId ?? item.parent;
+
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 

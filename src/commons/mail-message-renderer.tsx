@@ -173,12 +173,12 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 	const showBanner = useMemo(
 		() =>
 			hasExternalImages &&
-			!isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList, from) &&
+			!isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList ?? '', from) &&
 			displayBanner,
 		[from, hasExternalImages, settingsPref.zimbraPrefMailTrustedSenderList, displayBanner]
 	);
 	useEffect(() => {
-		if (isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList, from))
+		if (isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList ?? '', from))
 			setShowExternalImage(true);
 	}, [from, settingsPref.zimbraPrefMailTrustedSenderList]);
 
@@ -193,7 +193,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 
 	const saveTrustee = useCallback(
 		(trustee) => {
-			let trusteeAddress = [];
+			let trusteeAddress: string[] = [];
 			if (settingsPref.zimbraPrefMailTrustedSenderList) {
 				trusteeAddress = isArray(settingsPref.zimbraPrefMailTrustedSenderList)
 					? settingsPref.zimbraPrefMailTrustedSenderList

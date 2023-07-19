@@ -49,14 +49,14 @@ const SelectIdentitySignature: FC<SelectIdentitySignProps> = ({
 	);
 
 	// Get the selected signatures for the new message and for the replies
-	const [signatureNewMessage, signatureRepliesForwards] = useMemo(
+	const [signatureNewMessage, signatureRepliesForwards] = useMemo<[SignItemType, SignItemType]>(
 		() => [
-			getSignature(acc._attrs.zimbraPrefDefaultSignatureId) ?? noSignature,
-			getSignature(String(acc._attrs.zimbraPrefForwardReplySignatureId)) ?? noSignature
+			getSignature(acc._attrs?.zimbraPrefDefaultSignatureId ?? '') ?? noSignature,
+			getSignature(String(acc._attrs?.zimbraPrefForwardReplySignatureId)) ?? noSignature
 		],
 		[
-			acc._attrs.zimbraPrefDefaultSignatureId,
-			acc._attrs.zimbraPrefForwardReplySignatureId,
+			acc._attrs?.zimbraPrefDefaultSignatureId,
+			acc._attrs?.zimbraPrefForwardReplySignatureId,
 			getSignature,
 			noSignature
 		]
