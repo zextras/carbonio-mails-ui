@@ -358,7 +358,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							</Tooltip>
 							<Row>
 								{item.urgent && <Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />}
-								{item?.messages?.length > 1 && (
+								{item.messagesInConversation > 1 && (
 									<Tooltip label={toggleExpandButtonLabel}>
 										<IconButton
 											data-testid="ToggleExpand"
@@ -381,7 +381,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 					>
 						<ConversationMessagesList
 							active={activeItemId}
-							length={item?.messages?.length}
+							length={item.messagesInConversation}
 							messages={messagesToRender}
 							conversationStatus={conversationStatus}
 							folderId={convFolderLink}
