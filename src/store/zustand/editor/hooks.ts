@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { debounce } from 'lodash';
 
 import { useEditorsStore } from './store';
-import { TIMEOUTS } from '../../../constants';
+import { EditViewActionsType, TIMEOUTS } from '../../../constants';
 import { DraftSaveEndListener, DraftSaveStartListener, MailsEditorV2 } from '../../../types';
 import { saveDraftV2 } from '../../actions/save-draft';
 
@@ -98,6 +98,26 @@ export const updateEditor = ({
 	id: string;
 	editor: Partial<MailsEditorV2>;
 }): void => useEditorsStore.getState().updateEditor(id, editor);
+
+/**
+ * Returns reactive references to the action value and to its setter
+ * @param id
+ */
+export const useEditorAction = (
+	id: MailsEditorV2['id']
+): { action: string; setAction: (action: EditViewActionsType) => void } => {
+	const value = useEditorsStore((state) => state.editors[id].action);
+	const setter = useEditorsStore((state) => state.updateAction);
+
+	return {
+		action: value,
+		setAction: (val: EditViewActionsType): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: action');
+		}
+	};
+};
 
 /**
  * Returns reactive references to the subject value and to its setter

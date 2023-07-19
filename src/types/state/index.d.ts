@@ -31,6 +31,7 @@ export type EditorsStateTypeV2 = {
 	addEditor: (id: MailsEditorV2['id'], editor: MailsEditorV2) => void;
 	deleteEditor: (id: MailsEditorV2['id']) => void;
 	updateEditor: (id: MailsEditorV2['id'], opt: Partial<MailsEditorV2>) => void;
+	updateAction: (id: MailsEditorV2['id'], action: MailsEditorV2['action']) => void;
 	updateSubject: (id: MailsEditorV2['id'], subject: MailsEditorV2['subject']) => void;
 	updateText: (id: MailsEditorV2['id'], text: MailsEditorV2['text']) => void;
 	updateAutoSendTime: (

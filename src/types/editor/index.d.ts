@@ -129,10 +129,10 @@ export type MailsEditorV2 = {
 	// dispatch function for the messages store
 	messagesStoreDispatch: AppDispatch;
 	// listeners of the editor-related events
-	// listeners: {
-	// 	draftSaveStartListeners: Array<DraftSaveStartListener>;
-	// 	draftSaveEndListeners: Array<DraftSaveEndListener>;
-	// };
+	listeners: {
+		draftSaveStartListeners: Array<DraftSaveStartListener>;
+		draftSaveEndListeners: Array<DraftSaveEndListener>;
+	};
 };
 
 type IdentityType = {

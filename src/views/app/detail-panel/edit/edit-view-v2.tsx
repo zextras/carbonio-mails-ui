@@ -6,7 +6,7 @@
 
 import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 
-import { Container, Input, Text } from '@zextras/carbonio-design-system';
+import { Container, Input, Text, Padding, Button, Row } from '@zextras/carbonio-design-system';
 import { t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
@@ -23,6 +23,7 @@ import {
 import { getMailBodyWithSignature } from '../../../../helpers/signatures';
 import {
 	useAddDraftListeners,
+	useEditorAction,
 	useEditorFrom,
 	useEditorIsRichText,
 	useEditorRecipients,
@@ -36,6 +37,7 @@ import {
 	EditorRecipients,
 	Participant
 } from '../../../../types';
+import { EditViewActions } from '../../../../constants';
 
 export type EditViewProp = {
 	editorId: string;
@@ -56,6 +58,7 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	const account = useUserAccount();
 	const settings = useUserSettings();
 
+	const { action, setAction } = useEditorAction(editorId);
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { text, setText } = useEditorText(editorId);
@@ -122,6 +125,8 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		[account, settings]
 	);
 
+	const showIdentitySelector = useMemo<boolean>(() => identitiesList.length > 1, [identitiesList]);
+
 	const selectedIdentity = useMemo<IdentityDescriptor | null>(() => {
 		let result = null;
 
@@ -142,11 +147,46 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 			background={'gray5'}
 		>
 			<GapContainer mainAlignment={'flex-start'} crossAlignment={'flex-start'} gap={'large'}>
-				<EditViewIdentitySelector
-					selected={selectedIdentity}
-					identities={identitiesList}
-					onIdentitySelected={onIdentityChanged}
-				/>
+				{/* Header start */}
+				<Row
+					// // mainAlignment={'flex-start'}
+					mainAlignment={showIdentitySelector ? 'space-between' : 'flex-end'}
+					orientation="horizontal"
+					// // crossAlignment={'center'}
+					width="fill"
+					// // height={'fit'}
+
+					// gap={'large'}
+				>
+					{showIdentitySelector && (
+						<EditViewIdentitySelector
+							selected={selectedIdentity}
+							identities={identitiesList}
+							onIdentitySelected={onIdentityChanged}
+						/>
+					)}
+
+					<Row
+						mainAlignment={'flex-end'}
+						// orientation="horizontal"
+						// crossAlignment={'center'}
+						// // minWidth={'fit'}
+						// gap={'small'}
+					>
+						{action !== EditViewActions.COMPOSE && (
+							<Button
+								data-testid="BtnSaveMail"
+								type="outlined"
+								onClick={(): void => {
+									// handleSubmit(onSave)();
+								}}
+								label={`${t('label.save', 'Save')}`}
+							/>
+						)}
+					</Row>
+				</Row>
+
+				{/* Header end */}
 
 				<GapContainer
 					mainAlignment={'flex-start'}
