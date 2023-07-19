@@ -6,6 +6,7 @@
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { filter, findIndex, flatten, isArray, map } from 'lodash';
+import { v4 as uuid } from 'uuid';
 
 import { getMessageOwnerAccountName } from './folders';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
@@ -256,38 +257,37 @@ const getIdentities = (account: Account, settings: AccountSettings): Array<Ident
 			forwardReplySignatureId: identity._attrs?.zimbraPrefForwardReplySignatureId
 		});
 	});
-	const rightsList = flatten(
-		map(
-			filter(
-				account?.rights?.targets,
-				(rts) => rts.right === 'sendAs' || rts.right === 'sendOnBehalfOf'
-			),
-			(ele, idx) =>
-				map(ele?.target, (item: { d: string; type: string; email: Array<{ addr: string }> }) => ({
-					ownerAccount: item.email[0].addr ?? account.name,
-					receivingAddress: item.email[0].addr,
-					id: idx + identities.length,
-					identityName: item.d,
-					identityDisplayName: item.d,
-					fromDisplay: item.d,
-					fromAddress: item.email[0].addr,
-					type: item.type,
-					right: ele.right,
-					zimbraPrefDefaultSignatureId: '',
-					zimbraPrefForwardReplySignatureId: ''
-				}))
+
+	const delegationAccounts = filter(
+		account?.rights?.targets,
+		(rts) => rts.right === 'sendAs' || rts.right === 'sendOnBehalfOf'
+	);
+
+	const delegationIdentities = flatten(
+		map(delegationAccounts, (ele) =>
+			map(ele?.target, (item: { d: string; type: string; email: Array<{ addr: string }> }) => ({
+				ownerAccount: item.email[0].addr ?? account.name,
+				receivingAddress: item.email[0].addr,
+				id: uuid(),
+				identityName: item.d,
+				identityDisplayName: item.d,
+				fromDisplay: item.d,
+				fromAddress: item.email[0].addr,
+				type: 'delegation',
+				right: ele.right
+			}))
 		)
 	);
 
-	const flattenList = flatten(rightsList);
 	const uniqueIdentityList: IdentityDescriptor[] = [...identities];
-	if (flattenList?.length) {
-		map(flattenList, (ele: IdentityDescriptor) => {
+	if (delegationIdentities?.length) {
+		map(delegationIdentities, (ele: IdentityDescriptor) => {
 			const uniqIdentity = findIndex(identities, { fromAddress: ele.fromAddress });
 			if (uniqIdentity < 0) uniqueIdentityList.push(ele);
 		});
 		return uniqueIdentityList;
 	}
+
 	return identities;
 };
 
