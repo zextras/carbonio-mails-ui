@@ -25,6 +25,7 @@ const generateNewMessageEditor = (
 	account: Account,
 	settings: AccountSettings
 ): MailsEditorV2 => {
+	const editorId = uuid();
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
 		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
@@ -39,7 +40,7 @@ const generateNewMessageEditor = (
 			ParticipantRole.FROM
 		),
 		sender: undefined,
-		id: uuid(),
+		id: editorId,
 		attachments: [],
 		inlineAttachments: [],
 		isRichText: true,
@@ -52,11 +53,7 @@ const generateNewMessageEditor = (
 		subject: '',
 		text: textWithSignature,
 		requestReadReceipt: false,
-		messagesStoreDispatch,
-		listeners: {
-			draftSaveStartListeners: [],
-			draftSaveEndListeners: []
-		}
+		messagesStoreDispatch
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = checkDraftSaveAllowedStatus(editor);

@@ -68,18 +68,20 @@ export type EditorText = {
 	richText: string;
 };
 
-export type DraftSaveStartListener = (params: { editorId: string }) => void;
-
-export type DraftSaveResultType = { draftId: string } | { error: string };
-
-export type DraftSaveEndListener = (params: {
-	editorId: string;
-	result: DraftSaveResultType;
-}) => void;
-
 export type EditorOperationAllowedStatus = {
 	allowed: boolean;
 	reason?: string;
+};
+
+export type DraftSaveProcessStatus = {
+	status: 'completed' | 'running' | 'aborted';
+	abortReason?: string;
+	lastSaveTimestamp?: Date;
+};
+
+export type SendProcessStatus = {
+	status: 'completed' | 'running' | 'aborted';
+	abortReason?: string;
 };
 
 export type MailsEditorV2 = {
@@ -122,15 +124,19 @@ export type MailsEditorV2 = {
 	replyType?: ReplyType;
 	// allowed status of the draft save
 	draftSaveAllowedStatus?: EditorOperationAllowedStatus;
+	// status of the draft save
+	draftSaveProcessStatus?: DraftSaveProcessStatus;
 	// allowed status of the message send
 	sendAllowedStatus?: EditorOperationAllowedStatus;
+	// status of the message send
+	sendProcessStatus?: SendProcessStatus;
 	// dispatch function for the messages store
 	messagesStoreDispatch: AppDispatch;
-	// listeners of the editor-related events
-	listeners: {
-		draftSaveStartListeners: Array<DraftSaveStartListener>;
-		draftSaveEndListeners: Array<DraftSaveEndListener>;
-	};
+	// // listeners of the editor-related events
+	// listeners: {
+	// 	draftSaveStartListeners: Array<DraftSaveStartListener>;
+	// 	draftSaveEndListeners: Array<DraftSaveEndListener>;
+	// };
 };
 
 type IdentityType = {

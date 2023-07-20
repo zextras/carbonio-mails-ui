@@ -9,12 +9,7 @@ import { create } from 'zustand';
 
 import { equalsParticipant } from '../../../helpers/participants';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
-import {
-	DraftSaveEndListener,
-	DraftSaveStartListener,
-	EditorsStateTypeV2,
-	MailsEditorV2
-} from '../../../types';
+import { EditorsStateTypeV2, MailsEditorV2 } from '../../../types';
 import { retrieveAttachmentsType } from '../../editor-slice-utils';
 import { AppDispatch } from '../../redux';
 
@@ -275,6 +270,18 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	updateRequestReadReceipt: (
+		id: MailsEditorV2['id'],
+		value: MailsEditorV2['requestReadReceipt']
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].requestReadReceipt = value;
+				}
+			})
+		);
+	},
 	updateDraftSaveAllowedStatus: (id, status): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
@@ -284,11 +291,29 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	updateDraftSaveProcessStatus: (id, status): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].draftSaveProcessStatus = status;
+				}
+			})
+		);
+	},
 	updateSendAllowedStatus: (id, status): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].sendAllowedStatus = status;
+				}
+			})
+		);
+	},
+	updateSendProcessStatus: (id, status): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].sendProcessStatus = status;
 				}
 			})
 		);
@@ -416,48 +441,6 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].messagesStoreDispatch = dispatch;
-				}
-			})
-		);
-	},
-
-	// Listeners
-
-	addDraftSaveStartListener: (id: MailsEditorV2['id'], listener: DraftSaveStartListener): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].listeners.draftSaveStartListeners.push(listener);
-				}
-			})
-		);
-	},
-	removeDraftSaveStartListener: (
-		id: MailsEditorV2['id'],
-		listener: DraftSaveStartListener
-	): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					remove(state.editors[id].listeners.draftSaveStartListeners, (elem) => listener === elem);
-				}
-			})
-		);
-	},
-	addDraftSaveEndListener: (id: MailsEditorV2['id'], listener: DraftSaveEndListener): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].listeners.draftSaveEndListeners.push(listener);
-				}
-			})
-		);
-	},
-	removeDraftSaveEndListener: (id: MailsEditorV2['id'], listener: DraftSaveEndListener): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					remove(state.editors[id].listeners.draftSaveEndListeners, (elem) => listener === elem);
 				}
 			})
 		);

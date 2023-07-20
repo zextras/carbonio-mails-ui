@@ -6,7 +6,6 @@
 
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
-import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 
 export const MAILS_ROUTE = 'mails';
 
@@ -358,7 +357,8 @@ const SNACKBAR_DEFAULT_TIMEOUT = 3000;
 export const TIMEOUTS = {
 	DRAFT_SAVE_DELAY: 2000,
 	SET_AS_SPAM: SNACKBAR_DEFAULT_TIMEOUT,
-	REDIRECT: SNACKBAR_DEFAULT_TIMEOUT
+	REDIRECT: SNACKBAR_DEFAULT_TIMEOUT,
+	DRAFT_INFO_HIDING_DELAY: 3000
 };
 
 export const LIST_LIMIT = {

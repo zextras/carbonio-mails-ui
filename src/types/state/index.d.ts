@@ -6,12 +6,7 @@
 
 import { AppDispatch } from '../../store/redux';
 import type { Conversation } from '../conversations';
-import {
-	DraftSaveEndListener,
-	DraftSaveStartListener,
-	MailsEditor,
-	MailsEditorV2
-} from '../editor';
+import { MailsEditor, MailsEditorV2 } from '../editor';
 import { MailMessage } from '../messages';
 
 export type MailsStateType = {
@@ -68,16 +63,28 @@ export type EditorsStateTypeV2 = {
 	) => void;
 	updateDraftSaveAllowedStatus: (
 		id: MailsEditorV2['id'],
-		allowance: MailsEditorV2['draftSaveAllowedStatus']
+		status: MailsEditorV2['draftSaveAllowedStatus']
+	) => void;
+	updateDraftSaveProcessStatus: (
+		id: MailsEditorV2['id'],
+		status: MailsEditorV2['draftSaveProcessStatus']
 	) => void;
 	updateSendAllowedStatus: (
 		id: MailsEditorV2['id'],
-		allowance: MailsEditorV2['sendAllowedStatus']
+		status: MailsEditorV2['sendAllowedStatus']
+	) => void;
+	updateSendProcessStatus: (
+		id: MailsEditorV2['id'],
+		status: MailsEditorV2['sendProcessStatus']
 	) => void;
 	deleteEditor: (id: MailsEditorV2['id']) => void;
 	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']) => void;
 	updateSender: (id: MailsEditorV2['id'], sender: MailsEditorV2['sender']) => void;
 	updateIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
+	updateRequestReadReceipt: (
+		id: MailsEditorV2['id'],
+		requestReadReceipt: MailsEditorV2['requestReadReceipt']
+	) => void;
 	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments'][0]) => void;
 	updateAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
 	addInlineAttachment: (
@@ -95,10 +102,6 @@ export type EditorsStateTypeV2 = {
 	clearAttachments: (id: MailsEditorV2['id']) => void;
 	clearInlineAttachments: (id: MailsEditorV2['id']) => void;
 	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
-	addDraftSaveStartListener: (id: MailsEditorV2['id'], listener: DraftSaveStartListener) => void;
-	removeDraftSaveStartListener: (id: MailsEditorV2['id'], listener: DraftSaveStartListener) => void;
-	addDraftSaveEndListener: (id: MailsEditorV2['id'], listener: DraftSaveEndListener) => void;
-	removeDraftSaveEndListener: (id: MailsEditorV2['id'], listener: DraftSaveEndListener) => void;
 };
 
 export type MsgStateType = {

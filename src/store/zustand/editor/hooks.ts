@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useEffect } from 'react';
-
 import { debounce } from 'lodash';
 
+import { checkDraftSaveAllowedStatus } from './editor-utils';
 import { useEditorsStore } from './store';
 import { EditViewActionsType, TIMEOUTS } from '../../../constants';
-import { DraftSaveEndListener, DraftSaveStartListener, MailsEditorV2 } from '../../../types';
+import { MailsEditorV2 } from '../../../types';
 import { saveDraftV2 } from '../../actions/save-draft';
 
 const debugLog = (text: string): void => {
@@ -25,6 +24,29 @@ export const useEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | 
 	useEditorsStore((s) => s.editors?.[id] ?? null);
 export const getEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | null =>
 	useEditorsStore.getState()?.editors?.[id] ?? null;
+
+/**
+ *
+ * @param editorId
+ */
+const sendFromEditor = (editorId: MailsEditorV2['id']): void => {
+	const editor = getEditor({ id: editorId });
+	if (!editor) {
+		console.warn('Cannot find editor', editorId);
+		return;
+	}
+
+	if (!editor.sendAllowedStatus?.allowed) {
+		return;
+	}
+
+	// TODO implement the send logic
+	// - delay timer
+	// - ticker for countdown update
+	// - update the store sending status field
+	// - update the redux store
+	console.log('TO BE IMPLEMENTED');
+};
 
 /**
  *
@@ -49,23 +71,40 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 			const x = res.payload;
 			console.dir(x);
 
-			// Invoke end listeners
 			// TODO handle the response or the error
-			editor.listeners.draftSaveEndListeners.forEach((listener: DraftSaveEndListener) => {
-				listener({ editorId: editor.id, result: { draftId: 'fake DID' } });
+			useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
+				status: 'completed',
+				lastSaveTimestamp: new Date()
 			});
+			// FIXME use a subscription to the store update
+			useEditorsStore
+				.getState()
+				.updateDraftSaveAllowedStatus(
+					editorId,
+					checkDraftSaveAllowedStatus(getEditor(editorId) ?? {})
+				);
 		})
 		.catch((err) => {
-			// Invoke end listeners
-			editor.listeners.draftSaveEndListeners.forEach((listener: DraftSaveEndListener) => {
-				listener({ editorId: editor.id, result: { error: err } });
+			useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
+				status: 'aborted',
+				abortReason: err
 			});
+			// FIXME use a subscription to the store update
+			useEditorsStore
+				.getState()
+				.updateDraftSaveAllowedStatus(
+					editorId,
+					checkDraftSaveAllowedStatus(getEditor(editorId) ?? {})
+				);
 		});
 
-	// Invoke start listeners
-	editor.listeners.draftSaveStartListeners.forEach((listener: DraftSaveStartListener) => {
-		listener({ editorId: editor.id });
+	useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
+		status: 'running'
 	});
+	// FIXME use a subscription to the store update
+	useEditorsStore
+		.getState()
+		.updateDraftSaveAllowedStatus(editorId, checkDraftSaveAllowedStatus(getEditor(editorId) ?? {}));
 };
 
 const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, TIMEOUTS.DRAFT_SAVE_DELAY);
@@ -81,7 +120,13 @@ export const addEditor = ({
 }: {
 	id: MailsEditorV2['id'];
 	editor: MailsEditorV2;
-}): void => useEditorsStore.getState().addEditor(id, editor);
+}): void => {
+	useEditorsStore.getState().addEditor(id, editor);
+	// useEditorsStore.subscribe(
+	// 	(state) => [state.editors[id].from, state.editors[id].subject],
+	// 	(s): void => console.log('*** ho cambiato qualcosa a cui sono sottoscritto')
+	// );
+};
 
 /**
  * Remove a specific editor.
@@ -442,6 +487,29 @@ export const useEditorIsUrgent = (
 };
 
 /**
+ * Returns reactive reference to the requestReadReceipt value and to its setter
+ * @param id
+ */
+export const useEditorRequestReadReceipt = (
+	id: MailsEditorV2['id']
+): {
+	requestReadReceipt: MailsEditorV2['requestReadReceipt'];
+	setRequestReadReceipt: (requestReadReceipt: MailsEditorV2['requestReadReceipt']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[id].requestReadReceipt);
+	const setter = useEditorsStore((state) => state.updateRequestReadReceipt);
+
+	return {
+		requestReadReceipt: value,
+		setRequestReadReceipt: (val: MailsEditorV2['requestReadReceipt']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: requestReadReceipt');
+		}
+	};
+};
+
+/**
  * add attachments to a specific editor.
  * @params id
  * @params attachments
@@ -568,36 +636,62 @@ export const getClearInlineAttachments = ({ id }: { id: MailsEditorV2['id'] }): 
 	useEditorsStore.getState().clearInlineAttachments(id);
 
 /**
+ * Returns the reactive status for the draft save operation.
+ * If some change on the editor data will cause the ability/inability to
+ * perform a draft save the status will be updated.
+ *
+ * The hook returns also the function to invoke the draft save
+ * NOTE: the save operation is debounced
  *
  * @param editorId
- * @param saveStartListener
- * @param saveEndListener
  */
-export const useAddDraftListeners = ({
-	editorId,
-	saveStartListener,
-	saveEndListener
-}: {
-	editorId: MailsEditorV2['id'];
-	saveStartListener?: DraftSaveStartListener;
-	saveEndListener?: DraftSaveEndListener;
-}): void => {
-	const addStartListener = useEditorsStore((s) => s.addDraftSaveStartListener);
-	const addEndListener = useEditorsStore((s) => s.addDraftSaveEndListener);
+export const useEditorDraftSave = (
+	editorId: MailsEditorV2['id']
+): { status: MailsEditorV2['draftSaveAllowedStatus']; saveDraft: () => void } => {
+	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
+	const invoker = (): void => debouncedSaveDraftFromEditor(editorId);
 
-	// Invoke changes on the store only when the listeners are actually changed
-	useEffect(() => {
-		saveStartListener && addStartListener(editorId, saveStartListener);
-		saveEndListener && addEndListener(editorId, saveEndListener);
-	}, [editorId, saveStartListener, saveEndListener, addStartListener, addEndListener]);
+	return {
+		status,
+		saveDraft: invoker
+	};
 };
 
-export const useEditorDraftSaveAllowedStatus = (
+/**
+ * Returns the reactive status of the draft save process
+ * @param editorId
+ */
+export const useEditorDraftSaveProcessStatus = (
 	editorId: MailsEditorV2['id']
-): MailsEditorV2['draftSaveAllowedStatus'] =>
-	useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
+): MailsEditorV2['draftSaveProcessStatus'] =>
+	useEditorsStore((state) => state.editors[editorId].draftSaveProcessStatus);
 
-export const useEditorSendAllowedStatus = (
+/**
+ * Returns the reactive status for the message send operation.
+ * If some change on the editor data will cause the ability/inability to
+ * perform the send the status will be updated.
+ *
+ * The hook returns also the function to invoke the send
+ *
+ * @param editorId
+ */
+export const useEditorSend = (
 	editorId: MailsEditorV2['id']
-): MailsEditorV2['sendAllowedStatus'] =>
-	useEditorsStore((state) => state.editors[editorId].sendAllowedStatus);
+): { status: MailsEditorV2['sendAllowedStatus']; send: () => void } => {
+	const status = useEditorsStore((state) => state.editors[editorId].sendAllowedStatus);
+	const invoker = (): void => sendFromEditor(editorId);
+
+	return {
+		status,
+		send: invoker
+	};
+};
+
+/**
+ * Returns the reactive status of the message send process
+ * @param editorId
+ */
+export const useEditorSendProcessStatus = (
+	editorId: MailsEditorV2['id']
+): MailsEditorV2['sendProcessStatus'] =>
+	useEditorsStore((state) => state.editors[editorId].sendProcessStatus);

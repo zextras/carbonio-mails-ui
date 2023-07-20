@@ -5,12 +5,24 @@
  */
 import React from 'react';
 
-import { Container, ContainerProps, getPadding } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	ContainerProps,
+	getPadding,
+	Row,
+	RowProps
+} from '@zextras/carbonio-design-system';
 import styled, { SimpleInterpolation } from 'styled-components';
 
 type GapContainerProps = ContainerProps & { gap?: ContainerProps['padding'] };
 
+type GapRowProps = RowProps & { gap?: RowProps['padding'] };
+
 const StyledGapContainer = styled(Container)<GapContainerProps>`
+	gap: ${({ theme, gap }): SimpleInterpolation => gap && getPadding(gap, theme)};
+`;
+
+const StyledGapRow = styled(Row)<GapRowProps>`
 	gap: ${({ theme, gap }): SimpleInterpolation => gap && getPadding(gap, theme)};
 `;
 
@@ -25,4 +37,15 @@ const GapContainer = React.forwardRef<HTMLDivElement, GapContainerProps>(functio
 	);
 });
 
-export { GapContainer, GapContainerProps };
+const GapRow = React.forwardRef<HTMLDivElement, GapRowProps>(function GapRowFn(
+	{ children, ...rest },
+	ref
+) {
+	return (
+		<StyledGapRow ref={ref} {...rest}>
+			{children}
+		</StyledGapRow>
+	);
+});
+
+export { GapContainer, GapRow, GapContainerProps, GapRowProps };

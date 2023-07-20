@@ -4,17 +4,27 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useMemo } from 'react';
 
-import { Container, Input, Text, Button, Row, Tooltip } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	Input,
+	Text,
+	Button,
+	Dropdown,
+	IconButton,
+	Tooltip,
+	ButtonProps
+} from '@zextras/carbonio-design-system';
 import { t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
+import { EditViewDraftSaveInfo } from './parts/EditViewDraftSaveInfo';
 import { RecipientsRows } from './parts/recipients-rows';
 import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
-import { GapContainer } from '../../../../commons/gap-container';
+import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import {
 	getIdentities,
 	getIdentityFromParticipant,
@@ -22,22 +32,20 @@ import {
 } from '../../../../helpers/identities';
 import { getMailBodyWithSignature } from '../../../../helpers/signatures';
 import {
-	useAddDraftListeners,
 	useEditorAction,
-	useEditorDraftSaveAllowedStatus,
+	useEditorDraftSave,
+	useEditorDraftSaveProcessStatus,
 	useEditorFrom,
 	useEditorIsRichText,
+	useEditorIsUrgent,
 	useEditorRecipients,
+	useEditorRequestReadReceipt,
+	useEditorSend,
 	useEditorSender,
 	useEditorSubject,
 	useEditorText
 } from '../../../../store/zustand/editor';
-import {
-	DraftSaveEndListener,
-	DraftSaveStartListener,
-	EditorRecipients,
-	Participant
-} from '../../../../types';
+import { EditorRecipients, Participant } from '../../../../types';
 
 export type EditViewProp = {
 	editorId: string;
@@ -65,10 +73,27 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	const { from, setFrom } = useEditorFrom(editorId);
 	const { sender, setSender } = useEditorSender(editorId);
 	const { recipients, setRecipients } = useEditorRecipients(editorId);
-	const draftSaveAllowedStatus = useEditorDraftSaveAllowedStatus(editorId);
-	const [tempSaveDraftStatus, setTempSaveDraftStatus] = useState('');
+
+	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
+	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
+	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
+	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
+	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 
 	console.count('**** edit view render');
+
+	const onSaveClick = useCallback<ButtonProps['onClick']>((ev): void => {
+		saveDraft();
+	}, []);
+
+	// TODO attach to the scheduled-send button
+	const onScheduledSendClick = useCallback<ButtonProps['onClick']>((ev): void => {
+		// TODO do something interesting
+	}, []);
+
+	const onSendClick = useCallback<ButtonProps['onClick']>((ev): void => {
+		sendMessage();
+	}, []);
 
 	const onIdentityChanged = useCallback(
 		(identity: IdentityDescriptor): void => {
@@ -104,22 +129,6 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		[setText]
 	);
 
-	const onDraftSaveStart = useCallback<DraftSaveStartListener>(({ editorId: string }) => {
-		setTempSaveDraftStatus('Save draft started....');
-	}, []);
-
-	const onDraftSaveEnd = useCallback<DraftSaveEndListener>(({ editorId: string, result }) => {
-		setTempSaveDraftStatus(
-			`Save draft ended at ${new Date().toLocaleTimeString()} with result ${JSON.stringify(result)}`
-		);
-	}, []);
-
-	useAddDraftListeners({
-		editorId,
-		saveStartListener: onDraftSaveStart,
-		saveEndListener: onDraftSaveEnd
-	});
-
 	const identitiesList = useMemo<Array<IdentityDescriptor>>(
 		() => getIdentities(account, settings),
 		[account, settings]
@@ -139,6 +148,52 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		// TODO handle the sender scenario
 	}, [account, from, settings]);
 
+	const toggleRichTextEditor = useCallback(() => {
+		setIsRichText(!isRichText);
+	}, [isRichText, setIsRichText]);
+
+	const toggleImportant = useCallback(() => {
+		setIsUrgent(!isUrgent);
+	}, [isUrgent, setIsUrgent]);
+
+	const toggleReceiptRequest = useCallback(() => {
+		setRequestReadReceipt(!requestReadReceipt);
+	}, [requestReadReceipt, setRequestReadReceipt]);
+
+	const composerOptions = useMemo(
+		() => [
+			{
+				id: 'richText',
+				label: isRichText
+					? t('tooltip.disable_rich_text', 'Disable rich text editor')
+					: t('tooltip.enable_rich_text', 'Enable rich text editor'),
+				onClick: toggleRichTextEditor
+			},
+			{
+				id: 'urgent',
+				label: isUrgent
+					? t('label.mark_as_un_important', 'Mark as unimportant')
+					: t('label.mark_as_important', 'Mark as important'),
+				onClick: toggleImportant
+			},
+			{
+				id: 'read_receipt',
+				label: requestReadReceipt
+					? t('label.remove_request_receipt', 'Remove read receipt request')
+					: t('label.request_receipt', 'Request read receipt'),
+				onClick: toggleReceiptRequest
+			}
+		],
+		[
+			isRichText,
+			toggleRichTextEditor,
+			isUrgent,
+			toggleImportant,
+			requestReadReceipt,
+			toggleReceiptRequest
+		]
+	);
+
 	return (
 		<Container
 			mainAlignment={'flex-start'}
@@ -149,10 +204,11 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 			<GapContainer mainAlignment={'flex-start'} crossAlignment={'flex-start'} gap={'large'}>
 				{/* Header start */}
 
-				<Row
+				<GapRow
 					mainAlignment={showIdentitySelector ? 'space-between' : 'flex-end'}
 					orientation="horizontal"
 					width="fill"
+					gap={'medium'}
 				>
 					{showIdentitySelector && (
 						<EditViewIdentitySelector
@@ -162,23 +218,32 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 						/>
 					)}
 
-					<Row mainAlignment={'flex-end'}>
+					<GapRow mainAlignment={'flex-end'} gap={'medium'}>
+						<Dropdown items={composerOptions} selectedBackgroundColor="gray5">
+							<IconButton size="large" icon="MoreVertical" onClick={noop} />
+						</Dropdown>
 						<Tooltip
-							label={draftSaveAllowedStatus?.reason}
-							disabled={draftSaveAllowedStatus?.allowed}
+							label={saveDraftAllowedStatus?.reason}
+							disabled={saveDraftAllowedStatus?.allowed}
 						>
 							<Button
 								data-testid="BtnSaveMail"
 								type="outlined"
-								onClick={(): void => {
-									// handleSubmit(onSave)();
-								}}
+								onClick={onSaveClick}
 								label={`${t('label.save', 'Save')}`}
-								disabled={!draftSaveAllowedStatus?.allowed}
+								disabled={!saveDraftAllowedStatus?.allowed}
 							/>
 						</Tooltip>
-					</Row>
-				</Row>
+						<Tooltip label={sendAllowedStatus?.reason} disabled={sendAllowedStatus?.allowed}>
+							{/* THIS BUTTON IS JUST A PLACEHOLDER */}
+							<Button
+								onClick={onSendClick}
+								label="THIS IS NOT THE BUTTON YOU ARE LOOKING FOR"
+								disabled={!sendAllowedStatus?.allowed}
+							/>
+						</Tooltip>
+					</GapRow>
+				</GapRow>
 
 				{/* Header end */}
 
@@ -197,7 +262,6 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 						value={subject}
 						onChange={onSubjectChange}
 					></Input>
-					<Text>draft status: {tempSaveDraftStatus}</Text>
 					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
 						<Text>Attachments</Text>
 					</Container>
@@ -210,6 +274,7 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 						minHeight={0}
 						disabled={false}
 					/>
+					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>
 			</GapContainer>
 		</Container>
