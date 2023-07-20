@@ -6,7 +6,16 @@
 
 import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 
-import { Container, Input, Text, Padding, Button, Row } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	Input,
+	Text,
+	Button,
+	Row,
+	Dropdown,
+	IconButton,
+	Padding
+} from '@zextras/carbonio-design-system';
 import { t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
@@ -15,6 +24,7 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { GapContainer } from '../../../../commons/gap-container';
+import { EditViewActions } from '../../../../constants';
 import {
 	getIdentities,
 	getIdentityFromParticipant,
@@ -26,7 +36,9 @@ import {
 	useEditorAction,
 	useEditorFrom,
 	useEditorIsRichText,
+	useEditorIsUrgent,
 	useEditorRecipients,
+	useEditorRequestReadReceipt,
 	useEditorSender,
 	useEditorSubject,
 	useEditorText
@@ -37,7 +49,6 @@ import {
 	EditorRecipients,
 	Participant
 } from '../../../../types';
-import { EditViewActions } from '../../../../constants';
 
 export type EditViewProp = {
 	editorId: string;
@@ -66,6 +77,8 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	const { sender, setSender } = useEditorSender(editorId);
 	const { recipients, setRecipients } = useEditorRecipients(editorId);
 
+	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
+	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
 	const [tempSaveDraftStatus, setTempSaveDraftStatus] = useState('');
 
 	console.count('**** edit view render');
@@ -139,6 +152,52 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		// TODO handle the sender scenario
 	}, [account, from, settings]);
 
+	const toggleRichTextEditor = useCallback(() => {
+		setIsRichText(!isRichText);
+	}, [isRichText, setIsRichText]);
+
+	const toggleImportant = useCallback(() => {
+		setIsUrgent(!isUrgent);
+	}, [isUrgent, setIsUrgent]);
+
+	const toggleReceiptRequest = useCallback(() => {
+		setRequestReadReceipt(!requestReadReceipt);
+	}, [requestReadReceipt, setRequestReadReceipt]);
+
+	const composerOptions = useMemo(
+		() => [
+			{
+				id: 'richText',
+				label: isRichText
+					? t('tooltip.disable_rich_text', 'Disable rich text editor')
+					: t('tooltip.enable_rich_text', 'Enable rich text editor'),
+				onClick: toggleRichTextEditor
+			},
+			{
+				id: 'urgent',
+				label: isUrgent
+					? t('label.mark_as_un_important', 'Mark as unimportant')
+					: t('label.mark_as_important', 'Mark as important'),
+				onClick: toggleImportant
+			},
+			{
+				id: 'read_receipt',
+				label: requestReadReceipt
+					? t('label.remove_request_receipt', 'Remove read receipt request')
+					: t('label.request_receipt', 'Request read receipt'),
+				onClick: toggleReceiptRequest
+			}
+		],
+		[
+			isRichText,
+			toggleRichTextEditor,
+			isUrgent,
+			toggleImportant,
+			requestReadReceipt,
+			toggleReceiptRequest
+		]
+	);
+
 	return (
 		<Container
 			mainAlignment={'flex-start'}
@@ -149,14 +208,9 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 			<GapContainer mainAlignment={'flex-start'} crossAlignment={'flex-start'} gap={'large'}>
 				{/* Header start */}
 				<Row
-					// // mainAlignment={'flex-start'}
 					mainAlignment={showIdentitySelector ? 'space-between' : 'flex-end'}
 					orientation="horizontal"
-					// // crossAlignment={'center'}
 					width="fill"
-					// // height={'fit'}
-
-					// gap={'large'}
 				>
 					{showIdentitySelector && (
 						<EditViewIdentitySelector
@@ -166,22 +220,22 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 						/>
 					)}
 
-					<Row
-						mainAlignment={'flex-end'}
-						// orientation="horizontal"
-						// crossAlignment={'center'}
-						// // minWidth={'fit'}
-						// gap={'small'}
-					>
+					<Row mainAlignment={'flex-end'}>
+						<Dropdown items={composerOptions} selectedBackgroundColor="gray5">
+							<IconButton size="large" icon="MoreVertical" onClick={noop} />
+						</Dropdown>
 						{action !== EditViewActions.COMPOSE && (
-							<Button
-								data-testid="BtnSaveMail"
-								type="outlined"
-								onClick={(): void => {
-									// handleSubmit(onSave)();
-								}}
-								label={`${t('label.save', 'Save')}`}
-							/>
+							<Padding left={'small'}>
+								<Button
+									data-testid="BtnSaveMail"
+									type="outlined"
+									onClick={(): void => {
+										// TODO Handle Save operation
+										// handleSubmit(onSave)();
+									}}
+									label={`${t('label.save', 'Save')}`}
+								/>
+							</Padding>
 						)}
 					</Row>
 				</Row>

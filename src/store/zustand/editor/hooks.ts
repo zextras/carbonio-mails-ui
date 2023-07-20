@@ -438,6 +438,29 @@ export const useEditorIsUrgent = (
 };
 
 /**
+ * Returns reactive reference to the requestReadReceipt value and to its setter
+ * @param id
+ */
+export const useEditorRequestReadReceipt = (
+	id: MailsEditorV2['id']
+): {
+	requestReadReceipt: MailsEditorV2['requestReadReceipt'];
+	setRequestReadReceipt: (requestReadReceipt: MailsEditorV2['requestReadReceipt']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[id].requestReadReceipt);
+	const setter = useEditorsStore((state) => state.updateRequestReadReceipt);
+
+	return {
+		requestReadReceipt: value,
+		setRequestReadReceipt: (val: MailsEditorV2['requestReadReceipt']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: requestReadReceipt');
+		}
+	};
+};
+
+/**
  * add attachments to a specific editor.
  * @params id
  * @params attachments

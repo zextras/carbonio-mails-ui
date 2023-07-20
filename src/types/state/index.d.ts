@@ -70,6 +70,10 @@ export type EditorsStateTypeV2 = {
 	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']) => void;
 	updateSender: (id: MailsEditorV2['id'], sender: MailsEditorV2['sender']) => void;
 	updateIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
+	updateRequestReadReceipt: (
+		id: MailsEditorV2['id'],
+		requestReadReceipt: MailsEditorV2['requestReadReceipt']
+	) => void;
 	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments'][0]) => void;
 	updateAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
 	addInlineAttachment: (

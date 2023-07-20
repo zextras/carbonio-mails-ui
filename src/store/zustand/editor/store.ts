@@ -275,6 +275,18 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	updateRequestReadReceipt: (
+		id: MailsEditorV2['id'],
+		value: MailsEditorV2['requestReadReceipt']
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].requestReadReceipt = value;
+				}
+			})
+		);
+	},
 	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments'][0]): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
