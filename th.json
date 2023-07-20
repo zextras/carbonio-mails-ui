@@ -282,7 +282,10 @@
         "using_signatures": "การใช้ลายเซ็น",
         "admin_disabled_action": "ผู้ดูแลระบบปิดใช้งานการดำเนินการเปลี่ยนเส้นทาง",
         "received_from_address": "ได้รับจาก (ที่อยู่)",
-        "sent_to_address": "ส่งถึง (ที่อยู่)"
+        "sent_to_address": "ส่งถึง (ที่อยู่)",
+        "all_items_selected": "รายการที่มองเห็นได้ทั้งหมดถูกเลือก",
+        "exit_selection_mode": "ออกจากโหมดการเลือก",
+        "time": "เวลา"
     },
     "messages": {
         "modal": {

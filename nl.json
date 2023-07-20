@@ -288,7 +288,10 @@
         "using_signatures": "Handtekeningen gebruik",
         "admin_disabled_action": "De Admin heeft de redirect-actie uitgeschakeld",
         "received_from_address": "Ontvangen van (adres)",
-        "sent_to_address": "Verzonden naar (adres)"
+        "sent_to_address": "Verzonden naar (adres)",
+        "exit_selection_mode": "Selectiemodus verlaten",
+        "time": "Tijd",
+        "all_items_selected": "Alle zichtbare items zijn geselecteerd"
     },
     "messages": {
         "invalid_address": "Het volgende adres lijkt ongeldig te zijn",

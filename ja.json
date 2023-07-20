@@ -286,7 +286,10 @@
         "using_signatures": "署名の使用",
         "admin_disabled_action": "管理者がリダイレクト操作を無効にしました",
         "received_from_address": "（アドレス）から受信",
-        "sent_to_address": "（アドレス）へ送信"
+        "sent_to_address": "（アドレス）へ送信",
+        "exit_selection_mode": "選択モードを終了する",
+        "time": "時間",
+        "all_items_selected": "表示されている項目がすべて選択されました"
     },
     "messages": {
         "modal": {

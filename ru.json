@@ -321,7 +321,10 @@
         "using_signatures": "Использование подписей",
         "admin_disabled_action": "Администратор отключил возможность перенаправления",
         "sent_to_address": "Отправлено (адрес)",
-        "received_from_address": "Получено от (адрес)"
+        "received_from_address": "Получено от (адрес)",
+        "all_items_selected": "Выбраны все видимые элементы",
+        "time": "Время",
+        "exit_selection_mode": "Выйти из режима выбора"
     },
     "header": {
         "warning": "Предупреждение",
