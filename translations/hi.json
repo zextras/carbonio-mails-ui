@@ -241,7 +241,10 @@
         "deselect_all": "सभी डीसिलेक्ट करें",
         "admin_disabled_action": "एडमिन ने रीडायरेक्ट कार्रवाई को अक्षम कर दिया",
         "sent_to_address": "(एड्रेस) को भेजा गया",
-        "received_from_address": "इनसे प्राप्त (एड्रेस)"
+        "received_from_address": "इनसे प्राप्त (एड्रेस)",
+        "all_items_selected": "सभी दिख रहे आइटम चुन लिए गए हैं",
+        "exit_selection_mode": "सिलेक्शन मोड से बाहर जाएँ",
+        "time": "समय"
     },
     "messages": {
         "invalid_address": "निम्नलिखित एड्रेस अमान्य लग रहा है",
