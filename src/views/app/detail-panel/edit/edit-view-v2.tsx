@@ -6,7 +6,7 @@
 
 import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 
-import { Container, Input, Text, Padding, Button, Row } from '@zextras/carbonio-design-system';
+import { Container, Input, Text, Button, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
@@ -24,6 +24,7 @@ import { getMailBodyWithSignature } from '../../../../helpers/signatures';
 import {
 	useAddDraftListeners,
 	useEditorAction,
+	useEditorDraftSaveAllowedStatus,
 	useEditorFrom,
 	useEditorIsRichText,
 	useEditorRecipients,
@@ -37,7 +38,6 @@ import {
 	EditorRecipients,
 	Participant
 } from '../../../../types';
-import { EditViewActions } from '../../../../constants';
 
 export type EditViewProp = {
 	editorId: string;
@@ -65,7 +65,7 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 	const { from, setFrom } = useEditorFrom(editorId);
 	const { sender, setSender } = useEditorSender(editorId);
 	const { recipients, setRecipients } = useEditorRecipients(editorId);
-
+	const draftSaveAllowedStatus = useEditorDraftSaveAllowedStatus(editorId);
 	const [tempSaveDraftStatus, setTempSaveDraftStatus] = useState('');
 
 	console.count('**** edit view render');
@@ -148,15 +148,11 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		>
 			<GapContainer mainAlignment={'flex-start'} crossAlignment={'flex-start'} gap={'large'}>
 				{/* Header start */}
+
 				<Row
-					// // mainAlignment={'flex-start'}
 					mainAlignment={showIdentitySelector ? 'space-between' : 'flex-end'}
 					orientation="horizontal"
-					// // crossAlignment={'center'}
 					width="fill"
-					// // height={'fit'}
-
-					// gap={'large'}
 				>
 					{showIdentitySelector && (
 						<EditViewIdentitySelector
@@ -166,14 +162,11 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 						/>
 					)}
 
-					<Row
-						mainAlignment={'flex-end'}
-						// orientation="horizontal"
-						// crossAlignment={'center'}
-						// // minWidth={'fit'}
-						// gap={'small'}
-					>
-						{action !== EditViewActions.COMPOSE && (
+					<Row mainAlignment={'flex-end'}>
+						<Tooltip
+							label={draftSaveAllowedStatus?.reason}
+							disabled={draftSaveAllowedStatus?.allowed}
+						>
 							<Button
 								data-testid="BtnSaveMail"
 								type="outlined"
@@ -181,8 +174,9 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 									// handleSubmit(onSave)();
 								}}
 								label={`${t('label.save', 'Save')}`}
+								disabled={!draftSaveAllowedStatus?.allowed}
 							/>
-						)}
+						</Tooltip>
 					</Row>
 				</Row>
 

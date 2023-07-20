@@ -77,14 +77,10 @@ export type DraftSaveEndListener = (params: {
 	result: DraftSaveResultType;
 }) => void;
 
-export type EditorOperationAllowedStatus =
-	| {
-			allowed: true;
-	  }
-	| {
-			allowed: false;
-			reeason: string;
-	  };
+export type EditorOperationAllowedStatus = {
+	allowed: boolean;
+	reason?: string;
+};
 
 export type MailsEditorV2 = {
 	// the id of the editor (used to identify the editor in the store)
@@ -124,9 +120,9 @@ export type MailsEditorV2 = {
 	requestReadReceipt: boolean;
 	// reply type
 	replyType?: ReplyType;
-	// allowance status of the draft save
+	// allowed status of the draft save
 	draftSaveAllowedStatus?: EditorOperationAllowedStatus;
-	// allowance status of the message send
+	// allowed status of the message send
 	sendAllowedStatus?: EditorOperationAllowedStatus;
 	// dispatch function for the messages store
 	messagesStoreDispatch: AppDispatch;
