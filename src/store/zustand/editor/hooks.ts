@@ -10,7 +10,12 @@ import { debounce } from 'lodash';
 
 import { useEditorsStore } from './store';
 import { EditViewActionsType, TIMEOUTS } from '../../../constants';
-import { DraftSaveEndListener, DraftSaveStartListener, MailsEditorV2 } from '../../../types';
+import {
+	DraftSaveEndListener,
+	DraftSaveStartListener,
+	EditorOperationAllowedStatus,
+	MailsEditorV2
+} from '../../../types';
 import { saveDraftV2 } from '../../actions/save-draft';
 
 const debugLog = (text: string): void => {
@@ -63,6 +68,18 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 		listener({ editorId: editor.id });
 	});
 };
+
+/**
+ *
+ * @param editor
+ */
+const checkDraftSaveAllowance = (editor: MailsEditorV2): EditorOperationAllowedStatus =>
+	// TODO Check the editor data to determine if the draft is allowed to be saved
+	({ allowed: true });
+
+const checkSendAllowance = (editor: MailsEditorV2): EditorOperationAllowedStatus =>
+	// TODO Check the editor data to determine if the message is allowed to be sent
+	({ allowed: true });
 
 const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, TIMEOUTS.DRAFT_SAVE_DELAY);
 
@@ -586,4 +603,35 @@ export const useAddDraftListeners = ({
 		saveStartListener && addStartListener(editorId, saveStartListener);
 		saveEndListener && addEndListener(editorId, saveEndListener);
 	}, [editorId, saveStartListener, saveEndListener, addStartListener, addEndListener]);
+};
+
+export const useEditorDraftSaveAllowedStatus = (
+	editorId: MailsEditorV2['id']
+): {
+	draftSaveAllowedStatus: MailsEditorV2['draftSaveAllowedStatus'];
+	setDraftSaveAllowedStatus: (status: MailsEditorV2['draftSaveAllowedStatus']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
+	const setter = useEditorsStore((state) => state.updateDraftSaveAllowedStatus);
+
+	return {
+		draftSaveAllowedStatus: value,
+		setDraftSaveAllowedStatus: (val: MailsEditorV2['draftSaveAllowedStatus']): void =>
+			setter(editorId, val)
+	};
+};
+
+export const useEditorSendAllowedStatus = (
+	editorId: MailsEditorV2['id']
+): {
+	sendAllowedStatus: MailsEditorV2['sendAllowedStatus'];
+	setSendAllowedStatus: (status: MailsEditorV2['sendAllowedStatus']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[editorId].sendAllowedStatus);
+	const setter = useEditorsStore((state) => state.updateSendAllowedStatus);
+
+	return {
+		sendAllowedStatus: value,
+		setSendAllowedStatus: (val: MailsEditorV2['sendAllowedStatus']): void => setter(editorId, val)
+	};
 };

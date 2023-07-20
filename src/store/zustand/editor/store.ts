@@ -275,6 +275,24 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	updateDraftSaveAllowedStatus: (id, status): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].draftSaveAllowedStatus = status;
+				}
+			})
+		);
+	},
+	updateSendAllowedStatus: (id, status): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].sendAllowedStatus = status;
+				}
+			})
+		);
+	},
 	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments'][0]): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {

@@ -66,6 +66,14 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		recipients: MailsEditorV2['recipients']['bcc']
 	) => void;
+	updateDraftSaveAllowedStatus: (
+		id: MailsEditorV2['id'],
+		allowance: MailsEditorV2['draftSaveAllowedStatus']
+	) => void;
+	updateSendAllowedStatus: (
+		id: MailsEditorV2['id'],
+		allowance: MailsEditorV2['sendAllowedStatus']
+	) => void;
 	deleteEditor: (id: MailsEditorV2['id']) => void;
 	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']) => void;
 	updateSender: (id: MailsEditorV2['id'], sender: MailsEditorV2['sender']) => void;

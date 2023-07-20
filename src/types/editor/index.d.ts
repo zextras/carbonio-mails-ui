@@ -57,14 +57,6 @@ export type MailsEditor = {
 
 export type ReplyType = 'r' | 'w';
 
-export const DraftSaveStatus = {
-	PENDING: 'pending',
-	COMPLETE: 'completed',
-	ABORTED: 'aborted'
-} as const;
-
-export type DraftSaveStatusType = (typeof DraftSaveStatus)[keyof typeof DraftSaveStatus];
-
 export type EditorRecipients = {
 	to: Array<Participant>;
 	cc: Array<Participant>;
@@ -84,6 +76,15 @@ export type DraftSaveEndListener = (params: {
 	editorId: string;
 	result: DraftSaveResultType;
 }) => void;
+
+export type EditorOperationAllowedStatus =
+	| {
+			allowed: true;
+	  }
+	| {
+			allowed: false;
+			reeason: string;
+	  };
 
 export type MailsEditorV2 = {
 	// the id of the editor (used to identify the editor in the store)
@@ -123,9 +124,10 @@ export type MailsEditorV2 = {
 	requestReadReceipt: boolean;
 	// reply type
 	replyType?: ReplyType;
-	// Status of the draft saving process
-	draftSaveStatus?: DraftSaveStatusType;
-	draft;
+	// allowance status of the draft save
+	draftSaveAllowedStatus?: EditorOperationAllowedStatus;
+	// allowance status of the message send
+	sendAllowedStatus?: EditorOperationAllowedStatus;
 	// dispatch function for the messages store
 	messagesStoreDispatch: AppDispatch;
 	// listeners of the editor-related events
