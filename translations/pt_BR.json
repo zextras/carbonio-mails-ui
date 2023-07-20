@@ -52,8 +52,9 @@
         "share": "Compartilhar",
         "edit": "Editar",
         "me": "Eu",
-        "remove": "Remover",
-        "remove_plural": "Remover tudo",
+        "remove_0": "Remover",
+        "remove_1": "Remover tudo",
+        "remove_2": "",
         "save": "Salvar",
         "add_custom_message": "Adicionar mensagem personalizada",
         "allowed_actions": "Ações permitidas",
@@ -273,7 +274,10 @@
         "path": "Caminho",
         "select_all": "Selecionar tudo",
         "using_signatures": "Uso de assinaturas",
-        "admin_disabled_action": "O administrador desativou o redirecionamento"
+        "admin_disabled_action": "O administrador desativou o redirecionamento",
+        "all_items_selected": "Todos os items visíveis foram selecionados",
+        "exit_selection_mode": "Sair do modo de seleção",
+        "time": "Hora"
     },
     "title": {
         "new_messages": "Novas mensagens",
@@ -337,7 +341,7 @@
             },
             "redirect": {
                 "second": "O e-mail aparecerá como originalmente destinado ao novo destinatário",
-                "first": "Este e-mail será enviado a um novo destinatário preservando o endereço de e-mail do remetente original."
+                "first": "Este email será enviado a um novo destinatário mantendo o endereço do remetente original."
             },
             "send_anyway": {
                 "attachment": "anexo",
