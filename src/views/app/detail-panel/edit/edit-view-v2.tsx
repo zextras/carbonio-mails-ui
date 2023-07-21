@@ -19,8 +19,10 @@ import {
 import { t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
+import { useSendCountdown } from './edit-utils-hooks/use-send-countdown';
+import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
-import { EditViewDraftSaveInfo } from './parts/EditViewDraftSaveInfo';
+import { EditViewSendButtons } from './parts/edit-view-send-buttons';
 import { RecipientsRows } from './parts/recipients-rows';
 import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
@@ -32,7 +34,7 @@ import {
 } from '../../../../helpers/identities';
 import { getMailBodyWithSignature } from '../../../../helpers/signatures';
 import {
-	useEditorAction,
+	useEditorAutoSendTime,
 	useEditorDraftSave,
 	useEditorDraftSaveProcessStatus,
 	useEditorFrom,
@@ -49,6 +51,7 @@ import { EditorRecipients, Participant } from '../../../../types';
 
 export type EditViewProp = {
 	editorId: string;
+	onClose: () => void;
 };
 
 export const createParticipantFromIdentity = (
@@ -62,25 +65,31 @@ export const createParticipantFromIdentity = (
 		fullName: identity.fromDisplay
 	} as Participant);
 
-export const EditView: FC<EditViewProp> = ({ editorId }) => {
+export const EditView: FC<EditViewProp> = ({ editorId, onClose }) => {
 	const account = useUserAccount();
 	const settings = useUserSettings();
 
-	const { action, setAction } = useEditorAction(editorId);
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { text, setText } = useEditorText(editorId);
 	const { from, setFrom } = useEditorFrom(editorId);
 	const { sender, setSender } = useEditorSender(editorId);
 	const { recipients, setRecipients } = useEditorRecipients(editorId);
+	const { autoSendTime, setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
+	useSendCountdown(editorId);
 
 	console.count('**** edit view render');
+
+	// Performs cleanups and invoke the external callback
+	const close = useCallback(() => {
+		onClose();
+	}, [onClose]);
 
 	const onSaveClick = useCallback<ButtonProps['onClick']>(
 		(ev): void => {
@@ -89,27 +98,25 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		[saveDraft]
 	);
 
-	// TODO attach to the scheduled-send button
-	const onScheduledSendClick = useCallback<ButtonProps['onClick']>((ev): void => {
-		// TODO do something interesting
-	}, []);
-
-	const onSendClick = useCallback<ButtonProps['onClick']>(
-		(ev): void => {
-			sendMessage();
+	const onScheduledSendClick = useCallback(
+		(scheduledTime: number): void => {
+			setAutoSendTime(scheduledTime);
+			saveDraft();
+			close();
 		},
-		[sendMessage]
+		[setAutoSendTime]
 	);
+
+	const onSendClick = useCallback((): void => {
+		sendMessage();
+	}, [sendMessage]);
 
 	const onIdentityChanged = useCallback(
 		(identity: IdentityDescriptor): void => {
+			// TODO handle the sender in case of sendOnBehalfOf
 			setFrom(createParticipantFromIdentity(identity, ParticipantRole.FROM));
 			const textWithSignature = getMailBodyWithSignature(text, identity.defaultSignatureId);
-
 			setText(textWithSignature);
-			// TODO handle the sender in case of sendOnBehalfOf
-
-			// TODO change signature accordingly
 		},
 		[setFrom, setText, text]
 	);
@@ -243,10 +250,9 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 							/>
 						</Tooltip>
 						<Tooltip label={sendAllowedStatus?.reason} disabled={sendAllowedStatus?.allowed}>
-							{/* THIS BUTTON IS JUST A PLACEHOLDER */}
-							<Button
-								onClick={onSendClick}
-								label="THIS IS NOT THE BUTTON YOU ARE LOOKING FOR"
+							<EditViewSendButtons
+								onSendLater={onScheduledSendClick}
+								onSendNow={onSendClick}
 								disabled={!sendAllowedStatus?.allowed}
 							/>
 						</Tooltip>

@@ -318,6 +318,15 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	updateSendProcessStatusCountdown: (id, countdown): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id] && state.editors[id].sendProcessStatus?.countdown) {
+					state.editors[id].sendProcessStatus.countdown = countdown;
+				}
+			})
+		);
+	},
 	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments'][0]): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {

@@ -77,6 +77,10 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['sendProcessStatus']
 	) => void;
+	updateSendProcessStatusCountdown: (
+		id: MailsEditorV2['id'],
+		countdown: MailsEditorV2['sendProcessStatus']['countdown']
+	) => void;
 	deleteEditor: (id: MailsEditorV2['id']) => void;
 	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']) => void;
 	updateSender: (id: MailsEditorV2['id'], sender: MailsEditorV2['sender']) => void;

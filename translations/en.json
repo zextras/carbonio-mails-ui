@@ -572,6 +572,7 @@
             "message_deleted": "Message deleted",
             "message_move": "Message successfully moved",
             "message_redirected": "The message has been redirected",
+            "message_sending_aborted": "canceled by the user",
             "sending_mail_in_count": "Sending your message in {{count}} second",
             "sending_mail_in_count_plural": "Sending your message in {{count}} seconds",
             "tag_created": "Tag {{name}} successfully created",

@@ -5,9 +5,9 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AccountSettingsPrefs, soapFetch } from '@zextras/carbonio-shell-ui';
+
 import type {
 	MailsEditor,
-	PrefsType,
 	SaveDraftNewParameters,
 	saveDraftNewResult,
 	SaveDraftParameters,
@@ -53,13 +53,21 @@ export const saveDraftV2 = createAsyncThunk<saveDraftResult, SaveDraftParameters
 				_jsns: 'urn:zimbraMail',
 				m: createSoapDraftRequestFromEditor(editor)
 			},
-			null,
-			// FIXME remove the ts-ignore when SHELL-133 will be merged
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
+			undefined,
 			signal
 		)) as SaveDraftResponse;
 
 		return { resp };
 	}
 );
+
+export const saveDraftV3 = ({ editor, signal }: SaveDraftParameters): Promise<SaveDraftResponse> =>
+	soapFetch<SaveDraftRequest, SaveDraftResponse>(
+		'SaveDraft',
+		{
+			_jsns: 'urn:zimbraMail',
+			m: createSoapDraftRequestFromEditor(editor)
+		},
+		undefined,
+		signal
+	);

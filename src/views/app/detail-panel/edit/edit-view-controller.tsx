@@ -3,13 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 
 import {
 	updateBoardContext,
 	useBoard,
 	useUserAccount,
-	useUserSettings
+	useUserSettings,
+	closeBoard
 } from '@zextras/carbonio-shell-ui';
 
 import { EditView } from './edit-view-v2';
@@ -41,11 +42,12 @@ const EditViewController: FC = (x) => {
 	const settings = useUserSettings();
 	const board = useBoard<EditViewBoardContext>();
 
+	const onClose = useCallback(() => {
+		closeBoard(board.id);
+	}, [board.id]);
+
 	// TODO check why the useQueryParams triggers 2 renders
 	let { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
-
-	console.count('****  controller render');
-	// console.log('**** board', board);
 
 	/*
 	 * If the current component is running inside a board
@@ -89,6 +91,6 @@ const EditViewController: FC = (x) => {
 
 	// TODO handle board title change
 
-	return <MemoizedEditView editorId={editor.id} />;
+	return <MemoizedEditView editorId={editor.id} onClose={onClose} />;
 };
 export default EditViewController;

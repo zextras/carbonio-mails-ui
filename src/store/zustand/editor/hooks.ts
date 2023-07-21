@@ -4,18 +4,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { getUserSettings } from '@zextras/carbonio-shell-ui';
+import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { debounce, find } from 'lodash';
 
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
 import { useEditorsStore } from './store';
 import { EditViewActionsType, TIMEOUTS } from '../../../constants';
+import { createCancelableTimer } from '../../../helpers/timers';
 import { MailsEditorV2 } from '../../../types';
-import { saveDraftV2 } from '../../actions/save-draft';
+import { saveDraftV3 } from '../../actions/save-draft';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
-	undo?: () => void;
+};
+
+export type SendMessageResult = {
+	cancel?: () => void;
 };
 
 const debugLog = (text: string): void => {
@@ -68,35 +72,72 @@ const computeAndUpdateEditorStatus = (editorId: MailsEditorV2['id']): void => {
 /**
  *
  * @param editorId
+ * @param options
  */
-const sendFromEditor = (editorId: MailsEditorV2['id'], options?: SendMessageOptions): void => {
+const sendFromEditor = (
+	editorId: MailsEditorV2['id'],
+	options?: SendMessageOptions
+): SendMessageResult => {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {
 		console.warn('Cannot find the editor', editorId);
-		return;
+		return {};
 	}
 
 	if (!editor.sendAllowedStatus?.allowed) {
-		return;
+		return {};
 	}
+
+	const onTimerTick = (remain: number): void => {
+		useEditorsStore.getState().updateSendProcessStatusCountdown(editorId, remain);
+	};
+
+	const onTimerCanceled = (): void => {
+		console.log('***** message sending canceled');
+		useEditorsStore.getState().updateSendProcessStatus(editorId, {
+			status: 'aborted',
+			abortReason: t('messages.snackbar.message_sending_aborted', 'canceled by the user')
+		});
+		computeAndUpdateEditorStatus(editorId);
+	};
 
 	const delay =
 		(find(getUserSettings().props, ['name', 'mails_snackbar_delay'])
 			?._content as unknown as number) ?? 3;
 
+	const cancelableTimer = createCancelableTimer({
+		delay,
+		onTick: onTimerTick,
+		onCancel: onTimerCanceled
+	});
+	cancelableTimer.promise
+		.then(() => {
+			console.log('*** mando mail');
+
+			useEditorsStore.getState().updateSendProcessStatus(editorId, {
+				status: 'completed'
+			});
+			computeAndUpdateEditorStatus(editorId);
+		})
+		.catch((err) => {
+			console.log('*** errore in invio mail');
+		});
+
 	// TODO implement the send logic
-	// - delay timer
-	// - ticker for countdown update
-	// - update the store sending status field
 	// - update the redux store
-	console.log('TO BE IMPLEMENTED');
+	console.log('**** TO BE IMPLEMENTED');
 
 	// TODO handle the response or the error
 	useEditorsStore.getState().updateSendProcessStatus(editorId, {
 		status: 'running',
-		countdown: delay
+		countdown: delay,
+		cancel: cancelableTimer.cancel
 	});
 	computeAndUpdateEditorStatus(editorId);
+
+	return {
+		cancel: cancelableTimer.cancel
+	};
 };
 
 /**
@@ -114,15 +155,25 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 		return;
 	}
 
-	// Update messages store
-	editor
-		.messagesStoreDispatch(saveDraftV2({ editor }))
-		.then((res) => {
-			// PayloadAction<saveDraftResult, string, {arg: SaveDraftParameters, requestId: string, requestStatus: "fulfilled"}, never> | PayloadAction<...>
-			const x = res.payload;
-			// console.dir(x);
+	const handleError = (err: string): void => {
+		useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
+			status: 'aborted',
+			abortReason: err
+		});
+		computeAndUpdateEditorStatus(editorId);
+	};
 
-			// TODO handle the response or the error
+	// Update messages store
+	saveDraftV3({ editor })
+		.then((res) => {
+			if ('Fault' in res) {
+				handleError(res.Fault.Detail?.Error?.Detail);
+				return;
+			}
+
+			// TODO extract multipart for attachments?
+			res.m && useEditorsStore.getState().setDid(editorId, res.m[0].id);
+
 			useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
 				status: 'completed',
 				lastSaveTimestamp: new Date()
@@ -130,11 +181,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 			computeAndUpdateEditorStatus(editorId);
 		})
 		.catch((err) => {
-			useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
-				status: 'aborted',
-				abortReason: err
-			});
-			computeAndUpdateEditorStatus(editorId);
+			handleError(err);
 		});
 
 	useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
@@ -720,12 +767,25 @@ export const useEditorDraftSaveProcessStatus = (
  */
 export const useEditorSend = (
 	editorId: MailsEditorV2['id']
-): { status: MailsEditorV2['sendAllowedStatus']; send: (options?: SendMessageOptions) => void } => {
+): {
+	status: MailsEditorV2['sendAllowedStatus'];
+	send: (options?: SendMessageOptions) => SendMessageResult;
+} => {
 	const status = useEditorsStore((state) => state.editors[editorId].sendAllowedStatus);
-	const invoker = (options?: SendMessageOptions): void => sendFromEditor(editorId, options);
+	const sendInvoker = (options?: SendMessageOptions): SendMessageResult =>
+		sendFromEditor(editorId, options);
 
 	return {
 		status,
-		send: invoker
+		send: sendInvoker
 	};
 };
+
+/**
+ * Returns the reactive status of the message send process
+ * @param editorId
+ */
+export const useEditorSendProcessStatus = (
+	editorId: MailsEditorV2['id']
+): MailsEditorV2['sendProcessStatus'] =>
+	useEditorsStore((state) => state.editors[editorId].sendProcessStatus);

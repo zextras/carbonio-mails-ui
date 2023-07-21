@@ -4,14 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
-import { find, forEach, isEmpty, map } from 'lodash';
+import { find, forEach, map } from 'lodash';
+
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import {
 	InlineAttachments,
-	MailsEditor,
 	MailsEditorV2,
 	Participant,
-	SharedParticipant,
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj
 } from '../../../types';
@@ -150,7 +149,7 @@ export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDra
 
 	return {
 		autoSendTime: editor.autoSendTime,
-		did: editor.did,
+		id: editor.did,
 		attach: editor.attachments ?? { mp: [] }, // FIXME maybe attach should be optional
 		su: { _content: editor.subject ?? '' },
 		rt: editor.replyType,

@@ -44,7 +44,11 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 		};
 	}
 
-	if (!editor.recipients.to && !editor.recipients.cc && !editor.recipients.bcc) {
+	if (
+		!editor.recipients.to.length &&
+		!editor.recipients.cc.length &&
+		!editor.recipients.bcc.length
+	) {
 		return {
 			allowed: false,
 			reason: t('label.missing_recipients', 'there is no valid recipients') // TODO check strings with designer
