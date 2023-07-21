@@ -355,7 +355,10 @@
         "need_to_select_atleast_one_item": "Musisz wybrać co najmniej jeden element, aby móc wykonać tę czynność",
         "admin_disabled_action": "Administrator wyłączył przekierowywanie",
         "received_from_address": "Otrzymano od (adres)",
-        "sent_to_address": "Wysłane do (adres)"
+        "sent_to_address": "Wysłane do (adres)",
+        "all_items_selected": "Wszystkie widoczne elementy zostały wybrane",
+        "exit_selection_mode": "Wyjdź z trybu wybierania",
+        "time": "Czas"
     },
     "message": {
         "snackbar": {
@@ -382,7 +385,7 @@
         "email_saved_at": "E-mail został zapisany jako wersja robocza o {{time}}",
         "view_rights": "Wyświetlać",
         "delete_tag_message1": "Czy na pewno chcesz usunąć Tag \"{{name}}\"?",
-        "delete_tag_message2": "Po usunięciu Tag zostanie zdjęty z każdego elementu oznaczonego nim.",
+        "delete_tag_message2": "Po usunięciu tag zostanie zdjęty z każdego elementu oznaczonego nim.",
         "admin_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie, Zarządzanie",
         "manager_rights": "Wyświetlanie, Edytowanie, Dodawanie, Usuwanie",
         "external_images_blocked": "Obrazki z innych domen zostały zablokowane, aby chronić Cię przed potencjalnym spamem",
@@ -430,7 +433,7 @@
         "message_not_sent": "Błąd - Wiadomość nie została wysłana",
         "delete_email": "Usuń e-mail",
         "edit_draft": "Edytuj wersję roboczą",
-        "redirect_email": "Przekieruj e-mail",
+        "redirect_email": "Przekieruj e-maila",
         "warning": "Ostrzeżenie",
         "attention": "Uwaga"
     },
