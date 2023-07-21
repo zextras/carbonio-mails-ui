@@ -82,6 +82,7 @@ export type DraftSaveProcessStatus = {
 export type SendProcessStatus = {
 	status: 'completed' | 'running' | 'aborted';
 	abortReason?: string;
+	countdown: number;
 };
 
 export type MailsEditorV2 = {

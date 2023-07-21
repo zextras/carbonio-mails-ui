@@ -4,17 +4,38 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { debounce } from 'lodash';
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
+import { debounce, find } from 'lodash';
 
-import { checkDraftSaveAllowedStatus } from './editor-utils';
+import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
 import { useEditorsStore } from './store';
 import { EditViewActionsType, TIMEOUTS } from '../../../constants';
 import { MailsEditorV2 } from '../../../types';
 import { saveDraftV2 } from '../../actions/save-draft';
 
+export type SendMessageOptions = {
+	cancelable?: boolean;
+	undo?: () => void;
+};
+
 const debugLog = (text: string): void => {
 	console.debug(`***** ${text}`);
 };
+
+/**
+ * TODO for future refactors
+ * instead of calling imperatively the computeAndUpdateEditorStatus function
+ * to update the status of the store a subscription-based logic can be implemented.
+ *
+ * Using the subscriptionWithSelector functionality of Zustand we can subscribe
+ * for changes on the store and perform the status update only when the selected
+ * fields change.
+ * (see https://docs.pmnd.rs/zustand/recipes/recipes#reading/writing-state-and-reacting-to-changes-outside-of-components)
+ *
+ * The list of the fields to take into consideration can be provide by a specific
+ * function/constant so the code will be more clear and future changes/additions
+ * will be easier to perform.
+ */
 
 /**
  * Returns the editor with given ID or null if not found.
@@ -26,13 +47,32 @@ export const getEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | 
 	useEditorsStore.getState()?.editors?.[id] ?? null;
 
 /**
+ * Analyzes the given editor and updates in the store the allow status for the
+ * draft save and the send operations
+ * @param editorId
+ */
+const computeAndUpdateEditorStatus = (editorId: MailsEditorV2['id']): void => {
+	const editor = getEditor({ id: editorId });
+	if (!editor) {
+		console.warn('Cannot find the editor', editorId);
+		return;
+	}
+
+	useEditorsStore
+		.getState()
+		.updateDraftSaveAllowedStatus(editorId, computeDraftSaveAllowedStatus(editor));
+
+	useEditorsStore.getState().updateSendAllowedStatus(editorId, computeSendAllowedStatus(editor));
+};
+
+/**
  *
  * @param editorId
  */
-const sendFromEditor = (editorId: MailsEditorV2['id']): void => {
+const sendFromEditor = (editorId: MailsEditorV2['id'], options?: SendMessageOptions): void => {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {
-		console.warn('Cannot find editor', editorId);
+		console.warn('Cannot find the editor', editorId);
 		return;
 	}
 
@@ -40,12 +80,23 @@ const sendFromEditor = (editorId: MailsEditorV2['id']): void => {
 		return;
 	}
 
+	const delay =
+		(find(getUserSettings().props, ['name', 'mails_snackbar_delay'])
+			?._content as unknown as number) ?? 3;
+
 	// TODO implement the send logic
 	// - delay timer
 	// - ticker for countdown update
 	// - update the store sending status field
 	// - update the redux store
 	console.log('TO BE IMPLEMENTED');
+
+	// TODO handle the response or the error
+	useEditorsStore.getState().updateSendProcessStatus(editorId, {
+		status: 'running',
+		countdown: delay
+	});
+	computeAndUpdateEditorStatus(editorId);
 };
 
 /**
@@ -55,7 +106,7 @@ const sendFromEditor = (editorId: MailsEditorV2['id']): void => {
 const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {
-		console.warn('Cannot find editor', editorId);
+		console.warn('Cannot find the editor', editorId);
 		return;
 	}
 
@@ -69,42 +120,27 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 		.then((res) => {
 			// PayloadAction<saveDraftResult, string, {arg: SaveDraftParameters, requestId: string, requestStatus: "fulfilled"}, never> | PayloadAction<...>
 			const x = res.payload;
-			console.dir(x);
+			// console.dir(x);
 
 			// TODO handle the response or the error
 			useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
 				status: 'completed',
 				lastSaveTimestamp: new Date()
 			});
-			// FIXME use a subscription to the store update
-			useEditorsStore
-				.getState()
-				.updateDraftSaveAllowedStatus(
-					editorId,
-					checkDraftSaveAllowedStatus(getEditor(editorId) ?? {})
-				);
+			computeAndUpdateEditorStatus(editorId);
 		})
 		.catch((err) => {
 			useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
 				status: 'aborted',
 				abortReason: err
 			});
-			// FIXME use a subscription to the store update
-			useEditorsStore
-				.getState()
-				.updateDraftSaveAllowedStatus(
-					editorId,
-					checkDraftSaveAllowedStatus(getEditor(editorId) ?? {})
-				);
+			computeAndUpdateEditorStatus(editorId);
 		});
 
 	useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
 		status: 'running'
 	});
-	// FIXME use a subscription to the store update
-	useEditorsStore
-		.getState()
-		.updateDraftSaveAllowedStatus(editorId, checkDraftSaveAllowedStatus(getEditor(editorId) ?? {}));
+	computeAndUpdateEditorStatus(editorId);
 };
 
 const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, TIMEOUTS.DRAFT_SAVE_DELAY);
@@ -311,12 +347,13 @@ export const useEditorOriginalId = (
  * @params originalMessage
  * */
 export const useSetOriginalMessage = ({
-	id,
+	editorId,
 	originalMessage
 }: {
-	id: MailsEditorV2['id'];
+	editorId: MailsEditorV2['id'];
 	originalMessage: MailsEditorV2['originalMessage'];
-}): void => useEditorsStore((s) => s.setOriginalMessage(id, originalMessage));
+}): void => useEditorsStore((s) => s.setOriginalMessage(editorId, originalMessage));
+
 export const getSetOriginalMessage = ({
 	id,
 	originalMessage
@@ -327,22 +364,23 @@ export const getSetOriginalMessage = ({
 
 /**
  * Returns reactive references to the "to" recipients values and to their setter
- * @param id
+ * @param editorId
  */
 export const useEditorRecipients = (
-	id: MailsEditorV2['id']
+	editorId: MailsEditorV2['id']
 ): {
 	recipients: MailsEditorV2['recipients'];
 	setRecipients: (recipient: MailsEditorV2['recipients']) => void;
 } => {
-	const value = useEditorsStore((state) => state.editors[id].recipients);
+	const value = useEditorsStore((state) => state.editors[editorId].recipients);
 	const setter = useEditorsStore((state) => state.updateRecipients);
 
 	return {
 		recipients: value,
 		setRecipients: (val: MailsEditorV2['recipients']): void => {
-			setter(id, val);
-			debouncedSaveDraftFromEditor(id);
+			setter(editorId, val);
+			computeAndUpdateEditorStatus(editorId);
+			debouncedSaveDraftFromEditor(editorId);
 			debugLog('save cause: recipients');
 		}
 	};
@@ -350,22 +388,23 @@ export const useEditorRecipients = (
 
 /**
  * Returns reactive references to the "to" recipients values and to their setter
- * @param id
+ * @param editorId
  */
 export const useEditorToRecipients = (
-	id: MailsEditorV2['id']
+	editorId: MailsEditorV2['id']
 ): {
 	toRecipients: MailsEditorV2['recipients']['to'];
 	setToRecipients: (recipient: MailsEditorV2['recipients']['to']) => void;
 } => {
-	const value = useEditorsStore((state) => state.editors[id].recipients.to);
+	const value = useEditorsStore((state) => state.editors[editorId].recipients.to);
 	const setter = useEditorsStore((state) => state.updateToRecipients);
 
 	return {
 		toRecipients: value,
 		setToRecipients: (val: MailsEditorV2['recipients']['to']): void => {
-			setter(id, val);
-			debouncedSaveDraftFromEditor(id);
+			setter(editorId, val);
+			computeAndUpdateEditorStatus(editorId);
+			debouncedSaveDraftFromEditor(editorId);
 			debugLog('save cause: to');
 		}
 	};
@@ -373,22 +412,23 @@ export const useEditorToRecipients = (
 
 /**
  * Returns reactive references to the "cc" recipients values and to their setter
- * @param id
+ * @param editorId
  */
 export const useEditorCcRecipients = (
-	id: MailsEditorV2['id']
+	editorId: MailsEditorV2['id']
 ): {
 	ccRecipients: MailsEditorV2['recipients']['cc'];
 	setCcRecipients: (recipient: MailsEditorV2['recipients']['cc']) => void;
 } => {
-	const value = useEditorsStore((state) => state.editors[id].recipients.cc);
+	const value = useEditorsStore((state) => state.editors[editorId].recipients.cc);
 	const setter = useEditorsStore((state) => state.updateCcRecipients);
 
 	return {
 		ccRecipients: value,
 		setCcRecipients: (val: MailsEditorV2['recipients']['cc']): void => {
-			setter(id, val);
-			debouncedSaveDraftFromEditor(id);
+			setter(editorId, val);
+			computeAndUpdateEditorStatus(editorId);
+			debouncedSaveDraftFromEditor(editorId);
 			debugLog('save cause: cc');
 		}
 	};
@@ -396,22 +436,23 @@ export const useEditorCcRecipients = (
 
 /**
  * Returns reactive references to the "bcc" recipients values and to their setter
- * @param id
+ * @param editorId
  */
 export const useEditorBccRecipients = (
-	id: MailsEditorV2['id']
+	editorId: MailsEditorV2['id']
 ): {
 	bccRecipients: MailsEditorV2['recipients']['bcc'];
 	setBccRecipients: (recipient: MailsEditorV2['recipients']['bcc']) => void;
 } => {
-	const value = useEditorsStore((state) => state.editors[id].recipients.bcc);
+	const value = useEditorsStore((state) => state.editors[editorId].recipients.bcc);
 	const setter = useEditorsStore((state) => state.updateBccRecipients);
 
 	return {
 		bccRecipients: value,
 		setBccRecipients: (val: MailsEditorV2['recipients']['bcc']): void => {
-			setter(id, val);
-			debouncedSaveDraftFromEditor(id);
+			setter(editorId, val);
+			computeAndUpdateEditorStatus(editorId);
+			debouncedSaveDraftFromEditor(editorId);
 			debugLog('save cause: bcc');
 		}
 	};
@@ -419,22 +460,23 @@ export const useEditorBccRecipients = (
 
 /**
  * Returns reactive reference to the from value and to its setter
- * @param id
+ * @param editorId
  */
 export const useEditorFrom = (
-	id: MailsEditorV2['id']
+	editorId: MailsEditorV2['id']
 ): {
 	from: MailsEditorV2['from'];
 	setFrom: (from: MailsEditorV2['from']) => void;
 } => {
-	const value = useEditorsStore((state) => state.editors[id].from);
+	const value = useEditorsStore((state) => state.editors[editorId].from);
 	const setter = useEditorsStore((state) => state.updateFrom);
 
 	return {
 		from: value,
 		setFrom: (val: MailsEditorV2['from']): void => {
-			setter(id, val);
-			debouncedSaveDraftFromEditor(id);
+			setter(editorId, val);
+			computeAndUpdateEditorStatus(editorId);
+			debouncedSaveDraftFromEditor(editorId);
 			debugLog('save cause: from');
 		}
 	};
@@ -442,22 +484,23 @@ export const useEditorFrom = (
 
 /**
  * Returns reactive reference to the sender value and to its setter
- * @param id
+ * @param editorId
  */
 export const useEditorSender = (
-	id: MailsEditorV2['id']
+	editorId: MailsEditorV2['id']
 ): {
 	sender: MailsEditorV2['sender'];
 	setSender: (sender: MailsEditorV2['sender']) => void;
 } => {
-	const value = useEditorsStore((state) => state.editors[id].sender);
+	const value = useEditorsStore((state) => state.editors[editorId].sender);
 	const setter = useEditorsStore((state) => state.updateSender);
 
 	return {
 		sender: value,
 		setSender: (val: MailsEditorV2['sender']): void => {
-			setter(id, val);
-			debouncedSaveDraftFromEditor(id);
+			setter(editorId, val);
+			computeAndUpdateEditorStatus(editorId);
+			debouncedSaveDraftFromEditor(editorId);
 			debugLog('save cause: sender');
 		}
 	};
@@ -671,27 +714,18 @@ export const useEditorDraftSaveProcessStatus = (
  * If some change on the editor data will cause the ability/inability to
  * perform the send the status will be updated.
  *
- * The hook returns also the function to invoke the send
+ * The hook returns also the function to invoke the message send action
  *
  * @param editorId
  */
 export const useEditorSend = (
 	editorId: MailsEditorV2['id']
-): { status: MailsEditorV2['sendAllowedStatus']; send: () => void } => {
+): { status: MailsEditorV2['sendAllowedStatus']; send: (options?: SendMessageOptions) => void } => {
 	const status = useEditorsStore((state) => state.editors[editorId].sendAllowedStatus);
-	const invoker = (): void => sendFromEditor(editorId);
+	const invoker = (options?: SendMessageOptions): void => sendFromEditor(editorId, options);
 
 	return {
 		status,
 		send: invoker
 	};
 };
-
-/**
- * Returns the reactive status of the message send process
- * @param editorId
- */
-export const useEditorSendProcessStatus = (
-	editorId: MailsEditorV2['id']
-): MailsEditorV2['sendProcessStatus'] =>
-	useEditorsStore((state) => state.editors[editorId].sendProcessStatus);

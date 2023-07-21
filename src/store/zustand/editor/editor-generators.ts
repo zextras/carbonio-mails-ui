@@ -6,7 +6,7 @@
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
 
-import { checkDraftSaveAllowedStatus, checkSendAllowedStatus } from './editor-utils';
+import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
 import { getEditor } from './hooks';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { LineType } from '../../../commons/utils';
@@ -56,8 +56,8 @@ const generateNewMessageEditor = (
 		messagesStoreDispatch
 	} as MailsEditorV2;
 
-	editor.draftSaveAllowedStatus = checkDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = checkSendAllowedStatus(editor);
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
 
 	return editor;
 };

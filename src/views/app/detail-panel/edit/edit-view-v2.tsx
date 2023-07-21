@@ -82,18 +82,24 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 
 	console.count('**** edit view render');
 
-	const onSaveClick = useCallback<ButtonProps['onClick']>((ev): void => {
-		saveDraft();
-	}, []);
+	const onSaveClick = useCallback<ButtonProps['onClick']>(
+		(ev): void => {
+			saveDraft();
+		},
+		[saveDraft]
+	);
 
 	// TODO attach to the scheduled-send button
 	const onScheduledSendClick = useCallback<ButtonProps['onClick']>((ev): void => {
 		// TODO do something interesting
 	}, []);
 
-	const onSendClick = useCallback<ButtonProps['onClick']>((ev): void => {
-		sendMessage();
-	}, []);
+	const onSendClick = useCallback<ButtonProps['onClick']>(
+		(ev): void => {
+			sendMessage();
+		},
+		[sendMessage]
+	);
 
 	const onIdentityChanged = useCallback(
 		(identity: IdentityDescriptor): void => {
@@ -219,6 +225,8 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 					)}
 
 					<GapRow mainAlignment={'flex-end'} gap={'medium'}>
+						{/* <AddAttachmentDropdown editorId={editorId} onFilesSelected={(files) => addAttachments()} onPublicUrlCreated={} onFilesFilesSelected={} /> */}
+
 						<Dropdown items={composerOptions} selectedBackgroundColor="gray5">
 							<IconButton size="large" icon="MoreVertical" onClick={noop} />
 						</Dropdown>
