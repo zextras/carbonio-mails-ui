@@ -7,19 +7,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { drop } from 'lodash';
-import { EditViewActions } from '../constants';
-import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
-import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
-import type {
-	EditorsStateType,
-	MailsEditorMap,
-	MailsStateType,
-	Participant,
-	MailsEditor,
-	MailMessage,
-	SaveDraftNewParameters,
-	saveDraftNewResult
-} from '../types';
+
 import { deleteAttachments } from './actions/delete-all-attachments';
 import { saveDraft } from './actions/save-draft';
 import {
@@ -35,6 +23,19 @@ import {
 	retrieveReplyTo,
 	retrieveCCForEditNew
 } from './editor-slice-utils';
+import { EditViewActions } from '../constants';
+import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
+import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
+import type {
+	EditorsStateType,
+	MailsEditorMap,
+	MailsStateType,
+	Participant,
+	MailsEditor,
+	MailMessage,
+	SaveDraftNewParameters,
+	SaveDraftNewResult
+} from '../types';
 
 type CreateEditorPayload = {
 	editorId: string;
@@ -240,7 +241,7 @@ type saveDraftAction = {
 	meta: {
 		arg: SaveDraftNewParameters;
 	};
-	payload: saveDraftNewResult;
+	payload: SaveDraftNewResult;
 };
 
 function saveDraftFulfilled(state: EditorsStateType, action: saveDraftAction): void {

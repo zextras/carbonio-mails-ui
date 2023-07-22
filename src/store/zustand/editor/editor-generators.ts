@@ -73,7 +73,7 @@ export const resumeEditor = (id: MailsEditorV2['id']): MailsEditorV2 | null => {
 
 export type GenerateEditorParams = {
 	action: EditViewActionsType;
-	messageId?: string;
+	id?: string;
 	messagesStoreDispatch: AppDispatch;
 	account: Account;
 	settings: AccountSettings;
@@ -82,50 +82,50 @@ export type GenerateEditorParams = {
 /**
  * Generate a new editor structure for the given action and message id
  * @param action - Edit action type
- * @param messageId - The id of the message associated with the action
+ * @param id - The id of the message or the editor associated with the action
  */
 export const generateEditor = ({
 	action,
-	messageId,
+	id,
 	messagesStoreDispatch,
 	account,
 	settings
 }: GenerateEditorParams): MailsEditorV2 | null => {
 	switch (action) {
 		case EditViewActions.RESUME:
-			if (!messageId) {
+			if (!id) {
 				throw new Error('Cannot resume editor without an editor id');
 			}
-			return getEditor({ id: messageId });
+			return getEditor({ id });
 		case EditViewActions.NEW:
 			return generateNewMessageEditor(messagesStoreDispatch, account, settings);
 		case EditViewActions.REPLY:
 			// TODO
-			if (!messageId) {
+			if (!id) {
 				throw new Error('Cannot generate a reply editor without a message id');
 			}
 			break;
 		case EditViewActions.REPLY_ALL:
 			// TODO
-			if (!messageId) {
+			if (!id) {
 				throw new Error('Cannot generate a reply all editor without a message id');
 			}
 			break;
 		case EditViewActions.FORWARD:
 			// TODO
-			if (!messageId) {
+			if (!id) {
 				throw new Error('Cannot generate a forward editor without a message id');
 			}
 			break;
 		case EditViewActions.EDIT_AS_DRAFT:
 			// TODO
-			if (!messageId) {
+			if (!id) {
 				throw new Error('Cannot generate a draft editor without a message id');
 			}
 			break;
 		case EditViewActions.EDIT_AS_NEW:
 			// TODO
-			if (!messageId) {
+			if (!id) {
 				throw new Error('Cannot generate an edit as new editor without a message id');
 			}
 			break;

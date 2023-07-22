@@ -9,11 +9,11 @@ import { AccountSettingsPrefs, soapFetch } from '@zextras/carbonio-shell-ui';
 import type {
 	MailsEditor,
 	SaveDraftNewParameters,
-	saveDraftNewResult,
+	SaveDraftNewResult,
 	SaveDraftParameters,
 	SaveDraftRequest,
 	SaveDraftResponse,
-	saveDraftResult
+	SaveDraftResult
 } from '../../types';
 import { generateRequest } from '../editor-slice-utils';
 import { createSoapDraftRequestFromEditor } from '../zustand/editor/editor-transformations';
@@ -24,7 +24,7 @@ type SaveDraftProps = {
 	signal?: AbortSignal;
 };
 
-export const saveDraft = createAsyncThunk<saveDraftNewResult, SaveDraftNewParameters>(
+export const saveDraft = createAsyncThunk<SaveDraftNewResult, SaveDraftNewParameters>(
 	'saveDraft',
 	async ({ data, prefs, signal }: SaveDraftProps) => {
 		const resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>(
@@ -44,7 +44,7 @@ export const saveDraft = createAsyncThunk<saveDraftNewResult, SaveDraftNewParame
 	}
 );
 
-export const saveDraftV2 = createAsyncThunk<saveDraftResult, SaveDraftParameters>(
+export const saveDraftV2 = createAsyncThunk<SaveDraftResult, SaveDraftParameters>(
 	'saveDraft',
 	async ({ editor, signal }) => {
 		const resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>(

@@ -5,6 +5,7 @@
  */
 
 import { Participant } from '../participant';
+import { SaveDraftResponse } from '../soap';
 
 export type IncompleteMessage = {
 	id: string;
@@ -88,4 +89,12 @@ export type SendMsgParameters = {
 	msg?: MailMessage;
 	message?: MailMessage;
 	prefs?: PrefsType;
+};
+
+export type SendMsgResult = {
+	response:
+		| SaveDraftResponse
+		| (SaveDraftResponse['Fault'] & {
+				error: true;
+		  });
 };

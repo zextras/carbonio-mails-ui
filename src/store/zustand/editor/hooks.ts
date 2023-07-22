@@ -13,9 +13,14 @@ import { EditViewActionsType, TIMEOUTS } from '../../../constants';
 import { createCancelableTimer } from '../../../helpers/timers';
 import { MailsEditorV2 } from '../../../types';
 import { saveDraftV3 } from '../../actions/save-draft';
+import { sendMsgFromEditor } from '../../actions/send-msg';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
+	onCountdownTick?: (countdown: number, cancel: () => void) => void;
+	onComplete?: () => void;
+	onError?: (error: string) => void;
+	onCancel?: () => void;
 };
 
 export type SendMessageResult = {
@@ -88,12 +93,15 @@ const sendFromEditor = (
 		return {};
 	}
 
-	const onTimerTick = (remain: number): void => {
-		useEditorsStore.getState().updateSendProcessStatusCountdown(editorId, remain);
+	/**
+	 * On each time tick the store will be
+	 * @param remain
+	 */
+	const onTimerTick = (remain: number, cancel: () => void): void => {
+		options?.onCountdownTick && options?.onCountdownTick(remain, cancel);
 	};
 
 	const onTimerCanceled = (): void => {
-		console.log('***** message sending canceled');
 		useEditorsStore.getState().updateSendProcessStatus(editorId, {
 			status: 'aborted',
 			abortReason: t('messages.snackbar.message_sending_aborted', 'canceled by the user')
@@ -112,25 +120,32 @@ const sendFromEditor = (
 	});
 	cancelableTimer.promise
 		.then(() => {
-			console.log('*** mando mail');
-
-			useEditorsStore.getState().updateSendProcessStatus(editorId, {
-				status: 'completed'
-			});
-			computeAndUpdateEditorStatus(editorId);
+			editor
+				.messagesStoreDispatch(sendMsgFromEditor({ editorId }))
+				.then(() => {
+					useEditorsStore.getState().updateSendProcessStatus(editorId, {
+						status: 'completed'
+					});
+					computeAndUpdateEditorStatus(editorId);
+				})
+				.catch((err) => {
+					useEditorsStore.getState().updateSendProcessStatus(editorId, {
+						status: 'aborted',
+						abortReason: err
+					});
+					computeAndUpdateEditorStatus(editorId);
+				});
 		})
 		.catch((err) => {
-			console.log('*** errore in invio mail');
+			useEditorsStore.getState().updateSendProcessStatus(editorId, {
+				status: 'aborted',
+				abortReason: err
+			});
+			computeAndUpdateEditorStatus(editorId);
 		});
 
-	// TODO implement the send logic
-	// - update the redux store
-	console.log('**** TO BE IMPLEMENTED');
-
-	// TODO handle the response or the error
 	useEditorsStore.getState().updateSendProcessStatus(editorId, {
 		status: 'running',
-		countdown: delay,
 		cancel: cancelableTimer.cancel
 	});
 	computeAndUpdateEditorStatus(editorId);

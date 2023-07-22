@@ -10,14 +10,16 @@ import {
 	useBoard,
 	useUserAccount,
 	useUserSettings,
-	closeBoard
+	closeBoard,
+	t,
+	useBoardHooks
 } from '@zextras/carbonio-shell-ui';
 
 import { EditView } from './edit-view-v2';
 import { EditViewActions, EditViewActionsType } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
-import { addEditor } from '../../../../store/zustand/editor';
+import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
 import { EditViewBoardContext } from '../../../../types';
 
@@ -41,6 +43,7 @@ const EditViewController: FC = (x) => {
 	const account = useUserAccount();
 	const settings = useUserSettings();
 	const board = useBoard<EditViewBoardContext>();
+	const boardUtilities = useBoardHooks();
 
 	const onClose = useCallback(() => {
 		closeBoard(board.id);
@@ -63,12 +66,11 @@ const EditViewController: FC = (x) => {
 		action = EditViewActions.RESUME;
 		id = existingEditorId;
 	}
-	// console.log('**** final params', { action, id });
 
 	// Create or resume editor
 	const editor = generateEditor({
 		action,
-		messageId: id,
+		id,
 		messagesStoreDispatch,
 		account,
 		settings
@@ -89,8 +91,13 @@ const EditViewController: FC = (x) => {
 		updateBoardContext(board.id, { ...board.context, editorId: editor.id });
 	}
 
-	// TODO handle board title change
+	const { subject } = useEditorSubject(editor.id);
+	if (subject && board?.title !== subject) {
+		boardUtilities?.updateBoard({
+			title: subject ?? t('messages,new_email', 'new email')
+		});
+	}
 
-	return <MemoizedEditView editorId={editor.id} onClose={onClose} />;
+	return <MemoizedEditView editorId={editor.id} closeController={onClose} />;
 };
 export default EditViewController;

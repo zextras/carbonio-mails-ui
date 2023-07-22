@@ -83,7 +83,6 @@ export type SendProcessStatus = {
 	status: 'completed' | 'running' | 'aborted';
 	abortReason?: string;
 	cancel?: () => void;
-	countdown?: number;
 };
 
 export type MailsEditorV2 = {

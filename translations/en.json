@@ -583,6 +583,7 @@
         "something_went_wrong": "SOMETHING WENT WRONG",
         "trustee_addresses": "Mail from these addresses or domains will be considered trusted and images will automatically be displayed."
     },
+    "messages,new_email": "new email",
     "modal": {
         "delete_draft": {
             "message1": "Do you want to keep this draft or delete it?"
