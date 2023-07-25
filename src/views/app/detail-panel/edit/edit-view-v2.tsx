@@ -17,8 +17,9 @@ import {
 	ButtonProps
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
+import { map, noop } from 'lodash';
 
+import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewDraftSaveInfo } from './parts/EditViewDraftSaveInfo';
 import { RecipientsRows } from './parts/recipients-rows';
@@ -160,6 +161,32 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		setRequestReadReceipt(!requestReadReceipt);
 	}, [requestReadReceipt, setRequestReadReceipt]);
 
+	const addFilesFromLocal = useCallback((filesResponse) => {
+		// TODO handle files response and update attachment in Editor store
+		console.log('===== addFilesFromLocal >>', filesResponse);
+	}, []);
+
+	const addFilesFromFiles = useCallback((filesResponse) => {
+		// TODO handle files response and update attachment in Editor store
+		console.log('===== addFilesFromFiles >>', filesResponse);
+	}, []);
+
+	const addPublicLinkFromFiles = useCallback(
+		(filesResponse) => {
+			const textWithLink = {
+				plainText: map(filesResponse, (i: { value: { url: string } }) => i.value.url)
+					.join('\n')
+					.concat(text.plainText),
+				richText: ` ${map(
+					filesResponse,
+					(i: { value: { url: string } }) => `<p><a href="${i.value.url}"> ${i.value.url}</a></p>`
+				).join('')}`.concat(text.richText)
+			};
+			setText(textWithLink);
+		},
+		[setText, text]
+	);
+
 	const composerOptions = useMemo(
 		() => [
 			{
@@ -219,6 +246,11 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 					)}
 
 					<GapRow mainAlignment={'flex-end'} gap={'medium'}>
+						<AddAttachmentsDropdown
+							addFilesFromLocal={addFilesFromLocal}
+							addFilesFromFiles={addFilesFromFiles}
+							addPublicLinkFromFiles={addPublicLinkFromFiles}
+						/>
 						<Dropdown items={composerOptions} selectedBackgroundColor="gray5">
 							<IconButton size="large" icon="MoreVertical" onClick={noop} />
 						</Dropdown>
