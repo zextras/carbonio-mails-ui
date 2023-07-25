@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ChangeEvent, FC, useCallback, useMemo } from 'react';
+import React, { ChangeEvent, FC, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 
 import {
 	Container,
@@ -14,26 +14,32 @@ import {
 	Dropdown,
 	IconButton,
 	Tooltip,
-	ButtonProps
+	ButtonProps,
+	useSnackbar
 } from '@zextras/carbonio-design-system';
-import { t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { map, noop } from 'lodash';
+import { addBoard, t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { filter, map, noop } from 'lodash';
 
+import DropZoneAttachment from './dropzone-attachment';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
+import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
-import { EditViewDraftSaveInfo } from './parts/EditViewDraftSaveInfo';
+import { EditViewSendButtons } from './parts/edit-view-send-buttons';
 import { RecipientsRows } from './parts/recipients-rows';
 import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
+import WarningBanner from './parts/warning-banner';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
+import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import {
+	getAvailableAddresses,
 	getIdentities,
 	getIdentityFromParticipant,
 	IdentityDescriptor
 } from '../../../../helpers/identities';
 import { getMailBodyWithSignature } from '../../../../helpers/signatures';
 import {
-	useEditorAction,
+	useEditorAutoSendTime,
 	useEditorDraftSave,
 	useEditorDraftSaveProcessStatus,
 	useEditorFrom,
@@ -46,10 +52,13 @@ import {
 	useEditorSubject,
 	useEditorText
 } from '../../../../store/zustand/editor';
-import { EditorRecipients, Participant } from '../../../../types';
+import { BoardContext, EditorRecipients, Participant } from '../../../../types';
 
 export type EditViewProp = {
 	editorId: string;
+	closeController?: () => void;
+	hideController?: () => void;
+	showController?: () => void;
 };
 
 export const createParticipantFromIdentity = (
@@ -63,48 +72,123 @@ export const createParticipantFromIdentity = (
 		fullName: identity.fromDisplay
 	} as Participant);
 
-export const EditView: FC<EditViewProp> = ({ editorId }) => {
+export const EditView: FC<EditViewProp> = ({
+	editorId,
+	closeController,
+	hideController,
+	showController
+}) => {
 	const account = useUserAccount();
 	const settings = useUserSettings();
 
-	const { action, setAction } = useEditorAction(editorId);
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { text, setText } = useEditorText(editorId);
 	const { from, setFrom } = useEditorFrom(editorId);
 	const { sender, setSender } = useEditorSender(editorId);
 	const { recipients, setRecipients } = useEditorRecipients(editorId);
+	const { autoSendTime, setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
+	const createSnackbar = useSnackbar();
+	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 
 	console.count('**** edit view render');
 
-	const onSaveClick = useCallback<ButtonProps['onClick']>((ev): void => {
-		saveDraft();
-	}, []);
+	// Performs cleanups and invoke the external callback
+	const close = useCallback(() => {
+		closeController && closeController();
+	}, [closeController]);
 
-	// TODO attach to the scheduled-send button
-	const onScheduledSendClick = useCallback<ButtonProps['onClick']>((ev): void => {
-		// TODO do something interesting
-	}, []);
+	const onSaveClick = useCallback<ButtonProps['onClick']>(
+		(ev): void => {
+			saveDraft();
+		},
+		[saveDraft]
+	);
 
-	const onSendClick = useCallback<ButtonProps['onClick']>((ev): void => {
-		sendMessage();
-	}, []);
+	const onSendCountdownTick = useCallback(
+		(countdown: number, cancel: () => void): void => {
+			createSnackbar({
+				key: 'send',
+				replace: true,
+				type: 'info',
+				label: t('messages.snackbar.sending_mail_in_count', {
+					count: countdown,
+					defaultValue: 'Sending your message in {{count}} second',
+					defaultValue_plural: 'Sending your message in {{count}} seconds'
+				}),
+				autoHideTimeout: (countdown ?? 0) * 1000,
+				hideButton: !cancel,
+				actionLabel: t('label.undo', 'Undo'),
+				onActionClick: () => {
+					cancel();
+					// TODO move outside the component (editor-utils or a new help module?)
+					addBoard<BoardContext>({
+						url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
+						title: ''
+					});
+				}
+			});
+		},
+		[createSnackbar]
+	);
+
+	const onSendError = useCallback(
+		(error: string): void => {
+			createSnackbar({
+				key: `mail-${editorId}`,
+				replace: true,
+				type: 'error',
+				label: t('label.error_try_again', 'Something went wrong, please try again'),
+				autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+				hideButton: true
+			});
+		},
+		[createSnackbar, editorId]
+	);
+
+	const onSendComplete = useCallback((): void => {
+		createSnackbar({
+			key: `mail-${editorId}`,
+			replace: true,
+			type: 'success',
+			label: t('messages.snackbar.mail_sent', 'Message sent'),
+			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+			hideButton: true
+		});
+	}, [createSnackbar, editorId]);
+
+	const onScheduledSendClick = useCallback(
+		(scheduledTime: number): void => {
+			// TODO invoke pre-send (missing attachments and subject) checks
+			setAutoSendTime(scheduledTime);
+			saveDraft();
+			close();
+		},
+		[close, saveDraft, setAutoSendTime]
+	);
+
+	const onSendClick = useCallback((): void => {
+		// TODO invoke pre-send (missing attachments and subject) checks
+		sendMessage({
+			onCountdownTick: onSendCountdownTick,
+			onComplete: onSendComplete,
+			onError: onSendError
+		});
+		close();
+	}, [close, onSendComplete, onSendCountdownTick, onSendError, sendMessage]);
 
 	const onIdentityChanged = useCallback(
 		(identity: IdentityDescriptor): void => {
+			// TODO handle the sender in case of sendOnBehalfOf
 			setFrom(createParticipantFromIdentity(identity, ParticipantRole.FROM));
 			const textWithSignature = getMailBodyWithSignature(text, identity.defaultSignatureId);
-
 			setText(textWithSignature);
-			// TODO handle the sender in case of sendOnBehalfOf
-
-			// TODO change signature accordingly
 		},
 		[setFrom, setText, text]
 	);
@@ -186,6 +270,45 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 		},
 		[setText, text]
 	);
+	const onDragOverEvent = (event: SyntheticEvent): void => {
+		event.preventDefault();
+		setDropZoneEnabled(true);
+	};
+
+	// TODO complete with new attachment management
+	const onDropEvent = (event: DragEvent): void => {
+		event.preventDefault();
+		setDropZoneEnabled(false);
+		// // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// // @ts-ignore
+		// addAttachments(saveDraftCb, uploadAttachmentsCb, editor, event?.dataTransfer?.files).then(
+		// 	(data) => {
+		// 		updateEditorCb({
+		// 			attach: { mp: data }
+		// 		});
+		// 	}
+		// );
+	};
+
+	const onDragLeaveEvent = (event: DragEvent): void => {
+		event.preventDefault();
+		setDropZoneEnabled(false);
+	};
+
+	// TODO ask designers if the check must be performed only on TO or also on CC and BCC
+	const isSendingToYourself = useMemo(() => {
+		const availableAddresses = map(
+			getAvailableAddresses(account, settings),
+			(availableAddress) => availableAddress.address
+		);
+		const recipientsAddresses = map(recipients.to, (recipient) => recipient.address);
+
+		return (
+			filter(recipientsAddresses, (recipientAddress): boolean =>
+				availableAddresses.includes(recipientAddress)
+			).length > 0
+		);
+	}, [account, recipients.to, settings]);
 
 	const composerOptions = useMemo(
 		() => [
@@ -227,7 +350,15 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 			crossAlignment={'flex-start'}
 			padding={{ all: 'large' }}
 			background={'gray5'}
+			onDragOver={onDragOverEvent}
 		>
+			{dropZoneEnabled && (
+				<DropZoneAttachment
+					onDragOverEvent={onDragOverEvent}
+					onDropEvent={onDropEvent}
+					onDragLeaveEvent={onDragLeaveEvent}
+				/>
+			)}
 			<GapContainer mainAlignment={'flex-start'} crossAlignment={'flex-start'} gap={'large'}>
 				{/* Header start */}
 
@@ -267,10 +398,9 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 							/>
 						</Tooltip>
 						<Tooltip label={sendAllowedStatus?.reason} disabled={sendAllowedStatus?.allowed}>
-							{/* THIS BUTTON IS JUST A PLACEHOLDER */}
-							<Button
-								onClick={onSendClick}
-								label="THIS IS NOT THE BUTTON YOU ARE LOOKING FOR"
+							<EditViewSendButtons
+								onSendLater={onScheduledSendClick}
+								onSendNow={onSendClick}
 								disabled={!sendAllowedStatus?.allowed}
 							/>
 						</Tooltip>
@@ -278,6 +408,8 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 				</GapRow>
 
 				{/* Header end */}
+
+				{isSendingToYourself && <WarningBanner />}
 
 				<GapContainer
 					mainAlignment={'flex-start'}
@@ -298,7 +430,7 @@ export const EditView: FC<EditViewProp> = ({ editorId }) => {
 						<Text>Attachments</Text>
 					</Container>
 					<TextEditorContainer
-						onDragOver={noop}
+						onDragOver={onDragOverEvent}
 						onFilesSelected={noop}
 						onContentChanged={onBodyChange}
 						richTextMode={isRichText}

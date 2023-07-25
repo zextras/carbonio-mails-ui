@@ -3,20 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 
 import {
 	updateBoardContext,
 	useBoard,
 	useUserAccount,
-	useUserSettings
+	useUserSettings,
+	closeBoard,
+	t,
+	useBoardHooks
 } from '@zextras/carbonio-shell-ui';
 
 import { EditView } from './edit-view-v2';
 import { EditViewActions, EditViewActionsType } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
-import { addEditor } from '../../../../store/zustand/editor';
+import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
 import { EditViewBoardContext } from '../../../../types';
 
@@ -40,12 +43,14 @@ const EditViewController: FC = (x) => {
 	const account = useUserAccount();
 	const settings = useUserSettings();
 	const board = useBoard<EditViewBoardContext>();
+	const boardUtilities = useBoardHooks();
+
+	const onClose = useCallback(() => {
+		closeBoard(board.id);
+	}, [board.id]);
 
 	// TODO check why the useQueryParams triggers 2 renders
 	let { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
-
-	console.count('****  controller render');
-	// console.log('**** board', board);
 
 	/*
 	 * If the current component is running inside a board
@@ -61,12 +66,11 @@ const EditViewController: FC = (x) => {
 		action = EditViewActions.RESUME;
 		id = existingEditorId;
 	}
-	// console.log('**** final params', { action, id });
 
 	// Create or resume editor
 	const editor = generateEditor({
 		action,
-		messageId: id,
+		id,
 		messagesStoreDispatch,
 		account,
 		settings
@@ -87,8 +91,13 @@ const EditViewController: FC = (x) => {
 		updateBoardContext(board.id, { ...board.context, editorId: editor.id });
 	}
 
-	// TODO handle board title change
+	const { subject } = useEditorSubject(editor.id);
+	if (subject && board?.title !== subject) {
+		boardUtilities?.updateBoard({
+			title: subject ?? t('messages,new_email', 'new email')
+		});
+	}
 
-	return <MemoizedEditView editorId={editor.id} />;
+	return <MemoizedEditView editorId={editor.id} closeController={onClose} />;
 };
 export default EditViewController;

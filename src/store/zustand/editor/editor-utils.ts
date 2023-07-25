@@ -11,7 +11,7 @@ import { EditorOperationAllowedStatus, MailsEditorV2 } from '../../../types';
  *
  * @param editor
  */
-export const checkDraftSaveAllowedStatus = (
+export const computeDraftSaveAllowedStatus = (
 	editor: MailsEditorV2
 ): EditorOperationAllowedStatus => {
 	if (editor.draftSaveProcessStatus?.status === 'running') {
@@ -25,7 +25,7 @@ export const checkDraftSaveAllowedStatus = (
  *
  * @param editor
  */
-export const checkSendAllowedStatus = (editor: MailsEditorV2): EditorOperationAllowedStatus => {
+export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperationAllowedStatus => {
 	if (editor.draftSaveProcessStatus?.status === 'running') {
 		return { allowed: false, reason: t('label.draft_save_in_progress', 'draft save in progress') }; // TODO check strings with designer
 	}
@@ -44,7 +44,11 @@ export const checkSendAllowedStatus = (editor: MailsEditorV2): EditorOperationAl
 		};
 	}
 
-	if (!editor.recipients.to && !editor.recipients.cc && !editor.recipients.bcc) {
+	if (
+		!editor.recipients.to.length &&
+		!editor.recipients.cc.length &&
+		!editor.recipients.bcc.length
+	) {
 		return {
 			allowed: false,
 			reason: t('label.missing_recipients', 'there is no valid recipients') // TODO check strings with designer

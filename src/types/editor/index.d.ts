@@ -82,6 +82,7 @@ export type DraftSaveProcessStatus = {
 export type SendProcessStatus = {
 	status: 'completed' | 'running' | 'aborted';
 	abortReason?: string;
+	cancel?: () => void;
 };
 
 export type MailsEditorV2 = {
@@ -132,11 +133,6 @@ export type MailsEditorV2 = {
 	sendProcessStatus?: SendProcessStatus;
 	// dispatch function for the messages store
 	messagesStoreDispatch: AppDispatch;
-	// // listeners of the editor-related events
-	// listeners: {
-	// 	draftSaveStartListeners: Array<DraftSaveStartListener>;
-	// 	draftSaveEndListeners: Array<DraftSaveEndListener>;
-	// };
 };
 
 type IdentityType = {
