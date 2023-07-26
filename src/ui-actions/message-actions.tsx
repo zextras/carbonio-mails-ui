@@ -32,6 +32,7 @@ import DeleteConvConfirm from './delete-conv-modal';
 import MoveConvMessage from './move-conv-msg';
 import RedirectAction from './redirect-message-action';
 import { errorPage } from './error-page';
+import { useEditorsStore } from '../store/zustand/editor';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -577,6 +578,7 @@ export function sendDraft({
 	dispatch: AppDispatch;
 }): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.SEND;
+	const editor = useEditorsStore.getState().editors[id];
 	return {
 		id: actDescriptor.id,
 		icon: 'PaperPlaneOutline',
@@ -585,7 +587,7 @@ export function sendDraft({
 			if (ev) ev.preventDefault();
 			dispatch(
 				sendMsg({
-					editorId: id,
+					editor,
 					msg: message
 				})
 			)

@@ -7,9 +7,15 @@ import { produce } from 'immer';
 import { remove } from 'lodash';
 import { create } from 'zustand';
 
+import { findAttachments } from '../../../helpers/attachments';
 import { equalsParticipant } from '../../../helpers/participants';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
-import { EditorsStateTypeV2, MailsEditorV2 } from '../../../types';
+import {
+	EditorsStateTypeV2,
+	MailAttachmentParts,
+	MailsEditorV2,
+	SaveDraftResponse
+} from '../../../types';
 import { retrieveAttachmentsType } from '../../editor-slice-utils';
 import { AppDispatch } from '../../redux';
 
@@ -300,6 +306,31 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	updateDraft: ({
+		editorId,
+		res
+	}: {
+		editorId: MailsEditorV2['id'];
+		res: SaveDraftResponse;
+	}): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (res.m) {
+					const message = normalizeMailMessageFromSoap(res.m[0], true);
+					const mp = retrieveAttachmentsType(message, 'attachment');
+					state.editors[editorId] = {
+						...state.editors[editorId],
+						id: message.id,
+						attachments: { mp },
+						originalId: state.editors[editorId]?.did ?? state.editors[editorId]?.originalId,
+						did: message.id,
+						attachmentFiles: findAttachments(message.parts, []),
+						original: message
+					};
+				}
+			})
+		);
+	},
 	updateSendAllowedStatus: (id, status): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
@@ -318,11 +349,11 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments'][0]): void => {
+	addAttachment: (id: MailsEditorV2['id'], attachment: MailAttachmentParts): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].attachments = [...state.editors[id].attachments, attachment];
+					state.editors[id].attachments = [...state.editors[id].attachments, { mp: [attachment] }];
 				}
 			})
 		);

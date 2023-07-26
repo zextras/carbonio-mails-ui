@@ -11,23 +11,22 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
+
 import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
-import { LineType } from '../commons/utils';
 import { htmlEncode } from '../commons/get-quoted-text-util';
+import { LineType } from '../commons/utils';
 import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import type {
-	EditorAttachmentFiles,
 	InlineAttachments,
 	MailAttachmentParts,
 	MailMessage,
 	MailMessagePart,
 	MailsEditor,
 	Participant,
-	PrefsType,
 	SharedParticipant,
 	SoapDraftMessageObj
 } from '../types';
@@ -208,23 +207,6 @@ export const retrieveBCC = (original: MailMessage): Array<Participant> =>
 		original.participants,
 		(c: Participant): boolean => c.type === ParticipantRole.BLIND_CARBON_COPY
 	);
-
-export function findAttachments(
-	parts: Array<MailMessagePart>,
-	acc: Array<EditorAttachmentFiles>
-): Array<EditorAttachmentFiles> {
-	return reduce(
-		parts,
-		(found, part) => {
-			if (part && part.disposition === 'attachment' && !part.ci) {
-				found.push({ ...part, filename: part.filename ?? '' });
-			}
-			if (part.parts) return findAttachments(part.parts, found);
-			return acc;
-		},
-		acc as Array<EditorAttachmentFiles>
-	);
-}
 
 export function isHtml(parts: Array<MailMessagePart>): boolean {
 	function subtreeContainsHtmlParts(part: MailMessagePart): boolean {

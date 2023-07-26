@@ -4,11 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { reduce } from 'lodash';
+
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
+import { saveDraftV3 } from '../../../../store/actions/save-draft';
+import { uploadAttachmentsv2 } from '../../../../store/actions/upload-attachments';
 import { retrieveAttachmentsType } from '../../../../store/editor-slice-utils';
-import type { MailAttachmentParts, MailsEditor } from '../../../../types';
+import { getEditor, getUpdateDraft } from '../../../../store/zustand/editor/hooks';
+import type { MailAttachmentParts, MailsEditorV2, SaveDraftResponse } from '../../../../types';
 
 type AddAttachmentsPayloadType = {
 	resp: {
@@ -17,34 +20,58 @@ type AddAttachmentsPayloadType = {
 	};
 };
 
-type UploadAttachmentsCbType = (files: any) => AsyncThunkAction<any, any, any>;
-
-export const addAttachments = async (
-	saveDraftCb: (arg: Partial<MailsEditor>) => { payload: AddAttachmentsPayloadType },
-	uploadAttachmentsCb: UploadAttachmentsCbType,
-	compositionData: Partial<MailsEditor>,
-	files: FileList
-): Promise<MailAttachmentParts[] | undefined> => {
-	const { payload } = await saveDraftCb(compositionData);
-	const upload = await uploadAttachmentsCb(files);
-
+async function addAttachments({
+	files,
+	editorId
+}: {
+	files: FileList | null | undefined;
+	editorId: MailsEditorV2['id'];
+}): Promise<MailAttachmentParts[] | null> {
+	const editor = getEditor({ id: editorId });
+	if (!editor) {
+		console.warn('Cannot find editor', editorId);
+		return null;
+	}
+	if (!files) {
+		console.warn('Cannot find files', files);
+		return null;
+	}
+	const firstSaveDraftResponse: SaveDraftResponse = await saveDraftV3({ editor });
+	const upload = await uploadAttachmentsv2({ files });
 	const aid = reduce(
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		upload?.payload,
+		upload,
 		(acc: Array<string>, v: { aid: string }): Array<string> => [...acc, v.aid],
 		[]
 	).join(',');
-	const message = normalizeMailMessageFromSoap(payload.resp.m[0]);
+	const message = normalizeMailMessageFromSoap(firstSaveDraftResponse?.m?.[0]);
 	const mp = retrieveAttachmentsType(message, 'attachment');
-	const res = await saveDraftCb({
-		...compositionData,
-		id: payload.resp.m[0].id,
-		attach: { aid, mp }
+	const secondSaveDraftResponse = await saveDraftV3({
+		editor: {
+			...editor,
+			id: firstSaveDraftResponse?.m?.[0].id,
+			attach: [...editor.attachments, { aid, mp }]
+		}
 	});
+	const messageToParse = normalizeMailMessageFromSoap(secondSaveDraftResponse?.m?.[0]);
+	return retrieveAttachmentsType(messageToParse, 'attachment');
+}
 
-	return retrieveAttachmentsType(
-		normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0]),
-		'attachment'
-	);
-};
+export function addAttachmentsToEditor({
+	files,
+	editorId
+}: {
+	files: FileList | null | undefined;
+	editorId: MailsEditorV2['id'];
+}): void {
+	if (!files) {
+		return;
+	}
+	addAttachments({ files, editorId }).then((res) => {
+		getUpdateDraft({
+			editorId,
+			attachment: { mp: res }
+		});
+	});
+}

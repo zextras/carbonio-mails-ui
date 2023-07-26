@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useEffect, useState } from 'react';
+
 import {
 	FOLDERS,
 	getTags,
@@ -11,7 +13,7 @@ import {
 	useRefresh
 } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'lodash';
-import React, { FC, useEffect, useState } from 'react';
+
 import { useFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
@@ -149,8 +151,8 @@ export const SyncDataHandler: FC = () => {
 										(
 											acc: Array<{
 												id: string;
-												parent: string;
-												date: number;
+												parent: string | undefined;
+												date: number | undefined;
 												conversation: Conversation;
 											}>,
 											msg: any

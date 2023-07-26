@@ -4,27 +4,42 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ChangeEvent, FC, SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import React, {
+	ChangeEvent,
+	FC,
+	SyntheticEvent,
+	useCallback,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 
 import {
-	Container,
-	Input,
-	Text,
 	Button,
+	Container,
+	ContainerProps,
 	Dropdown,
+	getPadding,
+	Icon,
 	IconButton,
 	Tooltip,
 	ButtonProps,
-	useSnackbar
+	useSnackbar,
+	Text,
+	Padding,
+	Input
 } from '@zextras/carbonio-design-system';
 import { addBoard, t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, map, noop } from 'lodash';
+import styled, { DefaultTheme, SimpleInterpolation } from 'styled-components';
 
 import DropZoneAttachment from './dropzone-attachment';
+import { EditAttachmentsBlock } from './edit-attachments-block';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
+import * as StyledComp from './parts/edit-view-styled-components';
 import { RecipientsRows } from './parts/recipients-rows';
 import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
 import WarningBanner from './parts/warning-banner';
@@ -50,9 +65,16 @@ import {
 	useEditorSend,
 	useEditorSender,
 	useEditorSubject,
-	useEditorText
+	useEditorText,
+	useEditorAction
 } from '../../../../store/zustand/editor';
 import { BoardContext, EditorRecipients, Participant } from '../../../../types';
+
+const StyledGapContainer = styled(Container)<
+	ContainerProps & { gap?: keyof DefaultTheme['sizes']['padding'] }
+>`
+	gap: ${({ theme, gap }): SimpleInterpolation => gap && getPadding(gap, theme)};
+`;
 
 export type EditViewProp = {
 	editorId: string;
@@ -81,6 +103,8 @@ export const EditView: FC<EditViewProp> = ({
 	const account = useUserAccount();
 	const settings = useUserSettings();
 
+	const { action, setAction } = useEditorAction(editorId);
+	const inputRef = useRef<HTMLInputElement>(null);
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { text, setText } = useEditorText(editorId);
@@ -96,8 +120,6 @@ export const EditView: FC<EditViewProp> = ({
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-
-	console.count('**** edit view render');
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(() => {
@@ -135,7 +157,7 @@ export const EditView: FC<EditViewProp> = ({
 				}
 			});
 		},
-		[createSnackbar]
+		[createSnackbar, editorId]
 	);
 
 	const onSendError = useCallback(
@@ -232,6 +254,28 @@ export const EditView: FC<EditViewProp> = ({
 
 		// TODO handle the sender scenario
 	}, [account, from, settings]);
+	const onFileClick = useCallback(() => {
+		if (inputRef.current) {
+			inputRef.current.value = '';
+			inputRef.current.click();
+		}
+	}, []);
+
+	const attachmentsItems = [
+		{
+			id: 'localAttachment',
+			icon: 'MonitorOutline',
+			label: t('composer.attachment.local', 'Add from local'),
+			onClick: onFileClick,
+			customComponent: (
+				<>
+					<Icon icon="MonitorOutline" size="medium" />
+					<Padding horizontal="extrasmall" />
+					<Text>{t('composer.attachment.local', 'Add from local')}</Text>
+				</>
+			)
+		}
+	];
 
 	const toggleRichTextEditor = useCallback(() => {
 		setIsRichText(!isRichText);
@@ -247,12 +291,10 @@ export const EditView: FC<EditViewProp> = ({
 
 	const addFilesFromLocal = useCallback((filesResponse) => {
 		// TODO handle files response and update attachment in Editor store
-		console.log('===== addFilesFromLocal >>', filesResponse);
 	}, []);
 
 	const addFilesFromFiles = useCallback((filesResponse) => {
 		// TODO handle files response and update attachment in Editor store
-		console.log('===== addFilesFromFiles >>', filesResponse);
 	}, []);
 
 	const addPublicLinkFromFiles = useCallback(
@@ -346,7 +388,7 @@ export const EditView: FC<EditViewProp> = ({
 
 	return (
 		<Container
-			mainAlignment={'flex-start'}
+			mainAlignment="flex-start"
 			crossAlignment={'flex-start'}
 			padding={{ all: 'large' }}
 			background={'gray5'}
@@ -381,6 +423,7 @@ export const EditView: FC<EditViewProp> = ({
 							addFilesFromLocal={addFilesFromLocal}
 							addFilesFromFiles={addFilesFromFiles}
 							addPublicLinkFromFiles={addPublicLinkFromFiles}
+							editorId={editorId}
 						/>
 						<Dropdown items={composerOptions} selectedBackgroundColor="gray5">
 							<IconButton size="large" icon="MoreVertical" onClick={noop} />
@@ -421,14 +464,13 @@ export const EditView: FC<EditViewProp> = ({
 					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
 						<RecipientsRows recipients={recipients} onRecipientsChange={onRecipientsChanged} />
 					</Container>
-					<Input
-						label={t('label.subject', 'Subject')}
-						value={subject}
-						onChange={onSubjectChange}
-					></Input>
-					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
-						<Text>Attachments</Text>
-					</Container>
+					<Input label={t('label.subject', 'Subject')} value={subject} onChange={onSubjectChange} />
+
+					<StyledComp.RowContainer background="gray6" padding={{ all: 'small' }}>
+						<StyledComp.ColContainer occupyFull>
+							<EditAttachmentsBlock editorId={editorId} />
+						</StyledComp.ColContainer>
+					</StyledComp.RowContainer>
 					<TextEditorContainer
 						onDragOver={onDragOverEvent}
 						onFilesSelected={noop}

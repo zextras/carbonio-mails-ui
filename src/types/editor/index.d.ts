@@ -5,7 +5,7 @@
  */
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { EditViewActionsType } from '../../constants';
-import { AppDispatch } from '../../store/redux';
+import { type AppDispatch } from '../../store/redux';
 import type { MailMessage } from '../messages';
 import type { Participant } from '../participant';
 import type { MailAttachment } from '../soap';
@@ -13,7 +13,7 @@ import type { MailAttachment } from '../soap';
 export type EditorAttachmentFiles = {
 	contentType: string;
 	disposition?: string;
-	filename: string;
+	filename?: string;
 	name: string;
 	size: number;
 };

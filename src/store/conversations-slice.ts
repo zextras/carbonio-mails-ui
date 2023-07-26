@@ -10,16 +10,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
-import type {
-	ConversationsFolderStatus,
-	ConversationsStateType,
-	MailsStateType,
-	FetchConversationsReturn,
-	ConvMessage,
-	ConvActionParameters,
-	ConvActionResult,
-	Conversation
-} from '../types';
+
 import { convAction, getConv, searchConv, search } from './actions';
 import {
 	handleAddMessagesInConversationReducer,
@@ -30,6 +21,16 @@ import {
 	handleModifiedConversationsReducer,
 	handleModifiedMessagesInConversationReducer
 } from './sync/conversation';
+import type {
+	ConversationsFolderStatus,
+	ConversationsStateType,
+	MailsStateType,
+	FetchConversationsReturn,
+	ConvMessage,
+	ConvActionParameters,
+	ConvActionResult,
+	Conversation
+} from '../types';
 
 function fetchConversationsPending(state: ConversationsStateType): void {
 	state.status = 'pending';

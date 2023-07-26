@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useCallback, useMemo } from 'react';
+
 import { ContainerProps } from '@mui/material';
 import {
 	AccordionItem,
@@ -28,17 +30,17 @@ import {
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import React, { FC, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+
+import { useFolderActions } from './use-folder-actions';
+import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
+import { LIST_LIMIT } from '../../constants';
 import { useAppDispatch } from '../../hooks/redux';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
-import { useFolderActions } from './use-folder-actions';
-import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
-import { LIST_LIMIT } from '../../constants';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
@@ -249,7 +251,6 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		}),
 		[]
 	);
-
 	const accordionItem = useMemo(
 		() => ({
 			...item,
@@ -300,74 +301,71 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		return <></>;
 	}
 
-	const result =
-		item.id === FOLDERS.USER_ROOT || (item.isLink && item.oname === ROOT_NAME) ? (
-			<FittedRow>
-				<Padding left="small">
-					<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
-				</Padding>
-				<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-					<AccordionItem data-testid={`accordion-folder-item-${item.id}`} item={accordionItem} />
-				</Tooltip>
-			</FittedRow>
-		) : (
-			<Row width="fill" minWidth={0}>
-				<Drop
-					acceptType={['message', 'conversation', 'folder']}
-					onDrop={(data: DragObj): void => {
-						onDropAction({
-							type: data.type ?? '',
-							data: data.data,
-							event: data.event
-						} as OnDropActionProps);
-					}}
-					onDragEnter={(data: DragObj): { success: boolean } | undefined =>
-						onDragEnterAction({
-							type: data.type ?? '',
-							data: data.data,
-							event: data.event
-						} as OnDropActionProps)
-					}
-					overlayAcceptComponent={<DropOverlayContainer folder={item} />}
-					overlayDenyComponent={<DropDenyOverlayContainer folder={item} />}
+	return item.id === FOLDERS.USER_ROOT || (item.isLink && item.oname === ROOT_NAME) ? (
+		<FittedRow>
+			<Padding left="small">
+				<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
+			</Padding>
+			<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+				<AccordionItem data-testid={`accordion-folder-item-${item.id}`} item={accordionItem} />
+			</Tooltip>
+		</FittedRow>
+	) : (
+		<Row width="fill" minWidth={0}>
+			<Drop
+				acceptType={['message', 'conversation', 'folder']}
+				onDrop={(data: DragObj): void => {
+					onDropAction({
+						type: data.type ?? '',
+						data: data.data,
+						event: data.event
+					} as OnDropActionProps);
+				}}
+				onDragEnter={(data: DragObj): { success: boolean } | undefined =>
+					onDragEnterAction({
+						type: data.type ?? '',
+						data: data.data,
+						event: data.event
+					} as OnDropActionProps)
+				}
+				overlayAcceptComponent={<DropOverlayContainer folder={item} />}
+				overlayDenyComponent={<DropDenyOverlayContainer folder={item} />}
+			>
+				<Drag
+					type="folder"
+					data={item}
+					dragDisabled={dragFolderDisable}
+					style={{ display: 'block' }}
 				>
-					<Drag
-						type="folder"
-						data={item}
-						dragDisabled={dragFolderDisable}
-						style={{ display: 'block' }}
+					<AppLink
+						onClick={onClick}
+						to={`/folder/${item.id}`}
+						style={{ width: '100%', height: '100%', textDecoration: 'none' }}
 					>
-						<AppLink
-							onClick={onClick}
-							to={`/folder/${item.id}`}
-							style={{ width: '100%', height: '100%', textDecoration: 'none' }}
+						<Dropdown
+							data-testid={`folder-context-menu-${item.id}`}
+							contextMenu
+							items={dropdownItems}
+							display="block"
+							width="100%"
 						>
-							<Dropdown
-								data-testid={`folder-context-menu-${item.id}`}
-								contextMenu
-								items={dropdownItems}
-								display="block"
-								width="100%"
-							>
-								<Row>
-									<Padding left="small" />
-									<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-										<AccordionItem
-											data-testid={`accordion-folder-item-${item.id}`}
-											item={accordionItem}
-										>
-											{statusIcon}
-										</AccordionItem>
-									</Tooltip>
-								</Row>
-							</Dropdown>
-						</AppLink>
-					</Drag>
-				</Drop>
-			</Row>
-		);
-
-	return result;
+							<Row>
+								<Padding left="small" />
+								<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+									<AccordionItem
+										data-testid={`accordion-folder-item-${item.id}`}
+										item={accordionItem}
+									>
+										{statusIcon}
+									</AccordionItem>
+								</Tooltip>
+							</Row>
+						</Dropdown>
+					</AppLink>
+				</Drag>
+			</Drop>
+		</Row>
+	);
 };
 
 export default AccordionCustomComponent;

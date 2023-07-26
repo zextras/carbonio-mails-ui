@@ -5,6 +5,7 @@
  */
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, map, merge, omit, reduce, some, last, sortBy } from 'lodash';
+
 import type { ConvMessage, ConversationsStateType, Payload } from '../../types';
 
 export const handleCreatedConversationsReducer = (
@@ -76,12 +77,7 @@ export const handleModifiedMessagesInConversationReducer = (
 				...conv,
 				messages: map(conv.messages, (msg) => {
 					const messageToUpdate = find(payload, (item) => item.id === msg.id);
-					return messageToUpdate
-						? {
-								...msg,
-								...messageToUpdate
-						  }
-						: msg;
+					return messageToUpdate ? { ...msg, ...messageToUpdate } : msg;
 				})
 			}
 		}),

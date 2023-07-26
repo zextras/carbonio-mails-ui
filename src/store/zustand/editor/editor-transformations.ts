@@ -7,7 +7,7 @@ import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { find, forEach, map } from 'lodash';
 
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
-import {
+import type {
 	InlineAttachments,
 	MailsEditorV2,
 	Participant,

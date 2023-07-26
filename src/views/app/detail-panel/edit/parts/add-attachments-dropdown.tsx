@@ -12,6 +12,8 @@ import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 import * as StyledComp from './edit-view-styled-components';
+import { MailsEditorV2 } from '../../../../../types';
+import { addAttachmentsToEditor } from '../edit-utils';
 import {
 	useGetFilesFromDrive,
 	useGetFilesFromDriveRespType
@@ -36,12 +38,14 @@ export type AddAttachmentsDropdownProps = {
 	addFilesFromLocal: (files: any) => void;
 	addFilesFromFiles: (files: useGetFilesFromDriveRespType[]) => void;
 	addPublicLinkFromFiles: (files: UseGetPublicUrlRespType[]) => void;
+	editorId: MailsEditorV2['id'];
 };
 
 export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({
 	addFilesFromLocal,
 	addFilesFromFiles,
-	addPublicLinkFromFiles
+	addPublicLinkFromFiles,
+	editorId
 }) => {
 	const { control } = useForm();
 	const inputRef = useRef<any>();
@@ -149,7 +153,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({
 						ref={inputRef}
 						data-testid="file-input"
 						onChange={(): void => {
-							addFilesFromLocal(inputRef?.current?.files);
+							addAttachmentsToEditor({ files: inputRef?.current?.files, editorId });
 						}}
 						multiple
 					/>
