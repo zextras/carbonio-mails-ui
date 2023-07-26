@@ -41,7 +41,12 @@ const ModalFooter: FC<ModalFooterProps> = ({
 			<Checkbox defaultChecked={checked} onClick={onSecondaryAction} label={checkboxLabel} />
 			<Tooltip label={toolTipText}>
 				<Padding left="small">
-					<Button onClick={onConfirm} label={label} disabled={disabled} />
+					<Button
+						onClick={onConfirm}
+						label={label}
+						disabled={disabled}
+						data-testid="create-button"
+					/>
 				</Padding>
 			</Tooltip>
 		</Container>

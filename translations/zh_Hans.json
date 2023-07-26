@@ -388,7 +388,10 @@
         "using_signatures": "签名使用情况",
         "admin_disabled_action": "管理员已禁用重定向操作",
         "received_from_address": "接收自（地址）",
-        "sent_to_address": "发送至（地址）"
+        "sent_to_address": "发送至（地址）",
+        "exit_selection_mode": "退出选择模式",
+        "all_items_selected": "所有可见项目均已选择",
+        "time": "时间"
     },
     "search": {
         "unread": "未读",
