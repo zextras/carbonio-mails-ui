@@ -3,19 +3,35 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
+import { Account, AccountSettings, t } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
 
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
 import { getEditor } from './hooks';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
+import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { LineType } from '../../../commons/utils';
 import { EditViewActions, EditViewActionsType } from '../../../constants';
-import { getDefaultIdentity } from '../../../helpers/identities';
+import { getDefaultIdentity, getRecipientReplyIdentity } from '../../../helpers/identities';
 import { getMailBodyWithSignature } from '../../../helpers/signatures';
-import { MailsEditorV2 } from '../../../types';
+import { MailMessage, MailsEditorV2, MsgMap } from '../../../types';
 import { createParticipantFromIdentity } from '../../../views/app/detail-panel/edit/edit-view-v2';
+import { generateReplyText, retrieveReplyTo } from '../../editor-slice-utils';
 import { AppDispatch } from '../../redux';
+
+// Regex reply msg title
+const REPLY_REGEX = /(^(re:\s)+)/i;
+
+// Regex forward msg title
+const FORWARD_REGEX = /(^(fwd:\s)+)/i;
+
+const labels = {
+	to: `${t('label.to', 'To')}:`,
+	from: `${t('label.from', 'From')}:`,
+	cc: `${t('label.cc', 'CC')}:`,
+	subject: `${t('label.subject', 'Subject')}:`,
+	sent: `${t('label.sent', 'Sent')}:`
+};
 
 /**
  *
@@ -64,6 +80,61 @@ const generateNewMessageEditor = (
 
 /**
  *
+ */
+const generateReplyMessageEditor = (
+	messagesStoreDispatch: AppDispatch,
+	account: Account,
+	settings: AccountSettings,
+	originalMessage: MailMessage
+): MailsEditorV2 => {
+	const editorId = uuid();
+	const text = {
+		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
+		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+	};
+	const defaultIdentity = getDefaultIdentity(account, settings);
+	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
+
+	const textWithSignatureRepliesForwards = {
+		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
+		richText: `${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`
+	};
+	const folderRoots = getRootsMap();
+	const from = getRecipientReplyIdentity(folderRoots, account, settings, originalMessage);
+	const editor = {
+		action: EditViewActions.REPLY,
+		attachmentFiles: [],
+		from: {
+			address: from.address,
+			fullName: from.name,
+			name: from.identityName,
+			type: ParticipantRole.FROM
+		},
+		sender: undefined,
+		id: editorId,
+		attachments: [],
+		inlineAttachments: [],
+		isRichText: true,
+		isUrgent: false,
+		recipients: {
+			to: retrieveReplyTo(originalMessage),
+			cc: [],
+			bcc: []
+		},
+		subject: `RE: ${originalMessage.subject.replace(REPLY_REGEX, '')}`,
+		text: textWithSignatureRepliesForwards,
+		requestReadReceipt: false,
+		messagesStoreDispatch
+	} as MailsEditorV2;
+
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+
+	return editor;
+};
+
+/**
+ *
  * @param editorId
  */
 export const resumeEditor = (id: MailsEditorV2['id']): MailsEditorV2 | null => {
@@ -77,6 +148,7 @@ export type GenerateEditorParams = {
 	messagesStoreDispatch: AppDispatch;
 	account: Account;
 	settings: AccountSettings;
+	messages?: MsgMap;
 };
 
 /**
@@ -89,7 +161,8 @@ export const generateEditor = ({
 	id,
 	messagesStoreDispatch,
 	account,
-	settings
+	settings,
+	messages
 }: GenerateEditorParams): MailsEditorV2 | null => {
 	switch (action) {
 		case EditViewActions.RESUME:
@@ -103,6 +176,14 @@ export const generateEditor = ({
 			// TODO
 			if (!id) {
 				throw new Error('Cannot generate a reply editor without a message id');
+			}
+			if (messages && id && messages?.[id]) {
+				return generateReplyMessageEditor(
+					messagesStoreDispatch,
+					account,
+					settings,
+					messages?.[id] as MailMessage
+				);
 			}
 			break;
 		case EditViewActions.REPLY_ALL:

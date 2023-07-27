@@ -48,6 +48,7 @@ import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import {
 	getAvailableAddresses,
+	getDefaultIdentity,
 	getIdentities,
 	getIdentityFromParticipant,
 	IdentityDescriptor
@@ -208,11 +209,21 @@ export const EditView: FC<EditViewProp> = ({
 	const onIdentityChanged = useCallback(
 		(identity: IdentityDescriptor): void => {
 			// TODO handle the sender in case of sendOnBehalfOf
+			if (identity.right === 'sendOnBehalfOf') {
+				setSender(
+					createParticipantFromIdentity(
+						getDefaultIdentity(account, settings),
+						ParticipantRole.SENDER
+					)
+				);
+			} else {
+				setSender(undefined);
+			}
 			setFrom(createParticipantFromIdentity(identity, ParticipantRole.FROM));
 			const textWithSignature = getMailBodyWithSignature(text, identity.defaultSignatureId);
 			setText(textWithSignature);
 		},
-		[setFrom, setText, text]
+		[account, setFrom, setSender, setText, settings, text]
 	);
 
 	const onRecipientsChanged = useCallback(

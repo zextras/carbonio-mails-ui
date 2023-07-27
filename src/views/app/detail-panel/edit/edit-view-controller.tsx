@@ -17,8 +17,10 @@ import {
 
 import { EditView } from './edit-view-v2';
 import { EditViewActions, EditViewActionsType } from '../../../../constants';
-import { useAppDispatch } from '../../../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
+import { getMsg } from '../../../../store/actions';
+import { selectMessages } from '../../../../store/messages-slice';
 import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
 import { EditViewBoardContext } from '../../../../types';
@@ -44,6 +46,7 @@ const EditViewController: FC = (x) => {
 	const settings = useUserSettings();
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
+	const messages = useAppSelector(selectMessages);
 
 	const onClose = useCallback(() => {
 		closeBoard(board.id);
@@ -51,6 +54,10 @@ const EditViewController: FC = (x) => {
 
 	// TODO check why the useQueryParams triggers 2 renders
 	let { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
+
+	if (action === EditViewActions.REPLY && !!id && !messages?.[id]?.isComplete) {
+		messagesStoreDispatch(getMsg({ msgId: id }));
+	}
 
 	/*
 	 * If the current component is running inside a board
@@ -73,7 +80,8 @@ const EditViewController: FC = (x) => {
 		id,
 		messagesStoreDispatch,
 		account,
-		settings
+		settings,
+		messages
 	});
 	if (!editor) {
 		throw new Error('No editor provided');

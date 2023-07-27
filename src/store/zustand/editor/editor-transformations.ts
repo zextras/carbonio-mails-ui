@@ -136,6 +136,7 @@ export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDra
 		...editor.recipients.bcc
 	];
 	editor.from && participants.push(editor.from);
+	editor.sender && participants.push(editor.sender);
 
 	if (editor.requestReadReceipt && editor.from) {
 		participants.push({ ...editor.from, type: ParticipantRole.READ_RECEIPT_NOTIFICATION });
