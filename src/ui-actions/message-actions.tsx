@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text } from '@zextras/carbonio-design-system';
 import {
@@ -14,7 +16,11 @@ import {
 	t
 } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
-import React from 'react';
+
+import DeleteConvConfirm from './delete-conv-modal';
+import { errorPage } from './error-page';
+import MoveConvMessage from './move-conv-msg';
+import RedirectAction from './redirect-message-action';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { EditViewActions, MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
 import { getMsgsForPrint, msgAction } from '../store/actions';
@@ -22,16 +28,11 @@ import { sendMsg } from '../store/actions/send-msg';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
 	BoardContext,
-	Conversation,
 	MailMessage,
 	MessageActionReturnType,
 	MsgActionParameters,
 	MsgActionResult
 } from '../types';
-import DeleteConvConfirm from './delete-conv-modal';
-import MoveConvMessage from './move-conv-msg';
-import RedirectAction from './redirect-message-action';
-import { errorPage } from './error-page';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;

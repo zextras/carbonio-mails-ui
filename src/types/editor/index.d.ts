@@ -94,7 +94,7 @@ export type MailsEditorV2 = {
 	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
 	inlineAttachments: Array<InlineAttachment>;
 	// the array of non-inline attachments
-	attachments: Array<MailAttachment>;
+	attachments: MailAttachment;
 	// the array of attachment files
 	attachmentFiles: Array<EditorAttachmentFiles>;
 	// user defined delayed send timer

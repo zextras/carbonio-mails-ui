@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useContext, useMemo } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+
 import { Container, Input, Padding, Tooltip, Icon } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import * as StyledComp from './edit-view-styled-components';
+import { Controller, useForm } from 'react-hook-form';
+
 import { EditViewContext } from './edit-view-context';
+import * as StyledComp from './edit-view-styled-components';
 import type { EditViewContextType } from '../../../../../types';
 
 type PropType = { updateSubjectField: ({ subject }: { subject: string }) => void };

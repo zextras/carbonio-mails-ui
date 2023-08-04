@@ -15,7 +15,9 @@ import {
 	IconButton,
 	Tooltip,
 	ButtonProps,
-	useSnackbar
+	useSnackbar,
+	Padding,
+	Icon
 } from '@zextras/carbonio-design-system';
 import { addBoard, t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, map, noop } from 'lodash';
@@ -355,6 +357,11 @@ export const EditView: FC<EditViewProp> = ({
 		]
 	);
 
+	const isIconsVisible = useMemo(
+		() => requestReadReceipt || isUrgent,
+		[isUrgent, requestReadReceipt]
+	);
+
 	return (
 		<Container
 			mainAlignment={'flex-start'}
@@ -432,11 +439,44 @@ export const EditView: FC<EditViewProp> = ({
 					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
 						<RecipientsRows recipients={recipients} onRecipientsChange={onRecipientsChanged} />
 					</Container>
-					<Input
-						label={t('label.subject', 'Subject')}
-						value={subject}
-						onChange={onSubjectChange}
-					></Input>
+					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
+						<Container
+							orientation="horizontal"
+							background="gray5"
+							style={{ overflow: 'hidden' }}
+							padding={{ all: 'none' }}
+						>
+							<Container background="gray5" style={{ overflow: 'hidden' }} padding="0">
+								<Input
+									label={t('label.subject', 'Subject')}
+									value={subject}
+									onChange={onSubjectChange}
+								></Input>
+							</Container>
+							{isIconsVisible && (
+								<Container
+									width="fit"
+									background="gray5"
+									padding={{ right: 'medium', left: 'small' }}
+									orientation="horizontal"
+								>
+									{requestReadReceipt && (
+										<Tooltip label={t('label.request_receipt', 'Request read receipt')}>
+											<Padding right="small">
+												<Icon icon="CheckmarkSquare" color="secondary" size="large" />
+											</Padding>
+										</Tooltip>
+									)}
+									{isUrgent && (
+										<Tooltip label={t('tooltip.marked_as_important', 'Marked as important')}>
+											<Icon icon="ArrowUpward" color="secondary" size="large" />
+										</Tooltip>
+									)}
+								</Container>
+							)}
+						</Container>
+					</Container>
+
 					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
 						<Text>Attachments</Text>
 					</Container>

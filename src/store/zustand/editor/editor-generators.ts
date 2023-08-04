@@ -16,7 +16,16 @@ import { getDefaultIdentity, getRecipientReplyIdentity } from '../../../helpers/
 import { getMailBodyWithSignature } from '../../../helpers/signatures';
 import { MailMessage, MailsEditorV2, MsgMap } from '../../../types';
 import { createParticipantFromIdentity } from '../../../views/app/detail-panel/edit/edit-view-v2';
-import { generateReplyText, retrieveReplyTo } from '../../editor-slice-utils';
+import {
+	extractBody,
+	generateReplyText,
+	retrieveALL,
+	retrieveBCC,
+	retrieveCC,
+	retrieveCCForEditNew,
+	retrieveReplyTo,
+	retrieveTO
+} from '../../editor-slice-utils';
 import { AppDispatch } from '../../redux';
 
 // Regex reply msg title
@@ -57,7 +66,8 @@ const generateNewMessageEditor = (
 		),
 		sender: undefined,
 		id: editorId,
-		attachments: [],
+		// TODO: Need to manage the attachments
+		attachments: { mp: [] },
 		inlineAttachments: [],
 		isRichText: true,
 		isUrgent: false,
@@ -81,11 +91,76 @@ const generateNewMessageEditor = (
 /**
  *
  */
-const generateReplyMessageEditor = (
+const generateReplyAndReplyAllMsgEditor = (
 	messagesStoreDispatch: AppDispatch,
 	account: Account,
 	settings: AccountSettings,
-	originalMessage: MailMessage
+	originalMessage: MailMessage,
+	action: EditViewActionsType
+): MailsEditorV2 => {
+	const editorId = uuid();
+	const text = {
+		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
+		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+	};
+	const defaultIdentity = getDefaultIdentity(account, settings);
+	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
+
+	const textWithSignatureRepliesForwards = {
+		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
+		richText: `${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`
+	};
+	const folderRoots = getRootsMap();
+	const from = getRecipientReplyIdentity(folderRoots, account, settings, originalMessage);
+	const toParticipants =
+		action === EditViewActions.REPLY
+			? retrieveReplyTo(originalMessage)
+			: retrieveALL(originalMessage, [account]);
+	const editor = {
+		action: EditViewActions.REPLY,
+		attachmentFiles: [],
+		from: {
+			address: from.address,
+			fullName: from.name,
+			name: from.identityName,
+			type: ParticipantRole.FROM
+		},
+		sender: undefined,
+		id: editorId,
+		// TODO: Need to manage the attachments
+		attachments: { mp: [] },
+		inlineAttachments: [],
+		isRichText: true,
+		isUrgent: originalMessage.urgent,
+		recipients: {
+			to: toParticipants,
+			cc: action === EditViewActions.REPLY ? retrieveCC(originalMessage, [account]) : [],
+			bcc: []
+		},
+		subject: `RE: ${originalMessage.subject.replace(REPLY_REGEX, '')}`,
+		text: textWithSignatureRepliesForwards,
+		requestReadReceipt: false,
+		replyType: 'r',
+		originalId: originalMessage.id,
+		originalMessage,
+		messagesStoreDispatch
+	} as MailsEditorV2;
+
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+
+	return editor;
+};
+
+/**
+ *
+ */
+const generateForwardMsgEditor = (
+	messagesStoreDispatch: AppDispatch,
+	account: Account,
+	settings: AccountSettings,
+	originalMessage: MailMessage,
+	action: EditViewActionsType
 ): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
@@ -112,18 +187,74 @@ const generateReplyMessageEditor = (
 		},
 		sender: undefined,
 		id: editorId,
-		attachments: [],
+		// TODO: Need to manage the attachments
+		attachments: { mp: [] },
 		inlineAttachments: [],
 		isRichText: true,
-		isUrgent: false,
+		isUrgent: originalMessage.urgent,
 		recipients: {
-			to: retrieveReplyTo(originalMessage),
+			to: [],
 			cc: [],
 			bcc: []
 		},
-		subject: `RE: ${originalMessage.subject.replace(REPLY_REGEX, '')}`,
+		subject: `FWD: ${originalMessage.subject.replace(FORWARD_REGEX, '')}`,
 		text: textWithSignatureRepliesForwards,
 		requestReadReceipt: false,
+		replyType: 'w',
+		originalId: originalMessage.id,
+		originalMessage,
+		messagesStoreDispatch
+	} as MailsEditorV2;
+
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+
+	return editor;
+};
+
+/**
+ *
+ */
+const generateEditAsNewAndDraftEditor = (
+	messagesStoreDispatch: AppDispatch,
+	account: Account,
+	settings: AccountSettings,
+	originalMessage: MailMessage,
+	action: EditViewActionsType
+): MailsEditorV2 => {
+	const editorId = uuid();
+	const text = {
+		plainText: `${extractBody(originalMessage)[0]}`,
+		richText: `${extractBody(originalMessage)[1]}`
+	};
+	const folderRoots = getRootsMap();
+	const from = getRecipientReplyIdentity(folderRoots, account, settings, originalMessage);
+	const editor = {
+		action: EditViewActions.REPLY,
+		attachmentFiles: [],
+		from: {
+			address: from.address,
+			fullName: from.name,
+			name: from.identityName,
+			type: ParticipantRole.FROM
+		},
+		sender: undefined,
+		id: editorId,
+		// TODO: Need to manage the attachments
+		attachments: { mp: [] },
+		inlineAttachments: [],
+		isRichText: true,
+		isUrgent: originalMessage.urgent,
+		recipients: {
+			to: retrieveTO(originalMessage),
+			cc: retrieveCCForEditNew(originalMessage),
+			bcc: retrieveBCC(originalMessage)
+		},
+		subject: originalMessage.subject,
+		text,
+		requestReadReceipt: false,
+		originalId: originalMessage.id,
+		originalMessage,
 		messagesStoreDispatch
 	} as MailsEditorV2;
 
@@ -178,11 +309,12 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a reply editor without a message id');
 			}
 			if (messages && id && messages?.[id]) {
-				return generateReplyMessageEditor(
+				return generateReplyAndReplyAllMsgEditor(
 					messagesStoreDispatch,
 					account,
 					settings,
-					messages?.[id] as MailMessage
+					messages?.[id] as MailMessage,
+					action
 				);
 			}
 			break;
@@ -191,11 +323,29 @@ export const generateEditor = ({
 			if (!id) {
 				throw new Error('Cannot generate a reply all editor without a message id');
 			}
+			if (messages && id && messages?.[id]) {
+				return generateReplyAndReplyAllMsgEditor(
+					messagesStoreDispatch,
+					account,
+					settings,
+					messages?.[id] as MailMessage,
+					action
+				);
+			}
 			break;
 		case EditViewActions.FORWARD:
 			// TODO
 			if (!id) {
 				throw new Error('Cannot generate a forward editor without a message id');
+			}
+			if (messages && id && messages?.[id]) {
+				return generateForwardMsgEditor(
+					messagesStoreDispatch,
+					account,
+					settings,
+					messages?.[id] as MailMessage,
+					action
+				);
 			}
 			break;
 		case EditViewActions.EDIT_AS_DRAFT:
@@ -203,15 +353,34 @@ export const generateEditor = ({
 			if (!id) {
 				throw new Error('Cannot generate a draft editor without a message id');
 			}
+			if (messages && id && messages?.[id]) {
+				return generateEditAsNewAndDraftEditor(
+					messagesStoreDispatch,
+					account,
+					settings,
+					messages?.[id] as MailMessage,
+					action
+				);
+			}
 			break;
 		case EditViewActions.EDIT_AS_NEW:
 			// TODO
 			if (!id) {
 				throw new Error('Cannot generate an edit as new editor without a message id');
 			}
+			if (messages && id && messages?.[id]) {
+				return generateEditAsNewAndDraftEditor(
+					messagesStoreDispatch,
+					account,
+					settings,
+					messages?.[id] as MailMessage,
+					action
+				);
+			}
 			break;
 		case EditViewActions.MAIL_TO:
 			// TODO
+
 			break;
 		case EditViewActions.COMPOSE:
 			// TODO

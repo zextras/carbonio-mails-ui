@@ -12,7 +12,8 @@ import {
 	useUserSettings,
 	closeBoard,
 	t,
-	useBoardHooks
+	useBoardHooks,
+	getBoardContextById
 } from '@zextras/carbonio-shell-ui';
 
 import { EditView } from './edit-view-v2';
@@ -47,11 +48,13 @@ const EditViewController: FC = (x) => {
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
 	const messages = useAppSelector(selectMessages);
+	const conte = getBoardContextById(board.id);
+	//
 
 	const onClose = useCallback(() => {
 		closeBoard(board.id);
 	}, [board.id]);
-
+	console.log('====11======>>>>', { board });
 	// TODO check why the useQueryParams triggers 2 renders
 	let { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
 
