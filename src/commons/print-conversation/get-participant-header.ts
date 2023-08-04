@@ -21,8 +21,7 @@ export const getParticipantHeader = (participants: Participant[], type: string):
       vertical-align: top;
       text-align: left;
       font-weight: bold;
-      white-space: nowrap;
-      ">${type}: <span style="padding: 0.1875rem 0.1875rem 0.1875rem 0.1875rem; vertical-align: top; overflow: hidden; color: #828282;font-family: Roboto, sans-serif;
+      ">${type}: <span style="padding: 0.1875rem 0.1875rem 0.1875rem 0.1875rem; vertical-align: top; overflow: hidden;font-family: Roboto, sans-serif;
       font-style: normal;
       font-weight: 400;
       font-size: 0.875rem;

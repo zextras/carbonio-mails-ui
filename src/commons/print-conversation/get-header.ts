@@ -9,6 +9,7 @@ import moment from 'moment';
 import { type MailMessage } from '../../types';
 import { getParticipantHeader } from './get-participant-header';
 import { getAttachments } from './get-attachments';
+import { getSubject } from './get-subject';
 
 export function getHeader(msg: MailMessage, content: string): string {
 	const { participants, subject } = msg;
@@ -29,10 +30,7 @@ export function getHeader(msg: MailMessage, content: string): string {
                         <td align="left">
                             <table width="100%" align="left" cellpadding="2" cellspacing="0" border="0">
                                 ${getParticipantHeader(from, 'From')}
-                                <tr>
-                                    <td class='MsgHdrName'> Subject: </td>
-                                    <td  class='MsgHdrValue'>${subject}</td>
-                                </tr>
+                                ${getSubject(subject, 'Subject')}
                                 ${getParticipantHeader(to, 'To')} 
                                 ${getParticipantHeader(cc, 'Cc')}
                                 ${getParticipantHeader(bcc, 'Bcc')}
