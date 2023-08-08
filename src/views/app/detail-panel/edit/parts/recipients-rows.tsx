@@ -19,8 +19,8 @@ export type RecipientsRowsProps = {
 };
 
 export const RecipientsRows: FC<RecipientsRowsProps> = ({ recipients, onRecipientsChange }) => {
-	const [showCc, setShowCc] = useState(false);
-	const [showBcc, setShowBcc] = useState(false);
+	const [showCc, setShowCc] = useState(recipients.cc.length > 0);
+	const [showBcc, setShowBcc] = useState(recipients.bcc.length > 0);
 
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
 	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
