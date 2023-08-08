@@ -77,9 +77,7 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['sendProcessStatus']
 	) => void;
-	deleteEditor: (id: MailsEditorV2['id']) => void;
-	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']) => void;
-	updateSender: (id: MailsEditorV2['id'], sender: MailsEditorV2['sender']) => void;
+	updateIdentityId: (id: MailsEditorV2['id'], from: MailsEditorV2['identityId']) => void;
 	updateIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
 	updateRequestReadReceipt: (
 		id: MailsEditorV2['id'],

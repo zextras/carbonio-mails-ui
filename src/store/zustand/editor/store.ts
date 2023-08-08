@@ -243,20 +243,11 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']): void => {
+	updateIdentityId: (id: MailsEditorV2['id'], from: MailsEditorV2['identityId']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].from = from;
-				}
-			})
-		);
-	},
-	updateSender: (id: MailsEditorV2['id'], sender: MailsEditorV2['sender']): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].sender = sender;
+					state.editors[id].identityId = from;
 				}
 			})
 		);

@@ -8,6 +8,11 @@ import { find, forEach, map } from 'lodash';
 
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import {
+	getDefaultIdentity,
+	getIdentityDescriptor,
+	IdentityDescriptor
+} from '../../../helpers/identities';
+import {
 	InlineAttachments,
 	MailsEditorV2,
 	Participant,
@@ -126,6 +131,52 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 
 /**
  *
+ * @param identity
+ * @param type
+ */
+const createParticipantFromIdentity = (
+	identity: IdentityDescriptor,
+	type: typeof ParticipantRole.FROM | typeof ParticipantRole.SENDER
+): Participant =>
+	({
+		type,
+		address: identity.fromAddress,
+		name: identity.identityDisplayName,
+		fullName: identity.fromDisplay
+	} as Participant);
+
+/**
+ *
+ * @param identityId
+ */
+const createFromParticipantByIdentity = (identityId: string): Participant | null => {
+	const identity = getIdentityDescriptor(identityId);
+	if (!identity) {
+		return null;
+	}
+
+	return createParticipantFromIdentity(identity, ParticipantRole.FROM);
+};
+
+/**
+ *
+ * @param identityId
+ */
+const createSenderParticipantByIdentity = (identityId: string): Participant | null => {
+	const identity = getIdentityDescriptor(identityId);
+	if (!identity) {
+		return null;
+	}
+
+	if (identity.right === 'sendOnBehalfOf') {
+		return createParticipantFromIdentity(getDefaultIdentity(), ParticipantRole.SENDER);
+	}
+
+	return null;
+};
+
+/**
+ *
  * @param editor
  */
 export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDraftMessageObj => {
@@ -135,11 +186,14 @@ export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDra
 		...editor.recipients.cc,
 		...editor.recipients.bcc
 	];
-	editor.from && participants.push(editor.from);
-	editor.sender && participants.push(editor.sender);
+	const from = createFromParticipantByIdentity(editor.identityId);
+	const sender = createSenderParticipantByIdentity(editor.identityId);
 
-	if (editor.requestReadReceipt && editor.from) {
-		participants.push({ ...editor.from, type: ParticipantRole.READ_RECEIPT_NOTIFICATION });
+	from && participants.push(from);
+	sender && participants.push(sender);
+
+	if (editor.requestReadReceipt && from) {
+		participants.push({ ...from, type: ParticipantRole.READ_RECEIPT_NOTIFICATION });
 	}
 
 	const soapParticipants = map(participants, (participant) => ({

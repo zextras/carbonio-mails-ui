@@ -8,14 +8,17 @@ import { v4 as uuid } from 'uuid';
 
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
 import { getEditor } from './hooks';
-import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { LineType } from '../../../commons/utils';
 import { EditViewActions, EditViewActionsType } from '../../../constants';
-import { getDefaultIdentity, getRecipientReplyIdentity } from '../../../helpers/identities';
+import {
+	getDefaultIdentity,
+	getIdentityFromParticipant,
+	getRecipientReplyIdentity
+} from '../../../helpers/identities';
+import { getFromParticipantFromMessage } from '../../../helpers/messages';
 import { getMailBodyWithSignature } from '../../../helpers/signatures';
 import { MailMessage, MailsEditorV2, MsgMap } from '../../../types';
-import { createParticipantFromIdentity } from '../../../views/app/detail-panel/edit/edit-view-v2';
 import {
 	extractBody,
 	generateReplyText,
@@ -45,26 +48,18 @@ const labels = {
 /**
  *
  */
-const generateNewMessageEditor = (
-	messagesStoreDispatch: AppDispatch,
-	account: Account,
-	settings: AccountSettings
-): MailsEditorV2 => {
+const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
 		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
-	const defaultIdentity = getDefaultIdentity(account, settings);
+	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
 	const editor = {
 		action: EditViewActions.NEW,
 		attachmentFiles: [],
-		from: createParticipantFromIdentity(
-			getDefaultIdentity(account, settings),
-			ParticipantRole.FROM
-		),
-		sender: undefined,
+		identityId: getDefaultIdentity().id,
 		id: editorId,
 		// TODO: Need to manage the attachments
 		attachments: { mp: [] },
@@ -103,7 +98,7 @@ const generateReplyAndReplyAllMsgEditor = (
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
 		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
-	const defaultIdentity = getDefaultIdentity(account, settings);
+	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
 
 	const textWithSignatureRepliesForwards = {
@@ -111,7 +106,7 @@ const generateReplyAndReplyAllMsgEditor = (
 		richText: `${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`
 	};
 	const folderRoots = getRootsMap();
-	const from = getRecipientReplyIdentity(folderRoots, account, settings, originalMessage);
+	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const toParticipants =
 		action === EditViewActions.REPLY
 			? retrieveReplyTo(originalMessage)
@@ -119,12 +114,7 @@ const generateReplyAndReplyAllMsgEditor = (
 	const editor = {
 		action: EditViewActions.REPLY,
 		attachmentFiles: [],
-		from: {
-			address: from.address,
-			fullName: from.name,
-			name: from.identityName,
-			type: ParticipantRole.FROM
-		},
+		identityId: from.identityId,
 		sender: undefined,
 		id: editorId,
 		// TODO: Need to manage the attachments
@@ -159,15 +149,14 @@ const generateForwardMsgEditor = (
 	messagesStoreDispatch: AppDispatch,
 	account: Account,
 	settings: AccountSettings,
-	originalMessage: MailMessage,
-	action: EditViewActionsType
+	originalMessage: MailMessage
 ): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
 		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
-	const defaultIdentity = getDefaultIdentity(account, settings);
+	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
 
 	const textWithSignatureRepliesForwards = {
@@ -175,17 +164,11 @@ const generateForwardMsgEditor = (
 		richText: `${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`
 	};
 	const folderRoots = getRootsMap();
-	const from = getRecipientReplyIdentity(folderRoots, account, settings, originalMessage);
+	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const editor = {
 		action: EditViewActions.REPLY,
 		attachmentFiles: [],
-		from: {
-			address: from.address,
-			fullName: from.name,
-			name: from.identityName,
-			type: ParticipantRole.FROM
-		},
-		sender: undefined,
+		identityId: from.identityId,
 		id: editorId,
 		// TODO: Need to manage the attachments
 		attachments: { mp: [] },
@@ -219,26 +202,19 @@ const generateEditAsNewAndDraftEditor = (
 	messagesStoreDispatch: AppDispatch,
 	account: Account,
 	settings: AccountSettings,
-	originalMessage: MailMessage,
-	action: EditViewActionsType
+	originalMessage: MailMessage
 ): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
 		plainText: `${extractBody(originalMessage)[0]}`,
 		richText: `${extractBody(originalMessage)[1]}`
 	};
-	const folderRoots = getRootsMap();
-	const from = getRecipientReplyIdentity(folderRoots, account, settings, originalMessage);
+	const fromParticipant = getFromParticipantFromMessage(originalMessage);
+	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
 	const editor = {
 		action: EditViewActions.REPLY,
 		attachmentFiles: [],
-		from: {
-			address: from.address,
-			fullName: from.name,
-			name: from.identityName,
-			type: ParticipantRole.FROM
-		},
-		sender: undefined,
+		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
 		// TODO: Need to manage the attachments
 		attachments: { mp: [] },
@@ -266,7 +242,7 @@ const generateEditAsNewAndDraftEditor = (
 
 /**
  *
- * @param editorId
+ * @param id
  */
 export const resumeEditor = (id: MailsEditorV2['id']): MailsEditorV2 | null => {
 	const editor = getEditor({ id });
@@ -284,8 +260,12 @@ export type GenerateEditorParams = {
 
 /**
  * Generate a new editor structure for the given action and message id
- * @param action - Edit action type
- * @param id - The id of the message or the editor associated with the action
+ * @param action
+ * @param id
+ * @param messagesStoreDispatch
+ * @param account
+ * @param settings
+ * @param messages
  */
 export const generateEditor = ({
 	action,
@@ -302,7 +282,7 @@ export const generateEditor = ({
 			}
 			return getEditor({ id });
 		case EditViewActions.NEW:
-			return generateNewMessageEditor(messagesStoreDispatch, account, settings);
+			return generateNewMessageEditor(messagesStoreDispatch);
 		case EditViewActions.REPLY:
 			// TODO
 			if (!id) {
@@ -343,8 +323,7 @@ export const generateEditor = ({
 					messagesStoreDispatch,
 					account,
 					settings,
-					messages?.[id] as MailMessage,
-					action
+					messages?.[id] as MailMessage
 				);
 			}
 			break;
@@ -358,8 +337,7 @@ export const generateEditor = ({
 					messagesStoreDispatch,
 					account,
 					settings,
-					messages?.[id] as MailMessage,
-					action
+					messages?.[id] as MailMessage
 				);
 			}
 			break;
@@ -373,8 +351,7 @@ export const generateEditor = ({
 					messagesStoreDispatch,
 					account,
 					settings,
-					messages?.[id] as MailMessage,
-					action
+					messages?.[id] as MailMessage
 				);
 			}
 			break;

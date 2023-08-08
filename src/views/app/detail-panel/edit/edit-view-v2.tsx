@@ -19,7 +19,7 @@ import {
 	Padding,
 	Icon
 } from '@zextras/carbonio-design-system';
-import { addBoard, t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { addBoard, t } from '@zextras/carbonio-shell-ui';
 import { filter, map, noop } from 'lodash';
 
 import DropZoneAttachment from './dropzone-attachment';
@@ -30,14 +30,12 @@ import { EditViewSendButtons } from './parts/edit-view-send-buttons';
 import { RecipientsRows } from './parts/recipients-rows';
 import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
 import WarningBanner from './parts/warning-banner';
-import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import {
 	getAvailableAddresses,
-	getDefaultIdentity,
-	getIdentities,
-	getIdentityFromParticipant,
+	getIdentitiesDescriptors,
+	getIdentityDescriptor,
 	IdentityDescriptor
 } from '../../../../helpers/identities';
 import { getMailBodyWithSignature } from '../../../../helpers/signatures';
@@ -45,17 +43,16 @@ import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
 	useEditorDraftSaveProcessStatus,
-	useEditorFrom,
+	useEditorIdentityId,
 	useEditorIsRichText,
 	useEditorIsUrgent,
 	useEditorRecipients,
 	useEditorRequestReadReceipt,
 	useEditorSend,
-	useEditorSender,
 	useEditorSubject,
 	useEditorText
 } from '../../../../store/zustand/editor';
-import { BoardContext, EditorRecipients, Participant } from '../../../../types';
+import { BoardContext, EditorRecipients } from '../../../../types';
 
 export type EditViewProp = {
 	editorId: string;
@@ -64,31 +61,16 @@ export type EditViewProp = {
 	showController?: () => void;
 };
 
-export const createParticipantFromIdentity = (
-	identity: IdentityDescriptor,
-	type: typeof ParticipantRole.FROM | typeof ParticipantRole.SENDER
-): Participant =>
-	({
-		type,
-		address: identity.fromAddress,
-		name: identity.identityDisplayName,
-		fullName: identity.fromDisplay
-	} as Participant);
-
 export const EditView: FC<EditViewProp> = ({
 	editorId,
 	closeController,
 	hideController,
 	showController
 }) => {
-	const account = useUserAccount();
-	const settings = useUserSettings();
-
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { text, setText } = useEditorText(editorId);
-	const { from, setFrom } = useEditorFrom(editorId);
-	const { sender, setSender } = useEditorSender(editorId);
+	const { identityId, setIdentityId } = useEditorIdentityId(editorId);
 	const { recipients, setRecipients } = useEditorRecipients(editorId);
 	const { autoSendTime, setAutoSendTime } = useEditorAutoSendTime(editorId);
 
@@ -107,12 +89,9 @@ export const EditView: FC<EditViewProp> = ({
 		closeController && closeController();
 	}, [closeController]);
 
-	const onSaveClick = useCallback<ButtonProps['onClick']>(
-		(ev): void => {
-			saveDraft();
-		},
-		[saveDraft]
-	);
+	const onSaveClick = useCallback<ButtonProps['onClick']>((): void => {
+		saveDraft();
+	}, [saveDraft]);
 
 	const onSendCountdownTick = useCallback(
 		(countdown: number, cancel: () => void): void => {
@@ -138,7 +117,7 @@ export const EditView: FC<EditViewProp> = ({
 				}
 			});
 		},
-		[createSnackbar]
+		[createSnackbar, editorId]
 	);
 
 	const onSendError = useCallback(
@@ -188,22 +167,11 @@ export const EditView: FC<EditViewProp> = ({
 
 	const onIdentityChanged = useCallback(
 		(identity: IdentityDescriptor): void => {
-			// TODO handle the sender in case of sendOnBehalfOf
-			if (identity.right === 'sendOnBehalfOf') {
-				setSender(
-					createParticipantFromIdentity(
-						getDefaultIdentity(account, settings),
-						ParticipantRole.SENDER
-					)
-				);
-			} else {
-				setSender(undefined);
-			}
-			setFrom(createParticipantFromIdentity(identity, ParticipantRole.FROM));
+			setIdentityId(identity.id);
 			const textWithSignature = getMailBodyWithSignature(text, identity.defaultSignatureId);
 			setText(textWithSignature);
 		},
-		[account, setFrom, setSender, setText, settings, text]
+		[setIdentityId, setText, text]
 	);
 
 	const onRecipientsChanged = useCallback(
@@ -227,24 +195,14 @@ export const EditView: FC<EditViewProp> = ({
 		[setText]
 	);
 
-	const identitiesList = useMemo<Array<IdentityDescriptor>>(
-		() => getIdentities(account, settings),
-		[account, settings]
+	const identitiesList = useMemo<Array<IdentityDescriptor>>(() => getIdentitiesDescriptors(), []);
+
+	const selectedIdentity = useMemo<IdentityDescriptor | null>(
+		() => getIdentityDescriptor(identityId),
+		[identityId]
 	);
 
 	const showIdentitySelector = useMemo<boolean>(() => identitiesList.length > 1, [identitiesList]);
-
-	const selectedIdentity = useMemo<IdentityDescriptor | null>(() => {
-		let result = null;
-
-		if (from) {
-			result = getIdentityFromParticipant(from, account, settings);
-		}
-
-		return result;
-
-		// TODO handle the sender scenario
-	}, [account, from, settings]);
 
 	const toggleRichTextEditor = useCallback(() => {
 		setIsRichText(!isRichText);
@@ -311,7 +269,7 @@ export const EditView: FC<EditViewProp> = ({
 	// TODO ask designers if the check must be performed only on TO or also on CC and BCC
 	const isSendingToYourself = useMemo(() => {
 		const availableAddresses = map(
-			getAvailableAddresses(account, settings),
+			getAvailableAddresses(),
 			(availableAddress) => availableAddress.address
 		);
 		const recipientsAddresses = map(recipients.to, (recipient) => recipient.address);
@@ -321,7 +279,7 @@ export const EditView: FC<EditViewProp> = ({
 				availableAddresses.includes(recipientAddress)
 			).length > 0
 		);
-	}, [account, recipients.to, settings]);
+	}, [recipients.to]);
 
 	const composerOptions = useMemo(
 		() => [

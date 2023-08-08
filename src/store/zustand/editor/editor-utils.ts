@@ -37,10 +37,10 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 		};
 	}
 
-	if (!editor.from) {
+	if (!editor.identityId) {
 		return {
 			allowed: false,
-			reason: t('label.missing_sender', 'the sender of the message is not set') // TODO check strings with designer
+			reason: t('label.missing_sender', 'the identity of the sender is not set') // TODO check strings with designer
 		};
 	}
 

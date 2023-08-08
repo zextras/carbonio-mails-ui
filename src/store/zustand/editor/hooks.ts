@@ -157,7 +157,7 @@ const sendFromEditor = (
 
 /**
  *
- * @param editor
+ * @param editorId
  */
 const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 	const editor = getEditor({ id: editorId });
@@ -521,49 +521,25 @@ export const useEditorBccRecipients = (
 };
 
 /**
- * Returns reactive reference to the from value and to its setter
+ * Returns reactive reference to the identity id and to its setter
  * @param editorId
  */
-export const useEditorFrom = (
+export const useEditorIdentityId = (
 	editorId: MailsEditorV2['id']
 ): {
-	from: MailsEditorV2['from'];
-	setFrom: (from: MailsEditorV2['from']) => void;
+	identityId: MailsEditorV2['identityId'];
+	setIdentityId: (from: MailsEditorV2['identityId']) => void;
 } => {
-	const value = useEditorsStore((state) => state.editors[editorId].from);
-	const setter = useEditorsStore((state) => state.updateFrom);
+	const value = useEditorsStore((state) => state.editors[editorId].identityId);
+	const setter = useEditorsStore((state) => state.updateIdentityId);
 
 	return {
-		from: value,
-		setFrom: (val: MailsEditorV2['from']): void => {
+		identityId: value,
+		setIdentityId: (val: MailsEditorV2['identityId']): void => {
 			setter(editorId, val);
 			computeAndUpdateEditorStatus(editorId);
 			debouncedSaveDraftFromEditor(editorId);
-			debugLog('save cause: from');
-		}
-	};
-};
-
-/**
- * Returns reactive reference to the sender value and to its setter
- * @param editorId
- */
-export const useEditorSender = (
-	editorId: MailsEditorV2['id']
-): {
-	sender: MailsEditorV2['sender'];
-	setSender: (sender: MailsEditorV2['sender']) => void;
-} => {
-	const value = useEditorsStore((state) => state.editors[editorId].sender);
-	const setter = useEditorsStore((state) => state.updateSender);
-
-	return {
-		sender: value,
-		setSender: (val: MailsEditorV2['sender']): void => {
-			setter(editorId, val);
-			computeAndUpdateEditorStatus(editorId);
-			debouncedSaveDraftFromEditor(editorId);
-			debugLog('save cause: sender');
+			debugLog('save cause: identityId');
 		}
 	};
 };

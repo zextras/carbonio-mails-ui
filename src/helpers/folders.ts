@@ -3,13 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
+
+import { isConversation } from './messages';
 import { getFolder, useFolderStore } from '../carbonio-ui-commons/store/zustand/folder';
 import type { Folder, Folders } from '../carbonio-ui-commons/types/folder';
 import { Conversation } from '../types';
 import type { MailMessage } from '../types';
-import { isConversation } from './messages';
 
 /*
  * Describe the folder id syntax
@@ -76,16 +77,14 @@ export const getFolderOtherOwnerAccountName = (
 /**
  * Returns the account name of the owner of the folder, based on the folder id
  * @param folderId
- * @param primaryAccount
  * @param folderRoots
  */
-export const getFolderOwnerAccountName = (
-	folderId: string,
-	primaryAccount: Account,
-	folderRoots: Folders
-): string => {
+export const getFolderOwnerAccountName = (folderId: string, folderRoots: Folders): string => {
+	const primaryAccount = getUserAccount();
+
 	/*
-	 * Try to get the account of the "other" owner, aka an owner which is not the primary account of the current user
+	 * Try to get the account of the "other" owner, aka an owner which
+	 * is not the primary account of the current user
 	 */
 	const otherOwnerAccount = getFolderOtherOwnerAccountName(folderId, folderRoots);
 
@@ -99,18 +98,14 @@ export const getFolderOwnerAccountName = (
 /**
  * Returns the account name of the owner of the message, based on the message's parent folder
  * @param message
- * @param primaryAccount
  * @param folderRoots
  */
-export const getMessageOwnerAccountName = (
-	message: MailMessage,
-	primaryAccount: Account,
-	folderRoots: Folders
-): string => getFolderOwnerAccountName(message.parent, primaryAccount, folderRoots);
+export const getMessageOwnerAccountName = (message: MailMessage, folderRoots: Folders): string =>
+	getFolderOwnerAccountName(message.parent, folderRoots);
 
 /**
  * Returns the parent folder id for a given folder
- * @param folder a Folder or LinkFolder
+ * @param folderPath a Folder or LinkFolder
  * @returns the path to pass down as props to the Breadcrumb component
  */
 export const getFolderPathForBreadcrumb = (
@@ -127,6 +122,7 @@ export const getFolderPathForBreadcrumb = (
 /**
  * Tells if a folder with the given id is a spam folder
  * @param folderId
+ * @param folderType
  */
 export const isA = (folderId: string, folderType: keyof Folders): boolean => {
 	if (!folderId) {
@@ -173,6 +169,7 @@ export const isDraft = (folderId: string): boolean => isA(folderId, FOLDERS.DRAF
 
 /**
  * Tells if a folder is a trashed folder
+ * @param folder
  * @param folderId
  */
 export const isTrashed = ({

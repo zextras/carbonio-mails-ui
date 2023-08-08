@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, AccountSettings } from '@zextras/carbonio-shell-ui';
+import { Account, getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
-import { filter, findIndex, flatten, isArray, map } from 'lodash';
+import { filter, findIndex, flatten, isArray, map, remove } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import { getMessageOwnerAccountName } from './folders';
@@ -123,13 +123,10 @@ const IdentityTypeWeights = {
 
 /**
  * Returns the list of all the available addresses for the account and their type
- * @param account
- * @param settings
  */
-const getAvailableAddresses = (
-	account: Account,
-	settings: AccountSettings
-): Array<AvailableAddress> => {
+const getAvailableAddresses = (): Array<AvailableAddress> => {
+	const account = getUserAccount();
+	const settings = getUserSettings();
 	const result: Array<AvailableAddress> = [];
 
 	// Adds the email address of the primary account
@@ -184,25 +181,32 @@ const getAvailableAddresses = (
 /**
  *
  * @param address
- * @param primaryAccount
- * @param settings
  */
-const getAddressOwnerAccount = (
-	address: string,
-	primaryAccount: Account,
-	settings: AccountSettings
-): string | null => {
+const getAddressOwnerAccount = (address: string): string | null => {
 	if (!address) {
 		return null;
 	}
-	const addressInfo = getAvailableAddresses(primaryAccount, settings).filter(
-		(info) => info.address === address
-	);
+	const addressInfo = getAvailableAddresses().filter((info) => info.address === address);
 	if (addressInfo.length === 0) {
 		return null;
 	}
 
 	return addressInfo[0].ownerAccount;
+};
+
+/**
+ *
+ * @param identities
+ */
+const sortIdentities = (
+	identities: Account['identities']['identity']
+): Account['identities']['identity'] => {
+	const allIdentities = [...identities];
+	const defaultIdentity = remove(
+		allIdentities,
+		(identity) => identity.name === PRIMARY_IDENTITY_NAME
+	);
+	return [...defaultIdentity, ...allIdentities];
 };
 
 /**
@@ -212,17 +216,16 @@ const getAddressOwnerAccount = (
  *
  * The function returns also an identity for each account for which the user is a delegate
  * (sendAs or sendOnBehalfOf) if there is no an already existing identity
- *
- * @param account
- * @param settings
  */
-const getIdentities = (account: Account, settings: AccountSettings): Array<IdentityDescriptor> => {
+const getIdentitiesDescriptors = (): Array<IdentityDescriptor> => {
+	const account = getUserAccount();
 	const identities: Array<IdentityDescriptor> = [];
 
 	// Get the list of all the available email addresses for the account and their type
-	const availableEmailAddresses = getAvailableAddresses(account, settings);
+	const availableEmailAddresses = getAvailableAddresses();
 
-	account.identities?.identity?.forEach((identity) => {
+	// sortIdentities(account.identities?.identity)?.forEach((identity) => {
+	sortIdentities(account.identities?.identity)?.forEach((identity) => {
 		const fromAddress = identity._attrs?.zimbraPrefFromAddress ?? '';
 		const fromDisplay = identity._attrs?.zimbraPrefFromDisplay;
 
@@ -292,6 +295,13 @@ const getIdentities = (account: Account, settings: AccountSettings): Array<Ident
 };
 
 /**
+ *
+ * @param id
+ */
+export const getIdentityDescriptor = (id: string): IdentityDescriptor | null =>
+	getIdentitiesDescriptors().find((identityDescriptor) => identityDescriptor.id === id) ?? null;
+
+/**
  * Returns the list of all the recipients of the message, with their weight
  * based on their role in the message
  *
@@ -344,6 +354,7 @@ const checkMatchingAddress = (
  *
  * @param recipients
  * @param identities
+ * @param folderOwnerAccount
  *
  * @returns the list of recipients with their weight
  */
@@ -396,29 +407,22 @@ const filterMatchingRecipients = (recipients: Array<RecipientWeight>): Array<Rec
 /**
  * Analyze the message and return the identity that should be used to reply it.
  * @param folderRoots - The list of all the folder roots
- * @param account - The primary account infos
- * @param settings - The settings of the account
  * @param message - The message to analyze
  */
 const getRecipientReplyIdentity = (
 	folderRoots: Folders,
-	account: Account,
-	settings: AccountSettings,
 	message: MailMessage
 ): MatchingReplyIdentity => {
 	// Get all the available identities for the account
-	const identities = getIdentities(account, settings);
+	const identities = getIdentitiesDescriptors();
 
-	const messageFolderOwnerAccount = getMessageOwnerAccountName(message, account, folderRoots);
+	const messageFolderOwnerAccount = getMessageOwnerAccountName(message, folderRoots);
 
 	// Extract all the recipients addresses from the message
 	const recipients = getRecipients(message);
 
 	// Check if the recipient address matches one of the account available addresses
-	const recipientsWithMatchingAddress = checkMatchingAddress(
-		recipients,
-		getAvailableAddresses(account, settings)
-	);
+	const recipientsWithMatchingAddress = checkMatchingAddress(recipients, getAvailableAddresses());
 
 	/*
 	 * Filter out the recipients that do not match any of the available addresses
@@ -448,15 +452,9 @@ const getRecipientReplyIdentity = (
 /**
  *
  * @param participant
- * @param 	account: Account,
- * @param settings
  */
-const getIdentityFromParticipant = (
-	participant: Participant,
-	account: Account,
-	settings: AccountSettings
-): IdentityDescriptor | null =>
-	getIdentities(account, settings).reduce<IdentityDescriptor | null>((result, identity) => {
+const getIdentityFromParticipant = (participant: Participant): IdentityDescriptor | null =>
+	getIdentitiesDescriptors().reduce<IdentityDescriptor | null>((result, identity) => {
 		if (identity.fromAddress !== participant.address) {
 			return result;
 		}
@@ -488,50 +486,35 @@ const getMessageSenderAddress = (message: MailMessage): string | null => {
 /**
  * Returns the account of the message's sender obtained from the message's participants
  * @param message
- * @param primaryAccount
- * @param settings
  */
-const getMessageSenderAccount = (
-	message: MailMessage,
-	primaryAccount: Account,
-	settings: AccountSettings
-): string | null => {
+const getMessageSenderAccount = (message: MailMessage): string | null => {
 	const address = getMessageSenderAddress(message);
 	if (!address) {
 		return null;
 	}
 
-	return getAddressOwnerAccount(address, primaryAccount, settings);
+	return getAddressOwnerAccount(address);
 };
 
 /**
  *
- * @param account
- * @param settings
  */
-const getDefaultIdentity = (account: Account, settings: AccountSettings): IdentityDescriptor =>
-	getIdentities(account, settings).reduce((result, identity) =>
+const getDefaultIdentity = (): IdentityDescriptor =>
+	getIdentitiesDescriptors().reduce((result, identity) =>
 		identity.identityName === PRIMARY_IDENTITY_NAME ? identity : result
 	);
 
 /**
  *
  * @param identity
- * @param account
- * @param settings
  * @param t
  */
-const getIdentityDescription = (
-	identity: IdentityDescriptor,
-	account: Account,
-	settings: AccountSettings,
-	t: TFunction
-): string | null => {
+const getIdentityDescription = (identity: IdentityDescriptor, t: TFunction): string | null => {
 	if (!identity) {
 		return null;
 	}
 
-	const defaultIdentity = getDefaultIdentity(account, settings);
+	const defaultIdentity = getDefaultIdentity();
 
 	return identity.right === 'sendOnBehalfOf'
 		? `${defaultIdentity.fromDisplay} ${t('label.on_behalf_of', 'on behalf of')} ${
@@ -550,7 +533,7 @@ export {
 	filterMatchingRecipients,
 	getAddressOwnerAccount,
 	getAvailableAddresses,
-	getIdentities,
+	getIdentitiesDescriptors,
 	getIdentityFromParticipant,
 	getMessageSenderAccount,
 	getMessageSenderAddress,

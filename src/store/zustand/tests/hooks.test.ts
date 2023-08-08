@@ -4,14 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import {
-	ParticipantRole,
-	ParticipantRoleType
-} from '../../../carbonio-ui-commons/constants/participants';
 import { setupEditorStore } from '../../../tests/generators/editor-store';
-import { generateEditorCase, generateEditorV2Case } from '../../../tests/generators/editors';
+import { generateEditorV2Case } from '../../../tests/generators/editors';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { InlineAttachments, MailAttachment, MailMessage, Participant } from '../../../types';
+import { InlineAttachments, MailAttachment } from '../../../types';
 import {
 	getAddAttachment,
 	getAddEditor,
@@ -24,7 +20,6 @@ import {
 	getSetOriginalMessage,
 	getUpdateAutoSendTime,
 	getUpdateEditor,
-	getUpdateFrom,
 	getUpdateIsUrgent,
 	getUpdateRecipients,
 	getUpdateSubject,
@@ -140,15 +135,6 @@ describe('all editor hooks', () => {
 		getUpdateRecipients({ id: editor.id, recipients: newRecipients });
 		const editorFromStore = getEditor({ id: editor.id });
 		expect(editorFromStore?.recipients).toEqual(newRecipients);
-	});
-	test('getUpdateFrom updates an editor from in the store', async () => {
-		const editorId = 1;
-		const editor = await generateEditorV2Case(editorId);
-		const newFrom = { type: ParticipantRole.FROM, address: 'newaddress' };
-		setupEditorStore({ editors: [editor] });
-		getUpdateFrom({ id: editor.id, from: newFrom });
-		const editorFromStore = getEditor({ id: editor.id });
-		expect(editorFromStore?.from).toEqual(newFrom);
 	});
 	test('getUpdateIsUrgent updates an editor isUrgent in the store', async () => {
 		const editorId = 1;
