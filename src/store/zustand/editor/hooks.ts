@@ -23,6 +23,11 @@ export type SendMessageOptions = {
 	onCancel?: () => void;
 };
 
+export type SaveDraftOptions = {
+	onComplete?: () => void;
+	onError?: (error: string) => void;
+};
+
 export type SendMessageResult = {
 	cancel?: () => void;
 };
@@ -127,6 +132,7 @@ const sendFromEditor = (
 						status: 'completed'
 					});
 					computeAndUpdateEditorStatus(editorId);
+					options?.onComplete && options.onComplete();
 				})
 				.catch((err) => {
 					useEditorsStore.getState().updateSendProcessStatus(editorId, {
@@ -134,6 +140,7 @@ const sendFromEditor = (
 						abortReason: err
 					});
 					computeAndUpdateEditorStatus(editorId);
+					options?.onError && options.onError(err);
 				});
 		})
 		.catch((err) => {
@@ -142,6 +149,7 @@ const sendFromEditor = (
 				abortReason: err
 			});
 			computeAndUpdateEditorStatus(editorId);
+			options?.onError && options.onError(err);
 		});
 
 	useEditorsStore.getState().updateSendProcessStatus(editorId, {
@@ -158,8 +166,9 @@ const sendFromEditor = (
 /**
  *
  * @param editorId
+ * @param options
  */
-const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
+const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftOptions): void => {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {
 		console.warn('Cannot find the editor', editorId);
@@ -176,6 +185,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 			abortReason: err
 		});
 		computeAndUpdateEditorStatus(editorId);
+		options?.onError && options.onError(err);
 	};
 
 	// Update messages store
@@ -194,6 +204,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 				lastSaveTimestamp: new Date()
 			});
 			computeAndUpdateEditorStatus(editorId);
+			options?.onComplete && options?.onComplete();
 		})
 		.catch((err) => {
 			handleError(err);
