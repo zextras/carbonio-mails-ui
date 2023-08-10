@@ -21,18 +21,16 @@ import {
 	ContainerProps,
 	Dropdown,
 	getPadding,
-	Icon,
 	IconButton,
 	Tooltip,
 	ButtonProps,
 	useSnackbar,
-	Padding,
-	Icon
+	Icon,
+	Input,
 	Text,
-	Padding,
-	Input
+	Padding
 } from '@zextras/carbonio-design-system';
-import { addBoard, t } from '@zextras/carbonio-shell-ui';
+import { addBoard, t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, map, noop } from 'lodash';
 import styled, { DefaultTheme, SimpleInterpolation } from 'styled-components';
 
@@ -72,7 +70,7 @@ import {
 } from '../../../../store/zustand/editor';
 import { BoardContext, EditorRecipients } from '../../../../types';
 
-const StyledGapContainer = styled(Container)<
+const StyledGapContainer = styled(Container) <
 	ContainerProps & { gap?: keyof DefaultTheme['sizes']['padding'] }
 >`
 	gap: ${({ theme, gap }): SimpleInterpolation => gap && getPadding(gap, theme)};
@@ -227,24 +225,11 @@ export const EditView: FC<EditViewProp> = ({
 
 	const identitiesList = useMemo<Array<IdentityDescriptor>>(() => getIdentitiesDescriptors(), []);
 
+	const showIdentitySelector = useMemo<boolean>(() => identitiesList.length > 1, [identitiesList]);
 	const selectedIdentity = useMemo<IdentityDescriptor | null>(
 		() => getIdentityDescriptor(identityId),
 		[identityId]
 	);
-
-	const showIdentitySelector = useMemo<boolean>(() => identitiesList.length > 1, [identitiesList]);
-
-	const selectedIdentity = useMemo<IdentityDescriptor | null>(() => {
-		let result = null;
-
-		if (from) {
-			result = getIdentityFromParticipant(from, account, settings);
-		}
-
-		return result;
-
-		// TODO handle the sender scenario
-	}, [account, from, settings]);
 	const onFileClick = useCallback(() => {
 		if (inputRef.current) {
 			inputRef.current.value = '';

@@ -29,9 +29,9 @@ export type InlineAttachment = {
 
 export type InlineAttachments =
 	| Array<{
-		ci: string;
-		attach: { aid: string };
-	}>
+			ci: string;
+			attach: { aid: string };
+	  }>
 	| Array[];
 
 export type MailsEditor = {
@@ -179,8 +179,8 @@ type ThrottledSaveToDraftType = (data: Partial<MailsEditor>) => void;
 
 type EditViewContextType =
 	| {
-		throttledSaveToDraft: ThrottledSaveToDraftType;
-		editor: MailsEditor;
-		setSendLater: (arg: boolean) => void;
-	}
+			throttledSaveToDraft: ThrottledSaveToDraftType;
+			editor: MailsEditor;
+			setSendLater: (arg: boolean) => void;
+	  }
 	| Record<string, never>;
