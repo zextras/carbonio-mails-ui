@@ -7,7 +7,7 @@ import React, { FC } from 'react';
 
 import { ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import { map, reject } from 'lodash';
+import { map, reject, some } from 'lodash';
 
 import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
 import { Participant } from '../../../../../types';
@@ -56,6 +56,8 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			contacts,
 			(contact) =>
 				({
+					email: contact.email,
+					error: contact.error,
 					type,
 					address: contact.email,
 					name: contact.firstName,
@@ -100,7 +102,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					onChange={onContactInputChange}
 					defaultValue={recipients}
 					bottomBorderColor="transparent"
-					// hasError={some(editor?.to || [], { error: true })}
+					hasError={some(recipients || [], { error: true })}
 					// errorLabel=""
 				/>
 			) : (

@@ -385,6 +385,25 @@ export const useEditorIsRichText = (
 };
 
 /**
+ * Returns reactive references to the signature value and to its setter
+ * @params id
+ */
+export const useEditorSignature = (
+	id: MailsEditorV2['id']
+): {
+	signature: MailsEditorV2['signature'];
+	setSignature: (signature: MailsEditorV2['signature']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[id].signature);
+	const setter = useEditorsStore((state) => state.setSignature);
+
+	return {
+		signature: value,
+		setSignature: (val: MailsEditorV2['signature']) => setter(id, val)
+	};
+};
+
+/**
  * Returns reactive references to the originalId value and to its setter
  * @params id
  */

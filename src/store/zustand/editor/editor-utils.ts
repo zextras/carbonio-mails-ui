@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { t } from '@zextras/carbonio-shell-ui';
+import { concat, some } from 'lodash';
 
 import { EditorOperationAllowedStatus, MailsEditorV2 } from '../../../types';
 
@@ -49,6 +50,14 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 		!editor.recipients.cc.length &&
 		!editor.recipients.bcc.length
 	) {
+		return {
+			allowed: false,
+			reason: t('label.missing_recipients', 'there is no valid recipient') // TODO check strings with designer
+		};
+	}
+
+	const participants = concat(editor.recipients.to, editor.recipients.bcc, editor.recipients.cc);
+	if (some(participants, { error: true })) {
 		return {
 			allowed: false,
 			reason: t('label.missing_recipients', 'there is no valid recipients') // TODO check strings with designer

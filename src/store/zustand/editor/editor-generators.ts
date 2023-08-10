@@ -13,7 +13,7 @@ import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { LineType } from '../../../commons/utils';
 import { EditViewActions, EditViewActionsType } from '../../../constants';
 import { getDefaultIdentity, getRecipientReplyIdentity } from '../../../helpers/identities';
-import { getMailBodyWithSignature } from '../../../helpers/signatures';
+import { getMailBodyWithSignature, getSignatureValue } from '../../../helpers/signatures';
 import { MailMessage, MailsEditorV2, MsgMap } from '../../../types';
 import { createParticipantFromIdentity } from '../../../views/app/detail-panel/edit/edit-view-v2';
 import {
@@ -57,6 +57,8 @@ const generateNewMessageEditor = (
 	};
 	const defaultIdentity = getDefaultIdentity(account, settings);
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
+	const signature = getSignatureValue(account, defaultIdentity.defaultSignatureId ?? '');
+
 	const editor = {
 		action: EditViewActions.NEW,
 		attachmentFiles: [],
@@ -79,6 +81,7 @@ const generateNewMessageEditor = (
 		subject: '',
 		text: textWithSignature,
 		requestReadReceipt: false,
+		signature,
 		messagesStoreDispatch
 	} as MailsEditorV2;
 

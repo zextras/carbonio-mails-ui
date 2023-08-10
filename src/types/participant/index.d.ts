@@ -11,6 +11,8 @@ export type Participant = {
 	address: string;
 	name?: string;
 	fullName?: string;
+	email?: string;
+	error?: boolean;
 };
 
 export type SharedParticipant = {

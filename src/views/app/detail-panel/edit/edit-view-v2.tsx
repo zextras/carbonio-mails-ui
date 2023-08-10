@@ -415,13 +415,12 @@ export const EditView: FC<EditViewProp> = ({
 								disabled={!saveDraftAllowedStatus?.allowed}
 							/>
 						</Tooltip>
-						<Tooltip label={sendAllowedStatus?.reason} disabled={sendAllowedStatus?.allowed}>
-							<EditViewSendButtons
-								onSendLater={onScheduledSendClick}
-								onSendNow={onSendClick}
-								disabled={!sendAllowedStatus?.allowed}
-							/>
-						</Tooltip>
+						<EditViewSendButtons
+							onSendLater={onScheduledSendClick}
+							onSendNow={onSendClick}
+							disabled={!sendAllowedStatus?.allowed}
+							tooltip={sendAllowedStatus?.reason ?? ''}
+						/>
 					</GapRow>
 				</GapRow>
 

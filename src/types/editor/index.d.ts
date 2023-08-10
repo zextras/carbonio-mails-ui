@@ -131,6 +131,8 @@ export type MailsEditorV2 = {
 	sendAllowedStatus?: EditorOperationAllowedStatus;
 	// status of the message send
 	sendProcessStatus?: SendProcessStatus;
+	// value of the current signature
+	signature?: string;
 	// dispatch function for the messages store
 	messagesStoreDispatch: AppDispatch;
 };

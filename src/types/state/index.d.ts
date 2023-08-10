@@ -35,6 +35,7 @@ export type EditorsStateTypeV2 = {
 	) => void;
 	setDid: (id: MailsEditorV2['id'], did: MailsEditorV2['did']) => void;
 	setIsRichText: (id: MailsEditorV2['id'], isRichText: MailsEditorV2['isRichText']) => void;
+	setSignature: (id: MailsEditorV2['id'], signature: MailsEditorV2['signature']) => void;
 	setOriginalId: (id: MailsEditorV2['id'], originalId: MailsEditorV2['originalId']) => void;
 	setOriginalMessage: (
 		id: MailsEditorV2['id'],

@@ -108,6 +108,15 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	setSignature: (id: MailsEditorV2['id'], signature: MailsEditorV2['signature']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].signature = signature;
+				}
+			})
+		);
+	},
 	setOriginalMessage: (
 		id: MailsEditorV2['id'],
 		originalMessage: MailsEditorV2['originalMessage']

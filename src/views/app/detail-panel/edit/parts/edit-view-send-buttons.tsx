@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useMemo } from 'react';
 
-import { Button, MultiButton, useModal } from '@zextras/carbonio-design-system';
+import { Button, MultiButton, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import SendLaterModal from './send-later-modal-v2';
@@ -15,12 +15,14 @@ export type EditViewSendButtonsProps = {
 	onSendLater: (autoSendTime: number) => void;
 	onSendNow: () => void;
 	disabled: boolean;
+	tooltip: string;
 };
 
 export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 	onSendLater,
 	onSendNow,
-	disabled
+	disabled,
+	tooltip
 }) => {
 	const { attrs } = useUserSettings();
 	const createModal = useModal();
@@ -68,23 +70,27 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 	return (
 		<>
 			{multiBtnActions.length > 0 ? (
-				<MultiButton
-					data-testid="BtnSendMailMulti"
-					label={t('label.send', 'Send')}
-					onClick={onSendNow}
-					disabledPrimary={disabled}
-					disabledSecondary={disabled}
-					items={multiBtnActions}
-				/>
+				<Tooltip label={tooltip} disabled={!disabled}>
+					<MultiButton
+						data-testid="BtnSendMailMulti"
+						label={t('label.send', 'Send')}
+						onClick={onSendNow}
+						disabledPrimary={disabled}
+						disabledSecondary={disabled}
+						items={multiBtnActions}
+					/>
+				</Tooltip>
 			) : (
-				<Button
-					color="primary"
-					data-testid="BtnSendMail"
-					disabled={disabled}
-					icon="PaperPlane"
-					onClick={onSendNow}
-					label={t('label.send', 'Send')}
-				/>
+				<Tooltip label={tooltip} disabled={!disabled}>
+					<Button
+						color="primary"
+						data-testid="BtnSendMail"
+						disabled={disabled}
+						icon="PaperPlane"
+						onClick={onSendNow}
+						label={t('label.send', 'Send')}
+					/>
+				</Tooltip>
 			)}
 		</>
 	);

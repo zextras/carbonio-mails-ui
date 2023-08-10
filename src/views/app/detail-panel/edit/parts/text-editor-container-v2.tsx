@@ -4,25 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Container, Row, Text } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import React, {
-	FC,
-	ReactElement,
-	SyntheticEvent,
-	useCallback,
-	useContext,
-	useEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
-import type { EditViewContextType, MailsEditor, SaveDraftResponse } from '../../../../../types';
-import { addInlineAttachments, getConvertedImageSources } from '../add-inline-attachment';
-import { EditViewContext } from './edit-view-context';
+import React, { FC, SyntheticEvent, useMemo } from 'react';
+
+import { Container } from '@zextras/carbonio-design-system';
+import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+
 import * as StyledComp from './edit-view-styled-components';
+import { plainTextToHTML } from '../../../../../commons/mail-message-renderer';
+import type { MailsEditor } from '../../../../../types';
 
 export type TextEditorContent = { plainText: string; richText: string };
 
@@ -165,9 +154,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 								onChange={(ev): void => {
 									onContentChanged({
 										plainText: ev.target.value,
-										richText: `${
-											content.richText ? `${content.richText}${ev.target.value}` : ev.target.value
-										}`
+										richText: plainTextToHTML(ev.target.value)
 									});
 									// // eslint-disable-next-line no-param-reassign
 									// ev.target.style.height = 'auto';
