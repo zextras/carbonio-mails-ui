@@ -42,7 +42,7 @@ export type SoapEmailInfoObj = {
 export type SoapDraftMessageObj = {
 	autoSendTime?: number;
 	id?: string;
-	attach: MailAttachment;
+	attach?: MailAttachment;
 	su: { _content: string };
 	mp: Array<SoapEmailMessagePartObj>;
 	e: Array<SoapEmailInfoObj>;

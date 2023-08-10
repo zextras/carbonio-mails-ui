@@ -5,17 +5,21 @@
  */
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { EditViewActionsType } from '../../constants';
-import { AppDispatch } from '../../store/redux';
+import { type AppDispatch } from '../../store/redux';
 import type { MailMessage } from '../messages';
 import type { Participant } from '../participant';
 import type { MailAttachment } from '../soap';
 
 export type EditorAttachmentFiles = {
+	id: string;
 	contentType: string;
 	disposition?: string;
-	filename: string;
+	filename?: string;
 	name: string;
 	size: number;
+	uploadProgress: number;
+	fileSize: number;
+	uploadProcessStatus?: AttachmentUploadProcessStatus;
 };
 
 export type InlineAttachment = {
@@ -79,6 +83,12 @@ export type DraftSaveProcessStatus = {
 	lastSaveTimestamp?: Date;
 };
 
+export type AttachmentUploadProcessStatus = {
+	status: 'completed' | 'running' | 'aborted';
+	abortReason?: string;
+	lastSaveTimestamp?: Date;
+};
+
 export type SendProcessStatus = {
 	status: 'completed' | 'running' | 'aborted';
 	abortReason?: string;
@@ -90,6 +100,8 @@ export type MailsEditorV2 = {
 	id: string;
 	// the type of action that generated the editor
 	action: EditViewActionsType;
+	// the id of the sender identity
+	identityId: string;
 	// the array of inline attachments
 	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
 	inlineAttachments: Array<InlineAttachment>;
@@ -97,6 +109,8 @@ export type MailsEditorV2 = {
 	attachments: MailAttachment;
 	// the array of attachment files
 	attachmentFiles: Array<EditorAttachmentFiles>;
+	// allowed status of the attachments upload
+	attachmentsUploadStatus?: EditorOperationAllowedStatus;
 	// user defined delayed send timer
 	autoSendTime?: number;
 	// the saved draft id
@@ -111,10 +125,6 @@ export type MailsEditorV2 = {
 	originalId?: string;
 	// the whole message being replied to/forwarded (outbound messages only)
 	originalMessage?: MailMessage;
-	// the sender of the message
-	from?: Participant;
-	// the actual sender of the message. It will be set if the message is sent on behalf of the "from" sender
-	sender?: Participant;
 	// the recipients of the message being replied to/forwarded (outbound messages only)
 	recipients: EditorRecipients;
 	// flag to mark the message as urgent

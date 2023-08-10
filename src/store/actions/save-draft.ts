@@ -12,8 +12,7 @@ import type {
 	SaveDraftNewResult,
 	SaveDraftParameters,
 	SaveDraftRequest,
-	SaveDraftResponse,
-	SaveDraftResult
+	SaveDraftResponse
 } from '../../types';
 import { generateRequest } from '../editor-slice-utils';
 import { createSoapDraftRequestFromEditor } from '../zustand/editor/editor-transformations';
@@ -44,29 +43,16 @@ export const saveDraft = createAsyncThunk<SaveDraftNewResult, SaveDraftNewParame
 	}
 );
 
-export const saveDraftV2 = createAsyncThunk<SaveDraftResult, SaveDraftParameters>(
-	'saveDraft',
-	async ({ editor, signal }) => {
-		const resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>(
-			'SaveDraft',
-			{
-				_jsns: 'urn:zimbraMail',
-				m: createSoapDraftRequestFromEditor(editor)
-			},
-			undefined,
-			signal
-		)) as SaveDraftResponse;
-
-		return { resp };
-	}
-);
-
-export const saveDraftV3 = ({ editor, signal }: SaveDraftParameters): Promise<SaveDraftResponse> =>
+export const saveDraftV3 = ({
+	editor,
+	signal,
+	attach
+}: SaveDraftParameters): Promise<SaveDraftResponse> =>
 	soapFetch<SaveDraftRequest, SaveDraftResponse>(
 		'SaveDraft',
 		{
 			_jsns: 'urn:zimbraMail',
-			m: createSoapDraftRequestFromEditor(editor)
+			m: createSoapDraftRequestFromEditor(editor, attach)
 		},
 		undefined,
 		signal

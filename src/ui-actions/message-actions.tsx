@@ -578,6 +578,7 @@ export function sendDraft({
 	dispatch: AppDispatch;
 }): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.SEND;
+	const editor = useEditorsStore.getState().editors[id];
 	return {
 		id: actDescriptor.id,
 		icon: 'PaperPlaneOutline',
@@ -586,7 +587,7 @@ export function sendDraft({
 			if (ev) ev.preventDefault();
 			dispatch(
 				sendMsg({
-					editorId: id,
+					editor,
 					msg: message
 				})
 			)

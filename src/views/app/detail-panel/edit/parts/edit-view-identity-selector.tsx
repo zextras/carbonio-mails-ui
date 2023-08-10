@@ -48,9 +48,7 @@ const createIdentitySelectorItemElement = (
 	settings: AccountSettings,
 	fallbackDescription: string
 ): JSX.Element => {
-	const identityDescription = identity
-		? getIdentityDescription(identity, account, settings, t)
-		: fallbackDescription;
+	const identityDescription = identity ? getIdentityDescription(identity, t) : fallbackDescription;
 
 	return (
 		<Container width="100%" orientation="horizontal" height="fit">
@@ -89,9 +87,7 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({
 
 	const [open, setOpen] = useState(false);
 	const noName = useMemo(() => t('label.no_name', '<No Name>'), []);
-	const selectedDescription = selected
-		? getIdentityDescription(selected, account, settings, t)
-		: noName;
+	const selectedDescription = selected ? getIdentityDescription(selected, t) : noName;
 
 	const toggleOpen = useCallback(() => {
 		setOpen((s) => !s);
@@ -103,9 +99,9 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({
 
 	const dropdownEntries = useMemo<Array<DropdownItem>>(
 		() =>
-			identities.map((identity, index) => ({
+			identities.map((identity) => ({
 				id: identity.id,
-				label: getIdentityDescription(identity, account, settings, t) ?? noName,
+				label: getIdentityDescription(identity, t) ?? noName,
 				selected: identity.id === selected?.id,
 				onClick: (): void => {
 					onIdentitySelected(identity);

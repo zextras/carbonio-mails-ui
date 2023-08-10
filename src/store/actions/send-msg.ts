@@ -4,29 +4,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getUserAccount, getUserSettings, soapFetch } from '@zextras/carbonio-shell-ui';
+import { soapFetch } from '@zextras/carbonio-shell-ui';
 
 import { getConv } from './get-conv';
 import { getMsg } from './get-msg';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { getAddressOwnerAccount } from '../../helpers/identities';
-import { collectParticipantsFromMessage } from '../../helpers/messages';
+import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/identities';
+import { getParticipantsFromMessage } from '../../helpers/messages';
 import { SendMsgResult } from '../../types';
-import type {
-	SaveDraftRequest,
-	SaveDraftResponse,
-	SendMsgParameters,
-	MailsStateType
-} from '../../types';
+import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { closeEditor } from '../editor-slice';
 import { generateMailRequest, generateRequest } from '../editor-slice-utils';
-import { getEditor } from '../zustand/editor';
 import { createSoapDraftRequestFromEditor } from '../zustand/editor/editor-transformations';
 
 export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 	'sendMsg',
-	async ({ editorId, msg, prefs }, { rejectWithValue, getState, dispatch }) => {
-		const editor = (getState() as MailsStateType).editors.editors[editorId];
+	async ({ editor, msg, prefs }, { rejectWithValue, getState, dispatch }) => {
 		let toSend = editor && generateRequest(editor, prefs);
 
 		if (msg) {
@@ -35,11 +28,11 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 
 		let from = editor?.from?.address;
 		if (!from && msg) {
-			from = collectParticipantsFromMessage(msg, ParticipantRole.FROM)?.[0].address;
+			from = getParticipantsFromMessage(msg, ParticipantRole.FROM)?.[0].address;
 		}
 
 		// Get the sender account. If not determined then undefined is passed to the soapFetch which will use the default one
-		const account = getAddressOwnerAccount(from, getUserAccount(), getUserSettings());
+		const account = getAddressOwnerAccount(from);
 		let resp;
 		try {
 			resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>(
@@ -73,23 +66,17 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 
 export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParameters>(
 	'sendMsg',
-	async ({ editorId }, { rejectWithValue, getState, dispatch }) => {
-		const editor = getEditor({ id: editorId });
+	async ({ editor }, { rejectWithValue, getState, dispatch }) => {
 		if (!editor) {
 			return rejectWithValue('No editor provided');
 		}
 
-		const msg = createSoapDraftRequestFromEditor(editor);
-		const from = editor.from?.address;
-		if (!from) {
+		if (!editor.identityId) {
 			return rejectWithValue('Missing sender');
 		}
 
-		/*
-		 * Get the sender account. If not determined then undefined
-		 * is passed to the soapFetch which will use the default one
-		 */
-		const account = getAddressOwnerAccount(from, getUserAccount(), getUserSettings());
+		const msg = createSoapDraftRequestFromEditor(editor);
+		const identity = getIdentityDescriptor(editor.identityId);
 
 		let resp: SaveDraftResponse;
 		try {
@@ -99,7 +86,7 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 					_jsns: 'urn:zimbraMail',
 					m: msg
 				},
-				account ?? undefined
+				identity?.ownerAccount ?? undefined
 			)) as SaveDraftResponse;
 		} catch (e) {
 			console.error(e);

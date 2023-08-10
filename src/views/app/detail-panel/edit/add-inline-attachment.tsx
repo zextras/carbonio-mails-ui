@@ -6,6 +6,8 @@
 
 import { forEach, map, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+
+import { findAttachments } from '../../../../helpers/attachments';
 import { uploadInlineAttachments } from '../../../../store/actions/upload-inline-attachments';
 import type {
 	EditorAttachmentFiles,
@@ -53,23 +55,6 @@ export const addInlineAttachments = async ({
 		}
 	});
 };
-
-export function findAttachments(
-	parts: Array<MailMessagePart>,
-	acc: Array<EditorAttachmentFiles>
-): Array<EditorAttachmentFiles> {
-	return reduce(
-		parts,
-		(found, part: any) => {
-			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
-				found.push(part);
-			}
-			if (part.parts) return findAttachments(part.parts, found);
-			return acc;
-		},
-		acc
-	);
-}
 
 export function findInlineAttachments(
 	parts: MailMessagePart[],

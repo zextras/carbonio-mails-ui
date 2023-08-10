@@ -8,6 +8,7 @@ import { AppDispatch } from '../../store/redux';
 import type { Conversation } from '../conversations';
 import { MailsEditor, MailsEditorV2 } from '../editor';
 import { MailMessage } from '../messages';
+import { MailAttachmentParts } from '../soap';
 
 export type MailsStateType = {
 	editors: EditorsStateType;
@@ -70,6 +71,7 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['draftSaveProcessStatus']
 	) => void;
+	updateAttachmentFiles: (editorId, res: SaveDraftResponse) => void;
 	updateSendAllowedStatus: (
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['sendAllowedStatus']
@@ -78,16 +80,15 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['sendProcessStatus']
 	) => void;
-	deleteEditor: (id: MailsEditorV2['id']) => void;
-	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']) => void;
-	updateSender: (id: MailsEditorV2['id'], sender: MailsEditorV2['sender']) => void;
+	updateIdentityId: (id: MailsEditorV2['id'], from: MailsEditorV2['identityId']) => void;
 	updateIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
 	updateRequestReadReceipt: (
 		id: MailsEditorV2['id'],
 		requestReadReceipt: MailsEditorV2['requestReadReceipt']
 	) => void;
-	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments'][0]) => void;
+	addAttachment: (id: MailsEditorV2['id'], attachment: MailAttachmentParts) => void;
 	updateAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
+	addAttachmentFiles: (id: MailsEditorV2['id'], files: MailsEditorV2['attachmentFiles']) => void;
 	addInlineAttachment: (
 		id: MailsEditorV2['id'],
 		inlineAttachment: MailsEditorV2['inlineAttachments'][0]
@@ -103,8 +104,12 @@ export type EditorsStateTypeV2 = {
 	clearAttachments: (id: MailsEditorV2['id']) => void;
 	clearInlineAttachments: (id: MailsEditorV2['id']) => void;
 	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
+	updateUploadProgress: (
+		id: MailsEditorV2['id'],
+		percentCompleted: number,
+		fileUploadingId: string
+	) => void;
 };
-
 export type MsgStateType = {
 	searchedInFolder: Record<string, string>;
 	messages: MsgMap;
@@ -128,7 +133,7 @@ export type SearchesStateType = {
 	searchResults: any;
 	searchResultsIds: Array<string>;
 	conversations?: Record<string, Conversation>;
-	messages?: Record<string, Partial<MailMessage>>;
+	messages?: Record<string, Partial<MailMessage> & Pick<MailMessage, 'id'>>;
 	more: boolean;
 	offset: number;
 	sortBy: 'dateDesc' | 'dateAsc';
@@ -144,7 +149,7 @@ export type MailsFolderMap = Record<string, FolderType>;
 export type MailsEditorMap = Record<string, MailsEditor>;
 export type MailsEditorMapV2 = Record<string, MailsEditorV2>;
 
-export type MsgMap = Record<string, Partial<MailMessage>>;
+export type MsgMap = Record<string, Partial<MailMessage> & Pick<MailMessage, 'id'>>;
 
 export type ConversationsFolderStatus =
 	| 'empty'

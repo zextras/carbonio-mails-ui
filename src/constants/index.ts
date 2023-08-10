@@ -385,3 +385,9 @@ export const EditViewActions = {
 } as const;
 
 export type EditViewActionsType = (typeof EditViewActions)[keyof typeof EditViewActions];
+
+export const PROCESS_STATUS = {
+	RUNNING: 'running',
+	COMPLETED: 'completed',
+	ABORTED: 'aborted'
+} as const;

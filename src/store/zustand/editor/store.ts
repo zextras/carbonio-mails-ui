@@ -7,9 +7,16 @@ import { produce } from 'immer';
 import { remove } from 'lodash';
 import { create } from 'zustand';
 
+import { findAttachmentFiles } from '../../../helpers/attachments';
 import { equalsParticipant } from '../../../helpers/participants';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
-import { EditorsStateTypeV2, MailsEditorV2 } from '../../../types';
+import {
+	EditorAttachmentFiles,
+	EditorsStateTypeV2,
+	MailAttachmentParts,
+	MailsEditorV2,
+	SaveDraftResponse
+} from '../../../types';
 import { retrieveAttachmentsType } from '../../editor-slice-utils';
 import { AppDispatch } from '../../redux';
 
@@ -252,20 +259,11 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateFrom: (id: MailsEditorV2['id'], from: MailsEditorV2['from']): void => {
+	updateIdentityId: (id: MailsEditorV2['id'], from: MailsEditorV2['identityId']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].from = from;
-				}
-			})
-		);
-	},
-	updateSender: (id: MailsEditorV2['id'], sender: MailsEditorV2['sender']): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].sender = sender;
+					state.editors[id].identityId = from;
 				}
 			})
 		);
@@ -309,6 +307,23 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	updateAttachmentFiles: (editorId: MailsEditorV2['id'], res: SaveDraftResponse): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (res?.m?.length) {
+					const message = normalizeMailMessageFromSoap(res.m[0], true);
+					const mp = retrieveAttachmentsType(message, 'attachment');
+					const attachmentFiles = findAttachmentFiles(message.parts, []);
+					const editor = state.editors[editorId];
+					editor.attachments = { mp };
+					editor.attachmentFiles = attachmentFiles;
+					editor.originalId = editor.originalId ?? editor.originalMessage?.id;
+					editor.did = message.id;
+					editor.originalMessage = message;
+				}
+			})
+		);
+	},
 	updateSendAllowedStatus: (id, status): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
@@ -327,11 +342,43 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	addAttachment: (id: MailsEditorV2['id'], attachment: MailsEditorV2['attachments'][0]): void => {
+	addAttachmentFiles: (id: MailsEditorV2['id'], files: Array<EditorAttachmentFiles>): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].attachments = [...state.editors[id].attachments, attachment];
+					state.editors[id].attachmentFiles = [...state.editors[id].attachmentFiles, ...files];
+					console.log('@@attachmentFiles', { attachmentFiles: state.editors[id].attachmentFiles });
+				}
+			})
+		);
+	},
+	updateUploadProgress: (
+		id: MailsEditorV2['id'],
+		percentCompleted: number,
+		fileUploadingId: string
+	): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id] && fileUploadingId) {
+					state.editors[id].attachmentFiles = state.editors[id].attachmentFiles.map((file) => {
+						if (file.id === fileUploadingId) {
+							return {
+								...file,
+								uploadProgress: percentCompleted
+							};
+						}
+						return file;
+					});
+				}
+			})
+		);
+	},
+
+	addAttachment: (id: MailsEditorV2['id'], attachment: MailAttachmentParts): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].attachments = [...state.editors[id].attachments, { mp: [attachment] }];
 				}
 			})
 		);
@@ -424,8 +471,8 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].attachments = [];
-					state.editors[id].inlineAttachments = [];
+					state.editors[id].attachments = { mp: [] };
+					state.editors[id].attachmentFiles = [];
 				}
 			})
 		);
