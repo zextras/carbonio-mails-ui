@@ -8,8 +8,10 @@ import axios from 'axios';
 import { map } from 'lodash';
 
 import { convertToDecimal } from '../../commons/utilities';
+import { MailsEditorV2 } from '../../types';
+import { OnUploadProgressProps } from '../../views/app/detail-panel/edit/edit-utils';
 
-export type UploadAttachmentResponse = Array<{ aid: string }>;
+export type UploadAttachmentResponse = Array<{ aid: string } | null>;
 
 function parse(str: string): Array<Array<{ aid: string }>> {
 	// eslint-disable-next-line no-new-func
@@ -41,9 +43,20 @@ export async function uploadAttachments({
 }
 
 export async function uploadAttachmentsv2({
-	files
+	files,
+	onUploadProgress,
+	editorId,
+	attachmentFiles
 }: {
 	files: FileList;
+	attachmentFiles: MailsEditorV2['attachmentFiles'];
+	editorId: MailsEditorV2['id'];
+	onUploadProgress: ({
+		editorId,
+		attachmentFiles,
+		file,
+		progressEvent
+	}: OnUploadProgressProps) => void;
 }): Promise<UploadAttachmentResponse> {
 	return axios.all(
 		map(files, (file) =>
@@ -56,15 +69,17 @@ export async function uploadAttachmentsv2({
 						'Content-Disposition': `attachment; filename="${convertToDecimal(file.name)}"`
 					},
 					onUploadProgress: (progressEvent) => {
-						if (progressEvent) {
-							// TODO: add progress bar
-							// console.log(`@@ progress ${progressEvent.loaded} ${progressEvent.total}`);
+						if (progressEvent && progressEvent.loaded && progressEvent.total) {
+							onUploadProgress({ file, progressEvent, attachmentFiles, editorId });
 						}
 					}
 				})
 				.then((res) => res.data)
 				.then((txt) => parse(`[${txt}]`))
-				.then((val) => ({ aid: val[2][0].aid }))
+				.then((val) => {
+					if (val[2]) return { aid: val[2][0].aid };
+					return null;
+				})
 		)
 	);
 }

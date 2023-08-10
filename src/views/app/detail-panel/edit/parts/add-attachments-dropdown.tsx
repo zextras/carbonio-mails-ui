@@ -7,6 +7,7 @@ import React, { FC, ReactElement, useCallback, useMemo, useRef } from 'react';
 
 import { Dropdown, Row, Text, Tooltip, Icon, Padding } from '@zextras/carbonio-design-system';
 import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
+import { AxiosProgressEvent } from 'axios';
 import { compact } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
@@ -138,7 +139,10 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({
 		getFilesAction,
 		actionURLTarget
 	]);
-
+	function onUploadProgress(progressEvent: AxiosProgressEvent): void {
+		const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+		console.log(percentCompleted);
+	}
 	return (
 		<SelectorContainer orientation="horizontal" mainAlignment="space-between">
 			<Controller
@@ -153,7 +157,11 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({
 						ref={inputRef}
 						data-testid="file-input"
 						onChange={(): void => {
-							addAttachmentsToEditor({ files: inputRef?.current?.files, editorId });
+							addAttachmentsToEditor({
+								files: inputRef?.current?.files,
+								editorId,
+								onUploadProgress
+							});
 						}}
 						multiple
 					/>

@@ -160,7 +160,7 @@ const sendFromEditor = (
  *
  * @param editor
  */
-const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
+export const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {
 		console.warn('Cannot find the editor', editorId);
@@ -187,7 +187,6 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 				return;
 			}
 
-			// TODO extract multipart for attachments?
 			res.m && useEditorsStore.getState().setDid(editorId, res.m[0].id);
 
 			useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
@@ -199,7 +198,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 				.getState()
 				.updateDraftSaveAllowedStatus(
 					editorId,
-					checkDraftSaveAllowedStatus(getEditor({ id: editorId }) ?? {})
+					computeDraftSaveAllowedStatus(getEditor({ id: editorId }))
 				);
 		})
 		.catch((err) => {
@@ -212,7 +211,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 				.getState()
 				.updateDraftSaveAllowedStatus(
 					editorId,
-					checkDraftSaveAllowedStatus(getEditor({ id: editorId }) ?? {})
+					computeDraftSaveAllowedStatus(getEditor({ id: editorId }))
 				);
 		});
 
@@ -224,7 +223,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id']): void => {
 		.getState()
 		.updateDraftSaveAllowedStatus(
 			editorId,
-			checkDraftSaveAllowedStatus(getEditor({ id: editorId }) ?? {})
+			computeDraftSaveAllowedStatus(getEditor({ id: editorId }))
 		);
 };
 
@@ -663,16 +662,60 @@ export const useAddAttachment = ({
 	attachment
 }: {
 	id: MailsEditorV2['id'];
-	attachment: MailsEditorV2['attachments'][0];
-}): void => useEditorsStore((s) => s.addAttachment(id, attachment));
+	attachment: MailAttachmentParts;
+}): void =>
+	useEditorsStore((s) => {
+		s.addAttachment(id, attachment);
+		debouncedSaveDraftFromEditor(id);
+	});
 export const getAddAttachment = ({
 	id,
 	attachment
 }: {
 	id: MailsEditorV2['id'];
 	attachment: MailAttachmentParts;
-}): void => useEditorsStore.getState().addAttachment(id, attachment);
+}): void => {
+	useEditorsStore.getState().addAttachment(id, attachment);
+	debouncedSaveDraftFromEditor(id);
+};
 
+/**
+ * add attachmentFiles to a specific editor.
+ * @params id
+ * @params attachmentFiles: File[]
+ */
+export const useAddAttachmentFiles = ({
+	id,
+	attachmentFiles
+}: {
+	id: MailsEditorV2['id'];
+	attachmentFiles: MailsEditorV2['attachmentFiles'];
+}): void =>
+	useEditorsStore((s) => {
+		s.addAttachmentFiles(id, attachmentFiles);
+		debouncedSaveDraftFromEditor(id);
+	});
+export const getAddAttachmentFiles = ({
+	id,
+	attachmentFiles
+}: {
+	id: MailsEditorV2['id'];
+	attachmentFiles: MailsEditorV2['attachmentFiles'];
+}): void => {
+	useEditorsStore.getState().addAttachmentFiles(id, attachmentFiles);
+	debouncedSaveDraftFromEditor(id);
+};
+
+export const getUpdateUploadProgress = ({
+	editorId,
+	percentCompleted,
+	fileUploadingId
+}: {
+	editorId: MailsEditorV2['id'];
+	percentCompleted: number;
+	fileUploadingId: string;
+}): void =>
+	useEditorsStore.getState().updateUploadProgress(editorId, percentCompleted, fileUploadingId);
 /**
  * remove attachments from a specific editor.
  * @params id
@@ -767,9 +810,14 @@ export const getRemoveText = ({ id }: { id: MailsEditorV2['id'] }): void =>
  * @params id
  */
 export const useClearAttachments = ({ id }: { id: MailsEditorV2['id'] }): void =>
-	useEditorsStore((s) => s.clearAttachments(id));
-export const getClearAttachments = ({ id }: { id: MailsEditorV2['id'] }): void =>
+	useEditorsStore((s) => {
+		s.clearAttachments(id);
+		debouncedSaveDraftFromEditor(id);
+	});
+export const getClearAttachments = ({ id }: { id: MailsEditorV2['id'] }): void => {
 	useEditorsStore.getState().clearAttachments(id);
+	debouncedSaveDraftFromEditor(id);
+};
 
 /** remove the inlineAttachments of a specific editor.
  * @params id
@@ -812,7 +860,7 @@ export const useUpdateDraft = ({
 	editorId: MailsEditorV2['id'];
 	res: SaveDraftResponse;
 }): void => {
-	useEditorsStore((s) => s.updateDraft({ editorId, res }));
+	useEditorsStore((s) => s.updateAttachmentFiles(editorId, res));
 };
 export const getUpdateDraft = ({
 	editorId,
@@ -821,7 +869,7 @@ export const getUpdateDraft = ({
 	editorId: MailsEditorV2['id'];
 	res: SaveDraftResponse;
 }): void => {
-	useEditorsStore.getState().updateDraft({ editorId, res });
+	useEditorsStore.getState().updateAttachmentFiles(editorId, res);
 };
 
 /**

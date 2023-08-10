@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, useCallback } from 'react';
+import React, { FC, useCallback } from 'react';
 
 import {
 	updateBoardContext,
@@ -37,8 +37,6 @@ const parseAndValidateParams = (
 
 	return { action: resultAction, id: resultId };
 };
-
-const MemoizedEditView = memo(EditView);
 
 const EditViewController: FC = (x) => {
 	const messagesStoreDispatch = useAppDispatch();
@@ -106,6 +104,6 @@ const EditViewController: FC = (x) => {
 		});
 	}
 
-	return <MemoizedEditView editorId={editor.id} closeController={onClose} />;
+	return <EditView editorId={editor.id} closeController={onClose} />;
 };
 export default EditViewController;

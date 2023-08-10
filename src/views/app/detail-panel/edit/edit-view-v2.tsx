@@ -9,6 +9,7 @@ import React, {
 	FC,
 	SyntheticEvent,
 	useCallback,
+	useEffect,
 	useMemo,
 	useRef,
 	useState
@@ -67,7 +68,8 @@ import {
 	useEditorSender,
 	useEditorSubject,
 	useEditorText,
-	useEditorAction
+	useEditorAction,
+	getEditor
 } from '../../../../store/zustand/editor';
 import { BoardContext, EditorRecipients, Participant } from '../../../../types';
 
@@ -161,6 +163,9 @@ export const EditView: FC<EditViewProp> = ({
 		[createSnackbar, editorId]
 	);
 
+	useEffect(() => {
+		console.log('@@editorFromEditView', getEditor({ id: editorId }));
+	}, [editorId]);
 	const onSendError = useCallback(
 		(error: string): void => {
 			createSnackbar({
@@ -396,7 +401,7 @@ export const EditView: FC<EditViewProp> = ({
 			toggleReceiptRequest
 		]
 	);
-
+	const editor = getEditor({ id: editorId });
 	return (
 		<Container
 			mainAlignment="flex-start"

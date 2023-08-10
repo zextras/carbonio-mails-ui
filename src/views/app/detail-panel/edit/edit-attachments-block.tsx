@@ -20,7 +20,6 @@ import { map } from 'lodash';
 import { Attachment } from './attachment';
 import {
 	getClearAttachments,
-	useEditor,
 	useEditorAttachmentFiles,
 	useEditorSubject
 } from '../../../../store/zustand/editor';
@@ -33,7 +32,6 @@ export const EditAttachmentsBlock: FC<{
 	const [expanded, setExpanded] = useState(false);
 	const theme = useTheme();
 	const { subject } = useEditorSubject(editorId);
-	const editor = useEditor({ id: editorId });
 	const attachmentFiles = useEditorAttachmentFiles({ id: editorId });
 	const labelAttachmentsPlural = t('label.attachment_plural', 'Attachments');
 	const iconColors: IconColors = getAttachmentIconColors({
@@ -41,7 +39,10 @@ export const EditAttachmentsBlock: FC<{
 		theme
 	});
 
-	return attachmentFiles.length > 0 ? (
+	const removeAllAttachments = (): void => {
+		getClearAttachments({ id: editorId });
+	};
+	return (
 		<Container crossAlignment="flex-start">
 			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
 				{map(expanded ? attachmentFiles : attachmentFiles.slice(0, 2), (att, index) => (
@@ -59,6 +60,7 @@ export const EditAttachmentsBlock: FC<{
 						part={att.name}
 						iconColors={iconColors}
 						att={att}
+						uploadProgress={att.uploadProgress}
 					/>
 				))}
 			</Container>
@@ -92,16 +94,15 @@ export const EditAttachmentsBlock: FC<{
 							>
 								<Padding right="small">
 									<Text color="primary">
-										{`${t('label.show_all', 'Show all')} ${
-											attachmentFiles.length
-										} ${labelAttachmentsPlural}`}
+										{`${t('label.show_all', 'Show all')} ${attachmentFiles.length
+											} ${labelAttachmentsPlural}`}
 									</Text>
 								</Padding>
 								<Icon icon="ArrowIosDownward" color="primary" />
 							</Row>
 						))}
 				</Padding>
-				<Link size="medium" onClick={(): void => getClearAttachments({ id: editorId })}>
+				<Link size="medium" onClick={removeAllAttachments}>
 					{t('label.remove', {
 						count: attachmentFiles.length,
 						defaultValue: 'Remove',
@@ -110,7 +111,5 @@ export const EditAttachmentsBlock: FC<{
 				</Link>
 			</Row>
 		</Container>
-	) : (
-		<></>
 	);
 };

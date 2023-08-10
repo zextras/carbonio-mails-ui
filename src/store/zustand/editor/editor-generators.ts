@@ -6,7 +6,11 @@
 import { Account, AccountSettings, t } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
 
-import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
+import {
+	computeAttachmentUploadAllowedStatus,
+	computeDraftSaveAllowedStatus,
+	computeSendAllowedStatus
+} from './editor-utils';
 import { getEditor } from './hooks';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
@@ -74,7 +78,7 @@ const generateNewMessageEditor = (
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
-
+	editor.attachmentsUploadStatus = computeAttachmentUploadAllowedStatus(editor);
 	return editor;
 };
 
@@ -129,6 +133,7 @@ const generateReplyMessageEditor = (
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+	editor.attachmentsUploadStatus = computeAttachmentUploadAllowedStatus(editor);
 
 	return editor;
 };

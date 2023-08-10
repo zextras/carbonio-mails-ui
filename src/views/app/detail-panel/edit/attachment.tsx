@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, SyntheticEvent, useCallback, useRef } from 'react';
+import React, { FC, SyntheticEvent, useCallback, useRef, useState } from 'react';
 
 import {
 	Container,
@@ -18,8 +18,10 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 import styled, { SimpleInterpolation } from 'styled-components';
 
+import { UploadingAttachment, UploadingRow } from './uploading-attachment';
 import { getFileExtension } from '../../../../commons/utilities';
 import { getRemoveAttachments } from '../../../../store/zustand/editor';
+import StyledWrapper from '../../../../styled-wrapper';
 import { EditorAttachmentFiles, IconColors, MailsEditorV2 } from '../../../../types';
 
 const getSizeLabel = (size: number): string => {
@@ -36,10 +38,11 @@ const getSizeLabel = (size: number): string => {
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
-	height: 0;
 `;
 
-const AttachmentContainer = styled(Container)`
+const AttachmentContainer = styled(Container).attrs({ isUploading: false })<{
+	isUploading: boolean;
+}>`
 	border-radius: 0.125rem;
 	width: calc(50% - 0.25rem);
 	transition: 0.2s ease-out;
@@ -48,7 +51,10 @@ const AttachmentContainer = styled(Container)`
 		background-color: ${({ theme, background }): SimpleInterpolation =>
 			background && getColor(`${background}.hover`, theme)};
 		& ${AttachmentHoverBarContainer} {
-			display: flex;
+			display: ${(isUploading): string => (isUploading ? 'none' : 'flex')};
+		}
+		& ${UploadingRow} {
+			display: ${(isUploading): string => (isUploading ? 'flex' : 'none')};
 		}
 	}
 	&:focus {
@@ -87,6 +93,7 @@ type AttachmentType = {
 	part: string;
 	iconColors: IconColors;
 	att: EditorAttachmentFiles;
+	uploadProgress: number;
 };
 export const Attachment: FC<AttachmentType> = ({
 	filename,
@@ -95,81 +102,109 @@ export const Attachment: FC<AttachmentType> = ({
 	editorId,
 	part,
 	iconColors,
-	att
+	att,
+	uploadProgress
 }) => {
 	const extension = getFileExtension(att).value;
 	const sizeLabel = getSizeLabel(size);
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
+	const [uploadCompleted, setUploadCompleted] = useState(false);
 
 	const removeAttachment = useCallback(() => {
 		getRemoveAttachments({ id: editorId, action: part });
 	}, [editorId, part]);
+	const isUploading = uploadProgress !== 100;
+	const cancelUpload = useCallback(() => {
+		// TODO: cancel upload
+		console.log('@@@ cancel upload');
+	}, []);
+
+	if (uploadProgress === 100 && !uploadCompleted) {
+		setUploadCompleted(true);
+		setTimeout(() => {
+			setUploadCompleted(false);
+			console.log('@@@ setUploadCompleted', uploadCompleted);
+		}, 3000);
+	}
 
 	return (
-		<AttachmentContainer
-			orientation="horizontal"
-			mainAlignment="flex-start"
-			height="fit"
-			background="gray3"
-			data-testid={`attachment-container-${filename}`}
-		>
-			<Tooltip key={`${editorId}-Preview`} label={t('action.preview', 'Preview')}>
-				<Row
-					padding={{ all: 'small' }}
-					mainAlignment="flex-start"
-					onClick={(ev: SyntheticEvent): void => {
-						ev.preventDefault();
-						if (inputRef2.current) {
-							inputRef2.current.click();
-						}
-					}}
-					takeAvailableSpace
-				>
-					<AttachmentExtension
-						background={find(iconColors, (ic) => ic.extension === extension)?.color ?? ''}
+		<StyledWrapper>
+			<AttachmentContainer
+				orientation="horizontal"
+				mainAlignment="flex-start"
+				height="fit"
+				background="gray3"
+				data-testid={`attachment-container-${filename}`}
+				isUploading={isUploading}
+			>
+				<Tooltip key={`${editorId}-Preview`} label={t('action.preview', 'Preview')}>
+					<Row
+						padding={{ all: 'small' }}
+						mainAlignment="flex-start"
+						onClick={(ev: SyntheticEvent): void => {
+							ev.preventDefault();
+							if (inputRef2.current) {
+								inputRef2.current.click();
+							}
+						}}
+						takeAvailableSpace
 					>
-						{extension}
-					</AttachmentExtension>
-					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
-						<Padding style={{ width: '100%' }} bottom="extrasmall">
-							<Text>
-								{filename ||
-									t('label.attachement_unknown', {
-										mimeType: att?.contentType,
-										defaultValue: 'Unknown <{{mimeType}}>'
-									})}
-							</Text>
-						</Padding>
-						<Text color="gray1" size="small">
-							{sizeLabel}
-						</Text>
-					</Row>
-				</Row>
-			</Tooltip>
-			<Row orientation="horizontal" crossAlignment="center">
-				<AttachmentHoverBarContainer>
-					<Padding right="small">
-						<Tooltip
-							key={`${editorId}-DeletePermanentlyOutline`}
-							label={t('label.delete', 'Delete')}
+						<AttachmentExtension
+							background={find(iconColors, (ic) => ic.extension === extension)?.color ?? ''}
 						>
-							<IconButton
-								size="medium"
-								icon="DeletePermanentlyOutline"
-								onClick={removeAttachment}
-							/>
-						</Tooltip>
-					</Padding>
-				</AttachmentHoverBarContainer>
-			</Row>
-			<AttachmentLink
-				rel="noopener"
-				ref={inputRef2}
-				target="_blank"
-				href={`/service/home/~/?auth=co&id=${editorId}&part=${part}`}
-			/>
-			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={link} />
-		</AttachmentContainer>
+							{extension}
+						</AttachmentExtension>
+						<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
+							<Padding style={{ width: '100%' }} bottom="extrasmall">
+								<Text>
+									{filename ||
+										t('label.attachement_unknown', {
+											mimeType: att?.contentType,
+											defaultValue: 'Unknown <{{mimeType}}>'
+										})}
+								</Text>
+							</Padding>
+							<Text color="gray1" size="small">
+								{sizeLabel}
+							</Text>
+						</Row>
+					</Row>
+				</Tooltip>
+				{isUploading && (
+					<UploadingAttachment uploadProgress={uploadProgress} cancelUpload={cancelUpload} />
+				)}
+				{uploadCompleted && <Text>Upload completed</Text>}
+				<Row orientation="horizontal" crossAlignment="center">
+					{!isUploading && (
+						<AttachmentHoverBarContainer>
+							<Padding right="small">
+								<Tooltip
+									key={`${editorId}-DeletePermanentlyOutline`}
+									label={t('label.delete', 'Delete')}
+								>
+									<IconButton
+										size="large"
+										icon="DeletePermanentlyOutline"
+										onClick={removeAttachment}
+									/>
+								</Tooltip>
+							</Padding>
+						</AttachmentHoverBarContainer>
+					)}
+				</Row>
+				{!isUploading && (
+					<>
+						<AttachmentLink
+							rel="noopener"
+							ref={inputRef2}
+							target="_blank"
+							href={`/service/home/~/?auth=co&id=${editorId}&part=${part}`}
+						/>
+						<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={link} />
+					</>
+				)}
+			</AttachmentContainer>
+		</StyledWrapper>
 	);
 };

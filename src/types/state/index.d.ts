@@ -70,7 +70,7 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['draftSaveProcessStatus']
 	) => void;
-	updateDraft: (res: SaveDraftResponse) => void;
+	updateAttachmentFiles: (editorId, res: SaveDraftResponse) => void;
 	updateSendAllowedStatus: (
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['sendAllowedStatus']
@@ -89,6 +89,7 @@ export type EditorsStateTypeV2 = {
 	) => void;
 	addAttachment: (id: MailsEditorV2['id'], attachment: MailAttachmentParts) => void;
 	updateAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
+	addAttachmentFiles: (id: MailsEditorV2['id'], files: MailsEditorV2['attachmentFiles']) => void;
 	addInlineAttachment: (
 		id: MailsEditorV2['id'],
 		inlineAttachment: MailsEditorV2['inlineAttachments'][0]
@@ -104,8 +105,12 @@ export type EditorsStateTypeV2 = {
 	clearAttachments: (id: MailsEditorV2['id']) => void;
 	clearInlineAttachments: (id: MailsEditorV2['id']) => void;
 	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
+	updateUploadProgress: (
+		id: MailsEditorV2['id'],
+		percentCompleted: number,
+		fileUploadingId: string
+	) => void;
 };
-
 export type MsgStateType = {
 	searchedInFolder: Record<string, string>;
 	messages: MsgMap;

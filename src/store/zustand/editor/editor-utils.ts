@@ -5,7 +5,8 @@
  */
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { EditorOperationAllowedStatus, MailsEditorV2 } from '../../../types';
+import { PROCESS_STATUS } from '../../../constants';
+import type { EditorOperationAllowedStatus, MailsEditorV2 } from '../../../types';
 
 /**
  *
@@ -14,8 +15,45 @@ import { EditorOperationAllowedStatus, MailsEditorV2 } from '../../../types';
 export const computeDraftSaveAllowedStatus = (
 	editor: MailsEditorV2
 ): EditorOperationAllowedStatus => {
-	if (editor.draftSaveProcessStatus?.status === 'running') {
+	if (editor.draftSaveProcessStatus?.status === PROCESS_STATUS.RUNNING) {
 		return { allowed: false, reason: t('label.draft_save_in_progress', 'draft save in progress') }; // TODO check strings with designer
+	}
+
+	return { allowed: true };
+};
+
+/**
+ *
+ * @param editor
+ * @returns boolean
+ */
+export const computeAttachmentUploadAllowedStatus = (
+	editor: MailsEditorV2
+): EditorOperationAllowedStatus => {
+	const attachmentsUploadRunning = editor.attachmentFiles.some(
+		(attachment) => attachment.uploadProcessStatus?.status === PROCESS_STATUS.RUNNING
+	);
+	if (attachmentsUploadRunning) {
+		return {
+			allowed: false,
+			reason: t('label.attachment_upload_in_progress', 'attachment upload in progress')
+		}; // TODO check strings with designer
+	}
+
+	return { allowed: true };
+};
+
+export const computeAttachmentFailedStatus = (
+	editor: MailsEditorV2
+): EditorOperationAllowedStatus => {
+	const attachmentsUploadRunning = editor.attachmentFiles.some(
+		(attachment) => attachment.uploadProcessStatus?.status === PROCESS_STATUS.RUNNING
+	);
+	if (attachmentsUploadRunning) {
+		return {
+			allowed: false,
+			reason: t('label.attachment_upload_in_progress', 'attachment upload in progress')
+		}; // TODO check strings with designer
 	}
 
 	return { allowed: true };
@@ -26,11 +64,11 @@ export const computeDraftSaveAllowedStatus = (
  * @param editor
  */
 export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperationAllowedStatus => {
-	if (editor.draftSaveProcessStatus?.status === 'running') {
+	if (editor.draftSaveProcessStatus?.status === PROCESS_STATUS.RUNNING) {
 		return { allowed: false, reason: t('label.draft_save_in_progress', 'draft save in progress') }; // TODO check strings with designer
 	}
 
-	if (editor.sendProcessStatus?.status === 'running') {
+	if (editor.sendProcessStatus?.status === PROCESS_STATUS.RUNNING) {
 		return {
 			allowed: false,
 			reason: t('label.message_send_in_progress', 'message send in progress') // TODO check strings with designer
@@ -55,13 +93,24 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 		};
 	}
 
-	// TODO check attachments status
-	// if (!editor.) {
-	// 	return {
-	// 		allowed: false,
-	// 		reason: t('label.attachment_error_status', '')
-	// 	};
-	// }
+	if (
+		editor.attachmentsUploadStatus?.allowed === false &&
+		editor.attachmentsUploadStatus?.reason?.includes('running')
+	) {
+		return {
+			allowed: false,
+			reason: t('label.attachment_error_status.uploading', 'attachments are being uploaded') // TODO check strings with designer
+		};
+	}
 
+	if (
+		editor.attachmentsUploadStatus?.allowed === false &&
+		editor.attachmentsUploadStatus?.reason?.includes('fail')
+	) {
+		return {
+			allowed: false,
+			reason: t('label.attachment_error_status.failed', 'one or more attachments failed to upload') // TODO check strings with designer
+		};
+	}
 	return { allowed: true };
 };
