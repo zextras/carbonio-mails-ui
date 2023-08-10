@@ -17,7 +17,10 @@ export const computeDraftSaveAllowedStatus = (
 	editor: MailsEditorV2
 ): EditorOperationAllowedStatus => {
 	if (editor.draftSaveProcessStatus?.status === PROCESS_STATUS.RUNNING) {
-		return { allowed: false, reason: t('label.draft_save_in_progress', 'draft save in progress') }; // TODO check strings with designer
+		return {
+			allowed: false,
+			reason: t('label.draft_save_in_progress', 'Saving draft in progress')
+		};
 	}
 
 	return { allowed: true };
@@ -66,13 +69,16 @@ export const computeAttachmentFailedStatus = (
  */
 export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperationAllowedStatus => {
 	if (editor.draftSaveProcessStatus?.status === PROCESS_STATUS.RUNNING) {
-		return { allowed: false, reason: t('label.draft_save_in_progress', 'draft save in progress') }; // TODO check strings with designer
+		return {
+			allowed: false,
+			reason: t('label.draft_save_in_progress', 'Saving draft in progress         ')
+		};
 	}
 
 	if (editor.sendProcessStatus?.status === PROCESS_STATUS.RUNNING) {
 		return {
 			allowed: false,
-			reason: t('label.message_send_in_progress', 'message send in progress') // TODO check strings with designer
+			reason: t('label.message_send_in_progress', 'Sending message')
 		};
 	}
 
@@ -90,7 +96,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	) {
 		return {
 			allowed: false,
-			reason: t('label.missing_recipients', 'there is no valid recipient') // TODO check strings with designer
+			reason: t('label.missing_recipients', 'At least one recipient is required to send the email')
 		};
 	}
 
@@ -98,7 +104,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	if (some(participants, { error: true })) {
 		return {
 			allowed: false,
-			reason: t('label.missing_recipients', 'there is no valid recipients') // TODO check strings with designer
+			reason: t('label.invalid_recipients', `A recipient's address is spelled incorrectly`)
 		};
 	}
 

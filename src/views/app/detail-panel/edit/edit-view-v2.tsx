@@ -70,7 +70,7 @@ import {
 } from '../../../../store/zustand/editor';
 import { BoardContext, EditorRecipients } from '../../../../types';
 
-const StyledGapContainer = styled(Container) <
+const StyledGapContainer = styled(Container)<
 	ContainerProps & { gap?: keyof DefaultTheme['sizes']['padding'] }
 >`
 	gap: ${({ theme, gap }): SimpleInterpolation => gap && getPadding(gap, theme)};
@@ -482,11 +482,6 @@ export const EditView: FC<EditViewProp> = ({
 							)}
 						</Container>
 					</Container>
-
-					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
-						<Text>Attachments</Text>
-					</Container>
-					<Input label={t('label.subject', 'Subject')} value={subject} onChange={onSubjectChange} />
 
 					<StyledComp.RowContainer background="gray6" padding={{ all: 'small' }}>
 						<StyledComp.ColContainer occupyFull>
