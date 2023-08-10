@@ -14,6 +14,7 @@ import {
 } from '../../../helpers/identities';
 import {
 	InlineAttachments,
+	MailAttachment,
 	MailsEditorV2,
 	Participant,
 	SoapDraftMessageObj,
@@ -179,8 +180,10 @@ const createSenderParticipantByIdentity = (identityId: string): Participant | nu
  *
  * @param editor
  */
-export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDraftMessageObj => {
-	//
+export const createSoapDraftRequestFromEditor = (
+	editor: MailsEditorV2,
+	attach?: MailAttachment
+): SoapDraftMessageObj => {
 	const participants: Array<Participant> = [
 		...editor.recipients.to,
 		...editor.recipients.cc,
@@ -202,14 +205,15 @@ export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDra
 		d: participant.fullName ?? participant.name
 	}));
 
-	return {
+	const result = {
 		autoSendTime: editor.autoSendTime,
 		id: editor.did,
-		attach: editor.attachments ?? { mp: [] }, // FIXME maybe attach should be optional
 		su: { _content: editor.subject ?? '' },
 		rt: editor.replyType,
 		origid: editor.originalId,
 		e: soapParticipants,
 		mp: getMP(editor)
-	};
+	} as SoapDraftMessageObj;
+	attach && (result.attach = attach);
+	return result;
 };

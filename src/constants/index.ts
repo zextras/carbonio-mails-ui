@@ -20,62 +20,62 @@ type AttachmentTypeItemsConstantProps = {
 export const attachmentTypeItemsConstant = (
 	t: TFunction
 ): Array<AttachmentTypeItemsConstantProps> => [
-	{
-		label: t('attachment_type.application', 'Application'),
-		icon: 'Code',
-		searchString: 'attachment:application/*'
-	},
-	{
-		label: t('attachment_type.email', 'Email'),
-		icon: 'Email',
-		searchString: 'attachment:message/rfc822'
-	},
-	{
-		label: t('attachment_type.excel', 'Excel'),
-		icon: 'FileCalc',
-		searchString: 'attachment:application/vnd.ms-excel'
-	},
-	{
-		label: t('attachment_type.html', 'HTML'),
-		icon: 'FileHtml',
-		searchString: 'attachment:text/html'
-	},
-	{
-		label: t('attachment_type.image', 'Image'),
-		icon: 'Image',
-		searchString: 'attachment:image'
-	},
-	{
-		label: t('attachment_type.pdf', 'PDF'),
-		icon: 'FilePdf',
-		searchString: 'attachment:application/pdf'
-	},
-	{
-		label: t('attachment_type.powerpoint', 'Powerpoint'),
-		icon: 'FilePresentation',
-		searchString: 'attachment:application/vnd.ms-powerpoint'
-	},
-	{
-		label: t('attachment_type.text_document', 'Text Document'),
-		icon: 'FileText',
-		searchString: 'attachment:text'
-	},
-	{
-		label: t('attachment_type.video', 'Video'),
-		icon: 'Video',
-		searchString: 'attachment:video'
-	},
-	{
-		label: t('attachment_type.word', 'Word'),
-		icon: 'FileText',
-		searchString: 'attachment:word'
-	},
-	{
-		label: t('attachment_type.zipped_file', 'Zipped File'),
-		icon: 'FileZip',
-		searchString: 'attachment:application/zip OR attachment:application/x-zip-compressed'
-	}
-];
+		{
+			label: t('attachment_type.application', 'Application'),
+			icon: 'Code',
+			searchString: 'attachment:application/*'
+		},
+		{
+			label: t('attachment_type.email', 'Email'),
+			icon: 'Email',
+			searchString: 'attachment:message/rfc822'
+		},
+		{
+			label: t('attachment_type.excel', 'Excel'),
+			icon: 'FileCalc',
+			searchString: 'attachment:application/vnd.ms-excel'
+		},
+		{
+			label: t('attachment_type.html', 'HTML'),
+			icon: 'FileHtml',
+			searchString: 'attachment:text/html'
+		},
+		{
+			label: t('attachment_type.image', 'Image'),
+			icon: 'Image',
+			searchString: 'attachment:image'
+		},
+		{
+			label: t('attachment_type.pdf', 'PDF'),
+			icon: 'FilePdf',
+			searchString: 'attachment:application/pdf'
+		},
+		{
+			label: t('attachment_type.powerpoint', 'Powerpoint'),
+			icon: 'FilePresentation',
+			searchString: 'attachment:application/vnd.ms-powerpoint'
+		},
+		{
+			label: t('attachment_type.text_document', 'Text Document'),
+			icon: 'FileText',
+			searchString: 'attachment:text'
+		},
+		{
+			label: t('attachment_type.video', 'Video'),
+			icon: 'Video',
+			searchString: 'attachment:video'
+		},
+		{
+			label: t('attachment_type.word', 'Word'),
+			icon: 'FileText',
+			searchString: 'attachment:word'
+		},
+		{
+			label: t('attachment_type.zipped_file', 'Zipped File'),
+			icon: 'FileZip',
+			searchString: 'attachment:application/zip OR attachment:application/x-zip-compressed'
+		}
+	];
 
 type EmailStatusItemsConstantProps = {
 	label: string;
@@ -385,3 +385,9 @@ export const EditViewActions = {
 } as const;
 
 export type EditViewActionsType = (typeof EditViewActions)[keyof typeof EditViewActions];
+
+export const PROCESS_STATUS = {
+	RUNNING: 'running',
+	COMPLETED: 'completed',
+	ABORTED: 'aborted'
+} as const;

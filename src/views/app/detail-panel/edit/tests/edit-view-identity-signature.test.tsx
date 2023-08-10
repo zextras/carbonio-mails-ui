@@ -4,25 +4,27 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React from 'react';
+
 import { screen, waitFor } from '@testing-library/react';
 import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
-import React from 'react';
+
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
-import * as useQueryParam from '../../../../../hooks/use-query-param';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
-import EditView from '../edit-view';
 import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils/text/html';
+import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import {
 	getSignatureValue,
 	replaceSignatureOnPlainTextBody
 } from '../../../../../helpers/signatures';
+import * as useQueryParam from '../../../../../hooks/use-query-param';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import { generateStore } from '../../../../../tests/generators/store';
+import EditView from '../edit-view';
 
 /**
  * Test the EditView component for set signature for selected from identity

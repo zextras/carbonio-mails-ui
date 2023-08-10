@@ -4,14 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React from 'react';
+
 import { screen } from '@testing-library/react';
 import { noop } from 'lodash';
-import React from 'react';
+
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateEditorCase } from '../../../../../tests/generators/editors';
 import { generateStore } from '../../../../../tests/generators/store';
-
-import EditAttachmentsBlock from '../edit-attachments-block';
+import { EditAttachmentsBlock } from '../edit-attachments-block';
 
 describe('Attachments visualization', () => {
 	test.each`

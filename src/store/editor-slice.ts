@@ -13,7 +13,6 @@ import { saveDraft } from './actions/save-draft';
 import {
 	emptyEditor,
 	extractBody,
-	findAttachments,
 	generateReplyText,
 	retrieveAttachmentsType,
 	retrieveBCC,
@@ -24,6 +23,7 @@ import {
 	retrieveCCForEditNew
 } from './editor-slice-utils';
 import { EditViewActions } from '../constants';
+import { findAttachments } from '../helpers/attachments';
 import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import type {

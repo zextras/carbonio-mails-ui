@@ -7,10 +7,9 @@ import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
 import { isConversation } from './messages';
-import { getFolder, useFolderStore } from '../carbonio-ui-commons/store/zustand/folder';
+import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
 import type { Folder, Folders } from '../carbonio-ui-commons/types/folder';
-import { Conversation } from '../types';
-import type { MailMessage } from '../types';
+import type { MailMessage, Conversation } from '../types';
 
 /*
  * Describe the folder id syntax
@@ -182,8 +181,9 @@ export const isTrashed = ({
 	if (!folder && !folderId) {
 		return false;
 	}
+	const folderIdAbsPath = useFolderStore.getState()?.folders?.[folderId ?? '']?.absFolderPath;
 
-	const path = folder ? folder.absFolderPath : getFolder(folderId ?? '')?.absFolderPath;
+	const path = folder ? folder.absFolderPath : folderIdAbsPath;
 	if (!path) {
 		return false;
 	}
@@ -206,7 +206,8 @@ export const isInboxSubfolder = ({
 		return false;
 	}
 
-	const path = folder ? folder.absFolderPath : getFolder(folderId ?? '')?.absFolderPath;
+	const folderIdAbsPath = useFolderStore.getState()?.folders?.[folderId ?? '']?.absFolderPath;
+	const path = folder ? folder.absFolderPath : folderIdAbsPath;
 	if (!path) {
 		return false;
 	}
@@ -246,7 +247,7 @@ export const getParentFolderId = (item: MailMessage | Conversation): string | nu
 	 */
 
 	// First attempt: search for a shared account folder among the stored folders.
-	if (getFolder(parentId)) {
+	if (useFolderStore.getState()?.folders?.[parentId]) {
 		return parentId;
 	}
 

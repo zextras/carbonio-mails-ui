@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React from 'react';
+
 import { faker } from '@faker-js/faker';
 import {
 	act,
@@ -16,7 +18,7 @@ import {
 import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { rest } from 'msw';
-import React from 'react';
+
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
@@ -36,7 +38,7 @@ import type {
 	SoapMailMessage,
 	SoapMailMessagePart
 } from '../../../../../types';
-import EditView from '../edit-view';
+import { EditView } from '../edit-view-v2';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -120,10 +122,7 @@ describe('Edit view', () => {
 			const body = faker.lorem.sentence(10);
 
 			const props = {
-				mailId: 'new-1',
-				folderId: FOLDERS.INBOX,
-				setHeader: noop,
-				toggleAppBoard: false
+				editorId: 'new-1'
 			};
 
 			// Create and wait for the component to be rendered
@@ -261,7 +260,7 @@ describe('Edit view', () => {
 			});
 
 			const props = {
-				mailId: 'new-1',
+				editorId: 'new-1',
 				folderId: FOLDERS.INBOX,
 				setHeader: noop,
 				toggleAppBoard: false
@@ -377,7 +376,7 @@ describe('Edit view', () => {
 			});
 
 			const props = {
-				mailId: 'new-1',
+				editorId: 'new-1',
 				folderId: FOLDERS.INBOX,
 				setHeader: noop,
 				toggleAppBoard: false
@@ -412,7 +411,7 @@ describe('Edit view', () => {
 			});
 
 			const props = {
-				mailId: 'new-1',
+				editorId: 'new-1',
 				folderId: FOLDERS.INBOX,
 				setHeader: noop,
 				toggleAppBoard: false
@@ -473,7 +472,7 @@ describe('Edit view', () => {
 			});
 
 			const props = {
-				mailId: 'new-1',
+				editorId: 'new-1',
 				folderId: FOLDERS.INBOX,
 				setHeader: noop,
 				toggleAppBoard: false
@@ -545,7 +544,7 @@ describe('Edit view', () => {
 			});
 
 			const props = {
-				mailId: 'new-1',
+				editorId: 'new-1',
 				folderId: FOLDERS.INBOX,
 				setHeader: noop,
 				toggleAppBoard: false
@@ -612,7 +611,7 @@ describe('Edit view', () => {
 			});
 
 			const props = {
-				mailId: 'new-1',
+				editorId: 'new-1',
 				folderId: FOLDERS.INBOX,
 				setHeader: noop,
 				toggleAppBoard: false
@@ -655,7 +654,7 @@ describe('Edit view', () => {
 			});
 
 			const props = {
-				mailId: 'new-1',
+				editorId: 'new-1',
 				folderId: FOLDERS.INBOX,
 				setHeader: noop,
 				toggleAppBoard: false
@@ -734,7 +733,7 @@ describe('Edit view', () => {
 			});
 
 			const props = {
-				mailId: 'new-1',
+				editorId: 'new-1',
 				folderId: FOLDERS.INBOX,
 				setHeader: noop,
 				toggleAppBoard: false
@@ -770,7 +769,7 @@ describe('Edit view', () => {
 				});
 
 				const props = {
-					mailId: 'new-1',
+					editorId: 'new-1',
 					folderId: FOLDERS.INBOX,
 					setHeader: noop,
 					toggleAppBoard: false
@@ -821,11 +820,12 @@ describe('Edit view', () => {
 					// Mock the board context
 					mockedUseBoard.mockImplementation(() => ({
 						url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.REPLY}`,
-						context: { mailId: msg.id, folderId: FOLDERS.INBOX },
+						context: { editorId: msg.id, folderId: FOLDERS.INBOX },
 						title: ''
 					}));
 
 					const props = {
+						editorId: 'new-1',
 						setHeader: noop
 					};
 
@@ -889,11 +889,12 @@ describe('Edit view', () => {
 					// Mock the board context
 					mockedUseBoard.mockImplementation(() => ({
 						url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.REPLY}`,
-						context: { mailId: msg.id, folderId: FOLDERS.INBOX },
+						context: { editorId: msg.id, folderId: FOLDERS.INBOX },
 						title: ''
 					}));
 
 					const props = {
+						editorId: 'new-1',
 						setHeader: noop
 					};
 
@@ -953,11 +954,12 @@ describe('Edit view', () => {
 					// Mock the board context
 					mockedUseBoard.mockImplementation(() => ({
 						url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.REPLY}`,
-						context: { mailId: msg.id, folderId },
+						context: { editorId: msg.id, folderId },
 						title: ''
 					}));
 
 					const props = {
+						editorId: 'new-1',
 						setHeader: noop
 					};
 
