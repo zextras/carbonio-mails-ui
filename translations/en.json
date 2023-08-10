@@ -243,9 +243,14 @@
         "as_text": "As Text",
         "attachement_unknown": "Unknown <{{mimeType}}>",
         "attachment": "Attachment",
+        "attachment_error_status": {
+            "failed": "",
+            "uploading": ""
+        },
         "attachment_plural": "Attachments",
         "attachment_status": "Status of e-mail item",
         "attachment_type": "Attachment type",
+        "attachment_upload_in_progress": "attachment upload in progress",
         "attachment_with_count": "{{count}} Attachment",
         "attachment_with_count_plural": "{{count}} Attachments",
         "attachments_disclaimer": "You are viewing an attached message. The authenticity of the attached messages can not be verified.",
