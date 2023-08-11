@@ -122,7 +122,7 @@ export async function addAttachmentsToEditor({
 	}
 	const { zimbraFileUploadMaxSize } = getUserSettings().attrs;
 	forEach(files, (file) => {
-		if (file.size > zimbraFileUploadMaxSize) {
+		if (file.size > Number(zimbraFileUploadMaxSize)) {
 			onFileTooLarge && onFileTooLarge();
 		}
 	});

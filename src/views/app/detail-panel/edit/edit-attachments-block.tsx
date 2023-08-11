@@ -94,8 +94,9 @@ export const EditAttachmentsBlock: FC<{
 							>
 								<Padding right="small">
 									<Text color="primary">
-										{`${t('label.show_all', 'Show all')} ${attachmentFiles.length
-											} ${labelAttachmentsPlural}`}
+										{`${t('label.show_all', 'Show all')} ${
+											attachmentFiles.length
+										} ${labelAttachmentsPlural}`}
 									</Text>
 								</Padding>
 								<Icon icon="ArrowIosDownward" color="primary" />

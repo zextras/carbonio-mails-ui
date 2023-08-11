@@ -66,7 +66,8 @@ import {
 	useEditorSubject,
 	useEditorText,
 	useEditorAction,
-	getEditor
+	getEditor,
+	useEditorAttachmentFiles
 } from '../../../../store/zustand/editor';
 import { BoardContext, EditorRecipients } from '../../../../types';
 
@@ -108,6 +109,11 @@ export const EditView: FC<EditViewProp> = ({
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
+	const attachmentFiles = useEditorAttachmentFiles({ id: editorId });
+
+	const edito = getEditor({ id: editorId });
+
+	console.log('=========nnn>>', { edito });
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(() => {
@@ -482,12 +488,13 @@ export const EditView: FC<EditViewProp> = ({
 							)}
 						</Container>
 					</Container>
-
-					<StyledComp.RowContainer background="gray6" padding={{ all: 'small' }}>
-						<StyledComp.ColContainer occupyFull>
-							<EditAttachmentsBlock editorId={editorId} />
-						</StyledComp.ColContainer>
-					</StyledComp.RowContainer>
+					{attachmentFiles.length > 0 && (
+						<StyledComp.RowContainer background="gray6" padding={{ all: 'small' }}>
+							<StyledComp.ColContainer occupyFull>
+								<EditAttachmentsBlock editorId={editorId} />
+							</StyledComp.ColContainer>
+						</StyledComp.RowContainer>
+					)}
 					<TextEditorContainer
 						onDragOver={onDragOverEvent}
 						onFilesSelected={noop}
