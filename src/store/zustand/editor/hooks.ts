@@ -127,7 +127,7 @@ const sendFromEditor = (
 	cancelableTimer.promise
 		.then(() => {
 			editor
-				.messagesStoreDispatch(sendMsgFromEditor({ editorId }))
+				.messagesStoreDispatch(sendMsgFromEditor({ editor }))
 				.then(() => {
 					useEditorsStore.getState().updateSendProcessStatus(editorId, {
 						status: 'completed'

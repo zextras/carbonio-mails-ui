@@ -6,6 +6,7 @@
 import type { TextProps } from '@zextras/carbonio-design-system';
 
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import { EditorPrefillData } from '../editor';
 
 export type ModalProps = {
 	folder: Folder;
@@ -31,6 +32,8 @@ export type AppContext = {
 
 export type EditViewBoardContext = {
 	editorId?: string;
+	compositionData?: EditorPrefillData;
+	onConfirm?: () => void;
 };
 
 export type BoardContext = {

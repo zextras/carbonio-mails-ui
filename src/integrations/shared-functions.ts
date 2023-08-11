@@ -5,8 +5,10 @@
  */
 import { addBoard } from '@zextras/carbonio-shell-ui';
 import { isNil, omit, omitBy } from 'lodash';
-import type { Participant } from '../types';
+
 import { EditViewActions, MAILS_ROUTE } from '../constants';
+import { EditorPrefillData } from '../types';
+import type { Participant } from '../types';
 
 export const mailToSharedFunction: (contacts: Array<Partial<Participant>>) => void = (contacts) => {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -14,14 +16,16 @@ export const mailToSharedFunction: (contacts: Array<Partial<Participant>>) => vo
 	addBoard({
 		url: `${MAILS_ROUTE}/new?action=mailTo`,
 		context: {
-			contacts
+			compositionData: {
+				recipients: contacts
+			}
 		}
 	});
 };
 
 export const openComposerSharedFunction: (
 	onConfirm: any,
-	compositionData: any,
+	compositionData: EditorPrefillData,
 	...rest: any[]
 ) => void = (onConfirm, compositionData, ...rest) => {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -36,15 +40,9 @@ export const openComposerSharedFunction: (
 	});
 };
 
-type prefilledEditor = {
-	aid?: Array<string>;
-	subject?: string;
-	urgent?: boolean;
-};
-
 // function used to open a new mail editor board with prefilled fields set by other modules
 export const openPrefilledComposerSharedFunction: (
-	compositionData?: prefilledEditor,
+	compositionData?: EditorPrefillData,
 	...rest: never[]
 ) => void = (compositionData, ...rest) => {
 	// removing values from item which needs normalization

@@ -26,6 +26,7 @@ import { EditViewActions, MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } fro
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg } from '../store/actions/send-msg';
 import { AppDispatch, StoreProvider } from '../store/redux';
+import { useEditorsStore } from '../store/zustand/editor';
 import type {
 	BoardContext,
 	MailMessage,
@@ -568,6 +569,7 @@ export function editDraft({
 	};
 }
 
+// FIXME !!!! I'm badly broken !!!!
 export function sendDraft({
 	id,
 	message,
@@ -578,7 +580,7 @@ export function sendDraft({
 	dispatch: AppDispatch;
 }): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.SEND;
-	const editor = useEditorsStore.getState().editors[id];
+	const editor = useEditorsStore.getState().editors[id]; // No!! wrong id FIXME
 	return {
 		id: actDescriptor.id,
 		icon: 'PaperPlaneOutline',

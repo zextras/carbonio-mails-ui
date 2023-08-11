@@ -95,6 +95,20 @@ export type SendProcessStatus = {
 	cancel?: () => void;
 };
 
+/**
+ * The data that are allowed to be provided from outside the editor
+ * to prefill it (e.g. from shared functions)
+ * We keep as separate type (instead of a Partial<MailsEditorV2>)
+ * to de-couple the inner logic and to hide internal implementation
+ * details (e.g. editor status flags, stored callbacks, etc...)
+ */
+export type EditorPrefillData = {
+	aid?: Array<string>;
+	subject?: string;
+	urgent?: boolean;
+	recipients?: Partial<Participant>;
+};
+
 export type MailsEditorV2 = {
 	// the id of the editor (used to identify the editor in the store)
 	id: string;

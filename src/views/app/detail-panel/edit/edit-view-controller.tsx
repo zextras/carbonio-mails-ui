@@ -60,6 +60,9 @@ const EditViewController: FC = (x) => {
 		messagesStoreDispatch(getMsg({ msgId: id }));
 	}
 
+	// TODO do fancy stuff with it ;)
+	const compositionData = board.context?.compositionData;
+
 	/*
 	 * If the current component is running inside a board
 	 * its context is examined to get an existing editor id

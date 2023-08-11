@@ -18,9 +18,7 @@ import React, {
 import {
 	Button,
 	Container,
-	ContainerProps,
 	Dropdown,
-	getPadding,
 	IconButton,
 	Tooltip,
 	ButtonProps,
@@ -30,9 +28,8 @@ import {
 	Text,
 	Padding
 } from '@zextras/carbonio-design-system';
-import { addBoard, t, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { addBoard, t } from '@zextras/carbonio-shell-ui';
 import { filter, map, noop } from 'lodash';
-import styled, { DefaultTheme, SimpleInterpolation } from 'styled-components';
 
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
@@ -65,17 +62,10 @@ import {
 	useEditorSend,
 	useEditorSubject,
 	useEditorText,
-	useEditorAction,
 	getEditor,
 	useEditorAttachmentFiles
 } from '../../../../store/zustand/editor';
 import { BoardContext, EditorRecipients } from '../../../../types';
-
-const StyledGapContainer = styled(Container)<
-	ContainerProps & { gap?: keyof DefaultTheme['sizes']['padding'] }
->`
-	gap: ${({ theme, gap }): SimpleInterpolation => gap && getPadding(gap, theme)};
-`;
 
 export type EditViewProp = {
 	editorId: string;
@@ -90,10 +80,6 @@ export const EditView: FC<EditViewProp> = ({
 	hideController,
 	showController
 }) => {
-	const account = useUserAccount();
-	const settings = useUserSettings();
-
-	const { action, setAction } = useEditorAction(editorId);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
