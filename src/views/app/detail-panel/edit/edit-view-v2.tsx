@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /*
  * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
@@ -9,7 +10,6 @@ import React, {
 	FC,
 	SyntheticEvent,
 	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
 	useState
@@ -30,7 +30,9 @@ import {
 } from '@zextras/carbonio-design-system';
 import { addBoard, t } from '@zextras/carbonio-shell-ui';
 import { filter, map, noop } from 'lodash';
+import type { TinyMCE } from 'tinymce/tinymce';
 
+import { addInlineAttachmentsV2 } from './add-inline-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
@@ -62,7 +64,6 @@ import {
 	useEditorSend,
 	useEditorSubject,
 	useEditorText,
-	getEditor,
 	useEditorAttachmentFiles
 } from '../../../../store/zustand/editor';
 import { BoardContext, EditorRecipients } from '../../../../types';
@@ -72,6 +73,11 @@ export type EditViewProp = {
 	closeController?: () => void;
 	hideController?: () => void;
 	showController?: () => void;
+};
+
+type FileSelectProps = {
+	editor: TinyMCE;
+	files: File[];
 };
 
 export const EditView: FC<EditViewProp> = ({
@@ -96,10 +102,6 @@ export const EditView: FC<EditViewProp> = ({
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const attachmentFiles = useEditorAttachmentFiles({ id: editorId });
-
-	const edito = getEditor({ id: editorId });
-
-	console.log('=========nnn>>', { edito });
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(() => {
@@ -137,9 +139,6 @@ export const EditView: FC<EditViewProp> = ({
 		[createSnackbar, editorId]
 	);
 
-	useEffect(() => {
-		console.log('@@editorFromEditView', getEditor({ id: editorId }));
-	}, [editorId]);
 	const onSendError = useCallback(
 		(error: string): void => {
 			createSnackbar({
@@ -320,6 +319,7 @@ export const EditView: FC<EditViewProp> = ({
 		);
 	}, [recipients.to]);
 
+	const flexStart = 'flex-start';
 	const composerOptions = useMemo(
 		() => [
 			{
@@ -359,11 +359,18 @@ export const EditView: FC<EditViewProp> = ({
 		[isUrgent, requestReadReceipt]
 	);
 
-	const editor = getEditor({ id: editorId });
+	const onFilesSelected = ({ editor: tinymce, files }: FileSelectProps): void => {
+		addInlineAttachmentsV2({
+			files,
+			tinymce,
+			editorId
+		});
+	};
+
 	return (
 		<Container
-			mainAlignment="flex-start"
-			crossAlignment={'flex-start'}
+			mainAlignment={flexStart}
+			crossAlignment={flexStart}
 			padding={{ all: 'large' }}
 			background={'gray5'}
 			onDragOver={onDragOverEvent}
@@ -375,7 +382,7 @@ export const EditView: FC<EditViewProp> = ({
 					onDragLeaveEvent={onDragLeaveEvent}
 				/>
 			)}
-			<GapContainer mainAlignment={'flex-start'} crossAlignment={'flex-start'} gap={'large'}>
+			<GapContainer mainAlignment={flexStart} crossAlignment={flexStart} gap={'large'}>
 				{/* Header start */}
 
 				<GapRow
@@ -428,16 +435,16 @@ export const EditView: FC<EditViewProp> = ({
 				{isSendingToYourself && <WarningBanner />}
 
 				<GapContainer
-					mainAlignment={'flex-start'}
-					crossAlignment={'flex-start'}
+					mainAlignment={flexStart}
+					crossAlignment={flexStart}
 					background={'white'}
 					padding={{ all: 'small' }}
 					gap={'small'}
 				>
-					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
+					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
 						<RecipientsRows recipients={recipients} onRecipientsChange={onRecipientsChanged} />
 					</Container>
-					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
+					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
 						<Container
 							orientation="horizontal"
 							background="gray5"
@@ -483,7 +490,7 @@ export const EditView: FC<EditViewProp> = ({
 					)}
 					<TextEditorContainer
 						onDragOver={onDragOverEvent}
-						onFilesSelected={noop}
+						onFilesSelected={onFilesSelected}
 						onContentChanged={onBodyChange}
 						richTextMode={isRichText}
 						content={text}
