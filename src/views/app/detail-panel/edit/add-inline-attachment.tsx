@@ -10,10 +10,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { findAttachments } from '../../../../helpers/attachments';
 import { uploadInlineAttachments } from '../../../../store/actions/upload-inline-attachments';
-import { getAddInlineAttachment, getEditor } from '../../../../store/zustand/editor/hooks';
+import { getAddInlineAttachment } from '../../../../store/zustand/editor/hooks';
 import type {
 	EditorAttachmentFiles,
-	InlineAttachments,
 	MailMessage,
 	MailMessagePart,
 	MailsEditor
@@ -22,37 +21,28 @@ import type {
 export const _CI_REGEX = /^<(.*)>$/;
 export const _CI_SRC_REGEX = /^cid:(.*)$/;
 
-type AddInlineAttachmentsV2Props = {
+type AddInlineAttachmentsProps = {
 	files: File[];
 	tinymce: TinyMCE;
 	editorId: MailMessage['id'];
 };
 
-export const addInlineAttachmentsV2 = async ({
+export const addInlineAttachments = async ({
 	files,
 	tinymce,
 	editorId
-}: AddInlineAttachmentsV2Props): Promise<void> => {
+}: AddInlineAttachmentsProps): Promise<void> => {
 	const aids = await uploadInlineAttachments({ files });
-	const editor = getEditor({ id: editorId });
-
-	const attachAids: InlineAttachments = editor?.inlineAttachments
-		? [...editor.inlineAttachments]
-		: [];
-
 	const imageTextArray: Array<string> = [];
-
 	forEach(aids, (aid, index) => {
 		const ci = uuidv4();
-		attachAids.push({ ci: `${ci}@zimbra`, attach: aid });
+		const inlineAttachment = { ci: `${ci}@zimbra`, attach: aid };
+		getAddInlineAttachment({ id: editorId, inlineAttachment });
 		imageTextArray.push(
 			`&nbsp;<img pnsrc="cid:${ci}@zimbra" data-mce-src="cid:${ci}@zimbra" src="cid:${ci}@zimbra" />`
 		);
 		if (Number(index) === aids.length - 1) {
 			tinymce?.activeEditor?.insertContent(imageTextArray?.join('<br />'));
-			attachAids.forEach((attach) => {
-				getAddInlineAttachment({ id: editorId, inlineAttachment: attach });
-			});
 		}
 	});
 };

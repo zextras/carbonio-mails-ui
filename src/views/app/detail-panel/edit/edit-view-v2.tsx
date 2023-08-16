@@ -32,7 +32,7 @@ import { addBoard, t } from '@zextras/carbonio-shell-ui';
 import { filter, map, noop } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
-import { addInlineAttachmentsV2 } from './add-inline-attachment';
+import { addInlineAttachments } from './add-inline-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
@@ -360,7 +360,7 @@ export const EditView: FC<EditViewProp> = ({
 	);
 
 	const onFilesSelected = ({ editor: tinymce, files }: FileSelectProps): void => {
-		addInlineAttachmentsV2({
+		addInlineAttachments({
 			files,
 			tinymce,
 			editorId

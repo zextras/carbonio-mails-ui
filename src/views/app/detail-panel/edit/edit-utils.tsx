@@ -79,8 +79,6 @@ async function addAttachments({
 		editor,
 		attach: editor.attachments
 	});
-	firstSaveDraftResponse.isFulfilled &&
-		console.log('@@firstSaveDraftResponseFulfilled', { firstSaveDraftResponse });
 	const upload = await uploadAttachmentsv2({ files, onUploadProgress, editorId, attachmentFiles });
 	if (!upload[0]) {
 		return null;
