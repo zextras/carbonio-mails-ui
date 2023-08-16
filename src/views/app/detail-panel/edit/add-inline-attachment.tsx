@@ -22,46 +22,10 @@ import type {
 export const _CI_REGEX = /^<(.*)>$/;
 export const _CI_SRC_REGEX = /^cid:(.*)$/;
 
-type InputProps = {
-	updateEditorCb: (data: Partial<MailsEditor>) => void;
-	files: File[];
-	tinymce: any;
-	setIsReady: (arg: boolean) => void;
-	editor: MailsEditor;
-};
-
 type AddInlineAttachmentsV2Props = {
 	files: File[];
 	tinymce: TinyMCE;
 	editorId: MailMessage['id'];
-};
-
-export const addInlineAttachments = async ({
-	files,
-	tinymce,
-	updateEditorCb,
-	setIsReady,
-	editor
-}: InputProps): Promise<any> => {
-	const aids = await uploadInlineAttachments({ files });
-
-	const attachAids: InlineAttachments = editor?.inline ? [...editor.inline] : [];
-	const imageTextArray: Array<string> = [];
-
-	forEach(aids, (aid, index) => {
-		const ci = uuidv4();
-		attachAids.push({ ci: `${ci}@zimbra`, attach: aid });
-		imageTextArray.push(
-			`&nbsp;<img pnsrc="cid:${ci}@zimbra" data-mce-src="cid:${ci}@zimbra" src="cid:${ci}@zimbra" />`
-		);
-		if (Number(index) === aids.length - 1) {
-			tinymce?.activeEditor?.insertContent(imageTextArray?.join('<br />'));
-			updateEditorCb({
-				inline: attachAids
-			});
-			setTimeout(() => setIsReady(true), 5000);
-		}
-	});
 };
 
 export const addInlineAttachmentsV2 = async ({
