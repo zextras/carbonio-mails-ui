@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { findAttachments } from '../../../../helpers/attachments';
 import { uploadInlineAttachments } from '../../../../store/actions/upload-inline-attachments';
-import { getEditor } from '../../../../store/zustand/editor/hooks';
+import { getAddInlineAttachment, getEditor } from '../../../../store/zustand/editor/hooks';
 import type {
 	EditorAttachmentFiles,
 	InlineAttachments,
@@ -68,11 +68,13 @@ export const addInlineAttachmentsV2 = async ({
 	files,
 	tinymce,
 	editorId
-}: AddInlineAttachmentsV2Props): Promise<any> => {
+}: AddInlineAttachmentsV2Props): Promise<void> => {
 	const aids = await uploadInlineAttachments({ files });
 	const editor = getEditor({ id: editorId });
 
-	const attachAids: InlineAttachments = editor?.inlineAttachments ?? [];
+	const attachAids: InlineAttachments = editor?.inlineAttachments
+		? [...editor.inlineAttachments]
+		: [];
 
 	const imageTextArray: Array<string> = [];
 
@@ -84,6 +86,9 @@ export const addInlineAttachmentsV2 = async ({
 		);
 		if (Number(index) === aids.length - 1) {
 			tinymce?.activeEditor?.insertContent(imageTextArray?.join('<br />'));
+			attachAids.forEach((attach) => {
+				getAddInlineAttachment({ id: editorId, inlineAttachment: attach });
+			});
 		}
 	});
 };
