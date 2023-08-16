@@ -97,10 +97,6 @@ export const EditView: FC<EditViewProp> = ({
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const attachmentFiles = useEditorAttachmentFiles({ id: editorId });
 
-	const edito = getEditor({ id: editorId });
-
-	console.log('=========nnn>>', { edito });
-
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(() => {
 		closeController && closeController();
