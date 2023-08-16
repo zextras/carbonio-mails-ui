@@ -8,16 +8,16 @@ import React, { FC, SyntheticEvent, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import type { TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
 import { plainTextToHTML } from '../../../../../commons/mail-message-renderer';
-import type { MailsEditor } from '../../../../../types';
 
 export type TextEditorContent = { plainText: string; richText: string };
 
 export type TextEditorContainerProps = {
 	onDragOver: (event: SyntheticEvent) => void;
-	onFilesSelected: (files: File[]) => void;
+	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: File[] }) => void;
 	onContentChanged: (content: TextEditorContent) => void;
 	richTextMode: boolean;
 	content: TextEditorContent;
@@ -30,11 +30,6 @@ export type TextEditorContainerProps = {
 	// updateSubjectField: (mod: Partial<MailsEditor>) => void;
 	// saveDraftCb: (data: MailsEditor, signal?: AbortSignal) => SaveDraftResponse;
 	// textValue: [string, string];
-};
-
-type FileSelectProps = {
-	editor: MailsEditor;
-	files: File[];
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({
