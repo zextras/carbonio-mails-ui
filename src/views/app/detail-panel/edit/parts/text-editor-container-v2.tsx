@@ -118,15 +118,6 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									value={content.richText}
 									disabled={disabled}
 									onFileSelect={onFilesSelected}
-									// onFileSelect={({ editor: tinymce, files }: FileSelectProps): void => {
-									// 	addInlineAttachments({
-									// 		files,
-									// 		tinymce,
-									// 		updateEditorCb,
-									// 		setIsReady,
-									// 		editor
-									// 	});
-									// }}
 									onEditorChange={(ev: [string, string]): void => {
 										onContentChanged({ plainText: ev[0], richText: ev[1] });
 									}}
