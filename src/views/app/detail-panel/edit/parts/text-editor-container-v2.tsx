@@ -68,33 +68,6 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	// 	setInputValue(textValue);
 	// }, [textValue]);
 	//
-	// useEffect(() => {
-	// 	const controller = new AbortController();
-	// 	const { signal } = controller;
-	// 	if (isReady) {
-	// 		saveDraftCb(
-	// 			{
-	// 				...editor,
-	// 				text: inputValue
-	// 			},
-	// 			signal
-	// 		).then((res: SaveDraftResponse) => {
-	// 			if (res.payload.resp.m) {
-	// 				setIsReady(false);
-	// 				getConvertedImageSources({
-	// 					message: normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0]),
-	// 					updateEditorCb,
-	// 					setValue,
-	// 					setInputValue,
-	// 					inputValue
-	// 				});
-	// 			}
-	// 		});
-	// 	}
-	// 	return () => {
-	// 		controller.abort();
-	// 	};
-	// }, [editor, inputValue, isReady, saveDraftCb, setValue, updateEditorCb]);
 
 	return (
 		<>

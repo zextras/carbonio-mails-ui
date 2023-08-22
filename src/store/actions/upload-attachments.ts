@@ -8,8 +8,8 @@ import axios from 'axios';
 import { map } from 'lodash';
 
 import { convertToDecimal } from '../../commons/utilities';
+import { OnUploadProgressProps } from '../../helpers/attachments';
 import { MailsEditorV2 } from '../../types';
-import { OnUploadProgressProps } from '../../views/app/detail-panel/edit/edit-utils';
 
 export type UploadAttachmentResponse = Array<{ aid: string } | null>;
 

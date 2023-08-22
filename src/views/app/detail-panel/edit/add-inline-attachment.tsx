@@ -9,13 +9,24 @@ import type { TinyMCE } from 'tinymce/tinymce';
 import { v4 as uuidv4 } from 'uuid';
 
 import { findAttachments } from '../../../../helpers/attachments';
+import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
+import { saveDraftV3 } from '../../../../store/actions/save-draft';
 import { uploadInlineAttachments } from '../../../../store/actions/upload-inline-attachments';
-import { getAddInlineAttachment } from '../../../../store/zustand/editor/hooks';
+import { useEditorsStore } from '../../../../store/zustand/editor';
+import {
+	getAddInlineAttachment,
+	getClearInlineAttachments,
+	getEditor,
+	getEditorText,
+	getUpdateDraft,
+	getUpdateEditorText
+} from '../../../../store/zustand/editor/hooks';
 import type {
 	EditorAttachmentFiles,
 	MailMessage,
 	MailMessagePart,
-	MailsEditor
+	MailsEditor,
+	MailsEditorV2
 } from '../../../../types';
 
 export const _CI_REGEX = /^<(.*)>$/;
@@ -25,26 +36,6 @@ type AddInlineAttachmentsProps = {
 	files: File[];
 	tinymce: TinyMCE;
 	editorId: MailMessage['id'];
-};
-
-export const addInlineAttachments = async ({
-	files,
-	tinymce,
-	editorId
-}: AddInlineAttachmentsProps): Promise<void> => {
-	const aids = await uploadInlineAttachments({ files });
-	const imageTextArray: Array<string> = [];
-	forEach(aids, (aid, index) => {
-		const ci = uuidv4();
-		const inlineAttachment = { ci: `${ci}@zimbra`, attach: aid };
-		getAddInlineAttachment({ id: editorId, inlineAttachment });
-		imageTextArray.push(
-			`&nbsp;<img pnsrc="cid:${ci}@zimbra" data-mce-src="cid:${ci}@zimbra" src="cid:${ci}@zimbra" />`
-		);
-		if (Number(index) === aids.length - 1) {
-			tinymce?.activeEditor?.insertContent(imageTextArray?.join('<br />'));
-		}
-	});
 };
 
 export function findInlineAttachments(
@@ -63,13 +54,17 @@ export function findInlineAttachments(
 		acc
 	);
 }
-
 type GetConvertedImageSourcesType = {
 	message: MailMessage;
 	updateEditorCb: (data: Partial<MailsEditor>) => void;
 	setValue: (name: string, value: any) => void;
 	setInputValue: (arg: [string, string]) => void;
 	inputValue: [string, string];
+};
+
+type GetConvertedImageSourcesProps = {
+	editorId: MailsEditorV2['id'];
+	message: MailMessage;
 };
 
 export const getConvertedImageSources = ({
@@ -129,3 +124,96 @@ export const getConvertedImageSources = ({
 	setValue('text', [inputValue[0], newHtml]);
 	setInputValue([inputValue[0], newHtml]);
 };
+
+export function getConvertedImageSourcesV2({
+	editorId,
+	message
+}: GetConvertedImageSourcesProps): void {
+	const parser = new DOMParser();
+	const htmlDoc = parser.parseFromString(message.body.content, 'text/html');
+
+	const images = htmlDoc.getElementsByTagName('img');
+
+	const parts = findAttachments(message.parts ?? [], []);
+	const imgMap = reduce(
+		parts,
+		(r, v) => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			if (!_CI_REGEX.test(v.ci ?? '')) return r;
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			r[_CI_REGEX.exec(v.ci ?? '')?.[1] ?? ''] = v;
+			return r;
+		},
+		{} as any
+	);
+
+	if (images) {
+		forEach(images, (p: HTMLImageElement) => {
+			if (p.hasAttribute('dfsrc')) {
+				p.setAttribute('src', p.getAttribute('dfsrc') ?? '');
+			}
+			if (!_CI_SRC_REGEX.test(p.src)) return;
+			const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';
+			if (imgMap[ci]) {
+				const part = imgMap[ci];
+				p.setAttribute('pnsrc', p.getAttribute('src') ?? '');
+				p.setAttribute('src', `/service/home/~/?auth=co&id=${message.id}&part=${part.name}`);
+			}
+		});
+	}
+	const newHtml = htmlDoc.body.innerHTML;
+
+	const newInlineparts = findInlineAttachments(message?.parts, []);
+	const newInline = map(newInlineparts, (pt: { ci: string; name: string }) => ({
+		ci: pt.ci.replace('<', '').replace('>', '').trim(),
+		attach: {
+			mp: [{ mid: message?.id, part: pt.name }]
+		}
+	}));
+	console.log('newInline', newInline);
+	const editorText = getEditorText({ id: editorId });
+	getUpdateEditorText({ id: editorId, text: { ...editorText, richText: newHtml } });
+	getClearInlineAttachments({ id: editorId });
+	newInline.forEach((inline) => getAddInlineAttachment({ id: editorId, inlineAttachment: inline }));
+	// saveDraftV3({ editor: getEditor({ id: editorId }) });
+}
+
+export async function addInlineAttachments({
+	files,
+	tinymce,
+	editorId
+}: AddInlineAttachmentsProps): Promise<void> {
+	const aids = await uploadInlineAttachments({ files });
+	const imageTextArray: Array<string> = [];
+	forEach(aids, (aid, index) => {
+		const ci = uuidv4();
+		const inlineAttachment = { ci: `${ci}@zimbra`, attach: aid };
+		imageTextArray.push(
+			`&nbsp;<img pnsrc="cid:${ci}@zimbra" data-mce-src="cid:${ci}@zimbra" src="cid:${ci}@zimbra" />`
+		);
+		if (Number(index) === aids.length - 1) {
+			tinymce?.activeEditor?.insertContent(imageTextArray?.join('<br />'));
+			getAddInlineAttachment({ id: editorId, inlineAttachment });
+			// saveDraftV3({ editor: getEditor({ id: editorId }) });
+		}
+	});
+	// getUpdateDraft({ editorId });
+	setTimeout(() => {
+		const editor = getEditor({ id: editorId });
+		saveDraftV3({ editor, attach: { mp: [] } }).then((res) => {
+			console.log('@@res', res);
+			if (!res) return;
+			res.m && useEditorsStore.getState().setDid(editorId, res.m[0].id);
+
+			getUpdateDraft({ editorId, res });
+			console.log('@@getUpdateDraftExecuted', res);
+			if (!res?.data?.resp?.m?.cid) return;
+			getConvertedImageSourcesV2({
+				message: normalizeMailMessageFromSoap(res?.data?.resp?.m[0]),
+				editorId
+			});
+		}, 5000);
+	});
+}
