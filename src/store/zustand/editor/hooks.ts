@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
+import { getBridgedFunctions, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { debounce, find } from 'lodash';
 
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
@@ -184,6 +184,13 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 		useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
 			status: 'aborted',
 			abortReason: err
+		});
+		getBridgedFunctions()?.createSnackbar({
+			key: `save-draft`,
+			replace: true,
+			type: 'error',
+			label: t('label.error_try_again', 'Something went wrong, please try again'),
+			autoHideTimeout: 3000
 		});
 		computeAndUpdateEditorStatus(editorId);
 		options?.onError && options.onError(err);

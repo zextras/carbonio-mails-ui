@@ -56,6 +56,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			contacts,
 			(contact) =>
 				({
+					...contact,
 					email: contact.email,
 					error: contact.error,
 					type,
