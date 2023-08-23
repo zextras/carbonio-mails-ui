@@ -27,7 +27,8 @@ import {
 	Input,
 	Text,
 	Padding,
-	useModal
+	useModal,
+	CreateModalFn
 } from '@zextras/carbonio-design-system';
 import { addBoard, t } from '@zextras/carbonio-shell-ui';
 import { filter, map, noop } from 'lodash';
@@ -112,6 +113,61 @@ function getSubjectOrAttachmentError({
 		return t('messages.modal.send_anyway.no_attachments', 'You didn’t attach any files.');
 	}
 	return '';
+}
+
+function checkSubjectAndAttachment({
+	text,
+	attachmentFiles,
+	subject,
+	onConfirmCallback,
+	close,
+	createModal
+}: {
+	text: MailsEditorV2['text'];
+	attachmentFiles: Array<EditorAttachmentFiles>;
+	subject: MailsEditorV2['subject'];
+	onConfirmCallback: () => void;
+	close: () => void;
+	createModal: CreateModalFn;
+}): void {
+	const attachmentIsExpected = attachmentWords.some((el) => {
+		const [msgContent] = text.richText
+			? text.richText.split(LineType.HTML_SEP_ID)
+			: text.plainText.split(LineType.PLAINTEXT_SEP);
+		return msgContent.toLowerCase().includes(el);
+	});
+	if ((attachmentIsExpected && !attachmentFiles.length) || !subject) {
+		const closeModal = createModal({
+			title: t('header.attention', 'Attention'),
+			confirmLabel: t('action.ok', 'Ok'),
+			dismissLabel: t('label.cancel', 'Cancel'),
+			showCloseIcon: true,
+			onConfirm: () => {
+				onConfirmCallback();
+				close();
+				closeModal();
+			},
+			onClose: () => {
+				closeModal();
+			},
+			onSecondaryAction: () => {
+				closeModal();
+			},
+			children: (
+				<StoreProvider>
+					<Text overflow="break-word" style={{ paddingTop: '1rem' }}>
+						{getSubjectOrAttachmentError({ attachmentIsExpected, attachmentFiles, subject })}
+					</Text>
+					<Text overflow="break-word" style={{ paddingBottom: '1rem' }}>
+						{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
+					</Text>
+				</StoreProvider>
+			)
+		});
+	} else {
+		onConfirmCallback();
+		close();
+	}
 }
 
 export type EditViewProp = {
@@ -210,64 +266,42 @@ export const EditView: FC<EditViewProp> = ({
 		deleteEditor({ id: editorId });
 	}, [createSnackbar, editorId]);
 
+	const createModal = useModal();
 	const onScheduledSendClick = useCallback(
 		(scheduledTime: number): void => {
-			// TODO invoke pre-send (missing attachments and subject) checks
-			setAutoSendTime(scheduledTime);
-			saveDraft();
-			close();
+			const onConfirmCallback = (): void => {
+				setAutoSendTime(scheduledTime);
+				saveDraft();
+				close();
+			};
+			checkSubjectAndAttachment({
+				text,
+				attachmentFiles,
+				subject,
+				onConfirmCallback,
+				close,
+				createModal
+			});
 		},
 		[close, saveDraft, setAutoSendTime]
 	);
 
-	const createModal = useModal();
 	const onSendClick = useCallback((): void => {
-		const attachmentIsExpected = attachmentWords.some((el) => {
-			const [msgContent] = text.richText
-				? text.richText.split(LineType.HTML_SEP_ID)
-				: text.plainText.split(LineType.PLAINTEXT_SEP);
-			return msgContent.toLowerCase().includes(el);
-		});
-		if ((attachmentIsExpected && !attachmentFiles.length) || !subject) {
-			const closeModal = createModal({
-				title: t('header.attention', 'Attention'),
-				confirmLabel: t('action.ok', 'Ok'),
-				dismissLabel: t('label.cancel', 'Cancel'),
-				showCloseIcon: true,
-				onConfirm: () => {
-					sendMessage({
-						onCountdownTick: onSendCountdownTick,
-						onComplete: onSendComplete,
-						onError: onSendError
-					});
-					close();
-					closeModal();
-				},
-				onClose: () => {
-					closeModal();
-				},
-				onSecondaryAction: () => {
-					closeModal();
-				},
-				children: (
-					<StoreProvider>
-						<Text overflow="break-word" style={{ paddingTop: '1rem' }}>
-							{getSubjectOrAttachmentError({ attachmentIsExpected, attachmentFiles, subject })}
-						</Text>
-						<Text overflow="break-word" style={{ paddingBottom: '1rem' }}>
-							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
-						</Text>
-					</StoreProvider>
-				)
-			});
-		} else {
+		const onConfirmCallback = (): void => {
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
 				onComplete: onSendComplete,
 				onError: onSendError
 			});
-			close();
-		}
+		};
+		checkSubjectAndAttachment({
+			text,
+			attachmentFiles,
+			subject,
+			onConfirmCallback,
+			close,
+			createModal
+		});
 	}, [close, onSendComplete, onSendCountdownTick, onSendError, sendMessage]);
 
 	const onIdentityChanged = useCallback(
