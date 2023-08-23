@@ -67,7 +67,8 @@ import {
 	useEditorSend,
 	useEditorSubject,
 	useEditorText,
-	useEditorAttachmentFiles
+	useEditorAttachmentFiles,
+	deleteEditor
 } from '../../../../store/zustand/editor';
 import {
 	BoardContext,
@@ -206,6 +207,7 @@ export const EditView: FC<EditViewProp> = ({
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
+		deleteEditor({ id: editorId });
 	}, [createSnackbar, editorId]);
 
 	const onScheduledSendClick = useCallback(

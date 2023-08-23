@@ -14,6 +14,7 @@ import {
 	t,
 	useBoardHooks
 } from '@zextras/carbonio-shell-ui';
+import { noop } from 'lodash';
 
 import { EditView } from './edit-view-v2';
 import { EditViewActions, EditViewActionsType } from '../../../../constants';
@@ -21,7 +22,7 @@ import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
 import { getMsg } from '../../../../store/actions';
 import { selectMessages } from '../../../../store/messages-slice';
-import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
+import { addEditor, deleteEditor, useEditorSubject } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
 import { EditViewBoardContext, MailMessage } from '../../../../types';
 
@@ -38,17 +39,13 @@ const parseAndValidateParams = (
 	return { action: resultAction, id: resultId };
 };
 
-const EditViewController: FC = (x) => {
+const EditViewController: FC = () => {
 	const messagesStoreDispatch = useAppDispatch();
 	const account = useUserAccount();
 	const settings = useUserSettings();
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
 	const messages = useAppSelector(selectMessages);
-
-	const onClose = useCallback(() => {
-		closeBoard(board.id);
-	}, [board.id]);
 	// TODO check why the useQueryParams triggers 2 renders
 	let { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
 
@@ -93,6 +90,18 @@ const EditViewController: FC = (x) => {
 		throw new Error('No editor provided');
 	}
 
+	const onClose = useCallback(() => {
+		boardUtilities?.updateBoard({
+			onClose: noop
+		});
+		closeBoard(board.id);
+		boardUtilities?.updateBoard({
+			onClose: () => {
+				deleteEditor({ id: editor.id });
+			}
+		});
+	}, [board.id, boardUtilities, editor.id]);
+
 	if (action !== EditViewActions.RESUME) {
 		addEditor({ id: editor.id, editor });
 	}
@@ -112,6 +121,17 @@ const EditViewController: FC = (x) => {
 		});
 	}
 
+	/*
+	 * Add an onClose function to delete the editor from the store
+	 * when the board is closed
+	 */
+	if (board && !board.onClose) {
+		boardUtilities?.updateBoard({
+			onClose: () => {
+				deleteEditor({ id: editor.id });
+			}
+		});
+	}
 	return <EditView editorId={editor.id} closeController={onClose} />;
 };
 export default EditViewController;
