@@ -13,7 +13,6 @@ export type MailAttachmentParts = {
 };
 
 export type MailAttachment = {
-	abortController?: AbortController;
 	mp: Array<MailAttachmentParts>;
 	aid?: string;
 };

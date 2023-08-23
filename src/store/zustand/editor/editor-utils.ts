@@ -7,7 +7,12 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { concat, some } from 'lodash';
 
 import { PROCESS_STATUS } from '../../../constants';
-import type { EditorOperationAllowedStatus, MailsEditorV2 } from '../../../types';
+import type {
+	EditorOperationAllowedStatus,
+	MailsEditorV2,
+	SavedAttachment,
+	UnsavedAttachment
+} from '../../../types';
 
 /**
  *
@@ -23,41 +28,28 @@ export const computeDraftSaveAllowedStatus = (
 		};
 	}
 
-	return { allowed: true };
-};
-
-/**
- *
- * @param editor
- * @returns boolean
- */
-export const computeAttachmentUploadAllowedStatus = (
-	editor: MailsEditorV2
-): EditorOperationAllowedStatus => {
-	const attachmentsUploadRunning = editor.attachmentFiles.some(
-		(attachment) => attachment.uploadProcessStatus?.status === PROCESS_STATUS.RUNNING
-	);
-	if (attachmentsUploadRunning) {
+	if (
+		some(
+			editor.unsavedAttachments,
+			(unsavedAttachment) => unsavedAttachment.uploadStatus?.status === 'running'
+		)
+	) {
 		return {
 			allowed: false,
-			reason: t('label.attachment_upload_in_progress', 'attachment upload in progress')
-		}; // TODO check strings with designer
+			reason: t('label.attachment_error_status.uploading', 'Attachments are being uploaded') // TODO check strings with designer
+		};
 	}
 
-	return { allowed: true };
-};
-
-export const computeAttachmentFailedStatus = (
-	editor: MailsEditorV2
-): EditorOperationAllowedStatus => {
-	const attachmentsUploadRunning = editor.attachmentFiles.some(
-		(attachment) => attachment.uploadProcessStatus?.status === PROCESS_STATUS.RUNNING
-	);
-	if (attachmentsUploadRunning) {
+	if (
+		some(
+			editor.unsavedAttachments,
+			(unsavedAttachment) => unsavedAttachment.uploadStatus?.status === 'aborted'
+		)
+	) {
 		return {
 			allowed: false,
-			reason: t('label.attachment_upload_in_progress', 'attachment upload in progress')
-		}; // TODO check strings with designer
+			reason: t('label.attachment_error_status.failed', 'one or more attachments failed to upload') // TODO check strings with designer
+		};
 	}
 
 	return { allowed: true };
@@ -109,23 +101,39 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	}
 
 	if (
-		editor.attachmentsUploadStatus?.allowed === false &&
-		editor.attachmentsUploadStatus?.reason?.includes('running')
+		some(
+			editor.unsavedAttachments,
+			(unsavedAttachment) => unsavedAttachment.uploadStatus?.status === 'running'
+		)
 	) {
 		return {
 			allowed: false,
-			reason: t('label.attachment_error_status.uploading', 'attachments are being uploaded') // TODO check strings with designer
+			reason: t('label.attachment_error_status.uploading', 'Attachments are being uploaded') // TODO check strings with designer
 		};
 	}
 
 	if (
-		editor.attachmentsUploadStatus?.allowed === false &&
-		editor.attachmentsUploadStatus?.reason?.includes('fail')
+		some(
+			editor.unsavedAttachments,
+			(unsavedAttachment) => unsavedAttachment.uploadStatus?.status === 'aborted'
+		)
 	) {
 		return {
 			allowed: false,
 			reason: t('label.attachment_error_status.failed', 'one or more attachments failed to upload') // TODO check strings with designer
 		};
 	}
+
 	return { allowed: true };
 };
+
+export const isSavedAttachment = (
+	attachment: SavedAttachment | UnsavedAttachment
+): attachment is SavedAttachment => 'part' in attachment;
+
+export const isUnsavedAttachment = (
+	attachment: SavedAttachment | UnsavedAttachment
+): attachment is UnsavedAttachment => !isSavedAttachment(attachment);
+
+export const isAttachmentUploading = (attachment: UnsavedAttachment): boolean =>
+	attachment.uploadStatus?.status === 'running';

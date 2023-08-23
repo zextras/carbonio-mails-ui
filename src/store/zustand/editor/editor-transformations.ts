@@ -15,10 +15,13 @@ import {
 import {
 	InlineAttachments,
 	MailAttachment,
+	MailAttachmentParts,
 	MailsEditorV2,
 	Participant,
+	SavedAttachment,
 	SoapDraftMessageObj,
-	SoapEmailMessagePartObj
+	SoapEmailMessagePartObj,
+	UnsavedAttachment
 } from '../../../types';
 
 /**
@@ -176,14 +179,46 @@ const createSenderParticipantByIdentity = (identityId: string): Participant | nu
 	return null;
 };
 
+const composeAttachAidField = (attachments: Array<UnsavedAttachment>): string | null => {
+	if (!attachments || !attachments.length) {
+		return null;
+	}
+	return attachments.map((attachment) => attachment.aid).join(',');
+};
+
+const composeAttachMpField = (attachments: Array<SavedAttachment>): Array<MailAttachmentParts> => {
+	const result: Array<MailAttachmentParts> = [];
+	attachments.forEach((attachment) => {
+		result.push({ mid: attachment.messageId, part: attachment.partName });
+	});
+	return result;
+};
+
+/*
+ * Compose the "attach" field by listing the uploaded
+ * files id in the "aid" field (comma separated) and
+ * listing the previously saved attachment in the
+ * "mp" field
+ */
+const composeAttachField = (editor: MailsEditorV2): MailAttachment | null => {
+	const attachAid = composeAttachAidField(editor.unsavedAttachments);
+	const attachMp = composeAttachMpField(editor.savedAttachments);
+
+	if (!attachAid && !attachMp) {
+		return null;
+	}
+
+	return {
+		...(attachAid && { aid: attachAid }),
+		mp: attachMp
+	};
+};
+
 /**
  *
  * @param editor
  */
-export const createSoapDraftRequestFromEditor = (
-	editor: MailsEditorV2,
-	attach?: MailAttachment
-): SoapDraftMessageObj => {
+export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDraftMessageObj => {
 	const participants: Array<Participant> = [
 		...editor.recipients.to,
 		...editor.recipients.cc,
@@ -205,7 +240,7 @@ export const createSoapDraftRequestFromEditor = (
 		d: participant.fullName ?? participant.name
 	}));
 
-	const result = {
+	const result: SoapDraftMessageObj = {
 		autoSendTime: editor.autoSendTime,
 		id: editor.did,
 		su: { _content: editor.subject ?? '' },
@@ -213,7 +248,9 @@ export const createSoapDraftRequestFromEditor = (
 		origid: editor.originalId,
 		e: soapParticipants,
 		mp: getMP(editor)
-	} as SoapDraftMessageObj;
+	};
+
+	const attach = composeAttachField(editor);
 	attach && (result.attach = attach);
 	return result;
 };

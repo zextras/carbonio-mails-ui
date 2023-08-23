@@ -6,9 +6,15 @@
 
 import { AppDispatch } from '../../store/redux';
 import type { Conversation } from '../conversations';
-import { MailsEditor, MailsEditorV2 } from '../editor';
+import {
+	AttachmentUploadProcessStatus,
+	MailsEditor,
+	MailsEditorV2,
+	SavedAttachment,
+	UnsavedAttachment
+} from '../editor';
 import { MailMessage } from '../messages';
-import { MailAttachmentParts } from '../soap';
+import { SoapIncompleteMessage } from '../soap';
 
 export type MailsStateType = {
 	editors: EditorsStateType;
@@ -27,6 +33,7 @@ export type EditorsStateTypeV2 = {
 	addEditor: (id: MailsEditorV2['id'], editor: MailsEditorV2) => void;
 	deleteEditor: (id: MailsEditorV2['id']) => void;
 	updateEditor: (id: MailsEditorV2['id'], opt: Partial<MailsEditorV2>) => void;
+
 	updateAction: (id: MailsEditorV2['id'], action: MailsEditorV2['action']) => void;
 	updateSubject: (id: MailsEditorV2['id'], subject: MailsEditorV2['subject']) => void;
 	updateText: (id: MailsEditorV2['id'], text: MailsEditorV2['text']) => void;
@@ -47,14 +54,6 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		recipients: MailsEditorV2['recipients']['to']
 	) => void;
-	addToRecipient: (
-		id: MailsEditorV2['id'],
-		recipient: MailsEditorV2['recipients']['to'][number]
-	) => void;
-	removeToRecipient: (
-		id: MailsEditorV2['id'],
-		recipient: MailsEditorV2['recipients']['to'][number]
-	) => void;
 	updateCcRecipients: (
 		id: MailsEditorV2['id'],
 		recipients: MailsEditorV2['recipients']['cc']
@@ -63,53 +62,74 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		recipients: MailsEditorV2['recipients']['bcc']
 	) => void;
-	updateDraftSaveAllowedStatus: (
-		id: MailsEditorV2['id'],
-		status: MailsEditorV2['draftSaveAllowedStatus']
-	) => void;
-	updateDraftSaveProcessStatus: (
-		id: MailsEditorV2['id'],
-		status: MailsEditorV2['draftSaveProcessStatus']
-	) => void;
-	updateAttachmentFiles: (editorId, res: SaveDraftResponse) => void;
-	updateSendAllowedStatus: (
-		id: MailsEditorV2['id'],
-		status: MailsEditorV2['sendAllowedStatus']
-	) => void;
-	updateSendProcessStatus: (
-		id: MailsEditorV2['id'],
-		status: MailsEditorV2['sendProcessStatus']
-	) => void;
 	updateIdentityId: (id: MailsEditorV2['id'], from: MailsEditorV2['identityId']) => void;
 	updateIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
 	updateRequestReadReceipt: (
 		id: MailsEditorV2['id'],
 		requestReadReceipt: MailsEditorV2['requestReadReceipt']
 	) => void;
-	addAttachment: (id: MailsEditorV2['id'], attachment: MailAttachmentParts) => void;
-	updateAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
-	addAttachmentFiles: (id: MailsEditorV2['id'], files: MailsEditorV2['attachmentFiles']) => void;
-	addInlineAttachment: (
+
+	updateDraftSaveAllowedStatus: (
 		id: MailsEditorV2['id'],
-		inlineAttachment: MailsEditorV2['inlineAttachments'][0]
+		status: MailsEditorV2['draftSaveAllowedStatus']
 	) => void;
-	removeInlineAttachment: (
+
+	updateDraftSaveProcessStatus: (
 		id: MailsEditorV2['id'],
-		inlineAttachment: MailsEditorV2['inlineAttachments'][0]
+		status: MailsEditorV2['draftSaveProcessStatus']
 	) => void;
+
+	updateSendAllowedStatus: (
+		id: MailsEditorV2['id'],
+		status: MailsEditorV2['sendAllowedStatus']
+	) => void;
+
+	updateSendProcessStatus: (
+		id: MailsEditorV2['id'],
+		status: MailsEditorV2['sendProcessStatus']
+	) => void;
+
+	setSavedAttachments: (id: MailsEditorV2['id'], attachment: Array<SavedAttachment>) => void;
+	removeSavedAttachment: (id: MailsEditorV2['id'], partName: string) => void;
+	setUnsavedAttachments: (id: MailsEditorV2['id'], attachments: Array<UnsavedAttachment>) => void;
+	addUnsavedAttachment: (id: MailsEditorV2['id'], attachment: UnsavedAttachment) => void;
+	setAttachmentUploadStatus: (
+		id: MailsEditorV2['id'],
+		uploadId: string,
+		status: AttachmentUploadProcessStatus
+	) => void;
+	setAttachmentUploadCompleted: (id: MailsEditorV2['id'], uploadId: string, aid: string) => void;
+	removeUnsavedAttachment: (id: MailsEditorV2['id'], uploadId: string) => void;
+	clearAttachments: (id: MailsEditorV2['id']) => void;
+
+	// updateAttachmentFiles: (editorId, res: SaveDraftResponse) => void;
+	// addAttachment: (id: MailsEditorV2['id'], attachment: MailAttachmentParts) => void;
+	// updateAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
+	// addAttachmentFiles: (id: MailsEditorV2['id'], files: MailsEditorV2['attachmentFiles']) => void;
+	// addInlineAttachment: (
+	// 	id: MailsEditorV2['id'],
+	// 	inlineAttachment: MailsEditorV2['inlineAttachments'][0]
+	// ) => void;
+	// removeInlineAttachment: (
+	// 	id: MailsEditorV2['id'],
+	// 	inlineAttachment: MailsEditorV2['inlineAttachments'][0]
+	// ) => void;
+
 	clearEditors: () => void;
 	clearSubject: (id: MailsEditorV2['id']) => void;
 	clearAutoSendTime: (id: MailsEditorV2['id']) => void;
 	clearText: (id: MailsEditorV2['id']) => void;
-	clearAttachments: (id: MailsEditorV2['id']) => void;
 	clearInlineAttachments: (id: MailsEditorV2['id']) => void;
+
 	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
-	updateUploadProgress: (
-		id: MailsEditorV2['id'],
-		percentCompleted: number,
-		fileUploadingId: string
-	) => void;
+
+	// updateUploadProgress: (
+	// 	id: MailsEditorV2['id'],
+	// 	percentCompleted: number,
+	// 	fileUploadingId: string
+	// ) => void;
 };
+
 export type MsgStateType = {
 	searchedInFolder: Record<string, string>;
 	messages: MsgMap;
@@ -144,9 +164,8 @@ export type SearchesStateType = {
 	error?: ErrorType;
 };
 
-export type MailsFolderMap = Record<string, FolderType>;
-
 export type MailsEditorMap = Record<string, MailsEditor>;
+
 export type MailsEditorMapV2 = Record<string, MailsEditorV2>;
 
 export type MsgMap = Record<string, Partial<MailMessage> & Pick<MailMessage, 'id'>>;

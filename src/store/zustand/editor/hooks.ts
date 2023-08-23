@@ -5,15 +5,16 @@
  */
 
 import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
-import { debounce, find } from 'lodash';
+import { debounce, find, findIndex } from 'lodash';
 
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
 import { useEditorsStore } from './store';
 import { EditViewActionsType, TIMEOUTS } from '../../../constants';
 import { createCancelableTimer } from '../../../helpers/timers';
-import { MailAttachmentParts, MailsEditorV2, SaveDraftResponse } from '../../../types';
+import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from '../../../types';
 import { saveDraftV3 } from '../../actions/save-draft';
 import { sendMsgFromEditor } from '../../actions/send-msg';
+import { uploadAttachment, UploadAttachmentOptions } from '../../actions/upload-attachments';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
@@ -212,24 +213,15 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 				abortReason: err
 			});
 			// FIXME use a subscription to the store update
-			useEditorsStore
-				.getState()
-				.updateDraftSaveAllowedStatus(
-					editorId,
-					computeDraftSaveAllowedStatus(getEditor({ id: editorId }))
-				);
+			computeAndUpdateEditorStatus(editorId);
+			options?.onError && options?.onError(err);
 		});
 
 	useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
 		status: 'running'
 	});
 	// FIXME use a subscription to the store update
-	useEditorsStore
-		.getState()
-		.updateDraftSaveAllowedStatus(
-			editorId,
-			computeDraftSaveAllowedStatus(getEditor({ id: editorId }))
-		);
+	computeAndUpdateEditorStatus(editorId);
 };
 
 const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, TIMEOUTS.DRAFT_SAVE_DELAY);
@@ -364,45 +356,45 @@ export const useEditorAutoSendTime = (
 	};
 };
 
-/**
- * Returns the attachment files of the editor with given ID or an empty array if not found.
- * @params id
- */
-export const useEditorAttachmentFiles = ({
-	id
-}: {
-	id: MailsEditorV2['id'];
-}): MailsEditorV2['attachmentFiles'] =>
-	useEditorsStore((state) => state.editors[id].attachmentFiles);
-export const getEditorAttachmentFiles = ({
-	id
-}: {
-	id: MailsEditorV2['id'];
-}): MailsEditorV2['attachmentFiles'] =>
-	useEditorsStore.getState()?.editors?.[id]?.attachmentFiles ?? [];
-
-/**
- * Returns reactive references to the draft id value and to its setter
- * @params id
- */
-export const useEditorDid = (
-	id: MailsEditorV2['id']
-): {
-	did: MailsEditorV2['did'];
-	setDid: (did: MailsEditorV2['did']) => void;
-} => {
-	const value = useEditorsStore((state) => state.editors[id].did);
-	const setter = useEditorsStore((state) => state.setDid);
-
-	return {
-		did: value,
-		setDid: (val: MailsEditorV2['did']): void => {
-			setter(id, val);
-			debouncedSaveDraftFromEditor(id);
-			debugLog('save cause: did');
-		}
-	};
-};
+// /**
+//  * Returns the attachment files of the editor with given ID or an empty array if not found.
+//  * @params id
+//  */
+// export const useEditorAttachmentFiles = ({
+// 	id
+// }: {
+// 	id: MailsEditorV2['id'];
+// }): MailsEditorV2['attachmentFiles'] =>
+// 	useEditorsStore((state) => state.editors[id].attachmentFiles);
+// export const getEditorAttachmentFiles = ({
+// 	id
+// }: {
+// 	id: MailsEditorV2['id'];
+// }): MailsEditorV2['attachmentFiles'] =>
+// 	useEditorsStore.getState()?.editors?.[id]?.attachmentFiles ?? [];
+//
+// /**
+//  * Returns reactive references to the draft id value and to its setter
+//  * @params id
+//  */
+// export const useEditorDid = (
+// 	id: MailsEditorV2['id']
+// ): {
+// 	did: MailsEditorV2['did'];
+// 	setDid: (did: MailsEditorV2['did']) => void;
+// } => {
+// 	const value = useEditorsStore((state) => state.editors[id].did);
+// 	const setter = useEditorsStore((state) => state.setDid);
+//
+// 	return {
+// 		did: value,
+// 		setDid: (val: MailsEditorV2['did']): void => {
+// 			setter(id, val);
+// 			debouncedSaveDraftFromEditor(id);
+// 			debugLog('save cause: did');
+// 		}
+// 	};
+// };
 
 /**
  * Returns reactive references to the isRichText value and to its setter
@@ -652,180 +644,311 @@ export const useEditorRequestReadReceipt = (
 	};
 };
 
-/**
- * add attachments to a specific editor.
- * @params id
- * @params attachments
- */
-export const useAddAttachment = ({
-	id,
-	attachment
-}: {
-	id: MailsEditorV2['id'];
-	attachment: MailAttachmentParts;
-}): void =>
-	useEditorsStore((s) => {
-		s.addAttachment(id, attachment);
-		debouncedSaveDraftFromEditor(id);
-	});
-export const getAddAttachment = ({
-	id,
-	attachment
-}: {
-	id: MailsEditorV2['id'];
-	attachment: MailAttachmentParts;
-}): void => {
-	useEditorsStore.getState().addAttachment(id, attachment);
-	debouncedSaveDraftFromEditor(id);
+export const useEditorAttachments = (
+	editorId: MailsEditorV2['id']
+): {
+	hasAttachments: boolean;
+	unsavedAttachments: MailsEditorV2['unsavedAttachments'];
+	savedAttachments: MailsEditorV2['savedAttachments'];
+	uploadAttachment: (file: File, options: UploadAttachmentOptions) => UnsavedAttachment;
+	removeSavedAttachment: (partName: string) => void;
+	removeUnsavedAttachment: (uploadId: string) => void;
+	removeAttachments: () => void;
+} => {
+	const unsavedAttachments = useEditorsStore((state) => state.editors[editorId].unsavedAttachments);
+	const savedAttachments = useEditorsStore((state) => state.editors[editorId].savedAttachments);
+	const removeAttachmentsInvoker = useEditorsStore((state) => state.clearAttachments);
+	const removeSavedAttachmentsInvoker = useEditorsStore((state) => state.removeSavedAttachment);
+	const removeUnsavedAttachmentsInvoker = useEditorsStore((state) => state.removeUnsavedAttachment);
+
+	return {
+		hasAttachments: unsavedAttachments.length + savedAttachments.length > 0,
+		unsavedAttachments,
+		savedAttachments,
+		removeUnsavedAttachment: (uploadId: string): void => {
+			removeUnsavedAttachmentsInvoker(editorId, uploadId);
+			computeAndUpdateEditorStatus(editorId);
+			debouncedSaveDraftFromEditor(editorId);
+		},
+
+		removeSavedAttachment: (partName: string): void => {
+			removeSavedAttachmentsInvoker(editorId, partName);
+			computeAndUpdateEditorStatus(editorId);
+			debouncedSaveDraftFromEditor(editorId);
+		},
+		removeAttachments: (): void => {
+			removeAttachmentsInvoker(editorId);
+			computeAndUpdateEditorStatus(editorId);
+			debouncedSaveDraftFromEditor(editorId);
+		},
+		uploadAttachment: (
+			file: File,
+			callbacks: {
+				onProgress?: (uploadId: string, percentage: number) => void;
+				onComplete?: (uploadId: string, attachmentId: string) => void;
+				onError?: (uploadId: string, error: string) => void;
+			}
+		): UnsavedAttachment => {
+			const options: UploadAttachmentOptions = {
+				onProgress: (uploadId: string, percentage: number): void => {
+					const setUploadStatus = useEditorsStore.getState().setAttachmentUploadStatus;
+					const status: AttachmentUploadProcessStatus = {
+						status: 'running',
+						progress: percentage
+					};
+					setUploadStatus(editorId, uploadId, status);
+					callbacks.onProgress && callbacks.onProgress(uploadId, percentage);
+				},
+
+				onError: (uploadId: string, error: string): void => {
+					const setUploadStatus = useEditorsStore.getState().setAttachmentUploadStatus;
+					const status: AttachmentUploadProcessStatus = {
+						status: 'aborted',
+						abortReason: error
+					};
+					setUploadStatus(editorId, uploadId, status);
+					computeAndUpdateEditorStatus(editorId);
+					callbacks.onError && callbacks.onError(uploadId, error);
+				},
+
+				onComplete: (uploadId: string, attachmentId: string): void => {
+					const setUploadCompleted = useEditorsStore.getState().setAttachmentUploadCompleted;
+					setUploadCompleted(editorId, uploadId, attachmentId);
+					computeAndUpdateEditorStatus(editorId);
+					callbacks.onComplete && callbacks.onComplete(uploadId, attachmentId);
+				}
+			};
+
+			const { uploadId, abortController } = uploadAttachment(file, options);
+			const { addUnsavedAttachment } = useEditorsStore.getState();
+			const attachment: UnsavedAttachment = {
+				filename: file.name,
+				contentType: file.type,
+				size: file.size,
+				uploadId,
+				uploadStatus: {
+					status: 'running',
+					progress: 0
+				},
+				uploadAbortController: abortController
+			};
+			addUnsavedAttachment(editorId, attachment);
+			computeAndUpdateEditorStatus(editorId);
+			debouncedSaveDraftFromEditor(editorId);
+
+			return attachment;
+		}
+	};
 };
 
-/**
- * add attachmentFiles to a specific editor.
- * @params id
- * @params attachmentFiles: File[]
- */
-export const useAddAttachmentFiles = ({
-	id,
-	attachmentFiles
-}: {
-	id: MailsEditorV2['id'];
-	attachmentFiles: MailsEditorV2['attachmentFiles'];
-}): void =>
-	useEditorsStore((s) => {
-		s.addAttachmentFiles(id, attachmentFiles);
-		debouncedSaveDraftFromEditor(id);
+export const useEditorUploadProcess = (
+	editorId: MailsEditorV2['id'],
+	uploadId: string
+): { status: AttachmentUploadProcessStatus; cancel: () => void } | null => {
+	const attachmentStateInfo = useEditorsStore((state) => {
+		const unsavedAttachmentIndex = findIndex(state.editors[editorId].unsavedAttachments, [
+			'uploadId',
+			uploadId
+		]);
+		if (unsavedAttachmentIndex < 0) {
+			return null;
+		}
+
+		return {
+			status: state.editors[editorId].unsavedAttachments[unsavedAttachmentIndex].uploadStatus,
+			abortController:
+				state.editors[editorId].unsavedAttachments[unsavedAttachmentIndex].uploadAbortController
+		};
 	});
-export const getAddAttachmentFiles = ({
-	id,
-	attachmentFiles
-}: {
-	id: MailsEditorV2['id'];
-	attachmentFiles: MailsEditorV2['attachmentFiles'];
-}): void => {
-	useEditorsStore.getState().addAttachmentFiles(id, attachmentFiles);
-	debouncedSaveDraftFromEditor(id);
+	if (!attachmentStateInfo || !attachmentStateInfo.status || !attachmentStateInfo.abortController) {
+		return null;
+	}
+
+	return {
+		status: attachmentStateInfo.status,
+		cancel: (): void => {
+			attachmentStateInfo.abortController?.abort();
+			useEditorsStore.getState().removeUnsavedAttachment(editorId, uploadId);
+			computeAndUpdateEditorStatus(editorId);
+			debouncedSaveDraftFromEditor(editorId);
+		}
+	};
 };
 
-export const getUpdateUploadProgress = ({
-	editorId,
-	percentCompleted,
-	fileUploadingId
-}: {
-	editorId: MailsEditorV2['id'];
-	percentCompleted: number;
-	fileUploadingId: string;
-}): void =>
-	useEditorsStore.getState().updateUploadProgress(editorId, percentCompleted, fileUploadingId);
-/**
- * remove attachments from a specific editor.
- * @params id
- * @params attachments
- */
-export const useRemoveAttachment = ({
-	id,
-	action
-}: {
-	id: MailsEditorV2['id'];
-	action: any; // TODO type this action properly
-}): void => useEditorsStore((s) => s.updateAttachments(id, action));
-export const getRemoveAttachments = ({
-	id,
-	action
-}: {
-	id: MailsEditorV2['id'];
-	action: any; // TODO type this action properly
-}): void => useEditorsStore.getState().updateAttachments(id, action);
+// /**
+//  * add attachments to a specific editor.
+//  * @params id
+//  * @params attachments
+//  */
+// export const useAddAttachment = ({
+// 	id,
+// 	attachment
+// }: {
+// 	id: MailsEditorV2['id'];
+// 	attachment: MailAttachmentParts;
+// }): void =>
+// 	useEditorsStore((s) => {
+// 		s.addAttachment(id, attachment);
+// 		debouncedSaveDraftFromEditor(id);
+// 	});
+// export const getAddAttachment = ({
+// 	id,
+// 	attachment
+// }: {
+// 	id: MailsEditorV2['id'];
+// 	attachment: MailAttachmentParts;
+// }): void => {
+// 	useEditorsStore.getState().addAttachment(id, attachment);
+// 	debouncedSaveDraftFromEditor(id);
+// };
+//
+// /**
+//  * add attachmentFiles to a specific editor.
+//  * @params id
+//  * @params attachmentFiles: File[]
+//  */
+// export const useAddAttachmentFiles = ({
+// 	id,
+// 	attachmentFiles
+// }: {
+// 	id: MailsEditorV2['id'];
+// 	attachmentFiles: MailsEditorV2['attachmentFiles'];
+// }): void =>
+// 	useEditorsStore((s) => {
+// 		s.addAttachmentFiles(id, attachmentFiles);
+// 		debouncedSaveDraftFromEditor(id);
+// 	});
+// export const getAddAttachmentFiles = ({
+// 	id,
+// 	attachmentFiles
+// }: {
+// 	id: MailsEditorV2['id'];
+// 	attachmentFiles: MailsEditorV2['attachmentFiles'];
+// }): void => {
+// 	useEditorsStore.getState().addAttachmentFiles(id, attachmentFiles);
+// 	debouncedSaveDraftFromEditor(id);
+// };
+//
+// export const getUpdateUploadProgress = ({
+// 	editorId,
+// 	percentCompleted,
+// 	fileUploadingId
+// }: {
+// 	editorId: MailsEditorV2['id'];
+// 	percentCompleted: number;
+// 	fileUploadingId: string;
+// }): void =>
+// 	useEditorsStore.getState().updateUploadProgress(editorId, percentCompleted, fileUploadingId);
+// /**
+//  * remove attachments from a specific editor.
+//  * @params id
+//  * @params attachments
+//  */
+// export const useRemoveAttachment = ({
+// 	id,
+// 	action
+// }: {
+// 	id: MailsEditorV2['id'];
+// 	action: any; // TODO type this action properly
+// }): void => useEditorsStore((s) => s.updateAttachments(id, action));
+// export const getRemoveAttachments = ({
+// 	id,
+// 	action
+// }: {
+// 	id: MailsEditorV2['id'];
+// 	action: any; // TODO type this action properly
+// }): void => useEditorsStore.getState().updateAttachments(id, action);
+//
+// /**
+//  * add inline attachments to a specific editor.
+//  * @params id
+//  * @params inlineAttachments
+//  */
+// export const useAddInlineAttachment = ({
+// 	id,
+// 	inlineAttachment
+// }: {
+// 	id: MailsEditorV2['id'];
+// 	inlineAttachment: MailsEditorV2['inlineAttachments'][0];
+// }): void => useEditorsStore((s) => s.addInlineAttachment(id, inlineAttachment));
+// export const getAddInlineAttachment = ({
+// 	id,
+// 	inlineAttachment
+// }: {
+// 	id: MailsEditorV2['id'];
+// 	inlineAttachment: MailsEditorV2['inlineAttachments'][0];
+// }): void => useEditorsStore.getState().addInlineAttachment(id, inlineAttachment);
+//
+// /**
+//  * remove inline attachments from a specific editor.
+//  * @params id
+//  * @params inlineAttachments
+//  */
+// export const useRemoveInlineAttachment = ({
+// 	id,
+// 	inlineAttachment
+// }: {
+// 	id: MailsEditorV2['id'];
+// 	inlineAttachment: MailsEditorV2['inlineAttachments'][0];
+// }): void => useEditorsStore((s) => s.removeInlineAttachment(id, inlineAttachment));
+// export const getRemoveInlineAttachments = ({
+// 	id,
+// 	inlineAttachments
+// }: {
+// 	id: MailsEditorV2['id'];
+// 	inlineAttachments: MailsEditorV2['inlineAttachments'];
+// }): void => useEditorsStore.getState().removeInlineAttachment(id, inlineAttachments);
 
-/**
- * add inline attachments to a specific editor.
- * @params id
- * @params inlineAttachments
- */
-export const useAddInlineAttachment = ({
-	id,
-	inlineAttachment
-}: {
-	id: MailsEditorV2['id'];
-	inlineAttachment: MailsEditorV2['inlineAttachments'][0];
-}): void => useEditorsStore((s) => s.addInlineAttachment(id, inlineAttachment));
-export const getAddInlineAttachment = ({
-	id,
-	inlineAttachment
-}: {
-	id: MailsEditorV2['id'];
-	inlineAttachment: MailsEditorV2['inlineAttachments'][0];
-}): void => useEditorsStore.getState().addInlineAttachment(id, inlineAttachment);
-
-/**
- * remove inline attachments from a specific editor.
- * @params id
- * @params inlineAttachments
- */
-export const useRemoveInlineAttachment = ({
-	id,
-	inlineAttachment
-}: {
-	id: MailsEditorV2['id'];
-	inlineAttachment: MailsEditorV2['inlineAttachments'][0];
-}): void => useEditorsStore((s) => s.removeInlineAttachment(id, inlineAttachment));
-export const getRemoveInlineAttachments = ({
-	id,
-	inlineAttachments
-}: {
-	id: MailsEditorV2['id'];
-	inlineAttachments: MailsEditorV2['inlineAttachments'];
-}): void => useEditorsStore.getState().removeInlineAttachment(id, inlineAttachments);
-
-/**
- * Remove all editors.
- */
-export const useClearEditors = (): void => useEditorsStore((s) => s.clearEditors());
-export const getClearEditors = (): void => useEditorsStore.getState().clearEditors();
-
-/** remove the subject of a specific editor.
- * @params id
- */
-export const useClearSubject = ({ id }: { id: MailsEditorV2['id'] }): void =>
-	useEditorsStore((s) => s.clearSubject(id));
-export const getRemoveSubject = ({ id }: { id: MailsEditorV2['id'] }): void =>
-	useEditorsStore.getState().clearSubject(id);
-
-/** remove the autoSendTime of a specific editor.
- * @params id
- */
-export const useClearAutoSendTime = ({ id }: { id: MailsEditorV2['id'] }): void =>
-	useEditorsStore((s) => s.clearAutoSendTime(id));
-export const getRemoveAutoSendTime = ({ id }: { id: MailsEditorV2['id'] }): void =>
-	useEditorsStore.getState().clearAutoSendTime(id);
-
-/** remove the text of a specific editor.
- * @params id
- */
-export const useClearText = ({ id }: { id: MailsEditorV2['id'] }): void =>
-	useEditorsStore((s) => s.clearText(id));
-export const getRemoveText = ({ id }: { id: MailsEditorV2['id'] }): void =>
-	useEditorsStore.getState().clearText(id);
-
-/** remove the attachments of a specific editor.
- * @params id
- */
-export const useClearAttachments = ({ id }: { id: MailsEditorV2['id'] }): void =>
-	useEditorsStore((s) => {
-		s.clearAttachments(id);
-		debouncedSaveDraftFromEditor(id);
-	});
-export const getClearAttachments = ({ id }: { id: MailsEditorV2['id'] }): void => {
-	useEditorsStore.getState().clearAttachments(id);
-	debouncedSaveDraftFromEditor(id);
-};
-
-/** remove the inlineAttachments of a specific editor.
- * @params id
- */
-export const useClearInlineAttachments = ({ id }: { id: MailsEditorV2['id'] }): void =>
-	useEditorsStore((s) => s.clearInlineAttachments(id));
-export const getClearInlineAttachments = ({ id }: { id: MailsEditorV2['id'] }): void =>
-	useEditorsStore.getState().clearInlineAttachments(id);
+// /**
+//  * Remove all editors.
+//  */
+// export const useClearEditors = (): void => useEditorsStore((s) => s.clearEditors());
+// export const getClearEditors = (): void => useEditorsStore.getState().clearEditors();
+//
+// /** remove the subject of a specific editor.
+//  * @params id
+//  */
+// export const useClearSubject = ({ id }: { id: MailsEditorV2['id'] }): void =>
+// 	useEditorsStore((s) => s.clearSubject(id));
+// export const getRemoveSubject = ({ id }: { id: MailsEditorV2['id'] }): void =>
+// 	useEditorsStore.getState().clearSubject(id);
+//
+// /** remove the autoSendTime of a specific editor.
+//  * @params id
+//  */
+// export const useClearAutoSendTime = ({ id }: { id: MailsEditorV2['id'] }): void =>
+// 	useEditorsStore((s) => s.clearAutoSendTime(id));
+// export const getRemoveAutoSendTime = ({ id }: { id: MailsEditorV2['id'] }): void =>
+// 	useEditorsStore.getState().clearAutoSendTime(id);
+//
+// /** remove the text of a specific editor.
+//  * @params id
+//  */
+// export const useClearText = ({ id }: { id: MailsEditorV2['id'] }): void =>
+// 	useEditorsStore((s) => s.clearText(id));
+// export const getRemoveText = ({ id }: { id: MailsEditorV2['id'] }): void =>
+// 	useEditorsStore.getState().clearText(id);
+//
+// /** remove the attachments of a specific editor.
+//  * @params id
+//  */
+// export const useClearAttachments = ({ id }: { id: MailsEditorV2['id'] }): void =>
+// 	useEditorsStore((s) => {
+// 		s.clearAttachments(id);
+// 		debouncedSaveDraftFromEditor(id);
+// 	});
+// export const getClearAttachments = ({ id }: { id: MailsEditorV2['id'] }): void => {
+// 	useEditorsStore.getState().clearAttachments(id);
+// 	debouncedSaveDraftFromEditor(id);
+// };
+//
+// /** remove the inlineAttachments of a specific editor.
+//  * @params id
+//  */
+// export const useClearInlineAttachments = ({ id }: { id: MailsEditorV2['id'] }): void =>
+// 	useEditorsStore((s) => s.clearInlineAttachments(id));
+// export const getClearInlineAttachments = ({ id }: { id: MailsEditorV2['id'] }): void =>
+// 	useEditorsStore.getState().clearInlineAttachments(id);
 
 /**
  * Returns the reactive status for the draft save operation.
@@ -848,29 +971,29 @@ export const useEditorDraftSave = (
 		saveDraft: invoker
 	};
 };
-
-/** updates the draft for a specific editor.
- * @params editorId
- * @params res
- */
-export const useUpdateDraft = ({
-	editorId,
-	res
-}: {
-	editorId: MailsEditorV2['id'];
-	res: SaveDraftResponse;
-}): void => {
-	useEditorsStore((s) => s.updateAttachmentFiles(editorId, res));
-};
-export const getUpdateDraft = ({
-	editorId,
-	res
-}: {
-	editorId: MailsEditorV2['id'];
-	res: SaveDraftResponse;
-}): void => {
-	useEditorsStore.getState().updateAttachmentFiles(editorId, res);
-};
+//
+// /** updates the draft for a specific editor.
+//  * @params editorId
+//  * @params res
+//  */
+// export const useUpdateDraft = ({
+// 	editorId,
+// 	res
+// }: {
+// 	editorId: MailsEditorV2['id'];
+// 	res: SaveDraftResponse;
+// }): void => {
+// 	useEditorsStore((s) => s.updateAttachmentFiles(editorId, res));
+// };
+// export const getUpdateDraft = ({
+// 	editorId,
+// 	res
+// }: {
+// 	editorId: MailsEditorV2['id'];
+// 	res: SaveDraftResponse;
+// }): void => {
+// 	useEditorsStore.getState().updateAttachmentFiles(editorId, res);
+// };
 
 /**
  * Returns the reactive status of the draft save process
@@ -905,12 +1028,3 @@ export const useEditorSend = (
 		send: sendInvoker
 	};
 };
-
-/**
- * Returns the reactive status of the message send process
- * @param editorId
- */
-export const useEditorSendProcessStatus = (
-	editorId: MailsEditorV2['id']
-): MailsEditorV2['sendProcessStatus'] =>
-	useEditorsStore((state) => state.editors[editorId].sendProcessStatus);

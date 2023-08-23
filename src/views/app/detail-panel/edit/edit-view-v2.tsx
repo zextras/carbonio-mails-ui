@@ -37,7 +37,6 @@ import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
-import * as StyledComp from './parts/edit-view-styled-components';
 import { RecipientsRows } from './parts/recipients-rows';
 import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
 import WarningBanner from './parts/warning-banner';
@@ -63,7 +62,7 @@ import {
 	useEditorSubject,
 	useEditorText,
 	getEditor,
-	useEditorAttachmentFiles
+	useEditorAttachments
 } from '../../../../store/zustand/editor';
 import { BoardContext, EditorRecipients } from '../../../../types';
 
@@ -95,7 +94,8 @@ export const EditView: FC<EditViewProp> = ({
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-	const attachmentFiles = useEditorAttachmentFiles({ id: editorId });
+
+	const { uploadAttachment } = useEditorAttachments(editorId);
 
 	const edito = getEditor({ id: editorId });
 
@@ -257,9 +257,14 @@ export const EditView: FC<EditViewProp> = ({
 		setRequestReadReceipt(!requestReadReceipt);
 	}, [requestReadReceipt, setRequestReadReceipt]);
 
-	const addFilesFromLocal = useCallback((filesResponse) => {
-		// TODO handle files response and update attachment in Editor store
-	}, []);
+	const addFilesFromLocal = useCallback(
+		(files: FileList) => {
+			for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
+				uploadAttachment(files[fileIndex], {});
+			}
+		},
+		[uploadAttachment]
+	);
 
 	const addFilesFromFiles = useCallback((filesResponse) => {
 		// TODO handle files response and update attachment in Editor store
@@ -289,15 +294,14 @@ export const EditView: FC<EditViewProp> = ({
 	const onDropEvent = (event: DragEvent): void => {
 		event.preventDefault();
 		setDropZoneEnabled(false);
-		// // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// // @ts-ignore
-		// addAttachments(saveDraftCb, uploadAttachmentsCb, editor, event?.dataTransfer?.files).then(
-		// 	(data) => {
-		// 		updateEditorCb({
-		// 			attach: { mp: data }
-		// 		});
-		// 	}
-		// );
+		const files = event?.dataTransfer?.files;
+		if (!files) {
+			return;
+		}
+
+		for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
+			uploadAttachment(files[fileIndex], {});
+		}
 	};
 
 	const onDragLeaveEvent = (event: DragEvent): void => {
@@ -474,13 +478,9 @@ export const EditView: FC<EditViewProp> = ({
 							)}
 						</Container>
 					</Container>
-					{attachmentFiles.length > 0 && (
-						<StyledComp.RowContainer background="gray6" padding={{ all: 'small' }}>
-							<StyledComp.ColContainer occupyFull>
-								<EditAttachmentsBlock editorId={editorId} />
-							</StyledComp.ColContainer>
-						</StyledComp.RowContainer>
-					)}
+
+					<EditAttachmentsBlock editorId={editorId} />
+
 					<TextEditorContainer
 						onDragOver={onDragOverEvent}
 						onFilesSelected={noop}

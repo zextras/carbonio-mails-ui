@@ -18,7 +18,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 import styled, { SimpleInterpolation } from 'styled-components';
 
-import { UploadingAttachment, UploadingRow } from './uploading-attachment';
+import { AttachmentUploadStatus, UploadingRow } from './attachment-upload-status';
 import { getFileExtension } from '../../../../commons/utilities';
 import { getRemoveAttachments } from '../../../../store/zustand/editor';
 import StyledWrapper from '../../../../styled-wrapper';
@@ -172,7 +172,7 @@ export const Attachment: FC<AttachmentType> = ({
 					</Row>
 				</Tooltip>
 				{isUploading && (
-					<UploadingAttachment uploadProgress={uploadProgress} cancelUpload={cancelUpload} />
+					<AttachmentUploadStatus uploadProgress={uploadProgress} cancelUpload={cancelUpload} />
 				)}
 				{uploadCompleted && <Text>Upload completed</Text>}
 				<Row orientation="horizontal" crossAlignment="center">

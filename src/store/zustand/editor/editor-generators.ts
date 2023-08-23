@@ -6,15 +6,12 @@
 import { Account, AccountSettings, t } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
 
-import {
-	computeAttachmentUploadAllowedStatus,
-	computeDraftSaveAllowedStatus,
-	computeSendAllowedStatus
-} from './editor-utils';
+import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
 import { getEditor } from './hooks';
 import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { LineType } from '../../../commons/utils';
 import { EditViewActions, EditViewActionsType } from '../../../constants';
+import { getAttachmentParts } from '../../../helpers/attachments';
 import {
 	getDefaultIdentity,
 	getIdentityFromParticipant,
@@ -22,7 +19,7 @@ import {
 } from '../../../helpers/identities';
 import { getFromParticipantFromMessage } from '../../../helpers/messages';
 import { getMailBodyWithSignature } from '../../../helpers/signatures';
-import { MailMessage, MailsEditorV2, MsgMap } from '../../../types';
+import { MailMessage, MailsEditorV2, MsgMap, SavedAttachment } from '../../../types';
 import {
 	extractBody,
 	generateReplyText,
@@ -49,6 +46,17 @@ const labels = {
 	sent: `${t('label.sent', 'Sent')}:`
 };
 
+const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
+	const attachmentsParts = getAttachmentParts(message);
+	return attachmentsParts.map<SavedAttachment>((part) => ({
+		messageId: message.id,
+		filename: part.filename ?? '',
+		partName: part.name,
+		contentType: part.contentType,
+		size: part.size
+	}));
+};
+
 /**
  *
  */
@@ -64,12 +72,14 @@ const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEdit
 
 	const editor = {
 		action: EditViewActions.NEW,
-		attachmentFiles: [],
 		identityId: getDefaultIdentity().id,
 		id: editorId,
 		// TODO: Need to manage the attachments
-		attachments: { mp: [] },
-		inlineAttachments: [],
+		// attachments: { mp: [] },
+		// attachmentFiles: [],
+		// inlineAttachments: [],
+		unsavedAttachments: [],
+		savedAttachments: [],
 		isRichText: true,
 		isUrgent: false,
 		recipients: {
@@ -86,7 +96,6 @@ const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEdit
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
-	editor.attachmentsUploadStatus = computeAttachmentUploadAllowedStatus(editor);
 	return editor;
 };
 
@@ -120,13 +129,15 @@ const generateReplyAndReplyAllMsgEditor = (
 			: retrieveALL(originalMessage, [account]);
 	const editor = {
 		action: EditViewActions.REPLY,
-		attachmentFiles: [],
 		identityId: from.identityId,
 		sender: undefined,
 		id: editorId,
 		// TODO: Need to manage the attachments
-		attachments: { mp: [] },
-		inlineAttachments: [],
+		// attachments: { mp: [] },
+		// attachmentFiles: [],
+		// inlineAttachments: [],
+		unsavedAttachments: [],
+		savedAttachments: buildSavedAttachments(originalMessage),
 		isRichText: true,
 		isUrgent: originalMessage.urgent,
 		recipients: {
@@ -145,7 +156,6 @@ const generateReplyAndReplyAllMsgEditor = (
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
-	editor.attachmentsUploadStatus = computeAttachmentUploadAllowedStatus(editor);
 
 	return editor;
 };
@@ -175,12 +185,14 @@ const generateForwardMsgEditor = (
 	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const editor = {
 		action: EditViewActions.REPLY,
-		attachmentFiles: [],
 		identityId: from.identityId,
 		id: editorId,
 		// TODO: Need to manage the attachments
-		attachments: { mp: [] },
-		inlineAttachments: [],
+		// attachments: { mp: [] },
+		// attachmentFiles: [],
+		// inlineAttachments: [],
+		unsavedAttachments: [],
+		savedAttachments: buildSavedAttachments(originalMessage),
 		isRichText: true,
 		isUrgent: originalMessage.urgent,
 		recipients: {
@@ -221,12 +233,14 @@ const generateEditAsNewAndDraftEditor = (
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
 	const editor = {
 		action: EditViewActions.REPLY,
-		attachmentFiles: [],
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
 		// TODO: Need to manage the attachments
-		attachments: { mp: [] },
-		inlineAttachments: [],
+		// attachments: { mp: [] },
+		// attachmentFiles: [],
+		// inlineAttachments: [],
+		unsavedAttachments: [],
+		savedAttachments: buildSavedAttachments(originalMessage),
 		isRichText: true,
 		isUrgent: originalMessage.urgent,
 		recipients: {

@@ -5,6 +5,7 @@
  */
 import { isNil } from 'lodash';
 import { DefaultTheme } from 'styled-components';
+
 import type { EditorAttachmentFiles } from '../types/editor';
 import type { AttachmentPart } from '../types/messages';
 
@@ -18,6 +19,10 @@ export const calcColor = (label: string, theme: DefaultTheme): string => {
 	return theme.avatarColors[`avatar_${(sum % 50) + 1}`];
 };
 
+/**
+ * @deprecated use the getAttachmentExtension on helpers/attachments.ts
+ * @param file
+ */
 export const getFileExtension = (
 	file: EditorAttachmentFiles | AttachmentPart
 ): { value: string; displayName?: string } => {

@@ -7,14 +7,12 @@ import React, { FC, ReactElement, useCallback, useMemo, useRef } from 'react';
 
 import { Dropdown, Row, Text, Tooltip, Icon, Padding } from '@zextras/carbonio-design-system';
 import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
-import { AxiosProgressEvent } from 'axios';
 import { compact } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 import * as StyledComp from './edit-view-styled-components';
 import { MailsEditorV2 } from '../../../../../types';
-import { addAttachmentsToEditor } from '../edit-utils';
 import {
 	useGetFilesFromDrive,
 	useGetFilesFromDriveRespType
@@ -36,7 +34,7 @@ const SelectorContainer = styled(Row)`
  * @param addPublicLinkFromFiles
  */
 export type AddAttachmentsDropdownProps = {
-	addFilesFromLocal: (files: any) => void;
+	addFilesFromLocal: (files: FileList) => void;
 	addFilesFromFiles: (files: useGetFilesFromDriveRespType[]) => void;
 	addPublicLinkFromFiles: (files: UseGetPublicUrlRespType[]) => void;
 	editorId: MailsEditorV2['id'];
@@ -139,10 +137,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({
 		getFilesAction,
 		actionURLTarget
 	]);
-	function onUploadProgress(progressEvent: AxiosProgressEvent): void {
-		const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-		console.log(percentCompleted);
-	}
+
 	return (
 		<SelectorContainer orientation="horizontal" mainAlignment="space-between">
 			<Controller
@@ -157,11 +152,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({
 						ref={inputRef}
 						data-testid="file-input"
 						onChange={(): void => {
-							addAttachmentsToEditor({
-								files: inputRef?.current?.files,
-								editorId,
-								onUploadProgress
-							});
+							addFilesFromLocal && addFilesFromLocal(inputRef?.current?.files);
 						}}
 						multiple
 					/>

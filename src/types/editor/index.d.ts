@@ -8,7 +8,6 @@ import { EditViewActionsType } from '../../constants';
 import { type AppDispatch } from '../../store/redux';
 import type { MailMessage } from '../messages';
 import type { Participant } from '../participant';
-import type { MailAttachment } from '../soap';
 
 export type EditorAttachmentFiles = {
 	id: string;
@@ -86,7 +85,7 @@ export type DraftSaveProcessStatus = {
 export type AttachmentUploadProcessStatus = {
 	status: 'completed' | 'running' | 'aborted';
 	abortReason?: string;
-	lastSaveTimestamp?: Date;
+	progress?: number;
 };
 
 export type SendProcessStatus = {
@@ -109,6 +108,24 @@ export type EditorPrefillData = {
 	recipients?: Partial<Participant>;
 };
 
+export type AbstractAttachment = {
+	filename: string;
+	contentType: string;
+	size: number;
+};
+
+export type UnsavedAttachment = AbstractAttachment & {
+	aid?: string;
+	uploadId: string;
+	uploadStatus?: AttachmentUploadProcessStatus;
+	uploadAbortController?: AbortController;
+};
+
+export type SavedAttachment = AbstractAttachment & {
+	messageId: string;
+	partName: string;
+};
+
 export type MailsEditorV2 = {
 	// the id of the editor (used to identify the editor in the store)
 	id: string;
@@ -118,13 +135,15 @@ export type MailsEditorV2 = {
 	identityId: string;
 	// the array of inline attachments
 	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
-	inlineAttachments: Array<InlineAttachment>;
-	// the array of non-inline attachments
-	attachments: MailAttachment;
-	// the array of attachment files
-	attachmentFiles: Array<EditorAttachmentFiles>;
-	// allowed status of the attachments upload
-	attachmentsUploadStatus?: EditorOperationAllowedStatus;
+	inlineAttachments?: Array<InlineAttachment>;
+	unsavedAttachments: Array<UnsavedAttachment>;
+	savedAttachments: Array<SavedAttachment>;
+	// // the array of non-inline attachments
+	// attachments: MailAttachment;
+	// // the array of attachment files
+	// attachmentFiles: Array<EditorAttachmentFiles>;
+	// // allowed status of the attachments upload
+	// attachmentsUploadStatus?: EditorOperationAllowedStatus;
 	// user defined delayed send timer
 	autoSendTime?: number;
 	// the saved draft id

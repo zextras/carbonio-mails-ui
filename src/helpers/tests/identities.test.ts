@@ -5,6 +5,7 @@
  */
 import { faker } from '@faker-js/faker';
 import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
+
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { generateMessage } from '../../tests/generators/generateMessage';
@@ -47,29 +48,29 @@ describe('Address owner account', () => {
 
 	test('returns the primary account if address is the primary address', () => {
 		const inputAddress = mocksContext.identities.primary.identity.email;
-		expect(getAddressOwnerAccount(inputAddress, primaryAccount, settings)).toBe(inputAddress);
+		expect(getAddressOwnerAccount(inputAddress)).toBe(inputAddress);
 	});
 
 	test('returns the primary account if address is an alias of the primary address', () => {
 		const inputaddress = mocksContext.identities.aliases[0].identity.email;
-		expect(getAddressOwnerAccount(inputaddress, primaryAccount, settings)).toBe(
+		expect(getAddressOwnerAccount(inputaddress)).toBe(
 			mocksContext.identities.primary.identity.email
 		);
 	});
 
 	test('returns the shared account if address is an address belongs to an account on which the user has the "sendAs" right', () => {
 		const inputAddress = mocksContext.identities.sendAs[0].identity.email;
-		expect(getAddressOwnerAccount(inputAddress, primaryAccount, settings)).toBe(inputAddress);
+		expect(getAddressOwnerAccount(inputAddress)).toBe(inputAddress);
 	});
 
 	test('returns the shared account if address belongs to an account on which the user has the "sendOnBehalf" right', () => {
 		const inputAddress = mocksContext.identities.sendOnBehalf[0].identity.email;
-		expect(getAddressOwnerAccount(inputAddress, primaryAccount, settings)).toBe(inputAddress);
+		expect(getAddressOwnerAccount(inputAddress)).toBe(inputAddress);
 	});
 
 	test("returns null if the address isn't within the primary, the aliases or the shared account", () => {
 		const inputAddress = faker.internet.email();
-		expect(getAddressOwnerAccount(inputAddress, primaryAccount, settings)).toBeNull();
+		expect(getAddressOwnerAccount(inputAddress)).toBeNull();
 	});
 });
 
@@ -84,9 +85,7 @@ describe('Message sender account', () => {
 			address: mocksContext.identities.primary.identity.email
 		};
 		const msg = generateMessage({ from });
-		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBe(
-			mocksContext.identities.primary.identity.email
-		);
+		expect(getMessageSenderAccount(msg)).toBe(mocksContext.identities.primary.identity.email);
 	});
 
 	test('returns the primary account if sender is an alias of the primary address', () => {
@@ -95,9 +94,7 @@ describe('Message sender account', () => {
 			address: mocksContext.identities.aliases[0].identity.email
 		};
 		const msg = generateMessage({ from });
-		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBe(
-			mocksContext.identities.primary.identity.email
-		);
+		expect(getMessageSenderAccount(msg)).toBe(mocksContext.identities.primary.identity.email);
 	});
 
 	test('returns the shared account if sender is an address on which the user has the "sendAs" right', () => {
@@ -107,7 +104,7 @@ describe('Message sender account', () => {
 			address: targetAddress
 		};
 		const msg = generateMessage({ from });
-		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBe(targetAddress);
+		expect(getMessageSenderAccount(msg)).toBe(targetAddress);
 	});
 
 	test('returns the shared account if sender is an address on which the user has the "sendOnBehalf" right', () => {
@@ -117,7 +114,7 @@ describe('Message sender account', () => {
 			address: targetAddress
 		};
 		const msg = generateMessage({ from });
-		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBe(targetAddress);
+		expect(getMessageSenderAccount(msg)).toBe(targetAddress);
 	});
 
 	test("returns null if sender address isn't within the primary, the aliases or the shared account", () => {
@@ -126,6 +123,6 @@ describe('Message sender account', () => {
 			address: mocksContext.otherUsersIdentities[0].email
 		};
 		const msg = generateMessage({ from });
-		expect(getMessageSenderAccount(msg, primaryAccount, settings)).toBeNull();
+		expect(getMessageSenderAccount(msg)).toBeNull();
 	});
 });
