@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /*
  * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
@@ -9,7 +10,6 @@ import React, {
 	FC,
 	SyntheticEvent,
 	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
 	useState
@@ -26,11 +26,14 @@ import {
 	Icon,
 	Input,
 	Text,
-	Padding
+	Padding,
+	useModal
 } from '@zextras/carbonio-design-system';
 import { addBoard, t } from '@zextras/carbonio-shell-ui';
 import { filter, map, noop } from 'lodash';
+import type { TinyMCE } from 'tinymce/tinymce';
 
+import { addInlineAttachments } from './add-inline-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
@@ -41,6 +44,7 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
 import WarningBanner from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
+import { LineType } from '../../../../commons/utils';
 import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import {
 	getAvailableAddresses,
@@ -49,6 +53,7 @@ import {
 	IdentityDescriptor
 } from '../../../../helpers/identities';
 import { getMailBodyWithSignature } from '../../../../helpers/signatures';
+import { StoreProvider } from '../../../../store/redux';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -61,16 +66,62 @@ import {
 	useEditorSend,
 	useEditorSubject,
 	useEditorText,
-	getEditor,
 	useEditorAttachments
 } from '../../../../store/zustand/editor';
-import { BoardContext, EditorRecipients } from '../../../../types';
+import {
+	BoardContext,
+	EditorAttachmentFiles,
+	EditorRecipients,
+	MailsEditorV2
+} from '../../../../types';
+
+const attachmentWords: Array<string> = [
+	t('messages.modal.send_anyway.attach', 'attach'),
+	t('messages.modal.send_anyway.attachment', 'attachment'),
+	t('messages.modal.send_anyway.attachments', 'attachments'),
+	t('messages.modal.send_anyway.attached', 'attached'),
+	t('messages.modal.send_anyway.attaching', 'attaching'),
+	t('messages.modal.send_anyway.enclose', 'enclose'),
+	t('messages.modal.send_anyway.enclosed', 'enclosed'),
+	t('messages.modal.send_anyway.enclosing', 'enclosing')
+];
+
+function getSubjectOrAttachmentError({
+	attachmentIsExpected,
+	attachmentFiles,
+	subject
+}: {
+	attachmentIsExpected: boolean;
+	attachmentFiles: Array<EditorAttachmentFiles>;
+	subject: MailsEditorV2['subject'];
+}): string {
+	const attachmentIsPresent = attachmentFiles.length > 0;
+	const attachmentIsMissing = attachmentIsExpected && !attachmentIsPresent;
+	if (attachmentIsMissing && !subject) {
+		return t(
+			'messages.modal.send_anyway.no_subject_no_attachments',
+			'Email subject is empty and you didn’t attach any files.'
+		);
+	}
+	if (!subject) {
+		return t('messages.modal.send_anyway.subject', 'Subject is missing');
+	}
+	if (attachmentIsMissing) {
+		return t('messages.modal.send_anyway.no_attachments', 'You didn’t attach any files.');
+	}
+	return '';
+}
 
 export type EditViewProp = {
 	editorId: string;
 	closeController?: () => void;
 	hideController?: () => void;
 	showController?: () => void;
+};
+
+type FileSelectProps = {
+	editor: TinyMCE;
+	files: File[];
 };
 
 export const EditView: FC<EditViewProp> = ({
@@ -94,12 +145,7 @@ export const EditView: FC<EditViewProp> = ({
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-
 	const { uploadAttachment } = useEditorAttachments(editorId);
-
-	const edito = getEditor({ id: editorId });
-
-	console.log('=========nnn>>', { edito });
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(() => {
@@ -137,9 +183,6 @@ export const EditView: FC<EditViewProp> = ({
 		[createSnackbar, editorId]
 	);
 
-	useEffect(() => {
-		console.log('@@editorFromEditView', getEditor({ id: editorId }));
-	}, [editorId]);
 	const onSendError = useCallback(
 		(error: string): void => {
 			createSnackbar({
@@ -175,14 +218,54 @@ export const EditView: FC<EditViewProp> = ({
 		[close, saveDraft, setAutoSendTime]
 	);
 
+	const createModal = useModal();
 	const onSendClick = useCallback((): void => {
-		// TODO invoke pre-send (missing attachments and subject) checks
-		sendMessage({
-			onCountdownTick: onSendCountdownTick,
-			onComplete: onSendComplete,
-			onError: onSendError
+		const attachmentIsExpected = attachmentWords.some((el) => {
+			const [msgContent] = text.richText
+				? text.richText.split(LineType.HTML_SEP_ID)
+				: text.plainText.split(LineType.PLAINTEXT_SEP);
+			return msgContent.toLowerCase().includes(el);
 		});
-		close();
+		if ((attachmentIsExpected && !attachmentFiles.length) || !subject) {
+			const closeModal = createModal({
+				title: t('header.attention', 'Attention'),
+				confirmLabel: t('action.ok', 'Ok'),
+				dismissLabel: t('label.cancel', 'Cancel'),
+				showCloseIcon: true,
+				onConfirm: () => {
+					sendMessage({
+						onCountdownTick: onSendCountdownTick,
+						onComplete: onSendComplete,
+						onError: onSendError
+					});
+					close();
+					closeModal();
+				},
+				onClose: () => {
+					closeModal();
+				},
+				onSecondaryAction: () => {
+					closeModal();
+				},
+				children: (
+					<StoreProvider>
+						<Text overflow="break-word" style={{ paddingTop: '1rem' }}>
+							{getSubjectOrAttachmentError({ attachmentIsExpected, attachmentFiles, subject })}
+						</Text>
+						<Text overflow="break-word" style={{ paddingBottom: '1rem' }}>
+							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
+						</Text>
+					</StoreProvider>
+				)
+			});
+		} else {
+			sendMessage({
+				onCountdownTick: onSendCountdownTick,
+				onComplete: onSendComplete,
+				onError: onSendError
+			});
+			close();
+		}
 	}, [close, onSendComplete, onSendCountdownTick, onSendError, sendMessage]);
 
 	const onIdentityChanged = useCallback(
@@ -324,6 +407,7 @@ export const EditView: FC<EditViewProp> = ({
 		);
 	}, [recipients.to]);
 
+	const flexStart = 'flex-start';
 	const composerOptions = useMemo(
 		() => [
 			{
@@ -363,11 +447,18 @@ export const EditView: FC<EditViewProp> = ({
 		[isUrgent, requestReadReceipt]
 	);
 
-	const editor = getEditor({ id: editorId });
+	const onFilesSelected = ({ editor: tinymce, files }: FileSelectProps): void => {
+		addInlineAttachments({
+			files,
+			tinymce,
+			editorId
+		});
+	};
+
 	return (
 		<Container
-			mainAlignment="flex-start"
-			crossAlignment={'flex-start'}
+			mainAlignment={flexStart}
+			crossAlignment={flexStart}
 			padding={{ all: 'large' }}
 			background={'gray5'}
 			onDragOver={onDragOverEvent}
@@ -379,7 +470,7 @@ export const EditView: FC<EditViewProp> = ({
 					onDragLeaveEvent={onDragLeaveEvent}
 				/>
 			)}
-			<GapContainer mainAlignment={'flex-start'} crossAlignment={'flex-start'} gap={'large'}>
+			<GapContainer mainAlignment={flexStart} crossAlignment={flexStart} gap={'large'}>
 				{/* Header start */}
 
 				<GapRow
@@ -432,16 +523,16 @@ export const EditView: FC<EditViewProp> = ({
 				{isSendingToYourself && <WarningBanner />}
 
 				<GapContainer
-					mainAlignment={'flex-start'}
-					crossAlignment={'flex-start'}
+					mainAlignment={flexStart}
+					crossAlignment={flexStart}
 					background={'white'}
 					padding={{ all: 'small' }}
 					gap={'small'}
 				>
-					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
+					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
 						<RecipientsRows recipients={recipients} onRecipientsChange={onRecipientsChanged} />
 					</Container>
-					<Container mainAlignment={'flex-start'} crossAlignment={'flex-start'} height={'fit'}>
+					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
 						<Container
 							orientation="horizontal"
 							background="gray5"
@@ -483,7 +574,7 @@ export const EditView: FC<EditViewProp> = ({
 
 					<TextEditorContainer
 						onDragOver={onDragOverEvent}
-						onFilesSelected={noop}
+						onFilesSelected={onFilesSelected}
 						onContentChanged={onBodyChange}
 						richTextMode={isRichText}
 						content={text}

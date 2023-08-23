@@ -19,7 +19,13 @@ import {
 } from '../../../helpers/identities';
 import { getFromParticipantFromMessage } from '../../../helpers/messages';
 import { getMailBodyWithSignature } from '../../../helpers/signatures';
-import { MailMessage, MailsEditorV2, MsgMap, SavedAttachment } from '../../../types';
+import {
+	MailMessage,
+	MailsEditorV2,
+	MsgMap,
+	SavedAttachment,
+	EditorPrefillData
+} from '../../../types';
 import {
 	extractBody,
 	generateReplyText,
@@ -96,6 +102,50 @@ const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEdit
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+	return editor;
+};
+
+/**
+ *
+ */
+const generateIntegratedNewEditor = (
+	messagesStoreDispatch: AppDispatch,
+	compositionData?: EditorPrefillData
+): MailsEditorV2 => {
+	const editorId = uuid();
+	const text = {
+		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
+		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+	};
+	const defaultIdentity = getDefaultIdentity();
+	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
+	const attachments = compositionData?.aid ? { aid: compositionData?.aid } : { mp: [] };
+
+	const editor = {
+		action: EditViewActions.NEW,
+		attachmentFiles: [],
+		identityId: getDefaultIdentity().id,
+		id: editorId,
+		// TODO: Need to manage the attachments
+		attachments,
+		inlineAttachments: [],
+		isRichText: true,
+		isUrgent: false,
+		recipients: {
+			to: compositionData?.recipients ? compositionData.recipients : [],
+			cc: [],
+			bcc: []
+		},
+		subject: '',
+		text: textWithSignature,
+		requestReadReceipt: false,
+		// signature,
+		messagesStoreDispatch
+	} as MailsEditorV2;
+
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+	editor.attachmentsUploadStatus = computeAttachmentUploadAllowedStatus(editor);
 	return editor;
 };
 
@@ -277,7 +327,8 @@ export type GenerateEditorParams = {
 	messagesStoreDispatch: AppDispatch;
 	account: Account;
 	settings: AccountSettings;
-	messages?: MsgMap;
+	message?: MailMessage | undefined;
+	compositionData?: EditorPrefillData;
 };
 
 /**
@@ -295,7 +346,8 @@ export const generateEditor = ({
 	messagesStoreDispatch,
 	account,
 	settings,
-	messages
+	message,
+	compositionData
 }: GenerateEditorParams): MailsEditorV2 | null => {
 	switch (action) {
 		case EditViewActions.RESUME:
@@ -310,12 +362,12 @@ export const generateEditor = ({
 			if (!id) {
 				throw new Error('Cannot generate a reply editor without a message id');
 			}
-			if (messages && id && messages?.[id]) {
+			if (message) {
 				return generateReplyAndReplyAllMsgEditor(
 					messagesStoreDispatch,
 					account,
 					settings,
-					messages?.[id] as MailMessage,
+					message,
 					action
 				);
 			}
@@ -325,12 +377,12 @@ export const generateEditor = ({
 			if (!id) {
 				throw new Error('Cannot generate a reply all editor without a message id');
 			}
-			if (messages && id && messages?.[id]) {
+			if (message) {
 				return generateReplyAndReplyAllMsgEditor(
 					messagesStoreDispatch,
 					account,
 					settings,
-					messages?.[id] as MailMessage,
+					message,
 					action
 				);
 			}
@@ -340,13 +392,8 @@ export const generateEditor = ({
 			if (!id) {
 				throw new Error('Cannot generate a forward editor without a message id');
 			}
-			if (messages && id && messages?.[id]) {
-				return generateForwardMsgEditor(
-					messagesStoreDispatch,
-					account,
-					settings,
-					messages?.[id] as MailMessage
-				);
+			if (message) {
+				return generateForwardMsgEditor(messagesStoreDispatch, account, settings, message);
 			}
 			break;
 		case EditViewActions.EDIT_AS_DRAFT:
@@ -354,13 +401,8 @@ export const generateEditor = ({
 			if (!id) {
 				throw new Error('Cannot generate a draft editor without a message id');
 			}
-			if (messages && id && messages?.[id]) {
-				return generateEditAsNewAndDraftEditor(
-					messagesStoreDispatch,
-					account,
-					settings,
-					messages?.[id] as MailMessage
-				);
+			if (message) {
+				return generateEditAsNewAndDraftEditor(messagesStoreDispatch, account, settings, message);
 			}
 			break;
 		case EditViewActions.EDIT_AS_NEW:
@@ -368,25 +410,23 @@ export const generateEditor = ({
 			if (!id) {
 				throw new Error('Cannot generate an edit as new editor without a message id');
 			}
-			if (messages && id && messages?.[id]) {
-				return generateEditAsNewAndDraftEditor(
-					messagesStoreDispatch,
-					account,
-					settings,
-					messages?.[id] as MailMessage
-				);
+			if (message) {
+				return generateEditAsNewAndDraftEditor(messagesStoreDispatch, account, settings, message);
 			}
 			break;
 		case EditViewActions.MAIL_TO:
+		case EditViewActions.PREFILL_COMPOSE:
 			// TODO
+			return generateIntegratedNewEditor(messagesStoreDispatch, compositionData);
 
 			break;
 		case EditViewActions.COMPOSE:
 			// TODO
 			break;
-		case EditViewActions.PREFILL_COMPOSE:
-			// TODO
-			break;
+		// case EditViewActions.PREFILL_COMPOSE:
+		// 	// TODO
+		// 	return generateIntegratedNewEditor(messagesStoreDispatch, compositionData);
+		// 	break;
 		default:
 			return null;
 	}

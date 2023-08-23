@@ -6,7 +6,6 @@
 import { Account, getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { filter, findIndex, flatten, isArray, map, remove } from 'lodash';
-import { v4 as uuid } from 'uuid';
 
 import { getMessageOwnerAccountName } from './folders';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
@@ -195,6 +194,19 @@ const getAddressOwnerAccount = (address: string): string | null => {
 };
 
 /**
+ * @param email
+ * @param rights
+ */
+const generateIdentityId = (email: string, rights: string): string => email + rights;
+// const combinedString = email + rights;
+// const hash = combinedString
+// 	.split('')
+// 	.reduce((acc, char) => acc * 31 + char.charCodeAt(0) || 0, 0);
+
+// const positiveHash = Math.abs(hash);
+// return positiveHash.toString();
+
+/**
  *
  * @param identities
  */
@@ -271,7 +283,7 @@ const getIdentitiesDescriptors = (): Array<IdentityDescriptor> => {
 			map(ele?.target, (item: { d: string; type: string; email: Array<{ addr: string }> }) => ({
 				ownerAccount: item.email[0].addr ?? account.name,
 				receivingAddress: item.email[0].addr,
-				id: uuid(),
+				id: generateIdentityId(item.email[0].addr, ele.right),
 				identityName: item.d,
 				identityDisplayName: item.d,
 				fromDisplay: item.d,

@@ -12,8 +12,7 @@ import {
 	useUserSettings,
 	closeBoard,
 	t,
-	useBoardHooks,
-	getBoardContextById
+	useBoardHooks
 } from '@zextras/carbonio-shell-ui';
 
 import { EditView } from './edit-view-v2';
@@ -24,7 +23,7 @@ import { getMsg } from '../../../../store/actions';
 import { selectMessages } from '../../../../store/messages-slice';
 import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
-import { EditViewBoardContext } from '../../../../types';
+import { EditViewBoardContext, MailMessage } from '../../../../types';
 
 const parseAndValidateParams = (
 	action?: string,
@@ -46,13 +45,10 @@ const EditViewController: FC = (x) => {
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
 	const messages = useAppSelector(selectMessages);
-	const conte = getBoardContextById(board.id);
-	//
 
 	const onClose = useCallback(() => {
 		closeBoard(board.id);
 	}, [board.id]);
-	console.log('====11======>>>>', { board });
 	// TODO check why the useQueryParams triggers 2 renders
 	let { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
 
@@ -78,6 +74,11 @@ const EditViewController: FC = (x) => {
 		id = existingEditorId;
 	}
 
+	let message;
+	if (id) {
+		message = messages?.[id] as MailMessage;
+	}
+
 	// Create or resume editor
 	const editor = generateEditor({
 		action,
@@ -85,7 +86,8 @@ const EditViewController: FC = (x) => {
 		messagesStoreDispatch,
 		account,
 		settings,
-		messages
+		message,
+		compositionData
 	});
 	if (!editor) {
 		throw new Error('No editor provided');

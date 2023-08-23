@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
+import { getBridgedFunctions, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { debounce, find, findIndex } from 'lodash';
 
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
@@ -79,6 +79,29 @@ const computeAndUpdateEditorStatus = (editorId: MailsEditorV2['id']): void => {
 		.updateDraftSaveAllowedStatus(editorId, computeDraftSaveAllowedStatus(editor));
 
 	useEditorsStore.getState().updateSendAllowedStatus(editorId, computeSendAllowedStatus(editor));
+};
+
+/** updates the draft for a specific editor.
+ * @params editorId
+ * @params res
+ */
+export const useUpdateDraft = ({
+	editorId,
+	res
+}: {
+	editorId: MailsEditorV2['id'];
+	res: SaveDraftResponse;
+}): void => {
+	useEditorsStore((s) => s.updateAttachmentFiles(editorId, res));
+};
+export const getUpdateDraft = ({
+	editorId,
+	res
+}: {
+	editorId: MailsEditorV2['id'];
+	res: SaveDraftResponse;
+}): void => {
+	useEditorsStore.getState().updateAttachmentFiles(editorId, res);
 };
 
 /**
@@ -186,6 +209,13 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 			status: 'aborted',
 			abortReason: err
 		});
+		getBridgedFunctions()?.createSnackbar({
+			key: `save-draft`,
+			replace: true,
+			type: 'error',
+			label: t('label.error_try_again', 'Something went wrong, please try again'),
+			autoHideTimeout: 3000
+		});
 		computeAndUpdateEditorStatus(editorId);
 		options?.onError && options.onError(err);
 	};
@@ -204,6 +234,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 				status: 'completed',
 				lastSaveTimestamp: new Date()
 			});
+			getUpdateDraft({ editorId, res });
 			computeAndUpdateEditorStatus(editorId);
 			options?.onComplete && options?.onComplete();
 		})
@@ -331,6 +362,31 @@ export const useEditorText = (
 			debugLog('save cause: text reset');
 		}
 	};
+};
+
+/**
+ * Get the text of the editor with given ID
+ * @param id
+ * */
+export const getEditorText = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2['text'] =>
+	useEditorsStore.getState().editors[id].text;
+
+/**
+ * Set the text of the editor with given ID
+ * @param id
+ * @param text
+ * @param type
+ * */
+export const getUpdateEditorText = ({
+	id,
+	text
+}: {
+	id: MailsEditorV2['id'];
+	text: MailsEditorV2['text'];
+}): void => {
+	useEditorsStore.getState().updateText(id, text);
+	debouncedSaveDraftFromEditor(id);
+	debugLog('save cause: update text');
 };
 
 /**
@@ -971,29 +1027,6 @@ export const useEditorDraftSave = (
 		saveDraft: invoker
 	};
 };
-//
-// /** updates the draft for a specific editor.
-//  * @params editorId
-//  * @params res
-//  */
-// export const useUpdateDraft = ({
-// 	editorId,
-// 	res
-// }: {
-// 	editorId: MailsEditorV2['id'];
-// 	res: SaveDraftResponse;
-// }): void => {
-// 	useEditorsStore((s) => s.updateAttachmentFiles(editorId, res));
-// };
-// export const getUpdateDraft = ({
-// 	editorId,
-// 	res
-// }: {
-// 	editorId: MailsEditorV2['id'];
-// 	res: SaveDraftResponse;
-// }): void => {
-// 	useEditorsStore.getState().updateAttachmentFiles(editorId, res);
-// };
 
 /**
  * Returns the reactive status of the draft save process

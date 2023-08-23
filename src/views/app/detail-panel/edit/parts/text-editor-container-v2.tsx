@@ -8,16 +8,16 @@ import React, { FC, SyntheticEvent, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import type { TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
 import { plainTextToHTML } from '../../../../../commons/mail-message-renderer';
-import type { MailsEditor } from '../../../../../types';
 
 export type TextEditorContent = { plainText: string; richText: string };
 
 export type TextEditorContainerProps = {
 	onDragOver: (event: SyntheticEvent) => void;
-	onFilesSelected: (files: File[]) => void;
+	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: File[] }) => void;
 	onContentChanged: (content: TextEditorContent) => void;
 	richTextMode: boolean;
 	content: TextEditorContent;
@@ -30,11 +30,6 @@ export type TextEditorContainerProps = {
 	// updateSubjectField: (mod: Partial<MailsEditor>) => void;
 	// saveDraftCb: (data: MailsEditor, signal?: AbortSignal) => SaveDraftResponse;
 	// textValue: [string, string];
-};
-
-type FileSelectProps = {
-	editor: MailsEditor;
-	files: File[];
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({
@@ -73,33 +68,6 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	// 	setInputValue(textValue);
 	// }, [textValue]);
 	//
-	// useEffect(() => {
-	// 	const controller = new AbortController();
-	// 	const { signal } = controller;
-	// 	if (isReady) {
-	// 		saveDraftCb(
-	// 			{
-	// 				...editor,
-	// 				text: inputValue
-	// 			},
-	// 			signal
-	// 		).then((res: SaveDraftResponse) => {
-	// 			if (res.payload.resp.m) {
-	// 				setIsReady(false);
-	// 				getConvertedImageSources({
-	// 					message: normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0]),
-	// 					updateEditorCb,
-	// 					setValue,
-	// 					setInputValue,
-	// 					inputValue
-	// 				});
-	// 			}
-	// 		});
-	// 	}
-	// 	return () => {
-	// 		controller.abort();
-	// 	};
-	// }, [editor, inputValue, isReady, saveDraftCb, setValue, updateEditorCb]);
 
 	return (
 		<>
@@ -123,15 +91,6 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									value={content.richText}
 									disabled={disabled}
 									onFileSelect={onFilesSelected}
-									// onFileSelect={({ editor: tinymce, files }: FileSelectProps): void => {
-									// 	addInlineAttachments({
-									// 		files,
-									// 		tinymce,
-									// 		updateEditorCb,
-									// 		setIsReady,
-									// 		editor
-									// 	});
-									// }}
 									onEditorChange={(ev: [string, string]): void => {
 										onContentChanged({ plainText: ev[0], richText: ev[1] });
 									}}
