@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React, { FC, memo, useCallback, useMemo, useState } from 'react';
+
 import {
 	Badge,
 	Container,
@@ -26,10 +28,11 @@ import {
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
-import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+
+import { ConversationMessagesList } from './conversation-messages-list';
+import { getFolderParentId } from './utils';
 import { participantToString } from '../../../../commons/utils';
-import { getFolderIdParts } from '../../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
@@ -46,8 +49,6 @@ import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { RowInfo } from '../parts/row-info';
 import { SenderName } from '../parts/sender-name';
-import { ConversationMessagesList } from './conversation-messages-list';
-import { getFolderParentId } from './utils';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -207,13 +208,6 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 								if (folderParent === FOLDERS.TRASH) {
 									return [...acc, msg];
 								}
-								// deleted and spam messages are hidden in all folders except trash and spam
-								if (
-									(msg.parent === FOLDERS.TRASH && folderParent !== FOLDERS.TRASH) ||
-									(msg.parent === FOLDERS.SPAM && folderParent !== FOLDERS.SPAM)
-								) {
-									return acc;
-								}
 								// all other messages are valid and must be showed in the conversation
 								return [...acc, msg];
 							}
@@ -223,7 +217,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 					).sort((a, b) => (a.date && b.date ? sortSign * (a.date - b.date) : 1)),
 					'id'
 				),
-			[item?.messages, folderParent, messages, sortSign]
+			[item, messages, folderParent, sortSign]
 		);
 
 		/**
@@ -231,24 +225,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		 * In search module we check if the user has enabled the option to show trashed and/or spam messages
 		 * @returns {number}
 		 */
-		const getmsgToDisplayCount = useCallback((): number => {
-			if (isSearchModule && showTrashedMessagesInSearch && showSpamMessagesInSearch)
-				return item?.messages?.length;
-			if (isSearchModule && showTrashedMessagesInSearch)
-				return filter(
-					item?.messages,
-					(msg) => ![FOLDERS.SPAM].includes(getFolderIdParts(msg.parent).id ?? '')
-				)?.length;
-			if (isSearchModule && showSpamMessagesInSearch)
-				return filter(
-					item?.messages,
-					(msg) => ![FOLDERS.TRASH].includes(getFolderIdParts(msg.parent).id ?? '')
-				)?.length;
-			return filter(
-				item?.messages,
-				(msg) => ![FOLDERS.TRASH, FOLDERS.SPAM].includes(getFolderIdParts(msg.parent).id ?? '')
-			)?.length;
-		}, [isSearchModule, item?.messages, showSpamMessagesInSearch, showTrashedMessagesInSearch]);
+		const getmsgToDisplayCount = useCallback((): number => item.messagesInConversation, [item]);
 
 		const textReadValues: TextReadValuesProps = useMemo(() => {
 			if (typeof item.read === 'undefined')
