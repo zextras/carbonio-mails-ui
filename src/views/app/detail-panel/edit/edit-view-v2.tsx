@@ -10,7 +10,6 @@ import React, {
 	FC,
 	SyntheticEvent,
 	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
 	useState
@@ -68,8 +67,7 @@ import {
 	useEditorSubject,
 	useEditorText,
 	useEditorAttachmentFiles,
-	deleteEditor,
-	getEditor
+	deleteEditor
 } from '../../../../store/zustand/editor';
 import { BoardContext, CloseBoardReasons, EditorRecipients } from '../../../../types';
 
@@ -102,7 +100,6 @@ export const EditView: FC<EditViewProp> = ({
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
-	console.log('@@saveDraftAllowedStatus', { saveDraftAllowedStatus });
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
@@ -116,10 +113,6 @@ export const EditView: FC<EditViewProp> = ({
 		[closeController]
 	);
 
-	const editor = getEditor({ id: editorId });
-	useEffect(() => {
-		console.log('@@the_editor', { editor });
-	}, [editor]);
 	const onSaveClick = useCallback<ButtonProps['onClick']>((): void => {
 		saveDraft();
 	}, [saveDraft]);
