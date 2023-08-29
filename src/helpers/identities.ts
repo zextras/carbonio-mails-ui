@@ -417,6 +417,14 @@ const filterMatchingRecipients = (recipients: Array<RecipientWeight>): Array<Rec
 };
 
 /**
+ *
+ */
+const getDefaultIdentity = (): IdentityDescriptor =>
+	getIdentitiesDescriptors().reduce((result, identity) =>
+		identity.identityName === PRIMARY_IDENTITY_NAME ? identity : result
+	);
+
+/**
  * Analyze the message and return the identity that should be used to reply it.
  * @param folderRoots - The list of all the folder roots
  * @param message - The message to analyze
@@ -452,6 +460,16 @@ const getRecipientReplyIdentity = (
 	// Sort the recipient by weight
 	const replyIdentity = recipientWeights.sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0))?.[0];
 
+	if (!replyIdentity) {
+		// Return the default identity if not getting the matching recipient
+		const defaultIdentity = getDefaultIdentity();
+		return {
+			name: defaultIdentity?.fromDisplay ?? '',
+			address: defaultIdentity?.fromAddress ?? defaultIdentity?.receivingAddress ?? '',
+			identityId: defaultIdentity?.id,
+			identityName: defaultIdentity?.identityName
+		};
+	}
 	// Return the identity with the highest weight
 	return {
 		name: replyIdentity?.recipientFullName ?? '',
@@ -507,14 +525,6 @@ const getMessageSenderAccount = (message: MailMessage): string | null => {
 
 	return getAddressOwnerAccount(address);
 };
-
-/**
- *
- */
-const getDefaultIdentity = (): IdentityDescriptor =>
-	getIdentitiesDescriptors().reduce((result, identity) =>
-		identity.identityName === PRIMARY_IDENTITY_NAME ? identity : result
-	);
 
 /**
  *
