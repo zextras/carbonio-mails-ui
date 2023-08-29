@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { produce } from 'immer';
-import { findIndex, remove } from 'lodash';
+import { remove } from 'lodash';
 import { create } from 'zustand';
 
+import { filterSavedInlineAttachment, filterUnsavedInlineAttachment } from './editor-utils';
+import { getUnsavedAttachmentIndex } from './store-utils';
 import {
 	AttachmentUploadProcessStatus,
 	EditorsStateTypeV2,
@@ -225,23 +227,6 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	// updateAttachmentFiles: (editorId: MailsEditorV2['id'], res: SaveDraftResponse): void => {
-	// 	set(
-	// 		produce((state: EditorsStateTypeV2) => {
-	// 			if (res?.m?.length) {
-	// 				const message = normalizeMailMessageFromSoap(res.m[0], true);
-	// 				const mp = retrieveAttachmentsType(message, 'attachment');
-	// 				const attachmentFiles = findAttachmentFiles(message.parts, []);
-	// 				const editor = state.editors[editorId];
-	// 				editor.attachments = { mp };
-	// 				editor.attachmentFiles = attachmentFiles;
-	// 				editor.originalId = editor.originalId ?? editor.originalMessage?.id;
-	// 				editor.did = message.id;
-	// 				editor.originalMessage = message;
-	// 			}
-	// 		})
-	// 	);
-	// },
 	updateSendAllowedStatus: (id, status): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
@@ -278,11 +263,11 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	setUnsavedAttachments: (id: MailsEditorV2['id'], attachment: Array<UnsavedAttachment>): void => {
+	removeUnsavedAttachments: (id: MailsEditorV2['id']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].unsavedAttachments = [...attachment];
+					state.editors[id].unsavedAttachments = [];
 				}
 			})
 		);
@@ -296,6 +281,15 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	addSavedAttachment: (id: MailsEditorV2['id'], attachment: SavedAttachment): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].savedAttachments.push(attachment);
+				}
+			})
+		);
+	},
 	setAttachmentUploadStatus: (
 		id: MailsEditorV2['id'],
 		uploadId: string,
@@ -303,37 +297,27 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					const unsavedAttachmentIndex = findIndex(state.editors[id].unsavedAttachments, [
-						'uploadId',
-						uploadId
-					]);
-					if (unsavedAttachmentIndex < 0) {
-						return;
-					}
-
-					state.editors[id].unsavedAttachments[unsavedAttachmentIndex].uploadStatus = status;
+				const unsavedAttachmentIndex = getUnsavedAttachmentIndex(state, id, uploadId);
+				if (unsavedAttachmentIndex === null) {
+					return;
 				}
+
+				state.editors[id].unsavedAttachments[unsavedAttachmentIndex].uploadStatus = status;
 			})
 		);
 	},
 	setAttachmentUploadCompleted: (id: MailsEditorV2['id'], uploadId: string, aid: string): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					const unsavedAttachmentIndex = findIndex(state.editors[id].unsavedAttachments, [
-						'uploadId',
-						uploadId
-					]);
-					if (unsavedAttachmentIndex < 0) {
-						return;
-					}
-
-					state.editors[id].unsavedAttachments[unsavedAttachmentIndex].aid = aid;
-					state.editors[id].unsavedAttachments[unsavedAttachmentIndex].uploadStatus = {
-						status: 'completed'
-					};
+				const unsavedAttachmentIndex = getUnsavedAttachmentIndex(state, id, uploadId);
+				if (unsavedAttachmentIndex === null) {
+					return;
 				}
+
+				state.editors[id].unsavedAttachments[unsavedAttachmentIndex].aid = aid;
+				state.editors[id].unsavedAttachments[unsavedAttachmentIndex].uploadStatus = {
+					status: 'completed'
+				};
 			})
 		);
 	},
@@ -346,111 +330,21 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	clearAttachments: (id: MailsEditorV2['id']): void => {
+	clearStandardAttachments: (id: MailsEditorV2['id']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].savedAttachments = [];
-					state.editors[id].unsavedAttachments = [];
-				}
-			})
-		);
-	},
-	// addAttachmentFiles: (id: MailsEditorV2['id'], files: Array<EditorAttachmentFiles>): void => {
-	// 	set(
-	// 		produce((state: EditorsStateTypeV2) => {
-	// 			if (state?.editors?.[id]) {
-	// 				state.editors[id].attachmentFiles = [...state.editors[id].attachmentFiles, ...files];
-	// 				console.log('@@attachmentFiles', { attachmentFiles: state.editors[id].attachmentFiles });
-	// 			}
-	// 		})
-	// 	);
-	// },
-	// updateUploadProgress: (
-	// 	id: MailsEditorV2['id'],
-	// 	percentCompleted: number,
-	// 	fileUploadingId: string
-	// ): void => {
-	// 	set(
-	// 		produce((state: EditorsStateTypeV2) => {
-	// 			if (state?.editors?.[id] && fileUploadingId) {
-	// 				state.editors[id].attachmentFiles = state.editors[id].attachmentFiles.map((file) => {
-	// 					if (file.id === fileUploadingId) {
-	// 						return {
-	// 							...file,
-	// 							uploadProgress: percentCompleted
-	// 						};
-	// 					}
-	// 					return file;
-	// 				});
-	// 			}
-	// 		})
-	// 	);
-	// },
-	// addAttachment: (id: MailsEditorV2['id'], attachment: MailAttachmentParts): void => {
-	// 	set(
-	// 		produce((state: EditorsStateTypeV2) => {
-	// 			if (state?.editors?.[id]) {
-	// 				state.editors[id].attachments = [...state.editors[id].attachments, { mp: [attachment] }];
-	// 			}
-	// 		})
-	// 	);
-	// },
-	// // TODO: properly type action
-	// updateAttachments: (id: MailsEditorV2['id'], action: any): void => {
-	// 	set(
-	// 		produce((state: EditorsStateTypeV2) => {
-	// 			if (state?.editors?.[id]) {
-	// 				state.editors[id].attachments = {
-	// 					mp: retrieveAttachmentsType(
-	// 						normalizeMailMessageFromSoap(action.payload.res.m[0], true),
-	// 						'attachment'
-	// 					)
-	// 				};
-	// 			}
-	// 		})
-	// 	);
-	// },
-	addInlineAttachment: (
-		id: MailsEditorV2['id'],
-		attachment: MailsEditorV2['inlineAttachments'][0]
-	): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].inlineAttachments = [
-						...state.editors[id].inlineAttachments,
-						attachment
-					];
-				}
-			})
-		);
-	},
-	removeInlineAttachment: (
-		id: MailsEditorV2['id'],
-		attachment: MailsEditorV2['inlineAttachments'][0]
-	): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].inlineAttachments = state.editors[id].inlineAttachments.filter(
-						(att: { ci: string; attach: { aid: string } }) => att.ci !== attachment.ci
+					state.editors[id].savedAttachments = filterSavedInlineAttachment(
+						state.editors[id].savedAttachments
+					);
+					state.editors[id].unsavedAttachments = filterUnsavedInlineAttachment(
+						state.editors[id].unsavedAttachments
 					);
 				}
 			})
 		);
 	},
 
-	// clear
-	clearInlineAttachments: (id: MailsEditorV2['id']): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].inlineAttachments = [];
-				}
-			})
-		);
-	},
 	clearEditors: (): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {

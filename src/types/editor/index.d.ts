@@ -6,9 +6,13 @@
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { EditViewActionsType } from '../../constants';
 import { type AppDispatch } from '../../store/redux';
+import { SavedAttachment, UnsavedAttachment } from '../attachments';
 import type { MailMessage } from '../messages';
 import type { Participant } from '../participant';
 
+/**
+ * @deprecated
+ */
 export type EditorAttachmentFiles = {
 	id: string;
 	contentType: string;
@@ -21,11 +25,17 @@ export type EditorAttachmentFiles = {
 	uploadProcessStatus?: AttachmentUploadProcessStatus;
 };
 
+/**
+ * @deprecated
+ */
 export type InlineAttachment = {
 	ci: string;
 	attach: { aid: string };
 };
 
+/**
+ * @deprecated
+ */
 export type InlineAttachments =
 	| Array<{
 			ci: string;
@@ -33,6 +43,9 @@ export type InlineAttachments =
 	  }>
 	| Array[];
 
+/**
+ * @deprecated
+ */
 export type MailsEditor = {
 	inline: InlineAttachments;
 	autoSendTime?: number;
@@ -82,12 +95,6 @@ export type DraftSaveProcessStatus = {
 	lastSaveTimestamp?: Date;
 };
 
-export type AttachmentUploadProcessStatus = {
-	status: 'completed' | 'running' | 'aborted';
-	abortReason?: string;
-	progress?: number;
-};
-
 export type SendProcessStatus = {
 	status: 'completed' | 'running' | 'aborted';
 	abortReason?: string;
@@ -108,24 +115,6 @@ export type EditorPrefillData = {
 	recipients?: Partial<Participant>;
 };
 
-export type AbstractAttachment = {
-	filename: string;
-	contentType: string;
-	size: number;
-};
-
-export type UnsavedAttachment = AbstractAttachment & {
-	aid?: string;
-	uploadId: string;
-	uploadStatus?: AttachmentUploadProcessStatus;
-	uploadAbortController?: AbortController;
-};
-
-export type SavedAttachment = AbstractAttachment & {
-	messageId: string;
-	partName: string;
-};
-
 export type MailsEditorV2 = {
 	// the id of the editor (used to identify the editor in the store)
 	id: string;
@@ -133,17 +122,8 @@ export type MailsEditorV2 = {
 	action: EditViewActionsType;
 	// the id of the sender identity
 	identityId: string;
-	// the array of inline attachments
-	// FIXME: InlineAttachments is not correctly defined, it should be properly typed once we start the refactor of the attachments
-	inlineAttachments?: Array<InlineAttachment>;
 	unsavedAttachments: Array<UnsavedAttachment>;
 	savedAttachments: Array<SavedAttachment>;
-	// // the array of non-inline attachments
-	// attachments: MailAttachment;
-	// // the array of attachment files
-	// attachmentFiles: Array<EditorAttachmentFiles>;
-	// // allowed status of the attachments upload
-	// attachmentsUploadStatus?: EditorOperationAllowedStatus;
 	// user defined delayed send timer
 	autoSendTime?: number;
 	// the saved draft id

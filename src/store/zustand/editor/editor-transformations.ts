@@ -4,18 +4,32 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
-import { find, forEach, map } from 'lodash';
+import { filter, forEach, map, reduce } from 'lodash';
 
+import {
+	filterSavedInlineAttachment,
+	filterSavedStandardAttachment,
+	filterUnsavedInlineAttachment,
+	filterUnsavedStandardAttachment
+} from './editor-utils';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
+import {
+	CIDURL_REGEX,
+	extractContentIdInnerPart,
+	getAttachmentParts,
+	isCidUrl,
+	isContentIdEqual,
+	isDownloadServicedUrl
+} from '../../../helpers/attachments';
 import {
 	getDefaultIdentity,
 	getIdentityDescriptor,
 	IdentityDescriptor
 } from '../../../helpers/identities';
 import {
-	InlineAttachments,
 	MailAttachment,
 	MailAttachmentParts,
+	MailMessage,
 	MailsEditorV2,
 	Participant,
 	SavedAttachment,
@@ -24,37 +38,84 @@ import {
 	UnsavedAttachment
 } from '../../../types';
 
-/**
- *
- * @param inline
- * @param part
- */
-const findCidFromPart = (inline: InlineAttachments | undefined, part: string): string => {
-	const ci = find(inline, (i) => i.attach?.mp?.[0]?.part === part)?.ci;
-	return `cid:${ci}`;
+export const composeCidUrlFromContentId = (contentId: string): string | null => {
+	const contentIdInnerPart = extractContentIdInnerPart(contentId);
+	return contentIdInnerPart ? `cid:${contentIdInnerPart}` : null;
 };
+export const composeInlineAttachmentDownloadUrl = (attachment: SavedAttachment): string =>
+	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
+export const convertCidUrlToServiceUrl = (
+	cidUrl: string,
+	savedInlineAttachments: Array<SavedAttachment>
+): string => {
+	const cidUrlTokens = new RegExp(CIDURL_REGEX, 'gi').exec(cidUrl);
+	if (!cidUrlTokens) {
+		return cidUrl;
+	}
+	const cid = cidUrlTokens[1];
+	const referredAttachment = reduce<SavedAttachment, SavedAttachment | null>(
+		savedInlineAttachments,
+		(result, attachment) =>
+			isContentIdEqual(attachment.contentId ?? '', cid) ? attachment : result,
+		null
+	);
 
-/**
- *
- * @param content
- * @param inline
- */
-const replaceLinkWithParts = (content: string, inline: InlineAttachments | undefined): string => {
+	if (!referredAttachment) {
+		return cidUrl;
+	}
+
+	return composeInlineAttachmentDownloadUrl(referredAttachment);
+};
+export const replaceCidUrlWithServiceUrl = (
+	content: string,
+	savedAttachment: Array<SavedAttachment>
+): string => {
 	const parser = new DOMParser();
 	const htmlDoc = parser.parseFromString(content, 'text/html');
-
 	const images = htmlDoc.getElementsByTagName('img');
 
-	if (images) {
-		forEach(images, (p: HTMLImageElement) => {
-			if (p.hasAttribute('src') && p.getAttribute('src')?.includes('/service/home')) {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				const newSource = findCidFromPart(inline, p.getAttribute('src')?.split('&part=')[1]);
-				p.setAttribute('src', newSource ?? '');
-			}
-		});
+	if (!images) {
+		return content;
 	}
+
+	forEach(images, (p: HTMLImageElement) => {
+		const src = p.getAttribute('src');
+		if (!src || !isCidUrl(src)) {
+			return;
+		}
+
+		p.setAttribute('src', convertCidUrlToServiceUrl(src, savedAttachment));
+	});
+
+	return htmlDoc.body.innerHTML;
+};
+export const replaceServiceUrlWithCidUrl = (content: string): string => {
+	const parser = new DOMParser();
+	const htmlDoc = parser.parseFromString(content, 'text/html');
+	const images = htmlDoc.getElementsByTagName('img');
+
+	if (!images) {
+		return content;
+	}
+
+	forEach(images, (p: HTMLImageElement) => {
+		const src = p.getAttribute('src');
+		if (!src || !isDownloadServicedUrl(src)) {
+			return;
+		}
+
+		const pnsrc = p.getAttribute('pnsrc');
+		const dataSrc = p.getAttribute('data-src');
+		const dataMceSrc = p.getAttribute('data-mce-src');
+		if (pnsrc && isCidUrl(pnsrc)) {
+			p.setAttribute('src', pnsrc);
+		} else if (dataSrc && isCidUrl(dataSrc)) {
+			p.setAttribute('src', dataSrc);
+		} else if (dataMceSrc && isCidUrl(dataMceSrc)) {
+			p.setAttribute('src', dataMceSrc);
+		}
+	});
+
 	return htmlDoc.body.innerHTML;
 };
 
@@ -77,19 +138,24 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize as string,
 		color: prefs?.zimbraPrefHtmlEditorDefaultFontColor as string
 	};
-	const contentWithBodyParts = replaceLinkWithParts(
-		editor.text.richText,
-		editor?.inlineAttachments
-	);
+
+	const unsavedInlineAttachment = filterUnsavedInlineAttachment(editor.unsavedAttachments);
+	const savedInlineAttachment = filterSavedInlineAttachment(editor.savedAttachments);
+
+	const contentWithCidUrl = {
+		plainText: editor.text.plainText,
+		richText: replaceServiceUrlWithCidUrl(editor.text.richText)
+	};
+
 	if (editor.isRichText) {
-		if (editor?.inlineAttachments && editor?.inlineAttachments?.length > 0) {
+		if (unsavedInlineAttachment.length + savedInlineAttachment.length > 0) {
 			return [
 				{
 					ct: 'multipart/alternative',
 					mp: [
 						{
 							ct: 'text/plain',
-							content: { _content: editor.text.plainText ?? '' }
+							content: { _content: contentWithCidUrl.plainText }
 						},
 						{
 							ct: 'multipart/related',
@@ -97,10 +163,26 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 								{
 									ct: 'text/html',
 									content: {
-										_content: getHtmlWithPreAppliedStyled(contentWithBodyParts, style) ?? ''
+										_content: getHtmlWithPreAppliedStyled(contentWithCidUrl.richText, style) ?? ''
 									}
 								},
-								...editor.inlineAttachments
+								...unsavedInlineAttachment.map((inlineAttachment) => ({
+									ci: inlineAttachment.contentId,
+									ct: inlineAttachment.contentType,
+									attach: { aid: inlineAttachment.aid }
+								})),
+								...savedInlineAttachment.map((inlineAttachment) => ({
+									ci: inlineAttachment.contentId,
+									ct: inlineAttachment.contentType,
+									attach: {
+										mp: [
+											{
+												mid: inlineAttachment.messageId,
+												part: inlineAttachment.partName
+											}
+										]
+									}
+								}))
 							]
 						}
 					]
@@ -114,11 +196,13 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 					{
 						ct: 'text/html',
 						body: true,
-						content: { _content: getHtmlWithPreAppliedStyled(editor.text.richText, style) ?? '' }
+						content: {
+							_content: getHtmlWithPreAppliedStyled(contentWithCidUrl.richText, style) ?? ''
+						}
 					},
 					{
 						ct: 'text/plain',
-						content: { _content: editor.text.plainText ?? '' }
+						content: { _content: contentWithCidUrl.plainText }
 					}
 				]
 			}
@@ -183,7 +267,9 @@ const composeAttachAidField = (attachments: Array<UnsavedAttachment>): string | 
 	if (!attachments || !attachments.length) {
 		return null;
 	}
-	return attachments.map((attachment) => attachment.aid).join(',');
+	return filter(attachments, (attachment) => attachment.aid !== undefined)
+		.map((attachment) => attachment.aid)
+		.join(',');
 };
 
 const composeAttachMpField = (attachments: Array<SavedAttachment>): Array<MailAttachmentParts> => {
@@ -201,10 +287,12 @@ const composeAttachMpField = (attachments: Array<SavedAttachment>): Array<MailAt
  * "mp" field
  */
 const composeAttachField = (editor: MailsEditorV2): MailAttachment | null => {
-	const attachAid = composeAttachAidField(editor.unsavedAttachments);
-	const attachMp = composeAttachMpField(editor.savedAttachments);
+	const attachAid = composeAttachAidField(
+		filterUnsavedStandardAttachment(editor.unsavedAttachments)
+	);
+	const attachMp = composeAttachMpField(filterSavedStandardAttachment(editor.savedAttachments));
 
-	if (!attachAid && !attachMp) {
+	if (!attachAid && (!attachMp || !attachMp.length)) {
 		return null;
 	}
 
@@ -217,8 +305,12 @@ const composeAttachField = (editor: MailsEditorV2): MailAttachment | null => {
 /**
  *
  * @param editor
+ * @param command
  */
-export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDraftMessageObj => {
+const createSoapMessageRequestFromEditor = (
+	editor: MailsEditorV2,
+	command: 'sendmsg' | 'savedraft'
+): SoapDraftMessageObj => {
 	const participants: Array<Participant> = [
 		...editor.recipients.to,
 		...editor.recipients.cc,
@@ -242,7 +334,8 @@ export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDra
 
 	const result: SoapDraftMessageObj = {
 		autoSendTime: editor.autoSendTime,
-		id: editor.did,
+		...(command === 'savedraft' ? { id: editor.did } : {}),
+		...(command === 'sendmsg' ? { did: editor.did } : {}),
 		su: { _content: editor.subject ?? '' },
 		rt: editor.replyType,
 		origid: editor.originalId,
@@ -253,4 +346,24 @@ export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDra
 	const attach = composeAttachField(editor);
 	attach && (result.attach = attach);
 	return result;
+};
+
+export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDraftMessageObj =>
+	createSoapMessageRequestFromEditor(editor, 'savedraft');
+
+export const createSoapSendMsgRequestFromEditor = (editor: MailsEditorV2): SoapDraftMessageObj =>
+	createSoapMessageRequestFromEditor(editor, 'sendmsg');
+
+export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
+	const attachmentsParts = getAttachmentParts(message);
+	return attachmentsParts.map<SavedAttachment>((part) => ({
+		messageId: message.id,
+		// TODO create a function to determine if the attachment is an inline even when the disposition is not set
+		isInline: part.disposition === 'inline' && !!part.filename && !!part.ci,
+		contentId: (part.ci && extractContentIdInnerPart(part.ci)) ?? undefined,
+		filename: part.filename ?? '',
+		partName: part.name,
+		contentType: part.contentType,
+		size: part.size
+	}));
 };

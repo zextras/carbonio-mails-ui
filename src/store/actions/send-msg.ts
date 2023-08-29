@@ -15,7 +15,7 @@ import { SendMsgResult } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { closeEditor } from '../editor-slice';
 import { generateMailRequest, generateRequest } from '../editor-slice-utils';
-import { createSoapDraftRequestFromEditor } from '../zustand/editor/editor-transformations';
+import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
 
 export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 	'sendMsg',
@@ -75,7 +75,7 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 			return rejectWithValue('Missing sender');
 		}
 
-		const msg = createSoapDraftRequestFromEditor(editor);
+		const msg = createSoapSendMsgRequestFromEditor(editor);
 		const identity = getIdentityDescriptor(editor.identityId);
 
 		let resp: SaveDraftResponse;

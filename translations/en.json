@@ -309,6 +309,9 @@
         "error": "Error",
         "error_address": "A valid e-mail is required",
         "error_try_again": "Something went wrong, please try again",
+        "errors": {
+            "upload_failed_generic": "Upload failed for the file \"{{filename}}\""
+        },
         "exit_selection_mode": "Exit selection mode",
         "expand": "Expand",
         "expand_receivers_list": "Expand recipients list",
@@ -410,6 +413,9 @@
         "revoke_with_custom_message": "Revoke access sending a custom notification",
         "role": "Role: ",
         "save": "Save",
+        "save_draft": {
+            "incomplete_response": ""
+        },
         "save_to_files": "Save to Files",
         "schedule_send": "Schedule send",
         "search_activate_selection_mode": "Selection mode isn’t available yet on search results",

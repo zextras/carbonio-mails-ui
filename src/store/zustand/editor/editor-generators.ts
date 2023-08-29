@@ -6,12 +6,16 @@
 import { Account, AccountSettings, t } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
 
-import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
+import { buildSavedAttachments, replaceCidUrlWithServiceUrl } from './editor-transformations';
+import {
+	computeDraftSaveAllowedStatus,
+	computeSendAllowedStatus,
+	filterSavedInlineAttachment
+} from './editor-utils';
 import { getEditor } from './hooks';
 import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { LineType } from '../../../commons/utils';
 import { EditViewActions, EditViewActionsType } from '../../../constants';
-import { getAttachmentParts } from '../../../helpers/attachments';
 import {
 	getDefaultIdentity,
 	getIdentityFromParticipant,
@@ -19,13 +23,7 @@ import {
 } from '../../../helpers/identities';
 import { getFromParticipantFromMessage } from '../../../helpers/messages';
 import { getMailBodyWithSignature } from '../../../helpers/signatures';
-import {
-	MailMessage,
-	MailsEditorV2,
-	MsgMap,
-	SavedAttachment,
-	EditorPrefillData
-} from '../../../types';
+import { EditorPrefillData, MailMessage, MailsEditorV2, UnsavedAttachment } from '../../../types';
 import {
 	extractBody,
 	generateReplyText,
@@ -52,17 +50,6 @@ const labels = {
 	sent: `${t('label.sent', 'Sent')}:`
 };
 
-const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
-	const attachmentsParts = getAttachmentParts(message);
-	return attachmentsParts.map<SavedAttachment>((part) => ({
-		messageId: message.id,
-		filename: part.filename ?? '',
-		partName: part.name,
-		contentType: part.contentType,
-		size: part.size
-	}));
-};
-
 /**
  *
  */
@@ -74,16 +61,11 @@ const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEdit
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
-	// const signature = getSignatureValue(account, defaultIdentity.defaultSignatureId ?? '');
 
 	const editor = {
 		action: EditViewActions.NEW,
 		identityId: getDefaultIdentity().id,
 		id: editorId,
-		// TODO: Need to manage the attachments
-		// attachments: { mp: [] },
-		// attachmentFiles: [],
-		// inlineAttachments: [],
 		unsavedAttachments: [],
 		savedAttachments: [],
 		isRichText: true,
@@ -119,16 +101,24 @@ const generateIntegratedNewEditor = (
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
-	const attachments = compositionData?.aid ? { aid: compositionData?.aid } : { mp: [] };
+	const unsavedAttachments: Array<UnsavedAttachment> = !compositionData?.aid
+		? []
+		: compositionData.aid.map(
+				(aid: string): UnsavedAttachment => ({
+					isInline: false,
+					aid,
+					filename: 'unnamed',
+					size: 0,
+					contentType: 'application/octet-stream'
+				})
+		  );
 
 	const editor = {
 		action: EditViewActions.NEW,
-		attachmentFiles: [],
 		identityId: getDefaultIdentity().id,
 		id: editorId,
-		// TODO: Need to manage the attachments
-		attachments,
-		inlineAttachments: [],
+		unsavedAttachments,
+		savedAttachments: [],
 		isRichText: true,
 		isUrgent: false,
 		recipients: {
@@ -145,7 +135,6 @@ const generateIntegratedNewEditor = (
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
-	editor.attachmentsUploadStatus = computeAttachmentUploadAllowedStatus(editor);
 	return editor;
 };
 
@@ -160,6 +149,10 @@ const generateReplyAndReplyAllMsgEditor = (
 	action: EditViewActionsType
 ): MailsEditorV2 => {
 	const editorId = uuid();
+	const savedInlineAttachments = filterSavedInlineAttachment(
+		buildSavedAttachments(originalMessage)
+	);
+
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
 		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
@@ -169,7 +162,10 @@ const generateReplyAndReplyAllMsgEditor = (
 
 	const textWithSignatureRepliesForwards = {
 		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
-		richText: `${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`
+		richText: replaceCidUrlWithServiceUrl(
+			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
+			savedInlineAttachments
+		)
 	};
 	const folderRoots = getRootsMap();
 	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
@@ -177,17 +173,14 @@ const generateReplyAndReplyAllMsgEditor = (
 		action === EditViewActions.REPLY
 			? retrieveReplyTo(originalMessage)
 			: retrieveALL(originalMessage, [account]);
+
 	const editor = {
 		action: EditViewActions.REPLY,
 		identityId: from.identityId,
 		sender: undefined,
 		id: editorId,
-		// TODO: Need to manage the attachments
-		// attachments: { mp: [] },
-		// attachmentFiles: [],
-		// inlineAttachments: [],
 		unsavedAttachments: [],
-		savedAttachments: buildSavedAttachments(originalMessage),
+		savedAttachments: savedInlineAttachments,
 		isRichText: true,
 		isUrgent: originalMessage.urgent,
 		recipients: {
@@ -220,16 +213,20 @@ const generateForwardMsgEditor = (
 	originalMessage: MailMessage
 ): MailsEditorV2 => {
 	const editorId = uuid();
+	const savedAttachments = buildSavedAttachments(originalMessage);
+
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
 		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
-
 	const textWithSignatureRepliesForwards = {
 		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
-		richText: `${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`
+		richText: replaceCidUrlWithServiceUrl(
+			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
+			savedAttachments
+		)
 	};
 	const folderRoots = getRootsMap();
 	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
@@ -237,12 +234,8 @@ const generateForwardMsgEditor = (
 		action: EditViewActions.REPLY,
 		identityId: from.identityId,
 		id: editorId,
-		// TODO: Need to manage the attachments
-		// attachments: { mp: [] },
-		// attachmentFiles: [],
-		// inlineAttachments: [],
 		unsavedAttachments: [],
-		savedAttachments: buildSavedAttachments(originalMessage),
+		savedAttachments,
 		isRichText: true,
 		isUrgent: originalMessage.urgent,
 		recipients: {
@@ -265,30 +258,66 @@ const generateForwardMsgEditor = (
 	return editor;
 };
 
-/**
- *
- */
-const generateEditAsNewAndDraftEditor = (
+const generateEditAsDraftEditor = (
 	messagesStoreDispatch: AppDispatch,
 	account: Account,
 	settings: AccountSettings,
 	originalMessage: MailMessage
 ): MailsEditorV2 => {
 	const editorId = uuid();
+	const savedAttachments = buildSavedAttachments(originalMessage);
+
 	const text = {
 		plainText: `${extractBody(originalMessage)[0]}`,
-		richText: `${extractBody(originalMessage)[1]}`
+		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
 	};
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
 	const editor = {
-		action: EditViewActions.REPLY,
+		action: EditViewActions.EDIT_AS_DRAFT,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
-		// TODO: Need to manage the attachments
-		// attachments: { mp: [] },
-		// attachmentFiles: [],
-		// inlineAttachments: [],
+		unsavedAttachments: [],
+		savedAttachments: buildSavedAttachments(originalMessage),
+		isRichText: true,
+		isUrgent: originalMessage.urgent,
+		recipients: {
+			to: retrieveTO(originalMessage),
+			cc: retrieveCCForEditNew(originalMessage),
+			bcc: retrieveBCC(originalMessage)
+		},
+		subject: originalMessage.subject,
+		text,
+		requestReadReceipt: false,
+		did: originalMessage.id,
+		messagesStoreDispatch
+	} as MailsEditorV2;
+
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+
+	return editor;
+};
+
+const generateEditAsNewEditor = (
+	messagesStoreDispatch: AppDispatch,
+	account: Account,
+	settings: AccountSettings,
+	originalMessage: MailMessage
+): MailsEditorV2 => {
+	const editorId = uuid();
+	const savedAttachments = buildSavedAttachments(originalMessage);
+
+	const text = {
+		plainText: `${extractBody(originalMessage)[0]}`,
+		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
+	};
+	const fromParticipant = getFromParticipantFromMessage(originalMessage);
+	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
+	const editor = {
+		action: EditViewActions.EDIT_AS_NEW,
+		identityId: (fromIdentity ?? getDefaultIdentity()).id,
+		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: buildSavedAttachments(originalMessage),
 		isRichText: true,
@@ -402,7 +431,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a draft editor without a message id');
 			}
 			if (message) {
-				return generateEditAsNewAndDraftEditor(messagesStoreDispatch, account, settings, message);
+				return generateEditAsDraftEditor(messagesStoreDispatch, account, settings, message);
 			}
 			break;
 		case EditViewActions.EDIT_AS_NEW:
@@ -411,7 +440,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate an edit as new editor without a message id');
 			}
 			if (message) {
-				return generateEditAsNewAndDraftEditor(messagesStoreDispatch, account, settings, message);
+				return generateEditAsNewEditor(messagesStoreDispatch, account, settings, message);
 			}
 			break;
 		case EditViewActions.MAIL_TO:
@@ -433,149 +462,3 @@ export const generateEditor = ({
 
 	return null;
 };
-
-// function createEditorReducer(
-// 	state: EditorsStateType,
-// 	{ payload }: { payload: CreateEditorPayload }
-// ): void {
-// 	const empty = emptyEditor(payload.editorId, payload.accounts[0], payload.settings);
-//
-// 	state.editors[payload.editorId] = empty;
-//
-// 	const signatureRepliesForwardsValue = getSignatureValue(
-// 		payload.accounts[0],
-// 		String(payload.settings.prefs.zimbraPrefForwardReplySignatureId)
-// 	);
-//
-// 	const textWithSignatureRepliesForwards =
-// 		payload.labels && payload.original
-// 			? [
-// 				`${composeMailBodyWithSignature(signatureRepliesForwardsValue, false)} ${
-// 					generateReplyText(payload.original, payload.labels)[0]
-// 				}`,
-// 				`${composeMailBodyWithSignature(signatureRepliesForwardsValue, true)} ${
-// 					generateReplyText(payload.original, payload.labels)[1]
-// 				}`
-// 			]
-// 			: ['', ''];
-//
-// 	if (payload.action) {
-// 		const editorWithAction = { ...empty, action: payload.action };
-// 		switch (payload.action) {
-// 			case EditViewActionsType.NEW:
-// 				state.editors[payload.editorId] = editorWithAction;
-// 				break;
-// 			case EditViewActionsType.MAIL_TO:
-// 				if (payload?.boardContext?.contacts && payload?.boardContext?.contacts?.length > 0) {
-// 					state.editors[payload.editorId] = {
-// 						...editorWithAction,
-// 						to: [payload.boardContext.contacts[0]],
-// 						cc: drop(payload.boardContext.contacts, 1)
-// 					};
-// 				}
-//
-// 				break;
-// 			case EditViewActionsType.EDIT_AS_DRAFT:
-// 				if (payload.original) {
-// 					state.editors[payload.editorId] = {
-// 						...editorWithAction,
-// 						id: payload.id,
-// 						text: extractBody(payload.original),
-// 						to: retrieveTO(payload.original),
-// 						cc: retrieveCCForEditNew(payload.original),
-// 						bcc: retrieveBCC(payload.original),
-// 						subject: payload.original.subject,
-// 						original: payload.original,
-// 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
-// 						urgent: payload.original.urgent,
-// 						attachmentFiles: findAttachments(payload.original.parts, [])
-// 					};
-// 				}
-//
-// 				break;
-// 			case EditViewActionsType.EDIT_AS_NEW:
-// 				if (payload.original) {
-// 					state.editors[payload.editorId] = {
-// 						...editorWithAction,
-// 						id: payload.id,
-// 						subject: payload.original.subject,
-// 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
-// 						text: extractBody(payload.original),
-// 						to: retrieveTO(payload.original),
-// 						cc: retrieveCCForEditNew(payload.original),
-// 						bcc: retrieveBCC(payload.original),
-// 						original: payload.original,
-// 						attachmentFiles: findAttachments(payload.original.parts, [])
-// 					};
-// 				}
-//
-// 				break;
-// 			case EditViewActionsType.REPLY:
-// 				if (payload.original) {
-// 					state.editors[payload.editorId] = {
-// 						...editorWithAction,
-// 						id: payload.id,
-// 						text: textWithSignatureRepliesForwards,
-// 						to: retrieveReplyTo(payload.original),
-// 						subject: `RE: ${payload.original.subject.replace(REPLY_REGEX, '')}`,
-// 						original: payload.original,
-// 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
-// 						urgent: payload.original.urgent,
-// 						attachmentFiles: findAttachments(payload.original.parts, []),
-// 						rt: 'r',
-// 						origid: payload.original.id
-// 					};
-// 				}
-//
-// 				break;
-// 			case EditViewActionsType.REPLY_ALL:
-// 				if (payload.original && payload.accounts) {
-// 					state.editors[payload.editorId] = {
-// 						...editorWithAction,
-// 						text: textWithSignatureRepliesForwards,
-// 						to: retrieveALL(payload.original, payload.accounts),
-// 						cc: retrieveCC(payload.original, payload.accounts),
-// 						subject: `RE: ${payload.original.subject.replace(REPLY_REGEX, '')}`,
-// 						original: payload.original,
-// 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
-// 						urgent: payload.original.urgent,
-// 						attachmentFiles: findAttachments(payload.original.parts, []),
-// 						rt: 'r',
-// 						origid: payload.original.id
-// 					};
-// 				}
-// 				break;
-//
-// 			case EditViewActionsType.FORWARD:
-// 				if (payload.original) {
-// 					state.editors[payload.editorId] = {
-// 						...editorWithAction,
-// 						text: textWithSignatureRepliesForwards,
-// 						subject: `FWD: ${payload.original.subject.replace(FORWARD_REGEX, '')}`,
-// 						original: payload.original,
-// 						attach: { mp: retrieveAttachmentsType(payload.original, 'attachment') },
-// 						urgent: payload.original.urgent,
-// 						attachmentFiles: findAttachments(payload.original.parts, []),
-// 						rt: 'w',
-// 						origid: payload.original.id
-// 					};
-// 				}
-// 				break;
-// 			case EditViewActionsType.COMPOSE:
-// 				state.editors[payload.editorId] = {
-// 					...editorWithAction,
-// 					...(payload.boardContext?.compositionData ?? {})
-// 				};
-// 				break;
-// 			case EditViewActionsType.PREFILL_COMPOSE:
-// 				state.editors[payload.editorId] = {
-// 					...editorWithAction,
-// 					...(payload.boardContext?.compositionData ?? {})
-// 				};
-// 				break;
-// 			default:
-// 				console.warn('operation not handled!');
-// 				break;
-// 		}
-// 	}
-// }

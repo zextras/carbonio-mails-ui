@@ -16,15 +16,17 @@ function parse(str: string): Array<Array<{ aid: string }>> {
 	return Function(`'use strict'; return (${str})`)();
 }
 
-export type UploadAttachmentOptions = {
-	onProgress?: (uploadId: string, percentage: number) => void;
-	onComplete?: (uploadId: string, attachmentId: string) => void;
-	onError?: (uploadId: string, error: string) => void;
+export type UploadCallbacks = {
+	onUploadProgress?: (uploadId: string, percentage: number) => void;
+	onUploadComplete?: (uploadId: string, attachmentId: string) => void;
+	onUploadError?: (uploadId: string, error: string) => void;
 };
+
+export type AttachmentUploadOptions = UploadCallbacks & {};
 
 export const uploadAttachment = (
 	file: File,
-	{ onProgress, onComplete, onError }: UploadAttachmentOptions
+	{ onUploadProgress, onUploadComplete, onUploadError }: AttachmentUploadOptions
 ): {
 	uploadId: string;
 	abortController: AbortController;
@@ -44,7 +46,7 @@ export const uploadAttachment = (
 				const { loaded, total } = progressEvent;
 				const percent = total ? Math.round((loaded * 100) / total) : 0;
 				if (percent < 100) {
-					onProgress && onProgress(uploadId, percent);
+					onUploadProgress && onUploadProgress(uploadId, percent);
 				}
 			},
 			signal: abortController.signal
@@ -53,14 +55,14 @@ export const uploadAttachment = (
 		.then((txt) => parse(`[${txt}]`))
 		.then((val) => {
 			if (!val[2]) {
-				onError && onError(uploadId, 'The upload process returned no aid');
+				onUploadError && onUploadError(uploadId, 'The upload process returned no aid');
 				return;
 			}
 
-			onComplete && onComplete(uploadId, val[2][0].aid);
+			onUploadComplete && onUploadComplete(uploadId, val[2][0].aid);
 		})
 		.catch((reason) => {
-			onError && onError(uploadId, reason);
+			onUploadError && onUploadError(uploadId, reason);
 		});
 
 	return {

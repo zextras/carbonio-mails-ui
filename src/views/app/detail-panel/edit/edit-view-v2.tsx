@@ -33,7 +33,6 @@ import { addBoard, t } from '@zextras/carbonio-shell-ui';
 import { filter, map, noop } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
-import { addInlineAttachments } from './add-inline-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
@@ -68,12 +67,7 @@ import {
 	useEditorText,
 	useEditorAttachments
 } from '../../../../store/zustand/editor';
-import {
-	BoardContext,
-	EditorAttachmentFiles,
-	EditorRecipients,
-	MailsEditorV2
-} from '../../../../types';
+import { BoardContext, EditorRecipients, MailsEditorV2 } from '../../../../types';
 
 const attachmentWords: Array<string> = [
 	t('messages.modal.send_anyway.attach', 'attach'),
@@ -88,15 +82,14 @@ const attachmentWords: Array<string> = [
 
 function getSubjectOrAttachmentError({
 	attachmentIsExpected,
-	attachmentFiles,
+	hasAttachments,
 	subject
 }: {
 	attachmentIsExpected: boolean;
-	attachmentFiles: Array<EditorAttachmentFiles>;
+	hasAttachments: boolean;
 	subject: MailsEditorV2['subject'];
 }): string {
-	const attachmentIsPresent = attachmentFiles.length > 0;
-	const attachmentIsMissing = attachmentIsExpected && !attachmentIsPresent;
+	const attachmentIsMissing = attachmentIsExpected && !hasAttachments;
 	if (attachmentIsMissing && !subject) {
 		return t(
 			'messages.modal.send_anyway.no_subject_no_attachments',
@@ -121,7 +114,7 @@ export type EditViewProp = {
 
 type FileSelectProps = {
 	editor: TinyMCE;
-	files: File[];
+	files: FileList;
 };
 
 export const EditView: FC<EditViewProp> = ({
@@ -145,7 +138,8 @@ export const EditView: FC<EditViewProp> = ({
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-	const { uploadAttachment } = useEditorAttachments(editorId);
+	const { addStandardAttachment, addInlineAttachment, hasStandardAttachments } =
+		useEditorAttachments(editorId);
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(() => {
@@ -226,7 +220,7 @@ export const EditView: FC<EditViewProp> = ({
 				: text.plainText.split(LineType.PLAINTEXT_SEP);
 			return msgContent.toLowerCase().includes(el);
 		});
-		if ((attachmentIsExpected && !attachmentFiles.length) || !subject) {
+		if ((attachmentIsExpected && !hasStandardAttachments) || !subject) {
 			const closeModal = createModal({
 				title: t('header.attention', 'Attention'),
 				confirmLabel: t('action.ok', 'Ok'),
@@ -250,7 +244,11 @@ export const EditView: FC<EditViewProp> = ({
 				children: (
 					<StoreProvider>
 						<Text overflow="break-word" style={{ paddingTop: '1rem' }}>
-							{getSubjectOrAttachmentError({ attachmentIsExpected, attachmentFiles, subject })}
+							{getSubjectOrAttachmentError({
+								attachmentIsExpected,
+								hasAttachments: hasStandardAttachments,
+								subject
+							})}
 						</Text>
 						<Text overflow="break-word" style={{ paddingBottom: '1rem' }}>
 							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
@@ -343,10 +341,10 @@ export const EditView: FC<EditViewProp> = ({
 	const addFilesFromLocal = useCallback(
 		(files: FileList) => {
 			for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
-				uploadAttachment(files[fileIndex], {});
+				addStandardAttachment(files[fileIndex], {});
 			}
 		},
-		[uploadAttachment]
+		[addStandardAttachment]
 	);
 
 	const addFilesFromFiles = useCallback((filesResponse) => {
@@ -383,7 +381,7 @@ export const EditView: FC<EditViewProp> = ({
 		}
 
 		for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
-			uploadAttachment(files[fileIndex], {});
+			addStandardAttachment(files[fileIndex], {});
 		}
 	};
 
@@ -448,11 +446,12 @@ export const EditView: FC<EditViewProp> = ({
 	);
 
 	const onFilesSelected = ({ editor: tinymce, files }: FileSelectProps): void => {
-		addInlineAttachments({
-			files,
-			tinymce,
-			editorId
-		});
+		for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
+			// const bookmark = tinymce.activeEditor?.selection.
+			// 	.getBookmark()
+			// 	.console.log('***', tinymce.activeEditor?.c);
+			addInlineAttachment(files[fileIndex]);
+		}
 	};
 
 	return (
@@ -578,6 +577,7 @@ export const EditView: FC<EditViewProp> = ({
 						onContentChanged={onBodyChange}
 						richTextMode={isRichText}
 						content={text}
+						editorId={editorId}
 						minHeight={0}
 						disabled={false}
 					/>

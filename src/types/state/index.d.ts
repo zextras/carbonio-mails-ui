@@ -5,14 +5,9 @@
  */
 
 import { AppDispatch } from '../../store/redux';
+import { SavedAttachment, UnsavedAttachment } from '../attachments';
 import type { Conversation } from '../conversations';
-import {
-	AttachmentUploadProcessStatus,
-	MailsEditor,
-	MailsEditorV2,
-	SavedAttachment,
-	UnsavedAttachment
-} from '../editor';
+import { AttachmentUploadProcessStatus, MailsEditor, MailsEditorV2 } from '../editor';
 import { MailMessage } from '../messages';
 import { SoapIncompleteMessage } from '../soap';
 
@@ -89,9 +84,10 @@ export type EditorsStateTypeV2 = {
 		status: MailsEditorV2['sendProcessStatus']
 	) => void;
 
-	setSavedAttachments: (id: MailsEditorV2['id'], attachment: Array<SavedAttachment>) => void;
+	setSavedAttachments: (id: MailsEditorV2['id'], attachments: Array<SavedAttachment>) => void;
 	removeSavedAttachment: (id: MailsEditorV2['id'], partName: string) => void;
-	setUnsavedAttachments: (id: MailsEditorV2['id'], attachments: Array<UnsavedAttachment>) => void;
+	removeUnsavedAttachments: (id: MailsEditorV2['id']) => void;
+	addSavedAttachment: (id: MailsEditorV2['id'], attachment: SavedAttachment) => void;
 	addUnsavedAttachment: (id: MailsEditorV2['id'], attachment: UnsavedAttachment) => void;
 	setAttachmentUploadStatus: (
 		id: MailsEditorV2['id'],
@@ -100,34 +96,12 @@ export type EditorsStateTypeV2 = {
 	) => void;
 	setAttachmentUploadCompleted: (id: MailsEditorV2['id'], uploadId: string, aid: string) => void;
 	removeUnsavedAttachment: (id: MailsEditorV2['id'], uploadId: string) => void;
-	clearAttachments: (id: MailsEditorV2['id']) => void;
-
-	// updateAttachmentFiles: (editorId, res: SaveDraftResponse) => void;
-	// addAttachment: (id: MailsEditorV2['id'], attachment: MailAttachmentParts) => void;
-	// updateAttachments: (id: MailsEditorV2['id'], attachments: MailsEditorV2['attachments']) => void;
-	// addAttachmentFiles: (id: MailsEditorV2['id'], files: MailsEditorV2['attachmentFiles']) => void;
-	// addInlineAttachment: (
-	// 	id: MailsEditorV2['id'],
-	// 	inlineAttachment: MailsEditorV2['inlineAttachments'][0]
-	// ) => void;
-	// removeInlineAttachment: (
-	// 	id: MailsEditorV2['id'],
-	// 	inlineAttachment: MailsEditorV2['inlineAttachments'][0]
-	// ) => void;
-
+	clearStandardAttachments: (id: MailsEditorV2['id']) => void;
 	clearEditors: () => void;
 	clearSubject: (id: MailsEditorV2['id']) => void;
 	clearAutoSendTime: (id: MailsEditorV2['id']) => void;
 	clearText: (id: MailsEditorV2['id']) => void;
-	clearInlineAttachments: (id: MailsEditorV2['id']) => void;
-
 	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
-
-	// updateUploadProgress: (
-	// 	id: MailsEditorV2['id'],
-	// 	percentCompleted: number,
-	// 	fileUploadingId: string
-	// ) => void;
 };
 
 export type MsgStateType = {

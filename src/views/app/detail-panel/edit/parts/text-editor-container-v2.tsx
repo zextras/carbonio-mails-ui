@@ -12,17 +12,20 @@ import type { TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
 import { plainTextToHTML } from '../../../../../commons/mail-message-renderer';
+import { useEditorInlineUrlConverter } from '../../../../../store/zustand/editor';
+import { MailsEditorV2 } from '../../../../../types';
 
 export type TextEditorContent = { plainText: string; richText: string };
 
 export type TextEditorContainerProps = {
 	onDragOver: (event: SyntheticEvent) => void;
-	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: File[] }) => void;
+	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: FileList }) => void;
 	onContentChanged: (content: TextEditorContent) => void;
 	richTextMode: boolean;
 	content: TextEditorContent;
 	minHeight: number;
 	disabled: boolean;
+	editorId: MailsEditorV2['id'];
 	// draftSavedAt: string;
 	// minHeight: number;
 	// setValue: (name: string, value: any) => void;
@@ -33,6 +36,7 @@ export type TextEditorContainerProps = {
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({
+	editorId,
 	onDragOver,
 	onFilesSelected,
 	onContentChanged,
@@ -48,6 +52,14 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontFamily) ?? 'sans-serif',
 		[prefs]
 	);
+
+	const urlConverter = useEditorInlineUrlConverter(editorId);
+
+	const composerCustomOptions = {
+		toolbar_sticky: false,
+		convert_url: true
+		// urlconverter_callback: (url: string): string => urlConverter(url)
+	};
 
 	// const [inputValue, setInputValue] = useState(editor?.text ?? ['', '']);
 	// const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
@@ -95,9 +107,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 										onContentChanged({ plainText: ev[0], richText: ev[1] });
 									}}
 									onDragOver={onDragOver}
-									customInitOptions={{
-										toolbar_sticky: true
-									}}
+									customInitOptions={composerCustomOptions}
 								/>
 							</StyledComp.EditorWrapper>
 						</Container>

@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { t } from '@zextras/carbonio-shell-ui';
-import { concat, some } from 'lodash';
+import { concat, filter, reduce, reject, some } from 'lodash';
 
+import { useEditorsStore } from './store';
 import { PROCESS_STATUS } from '../../../constants';
+import { isContentIdEqual } from '../../../helpers/attachments';
 import type {
 	EditorOperationAllowedStatus,
 	MailsEditorV2,
@@ -137,3 +139,42 @@ export const isUnsavedAttachment = (
 
 export const isAttachmentUploading = (attachment: UnsavedAttachment): boolean =>
 	attachment.uploadStatus?.status === 'running';
+
+export const filterSavedStandardAttachment = (
+	attachments: Array<SavedAttachment>
+): Array<SavedAttachment> => reject(attachments, 'isInline');
+
+export const filterUnsavedStandardAttachment = (
+	attachments: Array<UnsavedAttachment>
+): Array<UnsavedAttachment> => reject(attachments, 'isInline');
+
+export const filterSavedInlineAttachment = (
+	attachments: Array<SavedAttachment>
+): Array<SavedAttachment> => filter(attachments, 'isInline');
+
+export const filterUnsavedInlineAttachment = (
+	attachments: Array<UnsavedAttachment>
+): Array<UnsavedAttachment> => filter(attachments, 'isInline');
+
+export const getSavedInlineAttachmentByContentId = (
+	editorId: MailsEditorV2['id'],
+	contentId: string
+): SavedAttachment | null =>
+	reduce<SavedAttachment, SavedAttachment | null>(
+		useEditorsStore.getState().editors[editorId].savedAttachments,
+		(result, attachment) =>
+			attachment.isInline && isContentIdEqual(attachment.contentId ?? '', contentId)
+				? attachment
+				: result,
+		null
+	);
+
+export const getUnsavedAttachmentByUploadId = (
+	editorId: MailsEditorV2['id'],
+	uploadId: string
+): UnsavedAttachment | null =>
+	reduce<UnsavedAttachment, UnsavedAttachment | null>(
+		useEditorsStore.getState().editors[editorId].unsavedAttachments,
+		(result, attachment) => (attachment.uploadId === uploadId ? attachment : result),
+		null
+	);

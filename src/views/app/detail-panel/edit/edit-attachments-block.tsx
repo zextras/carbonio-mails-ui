@@ -11,21 +11,24 @@ import { map } from 'lodash';
 
 import { AttachmentPreview } from './attachment-preview';
 import * as StyledComp from './parts/edit-view-styled-components';
-import { useEditorAttachments } from '../../../../store/zustand/editor';
+import { getEditor, useEditorAttachments } from '../../../../store/zustand/editor';
 import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../types';
 
 export const EditAttachmentsBlock: FC<{
 	editorId: MailsEditorV2['id'];
 }> = ({ editorId }): ReactElement => {
 	const [expanded, setExpanded] = useState(false);
-	const { savedAttachments, unsavedAttachments, removeAttachments } =
+	const { savedStandardAttachments, unsavedStandardAttachments, removeStandardAttachments } =
 		useEditorAttachments(editorId);
 	const labelAttachmentsPlural = t('label.attachment_plural', 'Attachments');
 
 	const allAttachments = useMemo<Array<UnsavedAttachment | SavedAttachment>>(
-		() => [...unsavedAttachments, ...savedAttachments],
-		[savedAttachments, unsavedAttachments]
+		() => [...unsavedStandardAttachments, ...savedStandardAttachments],
+		[savedStandardAttachments, unsavedStandardAttachments]
 	);
+
+	const editor = getEditor({ id: editorId });
+	console.dir(editor);
 
 	return allAttachments.length > 0 ? (
 		<StyledComp.RowContainer background="gray6">
@@ -79,7 +82,7 @@ export const EditAttachmentsBlock: FC<{
 									</Row>
 								))}
 						</Padding>
-						<Link size="medium" onClick={removeAttachments}>
+						<Link size="medium" onClick={removeStandardAttachments}>
 							{t('label.remove', {
 								count: allAttachments.length,
 								defaultValue: 'Remove',

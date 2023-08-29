@@ -10,15 +10,23 @@ import { useTheme } from '@zextras/carbonio-design-system';
 import { isNil, reduce } from 'lodash';
 
 import { calcColor } from '../commons/utilities';
-import { SavedAttachment, UnsavedAttachment } from '../types';
 import type {
 	AbstractAttachment,
 	EditorAttachmentFiles,
 	MailMessage,
-	MailMessagePart
+	MailMessagePart,
+	SavedAttachment,
+	UnsavedAttachment
 } from '../types';
 
 const FileExtensionRegex = /^.+\.([^.]+)$/;
+export const CIDURL_REGEX = '^(?:cid:)*(.+)$';
+export const DOWNLOADSERVICEURL_REGEX = '\\/service\\/home\\/~\\/\\?';
+export const EML_FILENAME_REGEX = '^(.+)\\.eml$';
+export const IMAGE_MIMETYPE_REGEX = '^image\\/';
+export const MIMETYPE_MULTIPART_ALTERNATIVE = 'multipart/alternative';
+export const MIMETYPE_PLAINTEXT = 'text/plain';
+export const MIMETYPE_EML = 'message/rfc822';
 
 export function findAttachments(
 	parts: MailMessagePart[],
@@ -37,23 +45,20 @@ export function findAttachments(
 	);
 }
 
-export function findAttachmentFiles(
-	parts: Array<MailMessagePart>,
-	acc: Array<EditorAttachmentFiles>
-): Array<EditorAttachmentFiles> {
-	return reduce(
-		parts,
-		(found, part) => {
-			if (part && part.disposition === 'attachment' && !part.ci) {
-				found.push({ ...part, filename: part.filename ?? '' });
-			}
-			if (part.parts) return findAttachmentFiles(part.parts, found);
-			return acc;
-		},
-		acc as Array<EditorAttachmentFiles>
-	);
-}
+export const isEml = (part: MailMessagePart): boolean =>
+	part.contentType === MIMETYPE_EML ||
+	(part.filename !== undefined && new RegExp(EML_FILENAME_REGEX, 'gi').test(part.filename));
 
+export const isImage = (part: MailMessagePart): boolean =>
+	new RegExp(IMAGE_MIMETYPE_REGEX, 'g').test(part.contentType);
+
+/**
+ * Filters the message parts to collect body content and attachments.
+ *
+ *
+ * @param parts
+ * @param filtered
+ */
 export function filterAttachmentsParts(
 	parts: Array<MailMessagePart>,
 	filtered: Array<MailMessagePart>
@@ -61,12 +66,11 @@ export function filterAttachmentsParts(
 	return reduce(
 		parts,
 		(filtered, part) => {
-			// FIXME sometimes the disposition is not set (e.g. when retrieving drafts)
-			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
+			if (part.disposition === 'attachment' || (part.disposition === 'inline' && part.filename)) {
 				filtered.push(part);
 			}
-			if (part.parts) {
-				return filterAttachmentsParts(part.parts, filtered);
+			if (part.parts && !isEml(part)) {
+				filterAttachmentsParts(part.parts, filtered);
 			}
 			return filtered;
 		},
@@ -299,3 +303,41 @@ export const useAttachmentIconColor = (attachment: UnsavedAttachment | SavedAtta
 		[attachment.contentType, theme]
 	);
 };
+
+/**
+ * Extract the inner part of the content id removing the
+ * angle brackets (if present)
+ * @param contentId
+ */
+export const extractContentIdInnerPart = (contentId: string): string | null => {
+	const regex = /^<?([^<>]+)>?$/;
+	const tokens = regex.exec(contentId);
+	if (!tokens) {
+		return null;
+	}
+
+	return tokens[1];
+};
+
+/**
+ * Tells if the 2 given content-id are the same, ignoring the
+ * angle brackets. If any of the 2 given arguments is not a
+ * valid content-id the result will be false
+ *
+ * @param contentId
+ * @param otherContentId
+ */
+export const isContentIdEqual = (contentId: string, otherContentId: string): boolean => {
+	const contentIdInnerPart = extractContentIdInnerPart(contentId);
+	const otherContentIdInnerPart = extractContentIdInnerPart(otherContentId);
+	if (!contentIdInnerPart || !otherContentIdInnerPart) {
+		return false;
+	}
+
+	return contentIdInnerPart === otherContentIdInnerPart;
+};
+
+export const isCidUrl = (url: string): boolean => new RegExp(CIDURL_REGEX, 'gi').test(url);
+
+export const isDownloadServicedUrl = (url: string): boolean =>
+	new RegExp(DOWNLOADSERVICEURL_REGEX, 'g').test(url);
