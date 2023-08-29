@@ -455,7 +455,7 @@ export const generateRequest = (
 
 	return {
 		autoSendTime: data.autoSendTime,
-		did: data.did ?? undefined,
+		did: data.did,
 		id: data.id ?? undefined,
 		attach: data.attach,
 		su: { _content: data.subject ?? '' },

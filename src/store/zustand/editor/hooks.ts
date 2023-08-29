@@ -9,9 +9,14 @@ import { debounce, find } from 'lodash';
 
 import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from './editor-utils';
 import { useEditorsStore } from './store';
-import { EditViewActionsType, TIMEOUTS } from '../../../constants';
+import { TIMEOUTS } from '../../../constants';
 import { createCancelableTimer } from '../../../helpers/timers';
-import { MailAttachmentParts, MailsEditorV2, SaveDraftResponse } from '../../../types';
+import {
+	EditViewActionsType,
+	MailAttachmentParts,
+	MailsEditorV2,
+	SaveDraftResponse
+} from '../../../types';
 import { saveDraftV3 } from '../../actions/save-draft';
 import { sendMsgFromEditor } from '../../actions/send-msg';
 
@@ -228,7 +233,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 			}
 
 			res.m && useEditorsStore.getState().setDid(editorId, res.m[0].id);
-
+			const { did } = useEditorsStore.getState().editors[editorId];
 			useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
 				status: 'completed',
 				lastSaveTimestamp: new Date()
@@ -896,7 +901,9 @@ export const getClearInlineAttachments = ({ id }: { id: MailsEditorV2['id'] }): 
 export const useEditorDraftSave = (
 	editorId: MailsEditorV2['id']
 ): { status: MailsEditorV2['draftSaveAllowedStatus']; saveDraft: () => void } => {
-	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
+	const status = useEditorsStore(
+		(state) => state.editors[editorId]?.draftSaveAllowedStatus ?? { allowed: true }
+	);
 	const invoker = (): void => debouncedSaveDraftFromEditor(editorId);
 
 	return {
