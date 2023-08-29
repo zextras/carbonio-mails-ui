@@ -17,14 +17,25 @@ import {
 import { noop } from 'lodash';
 
 import { EditView } from './edit-view-v2';
-import { EditViewActions, EditViewActionsType } from '../../../../constants';
+import { keepOrDiscardDraft } from './parts/delete-draft';
+import { CLOSE_BOARD_REASON, EditViewActions } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
 import { getMsg } from '../../../../store/actions';
 import { selectMessages } from '../../../../store/messages-slice';
-import { addEditor, deleteEditor, useEditorSubject } from '../../../../store/zustand/editor';
+import {
+	addEditor,
+	deleteEditor,
+	useEditorDraftSave,
+	useEditorSubject
+} from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
-import { EditViewBoardContext, MailMessage } from '../../../../types';
+import type {
+	CloseBoardReasons,
+	EditViewActionsType,
+	EditViewBoardContext,
+	MailMessage
+} from '../../../../types';
 
 const parseAndValidateParams = (
 	action?: string,
@@ -90,17 +101,35 @@ const EditViewController: FC = () => {
 		throw new Error('No editor provided');
 	}
 
-	const onClose = useCallback(() => {
-		boardUtilities?.updateBoard({
-			onClose: noop
-		});
-		closeBoard(board.id);
-		boardUtilities?.updateBoard({
-			onClose: () => {
-				deleteEditor({ id: editor.id });
+	const { saveDraft } = useEditorDraftSave(editor.id);
+	const updateBoard = boardUtilities?.updateBoard;
+	const onClose = useCallback(
+		({ reason }: { reason?: CloseBoardReasons }) => {
+			if (
+				(reason === CLOSE_BOARD_REASON.SEND_LATER || reason === CLOSE_BOARD_REASON.SEND) &&
+				editor.id
+			) {
+				updateBoard({
+					onClose: noop
+				});
 			}
-		});
-	}, [board.id, boardUtilities, editor.id]);
+			closeBoard(board.id);
+			updateBoard({
+				onClose: () => {
+					if (editor.did) {
+						keepOrDiscardDraft({
+							onConfirm: () => saveDraft(),
+							editorId: editor.id,
+							draftId: editor.did
+						});
+					} else {
+						deleteEditor({ id: editor.id });
+					}
+				}
+			});
+		},
+		[board.id, editor.did, editor.id, saveDraft, updateBoard]
+	);
 
 	if (action !== EditViewActions.RESUME) {
 		addEditor({ id: editor.id, editor });
@@ -116,7 +145,7 @@ const EditViewController: FC = () => {
 
 	const { subject } = useEditorSubject(editor.id);
 	if (subject && board?.title !== subject) {
-		boardUtilities?.updateBoard({
+		updateBoard({
 			title: subject ?? t('messages,new_email', 'new email')
 		});
 	}
@@ -126,9 +155,16 @@ const EditViewController: FC = () => {
 	 * when the board is closed
 	 */
 	if (board && !board.onClose) {
-		boardUtilities?.updateBoard({
+		updateBoard({
 			onClose: () => {
-				deleteEditor({ id: editor.id });
+				if (true) {
+					return keepOrDiscardDraft({
+						onConfirm: () => saveDraft(),
+						editorId: editor.id,
+						draftId: editor.did
+					});
+				}
+				return deleteEditor({ id: editor.id });
 			}
 		});
 	}

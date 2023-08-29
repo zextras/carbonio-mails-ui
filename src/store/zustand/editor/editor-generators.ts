@@ -14,7 +14,7 @@ import {
 import { getEditor } from './hooks';
 import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { LineType } from '../../../commons/utils';
-import { EditViewActions, EditViewActionsType } from '../../../constants';
+import { EditViewActions } from '../../../constants';
 import {
 	getDefaultIdentity,
 	getIdentityFromParticipant,
@@ -22,7 +22,7 @@ import {
 } from '../../../helpers/identities';
 import { getFromParticipantFromMessage } from '../../../helpers/messages';
 import { getMailBodyWithSignature } from '../../../helpers/signatures';
-import { EditorPrefillData, MailMessage, MailsEditorV2 } from '../../../types';
+import { EditorPrefillData, EditViewActionsType, MailMessage, MailsEditorV2 } from '../../../types';
 import {
 	extractBody,
 	generateReplyText,

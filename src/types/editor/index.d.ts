@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { EditViewActionsType } from '../../constants';
+import { CLOSE_BOARD_REASON } from '../../constants';
 import { type AppDispatch } from '../../store/redux';
 import type { MailMessage } from '../messages';
 import type { Participant } from '../participant';
@@ -109,6 +109,8 @@ export type EditorPrefillData = {
 	recipients?: Partial<Participant>;
 };
 
+export type EditViewActionsType = (typeof EditViewActions)[keyof typeof EditViewActions];
+
 export type MailsEditorV2 = {
 	// the id of the editor (used to identify the editor in the store)
 	id: string;
@@ -200,3 +202,5 @@ type EditViewContextType =
 			setSendLater: (arg: boolean) => void;
 	  }
 	| Record<string, never>;
+
+type CloseBoardReasons = (typeof CLOSE_BOARD_REASON)[keyof typeof CLOSE_BOARD_REASON];

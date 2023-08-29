@@ -46,7 +46,7 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
 import WarningBanner from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
-import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
+import { CLOSE_BOARD_REASON, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import {
 	getAvailableAddresses,
 	getIdentitiesDescriptors,
@@ -69,11 +69,11 @@ import {
 	useEditorAttachmentFiles,
 	deleteEditor
 } from '../../../../store/zustand/editor';
-import { BoardContext, EditorRecipients } from '../../../../types';
+import { BoardContext, CloseBoardReasons, EditorRecipients } from '../../../../types';
 
 export type EditViewProp = {
 	editorId: string;
-	closeController?: () => void;
+	closeController?: ({ reason }: { reason?: CloseBoardReasons }) => void;
 	hideController?: () => void;
 	showController?: () => void;
 };
@@ -106,9 +106,12 @@ export const EditView: FC<EditViewProp> = ({
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const attachmentFiles = useEditorAttachmentFiles({ id: editorId });
 	// Performs cleanups and invoke the external callback
-	const close = useCallback(() => {
-		closeController && closeController();
-	}, [closeController]);
+	const close = useCallback(
+		({ reason }: { reason?: CloseBoardReasons }) => {
+			closeController && closeController({ reason });
+		},
+		[closeController]
+	);
 
 	const onSaveClick = useCallback<ButtonProps['onClick']>((): void => {
 		saveDraft();
@@ -173,7 +176,7 @@ export const EditView: FC<EditViewProp> = ({
 			const onConfirmCallback = (): void => {
 				setAutoSendTime(scheduledTime);
 				saveDraft();
-				close();
+				close({ reason: CLOSE_BOARD_REASON.SEND_LATER });
 			};
 			checkSubjectAndAttachment({
 				text,
