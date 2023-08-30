@@ -33,6 +33,7 @@ import { addBoard, t } from '@zextras/carbonio-shell-ui';
 import { filter, map, noop } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
+import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
@@ -43,8 +44,7 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
 import WarningBanner from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
-import { LineType } from '../../../../commons/utils';
-import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
+import { CLOSE_BOARD_REASON, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import {
 	getAvailableAddresses,
 	getIdentitiesDescriptors,
@@ -52,7 +52,6 @@ import {
 	IdentityDescriptor
 } from '../../../../helpers/identities';
 import { getMailBodyWithSignature } from '../../../../helpers/signatures';
-import { StoreProvider } from '../../../../store/redux';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -65,49 +64,14 @@ import {
 	useEditorSend,
 	useEditorSubject,
 	useEditorText,
-	useEditorAttachments
+	useEditorAttachments,
+	deleteEditor
 } from '../../../../store/zustand/editor';
-import { BoardContext, EditorRecipients, MailsEditorV2 } from '../../../../types';
-
-const attachmentWords: Array<string> = [
-	t('messages.modal.send_anyway.attach', 'attach'),
-	t('messages.modal.send_anyway.attachment', 'attachment'),
-	t('messages.modal.send_anyway.attachments', 'attachments'),
-	t('messages.modal.send_anyway.attached', 'attached'),
-	t('messages.modal.send_anyway.attaching', 'attaching'),
-	t('messages.modal.send_anyway.enclose', 'enclose'),
-	t('messages.modal.send_anyway.enclosed', 'enclosed'),
-	t('messages.modal.send_anyway.enclosing', 'enclosing')
-];
-
-function getSubjectOrAttachmentError({
-	attachmentIsExpected,
-	hasAttachments,
-	subject
-}: {
-	attachmentIsExpected: boolean;
-	hasAttachments: boolean;
-	subject: MailsEditorV2['subject'];
-}): string {
-	const attachmentIsMissing = attachmentIsExpected && !hasAttachments;
-	if (attachmentIsMissing && !subject) {
-		return t(
-			'messages.modal.send_anyway.no_subject_no_attachments',
-			'Email subject is empty and you didn’t attach any files.'
-		);
-	}
-	if (!subject) {
-		return t('messages.modal.send_anyway.subject', 'Subject is missing');
-	}
-	if (attachmentIsMissing) {
-		return t('messages.modal.send_anyway.no_attachments', 'You didn’t attach any files.');
-	}
-	return '';
-}
+import { BoardContext, CloseBoardReasons, EditorRecipients } from '../../../../types';
 
 export type EditViewProp = {
 	editorId: string;
-	closeController?: () => void;
+	closeController?: ({ reason }: { reason?: CloseBoardReasons }) => void;
 	hideController?: () => void;
 	showController?: () => void;
 };
@@ -142,9 +106,12 @@ export const EditView: FC<EditViewProp> = ({
 		useEditorAttachments(editorId);
 
 	// Performs cleanups and invoke the external callback
-	const close = useCallback(() => {
-		closeController && closeController();
-	}, [closeController]);
+	const close = useCallback(
+		({ reason }: { reason?: CloseBoardReasons }) => {
+			closeController && closeController({ reason });
+		},
+		[closeController]
+	);
 
 	const onSaveClick = useCallback<ButtonProps['onClick']>((): void => {
 		saveDraft();
@@ -200,70 +167,45 @@ export const EditView: FC<EditViewProp> = ({
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
+		deleteEditor({ id: editorId });
 	}, [createSnackbar, editorId]);
 
+	const createModal = useModal();
 	const onScheduledSendClick = useCallback(
 		(scheduledTime: number): void => {
-			// TODO invoke pre-send (missing attachments and subject) checks
-			setAutoSendTime(scheduledTime);
-			saveDraft();
-			close();
+			const onConfirmCallback = (): void => {
+				setAutoSendTime(scheduledTime);
+				saveDraft();
+				close({ reason: CLOSE_BOARD_REASON.SEND_LATER });
+			};
+			checkSubjectAndAttachment({
+				text,
+				hasAttachments: hasStandardAttachments,
+				subject,
+				onConfirmCallback,
+				close,
+				createModal
+			});
 		},
 		[close, saveDraft, setAutoSendTime]
 	);
 
-	const createModal = useModal();
 	const onSendClick = useCallback((): void => {
-		const attachmentIsExpected = attachmentWords.some((el) => {
-			const [msgContent] = text.richText
-				? text.richText.split(LineType.HTML_SEP_ID)
-				: text.plainText.split(LineType.PLAINTEXT_SEP);
-			return msgContent.toLowerCase().includes(el);
-		});
-		if ((attachmentIsExpected && !hasStandardAttachments) || !subject) {
-			const closeModal = createModal({
-				title: t('header.attention', 'Attention'),
-				confirmLabel: t('action.ok', 'Ok'),
-				dismissLabel: t('label.cancel', 'Cancel'),
-				showCloseIcon: true,
-				onConfirm: () => {
-					sendMessage({
-						onCountdownTick: onSendCountdownTick,
-						onComplete: onSendComplete,
-						onError: onSendError
-					});
-					close();
-					closeModal();
-				},
-				onClose: () => {
-					closeModal();
-				},
-				onSecondaryAction: () => {
-					closeModal();
-				},
-				children: (
-					<StoreProvider>
-						<Text overflow="break-word" style={{ paddingTop: '1rem' }}>
-							{getSubjectOrAttachmentError({
-								attachmentIsExpected,
-								hasAttachments: hasStandardAttachments,
-								subject
-							})}
-						</Text>
-						<Text overflow="break-word" style={{ paddingBottom: '1rem' }}>
-							{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
-						</Text>
-					</StoreProvider>
-				)
-			});
-		} else {
+		const onConfirmCallback = (): void => {
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
 				onComplete: onSendComplete,
 				onError: onSendError
 			});
-			close();
-		}
+		};
+		checkSubjectAndAttachment({
+			text,
+			hasAttachments: hasStandardAttachments,
+			subject,
+			onConfirmCallback,
+			close,
+			createModal
+		});
 	}, [close, onSendComplete, onSendCountdownTick, onSendError, sendMessage]);
 
 	const onIdentityChanged = useCallback(

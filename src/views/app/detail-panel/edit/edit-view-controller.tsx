@@ -14,16 +14,28 @@ import {
 	t,
 	useBoardHooks
 } from '@zextras/carbonio-shell-ui';
+import { noop } from 'lodash';
 
 import { EditView } from './edit-view-v2';
-import { EditViewActions, EditViewActionsType } from '../../../../constants';
+import { keepOrDiscardDraft } from './parts/delete-draft';
+import { CLOSE_BOARD_REASON, EditViewActions } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
 import { getMsg } from '../../../../store/actions';
 import { selectMessages } from '../../../../store/messages-slice';
-import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
+import {
+	addEditor,
+	deleteEditor,
+	useEditorDraftSave,
+	useEditorSubject
+} from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
-import { EditViewBoardContext, MailMessage } from '../../../../types';
+import type {
+	CloseBoardReasons,
+	EditViewActionsType,
+	EditViewBoardContext,
+	MailMessage
+} from '../../../../types';
 
 const parseAndValidateParams = (
 	action?: string,
@@ -38,17 +50,13 @@ const parseAndValidateParams = (
 	return { action: resultAction, id: resultId };
 };
 
-const EditViewController: FC = (x) => {
+const EditViewController: FC = () => {
 	const messagesStoreDispatch = useAppDispatch();
 	const account = useUserAccount();
 	const settings = useUserSettings();
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
 	const messages = useAppSelector(selectMessages);
-
-	const onClose = useCallback(() => {
-		closeBoard(board.id);
-	}, [board.id]);
 	// TODO check why the useQueryParams triggers 2 renders
 	let { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
 
@@ -93,6 +101,36 @@ const EditViewController: FC = (x) => {
 		throw new Error('No editor provided');
 	}
 
+	const { saveDraft } = useEditorDraftSave(editor.id);
+	const updateBoard = boardUtilities?.updateBoard;
+	const onClose = useCallback(
+		({ reason }: { reason?: CloseBoardReasons }) => {
+			if (
+				(reason === CLOSE_BOARD_REASON.SEND_LATER || reason === CLOSE_BOARD_REASON.SEND) &&
+				editor.id
+			) {
+				updateBoard({
+					onClose: noop
+				});
+			}
+			closeBoard(board.id);
+			updateBoard({
+				onClose: () => {
+					if (editor.did) {
+						keepOrDiscardDraft({
+							onConfirm: () => saveDraft(),
+							editorId: editor.id,
+							draftId: editor.did
+						});
+					} else {
+						deleteEditor({ id: editor.id });
+					}
+				}
+			});
+		},
+		[board.id, editor.did, editor.id, saveDraft, updateBoard]
+	);
+
 	if (action !== EditViewActions.RESUME) {
 		addEditor({ id: editor.id, editor });
 	}
@@ -107,11 +145,32 @@ const EditViewController: FC = (x) => {
 
 	const { subject } = useEditorSubject(editor.id);
 	if (subject && board?.title !== subject) {
-		boardUtilities?.updateBoard({
+		updateBoard({
 			title: subject ?? t('messages,new_email', 'new email')
 		});
 	}
 
+	/*
+	 * Add an onClose function to delete the editor from the store
+	 * when the board is closed
+	 */
+	if (board && !board.onClose) {
+		updateBoard({
+			onClose: () => {
+				if (true) {
+					return keepOrDiscardDraft({
+						onConfirm: () => saveDraft(),
+						editorId: editor.id,
+						draftId: editor.did
+					});
+				}
+				if (!editor) {
+					return;
+				}
+				deleteEditor({ id: editor.id });
+			}
+		});
+	}
 	return <EditView editorId={editor.id} closeController={onClose} />;
 };
 export default EditViewController;

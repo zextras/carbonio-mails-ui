@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { AppDispatch } from '../../store/redux';
-import { SavedAttachment, UnsavedAttachment } from '../attachments';
+import type { AppDispatch } from '../../store/redux';
+import type { SavedAttachment, UnsavedAttachment } from '../attachments';
 import type { Conversation } from '../conversations';
 import { AttachmentUploadProcessStatus, MailsEditor, MailsEditorV2 } from '../editor';
 import { MailMessage } from '../messages';

@@ -385,10 +385,13 @@ export const EditViewActions = {
 	RESUME: 'resume'
 } as const;
 
-export type EditViewActionsType = (typeof EditViewActions)[keyof typeof EditViewActions];
-
 export const PROCESS_STATUS = {
 	RUNNING: 'running',
 	COMPLETED: 'completed',
 	ABORTED: 'aborted'
+} as const;
+
+export const CLOSE_BOARD_REASON = {
+	SEND: 'send',
+	SEND_LATER: 'sendLater'
 } as const;

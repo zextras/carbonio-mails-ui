@@ -20,15 +20,16 @@ import {
 } from './editor-utils';
 import { useEditorsStore } from './store';
 import { getUnsavedAttachmentIndex } from './store-utils';
-import { EditViewActionsType, TIMEOUTS } from '../../../constants';
+import { TIMEOUTS } from '../../../constants';
 import { createCancelableTimer } from '../../../helpers/timers';
-import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
+	EditViewActionsType,
 	AttachmentUploadProcessStatus,
 	MailsEditorV2,
 	SavedAttachment,
 	UnsavedAttachment
 } from '../../../types';
+import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { saveDraftV3 } from '../../actions/save-draft';
 import { sendMsgFromEditor } from '../../actions/send-msg';
 import {
