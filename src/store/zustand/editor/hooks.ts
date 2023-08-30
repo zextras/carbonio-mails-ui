@@ -272,8 +272,12 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 	// FIXME use a subscription to the store update
 	computeAndUpdateEditorStatus(editorId);
 };
+const autoSaveDraftSettings = getUserSettings().prefs.zimbraPrefAutoSaveDraftInterval;
+const delay = autoSaveDraftSettings
+	? parseInt(autoSaveDraftSettings, 10)
+	: TIMEOUTS.DRAFT_SAVE_DELAY;
 
-const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, TIMEOUTS.DRAFT_SAVE_DELAY);
+const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, delay);
 
 /**
  * @param id
