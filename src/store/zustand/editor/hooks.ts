@@ -22,6 +22,7 @@ import { useEditorsStore } from './store';
 import { getUnsavedAttachmentIndex } from './store-utils';
 import { TIMEOUTS } from '../../../constants';
 import { createCancelableTimer } from '../../../helpers/timers';
+import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
 	EditViewActionsType,
 	AttachmentUploadProcessStatus,
@@ -29,7 +30,6 @@ import {
 	SavedAttachment,
 	UnsavedAttachment
 } from '../../../types';
-import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { saveDraftV3 } from '../../actions/save-draft';
 import { sendMsgFromEditor } from '../../actions/send-msg';
 import {
@@ -57,7 +57,7 @@ export type SendMessageResult = {
 
 const debugLog = (text: string): void => {
 	// eslint-disable-next-line no-console
-	console.debug(`***** ${text}`);
+	// console.debug(`***** ${text}`);
 };
 
 /**
@@ -426,6 +426,29 @@ export const useEditorAutoSendTime = (
 			setter(id, val);
 			debouncedSaveDraftFromEditor(id);
 			debugLog('save cause: autoSendTime');
+		}
+	};
+};
+
+/**
+ * Returns reactive references to the draft id value and to its setter
+ * @params id
+ */
+export const useEditorDid = (
+	id: MailsEditorV2['id']
+): {
+	did: MailsEditorV2['did'];
+	setDid: (did: MailsEditorV2['did']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[id].did);
+	const setter = useEditorsStore((state) => state.setDid);
+
+	return {
+		did: value,
+		setDid: (val: MailsEditorV2['did']): void => {
+			setter(id, val);
+			debouncedSaveDraftFromEditor(id);
+			debugLog('save cause: did');
 		}
 	};
 };
