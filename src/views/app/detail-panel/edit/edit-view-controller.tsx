@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 
 import {
 	updateBoardContext,
@@ -26,6 +26,7 @@ import { selectMessages } from '../../../../store/messages-slice';
 import {
 	addEditor,
 	deleteEditor,
+	useEditorDid,
 	useEditorDraftSave,
 	useEditorSubject
 } from '../../../../store/zustand/editor';
@@ -150,24 +151,29 @@ const EditViewController: FC = () => {
 		});
 	}
 
+	const draftId = useEditorDid(editor.id).did;
 	/*
 	 * Add an onClose function to delete the editor from the store
 	 * when the board is closed
 	 */
-	if (board && !board.onClose) {
-		updateBoard({
-			onClose: () => {
-				if (true) {
-					return keepOrDiscardDraft({
-						onConfirm: () => saveDraft(),
-						editorId: editor.id,
-						draftId: editor.did
-					});
+	useEffect(() => {
+		if (board) {
+			updateBoard({
+				onClose: () => {
+					if (draftId && editor.id) {
+						return keepOrDiscardDraft({
+							onConfirm: () => saveDraft(),
+							editorId: editor.id,
+							draftId
+						});
+					}
+					return deleteEditor({ id: editor.id });
 				}
-				return deleteEditor({ id: editor.id });
-			}
-		});
-	}
+			});
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [draftId]);
+
 	return <EditView editorId={editor.id} closeController={onClose} />;
 };
 export default EditViewController;
