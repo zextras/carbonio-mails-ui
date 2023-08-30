@@ -13,7 +13,6 @@ import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/ide
 import { getParticipantsFromMessage } from '../../helpers/messages';
 import { SendMsgResult } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
-import { closeEditor } from '../editor-slice';
 import { generateMailRequest, generateRequest } from '../editor-slice-utils';
 import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
 
@@ -55,7 +54,6 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 
 		if (response?.m && response?.m[0]?.id) {
 			dispatch(getMsg({ msgId: response.m[0].id }));
-			dispatch(closeEditor(editorId));
 		}
 		if (response?.m && response?.m[0]?.cid) {
 			dispatch(getConv({ conversationId: response.m[0].cid }));

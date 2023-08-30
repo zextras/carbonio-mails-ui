@@ -12,15 +12,9 @@ import { MailMessage } from '../messages';
 import { SoapIncompleteMessage } from '../soap';
 
 export type MailsStateType = {
-	editors: EditorsStateType;
 	conversations: ConversationsStateType;
 	messages: MsgStateType;
 	searches: SearchesStateType;
-};
-
-export type EditorsStateType = {
-	status: string;
-	editors: MailsEditorMap;
 };
 
 export type EditorsStateTypeV2 = {
