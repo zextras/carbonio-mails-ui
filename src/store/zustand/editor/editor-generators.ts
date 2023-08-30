@@ -23,7 +23,13 @@ import {
 } from '../../../helpers/identities';
 import { getFromParticipantFromMessage } from '../../../helpers/messages';
 import { getMailBodyWithSignature } from '../../../helpers/signatures';
-import { EditViewActionsType, EditorPrefillData, MailMessage, MailsEditorV2, UnsavedAttachment } from '../../../types';
+import {
+	EditViewActionsType,
+	EditorPrefillData,
+	MailMessage,
+	MailsEditorV2,
+	UnsavedAttachment
+} from '../../../types';
 import {
 	extractBody,
 	generateReplyText,

@@ -22,7 +22,7 @@ export type UploadCallbacks = {
 	onUploadError?: (uploadId: string, error: string) => void;
 };
 
-export type AttachmentUploadOptions = UploadCallbacks & {};
+export type AttachmentUploadOptions = UploadCallbacks & Record<string, never>;
 
 export const uploadAttachment = (
 	file: File,

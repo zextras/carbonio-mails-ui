@@ -843,7 +843,11 @@ export const useEditorAttachments = (
 			},
 
 			onUploadComplete: (uploadId: string, attachmentId: string): void => {
-				const uploadedAttachment = getUnsavedAttachmentByUploadId(editorId, uploadId);
+				const { unsavedAttachments } = useEditorsStore.getState().editors[editorId];
+				const uploadedAttachment = getUnsavedAttachmentByUploadId({
+					uploadId,
+					unsavedAttachments
+				});
 				if (!uploadedAttachment || !uploadedAttachment.contentId) {
 					return;
 				}
