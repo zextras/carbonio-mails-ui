@@ -102,6 +102,7 @@ const EditViewController: FC = () => {
 		throw new Error('No editor provided');
 	}
 
+	const draftId = useEditorDid(editor.id).did;
 	const { saveDraft } = useEditorDraftSave(editor.id);
 	const updateBoard = boardUtilities?.updateBoard;
 	const onClose = useCallback(
@@ -117,19 +118,18 @@ const EditViewController: FC = () => {
 			closeBoard(board.id);
 			updateBoard({
 				onClose: () => {
-					if (editor.did) {
-						keepOrDiscardDraft({
+					if (draftId && editor.id) {
+						return keepOrDiscardDraft({
 							onConfirm: () => saveDraft(),
 							editorId: editor.id,
-							draftId: editor.did
+							draftId
 						});
-					} else {
-						deleteEditor({ id: editor.id });
 					}
+					return deleteEditor({ id: editor.id });
 				}
 			});
 		},
-		[board.id, editor.did, editor.id, saveDraft, updateBoard]
+		[board.id, draftId, editor.id, saveDraft, updateBoard]
 	);
 
 	if (action !== EditViewActions.RESUME) {
@@ -151,7 +151,6 @@ const EditViewController: FC = () => {
 		});
 	}
 
-	const draftId = useEditorDid(editor.id).did;
 	/*
 	 * Add an onClose function to delete the editor from the store
 	 * when the board is closed
