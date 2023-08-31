@@ -4,14 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
-import { useRouteMatch, Switch, Route } from 'react-router-dom';
+
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import ConversationPreviewPanel from '../app/detail-panel/conversation-preview-panel';
-import { MailEditPanel } from '../app/detail-panel/mail-edit-panel';
+import { useRouteMatch, Switch, Route } from 'react-router-dom';
+
 import { EmptyFieldMessages, EmptyListMessages } from './utils';
-import MessagePreviewPanel from '../app/detail-panel/message-preview-panel';
 import type { SearchPanelProps } from '../../types';
+import { ConversationPreviewPanel } from '../app/detail-panel/conversation-preview-panel';
+import { MessagePreviewPanel } from '../app/detail-panel/message-preview-panel';
 
 const generateRandomNumber = (): number => Math.floor(Math.random() * 3);
 
@@ -38,9 +39,6 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults, query }) => {
 	);
 	return (
 		<Switch>
-			<Route path={`${path}/folder/:folderId/edit/:editId`}>
-				<MailEditPanel />
-			</Route>
 			<Route path={`${path}/folder/:folderId/conversation/:conversationId`}>
 				<ConversationPreviewPanel />
 			</Route>

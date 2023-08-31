@@ -3,17 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Padding } from '@zextras/carbonio-design-system';
 import React, { FC, useEffect } from 'react';
+
+import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useParams } from 'react-router-dom';
+
+import MailPreview from './preview/mail-preview';
+import PreviewPanelHeader from './preview/preview-panel-header';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getMsg } from '../../../store/actions';
 import { selectMessage } from '../../../store/messages-slice';
 import type { MailsStateType } from '../../../types';
-import MailPreview from './preview/mail-preview';
-import PreviewPanelHeader from './preview/preview-panel-header';
 
-const MessagePreviewPanel: FC = () => {
+export const MessagePreviewPanel: FC = () => {
 	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
 	const dispatch = useAppDispatch();
 
@@ -52,5 +54,3 @@ const MessagePreviewPanel: FC = () => {
 		</Container>
 	);
 };
-
-export default MessagePreviewPanel;

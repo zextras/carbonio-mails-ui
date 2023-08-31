@@ -3,11 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
+
 import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
 import { FOLDERS, useCurrentRoute, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, find, map, sortBy } from 'lodash';
-import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+
+import MailPreview from './preview/mail-preview';
+import PreviewPanelHeader from './preview/preview-panel-header';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getConv, searchConv } from '../../../store/actions';
 import {
@@ -17,8 +21,6 @@ import {
 } from '../../../store/conversations-slice';
 import { selectMessages } from '../../../store/messages-slice';
 import type { Conversation, MailsStateType } from '../../../types';
-import MailPreview from './preview/mail-preview';
-import PreviewPanelHeader from './preview/preview-panel-header';
 
 const MessagesComponent = ({
 	conversation
@@ -84,7 +86,7 @@ const MessagesComponent = ({
 	return <></>;
 };
 
-const ConversationPreviewPanel: FC = () => {
+export const ConversationPreviewPanel: FC = () => {
 	const { conversationId, folderId } = useParams<{ conversationId: string; folderId: string }>();
 	const tagsFromStore = useTags();
 
@@ -95,7 +97,7 @@ const ConversationPreviewPanel: FC = () => {
 	);
 
 	const conversation = useMemo(
-		() => find(conversations, ['id', conversationId]),
+		() => find(conversations, ['id', conversationId]) as Conversation,
 		[conversationId, conversations]
 	);
 	useEffect(() => {
@@ -144,5 +146,3 @@ const ConversationPreviewPanel: FC = () => {
 		</Container>
 	);
 };
-
-export default ConversationPreviewPanel;
