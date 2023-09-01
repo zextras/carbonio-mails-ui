@@ -49,7 +49,10 @@
                 "retention_message": "Bu klasördeki koruma döneminde olan dosyaları silmek için ayrıca onaylamanız gerekecek",
                 "add_share": "Paylaşım ekle",
                 "retention_duration_warning": "Koruma dönemi süresi positif bir sayı olmalıdır",
-                "threshold_message": "Bu klasördeki çöpe gönderme aralığından daha eski mesajlar otomatik olarak temizlenir ve silinir."
+                "threshold_message": "Bu klasördeki çöpe gönderme aralığından daha eski mesajlar otomatik olarak temizlenir ve silinir.",
+                "special_chars_warning_msg": "Klasör adında özel karakterler kullanılamaz",
+                "enter_valid_folder_name": "Geçerli bir klasör adı girin",
+                "invalid_folder_name_warning_msg": "Özel karakterler kullanılamaz. Maksimum uzunluk 128 karakter olabilir."
             }
         }
     },
@@ -87,8 +90,7 @@
         "send_later_success": "Mesajınız {{date}} - {{time}} tarih ve saatinde gönderilecek",
         "select_date_time": "Bu mesajı göndermek için tarih ve saati seçin",
         "delete_attachment_message2": "Önce indirmek ister misiniz?",
-        "delete_attachment_message1": "Ekiniz, Carbonio'dan tamamen silinecek.",
-        "": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin"
+        "delete_attachment_message1": "Ekiniz, Carbonio'dan tamamen silinecek."
     },
     "snackbar": {
         "share_resend": "Paylaşım davetini yeniden gönder",
@@ -333,7 +335,9 @@
         "admin_disabled_action": "Yönetici yönlendirme eylemini devre dışı bıraktı",
         "time": "Zaman",
         "exit_selection_mode": "Seçme modundan çık",
-        "all_items_selected": "Tüm görünür öğeler seçildi"
+        "all_items_selected": "Tüm görünür öğeler seçildi",
+        "do_not_have_perm": "Bunun için yetkiniz yok",
+        "folder_not_valid_destination": "Seçilen klasör geçerli bir hedef değil"
     },
     "share": {
         "options": {
@@ -462,9 +466,9 @@
         "edit_schedule_warning": "Bu e-postayı düzenlediğinizde ertelenmiş gönderim için önceden belirlenen tarih ve saat sıfırlanacak.",
         "extra_windows": {
             "opening_blocked": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin",
-            "": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin",
             "popup_blocked": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin"
-        }
+        },
+        "enter_calendar_name": "Takvimi kabul etmek için bir ad girin"
     },
     "placeholder": {
         "add_new_recipients": "Yeni alıcılar ekle"
@@ -705,11 +709,13 @@
                 "title": "Yeni klasör oluştur"
             },
             "move": {
-                "title_modal": "Görüşmeyi taşı",
+                "title_modal_conversation": "Görüşmeyi taşı",
                 "body": {
                     "message1": "İçine taşınmasını istediğiniz bir klasör seçin:",
                     "message2": "İçine geri yüklemek istediğiniz bir klasör seçin:"
-                }
+                },
+                "title_modal_message": "Mesajı Taşı",
+                "title_modal": "Görüşmeyi taşı"
             },
             "delete": {
                 "body": {

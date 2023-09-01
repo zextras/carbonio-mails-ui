@@ -74,7 +74,6 @@
         "trustee_addresses": "La posta proveniente da questi indirizzi o domini verrà considerata affidabile e le immagini saranno visualizzate automaticamente.",
         "edit_schedule_warning": "Modificando questa e-mail, l'ora e il giorno impostati per l'invio ritardato del messaggio saranno resettati.",
         "extra_windows": {
-            "": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser",
             "popup_blocked": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser",
             "opening_blocked": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser"
         }
@@ -435,8 +434,7 @@
         "send_later_success": "La tua e-mail verrà inviata il {{date}} alle {{time}}",
         "select_date_time": "Seleziona la data e l’ora di invio di questo messaggio",
         "delete_attachment_message1": "L'allegato verrà eliminato permanentemente da Carbonio.",
-        "delete_attachment_message2": "Vuoi scaricarlo prima?",
-        "": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser"
+        "delete_attachment_message2": "Vuoi scaricarlo prima?"
     },
     "snackbar": {
         "share_resend": "Invito condivisione inviato",

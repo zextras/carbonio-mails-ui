@@ -393,7 +393,6 @@
         "edit_schedule_warning": "Durch das Bearbeiten dieser E-Mail werden zuvor eingestellte Zeit und Datum für das verzögerte Versenden zurückgesetzt.",
         "cal_name_exist_warning": "Ein Kalender mit dem gleichen Namen existiert bereits in diesem Pfad",
         "extra_windows": {
-            "": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen",
             "opening_blocked": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen",
             "popup_blocked": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen"
         }
@@ -458,8 +457,7 @@
         "schedule_time": "für {{date}} um {{time}}",
         "schedule_mail": "Wird gesendet am: {{date}} um {{time}}",
         "delete_attachment_message1": "Ihr Anhang wird endgültig von Carbonio gelöscht.",
-        "delete_attachment_message2": "Möchten Sie ihn vorher herunterladen?",
-        "": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen"
+        "delete_attachment_message2": "Möchten Sie ihn vorher herunterladen?"
     },
     "tooltip": {
         "revoke": "Zugriff widerrufen",
