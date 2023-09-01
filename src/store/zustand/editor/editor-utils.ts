@@ -6,7 +6,6 @@
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, reduce, reject, some } from 'lodash';
 
-import { useEditorsStore } from './store';
 import { PROCESS_STATUS } from '../../../constants';
 import { isContentIdEqual } from '../../../helpers/attachments';
 import type {
@@ -157,11 +156,11 @@ export const filterUnsavedInlineAttachment = (
 ): Array<UnsavedAttachment> => filter(attachments, 'isInline');
 
 export const getSavedInlineAttachmentByContentId = (
-	editorId: MailsEditorV2['id'],
-	contentId: string
+	contentId: string,
+	savedAttachments: Array<SavedAttachment>
 ): SavedAttachment | null =>
 	reduce<SavedAttachment, SavedAttachment | null>(
-		useEditorsStore.getState().editors[editorId].savedAttachments,
+		savedAttachments,
 		(result, attachment) =>
 			attachment.isInline && isContentIdEqual(attachment.contentId ?? '', contentId)
 				? attachment
@@ -169,12 +168,15 @@ export const getSavedInlineAttachmentByContentId = (
 		null
 	);
 
-export const getUnsavedAttachmentByUploadId = (
-	editorId: MailsEditorV2['id'],
-	uploadId: string
-): UnsavedAttachment | null =>
+export const getUnsavedAttachmentByUploadId = ({
+	uploadId,
+	unsavedAttachments
+}: {
+	uploadId: string;
+	unsavedAttachments: Array<UnsavedAttachment>;
+}): UnsavedAttachment | null =>
 	reduce<UnsavedAttachment, UnsavedAttachment | null>(
-		useEditorsStore.getState().editors[editorId].unsavedAttachments,
+		unsavedAttachments,
 		(result, attachment) => (attachment.uploadId === uploadId ? attachment : result),
 		null
 	);

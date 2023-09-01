@@ -49,13 +49,14 @@ export const handleCreatedMessagesInConversationsReducer = (
 			const date =
 				msg.l === FOLDERS.DRAFTS
 					? conversation.date
-					: last(sortBy(filter(messages, { parent: state.currentFolder }), 'date'))?.date;
+					: (last(sortBy(filter(messages, { parent: state.currentFolder }), 'date')) as ConvMessage)
+							.date;
 
 			const conv = {
 				[msg.cid]: {
 					...conversation,
 					messages,
-					fragment: msg?.fr,
+					fragment: msg?.fr ?? '',
 					date
 				}
 			};

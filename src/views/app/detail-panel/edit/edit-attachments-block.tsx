@@ -11,7 +11,7 @@ import { map } from 'lodash';
 
 import { AttachmentPreview } from './attachment-preview';
 import * as StyledComp from './parts/edit-view-styled-components';
-import { getEditor, useEditorAttachments } from '../../../../store/zustand/editor';
+import { useEditorAttachments } from '../../../../store/zustand/editor';
 import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../types';
 
 export const EditAttachmentsBlock: FC<{
@@ -26,9 +26,6 @@ export const EditAttachmentsBlock: FC<{
 		() => [...unsavedStandardAttachments, ...savedStandardAttachments],
 		[savedStandardAttachments, unsavedStandardAttachments]
 	);
-
-	const editor = getEditor({ id: editorId });
-	console.dir(editor);
 
 	return allAttachments.length > 0 ? (
 		<StyledComp.RowContainer background="gray6">

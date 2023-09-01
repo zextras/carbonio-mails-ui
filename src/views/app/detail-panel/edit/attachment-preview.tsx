@@ -102,13 +102,13 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 	}
 	const uploadProcess = useEditorUploadProcess(
 		editorId,
-		isUnsavedAttachment(attachment) ? attachment.uploadId ?? '' : ''
+		isUnsavedAttachment(attachment) ? (attachment.uploadId as string) : ''
 	);
 	const { removeUnsavedAttachment, removeSavedAttachment } = useEditorAttachments(editorId);
 	const { subject } = useEditorSubject(editorId);
 
 	const removeAttachment = useCallback(() => {
-		isUnsavedAttachment(attachment) && removeUnsavedAttachment(attachment.uploadId ?? '');
+		isUnsavedAttachment(attachment) && removeUnsavedAttachment(attachment.uploadId as string);
 		isSavedAttachment(attachment) && removeSavedAttachment(attachment.partName);
 	}, [attachment, removeSavedAttachment, removeUnsavedAttachment]);
 

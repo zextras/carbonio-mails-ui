@@ -287,8 +287,12 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 	// FIXME use a subscription to the store update
 	computeAndUpdateEditorStatus(editorId);
 };
+const autoSaveDraftSettings = getUserSettings().prefs.zimbraPrefAutoSaveDraftInterval;
+const delay = autoSaveDraftSettings
+	? parseInt(autoSaveDraftSettings, 10)
+	: TIMEOUTS.DRAFT_SAVE_DELAY;
 
-const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, TIMEOUTS.DRAFT_SAVE_DELAY);
+const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, delay);
 
 /**
  * @param id
@@ -860,7 +864,11 @@ export const useEditorAttachments = (
 			},
 
 			onUploadComplete: (uploadId: string, attachmentId: string): void => {
-				const uploadedAttachment = getUnsavedAttachmentByUploadId(editorId, uploadId);
+				const { unsavedAttachments } = useEditorsStore.getState().editors[editorId];
+				const uploadedAttachment = getUnsavedAttachmentByUploadId({
+					uploadId,
+					unsavedAttachments
+				});
 				if (!uploadedAttachment || !uploadedAttachment.contentId) {
 					return;
 				}

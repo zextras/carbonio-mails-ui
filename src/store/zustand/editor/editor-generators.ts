@@ -28,8 +28,7 @@ import {
 	EditorPrefillData,
 	MailMessage,
 	MailsEditorV2,
-	UnsavedAttachment,
-	Participant
+	UnsavedAttachment
 } from '../../../types';
 import {
 	extractBody,
@@ -56,14 +55,6 @@ const labels = {
 	subject: `${t('label.subject', 'Subject')}:`,
 	sent: `${t('label.sent', 'Sent')}:`
 };
-
-const fixParticipant = (participant: Participant): Participant => ({
-	...participant,
-	fullName: participant.fullName ?? participant.name
-});
-
-const fixParticipants = (participants: Array<Participant>): Array<Participant> =>
-	participants.map((participant) => fixParticipant(participant));
 
 /**
  *
@@ -297,7 +288,7 @@ const generateEditAsDraftEditor = (
 		isRichText: true,
 		isUrgent: originalMessage.urgent,
 		recipients: {
-			to: fixParticipants(retrieveTO(originalMessage)),
+			to: retrieveTO(originalMessage),
 			cc: retrieveCCForEditNew(originalMessage),
 			bcc: retrieveBCC(originalMessage)
 		},

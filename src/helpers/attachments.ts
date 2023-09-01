@@ -12,7 +12,6 @@ import { isNil, reduce } from 'lodash';
 import { calcColor } from '../commons/utilities';
 import type {
 	AbstractAttachment,
-	EditorAttachmentFiles,
 	MailMessage,
 	MailMessagePart,
 	SavedAttachment,
@@ -30,13 +29,13 @@ export const MIMETYPE_EML = 'message/rfc822';
 
 export function findAttachments(
 	parts: MailMessagePart[],
-	acc: Array<EditorAttachmentFiles>
-): Array<EditorAttachmentFiles> {
+	acc: Array<Omit<AbstractAttachment, 'isInline'>>
+): Array<Omit<AbstractAttachment, 'isInline'>> {
 	return reduce(
 		parts,
 		(found, part: MailMessagePart) => {
 			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
-				found.push(part);
+				found.push({ ...part, filename: part.filename ?? '' });
 			}
 			if (part.parts) return findAttachments(part.parts, found);
 			return acc;

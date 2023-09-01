@@ -12,15 +12,9 @@ import { MailMessage } from '../messages';
 import { SoapIncompleteMessage } from '../soap';
 
 export type MailsStateType = {
-	editors: EditorsStateType;
 	conversations: ConversationsStateType;
 	messages: MsgStateType;
 	searches: SearchesStateType;
-};
-
-export type EditorsStateType = {
-	status: string;
-	editors: MailsEditorMap;
 };
 
 export type EditorsStateTypeV2 = {
@@ -127,7 +121,7 @@ export type SearchesStateType = {
 	searchResults: any;
 	searchResultsIds: Array<string>;
 	conversations?: Record<string, Conversation>;
-	messages?: Record<string, Partial<MailMessage> & Pick<MailMessage, 'id'>>;
+	messages?: Record<string, Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>>;
 	more: boolean;
 	offset: number;
 	sortBy: 'dateDesc' | 'dateAsc';
@@ -142,7 +136,7 @@ export type MailsEditorMap = Record<string, MailsEditor>;
 
 export type MailsEditorMapV2 = Record<string, MailsEditorV2>;
 
-export type MsgMap = Record<string, Partial<MailMessage> & Pick<MailMessage, 'id'>>;
+export type MsgMap = Record<string, Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>>;
 
 export type ConversationsFolderStatus =
 	| 'empty'

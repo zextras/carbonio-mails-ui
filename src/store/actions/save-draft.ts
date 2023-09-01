@@ -43,16 +43,12 @@ export const saveDraft = createAsyncThunk<SaveDraftNewResult, SaveDraftNewParame
 	}
 );
 
-export const saveDraftV3 = ({
-	editor,
-	signal,
-	attach
-}: SaveDraftParameters): Promise<SaveDraftResponse> =>
+export const saveDraftV3 = ({ editor, signal }: SaveDraftParameters): Promise<SaveDraftResponse> =>
 	soapFetch<SaveDraftRequest, SaveDraftResponse>(
 		'SaveDraft',
 		{
 			_jsns: 'urn:zimbraMail',
-			m: createSoapDraftRequestFromEditor(editor, attach)
+			m: createSoapDraftRequestFromEditor(editor)
 		},
 		undefined,
 		signal

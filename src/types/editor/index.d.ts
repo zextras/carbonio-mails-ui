@@ -192,7 +192,7 @@ type FindDefaultIdentityType = {
 	settings: AccountSettings;
 };
 
-type ThrottledSaveToDraftType = (data: Partial<MailsEditor>) => void;
+type ThrottledSaveToDraftType = (data: Partial<MailsEditorV2>) => void;
 
 type EditViewContextType =
 	| {
