@@ -35,7 +35,7 @@ export function findAttachments(
 		parts,
 		(found, part: MailMessagePart) => {
 			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
-				found.push(part);
+				found.push({ ...part, filename: part.filename ?? '' });
 			}
 			if (part.parts) return findAttachments(part.parts, found);
 			return acc;
