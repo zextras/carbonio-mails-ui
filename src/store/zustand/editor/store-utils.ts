@@ -3,8 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { findIndex } from 'lodash';
 
+import { TIMEOUTS } from '../../../constants';
 import { EditorsStateTypeV2, UnsavedAttachment } from '../../../types';
 
 export const getUnsavedAttachmentIndex = (
@@ -33,3 +35,22 @@ export const getUnsavedAttachment = (
 	}
 	return state.editors[editorId].unsavedAttachments[index];
 };
+
+export function getDraftSaveDelay(): number {
+	const autoSaveDraftSettings = getUserSettings().prefs.zimbraPrefAutoSaveDraftInterval;
+	if (!autoSaveDraftSettings) {
+		return TIMEOUTS.DRAFT_SAVE_DELAY;
+	}
+	if (autoSaveDraftSettings === '0') {
+		return TIMEOUTS.DRAFT_SAVE_DELAY;
+	}
+	if (autoSaveDraftSettings.includes('s')) {
+		autoSaveDraftSettings.replace('s', '');
+		return parseInt(autoSaveDraftSettings, 10) * 1000;
+	}
+	if (autoSaveDraftSettings.includes('m')) {
+		autoSaveDraftSettings.replace('m', '');
+		return parseInt(autoSaveDraftSettings, 10) * 1000 * 60;
+	}
+	return TIMEOUTS.DRAFT_SAVE_DELAY;
+}
