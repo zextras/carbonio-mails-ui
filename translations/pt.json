@@ -37,7 +37,10 @@
                 "retention_duration_warning": "A duração da retenção deve ser um número positivo",
                 "retention_message": "As mensagens nesta pasta que se enquadram no período de retenção necessitam de confirmação expressa antes de serem excluídas",
                 "threshold_message": "As mensagens nesta pasta que excederem o limiar definido serão excluídas automaticamente.",
-                "add_share": "Adicionar compartilhamento"
+                "add_share": "Adicionar compartilhamento",
+                "enter_valid_folder_name": "Introduzir um nome de pasta válido",
+                "invalid_folder_name_warning_msg": "Caracteres especiais não permitidos. Comprimento máximo: 128 caracteres.",
+                "special_chars_warning_msg": "Caracteres especiais não são permitidos no nome da pasta"
             }
         }
     },
@@ -278,7 +281,9 @@
         "time": "Hora",
         "admin_disabled_action": "O Administrador desativou o redireccionamento",
         "all_items_selected": "Todos os items visíveis foram selecionados",
-        "exit_selection_mode": "Sair do modo de seleção"
+        "exit_selection_mode": "Sair do modo de seleção",
+        "do_not_have_perm": "Não tem autorização",
+        "folder_not_valid_destination": "A pasta selecionada não é um destino válido"
     },
     "title": {
         "new_messages": "Novas mensagens",
@@ -375,10 +380,10 @@
         "cal_name_exist_warning": "Já existe um calendário com o mesmo nome neste local",
         "edit_schedule_warning": "Ao editar este e-mail, a hora e a data definidas para o envio programado serão redefinidas.",
         "extra_windows": {
-            "": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador",
             "popup_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador",
             "opening_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador"
-        }
+        },
+        "enter_calendar_name": "Introduzir um nome para aceitar o calendário"
     },
     "placeholder": {
         "add_new_recipients": "Adicionar destinatários"
@@ -404,7 +409,7 @@
             },
             "share_calendar_with": {
                 "external_guests": "Convidados externos (apenas visualizar)",
-                "internal_users_groups": "Usuários ou grupos internos",
+                "internal_users_groups": "Utilizadores ou grupos internos",
                 "public": "Público (apenas ver, senha não requerida)"
             }
         },
@@ -620,8 +625,7 @@
         "send_later_success": "Seu e-mail será enviado em {{date}} às {{time}}",
         "schedule_mail": "Será enviado em: {{date}} às {{time}}",
         "delete_attachment_message1": "O anexo será excluído permanentemente do Carbonio.",
-        "delete_attachment_message2": "Deseja baixá-lo antes?",
-        "": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador"
+        "delete_attachment_message2": "Deseja baixá-lo antes?"
     },
     "snackbar": {
         "share_resend": "Convite do compartilhamento reenviado",
@@ -644,7 +648,7 @@
         "folder_sharing_status_0": "Partilhado com {{count}} utilizador",
         "folder_sharing_status_1": "Partilhado com {{count}} utilizadores",
         "folder_sharing_status_2": "Partilhado com {{count}} utilizadores",
-        "folder_linked_status": "Compartilhado comigo",
+        "folder_linked_status": "Partilhado comigo",
         "marked_as_important": "Marcar como importante"
     },
     "folder_panel": {
@@ -679,7 +683,9 @@
                     "message1": "Selecione uma pasta onde mover a selecionada:",
                     "message2": "Selecione uma pasta para restaurar:"
                 },
-                "title_modal": "Selecione a pasta de destino"
+                "title_modal": "Selecione a pasta de destino",
+                "title_modal_message": "Selecione a pasta de destino",
+                "title_modal_conversation": "Selecione a pasta de destino"
             },
             "wipe": {
                 "body": {

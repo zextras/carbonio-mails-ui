@@ -5,14 +5,15 @@
  */
 
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { Container, FormSubSection, RadioGroup, Radio } from '@zextras/carbonio-design-system';
 
+import { Container, FormSubSection, RadioGroup, Radio } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+
 import Heading from './components/settings-heading';
-import { composingMsgSubSection } from './subsections';
-import CustomSelect from './filters/parts/custom-select';
-import { ColorPicker } from '../../commons/color-picker';
 import { getFontSizesOptions, findLabel, getFonts } from './components/utils';
+import CustomSelect from './filters/parts/custom-select';
+import { composingMsgSubSection } from './subsections';
+import { ColorPicker } from '../../commons/color-picker';
 
 type UpdateSettingsProps = {
 	target: {
@@ -79,8 +80,10 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 						<RadioGroup
 							style={{ width: '100%' }}
 							value={settingsObj?.zimbraPrefComposeFormat}
-							onChange={(newValue: string): void => {
-								updateSettings({ target: { name: 'zimbraPrefComposeFormat', value: newValue } });
+							onChange={(newValue): void => {
+								updateSettings({
+									target: { name: 'zimbraPrefComposeFormat', value: newValue as string }
+								});
 							}}
 						>
 							<Radio width="100%" label={t('label.as_html', 'As HTML')} value="html" />
