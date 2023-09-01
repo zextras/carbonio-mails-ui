@@ -39,10 +39,7 @@ export const getUnsavedAttachment = (
 export function getDraftSaveDelay(): number {
 	const maximumDraftSaveDelay = TIMEOUTS.DRAFT_SAVE_DELAY;
 	const autoSaveDraftSettings = getUserSettings().prefs.zimbraPrefAutoSaveDraftInterval;
-	if (!autoSaveDraftSettings) {
-		return TIMEOUTS.DRAFT_SAVE_DELAY;
-	}
-	if (autoSaveDraftSettings === '0') {
+	if (!autoSaveDraftSettings || autoSaveDraftSettings === '0') {
 		return TIMEOUTS.DRAFT_SAVE_DELAY;
 	}
 	if (autoSaveDraftSettings.includes('s')) {
