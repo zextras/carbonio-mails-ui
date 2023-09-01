@@ -83,7 +83,6 @@
         "edit_schedule_warning": "编辑此邮件时将重置之前为延迟发送设置的时间和日期。",
         "cal_name_exist_warning": "此路径中已存在带有相同名称的日历",
         "extra_windows": {
-            "": "为完成此操作，Carbonio将需要打开一个新窗口。\n检查您的浏览器设置",
             "opening_blocked": "为完成此操作，Carbonio将需要打开一个新窗口。\n检查您的浏览器设置",
             "popup_blocked": "为完成此操作，Carbonio将需要打开一个新窗口。\n检查您的浏览器设置"
         }
@@ -438,8 +437,7 @@
         "schedule_time": "{{date}}，{{time}}",
         "schedule_mail": "发送时间：{{date}}，{{time}}",
         "delete_attachment_message1": "您的附件将从Carbonio中永久删除。",
-        "delete_attachment_message2": "此前是否想要下载？",
-        "": "为完成此操作，Carbonio将需要打开一个新窗口。\n检查您的浏览器设置"
+        "delete_attachment_message2": "此前是否想要下载？"
     },
     "settings": {
         "label": {

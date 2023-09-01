@@ -44,7 +44,10 @@
                 "add_share": "Dodaj udostępnienie",
                 "rename_warning": "Nie możesz zmienić nazwy folderu na nazwę znajdującą się już w systemie.",
                 "retention_duration_warning": "Okres przechowywania musi być liczbą większą od zera",
-                "threshold_message": "Wiadomości z tego folderu, wykraczające poza Próg pozbywania się będą poddawane automatycznemu usunięciu."
+                "threshold_message": "Wiadomości z tego folderu, wykraczające poza Próg pozbywania się będą poddawane automatycznemu usunięciu.",
+                "enter_valid_folder_name": "Wprowadź prawidłową nazwę folderu",
+                "invalid_folder_name_warning_msg": "Znaki specjalne nie są dozwolone. Max. długość to 128 znaków.",
+                "special_chars_warning_msg": "Znaki specjalne w nazwie folderu nie są dozwolone"
             }
         }
     },
@@ -263,9 +266,9 @@
         "behalf_of": "w imieniu",
         "accept": "Zaakceptuj",
         "add_task": "Jeżeli chcesz zrobić notatkę, możesz dodać zadanie do Twojej LISTY TO-DO",
-        "create_tag": "Stwórz Tag",
-        "delete_tag": "Usuń Tag",
-        "delete_tag_name": "Usuń Tag \"{{name}}\"",
+        "create_tag": "Stwórz tag",
+        "delete_tag": "Usuń tag",
+        "delete_tag_name": "Usuń tag \"{{name}}\"",
         "edit_tag": "Edytuj tag",
         "edit_tag_name": "Edytuj tag \"{{name}}\"",
         "no_special_char_allowed": "Nazwa nie może zawierać żadnych znaków specjalnych",
@@ -281,7 +284,7 @@
         "disposal_threshold": "Próg pozbywania się",
         "by_conversation": "Wg konwersacji",
         "by_message": "Wg wiadomości",
-        "create_new_task": "Stwórz nowe Zadanie",
+        "create_new_task": "Stwórz nowe zadanie",
         "destination_folder": "Folder docelowy",
         "enable_message_disposal": "Włącz pozbywanie się wiadomości",
         "enable_message_retention": "Włącz przechowywanie wiadomości",
@@ -358,7 +361,9 @@
         "sent_to_address": "Wysłane do (adres)",
         "all_items_selected": "Wszystkie widoczne elementy zostały wybrane",
         "exit_selection_mode": "Wyjdź z trybu wybierania",
-        "time": "Czas"
+        "time": "Czas",
+        "do_not_have_perm": "Nie masz uprawnień",
+        "folder_not_valid_destination": "Wybrany folder nie jest prawidłowym miejscem docelowym"
     },
     "message": {
         "snackbar": {
@@ -394,8 +399,7 @@
         "send_later_success": "Twój e-mail zostanie wysłany {{date}} o {{time}}",
         "select_date_time": "Wybierz datę i godzinę, o której ta wiadomość zostanie wysłana",
         "delete_attachment_message2": "Czy chcesz pobrać go przed tym?",
-        "delete_attachment_message1": "Załącznik zostanie trwale usunięty z Carbonio.",
-        "": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień"
+        "delete_attachment_message1": "Załącznik zostanie trwale usunięty z Carbonio."
     },
     "search": {
         "flagged_note": "Wyszukaj wszystkie oflagowane e-maile.",
@@ -461,7 +465,9 @@
                 "body": {
                     "message1": "Wybierz folder, do którego chcesz przenieść wybrany element:",
                     "message2": "Wybierz folder, do którego trafią przywrócone elementy:"
-                }
+                },
+                "title_modal": "Przenieś konwersację",
+                "title_modal_message": "Przenieś wiadomość"
             },
             "new": {
                 "create_footer": "Stwórz i Przenieś",
@@ -573,10 +579,10 @@
         "cal_name_exist_warning": "Kalendarz z wybraną nazwą już istnieje w tej ścieżce",
         "edit_schedule_warning": "Edytując ten e-mail, poprzednio ustawiona data i czas opóźnionego wysyłania zostanie zresetowana.",
         "extra_windows": {
-            "": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień",
             "popup_blocked": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień",
             "opening_blocked": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień"
-        }
+        },
+        "enter_calendar_name": "Wprowadź nazwę, aby zaakceptować kalendarz"
     },
     "settings": {
         "conv_is_participated": "w konwersacjach, w których uczestniczyłem",
