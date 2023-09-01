@@ -8,6 +8,7 @@
 import React, {
 	ChangeEvent,
 	FC,
+	memo,
 	SyntheticEvent,
 	useCallback,
 	useMemo,
@@ -81,6 +82,8 @@ type FileSelectProps = {
 	files: FileList;
 };
 
+const MemoizedTextEditorContainer = memo(TextEditorContainer);
+
 export const EditView: FC<EditViewProp> = ({
 	editorId,
 	closeController,
@@ -104,6 +107,8 @@ export const EditView: FC<EditViewProp> = ({
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const { addStandardAttachment, addInlineAttachment, hasStandardAttachments } =
 		useEditorAttachments(editorId);
+
+	// console.count('*** render editview');
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(
@@ -153,6 +158,11 @@ export const EditView: FC<EditViewProp> = ({
 				label: t('label.error_try_again', 'Something went wrong, please try again'),
 				autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 				hideButton: true
+			});
+			// TODO move outside the component (editor-utils or a new help module?)
+			addBoard<BoardContext>({
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
+				title: ''
 			});
 		},
 		[createSnackbar, editorId]
@@ -308,13 +318,13 @@ export const EditView: FC<EditViewProp> = ({
 		},
 		[setText, text]
 	);
-	const onDragOverEvent = (event: SyntheticEvent): void => {
+	const onDragOverEvent = useCallback((event: SyntheticEvent): void => {
 		event.preventDefault();
 		setDropZoneEnabled(true);
-	};
+	}, []);
 
 	// TODO complete with new attachment management
-	const onDropEvent = (event: DragEvent): void => {
+	const onDropEvent = useCallback((event: DragEvent): void => {
 		event.preventDefault();
 		setDropZoneEnabled(false);
 		const files = event?.dataTransfer?.files;
@@ -325,12 +335,12 @@ export const EditView: FC<EditViewProp> = ({
 		for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
 			addStandardAttachment(files[fileIndex], {});
 		}
-	};
+	}, []);
 
-	const onDragLeaveEvent = (event: DragEvent): void => {
+	const onDragLeaveEvent = useCallback((event: DragEvent): void => {
 		event.preventDefault();
 		setDropZoneEnabled(false);
-	};
+	}, []);
 
 	// TODO ask designers if the check must be performed only on TO or also on CC and BCC
 	const isSendingToYourself = useMemo(() => {
@@ -387,14 +397,15 @@ export const EditView: FC<EditViewProp> = ({
 		[isUrgent, requestReadReceipt]
 	);
 
-	const onFilesSelected = ({ editor: tinymce, files }: FileSelectProps): void => {
+	const onFilesSelected = useCallback(({ editor: tinymce, files }: FileSelectProps): void => {
+		// tinymce.activeEditor?.focus();
+		// const sel = tinymce.activeEditor?.selection?.getSel();
+		// const position = sel?.anchorNode.sel?.anchorOffset;
+		// console.log('**** position', position);
 		for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
-			// const bookmark = tinymce.activeEditor?.selection.
-			// 	.getBookmark()
-			// 	.console.log('***', tinymce.activeEditor?.c);
 			addInlineAttachment(files[fileIndex]);
 		}
-	};
+	}, []);
 
 	return (
 		<Container
@@ -513,7 +524,7 @@ export const EditView: FC<EditViewProp> = ({
 
 					<EditAttachmentsBlock editorId={editorId} />
 
-					<TextEditorContainer
+					<MemoizedTextEditorContainer
 						onDragOver={onDragOverEvent}
 						onFilesSelected={onFilesSelected}
 						onContentChanged={onBodyChange}

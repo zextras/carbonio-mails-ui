@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect } from 'react';
+import React, { FC, memo, useCallback, useEffect } from 'react';
 
 import {
 	updateBoardContext,
@@ -51,6 +51,8 @@ const parseAndValidateParams = (
 	return { action: resultAction, id: resultId };
 };
 
+const MemoizedEditView = memo(EditView);
+
 const EditViewController: FC = () => {
 	const messagesStoreDispatch = useAppDispatch();
 	const account = useUserAccount();
@@ -58,6 +60,9 @@ const EditViewController: FC = () => {
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
 	const messages = useAppSelector(selectMessages);
+
+	console.count('*** render controller');
+
 	// TODO check why the useQueryParams triggers 2 renders
 	let { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
 
@@ -173,6 +178,6 @@ const EditViewController: FC = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [draftId]);
 
-	return <EditView editorId={editor.id} closeController={onClose} />;
+	return <MemoizedEditView editorId={editor.id} closeController={onClose} />;
 };
 export default EditViewController;

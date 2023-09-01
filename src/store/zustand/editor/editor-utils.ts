@@ -131,7 +131,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 
 export const isSavedAttachment = (
 	attachment: SavedAttachment | UnsavedAttachment
-): attachment is SavedAttachment => 'part' in attachment;
+): attachment is SavedAttachment => 'partName' in attachment;
 
 export const isUnsavedAttachment = (
 	attachment: SavedAttachment | UnsavedAttachment

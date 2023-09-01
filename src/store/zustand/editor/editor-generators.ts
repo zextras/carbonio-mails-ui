@@ -23,7 +23,14 @@ import {
 } from '../../../helpers/identities';
 import { getFromParticipantFromMessage } from '../../../helpers/messages';
 import { getMailBodyWithSignature } from '../../../helpers/signatures';
-import { EditViewActionsType, EditorPrefillData, MailMessage, MailsEditorV2, UnsavedAttachment } from '../../../types';
+import {
+	EditViewActionsType,
+	EditorPrefillData,
+	MailMessage,
+	MailsEditorV2,
+	UnsavedAttachment,
+	Participant
+} from '../../../types';
 import {
 	extractBody,
 	generateReplyText,
@@ -49,6 +56,14 @@ const labels = {
 	subject: `${t('label.subject', 'Subject')}:`,
 	sent: `${t('label.sent', 'Sent')}:`
 };
+
+const fixParticipant = (participant: Participant): Participant => ({
+	...participant,
+	fullName: participant.fullName ?? participant.name
+});
+
+const fixParticipants = (participants: Array<Participant>): Array<Participant> =>
+	participants.map((participant) => fixParticipant(participant));
 
 /**
  *
@@ -282,7 +297,7 @@ const generateEditAsDraftEditor = (
 		isRichText: true,
 		isUrgent: originalMessage.urgent,
 		recipients: {
-			to: retrieveTO(originalMessage),
+			to: fixParticipants(retrieveTO(originalMessage)),
 			cc: retrieveCCForEditNew(originalMessage),
 			bcc: retrieveBCC(originalMessage)
 		},

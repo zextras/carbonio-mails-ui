@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { useCallback } from 'react';
+
 import { getBridgedFunctions, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { debounce, filter, find, reject } from 'lodash';
 
@@ -151,12 +153,25 @@ const sendFromEditor = (
 		.then(() => {
 			editor
 				.messagesStoreDispatch(sendMsgFromEditor({ editor }))
-				.then(() => {
-					useEditorsStore.getState().updateSendProcessStatus(editorId, {
-						status: 'completed'
-					});
-					computeAndUpdateEditorStatus(editorId);
-					options?.onComplete && options.onComplete();
+				.then((res) => {
+					// TODO try to handle the error only inside the sendMsgFromEditor (is the asyncThunk really necessary?)
+					if (res.meta.requestStatus === 'rejected') {
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						const errorDescription: string = res.payload.reason;
+						useEditorsStore.getState().updateSendProcessStatus(editorId, {
+							status: 'aborted',
+							abortReason: errorDescription
+						});
+						computeAndUpdateEditorStatus(editorId);
+						options?.onError && options.onError(errorDescription);
+					} else {
+						useEditorsStore.getState().updateSendProcessStatus(editorId, {
+							status: 'completed'
+						});
+						computeAndUpdateEditorStatus(editorId);
+						options?.onComplete && options.onComplete();
+					}
 				})
 				.catch((err) => {
 					useEditorsStore.getState().updateSendProcessStatus(editorId, {
@@ -366,19 +381,25 @@ export const useEditorText = (
 } => {
 	const value = useEditorsStore((state) => state.editors[id].text);
 	const setter = useEditorsStore((state) => state.updateText);
-
-	return {
-		text: value,
-		setText: (val: MailsEditorV2['text']): void => {
+	const setText = useCallback(
+		(val: MailsEditorV2['text']): void => {
 			setter(id, val);
 			debouncedSaveDraftFromEditor(id);
 			debugLog('save cause: text');
 		},
-		resetText: (): void => {
-			setter(id, { plainText: '', richText: '' });
-			debouncedSaveDraftFromEditor(id);
-			debugLog('save cause: text reset');
-		}
+		[id, setter]
+	);
+
+	const resetText = useCallback((): void => {
+		setter(id, { plainText: '', richText: '' });
+		debouncedSaveDraftFromEditor(id);
+		debugLog('save cause: text reset');
+	}, [id, setter]);
+
+	return {
+		text: value,
+		setText,
+		resetText
 	};
 };
 
@@ -848,11 +869,11 @@ export const useEditorAttachments = (
 				 * Creates and concat the img tag to the richtext body
 				 */
 				const cid = composeCidUrlFromContentId(uploadedAttachment.contentId);
-				const inlineImg = `<br/><img pnsrc="${cid}" src="${cid}" data-src="${cid}" data-mce-src="${cid}" alt=""/>`;
+				const inlineImg = `<img pnsrc="${cid}" src="${cid}" data-src="${cid}" data-mce-src="${cid}" alt="${uploadedAttachment.filename}"/><br/>`;
 				const { text } = useEditorsStore.getState().editors[editorId];
 				useEditorsStore.getState().updateText(editorId, {
 					plainText: text.plainText,
-					richText: text.richText.concat(inlineImg)
+					richText: inlineImg.concat(text.richText)
 				});
 				options?.onUploadComplete && options.onUploadComplete(uploadId, attachmentId);
 			},

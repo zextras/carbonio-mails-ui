@@ -4,17 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useContext, useEffect, useState } from 'react';
+
 import { Button, ChipInput, ChipItem, Container, Padding } from '@zextras/carbonio-design-system';
-import { Controller, useForm } from 'react-hook-form';
+import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, some } from 'lodash';
+import { Controller, useForm } from 'react-hook-form';
+
+import { EditViewContext } from './edit-view-context';
+import * as StyledComp from './edit-view-styled-components';
 import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../../../../../carbonio-ui-commons/constants/participants';
-import * as StyledComp from './edit-view-styled-components';
-import { EditViewContext } from './edit-view-context';
 import type { EditViewContextType, MailsEditor } from '../../../../../types';
 
 const emailRegex =
@@ -53,7 +55,7 @@ const ParticipantsRow: FC<{
 		}
 	}, [editor?.bcc?.length, editor?.cc?.length]);
 
-	const result = (
+	return (
 		<>
 			<StyledComp.ColContainer occupyFull>
 				{isAvailable ? (
@@ -83,7 +85,7 @@ const ParticipantsRow: FC<{
 															type: ParticipantRole.TO,
 															address: contact.email,
 															name: contact.firstName,
-															fullName: contact.fullName
+															fullName: contact.fullNamez
 													  }
 													: { ...contact, type: ParticipantRole.TO }
 											);
@@ -106,11 +108,11 @@ const ParticipantsRow: FC<{
 								>
 									<Padding right="small">
 										<Button
-											label={t('label.cc', 'Cc')}
-											type="ghost"
-											style={{ color: '#282828', padding: 0 }}
-											onClick={toggleCc}
-											data-testid="BtnCc"
+										label={t('label.cc', 'Cc')}
+										type="ghost"
+										style={{ color: '#282828', padding: 0 }}
+										onClick={toggleCc}
+										data-testid="BtnCc"
 										/>
 									</Padding>
 									<Button
@@ -353,7 +355,6 @@ const ParticipantsRow: FC<{
 			)}
 		</>
 	);
-	return result;
 };
 
 export default ParticipantsRow;

@@ -19,6 +19,7 @@ import styled, { SimpleInterpolation } from 'styled-components';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
 import {
+	composeAttachmentDownloadUrl,
 	getAttachmentExtension,
 	getSizeDescription,
 	useAttachmentIconColor
@@ -101,13 +102,13 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 	}
 	const uploadProcess = useEditorUploadProcess(
 		editorId,
-		isUnsavedAttachment(attachment) ? attachment.uploadId : ''
+		isUnsavedAttachment(attachment) ? attachment.uploadId ?? '' : ''
 	);
 	const { removeUnsavedAttachment, removeSavedAttachment } = useEditorAttachments(editorId);
 	const { subject } = useEditorSubject(editorId);
 
 	const removeAttachment = useCallback(() => {
-		isUnsavedAttachment(attachment) && removeUnsavedAttachment(attachment.uploadId);
+		isUnsavedAttachment(attachment) && removeUnsavedAttachment(attachment.uploadId ?? '');
 		isSavedAttachment(attachment) && removeSavedAttachment(attachment.partName);
 	}, [attachment, removeSavedAttachment, removeUnsavedAttachment]);
 
@@ -133,6 +134,13 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		}
 		uploadProcess && uploadProcess.cancel();
 	}, [uploadProcess]);
+
+	const isDeletable = useMemo(
+		() =>
+			isSavedAttachment(attachment) ||
+			(isUnsavedAttachment(attachment) && !isAttachmentUploading(attachment)),
+		[attachment]
+	);
 
 	return (
 		<StyledWrapper>
@@ -182,7 +190,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 					/>
 				)}
 				<Row orientation="horizontal" crossAlignment="center">
-					{isUnsavedAttachment(attachment) && !isAttachmentUploading(attachment) && (
+					{isDeletable && (
 						<AttachmentHoverBarContainer>
 							<Padding right="small">
 								<Tooltip label={t('label.delete', 'Delete')}>
@@ -203,7 +211,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 							rel="noopener"
 							ref={inputRef2}
 							target="_blank"
-							href={`/service/home/~/?auth=co&id=${editorId}&part=${attachment.partName}`}
+							href={composeAttachmentDownloadUrl(attachment)}
 						/>
 						<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={link} />
 					</>

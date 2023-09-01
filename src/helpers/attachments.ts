@@ -341,3 +341,6 @@ export const isCidUrl = (url: string): boolean => new RegExp(CIDURL_REGEX, 'gi')
 
 export const isDownloadServicedUrl = (url: string): boolean =>
 	new RegExp(DOWNLOADSERVICEURL_REGEX, 'g').test(url);
+
+export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): string =>
+	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;

@@ -15,6 +15,7 @@ import {
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import {
 	CIDURL_REGEX,
+	composeAttachmentDownloadUrl,
 	extractContentIdInnerPart,
 	getAttachmentParts,
 	isCidUrl,
@@ -42,8 +43,7 @@ export const composeCidUrlFromContentId = (contentId: string): string | null => 
 	const contentIdInnerPart = extractContentIdInnerPart(contentId);
 	return contentIdInnerPart ? `cid:${contentIdInnerPart}` : null;
 };
-export const composeInlineAttachmentDownloadUrl = (attachment: SavedAttachment): string =>
-	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
+
 export const convertCidUrlToServiceUrl = (
 	cidUrl: string,
 	savedInlineAttachments: Array<SavedAttachment>
@@ -64,8 +64,9 @@ export const convertCidUrlToServiceUrl = (
 		return cidUrl;
 	}
 
-	return composeInlineAttachmentDownloadUrl(referredAttachment);
+	return composeAttachmentDownloadUrl(referredAttachment);
 };
+
 export const replaceCidUrlWithServiceUrl = (
 	content: string,
 	savedAttachment: Array<SavedAttachment>
@@ -78,17 +79,41 @@ export const replaceCidUrlWithServiceUrl = (
 		return content;
 	}
 
-	forEach(images, (p: HTMLImageElement) => {
-		const src = p.getAttribute('src');
-		if (!src || !isCidUrl(src)) {
-			return;
-		}
+	const someSrcChanged = reduce(
+		images,
+		(result, img): boolean => {
+			const src = img.getAttribute('src');
+			const pnsrc = img.getAttribute('pnsrc');
+			const dataSrc = img.getAttribute('data-src');
+			const dataMceSrc = img.getAttribute('data-mce-src');
 
-		p.setAttribute('src', convertCidUrlToServiceUrl(src, savedAttachment));
-	});
+			let referenceCid;
+			if (pnsrc && isCidUrl(pnsrc)) {
+				referenceCid = pnsrc;
+			} else if (dataSrc && isCidUrl(dataSrc)) {
+				referenceCid = dataSrc;
+			} else if (dataMceSrc && isCidUrl(dataMceSrc)) {
+				referenceCid = dataMceSrc;
+			} else if (src && isCidUrl(src)) {
+				referenceCid = src;
+			}
+			if (!referenceCid) {
+				return false || result;
+			}
 
-	return htmlDoc.body.innerHTML;
+			const newSrc = convertCidUrlToServiceUrl(referenceCid, savedAttachment);
+			if (newSrc === src) {
+				return false || result;
+			}
+			img.setAttribute('src', newSrc);
+			return true || result;
+		},
+		false
+	);
+
+	return someSrcChanged ? htmlDoc.body.innerHTML : content;
 };
+
 export const replaceServiceUrlWithCidUrl = (content: string): string => {
 	const parser = new DOMParser();
 	const htmlDoc = parser.parseFromString(content, 'text/html');
