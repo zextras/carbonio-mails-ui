@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { t } from '@zextras/carbonio-shell-ui';
 import React, { ChangeEvent, FC, useCallback, useMemo } from 'react';
 
 import {
@@ -20,6 +19,8 @@ import {
 	Icon,
 	Text
 } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
+
 import Heading from './components/settings-heading';
 import {
 	CheckNewMailOptions,
@@ -30,8 +31,8 @@ import {
 	UnsendTimeOptions
 } from './components/utils';
 import { displayingMessagesSubSection } from './subsections';
-import type { DisplayingMessagesSettingsProps } from '../../types';
 import { MAIL_APP_ID } from '../../constants';
+import type { DisplayingMessagesSettingsProps } from '../../types';
 
 const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 	settingsObj,
@@ -199,7 +200,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 				<RadioGroup
 					style={{ width: '100%' }}
 					value={settingsObj.zimbraPrefGroupMailBy}
-					onChange={(newValue: string): void => {
+					onChange={(newValue): void => {
 						updateSettings({ target: { name: 'zimbraPrefGroupMailBy', value: newValue } });
 					}}
 				>
@@ -232,7 +233,7 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 				<RadioGroup
 					style={{ width: '100%' }}
 					value={settingsObj.zimbraPrefMarkMsgRead === '-1' ? '-1' : '0'}
-					onChange={(newValue: string): void => {
+					onChange={(newValue): void => {
 						updateSettings({ target: { name: 'zimbraPrefMarkMsgRead', value: newValue } });
 					}}
 				>

@@ -368,7 +368,6 @@
         "edit_schedule_warning": "Door deze e-mail te bewerken, worden de eerder ingestelde tijd en datum voor uitgestelde verzending opnieuw ingesteld.",
         "cal_name_exist_warning": "Een kalender met dezelfde naam bestaat al in dit traject",
         "extra_windows": {
-            "": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen",
             "opening_blocked": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen",
             "popup_blocked": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen"
         }
@@ -455,8 +454,7 @@
         "schedule_time": "voor {{date}} om {{time}}",
         "schedule_mail": "Zal worden verstuurd op: {{date}} om {{time}}",
         "delete_attachment_message1": "Uw bijlage wordt permanent verwijderd uit Carbonio.",
-        "delete_attachment_message2": "Wilt u het eerst downloaden?",
-        "": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen"
+        "delete_attachment_message2": "Wilt u het eerst downloaden?"
     },
     "composer": {
         "attachment": {
