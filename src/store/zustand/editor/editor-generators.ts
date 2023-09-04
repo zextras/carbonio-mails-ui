@@ -191,7 +191,7 @@ const generateReplyAndReplyAllMsgEditor = (
 		isUrgent: originalMessage.urgent,
 		recipients: {
 			to: toParticipants,
-			cc: action === EditViewActions.REPLY ? retrieveCC(originalMessage, [account]) : [],
+			cc: action === EditViewActions.REPLY_ALL ? retrieveCC(originalMessage, [account]) : [],
 			bcc: []
 		},
 		subject: `RE: ${originalMessage.subject.replace(REPLY_REGEX, '')}`,

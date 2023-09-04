@@ -5,6 +5,7 @@
  */
 import { getTags } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, isArray, isNil, map, omitBy, reduce } from 'lodash';
+
 import {
 	ParticipantRole,
 	ParticipantRoleType
@@ -23,8 +24,7 @@ import type {
 // extract ids of attachments from html content. the ids are preceded by "cid: and end with " or with &
 export const extractAttachmentIdsFromHtmlContent = (content: string): Array<string> => {
 	const matches = content.match(/cid:(.*?)(?="|&)/g);
-	const result = matches ? map(matches, (match) => match.replace('cid:', '')) : [];
-	return result;
+	return matches ? map(matches, (match) => match.replace('cid:', '')) : [];
 };
 
 // examine the multipart and return an array of ids referenced in the body of the html
@@ -185,8 +185,8 @@ const findBodyPart = (
 	mp: Array<SoapMailMessagePart>,
 	acc: { contentType: string; content: string },
 	id: string
-): { contentType: string; content: string } => {
-	const bodyPart = reduce(
+): { contentType: string; content: string } =>
+	reduce(
 		mp,
 		(found, part) => {
 			if (part.mp) return findBodyPart(part.mp, found, id);
@@ -215,9 +215,6 @@ const findBodyPart = (
 		},
 		acc
 	);
-
-	return bodyPart;
-};
 
 const generateBody = (
 	mp: Array<SoapMailMessagePart>,
@@ -254,7 +251,8 @@ export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participa
 	type: participantTypeFromSoap(e.t),
 	address: e.a,
 	name: e.d || e.a,
-	fullName: e.p
+	fullName: e.p,
+	email: e.a
 });
 
 const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
