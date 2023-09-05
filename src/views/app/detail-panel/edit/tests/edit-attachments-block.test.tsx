@@ -7,7 +7,6 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { noop } from 'lodash';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateEditorCase } from '../../../../../tests/generators/editors';
@@ -39,8 +38,7 @@ describe('Attachments visualization', () => {
 
 		// Create the props for the component
 		const props = {
-			editor,
-			throttledSaveToDraft: noop
+			editorId
 		};
 
 		// Render the component

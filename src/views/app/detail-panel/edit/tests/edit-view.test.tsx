@@ -15,7 +15,7 @@ import {
 	waitForElementToBeRemoved,
 	within
 } from '@testing-library/react';
-import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { rest } from 'msw';
 
@@ -29,6 +29,9 @@ import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import * as saveDraftAction from '../../../../../store/actions/save-draft';
+import { addEditor } from '../../../../../store/zustand/editor';
+import { setupEditorStore } from '../../../../../tests/generators/editor-store';
+import { generateEditorV2Case } from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import { saveDraftResult } from '../../../../../tests/mocks/network/msw/cases/saveDraft/saveDraft-1';
@@ -102,16 +105,10 @@ describe('Edit view', () => {
 		 * Test the creation of a new email
 		 */
 		test('create a new email', async () => {
-			const account = getUserAccount();
-			const store = generateStore();
-
-			// Mock the "action" query param
-			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-				if (param === 'action') {
-					return 'new';
-				}
-				return undefined;
-			});
+			setupEditorStore({ editors: [] });
+			const reduxStore = generateStore();
+			const editor = await generateEditorV2Case(1, reduxStore.dispatch);
+			addEditor({ id: editor.id, editor });
 
 			// Get the default identity address
 			const mocksContext = getMocksContext();

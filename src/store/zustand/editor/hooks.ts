@@ -408,31 +408,6 @@ export const useEditorText = (
 };
 
 /**
- * Get the text of the editor with given ID
- * @param id
- * */
-export const getEditorText = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2['text'] =>
-	useEditorsStore.getState().editors[id].text;
-
-/**
- * Set the text of the editor with given ID
- * @param id
- * @param text
- * @param type
- * */
-export const getUpdateEditorText = ({
-	id,
-	text
-}: {
-	id: MailsEditorV2['id'];
-	text: MailsEditorV2['text'];
-}): void => {
-	useEditorsStore.getState().updateText(id, text);
-	debouncedSaveDraftFromEditor(id);
-	debugLog('save cause: update text');
-};
-
-/**
  * Returns reactive references to the auto send time value and to its setter
  * @params id
  */
