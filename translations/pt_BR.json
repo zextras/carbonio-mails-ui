@@ -37,7 +37,8 @@
                 "retention_duration_warning": "A duração da retenção deve ser um número positivo",
                 "retention_message": "As mensagens nesta pasta que se enquadram no período de retenção necessitam de confirmação expressa antes de serem excluídas",
                 "threshold_message": "As mensagens nesta pasta que excederem o limiar definido serão excluídas automaticamente.",
-                "add_share": "Adicionar compartilhamento"
+                "add_share": "Adicionar compartilhamento",
+                "invalid_folder_name_warning_msg": "Caracteres especiais não permitidos. Comprimento máximo: 128 caracteres."
             }
         }
     },
@@ -374,7 +375,6 @@
         "cal_name_exist_warning": "Já existe um calendário com o mesmo nome neste local",
         "edit_schedule_warning": "Ao editar este e-mail, a hora e a data definidas para o envio programado serão redefinidas.",
         "extra_windows": {
-            "": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador",
             "popup_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador",
             "opening_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador"
         }
@@ -618,8 +618,7 @@
         "send_later_success": "Seu e-mail será enviado em {{date}} às {{time}}",
         "schedule_mail": "Será enviado em: {{date}} às {{time}}",
         "delete_attachment_message1": "O anexo será excluído permanentemente do Carbonio.",
-        "delete_attachment_message2": "Deseja baixá-lo antes?",
-        "": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador"
+        "delete_attachment_message2": "Deseja baixá-lo antes?"
     },
     "snackbar": {
         "share_resend": "Convite do compartilhamento reenviado",

@@ -360,7 +360,6 @@
         "cal_name_exist_warning": "Kalender dengan nama yang sama sudah ada di jalur ini",
         "read_receipt_1": "Pengirim pesan ini meminta untuk dikirimi notifikasi saat Anda membaca pesan ini.",
         "extra_windows": {
-            "": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda",
             "opening_blocked": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda",
             "popup_blocked": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda"
         }
@@ -604,8 +603,7 @@
         "schedule_time": "untuk {{date}} pukul {{time}}",
         "send_later_success": "Email Anda akan dikirim pada {{date}} pukul {{time}}",
         "delete_attachment_message1": "Lampiran Anda akan dihapus permanen dari Carbonio.",
-        "delete_attachment_message2": "Ingin mengunduhnya dulu?",
-        "": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda"
+        "delete_attachment_message2": "Ingin mengunduhnya dulu?"
     },
     "snackbar": {
         "share_resend": "Undangan berbagi dikirim ulang",
