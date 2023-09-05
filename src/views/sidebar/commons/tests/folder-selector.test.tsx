@@ -84,7 +84,7 @@ describe('Folder selector', () => {
 				const roots = getRootsMap();
 				const folderId = FOLDERS.INBOX;
 				const primaryAccount = getUserAccount();
-				const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
+				const ownerAccountName = getFolderOwnerAccountName(folderId, roots);
 
 				const props: FolderSelectorProps = {
 					onFolderSelected: jest.fn()
@@ -180,11 +180,7 @@ describe('Folder selector', () => {
 			await user.type(filterInput, folderInPrimaryAccountOnly.name);
 			const roots = getRootsMap();
 			const primaryAccount = getUserAccount();
-			const ownerAccountName = getFolderOwnerAccountName(
-				folderInPrimaryAccountOnly.id,
-				primaryAccount,
-				roots
-			);
+			const ownerAccountName = getFolderOwnerAccountName(folderInPrimaryAccountOnly.id, roots);
 
 			rootIds.forEach((rootId) => {
 				if (rootId === rootIds[0]) {

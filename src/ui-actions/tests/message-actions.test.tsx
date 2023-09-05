@@ -934,7 +934,6 @@ describe('Messages actions calls', () => {
 		});
 
 		const action = sendDraft({
-			id: msg.id, // FIXME this should be an editor Id
 			message: msg,
 			dispatch: store.dispatch
 		});

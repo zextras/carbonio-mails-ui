@@ -368,7 +368,7 @@ describe('Edit view', () => {
 
 		test.skip('is not autosaved if unchanged', async () => {
 			// Mock the saveDraft
-			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraft');
+			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftV3');
 
 			// Mock the "action" query param
 			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
@@ -603,7 +603,7 @@ describe('Edit view', () => {
 
 		test.skip('is not autosaved within 2 seconds if body is changed', async () => {
 			// Spy the saveDraftAction
-			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraft');
+			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftV3');
 
 			// Mock the "action" query param
 			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {

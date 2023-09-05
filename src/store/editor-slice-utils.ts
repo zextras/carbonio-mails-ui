@@ -419,7 +419,14 @@ export const getMP = ({
 	];
 };
 
+/**
+ * @deprecated
+ * @param data
+ * @param prefs
+ */
 export const generateRequest = (
+	// This function will be soon removed
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	data: any,
 	prefs?: Partial<AccountSettingsPrefs>
 ): SoapDraftMessageObj => {

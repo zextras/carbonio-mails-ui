@@ -20,7 +20,6 @@ export const EditViewDraftSaveInfo: FC<{ processStatus?: DraftSaveProcessStatus 
 	const timeoutId = useRef<null | ReturnType<typeof setTimeout>>(null);
 
 	useEffect(() => {
-		console.log('@@@ processStatus', { processStatus });
 		if (processStatus?.status === 'completed') {
 			setVisible(true);
 			timeoutId.current = setTimeout(() => setVisible(false), TIMEOUTS.DRAFT_INFO_HIDING_DELAY);
