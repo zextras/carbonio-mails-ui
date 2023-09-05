@@ -27,7 +27,6 @@ import type {
 	MailMessage,
 	MailMessagePart,
 	MailsEditor,
-	MailsEditorV2,
 	Participant,
 	SharedParticipant,
 	SoapDraftMessageObj
@@ -421,7 +420,7 @@ export const getMP = ({
 };
 
 export const generateRequest = (
-	data: MailsEditorV2,
+	data: any,
 	prefs?: Partial<AccountSettingsPrefs>
 ): SoapDraftMessageObj => {
 	const style = {
