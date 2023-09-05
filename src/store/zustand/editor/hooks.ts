@@ -21,7 +21,7 @@ import {
 	getUnsavedAttachmentByUploadId
 } from './editor-utils';
 import { useEditorsStore } from './store';
-import { getUnsavedAttachmentIndex } from './store-utils';
+import { getDraftSaveDelay, getUnsavedAttachmentIndex } from './store-utils';
 import { TIMEOUTS } from '../../../constants';
 import { createCancelableTimer } from '../../../helpers/timers';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
@@ -30,7 +30,8 @@ import {
 	AttachmentUploadProcessStatus,
 	MailsEditorV2,
 	SavedAttachment,
-	UnsavedAttachment
+	UnsavedAttachment,
+	MailsStateType
 } from '../../../types';
 import { saveDraftV3 } from '../../actions/save-draft';
 import { sendMsgFromEditor } from '../../actions/send-msg';
@@ -39,6 +40,9 @@ import {
 	AttachmentUploadOptions,
 	UploadCallbacks
 } from '../../actions/upload-attachments';
+import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../../hooks/redux';
+import { selectMessages } from '../../messages-slice';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
@@ -255,6 +259,10 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 			const savedAttachments = buildSavedAttachments(mailMessage);
 			useEditorsStore.getState().setSavedAttachments(editorId, savedAttachments);
 
+			/* update the message in the messages store */
+			const messages = useAppSelector(selectMessages);
+			messages[mailMessage.id] = mailMessage;
+
 			const text = {
 				plainText: editor.text.plainText,
 				richText: replaceCidUrlWithServiceUrl(editor.text.richText, savedAttachments)
@@ -287,11 +295,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 	// FIXME use a subscription to the store update
 	computeAndUpdateEditorStatus(editorId);
 };
-const autoSaveDraftSettings = getUserSettings().prefs.zimbraPrefAutoSaveDraftInterval;
-const delay = autoSaveDraftSettings
-	? parseInt(autoSaveDraftSettings, 10)
-	: TIMEOUTS.DRAFT_SAVE_DELAY;
-
+const delay = getDraftSaveDelay();
 const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, delay);
 
 /**

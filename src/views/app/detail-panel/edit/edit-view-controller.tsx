@@ -61,8 +61,6 @@ const EditViewController: FC = () => {
 	const boardUtilities = useBoardHooks();
 	const messages = useAppSelector(selectMessages);
 
-	console.count('*** render controller');
-
 	// TODO check why the useQueryParams triggers 2 renders
 	let { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
 

@@ -19,6 +19,7 @@ import {
 import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { htmlEncode } from '../commons/get-quoted-text-util';
 import { LineType } from '../commons/utils';
+import { getIdentityDescriptor } from '../helpers/identities';
 import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import type {
 	InlineAttachments,
@@ -26,6 +27,7 @@ import type {
 	MailMessage,
 	MailMessagePart,
 	MailsEditor,
+	MailsEditorV2,
 	Participant,
 	SharedParticipant,
 	SoapDraftMessageObj
@@ -419,7 +421,7 @@ export const getMP = ({
 };
 
 export const generateRequest = (
-	data: MailsEditor,
+	data: MailsEditorV2,
 	prefs?: Partial<AccountSettingsPrefs>
 ): SoapDraftMessageObj => {
 	const style = {
@@ -427,13 +429,16 @@ export const generateRequest = (
 		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
 		color: prefs?.zimbraPrefHtmlEditorDefaultFontColor
 	};
+
+	const from = getIdentityDescriptor(data.identityId)?.fromAddress;
+
 	const participants = map(
 		// eslint-disable-next-line no-nested-ternary
-		data.participants
-			? data.participants
+		data.recipients
+			? data.recipients
 			: isEmpty(data.sender)
-			? [data.from, ...data.to, ...data.cc, ...data.bcc]
-			: [data.from, data.sender, ...data.to, ...data.cc, ...data.bcc],
+			? [from, ...data.to, ...data.cc, ...data.bcc]
+			: [from, data.sender, ...data.to, ...data.cc, ...data.bcc],
 		(c) => ({
 			t: c.type,
 			a: c.email ?? c.address,
@@ -443,12 +448,12 @@ export const generateRequest = (
 	if (data.requestReadReceipt) {
 		participants.push({
 			a:
-				(data?.from as unknown as SharedParticipant)?.email ??
-				(data?.from as unknown as Participant)?.address,
+				(data?.sender as unknown as SharedParticipant)?.email ??
+				(from as unknown as Participant)?.address,
 			t: ParticipantRole.READ_RECEIPT_NOTIFICATION,
 			d:
-				(data?.from as unknown as Participant).fullName ??
-				(data?.from as unknown as SharedParticipant).firstName ??
+				(from as unknown as Participant).fullName ??
+				(from as unknown as SharedParticipant).firstName ??
 				undefined
 		});
 	}

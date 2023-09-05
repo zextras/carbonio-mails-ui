@@ -42,7 +42,7 @@ import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
 import { RecipientsRows } from './parts/recipients-rows';
-import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container-v2';
+import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container';
 import WarningBanner from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { CLOSE_BOARD_REASON, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
