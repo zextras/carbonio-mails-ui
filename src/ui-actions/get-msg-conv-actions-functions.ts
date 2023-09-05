@@ -5,9 +5,7 @@
  */
 
 import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
-import { getFolderIdParts } from '../helpers/folders';
-import { AppDispatch } from '../store/redux';
-import type { ActionReturnType, Conversation, MailMessage } from '../types';
+
 import {
 	deleteConversationPermanently,
 	moveConversationToFolder,
@@ -35,6 +33,9 @@ import {
 	showOriginalMsg
 } from './message-actions';
 import { applyTag } from './tag-actions';
+import { getFolderIdParts } from '../helpers/folders';
+import { AppDispatch } from '../store/redux';
+import type { ActionReturnType, Conversation, MailMessage } from '../types';
 
 /**
  * get the action to be executed when the user clicks on the "Mark as read/unread" button
@@ -186,28 +187,25 @@ export function getAddRemoveFlagAction({
 	item: MailMessage | Conversation;
 	dispatch: AppDispatch;
 }): ActionReturnType {
-	const action = isConversation
+	return isConversation
 		? setConversationsFlag({ ids: [id], value: item.flagged, dispatch })
 		: setMsgFlag({ ids: [id], value: item.flagged, dispatch });
-	return action;
 }
 
 export function getSendDraftAction({
 	isConversation,
-	id,
 	item,
 	dispatch,
 	folderIncludedSendDraft,
 	folderId
 }: {
 	isConversation: boolean;
-	id: string;
 	item: MailMessage | Conversation;
 	dispatch: AppDispatch;
 	folderIncludedSendDraft: string[];
 	folderId: string;
 }): ActionReturnType {
-	const action = isConversation ? false : sendDraft({ id, message: item as MailMessage, dispatch });
+	const action = isConversation ? false : sendDraft({ message: item as MailMessage, dispatch });
 	return folderIncludedSendDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -275,7 +273,7 @@ export function getMoveToFolderAction({
 	folderId: string;
 	deselectAll: () => void;
 }): ActionReturnType {
-	const action = isConversation
+	return isConversation
 		? moveConversationToFolder({
 				ids: [id],
 				dispatch,
@@ -290,7 +288,6 @@ export function getMoveToFolderAction({
 				isRestore: folderId === FOLDERS.TRASH,
 				deselectAll
 		  });
-	return action;
 }
 
 export function getPrintAction({

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /*
  * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
@@ -197,7 +196,7 @@ export const EditView: FC<EditViewProp> = ({
 				createModal
 			});
 		},
-		[close, saveDraft, setAutoSendTime]
+		[close, createModal, hasStandardAttachments, saveDraft, setAutoSendTime, subject, text]
 	);
 
 	const onSendClick = useCallback((): void => {
@@ -216,7 +215,17 @@ export const EditView: FC<EditViewProp> = ({
 			close,
 			createModal
 		});
-	}, [close, onSendComplete, onSendCountdownTick, onSendError, sendMessage]);
+	}, [
+		close,
+		createModal,
+		hasStandardAttachments,
+		onSendComplete,
+		onSendCountdownTick,
+		onSendError,
+		sendMessage,
+		subject,
+		text
+	]);
 
 	const onIdentityChanged = useCallback(
 		(identity: IdentityDescriptor): void => {
@@ -324,18 +333,21 @@ export const EditView: FC<EditViewProp> = ({
 	}, []);
 
 	// TODO complete with new attachment management
-	const onDropEvent = useCallback((event: DragEvent): void => {
-		event.preventDefault();
-		setDropZoneEnabled(false);
-		const files = event?.dataTransfer?.files;
-		if (!files) {
-			return;
-		}
+	const onDropEvent = useCallback(
+		(event: DragEvent): void => {
+			event.preventDefault();
+			setDropZoneEnabled(false);
+			const files = event?.dataTransfer?.files;
+			if (!files) {
+				return;
+			}
 
-		for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
-			addStandardAttachment(files[fileIndex], {});
-		}
-	}, []);
+			for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
+				addStandardAttachment(files[fileIndex], {});
+			}
+		},
+		[addStandardAttachment]
+	);
 
 	const onDragLeaveEvent = useCallback((event: DragEvent): void => {
 		event.preventDefault();
@@ -397,15 +409,18 @@ export const EditView: FC<EditViewProp> = ({
 		[isUrgent, requestReadReceipt]
 	);
 
-	const onFilesSelected = useCallback(({ editor: tinymce, files }: FileSelectProps): void => {
-		// tinymce.activeEditor?.focus();
-		// const sel = tinymce.activeEditor?.selection?.getSel();
-		// const position = sel?.anchorNode.sel?.anchorOffset;
-		// console.log('**** position', position);
-		for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
-			addInlineAttachment(files[fileIndex]);
-		}
-	}, []);
+	const onFilesSelected = useCallback(
+		({ editor: tinymce, files }: FileSelectProps): void => {
+			// tinymce.activeEditor?.focus();
+			// const sel = tinymce.activeEditor?.selection?.getSel();
+			// const position = sel?.anchorNode.sel?.anchorOffset;
+			// console.log('**** position', position);
+			for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
+				addInlineAttachment(files[fileIndex]);
+			}
+		},
+		[addInlineAttachment]
+	);
 
 	return (
 		<Container
