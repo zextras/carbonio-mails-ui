@@ -6,10 +6,7 @@
 
 import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
-import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
-import { isConversation, isSingleMessageConversation } from '../helpers/messages';
-import { AppDispatch } from '../store/redux';
-import type { ActionReturnType, Conversation, ConvMessage, MailMessage } from '../types';
+
 import {
 	getAddRemoveFlagAction,
 	getApplyTagAction,
@@ -28,6 +25,10 @@ import {
 	getSendDraftAction,
 	getShowOriginalAction
 } from './get-msg-conv-actions-functions';
+import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
+import { isConversation, isSingleMessageConversation } from '../helpers/messages';
+import { AppDispatch } from '../store/redux';
+import type { ActionReturnType, Conversation, MailMessage } from '../types';
 
 type GetMessageActionsProps = {
 	item: MailMessage | Conversation;
@@ -200,7 +201,6 @@ export function getMsgConvActions({
 
 	const sendDraftAction = getSendDraftAction({
 		isConversation: isConv,
-		id,
 		item,
 		dispatch,
 		folderIncludedSendDraft,

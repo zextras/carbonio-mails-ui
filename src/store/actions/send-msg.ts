@@ -11,37 +11,30 @@ import { getMsg } from './get-msg';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/identities';
 import { getParticipantsFromMessage } from '../../helpers/messages';
-import { SendMsgResult } from '../../types';
+import { MailMessage, SendMsgResult } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
-import { generateMailRequest, generateRequest } from '../editor-slice-utils';
+import { generateMailRequest } from '../editor-slice-utils';
 import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
 
-export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
+export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
 	'sendMsg',
-	async ({ editor, msg, prefs }, { rejectWithValue, getState, dispatch }) => {
-		let toSend = editor && generateRequest(editor, prefs);
+	async ({ msg }, { rejectWithValue, dispatch }) => {
+		const toSend = generateMailRequest(msg);
 
-		if (msg) {
-			toSend = generateMailRequest(msg);
-		}
-
-		let from = editor?.from?.address;
-		if (!from && msg) {
-			from = getParticipantsFromMessage(msg, ParticipantRole.FROM)?.[0].address;
-		}
+		const from = getParticipantsFromMessage(msg, ParticipantRole.FROM)?.[0].address;
 
 		// Get the sender account. If not determined then undefined is passed to the soapFetch which will use the default one
 		const account = getAddressOwnerAccount(from);
 		let resp;
 		try {
-			resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>(
+			resp = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
 				'SendMsg',
 				{
 					_jsns: 'urn:zimbraMail',
 					m: toSend
 				},
 				account ?? undefined
-			)) as SaveDraftResponse;
+			);
 		} catch (e) {
 			console.error(e);
 			return rejectWithValue(e);
@@ -58,7 +51,7 @@ export const sendMsg = createAsyncThunk<any, SendMsgParameters>(
 		if (response?.m && response?.m[0]?.cid) {
 			dispatch(getConv({ conversationId: response.m[0].cid }));
 		}
-		return { response, editor };
+		return { response };
 	}
 );
 
@@ -78,14 +71,14 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 
 		let resp: SaveDraftResponse;
 		try {
-			resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>(
+			resp = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
 				'SendMsg',
 				{
 					_jsns: 'urn:zimbraMail',
 					m: msg
 				},
 				identity?.ownerAccount ?? undefined
-			)) as SaveDraftResponse;
+			);
 		} catch (e) {
 			console.error(e);
 			return rejectWithValue(e);
