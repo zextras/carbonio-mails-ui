@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /*
  * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
@@ -26,7 +25,6 @@ import {
 	useSnackbar,
 	Icon,
 	Input,
-	Text,
 	Padding,
 	useModal
 } from '@zextras/carbonio-design-system';
@@ -197,7 +195,7 @@ export const EditView: FC<EditViewProp> = ({
 				createModal
 			});
 		},
-		[close, saveDraft, setAutoSendTime]
+		[close, createModal, hasStandardAttachments, saveDraft, setAutoSendTime, subject, text]
 	);
 
 	const onSendClick = useCallback((): void => {
@@ -216,7 +214,17 @@ export const EditView: FC<EditViewProp> = ({
 			close,
 			createModal
 		});
-	}, [close, onSendComplete, onSendCountdownTick, onSendError, sendMessage]);
+	}, [
+		close,
+		createModal,
+		hasStandardAttachments,
+		onSendComplete,
+		onSendCountdownTick,
+		onSendError,
+		sendMessage,
+		subject,
+		text
+	]);
 
 	const onIdentityChanged = useCallback(
 		(identity: IdentityDescriptor): void => {
@@ -255,28 +263,6 @@ export const EditView: FC<EditViewProp> = ({
 		() => getIdentityDescriptor(identityId),
 		[identityId]
 	);
-	const onFileClick = useCallback(() => {
-		if (inputRef.current) {
-			inputRef.current.value = '';
-			inputRef.current.click();
-		}
-	}, []);
-
-	const attachmentsItems = [
-		{
-			id: 'localAttachment',
-			icon: 'MonitorOutline',
-			label: t('composer.attachment.local', 'Add from local'),
-			onClick: onFileClick,
-			customComponent: (
-				<>
-					<Icon icon="MonitorOutline" size="medium" />
-					<Padding horizontal="extrasmall" />
-					<Text>{t('composer.attachment.local', 'Add from local')}</Text>
-				</>
-			)
-		}
-	];
 
 	const toggleRichTextEditor = useCallback(() => {
 		setIsRichText(!isRichText);
@@ -324,18 +310,21 @@ export const EditView: FC<EditViewProp> = ({
 	}, []);
 
 	// TODO complete with new attachment management
-	const onDropEvent = useCallback((event: DragEvent): void => {
-		event.preventDefault();
-		setDropZoneEnabled(false);
-		const files = event?.dataTransfer?.files;
-		if (!files) {
-			return;
-		}
+	const onDropEvent = useCallback(
+		(event: DragEvent): void => {
+			event.preventDefault();
+			setDropZoneEnabled(false);
+			const files = event?.dataTransfer?.files;
+			if (!files) {
+				return;
+			}
 
-		for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
-			addStandardAttachment(files[fileIndex], {});
-		}
-	}, []);
+			for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
+				addStandardAttachment(files[fileIndex], {});
+			}
+		},
+		[addStandardAttachment]
+	);
 
 	const onDragLeaveEvent = useCallback((event: DragEvent): void => {
 		event.preventDefault();
@@ -397,18 +386,22 @@ export const EditView: FC<EditViewProp> = ({
 		[isUrgent, requestReadReceipt]
 	);
 
-	const onFilesSelected = useCallback(({ editor: tinymce, files }: FileSelectProps): void => {
-		// tinymce.activeEditor?.focus();
-		// const sel = tinymce.activeEditor?.selection?.getSel();
-		// const position = sel?.anchorNode.sel?.anchorOffset;
-		// console.log('**** position', position);
-		for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
-			addInlineAttachment(files[fileIndex]);
-		}
-	}, []);
+	const onFilesSelected = useCallback(
+		({ editor: tinymce, files }: FileSelectProps): void => {
+			// tinymce.activeEditor?.focus();
+			// const sel = tinymce.activeEditor?.selection?.getSel();
+			// const position = sel?.anchorNode.sel?.anchorOffset;
+			// console.log('**** position', position);
+			for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
+				addInlineAttachment(files[fileIndex]);
+			}
+		},
+		[addInlineAttachment]
+	);
 
 	return (
 		<Container
+			data-testid={'edit-view-editor'}
 			mainAlignment={flexStart}
 			crossAlignment={flexStart}
 			padding={{ all: 'large' }}
@@ -493,6 +486,7 @@ export const EditView: FC<EditViewProp> = ({
 						>
 							<Container background="gray5" style={{ overflow: 'hidden' }} padding="0">
 								<Input
+									data-testid={'subject'}
 									label={t('label.subject', 'Subject')}
 									value={subject}
 									onChange={onSubjectChange}

@@ -3,12 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { addBoard, getTag } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
-import React from 'react';
 import { rest } from 'msw';
+
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
@@ -800,8 +802,8 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.REPLY}`,
-				context: { mailId: msg.id, folderId: msg.parent }
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY}&id=${msg.id}`,
+				title: ''
 			})
 		);
 	});
@@ -830,8 +832,8 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.REPLY_ALL}`,
-				context: { mailId: msg.id, folderId: msg.parent }
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY_ALL}&id=${msg.id}`,
+				title: ''
 			})
 		);
 	});
@@ -858,13 +860,13 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.FORWARD}`,
-				context: { mailId: msg.id, folderId: msg.parent }
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.FORWARD}&id=${msg.id}`,
+				title: ''
 			})
 		);
 	});
 
-	test('Edit as new action', () => {
+	test('Edit draft action', () => {
 		populateFoldersStore(FOLDER_VIEW.message);
 		const msg: MailMessage = generateMessage({});
 		generateStore({
@@ -886,8 +888,8 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.EDIT_AS_DRAFT}`,
-				context: { mailId: msg.id, folderId: msg.parent }
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${msg.id}`,
+				title: ''
 			})
 		);
 	});
@@ -914,8 +916,8 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.EDIT_AS_NEW}`,
-				context: { mailId: msg.id, folderId: msg.parent }
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_NEW}&id=${msg.id}`,
+				title: ''
 			})
 		);
 	});

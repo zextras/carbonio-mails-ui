@@ -109,6 +109,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({
 		const driveItem =
 			getFilesActionAvailable && getFilesAvailable
 				? {
+						id: 'driveItem',
 						label: t('composer.attachment.files', 'Add from Files'),
 						icon: 'DriveOutline',
 						onClick: (): void => {
@@ -119,6 +120,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({
 		const fileUrl =
 			getFilesActionAvailable && getLinkAvailable
 				? {
+						id: 'fileUrl',
 						label: t('composer.attachment.url', 'Add public link from Files'),
 						icon: 'Link2',
 						onClick: (): void => {

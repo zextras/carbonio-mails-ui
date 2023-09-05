@@ -7,6 +7,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 
 import { Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import moment from 'moment';
 
 import * as StyledComp from './edit-view-styled-components';
 import { TIMEOUTS } from '../../../../../constants';
@@ -40,7 +41,7 @@ export const EditViewDraftSaveInfo: FC<{ processStatus?: DraftSaveProcessStatus 
 						>
 							<Text size="extrasmall" color="secondary">
 								{t('message.email_saved_at', {
-									time: processStatus?.lastSaveTimestamp,
+									time: moment(processStatus?.lastSaveTimestamp).format('LTS'),
 									defaultValue: 'Email saved as draft at {{time}}'
 								})}
 							</Text>

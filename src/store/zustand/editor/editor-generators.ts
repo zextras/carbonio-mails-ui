@@ -59,7 +59,7 @@ const labels = {
 /**
  *
  */
-const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEditorV2 => {
+export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
@@ -96,7 +96,7 @@ const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEdit
 /**
  *
  */
-const generateIntegratedNewEditor = (
+export const generateIntegratedNewEditor = (
 	messagesStoreDispatch: AppDispatch,
 	compositionData?: EditorPrefillData
 ): MailsEditorV2 => {
@@ -147,7 +147,7 @@ const generateIntegratedNewEditor = (
 /**
  *
  */
-const generateReplyAndReplyAllMsgEditor = (
+export const generateReplyAndReplyAllMsgEditor = (
 	messagesStoreDispatch: AppDispatch,
 	account: Account,
 	settings: AccountSettings,
@@ -212,7 +212,7 @@ const generateReplyAndReplyAllMsgEditor = (
 /**
  *
  */
-const generateForwardMsgEditor = (
+export const generateForwardMsgEditor = (
 	messagesStoreDispatch: AppDispatch,
 	account: Account,
 	settings: AccountSettings,
@@ -264,7 +264,7 @@ const generateForwardMsgEditor = (
 	return editor;
 };
 
-const generateEditAsDraftEditor = (
+export const generateEditAsDraftEditor = (
 	messagesStoreDispatch: AppDispatch,
 	account: Account,
 	settings: AccountSettings,
@@ -305,7 +305,7 @@ const generateEditAsDraftEditor = (
 	return editor;
 };
 
-const generateEditAsNewEditor = (
+export const generateEditAsNewEditor = (
 	messagesStoreDispatch: AppDispatch,
 	account: Account,
 	settings: AccountSettings,
@@ -453,15 +453,7 @@ export const generateEditor = ({
 		case EditViewActions.PREFILL_COMPOSE:
 			// TODO
 			return generateIntegratedNewEditor(messagesStoreDispatch, compositionData);
-
 			break;
-		case EditViewActions.COMPOSE:
-			// TODO
-			break;
-		// case EditViewActions.PREFILL_COMPOSE:
-		// 	// TODO
-		// 	return generateIntegratedNewEditor(messagesStoreDispatch, compositionData);
-		// 	break;
 		default:
 			return null;
 	}

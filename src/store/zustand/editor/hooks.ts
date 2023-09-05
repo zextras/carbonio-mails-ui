@@ -30,8 +30,7 @@ import {
 	AttachmentUploadProcessStatus,
 	MailsEditorV2,
 	SavedAttachment,
-	UnsavedAttachment,
-	MailsStateType
+	UnsavedAttachment
 } from '../../../types';
 import { saveDraftV3 } from '../../actions/save-draft';
 import { sendMsgFromEditor } from '../../actions/send-msg';
@@ -40,9 +39,6 @@ import {
 	AttachmentUploadOptions,
 	UploadCallbacks
 } from '../../actions/upload-attachments';
-import { useSelector } from 'react-redux';
-import { useAppSelector } from '../../../hooks/redux';
-import { selectMessages } from '../../messages-slice';
 
 export type SendMessageOptions = {
 	cancelable?: boolean;
@@ -259,10 +255,6 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 			const savedAttachments = buildSavedAttachments(mailMessage);
 			useEditorsStore.getState().setSavedAttachments(editorId, savedAttachments);
 
-			/* update the message in the messages store */
-			const messages = useAppSelector(selectMessages);
-			messages[mailMessage.id] = mailMessage;
-
 			const text = {
 				plainText: editor.text.plainText,
 				richText: replaceCidUrlWithServiceUrl(editor.text.richText, savedAttachments)
@@ -286,6 +278,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 			});
 			// FIXME use a subscription to the store update
 			computeAndUpdateEditorStatus(editorId);
+			handleError(err);
 			options?.onError && options?.onError(err);
 		});
 

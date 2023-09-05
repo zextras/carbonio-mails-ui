@@ -9,40 +9,36 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { generateEditorCase } from '../../../../../tests/generators/editors';
+import { addEditor } from '../../../../../store/zustand/editor';
+import { setupEditorStore } from '../../../../../tests/generators/editor-store';
+import { generateEditorV2Case } from '../../../../../tests/generators/editors';
 import { generateStore } from '../../../../../tests/generators/store';
 import { EditAttachmentsBlock } from '../edit-attachments-block';
 
 describe('Attachments visualization', () => {
 	test.each`
-		editorId | attachmentType
-		${'1'}   | ${'Various format attachments'}
-	`(`$attachmentType attachments are visible in email editor`, async ({ editorId }) => {
+		editorTestCaseId | attachmentType
+		${'1'}           | ${'Various format attachments'}
+	`(`$attachmentType attachments are visible in email editor`, async ({ editorTestCaseId }) => {
 		// Generate editor info for the store
-		const editor = await generateEditorCase(editorId);
-		const editors = {
-			status: 'idle',
-			editors: {
-				[editor.id ?? '']: editor
-			}
-		};
-
-		// Generate the store
-		const store = generateStore({ editors });
+		const reduxStore = generateStore();
+		setupEditorStore({ editors: [] });
+		const editor = await generateEditorV2Case(editorTestCaseId, reduxStore.dispatch);
+		addEditor({ id: editor.id, editor });
 
 		// Get the attachment filename
-		const filenames = editor?.attachmentFiles?.map((attachment) => attachment.filename);
+		const filenames = editor?.savedAttachments?.map((attachment) => attachment.filename);
 		if (!filenames) {
 			return;
 		}
 
 		// Create the props for the component
 		const props = {
-			editorId
+			editorId: editor.id
 		};
 
 		// Render the component
-		const { user } = setupTest(<EditAttachmentsBlock {...props} />, { store });
+		const { user } = setupTest(<EditAttachmentsBlock {...props} />, { store: reduxStore });
 
 		// Check if the attachments list expansion link exists
 		const expansionLink = screen.queryByTestId('attachment-list-expand-link');
