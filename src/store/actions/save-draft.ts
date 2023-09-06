@@ -3,37 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { AccountSettingsPrefs, soapFetch } from '@zextras/carbonio-shell-ui';
-import type {
-	MailsEditor,
-	PrefsType,
-	SaveDraftNewParameters,
-	saveDraftNewResult,
-	SaveDraftRequest,
-	SaveDraftResponse
-} from '../../types';
-import { generateRequest } from '../editor-slice-utils';
+import { soapFetch } from '@zextras/carbonio-shell-ui';
 
-type SaveDraftProps = {
-	data: MailsEditor;
-	prefs?: Partial<AccountSettingsPrefs> | undefined;
-	signal?: AbortSignal;
-};
+import type { SaveDraftParameters, SaveDraftRequest, SaveDraftResponse } from '../../types';
+import { createSoapDraftRequestFromEditor } from '../zustand/editor/editor-transformations';
 
-export const saveDraft = createAsyncThunk<saveDraftNewResult, SaveDraftNewParameters>(
-	'saveDraft',
-	async ({ data, prefs, signal }: SaveDraftProps) => {
-		const resp = (await soapFetch<SaveDraftRequest, SaveDraftResponse>(
-			'SaveDraft',
-			{
-				_jsns: 'urn:zimbraMail',
-				m: generateRequest(data, prefs)
-			},
-			undefined,
-			signal
-		)) as SaveDraftResponse;
-
-		return { resp };
-	}
-);
+export const saveDraftV3 = ({ editor, signal }: SaveDraftParameters): Promise<SaveDraftResponse> =>
+	soapFetch<SaveDraftRequest, SaveDraftResponse>(
+		'SaveDraft',
+		{
+			_jsns: 'urn:zimbraMail',
+			m: createSoapDraftRequestFromEditor(editor)
+		},
+		undefined,
+		signal
+	);

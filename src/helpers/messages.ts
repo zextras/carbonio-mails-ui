@@ -3,7 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ParticipantRoleType } from '../carbonio-ui-commons/constants/participants';
+import {
+	ParticipantRole,
+	ParticipantRoleType
+} from '../carbonio-ui-commons/constants/participants';
 import type { Conversation, MailMessage, Participant } from '../types';
 
 /**
@@ -12,7 +15,7 @@ import type { Conversation, MailMessage, Participant } from '../types';
  * @param message
  * @param type
  */
-export const collectParticipantsFromMessage = (
+export const getParticipantsFromMessage = (
 	message: MailMessage,
 	type?: ParticipantRoleType
 ): Array<Participant> => {
@@ -31,7 +34,7 @@ export const collectParticipantsFromMessage = (
  * @param messages
  * @param type
  */
-export const collectParticipantsFromMessages = (
+export const getParticipantsFromMessages = (
 	messages: Array<MailMessage>,
 	type?: ParticipantRoleType
 ): Array<Participant> => {
@@ -41,9 +44,22 @@ export const collectParticipantsFromMessages = (
 
 	// Collect and return the filtered participant from each message
 	return messages.reduce<Array<Participant>>((result, message): Array<Participant> => {
-		result.push(...collectParticipantsFromMessage(message, type));
+		result.push(...getParticipantsFromMessage(message, type));
 		return result;
 	}, []);
+};
+
+/**
+ *
+ * @param message
+ */
+export const getFromParticipantFromMessage = (message: MailMessage): Participant | null => {
+	const result = getParticipantsFromMessage(message, ParticipantRole.FROM);
+	if (result.length <= 0) {
+		return null;
+	}
+
+	return result[0];
 };
 
 /**

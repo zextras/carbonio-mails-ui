@@ -6,9 +6,10 @@
 
 import { ItemType } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
+
+import { deleteMessagePermanently, moveMsgToTrash, setMsgRead } from './message-actions';
 import { AppDispatch } from '../store/redux';
 import type { Conversation, MailMessage, MessageActionReturnType } from '../types';
-import { deleteMessagePermanently, moveMsgToTrash, setMsgRead } from './message-actions';
 
 type GetPimaryActionsProps = {
 	folderIds: Array<string>;
@@ -138,7 +139,7 @@ export const getPrimaryActions = ({
 type GetFolderParentIdProps = {
 	folderId: string;
 	isConversation: boolean;
-	items: Array<Partial<MailMessage>> | Array<Conversation>;
+	items: Array<Partial<MailMessage> & Pick<MailMessage, 'id'>> | Array<Conversation>;
 };
 
 export function getFolderParentId({

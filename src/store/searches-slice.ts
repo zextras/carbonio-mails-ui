@@ -14,7 +14,7 @@ import type {
 	ConvActionParameters,
 	FetchConversationsReturn,
 	SearchesStateType,
-	StateType
+	MailsStateType
 } from '../types';
 import { msgAction, search } from './actions';
 import {
@@ -173,6 +173,6 @@ export const {
 	handleDeletedSearchMessages
 } = searchesSlice.actions;
 export const searchesSliceReducer = searchesSlice.reducer;
-export const selectSearches = ({ searches }: StateType): SearchesStateType => searches;
+export const selectSearches = ({ searches }: MailsStateType): SearchesStateType => searches;
 export const { resetSearchResults } = searchesSlice.actions;
-export const selectSearchesStatus = ({ searches }: StateType): string => searches.status;
+export const selectSearchesStatus = ({ searches }: MailsStateType): string => searches.status;

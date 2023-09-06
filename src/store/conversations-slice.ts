@@ -10,16 +10,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
-import type {
-	ConversationsFolderStatus,
-	ConversationsStateType,
-	StateType,
-	FetchConversationsReturn,
-	ConvMessage,
-	ConvActionParameters,
-	ConvActionResult,
-	Conversation
-} from '../types';
+
 import { convAction, getConv, searchConv, search } from './actions';
 import {
 	handleAddMessagesInConversationReducer,
@@ -30,6 +21,16 @@ import {
 	handleModifiedConversationsReducer,
 	handleModifiedMessagesInConversationReducer
 } from './sync/conversation';
+import type {
+	ConversationsFolderStatus,
+	ConversationsStateType,
+	MailsStateType,
+	FetchConversationsReturn,
+	ConvMessage,
+	ConvActionParameters,
+	ConvActionResult,
+	Conversation
+} from '../types';
 
 function fetchConversationsPending(state: ConversationsStateType): void {
 	state.status = 'pending';
@@ -215,43 +216,43 @@ export const {
 } = conversationsSlice.actions;
 export const conversationsSliceReducer = conversationsSlice.reducer;
 
-export function selectConversations({ conversations }: StateType): Record<string, any> {
+export function selectConversations({ conversations }: MailsStateType): Record<string, any> {
 	return conversations?.conversations;
 }
 
 export function selectCurrentFolderExpandedStatus({
 	conversations
-}: StateType): Record<string, string> {
+}: MailsStateType): Record<string, string> {
 	return conversations.expandedStatus;
 }
 
 export function selectConversationExpandedStatus(
-	{ conversations }: StateType,
+	{ conversations }: MailsStateType,
 	id: string
 ): 'pending' | 'error' | 'complete' | undefined {
 	return conversations?.expandedStatus?.[id];
 }
 
-export function selectCurrentFolder({ conversations }: StateType): string {
+export function selectCurrentFolder({ conversations }: MailsStateType): string {
 	return conversations?.currentFolder;
 }
 
-export function selectConversationStatus(state: StateType): ConversationsFolderStatus {
+export function selectConversationStatus(state: MailsStateType): ConversationsFolderStatus {
 	return state.conversations.status;
 }
 
-export function selectSearchedFolder({ conversations }: StateType, id: string): string {
+export function selectSearchedFolder({ conversations }: MailsStateType, id: string): string {
 	return conversations?.searchedInFolder?.[id];
 }
-export function selectConversationsArray({ conversations }: StateType): Array<Conversation> {
+export function selectConversationsArray({ conversations }: MailsStateType): Array<Conversation> {
 	return Object.values(conversations?.conversations ?? []);
 }
 
-export function selectConversation({ conversations }: StateType, id: string): Conversation {
+export function selectConversation({ conversations }: MailsStateType, id: string): Conversation {
 	return conversations?.conversations?.[id] ?? {};
 }
 export function selectFolderSearchStatus(
-	{ conversations }: StateType,
+	{ conversations }: MailsStateType,
 	folderId: string
 ): string | undefined {
 	return conversations?.searchedInFolder?.[folderId] ?? undefined;

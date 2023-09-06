@@ -7,13 +7,14 @@
 import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
+
+import { generateMessage } from './generateMessage';
 import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../../carbonio-ui-commons/constants/participants';
-import { collectParticipantsFromMessages } from '../../helpers/messages';
+import { getParticipantsFromMessages } from '../../helpers/messages';
 import type { Conversation, MailMessage, Participant } from '../../types';
-import { generateMessage } from './generateMessage';
 
 /**
  *
@@ -75,22 +76,22 @@ const generateConversation = ({
 	const finalFrom =
 		from ??
 		(messages && messages.length
-			? collectParticipantsFromMessages(messages, ParticipantRole.FROM)
+			? getParticipantsFromMessages(messages, ParticipantRole.FROM)
 			: generateRandomParticipants(messageGenerationCount, ParticipantRole.FROM));
 	const finalTo =
 		to ??
 		(messages && messages.length
-			? collectParticipantsFromMessages(messages, ParticipantRole.TO)
+			? getParticipantsFromMessages(messages, ParticipantRole.TO)
 			: generateRandomParticipants(messageGenerationCount, ParticipantRole.TO));
 	const finalCc =
 		cc ??
 		(messages && messages.length
-			? collectParticipantsFromMessages(messages, ParticipantRole.CARBON_COPY)
+			? getParticipantsFromMessages(messages, ParticipantRole.CARBON_COPY)
 			: generateRandomParticipants(messageGenerationCount, ParticipantRole.CARBON_COPY));
 	const finalMessages =
 		messages ?? times(messageGenerationCount, () => generateMessage({ folderId }));
 
-	const result = {
+	return {
 		date: receiveDate,
 		flagged: isFlagged,
 		fragment: '',
@@ -105,8 +106,6 @@ const generateConversation = ({
 		messages: finalMessages,
 		messagesInConversation: finalMessages.length
 	};
-
-	return result;
 };
 
 export { ConversationGenerationParams, generateConversation };

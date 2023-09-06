@@ -3,12 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { useCallback } from 'react';
+
 import { getBridgedFunctions, t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
-import { useCallback, useMemo } from 'react';
-import { useAppSelector } from '../../../../../hooks/redux';
-import { selectEditors } from '../../../../../store/editor-slice';
-import type { MailsEditor } from '../../../../../types';
 
 export const uploadToFiles = async (
 	node: { id: string },
@@ -16,17 +14,19 @@ export const uploadToFiles = async (
 ): Promise<unknown> => uploadTo({ nodeId: node.id, targetModule: 'MAILS' });
 
 type UseGetFilesFromDrivePropType = {
-	editorId: string;
-	updateEditorCb: (arg: Partial<MailsEditor>) => void;
-	saveDraftCb: (arg: Partial<MailsEditor>) => void;
+	addFilesFromFiles: (filesResponse: useGetFilesFromDriveRespType[]) => void;
 };
+
+export type useGetFilesFromDriveRespType = {
+	status: string;
+	value: {
+		attachmentId: string;
+	};
+};
+
 export const useGetFilesFromDrive = ({
-	editorId,
-	updateEditorCb,
-	saveDraftCb
+	addFilesFromFiles
 }: UseGetFilesFromDrivePropType): [(arg: any) => void, boolean] => {
-	const editors = useAppSelector(selectEditors);
-	const editor = useMemo(() => editors[editorId], [editors, editorId]);
 	const [uploadTo, isAvailable] = useIntegratedFunction('upload-to-target-and-get-target-id');
 
 	const confirmAction = useCallback(
@@ -61,23 +61,11 @@ export const useGetFilesFromDrive = ({
 						label,
 						autoHideTimeout: 4000
 					});
-					const data = {
-						attach: {
-							...editor.attach,
-							aid: map(
-								success,
-								(i: { value: { attachmentId: string } }) => i?.value?.attachmentId
-							).join(',')
-						}
-					};
-					const newEditor = { ...editor, ...data };
-					updateEditorCb(newEditor);
-					saveDraftCb(newEditor);
+					addFilesFromFiles(success as useGetFilesFromDriveRespType[]);
 				});
 			}
 		},
-		[editor, isAvailable, saveDraftCb, updateEditorCb, uploadTo]
+		[addFilesFromFiles, isAvailable, uploadTo]
 	);
-
 	return [confirmAction, isAvailable];
 };

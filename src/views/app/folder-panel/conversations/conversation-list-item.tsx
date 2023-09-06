@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React, { FC, memo, useCallback, useMemo, useState } from 'react';
+
 import {
 	Badge,
 	Container,
@@ -26,8 +28,10 @@ import {
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
-import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+
+import { ConversationMessagesList } from './conversation-messages-list';
+import { getFolderParentId } from './utils';
 import { participantToString } from '../../../../commons/utils';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
@@ -38,7 +42,7 @@ import type {
 	ConvMessage,
 	ConversationListItemProps,
 	IncompleteMessage,
-	StateType,
+	MailsStateType,
 	TextReadValuesProps
 } from '../../../../types';
 import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
@@ -46,8 +50,6 @@ import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { RowInfo } from '../parts/row-info';
 import { SenderName } from '../parts/sender-name';
-import { ConversationMessagesList } from './conversation-messages-list';
-import { getFolderParentId } from './utils';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -75,7 +77,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 
 		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
 
-		const conversationStatus = useAppSelector((state: StateType) =>
+		const conversationStatus = useAppSelector((state: MailsStateType) =>
 			selectConversationExpandedStatus(state, item.id)
 		);
 		const tagsFromStore = useTags();

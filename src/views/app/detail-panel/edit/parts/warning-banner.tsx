@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC } from 'react';
-import { t } from '@zextras/carbonio-shell-ui';
+
 import { Icon, Padding, Text } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
+
 import * as StyledComp from './edit-view-styled-components';
 
 const WarningBanner: FC = () => (
@@ -28,7 +30,6 @@ const WarningBanner: FC = () => (
 				)}
 			</Text>
 		</StyledComp.BannerContainer>
-		<Padding bottom="small" />
 	</>
 );
 

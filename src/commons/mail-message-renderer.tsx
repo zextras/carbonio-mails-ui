@@ -3,6 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, {
+	FC,
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
+
 import {
 	Button,
 	Container,
@@ -15,22 +25,14 @@ import {
 } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, isArray, isNull, reduce, some } from 'lodash';
-import React, {
-	FC,
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
-import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import type { EditorAttachmentFiles, MailMessage, MailMessagePart, Participant } from '../types';
 
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
+import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
+import { findAttachments } from '../helpers/attachments';
+import type { MailMessage, MailMessagePart, Participant } from '../types';
 
 export const _CI_REGEX = /^<(.*)>$/;
 export const _CI_SRC_REGEX = /^cid:(.*)$/;
@@ -439,23 +441,6 @@ const EmptyBody: FC = () => (
 		<Text>{`(${t('messages.no_content', 'This message has no text content')}.)`}</Text>
 	</Container>
 );
-
-export function findAttachments(
-	parts: MailMessagePart[],
-	acc: Array<EditorAttachmentFiles>
-): Array<EditorAttachmentFiles> {
-	return reduce(
-		parts,
-		(found, part: any) => {
-			if (part && (part.disposition === 'attachment' || part.disposition === 'inline') && part.ci) {
-				found.push(part);
-			}
-			if (part.parts) return findAttachments(part.parts, found);
-			return acc;
-		},
-		acc
-	);
-}
 
 const MailMessageRenderer: FC<{ mailMsg: MailMessage; onLoadChange: () => void }> = ({
 	mailMsg,

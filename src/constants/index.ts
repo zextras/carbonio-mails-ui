@@ -355,8 +355,12 @@ export const FOLDERIDS = {
 const SNACKBAR_DEFAULT_TIMEOUT = 3000;
 
 export const TIMEOUTS = {
+	SNACKBAR_DEFAULT_TIMEOUT,
+	DRAFT_SAVE_DELAY: 2000,
 	SET_AS_SPAM: SNACKBAR_DEFAULT_TIMEOUT,
-	REDIRECT: SNACKBAR_DEFAULT_TIMEOUT
+	REDIRECT: SNACKBAR_DEFAULT_TIMEOUT,
+	DRAFT_INFO_HIDING_DELAY: 3000,
+	COMPLETED_UPLOAD_NOTIFICATION_VISIBILITY: 3000
 };
 
 export const LIST_LIMIT = {
@@ -367,3 +371,27 @@ export const LIST_LIMIT = {
 export const LOCAL_STORAGES = {
 	EXPANDED_FOLDERS: 'open_mails_folders'
 };
+
+export const EditViewActions = {
+	NEW: 'new',
+	EDIT_AS_DRAFT: 'editAsDraft',
+	EDIT_AS_NEW: 'editAsNew',
+	REPLY: 'reply',
+	REPLY_ALL: 'replyAll',
+	FORWARD: 'forward',
+	MAIL_TO: 'mailTo',
+	COMPOSE: 'compose',
+	PREFILL_COMPOSE: 'prefillCompose',
+	RESUME: 'resume'
+} as const;
+
+export const PROCESS_STATUS = {
+	RUNNING: 'running',
+	COMPLETED: 'completed',
+	ABORTED: 'aborted'
+} as const;
+
+export const CLOSE_BOARD_REASON = {
+	SEND: 'send',
+	SEND_LATER: 'sendLater'
+} as const;

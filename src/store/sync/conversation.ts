@@ -5,6 +5,7 @@
  */
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, map, merge, omit, reduce, some, last, sortBy } from 'lodash';
+
 import type { ConvMessage, ConversationsStateType, Payload } from '../../types';
 
 export const handleCreatedConversationsReducer = (
@@ -48,13 +49,14 @@ export const handleCreatedMessagesInConversationsReducer = (
 			const date =
 				msg.l === FOLDERS.DRAFTS
 					? conversation.date
-					: last(sortBy(filter(messages, { parent: state.currentFolder }), 'date'))?.date;
+					: (last(sortBy(filter(messages, { parent: state.currentFolder }), 'date')) as ConvMessage)
+							.date;
 
 			const conv = {
 				[msg.cid]: {
 					...conversation,
 					messages,
-					fragment: msg?.fr,
+					fragment: msg?.fr ?? '',
 					date
 				}
 			};
@@ -76,12 +78,7 @@ export const handleModifiedMessagesInConversationReducer = (
 				...conv,
 				messages: map(conv.messages, (msg) => {
 					const messageToUpdate = find(payload, (item) => item.id === msg.id);
-					return messageToUpdate
-						? {
-								...msg,
-								...messageToUpdate
-						  }
-						: msg;
+					return messageToUpdate ? { ...msg, ...messageToUpdate } : msg;
 				})
 			}
 		}),

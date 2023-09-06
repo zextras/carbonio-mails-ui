@@ -3,9 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import moment from 'moment';
-import { find, isArray } from 'lodash';
 import { Account, t } from '@zextras/carbonio-shell-ui';
+import { find, isArray } from 'lodash';
+import moment from 'moment';
+
 import type { Participant } from '../types';
 
 export const getTimeLabel = (date: number): string => {
@@ -58,34 +59,20 @@ export const isAvailableInTrusteeList = (
 	return availableInTrusteeList;
 };
 
-// eslint-disable-next-line no-shadow
-export enum LineType {
-	ORIG_UNKNOWN = 'UNKNOWN',
-	ORIG_QUOTED = 'QUOTED',
-	ORIG_SEP_STRONG = 'SEP_STRONG',
-	ORIG_WROTE_STRONG = 'WROTE_STRONG',
-	ORIG_WROTE_WEAK = 'WROTE_WEAK',
-	ORIG_HEADER = 'HEADER',
-	ORIG_LINE = 'LINE',
-	HTML_SEP_ID = 'zwchr',
-	PLAINTEXT_SEP = '---------------------------',
-	NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*',
-	SIGNATURE_CLASS = 'signature-div',
-	SIGNATURE_PRE_SEP = '---'
-}
-
-// eslint-disable-next-line no-shadow
-export enum ActionsType {
-	NEW = 'new',
-	EDIT_AS_DRAFT = 'editAsDraft',
-	EDIT_AS_NEW = 'editAsNew',
-	REPLY = 'reply',
-	REPLY_ALL = 'replyAll',
-	FORWARD = 'forward',
-	MAIL_TO = 'mailTo',
-	COMPOSE = 'compose',
-	PREFILL_COMPOSE = 'prefillCompose'
-}
+export const LineType = {
+	ORIG_UNKNOWN: 'UNKNOWN',
+	ORIG_QUOTED: 'QUOTED',
+	ORIG_SEP_STRONG: 'SEP_STRONG',
+	ORIG_WROTE_STRONG: 'WROTE_STRONG',
+	ORIG_WROTE_WEAK: 'WROTE_WEAK',
+	ORIG_HEADER: 'HEADER',
+	ORIG_LINE: 'LINE',
+	HTML_SEP_ID: 'zwchr',
+	PLAINTEXT_SEP: '---------------------------',
+	NOTES_SEPARATOR: '*~*~*~*~*~*~*~*~*~*',
+	SIGNATURE_CLASS: 'signature-div',
+	SIGNATURE_PRE_SEP: '---'
+} as const;
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const omitBy = (obj: any, check: (arg: unknown) => boolean): any => {

@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Tags } from '@zextras/carbonio-shell-ui';
-import { MailMessage } from '../messages';
+
 import { SoapMailMessage } from './soap-mail-message';
 import { ZimbraRequest } from './zimbra-request';
+import type { MailMessage } from '../messages';
 
 // https://files.zimbra.com/docs/ soap_api/9.0.0/api-reference/zimbraMail/SearchConv.html
 

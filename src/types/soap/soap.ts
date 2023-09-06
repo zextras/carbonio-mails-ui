@@ -5,11 +5,11 @@
  */
 import { AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui/types/network/soap';
-import { Folder } from '../../carbonio-ui-commons/types/folder';
-import { MailsEditor } from '../editor';
-import { PrefsType } from '../settings';
+
 import { EmailAddresses } from './redirect-message-action';
-import { SaveDraftResponse } from './save-draft';
+import { MailAttachment, SaveDraftResponse } from './save-draft';
+import { Folder } from '../../carbonio-ui-commons/types/folder';
+import { MailsEditor, MailsEditorV2 } from '../editor';
 
 export type IFolderView =
 	| 'search folder'
@@ -275,6 +275,16 @@ export type SaveDraftNewParameters = {
 	signal?: AbortSignal;
 };
 
-export type saveDraftNewResult = {
+export type SaveDraftNewResult = {
+	resp: SaveDraftResponse;
+};
+
+export type SaveDraftParameters = {
+	editor: MailsEditorV2;
+	signal?: AbortSignal;
+	attach?: MailAttachment;
+};
+
+export type SaveDraftResult = {
 	resp: SaveDraftResponse;
 };

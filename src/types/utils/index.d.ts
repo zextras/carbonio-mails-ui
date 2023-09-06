@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type { TextProps } from '@zextras/carbonio-design-system';
+
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import { EditorPrefillData } from '../editor';
 
 export type ModalProps = {
 	folder: Folder;
@@ -26,6 +28,12 @@ export type AppContext = {
 	isMessageView: boolean;
 	count: number;
 	setCount: (arg: number | ((prevState: number) => number)) => void;
+};
+
+export type EditViewBoardContext = {
+	editorId?: string;
+	compositionData?: EditorPrefillData;
+	onConfirm?: () => void;
 };
 
 export type BoardContext = {

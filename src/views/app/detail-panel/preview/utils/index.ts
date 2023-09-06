@@ -5,6 +5,7 @@
  */
 import { includes, uniqBy } from 'lodash';
 import { DefaultTheme } from 'styled-components';
+
 import { calcColor, getFileExtension } from '../../../../../commons/utilities';
 import type {
 	AttachmentPart,
