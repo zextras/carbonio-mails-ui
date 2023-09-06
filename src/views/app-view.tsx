@@ -3,12 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, Suspense, lazy, useEffect, useMemo, useState } from 'react';
+
 import { Container } from '@zextras/carbonio-design-system';
 import { FOLDERS, Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import moment from 'moment';
-import React, { FC, Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
 import { selectCurrentFolder } from '../store/conversations-slice';

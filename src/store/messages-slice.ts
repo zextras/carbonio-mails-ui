@@ -10,29 +10,28 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { cloneDeep, forEach, merge, mergeWith, reduce } from 'lodash';
-import { CONVACTIONS } from '../commons/utilities';
-import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
-import type {
-	MsgMap,
-	MsgStateType,
-	StateType,
-	Conversation,
-	MailMessage,
-	FetchConversationsReturn,
-	SearchConvReturn,
-	MsgActionResult,
-	DeleteAttachmentsReturn,
-	SaveDraftResponse
-} from '../types';
+import { forEach, merge, mergeWith } from 'lodash';
+
 import { search, getConv, getMsg, msgAction, searchConv } from './actions';
 import { deleteAttachments } from './actions/delete-all-attachments';
-import { saveDraft } from './actions/save-draft';
 import {
 	handleCreatedMessagesReducer,
 	handleModifiedMessagesReducer,
 	handleDeletedMessagesReducer
 } from './sync/message';
+import { CONVACTIONS } from '../commons/utilities';
+import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
+import type {
+	MsgMap,
+	MsgStateType,
+	MailsStateType,
+	Conversation,
+	MailMessage,
+	FetchConversationsReturn,
+	SearchConvReturn,
+	MsgActionResult,
+	DeleteAttachmentsReturn
+} from '../types';
 
 function getMsgFulfilled(
 	{ messages, status }: MsgStateType,
@@ -80,17 +79,6 @@ function deleteAttachmentsFulfilled(
 	}
 }
 
-function saveDraftFulfilled(
-	{ messages, status }: MsgStateType,
-	{ payload }: { payload: { resp: SaveDraftResponse } }
-): void {
-	if (payload.resp.m) {
-		const message = normalizeMailMessageFromSoap(payload.resp?.m?.[0], true);
-		status[message.id] = 'complete';
-		// eslint-disable-next-line no-param-reassign
-		messages[message.id] = message;
-	}
-}
 function searchConvFulfilled(
 	{ messages, status }: MsgStateType,
 	{ payload }: { payload: SearchConvReturn }
@@ -171,7 +159,6 @@ export const messagesSlice = createSlice({
 		builder.addCase(msgAction.pending, produce(msgActionPending));
 		builder.addCase(msgAction.rejected, produce(msgActionRejected));
 		builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
-		builder.addCase(saveDraft.fulfilled, produce(saveDraftFulfilled));
 		builder.addCase(search.fulfilled, produce(fetchConversationsFulfilled));
 		builder.addCase(deleteAttachments.fulfilled, produce(deleteAttachmentsFulfilled));
 	}
@@ -181,25 +168,25 @@ export const { handleCreatedMessages, handleModifiedMessages, handleDeletedMessa
 	messagesSlice.actions;
 export const messageSliceReducer = messagesSlice.reducer;
 
-export function selectMessage(state: StateType, id: string): MailMessage {
+export function selectMessage(state: MailsStateType, id: string): MailMessage {
 	return state?.messages?.messages?.[id];
 }
 
-export function selectMessages(state: StateType): MsgMap {
+export function selectMessages(state: MailsStateType): MsgMap {
 	return state?.messages?.messages;
 }
 
-export function selectMessagesArray(state: StateType): Array<MailMessage> {
+export function selectMessagesArray(state: MailsStateType): Array<MailMessage> {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	return Object.values(state?.messages?.messages ?? []);
 }
 
-export function selectMessagesStatus(state: StateType): Record<string, string> {
+export function selectMessagesStatus(state: MailsStateType): Record<string, string> {
 	return state?.messages?.status;
 }
 
 export const selectFolderMsgSearchStatus =
-	(id: string): (({ messages }: StateType) => string | undefined) =>
-	({ messages }: StateType): string | undefined =>
+	(id: string): (({ messages }: MailsStateType) => string | undefined) =>
+	({ messages }: MailsStateType): string | undefined =>
 		messages?.searchedInFolder?.[id];

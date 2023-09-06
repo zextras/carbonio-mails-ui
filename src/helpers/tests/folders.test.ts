@@ -4,15 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
+
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
-import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import {
 	getFolder,
 	getFoldersArray,
 	getLinksArray,
 	getRootsMap
 } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
+import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import {
@@ -62,7 +63,7 @@ describe('Folder owner', () => {
 		populateFoldersStore();
 		const roots = getRootsMap();
 		const folderId = FOLDERS.INBOX;
-		const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
+		const ownerAccountName = getFolderOwnerAccountName(folderId, roots);
 		expect(ownerAccountName).toBe(primaryAccount.name);
 	});
 
@@ -71,7 +72,7 @@ describe('Folder owner', () => {
 		const roots = getRootsMap();
 		const sharedAccount = mocksContext.identities.sendAs[0];
 		const folderId = `${sharedAccount.identity.id}:${FOLDERS.INBOX}`;
-		const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
+		const ownerAccountName = getFolderOwnerAccountName(folderId, roots);
 		expect(ownerAccountName).toBe(sharedAccount.identity.email);
 	});
 
@@ -79,7 +80,7 @@ describe('Folder owner', () => {
 		populateFoldersStore();
 		const roots = getRootsMap();
 		const folderId = `TheAnswerIs42:${FOLDERS.INBOX}`;
-		const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
+		const ownerAccountName = getFolderOwnerAccountName(folderId, roots);
 		expect(ownerAccountName).toBe(primaryAccount.name);
 	});
 });

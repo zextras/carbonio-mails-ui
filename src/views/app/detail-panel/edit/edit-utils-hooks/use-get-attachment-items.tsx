@@ -4,12 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Icon, Padding, Text } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
-import { compact } from 'lodash';
-import React, { ReactElement, useMemo } from 'react';
-import { useGetPublicUrl } from './use-get-public-url';
-import { useGetFilesFromDrive } from './use-get-drive-files';
+import React, { ReactElement } from 'react';
+
 import type { MailsEditor } from '../../../../../types';
 
 type UseGetAttachItemsPropType = {
@@ -31,106 +27,4 @@ type UseGetAttachItemsReturnType = {
 	primary?: boolean | undefined;
 	group?: string | undefined;
 	disabled?: boolean | undefined;
-};
-export const useGetAttachItems = ({
-	onFileClick,
-	setOpenDD,
-	editorId,
-	updateEditorCb,
-	saveDraftCb,
-	setValue,
-	changeEditorText
-}: UseGetAttachItemsPropType): Array<UseGetAttachItemsReturnType> => {
-	const [getFilesFromDrive, getFilesAvailable] = useGetFilesFromDrive({
-		editorId,
-		updateEditorCb,
-		saveDraftCb
-	});
-	const [getLink, getLinkAvailable] = useGetPublicUrl({
-		editorId,
-		updateEditorCb,
-		saveDraftCb,
-		setValue,
-		changeEditorText
-	});
-
-	const actionTarget = useMemo(
-		() => ({
-			title: t('label.choose_file', 'Choose file'),
-			confirmAction: getFilesFromDrive,
-			confirmLabel: t('label.select', 'Select'),
-			allowFiles: true,
-			allowFolders: false
-		}),
-		[getFilesFromDrive]
-	);
-
-	const actionURLTarget = useMemo(
-		() => ({
-			title: t('label.choose_file', 'Choose file'),
-			confirmAction: getLink,
-			confirmLabel: t('label.share_public_link', 'Share Public Link'),
-			allowFiles: true,
-			allowFolders: false
-		}),
-		[getLink]
-	);
-	const [getFilesAction, getFilesActionAvailable] = getIntegratedFunction('select-nodes');
-
-	return useMemo(() => {
-		const localItem = {
-			id: 'localAttachment',
-			icon: 'MonitorOutline',
-			label: t('composer.attachment.local', 'Add from local'),
-			onClick: onFileClick,
-			customComponent: (
-				<>
-					<Icon icon="MonitorOutline" size="medium" />
-					<Padding horizontal="extrasmall" />
-					<Text>{t('composer.attachment.local', 'Add from local')}</Text>
-				</>
-			)
-		};
-
-		const contactItem = {
-			id: 'contactsModAttachment',
-			icon: 'ContactsModOutline',
-			label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
-			onClick: (): void => {
-				setOpenDD(false);
-			},
-			disabled: true
-		};
-		const driveItem =
-			getFilesActionAvailable && getFilesAvailable
-				? {
-						label: t('composer.attachment.files', 'Add from Files'),
-						icon: 'DriveOutline',
-						onClick: (): void => {
-							getFilesAction(actionTarget);
-						}
-				  }
-				: undefined;
-		const fileUrl =
-			getFilesActionAvailable && getLinkAvailable
-				? {
-						label: t('composer.attachment.url', 'Add public link from Files'),
-						icon: 'Link2',
-						onClick: (): void => {
-							getFilesAction(actionURLTarget);
-						}
-				  }
-				: undefined;
-
-		return compact([localItem, driveItem, fileUrl, contactItem]);
-	}, [
-		onFileClick,
-		getFilesAvailable,
-		actionTarget,
-		getFilesActionAvailable,
-		getLinkAvailable,
-		getFilesAction,
-		actionURLTarget,
-		setOpenDD
-	]);
 };

@@ -3,10 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { useMemo } from 'react';
+
 import { FOLDERS, useAppContext, useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
-import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+
+import { useAppDispatch } from './redux';
+import { useSelection } from './use-selection';
 import type { AppContext, MailMessage } from '../types';
 import {
 	deleteMessagePermanently,
@@ -27,8 +31,6 @@ import {
 	showOriginalMsg
 } from '../ui-actions/message-actions';
 import { applyTag } from '../ui-actions/tag-actions';
-import { useAppDispatch } from './redux';
-import { useSelection } from './use-selection';
 
 export const useMessageActions = (message: MailMessage, isAlone = false): Array<any> => {
 	const { folderId }: { folderId: string } = useParams();
@@ -46,7 +48,7 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 	const arr = [];
 
 	if (message.parent === FOLDERS.DRAFTS) {
-		arr.push(sendDraft({ id: message.id, message, dispatch }));
+		arr.push(sendDraft({ message, dispatch }));
 		arr.push(editDraft({ id: message.id, folderId, message }));
 		arr.push(
 			moveMsgToTrash({

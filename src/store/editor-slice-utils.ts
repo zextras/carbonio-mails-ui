@@ -11,23 +11,23 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
+
 import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
-import { LineType } from '../commons/utils';
 import { htmlEncode } from '../commons/get-quoted-text-util';
+import { LineType } from '../commons/utils';
+import { getIdentityDescriptor } from '../helpers/identities';
 import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import type {
-	EditorAttachmentFiles,
-	InlineAttachedType,
+	InlineAttachments,
 	MailAttachmentParts,
 	MailMessage,
 	MailMessagePart,
 	MailsEditor,
 	Participant,
-	PrefsType,
 	SharedParticipant,
 	SoapDraftMessageObj
 } from '../types';
@@ -209,23 +209,6 @@ export const retrieveBCC = (original: MailMessage): Array<Participant> =>
 		(c: Participant): boolean => c.type === ParticipantRole.BLIND_CARBON_COPY
 	);
 
-export function findAttachments(
-	parts: Array<MailMessagePart>,
-	acc: Array<EditorAttachmentFiles>
-): Array<EditorAttachmentFiles> {
-	return reduce(
-		parts,
-		(found, part) => {
-			if (part && part.disposition === 'attachment' && !part.ci) {
-				found.push({ ...part, filename: part.filename ?? '' });
-			}
-			if (part.parts) return findAttachments(part.parts, found);
-			return acc;
-		},
-		acc as Array<EditorAttachmentFiles>
-	);
-}
-
 export function isHtml(parts: Array<MailMessagePart>): boolean {
 	function subtreeContainsHtmlParts(part: MailMessagePart): boolean {
 		if (part.contentType === 'text/html') return true;
@@ -350,13 +333,13 @@ export const getHtmlWithPreAppliedStyled = (
 ): string =>
 	`<html><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
 
-export const findCidFromPart = (inline: InlineAttachedType | undefined, part: string): string => {
+export const findCidFromPart = (inline: InlineAttachments | undefined, part: string): string => {
 	const ci = find(inline, (i) => i.attach?.mp?.[0]?.part === part)?.ci;
 	return `cid:${ci}`;
 };
 export const replaceLinkWithParts = (
 	content: string,
-	inline: InlineAttachedType | undefined
+	inline: InlineAttachments | undefined
 ): string => {
 	const parser = new DOMParser();
 	const htmlDoc = parser.parseFromString(content, 'text/html');
@@ -436,8 +419,15 @@ export const getMP = ({
 	];
 };
 
+/**
+ * @deprecated
+ * @param data
+ * @param prefs
+ */
 export const generateRequest = (
-	data: MailsEditor,
+	// This function will be soon removed
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+	data: any,
 	prefs?: Partial<AccountSettingsPrefs>
 ): SoapDraftMessageObj => {
 	const style = {
@@ -445,13 +435,16 @@ export const generateRequest = (
 		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize,
 		color: prefs?.zimbraPrefHtmlEditorDefaultFontColor
 	};
+
+	const from = getIdentityDescriptor(data.identityId)?.fromAddress;
+
 	const participants = map(
 		// eslint-disable-next-line no-nested-ternary
-		data.participants
-			? data.participants
+		data.recipients
+			? data.recipients
 			: isEmpty(data.sender)
-			? [data.from, ...data.to, ...data.cc, ...data.bcc]
-			: [data.from, data.sender, ...data.to, ...data.cc, ...data.bcc],
+			? [from, ...data.to, ...data.cc, ...data.bcc]
+			: [from, data.sender, ...data.to, ...data.cc, ...data.bcc],
 		(c) => ({
 			t: c.type,
 			a: c.email ?? c.address,
@@ -461,19 +454,19 @@ export const generateRequest = (
 	if (data.requestReadReceipt) {
 		participants.push({
 			a:
-				(data?.from as unknown as SharedParticipant)?.email ??
-				(data?.from as unknown as Participant)?.address,
+				(data?.sender as unknown as SharedParticipant)?.email ??
+				(from as unknown as Participant)?.address,
 			t: ParticipantRole.READ_RECEIPT_NOTIFICATION,
 			d:
-				(data?.from as unknown as Participant).fullName ??
-				(data?.from as unknown as SharedParticipant).firstName ??
+				(from as unknown as Participant).fullName ??
+				(from as unknown as SharedParticipant).firstName ??
 				undefined
 		});
 	}
 
 	return {
 		autoSendTime: data.autoSendTime,
-		did: data.did ?? undefined,
+		did: data.did,
 		id: data.id ?? undefined,
 		attach: data.attach,
 		su: { _content: data.subject ?? '' },

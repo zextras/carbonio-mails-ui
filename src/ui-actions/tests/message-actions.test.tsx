@@ -3,12 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { addBoard, getTag } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
-import React from 'react';
 import { rest } from 'msw';
+
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
@@ -18,8 +20,7 @@ import { getTags, getUserAccount } from '../../carbonio-ui-commons/test/mocks/ca
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { ActionsType } from '../../commons/utils';
-import { MAILS_ROUTE, TIMEOUTS } from '../../constants';
+import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../constants';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
@@ -801,8 +802,8 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY}`,
-				context: { mailId: msg.id, folderId: msg.parent }
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY}&id=${msg.id}`,
+				title: ''
 			})
 		);
 	});
@@ -831,8 +832,8 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.REPLY_ALL}`,
-				context: { mailId: msg.id, folderId: msg.parent }
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY_ALL}&id=${msg.id}`,
+				title: ''
 			})
 		);
 	});
@@ -859,13 +860,13 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.FORWARD}`,
-				context: { mailId: msg.id, folderId: msg.parent }
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.FORWARD}&id=${msg.id}`,
+				title: ''
 			})
 		);
 	});
 
-	test('Edit as new action', () => {
+	test('Edit draft action', () => {
 		populateFoldersStore(FOLDER_VIEW.message);
 		const msg: MailMessage = generateMessage({});
 		generateStore({
@@ -887,8 +888,8 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.EDIT_AS_DRAFT}`,
-				context: { mailId: msg.id, folderId: msg.parent }
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${msg.id}`,
+				title: ''
 			})
 		);
 	});
@@ -915,8 +916,8 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit/${msg.id}?action=${ActionsType.EDIT_AS_NEW}`,
-				context: { mailId: msg.id, folderId: msg.parent }
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_NEW}&id=${msg.id}`,
+				title: ''
 			})
 		);
 	});
@@ -933,7 +934,6 @@ describe('Messages actions calls', () => {
 		});
 
 		const action = sendDraft({
-			id: msg.id, // FIXME this should be an editor Id
 			message: msg,
 			dispatch: store.dispatch
 		});

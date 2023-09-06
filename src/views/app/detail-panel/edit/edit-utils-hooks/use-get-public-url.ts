@@ -4,29 +4,35 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { useCallback } from 'react';
+
 import { getBridgedFunctions, t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
-import { useCallback, useMemo } from 'react';
-import { useAppSelector } from '../../../../../hooks/redux';
-import { selectEditors } from '../../../../../store/editor-slice';
 
-type InputProps = {
-	editorId: string;
-	updateEditorCb: (arg: any) => void;
-	saveDraftCb: (arg: any) => void;
-	setValue: (arg: any, arg2: any) => void;
-	changeEditorText: (text: [string, string]) => void;
+type UseGetPublicUrlPropType = {
+	addPublicLinkFromFiles: (filesResponse: UseGetPublicUrlRespType[]) => void;
 };
+
+export type UseGetPublicUrlRespType = {
+	status: string;
+	value: {
+		__typename?: 'Link';
+		id: string;
+		url?: string | null;
+		description?: string | null;
+		expires_at?: number | null;
+		created_at: number;
+		node: {
+			__typename?: string;
+			id: string;
+		};
+	};
+};
+
 export const useGetPublicUrl = ({
-	editorId,
-	updateEditorCb,
-	saveDraftCb,
-	setValue,
-	changeEditorText
-}: InputProps): [(nodes: any) => void, boolean] => {
+	addPublicLinkFromFiles
+}: UseGetPublicUrlPropType): [(nodes: any) => void, boolean] => {
 	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
-	const editors = useAppSelector(selectEditors);
-	const editor = useMemo(() => editors[editorId], [editors, editorId]);
 
 	const getPublicUrl = useCallback(
 		(nodes) => {
@@ -59,29 +65,10 @@ export const useGetPublicUrl = ({
 					label,
 					autoHideTimeout: 4000
 				});
-
-				const newEditor = {
-					...editor,
-					text: [
-						map(success, (i: { value: { url: string } }) => i.value.url)
-							.join('\n')
-							.concat(editor.text[0]),
-						` ${map(
-							success,
-							(i: { value: { url: string } }) =>
-								`<p><a href="${i.value.url}"> ${i.value.url}</a></p>`
-						).join('')}`.concat(editor.text[1])
-					]
-				};
-
-				updateEditorCb(newEditor);
-				saveDraftCb(newEditor);
-				setValue('text', newEditor.text);
-				changeEditorText(newEditor.text);
+				addPublicLinkFromFiles(success as UseGetPublicUrlRespType[]);
 			});
 		},
-		[changeEditorText, editor, getLink, saveDraftCb, setValue, updateEditorCb]
+		[addPublicLinkFromFiles, getLink]
 	);
-
 	return [getPublicUrl, getLinkAvailable];
 };

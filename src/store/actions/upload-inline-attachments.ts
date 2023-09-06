@@ -4,7 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import axios from 'axios';
 import { map } from 'lodash';
+
+import { UploadAttachmentResponse } from './upload-attachments';
 
 export const convertToDecimal = (source: string): string => {
 	let result = '';
@@ -24,8 +27,12 @@ export const convertToDecimal = (source: string): string => {
 	return result;
 };
 
-export const uploadInlineAttachments = async ({ files }: { files: File[] }): Promise<any> =>
-	Promise.all(
+export const uploadInlineAttachments = async ({
+	files
+}: {
+	files: File[];
+}): Promise<UploadAttachmentResponse> =>
+	axios.all(
 		map(files, (file) =>
 			fetch('/service/upload?fmt=extended,raw', {
 				headers: {

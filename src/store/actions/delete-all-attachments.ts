@@ -11,10 +11,17 @@ type removeAttachmentsPayload = {
 	attachments: string[];
 };
 
+type RemoveAttachmentsResponse = {
+	m: {
+		id: string;
+		part: Array<string>;
+	};
+};
+
 export const deleteAttachments = createAsyncThunk(
 	'mails/deleteAttachments',
 	async ({ id, attachments }: removeAttachmentsPayload) => {
-		const res = await soapFetch('RemoveAttachments', {
+		const res: RemoveAttachmentsResponse = await soapFetch('RemoveAttachments', {
 			_jsns: 'urn:zimbraMail',
 			m: {
 				id,

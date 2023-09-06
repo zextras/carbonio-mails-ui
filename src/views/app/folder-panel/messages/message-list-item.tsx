@@ -26,8 +26,8 @@ import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { ActionsType, getTimeLabel, participantToString } from '../../../../commons/utils';
-import { MAILS_ROUTE } from '../../../../constants';
+import { getTimeLabel, participantToString } from '../../../../commons/utils';
+import { EditViewActions, MAILS_ROUTE } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import type { MessageListItemProps, TextReadValuesType } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
@@ -70,7 +70,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				const { id, isDraft } = item;
 				if (isDraft) {
 					addBoard({
-						url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
+						url: `${MAILS_ROUTE}/edit/${id}?action=${EditViewActions.EDIT_AS_DRAFT}`,
 						context: { mailId: id, folderId: firstChildFolderId },
 						title: ''
 					});

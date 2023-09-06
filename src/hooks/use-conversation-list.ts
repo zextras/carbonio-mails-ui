@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
-import type { Conversation, StateType } from '../types';
+import type { Conversation, MailsStateType } from '../types';
 import { useAppDispatch, useAppSelector } from './redux';
 
 type RouteParams = {
@@ -19,8 +19,8 @@ type RouteParams = {
 export const useConversationListItems = (): Array<Conversation> => {
 	const { folderId } = <RouteParams>useParams();
 	const dispatch = useAppDispatch();
-	const folderStatus = useAppSelector((state: StateType) =>
-		selectFolderSearchStatus(<StateType>state, folderId)
+	const folderStatus = useAppSelector((state: MailsStateType) =>
+		selectFolderSearchStatus(<MailsStateType>state, folderId)
 	);
 	const conversations = useAppSelector(selectConversationsArray);
 	const folder = getFolder(folderId);

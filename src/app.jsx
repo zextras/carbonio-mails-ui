@@ -23,7 +23,7 @@ import {
 	openComposerSharedFunction,
 	openPrefilledComposerSharedFunction
 } from './integrations/shared-functions';
-import { MAILS_ROUTE, MAIL_APP_ID } from './constants';
+import { MAILS_ROUTE, MAIL_APP_ID, EditViewActions } from './constants';
 import { getSettingsSubSections } from './views/settings/subsections';
 import { StoreProvider } from './store/redux';
 import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
@@ -36,7 +36,9 @@ const LazyAppView = lazy(() =>
 );
 
 const LazyEditView = lazy(() =>
-	import(/* webpackChunkName: "mails-edit-view" */ './views/app/detail-panel/edit/edit-view')
+	import(
+		/* webpackChunkName: "mails-edit-view" */ './views/app/detail-panel/edit/edit-view-controller'
+	)
 );
 
 const LazySettingsView = lazy(() =>
@@ -154,7 +156,7 @@ const App = () => {
 					onClick: (ev) => {
 						ev?.preventDefault?.();
 						addBoard({
-							url: `${MAILS_ROUTE}/new?action=new`,
+							url: `${MAILS_ROUTE}/edit?action=${EditViewActions.NEW}`,
 							title: t('label.new_email', 'New E-mail')
 							// TODO provide the context filled with the current folder id
 						});

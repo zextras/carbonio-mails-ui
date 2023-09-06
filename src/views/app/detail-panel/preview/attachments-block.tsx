@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
+
 import {
 	Container,
 	getColor,
@@ -23,8 +25,16 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, find, map } from 'lodash';
-import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+
+import DeleteAttachmentModal from './delete-attachment-modal';
+import { humanFileSize, previewType } from './file-preview';
+import {
+	getAttachmentIconColors,
+	getAttachmentsDownloadLink,
+	getAttachmentsLink,
+	getLocationOrigin
+} from './utils';
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { getMsgsForPrint } from '../../../../store/actions';
@@ -38,14 +48,6 @@ import type {
 	OpenEmlPreviewType
 } from '../../../../types';
 import { useExtraWindow } from '../../extra-windows/use-extra-window';
-import DeleteAttachmentModal from './delete-attachment-modal';
-import { humanFileSize, previewType } from './file-preview';
-import {
-	getAttachmentIconColors,
-	getAttachmentsDownloadLink,
-	getAttachmentsLink,
-	getLocationOrigin
-} from './utils';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments

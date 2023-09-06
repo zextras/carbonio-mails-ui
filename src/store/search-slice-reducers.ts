@@ -5,6 +5,7 @@
  */
 
 import { filter, find, forEach, map, merge, omit, reduce, some } from 'lodash';
+
 import type { ConvMessage, Payload, SearchesStateType } from '../types';
 
 export const handleCreatedConversationsReducer = (
@@ -47,7 +48,7 @@ export const handleCreatedMessagesInConversationsReducer = (
 				[msg.cid]: {
 					...conversation,
 					messages,
-					fragment: msg?.fr
+					fragment: msg?.fr ?? ''
 				}
 			};
 
