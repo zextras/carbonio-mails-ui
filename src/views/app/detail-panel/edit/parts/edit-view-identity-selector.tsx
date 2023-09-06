@@ -15,13 +15,7 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import {
-	Account,
-	AccountSettings,
-	t,
-	useUserAccount,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import styled from 'styled-components';
 
@@ -37,25 +31,30 @@ const SelectorContainer = styled(Row)`
 
 /**
  *
- * @param identity
- * @param account
- * @param settings
- * @param fallbackDescription
+ * @param identity - Identity to display
+ * @param useExtendedDescription - Compose an extended description containing name and rights
+ * @param fallbackDescription - Description to use if no one is available for the given identity
  */
 const createIdentitySelectorItemElement = (
 	identity: IdentityDescriptor | null,
-	account: Account,
-	settings: AccountSettings,
+	useExtendedDescription: boolean,
 	fallbackDescription: string
 ): JSX.Element => {
-	const identityDescription = identity ? getIdentityDescription(identity, t) : fallbackDescription;
+	// eslint-disable-next-line no-nested-ternary
+	const identityDescription = identity
+		? useExtendedDescription
+			? getIdentityDescription(identity, t)
+			: identity.fromAddress
+		: fallbackDescription;
 
 	return (
 		<Container width="100%" orientation="horizontal" height="fit">
 			<Avatar label={identity?.identityName || identity?.fromDisplay || fallbackDescription} />
 			<Container width="100%" crossAlignment="flex-start" height="fit" padding={{ left: 'medium' }}>
 				<Text weight="bold">{identity?.identityDisplayName || fallbackDescription}</Text>
-				<Text color="gray1">{identityDescription}</Text>
+				<Text size="small" color="gray1">
+					{identityDescription}
+				</Text>
 			</Container>
 		</Container>
 	);
@@ -82,9 +81,6 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({
 	identities,
 	onIdentitySelected
 }) => {
-	const account = useUserAccount();
-	const settings = useUserSettings();
-
 	const [open, setOpen] = useState(false);
 	const noName = useMemo(() => t('label.no_name', '<No Name>'), []);
 	const selectedDescription = selected ? getIdentityDescription(selected, t) : noName;
@@ -107,9 +103,9 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({
 					onIdentitySelected(identity);
 					close();
 				},
-				customComponent: createIdentitySelectorItemElement(identity, account, settings, noName)
+				customComponent: createIdentitySelectorItemElement(identity, true, noName)
 			})),
-		[account, close, identities, noName, onIdentitySelected, selected, settings]
+		[close, identities, noName, onIdentitySelected, selected]
 	);
 
 	return (
@@ -130,7 +126,7 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({
 						wrap="nowrap"
 						padding={{ all: 'small' }}
 					>
-						{createIdentitySelectorItemElement(selected, account, settings, noName)}
+						{createIdentitySelectorItemElement(selected, false, noName)}
 						<IconButton icon={open ? 'ChevronUpOutline' : 'ChevronDownOutline'} onClick={noop} />
 					</Row>
 				</Dropdown>
