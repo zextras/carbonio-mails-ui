@@ -145,7 +145,7 @@ const sendFromEditor = (
 			?._content as unknown as number) ?? 3;
 
 	const cancelableTimer = createCancelableTimer({
-		delay,
+		secondsDelay: delay,
 		onTick: onTimerTick,
 		onCancel: onTimerCanceled
 	});

@@ -10,7 +10,7 @@
 const TICK_DELAY_TIME = 1000;
 
 export type CancelableTimerParams = {
-	delay: number;
+	secondsDelay: number;
 	onTick?: (count: number, cancel: () => void) => void;
 	onCancel?: () => void;
 };
@@ -22,16 +22,17 @@ export type CancelableTimer = {
 
 /**
  *
- * @param delay
+ * @param secondsDelay
  * @param onTick
+ * @param onCancel
  */
 export const createCancelableTimer = ({
-	delay,
+	secondsDelay,
 	onTick,
 	onCancel
 }: CancelableTimerParams): CancelableTimer => {
 	let intervalId: ReturnType<typeof setInterval> | null;
-	let countdown = delay;
+	let countdown = secondsDelay;
 
 	const cancel = (): void => {
 		if (!intervalId) {
@@ -43,10 +44,16 @@ export const createCancelableTimer = ({
 	};
 
 	const promise = new Promise<void>((resolve) => {
+		if (secondsDelay <= 0) {
+			resolve();
+			return;
+		}
+
 		intervalId = setInterval(() => {
-			countdown -= 1;
-			onTick && onTick(countdown, cancel);
-			if (countdown === 0) {
+			if (countdown > 0) {
+				countdown -= 1;
+				onTick && onTick(countdown, cancel);
+			} else {
 				intervalId && clearInterval(intervalId);
 				resolve();
 			}
