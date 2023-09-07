@@ -31,7 +31,7 @@ import styled from 'styled-components';
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import { findAttachments } from '../helpers/attachments';
+import { getAttachmentParts } from '../helpers/attachments';
 import type { MailMessage, MailMessagePart, Participant } from '../types';
 
 export const _CI_REGEX = /^<(.*)>$/;
@@ -446,7 +446,7 @@ const MailMessageRenderer: FC<{ mailMsg: MailMessage; onLoadChange: () => void }
 	mailMsg,
 	onLoadChange
 }) => {
-	const parts = findAttachments(mailMsg.parts ?? [], []);
+	const parts = getAttachmentParts(mailMsg);
 
 	useEffect(() => {
 		if (!mailMsg.read) {
