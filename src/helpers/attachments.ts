@@ -20,11 +20,13 @@ import type {
 
 const FileExtensionRegex = /^.+\.([^.]+)$/;
 export const CIDURL_REGEX = '^(?:cid:)*(.+)$';
+export const REFERRED_CIDURL_PATTERN = '"cid:([^"]+)"';
 export const DOWNLOADSERVICEURL_REGEX = '\\/service\\/home\\/~\\/\\?';
 export const EML_FILENAME_REGEX = '^(.+)\\.eml$';
 export const IMAGE_MIMETYPE_REGEX = '^image\\/';
 export const MIMETYPE_MULTIPART_ALTERNATIVE = 'multipart/alternative';
 export const MIMETYPE_PLAINTEXT = 'text/plain';
+export const MIMETYPE_RICHTEXT = 'text/html';
 export const MIMETYPE_EML = 'message/rfc822';
 
 export function findAttachments(
@@ -52,6 +54,101 @@ export const isImage = (part: MailMessagePart): boolean =>
 	new RegExp(IMAGE_MIMETYPE_REGEX, 'g').test(part.contentType);
 
 /**
+ * Extract the inner part of the content id removing the
+ * angle brackets (if present)
+ * @param contentId
+ */
+export const extractContentIdInnerPart = (contentId: string): string | null => {
+	const regex = /^<?([^<>]+)>?$/;
+	const tokens = regex.exec(contentId);
+	if (!tokens) {
+		return null;
+	}
+
+	return tokens[1];
+};
+
+/**
+ * Tells if the 2 given content-id are the same, ignoring the
+ * angle brackets. If any of the 2 given arguments is not a
+ * valid content-id the result will be false
+ *
+ * @param contentId
+ * @param otherContentId
+ */
+export const isContentIdEqual = (contentId: string, otherContentId: string): boolean => {
+	const contentIdInnerPart = extractContentIdInnerPart(contentId);
+	const otherContentIdInnerPart = extractContentIdInnerPart(otherContentId);
+	if (!contentIdInnerPart || !otherContentIdInnerPart) {
+		return false;
+	}
+
+	return contentIdInnerPart === otherContentIdInnerPart;
+};
+
+export const isCidUrl = (url: string): boolean => new RegExp(CIDURL_REGEX, 'gi').test(url);
+
+export const getCidFromCidUrl = (cidUrl: string): string | null => {
+	const cidUrlTokens = new RegExp(CIDURL_REGEX, 'gi').exec(cidUrl);
+	if (!cidUrlTokens) {
+		return null;
+	}
+	return cidUrlTokens[1];
+};
+
+export const getCidFromReference = (cidReference: string): string | null => {
+	const cidReferenceTokens = new RegExp(REFERRED_CIDURL_PATTERN, 'gi').exec(cidReference);
+	if (!cidReferenceTokens) {
+		return null;
+	}
+	return cidReferenceTokens[1];
+};
+
+/**
+ *
+ * @param richText
+ */
+const getCidReferences = (richText: string): Array<string> => {
+	const result: Array<string> = [];
+	const doc = new DOMParser().parseFromString(richText, MIMETYPE_RICHTEXT);
+	const escapedText = doc.documentElement.outerHTML;
+	if (!escapedText) {
+		return result;
+	}
+
+	const matches = escapedText.match(new RegExp(REFERRED_CIDURL_PATTERN, 'g'));
+	matches && result.push(...matches);
+
+	return result;
+};
+
+/**
+ *
+ * @param parts
+ */
+export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<string> => {
+	const result: Array<string> = [];
+	parts.forEach((part) => {
+		if (part.contentType === MIMETYPE_RICHTEXT && part.content) {
+			getCidReferences(part.content).forEach((cidReference) => {
+				const cid = getCidFromReference(cidReference);
+				if (cid) {
+					result.push(cid);
+				}
+			});
+		}
+
+		if (part.parts) {
+			result.push(...getReferredContentIds(part.parts));
+		}
+	});
+	return result;
+};
+
+export const isReferredCid = (cid: string, referredCids: Array<string>): boolean =>
+	referredCids.reduce((result, referredCid) => isContentIdEqual(cid, referredCid) || result, false);
+
+/**
  * Filters the message parts to collect body content and attachments.
  *
  *
@@ -60,16 +157,30 @@ export const isImage = (part: MailMessagePart): boolean =>
  */
 export function filterAttachmentsParts(
 	parts: Array<MailMessagePart>,
-	filtered: Array<MailMessagePart>
+	filtered: Array<MailMessagePart>,
+	referredCids: Array<string>
 ): Array<MailMessagePart> {
 	return reduce(
 		parts,
 		(filtered, part) => {
-			if (part.disposition === 'attachment' || (part.disposition === 'inline' && part.filename)) {
-				filtered.push(part);
+			const isReferredByCid = part.ci && isReferredCid(part.ci, referredCids);
+			if (
+				part.disposition === 'attachment' ||
+				(part.disposition === 'inline' && part.filename) ||
+				isReferredByCid
+			) {
+				// Force the inline disposition if the part is referred by something else in the body
+				if (isReferredByCid) {
+					filtered.push({
+						...part,
+						disposition: 'inline'
+					});
+				} else {
+					filtered.push(part);
+				}
 			}
 			if (part.parts && !isEml(part)) {
-				filterAttachmentsParts(part.parts, filtered);
+				filterAttachmentsParts(part.parts, filtered, referredCids);
 			}
 			return filtered;
 		},
@@ -77,8 +188,13 @@ export function filterAttachmentsParts(
 	);
 }
 
+/**
+ *
+ * @param message
+ */
 export function getAttachmentParts(message: MailMessage): Array<MailMessagePart> {
-	return filterAttachmentsParts(message.parts, []);
+	const referredCids = getReferredContentIds(message.parts);
+	return filterAttachmentsParts(message.parts, [], referredCids);
 }
 
 export const getAttachmentExtension = (
@@ -302,41 +418,6 @@ export const useAttachmentIconColor = (attachment: UnsavedAttachment | SavedAtta
 		[attachment.contentType, theme]
 	);
 };
-
-/**
- * Extract the inner part of the content id removing the
- * angle brackets (if present)
- * @param contentId
- */
-export const extractContentIdInnerPart = (contentId: string): string | null => {
-	const regex = /^<?([^<>]+)>?$/;
-	const tokens = regex.exec(contentId);
-	if (!tokens) {
-		return null;
-	}
-
-	return tokens[1];
-};
-
-/**
- * Tells if the 2 given content-id are the same, ignoring the
- * angle brackets. If any of the 2 given arguments is not a
- * valid content-id the result will be false
- *
- * @param contentId
- * @param otherContentId
- */
-export const isContentIdEqual = (contentId: string, otherContentId: string): boolean => {
-	const contentIdInnerPart = extractContentIdInnerPart(contentId);
-	const otherContentIdInnerPart = extractContentIdInnerPart(otherContentId);
-	if (!contentIdInnerPart || !otherContentIdInnerPart) {
-		return false;
-	}
-
-	return contentIdInnerPart === otherContentIdInnerPart;
-};
-
-export const isCidUrl = (url: string): boolean => new RegExp(CIDURL_REGEX, 'gi').test(url);
 
 export const isDownloadServicedUrl = (url: string): boolean =>
 	new RegExp(DOWNLOADSERVICEURL_REGEX, 'g').test(url);

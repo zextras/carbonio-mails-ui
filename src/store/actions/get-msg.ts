@@ -5,22 +5,24 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
+
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type { GetMsgParameters, MailMessage, GetMsgRequest, GetMsgResponse } from '../../types';
 
+export const getMsgCall = async ({ msgId }: GetMsgParameters): Promise<MailMessage> => {
+	const result = (await soapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
+		_jsns: 'urn:zimbraMail',
+		m: {
+			html: 1,
+			id: msgId,
+			needExp: 1
+		}
+	})) as GetMsgResponse;
+	const msg = result?.m[0];
+	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
+};
+
 export const getMsg = createAsyncThunk<MailMessage, GetMsgParameters>(
 	'messages/getMsg',
-	async ({ msgId }) => {
-		const result = (await soapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
-			_jsns: 'urn:zimbraMail',
-			m: {
-				html: 1,
-				id: msgId,
-				needExp: 1
-			}
-		})) as GetMsgResponse;
-		const msg = result?.m[0];
-		const normalizedMsg = normalizeMailMessageFromSoap(msg, true) as MailMessage;
-		return normalizedMsg;
-	}
+	getMsgCall
 );
