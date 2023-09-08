@@ -167,10 +167,10 @@ export function filterAttachmentsParts(
 			if (
 				part.disposition === 'attachment' ||
 				(part.disposition === 'inline' && part.filename) ||
-				isReferredByCid
+				(part.disposition === undefined && isReferredByCid)
 			) {
 				// Force the inline disposition if the part is referred by something else in the body
-				if (isReferredByCid) {
+				if (part.disposition === undefined && isReferredByCid) {
 					filtered.push({
 						...part,
 						disposition: 'inline'
