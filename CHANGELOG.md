@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.3...v1.6.4) (2023-09-06)
+
+
+### Bug Fixes
+
+* **editor:** email send with delay set to 0 ([ae68a5a](https://github.com/zextras/carbonio-mails-ui/commit/ae68a5aeca98e7814cf64864aa8ac6ad80329c87))
+
 ### [1.6.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.2...v1.6.3) (2023-09-06)
 
 ### [1.6.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.1...v1.6.2) (2023-09-01)
