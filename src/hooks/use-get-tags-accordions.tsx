@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+
 import {
 	AccordionItem,
 	Dropdown,
@@ -15,8 +14,15 @@ import {
 	Row,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { ZIMBRA_STANDARD_COLORS, runSearch, t, useTags } from '@zextras/carbonio-shell-ui';
+import {
+	ZIMBRA_STANDARD_COLORS,
+	runSearch,
+	t,
+	useTags,
+	QueryChip
+} from '@zextras/carbonio-shell-ui';
 import { reduce } from 'lodash';
+
 import type { TagsAccordionItems } from '../carbonio-ui-commons/types/tags';
 import type { ItemType } from '../types';
 import { createTag, useGetTagsActions } from '../ui-actions/tag-actions';
@@ -32,9 +38,8 @@ const CustomComp: FC<ItemProps> = (props) => {
 		() =>
 			runSearch(
 				[
+					// TODO: add a new type for query chips
 					{
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						avatarBackground: ZIMBRA_STANDARD_COLORS[props?.item?.color || 0].hex,
 						avatarIcon: 'Tag',
 						background: 'gray2',
@@ -43,7 +48,7 @@ const CustomComp: FC<ItemProps> = (props) => {
 						isQueryFilter: true,
 						label: `tag:${props?.item?.name}`,
 						value: `tag:"${props?.item?.name}"`
-					}
+					} as QueryChip
 				],
 				'mails'
 			),

@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text } from '@zextras/carbonio-design-system';
 import {
@@ -14,25 +16,23 @@ import {
 	t
 } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
-import React from 'react';
+
+import DeleteConvConfirm from './delete-conv-modal';
+import { errorPage } from './error-page';
+import MoveConvMessage from './move-conv-msg';
+import RedirectAction from './redirect-message-action';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
-import { ActionsType } from '../commons/utils';
-import { MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
+import { EditViewActions, MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
 import { getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg } from '../store/actions/send-msg';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
 	BoardContext,
-	Conversation,
 	MailMessage,
 	MessageActionReturnType,
 	MsgActionParameters,
 	MsgActionResult
 } from '../types';
-import DeleteConvConfirm from './delete-conv-modal';
-import MoveConvMessage from './move-conv-msg';
-import RedirectAction from './redirect-message-action';
-import { errorPage } from './error-page';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -446,8 +446,8 @@ export function replyMsg({
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY}`,
-				context: { mailId: id, folderId },
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY}&id=${id}`,
+				// context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -466,8 +466,8 @@ export function replyAllMsg({
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.REPLY_ALL}`,
-				context: { mailId: id, folderId },
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY_ALL}&id=${id}`,
+				// context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -486,8 +486,8 @@ export function forwardMsg({
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.FORWARD}`,
-				context: { mailId: id, folderId },
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.FORWARD}&id=${id}`,
+				// context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -506,8 +506,8 @@ export function editAsNewMsg({
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_NEW}`,
-				context: { mailId: id, folderId },
+				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_NEW}&id=${id}`,
+				// context: { mailId: id, folderId },
 				title: ''
 			});
 		}
@@ -535,8 +535,8 @@ export function editDraft({
 						// @ts-ignore
 						closeModal();
 						addBoard<BoardContext>({
-							url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
-							context: { mailId: id, folderId },
+							url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${id}`,
+							// context: { mailId: id, folderId },
 							title: ''
 						});
 					},
@@ -559,8 +559,8 @@ export function editDraft({
 				});
 			} else {
 				addBoard<BoardContext>({
-					url: `${MAILS_ROUTE}/edit/${id}?action=${ActionsType.EDIT_AS_DRAFT}`,
-					context: { mailId: id, folderId },
+					url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${id}`,
+					// context: { mailId: id, folderId },
 					title: ''
 				});
 			}
@@ -569,11 +569,9 @@ export function editDraft({
 }
 
 export function sendDraft({
-	id,
 	message,
 	dispatch
 }: {
-	id: string;
 	message: MailMessage;
 	dispatch: AppDispatch;
 }): MessageActionReturnType {
@@ -586,7 +584,6 @@ export function sendDraft({
 			if (ev) ev.preventDefault();
 			dispatch(
 				sendMsg({
-					editorId: id,
 					msg: message
 				})
 			)

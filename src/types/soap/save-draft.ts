@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ParticipantRoleType } from '../../carbonio-ui-commons/constants/participants';
 import { SoapMailMessage } from './soap-mail-message';
+import { ParticipantRoleType } from '../../carbonio-ui-commons/constants/participants';
 
 export type MailAttachmentParts = {
 	mid: string;
@@ -41,7 +41,7 @@ export type SoapEmailInfoObj = {
 export type SoapDraftMessageObj = {
 	autoSendTime?: number;
 	id?: string;
-	attach: MailAttachment;
+	attach?: MailAttachment;
 	su: { _content: string };
 	mp: Array<SoapEmailMessagePartObj>;
 	e: Array<SoapEmailInfoObj>;

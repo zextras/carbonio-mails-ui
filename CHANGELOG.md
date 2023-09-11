@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.3...v1.6.4) (2023-09-06)
+
+
+### Bug Fixes
+
+* **editor:** email send with delay set to 0 ([ae68a5a](https://github.com/zextras/carbonio-mails-ui/commit/ae68a5aeca98e7814cf64864aa8ac6ad80329c87))
+
+### [1.6.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.2...v1.6.3) (2023-09-06)
+
+### [1.6.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.1...v1.6.2) (2023-09-01)
+
+
+### Bug Fixes
+
+* filter with To condition not working ([27e248d](https://github.com/zextras/carbonio-mails-ui/commit/27e248dadf8a27333962f167b80541c776db077d))
+* fix typescript errors ([f9d13d0](https://github.com/zextras/carbonio-mails-ui/commit/f9d13d018db0b307169eab65f8fdfba34f5c00da))
+* missing chevron in conversation container in shared folder ([436deff](https://github.com/zextras/carbonio-mails-ui/commit/436deff4c0c07033f38eeff35a4ca27d0eebb927))
+* visualization by message doesn't work on shared folder ([d30901d](https://github.com/zextras/carbonio-mails-ui/commit/d30901d8ec1fca749b1ec822e299c1b61b914b92))
+
 ### [1.6.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.0...v1.6.1) (2023-07-20)
 
 ## [1.6.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.5.0...v1.6.0) (2023-07-06)

@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { act, screen } from '@testing-library/react';
+import React from 'react';
+
+import { screen } from '@testing-library/react';
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { reject } from 'lodash';
-import React from 'react';
+
 import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
 import {
 	getFolder,
@@ -26,8 +28,8 @@ import {
 	isTrashed
 } from '../../../../helpers/folders';
 import { generateStore } from '../../../../tests/generators/store';
-import { FolderSelector, FolderSelectorProps } from '../folder-selector';
 import { getSystemFolderTranslatedName } from '../../utils';
+import { FolderSelector, FolderSelectorProps } from '../folder-selector';
 
 describe('Folder selector', () => {
 	const store = generateStore();
@@ -82,7 +84,7 @@ describe('Folder selector', () => {
 				const roots = getRootsMap();
 				const folderId = FOLDERS.INBOX;
 				const primaryAccount = getUserAccount();
-				const ownerAccountName = getFolderOwnerAccountName(folderId, primaryAccount, roots);
+				const ownerAccountName = getFolderOwnerAccountName(folderId, roots);
 
 				const props: FolderSelectorProps = {
 					onFolderSelected: jest.fn()
@@ -105,7 +107,9 @@ describe('Folder selector', () => {
 				selectedFolderId: FOLDERS.INBOX,
 				onFolderSelected: jest.fn()
 			};
-			const inboxFolderName = getSystemFolderTranslatedName({ folderName: 'Inbox' });
+			const inboxFolderName = getSystemFolderTranslatedName({
+				folderName: 'Inbox'
+			});
 			const { user } = setupTest(<FolderSelector {...props} />, { store });
 			makeListItemsVisible();
 			const filterInput = screen.getByTestId('folder-name-filter');
@@ -118,7 +122,9 @@ describe('Folder selector', () => {
 
 		test('if the user type "INBOX" in the filter only the Inbox folder is displayed', async () => {
 			populateFoldersStore();
-			const inboxFolderName = getSystemFolderTranslatedName({ folderName: 'Inbox' });
+			const inboxFolderName = getSystemFolderTranslatedName({
+				folderName: 'Inbox'
+			});
 			const inboxCount = getFoldersArray().reduce<number>(
 				(result, folder) => (isInbox(folder.id) ? result + 1 : result),
 				0
@@ -174,11 +180,7 @@ describe('Folder selector', () => {
 			await user.type(filterInput, folderInPrimaryAccountOnly.name);
 			const roots = getRootsMap();
 			const primaryAccount = getUserAccount();
-			const ownerAccountName = getFolderOwnerAccountName(
-				folderInPrimaryAccountOnly.id,
-				primaryAccount,
-				roots
-			);
+			const ownerAccountName = getFolderOwnerAccountName(folderInPrimaryAccountOnly.id, roots);
 
 			rootIds.forEach((rootId) => {
 				if (rootId === rootIds[0]) {

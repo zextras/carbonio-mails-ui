@@ -20,7 +20,7 @@ import {
 	selectCurrentFolderExpandedStatus
 } from '../../../store/conversations-slice';
 import { selectMessages } from '../../../store/messages-slice';
-import type { Conversation, StateType } from '../../../types';
+import type { Conversation, MailsStateType } from '../../../types';
 
 const MessagesComponent = ({
 	conversation
@@ -73,18 +73,18 @@ const MessagesComponent = ({
 	return <></>;
 };
 
-const ConversationPreviewPanel: FC = () => {
+export const ConversationPreviewPanel: FC = () => {
 	const { conversationId, folderId } = useParams<{ conversationId: string; folderId: string }>();
 	const tagsFromStore = useTags();
 
 	const dispatch = useAppDispatch();
 	const conversations = useAppSelector(selectConversationsArray);
-	const conversationsStatus = useAppSelector((state: StateType) =>
+	const conversationsStatus = useAppSelector((state: MailsStateType) =>
 		selectConversationExpandedStatus(state, conversationId)
 	);
 
 	const conversation = useMemo(
-		() => find(conversations, ['id', conversationId]),
+		() => find(conversations, ['id', conversationId]) as Conversation,
 		[conversationId, conversations]
 	);
 	useEffect(() => {
@@ -133,5 +133,3 @@ const ConversationPreviewPanel: FC = () => {
 		</Container>
 	);
 };
-
-export default ConversationPreviewPanel;

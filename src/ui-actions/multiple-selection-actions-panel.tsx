@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+
 import {
 	Button,
 	Container,
@@ -13,17 +15,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
 import { every, filter, findIndex, some } from 'lodash';
-import React, { FC, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { getFolderIdParts } from '../helpers/folders';
-import { useAppDispatch } from '../hooks/redux';
-import type {
-	ActionReturnType,
-	ConvActionReturnType,
-	Conversation,
-	MailMessage,
-	MessageActionReturnType,
-	TagActionItemType
-} from '../types';
+
 import {
 	deleteConversationPermanently,
 	moveConversationToFolder,
@@ -42,9 +34,19 @@ import {
 } from './message-actions';
 import { applyMultiTag } from './tag-actions';
 import { getFolderParentId } from './utils';
+import { getFolderIdParts } from '../helpers/folders';
+import { useAppDispatch } from '../hooks/redux';
+import type {
+	ActionReturnType,
+	ConvActionReturnType,
+	Conversation,
+	MailMessage,
+	MessageActionReturnType,
+	TagActionItemType
+} from '../types';
 
 type MultipleSelectionActionsPanelProps = {
-	items: Array<Partial<MailMessage>> | Array<Conversation>;
+	items: Array<Partial<MailMessage> & Pick<MailMessage, 'id'>> | Array<Conversation>;
 	selectedIds: Array<string>;
 	deselectAll: () => void;
 	selectAll: () => void;
@@ -53,7 +55,7 @@ type MultipleSelectionActionsPanelProps = {
 	setIsSelectModeOn: (value: boolean) => void;
 	folderId: string;
 };
-type MsgOrConv = Partial<MailMessage> | Conversation;
+type MsgOrConv = (Partial<MailMessage> & Pick<MailMessage, 'id'>) | Conversation;
 
 export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProps> = ({
 	items,

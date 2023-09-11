@@ -3,9 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import type { MailsEditor } from '../../types';
+import { AppDispatch } from '../../store/redux';
+import type { MailsEditorV2 } from '../../types';
 
-export const generateEditorCase = async (id: number): Promise<MailsEditor> => {
-	const { editorCase } = await import(`./editorCases/editorCase-${id}`);
-	return editorCase;
+export const generateEditorV2Case = async (
+	id: number,
+	messagesStoreDispatch: AppDispatch
+): Promise<MailsEditorV2> => {
+	const { buildEditorCase } = await import(`./editorCases/editor-case-v2-${id}`);
+	return buildEditorCase(messagesStoreDispatch);
 };

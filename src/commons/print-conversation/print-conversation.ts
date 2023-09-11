@@ -6,16 +6,13 @@
 
 import { type Account } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
-import { type MailMessage } from '../../types';
-import {
-	_CI_REGEX,
-	_CI_SRC_REGEX,
-	findAttachments,
-	plainTextToHTML
-} from '../mail-message-renderer';
+
 import { getBodyWrapper } from './get-body-wrapper';
 import { getCompleteHTML } from './get-complete-html';
 import { getHeader } from './get-header';
+import { findAttachments } from '../../helpers/attachments';
+import { type MailMessage } from '../../types';
+import { _CI_REGEX, _CI_SRC_REGEX, plainTextToHTML } from '../mail-message-renderer';
 
 function getSs(conversationMessage: Array<MailMessage>): Array<string> {
 	return map(conversationMessage, (msg) => {

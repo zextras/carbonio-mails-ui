@@ -4,118 +4,93 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Container, Row, Text } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import React, {
-	FC,
-	ReactElement,
-	SyntheticEvent,
-	useCallback,
-	useContext,
-	useEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
-import type { EditViewContextType, MailsEditor, SaveDraftResponse } from '../../../../../types';
-import { addInlineAttachments, getConvertedImageSources } from '../add-inline-attachment';
-import { EditViewContext } from './edit-view-context';
+import React, { FC, SyntheticEvent, useMemo } from 'react';
+
+import { Container } from '@zextras/carbonio-design-system';
+import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import type { TinyMCE } from 'tinymce/tinymce';
+
 import * as StyledComp from './edit-view-styled-components';
+import { plainTextToHTML } from '../../../../../commons/mail-message-renderer';
+import { useEditorInlineUrlConverter } from '../../../../../store/zustand/editor';
+import { MailsEditorV2 } from '../../../../../types';
 
-type PropType = {
-	onDragOverEvent: (event: SyntheticEvent) => void;
-	draftSavedAt: string;
+export type TextEditorContent = { plainText: string; richText: string };
+
+export type TextEditorContainerProps = {
+	onDragOver: (event: SyntheticEvent) => void;
+	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: FileList }) => void;
+	onContentChanged: (content: TextEditorContent) => void;
+	richTextMode: boolean;
+	content: TextEditorContent;
 	minHeight: number;
-	setValue: (name: string, value: any) => void;
-	updateEditorCb: (data: Partial<MailsEditor>) => void;
-	updateSubjectField: (mod: Partial<MailsEditor>) => void;
-	saveDraftCb: (data: MailsEditor, signal?: AbortSignal) => SaveDraftResponse;
-	textValue: [string, string];
+	disabled: boolean;
+	editorId: MailsEditorV2['id'];
+	// draftSavedAt: string;
+	// minHeight: number;
+	// setValue: (name: string, value: any) => void;
+	// updateEditorCb: (data: Partial<MailsEditor>) => void;
+	// updateSubjectField: (mod: Partial<MailsEditor>) => void;
+	// saveDraftCb: (data: MailsEditor, signal?: AbortSignal) => SaveDraftResponse;
+	// textValue: [string, string];
 };
 
-type FileSelectProps = {
-	editor: MailsEditor;
-	files: File[];
-};
-const TextEditorContainer: FC<PropType> = ({
-	onDragOverEvent,
-	draftSavedAt,
+export const TextEditorContainer: FC<TextEditorContainerProps> = ({
+	editorId,
+	onDragOver,
+	onFilesSelected,
+	onContentChanged,
 	minHeight,
-	setValue,
-	updateEditorCb,
-	updateSubjectField,
-	saveDraftCb,
-	textValue
+	content,
+	richTextMode,
+	disabled
 }) => {
-	const { control } = useForm();
-	const { editor, throttledSaveToDraft } = useContext<EditViewContextType>(EditViewContext);
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 
 	const { prefs } = useUserSettings();
-
 	const defaultFontFamily = useMemo<string>(
 		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontFamily) ?? 'sans-serif',
 		[prefs]
 	);
-	const [inputValue, setInputValue] = useState(editor?.text ?? ['', '']);
-	const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
-	const [showStickyTime, setStickyTime] = useState(false);
-	const [isReady, setIsReady] = useState(false);
-	const toggleStickyTime = useCallback(() => {
-		clearTimeout(timeoutRef.current as ReturnType<typeof setTimeout>);
-		setStickyTime(false);
-		timeoutRef.current = setTimeout(() => {
-			setStickyTime(true);
-			setTimeout(() => {
-				setStickyTime(false);
-			}, 1500);
-		}, 1500);
-	}, []);
 
-	useEffect(() => {
-		setInputValue(textValue);
-	}, [textValue]);
+	const urlConverter = useEditorInlineUrlConverter(editorId);
 
-	useEffect(() => {
-		const controller = new AbortController();
-		const { signal } = controller;
-		if (isReady) {
-			saveDraftCb(
-				{
-					...editor,
-					text: inputValue
-				},
-				signal
-			).then((res: SaveDraftResponse) => {
-				if (res.payload.resp.m) {
-					setIsReady(false);
-					getConvertedImageSources({
-						message: normalizeMailMessageFromSoap(res?.payload?.resp?.m?.[0]),
-						updateEditorCb,
-						setValue,
-						setInputValue,
-						inputValue
-					});
-				}
-			});
-		}
-		return () => {
-			controller.abort();
-		};
-	}, [editor, inputValue, isReady, saveDraftCb, setValue, updateEditorCb]);
+	const composerCustomOptions = {
+		toolbar_sticky: false,
+		convert_url: true
+		// urlconverter_callback: (url: string): string => urlConverter(url)
+	};
+
+	// const [inputValue, setInputValue] = useState(editor?.text ?? ['', '']);
+	// const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
+	// const [showStickyTime, setStickyTime] = useState(false);
+	// const [isReady, setIsReady] = useState(false);
+	// const toggleStickyTime = useCallback(() => {
+	// 	clearTimeout(timeoutRef.current as ReturnType<typeof setTimeout>);
+	// 	setStickyTime(false);
+	// 	timeoutRef.current = setTimeout(() => {
+	// 		setStickyTime(true);
+	// 		setTimeout(() => {
+	// 			setStickyTime(false);
+	// 		}, 1500);
+	// 	}, 1500);
+	// }, []);
+	//
+	// useEffect(() => {
+	// 	setInputValue(textValue);
+	// }, [textValue]);
+	//
 
 	return (
 		<>
-			{editor?.text && (
+			{content && (
 				<Container
 					height="fit"
 					padding={{ all: 'small' }}
 					background="gray6"
 					crossAlignment="flex-end"
 				>
-					{editor?.richText && composerIsAvailable ? (
+					{richTextMode && composerIsAvailable ? (
 						<Container
 							background="gray6"
 							mainAlignment="flex-start"
@@ -125,87 +100,69 @@ const TextEditorContainer: FC<PropType> = ({
 								<Composer
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									value={inputValue[1]}
-									disabled={isReady}
-									onFileSelect={({ editor: tinymce, files }: FileSelectProps): void => {
-										addInlineAttachments({
-											files,
-											tinymce,
-											updateEditorCb,
-											setIsReady,
-											editor
-										});
-									}}
+									value={content.richText}
+									disabled={disabled}
+									onFileSelect={onFilesSelected}
 									onEditorChange={(ev: [string, string]): void => {
-										setInputValue(ev);
-										updateSubjectField({ text: ev });
-										throttledSaveToDraft({ text: ev });
-										toggleStickyTime();
+										onContentChanged({ plainText: ev[0], richText: ev[1] });
 									}}
-									onDragOver={onDragOverEvent}
+									onDragOver={onDragOver}
+									customInitOptions={composerCustomOptions}
 								/>
 							</StyledComp.EditorWrapper>
 						</Container>
 					) : (
-						<Controller
-							name="text"
-							control={control}
-							defaultValue={editor?.text}
-							render={({ field: { onChange } }): ReactElement => (
-								<Container background="gray6" height="fit">
-									<StyledComp.TextArea
-										data-testid="MailPlainTextEditor"
-										value={inputValue[0]}
-										style={{ fontFamily: defaultFontFamily }}
-										onFocus={(ev): void => {
-											ev.currentTarget.setSelectionRange(0, null);
-										}}
-										onChange={(ev): void => {
-											// eslint-disable-next-line no-param-reassign
-											ev.target.style.height = 'auto';
-											// eslint-disable-next-line no-param-reassign
-											ev.target.style.height = `${25 + ev.target.scrollHeight}px`;
-											const data: [string, string] = [
-												ev.target.value,
-												`${
-													editor?.text[1] ? `${editor.text[1]}${ev.target.value}` : ev.target.value
-												}`
-											];
-
-											throttledSaveToDraft({ text: data });
-											updateSubjectField({ text: data });
-											onChange(data);
-											setInputValue(data);
-											toggleStickyTime();
-										}}
-									/>
-								</Container>
-							)}
-						/>
+						<Container background="gray6" height="fit">
+							<StyledComp.TextArea
+								data-testid="MailPlainTextEditor"
+								value={content.plainText}
+								style={{ fontFamily: defaultFontFamily }}
+								onFocus={(ev): void => {
+									ev.currentTarget.setSelectionRange(0, null);
+								}}
+								onChange={(ev): void => {
+									onContentChanged({
+										plainText: ev.target.value,
+										richText: plainTextToHTML(ev.target.value)
+									});
+									// // eslint-disable-next-line no-param-reassign
+									// ev.target.style.height = 'auto';
+									// // eslint-disable-next-line no-param-reassign
+									// ev.target.style.height = `${25 + ev.target.scrollHeight}px`;
+									// const data: [string, string] = [
+									// 	ev.target.value,
+									// 	`${editor?.text[1] ? `${editor.text[1]}${ev.target.value}` : ev.target.value}`
+									// ];
+									//
+									// throttledSaveToDraft({ text: data });
+									// updateSubjectField({ text: data });
+									// onChange(data);
+									// setInputValue(data);
+									// toggleStickyTime();
+								}}
+							/>
+						</Container>
 					)}
-					{draftSavedAt && showStickyTime && (
-						<StyledComp.StickyTimeContainer>
-							<StyledComp.StickyTime>
-								<Row
-									crossAlignment="flex-end"
-									background="gray5"
-									padding={{ vertical: 'medium', horizontal: 'large' }}
-								>
-									<Text size="extrasmall" color="secondary">
-										{t('message.email_saved_at', {
-											time: draftSavedAt,
-											defaultValue: 'Email saved as draft at {{time}}'
-										})}
-									</Text>
-								</Row>
-							</StyledComp.StickyTime>
-						</StyledComp.StickyTimeContainer>
-					)}
-					<StyledComp.Divider />
+					{/* {draftSavedAt && showStickyTime && ( */}
+					{/*	<StyledComp.StickyTimeContainer> */}
+					{/*		<StyledComp.StickyTime> */}
+					{/*			<Row */}
+					{/*				crossAlignment="flex-end" */}
+					{/*				background="gray5" */}
+					{/*				padding={{ vertical: 'medium', horizontal: 'large' }} */}
+					{/*			> */}
+					{/*				<Text size="extrasmall" color="secondary"> */}
+					{/*					{t('message.email_saved_at', { */}
+					{/*						time: draftSavedAt, */}
+					{/*						defaultValue: 'Email saved as draft at {{time}}' */}
+					{/*					})} */}
+					{/*				</Text> */}
+					{/*			</Row> */}
+					{/*		</StyledComp.StickyTime> */}
+					{/*	</StyledComp.StickyTimeContainer> */}
+					{/* )} */}
 				</Container>
 			)}
 		</>
 	);
 };
-
-export default TextEditorContainer;

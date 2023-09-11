@@ -3,14 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { getBridgedFunctions, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
-import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { modifyOutgoingFilterRules } from '../../../../../store/actions/modify-filter-rules';
+import type { FilterActions } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
 import ModalFooter from '../create-filter-modal-footer';
@@ -18,7 +21,6 @@ import DefaultCondition from '../create-filters-conditions/default';
 import FilterTestConditionRow from '../filter-test-condition-row';
 import { findRowKey, getTestComponent } from '../get-test-component';
 import FilterActionConditions from '../new-filter-action-conditions';
-import type { FilterActions } from '../../../../../types';
 import { getButtonInfo } from '../utils';
 
 type FilterType = {

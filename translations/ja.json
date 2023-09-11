@@ -364,7 +364,6 @@
         "edit_schedule_warning": "このメールを編集すると、以前に設定された遅延送信の日時がリセットされます。",
         "cal_name_exist_warning": "同じ名前のカレンダーがこのパスにすでに存在しています",
         "extra_windows": {
-            "": "操作を完了するには、Carbonioで新しいウィンドウを開く必要があります。\nブラウザの設定を確認してください",
             "opening_blocked": "操作を完了するには、Carbonioで新しいウィンドウを開く必要があります。\nブラウザの設定を確認してください",
             "popup_blocked": "操作を完了するには、Carbonioで新しいウィンドウを開く必要があります。\nブラウザの設定を確認してください"
         }
@@ -450,8 +449,7 @@
         "schedule_time": "{{date}}、{{time}}",
         "schedule_mail": "送信予定日: {{date}} {{time}}",
         "delete_attachment_message1": "添付ファイルが Carbonio から完全に削除されます。",
-        "delete_attachment_message2": "事前にダウンロードしますか？",
-        "": "操作を完了するには、Carbonioで新しいウィンドウを開く必要があります。\nブラウザの設定を確認してください"
+        "delete_attachment_message2": "事前にダウンロードしますか？"
     },
     "settings": {
         "label": {

@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
+import { SaveDraftResponse } from '../soap';
 
 export type IncompleteMessage = {
 	id: string;
@@ -84,8 +86,16 @@ export type MailMessage = IncompleteMessage & {
  * Parameters' type for the SendMsgRequest API command
  */
 export type SendMsgParameters = {
-	editorId: string;
+	editor: MailsEditorV2;
 	msg?: MailMessage;
 	message?: MailMessage;
 	prefs?: PrefsType;
+};
+
+export type SendMsgResult = {
+	response:
+		| SaveDraftResponse
+		| (SaveDraftResponse['Fault'] & {
+				error: true;
+		  });
 };
