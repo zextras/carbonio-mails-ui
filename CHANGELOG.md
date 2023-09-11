@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.6...v1.6.7) (2023-09-11)
+
+
+### Bug Fixes
+
+* advanced search pass wrong value in folder chip ([703991e](https://github.com/zextras/carbonio-mails-ui/commit/703991ec3b0fa3ab3895f8405056981b5add6ad8))
+
 ### [1.6.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.5...v1.6.6) (2023-09-11)
 
 
