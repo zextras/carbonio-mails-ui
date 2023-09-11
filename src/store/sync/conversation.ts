@@ -50,7 +50,7 @@ export const handleCreatedMessagesInConversationsReducer = (
 				msg.l === FOLDERS.DRAFTS
 					? conversation.date
 					: (last(sortBy(filter(messages, { parent: state.currentFolder }), 'date')) as ConvMessage)
-							.date;
+							?.date;
 
 			const conv = {
 				[msg.cid]: {
