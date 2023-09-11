@@ -6,7 +6,7 @@
 import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
 
 import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
-import { FOLDERS, useCurrentRoute, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, find, map, sortBy } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -27,31 +27,18 @@ const MessagesComponent = ({
 }: {
 	conversation: Conversation | undefined;
 }): ReactElement => {
-	const { conversationId, folderId } = useParams<{ conversationId: string; folderId: string }>();
+	const { conversationId } = useParams<{ conversationId: string }>();
 	const settings = useUserSettings();
 	const messages = useAppSelector(selectMessages);
 	const conversationStatus = useAppSelector(selectCurrentFolderExpandedStatus)[conversationId];
-	const activeRoute = useCurrentRoute();
 	const convMessages = useMemo(() => {
-		const msgs =
-			folderId !== FOLDERS.TRASH && activeRoute && activeRoute.id !== 'search'
-				? map(
-						filter(conversation?.messages, (m) => m.parent !== FOLDERS.TRASH),
-						(item) => messages[item.id] ?? item
-				  )
-				: map(conversation?.messages, (item) => messages[item.id] ?? item);
+		const msgs = map(conversation?.messages, (item) => messages[item.id] ?? item);
 
 		if (settings.prefs.zimbraPrefConversationOrder === 'dateAsc' && msgs?.length > 0) {
 			return sortBy(msgs, [(o): string | number => o.date]);
 		}
 		return msgs ?? [];
-	}, [
-		folderId,
-		activeRoute,
-		conversation?.messages,
-		settings.prefs.zimbraPrefConversationOrder,
-		messages
-	]);
+	}, [conversation?.messages, settings.prefs.zimbraPrefConversationOrder, messages]);
 
 	const expand = useCallback(
 		(message, index) => {
