@@ -9,6 +9,7 @@ import { ChipInput, Container, CustomModal } from '@zextras/carbonio-design-syst
 import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
+import { isSharedAccountFolder } from '../../../helpers/folders';
 import type { ChipOnAdd, TagFolderRowProps } from '../../../types';
 import { SelectFolderModal } from '../../sidebar/select-folder-modal';
 import { getFolderIconColor } from '../../sidebar/utils';
@@ -90,7 +91,7 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 					avatarBackground: getFolderIconColor(folderDestination),
 					avatarIcon: 'FolderOutline',
 					isQueryFilter: true,
-					value: folderDestination.id.includes(':')
+					value: isSharedAccountFolder(folderDestination.id)
 						? `inid:"${folderDestination.id}"`
 						: `in:"${folderDestination?.absFolderPath}"`
 				}
