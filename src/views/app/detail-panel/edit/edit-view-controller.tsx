@@ -195,7 +195,7 @@ const EditViewController: FC = () => {
 		if (isMessageLoadingRequired && !!id) {
 			messagesStoreDispatch(getMsg({ msgId: id }));
 		}
-	});
+	}, [id, isMessageLoadingRequired, messagesStoreDispatch]);
 
 	return isMessageLoadingRequired ? (
 		<Button loading disabled label="" type="ghost" onClick={noop} />
