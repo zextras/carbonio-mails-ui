@@ -3,15 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, useCallback, useEffect } from 'react';
+import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 
+import { Button } from '@zextras/carbonio-design-system';
 import {
 	updateBoardContext,
-	useBoard,
-	useUserAccount,
-	useUserSettings,
 	closeBoard,
 	t,
+	useBoard,
 	useBoardHooks
 } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
@@ -22,7 +21,7 @@ import { CLOSE_BOARD_REASON, EditViewActions } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
 import { getMsg } from '../../../../store/actions';
-import { selectMessages } from '../../../../store/messages-slice';
+import { selectMessage } from '../../../../store/messages-slice';
 import {
 	addEditor,
 	deleteEditor,
@@ -31,12 +30,8 @@ import {
 	useEditorSubject
 } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
-import type {
-	CloseBoardReasons,
-	EditViewActionsType,
-	EditViewBoardContext,
-	MailMessage
-} from '../../../../types';
+import { EditViewBoardContext } from '../../../../types';
+import type { CloseBoardReasons, EditViewActionsType, MailMessage } from '../../../../types';
 
 const parseAndValidateParams = (
 	action?: string,
@@ -51,26 +46,27 @@ const parseAndValidateParams = (
 	return { action: resultAction, id: resultId };
 };
 
+const isActionRequiringMessage = (action: EditViewActionsType): boolean =>
+	[
+		EditViewActions.REPLY,
+		EditViewActions.REPLY_ALL,
+		EditViewActions.FORWARD,
+		EditViewActions.EDIT_AS_NEW,
+		EditViewActions.EDIT_AS_DRAFT
+	].includes(action);
+
+type EditViewControllerCoreProps = {
+	action: EditViewActionsType;
+	entityId?: string;
+	message?: MailMessage;
+};
+
 const MemoizedEditView = memo(EditView);
 
-const EditViewController: FC = () => {
+const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entityId, message }) => {
 	const messagesStoreDispatch = useAppDispatch();
-	const account = useUserAccount();
-	const settings = useUserSettings();
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
-	const messages = useAppSelector(selectMessages);
-
-	// TODO check why the useQueryParams triggers 2 renders
-	let { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
-
-	if (action === EditViewActions.REPLY && !!id && !messages?.[id]?.isComplete) {
-		messagesStoreDispatch(getMsg({ msgId: id }));
-	}
-
-	// TODO do fancy stuff with it ;)
-	const compositionData = board.context?.compositionData;
-
 	/*
 	 * If the current component is running inside a board
 	 * its context is examined to get an existing editor id
@@ -83,21 +79,15 @@ const EditViewController: FC = () => {
 	const existingEditorId = board.context?.editorId;
 	if (existingEditorId) {
 		action = EditViewActions.RESUME;
-		id = existingEditorId;
-	}
-
-	let message;
-	if (id) {
-		message = messages?.[id] as MailMessage;
+		entityId = existingEditorId;
 	}
 
 	// Create or resume editor
+	const compositionData = board.context?.compositionData;
 	const editor = generateEditor({
 		action,
-		id,
+		id: entityId,
 		messagesStoreDispatch,
-		account,
-		settings,
 		message,
 		compositionData
 	});
@@ -177,5 +167,40 @@ const EditViewController: FC = () => {
 	}, [draftId]);
 
 	return <MemoizedEditView editorId={editor.id} closeController={onClose} />;
+};
+
+const MemoizedEditViewControllerCore = memo(EditViewControllerCore);
+
+const EditViewController: FC = () => {
+	const messagesStoreDispatch = useAppDispatch();
+
+	// TODO check why the useQueryParams triggers 2 renders
+	const { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
+
+	const isMessageRequired = useMemo<boolean>(
+		(): boolean => isActionRequiringMessage(action) && !!id,
+		[action, id]
+	);
+
+	const message = useAppSelector((state) =>
+		isMessageRequired && id ? selectMessage(state, id) : undefined
+	);
+
+	const isMessageLoadingRequired = useMemo<boolean>(
+		(): boolean => isMessageRequired && !message?.isComplete,
+		[isMessageRequired, message?.isComplete]
+	);
+
+	useEffect(() => {
+		if (isMessageLoadingRequired && !!id) {
+			messagesStoreDispatch(getMsg({ msgId: id }));
+		}
+	});
+
+	return isMessageLoadingRequired ? (
+		<Button loading disabled label="" type="ghost" onClick={noop} />
+	) : (
+		<MemoizedEditViewControllerCore entityId={id} action={action} message={message} />
+	);
 };
 export default EditViewController;

@@ -288,6 +288,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 	// FIXME use a subscription to the store update
 	computeAndUpdateEditorStatus(editorId);
 };
+
 const delay = getDraftSaveDelay();
 const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, delay);
 

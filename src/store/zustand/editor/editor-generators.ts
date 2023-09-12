@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, AccountSettings, t } from '@zextras/carbonio-shell-ui';
+import { getUserAccount, t } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
 
 import { buildSavedAttachments, replaceCidUrlWithServiceUrl } from './editor-transformations';
@@ -149,11 +149,10 @@ export const generateIntegratedNewEditor = (
  */
 export const generateReplyAndReplyAllMsgEditor = (
 	messagesStoreDispatch: AppDispatch,
-	account: Account,
-	settings: AccountSettings,
 	originalMessage: MailMessage,
 	action: EditViewActionsType
 ): MailsEditorV2 => {
+	const account = getUserAccount();
 	const editorId = uuid();
 	const savedInlineAttachments = filterSavedInlineAttachment(
 		buildSavedAttachments(originalMessage)
@@ -214,8 +213,6 @@ export const generateReplyAndReplyAllMsgEditor = (
  */
 export const generateForwardMsgEditor = (
 	messagesStoreDispatch: AppDispatch,
-	account: Account,
-	settings: AccountSettings,
 	originalMessage: MailMessage
 ): MailsEditorV2 => {
 	const editorId = uuid();
@@ -266,8 +263,6 @@ export const generateForwardMsgEditor = (
 
 export const generateEditAsDraftEditor = (
 	messagesStoreDispatch: AppDispatch,
-	account: Account,
-	settings: AccountSettings,
 	originalMessage: MailMessage
 ): MailsEditorV2 => {
 	const editorId = uuid();
@@ -307,8 +302,6 @@ export const generateEditAsDraftEditor = (
 
 export const generateEditAsNewEditor = (
 	messagesStoreDispatch: AppDispatch,
-	account: Account,
-	settings: AccountSettings,
 	originalMessage: MailMessage
 ): MailsEditorV2 => {
 	const editorId = uuid();
@@ -360,9 +353,7 @@ export type GenerateEditorParams = {
 	action: EditViewActionsType;
 	id?: string;
 	messagesStoreDispatch: AppDispatch;
-	account: Account;
-	settings: AccountSettings;
-	message?: MailMessage | undefined;
+	message?: MailMessage | null;
 	compositionData?: EditorPrefillData;
 };
 
@@ -371,16 +362,12 @@ export type GenerateEditorParams = {
  * @param action
  * @param id
  * @param messagesStoreDispatch
- * @param account
- * @param settings
- * @param messages
+ * @param message
  */
 export const generateEditor = ({
 	action,
 	id,
 	messagesStoreDispatch,
-	account,
-	settings,
 	message,
 	compositionData
 }: GenerateEditorParams): MailsEditorV2 | null => {
@@ -398,13 +385,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a reply editor without a message id');
 			}
 			if (message) {
-				return generateReplyAndReplyAllMsgEditor(
-					messagesStoreDispatch,
-					account,
-					settings,
-					message,
-					action
-				);
+				return generateReplyAndReplyAllMsgEditor(messagesStoreDispatch, message, action);
 			}
 			break;
 		case EditViewActions.REPLY_ALL:
@@ -413,13 +394,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a reply all editor without a message id');
 			}
 			if (message) {
-				return generateReplyAndReplyAllMsgEditor(
-					messagesStoreDispatch,
-					account,
-					settings,
-					message,
-					action
-				);
+				return generateReplyAndReplyAllMsgEditor(messagesStoreDispatch, message, action);
 			}
 			break;
 		case EditViewActions.FORWARD:
@@ -428,7 +403,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a forward editor without a message id');
 			}
 			if (message) {
-				return generateForwardMsgEditor(messagesStoreDispatch, account, settings, message);
+				return generateForwardMsgEditor(messagesStoreDispatch, message);
 			}
 			break;
 		case EditViewActions.EDIT_AS_DRAFT:
@@ -437,7 +412,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a draft editor without a message id');
 			}
 			if (message) {
-				return generateEditAsDraftEditor(messagesStoreDispatch, account, settings, message);
+				return generateEditAsDraftEditor(messagesStoreDispatch, message);
 			}
 			break;
 		case EditViewActions.EDIT_AS_NEW:
@@ -446,7 +421,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate an edit as new editor without a message id');
 			}
 			if (message) {
-				return generateEditAsNewEditor(messagesStoreDispatch, account, settings, message);
+				return generateEditAsNewEditor(messagesStoreDispatch, message);
 			}
 			break;
 		case EditViewActions.MAIL_TO:
@@ -460,3 +435,13 @@ export const generateEditor = ({
 
 	return null;
 };
+//
+// export const useGenerateEditor = ({
+// 	action,
+// 	id,
+// 	compositionData
+// }: Omit<GenerateEditorParams, 'message' | 'messagesStoreDispatch'>): MailsEditorV2 | null => {
+// 	const messagesStoreDispatch = useAppDispatch();
+// 	const message = use;
+// 	return generateEditor({ action, id, messagesStoreDispatch, message });
+// };
