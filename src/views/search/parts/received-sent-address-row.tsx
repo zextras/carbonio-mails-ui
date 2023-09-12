@@ -91,6 +91,9 @@ const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): 
 				label: /^from:*/.test(contact.fullName || contact.label)
 					? contact.fullName || contact.label
 					: `from:${contact.fullName || contact.label}`,
+				fullName: /^to:*/.test(contact.fullName || contact.label)
+					? contact.fullName || contact.label
+					: `to:${contact.fullName || contact.label}`,
 				value: /^from:*/.test(contact.email || contact.value)
 					? contact.email || contact.value
 					: `from:${contact.email}`
@@ -107,7 +110,10 @@ const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): 
 				avatarIcon: 'EmailOutline',
 				isGeneric: false,
 				isQueryFilter: true,
-				label: /^to:*/.test(contact.fullName || contact.label)
+				label: /^from:*/.test(contact.fullName || contact.label)
+					? contact.fullName || contact.label
+					: `from:${contact.fullName || contact.label}`,
+				fullName: /^to:*/.test(contact.fullName || contact.label)
 					? contact.fullName || contact.label
 					: `to:${contact.fullName || contact.label}`,
 				value: /^to:*/.test(contact.email || contact.value)
