@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { useMemo } from 'react';
+
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { sortBy } from 'lodash';
-import { useMemo } from 'react';
+
 import { getRootsArray, useRootsArray } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { Folder } from '../carbonio-ui-commons/types/folder';
 import { getFolderIdParts } from '../helpers/folders';
@@ -19,11 +21,12 @@ import { getFolderIdParts } from '../helpers/folders';
  * @returns the sorting criteria
  */
 export const getSortCriteria = (folder: Folder): string => {
-	const { id } = getFolderIdParts(folder.id);
+	const { id, zid } = getFolderIdParts(folder.id);
+	const isSharedFolder = !!zid;
 	if (id === FOLDERS.TRASH) {
 		return FOLDERS.LAST_SYSTEM_FOLDER_POSITION;
 	}
-	return parseInt(id ?? '', 10) < 17 ? `   ${id}` : folder.name.toLowerCase();
+	return parseInt(id ?? '', 10) < 17 && !isSharedFolder ? `   ${id}` : folder.name.toLowerCase();
 };
 
 /**

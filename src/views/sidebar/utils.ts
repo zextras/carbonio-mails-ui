@@ -6,6 +6,7 @@
 import { type AccordionItemType } from '@zextras/carbonio-design-system';
 import { FOLDERS, ROOT_NAME, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
+
 import {
 	type AccordionFolder,
 	type Folder,
@@ -96,61 +97,6 @@ export const getFolderIconColor = (f: Folder | AccordionItemType): string => {
 	return ZIMBRA_STANDARD_COLORS[0].hex;
 };
 
-export const getFolderIconNameForAccordionFolder = (folder: AccordionFolder): string | null => {
-	const systemFolders = [
-		FOLDERS.USER_ROOT,
-		FOLDERS.INBOX,
-		FOLDERS.TRASH,
-		FOLDERS.DRAFTS,
-		FOLDERS.SPAM,
-		FOLDERS.SENT
-	];
-
-	if (
-		folder.id === FOLDERS.USER_ROOT ||
-		('oname' in folder.folder && folder.folder?.oname === ROOT_NAME)
-	) {
-		return null;
-	}
-
-	if (folder.id && systemFolders.includes(folder.id)) {
-		switch (folder.id) {
-			case FOLDERS.INBOX:
-				return 'InboxOutline';
-			case FOLDERS.DRAFTS:
-				return 'FileOutline';
-			case FOLDERS.SENT:
-				return 'PaperPlaneOutline';
-			case FOLDERS.SPAM:
-				return 'SlashOutline';
-			case FOLDERS.TRASH:
-				return 'Trash2Outline';
-			default:
-				return 'FolderOutline';
-		}
-	}
-	if (
-		folder.id?.charAt(folder.id.length - 2) === ':' &&
-		systemFolders.includes(folder.id.slice(-1))
-	) {
-		switch (folder.id.slice(-1)) {
-			case FOLDERS.INBOX:
-				return 'InboxOutline';
-			case FOLDERS.DRAFTS:
-				return 'FileOutline';
-			case FOLDERS.SENT:
-				return 'PaperPlaneOutline';
-			case FOLDERS.SPAM:
-				return 'SlashOutline';
-			case FOLDERS.TRASH:
-				return 'Trash2Outline';
-			default:
-				return 'FolderOutline';
-		}
-	}
-	return 'FolderOutline';
-};
-
 export const getFolderIconName = (folder: Folder | AccordionItemType): string | null => {
 	const systemFolders = [
 		FOLDERS.USER_ROOT,
@@ -188,20 +134,7 @@ export const getFolderIconName = (folder: Folder | AccordionItemType): string | 
 		folder.id?.charAt(folder.id.length - 2) === ':' &&
 		systemFolders.includes(folder.id.slice(-1))
 	) {
-		switch (folder.id.slice(-1)) {
-			case FOLDERS.INBOX:
-				return 'InboxOutline';
-			case FOLDERS.DRAFTS:
-				return 'FileOutline';
-			case FOLDERS.SENT:
-				return 'PaperPlaneOutline';
-			case FOLDERS.SPAM:
-				return 'SlashOutline';
-			case FOLDERS.TRASH:
-				return 'Trash2Outline';
-			default:
-				return 'FolderOutline';
-		}
+		return 'FolderOutline';
 	}
 	return 'FolderOutline';
 };
