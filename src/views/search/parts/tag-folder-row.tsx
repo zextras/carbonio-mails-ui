@@ -3,10 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+
 import { ChipInput, Container, CustomModal } from '@zextras/carbonio-design-system';
 import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+
+import { isSharedAccountFolder } from '../../../helpers/folders';
 import type { ChipOnAdd, TagFolderRowProps } from '../../../types';
 import { SelectFolderModal } from '../../sidebar/select-folder-modal';
 import { getFolderIconColor } from '../../sidebar/utils';
@@ -88,7 +91,9 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 					avatarBackground: getFolderIconColor(folderDestination),
 					avatarIcon: 'FolderOutline',
 					isQueryFilter: true,
-					value: `in:"${folderDestination?.absFolderPath}"`
+					value: isSharedAccountFolder(folderDestination.id)
+						? `inid:"${folderDestination.id}"`
+						: `in:"${folderDestination?.absFolderPath}"`
 				}
 			]);
 			_onClose();

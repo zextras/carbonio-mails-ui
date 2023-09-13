@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.6.6",
+	"version": "1.6.8",
 	"description": "Mails module",
 	"main": "src/app.jsx",
 	"engines": {

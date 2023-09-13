@@ -14,10 +14,10 @@ import {
 } from './editor-utils';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import {
-	CIDURL_REGEX,
 	composeAttachmentDownloadUrl,
 	extractContentIdInnerPart,
 	getAttachmentParts,
+	getCidFromCidUrl,
 	isCidUrl,
 	isContentIdEqual,
 	isDownloadServicedUrl
@@ -48,11 +48,10 @@ export const convertCidUrlToServiceUrl = (
 	cidUrl: string,
 	savedInlineAttachments: Array<SavedAttachment>
 ): string => {
-	const cidUrlTokens = new RegExp(CIDURL_REGEX, 'gi').exec(cidUrl);
-	if (!cidUrlTokens) {
+	const cid = getCidFromCidUrl(cidUrl);
+	if (!cid) {
 		return cidUrl;
 	}
-	const cid = cidUrlTokens[1];
 	const referredAttachment = reduce<SavedAttachment, SavedAttachment | null>(
 		savedInlineAttachments,
 		(result, attachment) =>

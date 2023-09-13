@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.8](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.7...v1.6.8) (2023-09-11)
+
+
+### Bug Fixes
+
+* progress save ([06138a9](https://github.com/zextras/carbonio-mails-ui/commit/06138a960f991eb72a4ac57e4998b05b7b9e1699))
+* recognize inline attachment without content disposition ([c2ce311](https://github.com/zextras/carbonio-mails-ui/commit/c2ce311eae0b6da53e7fc49bf23837ef79ad88bb))
+
+### [1.6.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.6...v1.6.7) (2023-09-11)
+
+
+### Bug Fixes
+
+* advanced search pass wrong value in folder chip ([703991e](https://github.com/zextras/carbonio-mails-ui/commit/703991ec3b0fa3ab3895f8405056981b5add6ad8))
+
 ### [1.6.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.5...v1.6.6) (2023-09-11)
 
 
