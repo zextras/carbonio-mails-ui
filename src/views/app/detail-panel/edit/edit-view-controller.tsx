@@ -5,7 +5,7 @@
  */
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 
-import { Button } from '@zextras/carbonio-design-system';
+import { Button, Container } from '@zextras/carbonio-design-system';
 import {
 	updateBoardContext,
 	closeBoard,
@@ -171,6 +171,10 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 
 const MemoizedEditViewControllerCore = memo(EditViewControllerCore);
 
+/**
+ * Get and parse the parameters. Get the original message if it is needed
+ * @constructor
+ */
 const EditViewController: FC = () => {
 	const messagesStoreDispatch = useAppDispatch();
 
@@ -191,6 +195,10 @@ const EditViewController: FC = () => {
 		[isMessageRequired, message?.isComplete]
 	);
 
+	/**
+	 * Load the original message if it's required and is not
+	 * in the store or is not complete
+	 */
 	useEffect(() => {
 		if (isMessageLoadingRequired && !!id) {
 			messagesStoreDispatch(getMsg({ msgId: id }));
@@ -198,7 +206,9 @@ const EditViewController: FC = () => {
 	}, [id, isMessageLoadingRequired, messagesStoreDispatch]);
 
 	return isMessageLoadingRequired ? (
-		<Button loading disabled label="" type="ghost" onClick={noop} />
+		<Container>
+			<Button loading disabled label="" type="ghost" onClick={noop} />
+		</Container>
 	) : (
 		<MemoizedEditViewControllerCore entityId={id} action={action} message={message} />
 	);
