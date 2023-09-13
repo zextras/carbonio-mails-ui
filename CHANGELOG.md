@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.10](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.9...v1.6.10) (2023-09-13)
+
+
+### Bug Fixes
+
+* editor generate fail on draft double click ([b3e72f8](https://github.com/zextras/carbonio-mails-ui/commit/b3e72f819ff6e40d6ec81f2d15256bae2b07cea2))
+* **Editor:** align the editor loader ([2881ea3](https://github.com/zextras/carbonio-mails-ui/commit/2881ea3f8fc36b04804d8c4ea69129721ddcc239))
+* **editor:** avoid errors during the editor creation if the referred message is not in the store ([c2f9a35](https://github.com/zextras/carbonio-mails-ui/commit/c2f9a35b36bf31eecbca20cf85b44a5c0e4f6675))
+* **editor:** avoid errors during the editor creation if the referred message is not in the store ([cb79796](https://github.com/zextras/carbonio-mails-ui/commit/cb79796634e35d6bce16f24d75d24e37c14a10f0))
+
 ### [1.6.9](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.8...v1.6.9) (2023-09-13)
 
 
