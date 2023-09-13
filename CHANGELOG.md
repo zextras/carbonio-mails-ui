@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.9](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.8...v1.6.9) (2023-09-13)
+
+
+### Bug Fixes
+
+* filtering From and To will display correctly the chips ([a3b3219](https://github.com/zextras/carbonio-mails-ui/commit/a3b321991da3a640f7066d0dbda42ac08b6a73b8))
+
 ### [1.6.8](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.7...v1.6.8) (2023-09-11)
 
 
