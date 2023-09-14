@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, memo, useCallback, useMemo } from 'react';
+
 import {
 	Badge,
 	Container,
@@ -24,12 +26,12 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
-import React, { FC, memo, useCallback, useMemo } from 'react';
+
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions, MAILS_ROUTE } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
-import type { MessageListItemProps, TextReadValuesType } from '../../../../types';
+import type { BoardContext, MessageListItemProps, TextReadValuesType } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
@@ -69,15 +71,14 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 			if (!e.isDefaultPrevented()) {
 				const { id, isDraft } = item;
 				if (isDraft) {
-					addBoard({
-						url: `${MAILS_ROUTE}/edit/${id}?action=${EditViewActions.EDIT_AS_DRAFT}`,
-						context: { mailId: id, folderId: firstChildFolderId },
+					addBoard<BoardContext>({
+						url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${id}`,
 						title: ''
 					});
 				}
 			}
 		},
-		[firstChildFolderId, item]
+		[item]
 	);
 
 	const accounts = useUserAccounts();

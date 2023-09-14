@@ -56,8 +56,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	const urlConverter = useEditorInlineUrlConverter(editorId);
 
 	const composerCustomOptions = {
-		toolbar_sticky: false,
-		convert_url: true
+		toolbar_sticky: false
+		// newline_behavior: 'default'
 		// urlconverter_callback: (url: string): string => urlConverter(url)
 	};
 
