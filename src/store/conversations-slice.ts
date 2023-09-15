@@ -7,7 +7,7 @@
 
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state", "conversation", "message", "cache"] }] */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
 
@@ -216,9 +216,8 @@ export const {
 } = conversationsSlice.actions;
 export const conversationsSliceReducer = conversationsSlice.reducer;
 
-export function selectConversations({ conversations }: MailsStateType): Record<string, any> {
-	return conversations?.conversations;
-}
+const selectConversationsSlice = (state: MailsStateType): MailsStateType['conversations'] =>
+	state.conversations;
 
 export function selectCurrentFolderExpandedStatus({
 	conversations
@@ -244,9 +243,10 @@ export function selectConversationStatus(state: MailsStateType): ConversationsFo
 export function selectSearchedFolder({ conversations }: MailsStateType, id: string): string {
 	return conversations?.searchedInFolder?.[id];
 }
-export function selectConversationsArray({ conversations }: MailsStateType): Array<Conversation> {
-	return Object.values(conversations?.conversations ?? []);
-}
+
+export const selectConversationsArray = createSelector([selectConversationsSlice], (slice) =>
+	Object.values(slice.conversations ?? [])
+);
 
 export function selectConversation({ conversations }: MailsStateType, id: string): Conversation {
 	return conversations?.conversations?.[id] ?? {};

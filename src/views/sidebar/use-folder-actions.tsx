@@ -3,11 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { SyntheticEvent, useContext, useMemo } from 'react';
+
 import { ModalManagerContext } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { noop, startsWith } from 'lodash';
-import React, { SyntheticEvent, useContext, useMemo } from 'react';
+
+import { DeleteModal } from './delete-modal';
+import { EditModal } from './edit-modal';
+import EditPermissionsModal from './edit-permissions-modal';
+import { EmptyModal } from './empty-modal';
+import { NewModal } from './new-modal';
+import { SelectFolderModal } from './select-folder-modal';
+import { SharesInfoModal } from './shares-info-modal';
+import { FolderActionsType } from '../../carbonio-ui-commons/constants/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/utils';
 import { getFolderIdParts } from '../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
@@ -16,15 +27,6 @@ import { selectMessagesArray } from '../../store/messages-slice';
 import { StoreProvider } from '../../store/redux';
 import { AppContext } from '../../types';
 import MoveConvMessage from '../../ui-actions/move-conv-msg';
-import { DeleteModal } from './delete-modal';
-import { EditModal } from './edit-modal';
-import EditPermissionsModal from './edit-permissions-modal';
-import { EmptyModal } from './empty-modal';
-import { NewModal } from './new-modal';
-import { SharesInfoModal } from './shares-info-modal';
-import { SelectFolderModal } from './select-folder-modal';
-import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/utils';
-import { FolderActionsType } from '../../carbonio-ui-commons/constants/folders';
 
 type FolderActionsProps = {
 	id: string;
