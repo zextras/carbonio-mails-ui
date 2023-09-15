@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React, { FC, ReactElement, useCallback, useState } from 'react';
+
 import {
 	Avatar,
 	Collapse,
@@ -18,10 +20,10 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { FOLDERS, useLocalStorage, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
-import React, { FC, ReactElement, useCallback, useState } from 'react';
 import styled from 'styled-components';
+
 import { StaticBreadcrumbs } from '../../../../carbonio-ui-commons/components/breadcrumbs/static-breadcrumbs';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import { isRoot } from '../../../../helpers/folders';
@@ -158,7 +160,6 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 	const account = useUserAccount();
 
 	const rootLabel = folder.id === FOLDERS.USER_ROOT ? account.name : folder.name;
-
 	const toggleOpen = useCallback(
 		(e: KeyboardEvent | React.SyntheticEvent) => {
 			e.stopPropagation();
@@ -170,28 +171,26 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 		[onOpenStatusChange]
 	);
 
-	const forceOpen = useCallback(
+	const onClick = useCallback(
 		(e: KeyboardEvent | React.SyntheticEvent) => {
 			e.stopPropagation();
 			if (!open) {
 				setOpen(true);
 			}
-		},
-		[open]
-	);
 
+			onFolderSelected && onFolderSelected(folder);
+		},
+		[open, onFolderSelected, folder]
+	);
 	return (
-		<RootAccordion
-			width="fill"
-			data-testid={`folder-accordion-root-${folder.id}`}
-			onClick={forceOpen}
-		>
+		<RootAccordion width="fill" data-testid={`folder-accordion-root-${folder.id}`}>
 			<Container
 				orientation="horizontal"
 				width="fill"
 				height="fit"
 				mainAlignment="space-between"
 				padding={'small'}
+				onClick={onClick}
 			>
 				<Container orientation="horizontal" width="fill" mainAlignment="flex-start">
 					<Padding horizontal="small">
