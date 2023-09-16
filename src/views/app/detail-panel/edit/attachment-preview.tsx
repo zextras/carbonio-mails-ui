@@ -27,14 +27,14 @@ import {
 import {
 	getEditor,
 	useEditorAttachments,
-	useEditorSubject,
-	useEditorUploadProcess
+	useEditorSubject
 } from '../../../../store/zustand/editor';
 import {
 	isAttachmentUploading,
 	isSavedAttachment,
 	isUnsavedAttachment
 } from '../../../../store/zustand/editor/editor-utils';
+import { useEditorUploadProcess } from '../../../../store/zustand/editor/hooks/updload';
 import StyledWrapper from '../../../../styled-wrapper';
 import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../types';
 import { getAttachmentsLink } from '../preview/utils';

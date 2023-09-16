@@ -5,6 +5,7 @@
  */
 
 import axios from 'axios';
+import { map, remove } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import { convertToDecimal } from '../../commons/utilities';
@@ -17,20 +18,27 @@ function parse(str: string): Array<Array<{ aid: string }>> {
 }
 
 export type UploadCallbacks = {
-	onUploadProgress?: (uploadId: string, percentage: number) => void;
-	onUploadComplete?: (uploadId: string, attachmentId: string) => void;
-	onUploadError?: (uploadId: string, error: string) => void;
+	onUploadProgress?: (file: File, uploadId: string, percentage: number) => void;
+	onUploadComplete?: (file: File, uploadId: string, attachmentId: string) => void;
+	onUploadError?: (file: File, uploadId: string, error: string) => void;
 };
 
-export type AttachmentUploadOptions = UploadCallbacks | Record<string, never>;
+export type UploadAttachmentOptions = UploadCallbacks;
+
+export type UploadAttachmentsOptions = UploadCallbacks & {
+	onUploadsEnd?: (completedUploadsId: Array<string>, failedUploadsId: Array<string>) => void;
+};
+
+export type UploadAttachmentResult = {
+	file: File;
+	uploadId: string;
+	abortController: AbortController;
+};
 
 export const uploadAttachment = (
 	file: File,
-	{ onUploadProgress, onUploadComplete, onUploadError }: AttachmentUploadOptions
-): {
-	uploadId: string;
-	abortController: AbortController;
-} => {
+	options?: UploadAttachmentOptions
+): UploadAttachmentResult => {
 	const uploadId: string = uuid();
 	const abortController = new AbortController();
 
@@ -46,7 +54,7 @@ export const uploadAttachment = (
 				const { loaded, total } = progressEvent;
 				const percent = total ? Math.round((loaded * 100) / total) : 0;
 				if (percent < 100) {
-					onUploadProgress && onUploadProgress(uploadId, percent);
+					options?.onUploadProgress && options?.onUploadProgress(file, uploadId, percent);
 				}
 			},
 			signal: abortController.signal
@@ -55,18 +63,68 @@ export const uploadAttachment = (
 		.then((txt) => parse(`[${txt}]`))
 		.then((val) => {
 			if (!val[2]) {
-				onUploadError && onUploadError(uploadId, 'The upload process returned no aid');
+				options?.onUploadError &&
+					options?.onUploadError(file, uploadId, 'The upload process returned no aid');
 				return;
 			}
 
-			onUploadComplete && onUploadComplete(uploadId, val[2][0].aid);
+			options?.onUploadComplete && options?.onUploadComplete(file, uploadId, val[2][0].aid);
 		})
 		.catch((reason) => {
-			onUploadError && onUploadError(uploadId, reason);
+			options?.onUploadError && options?.onUploadError(file, uploadId, reason);
 		});
 
 	return {
+		file,
 		uploadId,
 		abortController
 	};
+};
+
+export const uploadAttachments = (
+	files: Array<File>,
+	options?: UploadAttachmentsOptions
+): Array<UploadAttachmentResult> => {
+	const runningUploads: Array<string> = [];
+	const completedUploads: Array<string> = [];
+	const failedUploads: Array<string> = [];
+
+	const removeRunningUpload = (uploadId: string, reason: 'completed' | 'error'): void => {
+		const removedUploadId = remove(
+			runningUploads,
+			(runningUploadId) => runningUploadId === uploadId
+		)?.[0];
+
+		if (!removedUploadId) {
+			return;
+		}
+
+		reason === 'completed' && completedUploads.push(removedUploadId);
+		reason === 'error' && failedUploads.push(removedUploadId);
+
+		if (runningUploads.length === 0 && options?.onUploadsEnd) {
+			options.onUploadsEnd(completedUploads, failedUploads);
+		}
+	};
+
+	const customizedOptions: UploadAttachmentsOptions = {
+		...options,
+		onUploadComplete: (file, uploadId, attachmentId): void => {
+			options?.onUploadComplete && options.onUploadComplete(file, uploadId, attachmentId);
+			removeRunningUpload(uploadId, 'completed');
+		},
+		onUploadError: (file, uploadId, error): void => {
+			options?.onUploadError && options.onUploadError(file, uploadId, error);
+			removeRunningUpload(uploadId, 'error');
+		}
+	};
+
+	const uploadsInfo = map(files, (file) => uploadAttachment(file, customizedOptions));
+
+	// Populate the list of the running uploads
+	uploadsInfo.forEach((uploadInfo) => {
+		runningUploads.push(uploadInfo.uploadId);
+	});
+
+	return uploadsInfo;
 };

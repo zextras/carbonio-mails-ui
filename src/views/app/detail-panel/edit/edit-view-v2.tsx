@@ -44,6 +44,7 @@ import { TextEditorContainer, TextEditorContent } from './parts/text-editor-cont
 import WarningBanner from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { CLOSE_BOARD_REASON, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
+import { buildArrayFromFileList } from '../../../../helpers/files';
 import {
 	getAvailableAddresses,
 	getIdentitiesDescriptors,
@@ -103,7 +104,7 @@ export const EditView: FC<EditViewProp> = ({
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-	const { addStandardAttachment, addInlineAttachment, hasStandardAttachments } =
+	const { addStandardAttachments, addInlineAttachments, hasStandardAttachments } =
 		useEditorAttachments(editorId);
 
 	// console.count('*** render editview');
@@ -277,12 +278,11 @@ export const EditView: FC<EditViewProp> = ({
 	}, [requestReadReceipt, setRequestReadReceipt]);
 
 	const addFilesFromLocal = useCallback(
-		(files: FileList) => {
-			for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
-				addStandardAttachment(files[fileIndex], {});
-			}
+		(fileList: FileList) => {
+			const files = buildArrayFromFileList(fileList);
+			addStandardAttachments(files, {});
 		},
-		[addStandardAttachment]
+		[addStandardAttachments]
 	);
 
 	const addFilesFromFiles = useCallback((filesResponse) => {
@@ -314,16 +314,15 @@ export const EditView: FC<EditViewProp> = ({
 		(event: DragEvent): void => {
 			event.preventDefault();
 			setDropZoneEnabled(false);
-			const files = event?.dataTransfer?.files;
-			if (!files) {
+			const fileList = event?.dataTransfer?.files;
+			if (!fileList) {
 				return;
 			}
 
-			for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
-				addStandardAttachment(files[fileIndex], {});
-			}
+			const files = buildArrayFromFileList(fileList);
+			addStandardAttachments(files);
 		},
-		[addStandardAttachment]
+		[addStandardAttachments]
 	);
 
 	const onDragLeaveEvent = useCallback((event: DragEvent): void => {
@@ -387,16 +386,18 @@ export const EditView: FC<EditViewProp> = ({
 	);
 
 	const onFilesSelected = useCallback(
-		({ editor: tinymce, files }: FileSelectProps): void => {
-			// tinymce.activeEditor?.focus();
-			// const sel = tinymce.activeEditor?.selection?.getSel();
-			// const position = sel?.anchorNode.sel?.anchorOffset;
-			// console.log('**** position', position);
-			for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
-				addInlineAttachment(files[fileIndex]);
-			}
+		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
+			const files = buildArrayFromFileList(fileList);
+			addInlineAttachments(files, {
+				onSaveComplete: (inlineAttachments) => {
+					inlineAttachments.forEach((inlineAttachment) => {
+						const img = `&nbsp;<img pnsrc="${inlineAttachment.cidUrl}" data-mce-src="${inlineAttachment.cidUrl}" src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
+						tinymce?.activeEditor?.insertContent(img);
+					});
+				}
+			});
 		},
-		[addInlineAttachment]
+		[addInlineAttachments]
 	);
 
 	return (

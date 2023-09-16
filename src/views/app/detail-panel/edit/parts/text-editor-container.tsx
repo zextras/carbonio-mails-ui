@@ -12,7 +12,6 @@ import type { TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
 import { plainTextToHTML } from '../../../../../commons/mail-message-renderer';
-import { useEditorInlineUrlConverter } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
 
 export type TextEditorContent = { plainText: string; richText: string };
@@ -53,12 +52,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		[prefs]
 	);
 
-	const urlConverter = useEditorInlineUrlConverter(editorId);
-
 	const composerCustomOptions = {
 		toolbar_sticky: false
-		// newline_behavior: 'default'
-		// urlconverter_callback: (url: string): string => urlConverter(url)
 	};
 
 	// const [inputValue, setInputValue] = useState(editor?.text ?? ['', '']);

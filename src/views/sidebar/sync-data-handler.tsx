@@ -125,9 +125,7 @@ export const SyncDataHandler: FC = () => {
 								dispatch(handleNotifyModifiedSearchConversations(keyBy(conversations, 'id')));
 							}
 							if (notify.modified.m) {
-								const messages = map(notify.modified.m, (obj) =>
-									normalizeMailMessageFromSoap(obj, false)
-								);
+								const messages = map(notify.modified.m, (obj) => normalizeMailMessageFromSoap(obj));
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								dispatch(handleModifiedMessages(messages));

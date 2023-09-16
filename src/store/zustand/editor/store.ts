@@ -281,6 +281,15 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	addUnsavedAttachments: (id: MailsEditorV2['id'], attachments: Array<UnsavedAttachment>): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].unsavedAttachments.push(...attachments);
+				}
+			})
+		);
+	},
 	addSavedAttachment: (id: MailsEditorV2['id'], attachment: SavedAttachment): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
