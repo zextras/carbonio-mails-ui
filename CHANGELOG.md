@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.13](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.12...v1.6.13) (2023-09-18)
+
+
+### Bug Fixes
+
+* **editor:** change upload and save attachment logic ([1f8589c](https://github.com/zextras/carbonio-mails-ui/commit/1f8589c566639df1cf262fe71c6a2c7646246235))
+* **editor:** fix the src transformation for inline images ([7b06730](https://github.com/zextras/carbonio-mails-ui/commit/7b067307ce430934c2d6b9e1d89c410a17226ef1))
+
 ### [1.6.12](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.11...v1.6.12) (2023-09-15)
 
 
