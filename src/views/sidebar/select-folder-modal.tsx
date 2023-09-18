@@ -7,7 +7,7 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { isNil, some } from 'lodash';
+import { isNil } from 'lodash';
 
 import { FolderSelector } from './commons/folder-selector';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
@@ -41,16 +41,13 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 		confirmAction(folderDestination, setFolderDestination, onClose);
 	}, [confirmAction, folderDestination, onClose]);
 
-	const isInputDisabled = useMemo(
-		() =>
-			isNil(folderDestination) ||
-			folderDestination?.id === folder?.l ||
-			some(folderDestination?.children, ['name', folder?.name]),
-		[folder?.l, folder?.name, folderDestination]
+	const isConfirmDisabled = useMemo(
+		() => isNil(folderDestination) || folderDestination?.id === folder?.l,
+		[folder?.l, folderDestination]
 	);
 
 	const modalFooterTooltip =
-		isInputDisabled &&
+		isConfirmDisabled &&
 		t('label.folder_not_valid_destination', 'The selected folder is not a valid destination');
 
 	return (
@@ -86,7 +83,7 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 					secondaryAction={onClose}
 					label={actionLabel}
 					secondaryLabel={t('label.cancel', 'Cancel')}
-					disabled={isInputDisabled}
+					disabled={isConfirmDisabled}
 				/>
 			</Container>
 		</Container>
