@@ -385,7 +385,7 @@ export const EditView: FC<EditViewProp> = ({
 		[isUrgent, requestReadReceipt]
 	);
 
-	const onFilesSelected = useCallback(
+	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
 			const files = buildArrayFromFileList(fileList);
 			addInlineAttachments(files, {
@@ -521,7 +521,7 @@ export const EditView: FC<EditViewProp> = ({
 
 					<MemoizedTextEditorContainer
 						onDragOver={onDragOverEvent}
-						onFilesSelected={onFilesSelected}
+						onFilesSelected={onInlineAttachmentsSelected}
 						onContentChanged={onBodyChange}
 						richTextMode={isRichText}
 						content={text}

@@ -35,6 +35,16 @@ export type UploadAttachmentResult = {
 	abortController: AbortController;
 };
 
+/**
+ * Uploads a single file and provides a set of callbacks to be notified upon
+ * progress, completion or failure of the upload
+ *
+ * @param file
+ * @param options
+ *
+ * @return An object containing the given uploaded file, the assigned uploadId and
+ * the AbortController to cancel the upload connection
+ */
 export const uploadAttachment = (
 	file: File,
 	options?: UploadAttachmentOptions
@@ -81,6 +91,17 @@ export const uploadAttachment = (
 	};
 };
 
+/**
+ * Uploads a list of files and provides callback a set of callbacks to be notified upon
+ * progress, completion or failure of the single upload, plus a callback to be
+ * notified when all uploads end (with success of failure)
+ *
+ * @param files
+ * @param options
+ *
+ * @return An array of objects containing, for each element, the given uploaded file, the assigned uploadId and
+ * the AbortController to cancel the upload connection
+ */
 export const uploadAttachments = (
 	files: Array<File>,
 	options?: UploadAttachmentsOptions
