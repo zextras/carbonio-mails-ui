@@ -132,11 +132,13 @@ export type SearchesStateType = {
 	error?: ErrorType;
 };
 
+export type MsgMapValue = Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>;
+
 export type MailsEditorMap = Record<string, MailsEditor>;
 
 export type MailsEditorMapV2 = Record<string, MailsEditorV2>;
 
-export type MsgMap = Record<string, Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>>;
+export type MsgMap = Record<string, MsgMapValue>;
 
 export type ConversationsFolderStatus =
 	| 'empty'
