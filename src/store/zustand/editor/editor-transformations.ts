@@ -105,6 +105,9 @@ export const replaceCidUrlWithServiceUrl = (
 				return false || result;
 			}
 			img.setAttribute('src', newSrc);
+			img.setAttribute('pnsrc', referenceCid);
+			img.setAttribute('data-src', referenceCid);
+			img.setAttribute('data-mce-src', referenceCid);
 			return true || result;
 		},
 		false

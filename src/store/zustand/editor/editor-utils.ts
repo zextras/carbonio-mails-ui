@@ -168,15 +168,26 @@ export const getSavedInlineAttachmentByContentId = (
 		null
 	);
 
-export const getUnsavedAttachmentByUploadId = ({
-	uploadId,
-	unsavedAttachments
-}: {
-	uploadId: string;
-	unsavedAttachments: Array<UnsavedAttachment>;
-}): UnsavedAttachment | null =>
-	reduce<UnsavedAttachment, UnsavedAttachment | null>(
+const isContentIdWithinIdList = (contentId: string, idList: Array<string>): boolean =>
+	reduce(idList, (result, id) => result || isContentIdEqual(contentId, id), false);
+
+export const getSavedInlineAttachmentsByContentId = (
+	contentIds: Array<string>,
+	savedAttachments: Array<SavedAttachment>
+): Array<SavedAttachment> =>
+	filter(
+		savedAttachments,
+		(attachment) =>
+			attachment.isInline &&
+			!!attachment.contentId &&
+			isContentIdWithinIdList(attachment.contentId, contentIds)
+	);
+
+export const filterUnsavedAttachmentsByUploadId = (
+	unsavedAttachments: Array<UnsavedAttachment>,
+	uploadIds: Array<string>
+): Array<UnsavedAttachment> =>
+	filter(
 		unsavedAttachments,
-		(result, attachment) => (attachment.uploadId === uploadId ? attachment : result),
-		null
+		(attachment) => attachment.uploadId !== undefined && uploadIds.includes(attachment.uploadId)
 	);

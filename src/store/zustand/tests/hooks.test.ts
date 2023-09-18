@@ -20,7 +20,6 @@ import {
 	useEditorAutoSendTime
 	// useEditorIsUrgent,
 	// useEditorRequestReadReceipt,
-	// useEditorSavedInlineAttachment,
 	// useEditorAttachments,
 	// useEditorInlineUrlConverter,
 	// useEditorUploadProcess,
@@ -218,10 +217,6 @@ describe('all editor hooks', () => {
 		test.todo('set the request read receipt flag in the store');
 	});
 
-	describe('useEditorSavedInlineAttachment', () => {
-		test.todo('get the list of saved inline attachments from the store');
-	});
-
 	describe('useEditorAttachments', () => {
 		describe('hasStandardAttachment', () => {
 			test.todo('if there is no attachment then the value is false');
@@ -236,10 +231,6 @@ describe('all editor hooks', () => {
 				'(real case #1) if there are inline attachments that are treated as standard then the value is true'
 			);
 		});
-	});
-
-	describe('useEditorInlineUrlConverter', () => {
-		test.todo('useEditorInlineUrlConverter');
 	});
 
 	describe('useEditorUploadProcess', () => {
