@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import styled from 'styled-components';
 import { Container, IconCheckbox, Row } from '@zextras/carbonio-design-system';
+import styled from 'styled-components';
 
 export const FileInput = styled.input`
 	display: none;
@@ -92,6 +92,7 @@ export const RowContainer = styled(Container)`
 	display: grid;
 	grid-template-columns: repeat(12, 1fr);
 	grid-gap: 0.5rem;
+	height: fit-content;
 `;
 
 export const ColContainer = styled.div`

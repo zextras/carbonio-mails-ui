@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.12](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.11...v1.6.12) (2023-09-15)
+
+
+### Bug Fixes
+
+* fixed height of attachments row in expanded editor ([a3f347e](https://github.com/zextras/carbonio-mails-ui/commit/a3f347ed69b725eb0f294f4be8fd0e0c93f0211d))
+
+### [1.6.11](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.10...v1.6.11) (2023-09-14)
+
 ### [1.6.10](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.9...v1.6.10) (2023-09-13)
 
 
