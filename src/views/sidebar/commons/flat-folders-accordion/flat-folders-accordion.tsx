@@ -10,6 +10,7 @@ import {
 	Avatar,
 	Collapse,
 	Container,
+	ContainerProps,
 	getColor,
 	Icon,
 	IconButton,
@@ -37,6 +38,13 @@ const FolderAccordionPlaceholder = styled.div`
 
 const RootAccordion = styled(Row)`
 	cursor: pointer;
+`;
+
+const CustomContainer = styled(Container)<ContainerProps & { active?: boolean }>`
+	&:hover {
+		background-color: ${({ theme, active }): string =>
+			active ? theme.palette.highlight.active : theme.palette.gray6.hover};
+	}
 `;
 
 const CustomListItemHelper = styled(ListItem)``;
@@ -118,7 +126,7 @@ const FlatFoldersAccordionFolder: FC<FlatFoldersAccordionFolderProps> = ({
 	 * for which a translated name is available
 	 */
 	const crumbs = parts.map((part, index) => ({
-		id: `${index}`,
+		id: `${index} `,
 		label: index === 0 ? getSystemFolderTranslatedName({ folderName: part }) : part
 	}));
 
@@ -184,13 +192,15 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 	);
 	return (
 		<RootAccordion width="fill" data-testid={`folder-accordion-root-${folder.id}`}>
-			<Container
+			<CustomContainer
 				orientation="horizontal"
 				width="fill"
 				height="fit"
 				mainAlignment="space-between"
 				padding={'small'}
 				onClick={onClick}
+				background={selectedFolderId === folder.id ? 'highlight.active' : 'gray6'}
+				active={selectedFolderId === folder.id}
 			>
 				<Container orientation="horizontal" width="fill" mainAlignment="flex-start">
 					<Padding horizontal="small">
@@ -208,7 +218,7 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 						icon={open ? 'ChevronUp' : 'ChevronDown'}
 					/>
 				</Padding>
-			</Container>
+			</CustomContainer>
 			<Collapse crossSize="100%" orientation="vertical" open={open} disableTransition={false}>
 				<ListV2>
 					{childrenFolders.map<ReactElement>((childFolder) => (
