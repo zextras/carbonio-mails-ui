@@ -7,10 +7,10 @@
 
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state", conversation", "message", "cache", "status"] }] */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { forEach, merge, mergeWith } from 'lodash';
+import { cloneDeep, forEach, merge, mergeWith } from 'lodash';
 
 import { search, getConv, getMsg, msgAction, searchConv } from './actions';
 import { deleteAttachments } from './actions/delete-all-attachments';
@@ -30,7 +30,8 @@ import type {
 	FetchConversationsReturn,
 	SearchConvReturn,
 	MsgActionResult,
-	DeleteAttachmentsReturn
+	DeleteAttachmentsReturn,
+	MsgMapValue
 } from '../types';
 
 function getMsgFulfilled(
@@ -145,6 +146,8 @@ export const getMessagesSliceInitialState = (): MsgStateType =>
 		status: {}
 	} as MsgStateType);
 
+const selectMessagesSlice = (state: MailsStateType): MailsStateType['messages'] => state.messages;
+
 export const messagesSlice = createSlice({
 	name: 'messages',
 	initialState: getMessagesSliceInitialState(),
@@ -177,11 +180,10 @@ export function selectMessages(state: MailsStateType): MsgMap {
 	return state?.messages?.messages;
 }
 
-export function selectMessagesArray(state: MailsStateType): Array<MailMessage> {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	return Object.values(state?.messages?.messages ?? []);
-}
+export const selectMessagesArray = createSelector(
+	[selectMessagesSlice],
+	(slice): Array<MsgMapValue> => Object.values(slice.messages ?? [])
+);
 
 export function selectMessagesStatus(state: MailsStateType): Record<string, string> {
 	return state?.messages?.status;

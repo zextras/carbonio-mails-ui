@@ -3,14 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { filter, orderBy } from 'lodash';
 import { useEffect, useMemo } from 'react';
+
+import { filter, orderBy } from 'lodash';
 import { useParams } from 'react-router-dom';
+
+import { useAppDispatch, useAppSelector } from './redux';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { search } from '../store/actions';
 import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
 import type { MailMessage } from '../types';
-import { useAppDispatch, useAppSelector } from './redux';
 
 type RouteParams = {
 	folderId: string;
