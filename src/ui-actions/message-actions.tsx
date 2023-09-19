@@ -626,9 +626,9 @@ export function sendDraft({
 				sendMsg({
 					msg: message
 				})
-			)
-				.then() // TODO IRIS-4400
-				.catch(); // TODO IRIS-4400
+			).then((res) => {
+				console.log(res);
+			});
 		}
 	};
 }
