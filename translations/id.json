@@ -6,7 +6,7 @@
         "ok": "Oke",
         "reply": "Balas",
         "search": "Cari",
-        "edit_share": "Edit Akses",
+        "edit_share": "Edit Berbagi",
         "edit_as_new": "Edit sebagai baru",
         "flag": "Tambahkan bendera",
         "share_folder": "Bagikan folder",
@@ -37,7 +37,10 @@
                 "retention_duration_warning": "Durasi retensi harus berupa angka positif",
                 "retention_message": "Pesan dalam folder yang termasuk dalam rentang retensi memerlukan konfirmasi langsung sebelum dihapus",
                 "threshold_message": "Pesan dalam folder ini yang lebih lama dari ambang pembuangan akan dikenakan pembersihan dan penghapusan otomatis.",
-                "add_share": "Tambahkan Berbagi"
+                "add_share": "Tambahkan Berbagi",
+                "enter_valid_folder_name": "Masukkan nama folder yang valid",
+                "invalid_folder_name_warning_msg": "Karakter khusus tidak diizinkan. Panjang maksimum 128 karakter.",
+                "special_chars_warning_msg": "Karakter khusus tidak diizinkan di nama folder"
             }
         }
     },
@@ -222,7 +225,7 @@
         "always_allow_domain": "Selalu izinkan dari domain<strong>{{domain}}</strong>",
         "always_allow_address": "Selalu izinkan dari <strong>{{from}}</strong>",
         "time_zone": "Zona Waktu",
-        "searching": "Mencari...",
+        "searching": "Mencari…",
         "notify": "Beri tahu",
         "do_not_notify": "Jangan kirim notifikasi",
         "trusted_addresses": "Alamat tepercaya",
@@ -285,7 +288,9 @@
         "sent_to_address": "Dikirim ke (alamat)",
         "exit_selection_mode": "Keluar dari mode pemilihan",
         "time": "Waktu",
-        "all_items_selected": "Semua item yang terlihat telah dipilih"
+        "all_items_selected": "Semua item yang terlihat telah dipilih",
+        "do_not_have_perm": "Anda tidak memiliki izin",
+        "folder_not_valid_destination": "Folder tujuan yang dipilih tidak valid"
     },
     "messages": {
         "snackbar": {
@@ -362,7 +367,8 @@
         "extra_windows": {
             "opening_blocked": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda",
             "popup_blocked": "Untuk menyelesaikan operasi, Carbonio perlu membuka jendela baru.\nPeriksa pengaturan browser Anda"
-        }
+        },
+        "enter_calendar_name": "Masukkan nama untuk menerima kalender"
     },
     "placeholder": {
         "add_new_recipients": "Tambahkan penerima baru"
@@ -659,7 +665,9 @@
                 "body": {
                     "message1": "Pilih satu folder sebagai tempat memindahkan file yang diinginkan:",
                     "message2": "Pilih folder sebagai tujuan pemulihan:"
-                }
+                },
+                "title_modal": "Pindahkan Percakapan",
+                "title_modal_message": "Pindahkan Pesan"
             },
             "wipe": {
                 "body": {
@@ -705,12 +713,12 @@
         "archive_title1": "Simpan email ke arsip agar Anda bisa meninjaunya nanti.",
         "archive_title2": "Pilih email terarsip untuk meninjaunya.",
         "description2": "Kirim dokumen, gambar, dan lainnya dengan membuat email baru.",
-        "description4": "Anda bisa menandainya dengan bendera, balas, atau teruskan ke pengguna lain.",
+        "description4": "Anda bisa menandainya dengan bendera, membalas, atau meneruskan ke pengguna lain.",
         "description5": "Lihat apa materi diskusi yang diajukan oleh pengguna lain.",
         "description6": "Balas email ini atau teruskan ke pengguna lain.",
         "description7": "Pilih email yang akan dibalas.",
         "draft_title2": "Pilih dan edit email untuk dikirim ke pengguna lain.",
-        "junk_title1": "Anda beruntung! Tidak ada email spam yang Anda khawatirkan",
+        "junk_title1": "Anda beruntung! Tidak ada email spam yang perlu Anda khawatirkan",
         "junk_title2": "Klik ikon sampah untuk menghapus email sampah",
         "list_draft_title": "Tidak ada draf tersimpan",
         "list_folder_title": "Tampaknya tidak ada email",
@@ -748,13 +756,13 @@
         "unforwarded": "tidak diteruskan",
         "unflagged": "tidak dibenderai",
         "tome": "ke saya",
-        "sent": "dikirim saya",
+        "sent": "dikirim oleh saya",
         "received": "diterima saya",
         "read": "dibaca",
         "fromme": "dari saya",
         "fromccme": "dari saya atau disalin ke saya",
         "forwarded": "diteruskan",
-        "flagged": "dibenderai",
+        "flagged": "diberi tanda bendera",
         "draft": "draf",
         "unreplied": "tidak dijawab oleh saya",
         "tofromme": "kepada saya atau dari saya",

@@ -37,7 +37,10 @@
                 "retention_duration_warning": "Die Speicherungsdauer muss eine positive Zahl sein",
                 "retention_message": "Nachrichten in diesem Ordner, die in die Speicherungsfrist fallen, werden eine ausdrückliche Bestätigung erfordern, bevor sie gelöscht werden können",
                 "add_share": "Teilen hinzufügen",
-                "threshold_message": "Nachrichten in diesem Ordner, die älter als die Entsorgungsschwelle sind, werden automatisch bereinigt und gelöscht."
+                "threshold_message": "Nachrichten in diesem Ordner, die älter als die Entsorgungsschwelle sind, werden automatisch bereinigt und gelöscht.",
+                "enter_valid_folder_name": "Geben Sie einen gültigen Ordnernamen ein",
+                "invalid_folder_name_warning_msg": "Sonderzeichen sind nicht erlaubt. Die maximale Länge beträgt 128 Zeichen.",
+                "special_chars_warning_msg": "Sonderzeichen sind im Ordnernamen nicht erlaubt"
             }
         }
     },
@@ -219,7 +222,7 @@
         "view_images": "BILDER ANSEHEN",
         "share_public_link": "Öffentlichen Link teilen",
         "time_zone": "Zeitzone",
-        "searching": "Wird gesucht...",
+        "searching": "Wird gesucht…",
         "notify": "Benachrichtigen",
         "do_not_notify": "Nicht benachrichtigen",
         "keep_draft": "Entwurf speichern",
@@ -283,7 +286,9 @@
         "sent_to_address": "Gesendet an (Adresse)",
         "all_items_selected": "Alle sichtbaren Elemente wurden ausgewählt",
         "exit_selection_mode": "Auswahlmodus verlassen",
-        "time": "Zeit"
+        "time": "Zeit",
+        "do_not_have_perm": "Sie haben keine Berechtigung",
+        "folder_not_valid_destination": "Der ausgewählte Ordner ist kein gültiges Ziel"
     },
     "share": {
         "options": {
@@ -395,7 +400,8 @@
         "extra_windows": {
             "opening_blocked": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen",
             "popup_blocked": "Um den Vorgang abzuschließen, muss Carbonio ein neues Fenster öffnen.\nÜberprüfen Sie Ihre Browsereinstellungen"
-        }
+        },
+        "enter_calendar_name": "Geben Sie einen Namen ein, um den Kalender zu akzeptieren"
     },
     "placeholder": {
         "add_new_recipients": "Neue Empfänger hinzufügen"
@@ -677,7 +683,9 @@
                     "message1": "Einen Ordner als Ziel zum Verschieben aussuchen:",
                     "message2": "Wählen Sie einen Ordner für die Wiederherstellung aus:"
                 },
-                "title_modal": "Konversation verschieben"
+                "title_modal": "Konversation verschieben",
+                "title_modal_conversation": "Konversation verschieben",
+                "title_modal_message": "Nachricht verschieben"
             }
         },
         "action": {
