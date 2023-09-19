@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { lazy, useEffect, Suspense } from 'react';
+
 import {
 	Spinner,
 	addRoute,
@@ -17,19 +18,20 @@ import {
 	t
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
-import { SyncDataHandler } from './views/sidebar/sync-data-handler';
+
+import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
+import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
+import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
+import { MAILS_ROUTE, MAIL_APP_ID, EditViewActions } from './constants';
 import {
 	mailToSharedFunction,
 	openComposerSharedFunction,
 	openPrefilledComposerSharedFunction
 } from './integrations/shared-functions';
-import { MAILS_ROUTE, MAIL_APP_ID, EditViewActions } from './constants';
-import { getSettingsSubSections } from './views/settings/subsections';
 import { StoreProvider } from './store/redux';
-import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
-import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
 import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-manager';
-import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
+import { getSettingsSubSections } from './views/settings/subsections';
+import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
 const LazyAppView = lazy(() =>
 	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')

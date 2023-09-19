@@ -76,7 +76,8 @@
         "extra_windows": {
             "popup_blocked": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser",
             "opening_blocked": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser"
-        }
+        },
+        "enter_calendar_name": "Inserisci un nome per accettare il calendario"
     },
     "label": {
         "cc": "Cc",
@@ -311,7 +312,10 @@
         "sent_to_address": "Inviato a (indirizzo)",
         "admin_disabled_action": "L'amministratore ha disattivato l'opzione di reindirizzamento",
         "time": "Ora",
-        "all_items_selected": "Tutti gli elementi visibili sono stati selezionati"
+        "all_items_selected": "Tutti gli elementi visibili sono stati selezionati",
+        "do_not_have_perm": "Non hai l'autorizzazione",
+        "exit_selection_mode": "Esci dalla modalità selezione",
+        "folder_not_valid_destination": "La cartella selezionata non è una destinazione valida"
     },
     "tooltip": {
         "add_attachments": "Aggiungi allegati",
@@ -376,7 +380,10 @@
                 "add_share": "Aggiungi Condivisione",
                 "retention_duration_warning": "Il periodo di conservazione dev'essere un numero positivo",
                 "retention_message": "All'interno di questa cartella, per i messaggi che rientrano nel periodo di conservazione, verrà chiesta conferma per la cancellazione",
-                "threshold_message": "In questa cartella, i messaggi più vecchi del limite consentito saranno soggetti a cancellazione automatica."
+                "threshold_message": "In questa cartella, i messaggi più vecchi del limite consentito saranno soggetti a cancellazione automatica.",
+                "enter_valid_folder_name": "Inserisci un nome valido per la cartella",
+                "invalid_folder_name_warning_msg": "Non sono consentiti i caratteri speciali. Lunghezza massima 128 caratteri.",
+                "special_chars_warning_msg": "Non sono consentiti i caratteri speciali nel nome della cartella"
             }
         }
     },
@@ -726,7 +733,9 @@
                 "body": {
                     "message1": "Seleziona una cartella in cui spostare quella selezionata:",
                     "message2": "Seleziona la cartella da ripristinare in:"
-                }
+                },
+                "title_modal_conversation": "Sposta Conversazione",
+                "title_modal_message": "Sposta Messaggio"
             }
         },
         "action": {
