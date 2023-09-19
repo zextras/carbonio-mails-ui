@@ -83,6 +83,7 @@ export type EditorsStateTypeV2 = {
 	removeUnsavedAttachments: (id: MailsEditorV2['id']) => void;
 	addSavedAttachment: (id: MailsEditorV2['id'], attachment: SavedAttachment) => void;
 	addUnsavedAttachment: (id: MailsEditorV2['id'], attachment: UnsavedAttachment) => void;
+	addUnsavedAttachments: (id: MailsEditorV2['id'], attachments: Array<UnsavedAttachment>) => void;
 	setAttachmentUploadStatus: (
 		id: MailsEditorV2['id'],
 		uploadId: string,
