@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
+import { Account, getUserAccount, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { filter, findIndex, flatten, isArray, map, remove } from 'lodash';
 
@@ -119,6 +119,9 @@ const IdentityTypeWeights = {
 	alias: 2,
 	delegation: 1
 };
+
+const getNoIdentityPlaceholder = (): string =>
+	t('label.no_identity_selected', '<No identity selected>');
 
 /**
  * Returns the list of all the available addresses for the account and their type
@@ -549,6 +552,7 @@ export {
 	IdentityDescriptor,
 	MatchingReplyIdentity,
 	RecipientWeight,
+	getNoIdentityPlaceholder,
 	getDefaultIdentity,
 	checkMatchingAddress,
 	computeIdentityWeight,

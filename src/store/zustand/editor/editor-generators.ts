@@ -181,7 +181,7 @@ export const generateReplyAndReplyAllMsgEditor = (
 
 	const editor = {
 		action: EditViewActions.REPLY,
-		identityId: from.identityId,
+		identityId: from.identityId ?? defaultIdentity.id,
 		sender: undefined,
 		id: editorId,
 		unsavedAttachments: [],
@@ -235,7 +235,7 @@ export const generateForwardMsgEditor = (
 	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const editor = {
 		action: EditViewActions.REPLY,
-		identityId: from.identityId,
+		identityId: from.identityId ?? defaultIdentity.id,
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments,
