@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { getBridgedFunctions, t, AccountSettingsPrefs, Account, AccountSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
 import { computeAndUpdateEditorStatus } from './commons';
@@ -14,10 +14,24 @@ import { saveDraftAsyncThunk, saveDraftV3 } from '../../../actions/save-draft';
 import { buildSavedAttachments } from '../editor-transformations';
 import { useEditorsStore } from '../store';
 import { getDraftSaveDelay } from '../store-utils';
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
+
 
 export type SaveDraftOptions = {
 	onComplete?: () => void;
 	onError?: (error: string) => void;
+};
+
+export const getSizeDescription = (size: number): string => {
+	let value = '';
+	if (size < 1024000) {
+		value = `${Math.round(size / 1024)} KB`;
+	} else if (size < 1024000000) {
+		value = `${Math.round(size / 1024 / 1024) } MB`;
+	} else {
+		value = `${Math.round(size / 1024 / 1024 / 1024)} GB`;
+	}
+	return value;
 };
 
 /**
@@ -52,11 +66,56 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 		options?.onError && options.onError(err);
 	};
 
+	const handleReason = (err: string): void => {
+
+		const errMessageSize = new RegExp('^Message of size');
+		
+		let errMessage = err;
+		let errMessage2 = '';
+
+		if ( errMessageSize.test(err) ) {
+			const maxMessageSize = getUserSettings().attrs.zimbraMtaMaxMessageSize;
+			const realMaxMessageSize = getSizeDescription(Number(maxMessageSize) - (Number(maxMessageSize)*30/100));
+
+			errMessage = 'la grandezza massima del messaggio è di ' + realMaxMessageSize + '.';
+			errMessage2 = 'Rimuovi uno o più allegati o immagini inline e riprova!';
+		}
+
+		useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
+			status: 'aborted',
+			abortReason: err
+		});
+		getBridgedFunctions()?.createSnackbar({
+			key: `save-draft`,
+			replace: false,
+			type: 'error',
+			label: 'Errore nel salvataggio della bozza: ' + errMessage,
+			autoHideTimeout: 5000
+		});
+
+		if (errMessage2.length > 0 ) {
+			getBridgedFunctions()?.createSnackbar({
+				key: `save-draft2`,
+				replace: false,
+				type: 'info',
+				label: 'Suggerimento: '+ errMessage2,
+				autoHideTimeout: 5000
+			});
+		}
+
+		computeAndUpdateEditorStatus(editorId);
+		options?.onError && options.onError(err);
+	};
+
 	// Update messages store
 	saveDraftV3({ editor })
 		.then((res) => {
 			if ('Fault' in res) {
-				handleError(res.Fault.Detail?.Error?.Detail);
+				if ('Reason' in res.Fault) {
+					handleReason(res.Fault.Reason?.Text)
+				} else {
+					handleError(res.Fault.Detail?.Error?.Detail);
+				}
 				return;
 			}
 
