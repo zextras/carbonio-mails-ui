@@ -14,7 +14,7 @@ import React, {
 	useRef,
 	useState
 } from 'react';
-import styled from 'styled-components';
+
 import {
 	Container,
 	Text,
@@ -31,6 +31,13 @@ import {
 	getColor
 } from '@zextras/carbonio-design-system';
 import {
+	useTags,
+	useUserAccounts,
+	ZIMBRA_STANDARD_COLORS,
+	runSearch,
+	t
+} from '@zextras/carbonio-shell-ui';
+import {
 	capitalize,
 	every,
 	filter,
@@ -42,23 +49,19 @@ import {
 	reduce,
 	uniqBy
 } from 'lodash';
-import {
-	useTags,
-	useUserAccounts,
-	ZIMBRA_STANDARD_COLORS,
-	runSearch,
-	t
-} from '@zextras/carbonio-shell-ui';
-import { useParams } from 'react-router-dom';
 import moment from 'moment';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
+import { useParams } from 'react-router-dom';
+import styled from 'styled-components';
+
+import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
-import MailMsgPreviewActions from '../../../../../ui-actions/mail-message-preview-actions';
+import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
+import { getTimeLabel, participantToString } from '../../../../../commons/utils';
+import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
 import { useMessageActions } from '../../../../../hooks/use-message-actions';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
-import { getTimeLabel, participantToString } from '../../../../../commons/utils';
-import MessageContactsList from './message-contact-list';
 import type { MailMessage } from '../../../../../types';
+import MailMsgPreviewActions from '../../../../../ui-actions/mail-message-preview-actions';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean }>`
@@ -89,7 +92,7 @@ type PreviewHeaderProps = {
 const fallbackContact = {
 	type: ParticipantRole.FROM,
 	address: '',
-	displayName: '',
+	displayName: getNoIdentityPlaceholder(),
 	fullName: ''
 };
 
@@ -279,8 +282,8 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						padding={{ all: 'small' }}
 					>
 						<Avatar
-							label={mainContact.fullName || mainContact.address}
-							colorLabel={mainContact.address}
+							label={mainContact.fullName || mainContact.address || getNoIdentityPlaceholder()}
+							colorLabel={mainContact.address || getNoIdentityPlaceholder()}
 							size="small"
 						/>
 					</Container>

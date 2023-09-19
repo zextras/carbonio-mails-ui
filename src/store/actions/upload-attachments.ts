@@ -92,7 +92,7 @@ export const uploadAttachment = (
 };
 
 /**
- * Uploads a list of files and provides callback a set of callbacks to be notified upon
+ * Uploads a list of files and provides a set of callbacks to be notified upon
  * progress, completion or failure of the single upload, plus a callback to be
  * notified when all uploads end (with success of failure)
  *

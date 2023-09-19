@@ -19,7 +19,11 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import styled from 'styled-components';
 
-import { getIdentityDescription, IdentityDescriptor } from '../../../../../helpers/identities';
+import {
+	getIdentityDescription,
+	getNoIdentityPlaceholder,
+	IdentityDescriptor
+} from '../../../../../helpers/identities';
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;
@@ -82,7 +86,7 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({
 	onIdentitySelected
 }) => {
 	const [open, setOpen] = useState(false);
-	const noName = useMemo(() => t('label.no_name', '<No Name>'), []);
+	const noName = useMemo(() => getNoIdentityPlaceholder(), []);
 	const selectedDescription = selected ? getIdentityDescription(selected, t) : noName;
 
 	const toggleOpen = useCallback(() => {

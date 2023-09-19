@@ -10,7 +10,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { cloneDeep, forEach, merge, mergeWith } from 'lodash';
+import { forEach, merge, mergeWith } from 'lodash';
 
 import { search, getConv, getMsg, msgAction, searchConv } from './actions';
 import { deleteAttachments } from './actions/delete-all-attachments';
@@ -40,7 +40,6 @@ function getMsgFulfilled(
 	status[payload.id] = 'complete';
 	if (payload?.id) {
 		const mergedMessages = merge(messages?.[payload.id] ?? {}, { ...payload, isComplete: true });
-		const x = cloneDeep(mergedMessages);
 		// eslint-disable-next-line no-param-reassign
 		messages[payload.id] = {
 			...mergedMessages,
