@@ -41,7 +41,6 @@ function getMsgFulfilled(
 	status[payload.id] = 'complete';
 	if (payload?.id) {
 		const mergedMessages = merge(messages?.[payload.id] ?? {}, { ...payload, isComplete: true });
-		const x = cloneDeep(mergedMessages);
 		// eslint-disable-next-line no-param-reassign
 		messages[payload.id] = {
 			...mergedMessages,

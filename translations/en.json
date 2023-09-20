@@ -369,6 +369,7 @@
         "need_to_select_atleast_one_item": "You need to select at least one item to perform the action",
         "new_email": "New E-mail",
         "new_folder": "New Folder",
+        "no_identity_selected": "<No identity selected>",
         "no_name": "<No Name>",
         "no_search_results_found": "No results found",
         "no_sender": "the sender of the message is not set",

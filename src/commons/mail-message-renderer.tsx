@@ -32,6 +32,7 @@ import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import { getAttachmentParts } from '../helpers/attachments';
+import { getNoIdentityPlaceholder } from '../helpers/identities';
 import type { MailMessage, MailMessagePart, Participant } from '../types';
 
 export const _CI_REGEX = /^<(.*)>$/;
@@ -146,7 +147,8 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 	const [showQuotedText, setShowQuotedText] = useState(false);
 
 	const settingsPref = useUserSettings()?.prefs;
-	const from = filter(participants, { type: ParticipantRole.FROM })[0]?.address;
+	const from =
+		filter(participants, { type: ParticipantRole.FROM })[0]?.address ?? getNoIdentityPlaceholder();
 	const domain = from?.substring(from.lastIndexOf('@') + 1);
 
 	const [showExternalImage, setShowExternalImage] = useState(false);
