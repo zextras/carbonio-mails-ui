@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.15](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.14...v1.6.15) (2023-09-19)
+
+
+### Bug Fixes
+
+* fallback to default identity when no identity can be determined ([d9764e3](https://github.com/zextras/carbonio-mails-ui/commit/d9764e36e9c7a65904baf2a3ec1cc51c12c2f8f9))
+
+### [1.6.14](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.13...v1.6.14) (2023-09-19)
+
 ### [1.6.13](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.12...v1.6.13) (2023-09-18)
 
 

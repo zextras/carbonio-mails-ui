@@ -6,7 +6,10 @@
                 "retention_message": "保存範囲内にあるこのフォルダ内のメッセージは、削除する前に明示的に確認する必要があります",
                 "retention_duration_warning": "保持期間は正の数でなければなりません",
                 "add_share": "共有を追加する",
-                "threshold_message": "このフォルダ内の廃棄しきい値より古いメッセージは、自動クリーンアップと削除の対象になります。"
+                "threshold_message": "このフォルダ内の廃棄しきい値より古いメッセージは、自動クリーンアップと削除の対象になります。",
+                "enter_valid_folder_name": "有効なフォルダ名を入力してください",
+                "invalid_folder_name_warning_msg": "特殊文字は使用できません。 最大文字数は 128 文字です。",
+                "special_chars_warning_msg": "フォルダー名に特殊文字を使用できません"
             }
         }
     },
@@ -226,7 +229,7 @@
         "always_allow_domain": "常に<strong>{{domain}}</strong>ドメインから許可する",
         "always_allow_address": "常に<strong>{{from}}</strong>から許可する",
         "time_zone": "タイムゾーン",
-        "searching": "検索中...",
+        "searching": "検索中…",
         "notify": "通知",
         "do_not_notify": "通知しない",
         "trusted_addresses": "信頼できるアドレス",
@@ -289,7 +292,9 @@
         "sent_to_address": "（アドレス）へ送信",
         "exit_selection_mode": "選択モードを終了する",
         "time": "時間",
-        "all_items_selected": "表示されている項目がすべて選択されました"
+        "all_items_selected": "表示されている項目がすべて選択されました",
+        "do_not_have_perm": "許可がありません",
+        "folder_not_valid_destination": "選択したフォルダーは有効な宛先ではありません"
     },
     "messages": {
         "modal": {
@@ -366,7 +371,8 @@
         "extra_windows": {
             "opening_blocked": "操作を完了するには、Carbonioで新しいウィンドウを開く必要があります。\nブラウザの設定を確認してください",
             "popup_blocked": "操作を完了するには、Carbonioで新しいウィンドウを開く必要があります。\nブラウザの設定を確認してください"
-        }
+        },
+        "enter_calendar_name": "名前を入力してカレンダーを承認します"
     },
     "placeholder": {
         "add_new_recipients": "新しい受信者を追加する"
@@ -642,7 +648,9 @@
                 "body": {
                     "message1": "検討対象のフォルダを次の場所に移動するフォルダを選択します:",
                     "message2": "復元するフォルダを選択します:"
-                }
+                },
+                "title_modal": "会話を移動する",
+                "title_modal_message": "メッセージを移動する"
             },
             "new": {
                 "restore_create_footer": "作成と復元",

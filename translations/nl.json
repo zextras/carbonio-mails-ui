@@ -37,7 +37,10 @@
                 "retention_duration_warning": "De retentietijd moet een positief getal zijn",
                 "retention_message": "Berichten in deze map die binnen het retentiebereik vallen, vereisen een uitdrukkelijke bevestiging voordat ze worden verwijderd",
                 "add_share": "Delen toevoegen",
-                "threshold_message": "Berichten in deze map die ouder zijn dan de verwijderingsdrempel zullen automatisch worden opgeschoond en verwijderd."
+                "threshold_message": "Berichten in deze map die ouder zijn dan de verwijderingsdrempel zullen automatisch worden opgeschoond en verwijderd.",
+                "enter_valid_folder_name": "Voer een geldige mapnaam in",
+                "invalid_folder_name_warning_msg": "Speciale tekens zijn niet toegestaan. De maximale lengte is 128 tekens.",
+                "special_chars_warning_msg": "Speciale tekens zijn niet toegestaan in de mapnaam"
             }
         }
     },
@@ -90,7 +93,7 @@
         "revoke": "Intrekken",
         "revoke_access_tooltip": "Toegang intrekken met een standaardkennisgeving",
         "revoke_access_without_notification": "Toegang intrekken zonder een melding te sturen",
-        "revoke_share": "Teilen widerrufen",
+        "revoke_share": "Delen herroepen",
         "role": "Rol: ",
         "select_folder": "Map selecteren",
         "send_notification": "Een kennisgeving sturen naar",
@@ -291,7 +294,9 @@
         "sent_to_address": "Verzonden naar (adres)",
         "exit_selection_mode": "Selectiemodus verlaten",
         "time": "Tijd",
-        "all_items_selected": "Alle zichtbare items zijn geselecteerd"
+        "all_items_selected": "Alle zichtbare items zijn geselecteerd",
+        "do_not_have_perm": "Je hebt geen toestemming",
+        "folder_not_valid_destination": "De geselecteerde map is geen geldige bestemming"
     },
     "messages": {
         "invalid_address": "Het volgende adres lijkt ongeldig te zijn",
@@ -370,7 +375,8 @@
         "extra_windows": {
             "opening_blocked": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen",
             "popup_blocked": "Om de operatie te voltooien, moet Carbonio een nieuw venster openen.\nControleer uw browserinstellingen"
-        }
+        },
+        "enter_calendar_name": "Voer een naam in om de kalender te accepteren"
     },
     "placeholder": {
         "add_new_recipients": "Nieuwe ontvangers toevoegen"
@@ -671,7 +677,9 @@
                 "body": {
                     "message1": "Selecteer een map om de overwogene naar te verplaatsen:",
                     "message2": "Selecteer een map om naar te herstellen:"
-                }
+                },
+                "title_modal": "Gesprek verplaatsen",
+                "title_modal_message": "Bericht verplaatsen"
             },
             "wipe": {
                 "body": {
