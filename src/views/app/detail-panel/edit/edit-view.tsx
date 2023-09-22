@@ -59,6 +59,8 @@ import {
 	deleteEditor
 } from '../../../../store/zustand/editor';
 import { BoardContext, CloseBoardReasons, EditorRecipients } from '../../../../types';
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
+import { useEditorDraftSaveNoTimeout } from '../../../../store/zustand/editor/hooks/save-draft';
 
 export type EditViewProp = {
 	editorId: string;
@@ -92,6 +94,7 @@ export const EditView: FC<EditViewProp> = ({
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
+	const { status: saveDraftAllowedStatusNoTimeout, saveDraftNoTimeout } = useEditorDraftSaveNoTimeout(editorId);
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
@@ -108,8 +111,8 @@ export const EditView: FC<EditViewProp> = ({
 	);
 
 	const onSaveClick = useCallback<ButtonProps['onClick']>((): void => {
-		saveDraft();
-	}, [saveDraft]);
+		saveDraftNoTimeout();
+	}, [saveDraftNoTimeout]);
 
 	const onSendCountdownTick = useCallback(
 		(countdown: number, cancel: () => void): void => {
@@ -138,16 +141,97 @@ export const EditView: FC<EditViewProp> = ({
 		[createSnackbar, editorId]
 	);
 
+	const getSizeDescription = (size: number): string => {
+		let value = '';
+		if (size < 1024000) {
+			value = `${Math.round(size / 1024)} KB`;
+		} else if (size < 1024000000) {
+			value = `${Math.round(size / 1024 / 1024) } MB`;
+		} else {
+			value = `${Math.round(size / 1024 / 1024 / 1024)} GB`;
+		}
+		return value;
+	};
+
 	const onSendError = useCallback(
 		(error: string): void => {
-			createSnackbar({
-				key: `mail-${editorId}`,
-				replace: true,
-				type: 'error',
-				label: t('label.error_try_again', 'Something went wrong, please try again'),
-				autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-				hideButton: true
-			});
+
+			const errMessageSize = new RegExp('^Message of size');
+			const errInvalidAddress = new RegExp('^Invalid address');
+			if ( errMessageSize.test(error) ) {
+
+				const sizeMatched = error.match(/(\d+)/);
+				let messageSize = 0;
+				if (sizeMatched) {
+					messageSize = Number(sizeMatched[0]);
+				}
+
+				const maxMessageSize = getUserSettings().attrs.zimbraMtaMaxMessageSize;
+				const realMaxMessageSize = getSizeDescription(Number(maxMessageSize) - (Number(maxMessageSize)*30/100));
+				const realMessageSize = getSizeDescription(messageSize - (messageSize*30/100));
+
+				const errMessage = 'l\'attuale dimensione del messaggio ('+ realMessageSize +')  supera il limite massimo consentito (' + realMaxMessageSize + ').';
+				const errMessage2 = 'Rimuovi uno o più allegati o immagini inline e riprova!';
+
+				createSnackbar({
+					key: `mail-${editorId}`,
+					replace: true,
+					type: 'error',
+					label: 'Non è stato possibile inviare il messaggio: ' + errMessage,
+					autoHideTimeout: 5000
+				});
+
+				if (errMessage2.length > 0 ) {
+					createSnackbar({
+						key: `mail-${editorId}-2`,
+						replace: false,
+						type: 'info',
+						label: 'Suggerimento: '+ errMessage2,
+						autoHideTimeout: 5000
+					});
+				}
+
+			} else if (errInvalidAddress.test(error)) {
+				const emailMatch = error.match(/(\S+@\S+)/);
+				let realEmail = '';
+				let cleanEmail = '';
+				if (emailMatch) {
+					realEmail = emailMatch[0];
+					cleanEmail = realEmail.slice(0, -1)
+				}
+
+				const errMessage = 'Il destinatario con email ' + cleanEmail + ' non esiste o è stata disabilitata la casella di posta.';
+				const errMessage2 = 'Rimuovi il contatto ' + cleanEmail + ' e riprova!';
+
+
+				createSnackbar({
+					key: `mail-${editorId}`,
+					replace: true,
+					type: 'error',
+					label: 'Non è stato possibile inviare il messaggio: ' + errMessage,
+					autoHideTimeout: 5000
+				});
+
+				if (errMessage2.length > 0 ) {
+					createSnackbar({
+						key: `mail-${editorId}-2`,
+						replace: false,
+						type: 'info',
+						label: 'Suggerimento: '+ errMessage2,
+						autoHideTimeout: 5000
+					});
+				}
+
+			} else {
+				createSnackbar({
+					key: `mail-${editorId}`,
+					replace: true,
+					type: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+					hideButton: true
+				});
+			}
 			// TODO move outside the component (editor-utils or a new help module?)
 			addBoard<BoardContext>({
 				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
@@ -449,7 +533,7 @@ export const EditView: FC<EditViewProp> = ({
 								type="outlined"
 								onClick={onSaveClick}
 								label={`${t('label.save', 'Save')}`}
-								disabled={!saveDraftAllowedStatus?.allowed}
+								disabled={!saveDraftAllowedStatusNoTimeout?.allowed}
 							/>
 						</Tooltip>
 						<EditViewSendButtons

@@ -74,11 +74,20 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 		let errMessage2 = '';
 
 		if ( errMessageSize.test(err) ) {
+
+			const sizeMatched = err.match(/(\d+)/);
+			let messageSize = 0;
+			if (sizeMatched) {
+				messageSize = Number(sizeMatched[0]);
+			}
+
 			const maxMessageSize = getUserSettings().attrs.zimbraMtaMaxMessageSize;
 			const realMaxMessageSize = getSizeDescription(Number(maxMessageSize) - (Number(maxMessageSize)*30/100));
+			const realMessageSize = getSizeDescription(messageSize - (messageSize*30/100));
 
-			errMessage = 'la grandezza massima del messaggio è di ' + realMaxMessageSize + '.';
+			errMessage = 'l\'attuale dimensione del messaggio ('+ realMessageSize +')  supera il limite massimo consentito (' + realMaxMessageSize + ').';
 			errMessage2 = 'Rimuovi uno o più allegati o immagini inline e riprova!';
+
 		}
 
 		useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
@@ -161,6 +170,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 
 const delay = getDraftSaveDelay();
 export const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, delay);
+export const debouncedSaveDraftFromEditorNoTimeout = debounce(saveDraftFromEditor, 0);
 
 /**
  * Returns the reactive status for the draft save operation.
@@ -181,6 +191,18 @@ export const useEditorDraftSave = (
 	return {
 		status,
 		saveDraft: invoker
+	};
+};
+
+export const useEditorDraftSaveNoTimeout = (
+	editorId: MailsEditorV2['id']
+): { status: MailsEditorV2['draftSaveAllowedStatus']; saveDraftNoTimeout: () => void } => {
+	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
+	const invoker = (): void => debouncedSaveDraftFromEditorNoTimeout(editorId);
+
+	return {
+		status,
+		saveDraftNoTimeout: invoker
 	};
 };
 
