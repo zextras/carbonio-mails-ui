@@ -4,10 +4,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Account, t } from '@zextras/carbonio-shell-ui';
-import { find, isArray } from 'lodash';
+import { find, isArray, capitalize } from 'lodash';
 import moment from 'moment';
 
 import type { Participant } from '../types';
+
+export const toTitleCase = (str: string | undefined): string => {
+	if ( str ) {
+		const titleCase = str.toLowerCase().split(' ').map(word => {
+			return word.charAt(0).toUpperCase() + word.slice(1);
+		}).join(' ');
+		return titleCase;
+	}
+
+	return '';
+};
+
 
 export const getTimeLabel = (date: number): string => {
 	const momentDate = moment(date);
@@ -18,9 +30,9 @@ export const getTimeLabel = (date: number): string => {
 		return momentDate.format('dddd, LT');
 	}
 	if (momentDate.isSame(new Date(), 'month')) {
-		return momentDate.format('DD MMMM');
+		return momentDate.format('DD MMMM HH:mm');
 	}
-	return momentDate.format('DD/MM/YYYY');
+	return momentDate.format('DD/MM/YYYY HH:mm');
 };
 
 export const participantToString = (
@@ -31,7 +43,28 @@ export const participantToString = (
 	if (me) {
 		return t('label.me', 'Me');
 	}
+
 	return participant?.fullName || participant?.name || participant?.address || '';
+};
+
+export const participantWithAddressToString = (
+	participant: Participant | undefined,
+	accounts: Array<Account>
+): string => {
+	const me = find(accounts, ['name', participant?.address]);
+	if (me) {
+		return t('label.me', 'Me');
+	}
+
+	if (participant?.fullName && participant?.address ) {
+		return '"' + toTitleCase(participant?.fullName) + '" <' + participant?.address + '>';
+	}
+
+	if (participant?.name && participant?.address ) {
+		return '"' + toTitleCase(participant?.name) + '" <' + participant?.address + '>';
+	}
+	
+	return toTitleCase(participant?.fullName) || toTitleCase(participant?.name) || participant?.address || '';
 };
 
 export const isAvailableInTrusteeList = (
