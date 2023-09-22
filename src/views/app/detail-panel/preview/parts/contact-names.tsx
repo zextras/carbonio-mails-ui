@@ -11,7 +11,7 @@ import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { capitalize, map } from 'lodash';
 import styled from 'styled-components';
 
-import { participantToString } from '../../../../../commons/utils';
+import { participantWithAddressToString } from '../../../../../commons/utils';
 import type { Participant } from '../../../../../types';
 
 const ContactSubText = styled(Text)`
@@ -62,7 +62,7 @@ const ContactName: FC<{
 				{map(contacts, (contact, index) => (
 					<Tooltip label={contact.address} key={index}>
 						<ContactSubText color="secondary" size="small">
-							{capitalize(participantToString(contact, accounts))}
+							{participantWithAddressToString(contact, accounts)}
 						</ContactSubText>
 					</Tooltip>
 				))}

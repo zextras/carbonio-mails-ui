@@ -3,11 +3,28 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+<<<<<<< HEAD
 import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find, isArray } from 'lodash';
+=======
+import { Account, t } from '@zextras/carbonio-shell-ui';
+import { find, isArray, capitalize } from 'lodash';
+>>>>>>> 7e6d99bb (fix: change contact label into email preview, changed time format)
 import moment from 'moment';
 
 import type { Participant } from '../types';
+
+export const toTitleCase = (str: string | undefined): string => {
+	if ( str ) {
+		const titleCase = str.toLowerCase().split(' ').map(word => {
+			return word.charAt(0).toUpperCase() + word.slice(1);
+		}).join(' ');
+		return titleCase;
+	}
+
+	return '';
+};
+
 
 export const getTimeLabel = (date: number): string => {
 	const { zimbraPrefLocale = 'en' } = getUserSettings().prefs;
@@ -15,7 +32,17 @@ export const getTimeLabel = (date: number): string => {
 	if (momentDate.isSame(new Date(), 'day')) {
 		return momentDate.format('LT');
 	}
+<<<<<<< HEAD
 	return momentDate.format('L LT');
+=======
+	if (momentDate.isSame(new Date(), 'week')) {
+		return momentDate.format('dddd, LT');
+	}
+	if (momentDate.isSame(new Date(), 'month')) {
+		return momentDate.format('DD MMMM HH:mm');
+	}
+	return momentDate.format('DD/MM/YYYY HH:mm');
+>>>>>>> 7e6d99bb (fix: change contact label into email preview, changed time format)
 };
 
 export const participantToString = (
@@ -26,7 +53,28 @@ export const participantToString = (
 	if (me) {
 		return t('label.me', 'Me');
 	}
+
 	return participant?.fullName || participant?.name || participant?.address || '';
+};
+
+export const participantWithAddressToString = (
+	participant: Participant | undefined,
+	accounts: Array<Account>
+): string => {
+	const me = find(accounts, ['name', participant?.address]);
+	if (me) {
+		return t('label.me', 'Me');
+	}
+
+	if (participant?.fullName && participant?.address ) {
+		return '"' + toTitleCase(participant?.fullName) + '" <' + participant?.address + '>';
+	}
+
+	if (participant?.name && participant?.address ) {
+		return '"' + toTitleCase(participant?.name) + '" <' + participant?.address + '>';
+	}
+	
+	return toTitleCase(participant?.fullName) || toTitleCase(participant?.name) || participant?.address || '';
 };
 
 export const isAvailableInTrusteeList = (
