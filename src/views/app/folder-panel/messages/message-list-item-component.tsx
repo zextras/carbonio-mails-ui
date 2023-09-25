@@ -3,11 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { noop } from 'lodash';
 import React, { FC, memo } from 'react';
+
+import { noop } from 'lodash';
+
+import { MessageListItem } from './message-list-item';
 import type { IncompleteMessage } from '../../../../types';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
-import { MessageListItem } from './message-list-item';
 
 export type ListItemComponentProps = {
 	message: IncompleteMessage;
@@ -48,6 +50,7 @@ export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
 				setDraggedIds={setDraggedIds}
 				dragImageRef={dragImageRef}
 				dragAndDropIsDisabled={!!isSearchModule}
+				deselectAll={deselectAll}
 			>
 				<MessageListItem
 					item={message}
