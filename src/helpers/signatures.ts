@@ -5,10 +5,11 @@
  */
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find, map } from 'lodash';
+
 import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { LineType } from '../commons/utils';
-import type { SignatureDescriptor } from '../types/signatures';
 import type { EditorText } from '../types/editor';
+import type { SignatureDescriptor } from '../types/signatures';
 
 const NO_SIGNATURE_ID = '11111111-1111-1111-1111-111111111111';
 const NO_SIGNATURE_LABEL = 'No signature';
@@ -92,7 +93,7 @@ const composeMailBodyWithSignature = (
 	}
 
 	return isRichText
-		? `<br/><br/><div class="${LineType.SIGNATURE_CLASS}">${signatureValue}</div>`
+		? `<p></p><div class="${LineType.SIGNATURE_CLASS}">${signatureValue}</div>`
 		: `\n\n${LineType.SIGNATURE_PRE_SEP}\n${convertHtmlToPlainText(signatureValue)}`;
 };
 
