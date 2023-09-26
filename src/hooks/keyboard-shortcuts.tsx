@@ -8,8 +8,16 @@ import {
 	moveConversationToTrash,
 	setConversationsFlag,
 	setConversationsRead,
-	setConversationsSpam
+	setConversationsSpam,
+	deleteConversationPermanently,
+	moveConversationToFolder
 } from '../ui-actions/conversation-actions';
+import {
+	deleteMessagePermanently,
+	moveMessageToFolder,
+	moveMsgToTrash
+} from '../ui-actions/message-actions';
+import { isConversation, isSingleMessageConversation } from '../helpers/messages';
 
 type handleKeyboardShortcutsProps = {
 	event: any;
@@ -22,6 +30,7 @@ type handleKeyboardShortcutsProps = {
 
 const modifierKeysFirstTier = ['v', 'm', '.', 'n'];
 const modifierKeysSecondTier: Array<any> = [];
+const modifierKeysThirdTier = ['Delete','ShiftDelete'];
 
 let keySequence = '';
 
@@ -41,9 +50,19 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 		event.target.nodeName !== 'TEXTAREA';
 
 	const callKeyboardShortcutAction = (): void => {
+		const findMsg = conversations.find(item => item.id === itemId);
+		let isSingleMessage, isFullConv = false;
+		if (typeof findMsg !== 'undefined') {  
+			isSingleMessage = isSingleMessageConversation(findMsg);
+			isFullConv = isConversation(findMsg);
+		}
+		if (!isGlobalContext ){
+			keySequence = '';
+			return;
+		}
 		switch (keySequence) {
 			case 'mr': // Mark read
-				if (isGlobalContext) {
+				if (isGlobalContext && (isFullConv || isSingleMessage)) {
 					eventActions();
 					setConversationsRead({
 						ids: [itemId],
@@ -56,7 +75,7 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 				}
 				break;
 			case 'z': // Mark read
-				if (isGlobalContext) {
+				if (isGlobalContext && (isFullConv || isSingleMessage)) {
 					eventActions();
 					setConversationsRead({
 						ids: [itemId],
@@ -69,7 +88,7 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 				}
 				break;
 			case 'mu': // Mark unread
-				if (isGlobalContext) {
+				if (isGlobalContext && (isFullConv || isSingleMessage)) {
 					eventActions();
 					setConversationsRead({
 						ids: [itemId],
@@ -82,7 +101,7 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 				}
 				break;
 			case 'x': // Mark unread
-				if (isGlobalContext && itemId) {
+				if (isGlobalContext && itemId && (isFullConv || isSingleMessage)) {
 					eventActions();
 					setConversationsRead({
 						ids: [itemId],
@@ -95,13 +114,13 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 				}
 				break;
 			case 'mf': // Flag/Unflag messages
-				if (isGlobalContext && itemId) {
+				if (isGlobalContext && itemId && (isFullConv || isSingleMessage)) {
 					eventActions();
 					setConversationsFlag({ ids: [itemId], value: conversationFlag, dispatch }).onClick(event);
 				}
 				break;
 			case 'ms': // Report (mark as) spam
-				if (isGlobalContext && itemId) {
+				if (isGlobalContext && itemId && (isFullConv || isSingleMessage)) {
 					eventActions();
 					setConversationsSpam({
 						ids: [itemId],
@@ -147,7 +166,50 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 					eventActions();
 				}
 				break;
-
+			case 'mm': // Move Message
+				if (isGlobalContext && (isFullConv || isSingleMessage)) {
+					eventActions();
+					isFullConv
+					? moveConversationToFolder({
+							ids: [itemId],
+							dispatch,
+							folderId,
+							isRestore: false,
+							deselectAll
+					}).onClick(event)
+					: moveMessageToFolder({
+							id: [itemId],
+							folderId,
+							dispatch,
+							isRestore: false,
+							deselectAll
+					}).onClick(event);
+				}
+				break;
+			case 'Delete': //Delete
+				if (isGlobalContext && (isFullConv || isSingleMessage)) {
+					eventActions();
+					isFullConv
+					? moveConversationToTrash({ ids: [itemId], 
+						dispatch, 
+						folderId, 
+						deselectAll }).onClick(event)
+					: moveMsgToTrash({ ids: [itemId], 
+						dispatch, 
+						deselectAll }).onClick(event);
+				}
+				break;
+			case 'ShiftDelete': //DeletePermantely
+				if (isGlobalContext && (isFullConv || isSingleMessage)) {
+					eventActions();
+					isFullConv
+					? deleteConversationPermanently({ ids: [itemId], 
+						deselectAll }).onClick(event)
+					: deleteMessagePermanently({ ids: [itemId], 
+						dispatch,
+						deselectAll }).onClick(event);
+				}
+				break;
 			default:
 		}
 		keySequence = '';
@@ -169,7 +231,11 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 				callKeyboardShortcutAction();
 			}
 			break;
-
 		default:
+			if (modifierKeysThirdTier.indexOf(event.key) !== -1 && keySequence.length > 2 ) {
+				clearTimeout(timer);
+				callKeyboardShortcutAction();
+			}
+			break;
 	}
 };
