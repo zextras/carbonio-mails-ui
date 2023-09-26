@@ -12,10 +12,10 @@ import { isNil } from 'lodash';
 import { FolderSelector } from './commons/folder-selector';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import type { Folder, RootFolder } from '../../carbonio-ui-commons/types/folder';
 
 type SelectFolderModalProps = {
-	folder?: Folder;
+	folder?: Folder | RootFolder;
 	onClose: () => void;
 	headerTitle: string;
 	actionLabel: string;
