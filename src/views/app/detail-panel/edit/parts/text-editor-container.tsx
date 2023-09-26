@@ -25,13 +25,6 @@ export type TextEditorContainerProps = {
 	minHeight: number;
 	disabled: boolean;
 	editorId: MailsEditorV2['id'];
-	// draftSavedAt: string;
-	// minHeight: number;
-	// setValue: (name: string, value: any) => void;
-	// updateEditorCb: (data: Partial<MailsEditor>) => void;
-	// updateSubjectField: (mod: Partial<MailsEditor>) => void;
-	// saveDraftCb: (data: MailsEditor, signal?: AbortSignal) => SaveDraftResponse;
-	// textValue: [string, string];
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({
@@ -55,26 +48,6 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	const composerCustomOptions = {
 		toolbar_sticky: false
 	};
-
-	// const [inputValue, setInputValue] = useState(editor?.text ?? ['', '']);
-	// const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
-	// const [showStickyTime, setStickyTime] = useState(false);
-	// const [isReady, setIsReady] = useState(false);
-	// const toggleStickyTime = useCallback(() => {
-	// 	clearTimeout(timeoutRef.current as ReturnType<typeof setTimeout>);
-	// 	setStickyTime(false);
-	// 	timeoutRef.current = setTimeout(() => {
-	// 		setStickyTime(true);
-	// 		setTimeout(() => {
-	// 			setStickyTime(false);
-	// 		}, 1500);
-	// 	}, 1500);
-	// }, []);
-	//
-	// useEffect(() => {
-	// 	setInputValue(textValue);
-	// }, [textValue]);
-	//
 
 	return (
 		<>
@@ -120,42 +93,10 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 										plainText: ev.target.value,
 										richText: plainTextToHTML(ev.target.value)
 									});
-									// // eslint-disable-next-line no-param-reassign
-									// ev.target.style.height = 'auto';
-									// // eslint-disable-next-line no-param-reassign
-									// ev.target.style.height = `${25 + ev.target.scrollHeight}px`;
-									// const data: [string, string] = [
-									// 	ev.target.value,
-									// 	`${editor?.text[1] ? `${editor.text[1]}${ev.target.value}` : ev.target.value}`
-									// ];
-									//
-									// throttledSaveToDraft({ text: data });
-									// updateSubjectField({ text: data });
-									// onChange(data);
-									// setInputValue(data);
-									// toggleStickyTime();
 								}}
 							/>
 						</Container>
 					)}
-					{/* {draftSavedAt && showStickyTime && ( */}
-					{/*	<StyledComp.StickyTimeContainer> */}
-					{/*		<StyledComp.StickyTime> */}
-					{/*			<Row */}
-					{/*				crossAlignment="flex-end" */}
-					{/*				background="gray5" */}
-					{/*				padding={{ vertical: 'medium', horizontal: 'large' }} */}
-					{/*			> */}
-					{/*				<Text size="extrasmall" color="secondary"> */}
-					{/*					{t('message.email_saved_at', { */}
-					{/*						time: draftSavedAt, */}
-					{/*						defaultValue: 'Email saved as draft at {{time}}' */}
-					{/*					})} */}
-					{/*				</Text> */}
-					{/*			</Row> */}
-					{/*		</StyledComp.StickyTime> */}
-					{/*	</StyledComp.StickyTimeContainer> */}
-					{/* )} */}
 				</Container>
 			)}
 		</>

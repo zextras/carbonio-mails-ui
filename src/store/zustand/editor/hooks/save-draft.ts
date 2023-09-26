@@ -37,7 +37,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 	}
 
 	const handleError = (err: string): void => {
-		useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
+		useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 			status: 'aborted',
 			abortReason: err
 		});
@@ -73,7 +73,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 			const savedAttachments = buildSavedAttachments(mailMessage);
 			useEditorsStore.getState().setSavedAttachments(editorId, savedAttachments);
 
-			useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
+			useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 				status: 'completed',
 				lastSaveTimestamp: new Date()
 			});
@@ -81,7 +81,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 			options?.onComplete && options?.onComplete();
 		})
 		.catch((err) => {
-			useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
+			useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 				status: 'aborted',
 				abortReason: err
 			});
@@ -91,7 +91,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 			options?.onError && options?.onError(err);
 		});
 
-	useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
+	useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 		status: 'running'
 	});
 	// FIXME use a subscription to the store update

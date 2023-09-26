@@ -41,7 +41,7 @@ import type {
 	SoapMailMessage,
 	SoapMailMessagePart
 } from '../../../../../types';
-import { EditView, EditViewProp } from '../edit-view-v2';
+import { EditView, EditViewProp } from '../edit-view';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;

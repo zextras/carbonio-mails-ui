@@ -53,7 +53,7 @@ const sendFromEditor = (
 	};
 
 	const onTimerCanceled = (): void => {
-		useEditorsStore.getState().updateSendProcessStatus(editorId, {
+		useEditorsStore.getState().setSendProcessStatus(editorId, {
 			status: 'aborted',
 			abortReason: t('messages.snackbar.message_sending_aborted', 'canceled by the user')
 		});
@@ -79,14 +79,14 @@ const sendFromEditor = (
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						const errorDescription: string = res.payload.reason;
-						useEditorsStore.getState().updateSendProcessStatus(editorId, {
+						useEditorsStore.getState().setSendProcessStatus(editorId, {
 							status: 'aborted',
 							abortReason: errorDescription
 						});
 						computeAndUpdateEditorStatus(editorId);
 						options?.onError && options.onError(errorDescription);
 					} else {
-						useEditorsStore.getState().updateSendProcessStatus(editorId, {
+						useEditorsStore.getState().setSendProcessStatus(editorId, {
 							status: 'completed'
 						});
 						computeAndUpdateEditorStatus(editorId);
@@ -94,7 +94,7 @@ const sendFromEditor = (
 					}
 				})
 				.catch((err) => {
-					useEditorsStore.getState().updateSendProcessStatus(editorId, {
+					useEditorsStore.getState().setSendProcessStatus(editorId, {
 						status: 'aborted',
 						abortReason: err
 					});
@@ -103,7 +103,7 @@ const sendFromEditor = (
 				});
 		})
 		.catch((err) => {
-			useEditorsStore.getState().updateSendProcessStatus(editorId, {
+			useEditorsStore.getState().setSendProcessStatus(editorId, {
 				status: 'aborted',
 				abortReason: err
 			});
@@ -111,7 +111,7 @@ const sendFromEditor = (
 			options?.onError && options.onError(err);
 		});
 
-	useEditorsStore.getState().updateSendProcessStatus(editorId, {
+	useEditorsStore.getState().setSendProcessStatus(editorId, {
 		status: 'running',
 		cancel: cancelableTimer.cancel
 	});

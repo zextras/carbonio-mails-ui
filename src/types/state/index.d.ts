@@ -21,59 +21,44 @@ export type EditorsStateTypeV2 = {
 	editors: MailsEditorMapV2;
 	addEditor: (id: MailsEditorV2['id'], editor: MailsEditorV2) => void;
 	deleteEditor: (id: MailsEditorV2['id']) => void;
-	updateEditor: (id: MailsEditorV2['id'], opt: Partial<MailsEditorV2>) => void;
 
-	updateAction: (id: MailsEditorV2['id'], action: MailsEditorV2['action']) => void;
-	updateSubject: (id: MailsEditorV2['id'], subject: MailsEditorV2['subject']) => void;
-	updateText: (id: MailsEditorV2['id'], text: MailsEditorV2['text']) => void;
-	updateAutoSendTime: (
-		id: MailsEditorV2['id'],
-		autoSendTime: MailsEditorV2['autoSendTime']
-	) => void;
+	setIdentityId: (id: MailsEditorV2['id'], from: MailsEditorV2['identityId']) => void;
+	setSubject: (id: MailsEditorV2['id'], subject: MailsEditorV2['subject']) => void;
+	setText: (id: MailsEditorV2['id'], text: MailsEditorV2['text']) => void;
+	setAutoSendTime: (id: MailsEditorV2['id'], autoSendTime: MailsEditorV2['autoSendTime']) => void;
 	setDid: (id: MailsEditorV2['id'], did: MailsEditorV2['did']) => void;
 	setIsRichText: (id: MailsEditorV2['id'], isRichText: MailsEditorV2['isRichText']) => void;
-	setSignature: (id: MailsEditorV2['id'], signature: MailsEditorV2['signature']) => void;
-	setOriginalId: (id: MailsEditorV2['id'], originalId: MailsEditorV2['originalId']) => void;
-	setOriginalMessage: (
-		id: MailsEditorV2['id'],
-		originalMessage: MailsEditorV2['originalMessage']
-	) => void;
-	updateRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']) => void;
-	updateToRecipients: (
-		id: MailsEditorV2['id'],
-		recipients: MailsEditorV2['recipients']['to']
-	) => void;
-	updateCcRecipients: (
-		id: MailsEditorV2['id'],
-		recipients: MailsEditorV2['recipients']['cc']
-	) => void;
-	updateBccRecipients: (
-		id: MailsEditorV2['id'],
-		recipients: MailsEditorV2['recipients']['bcc']
-	) => void;
-	updateIdentityId: (id: MailsEditorV2['id'], from: MailsEditorV2['identityId']) => void;
-	updateIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
-	updateRequestReadReceipt: (
+	setIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
+	setRequestReadReceipt: (
 		id: MailsEditorV2['id'],
 		requestReadReceipt: MailsEditorV2['requestReadReceipt']
 	) => void;
+	setOriginalId: (id: MailsEditorV2['id'], originalId: MailsEditorV2['originalId']) => void;
 
-	updateDraftSaveAllowedStatus: (
+	setRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']) => void;
+	setToRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']['to']) => void;
+	setCcRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']['cc']) => void;
+	setBccRecipients: (
+		id: MailsEditorV2['id'],
+		recipients: MailsEditorV2['recipients']['bcc']
+	) => void;
+
+	setDraftSaveAllowedStatus: (
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['draftSaveAllowedStatus']
 	) => void;
 
-	updateDraftSaveProcessStatus: (
+	setDraftSaveProcessStatus: (
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['draftSaveProcessStatus']
 	) => void;
 
-	updateSendAllowedStatus: (
+	setSendAllowedStatus: (
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['sendAllowedStatus']
 	) => void;
 
-	updateSendProcessStatus: (
+	setSendProcessStatus: (
 		id: MailsEditorV2['id'],
 		status: MailsEditorV2['sendProcessStatus']
 	) => void;
@@ -92,10 +77,6 @@ export type EditorsStateTypeV2 = {
 	setAttachmentUploadCompleted: (id: MailsEditorV2['id'], uploadId: string, aid: string) => void;
 	removeUnsavedAttachment: (id: MailsEditorV2['id'], uploadId: string) => void;
 	clearStandardAttachments: (id: MailsEditorV2['id']) => void;
-	clearEditors: () => void;
-	clearSubject: (id: MailsEditorV2['id']) => void;
-	clearAutoSendTime: (id: MailsEditorV2['id']) => void;
-	clearText: (id: MailsEditorV2['id']) => void;
 	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
 };
 
