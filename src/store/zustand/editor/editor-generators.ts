@@ -63,7 +63,7 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 	const editorId = uuid();
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
@@ -103,7 +103,7 @@ export const generateIntegratedNewEditor = (
 	const editorId = uuid();
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
@@ -160,7 +160,7 @@ export const generateReplyAndReplyAllMsgEditor = (
 
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
@@ -220,7 +220,7 @@ export const generateForwardMsgEditor = (
 
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
