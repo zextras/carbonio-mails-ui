@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React, { FC } from 'react';
+
 import { Drag } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
-import React, { FC } from 'react';
+
 import type { AppContext, DragItemWrapperProps, MsgListDraggableItemType } from '../../../../types';
 
 type DragCheckProps = {
@@ -65,7 +67,8 @@ export const DragItemWrapper: FC<DragItemWrapperProps> = ({
 	setDraggedIds,
 	dragImageRef,
 	children,
-	dragAndDropIsDisabled
+	dragAndDropIsDisabled,
+	deselectAll
 }) => {
 	const folderId = item.parent;
 	const { isMessageView } = useAppContext<AppContext>();
@@ -77,7 +80,7 @@ export const DragItemWrapper: FC<DragItemWrapperProps> = ({
 	) : (
 		<Drag
 			type="message"
-			data={{ ...item, parentFolderId: folderId, selectedIDs: ids }}
+			data={{ ...item, parentFolderId: folderId, selectedIDs: ids, deselectAll }}
 			style={{ display: 'block' }}
 			onDragStart={(e): void =>
 				dragCheck({ e, id: item.id, selectedItems, setDraggedIds, dragImageRef })

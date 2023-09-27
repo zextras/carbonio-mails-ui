@@ -5,9 +5,9 @@
  */
 import React, { FC, RefObject } from 'react';
 
+import { ConversationListItem } from './conversation-list-item';
 import type { Conversation } from '../../../../types';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
-import { ConversationListItem } from './conversation-list-item';
 
 type ConversationListItemComponentProps = {
 	item: Conversation;
@@ -51,6 +51,7 @@ export const ConversationListItemComponent: FC<ConversationListItemComponentProp
 		setDraggedIds={setDraggedIds}
 		dragImageRef={dragImageRef}
 		dragAndDropIsDisabled={!!isSearchModule}
+		deselectAll={deselectAll}
 	>
 		<ConversationListItem
 			activeItemId={activeItemId}

@@ -146,6 +146,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					replaceHistory(`/folder/${folderId}`);
+					data.data.deselectAll && data.data.deselectAll();
 					getBridgedFunctions()?.createSnackbar({
 						key: `edit`,
 						replace: true,
@@ -177,6 +178,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				})
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
+					data.data.deselectAll && data.data.deselectAll();
 					getBridgedFunctions()?.createSnackbar({
 						key: `edit`,
 						replace: true,

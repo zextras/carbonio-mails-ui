@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React, { FC, memo, useMemo } from 'react';
+
 import { Button, Container, ListV2 } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
-import React, { FC, memo, useMemo } from 'react';
+
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, ConversationMessagesListProps } from '../../../../types';
@@ -56,6 +58,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 										setDraggedIds={setDraggedIds}
 										dragImageRef={dragImageRef}
 										dragAndDropIsDisabled={!!isSearchModule}
+										deselectAll={deselectAll}
 									>
 										<MessageListItem
 											item={message}

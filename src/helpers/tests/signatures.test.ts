@@ -3,12 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, getUserAccount, getUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { cloneDeep } from 'lodash';
+
 import { LineType } from '../../commons/utils';
 import {
 	composeMailBodyWithSignature,
-	getSignature,
 	getSignatures,
 	getSignatureValue,
 	NO_SIGNATURE_ID,
@@ -44,10 +44,10 @@ describe('Signatures', () => {
 
 		test('composeMailBodyWithSignature in rich text with html signature', () => {
 			expect(composeMailBodyWithSignature('lorem ipsum', true)).toBe(
-				`<br/><br/><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum</div>`
+				`<p></p><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum</div>`
 			);
 			expect(composeMailBodyWithSignature('lorem ipsum<br/>lore ipsum', true)).toBe(
-				`<br/><br/><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum<br/>lore ipsum</div>`
+				`<p></p><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum<br/>lore ipsum</div>`
 			);
 			expect(
 				composeMailBodyWithSignature(
@@ -55,7 +55,7 @@ describe('Signatures', () => {
 					true
 				)
 			).toBe(
-				`<br/><br/><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum<img src="./placeholder.png" alt="placeholder.png"/> lorem ipsum</div>`
+				`<p></p><div class="${LineType.SIGNATURE_CLASS}">lorem ipsum<img src="./placeholder.png" alt="placeholder.png"/> lorem ipsum</div>`
 			);
 		});
 	});
