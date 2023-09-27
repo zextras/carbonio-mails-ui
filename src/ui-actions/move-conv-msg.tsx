@@ -3,17 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
-import { noop, some } from 'lodash';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+
+import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
+import { getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { noop, some } from 'lodash';
+
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
+import { Folder } from '../carbonio-ui-commons/types/folder';
+import { isRoot } from '../helpers/folders';
 import { convAction, msgAction } from '../store/actions';
 import { createFolder } from '../store/actions/create-folder';
 import { AppDispatch } from '../store/redux';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
-import { Folder } from '../carbonio-ui-commons/types/folder';
 
 type MoveConvMessageProps = {
 	selectedIDs: string[];
@@ -136,9 +139,7 @@ const MoveConvMessage = ({
 	const isDisabled = useMemo(() => {
 		if (moveConvModal) {
 			return (
-				!folderDestination ||
-				folderDestination?.id === folderId ||
-				folderDestination?.id === FOLDERS.USER_ROOT
+				!folderDestination || folderDestination?.id === folderId || isRoot(folderDestination?.id)
 			);
 		}
 		return !folderDestination || !inputValue.length || hasSameName;
