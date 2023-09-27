@@ -104,7 +104,6 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					defaultValue={recipients}
 					bottomBorderColor="transparent"
 					hasError={some(recipients || [], { error: true })}
-					// errorLabel=""
 				/>
 			) : (
 				<ChipInput
@@ -115,8 +114,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					onChange={onChipInputChange}
 					defaultValue={chipInputValues}
 					background="gray5"
-					// hasError={some(editor?.to || [], { error: true })}
-					// errorLabel=""
+					hasError={some(recipients || [], { error: true })}
 				/>
 			)}
 		</>
