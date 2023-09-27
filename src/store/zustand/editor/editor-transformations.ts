@@ -356,7 +356,7 @@ const createSoapMessageRequestFromEditor = (
 	const soapParticipants = map(participants, (participant) => ({
 		t: participant.type,
 		a: participant.address,
-		d: participant.fullName ?? participant.name
+		p: participant.fullName ?? participant.name
 	}));
 
 	const result: SoapDraftMessageObj = {

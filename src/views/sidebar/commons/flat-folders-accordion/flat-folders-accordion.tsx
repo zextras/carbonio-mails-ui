@@ -4,10 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React, { FC, ReactElement, useCallback, useState } from 'react';
+
 import {
 	Avatar,
 	Collapse,
 	Container,
+	ContainerProps,
 	getColor,
 	Icon,
 	IconButton,
@@ -18,10 +21,10 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { FOLDERS, useLocalStorage, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
-import React, { FC, ReactElement, useCallback, useState } from 'react';
 import styled from 'styled-components';
+
 import { StaticBreadcrumbs } from '../../../../carbonio-ui-commons/components/breadcrumbs/static-breadcrumbs';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import { isRoot } from '../../../../helpers/folders';
@@ -35,6 +38,13 @@ const FolderAccordionPlaceholder = styled.div`
 
 const RootAccordion = styled(Row)`
 	cursor: pointer;
+`;
+
+const CustomContainer = styled(Container)<ContainerProps & { active?: boolean }>`
+	&:hover {
+		background-color: ${({ theme, active }): string =>
+			active ? theme.palette.highlight.active : theme.palette.gray6.hover};
+	}
 `;
 
 const CustomListItemHelper = styled(ListItem)``;
@@ -116,7 +126,7 @@ const FlatFoldersAccordionFolder: FC<FlatFoldersAccordionFolderProps> = ({
 	 * for which a translated name is available
 	 */
 	const crumbs = parts.map((part, index) => ({
-		id: `${index}`,
+		id: `${index} `,
 		label: index === 0 ? getSystemFolderTranslatedName({ folderName: part }) : part
 	}));
 
@@ -158,7 +168,6 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 	const account = useUserAccount();
 
 	const rootLabel = folder.id === FOLDERS.USER_ROOT ? account.name : folder.name;
-
 	const toggleOpen = useCallback(
 		(e: KeyboardEvent | React.SyntheticEvent) => {
 			e.stopPropagation();
@@ -170,28 +179,28 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 		[onOpenStatusChange]
 	);
 
-	const forceOpen = useCallback(
+	const onClick = useCallback(
 		(e: KeyboardEvent | React.SyntheticEvent) => {
 			e.stopPropagation();
 			if (!open) {
 				setOpen(true);
 			}
-		},
-		[open]
-	);
 
+			onFolderSelected && onFolderSelected(folder);
+		},
+		[open, onFolderSelected, folder]
+	);
 	return (
-		<RootAccordion
-			width="fill"
-			data-testid={`folder-accordion-root-${folder.id}`}
-			onClick={forceOpen}
-		>
-			<Container
+		<RootAccordion width="fill" data-testid={`folder-accordion-root-${folder.id}`}>
+			<CustomContainer
 				orientation="horizontal"
 				width="fill"
 				height="fit"
 				mainAlignment="space-between"
 				padding={'small'}
+				onClick={onClick}
+				background={selectedFolderId === folder.id ? 'highlight.active' : 'gray6'}
+				active={selectedFolderId === folder.id}
 			>
 				<Container orientation="horizontal" width="fill" mainAlignment="flex-start">
 					<Padding horizontal="small">
@@ -209,7 +218,7 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 						icon={open ? 'ChevronUp' : 'ChevronDown'}
 					/>
 				</Padding>
-			</Container>
+			</CustomContainer>
 			<Collapse crossSize="100%" orientation="vertical" open={open} disableTransition={false}>
 				<ListV2>
 					{childrenFolders.map<ReactElement>((childFolder) => (

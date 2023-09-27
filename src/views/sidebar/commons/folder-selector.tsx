@@ -3,17 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
-import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
-import { filter, startsWith } from 'lodash';
 import React, { ChangeEvent, ReactElement, useMemo, useState } from 'react';
+
+import { Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
+import { filter, startsWith } from 'lodash';
 import styled from 'styled-components';
+
+import { FlatFoldersAccordion } from './flat-folders-accordion/flat-folders-accordion';
 import { getFolder, useRootsArray } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { isRoot, isSpam, isTrash, isTrashed } from '../../../helpers/folders';
 import { getSortCriteria, sortFolders } from '../../../hooks/use-folders';
 import { getSystemFolderTranslatedName } from '../utils';
-import { FlatFoldersAccordion } from './flat-folders-accordion/flat-folders-accordion';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -67,8 +69,7 @@ function filterRoots(roots: Array<Folder>, nameCriteria: string): Array<Folder> 
 				children: root.children ? filterRootChildren(root.children, nameCriteria) : []
 			});
 		}
-		const result = acc.filter((accItem) => !!accItem.children?.length);
-		return result;
+		return acc.filter((accItem) => !!accItem.children?.length);
 	}, [] as Array<Folder>);
 }
 

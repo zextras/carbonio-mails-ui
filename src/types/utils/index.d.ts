@@ -101,4 +101,5 @@ export type DragItemWrapperProps = {
 	setDraggedIds: (ids: Record<string, boolean>) => void;
 	dragImageRef: React.RefObject<HTMLElement> | undefined;
 	dragAndDropIsDisabled: boolean;
+	deselectAll: () => void;
 };
