@@ -25,13 +25,6 @@ export type TextEditorContainerProps = {
 	minHeight: number;
 	disabled: boolean;
 	editorId: MailsEditorV2['id'];
-	// draftSavedAt: string;
-	// minHeight: number;
-	// setValue: (name: string, value: any) => void;
-	// updateEditorCb: (data: Partial<MailsEditor>) => void;
-	// updateSubjectField: (mod: Partial<MailsEditor>) => void;
-	// saveDraftCb: (data: MailsEditor, signal?: AbortSignal) => SaveDraftResponse;
-	// textValue: [string, string];
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({

@@ -11,7 +11,6 @@ import React, {
 	SyntheticEvent,
 	useCallback,
 	useMemo,
-	useRef,
 	useState
 } from 'react';
 
@@ -89,13 +88,12 @@ export const EditView: FC<EditViewProp> = ({
 	hideController,
 	showController
 }) => {
-	const inputRef = useRef<HTMLInputElement>(null);
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { text, setText } = useEditorText(editorId);
 	const { identityId, setIdentityId } = useEditorIdentityId(editorId);
 	const { recipients, setRecipients } = useEditorRecipients(editorId);
-	const { autoSendTime, setAutoSendTime } = useEditorAutoSendTime(editorId);
+	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
@@ -106,8 +104,6 @@ export const EditView: FC<EditViewProp> = ({
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const { addStandardAttachments, addInlineAttachments, hasStandardAttachments } =
 		useEditorAttachments(editorId);
-
-	// console.count('*** render editview');
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(

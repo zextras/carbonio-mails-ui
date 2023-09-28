@@ -35,28 +35,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateEditor: (id: MailsEditorV2['id'], opt: Partial<MailsEditorV2>): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id] = {
-						...state.editors[id],
-						...opt
-					};
-				}
-			})
-		);
-	},
-	updateAction: (id: MailsEditorV2['id'], action: MailsEditorV2['action']): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].action = action;
-				}
-			})
-		);
-	},
-	updateSubject: (id: MailsEditorV2['id'], subject: MailsEditorV2['subject']): void => {
+	setSubject: (id: MailsEditorV2['id'], subject: MailsEditorV2['subject']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
@@ -65,7 +44,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateText: (id: MailsEditorV2['id'], text: MailsEditorV2['text']): void => {
+	setText: (id: MailsEditorV2['id'], text: MailsEditorV2['text']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
@@ -74,10 +53,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateAutoSendTime: (
-		id: MailsEditorV2['id'],
-		autoSendTime: MailsEditorV2['autoSendTime']
-	): void => {
+	setAutoSendTime: (id: MailsEditorV2['id'], autoSendTime: MailsEditorV2['autoSendTime']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
@@ -113,28 +89,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	setSignature: (id: MailsEditorV2['id'], signature: MailsEditorV2['signature']): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].signature = signature;
-				}
-			})
-		);
-	},
-	setOriginalMessage: (
-		id: MailsEditorV2['id'],
-		originalMessage: MailsEditorV2['originalMessage']
-	): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].originalMessage = originalMessage;
-				}
-			})
-		);
-	},
-	updateRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']): void => {
+	setRecipients: (id: MailsEditorV2['id'], recipients: MailsEditorV2['recipients']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
@@ -143,7 +98,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateToRecipients: (
+	setToRecipients: (
 		id: MailsEditorV2['id'],
 		recipients: MailsEditorV2['recipients']['to']
 	): void => {
@@ -155,7 +110,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateCcRecipients: (
+	setCcRecipients: (
 		id: MailsEditorV2['id'],
 		recipients: MailsEditorV2['recipients']['cc']
 	): void => {
@@ -167,7 +122,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateBccRecipients: (
+	setBccRecipients: (
 		id: MailsEditorV2['id'],
 		recipients: MailsEditorV2['recipients']['bcc']
 	): void => {
@@ -179,7 +134,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateIdentityId: (id: MailsEditorV2['id'], from: MailsEditorV2['identityId']): void => {
+	setIdentityId: (id: MailsEditorV2['id'], from: MailsEditorV2['identityId']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
@@ -188,7 +143,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateIsUrgent: (id: MailsEditorV2['id'], value: MailsEditorV2['isUrgent']): void => {
+	setIsUrgent: (id: MailsEditorV2['id'], value: MailsEditorV2['isUrgent']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
@@ -197,7 +152,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateRequestReadReceipt: (
+	setRequestReadReceipt: (
 		id: MailsEditorV2['id'],
 		value: MailsEditorV2['requestReadReceipt']
 	): void => {
@@ -209,7 +164,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateDraftSaveAllowedStatus: (id, status): void => {
+	setDraftSaveAllowedStatus: (id, status): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
@@ -218,7 +173,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateDraftSaveProcessStatus: (id, status): void => {
+	setDraftSaveProcessStatus: (id, status): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
@@ -227,7 +182,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateSendAllowedStatus: (id, status): void => {
+	setSendAllowedStatus: (id, status): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
@@ -236,7 +191,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	updateSendProcessStatus: (id, status): void => {
+	setSendProcessStatus: (id, status): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
@@ -349,44 +304,6 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 					state.editors[id].unsavedAttachments = filterUnsavedInlineAttachment(
 						state.editors[id].unsavedAttachments
 					);
-				}
-			})
-		);
-	},
-
-	clearEditors: (): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				state.editors = {};
-			})
-		);
-	},
-	clearSubject: (id: MailsEditorV2['id']): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].subject = '';
-				}
-			})
-		);
-	},
-	clearAutoSendTime: (id: MailsEditorV2['id']): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].autoSendTime = undefined;
-				}
-			})
-		);
-	},
-	clearText: (id: MailsEditorV2['id']): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].text = {
-						plainText: '',
-						richText: ''
-					};
 				}
 			})
 		);

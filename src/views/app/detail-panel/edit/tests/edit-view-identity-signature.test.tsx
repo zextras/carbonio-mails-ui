@@ -23,7 +23,7 @@ import {
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
-import { EditView, EditViewProp } from '../edit-view-v2';
+import { EditView, EditViewProp } from '../edit-view';
 
 /**
  * Test the EditView component for set signature for selected from identity

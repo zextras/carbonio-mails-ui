@@ -15,7 +15,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
-import { EditView } from './edit-view-v2';
+import { EditView } from './edit-view';
 import { keepOrDiscardDraft } from './parts/delete-draft';
 import { CLOSE_BOARD_REASON, EditViewActions } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';

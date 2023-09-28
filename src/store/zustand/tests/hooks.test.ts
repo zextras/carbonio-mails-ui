@@ -14,7 +14,6 @@ import {
 	addEditor,
 	getEditor,
 	deleteEditor,
-	updateEditor,
 	useEditorSubject,
 	useEditorText,
 	useEditorAutoSendTime
@@ -43,16 +42,6 @@ describe('all editor hooks', () => {
 			addEditor({ id: editor.id, editor });
 			const editorFromStore = getEditor({ id: editor.id });
 			expect(editorFromStore).toEqual(editor);
-		});
-
-		test('updateEditor update the editor in the store', async () => {
-			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1, generateStore().dispatch);
-			addEditor({ id: editor.id, editor });
-			const newEditor = { ...editor, subject: 'new subject' };
-			updateEditor({ id: editor.id, editor: newEditor });
-			const editorFromStore = getEditor({ id: editor.id });
-			expect(editorFromStore).toEqual(newEditor);
 		});
 
 		test('deleteEditor deletes an editor from the store', async () => {
