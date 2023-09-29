@@ -101,8 +101,7 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 	}
 
 	const onMessageSent = useCallback(() => {
-		// The cast is necessary because of a bad typization
-		const callback = board.context?.onConfirm as any;
+		const callback = board.context?.onConfirm;
 		if (!callback) {
 			return;
 		}

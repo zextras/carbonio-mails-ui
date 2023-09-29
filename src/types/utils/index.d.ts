@@ -33,7 +33,7 @@ export type AppContext = {
 export type EditViewBoardContext = {
 	editorId?: string;
 	compositionData?: EditorPrefillData;
-	onConfirm?: () => void;
+	onConfirm?: (param: { editor: { text: [string, string] }; onBoardClose: () => void }) => void;
 };
 
 export type BoardContext = {
