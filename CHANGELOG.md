@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.16](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.15...v1.6.16) (2023-09-29)
+
+
+### Bug Fixes
+
+* badge in conversation of shared folders does not always show correct number ([#423](https://github.com/zextras/carbonio-mails-ui/issues/423)) ([62e9939](https://github.com/zextras/carbonio-mails-ui/commit/62e9939a45fbe76c5e6a8fd53a1752ebc8d724c3))
+* **editor:** avoid the losing of content when re-editing a draft ([0dd43cd](https://github.com/zextras/carbonio-mails-ui/commit/0dd43cd3beb8de8d56614eccb0545458a599fbfa))
+* **editor:** editor breaks while editing a deletion of a calendars appointment ([#459](https://github.com/zextras/carbonio-mails-ui/issues/459)) ([296d8a1](https://github.com/zextras/carbonio-mails-ui/commit/296d8a1d759ca900006c45d0cebe9fb4a2a3a375))
+* **editor:** replace the br tags added by default on top of the mails ([94e6b47](https://github.com/zextras/carbonio-mails-ui/commit/94e6b4713fb640e81b8cf2b20660fb8564fdbca3))
+* memoized redux selectors ([#435](https://github.com/zextras/carbonio-mails-ui/issues/435)) ([aa1617f](https://github.com/zextras/carbonio-mails-ui/commit/aa1617f56ce7de6ed545ac01d25c83ba06a85ce0))
+* when sending a message, mail From is not using from the user setting ([8fc4c98](https://github.com/zextras/carbonio-mails-ui/commit/8fc4c98cd47ce849932df2c92c2b0fac06367e2e))
+* with selection mode, moving different emails in different folder having issue ([d92a496](https://github.com/zextras/carbonio-mails-ui/commit/d92a496fb0a703b885b0e965cf6d30a443d222b8))
+
 ### [1.6.15](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.14...v1.6.15) (2023-09-19)
 
 
