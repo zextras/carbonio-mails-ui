@@ -73,6 +73,7 @@ export type EditViewProp = {
 	closeController?: ({ reason }: { reason?: CloseBoardReasons }) => void;
 	hideController?: () => void;
 	showController?: () => void;
+	onMessageSent?: () => void;
 };
 
 type FileSelectProps = {
@@ -86,7 +87,8 @@ export const EditView: FC<EditViewProp> = ({
 	editorId,
 	closeController,
 	hideController,
-	showController
+	showController,
+	onMessageSent
 }) => {
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
@@ -172,8 +174,9 @@ export const EditView: FC<EditViewProp> = ({
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
+		onMessageSent && onMessageSent();
 		deleteEditor({ id: editorId });
-	}, [createSnackbar, editorId]);
+	}, [createSnackbar, editorId, onMessageSent]);
 
 	const createModal = useModal();
 	const onScheduledSendClick = useCallback(

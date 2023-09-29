@@ -67,6 +67,7 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 	const messagesStoreDispatch = useAppDispatch();
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
+
 	/*
 	 * If the current component is running inside a board
 	 * its context is examined to get an existing editor id
@@ -84,7 +85,6 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 
 	// Create or resume editor
 	const compositionData = board.context?.compositionData;
-	const onMessageSend = board.context?.onConfirm;
 	const editor = generateEditor({
 		action,
 		id: entityId,
@@ -100,6 +100,19 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 		addEditor({ id: editor.id, editor });
 	}
 
+	const onMessageSent = useCallback(() => {
+		// The cast is necessary because of a bad typization
+		const callback = board.context?.onConfirm as any;
+		if (!callback) {
+			return;
+		}
+		callback &&
+			callback({
+				editor: { text: [editor.text.plainText, editor.text.richText] },
+				onBoardClose: noop
+			});
+	}, [board.context?.onConfirm, editor.text.plainText, editor.text.richText]);
+
 	const draftId = useEditorDid(editor.id).did;
 	const { saveDraft } = useEditorDraftSave(editor.id);
 	const updateBoard = boardUtilities?.updateBoard;
@@ -112,7 +125,6 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 				updateBoard({
 					onClose: noop
 				});
-				onMessageSend && onMessageSend();
 			}
 			closeBoard(board.id);
 			updateBoard({
@@ -128,7 +140,7 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 				}
 			});
 		},
-		[board.id, draftId, editor.id, saveDraft, updateBoard, onMessageSend]
+		[board.id, draftId, editor.id, saveDraft, updateBoard]
 	);
 
 	/*
@@ -168,7 +180,13 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [draftId]);
 
-	return <MemoizedEditView editorId={editor.id} closeController={onClose} />;
+	return (
+		<MemoizedEditView
+			editorId={editor.id}
+			closeController={onClose}
+			onMessageSent={onMessageSent}
+		/>
+	);
 };
 
 const MemoizedEditViewControllerCore = memo(EditViewControllerCore);
