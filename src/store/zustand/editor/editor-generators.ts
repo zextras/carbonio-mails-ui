@@ -13,6 +13,7 @@ import {
 	filterSavedInlineAttachment
 } from './editor-utils';
 import { getEditor } from './hooks';
+import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { LineType } from '../../../commons/utils';
 import { EditViewActions } from '../../../constants';
@@ -28,7 +29,8 @@ import {
 	EditorPrefillData,
 	MailMessage,
 	MailsEditorV2,
-	UnsavedAttachment
+	UnsavedAttachment,
+	Participant
 } from '../../../types';
 import {
 	extractBody,
@@ -63,7 +65,7 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 	const editorId = uuid();
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
@@ -94,6 +96,45 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 };
 
 /**
+ * Temporary type to keep backward compatibility with Calendars
+ */
+type InviteParticipant = {
+	name: string;
+	email: string;
+	isOptional: boolean;
+	response: string;
+};
+
+const isInviteParticipant = (participant: any): participant is InviteParticipant =>
+	'name' in participant &&
+	'email' in participant &&
+	'isOptional' in participant &&
+	'response' in participant;
+
+const normalizeParticipant = (
+	abstractParticipant: InviteParticipant | Partial<Participant>
+): Participant => {
+	const isParticipant = !isInviteParticipant(abstractParticipant);
+	return {
+		type: isParticipant && abstractParticipant.type ? abstractParticipant.type : ParticipantRole.TO,
+		address:
+			isParticipant && abstractParticipant.address
+				? abstractParticipant.address
+				: abstractParticipant.email ?? '',
+		name: abstractParticipant.name,
+		fullName: isParticipant ? abstractParticipant.fullName : abstractParticipant.name,
+		email: abstractParticipant.email
+	};
+};
+
+const normalizeParticipants = (
+	abstractParticipants: Array<InviteParticipant | Partial<Participant>> | undefined
+): Array<Participant> =>
+	abstractParticipants
+		? abstractParticipants.map((abstractParticipant) => normalizeParticipant(abstractParticipant))
+		: [];
+
+/**
  *
  */
 export const generateIntegratedNewEditor = (
@@ -101,9 +142,18 @@ export const generateIntegratedNewEditor = (
 	compositionData?: EditorPrefillData
 ): MailsEditorV2 => {
 	const editorId = uuid();
+
+	const plainText = compositionData?.text?.[0] ?? `\n\n${LineType.SIGNATURE_PRE_SEP}\n`;
+	const richText =
+		compositionData?.text?.[1] ?? `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`;
+
+	const recipients = compositionData?.recipients
+		? compositionData.recipients
+		: normalizeParticipants(compositionData?.to);
+
 	const text = {
-		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		plainText,
+		richText
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
@@ -128,14 +178,13 @@ export const generateIntegratedNewEditor = (
 		isRichText: true,
 		isUrgent: false,
 		recipients: {
-			to: compositionData?.recipients ? compositionData.recipients : [],
+			to: recipients ?? [],
 			cc: [],
 			bcc: []
 		},
-		subject: '',
+		subject: compositionData?.subject ?? '',
 		text: textWithSignature,
 		requestReadReceipt: false,
-		// signature,
 		messagesStoreDispatch
 	} as MailsEditorV2;
 
@@ -160,7 +209,7 @@ export const generateReplyAndReplyAllMsgEditor = (
 
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
@@ -220,7 +269,7 @@ export const generateForwardMsgEditor = (
 
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
-		richText: `<br/><br/><div class="${LineType.SIGNATURE_CLASS}"></div>`
+		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
@@ -380,7 +429,6 @@ export const generateEditor = ({
 		case EditViewActions.NEW:
 			return generateNewMessageEditor(messagesStoreDispatch);
 		case EditViewActions.REPLY:
-			// TODO
 			if (!id) {
 				throw new Error('Cannot generate a reply editor without a message id');
 			}
@@ -389,7 +437,6 @@ export const generateEditor = ({
 			}
 			break;
 		case EditViewActions.REPLY_ALL:
-			// TODO
 			if (!id) {
 				throw new Error('Cannot generate a reply all editor without a message id');
 			}
@@ -398,7 +445,6 @@ export const generateEditor = ({
 			}
 			break;
 		case EditViewActions.FORWARD:
-			// TODO
 			if (!id) {
 				throw new Error('Cannot generate a forward editor without a message id');
 			}
@@ -407,7 +453,6 @@ export const generateEditor = ({
 			}
 			break;
 		case EditViewActions.EDIT_AS_DRAFT:
-			// TODO
 			if (!id) {
 				throw new Error('Cannot generate a draft editor without a message id');
 			}
@@ -416,7 +461,6 @@ export const generateEditor = ({
 			}
 			break;
 		case EditViewActions.EDIT_AS_NEW:
-			// TODO
 			if (!id) {
 				throw new Error('Cannot generate an edit as new editor without a message id');
 			}
@@ -425,8 +469,8 @@ export const generateEditor = ({
 			}
 			break;
 		case EditViewActions.MAIL_TO:
+		case EditViewActions.COMPOSE:
 		case EditViewActions.PREFILL_COMPOSE:
-			// TODO
 			return generateIntegratedNewEditor(messagesStoreDispatch, compositionData);
 			break;
 		default:

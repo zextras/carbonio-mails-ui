@@ -112,7 +112,15 @@ export type EditorPrefillData = {
 	aid?: Array<string>;
 	subject?: string;
 	urgent?: boolean;
-	recipients?: Partial<Participant>;
+	recipients?: Array<Partial<Participant>>;
+	/**
+	 * @deprecated - added for backward compatibility
+	 */
+	text?: [string, string];
+	/**
+	 * @deprecated - added for backward compatibility
+	 */
+	to?: Array<Partial<Participant>>;
 };
 
 export type EditViewActionsType = (typeof EditViewActions)[keyof typeof EditViewActions];

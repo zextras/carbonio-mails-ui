@@ -11,7 +11,6 @@ import React, {
 	SyntheticEvent,
 	useCallback,
 	useMemo,
-	useRef,
 	useState
 } from 'react';
 
@@ -74,6 +73,7 @@ export type EditViewProp = {
 	closeController?: ({ reason }: { reason?: CloseBoardReasons }) => void;
 	hideController?: () => void;
 	showController?: () => void;
+	onMessageSent?: () => void;
 };
 
 type FileSelectProps = {
@@ -87,15 +87,15 @@ export const EditView: FC<EditViewProp> = ({
 	editorId,
 	closeController,
 	hideController,
-	showController
+	showController,
+	onMessageSent
 }) => {
-	const inputRef = useRef<HTMLInputElement>(null);
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { text, setText } = useEditorText(editorId);
 	const { identityId, setIdentityId } = useEditorIdentityId(editorId);
 	const { recipients, setRecipients } = useEditorRecipients(editorId);
-	const { autoSendTime, setAutoSendTime } = useEditorAutoSendTime(editorId);
+	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
@@ -106,8 +106,6 @@ export const EditView: FC<EditViewProp> = ({
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const { addStandardAttachments, addInlineAttachments, hasStandardAttachments } =
 		useEditorAttachments(editorId);
-
-	// console.count('*** render editview');
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(
@@ -176,8 +174,9 @@ export const EditView: FC<EditViewProp> = ({
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
+		onMessageSent && onMessageSent();
 		deleteEditor({ id: editorId });
-	}, [createSnackbar, editorId]);
+	}, [createSnackbar, editorId, onMessageSent]);
 
 	const createModal = useModal();
 	const onScheduledSendClick = useCallback(

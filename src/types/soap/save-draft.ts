@@ -36,6 +36,7 @@ export type SoapEmailInfoObj = {
 	d?: string;
 	t: ParticipantRoleType;
 	isGroup?: 0 | 1;
+	p?: string;
 };
 
 export type SoapDraftMessageObj = {

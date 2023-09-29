@@ -7,7 +7,7 @@ import { useCallback } from 'react';
 
 import { computeAndUpdateEditorStatus } from './commons';
 import { debouncedSaveDraftFromEditor } from './save-draft';
-import { EditViewActionsType, MailsEditorV2 } from '../../../../types';
+import { MailsEditorV2 } from '../../../../types';
 import { useEditorsStore } from '../store';
 
 /**
@@ -26,25 +26,6 @@ import { useEditorsStore } from '../store';
  */
 
 /**
- * Returns reactive references to the action value and to its setter
- * @param id
- */
-export const useEditorAction = (
-	id: MailsEditorV2['id']
-): { action: string; setAction: (action: EditViewActionsType) => void } => {
-	const value = useEditorsStore((state) => state.editors[id].action);
-	const setter = useEditorsStore((state) => state.updateAction);
-
-	return {
-		action: value,
-		setAction: (val: EditViewActionsType): void => {
-			setter(id, val);
-			debouncedSaveDraftFromEditor(id);
-		}
-	};
-};
-
-/**
  * Returns reactive references to the subject value and to its setter
  * @param id
  */
@@ -52,7 +33,7 @@ export const useEditorSubject = (
 	id: MailsEditorV2['id']
 ): { subject: string; setSubject: (subject: string) => void } => {
 	const value = useEditorsStore((state) => state.editors[id].subject);
-	const setter = useEditorsStore((state) => state.updateSubject);
+	const setter = useEditorsStore((state) => state.setSubject);
 
 	return {
 		subject: value,
@@ -75,7 +56,7 @@ export const useEditorText = (
 	resetText: () => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].text);
-	const setter = useEditorsStore((state) => state.updateText);
+	const setter = useEditorsStore((state) => state.setText);
 	const setText = useCallback(
 		(val: MailsEditorV2['text']): void => {
 			setter(id, val);
@@ -107,7 +88,7 @@ export const useEditorAutoSendTime = (
 	setAutoSendTime: (autoSendTime: MailsEditorV2['autoSendTime']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].autoSendTime);
-	const setter = useEditorsStore((state) => state.updateAutoSendTime);
+	const setter = useEditorsStore((state) => state.setAutoSendTime);
 
 	return {
 		autoSendTime: value,
@@ -163,65 +144,6 @@ export const useEditorIsRichText = (
 };
 
 /**
- * Returns reactive references to the signature value and to its setter
- * @params id
- */
-export const useEditorSignature = (
-	id: MailsEditorV2['id']
-): {
-	signature: MailsEditorV2['signature'];
-	setSignature: (signature: MailsEditorV2['signature']) => void;
-} => {
-	const value = useEditorsStore((state) => state.editors[id].signature);
-	const setter = useEditorsStore((state) => state.setSignature);
-
-	return {
-		signature: value,
-		setSignature: (val: MailsEditorV2['signature']) => setter(id, val)
-	};
-};
-
-/**
- * Returns reactive references to the originalId value and to its setter
- * @params id
- */
-export const useEditorOriginalId = (
-	id: MailsEditorV2['id']
-): {
-	originalId: MailsEditorV2['originalId'];
-	setOriginalId: (originalId: MailsEditorV2['originalId']) => void;
-} => {
-	const value = useEditorsStore((state) => state.editors[id].originalId);
-	const setter = useEditorsStore((state) => state.setOriginalId);
-
-	return {
-		originalId: value,
-		setOriginalId: (val: MailsEditorV2['originalId']) => setter(id, val)
-	};
-};
-
-/**
- * set the originalMessage of a specific editor.
- * @params id
- * @params originalMessage
- */
-export const useSetOriginalMessage = ({
-	editorId,
-	originalMessage
-}: {
-	editorId: MailsEditorV2['id'];
-	originalMessage: MailsEditorV2['originalMessage'];
-}): void => useEditorsStore((s) => s.setOriginalMessage(editorId, originalMessage));
-
-export const getSetOriginalMessage = ({
-	id,
-	originalMessage
-}: {
-	id: MailsEditorV2['id'];
-	originalMessage: MailsEditorV2['originalMessage'];
-}): void => useEditorsStore.getState().setOriginalMessage(id, originalMessage);
-
-/**
  * Returns reactive references to the "to" recipients values and to their setter
  * @param editorId
  */
@@ -232,7 +154,7 @@ export const useEditorRecipients = (
 	setRecipients: (recipient: MailsEditorV2['recipients']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[editorId].recipients);
-	const setter = useEditorsStore((state) => state.updateRecipients);
+	const setter = useEditorsStore((state) => state.setRecipients);
 
 	return {
 		recipients: value,
@@ -255,7 +177,7 @@ export const useEditorToRecipients = (
 	setToRecipients: (recipient: MailsEditorV2['recipients']['to']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.to);
-	const setter = useEditorsStore((state) => state.updateToRecipients);
+	const setter = useEditorsStore((state) => state.setToRecipients);
 
 	return {
 		toRecipients: value,
@@ -278,7 +200,7 @@ export const useEditorCcRecipients = (
 	setCcRecipients: (recipient: MailsEditorV2['recipients']['cc']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.cc);
-	const setter = useEditorsStore((state) => state.updateCcRecipients);
+	const setter = useEditorsStore((state) => state.setCcRecipients);
 
 	return {
 		ccRecipients: value,
@@ -301,7 +223,7 @@ export const useEditorBccRecipients = (
 	setBccRecipients: (recipient: MailsEditorV2['recipients']['bcc']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.bcc);
-	const setter = useEditorsStore((state) => state.updateBccRecipients);
+	const setter = useEditorsStore((state) => state.setBccRecipients);
 
 	return {
 		bccRecipients: value,
@@ -324,7 +246,7 @@ export const useEditorIdentityId = (
 	setIdentityId: (from: MailsEditorV2['identityId']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[editorId].identityId);
-	const setter = useEditorsStore((state) => state.updateIdentityId);
+	const setter = useEditorsStore((state) => state.setIdentityId);
 
 	return {
 		identityId: value,
@@ -347,7 +269,7 @@ export const useEditorIsUrgent = (
 	setIsUrgent: (isUrgent: MailsEditorV2['isUrgent']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].isUrgent);
-	const setter = useEditorsStore((state) => state.updateIsUrgent);
+	const setter = useEditorsStore((state) => state.setIsUrgent);
 
 	return {
 		isUrgent: value,
@@ -369,7 +291,7 @@ export const useEditorRequestReadReceipt = (
 	setRequestReadReceipt: (requestReadReceipt: MailsEditorV2['requestReadReceipt']) => void;
 } => {
 	const value = useEditorsStore((state) => state.editors[id].requestReadReceipt);
-	const setter = useEditorsStore((state) => state.updateRequestReadReceipt);
+	const setter = useEditorsStore((state) => state.setRequestReadReceipt);
 
 	return {
 		requestReadReceipt: value,

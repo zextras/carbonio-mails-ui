@@ -22,7 +22,7 @@ export const computeAndUpdateEditorStatus = (editorId: MailsEditorV2['id']): voi
 
 	useEditorsStore
 		.getState()
-		.updateDraftSaveAllowedStatus(editorId, computeDraftSaveAllowedStatus(editor));
+		.setDraftSaveAllowedStatus(editorId, computeDraftSaveAllowedStatus(editor));
 
-	useEditorsStore.getState().updateSendAllowedStatus(editorId, computeSendAllowedStatus(editor));
+	useEditorsStore.getState().setSendAllowedStatus(editorId, computeSendAllowedStatus(editor));
 };

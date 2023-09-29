@@ -41,11 +41,23 @@ import type {
 	SoapMailMessage,
 	SoapMailMessagePart
 } from '../../../../../types';
-import { EditView, EditViewProp } from '../edit-view-v2';
+import { EditView, EditViewProp } from '../edit-view';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
 const CT_MULTIPART_ALTERNATIVE = 'multipart/alternative';
+
+const extractPartContent = (content: string | { _content: string } | undefined): string => {
+	if (!content) {
+		return '';
+	}
+
+	if (typeof content === 'string') {
+		return content;
+	}
+
+	return content._content;
+};
 
 /**
  * Extracts the content of the mail message body, if it is found,
@@ -87,7 +99,7 @@ const getSoapMailBodyContent = (
 			return '';
 		}
 
-		return part.content && typeof part.content === 'string' ? part.content : '';
+		return extractPartContent(part.content);
 	}
 
 	return '';
@@ -104,7 +116,7 @@ describe('Edit view', () => {
 		/**
 		 * Test the creation of a new email
 		 */
-		test.skip('create a new email', async () => {
+		test('create a new email', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
@@ -113,6 +125,7 @@ describe('Edit view', () => {
 			// Get the default identity address
 			const mocksContext = getMocksContext();
 			const from = mocksContext.identities.primary.identity.email;
+			const { fullName } = mocksContext.identities.primary.identity;
 			const address = faker.internet.email();
 			const ccAddress = faker.internet.email();
 			const subject = faker.lorem.sentence(1);
@@ -125,7 +138,7 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
-			// expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
+			expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 			// Get the components
 			const btnSend =
@@ -168,6 +181,7 @@ describe('Edit view', () => {
 
 			// Insert a text inside editor
 			await user.type(editorTextareaElement, body);
+			await user.click(subjectInputElement);
 
 			// Check for the status of the "send" button to be enabled
 			expect(btnSend).toBeEnabled();
@@ -209,12 +223,9 @@ describe('Edit view', () => {
 				);
 			});
 
-			await waitFor(
-				() => {
-					expect(btnSend).toBeEnabled();
-				},
-				{ timeout: 5000 }
-			);
+			await waitFor(() => {
+				expect(btnSend).toBeEnabled();
+			});
 
 			// Click on the "send" button
 			// The button's existence is already tested above
@@ -223,7 +234,7 @@ describe('Edit view', () => {
 			await user.click(btnSend);
 
 			// Check if a snackbar (countdown) will appear
-			await screen.findByText('messages.snackbar.sending_mail_in_count', {}, { timeout: 5000 });
+			await screen.findByText('messages.snackbar.sending_mail_in_count', {}, { timeout: 2000 });
 
 			// Wait for the snackbar to disappear
 			await waitForElementToBeRemoved(
@@ -231,30 +242,30 @@ describe('Edit view', () => {
 				{ timeout: 10000 }
 			);
 
+			act(() => {
+				jest.advanceTimersByTime(4000);
+			});
+
 			// Obtain the message from the rest handler
 			const msg = await sendMsgPromise;
 
 			// Check the content of the message
 			expect(msg.su._content).toBe(subject);
+
 			msg.e.forEach((participant) => {
 				if (participant.t === 't') {
 					expect(participant.a).toBe(address);
 				} else if (participant.t === 'f') {
 					expect(participant.a).toBe(from);
+					expect(participant.p).toBe(fullName);
 				}
 			});
-
-			await waitFor(
-				() => {
-					expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
-				},
-				{ timeout: 30000 }
-			);
 
 			// Check if a snackbar (email sent) will appear
 			// await screen.findByText('messages.snackbar.mail_sent', {}, { timeout: 5000 });
 			// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
-		}, 20000);
+			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
+		}, 200000);
 	});
 
 	/**

@@ -7,13 +7,14 @@
 
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state", conversation", "message", "cache", "status"] }] */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach, merge, mergeWith } from 'lodash';
 
 import { search, getConv, getMsg, msgAction, searchConv } from './actions';
 import { deleteAttachments } from './actions/delete-all-attachments';
+import { saveDraftAsyncThunk } from './actions/save-draft';
 import {
 	handleCreatedMessagesReducer,
 	handleModifiedMessagesReducer,
@@ -30,7 +31,9 @@ import type {
 	FetchConversationsReturn,
 	SearchConvReturn,
 	MsgActionResult,
-	DeleteAttachmentsReturn
+	DeleteAttachmentsReturn,
+	MsgMapValue,
+	SaveDraftResponse
 } from '../types';
 
 function getMsgFulfilled(
@@ -77,6 +80,18 @@ function deleteAttachmentsFulfilled(
 	if (payload?.attachments?.length && state.messages[meta.arg.id]) {
 		const normalizeMsg = normalizeMailMessageFromSoap(payload.res.m[0], true);
 		state.messages[meta.arg.id] = { ...state.messages[meta.arg.id], parts: normalizeMsg.parts };
+	}
+}
+
+function saveDraftFulfilled(
+	{ messages, status }: MsgStateType,
+	{ payload }: { payload: { resp: SaveDraftResponse } }
+): void {
+	if (payload.resp.m) {
+		const message = normalizeMailMessageFromSoap(payload.resp?.m?.[0], true);
+		status[message.id] = 'complete';
+		// eslint-disable-next-line no-param-reassign
+		messages[message.id] = message;
 	}
 }
 
@@ -145,6 +160,8 @@ export const getMessagesSliceInitialState = (): MsgStateType =>
 		status: {}
 	} as MsgStateType);
 
+const selectMessagesSlice = (state: MailsStateType): MailsStateType['messages'] => state.messages;
+
 export const messagesSlice = createSlice({
 	name: 'messages',
 	initialState: getMessagesSliceInitialState(),
@@ -160,6 +177,7 @@ export const messagesSlice = createSlice({
 		builder.addCase(msgAction.pending, produce(msgActionPending));
 		builder.addCase(msgAction.rejected, produce(msgActionRejected));
 		builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
+		builder.addCase(saveDraftAsyncThunk.fulfilled, produce(saveDraftFulfilled));
 		builder.addCase(search.fulfilled, produce(fetchConversationsFulfilled));
 		builder.addCase(deleteAttachments.fulfilled, produce(deleteAttachmentsFulfilled));
 	}
@@ -177,11 +195,10 @@ export function selectMessages(state: MailsStateType): MsgMap {
 	return state?.messages?.messages;
 }
 
-export function selectMessagesArray(state: MailsStateType): Array<MailMessage> {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	return Object.values(state?.messages?.messages ?? []);
-}
+export const selectMessagesArray = createSelector(
+	[selectMessagesSlice],
+	(slice): Array<MsgMapValue> => Object.values(slice.messages ?? [])
+);
 
 export function selectMessagesStatus(state: MailsStateType): Record<string, string> {
 	return state?.messages?.status;

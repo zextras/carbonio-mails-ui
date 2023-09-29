@@ -23,7 +23,7 @@ export const mailToSharedFunction: (contacts: Array<Partial<Participant>>) => vo
 };
 
 export const openComposerSharedFunction: (
-	onConfirm: any,
+	onConfirm: () => void,
 	compositionData: EditorPrefillData,
 	...rest: any[]
 ) => void = (onConfirm, compositionData, ...rest) => {
@@ -44,18 +44,6 @@ export const openPrefilledComposerSharedFunction: (
 	editorPrefillData?: EditorPrefillData,
 	...rest: never[]
 ) => void = (editorPrefillData, ...rest) => {
-	// // removing values from item which needs normalization
-	// const normalizedValues = omit(editorPrefillData, ['aid']);
-	//
-	// // normalize values
-	// const attach =
-	// 	editorPrefillData?.aid && editorPrefillData?.aid?.length > 0
-	// 		? { aid: editorPrefillData.aid.join(',') }
-	// 		: undefined;
-	//
-	// // removing nil values
-	// const editor = omitBy({ ...normalizedValues, attach }, isNil);
-
 	// add board with custom editor
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore

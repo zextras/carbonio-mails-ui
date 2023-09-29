@@ -15,7 +15,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
-import { EditView } from './edit-view-v2';
+import { EditView } from './edit-view';
 import { keepOrDiscardDraft } from './parts/delete-draft';
 import { CLOSE_BOARD_REASON, EditViewActions } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
@@ -67,6 +67,7 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 	const messagesStoreDispatch = useAppDispatch();
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
+
 	/*
 	 * If the current component is running inside a board
 	 * its context is examined to get an existing editor id
@@ -98,6 +99,18 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 	if (action !== EditViewActions.RESUME) {
 		addEditor({ id: editor.id, editor });
 	}
+
+	const onMessageSent = useCallback(() => {
+		const callback = board.context?.onConfirm;
+		if (!callback) {
+			return;
+		}
+		callback &&
+			callback({
+				editor: { text: [editor.text.plainText, editor.text.richText] },
+				onBoardClose: noop
+			});
+	}, [board.context?.onConfirm, editor.text.plainText, editor.text.richText]);
 
 	const draftId = useEditorDid(editor.id).did;
 	const { saveDraft } = useEditorDraftSave(editor.id);
@@ -166,7 +179,13 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [draftId]);
 
-	return <MemoizedEditView editorId={editor.id} closeController={onClose} />;
+	return (
+		<MemoizedEditView
+			editorId={editor.id}
+			closeController={onClose}
+			onMessageSent={onMessageSent}
+		/>
+	);
 };
 
 const MemoizedEditViewControllerCore = memo(EditViewControllerCore);

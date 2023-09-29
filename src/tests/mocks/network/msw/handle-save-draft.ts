@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { ResponseComposition, RestContext, RestRequest } from 'msw';
+
 import {
 	RestGenericRequest,
 	RestGenericResponse
@@ -18,7 +19,7 @@ export const handleSaveDraftRequest = async (
 	if (!req) {
 		return res(ctx.status(500, 'Empty request'));
 	}
-	const { id } = (await req.json<RestGenericRequest>()).Body.SaveDraftResponse.m;
+	const { id } = (await req.json<RestGenericRequest>()).Body.SaveDraftRequest.m;
 	const { saveDraftResult } = await import(`./cases/saveDraft/saveDraft-${id}`);
 	return res(ctx.json(saveDraftResult));
 };
