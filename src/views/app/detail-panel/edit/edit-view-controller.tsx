@@ -84,6 +84,7 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 
 	// Create or resume editor
 	const compositionData = board.context?.compositionData;
+	const onMessageSend = board.context?.onConfirm;
 	const editor = generateEditor({
 		action,
 		id: entityId,
@@ -111,6 +112,7 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 				updateBoard({
 					onClose: noop
 				});
+				onMessageSend && onMessageSend();
 			}
 			closeBoard(board.id);
 			updateBoard({
@@ -126,7 +128,7 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 				}
 			});
 		},
-		[board.id, draftId, editor.id, saveDraft, updateBoard]
+		[board.id, draftId, editor.id, saveDraft, updateBoard, onMessageSend]
 	);
 
 	/*

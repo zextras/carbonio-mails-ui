@@ -23,7 +23,7 @@ export const mailToSharedFunction: (contacts: Array<Partial<Participant>>) => vo
 };
 
 export const openComposerSharedFunction: (
-	onConfirm: any,
+	onConfirm: () => void,
 	compositionData: EditorPrefillData,
 	...rest: any[]
 ) => void = (onConfirm, compositionData, ...rest) => {
