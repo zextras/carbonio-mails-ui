@@ -46,7 +46,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	);
 
 	const composerCustomOptions = {
-		toolbar_sticky: false
+		toolbar_sticky: true,
+		ui_mode: 'split'
 	};
 
 	return (

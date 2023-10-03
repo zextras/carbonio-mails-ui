@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.16...v1.7.0) (2023-10-03)
+
+
+### Features
+
+* enable sticky toolbar on mail editor ([2a27333](https://github.com/zextras/carbonio-mails-ui/commit/2a2733395bc914d2850434fb6e953add334a59da))
+
 ### [1.6.16](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.15...v1.6.16) (2023-09-29)
 
 
