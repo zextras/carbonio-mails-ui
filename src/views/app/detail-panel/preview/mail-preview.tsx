@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import {
 	Button,
 	Collapse,
@@ -22,8 +24,11 @@ import {
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+
+import AttachmentsBlock from './attachments-block';
+import PreviewHeader from './parts/preview-header';
+import ReadReceiptModal from './read-receipt-modal';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
 import { useAppDispatch } from '../../../../hooks/redux';
@@ -32,9 +37,6 @@ import { getMsg, msgAction } from '../../../../store/actions';
 import type { ExtraWindowCreationParams, MailMessage, OpenEmlPreviewType } from '../../../../types';
 import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
 import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
-import AttachmentsBlock from './attachments-block';
-import PreviewHeader from './parts/preview-header';
-import ReadReceiptModal from './read-receipt-modal';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 
@@ -68,7 +70,7 @@ const MailContent: FC<{
 	// already open that message will not be expanded
 	useEffect(() => {
 		if (!message.isComplete) {
-			dispatch(getMsg({ msgId: message.id }));
+			dispatch(getMsg({ msgId: message.id, requestedHeaders: ['X-Spam-Status'] })); // TODO
 		}
 	}, [dispatch, message.id, message.isComplete]);
 
