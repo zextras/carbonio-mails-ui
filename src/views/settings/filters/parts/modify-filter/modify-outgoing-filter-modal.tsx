@@ -142,8 +142,12 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice(), [outgoingFilters]);
 
 	const toggleCheckBox = useCallback(() => {
-		setDontProcessAddFilters(!dontProcessAddFilters);
-	}, [dontProcessAddFilters]);
+		setDontProcessAddFilters((prev) => !prev);
+	}, []);
+
+	useMemo(() => {
+		setDontProcessAddFilters(!!selectedFilter.filterActions[0]?.actionStop);
+	}, [selectedFilter.filterActions]);
 
 	const filterActionProps = useMemo(
 		() => ({
