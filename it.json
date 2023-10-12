@@ -30,7 +30,8 @@
             "tag_created": "Etichetta {{name}} creata con successo",
             "tag_deleted": "Etichetta {{name}} eliminata con successo",
             "tag_not_updated": "Qualcosa è andato storto, l'etichetta non è stata aggiornata. Riprova.",
-            "tag_updated": "Etichetta aggiornata con successo"
+            "tag_updated": "Etichetta aggiornata con successo",
+            "message_sending_aborted": "annullato dall'utente"
         },
         "modal": {
             "delete": {
@@ -54,7 +55,8 @@
                 "attachment": "allegato",
                 "attach": "allega",
                 "enclosing": "includere",
-                "attaching": "allegare"
+                "attaching": "allegare",
+                "subject": "Oggetto mancante"
             }
         },
         "invalid_address": "Il seguente indirizzo sembra essere non valido",
@@ -315,7 +317,18 @@
         "all_items_selected": "Tutti gli elementi visibili sono stati selezionati",
         "do_not_have_perm": "Non hai l'autorizzazione",
         "exit_selection_mode": "Esci dalla modalità selezione",
-        "folder_not_valid_destination": "La cartella selezionata non è una destinazione valida"
+        "folder_not_valid_destination": "La cartella selezionata non è una destinazione valida",
+        "attachment_upload_in_progress": "Caricamento dell'allegato in corso",
+        "errors": {
+            "upload_failed_generic": "Caricamento non riuscito per il file \"{{filename}}\""
+        },
+        "invalid_recipients": "L'indirizzo di un destinatario è scritto in modo errato",
+        "message_send_in_progress": "invio del messaggio in corso",
+        "missing_recipients": "non ci sono destinatari validi",
+        "missing_sender": "non è specificato il mittente del messaggio",
+        "no_sender": "non è specificato il mittente del messaggio",
+        "upload_failed": "Caricamento non riuscito",
+        "no_identity_selected": "<nessuna identità selezionata>"
     },
     "tooltip": {
         "add_attachments": "Aggiungi allegati",
@@ -811,5 +824,6 @@
         "compose_colin": "Componi :",
         "composing_messages": "Composizione messaggi"
     },
-    "go_back": "Indietro"
+    "go_back": "Indietro",
+    "messages,new_email": "nuova email"
 }

@@ -243,9 +243,14 @@
         "as_text": "As Text",
         "attachement_unknown": "Unknown <{{mimeType}}>",
         "attachment": "Attachment",
+        "attachment_error_status": {
+            "failed": "",
+            "uploading": ""
+        },
         "attachment_plural": "Attachments",
         "attachment_status": "Status of e-mail item",
         "attachment_type": "Attachment type",
+        "attachment_upload_in_progress": "attachment upload in progress",
         "attachment_with_count": "{{count}} Attachment",
         "attachment_with_count_plural": "{{count}} Attachments",
         "attachments_disclaimer": "You are viewing an attached message. The authenticity of the attached messages can not be verified.",
@@ -288,6 +293,7 @@
         "download_and_delete": "Download And Delete",
         "draft": "Draft",
         "draft_folder": "[DRAFT]",
+        "draft_save_in_progress": "",
         "duplicate_messages": "Duplicate Messages",
         "edit": "Edit",
         "edit_access": "Edit access",
@@ -303,6 +309,9 @@
         "error": "Error",
         "error_address": "A valid e-mail is required",
         "error_try_again": "Something went wrong, please try again",
+        "errors": {
+            "upload_failed_generic": "Upload failed for the file \"{{filename}}\""
+        },
         "exit_selection_mode": "Exit selection mode",
         "expand": "Expand",
         "expand_receivers_list": "Expand recipients list",
@@ -336,6 +345,7 @@
         "insert": "Insert",
         "invalid_destination": "This node is not a valid destination",
         "invalid_query": "Unable to parse the search query, clear it and retry",
+        "invalid_recipients": "A recipient's address is spelled incorrectly",
         "keep_draft": "Save Draft",
         "keywords": "Keywords",
         "loading_results": "Loading Results…",
@@ -351,13 +361,18 @@
         "me": "Me",
         "message_arrival": "Message Arrival",
         "message_from_me": "Messages from me",
+        "message_send_in_progress": "message send in progress",
         "messages": "Messages",
+        "missing_recipients": "there is no valid recipients",
+        "missing_sender": "the sender of the message is not set",
         "move": "Move",
         "need_to_select_atleast_one_item": "You need to select at least one item to perform the action",
         "new_email": "New E-mail",
         "new_folder": "New Folder",
+        "no_identity_selected": "<No identity selected>",
         "no_name": "<No Name>",
         "no_search_results_found": "No results found",
+        "no_sender": "the sender of the message is not set",
         "no_signature": "No signature",
         "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",
@@ -399,6 +414,9 @@
         "revoke_with_custom_message": "Revoke access sending a custom notification",
         "role": "Role: ",
         "save": "Save",
+        "save_draft": {
+            "incomplete_response": ""
+        },
         "save_to_files": "Save to Files",
         "schedule_send": "Schedule send",
         "search_activate_selection_mode": "Selection mode isn’t available yet on search results",
@@ -448,6 +466,7 @@
         "type": "Type",
         "type_name_here": "Item name",
         "undo": "Undo",
+        "upload_failed": "Upload failed",
         "upload_from_files": "Upload from Files",
         "using_signatures": "Signatures Usage",
         "view_images": "VIEW IMAGES",
@@ -532,7 +551,8 @@
                 "no_attachments": "You didn’t attach any files.",
                 "no_subject": "Email subject is empty.",
                 "no_subject_no_attachments": "Email subject is empty and you didn’t attach any files.",
-                "second": "Do you want to send the email anyway?"
+                "second": "Do you want to send the email anyway?",
+                "subject": "Subject is missing"
             }
         },
         "new_email": "New e-mail",
@@ -567,6 +587,7 @@
             "message_deleted": "Message deleted",
             "message_move": "Message successfully moved",
             "message_redirected": "The message has been redirected",
+            "message_sending_aborted": "canceled by the user",
             "sending_mail_in_count": "Sending your message in {{count}} second",
             "sending_mail_in_count_plural": "Sending your message in {{count}} seconds",
             "tag_created": "Tag {{name}} successfully created",
@@ -577,6 +598,7 @@
         "something_went_wrong": "SOMETHING WENT WRONG",
         "trustee_addresses": "Mail from these addresses or domains will be considered trusted and images will automatically be displayed."
     },
+    "messages,new_email": "new email",
     "modal": {
         "delete_draft": {
             "message1": "Do you want to keep this draft or delete it?"
