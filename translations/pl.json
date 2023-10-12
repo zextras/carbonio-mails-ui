@@ -363,7 +363,18 @@
         "exit_selection_mode": "Wyjdź z trybu wybierania",
         "time": "Czas",
         "do_not_have_perm": "Nie masz uprawnień",
-        "folder_not_valid_destination": "Wybrany folder nie jest prawidłowym miejscem docelowym"
+        "folder_not_valid_destination": "Wybrany folder nie jest prawidłowym miejscem docelowym",
+        "invalid_recipients": "Adres co najmniej jednego z odbiorców jest niepoprawnie wpisany",
+        "missing_recipients": "brak prawidłowych odbiorców",
+        "missing_sender": "nie ustawiono nadawcy wiadomości",
+        "no_sender": "nie ustawiono nadawcy wiadomości",
+        "message_send_in_progress": "trwa wysyłanie wiadomości",
+        "upload_failed": "Przesyłanie się nie powiodło",
+        "errors": {
+            "upload_failed_generic": "Nie udało się przesłać pliku \"{{filename}}\""
+        },
+        "no_identity_selected": "<Nie wybrano tożsamości>",
+        "attachment_upload_in_progress": "trwa przesyłanie załącznika"
     },
     "message": {
         "snackbar": {
@@ -538,7 +549,8 @@
             "tag_not_updated": "Coś poszło nie tak, Tag nie został zaktualizowany. Spróbuj ponownie.",
             "tag_created": "Tag {{name}} został stworzony pomyślnie",
             "tag_deleted": "Tag {{name}} został usunięty",
-            "tag_updated": "Tag został zaktualizowany pomyślnie"
+            "tag_updated": "Tag został zaktualizowany pomyślnie",
+            "message_sending_aborted": "anulowano przez użytkownika"
         },
         "modal": {
             "delete": {
@@ -562,7 +574,8 @@
                 "attachment": "załącznik",
                 "attaching": "załączanie",
                 "attached": "załączone",
-                "attach": "załącz"
+                "attach": "załącz",
+                "subject": "Brak tematu"
             }
         },
         "new_email": "Nowy e-mail",
@@ -820,5 +833,6 @@
         "composing_messages": "Tworzenie wiadomości",
         "compose_colin": "Stwórz:"
     },
-    "go_back": "Powrót"
+    "go_back": "Powrót",
+    "messages,new_email": "nowy e-mail"
 }
