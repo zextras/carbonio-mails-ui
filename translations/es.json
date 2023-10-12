@@ -298,7 +298,18 @@
         "all_items_selected": "Todos los elementos visibles seleccionados",
         "time": "Hora",
         "do_not_have_perm": "No tienes permiso",
-        "folder_not_valid_destination": "La carpeta seleccionada no es un destino válido"
+        "folder_not_valid_destination": "La carpeta seleccionada no es un destino válido",
+        "message_send_in_progress": "Envío en progreso",
+        "missing_recipients": "No hay destinatarios válidos",
+        "missing_sender": "el remitente del mensaje no ha sido definido",
+        "no_identity_selected": "<No hay una identidad definida>",
+        "upload_failed": "Carga fallida",
+        "attachment_upload_in_progress": "Carga de adjunto en progreso",
+        "errors": {
+            "upload_failed_generic": "Carga de archivo \" {{filename}}\" fallida"
+        },
+        "invalid_recipients": "La dirección de un destinatario está mal escrita",
+        "no_sender": "El remitente del mensaje no ha sido definido"
     },
     "messages": {
         "modal": {
@@ -323,7 +334,8 @@
                 "enclose": "incluir",
                 "attaching": "adjuntando",
                 "attached": "adjuntado",
-                "attach": "adjuntar"
+                "attach": "adjuntar",
+                "subject": "Falta el asunto"
             }
         },
         "new_email": "Nuevo correo",
@@ -360,7 +372,8 @@
             "tag_not_updated": "Algo salió mal, la etiqueta no pudo ser actualizada. Intenta nuevamente.",
             "tag_created": "Se ha creado la etiqueta \"{{name}}\"",
             "tag_deleted": "Se ha eliminado la etiqueta \"{{name}}\"",
-            "tag_updated": "La etiqueta ha sido actualizada"
+            "tag_updated": "La etiqueta ha sido actualizada",
+            "message_sending_aborted": "Cancelado por el usuario"
         },
         "invalid_address": "La siguiente dirección no parece válida",
         "invalid_address_plural": "Las siguientes direcciones no parecen válidas",
@@ -813,5 +826,6 @@
         "delete_draft": {
             "message1": "¿Quieres conservar el borrador o eliminarlo?"
         }
-    }
+    },
+    "messages,new_email": "Nuevo email"
 }

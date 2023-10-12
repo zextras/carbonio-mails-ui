@@ -34,7 +34,8 @@
             "tag_created": "Тег {{name}} успешно создан",
             "tag_deleted": "{{name}} Тег успешно удален",
             "tag_updated": "Тег успешно обновлен",
-            "tag_not_updated": "Что-то пошло не так, тег не обновился. Повторите попытку."
+            "tag_not_updated": "Что-то пошло не так, тег не обновился. Повторите попытку.",
+            "message_sending_aborted": "отменено пользователем"
         },
         "modal": {
             "delete": {
@@ -58,7 +59,8 @@
                 "attach": "прикрепить",
                 "enclosed": "Вложение добавлено",
                 "enclose": "прикрепить",
-                "enclosing": "включить"
+                "enclosing": "включить",
+                "subject": "Нет темы"
             }
         },
         "no_content": "Это сообщение не имеет текстового содержания",
@@ -326,7 +328,13 @@
         "time": "Время",
         "exit_selection_mode": "Выйти из режима выбора",
         "do_not_have_perm": "У вас нет разрешения",
-        "folder_not_valid_destination": "Выбранная папка не является допустимым местом назначения"
+        "folder_not_valid_destination": "Выбранная папка не является допустимым местом назначения",
+        "attachment_upload_in_progress": "идет загрузка вложения",
+        "invalid_recipients": "Адрес получателя указан неверно",
+        "upload_failed": "Загрузка не удалась",
+        "errors": {
+            "upload_failed_generic": "Не удалось загрузить файл «{{filename}}»"
+        }
     },
     "header": {
         "warning": "Предупреждение",
@@ -823,5 +831,6 @@
     "labels": {
         "compose_colin": "Создать:",
         "composing_messages": "Создание сообщений"
-    }
+    },
+    "messages,new_email": "Новое письмо"
 }
