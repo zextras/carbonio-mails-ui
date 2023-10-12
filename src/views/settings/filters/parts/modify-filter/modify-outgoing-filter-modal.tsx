@@ -3,7 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+	FC,
+	ReactElement,
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useState
+} from 'react';
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { getBridgedFunctions, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -145,7 +153,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 		setDontProcessAddFilters((prev) => !prev);
 	}, []);
 
-	useMemo(() => {
+	useLayoutEffect(() => {
 		setDontProcessAddFilters(!!selectedFilter.filterActions[0]?.actionStop);
 	}, [selectedFilter.filterActions]);
 
