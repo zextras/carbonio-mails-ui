@@ -38,7 +38,9 @@
                 "retention_message": "As mensagens nesta pasta que se enquadram no período de retenção necessitam de confirmação expressa antes de serem excluídas",
                 "threshold_message": "As mensagens nesta pasta que excederem o limiar definido serão excluídas automaticamente.",
                 "add_share": "Adicionar compartilhamento",
-                "invalid_folder_name_warning_msg": "Caracteres especiais não permitidos. Comprimento máximo: 128 caracteres."
+                "invalid_folder_name_warning_msg": "Caracteres especiais não permitidos. Comprimento máximo: 128 caracteres.",
+                "special_chars_warning_msg": "O nome da pasta não permite caracteres especiais",
+                "enter_valid_folder_name": "Digite un nome de pasta válido"
             }
         }
     },
@@ -278,7 +280,20 @@
         "admin_disabled_action": "O administrador desativou o redirecionamento",
         "all_items_selected": "Todos os items visíveis foram selecionados",
         "exit_selection_mode": "Sair do modo de seleção",
-        "time": "Hora"
+        "time": "Hora",
+        "do_not_have_perm": "Você não tem permissões",
+        "folder_not_valid_destination": "A pasta selecionada não é um destino válido",
+        "message_send_in_progress": "envio de mensagem em andamento",
+        "missing_recipients": "não há destinatários válidos",
+        "no_identity_selected": "<Nenhuma identidade selecionada>",
+        "no_sender": "o remetente da mensagem não está definido",
+        "upload_failed": "Falha no upload",
+        "attachment_upload_in_progress": "upload de anexos em andamento",
+        "errors": {
+            "upload_failed_generic": "Falha no upload do arquivo \"{{filename}}\""
+        },
+        "invalid_recipients": "O endereço de um destinatário está escrito incorretamente",
+        "missing_sender": "o remetente da mensagem não está definido"
     },
     "title": {
         "new_messages": "Novas mensagens",
@@ -331,7 +346,8 @@
             "tag_created": "Marcador \"{{name}}\" criado com sucesso",
             "tag_deleted": "Marcador \"{{name}}\" excluído com sucesso",
             "tag_not_updated": "Algo deu errado, o marcador não foi atualizado. Tente novamente.",
-            "tag_updated": "Marcador atualizado com sucesso"
+            "tag_updated": "Marcador atualizado com sucesso",
+            "message_sending_aborted": "cancelado pelo usuário"
         },
         "invalid_address": "O seguinte endereço parece ser inválido",
         "invalid_address_plural": "Os seguintes endereços parecem ser inválidos",
@@ -357,7 +373,8 @@
                 "no_attachments": "Você não anexou nenhum arquivo.",
                 "no_subject": "O assunto do e-mail está vazio.",
                 "no_subject_no_attachments": "O assunto está vazio e você não anexou nenhum arquivo.",
-                "first": "O assunto está vazio e você não anexou nenhum arquivo."
+                "first": "O assunto está vazio e você não anexou nenhum arquivo.",
+                "subject": "O assunto está faltando"
             }
         },
         "new_email": "Novo e-mail",
@@ -377,7 +394,8 @@
         "extra_windows": {
             "popup_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador",
             "opening_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador"
-        }
+        },
+        "enter_calendar_name": "Digite um nome para aceitar o calendário"
     },
     "placeholder": {
         "add_new_recipients": "Adicionar destinatários"
@@ -675,7 +693,9 @@
                     "message1": "Selecione uma pasta onde mover a selecionada:",
                     "message2": "Selecione uma pasta para restaurar:"
                 },
-                "title_modal_conversation": "Selecione a pasta de destino"
+                "title_modal_conversation": "Selecione a pasta de destino",
+                "title_modal_message": "Mover mensagem",
+                "title_modal": "Mover conversa"
             },
             "wipe": {
                 "body": {
@@ -807,5 +827,6 @@
         "delete_draft": {
             "message1": "Deseja manter ou excluir este rascunho?"
         }
-    }
+    },
+    "messages,new_email": "Novo email"
 }
