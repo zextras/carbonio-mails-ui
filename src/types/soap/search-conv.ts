@@ -20,7 +20,7 @@ export type SearchConvRequest = ZimbraRequest & {
 	fetch: string;
 	html: 1 | 0;
 	needExp: 1 | 0;
-	max: number;
+	max?: number;
 	recip: '0' | '1' | '2' | 'false' | 'true';
 };
 
