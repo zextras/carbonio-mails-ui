@@ -7,6 +7,7 @@
 /* eslint-disable import/extensions */
 
 import React, { FC, ReactElement } from 'react';
+
 import {
 	Container,
 	Button,
@@ -38,7 +39,7 @@ const ModalFooter: FC<ModalFooterProps> = ({
 	<Container mainAlignment="center" crossAlignment="center" padding={{ top: 'large' }}>
 		<Divider />
 		<Container orientation="horizontal" padding={{ top: 'medium' }} mainAlignment="space-between">
-			<Checkbox defaultChecked={checked} onClick={onSecondaryAction} label={checkboxLabel} />
+			<Checkbox value={checked} onClick={onSecondaryAction} label={checkboxLabel} />
 			<Tooltip label={toolTipText}>
 				<Padding left="small">
 					<Button
