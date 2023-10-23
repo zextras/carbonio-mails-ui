@@ -58,6 +58,7 @@ const ContactNameChip: FC<{
 								label: t('message.send_email', 'Send e-mail'),
 								type: 'button',
 								icon: 'EmailOutline',
+								background: 'gray3',
 								// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 								onClick: () => {
 									sendMsg(contact);
@@ -68,6 +69,7 @@ const ContactNameChip: FC<{
 								label: t('message.copy', 'Copy'),
 								type: 'button',
 								icon: 'Copy',
+								background: 'gray3',
 								// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 								onClick: () => {
 									copyEmailToClipboard(contact.address);
