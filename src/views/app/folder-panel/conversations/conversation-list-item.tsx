@@ -101,8 +101,9 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 									color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
 								});
 							} else if (item.tags?.length > 0 && !includes(item.tags, v.id)) {
+								const findRealTag = new RegExp('nil:.{1,}');
 								forEach(
-									filter(item.tags, (tn) => tn.includes('nil:')),
+									filter(item.tags, (tn) => findRealTag.test(tn)),
 									(tagNotInList) => {
 										acc.push({
 											id: tagNotInList,
