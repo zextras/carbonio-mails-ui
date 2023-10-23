@@ -83,7 +83,7 @@ function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 describe('Messages actions calls', () => {
 	describe('Add flag action', () => {
 		test('Single id', async () => {
-			const { current: uiUtilities } = setupHook(useUiUtilities).resultl;
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({

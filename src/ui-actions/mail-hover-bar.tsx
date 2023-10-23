@@ -94,7 +94,7 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 							moveMsgToTrash({ ids, dispatch, folderId, uiUtilities })
 					  ];
 		}
-	}, [folderId, ids, dispatch, read, flag, messageId, showReplyAll]);
+	}, [folderId, ids, dispatch, uiUtilities, read, flag, messageId, showReplyAll]);
 
 	return (
 		<ButtonBar orientation="horizontal">

@@ -66,7 +66,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				replaceHistory(`/folder/${firstChildFolderId}/message/${item.id}`);
 			}
 		},
-		[item.read, item.id, zimbraPrefMarkMsgRead, firstChildFolderId, dispatch]
+		[item.read, item.id, zimbraPrefMarkMsgRead, firstChildFolderId, dispatch, uiUtilities]
 	);
 	const onDoubleClick = useCallback(
 		(e) => {
