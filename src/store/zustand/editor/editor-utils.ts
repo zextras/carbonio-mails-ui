@@ -49,7 +49,7 @@ export const computeDraftSaveAllowedStatus = (
 	) {
 		return {
 			allowed: false,
-			reason: t('label.attachment_error_status.failed', 'one or more attachments failed to upload') // TODO check strings with designer
+			reason: t('label.attachment_error_status.failed', 'One or more attachments failed to upload') // TODO check strings with designer
 		};
 	}
 
@@ -64,7 +64,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	if (editor.draftSaveProcessStatus?.status === PROCESS_STATUS.RUNNING) {
 		return {
 			allowed: false,
-			reason: t('label.draft_save_in_progress', 'Saving draft in progress         ')
+			reason: t('label.draft_save_in_progress', 'Saving draft in progress')
 		};
 	}
 

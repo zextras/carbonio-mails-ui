@@ -244,8 +244,8 @@
         "attachement_unknown": "Unknown <{{mimeType}}>",
         "attachment": "Attachment",
         "attachment_error_status": {
-            "failed": "",
-            "uploading": ""
+            "failed": "One or more attachments failed to upload",
+            "uploading": "Attachments are being uploaded"
         },
         "attachment_plural": "Attachments",
         "attachment_status": "Status of e-mail item",
