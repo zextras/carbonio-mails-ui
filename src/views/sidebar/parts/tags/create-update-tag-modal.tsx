@@ -4,18 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Input, Padding, Text } from '@zextras/carbonio-design-system';
-import {
-	changeTagColor,
-	createTag,
-	getBridgedFunctions,
-	renameTag,
-	t
-} from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+
+import { Input, Padding, Text } from '@zextras/carbonio-design-system';
+import { changeTagColor, createTag, renameTag, t } from '@zextras/carbonio-shell-ui';
+
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import type { CreateUpdateTagModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
 
 const NonSupportedCharacters = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
@@ -24,6 +21,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 	editMode = false,
 	tag
 }): ReactElement => {
+	const uiUtilities = useUiUtilities();
 	const [name, setName] = useState(tag?.name || '');
 	const [color, setColor] = useState(tag?.color || 0);
 	const title = useMemo(
@@ -50,7 +48,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 		() =>
 			createTag({ name, color }).then((res: any) => {
 				if (res.tag) {
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `new-tag`,
 						replace: true,
 						type: 'info',
@@ -64,13 +62,13 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 				}
 				onClose();
 			}),
-		[name, color, onClose]
+		[name, color, onClose, uiUtilities]
 	);
 	const onUpdate = useCallback(() => {
 		Promise.all([renameTag(`${tag?.id}`, name), changeTagColor(`${tag?.id}`, Number(color))])
 			.then(() => {
 				onClose();
-				getBridgedFunctions()?.createSnackbar({
+				uiUtilities.createSnackbar({
 					key: `update-tag`,
 					replace: true,
 					type: 'info',
@@ -81,7 +79,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 			})
 			.catch(() => {
 				onClose();
-				getBridgedFunctions()?.createSnackbar({
+				uiUtilities.createSnackbar({
 					key: `update-tag-error`,
 					replace: true,
 					type: 'error',
@@ -93,7 +91,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 					hideButton: true
 				});
 			});
-	}, [color, name, onClose, tag]);
+	}, [color, name, onClose, tag?.id, uiUtilities]);
 
 	return (
 		<>

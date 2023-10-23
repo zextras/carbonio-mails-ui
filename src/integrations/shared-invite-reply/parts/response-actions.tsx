@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
+
 import {
 	Button,
 	Checkbox,
@@ -14,11 +16,12 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
-import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
-import { ResponseActionsProps } from '../../../types';
+
 import ColorSelect from './color-select';
 import { accept, decline } from './share-calendar-actions';
+import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
+import { useUiUtilities } from '../../../hooks/use-ui-utilities';
+import { ResponseActionsProps } from '../../../types';
 
 const ResponseActions: FC<ResponseActionsProps> = ({
 	dispatch,
@@ -34,6 +37,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	allowedActions,
 	participants
 }): ReactElement => {
+	const uiUtilities = useUiUtilities();
 	const [customMessage, setCustomMessage] = useState('');
 	const [notifyOrganizer, setNotifyOrganizer] = useState(false);
 	const [calendarName, setCalendarName] = useState(sharedCalendarName);
@@ -71,7 +75,8 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				customMessage,
 				role,
 				allowedActions,
-				notifyOrganizer
+				notifyOrganizer,
+				uiUtilities
 			}),
 		[
 			zid,
@@ -90,7 +95,8 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 			customMessage,
 			role,
 			allowedActions,
-			notifyOrganizer
+			notifyOrganizer,
+			uiUtilities
 		]
 	);
 
@@ -106,12 +112,12 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 			customMessage,
 			role,
 			allowedActions,
-			notifyOrganizer
+			notifyOrganizer,
+			uiUtilities
 		});
 	}, [
 		dispatch,
 		t,
-
 		msgId,
 		sharedCalendarName,
 		owner,
@@ -120,7 +126,8 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 		customMessage,
 		role,
 		allowedActions,
-		notifyOrganizer
+		notifyOrganizer,
+		uiUtilities
 	]);
 	return (
 		<>

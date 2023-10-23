@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { omit, reject } from 'lodash';
 
 import { computeAndUpdateEditorStatus } from './commons';
@@ -11,7 +11,13 @@ import { getEditor } from './editors';
 import { debouncedSaveDraftFromEditor, SaveDraftOptions } from './save-draft';
 import { TIMEOUTS } from '../../../../constants';
 import { composeAttachmentDownloadUrl } from '../../../../helpers/attachments';
-import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from '../../../../types';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
+import {
+	AttachmentUploadProcessStatus,
+	MailsEditorV2,
+	UiUtilities,
+	UnsavedAttachment
+} from '../../../../types';
 import {
 	uploadAttachments,
 	UploadAttachmentsOptions,
@@ -24,8 +30,8 @@ import {
 } from '../editor-utils';
 import { useEditorsStore } from '../store';
 
-const notifyUploadError = (file: File, err: string): void => {
-	getBridgedFunctions()?.createSnackbar({
+const notifyUploadError = (file: File, err: string, uiUtilities: UiUtilities): void => {
+	uiUtilities.createSnackbar({
 		key: `upload-error`,
 		replace: true,
 		type: 'error',
@@ -63,6 +69,8 @@ export const useEditorAttachments = (
 	removeUnsavedAttachment: (uploadId: string) => void;
 	removeStandardAttachments: () => void;
 } => {
+	const uiUtilities = useUiUtilities();
+
 	const unsavedStandardAttachments = reject(
 		useEditorsStore((state) => state.editors[editorId].unsavedAttachments),
 		'isInline'
@@ -99,7 +107,7 @@ export const useEditorAttachments = (
 					status: 'aborted',
 					abortReason: error
 				};
-				notifyUploadError(file, error);
+				notifyUploadError(file, error, uiUtilities);
 				setUploadStatus(editorId, uploadId, status);
 				computeAndUpdateEditorStatus(editorId);
 				callbacks?.onUploadError && callbacks.onUploadError(file, uploadId, error);
@@ -176,7 +184,7 @@ export const useEditorAttachments = (
 							callbacks?.onSaveComplete && callbacks.onSaveComplete(uploadedContentIds);
 						}
 					};
-					debouncedSaveDraftFromEditor(editorId, saveDraftOptions);
+					debouncedSaveDraftFromEditor(editorId, uiUtilities, saveDraftOptions);
 				}
 
 				callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
@@ -239,18 +247,18 @@ export const useEditorAttachments = (
 		removeUnsavedAttachment: (uploadId: string): void => {
 			removeUnsavedAttachmentsInvoker(editorId, uploadId);
 			computeAndUpdateEditorStatus(editorId);
-			debouncedSaveDraftFromEditor(editorId);
+			debouncedSaveDraftFromEditor(editorId, uiUtilities);
 		},
 
 		removeSavedAttachment: (partName: string): void => {
 			removeSavedAttachmentsInvoker(editorId, partName);
 			computeAndUpdateEditorStatus(editorId);
-			debouncedSaveDraftFromEditor(editorId);
+			debouncedSaveDraftFromEditor(editorId, uiUtilities);
 		},
 		removeStandardAttachments: (): void => {
 			removeStandardAttachmentsInvoker(editorId);
 			computeAndUpdateEditorStatus(editorId);
-			debouncedSaveDraftFromEditor(editorId);
+			debouncedSaveDraftFromEditor(editorId, uiUtilities);
 		},
 		addStandardAttachments,
 		addInlineAttachments

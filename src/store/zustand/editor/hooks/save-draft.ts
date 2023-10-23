@@ -3,13 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
 import { computeAndUpdateEditorStatus } from './commons';
 import { getEditor } from './editors';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
-import { MailsEditorV2 } from '../../../../types';
+import { MailsEditorV2, UiUtilities } from '../../../../types';
 import { saveDraftAsyncThunk, saveDraftV3 } from '../../../actions/save-draft';
 import { buildSavedAttachments } from '../editor-transformations';
 import { useEditorsStore } from '../store';
@@ -24,8 +25,13 @@ export type SaveDraftOptions = {
  *
  * @param editorId
  * @param options
+ * @param uiUtilities
  */
-const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftOptions): void => {
+const saveDraftFromEditor = (
+	editorId: MailsEditorV2['id'],
+	uiUtilities: UiUtilities,
+	options?: SaveDraftOptions
+): void => {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {
 		console.warn('Cannot find the editor', editorId);
@@ -36,12 +42,12 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 		return;
 	}
 
-	const handleError = (err: string): void => {
+	const handleError = (err: string, uiUtilities: UiUtilities): void => {
 		useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 			status: 'aborted',
 			abortReason: err
 		});
-		getBridgedFunctions()?.createSnackbar({
+		uiUtilities.createSnackbar({
 			key: `save-draft`,
 			replace: true,
 			type: 'error',
@@ -56,13 +62,14 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 	saveDraftV3({ editor })
 		.then((res) => {
 			if ('Fault' in res) {
-				handleError(res.Fault.Detail?.Error?.Detail);
+				handleError(res.Fault.Detail?.Error?.Detail, uiUtilities);
 				return;
 			}
 
 			if (!res.m) {
 				handleError(
-					t('label.save_draft.incomplete_response', 'The save draft response is incomplete')
+					t('label.save_draft.incomplete_response', 'The save draft response is incomplete'),
+					uiUtilities
 				);
 				return;
 			}
@@ -89,7 +96,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 			});
 			// FIXME use a subscription to the store update
 			computeAndUpdateEditorStatus(editorId);
-			handleError(err);
+			handleError(err, uiUtilities);
 			options?.onError && options?.onError(err);
 		});
 
@@ -115,9 +122,14 @@ export const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, delay)
  */
 export const useEditorDraftSave = (
 	editorId: MailsEditorV2['id']
-): { status: MailsEditorV2['draftSaveAllowedStatus']; saveDraft: () => void } => {
+): {
+	status: MailsEditorV2['draftSaveAllowedStatus'];
+	saveDraft: (options?: SaveDraftOptions) => void;
+} => {
+	const uiUtilities = useUiUtilities();
 	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
-	const invoker = (): void => debouncedSaveDraftFromEditor(editorId);
+	const invoker = (options?: SaveDraftOptions): void =>
+		saveDraftFromEditor(editorId, uiUtilities, options);
 
 	return {
 		status,

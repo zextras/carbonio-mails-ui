@@ -3,12 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useMemo } from 'react';
+
 import { Container, Dropdown, IconButton, Padding } from '@zextras/carbonio-design-system';
 import { FOLDERS, useAppContext, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import React, { FC, useMemo } from 'react';
+
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import type { AppContext, PreviewPanelActionsType } from '../../../../types';
 import {
 	moveConversationToTrash,
@@ -24,6 +27,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 	isMessageView,
 	conversation
 }) => {
+	const uiUtilities = useUiUtilities();
 	const dispatch = useAppDispatch();
 	const account = useUserAccount();
 	const { setCount } = useAppContext<AppContext>();
@@ -35,7 +39,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 	const primaryActions = useMemo(() => {
 		switch (folderId) {
 			case FOLDERS.SENT:
-				return [moveConversationToTrash({ ids, dispatch, deselectAll, folderId })];
+				return [moveConversationToTrash({ ids, dispatch, deselectAll, folderId, uiUtilities })];
 			case FOLDERS.TRASH:
 			case FOLDERS.SPAM:
 				return [
@@ -45,12 +49,12 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 			default:
 				return [
 					replyMsg({ id: item?.messages?.[0]?.id ?? item?.id, folderId }),
-					moveConversationToTrash({ ids, dispatch, deselectAll, folderId })
+					moveConversationToTrash({ ids, dispatch, deselectAll, folderId, uiUtilities })
 					// archiveMsg
 					// editTagsMsg
 				];
 		}
-	}, [dispatch, folderId, ids, item, deselectAll]);
+	}, [uiUtilities, dispatch, folderId, ids, item, deselectAll]);
 
 	const secondaryActions = useMemo(() => {
 		switch (folderId) {
@@ -61,7 +65,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 			case FOLDERS.SPAM:
 				return [
 					isMessageView
-						? setMsgRead({ ids, value: item?.read, dispatch, folderId })
+						? setMsgRead({ ids, value: item?.read, dispatch, folderId, uiUtilities })
 						: setConversationsRead({
 								ids,
 								value: conversation.read,
@@ -79,7 +83,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 				return [
 					replyAllMsg({ id: item?.messages?.[0]?.id ?? item?.id, folderId }),
 					isMessageView
-						? setMsgRead({ ids, value: item?.read, dispatch, folderId })
+						? setMsgRead({ ids, value: item?.read, dispatch, folderId, uiUtilities })
 						: setConversationsRead({
 								ids,
 								value: conversation.read,
@@ -105,6 +109,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 		item?.id,
 		dispatch,
 		isMessageView,
+		uiUtilities,
 		conversation,
 		deselectAll,
 		account

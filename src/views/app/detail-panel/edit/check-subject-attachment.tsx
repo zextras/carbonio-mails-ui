@@ -10,9 +10,8 @@ import { Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { LineType } from '../../../../commons/utils';
-import { CLOSE_BOARD_REASON } from '../../../../constants';
 import { StoreProvider } from '../../../../store/redux';
-import type { CloseBoardReasons, MailsEditorV2 } from '../../../../types';
+import type { MailsEditorV2 } from '../../../../types';
 
 export const attachmentWords: Array<string> = [
 	t('messages.modal.send_anyway.attach', 'attach'),
@@ -55,14 +54,12 @@ export function checkSubjectAndAttachment({
 	hasAttachments,
 	subject,
 	onConfirmCallback,
-	close,
 	createModal
 }: {
 	text: MailsEditorV2['text'];
 	hasAttachments: boolean;
 	subject: MailsEditorV2['subject'];
 	onConfirmCallback: () => void;
-	close: ({ reason }: { reason?: CloseBoardReasons }) => void;
 	createModal: any;
 }): void {
 	const attachmentIsExpected = attachmentWords.some((el) => {
@@ -79,7 +76,6 @@ export function checkSubjectAndAttachment({
 			showCloseIcon: true,
 			onConfirm: () => {
 				onConfirmCallback();
-				close({ reason: CLOSE_BOARD_REASON.SEND });
 				closeModal();
 			},
 			onClose: () => {
@@ -101,6 +97,5 @@ export function checkSubjectAndAttachment({
 		});
 	} else {
 		onConfirmCallback();
-		close({ reason: CLOSE_BOARD_REASON.SEND });
 	}
 }

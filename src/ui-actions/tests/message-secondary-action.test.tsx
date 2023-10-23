@@ -4,9 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
-import { MessageActionsDescriptors } from '../../constants';
+
+import { existsActionById } from './actions-tests-utils';
 import { TagsActionsType } from '../../carbonio-ui-commons/constants';
 import { tags } from '../../carbonio-ui-commons/test/mocks/tags/tags';
+import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
+import { MessageActionsDescriptors } from '../../constants';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import {
 	CONTAIN_ASSERTION as ASSERTION,
 	FOLDERS_DESCRIPTORS as FOLDERS,
@@ -14,7 +18,6 @@ import {
 } from '../../tests/constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { getMsgConvActions } from '../get-msg-conv-actions';
-import { existsActionById } from './actions-tests-utils';
 
 describe('Secondary actions visibility', () => {
 	/**
@@ -136,6 +139,7 @@ describe('Secondary actions visibility', () => {
 	`(
 		`(case #$case) secondary actions for a message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, assertion, action }) => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			const msg = generateMessage({ folderId: folder.id });
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
@@ -145,7 +149,8 @@ describe('Secondary actions visibility', () => {
 				dispatch,
 				deselectAll,
 				account,
-				tags
+				tags,
+				uiUtilities
 			});
 			expect(
 				existsActionById({ id: action.id, actions: secondaryActions, type: 'secondary' })
@@ -186,6 +191,7 @@ describe('Secondary actions visibility', () => {
 	`(
 		`(case #$case) secondary actions for a $read.desc message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, read, assertion, action }) => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			const msg = generateMessage({ folderId: folder.id, isRead: read.value });
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
@@ -195,7 +201,8 @@ describe('Secondary actions visibility', () => {
 				dispatch,
 				deselectAll,
 				account,
-				tags: {}
+				tags: {},
+				uiUtilities
 			});
 			expect(
 				existsActionById({ id: action.id, actions: secondaryActions, type: 'secondary' })
@@ -236,6 +243,7 @@ describe('Secondary actions visibility', () => {
 	`(
 		`(case #$case) secondary actions for a $flagged.desc message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, flagged, assertion, action }) => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			const msg = generateMessage({ folderId: folder.id, isFlagged: flagged.value });
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
@@ -245,7 +253,8 @@ describe('Secondary actions visibility', () => {
 				dispatch,
 				deselectAll,
 				account,
-				tags: {}
+				tags: {},
+				uiUtilities
 			});
 			expect(
 				existsActionById({ id: action.id, actions: secondaryActions, type: 'secondary' })
@@ -267,6 +276,7 @@ describe('Secondary actions visibility', () => {
 	`(
 		`(case #$case) secondary actions for a message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, assertion, action }) => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			const msg = generateMessage({ folderId: folder.id });
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
@@ -276,7 +286,8 @@ describe('Secondary actions visibility', () => {
 				dispatch,
 				deselectAll,
 				account,
-				tags
+				tags,
+				uiUtilities
 			});
 			expect(existsActionById({ id: action, actions: secondaryActions, type: 'secondary' })).toBe(
 				assertion.value

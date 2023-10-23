@@ -31,6 +31,7 @@ import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions, MAILS_ROUTE } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import type { BoardContext, MessageListItemProps, TextReadValuesType } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
@@ -50,6 +51,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	deselectAll,
 	currentFolderId
 }) {
+	const uiUtilities = useUiUtilities();
 	const firstChildFolderId = currentFolderId ?? item.parent;
 
 	const dispatch = useAppDispatch();
@@ -59,7 +61,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (item.read === false && zimbraPrefMarkMsgRead) {
-					setMsgRead({ ids: [item.id], value: false, dispatch }).onClick(e);
+					setMsgRead({ ids: [item.id], value: false, dispatch, uiUtilities }).onClick(e);
 				}
 				replaceHistory(`/folder/${firstChildFolderId}/message/${item.id}`);
 			}

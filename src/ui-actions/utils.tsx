@@ -9,7 +9,7 @@ import { FOLDERS } from '@zextras/carbonio-shell-ui';
 
 import { deleteMessagePermanently, moveMsgToTrash, setMsgRead } from './message-actions';
 import { AppDispatch } from '../store/redux';
-import type { Conversation, MailMessage, MessageActionReturnType } from '../types';
+import type { Conversation, MailMessage, MessageActionReturnType, UiUtilities } from '../types';
 
 type GetPimaryActionsProps = {
 	folderIds: Array<string>;
@@ -18,6 +18,7 @@ type GetPimaryActionsProps = {
 	ids: Array<string>;
 	dispatch: AppDispatch;
 	deselectAll: () => void;
+	uiUtilities: UiUtilities;
 };
 
 type GetPrimaryActionsReturnType = (
@@ -36,34 +37,50 @@ const getPrimaryActionsSingleFolder = ({
 	showUnreadConvo,
 	ids,
 	dispatch,
-	deselectAll
+	deselectAll,
+	uiUtilities
 }: GetPimaryActionsProps): GetPrimaryActionsReturnType => {
 	switch (folderIds[0]) {
 		case FOLDERS.SPAM:
 		case FOLDERS.INBOX:
 			return [
 				showReadConvo &&
-					setMsgRead({ ids, value: true, dispatch, folderId: folderIds[0], deselectAll }),
+					setMsgRead({
+						ids,
+						value: true,
+						dispatch,
+						folderId: folderIds[0],
+						deselectAll,
+						uiUtilities
+					}),
 				showUnreadConvo &&
-					setMsgRead({ ids, value: false, dispatch, folderId: folderIds[0], deselectAll }),
+					setMsgRead({
+						ids,
+						value: false,
+						dispatch,
+						folderId: folderIds[0],
+						deselectAll,
+						uiUtilities
+					}),
 				moveMsgToTrash({
 					ids,
 					dispatch,
 					deselectAll,
-					folderId: folderIds[0]
+					folderId: folderIds[0],
+					uiUtilities
 				})
 			];
 		case FOLDERS.SENT:
-			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0] })];
+			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0], uiUtilities })];
 
 		case FOLDERS.DRAFTS:
-			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0] })];
+			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0], uiUtilities })];
 
 		case FOLDERS.TRASH:
-			return [deleteMessagePermanently({ ids, dispatch, deselectAll })];
+			return [deleteMessagePermanently({ ids, dispatch, deselectAll, uiUtilities })];
 
 		default:
-			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0] })];
+			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0], uiUtilities })];
 	}
 };
 
@@ -73,34 +90,50 @@ const getPrimaryActionsMultipleFolder = ({
 	showUnreadConvo,
 	ids,
 	dispatch,
-	deselectAll
+	deselectAll,
+	uiUtilities
 }: GetPimaryActionsProps): GetPrimaryActionsReturnType => {
 	switch (folderIds[0]) {
 		case FOLDERS.SPAM:
 		case FOLDERS.INBOX:
 			return [
 				showReadConvo &&
-					setMsgRead({ ids, value: true, dispatch, folderId: folderIds[0], deselectAll }),
+					setMsgRead({
+						ids,
+						value: true,
+						dispatch,
+						folderId: folderIds[0],
+						deselectAll,
+						uiUtilities
+					}),
 				showUnreadConvo &&
-					setMsgRead({ ids, value: false, dispatch, folderId: folderIds[0], deselectAll }),
+					setMsgRead({
+						ids,
+						value: false,
+						dispatch,
+						folderId: folderIds[0],
+						deselectAll,
+						uiUtilities
+					}),
 				moveMsgToTrash({
 					ids,
 					dispatch,
 					deselectAll,
-					folderId: folderIds[0]
+					folderId: folderIds[0],
+					uiUtilities
 				})
 			];
 		case FOLDERS.SENT:
-			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0] })];
+			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0], uiUtilities })];
 
 		case FOLDERS.DRAFTS:
-			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0] })];
+			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0], uiUtilities })];
 
 		case FOLDERS.TRASH:
-			return [deleteMessagePermanently({ ids, dispatch, deselectAll })];
+			return [deleteMessagePermanently({ ids, dispatch, deselectAll, uiUtilities })];
 
 		default:
-			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0] })];
+			return [moveMsgToTrash({ ids, dispatch, deselectAll, folderId: folderIds[0], uiUtilities })];
 	}
 };
 
@@ -110,7 +143,8 @@ export const getPrimaryActions = ({
 	ids,
 	dispatch,
 	deselectAll,
-	showUnreadConvo
+	showUnreadConvo,
+	uiUtilities
 }: GetPimaryActionsProps): GetPrimaryActionsReturnType => {
 	if (folderIds.length === 1) {
 		return getPrimaryActionsSingleFolder({
@@ -119,7 +153,8 @@ export const getPrimaryActions = ({
 			showUnreadConvo,
 			ids,
 			dispatch,
-			deselectAll
+			deselectAll,
+			uiUtilities
 		});
 	}
 	if (folderIds.length > 1) {
@@ -129,7 +164,8 @@ export const getPrimaryActions = ({
 			showUnreadConvo,
 			ids,
 			dispatch,
-			deselectAll
+			deselectAll,
+			uiUtilities
 		});
 	}
 

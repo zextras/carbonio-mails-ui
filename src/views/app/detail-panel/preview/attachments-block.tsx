@@ -17,12 +17,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import {
-	getBridgedFunctions,
-	getIntegratedFunction,
-	soapFetch,
-	t
-} from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, soapFetch, t } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, find, map } from 'lodash';
 import styled from 'styled-components';
@@ -37,6 +32,7 @@ import {
 } from './utils';
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
@@ -119,6 +115,7 @@ const Attachment: FC<AttachmentType> = ({
 	att,
 	openEmlPreview
 }) => {
+	const uiUtilities = useUiUtilities();
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
@@ -162,7 +159,7 @@ const Attachment: FC<AttachmentType> = ({
 	}, [downloadAttachment, onDeleteAttachment]);
 
 	const removeAttachment = useCallback(() => {
-		const closeModal = getBridgedFunctions()?.createModal(
+		const closeModal = uiUtilities.createModal(
 			{
 				maxHeight: '90vh',
 				children: (
@@ -180,7 +177,7 @@ const Attachment: FC<AttachmentType> = ({
 			},
 			true
 		);
-	}, [onDeleteAttachment, onDownloadAndDelete]);
+	}, [uiUtilities, onDeleteAttachment, onDownloadAndDelete]);
 
 	const confirmAction = useCallback(
 		(nodes) => {
@@ -192,7 +189,7 @@ const Attachment: FC<AttachmentType> = ({
 			})
 				.then((res: any) => {
 					if (!res?.Fault) {
-						getBridgedFunctions()?.createSnackbar({
+						uiUtilities.createSnackbar({
 							key: `mail-moved-root`,
 							replace: true,
 							type: 'info',
@@ -201,7 +198,7 @@ const Attachment: FC<AttachmentType> = ({
 							autoHideTimeout: 3000
 						});
 					} else {
-						getBridgedFunctions()?.createSnackbar({
+						uiUtilities.createSnackbar({
 							key: `mail-moved-root`,
 							replace: true,
 							type: 'warning',
@@ -215,7 +212,7 @@ const Attachment: FC<AttachmentType> = ({
 					}
 				})
 				.catch(() => {
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `calendar-moved-root`,
 						replace: true,
 						type: 'warning',
@@ -228,7 +225,7 @@ const Attachment: FC<AttachmentType> = ({
 					});
 				});
 		},
-		[att, message]
+		[att.name, message.id, uiUtilities]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
@@ -256,7 +253,7 @@ const Attachment: FC<AttachmentType> = ({
 				openEmlPreview && openEmlPreview(message.id, att?.name, res[0]);
 			})
 			.catch(() => {
-				getBridgedFunctions()?.createSnackbar({
+				uiUtilities.createSnackbar({
 					key: `eml-attachment-failed-download`,
 					replace: true,
 					type: 'error',
@@ -268,7 +265,7 @@ const Attachment: FC<AttachmentType> = ({
 					autoHideTimeout: 3000
 				});
 			});
-	}, [att?.name, message.id, openEmlPreview]);
+	}, [att?.name, message.id, openEmlPreview, uiUtilities]);
 
 	const preview = useCallback(
 		(ev) => {
@@ -439,6 +436,7 @@ const AttachmentsBlock: FC<{
 	isExternalMessage?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
 }> = ({ message, isExternalMessage = false, openEmlPreview }): ReactElement => {
+	const uiUtilities = useUiUtilities();
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(
 		() => filter(message?.attachments, { cd: 'attachment' }),
@@ -494,7 +492,7 @@ const AttachmentsBlock: FC<{
 				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
 				const type = allSuccess ? 'info' : 'warning';
 				const label = getLabel({ allSuccess, allFails });
-				getBridgedFunctions()?.createSnackbar({
+				uiUtilities.createSnackbar({
 					key: `calendar-moved-root`,
 					replace: true,
 					type,
@@ -504,7 +502,7 @@ const AttachmentsBlock: FC<{
 				});
 			});
 		},
-		[attachments, message]
+		[uiUtilities, attachments, message]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);

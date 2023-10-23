@@ -3,24 +3,27 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
-import { includes, isEmpty } from 'lodash';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import type { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
-import { folderAction } from '../../../../store/actions/folder-action';
-import { translatedSystemFolders } from '../../utils';
+
+import { Container } from '@zextras/carbonio-design-system';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import { includes, isEmpty } from 'lodash';
+
 import { FolderDetails } from './folder-details';
 import NameInputRow from './name-input';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
+import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
+import { FolderActionsType } from '../../../../carbonio-ui-commons/constants/folders';
+import type { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
 import {
 	allowedActionOnSharedAccount,
 	isValidFolderName
 } from '../../../../carbonio-ui-commons/utils/utils';
-import { FolderActionsType } from '../../../../carbonio-ui-commons/constants/folders';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
+import { folderAction } from '../../../../store/actions/folder-action';
+import { translatedSystemFolders } from '../../utils';
 
 const retentionPeriod = [
 	{
@@ -43,6 +46,7 @@ const retentionPeriod = [
 const numberRegex = /^\d+$/;
 
 const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveModal }) => {
+	const uiUtilities = useUiUtilities();
 	const [inputValue, setInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);
 	const [rtnValue, setRtnValue] = useState<number | string>(0);
@@ -65,8 +69,6 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 			folder.retentionPolicy[0].keep &&
 			Object.keys(folder.retentionPolicy[0].keep[0]).length !== 0
 		) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			const lifetime = folder.retentionPolicy[0]?.keep[0]?.policy[0]?.lifetime;
 			// eslint-disable-next-line radix
 			const d = parseInt(lifetime);
@@ -219,7 +221,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 						: {}
 			}).then((res) => {
 				if (!('Fault' in res)) {
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -228,7 +230,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 						autoHideTimeout: 3000
 					});
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
@@ -251,7 +253,8 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 		rtnYear,
 		dspYear,
 		folder,
-		folderColor
+		folderColor,
+		uiUtilities
 	]);
 
 	const title = t('label.edit_folder_properties', {

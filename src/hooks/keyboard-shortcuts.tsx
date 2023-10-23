@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { noop } from 'lodash';
+
+import { UiUtilities } from '../types';
 import {
 	moveConversationToTrash,
 	setConversationsFlag,
@@ -18,6 +20,7 @@ type handleKeyboardShortcutsProps = {
 	dispatch: any;
 	deselectAll: any;
 	conversations: Array<any>;
+	uiUtilities: UiUtilities;
 };
 
 const modifierKeysFirstTier = ['v', 'm', '.', 'n'];
@@ -107,7 +110,8 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 						ids: [itemId],
 						value: false,
 						dispatch,
-						deselectAll
+						deselectAll,
+						uiUtilities: params.uiUtilities
 					}).onClick(event);
 				}
 				break;
@@ -118,7 +122,8 @@ export const handleKeyboardShortcuts = (params: handleKeyboardShortcutsProps): v
 						ids: [itemId],
 						dispatch,
 						deselectAll,
-						folderId
+						folderId,
+						uiUtilities: params.uiUtilities
 					}).onClick(event);
 				}
 				break;

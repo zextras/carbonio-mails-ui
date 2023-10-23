@@ -3,17 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
-import { forEach, isArray, map } from 'lodash';
 import React from 'react';
+
+import { Account, replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { forEach, isArray, map } from 'lodash';
+
+import DeleteConvConfirm from './delete-conv-modal';
+import { errorPage } from './error-page';
+import MoveConvMessage from './move-conv-msg';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { ConversationActionsDescriptors } from '../constants';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import { AppDispatch, StoreProvider } from '../store/redux';
+import { UiUtilities } from '../types';
 import type { ConvActionReturnType, Conversation, MailMessage } from '../types';
-import DeleteConvConfirm from './delete-conv-modal';
-import MoveConvMessage from './move-conv-msg';
-import { errorPage } from './error-page';
 
 type ConvActionIdsType = Array<string>;
 type ConvActionValueType = string | boolean;
@@ -32,6 +35,7 @@ type ConvActionPropType = {
 	isRestore: boolean;
 	message: MailMessage;
 	disabled: boolean;
+	uiUtilities: UiUtilities;
 };
 
 export function setConversationsFlag({
@@ -185,8 +189,12 @@ export function setConversationsSpam({
 	ids,
 	value,
 	dispatch,
-	deselectAll
-}: Pick<ConvActionPropType, 'ids' | 'dispatch' | 'value' | 'deselectAll'>): ConvActionReturnType {
+	deselectAll,
+	uiUtilities
+}: Pick<
+	ConvActionPropType,
+	'ids' | 'dispatch' | 'value' | 'deselectAll' | 'uiUtilities'
+>): ConvActionReturnType {
 	return {
 		id: 'spam-conversations',
 		icon: value ? 'AlertCircleOutline' : 'AlertCircle',
@@ -197,7 +205,7 @@ export function setConversationsSpam({
 			let notCanceled = true;
 
 			const infoSnackbar = (hideButton = false): void => {
-				getBridgedFunctions()?.createSnackbar({
+				uiUtilities.createSnackbar({
 					key: `trash-${ids}`,
 					replace: true,
 					type: 'info',
@@ -224,7 +232,7 @@ export function setConversationsSpam({
 						if (res.type.includes('fulfilled')) {
 							deselectAll();
 						} else {
-							getBridgedFunctions()?.createSnackbar({
+							uiUtilities.createSnackbar({
 								key: `trash-${ids}`,
 								replace: true,
 								type: 'error',
@@ -243,10 +251,11 @@ export function moveConversationToTrash({
 	ids,
 	dispatch,
 	deselectAll,
-	folderId
+	folderId,
+	uiUtilities
 }: Pick<
 	ConvActionPropType,
-	'ids' | 'dispatch' | 'folderId' | 'deselectAll'
+	'ids' | 'dispatch' | 'folderId' | 'deselectAll' | 'uiUtilities'
 >): ConvActionReturnType {
 	const actDescriptor = ConversationActionsDescriptors.MOVE_TO_TRASH.id;
 
@@ -266,7 +275,7 @@ export function moveConversationToTrash({
 					if (res.type.includes('fulfilled')) {
 						deselectAll();
 						replaceHistory(`/folder/${folderId}/conversation/${ids[0]}`);
-						getBridgedFunctions()?.createSnackbar({
+						uiUtilities.createSnackbar({
 							key: `edit`,
 							replace: true,
 							type: 'success',
@@ -275,7 +284,7 @@ export function moveConversationToTrash({
 							autoHideTimeout: 3000
 						});
 					} else {
-						getBridgedFunctions()?.createSnackbar({
+						uiUtilities.createSnackbar({
 							key: `edit`,
 							replace: true,
 							hideButton: true,
@@ -295,7 +304,7 @@ export function moveConversationToTrash({
 				if (res.type.includes('fulfilled')) {
 					deselectAll();
 					replaceHistory(`/folder/${folderId}/`);
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
 						type: 'info',
@@ -305,7 +314,7 @@ export function moveConversationToTrash({
 						onActionClick: (): void => restoreConversation()
 					});
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
 						type: 'error',
@@ -324,17 +333,18 @@ export function moveConversationToFolder({
 	folderId,
 	dispatch,
 	isRestore,
-	deselectAll
+	deselectAll,
+	uiUtilities
 }: Pick<
 	ConvActionPropType,
-	'ids' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId'
+	'ids' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId' | 'uiUtilities'
 >): ConvActionReturnType {
 	return {
 		id: 'move-conversations',
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
 		label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 		onClick: (): void => {
-			const closeModal = getBridgedFunctions()?.createModal(
+			const closeModal = uiUtilities.createModal(
 				{
 					maxHeight: '90vh',
 					children: (
@@ -361,14 +371,15 @@ export function moveConversationToFolder({
 
 export function deleteConversationPermanently({
 	ids,
-	deselectAll
-}: Pick<ConvActionPropType, 'ids' | 'deselectAll'>): ConvActionReturnType {
+	deselectAll,
+	uiUtilities
+}: Pick<ConvActionPropType, 'ids' | 'deselectAll' | 'uiUtilities'>): ConvActionReturnType {
 	return {
 		id: 'delete-conversations',
 		icon: 'DeletePermanentlyOutline',
 		label: t('label.delete_permanently', 'Delete permanently'),
 		onClick: (): void => {
-			const closeModal = getBridgedFunctions()?.createModal(
+			const closeModal = uiUtilities.createModal(
 				{
 					children: (
 						<StoreProvider>

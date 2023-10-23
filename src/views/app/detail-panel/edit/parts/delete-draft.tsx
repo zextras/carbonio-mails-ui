@@ -7,51 +7,60 @@
 import React, { useCallback } from 'react';
 
 import { Padding, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useAppDispatch } from '../../../../../hooks/redux';
+import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import { StoreProvider } from '../../../../../store/redux';
-import { deleteEditor } from '../../../../../store/zustand/editor';
-import { MailsEditorV2 } from '../../../../../types';
+import { useEditorDid, useEditorDraftSave } from '../../../../../store/zustand/editor';
+import { MailsEditorV2, UiUtilities } from '../../../../../types';
 import { moveMsgToTrash } from '../../../../../ui-actions/message-actions';
 
-type DeleteDraftModalProps = {
-	ids: Array<string>;
-	onClose: () => void;
-	onConfirm: () => void;
-	onDelete: () => void;
+type EditViewClosingModalProps = {
+	editorId: MailsEditorV2['id'];
+	onCloseConfirmed?: () => void;
+	onCloseCanceled?: () => void; // TODO use it to cancel the edit view closing operation
 };
 
-export const DeleteDraftModal = ({
-	ids,
-	onClose,
-	onConfirm,
-	onDelete
-}: DeleteDraftModalProps): React.ReactElement => {
+export const EditViewClosingModal = ({
+	editorId,
+	onCloseConfirmed
+}: EditViewClosingModalProps): React.ReactElement => {
+	const { did: draftId } = useEditorDid(editorId);
+	const { saveDraft, status: saveDraftAllowed } = useEditorDraftSave(editorId);
+
 	const dispatch = useAppDispatch();
+	const uiUtilities = useUiUtilities();
 
 	const onCloseModal = useCallback(() => {
-		onClose?.();
-	}, [onClose]);
+		onCloseConfirmed && onCloseConfirmed();
+	}, [onCloseConfirmed]);
 
-	const onDraft = useCallback(() => {
-		onConfirm?.();
-		onClose?.();
-	}, [onClose, onConfirm]);
+	const onKeepDraft = useCallback(() => {
+		saveDraft({
+			onComplete: () => {
+				onCloseConfirmed && onCloseConfirmed();
+			}
+		});
+	}, [onCloseConfirmed, saveDraft]);
 
-	const onDeleteAction = useCallback(
+	const onDeleteDraft = useCallback(
 		(ev) => {
+			if (!draftId) {
+				return;
+			}
+
 			moveMsgToTrash({
-				ids,
+				ids: [draftId],
 				dispatch,
-				folderId: FOLDERS.TRASH
+				folderId: FOLDERS.TRASH,
+				uiUtilities
 			})?.onClick(ev);
-			onDelete?.();
-			onClose?.();
+			onCloseConfirmed && onCloseConfirmed();
 		},
-		[dispatch, ids, onClose, onDelete]
+		[dispatch, draftId, onCloseConfirmed, uiUtilities]
 	);
 
 	return (
@@ -64,9 +73,11 @@ export const DeleteDraftModal = ({
 			</Padding>
 			<ModalFooter
 				secondaryBtnType={'outlined'}
-				onConfirm={onDraft}
+				disabled={!saveDraftAllowed?.allowed}
+				tooltip={saveDraftAllowed?.reason}
+				onConfirm={onKeepDraft}
 				label={t('label.keep_draft', 'Keep Draft')}
-				secondaryAction={onDeleteAction}
+				secondaryAction={onDeleteDraft}
 				secondaryLabel={t('label.delete_draft', 'Delete Draft')}
 				secondaryColor="primary"
 				paddingTop="0"
@@ -77,34 +88,29 @@ export const DeleteDraftModal = ({
 
 type KeepDraftModalProps = {
 	editorId: MailsEditorV2['id'];
-	draftId?: MailsEditorV2['did'];
-	onConfirm?: () => void;
+	uiUtilities: UiUtilities;
+	onCloseConfirmed?: () => void;
 };
 
-export function keepOrDiscardDraft({ editorId, draftId, onConfirm }: KeepDraftModalProps): void {
-	const onDelete = (): void => {
-		deleteEditor({ id: editorId });
-	};
-
-	if (draftId && editorId) {
-		const closeModal = getBridgedFunctions()?.createModal(
-			{
-				children: (
-					<StoreProvider>
-						<DeleteDraftModal
-							ids={[draftId]}
-							onDelete={onDelete}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							onConfirm={(): void => onConfirm?.()}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							onClose={(): void => closeModal()}
-						/>
-					</StoreProvider>
-				)
-			},
-			true
-		);
-	}
+export function keepOrDiscardDraft({
+	editorId,
+	onCloseConfirmed,
+	uiUtilities
+}: KeepDraftModalProps): void {
+	const closeModal = uiUtilities.createModal(
+		{
+			children: (
+				<StoreProvider>
+					<EditViewClosingModal
+						editorId={editorId}
+						onCloseConfirmed={(): void => {
+							closeModal();
+							onCloseConfirmed && onCloseConfirmed();
+						}}
+					/>
+				</StoreProvider>
+			)
+		},
+		true
+	);
 }

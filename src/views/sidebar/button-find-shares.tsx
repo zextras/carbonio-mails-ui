@@ -4,20 +4,21 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React, { FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
+
 import { Button, Container, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, isEqual, uniqWith } from 'lodash';
-import React, { FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
+
+import { SharesModal } from './shares-modal';
 import { ResFolder } from '../../carbonio-ui-commons/utils';
 import { useAppDispatch } from '../../hooks/redux';
 import { getShareInfo } from '../../store/actions/get-share-info';
 import { StoreProvider } from '../../store/redux';
-import { SharesModal } from './shares-modal';
 
 export const ButtonFindShares: FC = () => {
 	const dispatch = useAppDispatch();
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createModal = useContext(ModalManagerContext) as Function;
+	const createModal = useContext(ModalManagerContext);
 
 	const label = useMemo(() => t('label.find_shares', 'Find shares'), []);
 	const openFindShares = useCallback(

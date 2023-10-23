@@ -13,7 +13,7 @@ import {
 	Row,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useTags } from '@zextras/carbonio-shell-ui';
 import { every, filter, findIndex, some } from 'lodash';
 
 import {
@@ -36,6 +36,7 @@ import { applyMultiTag } from './tag-actions';
 import { getFolderParentId } from './utils';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppDispatch } from '../hooks/redux';
+import { useUiUtilities } from '../hooks/use-ui-utilities';
 import type {
 	ActionReturnType,
 	ConvActionReturnType,
@@ -67,6 +68,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	setIsSelectModeOn,
 	folderId
 }) => {
+	const uiUtilities = useUiUtilities();
 	const isConversation = 'messages' in (items?.[0] || {});
 
 	const folderParentId = getFolderParentId({ folderId, isConversation, items });
@@ -97,7 +99,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		const selectedItems = filter(items, (item: MsgOrConv) => ids.includes(item.id ?? '0'));
 		const action = isConversation
 			? setConversationsFlag({ ids, value: false, dispatch })
-			: setMsgFlag({ ids, value: false, dispatch });
+			: setMsgFlag({ ids, value: false, dispatch, uiUtilities });
 		return !some(selectedItems, ['flagged', true]) && action;
 	};
 
@@ -105,7 +107,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		const selectedItems = filter(items, (item: MsgOrConv) => ids.includes(item.id ?? '0'));
 		const action = isConversation
 			? setConversationsFlag({ ids, value: true, dispatch })
-			: setMsgFlag({ ids, value: true, dispatch });
+			: setMsgFlag({ ids, value: true, dispatch, uiUtilities });
 		return every(selectedItems, ['flagged', true]) && action;
 	};
 
@@ -125,7 +127,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					deselectAll,
 					shouldReplaceHistory: false
 			  })
-			: setMsgRead({ ids, value: false, dispatch, folderId: folderParentId });
+			: setMsgRead({ ids, value: false, dispatch, folderId: folderParentId, uiUtilities });
 		return findIndex(selectedItems, ['read', false]) !== -1 && action;
 	};
 
@@ -145,7 +147,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					deselectAll,
 					shouldReplaceHistory: false
 			  })
-			: setMsgRead({ ids, value: true, dispatch, folderId: folderParentId });
+			: setMsgRead({ ids, value: true, dispatch, folderId: folderParentId, uiUtilities });
 		return selectedItems.length > 0 && every(selectedItems, ['read', true]) && action;
 	};
 
@@ -157,8 +159,8 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 				!foldersExcludedTrash.includes(getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
-			? moveConversationToTrash({ ids, dispatch, folderId, deselectAll })
-			: moveMsgToTrash({ ids, dispatch, deselectAll });
+			? moveConversationToTrash({ ids, dispatch, folderId, deselectAll, uiUtilities })
+			: moveMsgToTrash({ ids, dispatch, deselectAll, uiUtilities });
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
 
@@ -170,8 +172,8 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 				foldersIncludedDeletePermanently.includes(getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
-			? deleteConversationPermanently({ ids, deselectAll })
-			: deleteMessagePermanently({ ids, dispatch, deselectAll });
+			? deleteConversationPermanently({ ids, deselectAll, uiUtilities })
+			: deleteMessagePermanently({ ids, dispatch, deselectAll, uiUtilities });
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
 
@@ -188,14 +190,16 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					dispatch,
 					folderId,
 					isRestore: false,
-					deselectAll
+					deselectAll,
+					uiUtilities
 			  })
 			: moveMessageToFolder({
 					id: ids,
 					folderId: folderParentId,
 					dispatch,
 					isRestore: false,
-					deselectAll
+					deselectAll,
+					uiUtilities
 			  });
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
@@ -230,9 +234,10 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					ids,
 					value: false,
 					dispatch,
-					deselectAll
+					deselectAll,
+					uiUtilities
 			  })
-			: setMsgAsSpam({ ids, value: false, dispatch, folderId: folderParentId });
+			: setMsgAsSpam({ ids, value: false, dispatch, folderId: folderParentId, uiUtilities });
 
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
@@ -249,9 +254,10 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					ids,
 					value: true,
 					dispatch,
-					deselectAll
+					deselectAll,
+					uiUtilities
 			  })
-			: setMsgAsSpam({ ids, value: true, dispatch, folderId: folderParentId });
+			: setMsgAsSpam({ ids, value: true, dispatch, folderId: folderParentId, uiUtilities });
 
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
@@ -329,7 +335,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 
 	const selectAllOnClick = useCallback(() => {
 		selectAll();
-		getBridgedFunctions()?.createSnackbar({
+		uiUtilities.createSnackbar({
 			key: `selected-${ids}`,
 			replace: true,
 			type: 'info',
@@ -337,7 +343,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			autoHideTimeout: 5000,
 			hideButton: true
 		});
-	}, [selectAll, ids]);
+	}, [selectAll, ids, uiUtilities]);
 
 	const actionsIsNotEmpty = primaryActionsArray.length > 0 || secondaryActionsArray.length > 0;
 

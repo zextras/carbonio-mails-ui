@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+
 import {
 	Button,
 	Chip,
@@ -13,18 +15,13 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import {
-	getBridgedFunctions,
-	Grant,
-	soapFetch,
-	t,
-	useUserAccounts
-} from '@zextras/carbonio-shell-ui';
+import { Grant, soapFetch, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-
 import styled from 'styled-components';
+
+import { Context } from './edit-context';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import {
 	findLabel,
 	ShareCalendarRoleOptions
@@ -36,7 +33,6 @@ import type {
 	GranteeProps,
 	ShareFolderPropertiesProps
 } from '../../../../types';
-import { Context } from './edit-context';
 
 const HoverChip = styled(Chip)<ChipProps & { hovered?: boolean }>`
 	background-color: ${({ theme, hovered }): string =>
@@ -70,7 +66,7 @@ const Actions: FC<ActionProps> = ({
 	onMouseLeave,
 	onMouseEnter
 }) => {
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	const uiUtilities = useUiUtilities();
 	const accounts = useUserAccounts();
 	const { setActiveGrant } = useContext(Context);
 	// eslint-disable-next-line @typescript-eslint/ban-types
@@ -90,7 +86,7 @@ const Actions: FC<ActionProps> = ({
 			})
 		).then((res: Response) => {
 			if (res.type.includes('fulfilled')) {
-				getBridgedFunctions()?.createSnackbar({
+				uiUtilities.createSnackbar({
 					key: `resend-${folder.id}`,
 					replace: true,
 					type: 'info',
@@ -100,7 +96,7 @@ const Actions: FC<ActionProps> = ({
 				});
 			}
 		});
-	}, [accounts, dispatch, folder, grant.d]);
+	}, [accounts, dispatch, folder, grant.d, uiUtilities]);
 	const onEdit = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('edit');

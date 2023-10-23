@@ -4,10 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
+
+import { existsActionById } from './actions-tests-utils';
+import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import { ASSERTION, FOLDERIDS, MSG_CONV_STATUS, MessageActionsDescriptors } from '../../constants';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { getMsgConvActions } from '../get-msg-conv-actions';
-import { existsActionById } from './actions-tests-utils';
 
 describe('Primary actions visibility', () => {
 	/**
@@ -87,6 +90,7 @@ describe('Primary actions visibility', () => {
 	`(
 		`(case #$case) primary actions for a message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, assertion, action }) => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			const msg = generateMessage({ folderId: folder.id });
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
@@ -96,7 +100,8 @@ describe('Primary actions visibility', () => {
 				dispatch,
 				deselectAll,
 				account,
-				tags: {}
+				tags: {},
+				uiUtilities
 			});
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 		}
@@ -133,6 +138,7 @@ describe('Primary actions visibility', () => {
 	`(
 		`(case #$case) primary actions for a $read.desc message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, read, assertion, action }) => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			const msg = generateMessage({ folderId: folder.id, isRead: read.value });
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
@@ -142,7 +148,8 @@ describe('Primary actions visibility', () => {
 				dispatch,
 				deselectAll,
 				account,
-				tags: {}
+				tags: {},
+				uiUtilities
 			});
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 		}
@@ -181,6 +188,7 @@ describe('Primary actions visibility', () => {
 	`(
 		`(case #$case) primary actions for a $flagged.desc message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, flagged, assertion, action }) => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			const msg = generateMessage({ folderId: folder.id, isFlagged: flagged.value });
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
@@ -190,7 +198,8 @@ describe('Primary actions visibility', () => {
 				dispatch,
 				deselectAll,
 				account,
-				tags: {}
+				tags: {},
+				uiUtilities
 			});
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 		}

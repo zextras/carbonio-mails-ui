@@ -7,14 +7,7 @@ import React from 'react';
 
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text } from '@zextras/carbonio-design-system';
-import {
-	Account,
-	addBoard,
-	FOLDERS,
-	getBridgedFunctions,
-	replaceHistory,
-	t
-} from '@zextras/carbonio-shell-ui';
+import { Account, addBoard, FOLDERS, replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
 
 import DeleteConvConfirm from './delete-conv-modal';
@@ -31,7 +24,8 @@ import type {
 	MailMessage,
 	MessageActionReturnType,
 	MsgActionParameters,
-	MsgActionResult
+	MsgActionResult,
+	UiUtilities
 } from '../types';
 
 type MessageActionIdsType = Array<string>;
@@ -50,6 +44,7 @@ type MessageActionPropType = {
 	closeEditor?: boolean;
 	isRestore?: boolean;
 	message?: MailMessage;
+	uiUtilities: UiUtilities;
 };
 
 export const setMsgRead = ({
@@ -120,6 +115,7 @@ type SetAsSpamProps = {
 	ids: Array<string>;
 	shouldReplaceHistory?: boolean;
 	folderId?: string;
+	uiUtilities: UiUtilities;
 };
 function setAsSpam({
 	notCanceled,
@@ -127,7 +123,8 @@ function setAsSpam({
 	dispatch,
 	ids,
 	shouldReplaceHistory,
-	folderId
+	folderId,
+	uiUtilities
 }: SetAsSpamProps): void {
 	if (!notCanceled) return;
 	dispatch(
@@ -140,7 +137,7 @@ function setAsSpam({
 			replaceHistory(`/folder/${folderId}`);
 		}
 		if (!res.type.includes('fulfilled')) {
-			getBridgedFunctions()?.createSnackbar({
+			uiUtilities.createSnackbar({
 				key: `trash-${ids}`,
 				replace: true,
 				type: 'error',
@@ -156,7 +153,8 @@ export function setMsgAsSpam({
 	value,
 	dispatch,
 	shouldReplaceHistory = true,
-	folderId
+	folderId,
+	uiUtilities
 }: MessageActionPropType): MessageActionReturnType {
 	const actDescriptor = value
 		? MessageActionsDescriptors.MARK_AS_NOT_SPAM
@@ -173,7 +171,7 @@ export function setMsgAsSpam({
 			let notCanceled = true;
 
 			const infoSnackbar = (hideButton = false): void => {
-				getBridgedFunctions()?.createSnackbar({
+				uiUtilities.createSnackbar({
 					key: `trash-${ids}`,
 					replace: true,
 					type: 'info',
@@ -191,7 +189,15 @@ export function setMsgAsSpam({
 			infoSnackbar();
 			setTimeout(() => {
 				/** If the user has not clicked on the undo button, we can proceed with the action */
-				setAsSpam({ notCanceled, value, dispatch, ids, shouldReplaceHistory, folderId });
+				setAsSpam({
+					notCanceled,
+					value,
+					dispatch,
+					ids,
+					shouldReplaceHistory,
+					folderId,
+					uiUtilities
+				});
 			}, TIMEOUTS.SET_AS_SPAM);
 		}
 	};
@@ -269,7 +275,8 @@ const restoreMessage = (
 	ids: MessageActionIdsType,
 	folderId: string,
 	closeEditor: boolean | undefined,
-	conversationId: string | undefined
+	conversationId: string | undefined,
+	uiUtilities: UiUtilities
 ): void => {
 	dispatchMsgMove(dispatch, ids, folderId)
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -282,7 +289,7 @@ const restoreMessage = (
 							? `/folder/${folderId}/conversation/${conversationId}`
 							: `/folder/${folderId}/conversation/-${ids[0]}`
 					);
-				getBridgedFunctions()?.createSnackbar({
+				uiUtilities.createSnackbar({
 					key: `move-${ids}`,
 					replace: true,
 					type: 'success',
@@ -291,7 +298,7 @@ const restoreMessage = (
 					hideButton: true
 				});
 			} else {
-				getBridgedFunctions()?.createSnackbar({
+				uiUtilities.createSnackbar({
 					key: `move-${ids}`,
 					replace: true,
 					type: 'error',
@@ -309,7 +316,8 @@ export function moveMsgToTrash({
 	deselectAll,
 	folderId = FOLDERS.INBOX,
 	conversationId,
-	closeEditor
+	closeEditor,
+	uiUtilities
 }: MessageActionPropType): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.MOVE_TO_TRASH;
 
@@ -329,7 +337,7 @@ export function moveMsgToTrash({
 				if (res.type.includes('fulfilled')) {
 					deselectAll && deselectAll();
 					closeEditor && replaceHistory(`/folder/${folderId}`);
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
 						type: 'info',
@@ -338,10 +346,10 @@ export function moveMsgToTrash({
 						hideButton: false,
 						actionLabel: t('label.undo', 'Undo'),
 						onActionClick: () =>
-							restoreMessage(dispatch, ids, folderId, closeEditor, conversationId)
+							restoreMessage(dispatch, ids, folderId, closeEditor, conversationId, uiUtilities)
 					});
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
 						type: 'error',
@@ -357,8 +365,9 @@ export function moveMsgToTrash({
 
 export function deleteMsg({
 	ids,
-	dispatch
-}: Pick<MessageActionPropType, 'ids' | 'dispatch'>): MessageActionReturnType {
+	dispatch,
+	uiUtilities
+}: Pick<MessageActionPropType, 'ids' | 'dispatch' | 'uiUtilities'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.DELETE;
 
 	return {
@@ -367,7 +376,7 @@ export function deleteMsg({
 		label: t('label.delete', 'Delete'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			const closeModal = getBridgedFunctions()?.createModal({
+			const closeModal = uiUtilities.createModal({
 				title: t('header.delete_email', 'Delete e-mail'),
 				confirmLabel: t('action.ok', 'Ok'),
 				onConfirm: () => {
@@ -382,7 +391,7 @@ export function deleteMsg({
 						// @ts-ignore
 						closeModal();
 						if (res.type.includes('fulfilled')) {
-							getBridgedFunctions()?.createSnackbar({
+							uiUtilities.createSnackbar({
 								key: `trash-${ids}`,
 								replace: true,
 								type: 'info',
@@ -390,7 +399,7 @@ export function deleteMsg({
 								autoHideTimeout: 3000
 							});
 						} else {
-							getBridgedFunctions()?.createSnackbar({
+							uiUtilities.createSnackbar({
 								key: `trash-${ids}`,
 								replace: true,
 								type: 'error',
@@ -517,8 +526,12 @@ export function editAsNewMsg({
 export function editDraft({
 	id,
 	folderId,
-	message
-}: Pick<MessageActionPropType, 'id' | 'folderId' | 'message'>): MessageActionReturnType {
+	message,
+	uiUtilities
+}: Pick<
+	MessageActionPropType,
+	'id' | 'folderId' | 'message' | 'uiUtilities'
+>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.EDIT_DRAFT;
 	return {
 		id: actDescriptor.id,
@@ -527,7 +540,7 @@ export function editDraft({
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			if (message?.isScheduled) {
-				const closeModal = getBridgedFunctions()?.createModal({
+				const closeModal = uiUtilities.createModal({
 					title: t('label.warning', 'Warning'),
 					confirmLabel: t('action.edit_anyway', 'Edit anyway'),
 					onConfirm: () => {
@@ -593,7 +606,13 @@ export function sendDraft({
 	};
 }
 
-export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
+export function redirectMsg({
+	id,
+	uiUtilities
+}: {
+	id: string;
+	uiUtilities: UiUtilities;
+}): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.REDIRECT;
 	return {
 		id: actDescriptor.id,
@@ -601,7 +620,7 @@ export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
 		label: t('action.redirect', 'Redirect'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			const closeModal = getBridgedFunctions()?.createModal(
+			const closeModal = uiUtilities.createModal(
 				{
 					maxHeight: '90vh',
 					children: (
@@ -624,10 +643,11 @@ export function moveMessageToFolder({
 	dispatch,
 	isRestore,
 	deselectAll,
-	folderId
+	folderId,
+	uiUtilities
 }: Pick<
 	MessageActionPropType,
-	'id' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId'
+	'id' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId' | 'uiUtilities'
 >): MessageActionReturnType {
 	const actDescriptor = isRestore
 		? MessageActionsDescriptors.RESTORE
@@ -637,7 +657,7 @@ export function moveMessageToFolder({
 		icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
 		label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 		onClick: (): void => {
-			const closeModal = getBridgedFunctions()?.createModal(
+			const closeModal = uiUtilities.createModal(
 				{
 					maxHeight: '90vh',
 					children: (
@@ -645,9 +665,6 @@ export function moveMessageToFolder({
 							<MoveConvMessage
 								folderId={folderId ?? ''}
 								selectedIDs={[id as string]}
-								// TODO: Fix it in DS
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
 								onClose={(): void => closeModal()}
 								isMessageView
 								isRestore={isRestore ?? false}
@@ -665,7 +682,8 @@ export function moveMessageToFolder({
 
 export function deleteMessagePermanently({
 	ids,
-	deselectAll
+	deselectAll,
+	uiUtilities
 }: MessageActionPropType): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.DELETE_PERMANENTLY;
 	return {
@@ -673,16 +691,13 @@ export function deleteMessagePermanently({
 		icon: 'DeletePermanentlyOutline',
 		label: t('label.delete_permanently', 'Delete Permanently'),
 		onClick: (): void => {
-			const closeModal = getBridgedFunctions()?.createModal(
+			const closeModal = uiUtilities.createModal(
 				{
 					children: (
 						<StoreProvider>
 							<DeleteConvConfirm
 								selectedIDs={ids}
 								isMessageView
-								// TODO: Fix it in DS
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
 								onClose={(): void => closeModal()}
 								deselectAll={deselectAll || ((): null => null)}
 							/>

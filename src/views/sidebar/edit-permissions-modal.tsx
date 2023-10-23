@@ -18,12 +18,7 @@ import {
 	SelectItem,
 	Text
 } from '@zextras/carbonio-design-system';
-import {
-	getBridgedFunctions,
-	t,
-	useIntegratedComponent,
-	useUserAccounts
-} from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { GranteeInfo } from './parts/edit/share-folder-properties';
@@ -31,6 +26,7 @@ import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-foote
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
 import { useAppDispatch } from '../../hooks/redux';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import {
 	ShareCalendarRoleOptions,
 	ShareCalendarWithOptions,
@@ -48,6 +44,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	goBack
 }) => {
 	const dispatch = useAppDispatch();
+	const uiUtilities = useUiUtilities();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
@@ -88,7 +85,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 			})
 		).then((res: { type: string }) => {
 			if (!('Fault' in res)) {
-				getBridgedFunctions()?.createSnackbar({
+				uiUtilities.createSnackbar({
 					key: `share-${folder.id}`,
 					replace: true,
 					hideButton: true,
@@ -111,7 +108,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 						})
 					).then((res2: { type: string }) => {
 						if (!res2.type.includes('fulfilled')) {
-							getBridgedFunctions()?.createSnackbar({
+							uiUtilities.createSnackbar({
 								key: `share-${folder.id}`,
 								replace: true,
 								type: 'error',
@@ -129,13 +126,15 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 		sendNotification,
 		standardMessage,
 		editMode,
-		grant,
+		grant.d,
+		grant.zid,
 		contacts,
 		shareWithUserType,
 		shareWithUserRole,
 		folder,
 		accounts,
-		onClose
+		onClose,
+		uiUtilities
 	]);
 
 	const disableEdit = useMemo(

@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom';
 
 import { useAppDispatch } from './redux';
 import { useSelection } from './use-selection';
+import { useUiUtilities } from './use-ui-utilities';
 import type { AppContext, MailMessage } from '../types';
 import {
 	deleteMessagePermanently,
@@ -33,6 +34,7 @@ import {
 import { applyTag } from '../ui-actions/tag-actions';
 
 export const useMessageActions = (message: MailMessage, isAlone = false): Array<any> => {
+	const uiUtilities = useUiUtilities();
 	const { folderId }: { folderId: string } = useParams();
 	const dispatch = useAppDispatch();
 	const { setCount } = useAppContext<AppContext>();
@@ -49,7 +51,7 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 
 	if (message.parent === FOLDERS.DRAFTS) {
 		arr.push(sendDraft({ message, dispatch }));
-		arr.push(editDraft({ id: message.id, folderId, message }));
+		arr.push(editDraft({ id: message.id, folderId, message, uiUtilities }));
 		arr.push(
 			moveMsgToTrash({
 				ids: [message.id],
@@ -57,10 +59,11 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 				deselectAll,
 				folderId,
 				conversationId: message?.conversation,
-				closeEditor: isAlone
+				closeEditor: isAlone,
+				uiUtilities
 			})
 		);
-		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
+		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch, uiUtilities }));
 		arr.push(applyTag({ tags, conversation: message, isMessage: true }));
 	}
 	if (
@@ -79,7 +82,8 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 				deselectAll,
 				folderId,
 				conversationId: message?.conversation,
-				closeEditor: isAlone
+				closeEditor: isAlone,
+				uiUtilities
 			})
 		);
 		arr.push(
@@ -89,7 +93,8 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 				dispatch,
 				folderId,
 				shouldReplaceHistory: true,
-				deselectAll
+				deselectAll,
+				uiUtilities
 			})
 		);
 		arr.push(
@@ -98,16 +103,17 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 				folderId,
 				dispatch,
 				isRestore: false,
-				deselectAll
+				deselectAll,
+				uiUtilities
 			})
 		);
 
 		arr.push(applyTag({ tags, conversation: message, isMessage: true }));
 		arr.push(printMsg({ message, account }));
-		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
-		arr.push(redirectMsg({ id: message.id }));
+		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch, uiUtilities }));
+		arr.push(redirectMsg({ id: message.id, uiUtilities }));
 		arr.push(editAsNewMsg({ id: message.id, folderId }));
-		arr.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }));
+		arr.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId, uiUtilities }));
 		arr.push(showOriginalMsg({ id: message.id }));
 	}
 
@@ -118,20 +124,22 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 				folderId,
 				dispatch,
 				isRestore: true,
-				deselectAll
+				deselectAll,
+				uiUtilities
 			})
 		);
-		arr.push(deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }));
+		arr.push(deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll, uiUtilities }));
 		arr.push(applyTag({ tags, conversation: message, isMessage: true }));
 	}
 	if (message.parent === FOLDERS.SPAM) {
 		arr.push(
 			deleteMsg({
 				ids: [message.id],
-				dispatch
+				dispatch,
+				uiUtilities
 			})
 		);
-		arr.push(setMsgAsSpam({ ids: [message.id], value: true, dispatch, folderId }));
+		arr.push(setMsgAsSpam({ ids: [message.id], value: true, dispatch, folderId, uiUtilities }));
 		arr.push(printMsg({ message, account }));
 		arr.push(showOriginalMsg({ id: message.id }));
 		arr.push(applyTag({ tags, conversation: message, isMessage: true }));

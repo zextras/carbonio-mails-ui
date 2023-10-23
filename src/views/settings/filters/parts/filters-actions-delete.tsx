@@ -4,17 +4,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
-import type { TFunction } from 'i18next';
+
 import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
+import type { TFunction } from 'i18next';
 import { find, noop } from 'lodash';
+
 import { removeFilter, addFilter } from './actions';
+import CreateFilterModal from './create-filter-modal';
+import { FilterContext } from './filter-context';
+import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import {
 	modifyFilterRules,
 	modifyOutgoingFilterRules
 } from '../../../../store/actions/modify-filter-rules';
-import { FilterContext } from './filter-context';
-import CreateFilterModal from './create-filter-modal';
-import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
 import { StoreProvider } from '../../../../store/redux';
 
 type FilterListType = {
@@ -50,6 +53,8 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		setFetchOutgoingFilters,
 		setOutgoingFilters
 	} = useContext(FilterContext);
+
+	const uiUtilities = useUiUtilities();
 
 	const disableAdd = useMemo(
 		() => Object.keys(availableList.selected).length <= 0,
@@ -104,9 +109,10 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			activeList,
 			setFilters: setFilters ?? emptyFilter,
 			setFetchFilters: setFetchFilters ?? emptyFilter,
-			modifierFunc
+			modifierFunc,
+			uiUtilities
 		});
-	}, [t, availableList, activeList, setFilters, setFetchFilters, modifierFunc]);
+	}, [t, availableList, activeList, setFilters, setFetchFilters, modifierFunc, uiUtilities]);
 	const onAdd = useCallback(
 		() =>
 			addFilter({
@@ -115,9 +121,10 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				activeList,
 				setFilters: setFilters ?? emptyFilter,
 				setFetchFilters: setFetchFilters ?? emptyFilter,
-				modifierFunc
+				modifierFunc,
+				uiUtilities
 			}),
-		[t, availableList, activeList, setFilters, setFetchFilters, modifierFunc]
+		[t, availableList, activeList, setFilters, setFetchFilters, modifierFunc, uiUtilities]
 	);
 
 	const openFilterModifyModal = useCallback(() => {

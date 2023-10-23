@@ -19,8 +19,13 @@ import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/account
 import { getTags, getUserAccount } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import {
+	makeListItemsVisible,
+	setupHook,
+	setupTest
+} from '../../carbonio-ui-commons/test/test-setup';
 import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../constants';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
@@ -78,6 +83,7 @@ function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 describe('Messages actions calls', () => {
 	describe('Add flag action', () => {
 		test('Single id', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).resultl;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
@@ -91,7 +97,8 @@ describe('Messages actions calls', () => {
 			const action = setMsgFlag({
 				ids: [msg.id],
 				dispatch: store.dispatch,
-				value: false
+				value: false,
+				uiUtilities
 			});
 
 			act(() => {
@@ -107,6 +114,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
@@ -122,7 +130,8 @@ describe('Messages actions calls', () => {
 			const action = setMsgFlag({
 				ids: msgIds,
 				dispatch: store.dispatch,
-				value: false
+				value: false,
+				uiUtilities
 			});
 
 			act(() => {
@@ -140,6 +149,7 @@ describe('Messages actions calls', () => {
 
 	describe('Remove flag action', () => {
 		test('Single id', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
@@ -153,7 +163,8 @@ describe('Messages actions calls', () => {
 			const action = setMsgFlag({
 				ids: [msg.id],
 				dispatch: store.dispatch,
-				value: true
+				value: true,
+				uiUtilities
 			});
 
 			act(() => {
@@ -169,6 +180,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
@@ -186,7 +198,8 @@ describe('Messages actions calls', () => {
 			const action = setMsgFlag({
 				ids: msgIds,
 				dispatch: store.dispatch,
-				value: false
+				value: false,
+				uiUtilities
 			});
 
 			act(() => {
@@ -204,6 +217,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as read action', () => {
 		test('Single id', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
@@ -218,7 +232,8 @@ describe('Messages actions calls', () => {
 				ids: [msg.id],
 				dispatch: store.dispatch,
 				value: false,
-				folderId: msg.parent
+				folderId: msg.parent,
+				uiUtilities
 			});
 
 			act(() => {
@@ -234,6 +249,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
@@ -251,7 +267,8 @@ describe('Messages actions calls', () => {
 			const action = setMsgRead({
 				ids: msgIds,
 				dispatch: store.dispatch,
-				value: false
+				value: false,
+				uiUtilities
 			});
 
 			act(() => {
@@ -269,6 +286,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as unread action', () => {
 		test('Single id', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
@@ -283,7 +301,8 @@ describe('Messages actions calls', () => {
 				ids: [msg.id],
 				dispatch: store.dispatch,
 				value: true,
-				folderId: msg.parent
+				folderId: msg.parent,
+				uiUtilities
 			});
 
 			act(() => {
@@ -299,6 +318,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
@@ -317,7 +337,8 @@ describe('Messages actions calls', () => {
 				ids: msgIds,
 				dispatch: store.dispatch,
 				value: true,
-				folderId: FOLDERS.INBOX
+				folderId: FOLDERS.INBOX,
+				uiUtilities
 			});
 
 			act(() => {
@@ -335,6 +356,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as spam action', () => {
 		test('Single id', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
@@ -349,7 +371,8 @@ describe('Messages actions calls', () => {
 				ids: [msg.id],
 				dispatch: store.dispatch,
 				value: true,
-				folderId: msg.parent
+				folderId: msg.parent,
+				uiUtilities
 			});
 
 			act(() => {
@@ -366,6 +389,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
@@ -384,7 +408,8 @@ describe('Messages actions calls', () => {
 				ids: msgIds,
 				dispatch: store.dispatch,
 				value: true,
-				folderId: FOLDERS.INBOX
+				folderId: FOLDERS.INBOX,
+				uiUtilities
 			});
 
 			act(() => {
@@ -403,6 +428,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as not spam action', () => {
 		test('Single id', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
@@ -417,7 +443,8 @@ describe('Messages actions calls', () => {
 				ids: [msg.id],
 				dispatch: store.dispatch,
 				value: false,
-				folderId: msg.parent
+				folderId: msg.parent,
+				uiUtilities
 			});
 
 			act(() => {
@@ -434,6 +461,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
@@ -452,7 +480,8 @@ describe('Messages actions calls', () => {
 				ids: msgIds,
 				dispatch: store.dispatch,
 				value: false,
-				folderId: FOLDERS.INBOX
+				folderId: FOLDERS.INBOX,
+				uiUtilities
 			});
 
 			act(() => {
@@ -524,6 +553,7 @@ describe('Messages actions calls', () => {
 
 	describe('Move to trash action', () => {
 		test('Single id', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msg = generateMessage({});
 			const store = generateStore({
@@ -537,7 +567,8 @@ describe('Messages actions calls', () => {
 			const action = moveMsgToTrash({
 				ids: [msg.id],
 				dispatch: store.dispatch,
-				folderId: msg.parent
+				folderId: msg.parent,
+				uiUtilities
 			});
 
 			act(() => {
@@ -553,6 +584,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore(FOLDER_VIEW.message);
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
@@ -570,7 +602,8 @@ describe('Messages actions calls', () => {
 			const action = moveMsgToTrash({
 				ids: msgIds,
 				dispatch: store.dispatch,
-				folderId: FOLDERS.INBOX
+				folderId: FOLDERS.INBOX,
+				uiUtilities
 			});
 
 			act(() => {
@@ -867,6 +900,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Edit draft action', () => {
+		const { current: uiUtilities } = setupHook(useUiUtilities).result;
 		populateFoldersStore(FOLDER_VIEW.message);
 		const msg: MailMessage = generateMessage({});
 		generateStore({
@@ -879,7 +913,8 @@ describe('Messages actions calls', () => {
 
 		const action = editDraft({
 			id: msg.id,
-			folderId: msg.parent
+			folderId: msg.parent,
+			uiUtilities
 		});
 
 		act(() => {

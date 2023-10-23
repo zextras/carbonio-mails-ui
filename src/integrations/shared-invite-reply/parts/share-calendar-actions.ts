@@ -3,13 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
+
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { msgAction } from '../../../store/actions';
 import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCalendarReply';
 import { mountSharedCalendar } from '../../../store/actions/mount-share-calendar';
 import { AppDispatch } from '../../../store/redux';
+import { UiUtilities } from '../../../types';
 import type { MailsEditor, Participant } from '../../../types';
 
 type Accept = {
@@ -30,12 +31,14 @@ type Accept = {
 	role: string;
 	allowedActions: string;
 	notifyOrganizer: boolean;
+	uiUtilities: UiUtilities;
 };
 
 type MoveInviteToTrashType = {
 	t: (...args: any[]) => string;
 	dispatch: AppDispatch;
 	msgId: string;
+	uiUtilities: UiUtilities;
 };
 
 type MountSharedCalendarType = {
@@ -71,6 +74,7 @@ type DeclineType = {
 	role: string;
 	allowedActions: string;
 	notifyOrganizer: boolean;
+	uiUtilities: UiUtilities;
 };
 const mountSharedCalendarFunc = ({
 	zid,
@@ -131,7 +135,7 @@ const sharedCalendarReplyFunc = ({
 	);
 };
 
-const moveInviteToTrashFunc = ({ msgId, dispatch, t }: MoveInviteToTrashType): any =>
+const moveInviteToTrashFunc = ({ msgId, dispatch, t, uiUtilities }: MoveInviteToTrashType): any =>
 	dispatch(
 		msgAction({
 			operation: `trash`,
@@ -139,7 +143,7 @@ const moveInviteToTrashFunc = ({ msgId, dispatch, t }: MoveInviteToTrashType): a
 		})
 	).then((res2: any): void => {
 		if (!res2.type.includes('fulfilled')) {
-			getBridgedFunctions()?.createSnackbar({
+			uiUtilities.createSnackbar({
 				key: `share`,
 				replace: true,
 				hideButton: true,
@@ -167,7 +171,8 @@ export const accept = ({
 	customMessage,
 	role,
 	allowedActions,
-	notifyOrganizer
+	notifyOrganizer,
+	uiUtilities
 }: Accept): void =>
 	mountSharedCalendarFunc({
 		zid,
@@ -191,8 +196,8 @@ export const accept = ({
 					allowedActions,
 					isAccepted: true
 				});
-			moveInviteToTrashFunc({ msgId, dispatch, t });
-			getBridgedFunctions()?.createSnackbar({
+			moveInviteToTrashFunc({ msgId, dispatch, t, uiUtilities });
+			uiUtilities.createSnackbar({
 				key: `share_accepted`,
 				replace: true,
 				type: 'info',
@@ -201,7 +206,7 @@ export const accept = ({
 				hideButton: true
 			});
 		} else {
-			getBridgedFunctions()?.createSnackbar({
+			uiUtilities.createSnackbar({
 				key: `share`,
 				replace: true,
 				type: 'error',
@@ -223,7 +228,8 @@ export const decline = ({
 	customMessage,
 	role,
 	allowedActions,
-	notifyOrganizer
+	notifyOrganizer,
+	uiUtilities
 }: DeclineType): any =>
 	dispatch(
 		msgAction({
@@ -244,7 +250,7 @@ export const decline = ({
 					allowedActions,
 					isAccepted: false
 				});
-			getBridgedFunctions()?.createSnackbar({
+			uiUtilities.createSnackbar({
 				key: `share_declined`,
 				replace: true,
 				type: 'info',
@@ -253,7 +259,7 @@ export const decline = ({
 				hideButton: true
 			});
 		} else {
-			getBridgedFunctions()?.createSnackbar({
+			uiUtilities.createSnackbar({
 				key: `share`,
 				replace: true,
 				type: 'error',

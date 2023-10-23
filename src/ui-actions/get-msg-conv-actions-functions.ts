@@ -35,7 +35,7 @@ import {
 import { applyTag } from './tag-actions';
 import { getFolderIdParts } from '../helpers/folders';
 import { AppDispatch } from '../store/redux';
-import type { ActionReturnType, Conversation, MailMessage } from '../types';
+import type { ActionReturnType, Conversation, MailMessage, UiUtilities } from '../types';
 
 /**
  * get the action to be executed when the user clicks on the "Mark as read/unread" button
@@ -55,7 +55,8 @@ export function getReadUnreadAction({
 	dispatch,
 	folderId,
 	deselectAll,
-	foldersExcludedMarkReadUnread
+	foldersExcludedMarkReadUnread,
+	uiUtilities
 }: {
 	isConversation: boolean;
 	id: string;
@@ -64,6 +65,7 @@ export function getReadUnreadAction({
 	folderId: string;
 	deselectAll: () => void;
 	foldersExcludedMarkReadUnread: string[];
+	uiUtilities: UiUtilities;
 }): ActionReturnType {
 	const action = isConversation
 		? setConversationsRead({
@@ -74,7 +76,7 @@ export function getReadUnreadAction({
 				deselectAll,
 				shouldReplaceHistory: false
 		  })
-		: setMsgRead({ ids: [id], value: item.read, dispatch, folderId });
+		: setMsgRead({ ids: [id], value: item.read, dispatch, folderId, uiUtilities });
 	return !foldersExcludedMarkReadUnread.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -140,7 +142,8 @@ export function getMoveToTrashAction({
 	dispatch,
 	folderId,
 	deselectAll,
-	foldersExcludedTrash
+	foldersExcludedTrash,
+	uiUtilities
 }: {
 	isConversation: boolean;
 	id: string;
@@ -148,10 +151,11 @@ export function getMoveToTrashAction({
 	folderId: string;
 	deselectAll: () => void;
 	foldersExcludedTrash: string[];
+	uiUtilities: UiUtilities;
 }): ActionReturnType {
 	const action = isConversation
-		? moveConversationToTrash({ ids: [id], dispatch, folderId, deselectAll })
-		: moveMsgToTrash({ ids: [id], dispatch, deselectAll });
+		? moveConversationToTrash({ ids: [id], dispatch, folderId, deselectAll, uiUtilities })
+		: moveMsgToTrash({ ids: [id], dispatch, deselectAll, uiUtilities });
 	return !foldersExcludedTrash.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -161,7 +165,8 @@ export function getDeletePermanentlyAction({
 	deselectAll,
 	dispatch,
 	foldersIncludedDeletePermanently,
-	folderId
+	folderId,
+	uiUtilities
 }: {
 	isConversation: boolean;
 	id: string;
@@ -169,10 +174,11 @@ export function getDeletePermanentlyAction({
 	dispatch: AppDispatch;
 	foldersIncludedDeletePermanently: string[];
 	folderId: string;
+	uiUtilities: UiUtilities;
 }): ActionReturnType {
 	const action = isConversation
-		? deleteConversationPermanently({ ids: [id], deselectAll })
-		: deleteMessagePermanently({ ids: [id], dispatch, deselectAll });
+		? deleteConversationPermanently({ ids: [id], deselectAll, uiUtilities })
+		: deleteMessagePermanently({ ids: [id], dispatch, deselectAll, uiUtilities });
 	return foldersIncludedDeletePermanently.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -180,16 +186,18 @@ export function getAddRemoveFlagAction({
 	isConversation,
 	id,
 	item,
-	dispatch
+	dispatch,
+	uiUtilities
 }: {
 	isConversation: boolean;
 	id: string;
 	item: MailMessage | Conversation;
 	dispatch: AppDispatch;
+	uiUtilities: UiUtilities;
 }): ActionReturnType {
 	return isConversation
 		? setConversationsFlag({ ids: [id], value: item.flagged, dispatch })
-		: setMsgFlag({ ids: [id], value: item.flagged, dispatch });
+		: setMsgFlag({ ids: [id], value: item.flagged, dispatch, uiUtilities });
 }
 
 export function getSendDraftAction({
@@ -215,7 +223,8 @@ export function getMarkRemoveSpam({
 	folderId,
 	dispatch,
 	deselectAll,
-	foldersExcludedMarkUnmarkSpam
+	foldersExcludedMarkUnmarkSpam,
+	uiUtilities
 }: {
 	isConversation: boolean;
 	id: string;
@@ -223,19 +232,22 @@ export function getMarkRemoveSpam({
 	dispatch: AppDispatch;
 	deselectAll: () => void;
 	foldersExcludedMarkUnmarkSpam: string[];
+	uiUtilities: UiUtilities;
 }): ActionReturnType {
 	const action = isConversation
 		? setConversationsSpam({
 				ids: [id],
 				value: folderId === FOLDERS.SPAM,
 				dispatch,
-				deselectAll
+				deselectAll,
+				uiUtilities
 		  })
 		: setMsgAsSpam({
 				ids: [id],
 				value: folderId === FOLDERS.SPAM,
 				dispatch,
-				folderId
+				folderId,
+				uiUtilities
 		  });
 	return !foldersExcludedMarkUnmarkSpam.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
@@ -265,13 +277,15 @@ export function getMoveToFolderAction({
 	id,
 	dispatch,
 	folderId,
-	deselectAll
+	deselectAll,
+	uiUtilities
 }: {
 	isConversation: boolean;
 	id: string;
 	dispatch: AppDispatch;
 	folderId: string;
 	deselectAll: () => void;
+	uiUtilities: UiUtilities;
 }): ActionReturnType {
 	return isConversation
 		? moveConversationToFolder({
@@ -279,14 +293,16 @@ export function getMoveToFolderAction({
 				dispatch,
 				folderId,
 				isRestore: folderId === FOLDERS.TRASH,
-				deselectAll
+				deselectAll,
+				uiUtilities
 		  })
 		: moveMessageToFolder({
 				id: [id],
 				folderId,
 				dispatch,
 				isRestore: folderId === FOLDERS.TRASH,
-				deselectAll
+				deselectAll,
+				uiUtilities
 		  });
 }
 
@@ -316,14 +332,16 @@ export function getRedirectAction({
 	isConversation,
 	id,
 	folderExcludedRedirect,
-	folderId
+	folderId,
+	uiUtilities
 }: {
 	isConversation: boolean;
 	id: string;
 	folderExcludedRedirect: string[];
 	folderId: string;
+	uiUtilities: UiUtilities;
 }): ActionReturnType {
-	const action = isConversation ? false : redirectMsg({ id });
+	const action = isConversation ? false : redirectMsg({ id, uiUtilities });
 	return !folderExcludedRedirect.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -331,14 +349,16 @@ export function getEditDraftAction({
 	isConversation,
 	id,
 	folderId,
-	folderIncludeEditDraft
+	folderIncludeEditDraft,
+	uiUtilities
 }: {
 	isConversation: boolean;
 	id: string;
 	folderId: string;
 	folderIncludeEditDraft: string[];
+	uiUtilities: UiUtilities;
 }): ActionReturnType {
-	const action = isConversation ? false : editDraft({ id, folderId });
+	const action = isConversation ? false : editDraft({ id, folderId, uiUtilities });
 	return folderIncludeEditDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 

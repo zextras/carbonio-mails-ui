@@ -3,22 +3,33 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
+import { faker } from '@faker-js/faker';
 import { act, screen } from '@testing-library/react';
 import { noop, times } from 'lodash';
-import React from 'react';
 import { rest } from 'msw';
-import { faker } from '@faker-js/faker';
+
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
+import {
+	getTag,
+	getTags,
+	getUserAccount
+} from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import {
+	makeListItemsVisible,
+	setupHook,
+	setupTest
+} from '../../carbonio-ui-commons/test/test-setup';
 import { TIMEOUTS } from '../../constants';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
+import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
+import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateStore } from '../../tests/generators/store';
 import { ConvActionRequest, Conversation, Status } from '../../types';
-import DeleteConvConfirm from '../delete-conv-modal';
-import MoveConvMessage from '../move-conv-msg';
-import { generateConversation } from '../../tests/generators/generateConversation';
 import {
 	moveConversationToTrash,
 	printConversation,
@@ -26,13 +37,9 @@ import {
 	setConversationsRead,
 	setConversationsSpam
 } from '../conversation-actions';
-import {
-	getTag,
-	getTags,
-	getUserAccount
-} from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import DeleteConvConfirm from '../delete-conv-modal';
+import MoveConvMessage from '../move-conv-msg';
 import { TagsDropdownItem } from '../tag-actions';
-import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 
 function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
@@ -390,6 +397,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Mark as spam action', () => {
 		test('Single id', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore('message');
 			const conv = generateConversation({});
 			const store = generateStore({
@@ -410,7 +418,8 @@ describe('Conversation actions calls', () => {
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: false,
-				deselectAll: noop
+				deselectAll: noop,
+				uiUtilities
 			});
 
 			act(() => {
@@ -426,6 +435,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore('message');
 			const conversations: Array<Conversation> = times(10, () => generateConversation({}));
 			const store = generateStore({
@@ -454,7 +464,8 @@ describe('Conversation actions calls', () => {
 				ids: convIds,
 				dispatch: store.dispatch,
 				value: false,
-				deselectAll: noop
+				deselectAll: noop,
+				uiUtilities
 			});
 
 			act(() => {
@@ -472,6 +483,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Mark as not spam action', () => {
 		test('Single id', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore('message');
 			const conv = generateConversation({});
 			const store = generateStore({
@@ -492,7 +504,8 @@ describe('Conversation actions calls', () => {
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: true,
-				deselectAll: noop
+				deselectAll: noop,
+				uiUtilities
 			});
 
 			act(() => {
@@ -508,6 +521,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore('message');
 			const conversations: Array<Conversation> = times(10, () => generateConversation({}));
 			const store = generateStore({
@@ -536,7 +550,8 @@ describe('Conversation actions calls', () => {
 				ids: convIds,
 				dispatch: store.dispatch,
 				value: true,
-				deselectAll: noop
+				deselectAll: noop,
+				uiUtilities
 			});
 
 			act(() => {
@@ -574,6 +589,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Move to trash action', () => {
 		test('Single id', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore('message');
 			const conv = generateConversation({});
 			const store = generateStore({
@@ -594,7 +610,8 @@ describe('Conversation actions calls', () => {
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				folderId: conv.parent,
-				deselectAll: noop
+				deselectAll: noop,
+				uiUtilities
 			});
 
 			act(() => {
@@ -609,6 +626,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
+			const { current: uiUtilities } = setupHook(useUiUtilities).result;
 			populateFoldersStore('message');
 			const conversations: Array<Conversation> = times(10, () => generateConversation({}));
 			const store = generateStore({
@@ -637,7 +655,8 @@ describe('Conversation actions calls', () => {
 				ids: convIds,
 				dispatch: store.dispatch,
 				folderId: FOLDERS.INBOX,
-				deselectAll: noop
+				deselectAll: noop,
+				uiUtilities
 			});
 
 			act(() => {

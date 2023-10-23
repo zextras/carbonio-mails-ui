@@ -3,9 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { concat, filter, findIndex } from 'lodash';
+
+import { UiUtilities } from '../../../../types';
 
 type FilterListType = {
 	active: boolean;
@@ -31,6 +32,7 @@ type CompProps = {
 	setFilters: (arg: Array<FilterListType>) => void;
 	setFetchFilters: (arg: boolean) => void;
 	modifierFunc: (arg: any) => Promise<any>;
+	uiUtilities: UiUtilities;
 };
 
 type DeleteFilterCompProps = {
@@ -43,6 +45,7 @@ type DeleteFilterCompProps = {
 	onClose: () => void;
 	selectedFilter: any;
 	incomingFilters: any;
+	uiUtilities: UiUtilities;
 };
 
 type DeleteOutgoingFilterCompProps = {
@@ -55,6 +58,7 @@ type DeleteOutgoingFilterCompProps = {
 	onClose: () => void;
 	selectedFilter: any;
 	outgoingFilters: any;
+	uiUtilities: UiUtilities;
 };
 export const removeFilter = ({
 	t,
@@ -62,7 +66,8 @@ export const removeFilter = ({
 	availableList,
 	setFilters,
 	setFetchFilters,
-	modifierFunc
+	modifierFunc,
+	uiUtilities
 }: CompProps): void => {
 	const activeFiltersCopy = activeList?.list?.slice();
 	const availableFiltersCopy = availableList?.list?.slice();
@@ -79,7 +84,7 @@ export const removeFilter = ({
 			setFetchFilters(true);
 		})
 		.catch((error) => {
-			getBridgedFunctions()?.createSnackbar({
+			uiUtilities.createSnackbar({
 				key: `share`,
 				replace: true,
 				hideButton: true,
@@ -97,7 +102,8 @@ export const addFilter = ({
 	availableList,
 	setFilters,
 	setFetchFilters,
-	modifierFunc
+	modifierFunc,
+	uiUtilities
 }: CompProps): void => {
 	const activeFiltersCopy = activeList?.list?.slice();
 	const availableFiltersCopy = availableList?.list?.slice();
@@ -113,7 +119,7 @@ export const addFilter = ({
 			setFetchFilters(true);
 		})
 		.catch((error: { message: any }) => {
-			getBridgedFunctions()?.createSnackbar({
+			uiUtilities.createSnackbar({
 				key: 'filter-delete-error',
 				type: 'error',
 				label:
@@ -129,14 +135,15 @@ export const deleteOutgoingFilter = ({
 	modifierFunc,
 	onClose,
 	selectedFilter,
-	outgoingFilters
+	outgoingFilters,
+	uiUtilities
 }: DeleteOutgoingFilterCompProps): void => {
 	const newFilters = filter(outgoingFilters, (f) => f.name !== selectedFilter.name);
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	modifierFunc(newFilters)
 		.then(() => {
-			getBridgedFunctions()?.createSnackbar({
+			uiUtilities.createSnackbar({
 				key: 'filter-delete-success',
 				type: 'info',
 				label: t('settings.filter_deleted', 'Filter successfully deleted'),
@@ -145,7 +152,7 @@ export const deleteOutgoingFilter = ({
 			setFetchFilters(true);
 		})
 		.catch((error: { message: any }) => {
-			getBridgedFunctions()?.createSnackbar({
+			uiUtilities.createSnackbar({
 				key: 'filter-delete-error',
 				type: 'error',
 				label:
@@ -162,14 +169,15 @@ export const deleteFilter = ({
 	modifierFunc,
 	onClose,
 	selectedFilter,
-	incomingFilters
+	incomingFilters,
+	uiUtilities
 }: DeleteFilterCompProps): void => {
 	const newFilters = filter(incomingFilters, (f) => f.name !== selectedFilter.name);
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	modifierFunc(newFilters)
 		.then(() => {
-			getBridgedFunctions()?.createSnackbar({
+			uiUtilities.createSnackbar({
 				key: 'filter-delete-success',
 				type: 'info',
 				label: t('settings.filter_deleted', 'Filter successfully deleted'),
@@ -178,7 +186,7 @@ export const deleteFilter = ({
 			setFetchFilters(true);
 		})
 		.catch((error: { message: any }) => {
-			getBridgedFunctions()?.createSnackbar({
+			uiUtilities.createSnackbar({
 				key: 'filter-delete-error',
 				type: 'error',
 				label:

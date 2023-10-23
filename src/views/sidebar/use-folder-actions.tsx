@@ -3,10 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { SyntheticEvent, useContext, useMemo } from 'react';
+import React, { SyntheticEvent, useMemo } from 'react';
 
-import { ModalManagerContext } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { noop, startsWith } from 'lodash';
 
 import { DeleteModal } from './delete-modal';
@@ -22,6 +21,7 @@ import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/ut
 import { getFolderIdParts } from '../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { folderAction } from '../../store/actions/folder-action';
 import { selectMessagesArray } from '../../store/messages-slice';
 import { StoreProvider } from '../../store/redux';
@@ -38,8 +38,7 @@ type FolderActionsProps = {
 
 export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	const dispatch = useAppDispatch();
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createModal = useContext(ModalManagerContext) as Function;
+	const uiUtilities = useUiUtilities();
 	const folderIsTrash = getFolderIdParts(folder.id ?? '0').id === FOLDERS.TRASH;
 	const messages = useAppSelector(selectMessagesArray);
 	const trashMessages = messages.filter(
@@ -64,7 +63,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = uiUtilities.createModal(
 						{
 							maxHeight: '90vh',
 							children: (
@@ -92,7 +91,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					}
 
 					if (folderIsTrash) {
-						const closeModal = createModal(
+						const closeModal = uiUtilities.createModal(
 							{
 								maxHeight: '90vh',
 								children: (
@@ -127,7 +126,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							const restoreFolder = (): Promise<void> =>
 								folderAction({ folder, l: folder.l, op: 'move' }).then((res) => {
 									if (!('Fault' in res)) {
-										getBridgedFunctions()?.createSnackbar({
+										uiUtilities.createSnackbar({
 											key: `move-folder`,
 											replace: true,
 											type: 'success',
@@ -136,7 +135,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 											hideButton: true
 										});
 									} else {
-										getBridgedFunctions()?.createSnackbar({
+										uiUtilities.createSnackbar({
 											key: `move`,
 											replace: true,
 											type: 'error',
@@ -153,7 +152,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							})
 								.then((res) => {
 									if (!('Fault' in res)) {
-										getBridgedFunctions()?.createSnackbar({
+										uiUtilities.createSnackbar({
 											key: `move`,
 											replace: true,
 											type: 'success',
@@ -164,7 +163,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 											onActionClick: () => restoreFolder()
 										});
 									} else {
-										getBridgedFunctions()?.createSnackbar({
+										uiUtilities.createSnackbar({
 											key: `move`,
 											replace: true,
 											type: 'error',
@@ -177,7 +176,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 								})
 								.catch(() => noop);
 						};
-						const closeModal = createModal(
+						const closeModal = uiUtilities.createModal(
 							{
 								maxHeight: '90vh',
 								children: (
@@ -211,7 +210,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = uiUtilities.createModal(
 						{
 							children: (
 								<StoreProvider>
@@ -234,7 +233,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = uiUtilities.createModal(
 						{
 							maxHeight: '90vh',
 							children: (
@@ -258,7 +257,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = uiUtilities.createModal(
 						{
 							children: (
 								<StoreProvider>
@@ -279,7 +278,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = uiUtilities.createModal(
 						{
 							children: (
 								<StoreProvider>
@@ -316,7 +315,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					if (e) {
 						e.stopPropagation();
 					}
-					const closeModal = createModal(
+					const closeModal = uiUtilities.createModal(
 						{
 							children: (
 								<StoreProvider>
@@ -341,7 +340,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				}
 			}
 		],
-		[createModal, deselectAll, dispatch, folder, folderIsTrash, moveMessagesIds]
+		[folder, folderIsTrash, uiUtilities, moveMessagesIds, deselectAll, dispatch]
 	);
 
 	const defaultFolderActions = useMemo(

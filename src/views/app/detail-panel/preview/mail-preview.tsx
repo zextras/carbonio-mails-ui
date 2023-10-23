@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import {
 	Button,
 	Collapse,
@@ -22,19 +24,20 @@ import {
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+
+import AttachmentsBlock from './attachments-block';
+import PreviewHeader from './parts/preview-header';
+import ReadReceiptModal from './read-receipt-modal';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 import { getMsg, msgAction } from '../../../../store/actions';
 import type { ExtraWindowCreationParams, MailMessage, OpenEmlPreviewType } from '../../../../types';
 import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
 import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
-import AttachmentsBlock from './attachments-block';
-import PreviewHeader from './parts/preview-header';
-import ReadReceiptModal from './read-receipt-modal';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 
@@ -248,6 +251,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 }) => {
 	const { folderId } = useParams<{ folderId: string }>();
 
+	const uiUtilities = useUiUtilities();
 	const dispatch = useAppDispatch();
 	const compProps = useMemo(
 		() => ({ message, onClick, open, isAlone, isExternalMessage, isStandaloneComponent }),
@@ -260,9 +264,10 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 				value: true,
 				dispatch,
 				shouldReplaceHistory: true,
-				folderId
+				folderId,
+				uiUtilities
 			}).onClick(ev),
-		[dispatch, folderId, message.id]
+		[dispatch, folderId, message.id, uiUtilities]
 	);
 
 	return (

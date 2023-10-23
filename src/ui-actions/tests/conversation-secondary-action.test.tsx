@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
+
+import { existsActionById } from './actions-tests-utils';
+import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import {
 	ASSERTION,
 	ConversationActionsDescriptors,
@@ -11,10 +14,10 @@ import {
 	MSG_CONV_STATUS,
 	MessageActionsDescriptors
 } from '../../constants';
-import { getMsgConvActions } from '../get-msg-conv-actions';
-import { existsActionById } from './actions-tests-utils';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
+import { getMsgConvActions } from '../get-msg-conv-actions';
 
 describe('Actions visibility', () => {
 	describe('Conversation secondary actions', () => {
@@ -35,6 +38,7 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
+				const { current: uiUtilities } = setupHook(useUiUtilities).result;
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id
@@ -47,7 +51,8 @@ describe('Actions visibility', () => {
 					dispatch,
 					deselectAll,
 					account,
-					tags: {}
+					tags: {},
+					uiUtilities
 				});
 				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
 					assertion.value
@@ -69,6 +74,7 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
+				const { current: uiUtilities } = setupHook(useUiUtilities).result;
 				const conv = generateMessage({
 					folderId: folder.id
 				});
@@ -80,7 +86,8 @@ describe('Actions visibility', () => {
 					dispatch,
 					deselectAll,
 					account,
-					tags: {}
+					tags: {},
+					uiUtilities
 				});
 				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
 					assertion.value
@@ -121,6 +128,7 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) secondary actions for a $read.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, read, assertion, action }) => {
+				const { current: uiUtilities } = setupHook(useUiUtilities).result;
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id,
@@ -134,7 +142,8 @@ describe('Actions visibility', () => {
 					dispatch,
 					deselectAll,
 					account,
-					tags: {}
+					tags: {},
+					uiUtilities
 				});
 				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
 					assertion.value
@@ -175,6 +184,7 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) secondary actions for a $flagged.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, flagged, assertion, action }) => {
+				const { current: uiUtilities } = setupHook(useUiUtilities).result;
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id,
@@ -188,7 +198,8 @@ describe('Actions visibility', () => {
 					dispatch,
 					deselectAll,
 					account,
-					tags: {}
+					tags: {},
+					uiUtilities
 				});
 				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
 					assertion.value

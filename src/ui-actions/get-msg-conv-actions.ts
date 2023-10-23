@@ -28,7 +28,7 @@ import {
 import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
 import { isConversation, isSingleMessageConversation } from '../helpers/messages';
 import { AppDispatch } from '../store/redux';
-import type { ActionReturnType, Conversation, MailMessage } from '../types';
+import type { ActionReturnType, UiUtilities, Conversation, MailMessage } from '../types';
 
 type GetMessageActionsProps = {
 	item: MailMessage | Conversation;
@@ -36,6 +36,7 @@ type GetMessageActionsProps = {
 	deselectAll: () => void;
 	account: Account;
 	tags: Tags;
+	uiUtilities: UiUtilities;
 };
 
 export type MsgConvActionsReturnType = [
@@ -48,7 +49,8 @@ export function getMsgConvActions({
 	dispatch,
 	deselectAll,
 	account,
-	tags
+	tags,
+	uiUtilities
 }: GetMessageActionsProps): MsgConvActionsReturnType {
 	const isConv = isConversation(item);
 	const folderId = getParentFolderId(item);
@@ -87,7 +89,8 @@ export function getMsgConvActions({
 		isConversation: isConv,
 		id,
 		item,
-		dispatch
+		dispatch,
+		uiUtilities
 	});
 
 	const msgReadUnreadAction = getReadUnreadAction({
@@ -97,7 +100,8 @@ export function getMsgConvActions({
 		dispatch,
 		folderId,
 		deselectAll,
-		foldersExcludedMarkReadUnread
+		foldersExcludedMarkReadUnread,
+		uiUtilities
 	});
 
 	const moveToTrashAction = getMoveToTrashAction({
@@ -106,7 +110,8 @@ export function getMsgConvActions({
 		dispatch,
 		folderId: firstConversationMessage.parent,
 		deselectAll,
-		foldersExcludedTrash
+		foldersExcludedTrash,
+		uiUtilities
 	});
 
 	const deletePermanentlyAction = getDeletePermanentlyAction({
@@ -115,7 +120,8 @@ export function getMsgConvActions({
 		deselectAll,
 		dispatch,
 		foldersIncludedDeletePermanently,
-		folderId: firstConversationMessage.parent
+		folderId: firstConversationMessage.parent,
+		uiUtilities
 	});
 
 	const moveToFolderAction = getMoveToFolderAction({
@@ -123,7 +129,8 @@ export function getMsgConvActions({
 		id,
 		dispatch,
 		folderId: firstConversationMessage.parent,
-		deselectAll
+		deselectAll,
+		uiUtilities
 	});
 
 	const printAction = getPrintAction({
@@ -148,7 +155,8 @@ export function getMsgConvActions({
 		folderId,
 		dispatch,
 		deselectAll,
-		foldersExcludedMarkUnmarkSpam
+		foldersExcludedMarkUnmarkSpam,
+		uiUtilities
 	});
 
 	const showOriginalAction = getShowOriginalAction({
@@ -162,7 +170,8 @@ export function getMsgConvActions({
 		isConversation: isConv,
 		id,
 		folderId,
-		folderIncludeEditDraft
+		folderIncludeEditDraft,
+		uiUtilities
 	});
 
 	const replyAction = getReplyAction(
@@ -211,7 +220,8 @@ export function getMsgConvActions({
 		isConversation: isConv,
 		id,
 		folderExcludedRedirect,
-		folderId
+		folderId,
+		uiUtilities
 	});
 
 	/**
