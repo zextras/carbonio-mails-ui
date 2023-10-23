@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, SyntheticEvent, useMemo } from 'react';
+import React, { FC, SyntheticEvent, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -38,6 +38,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	disabled
 }) => {
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
+	const [isFirstChangeEventFired, setIsFirstChangeEventFired] = useState(false);
 
 	const { prefs } = useUserSettings();
 	const defaultFontFamily = useMemo<string>(
@@ -73,7 +74,9 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									disabled={disabled}
 									onFileSelect={onFilesSelected}
 									onEditorChange={(ev: [string, string]): void => {
-										onContentChanged({ plainText: ev[0], richText: ev[1] });
+										if (isFirstChangeEventFired)
+											onContentChanged({ plainText: ev[0], richText: ev[1] });
+										setIsFirstChangeEventFired(true);
 									}}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
