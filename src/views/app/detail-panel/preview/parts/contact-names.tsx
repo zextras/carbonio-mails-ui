@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { capitalize, map } from 'lodash';
 import React, { FC, ReactElement, useLayoutEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+
 import { Row, Tooltip, Text } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { capitalize, map } from 'lodash';
+import styled from 'styled-components';
 
 import { participantToString } from '../../../../../commons/utils';
 import type { Participant } from '../../../../../types';
@@ -23,23 +24,19 @@ const ContactSubText = styled(Text)`
 	}
 `;
 const ContactName: FC<{
-	showMoreCB?: (showMore: boolean) => void;
 	showOverflow?: boolean;
 	contacts: Participant[];
 	label: string;
-}> = ({ showMoreCB, showOverflow, contacts, label }): ReactElement => {
+}> = ({ showOverflow, contacts, label }): ReactElement => {
 	const accounts = useUserAccounts();
 	const toRef = useRef<HTMLInputElement>(null);
 	const [isOverflow, setIsOverflow] = useState(false);
 	useLayoutEffect(() => {
 		if (toRef?.current?.clientWidth) {
 			const rowOverflow = toRef?.current.scrollWidth > toRef?.current.clientWidth;
-			if (showOverflow && rowOverflow) {
-				showMoreCB && showMoreCB(true);
-			}
 			setIsOverflow(rowOverflow);
 		}
-	}, [showMoreCB, showOverflow]);
+	}, [showOverflow]);
 
 	return (
 		<>

@@ -53,6 +53,7 @@ import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
+import ContactNameChip from './contact-names-chips';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
@@ -103,6 +104,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	const accounts = useUserAccounts();
 
 	const [_minWidth, _setMinWidth] = useState('');
+	const [isContactListExpand, setIsContactListExpand] = useState(false);
 	const actions = useMessageActions(message, isAlone);
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
 	const _onClick = useCallback((e) => !e.isDefaultPrevented() && onClick(e), [onClick]);
@@ -111,6 +113,10 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	const { folderId } = useParams();
+
+	const contactListExpandCB = useCallback((contactListExpand) => {
+		setIsContactListExpand(contactListExpand);
+	}, []);
 
 	const theme = useContext(ThemeContext);
 	const iconSize = useMemo(
@@ -315,10 +321,22 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										>
 											{capitalize(participantToString(mainContact, accounts))}
 										</Text>
-										<Padding left="small" />
-										<Text color="gray1" size={message.read ? 'small' : 'medium'}>
-											{mainContact.address && mainContact.address}
-										</Text>
+										<Row
+											takeAvailableSpace
+											width="fit"
+											mainAlignment="flex-start"
+											wrap="nowrap"
+											padding={{ left: 'small' }}
+										>
+											{!isContactListExpand && (
+												<Text color="gray1" size={message.read ? 'small' : 'medium'}>
+													{mainContact.address && mainContact.address}
+												</Text>
+											)}
+											{isContactListExpand && mainContact.address && (
+												<ContactNameChip contacts={[mainContact]} label={''} />
+											)}
+										</Row>
 									</Row>
 								) : (
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -419,7 +437,13 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						</Text>
 					</Row>
 				)}
-				{open && <MessageContactsList message={message} folderId={folderId} />}
+				{open && (
+					<MessageContactsList
+						message={message}
+						folderId={folderId}
+						contactListExpandCB={contactListExpandCB}
+					/>
+				)}
 			</Container>
 		</HoverContainer>
 	);
