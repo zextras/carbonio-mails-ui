@@ -306,8 +306,12 @@ export const EditView: FC<EditViewProp> = ({
 	);
 	const onDragOverEvent = useCallback((event: React.DragEvent): void => {
 		const eventType = event?.dataTransfer?.types;
+		if (eventType?.includes('contact')) {
+			setDropZoneEnabled(false);
+
+			return;
+		}
 		event.preventDefault();
-		if (eventType?.includes('contact')) return;
 		setDropZoneEnabled(true);
 	}, []);
 
