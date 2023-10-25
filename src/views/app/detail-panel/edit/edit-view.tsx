@@ -6,6 +6,7 @@
 
 import React, {
 	ChangeEvent,
+	DragEventHandler,
 	FC,
 	memo,
 	SyntheticEvent,
@@ -303,8 +304,10 @@ export const EditView: FC<EditViewProp> = ({
 		},
 		[setText, text]
 	);
-	const onDragOverEvent = useCallback((event: SyntheticEvent): void => {
+	const onDragOverEvent = useCallback((event: React.DragEvent): void => {
+		const eventType = event?.dataTransfer?.types;
 		event.preventDefault();
+		if (eventType?.includes('contact')) return;
 		setDropZoneEnabled(true);
 	}, []);
 

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, SyntheticEvent, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -17,7 +17,7 @@ import { MailsEditorV2 } from '../../../../../types';
 export type TextEditorContent = { plainText: string; richText: string };
 
 export type TextEditorContainerProps = {
-	onDragOver: (event: SyntheticEvent) => void;
+	onDragOver: (event: React.DragEvent) => void;
 	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: FileList }) => void;
 	onContentChanged: (content: TextEditorContent) => void;
 	richTextMode: boolean;
@@ -28,7 +28,6 @@ export type TextEditorContainerProps = {
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({
-	editorId,
 	onDragOver,
 	onFilesSelected,
 	onContentChanged,
