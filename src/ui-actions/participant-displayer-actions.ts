@@ -3,16 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { t, getBridgedFunctions } from '@zextras/carbonio-shell-ui';
+import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 
 import { mailToSharedFunction } from '../integrations/shared-functions';
 import { Participant } from '../types';
 
-export const copyEmailToClipboard = (email: string): void => {
+export const copyEmailToClipboard = (email: string, createSnackbar: CreateSnackbarFn): void => {
 	navigator.clipboard.writeText(email).then(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		getBridgedFunctions().createSnackbar({
+		createSnackbar({
 			key: `clipboard-copy-success`,
 			replace: true,
 			type: 'success',

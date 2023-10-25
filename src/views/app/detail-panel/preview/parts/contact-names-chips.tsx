@@ -4,9 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, ReactElement } from 'react';
+import React, { FC, ReactElement, useContext } from 'react';
 
-import { Row, Text, Chip, Container } from '@zextras/carbonio-design-system';
+import {
+	Row,
+	Text,
+	Chip,
+	Container,
+	SnackbarManagerContext
+} from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
@@ -20,67 +26,64 @@ const ContactNameChip: FC<{
 	showOverflow?: boolean;
 	contacts: Participant[];
 	label: string;
-}> = ({ contacts, label }): ReactElement => (
-	<>
-		<Row mainAlignment="flex-start">
-			<Text color="secondary" size="small" style={{ paddingRight: '0.25rem' }}>
-				{label}
-			</Text>
-		</Row>
-		<Row
-			mainAlignment="flex-start"
-			takeAvailableSpace
-			height="fit"
-			orientation="vertical"
-			display="flex"
-			wrap={'nowrap'}
-			style={{
-				lineHeight: '1.125rem',
-				flexDirection: 'row',
-				overflow: 'hidden'
-			}}
-		>
-			<Container
-				orientation="horizontal"
-				wrap="wrap"
+}> = ({ contacts, label }): ReactElement => {
+	const createSnackbar = useContext(SnackbarManagerContext);
+	return (
+		<>
+			<Row mainAlignment="flex-start">
+				<Text color="secondary" size="small" style={{ paddingRight: '0.25rem' }}>
+					{label}
+				</Text>
+			</Row>
+			<Row
 				mainAlignment="flex-start"
-				style={{ gap: '0.5rem' }}
+				takeAvailableSpace
+				height="fit"
+				orientation="vertical"
+				display="flex"
+				wrap={'nowrap'}
+				style={{
+					lineHeight: '1.125rem',
+					flexDirection: 'row',
+					overflow: 'hidden'
+				}}
 			>
-				{map(contacts, (contact) => (
-					<Chip
-						label={contact.address}
-						background="gray2"
-						color="text"
-						data-testid={'Chip'}
-						actions={[
-							{
-								id: 'action1',
-								label: t('message.send_email', 'Send e-mail'),
-								type: 'button',
-								icon: 'EmailOutline',
-								background: 'gray3',
-								// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-								onClick: () => {
-									sendMsg(contact);
+				<Container
+					orientation="horizontal"
+					wrap="wrap"
+					mainAlignment="flex-start"
+					style={{ gap: '0.5rem' }}
+				>
+					{map(contacts, (contact) => (
+						<Chip
+							label={contact.address}
+							background="gray2"
+							color="text"
+							data-testid={'Chip'}
+							actions={[
+								{
+									id: 'action1',
+									label: t('message.send_email', 'Send e-mail'),
+									type: 'button',
+									icon: 'EmailOutline',
+									background: 'gray3',
+									onClick: () => sendMsg(contact)
+								},
+								{
+									id: 'action2',
+									label: t('message.copy', 'Copy'),
+									type: 'button',
+									icon: 'Copy',
+									background: 'gray3',
+									onClick: () => copyEmailToClipboard(contact.address, createSnackbar)
 								}
-							},
-							{
-								id: 'action2',
-								label: t('message.copy', 'Copy'),
-								type: 'button',
-								icon: 'Copy',
-								background: 'gray3',
-								// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-								onClick: () => {
-									copyEmailToClipboard(contact.address);
-								}
-							}
-						]}
-					/>
-				))}
-			</Container>
-		</Row>
-	</>
-);
+							]}
+						/>
+					))}
+				</Container>
+			</Row>
+		</>
+	);
+};
 
 export default ContactNameChip;
