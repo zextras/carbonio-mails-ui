@@ -6,9 +6,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
+
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type {
-	MailMessage,
 	SearchConvParameters,
 	SearchConvRequest,
 	SearchConvResponse,
@@ -28,8 +28,7 @@ export const searchConv = createAsyncThunk<SearchConvReturn, SearchConvParameter
 			fetch,
 			needExp: 1,
 			limit: 250,
-			html: 1,
-			max: 250000
+			html: 1
 		})) as SearchConvResponse;
 		const messages = map(result?.m ?? [], (msg) => normalizeMailMessageFromSoap(msg, true));
 

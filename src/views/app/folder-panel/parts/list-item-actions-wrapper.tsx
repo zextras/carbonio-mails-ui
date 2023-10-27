@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
-import { useTags, useUserAccount } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, SyntheticEvent, useCallback } from 'react';
+
+import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
+import { useTags } from '@zextras/carbonio-shell-ui';
 import styled, { DefaultTheme } from 'styled-components';
+
 import { useAppDispatch } from '../../../../hooks/redux';
 import type {
 	ConvActionReturnType,
@@ -86,14 +88,12 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	deselectAll
 }) => {
 	const dispatch = useAppDispatch();
-	const account = useUserAccount();
 	const tags = useTags();
 
 	const [hoverActions, dropdownActions] = getMsgConvActions({
 		item,
 		dispatch,
 		deselectAll,
-		account,
 		tags
 	});
 

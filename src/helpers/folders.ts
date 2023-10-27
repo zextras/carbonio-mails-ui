@@ -9,6 +9,7 @@ import { find } from 'lodash';
 import { isConversation } from './messages';
 import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
 import type { Folder, Folders } from '../carbonio-ui-commons/types/folder';
+import { NO_ACCOUNT_NAME } from '../constants';
 import type { MailMessage, Conversation } from '../types';
 
 /*
@@ -88,7 +89,7 @@ export const getFolderOwnerAccountName = (folderId: string, folderRoots: Folders
 	const otherOwnerAccount = getFolderOtherOwnerAccountName(folderId, folderRoots);
 
 	if (!otherOwnerAccount) {
-		return primaryAccount.name;
+		return primaryAccount?.name ?? NO_ACCOUNT_NAME;
 	}
 
 	return otherOwnerAccount;

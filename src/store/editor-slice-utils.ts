@@ -124,14 +124,14 @@ export const retrieveReplyTo = (original: MailMessage): Array<Participant> => {
 export const retrieveTO = (original: MailMessage): Array<Participant> =>
 	filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.TO);
 
-export function retrieveALL(original: MailMessage, accounts: Array<Account>): Array<Participant> {
+export function retrieveALL(original: MailMessage, accountName: string): Array<Participant> {
 	const toEmails = filter(
 		original.participants,
 		(c: Participant): boolean => c.type === ParticipantRole.TO
 	);
 	const fromEmails = filter(
 		original.participants,
-		(c: Participant): boolean => c.type === ParticipantRole.FROM && c.address !== accounts[0].name
+		(c: Participant): boolean => c.type === ParticipantRole.FROM && c.address !== accountName
 	);
 	const replyToParticipants = filter(
 		original.participants,
@@ -140,13 +140,13 @@ export function retrieveALL(original: MailMessage, accounts: Array<Account>): Ar
 
 	const isSentByMe = some(
 		filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.FROM),
-		{ address: accounts[0].name }
+		{ address: accountName }
 	);
 	if (replyToParticipants.length === 0) {
 		if (original.parent === FOLDERS.SENT || original.isSentByMe || isSentByMe) {
-			return filter(toEmails, (c) => c.address !== accounts[0].name).length === 0
+			return filter(toEmails, (c) => c.address !== accountName).length === 0
 				? toEmails
-				: filter(toEmails, (c) => c.address !== accounts[0].name);
+				: filter(toEmails, (c) => c.address !== accountName);
 		}
 		return changeTypeOfParticipants(fromEmails, ParticipantRole.TO);
 	}
@@ -159,20 +159,16 @@ export const retrieveCCForEditNew = (original: MailMessage): Array<Participant> 
 		(c: Participant): boolean => c.type === ParticipantRole.CARBON_COPY
 	);
 
-export function retrieveCC(
-	original: MailMessage,
-	accounts: Array<Account> = []
-): Array<Participant> {
+export function retrieveCC(original: MailMessage, accountName: string): Array<Participant> {
 	const toEmails = filter(
 		original.participants,
-		(c: Participant): boolean => c.type === ParticipantRole.TO && c.address !== accounts[0]?.name
+		(c: Participant): boolean => c.type === ParticipantRole.TO && c.address !== accountName
 	);
 	const ccEmails = filter(
 		original.participants,
-		(c: Participant): boolean =>
-			c.type === ParticipantRole.CARBON_COPY && c.address !== accounts[0]?.name
+		(c: Participant): boolean => c.type === ParticipantRole.CARBON_COPY && c.address !== accountName
 	);
-	const finalTo = retrieveALL(original, accounts);
+	const finalTo = retrieveALL(original, accountName);
 
 	const reducedCcEmails = reduce(
 		ccEmails,

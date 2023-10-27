@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
+
+import { existsActionById } from './actions-tests-utils';
 import { ASSERTION, FOLDERIDS, MSG_CONV_STATUS, MessageActionsDescriptors } from '../../constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { getMsgConvActions } from '../get-msg-conv-actions';
-import { existsActionById } from './actions-tests-utils';
 
 describe('Primary actions visibility', () => {
 	/**
@@ -95,7 +96,6 @@ describe('Primary actions visibility', () => {
 				item: msg,
 				dispatch,
 				deselectAll,
-				account,
 				tags: {}
 			});
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
@@ -141,7 +141,6 @@ describe('Primary actions visibility', () => {
 				item: msg,
 				dispatch,
 				deselectAll,
-				account,
 				tags: {}
 			});
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
@@ -189,7 +188,6 @@ describe('Primary actions visibility', () => {
 				item: msg,
 				dispatch,
 				deselectAll,
-				account,
 				tags: {}
 			});
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);

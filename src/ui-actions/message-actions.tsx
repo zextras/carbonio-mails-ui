@@ -8,7 +8,6 @@ import React from 'react';
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text } from '@zextras/carbonio-design-system';
 import {
-	Account,
 	addBoard,
 	FOLDERS,
 	getBridgedFunctions,
@@ -197,13 +196,7 @@ export function setMsgAsSpam({
 	};
 }
 
-export function printMsg({
-	message,
-	account
-}: {
-	account: Account;
-	message: MailMessage;
-}): MessageActionReturnType {
+export function printMsg({ message }: { message: MailMessage }): MessageActionReturnType {
 	const conversations = map([message], (msg) => ({
 		conversation: msg.conversation,
 		subject: msg.subject
@@ -221,7 +214,6 @@ export function printMsg({
 				.then((res) => {
 					const content = getContentForPrint({
 						messages: res,
-						account,
 						conversations,
 						isMsg: true
 					});

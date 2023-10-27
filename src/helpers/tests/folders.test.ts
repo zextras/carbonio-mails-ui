@@ -15,6 +15,7 @@ import {
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
+import { NO_ACCOUNT_NAME } from '../../constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import {
 	getFolderIdParts,
@@ -64,7 +65,7 @@ describe('Folder owner', () => {
 		const roots = getRootsMap();
 		const folderId = FOLDERS.INBOX;
 		const ownerAccountName = getFolderOwnerAccountName(folderId, roots);
-		expect(ownerAccountName).toBe(primaryAccount.name);
+		expect(ownerAccountName).toBe(primaryAccount?.name ?? NO_ACCOUNT_NAME);
 	});
 
 	test("For a folder with an id containing the zid, the name of the shared account owning that folder's root is returned", () => {
@@ -81,7 +82,7 @@ describe('Folder owner', () => {
 		const roots = getRootsMap();
 		const folderId = `TheAnswerIs42:${FOLDERS.INBOX}`;
 		const ownerAccountName = getFolderOwnerAccountName(folderId, roots);
-		expect(ownerAccountName).toBe(primaryAccount.name);
+		expect(ownerAccountName).toBe(primaryAccount?.name ?? NO_ACCOUNT_NAME);
 	});
 });
 

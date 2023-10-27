@@ -483,6 +483,7 @@
     },
     "message": {
         "admin_rights": "View,Edit,Add,Remove,Administer",
+        "copy": "Copy",
         "delete_attachment_message1": "Your attachment will be permanently deleted from Carbonio.",
         "delete_attachment_message2": "Do you want to download it before?",
         "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
@@ -494,6 +495,7 @@
         "schedule_mail": "Will be sent on: {{date}} at {{time}}",
         "schedule_time": "for {{date}} at {{time}}",
         "select_date_time": "Select a date and time to send this message",
+        "send_email": "Send e-mail",
         "send_later_success": "Your e-mail will be sent on {{date}} at {{time}}",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
@@ -811,6 +813,7 @@
         "signature_heading": "Signatures"
     },
     "snackbar": {
+        "email_copied_to_clipboard": "Email copied to clipboard.",
         "email_moved_to_trash": "E-mail moved to Trash",
         "folder_shared": "Folder shared",
         "share_resend": "Share invite resent",

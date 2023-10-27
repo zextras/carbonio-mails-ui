@@ -664,7 +664,7 @@
             "empty": {
                 "body": {
                     "message2": "Ao esvaziá-la, todo o seu conteúdo será excluído permanentemente.",
-                    "message1": "Deseja esvaziar a pasta selecionada?"
+                    "message1": "Deseja apagar todas as mensagens desta pasta?"
                 }
             },
             "new": {
@@ -689,8 +689,8 @@
             },
             "wipe": {
                 "body": {
-                    "message2": "Ao esvaciá-la, todo o seu conteúdo será excluído permanentemente.",
-                    "message1": "Deseja esvaziar a pasta selecionada?"
+                    "message2": "Todo o conteúdo será removido permanentemente.",
+                    "message1": "Deseja apagar todas as mensagens desta pasta?"
                 }
             }
         },

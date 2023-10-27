@@ -3,12 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, {
+	FC,
+	ReactElement,
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useState
+} from 'react';
+
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { getBridgedFunctions, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
-import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { modifyFilterRules } from '../../../../../store/actions/modify-filter-rules';
 import type { FilterActions } from '../../../../../types';
@@ -141,8 +151,12 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice(), [incomingFilters]);
 
 	const toggleCheckBox = useCallback(() => {
-		setDontProcessAddFilters(!dontProcessAddFilters);
-	}, [dontProcessAddFilters]);
+		setDontProcessAddFilters((prev) => !prev);
+	}, []);
+
+	useLayoutEffect(() => {
+		setDontProcessAddFilters(!!selectedFilter.filterActions[0]?.actionStop);
+	}, [selectedFilter.filterActions]);
 
 	const filterActionProps = useMemo(
 		() => ({

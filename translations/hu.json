@@ -1,0 +1,233 @@
+{
+    "action": {
+        "edit_anyway": "Szerkesztés mégis",
+        "edit_as_new": "Szerkesztés újként",
+        "edit_share": "Megosztás szerkesztése",
+        "flag": "Jelölés hozzáadása",
+        "forward": "Továbbítás",
+        "goto_drafts": "Ugrás a piszkozatokra",
+        "goto_folder": "Ugrás a mappára",
+        "hide_details": "Részletek elrejtése",
+        "mark_all_read": "Olvasottnak jelölés",
+        "mark_as_non_spam": "Nem spam",
+        "mark_as_read": "Olvasottnak jelöl",
+        "mark_as_spam": "Spam-nek jelöl",
+        "mark_as_unread": "Olvasatlannak jelöl",
+        "ok": "Ok",
+        "print": "Nyomtatás",
+        "redirect": "Átirányítás",
+        "reply": "Válasz",
+        "reply_all": "Válasz mindenkinek",
+        "reset": "Visszaállítás",
+        "search": "Keresés",
+        "send_anyway": "Küldés mégis",
+        "share_folder": "Mappa megosztás",
+        "show_details": "Mutassa a részleteket",
+        "show_original": "Mutassa az eredetit",
+        "unflag": "Jelölés eltávolítása",
+        "preview": "Előnézet",
+        "preview_new_tab": "Kattintson az előnézethez egy új lapon",
+        "click_open": "Kattintson a megnyitáshoz",
+        "click_preview": "Kattintson az előnézethez"
+    },
+    "attachment_type": {
+        "application": "Alkalmazás",
+        "email": "Levél",
+        "excel": "Excel",
+        "html": "HTML",
+        "image": "Kép",
+        "pdf": "PDF",
+        "text_document": "Szöveges dokumentum",
+        "video": "Videó",
+        "word": "Word",
+        "zipped_file": "Tömörített állomány",
+        "powerpoint": "Powerpoint bemutató"
+    },
+    "board": {
+        "show": "Táblát mutat"
+    },
+    "composer": {
+        "attachment": {
+            "drag_and_drop": {
+                "title": "Drag&Drop mód",
+                "content": "Húzza ide a csatolmányt a gyors hozzáadáshoz"
+            },
+            "files": "Hozzáadás a fájlokból",
+            "url": "Nyilvános link hozzáadása a fájlokból",
+            "local": "Hozzáadás a helyi mappából",
+            "contacts_mod": "Kapcsolat hozzáadása"
+        }
+    },
+    "displayer": {
+        "archive_title2": "Válasszon egy archívált levelet a megtekintéshez",
+        "description2": "Küldjön dokumentumokat, képeket és egyebeket egy új levél megírásával.",
+        "description5": "Nézze meg, hogy más felhasználók miről szeretnének Önnel beszélgetni.",
+        "draft_title2": "Válasszon ki és szerkesszen egy levelet, hogy elküldhesse azt más felhasználóknak.",
+        "junk_title2": "Kattintson a szemetes ikonra a spam levél törléséhez",
+        "list_draft_title": "Nincs mentett piszkozat",
+        "list_folder_title": "Úgy néz ki még nem érkezett levél",
+        "list_junk_title": "Nincs spam levél",
+        "list_sent_title": "Még nem küldött levelet",
+        "list_spam_title": "Nincsenek spam levelek",
+        "list_trash_title": "A szemetes üres",
+        "search_description1": "Vagy válassza ki a \"Haladó szűrőbeállítások\"-at a keresés testreszabásához.",
+        "search_description2": "Újabb keresés indítása.",
+        "search_description3": "Ellenőrizze a helyesírást és a szűrőbeállításokat, vagy próbálkozzon másik kulcsszóval.",
+        "search_list_title1": "Eddig nincs találat. Folytassa a keresést!",
+        "search_list_title2": "Nincs találat a keresésre.",
+        "search_title1": "Másik keresés indítása",
+        "search_title3": "Nincs találat a keresésére.",
+        "search_title2": "Sajnáljuk, de nincs találat a keresésre",
+        "search_title4": "Válasszon ki egy vagy több eredményt a műveletek végrehajtásához vagy a részletek megjelenítéséhez.",
+        "sent_title2": "Válasszon ki egy levelet az elküldött üzenetek megjelenítéséhez.",
+        "spam_title1": "Milyen szerencsés! Nincsenek spam levelek, amelyek miatt aggódnia kéne",
+        "spam_title2": "Kattintson a szemetes ikonra egy spam levél törléséhez.",
+        "title1": "Új levél írása az \"Új\" gombra kattintva",
+        "title2": "Kattintson az \"Új\" gombra",
+        "title3": "Maradjon kapcsolatban más felhasználókkal.",
+        "title4": "Válasszon egy levelet olvasásra",
+        "title8": "Válasszon egy levelet olvasásra vagy törlésre.",
+        "trash_title1": "Kattintson a szemetesre a levél törléséhez",
+        "trash_title2": "Válassza ki és állítsa vissza a leveleket a szemetesből.",
+        "junk_title1": "Nahát milyen szerencse! Nincs kéretlen levél amiért aggódnia kéne.",
+        "archive_title1": "Levél mentése az archívumba a későbbi megtekintéshez.",
+        "draft_title1": "A levél piszkozatként történő mentése lehetővé teszi, hogy megőrizze azokat az üzeneteket, amelyeket később szeretne elküldeni.",
+        "description4": "Meg tudja jelölni, válaszolni, vagy továbbítani mások számára.",
+        "description6": "Válaszoljon erre a levélre, vagy továbbítsa másoknak.",
+        "description7": "Kiválaszt egy levelet a válaszhoz."
+    },
+    "email_status": {
+        "anywhere": "minden mappában",
+        "ccme": "másolatban nekem",
+        "draft": "piszkozat",
+        "flagged": "megjelölt",
+        "forwarded": "továbbított",
+        "fromccme": "tőlem, vagy másolatban nekem",
+        "fromme": "tőlem",
+        "invitations": "meghívók",
+        "local": "a mappáimban",
+        "received": "általam kapott",
+        "remote": "az általam megosztott mappában",
+        "replied": "általam megválaszolt",
+        "sent": "általam küldött",
+        "toccme": "nekem, vagy másolatban nekem",
+        "tofromccme": "tőlem, nekem, vagy másolatban nekem",
+        "tome": "nekem",
+        "unflagged": "nem jelölt",
+        "unforwarded": "nem továbbított",
+        "unread": "olvasatlan",
+        "solo": "beszélgetések egyetlen üzenettel",
+        "read": "olvasott",
+        "tofromme": "nekem, vagy tőlem",
+        "unreplied": "álltalam nem megválaszolt"
+    },
+    "filters": {
+        "active_filters": "Aktív szűrők",
+        "available_filters": "Rendelkezésre álló szűrők",
+        "filter_note": "Megjegyzés: a szűrési szabályok változtatása azonnal mentődik",
+        "filters": "Szűrők",
+        "outgoing_message_filters": "Kimenő üzenetek szűrői",
+        "run": "Futtat",
+        "incoming_msg_filters": "Bejövő üzenetek szűrői"
+    },
+    "folder": {
+        "modal": {
+            "edit": {
+                "add_share": "Megosztás hozzáadása",
+                "enter_valid_folder_name": "Létező mappanevet adjon meg",
+                "rename_warning": "Nem átnevezhető rendszermappa.",
+                "retention_duration_warning": "A megőrzési időnek pozitív számnak kell lennie",
+                "special_chars_warning_msg": "A mappa nevében nem szerepelhetnek speciális karakterek",
+                "invalid_folder_name_warning_msg": "Speciális karakterek nem engedélyezettek. Maximum 128 karakter.",
+                "retention_message": "A mappában található üzenetek, amelyek a megőrzési tartományba esnek, a törlés előtt kifejezett megerősítést igényelnek",
+                "threshold_message": "A mappában lévő, az eltávolítási küszöbnél régebbi üzeneteket a rendszer automatikusan átnézi és törli."
+            }
+        }
+    },
+    "folder_panel": {
+        "action": {
+            "edit_properties": "Tulajdonságok szerkesztése",
+            "empty": {
+                "trash": "Lomtár ürítése"
+            },
+            "wipe": {
+                "folder_panel": "Mappa törlése"
+            }
+        },
+        "modal": {
+            "delete": {
+                "body": {
+                    "message2": "Véglegesen törli a kijelölt mappát?",
+                    "message4": "Ha törli, az összes kapcsolódó tartalom véglegesen eltávolításra kerül, és a mappa már nem lesz helyreállítható.",
+                    "message3": "Ha törli, az összes kapcsolódó tartalom a Kukába kerül, és a mappa a továbbiakban nem lesz látható.",
+                    "message1": "Kiüríti a kijelölt mappát?"
+                }
+            },
+            "empty": {
+                "body": {
+                    "message1": "Kiüríti a kijelölt mappát?",
+                    "message2": "Ha kiüríti, az összes kapcsolódó tartalom véglegesen törlődik."
+                }
+            },
+            "move": {
+                "body": {
+                    "message2": "Válassza ki a visszaállítani kívánt mappát:",
+                    "message1": "Válasszon ki egy mappát, amelybe át szeretné helyezni a kívántat:"
+                },
+                "title_modal": "Beszélgetés áthelyezése",
+                "title_modal_message": "Üzenet áthelyezése",
+                "title_modal_conversation": "Beszélgetés áthelyezése"
+            },
+            "new": {
+                "create_footer": "Létrehozás és áthelyezés",
+                "input": {
+                    "name": "Mappanév megadása",
+                    "position": "Szülőmappa",
+                    "name_exist": "A név már létezik"
+                },
+                "name_exist_warning": "Ilyen név már létezik",
+                "restore_create_footer": "Létrehozás és visszaállítás",
+                "title": "Új mappa létrehozása"
+            },
+            "wipe": {
+                "body": {
+                    "message1": "Biztosan kiüríti a kijelölt mappát?",
+                    "message2": "Ha kiüríti, akkor az összes kapcsolódó tartalom véglegesen törlődik."
+                }
+            }
+        }
+    },
+    "folders": {
+        "drafts": "Piszkozatok",
+        "inbox": "Beérkezett üzenetek",
+        "junk": "Levélszemét",
+        "sent": "Elküldött üzenetek",
+        "spam": "Spam",
+        "trash": "Törölt üzenetek"
+    },
+    "go_back": "Vissza",
+    "header": {
+        "attention": "Figyelem",
+        "delete_email": "Levél törlése",
+        "edit_draft": "Piszkozat szerkesztése",
+        "message_not_sent": "Hiba - Az üzenet nem lett elküldve",
+        "redirect_email": "E-mail átirányítása",
+        "warning": "Figyelmeztetés"
+    },
+    "label": {
+        "accept": "Elfogad",
+        "activate_selection_mode": "Kiválasztási mód aktiválása",
+        "add": "Hozzáadás",
+        "addresses_not_accepted": "Egy vagy több címet nem fogadtak el. A visszautasított címek:",
+        "administer": "Rendszergazda",
+        "advanced_filters": "Bővített szűrő",
+        "advanced_filters_plural": "Bővített szűrők",
+        "all": "összes",
+        "all_items_selected": "Az összes látható elem ki van választva",
+        "allowed_actions": "Engedélyezett műveletek",
+        "always_allow_address": "Engedélyezés mindig innen: <strong>{{from}}</strong>",
+        "add_custom_message": "Egyedi üzenet hozzáadása",
+        "add_task": "Ha jegyzetelnie kell, hozzáadhat egy feladatot a tennivalók listájához",
+        "admin_disabled_action": "A rendszergazda letiltotta az átirányítási műveletet"
+    }
+}
