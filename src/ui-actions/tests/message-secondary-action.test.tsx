@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
-import { MessageActionsDescriptors } from '../../constants';
+
+import { existsActionById } from './actions-tests-utils';
 import { TagsActionsType } from '../../carbonio-ui-commons/constants';
 import { tags } from '../../carbonio-ui-commons/test/mocks/tags/tags';
+import { MessageActionsDescriptors } from '../../constants';
 import {
 	CONTAIN_ASSERTION as ASSERTION,
 	FOLDERS_DESCRIPTORS as FOLDERS,
@@ -14,7 +16,6 @@ import {
 } from '../../tests/constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { getMsgConvActions } from '../get-msg-conv-actions';
-import { existsActionById } from './actions-tests-utils';
 
 describe('Secondary actions visibility', () => {
 	/**
@@ -144,7 +145,6 @@ describe('Secondary actions visibility', () => {
 				item: msg,
 				dispatch,
 				deselectAll,
-				account,
 				tags
 			});
 			expect(
@@ -194,7 +194,6 @@ describe('Secondary actions visibility', () => {
 				item: msg,
 				dispatch,
 				deselectAll,
-				account,
 				tags: {}
 			});
 			expect(
@@ -244,7 +243,6 @@ describe('Secondary actions visibility', () => {
 				item: msg,
 				dispatch,
 				deselectAll,
-				account,
 				tags: {}
 			});
 			expect(
@@ -275,7 +273,6 @@ describe('Secondary actions visibility', () => {
 				item: msg,
 				dispatch,
 				deselectAll,
-				account,
 				tags
 			});
 			expect(existsActionById({ id: action, actions: secondaryActions, type: 'secondary' })).toBe(

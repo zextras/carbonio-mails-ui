@@ -16,7 +16,7 @@ import { ParticipantRole } from '../../carbonio-ui-commons/constants/participant
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
-import { getTags, getUserAccount } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
@@ -484,8 +484,7 @@ describe('Messages actions calls', () => {
 
 		const printGeneratorMock = jest.spyOn(getMsgsForPrint, 'getMsgsForPrint');
 		const action = printMsg({
-			message: msg,
-			account: getUserAccount()
+			message: msg
 		});
 
 		act(() => {

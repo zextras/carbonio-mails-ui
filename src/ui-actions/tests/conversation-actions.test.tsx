@@ -3,22 +3,24 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
+import { faker } from '@faker-js/faker';
 import { act, screen } from '@testing-library/react';
 import { noop, times } from 'lodash';
-import React from 'react';
 import { rest } from 'msw';
-import { faker } from '@faker-js/faker';
+
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
+import { getTag, getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { TIMEOUTS } from '../../constants';
+import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
+import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateStore } from '../../tests/generators/store';
 import { ConvActionRequest, Conversation, Status } from '../../types';
-import DeleteConvConfirm from '../delete-conv-modal';
-import MoveConvMessage from '../move-conv-msg';
-import { generateConversation } from '../../tests/generators/generateConversation';
 import {
 	moveConversationToTrash,
 	printConversation,
@@ -26,13 +28,9 @@ import {
 	setConversationsRead,
 	setConversationsSpam
 } from '../conversation-actions';
-import {
-	getTag,
-	getTags,
-	getUserAccount
-} from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import DeleteConvConfirm from '../delete-conv-modal';
+import MoveConvMessage from '../move-conv-msg';
 import { TagsDropdownItem } from '../tag-actions';
-import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 
 function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
@@ -559,8 +557,7 @@ describe('Conversation actions calls', () => {
 		window.open = jest.fn();
 		const printGeneratorMock = jest.spyOn(getMsgsForPrint, 'getMsgsForPrint');
 		const action = printConversation({
-			conversation: conv,
-			account: getUserAccount()
+			conversation: conv
 		});
 
 		act(() => {

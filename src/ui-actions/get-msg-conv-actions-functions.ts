@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
 
 import {
 	deleteConversationPermanently,
@@ -293,22 +293,19 @@ export function getMoveToFolderAction({
 export function getPrintAction({
 	isConversation,
 	item,
-	account,
 	folderExcludedPrintMessage,
 	folderId
 }: {
 	isConversation: boolean;
 	item: MailMessage | Conversation;
-	account: Account;
 	folderExcludedPrintMessage: string[];
 	folderId: string;
 }): ActionReturnType {
 	const action = isConversation
 		? printConversation({
-				conversation: [item as Conversation],
-				account
+				conversation: [item as Conversation]
 		  })
-		: printMsg({ message: item as MailMessage, account });
+		: printMsg({ message: item as MailMessage });
 	return !folderExcludedPrintMessage.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 

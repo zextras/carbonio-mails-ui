@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
 import {
@@ -34,7 +34,6 @@ type GetMessageActionsProps = {
 	item: MailMessage | Conversation;
 	dispatch: AppDispatch;
 	deselectAll: () => void;
-	account: Account;
 	tags: Tags;
 };
 
@@ -47,7 +46,6 @@ export function getMsgConvActions({
 	item,
 	dispatch,
 	deselectAll,
-	account,
 	tags
 }: GetMessageActionsProps): MsgConvActionsReturnType {
 	const isConv = isConversation(item);
@@ -129,7 +127,6 @@ export function getMsgConvActions({
 	const printAction = getPrintAction({
 		isConversation: isConv,
 		item,
-		account,
 		folderExcludedPrintMessage,
 		folderId
 	});

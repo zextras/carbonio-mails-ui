@@ -16,7 +16,7 @@ import { getEditor } from './hooks';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { LineType } from '../../../commons/utils';
-import { EditViewActions } from '../../../constants';
+import { EditViewActions, NO_ACCOUNT_NAME } from '../../../constants';
 import {
 	getDefaultIdentity,
 	getIdentityFromParticipant,
@@ -201,7 +201,7 @@ export const generateReplyAndReplyAllMsgEditor = (
 	originalMessage: MailMessage,
 	action: EditViewActionsType
 ): MailsEditorV2 => {
-	const account = getUserAccount();
+	const accountName = getUserAccount()?.name ?? NO_ACCOUNT_NAME;
 	const editorId = uuid();
 	const savedInlineAttachments = filterSavedInlineAttachment(
 		buildSavedAttachments(originalMessage)
@@ -226,7 +226,7 @@ export const generateReplyAndReplyAllMsgEditor = (
 	const toParticipants =
 		action === EditViewActions.REPLY
 			? retrieveReplyTo(originalMessage)
-			: retrieveALL(originalMessage, [account]);
+			: retrieveALL(originalMessage, accountName);
 
 	const editor = {
 		action: EditViewActions.REPLY,
@@ -239,7 +239,7 @@ export const generateReplyAndReplyAllMsgEditor = (
 		isUrgent: originalMessage.urgent,
 		recipients: {
 			to: toParticipants,
-			cc: action === EditViewActions.REPLY_ALL ? retrieveCC(originalMessage, [account]) : [],
+			cc: action === EditViewActions.REPLY_ALL ? retrieveCC(originalMessage, accountName) : [],
 			bcc: []
 		},
 		subject: `RE: ${originalMessage.subject.replace(REPLY_REGEX, '')}`,
