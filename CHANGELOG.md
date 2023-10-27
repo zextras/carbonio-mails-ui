@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.7.1...v1.8.0) (2023-10-27)
+
+
+### Features
+
+* allow user to copy-click the participants email addresses  ([86ccc03](https://github.com/zextras/carbonio-mails-ui/commit/86ccc03ed68e5aa4a6e1f213a5c0b8460a6dbc7c))
+
+
+### Bug Fixes
+
+* email filter option 'do not process additional filters' is always active ([12540be](https://github.com/zextras/carbonio-mails-ui/commit/12540be7df37e92f1b805b888fedbb570627c938))
+* load conversation full content ([a2653d0](https://github.com/zextras/carbonio-mails-ui/commit/a2653d0229f2fbda2bdcf8650b824d5997a363d9))
+* unnecessary first saving of the draft trigger by the editor ([6ee0f77](https://github.com/zextras/carbonio-mails-ui/commit/6ee0f7766f788a468baf9042d3d6c1ac15513d43))
+
 ### [1.7.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.7.0...v1.7.1) (2023-10-12)
 
 ## [1.7.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.6.16...v1.7.0) (2023-10-03)
