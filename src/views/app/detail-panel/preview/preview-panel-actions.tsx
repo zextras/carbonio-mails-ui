@@ -108,8 +108,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 		dispatch,
 		isMessageView,
 		conversation,
-		deselectAll,
-		account
+		deselectAll
 	]);
 
 	return (
