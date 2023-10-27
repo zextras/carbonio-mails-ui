@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useMemo } from 'react';
+
 import { Container, Dropdown, IconButton, Padding } from '@zextras/carbonio-design-system';
 import { FOLDERS, useAppContext, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import React, { FC, useMemo } from 'react';
+
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, PreviewPanelActionsType } from '../../../../types';
@@ -90,7 +92,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 								deselectAll
 						  }),
 					setConversationsFlag({ ids, value: item?.flagged, dispatch }),
-					printConversation({ conversation, account })
+					printConversation({ conversation })
 					// setConversationsSpam(ids, false, t, dispatch)
 					// archiveMsg
 					// editTagsMsg

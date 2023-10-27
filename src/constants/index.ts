@@ -11,6 +11,8 @@ export const MAILS_ROUTE = 'mails';
 
 export const MAIL_APP_ID = 'carbonio-mails-ui';
 
+export const NO_ACCOUNT_NAME = 'No account';
+
 type AttachmentTypeItemsConstantProps = {
 	label: string;
 	icon: string;

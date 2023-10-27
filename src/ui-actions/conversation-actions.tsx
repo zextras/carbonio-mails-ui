@@ -3,17 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
-import { forEach, isArray, map } from 'lodash';
 import React from 'react';
+
+import { getBridgedFunctions, replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { forEach, isArray, map } from 'lodash';
+
+import DeleteConvConfirm from './delete-conv-modal';
+import { errorPage } from './error-page';
+import MoveConvMessage from './move-conv-msg';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { ConversationActionsDescriptors } from '../constants';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type { ConvActionReturnType, Conversation, MailMessage } from '../types';
-import DeleteConvConfirm from './delete-conv-modal';
-import MoveConvMessage from './move-conv-msg';
-import { errorPage } from './error-page';
 
 type ConvActionIdsType = Array<string>;
 type ConvActionValueType = string | boolean;
@@ -136,11 +138,9 @@ export function setConversationsRead({
 }
 
 export function printConversation({
-	conversation,
-	account
+	conversation
 }: {
 	conversation: Conversation | Conversation[];
-	account: Account;
 }): ConvActionReturnType {
 	let messageIds: Array<string> = [];
 
@@ -164,7 +164,6 @@ export function printConversation({
 				.then((res) => {
 					const content = getContentForPrint({
 						messages: res,
-						account,
 						conversations: conversation,
 						isMsg: false
 					});

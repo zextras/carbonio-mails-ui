@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { type Account } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
 import { getBodyWrapper } from './get-body-wrapper';
@@ -67,12 +66,10 @@ function getSs(conversationMessage: Array<MailMessage>): Array<string> {
 
 export const getContentForPrint = ({
 	messages,
-	account,
 	conversations,
 	isMsg = false
 }: {
 	messages: any;
-	account: Account;
 	conversations: any;
 	isMsg: boolean;
 }): string => {
@@ -84,5 +81,5 @@ export const getContentForPrint = ({
 		content += getBodyWrapper({ content: ss.join('<br/>'), subject: conv.subject });
 	});
 
-	return getCompleteHTML({ content, account });
+	return getCompleteHTML({ content });
 };

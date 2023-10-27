@@ -103,7 +103,7 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 		);
 
 		arr.push(applyTag({ tags, conversation: message, isMessage: true }));
-		arr.push(printMsg({ message, account }));
+		arr.push(printMsg({ message }));
 		arr.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
 		arr.push(redirectMsg({ id: message.id }));
 		arr.push(editAsNewMsg({ id: message.id, folderId }));
@@ -132,7 +132,7 @@ export const useMessageActions = (message: MailMessage, isAlone = false): Array<
 			})
 		);
 		arr.push(setMsgAsSpam({ ids: [message.id], value: true, dispatch, folderId }));
-		arr.push(printMsg({ message, account }));
+		arr.push(printMsg({ message }));
 		arr.push(showOriginalMsg({ id: message.id }));
 		arr.push(applyTag({ tags, conversation: message, isMessage: true }));
 	}

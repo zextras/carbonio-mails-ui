@@ -4,15 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { type Account } from '@zextras/carbonio-shell-ui';
+import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
-export function getCompleteHTML({
-	content,
-	account
-}: {
-	content: string;
-	account: Account;
-}): string {
+import { NO_ACCOUNT_NAME } from '../../constants';
+
+export function getCompleteHTML({ content }: { content: string }): string {
+	const accountName = getUserAccount()?.name ?? NO_ACCOUNT_NAME;
 	return `	<html>
 		<head>
 			<title>Carbonio</title>
@@ -106,7 +103,7 @@ export function getCompleteHTML({
 						<b>Carbonio</b>
 					</td>
 					<td nowrap width="1%">
-						<b>${account?.name}</b>
+						<b>${accountName}</b>
 					</td>
 				</tr>
 			</table>
