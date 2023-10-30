@@ -119,10 +119,6 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			[item.tags, tagsFromStore]
 		);
 
-		const showTrashedMessagesInSearch =
-			useUserSettings()?.prefs?.zimbraPrefIncludeTrashInSearch === 'TRUE';
-		const showSpamMessagesInSearch =
-			useUserSettings()?.prefs?.zimbraPrefIncludeSpamInSearch === 'TRUE';
 		const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 		const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 		const participantsString = useMemo(
@@ -134,26 +130,6 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 				),
 			[item.participants, accounts]
 		);
-
-		// const openDisplayerOnSeparatedWindow = useCallback(
-		// 	(conversationId: string, folderId: string, subject?: string): void => {
-		// 		if (!createWindow) {
-		// 			return;
-		// 		}
-		//
-		// 		const createWindowParams: ExtraWindowCreationParams = {
-		// 			name: `conversation-${conversationId}`,
-		// 			returnComponent: false,
-		// 			children: (
-		// 				<ConversationPreviewPanel conversationId={conversationId} folderId={folderId} />
-		// 			),
-		// 			title: subject,
-		// 			closeOnUnmount: false
-		// 		};
-		// 		createWindow(createWindowParams);
-		// 	},
-		// 	[createWindow]
-		// );
 
 		const toggleOpen = useCallback(
 			(e) => {
