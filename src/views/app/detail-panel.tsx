@@ -10,7 +10,7 @@ import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './detail-panel/conversation-preview-panel';
-import { MessagePreviewPanel } from './detail-panel/message-preview-panel';
+import { MessagePreviewPanelContainer } from './detail-panel/message-preview-panel-container';
 import { SelectionInteractive } from './detail-panel/selection-interactive';
 import type { AppContext } from '../../types';
 
@@ -27,7 +27,7 @@ const DetailPanel: FC = () => {
 					<ConversationPreviewPanel />
 				</Route>
 				<Route exact path={`${path}/folder/:folderId/message/:messageId`}>
-					<MessagePreviewPanel />
+					<MessagePreviewPanelContainer />
 				</Route>
 			</Switch>
 		</Container>

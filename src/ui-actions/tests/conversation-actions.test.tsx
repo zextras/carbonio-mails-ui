@@ -32,6 +32,7 @@ import DeleteConvConfirm from '../delete-conv-modal';
 import MoveConvMessage from '../move-conv-msg';
 import { TagsDropdownItem } from '../tag-actions';
 
+// TODO move into an utility module
 function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
 		// Register a handler for the REST call

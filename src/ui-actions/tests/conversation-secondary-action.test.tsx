@@ -29,13 +29,19 @@ describe('Actions visibility', () => {
 			${4} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
 			${4} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
 			${4} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
-			${4} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
-			${4} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
-			${4} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
-			${4} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${5} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${5} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${5} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${5} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${6} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
+			${6} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
+			${6} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
+			${6} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
+			${6} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
 		`(
 			`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
+				const createWindow = jest.fn();
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id
@@ -47,7 +53,9 @@ describe('Actions visibility', () => {
 					item: conv,
 					dispatch,
 					deselectAll,
-					tags: {}
+					tags: {},
+					createWindow,
+					messageActions: []
 				});
 				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
 					assertion.value
@@ -69,6 +77,7 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
+				const createWindow = jest.fn();
 				const conv = generateMessage({
 					folderId: folder.id
 				});
@@ -79,7 +88,9 @@ describe('Actions visibility', () => {
 					item: conv,
 					dispatch,
 					deselectAll,
-					tags: {}
+					tags: {},
+					createWindow,
+					messageActions: []
 				});
 				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
 					assertion.value
@@ -120,6 +131,7 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) secondary actions for a $read.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, read, assertion, action }) => {
+				const createWindow = jest.fn();
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id,
@@ -132,7 +144,9 @@ describe('Actions visibility', () => {
 					item: conv,
 					dispatch,
 					deselectAll,
-					tags: {}
+					tags: {},
+					createWindow,
+					messageActions: []
 				});
 				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
 					assertion.value
@@ -173,6 +187,7 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) secondary actions for a $flagged.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, flagged, assertion, action }) => {
+				const createWindow = jest.fn();
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id,
@@ -185,7 +200,9 @@ describe('Actions visibility', () => {
 					item: conv,
 					dispatch,
 					deselectAll,
-					tags: {}
+					tags: {},
+					createWindow,
+					messageActions: []
 				});
 				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
 					assertion.value

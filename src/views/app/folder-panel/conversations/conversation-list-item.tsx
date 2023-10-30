@@ -44,7 +44,11 @@ import type {
 	MailsStateType,
 	TextReadValuesProps
 } from '../../../../types';
-import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
+import {
+	previewConversationOnSeparatedWindowAction,
+	setConversationsRead
+} from '../../../../ui-actions/conversation-actions';
+import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { RowInfo } from '../parts/row-info';
@@ -73,6 +77,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		const accounts = useUserAccounts();
 		const messages = useAppSelector(selectMessages);
 		const isConversation = 'messages' in (item || {});
+		const { createWindow } = useExtraWindowsManager();
 
 		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
 
@@ -130,6 +135,26 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			[item.participants, accounts]
 		);
 
+		// const openDisplayerOnSeparatedWindow = useCallback(
+		// 	(conversationId: string, folderId: string, subject?: string): void => {
+		// 		if (!createWindow) {
+		// 			return;
+		// 		}
+		//
+		// 		const createWindowParams: ExtraWindowCreationParams = {
+		// 			name: `conversation-${conversationId}`,
+		// 			returnComponent: false,
+		// 			children: (
+		// 				<ConversationPreviewPanel conversationId={conversationId} folderId={folderId} />
+		// 			),
+		// 			title: subject,
+		// 			closeOnUnmount: false
+		// 		};
+		// 		createWindow(createWindowParams);
+		// 	},
+		// 	[createWindow]
+		// );
+
 		const toggleOpen = useCallback(
 			(e) => {
 				e.preventDefault();
@@ -170,14 +195,24 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 
 		const _onDoubleClick = useCallback(
 			(e) => {
-				if (!e.isDefaultPrevented()) {
-					const { id, isDraft } = item.messages[0];
+				if (e.isDefaultPrevented()) {
+					return;
+				}
 
-					if (isDraft) pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
+				const { id, isDraft } = item.messages[0];
+				if (isDraft) {
+					pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
+				} else {
+					previewConversationOnSeparatedWindowAction(
+						item.id,
+						folderParent,
+						item.subject,
+						createWindow
+					).onClick({});
 				}
 			},
 
-			[folderParent, item.messages]
+			[createWindow, folderParent, item.id, item.messages, item.subject]
 		);
 
 		const toggleExpandButtonLabel = useMemo(

@@ -28,10 +28,13 @@ import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
 	BoardContext,
 	MailMessage,
+	MessageAction,
 	MessageActionReturnType,
 	MsgActionParameters,
 	MsgActionResult
 } from '../types';
+import { ConvActionReturnType, ExtraWindowCreationParams, ExtraWindowsContextType } from '../types';
+import { MessagePreviewPanel } from '../views/app/detail-panel/message-preview-panel';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -192,6 +195,51 @@ export function setMsgAsSpam({
 				/** If the user has not clicked on the undo button, we can proceed with the action */
 				setAsSpam({ notCanceled, value, dispatch, ids, shouldReplaceHistory, folderId });
 			}, TIMEOUTS.SET_AS_SPAM);
+		}
+	};
+}
+
+export const previewOnSeparatedWindow = (
+	messageId: string,
+	folderId: string,
+	subject: string,
+	createWindow: ExtraWindowsContextType['createWindow'],
+	messageActions: Array<MessageAction>
+): void => {
+	if (!createWindow) {
+		return;
+	}
+
+	const createWindowParams: ExtraWindowCreationParams = {
+		name: `message-${messageId}`,
+		returnComponent: false,
+		children: (
+			<MessagePreviewPanel
+				messageId={messageId}
+				folderId={folderId}
+				messageActions={messageActions}
+			/>
+		),
+		title: subject,
+		closeOnUnmount: false
+	};
+	createWindow(createWindowParams);
+};
+
+export function previewMessageOnSeparatedWindow(
+	messageId: string,
+	folderId: string,
+	subject: string,
+	createWindow: ExtraWindowsContextType['createWindow'],
+	messageActions: Array<MessageAction>
+): ConvActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW;
+	return {
+		id: actDescriptor.id,
+		icon: 'BrowserOutline',
+		label: t('action.preview_on_separated_window', 'Open on a new window'),
+		onClick: (): void => {
+			previewOnSeparatedWindow(messageId, folderId, subject, createWindow, messageActions);
 		}
 	};
 }
