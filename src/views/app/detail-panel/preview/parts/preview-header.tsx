@@ -97,7 +97,7 @@ const fallbackContact = {
 	fullName: ''
 };
 
-const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }, actions): ReactElement => {
+const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactElement => {
 	const { message, onClick, open, isExternalMessage } = compProps;
 
 	const textRef = useRef<HTMLInputElement>(null);
