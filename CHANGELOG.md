@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.9.1...v1.9.2) (2023-10-31)
+
+
+### Bug Fixes
+
+* restore message actions on displayer ([8533b8d](https://github.com/zextras/carbonio-mails-ui/commit/8533b8de0dea8b7fc93a9e1561c8807ed70fb840))
+
+### [1.9.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.9.0...v1.9.1) (2023-10-31)
+
+
+### Bug Fixes
+
+* fix function in folders.ts ([630d49c](https://github.com/zextras/carbonio-mails-ui/commit/630d49c5647f82927a4cd84c5996397b462cab88))
+
 ## [1.9.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.8.0...v1.9.0) (2023-10-31)
 
 
