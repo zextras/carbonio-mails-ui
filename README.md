@@ -23,14 +23,19 @@ Mails module for Zextras Carbonio
 
 <h4>Setup</h4>
 
-- clone this repo
+- clone the repo
 
 - install the dependencies:
 
 ```
 nvm use
 npm install
-npm run sdk-setup
+```
+
+- install carbonio-commons-ui submodule
+
+```
+git submodule update --recursive --init
 ```
 
 <h4>Watch Mode</h4>
