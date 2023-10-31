@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
-import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
+import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { generateMessage } from '../../tests/generators/generateMessage';
+import { getMessageOwnerAccountName } from '../folders';
 import {
 	getAddressOwnerAccount,
 	getMessageSenderAccount,
@@ -43,8 +45,6 @@ describe('Message sender address', () => {
 
 describe('Address owner account', () => {
 	const mocksContext = getMocksContext();
-	const primaryAccount = getUserAccount();
-	const settings = getUserSettings();
 
 	test('returns the primary account if address is the primary address', () => {
 		const inputAddress = mocksContext.identities.primary.identity.email;
@@ -76,8 +76,6 @@ describe('Address owner account', () => {
 
 describe('Message sender account', () => {
 	const mocksContext = getMocksContext();
-	const primaryAccount = getUserAccount();
-	const settings = getUserSettings();
 
 	test('returns the primary account if sender is the primary address', () => {
 		const from = {
@@ -124,5 +122,38 @@ describe('Message sender account', () => {
 		};
 		const msg = generateMessage({ from });
 		expect(getMessageSenderAccount(msg)).toBeNull();
+	});
+});
+
+describe('Message folder owner account', () => {
+	const mocksContext = getMocksContext();
+
+	test('returns the primary account if the the message is located under the primary account', () => {
+		populateFoldersStore();
+		const folderRoots = getRootsMap();
+		const from = {
+			type: ParticipantRole.TO,
+			address: mocksContext.identities.primary.identity.email
+		};
+		const folderId = `${mocksContext.identities.primary.identity.id}:2`;
+		const msg = generateMessage({ from, folderId });
+		expect(getMessageOwnerAccountName(msg, folderRoots)).toBe(
+			mocksContext.identities.primary.identity.email
+		);
+	});
+	test('returns the shared account if the message is located under the shared account', () => {
+		populateFoldersStore();
+		const folderRoots = getRootsMap();
+		const to = [
+			{
+				type: ParticipantRole.TO,
+				address: mocksContext.identities.sendOnBehalf[0].identity.email
+			}
+		];
+		const folderId = `${mocksContext.identities.sendOnBehalf[0].identity.id}:2`;
+		const msg = generateMessage({ to, folderId });
+		expect(getMessageOwnerAccountName(msg, folderRoots)).toBe(
+			mocksContext.identities.sendOnBehalf[0].identity.email
+		);
 	});
 });
