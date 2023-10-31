@@ -9,7 +9,9 @@ import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-desi
 import { useTags } from '@zextras/carbonio-shell-ui';
 import styled, { DefaultTheme } from 'styled-components';
 
+import { isConversation } from '../../../../helpers/messages';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useMessageActions } from '../../../../hooks/use-message-actions';
 import type {
 	ConvActionReturnType,
 	Conversation,
@@ -19,6 +21,7 @@ import type {
 	TagActionItemType
 } from '../../../../types';
 import { getMsgConvActions } from '../../../../ui-actions/get-msg-conv-actions';
+import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
 
 const HoverBarContainer = styled(Container)<{ background: keyof DefaultTheme['palette'] }>`
 	top: 0;
@@ -89,12 +92,16 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 }) => {
 	const dispatch = useAppDispatch();
 	const tags = useTags();
+	const { createWindow } = useExtraWindowsManager();
+	const messageActions = useMessageActions(isConversation(item) ? undefined : item, true);
 
 	const [hoverActions, dropdownActions] = getMsgConvActions({
 		item,
 		dispatch,
 		deselectAll,
-		tags
+		tags,
+		createWindow,
+		messageActions
 	});
 
 	const dropdownActionsItems = dropdownActions.map((action) => ({

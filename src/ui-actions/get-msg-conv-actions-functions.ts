@@ -10,6 +10,7 @@ import {
 	deleteConversationPermanently,
 	moveConversationToFolder,
 	moveConversationToTrash,
+	previewConversationOnSeparatedWindowAction,
 	printConversation,
 	setConversationsFlag,
 	setConversationsRead,
@@ -22,6 +23,7 @@ import {
 	forwardMsg,
 	moveMessageToFolder,
 	moveMsgToTrash,
+	previewMessageOnSeparatedWindow,
 	printMsg,
 	redirectMsg,
 	replyAllMsg,
@@ -35,7 +37,13 @@ import {
 import { applyTag } from './tag-actions';
 import { getFolderIdParts } from '../helpers/folders';
 import { AppDispatch } from '../store/redux';
-import type { ActionReturnType, Conversation, MailMessage } from '../types';
+import type {
+	ActionReturnType,
+	Conversation,
+	ExtraWindowsContextType,
+	MailMessage,
+	MessageAction
+} from '../types';
 
 /**
  * get the action to be executed when the user clicks on the "Mark as read/unread" button
@@ -238,6 +246,26 @@ export function getMarkRemoveSpam({
 				folderId
 		  });
 	return !foldersExcludedMarkUnmarkSpam.includes(getFolderIdParts(folderId).id ?? '0') && action;
+}
+
+export function getPreviewOnSeparatedWindowAction({
+	isConversation,
+	id,
+	folderId,
+	subject,
+	createWindow,
+	messageActions
+}: {
+	isConversation: boolean;
+	id: string;
+	folderId: string;
+	subject: string;
+	createWindow: ExtraWindowsContextType['createWindow'];
+	messageActions: Array<MessageAction>;
+}): ActionReturnType {
+	return isConversation
+		? previewConversationOnSeparatedWindowAction(id, folderId, subject, createWindow)
+		: previewMessageOnSeparatedWindow(id, folderId, subject, createWindow, messageActions);
 }
 
 export function getApplyTagAction({

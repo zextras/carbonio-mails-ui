@@ -30,6 +30,7 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) primary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
+				const createWindow = jest.fn();
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id
@@ -42,7 +43,9 @@ describe('Actions visibility', () => {
 					item: conv,
 					dispatch,
 					deselectAll,
-					tags: {}
+					tags: {},
+					createWindow,
+					messageActions: []
 				});
 				expect(existsActionById({ id: action.id, actions })).toBe(assertion.value);
 			}
@@ -81,6 +84,7 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) primary actions for a $read.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, read, assertion, action }) => {
+				const createWindow = jest.fn();
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id,
@@ -93,7 +97,9 @@ describe('Actions visibility', () => {
 					item: conv,
 					dispatch,
 					deselectAll,
-					tags: {}
+					tags: {},
+					createWindow,
+					messageActions: []
 				});
 				expect(existsActionById({ id: action.id, actions })).toBe(assertion.value);
 			}
@@ -132,6 +138,7 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) primary actions for a $flagged.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, flagged, assertion, action }) => {
+				const createWindow = jest.fn();
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id,
@@ -144,7 +151,9 @@ describe('Actions visibility', () => {
 					item: conv,
 					dispatch,
 					deselectAll,
-					tags: {}
+					tags: {},
+					createWindow,
+					messageActions: []
 				});
 				expect(existsActionById({ id: action.id, actions })).toBe(assertion.value);
 			}

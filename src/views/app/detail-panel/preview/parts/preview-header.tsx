@@ -59,9 +59,8 @@ import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
-import { useMessageActions } from '../../../../../hooks/use-message-actions';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
-import type { MailMessage } from '../../../../../types';
+import type { MailMessage, MessageAction } from '../../../../../types';
 import MailMsgPreviewActions from '../../../../../ui-actions/mail-message-preview-actions';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
@@ -85,9 +84,10 @@ type PreviewHeaderProps = {
 		message: MailMessage;
 		onClick: (e: SyntheticEvent) => void;
 		open: boolean;
-		isAlone: boolean;
 		isExternalMessage?: boolean;
+		isInsideExtraWindow?: boolean;
 	};
+	actions: MessageAction[];
 };
 
 const fallbackContact = {
@@ -97,15 +97,14 @@ const fallbackContact = {
 	fullName: ''
 };
 
-const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
-	const { message, onClick, open, isAlone, isExternalMessage } = compProps;
+const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }, actions): ReactElement => {
+	const { message, onClick, open, isExternalMessage } = compProps;
 
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
 
 	const [_minWidth, _setMinWidth] = useState('');
 	const [isContactListExpand, setIsContactListExpand] = useState(false);
-	const actions = useMessageActions(message, isAlone);
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
 	const _onClick = useCallback((e) => !e.isDefaultPrevented() && onClick(e), [onClick]);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
