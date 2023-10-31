@@ -5,12 +5,12 @@
  */
 import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
 
-import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
+import { Container, Shimmer } from '@zextras/carbonio-design-system';
 import { FOLDERS, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, find, map, sortBy } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import MailPreview from './preview/mail-preview';
+import { ConversationMessagePreview } from './conversation-message-preview';
 import PreviewPanelHeader from './preview/preview-panel-header';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getConv, searchConv } from '../../../store/actions';
@@ -21,16 +21,16 @@ import {
 } from '../../../store/conversations-slice';
 import { selectMessages } from '../../../store/messages-slice';
 import type { Conversation, MailsStateType } from '../../../types';
+import { useExtraWindow } from '../extra-windows/use-extra-window';
 
-const MessagesComponent = ({
+export const ConversationPreviewComponent = ({
 	conversation
 }: {
-	conversation: Conversation | undefined;
+	conversation: Conversation;
 }): ReactElement => {
-	const { conversationId } = useParams<{ conversationId: string }>();
 	const settings = useUserSettings();
 	const messages = useAppSelector(selectMessages);
-	const conversationStatus = useAppSelector(selectCurrentFolderExpandedStatus)[conversationId];
+	const conversationStatus = useAppSelector(selectCurrentFolderExpandedStatus)[conversation.id];
 	const convMessages = useMemo(() => {
 		const msgs = map(conversation?.messages, (item) => messages[item.id] ?? item);
 
@@ -40,8 +40,8 @@ const MessagesComponent = ({
 		return msgs ?? [];
 	}, [conversation?.messages, settings.prefs.zimbraPrefConversationOrder, messages]);
 
-	const expand = useCallback(
-		(message, index) => {
+	const isExpanded = useCallback(
+		(index: number): boolean => {
 			if (settings.prefs.zimbraPrefConversationOrder === 'dateAsc') {
 				return index === convMessages.length - 1;
 			}
@@ -50,32 +50,54 @@ const MessagesComponent = ({
 		[convMessages.length, settings.prefs.zimbraPrefConversationOrder]
 	);
 
-	if (conversation && conversationStatus === 'complete') {
-		return (
-			<>
-				{map(convMessages, (message, index) =>
-					message ? (
-						<Padding key={`${conversationId}-${message.id}`} bottom="medium" width="100%">
-							<MailPreview
-								message={message}
-								expanded={expand(message, index)}
-								isAlone={convMessages?.length === 1}
-								isMessageView={false}
-							/>
-						</Padding>
-					) : (
-						<Shimmer.Logo size="large" />
-					)
+	return (
+		<Container
+			style={{ overflowY: 'auto' }}
+			height="fill"
+			background="gray5"
+			padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
+			mainAlignment="flex-start"
+		>
+			<Container height="fit" mainAlignment="flex-start" background="gray5">
+				{conversation && conversationStatus === 'complete' ? (
+					<>
+						{map(convMessages, (message, index) =>
+							message ? (
+								<ConversationMessagePreview
+									idPrefix={conversation.id}
+									message={message}
+									isExpanded={isExpanded(index)}
+									isAlone={convMessages?.length === 1}
+								></ConversationMessagePreview>
+							) : (
+								<Shimmer.Logo size="large" />
+							)
+						)}
+					</>
+				) : (
+					<></>
 				)}
-			</>
-		);
-	}
-	return <></>;
+			</Container>
+		</Container>
+	);
 };
 
-export const ConversationPreviewPanel: FC = () => {
-	const { conversationId, folderId } = useParams<{ conversationId: string; folderId: string }>();
+type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
+
+const useConversationPreviewPanelParameters = (
+	props: ConversationPreviewPanelProps
+): { conversationId: string; folderId: string } => {
+	const params = useParams<{ conversationId: string; folderId: string }>();
+	return {
+		conversationId: props.conversationId ?? params.conversationId,
+		folderId: props.folderId ?? params.folderId
+	};
+};
+
+export const ConversationPreviewPanel: FC<ConversationPreviewPanelProps> = (props) => {
+	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 	const tagsFromStore = useTags();
+	const { isInsideExtraWindow } = useExtraWindow();
 
 	const dispatch = useAppDispatch();
 	const conversations = useAppSelector(selectConversationsArray);
@@ -114,20 +136,8 @@ export const ConversationPreviewPanel: FC = () => {
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 			{showPreviewPanel && (
 				<>
-					<PreviewPanelHeader item={conversation} folderId={folderId} />
-					{/* commented to hide the panel actions */}
-					{/* <PreviewPanelActions item={conversation} folderId={folderId} /> */}
-					<Container
-						style={{ overflowY: 'auto' }}
-						height="fill"
-						background="gray5"
-						padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
-						mainAlignment="flex-start"
-					>
-						<Container height="fit" mainAlignment="flex-start" background="gray5">
-							<MessagesComponent conversation={conversation} />
-						</Container>
-					</Container>
+					{!isInsideExtraWindow && <PreviewPanelHeader item={conversation} folderId={folderId} />}
+					<ConversationPreviewComponent conversation={conversation} />
 				</>
 			)}
 		</Container>

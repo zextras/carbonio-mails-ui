@@ -88,6 +88,7 @@ describe('Primary actions visibility', () => {
 	`(
 		`(case #$case) primary actions for a message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, assertion, action }) => {
+			const createWindow = jest.fn();
 			const msg = generateMessage({ folderId: folder.id });
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
@@ -96,7 +97,9 @@ describe('Primary actions visibility', () => {
 				item: msg,
 				dispatch,
 				deselectAll,
-				tags: {}
+				tags: {},
+				createWindow,
+				messageActions: []
 			});
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 		}
@@ -133,6 +136,7 @@ describe('Primary actions visibility', () => {
 	`(
 		`(case #$case) primary actions for a $read.desc message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, read, assertion, action }) => {
+			const createWindow = jest.fn();
 			const msg = generateMessage({ folderId: folder.id, isRead: read.value });
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
@@ -141,7 +145,9 @@ describe('Primary actions visibility', () => {
 				item: msg,
 				dispatch,
 				deselectAll,
-				tags: {}
+				tags: {},
+				createWindow,
+				messageActions: []
 			});
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 		}
@@ -180,6 +186,7 @@ describe('Primary actions visibility', () => {
 	`(
 		`(case #$case) primary actions for a $flagged.desc message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, flagged, assertion, action }) => {
+			const createWindow = jest.fn();
 			const msg = generateMessage({ folderId: folder.id, isFlagged: flagged.value });
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
@@ -188,7 +195,9 @@ describe('Primary actions visibility', () => {
 				item: msg,
 				dispatch,
 				deselectAll,
-				tags: {}
+				tags: {},
+				createWindow,
+				messageActions: []
 			});
 			expect(existsActionById({ id: action.id, actions: primaryActions })).toBe(assertion.value);
 		}

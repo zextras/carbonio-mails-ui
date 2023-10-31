@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-/* eslint-disable no-nested-ternary */
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import {
 	Button,
 	Collapse,
@@ -22,19 +23,22 @@ import {
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+/* eslint-disable no-nested-ternary */
 import { useParams } from 'react-router-dom';
-import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
-import MailMessageRenderer from '../../../../commons/mail-message-renderer';
-import { useAppDispatch } from '../../../../hooks/redux';
-import SharedInviteReply from '../../../../integrations/shared-invite-reply';
-import { getMsg, msgAction } from '../../../../store/actions';
-import type { ExtraWindowCreationParams, MailMessage, OpenEmlPreviewType } from '../../../../types';
-import { setMsgAsSpam } from '../../../../ui-actions/message-actions';
-import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
+
 import AttachmentsBlock from './attachments-block';
 import PreviewHeader from './parts/preview-header';
 import ReadReceiptModal from './read-receipt-modal';
+import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
+import MailMessageRenderer from '../../../../commons/mail-message-renderer';
+import { MessageActionsDescriptors } from '../../../../constants';
+import { useAppDispatch } from '../../../../hooks/redux';
+import SharedInviteReply from '../../../../integrations/shared-invite-reply';
+import { getMsg, msgAction } from '../../../../store/actions';
+import type { MailMessage, OpenEmlPreviewType } from '../../../../types';
+import { ExtraWindowCreationParams, MessageAction } from '../../../../types';
+import { findMessageActionById } from '../../../../ui-actions/utils';
+import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 
@@ -42,14 +46,14 @@ const MailContent: FC<{
 	message: MailMessage;
 	isMailPreviewOpen: boolean;
 	isExternalMessage?: boolean;
-	isStandaloneComponent?: boolean;
+	isInsideExtraWindow?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
 }> = ({
 	message,
 	isMailPreviewOpen,
 	isExternalMessage = false,
 	openEmlPreview,
-	isStandaloneComponent = false
+	isInsideExtraWindow = false
 }) => {
 	const [showModal, setShowModal] = useState(true);
 	const dispatch = useAppDispatch();
@@ -153,7 +157,7 @@ const MailContent: FC<{
 				height="fit"
 				crossAlignment="stretch"
 				padding={
-					isStandaloneComponent ? { vertical: 'small' } : { horizontal: 'large', vertical: 'small' }
+					isInsideExtraWindow ? { vertical: 'small' } : { horizontal: 'large', vertical: 'small' }
 				}
 				background="gray6"
 			>
@@ -207,7 +211,7 @@ const MailContent: FC<{
 	}, [
 		showAppointmentInvite,
 		message,
-		isStandaloneComponent,
+		isInsideExtraWindow,
 		isExternalMessage,
 		openEmlPreview,
 		moveToTrash,
@@ -234,35 +238,26 @@ type MailPreviewBlockType = {
 	message: MailMessage;
 	open: boolean;
 	onClick: () => void;
-	isAlone: boolean;
+	messageActions: Array<MessageAction>;
 	isExternalMessage?: boolean;
-	isStandaloneComponent?: boolean;
+	isInsideExtraWindow?: boolean;
 };
 const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	message,
 	open,
 	onClick,
-	isAlone,
+	messageActions,
 	isExternalMessage = false,
-	isStandaloneComponent = false
+	isInsideExtraWindow = false
 }) => {
 	const { folderId } = useParams<{ folderId: string }>();
-
-	const dispatch = useAppDispatch();
 	const compProps = useMemo(
-		() => ({ message, onClick, open, isAlone, isExternalMessage, isStandaloneComponent }),
-		[message, onClick, open, isAlone, isExternalMessage, isStandaloneComponent]
+		() => ({ message, onClick, open, isExternalMessage, isInsideExtraWindow }),
+		[message, onClick, open, isExternalMessage, isInsideExtraWindow]
 	);
-	const markAsNotSpam = useCallback(
-		(ev) =>
-			setMsgAsSpam({
-				ids: [message.id],
-				value: true,
-				dispatch,
-				shouldReplaceHistory: true,
-				folderId
-			}).onClick(ev),
-		[dispatch, folderId, message.id]
+	const markAsNotSpam = findMessageActionById(
+		messageActions,
+		MessageActionsDescriptors.MARK_AS_NOT_SPAM.id
 	);
 
 	return (
@@ -296,7 +291,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 			)}
 			{message && (
 				<Row width="fill">
-					<PreviewHeader compProps={compProps} />
+					<PreviewHeader compProps={compProps} actions={messageActions} />
 				</Row>
 			)}
 
@@ -326,22 +321,24 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	);
 };
 
-type MailPreviewType = {
+export type MailPreviewProps = {
 	message: MailMessage;
 	expanded: boolean;
+	messageActions: Array<MessageAction>;
 	isAlone: boolean;
 	isMessageView: boolean;
 	isExternalMessage?: boolean;
-	isStandaloneComponent?: boolean;
+	isInsideExtraWindow?: boolean;
 };
 
-const MailPreview: FC<MailPreviewType> = ({
+const MailPreview: FC<MailPreviewProps> = ({
 	message,
 	expanded,
+	messageActions,
 	isAlone,
 	isMessageView,
 	isExternalMessage = false,
-	isStandaloneComponent = false
+	isInsideExtraWindow = false
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(expanded || isAlone);
@@ -370,9 +367,10 @@ const MailPreview: FC<MailPreviewType> = ({
 						message={emlMessage}
 						expanded={false}
 						isAlone
+						messageActions={messageActions}
 						isMessageView
 						isExternalMessage
-						isStandaloneComponent
+						isInsideExtraWindow
 					/>
 				),
 				title: emlMessage.subject,
@@ -382,7 +380,7 @@ const MailPreview: FC<MailPreviewType> = ({
 				createWindow(createWindowParams);
 			}
 		},
-		[createWindow]
+		[createWindow, messageActions]
 	);
 
 	return (
@@ -390,16 +388,16 @@ const MailPreview: FC<MailPreviewType> = ({
 			ref={mailContainerRef}
 			height="fit"
 			data-testid={`MailPreview-${message.id}`}
-			padding={isStandaloneComponent ? { all: 'large' } : undefined}
+			padding={isInsideExtraWindow ? { all: 'large' } : undefined}
 			background="white"
 		>
 			<MailPreviewBlock
 				onClick={onClick}
 				message={message}
 				open={isMailPreviewOpen}
-				isAlone={isAlone}
+				messageActions={messageActions}
 				isExternalMessage={isExternalMessage}
-				isStandaloneComponent={isStandaloneComponent}
+				isInsideExtraWindow={isInsideExtraWindow}
 			/>
 
 			<Container
@@ -415,7 +413,7 @@ const MailPreview: FC<MailPreviewType> = ({
 						isMailPreviewOpen={isMailPreviewOpen}
 						openEmlPreview={openEmlPreview}
 						isExternalMessage={isExternalMessage}
-						isStandaloneComponent={isStandaloneComponent}
+						isInsideExtraWindow={isInsideExtraWindow}
 					/>
 				)}
 			</Container>

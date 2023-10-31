@@ -4,13 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { screen } from '@testing-library/react';
 import React from 'react';
+
+import { screen } from '@testing-library/react';
+
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { getMsg } from '../../../../../store/actions';
 import { selectMessage } from '../../../../../store/messages-slice';
 import { generateStore } from '../../../../../tests/generators/store';
-import MailPreview from '../mail-preview';
+import MailPreview, { MailPreviewProps } from '../mail-preview';
 
 /**
  * Test the Mail Preview component in different scenarios
@@ -29,11 +31,12 @@ describe('Mail preview', () => {
 		await store.dispatch<any>(getMsg({ msgId }));
 		const state = store.getState();
 		const message = selectMessage(state, msgId);
-		const props = {
+		const props: MailPreviewProps = {
 			message,
 			expanded: true,
 			isAlone: true,
-			isMessageView: true
+			isMessageView: true,
+			messageActions: []
 		};
 
 		// Render the component
