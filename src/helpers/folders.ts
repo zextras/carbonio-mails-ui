@@ -63,8 +63,12 @@ export const getFolderOtherOwnerAccountName = (
 		return null;
 	}
 
-	// If the id contains the zid, the account is considered the owner if the zid matches the account id
-	const matchingFolderRoot = find(folderRoots, { zid });
+	/** find the folderRoots for which the id corresponds to the message zid
+	 * if the folderRoots has an owner, return the owner
+	 * if not, return null
+	 * */
+
+	const matchingFolderRoot = find(folderRoots, (c) => c.id.includes(zid));
 	if (!matchingFolderRoot) {
 		return null;
 	}
