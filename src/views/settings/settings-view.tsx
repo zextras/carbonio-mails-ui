@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useCallback, useMemo, useState } from 'react';
+
 import { Container, FormSection } from '@zextras/carbonio-design-system';
 import {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -15,11 +17,7 @@ import {
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { cloneDeep, filter, find, forEach, isEmpty, isEqual, map, reduce, remove } from 'lodash';
-import React, { FC, useCallback, useMemo, useState } from 'react';
-import { NO_SIGNATURE_ID } from '../../helpers/signatures';
-import { useAppDispatch } from '../../hooks/redux';
-import { SignatureRequest } from '../../store/actions/signatures';
-import type { AccountIdentity, PropsType, SignItemType } from '../../types';
+
 import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
 import ComposeMessage from './compose-msg-settings';
 import DisplayMessagesSettings from './displaying-messages-settings';
@@ -27,6 +25,10 @@ import FilterModule from './filters';
 import ReceivingMessagesSettings from './receiving-messages-settings';
 import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
+import { NO_SIGNATURE_ID } from '../../helpers/signatures';
+import { useAppDispatch } from '../../hooks/redux';
+import { SignatureRequest } from '../../store/actions/signatures';
+import type { AccountIdentity, PropsType, SignItemType } from '../../types';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -293,6 +295,12 @@ const SettingsView: FC = () => {
 					});
 					// saving new values only when request is performed successfully
 					setCurrentProps((a) => ({ ...a, ...propsToUpdate }));
+					/* Update the current Identities with changes if identities updated
+						and request is performed successfully
+					*/
+					if (Object.keys(identitiesToUpdate).length > 0) {
+						setCurrentIdentities(updatedIdentities);
+					}
 				} else {
 					getBridgedFunctions()?.createSnackbar({
 						key: `new`,
@@ -314,7 +322,8 @@ const SettingsView: FC = () => {
 		dispatch,
 		account,
 		setNewOrForwardSignatureId,
-		flag
+		flag,
+		updatedIdentities
 	]);
 
 	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), []);
