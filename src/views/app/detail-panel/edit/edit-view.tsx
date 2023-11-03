@@ -4,16 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, {
-	ChangeEvent,
-	DragEventHandler,
-	FC,
-	memo,
-	SyntheticEvent,
-	useCallback,
-	useMemo,
-	useState
-} from 'react';
+import React, { ChangeEvent, FC, memo, useCallback, useMemo, useState } from 'react';
 
 import {
 	Button,
