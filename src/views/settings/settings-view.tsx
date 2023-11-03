@@ -271,6 +271,7 @@ const SettingsView: FC = () => {
 					});
 				}
 			});
+			return Promise.allSettled([Promise.resolve()]);
 		}
 
 		if (Object.keys(settingsToUpdate).length > 0) {
@@ -283,7 +284,7 @@ const SettingsView: FC = () => {
 			changes = { ...changes, identity: { modifyList: identitiesToUpdate } };
 		}
 		if (!isEmpty(changes)) {
-			editSettings(changes).then((res) => {
+			return editSettings(changes).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					getBridgedFunctions()?.createSnackbar({
 						key: `new`,
@@ -313,6 +314,7 @@ const SettingsView: FC = () => {
 				}
 			});
 		}
+		return Promise.allSettled([Promise.resolve()]);
 	}, [
 		signatures,
 		originalSignatures,
