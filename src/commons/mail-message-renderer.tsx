@@ -394,8 +394,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 							dropdownProps={{
 								maxWidth: '31.25rem',
 								width: 'fit',
-								items,
-								children: <></>
+								items
 							}}
 							items={items}
 						/>

@@ -39,3 +39,9 @@ export type ActionReturnType =
 	| MessageActionReturnType
 	| ConvActionReturnType
 	| TagActionItemType;
+
+/*
+ * The "any" is inherited from the return type of the useMessageActions hook.
+ * We define an alias, and then we will refactor the MessageAction type
+ */
+export type MessageAction = any;

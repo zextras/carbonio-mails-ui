@@ -72,8 +72,17 @@ describe('Signatures', () => {
 
 		test('getSignatures from account with empty signatures', () => {
 			const account = cloneDeep(getUserAccount());
-			account.signatures.signature = [];
+			account && (account.signatures.signature = []);
 			expect(getSignatures(account)).toEqual([
+				{
+					label: NO_SIGNATURE_LABEL,
+					value: { description: '', id: NO_SIGNATURE_ID }
+				}
+			]);
+		});
+
+		test('getSignatures returns the "empty" placeholder if there is no account', () => {
+			expect(getSignatures(undefined)).toEqual([
 				{
 					label: NO_SIGNATURE_LABEL,
 					value: { description: '', id: NO_SIGNATURE_ID }
@@ -84,7 +93,7 @@ describe('Signatures', () => {
 		test('getSignatures from account with signatures', () => {
 			const account = getUserAccount();
 			// TODO remove the any after the signatures type will be added to account in Shell
-			const signature: any = account.signatures.signature[0];
+			const signature: any = account?.signatures?.signature?.[0];
 
 			expect(getSignatures(account).length).toBeGreaterThan(1);
 			expect(getSignatures(account)[0].label).toBe(NO_SIGNATURE_LABEL);
@@ -99,7 +108,7 @@ describe('Signatures', () => {
 		test('getSignatureValue', () => {
 			const account = getUserAccount();
 			// TODO remove the any after the signatures type will be added to account in Shell
-			const signature: any = account.signatures.signature[0];
+			const signature: any = account?.signatures?.signature?.[0];
 			expect(getSignatureValue(account, NO_SIGNATURE_ID)).toEqual('');
 			expect(getSignatureValue(account, 'invalid-id')).toEqual('');
 			expect(getSignatureValue(account, signature.id)).toEqual(signature.content[0]._content);

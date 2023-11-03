@@ -6,17 +6,27 @@
 import React, { FC, useEffect } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
-import { useParams } from 'react-router-dom';
 
 import MailPreview from './preview/mail-preview';
 import PreviewPanelHeader from './preview/preview-panel-header';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getMsg } from '../../../store/actions';
 import { selectMessage } from '../../../store/messages-slice';
-import type { MailsStateType } from '../../../types';
+import type { MailsStateType, MessageAction } from '../../../types';
+import { useExtraWindow } from '../extra-windows/use-extra-window';
 
-export const MessagePreviewPanel: FC = () => {
-	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
+export type MessagePreviewPanelProps = {
+	folderId: string;
+	messageId: string;
+	messageActions: Array<MessageAction>;
+};
+
+export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
+	folderId,
+	messageId,
+	messageActions
+}) => {
+	const { isInsideExtraWindow } = useExtraWindow();
 	const dispatch = useAppDispatch();
 
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
@@ -31,9 +41,7 @@ export const MessagePreviewPanel: FC = () => {
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 			{message && (
 				<>
-					<PreviewPanelHeader item={message} folderId={folderId} />
-					{/* commented to hide the panel actions */}
-					{/* <PreviewPanelActions item={message} folderId={folderId} isMessageView /> */}
+					{!isInsideExtraWindow && <PreviewPanelHeader item={message} folderId={folderId} />}
 					<Container
 						style={{ overflowY: 'auto' }}
 						height="fill"
@@ -43,9 +51,15 @@ export const MessagePreviewPanel: FC = () => {
 					>
 						<Container height="fit" mainAlignment="flex-start" background="gray5">
 							<Padding bottom="medium" width="100%">
-								{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-								{/* @ts-ignore */}
-								<MailPreview message={message} expanded isAlone isMessageView />
+								eslint-disable-next-line @typescript-eslint/ban-ts-comment @ts-ignore
+								<MailPreview
+									message={message}
+									expanded
+									isAlone
+									messageActions={messageActions}
+									isMessageView
+									isInsideExtraWindow={isInsideExtraWindow}
+								/>
 							</Padding>
 						</Container>
 					</Container>

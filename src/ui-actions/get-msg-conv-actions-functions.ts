@@ -4,12 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
 
 import {
 	deleteConversationPermanently,
 	moveConversationToFolder,
 	moveConversationToTrash,
+	previewConversationOnSeparatedWindowAction,
 	printConversation,
 	setConversationsFlag,
 	setConversationsRead,
@@ -22,6 +23,7 @@ import {
 	forwardMsg,
 	moveMessageToFolder,
 	moveMsgToTrash,
+	previewMessageOnSeparatedWindow,
 	printMsg,
 	redirectMsg,
 	replyAllMsg,
@@ -35,7 +37,13 @@ import {
 import { applyTag } from './tag-actions';
 import { getFolderIdParts } from '../helpers/folders';
 import { AppDispatch } from '../store/redux';
-import type { ActionReturnType, Conversation, MailMessage } from '../types';
+import type {
+	ActionReturnType,
+	Conversation,
+	ExtraWindowsContextType,
+	MailMessage,
+	MessageAction
+} from '../types';
 
 /**
  * get the action to be executed when the user clicks on the "Mark as read/unread" button
@@ -240,6 +248,26 @@ export function getMarkRemoveSpam({
 	return !foldersExcludedMarkUnmarkSpam.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
+export function getPreviewOnSeparatedWindowAction({
+	isConversation,
+	id,
+	folderId,
+	subject,
+	createWindow,
+	messageActions
+}: {
+	isConversation: boolean;
+	id: string;
+	folderId: string;
+	subject: string;
+	createWindow: ExtraWindowsContextType['createWindow'];
+	messageActions: Array<MessageAction>;
+}): ActionReturnType {
+	return isConversation
+		? previewConversationOnSeparatedWindowAction(id, folderId, subject, createWindow)
+		: previewMessageOnSeparatedWindow(id, folderId, subject, createWindow, messageActions);
+}
+
 export function getApplyTagAction({
 	tags,
 	item,
@@ -293,22 +321,19 @@ export function getMoveToFolderAction({
 export function getPrintAction({
 	isConversation,
 	item,
-	account,
 	folderExcludedPrintMessage,
 	folderId
 }: {
 	isConversation: boolean;
 	item: MailMessage | Conversation;
-	account: Account;
 	folderExcludedPrintMessage: string[];
 	folderId: string;
 }): ActionReturnType {
 	const action = isConversation
 		? printConversation({
-				conversation: [item as Conversation],
-				account
+				conversation: [item as Conversation]
 		  })
-		: printMsg({ message: item as MailMessage, account });
+		: printMsg({ message: item as MailMessage });
 	return !folderExcludedPrintMessage.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 

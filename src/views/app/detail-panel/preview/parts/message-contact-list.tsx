@@ -4,6 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React, {
+	FC,
+	ReactElement,
+	useCallback,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
+
 import {
 	Badge,
 	Container,
@@ -15,30 +25,30 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
-import React, {
-	FC,
-	ReactElement,
-	useCallback,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
-import type { MailMessage, TextReadValuesProps } from '../../../../../types';
+
 import ContactNames from './contact-names';
-import { getFolderTranslatedName } from '../../../../sidebar/utils';
+import ContactNameChip from './contact-names-chips';
 import { useFoldersMap } from '../../../../../carbonio-ui-commons/store/zustand/folder';
+import type { MailMessage, TextReadValuesProps } from '../../../../../types';
+import { getFolderTranslatedName } from '../../../../sidebar/utils';
 
 const MessageContactList: FC<{
 	message: MailMessage;
 	folderId: string;
-}> = ({ message, folderId }): ReactElement => {
+	contactListExpandCB: (showMore: boolean) => void;
+}> = ({ message, folderId, contactListExpandCB }): ReactElement => {
 	const [open, setOpen] = useState(false);
 
-	const toggleOpen = useCallback((e) => {
-		e.preventDefault();
-		setOpen((o) => !o);
-	}, []);
+	const toggleOpen = useCallback(
+		(e) => {
+			e.preventDefault();
+			setOpen((o) => {
+				contactListExpandCB(!o);
+				return !o;
+			});
+		},
+		[contactListExpandCB]
+	);
 	const folders = useFoldersMap();
 
 	const toContacts = useMemo(
@@ -74,10 +84,6 @@ const MessageContactList: FC<{
 		() => messageFolder?.name && messageFolder?.id !== folderId,
 		[folderId, messageFolder]
 	);
-	const [isOverflow, setIsOverflow] = useState(false);
-	const showMoreCB = useCallback((showMore) => {
-		setIsOverflow(showMore);
-	}, []);
 
 	const toggleExpandButtonLabel = useMemo(
 		() =>
@@ -108,51 +114,34 @@ const MessageContactList: FC<{
 				mainAlignment="space-between"
 				orientation="horizontal"
 			>
-				{isOverflow && (
-					<Tooltip label={toggleExpandButtonLabel}>
-						<IconButton
-							size="small"
-							icon={open ? 'ChevronUp' : 'ChevronDown'}
-							onClick={toggleOpen}
-							customSize={{
-								iconSize: 'small',
-								paddingSize: ''
-							}}
-						/>
-					</Tooltip>
-				)}
+				<Tooltip label={toggleExpandButtonLabel}>
+					<IconButton
+						size="small"
+						icon={open ? 'ChevronUp' : 'ChevronDown'}
+						onClick={toggleOpen}
+						customSize={{
+							iconSize: 'small',
+							paddingSize: ''
+						}}
+					/>
+				</Tooltip>
 			</Container>
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" width={badgeWidth}>
 				{!open && (
 					<Container width="calc(100% - 1.5rem)" crossAlignment="flex-start">
 						<Row height="fit" crossAlignment="flex-start" mainAlignment="flex-start">
 							{toContacts.length > 0 && (
-								<ContactNames
-									showMoreCB={showMoreCB}
-									showOverflow
-									contacts={toContacts}
-									label={labelTo}
-								/>
+								<ContactNames showOverflow contacts={toContacts} label={labelTo} />
 							)}
 						</Row>
 						<Row height="fit" crossAlignment="flex-start" mainAlignment="flex-start">
 							{ccContacts.length > 0 && (
-								<ContactNames
-									showMoreCB={showMoreCB}
-									showOverflow
-									contacts={ccContacts}
-									label={labelCc}
-								/>
+								<ContactNames showOverflow contacts={ccContacts} label={labelCc} />
 							)}
 						</Row>
 						<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
 							{bccContacts.length > 0 && (
-								<ContactNames
-									showMoreCB={showMoreCB}
-									showOverflow
-									contacts={bccContacts}
-									label={labelBcc}
-								/>
+								<ContactNames showOverflow contacts={bccContacts} label={labelBcc} />
 							)}
 						</Row>
 					</Container>
@@ -160,14 +149,28 @@ const MessageContactList: FC<{
 				{open && (
 					<Container width="calc(100% - 1.5rem)" crossAlignment="flex-start">
 						<Container width="100%">
-							<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
-								{toContacts.length > 0 && <ContactNames contacts={toContacts} label={labelTo} />}
+							<Row
+								height="fit"
+								width="100%"
+								crossAlignment="flex-start"
+								mainAlignment="flex-start"
+								padding={{ bottom: 'small' }}
+							>
+								{toContacts.length > 0 && <ContactNameChip contacts={toContacts} label={labelTo} />}
+							</Row>
+							<Row
+								height="fit"
+								width="100%"
+								crossAlignment="flex-start"
+								mainAlignment="flex-start"
+								padding={{ bottom: 'small' }}
+							>
+								{ccContacts.length > 0 && <ContactNameChip contacts={ccContacts} label={labelCc} />}
 							</Row>
 							<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
-								{ccContacts.length > 0 && <ContactNames contacts={ccContacts} label={labelCc} />}
-							</Row>
-							<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
-								{bccContacts.length > 0 && <ContactNames contacts={bccContacts} label={labelBcc} />}
+								{bccContacts.length > 0 && (
+									<ContactNameChip contacts={bccContacts} label={labelBcc} />
+								)}
 							</Row>
 						</Container>
 					</Container>

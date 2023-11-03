@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Account, FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
 import {
@@ -17,6 +17,7 @@ import {
 	getMarkRemoveSpam,
 	getMoveToFolderAction,
 	getMoveToTrashAction,
+	getPreviewOnSeparatedWindowAction,
 	getPrintAction,
 	getReadUnreadAction,
 	getRedirectAction,
@@ -28,14 +29,21 @@ import {
 import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
 import { isConversation, isSingleMessageConversation } from '../helpers/messages';
 import { AppDispatch } from '../store/redux';
-import type { ActionReturnType, Conversation, MailMessage } from '../types';
+import type {
+	ActionReturnType,
+	Conversation,
+	ExtraWindowsContextType,
+	MailMessage,
+	MessageAction
+} from '../types';
 
 type GetMessageActionsProps = {
 	item: MailMessage | Conversation;
 	dispatch: AppDispatch;
 	deselectAll: () => void;
-	account: Account;
 	tags: Tags;
+	createWindow: ExtraWindowsContextType['createWindow'];
+	messageActions: Array<MessageAction>;
 };
 
 export type MsgConvActionsReturnType = [
@@ -47,8 +55,9 @@ export function getMsgConvActions({
 	item,
 	dispatch,
 	deselectAll,
-	account,
-	tags
+	tags,
+	createWindow,
+	messageActions
 }: GetMessageActionsProps): MsgConvActionsReturnType {
 	const isConv = isConversation(item);
 	const folderId = getParentFolderId(item);
@@ -129,7 +138,6 @@ export function getMsgConvActions({
 	const printAction = getPrintAction({
 		isConversation: isConv,
 		item,
-		account,
 		folderExcludedPrintMessage,
 		folderId
 	});
@@ -214,6 +222,15 @@ export function getMsgConvActions({
 		folderId
 	});
 
+	const previewOnSeparatedWindow = getPreviewOnSeparatedWindowAction({
+		isConversation: isConv,
+		id,
+		folderId,
+		subject: item.subject,
+		createWindow,
+		messageActions
+	});
+
 	/**
 	 * Primary actions are the ones that are shown when the user hovers over a message
 	 * @returns an array of arrays of actions
@@ -250,6 +267,7 @@ export function getMsgConvActions({
 		applyTagAction,
 		moveToFolderAction,
 		printAction,
+		previewOnSeparatedWindow,
 		redirectAction,
 		editDraftAction,
 		editAsNewAction,

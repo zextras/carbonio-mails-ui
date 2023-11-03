@@ -9,6 +9,7 @@ import { find } from 'lodash';
 import { isConversation } from './messages';
 import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
 import type { Folder, Folders } from '../carbonio-ui-commons/types/folder';
+import { NO_ACCOUNT_NAME } from '../constants';
 import type { MailMessage, Conversation } from '../types';
 
 /*
@@ -62,8 +63,12 @@ export const getFolderOtherOwnerAccountName = (
 		return null;
 	}
 
-	// If the id contains the zid, the account is considered the owner if the zid matches the account id
-	const matchingFolderRoot = find(folderRoots, { zid });
+	/** find the folderRoots for which the id corresponds to the message zid
+	 * if the folderRoots has an owner, return the owner
+	 * if not, return null
+	 * */
+
+	const matchingFolderRoot = find(folderRoots, (c) => c.id.includes(zid));
 	if (!matchingFolderRoot) {
 		return null;
 	}
@@ -88,7 +93,7 @@ export const getFolderOwnerAccountName = (folderId: string, folderRoots: Folders
 	const otherOwnerAccount = getFolderOtherOwnerAccountName(folderId, folderRoots);
 
 	if (!otherOwnerAccount) {
-		return primaryAccount.name;
+		return primaryAccount?.name ?? NO_ACCOUNT_NAME;
 	}
 
 	return otherOwnerAccount;

@@ -53,14 +53,14 @@ import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
+import ContactNameChip from './contact-names-chips';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
-import { useMessageActions } from '../../../../../hooks/use-message-actions';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
-import type { MailMessage } from '../../../../../types';
+import type { MailMessage, MessageAction } from '../../../../../types';
 import MailMsgPreviewActions from '../../../../../ui-actions/mail-message-preview-actions';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
@@ -84,9 +84,10 @@ type PreviewHeaderProps = {
 		message: MailMessage;
 		onClick: (e: SyntheticEvent) => void;
 		open: boolean;
-		isAlone: boolean;
 		isExternalMessage?: boolean;
+		isInsideExtraWindow?: boolean;
 	};
+	actions: MessageAction[];
 };
 
 const fallbackContact = {
@@ -96,14 +97,14 @@ const fallbackContact = {
 	fullName: ''
 };
 
-const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
-	const { message, onClick, open, isAlone, isExternalMessage } = compProps;
+const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactElement => {
+	const { message, onClick, open, isExternalMessage } = compProps;
 
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
 
 	const [_minWidth, _setMinWidth] = useState('');
-	const actions = useMessageActions(message, isAlone);
+	const [isContactListExpand, setIsContactListExpand] = useState(false);
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
 	const _onClick = useCallback((e) => !e.isDefaultPrevented() && onClick(e), [onClick]);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
@@ -111,6 +112,10 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	const { folderId } = useParams();
+
+	const contactListExpandCB = useCallback((contactListExpand) => {
+		setIsContactListExpand(contactListExpand);
+	}, []);
 
 	const theme = useContext(ThemeContext);
 	const iconSize = useMemo(
@@ -315,10 +320,22 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										>
 											{capitalize(participantToString(mainContact, accounts))}
 										</Text>
-										<Padding left="small" />
-										<Text color="gray1" size={message.read ? 'small' : 'medium'}>
-											{mainContact.address && mainContact.address}
-										</Text>
+										<Row
+											takeAvailableSpace
+											width="fit"
+											mainAlignment="flex-start"
+											wrap="nowrap"
+											padding={{ left: 'small' }}
+										>
+											{!isContactListExpand && (
+												<Text color="gray1" size={message.read ? 'small' : 'medium'}>
+													{mainContact.address && mainContact.address}
+												</Text>
+											)}
+											{isContactListExpand && mainContact.address && (
+												<ContactNameChip contacts={[mainContact]} label={''} />
+											)}
+										</Row>
 									</Row>
 								) : (
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -419,7 +436,13 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						</Text>
 					</Row>
 				)}
-				{open && <MessageContactsList message={message} folderId={folderId} />}
+				{open && (
+					<MessageContactsList
+						message={message}
+						folderId={folderId}
+						contactListExpandCB={contactListExpandCB}
+					/>
+				)}
 			</Container>
 		</HoverContainer>
 	);
