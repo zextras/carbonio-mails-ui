@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.9.3...v1.10.0) (2023-11-03)
+
+
+### Features
+
+* disable attachments dropzone when a contact is dragged ([5c02d1e](https://github.com/zextras/carbonio-mails-ui/commit/5c02d1eefc58969b99b9c3893f667b6732385302))
+* disable attachments dropzone when a contant is being draged ([a4d5daa](https://github.com/zextras/carbonio-mails-ui/commit/a4d5daa3a7b47978b3801d068d98a242641e62ed))
+
+### [1.9.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.9.2...v1.9.3) (2023-11-03)
+
 ### [1.9.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.9.1...v1.9.2) (2023-10-31)
 
 

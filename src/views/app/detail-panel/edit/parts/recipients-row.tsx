@@ -104,6 +104,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					defaultValue={recipients}
 					bottomBorderColor="transparent"
 					hasError={some(recipients || [], { error: true })}
+					dragAndDropEnabled
 				/>
 			) : (
 				<ChipInput

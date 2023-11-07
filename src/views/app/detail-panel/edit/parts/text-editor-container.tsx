@@ -17,7 +17,7 @@ import { MailsEditorV2 } from '../../../../../types';
 export type TextEditorContent = { plainText: string; richText: string };
 
 export type TextEditorContainerProps = {
-	onDragOver: (event: SyntheticEvent) => void;
+	onDragOver: (event: React.DragEvent) => void;
 	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: FileList }) => void;
 	onContentChanged: (content: TextEditorContent) => void;
 	richTextMode: boolean;
@@ -28,7 +28,6 @@ export type TextEditorContainerProps = {
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({
-	editorId,
 	onDragOver,
 	onFilesSelected,
 	onContentChanged,
