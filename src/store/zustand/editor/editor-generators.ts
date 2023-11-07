@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getUserAccount, t } from '@zextras/carbonio-shell-ui';
+import { getUserAccount, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
 
 import { buildSavedAttachments, replaceCidUrlWithServiceUrl } from './editor-transformations';
@@ -69,6 +69,7 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
+	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 
 	const editor = {
 		action: EditViewActions.NEW,
@@ -76,7 +77,7 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: [],
-		isRichText: true,
+		isRichText,
 		isUrgent: false,
 		recipients: {
 			to: [],
@@ -155,6 +156,7 @@ export const generateIntegratedNewEditor = (
 		plainText,
 		richText
 	};
+	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
 	const unsavedAttachments: Array<UnsavedAttachment> = !compositionData?.aid
@@ -175,7 +177,7 @@ export const generateIntegratedNewEditor = (
 		id: editorId,
 		unsavedAttachments,
 		savedAttachments: [],
-		isRichText: true,
+		isRichText,
 		isUrgent: false,
 		recipients: {
 			to: recipients ?? [],
@@ -223,6 +225,7 @@ export const generateReplyAndReplyAllMsgEditor = (
 	};
 	const folderRoots = getRootsMap();
 	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
+	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const toParticipants =
 		action === EditViewActions.REPLY
 			? retrieveReplyTo(originalMessage)
@@ -235,7 +238,7 @@ export const generateReplyAndReplyAllMsgEditor = (
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: savedInlineAttachments,
-		isRichText: true,
+		isRichText,
 		isUrgent: originalMessage.urgent,
 		recipients: {
 			to: toParticipants,
@@ -280,6 +283,7 @@ export const generateForwardMsgEditor = (
 			savedAttachments
 		)
 	};
+	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const folderRoots = getRootsMap();
 	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const editor = {
@@ -288,7 +292,7 @@ export const generateForwardMsgEditor = (
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments,
-		isRichText: true,
+		isRichText,
 		isUrgent: originalMessage.urgent,
 		recipients: {
 			to: [],
@@ -321,6 +325,7 @@ export const generateEditAsDraftEditor = (
 		plainText: `${extractBody(originalMessage)[0]}`,
 		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
 	};
+	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
 	const editor = {
@@ -329,7 +334,7 @@ export const generateEditAsDraftEditor = (
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: buildSavedAttachments(originalMessage),
-		isRichText: true,
+		isRichText,
 		isUrgent: originalMessage.urgent,
 		recipients: {
 			to: retrieveTO(originalMessage),
@@ -360,6 +365,7 @@ export const generateEditAsNewEditor = (
 		plainText: `${extractBody(originalMessage)[0]}`,
 		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
 	};
+	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
 	const editor = {
@@ -368,7 +374,7 @@ export const generateEditAsNewEditor = (
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: buildSavedAttachments(originalMessage),
-		isRichText: true,
+		isRichText,
 		isUrgent: originalMessage.urgent,
 		recipients: {
 			to: retrieveTO(originalMessage),
