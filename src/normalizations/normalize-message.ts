@@ -252,7 +252,9 @@ export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participa
 	address: e.a,
 	name: e.d || e.a,
 	fullName: e.p,
-	email: e.a
+	email: e.a,
+	exp: e.exp,
+	isGroup: e.isGroup
 });
 
 const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
