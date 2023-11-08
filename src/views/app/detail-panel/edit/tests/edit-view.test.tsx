@@ -15,14 +15,16 @@ import {
 	waitForElementToBeRemoved,
 	within
 } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { rest } from 'msw';
 
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
-import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import {
+	FOLDERS,
+	useBoard as mockedUseBoard
+} from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -266,6 +268,19 @@ describe('Edit view', () => {
 			// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
 			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
 		}, 200000);
+
+		/**
+		 * Test the creation of a new email
+		 */
+		test('create a new email and text format should be as per setting', async () => {
+			setupEditorStore({ editors: [] });
+			const reduxStore = generateStore();
+			const editor = generateNewMessageEditor(reduxStore.dispatch);
+			addEditor({ id: editor.id, editor });
+
+			// Text format should be plain as per the settings done
+			expect(editor.isRichText).toBe(false);
+		}, 20000);
 	});
 
 	/**

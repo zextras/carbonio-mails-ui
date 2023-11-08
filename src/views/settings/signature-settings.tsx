@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement } from 'react';
+
 import {
 	Container,
 	FormSubSection,
@@ -15,16 +16,16 @@ import {
 	Padding,
 	SelectItem
 } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
-
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, unescape, reject, concat } from 'lodash';
+import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
+
+import SelectIdentitySignature from './components/select-identity-signature';
+import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import { GetAllSignatures } from '../../store/actions/signatures';
-import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
 import type { SignatureSettingsPropsType, SignItemType } from '../../types';
-import SelectIdentitySignature from './components/select-identity-signature';
 
 const Signature = styled(Row)`
 	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
@@ -55,6 +56,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
 	const [signaturesLoaded, setSignaturesLoaded] = useState(false);
+	const [isFirstChangeEventFired, setIsFirstChangeEventFired] = useState(false);
 
 	// Fetches signatures from the BE
 	useEffect(() => {
@@ -158,6 +160,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						label: item.label ?? '',
 						description: item.description ?? ''
 					});
+					setIsFirstChangeEventFired(false);
 				}}
 			>
 				<Row height="2.5rem" padding={{ all: 'small' }}>
@@ -254,36 +257,37 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 									// @ts-ignore
 									value={currentSignature?.description}
 									onEditorChange={(ev: [string, string]): void => {
-										// Rich text signature
-										const newDescription = ev[1];
-
-										if (currentSignature?.description === newDescription) {
-											return;
-										}
-
-										setCurrentSignature(
-											(current) =>
-												({
-													...current,
-													description: newDescription
-												} as SignItemType)
-										);
-
-										const updatedSign = signatures.map((signature) => {
-											if (
-												signature.id === currentSignature?.id &&
-												signature.description !== newDescription
-											) {
-												return {
-													...signature,
-													description: newDescription
-												};
+										if (isFirstChangeEventFired) {
+											// Rich text signature
+											const newDescription = ev[1];
+											if (currentSignature?.description === newDescription) {
+												return;
 											}
-											return signature;
-										});
+											setCurrentSignature(
+												(current) =>
+													({
+														...current,
+														description: newDescription
+													} as SignItemType)
+											);
 
-										setDisabled(false);
-										setSignatures(updatedSign);
+											const updatedSign = signatures.map((signature) => {
+												if (
+													signature.id === currentSignature?.id &&
+													signature.description !== newDescription
+												) {
+													return {
+														...signature,
+														description: newDescription
+													};
+												}
+												return signature;
+											});
+
+											setDisabled(false);
+											setSignatures(updatedSign);
+										}
+										setIsFirstChangeEventFired(true);
 									}}
 								/>
 							</EditorWrapper>
