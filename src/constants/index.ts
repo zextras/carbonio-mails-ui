@@ -305,6 +305,13 @@ export const ConversationActionsDescriptors = {
 	}
 } as const;
 
+export const FilterActionsDescriptors = {
+	APPLY: {
+		id: 'apply-filter-on-folder',
+		desc: 'Apply filter to a folder'
+	}
+} as const;
+
 export const MSG_CONV_STATUS = {
 	FLAGGED: {
 		value: true,

@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
 
-import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
+import { Button, Padding, useModal } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { find } from 'lodash';
 
@@ -16,6 +16,10 @@ import { FilterContext } from './filter-context';
 import ModifyFilterModal from './modify-filter/modify-filter-modal';
 import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { StoreProvider } from '../../../../store/redux';
+import {
+	ApplyFilterUIActionExecutionParams,
+	getApplyFilterUIAction
+} from '../../../../ui-actions/apply-filter';
 
 type FilterListType = {
 	active: boolean;
@@ -47,25 +51,36 @@ type ComponentProps = {
 const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { t, availableList, activeList, incomingFilters } = compProps;
 	const { setFetchIncomingFilters, setIncomingFilters } = useContext(FilterContext);
+	const createModal = useModal();
 
 	const isAvailableFilterSelected = useMemo(
-		() => Object.keys(availableList.selected).length <= 0,
+		() => Object.keys(availableList.selected).length > 0,
 		[availableList.selected]
 	);
 
 	const isActiveFilterSelected = useMemo(
-		() => Object.keys(activeList.selected).length <= 0,
+		() => Object.keys(activeList.selected).length > 0,
 		[activeList.selected]
 	);
 
 	const disableAdd = !isAvailableFilterSelected;
-
 	const disableRemove = !isActiveFilterSelected;
+	const disableEdit = !isAvailableFilterSelected && !isActiveFilterSelected;
+	const disableDelete = !isAvailableFilterSelected && !isActiveFilterSelected;
+	const disableApply = !isActiveFilterSelected;
 
-	const selectedFilterName = useMemo(
-		() => Object.keys(activeList.selected)[0] || Object.keys(availableList.selected)[0],
-		[activeList.selected, availableList.selected]
+	const selectedActiveFilterName = useMemo(
+		() => Object.keys(activeList.selected)[0],
+		[activeList.selected]
 	);
+
+	const selectedAvailableFilterName = useMemo(
+		() => Object.keys(availableList.selected)[0],
+		[availableList.selected]
+	);
+
+	const selectedFilterName = selectedActiveFilterName || selectedAvailableFilterName;
+
 	const selectedFilter = useMemo(
 		() =>
 			find(availableList.list, { name: Object.keys(availableList.selected)[0] }) ||
@@ -73,22 +88,21 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		[availableList, activeList]
 	);
 
-	const disableEdit = !isAvailableFilterSelected && !isActiveFilterSelected;
-
-	const disableRun = useMemo(
-		() => Object.keys(availableList.selected).length <= 0,
-		[availableList.selected]
-	);
-	const runSelectedFilter = useCallback((): void => {
-		const x = '';
-	}, []);
-
-	const disableDelete = useMemo(
-		() => !Object.keys(activeList.selected).length && !Object.keys(availableList.selected).length,
-		[activeList.selected, availableList.selected]
-	);
-
-	const createModal = useContext(ModalManagerContext);
+	const applySelectedFilter = useCallback((): void => {
+		if (!selectedActiveFilterName) {
+			return;
+		}
+		const action = getApplyFilterUIAction();
+		const executionParams: ApplyFilterUIActionExecutionParams = {
+			uiUtilities: {
+				createModal
+			},
+			criteria: {
+				filterName: selectedActiveFilterName
+			}
+		};
+		action.execute && action.execute(executionParams);
+	}, [createModal, selectedActiveFilterName]);
 
 	const openCreateModal = useCallback(() => {
 		const closeModal = createModal(
@@ -151,6 +165,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		setIncomingFilters,
 		t
 	]);
+
 	const onRemove = useCallback(
 		() =>
 			removeFilter({
@@ -250,11 +265,11 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			/>
 			<Padding bottom="medium" />
 			<Button
-				label={t('filters.run', 'Run')}
+				label={t('filters.apply', 'Apply')}
 				type="outlined"
-				disabled={disableRun}
+				disabled={disableApply}
 				width="fill"
-				onClick={runSelectedFilter}
+				onClick={applySelectedFilter}
 			/>
 			<Padding bottom="medium" />
 			<Button

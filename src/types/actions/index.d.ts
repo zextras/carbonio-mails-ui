@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { CreateModalFn } from '@zextras/carbonio-design-system';
+
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { TagActionItemType } from '../tags';
 
@@ -15,19 +17,26 @@ export type ActionProps = {
 	onMouseEnter: () => void;
 };
 
-export type MessageActionReturnType = {
+export type UIActionExecutionParams = {
+	uiUtilities: {
+		createModal: CreateModalFn;
+	};
+};
+
+export type UIAction<ExecutionParams extends UIActionExecutionParams> = {
 	id: string;
 	icon: string;
 	label: string;
+	execute?: (params: ExecutionParams) => void;
+};
+
+export type MessageActionReturnType = UIAction & {
 	onClick: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
 	items?: ItemType[];
 	customComponent?: React.ReactElement;
 };
 
-export type ConvActionReturnType = {
-	id: string;
-	icon: string;
-	label: string;
+export type ConvActionReturnType = UIAction & {
 	disabled?: boolean;
 	onClick: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
 	customComponent?: JSX.Element;
