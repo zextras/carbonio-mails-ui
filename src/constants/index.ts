@@ -305,6 +305,13 @@ export const ConversationActionsDescriptors = {
 	}
 } as const;
 
+export const GenericActionDescriptors = {
+	SELECT_FOLDERS: {
+		id: 'select-folders',
+		desc: 'Select folders'
+	}
+};
+
 export const FilterActionsDescriptors = {
 	APPLY: {
 		id: 'apply-filter-on-folder',

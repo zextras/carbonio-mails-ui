@@ -27,20 +27,13 @@ export const getApplyFilterUIAction = (): UIAction<ApplyFilterUIActionExecutionP
 	label: t('action.apply_filter_on_folder', 'Apply filter on folder'),
 	execute: ({ criteria, uiUtilities }: ApplyFilterUIActionExecutionParams): void => {
 		const closeModal = uiUtilities.createModal({
-			title: t('modals.apply_filters.title', {
-				filterName: criteria.filterName,
-				defaultValue: 'Application filter {{filterName}}'
-			}),
-			onClose: () => closeModal(),
-			confirmLabel: t('modals.apply_filters.button_apply', 'Apply'),
-			onConfirm: (): void => {
-				console.log('*** Confirmed');
-				closeModal();
-			},
-			secondaryActionLabel: t('label.cancel', 'Cancel'),
-			onSecondaryAction: () => closeModal(),
-			size: 'medium',
-			children: <ApplyFilterModal filterName={criteria.filterName}></ApplyFilterModal>
+			size: 'small',
+			children: (
+				<ApplyFilterModal
+					criteria={criteria}
+					closeModal={(): void => closeModal()}
+				></ApplyFilterModal>
+			)
 		});
 		// applyFilterRules({
 		// 	ruleName: 'test',
