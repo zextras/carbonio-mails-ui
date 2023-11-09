@@ -7,6 +7,8 @@
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find, isEqual, isObject, map, reduce, transform } from 'lodash';
 
+import { NO_SIGNATURE_ID } from '../../../helpers/signatures';
+
 export const differenceObject = (object, base) => {
 	// eslint-disable-next-line no-shadow
 	function changes(object, base) {
@@ -29,8 +31,12 @@ export const differenceIdentities = (original, modified) => {
 				id: acc.id,
 				name: acc.name,
 				prefs: {
-					zimbraPrefDefaultSignatureId: acc._attrs.zimbraPrefDefaultSignatureId,
+					zimbraPrefDefaultSignatureId: acc._attrs.zimbraPrefDefaultSignatureId
+						? acc._attrs.zimbraPrefDefaultSignatureId
+						: NO_SIGNATURE_ID,
 					zimbraPrefForwardReplySignatureId: acc._attrs.zimbraPrefForwardReplySignatureId
+						? acc._attrs.zimbraPrefForwardReplySignatureId
+						: NO_SIGNATURE_ID
 				}
 			});
 		}
