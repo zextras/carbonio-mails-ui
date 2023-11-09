@@ -410,7 +410,9 @@
         "send_later_success": "Twój e-mail zostanie wysłany {{date}} o {{time}}",
         "select_date_time": "Wybierz datę i godzinę, o której ta wiadomość zostanie wysłana",
         "delete_attachment_message2": "Czy chcesz pobrać go przed tym?",
-        "delete_attachment_message1": "Załącznik zostanie trwale usunięty z Carbonio."
+        "delete_attachment_message1": "Załącznik zostanie trwale usunięty z Carbonio.",
+        "send_email": "Wyślij e-maila",
+        "copy": "Skopiuj"
     },
     "search": {
         "flagged_note": "Wyszukaj wszystkie oflagowane e-maile.",
@@ -769,7 +771,8 @@
         "share_updated": "\"Uprawnienia dostępu zostały zaktualizowane\"",
         "share_revoke": "Dostęp do udostępniania został odebrany",
         "tag_applied": "Tag \"{{tag}}\" został zastosowany",
-        "tag_removed": "Tag \"{{tag}}\" został zdjęty"
+        "tag_removed": "Tag \"{{tag}}\" został zdjęty",
+        "email_copied_to_clipboard": "E-mail został skopiowany do schowka."
     },
     "title": {
         "new_messages": "Nowe wiadomości",
