@@ -569,6 +569,9 @@
         "read_receipt_1": "The sender of this message has requested to be notified when you read this message.",
         "read_receipt_2": "Do you wish to notify the sender?",
         "snackbar": {
+            "apply_filter_rules_completed": "Filter successfully applied to all the messages inside the selected folder",
+            "apply_filter_rules_error": "An error occurred while applying a filter",
+            "apply_filter_rules_started": "Filter is being applied to the messages inside the selected folder",
             "conversation_deleted": "Conversation deleted",
             "conversation_move": "Conversation successfully moved",
             "conversation_move_error": "Something went wrong, the conversation move was not completed. Please try again.",

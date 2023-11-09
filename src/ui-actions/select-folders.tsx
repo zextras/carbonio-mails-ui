@@ -38,28 +38,31 @@ export const getSelectFoldersUIAction = (): UIAction<SelectFoldersUIActionExecut
 		icon: 'FolderOutline',
 		label: t('action.select_folders', 'Select folders'),
 		execute: ({ config, uiUtilities, callbacks }): void => {
-			const closeModal = uiUtilities.createModal({
-				size: 'medium',
-				children: (
-					<SelectFolderModal
-						folder={config.selectedFolder}
-						onClose={(): void => {
-							closeModal();
-							callbacks.onCancel && callbacks.onCancel();
-						}}
-						headerTitle={config.title ?? t('label.select_folder', 'Select folder')}
-						actionLabel={config.confirmActionLabel ?? t('label.select_folder', 'Select folder')}
-						inputLabel={config.hintText ?? ''}
-						confirmAction={(folder): void => {
-							if (!folder) {
-								return;
-							}
-							closeModal();
-							callbacks.onComplete && callbacks.onComplete(folder);
-						}}
-					></SelectFolderModal>
-				)
-			});
+			const closeModal = uiUtilities.createModal(
+				{
+					size: 'medium',
+					children: (
+						<SelectFolderModal
+							folder={config.selectedFolder}
+							onClose={(): void => {
+								closeModal();
+								callbacks.onCancel && callbacks.onCancel();
+							}}
+							headerTitle={config.title ?? t('label.select_folder', 'Select folder')}
+							actionLabel={config.confirmActionLabel ?? t('label.select_folder', 'Select folder')}
+							inputLabel={config.hintText ?? ''}
+							confirmAction={(folder): void => {
+								if (!folder) {
+									return;
+								}
+								closeModal();
+								callbacks.onComplete && callbacks.onComplete(folder);
+							}}
+						></SelectFolderModal>
+					)
+				},
+				true
+			);
 		}
 	};
 };

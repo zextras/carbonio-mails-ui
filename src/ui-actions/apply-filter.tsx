@@ -26,21 +26,17 @@ export const getApplyFilterUIAction = (): UIAction<ApplyFilterUIActionExecutionP
 	icon: 'QuestionMarkOutline',
 	label: t('action.apply_filter_on_folder', 'Apply filter on folder'),
 	execute: ({ criteria, uiUtilities }: ApplyFilterUIActionExecutionParams): void => {
-		const closeModal = uiUtilities.createModal({
-			size: 'small',
-			children: (
-				<ApplyFilterModal
-					criteria={criteria}
-					closeModal={(): void => closeModal()}
-				></ApplyFilterModal>
-			)
-		});
-		// applyFilterRules({
-		// 	ruleName: 'test',
-		// 	foldersId: ['2'],
-		// 	messagesId: ['28125', '28121']
-		// })
-		// 	.then((x) => console.log('**** x', x))
-		// 	.catch((err) => console.error('***** err', err));
+		const closeModal = uiUtilities.createModal(
+			{
+				size: 'small',
+				children: (
+					<ApplyFilterModal
+						criteria={criteria}
+						closeModal={(): void => closeModal()}
+					></ApplyFilterModal>
+				)
+			},
+			true
+		);
 	}
 });
