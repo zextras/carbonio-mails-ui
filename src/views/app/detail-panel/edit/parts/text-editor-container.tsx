@@ -75,10 +75,13 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									onEditorChange={(ev: [string, string]): void => {
 										if (isFirstChangeEventFired)
 											onContentChanged({ plainText: ev[0], richText: ev[1] });
-										setIsFirstChangeEventFired(true);
 									}}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
+									onFocus={(): void => {
+										if (!isFirstChangeEventFired)
+											setIsFirstChangeEventFired(true);
+									}}
 								/>
 							</StyledComp.EditorWrapper>
 						</Container>
