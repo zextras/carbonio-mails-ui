@@ -21,6 +21,8 @@ import {
 	copyEmailToClipboard,
 	sendMsg
 } from '../../../../../ui-actions/participant-displayer-actions';
+import { toTitleCase } from '../../../../../commons/utils';
+
 
 const ContactNameChip: FC<{
 	showOverflow?: boolean;
@@ -28,6 +30,19 @@ const ContactNameChip: FC<{
 	label: string;
 }> = ({ contacts, label }): ReactElement => {
 	const createSnackbar = useContext(SnackbarManagerContext);
+	const recipientsWithAddressToString = (
+		participant: Participant | undefined,
+	): string => {
+		if (participant?.fullName && participant?.address ) {
+			return '"' + toTitleCase(participant?.fullName) + '" <' + participant?.address + '>';
+		}
+	
+		if (participant?.name && participant?.address ) {
+			return '"' + toTitleCase(participant?.name) + '" <' + participant?.address + '>';
+		}
+		
+		return toTitleCase(participant?.fullName) || toTitleCase(participant?.name) || participant?.address || '';
+	};
 	return (
 		<>
 			<Row mainAlignment="flex-start">
@@ -56,7 +71,7 @@ const ContactNameChip: FC<{
 				>
 					{map(contacts, (contact) => (
 						<Chip
-							label={contact.address}
+							label={recipientsWithAddressToString(contact)}
 							background="gray2"
 							color="text"
 							data-testid={'Chip'}
