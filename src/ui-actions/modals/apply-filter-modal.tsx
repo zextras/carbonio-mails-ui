@@ -9,6 +9,7 @@ import {
 	ChipInput,
 	ChipItem,
 	CloseModalFn,
+	Divider,
 	ModalFooter,
 	ModalHeader,
 	Text,
@@ -16,10 +17,12 @@ import {
 	useSnackbar
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { Trans } from 'react-i18next';
 
 import { applyFilterRules } from '../../api/apply-filter-rules';
 import { Folder } from '../../carbonio-ui-commons/types/folder';
 import { GapContainer } from '../../commons/gap-container';
+import { TextStyler } from '../../commons/text-styler';
 import { TIMEOUTS } from '../../constants';
 import { getFolderIconColor } from '../../views/sidebar/utils';
 import type { ApplyFilterUIActionExecutionParams } from '../apply-filter';
@@ -27,21 +30,15 @@ import { getSelectFoldersUIAction } from '../select-folders';
 
 export type ApplyFilterModalProps = {
 	criteria: ApplyFilterUIActionExecutionParams['criteria'];
-	// onConfirm: () => void;
-	// onCancel: () => void;
 	closeModal: CloseModalFn;
 };
 
-/**
- * TODO add a prop to control the 'confirm' button status
- * @param filterName
- * @constructor
- */
 export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeModal }) => {
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
 	const [folder, setFolder] = useState<Folder>();
 
+	const involvedMessagesCount = folder?.n ?? 0;
 	const confirmEnabled = useMemo<boolean>(() => !!folder, [folder]);
 
 	const title = t('modals.apply_filters.title', {
@@ -66,11 +63,13 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 					label: t('messages.snackbar.apply_filter_rules_completed', {
 						filterName: criteria.filterName,
 						involvedMessagesCount: serviceResult.messagesId.length,
+						folderPath: folder.absFolderPath,
 						defaultValue:
-							"Filter '{{filterName}}'successfully applied to {{involvedMessagesCount}} messages inside the selected folder"
+							"Filter '{{filterName}}'successfully applied to {{involvedMessagesCount}} messages of the folder '{{folderPath}}'"
 					}),
 					replace: true,
-					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+					hideButton: true
 				});
 			})
 			.catch((err) => {
@@ -82,7 +81,8 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 						defaultValue: "An error occurred while applying the filter '{{filterName}}'"
 					}),
 					replace: true,
-					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+					hideButton: true
 				});
 			});
 
@@ -93,10 +93,11 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 				filterName: criteria.filterName,
 				folderPath: folder.absFolderPath,
 				defaultValue:
-					"Filter '{{filterName}}' is being applied to the messages inside the folder '{{folderPath}}'"
+					"Filter '{{filterName}}' is being applied to the messages of the folder '{{folderPath}}'"
 			}),
 			replace: true,
-			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+			hideButton: true
 		});
 		closeModal();
 	}, [closeModal, createSnackbar, criteria.filterName, folder]);
@@ -109,7 +110,10 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 			action.execute({
 				config: {
 					allowRootSelection: false,
-					allowSharedAccounts: false
+					showSharedAccounts: false,
+					allowFolderCreation: false,
+					showThrashFolder: true,
+					showSpamFolder: true
 				},
 				uiUtilities: {
 					createModal
@@ -141,7 +145,14 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 	return (
 		<>
 			<ModalHeader onClose={onCancelAction} title={title} showCloseIcon></ModalHeader>
-			<GapContainer gap={'medium'} crossAlignment={'flex-start'}>
+			<Divider />
+			<GapContainer
+				gap={'medium'}
+				mainAlignment={'flex-start'}
+				crossAlignment={'flex-start'}
+				minHeight={'13.63rem'}
+				padding={{ top: 'small' }}
+			>
 				<Text>{t('settings.filter_folder_message', 'Select a folder to apply your filter:')}</Text>
 				<ChipInput
 					background="gray5"
@@ -159,13 +170,28 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 					}}
 					requireUniqueChips
 				/>
+
 				{folder && (
 					<>
-						<Text>{folder.n} messages will be processed inside the selected folder.</Text>
-						<Text>Do you want to apply the filter?</Text>
+						<Text>
+							<Trans
+								t={t}
+								i18nKey="modals.apply_filters.label_involved_messages"
+								involvedMessagesCount={involvedMessagesCount}
+							>
+								<TextStyler bold>{{ involvedMessagesCount }} messages</TextStyler> will be processed
+								inside the selected folder.
+							</Trans>
+						</Text>
+						<Text>
+							<Trans t={t} i18nKey="modals.apply_filters.label_confirm_request">
+								Do you want to apply the filter?
+							</Trans>
+						</Text>
 					</>
 				)}
 			</GapContainer>
+			<Divider />
 			<ModalFooter
 				confirmLabel={confirmActionLabel}
 				confirmDisabled={!confirmEnabled}

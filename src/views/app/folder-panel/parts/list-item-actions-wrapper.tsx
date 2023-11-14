@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, SyntheticEvent, useCallback } from 'react';
+import React, { FC, ReactElement, useCallback } from 'react';
 
 import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
 import { useTags } from '@zextras/carbonio-shell-ui';
@@ -69,7 +69,7 @@ const HoverActionComponent = ({
 	const label = 'label' in action ? action.label : '';
 	const icon = 'icon' in action ? action.icon : '';
 	const onClick = useCallback(
-		(ev: SyntheticEvent<Element, Event> | KeyboardEvent): void => {
+		(ev): void => {
 			ev.stopPropagation();
 			action.onClick && action.onClick(ev);
 		},
@@ -106,7 +106,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 
 	const dropdownActionsItems = dropdownActions.map((action) => ({
 		...action,
-		onClick: (ev: SyntheticEvent<Element, Event> | KeyboardEvent): void => {
+		onClick: (ev: KeyboardEvent | React.SyntheticEvent<HTMLElement, Event>): void => {
 			action.onClick && action.onClick(ev);
 		},
 		label: 'label' in action ? action.label : ''

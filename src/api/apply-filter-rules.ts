@@ -38,9 +38,9 @@ export type ApplyFilterRulesSoapRequest = {
  */
 export type ApplyFilterRulesSoapResponse =
 	| {
-			m?: {
+			m?: Array<{
 				ids: string;
-			};
+			}>;
 	  }
 	| ErrorSoapBodyResponse;
 
@@ -107,11 +107,11 @@ const isSoapError = (response: ApplyFilterRulesSoapResponse): response is ErrorS
 export const extractMessagesIdFromSoapResponse = (
 	response: ApplyFilterRulesSoapResponse
 ): Array<string> => {
-	if (!response || isSoapError(response) || !response.m?.ids) {
+	if (!response || isSoapError(response) || !response.m?.[0].ids) {
 		return [];
 	}
 
-	return response.m.ids.split(',');
+	return response.m[0].ids.split(',');
 };
 
 /**

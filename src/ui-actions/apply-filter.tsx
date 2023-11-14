@@ -28,7 +28,7 @@ export const getApplyFilterUIAction = (): UIAction<ApplyFilterUIActionExecutionP
 	execute: ({ criteria, uiUtilities }: ApplyFilterUIActionExecutionParams): void => {
 		const closeModal = uiUtilities.createModal(
 			{
-				size: 'small',
+				size: 'medium',
 				children: (
 					<ApplyFilterModal
 						criteria={criteria}

@@ -39,14 +39,14 @@ export type UIAction<ExecutionParams extends UIActionExecutionParams> = {
 };
 
 export type MessageActionReturnType = UIAction<never> & {
-	onClick: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
+	onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
 	items?: ItemType[];
 	customComponent?: React.ReactElement;
 };
 
 export type ConvActionReturnType = UIAction<never> & {
 	disabled?: boolean;
-	onClick: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
+	onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
 	customComponent?: JSX.Element;
 	items?: ItemType[];
 };

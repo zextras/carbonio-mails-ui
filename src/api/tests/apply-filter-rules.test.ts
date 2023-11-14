@@ -9,6 +9,7 @@ import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/netwo
 import {
 	applyFilterRules,
 	ApplyFilterRulesSoapRequest,
+	ApplyFilterRulesSoapResponse,
 	composeFoldersIdSoapCriteria,
 	composeMessagesIdSoapCriteria,
 	extractMessagesIdFromSoapResponse
@@ -79,69 +80,38 @@ describe('extractMessagesIdFromSoapResponse', () => {
 	});
 
 	it("returns an empty array if the provided response doesn't contain the m property", () => {
-		const response: ApplyFilterRulesSoapRequest = {
-			filterRules: [
-				{
-					filterRule: {
-						name: 'fakerule'
-					}
-				}
-			],
-			_jsns: 'awesomeNamespace'
-		};
+		const response: ApplyFilterRulesSoapResponse = {};
 		const result = extractMessagesIdFromSoapResponse(response);
 		expect(result).toEqual([]);
 	});
 
 	it('returns an empty array if the provided response contains an empty string for the m.ids property', () => {
-		const response: ApplyFilterRulesSoapRequest = {
-			filterRules: [
-				{
-					filterRule: {
-						name: 'fakerule'
-					}
-				}
-			],
-			m: {
-				ids: ''
-			},
-			_jsns: 'awesomeNamespace'
+		const response: ApplyFilterRulesSoapResponse = {
+			m: [{ ids: '' }]
 		};
 		const result = extractMessagesIdFromSoapResponse(response);
 		expect(result).toEqual([]);
 	});
 
 	it('returns ["1"] if the provided response contains the value "1" for the m.ids property', () => {
-		const response: ApplyFilterRulesSoapRequest = {
-			filterRules: [
+		const response: ApplyFilterRulesSoapResponse = {
+			m: [
 				{
-					filterRule: {
-						name: 'fakerule'
-					}
+					ids: '1'
 				}
-			],
-			m: {
-				ids: '1'
-			},
-			_jsns: 'awesomeNamespace'
+			]
 		};
 		const result = extractMessagesIdFromSoapResponse(response);
 		expect(result).toEqual(['1']);
 	});
 
 	it('returns ["1", "2"] if the provided response contains the value "1,2" for the m.ids property', () => {
-		const response: ApplyFilterRulesSoapRequest = {
-			filterRules: [
+		const response: ApplyFilterRulesSoapResponse = {
+			m: [
 				{
-					filterRule: {
-						name: 'fakerule'
-					}
+					ids: '1,2'
 				}
-			],
-			m: {
-				ids: '1,2'
-			},
-			_jsns: 'awesomeNamespace'
+			]
 		};
 		const result = extractMessagesIdFromSoapResponse(response);
 		expect(result).toEqual(['1', '2']);
