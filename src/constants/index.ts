@@ -11,6 +11,8 @@ export const MAILS_ROUTE = 'mails';
 
 export const MAIL_APP_ID = 'carbonio-mails-ui';
 
+export const NO_ACCOUNT_NAME = 'No account';
+
 type AttachmentTypeItemsConstantProps = {
 	label: string;
 	icon: string;
@@ -257,10 +259,18 @@ export const MessageActionsDescriptors = {
 	DELETE_PERMANENTLY: {
 		id: 'message-delete-permanently',
 		desc: 'Delete Permanently'
+	},
+	PREVIEW_ON_SEPARATED_WINDOW: {
+		id: 'preview-on-separated-window',
+		desc: 'Preview the message on a separated window'
 	}
 } as const;
 
 export const ConversationActionsDescriptors = {
+	PREVIEW_ON_SEPARATED_WINDOW: {
+		id: 'preview-on-separated-window',
+		desc: 'Preview the conversation on a separated window'
+	},
 	FLAG: {
 		id: 'flag-conversation',
 		desc: 'Add flag'

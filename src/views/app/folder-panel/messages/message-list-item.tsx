@@ -31,10 +31,15 @@ import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions, MAILS_ROUTE } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useMessageActions } from '../../../../hooks/use-message-actions';
 import type { BoardContext, MessageListItemProps, TextReadValuesType } from '../../../../types';
-import { setMsgRead } from '../../../../ui-actions/message-actions';
+import {
+	previewMessageOnSeparatedWindow,
+	setMsgRead
+} from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
+import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { SenderName } from '../parts/sender-name';
@@ -54,6 +59,8 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+	const { createWindow } = useExtraWindowsManager();
+	const messageActions = useMessageActions(item, true);
 
 	const onClick = useCallback(
 		(e) => {
@@ -75,10 +82,18 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 						url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${id}`,
 						title: ''
 					});
+				} else {
+					previewMessageOnSeparatedWindow(
+						id,
+						firstChildFolderId,
+						item.subject,
+						createWindow,
+						messageActions
+					).onClick({});
 				}
 			}
 		},
-		[item]
+		[createWindow, firstChildFolderId, item, messageActions]
 	);
 
 	const accounts = useUserAccounts();

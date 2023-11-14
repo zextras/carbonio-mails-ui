@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, {
-	ChangeEvent,
-	FC,
-	memo,
-	SyntheticEvent,
-	useCallback,
-	useMemo,
-	useState
-} from 'react';
+import React, { ChangeEvent, FC, memo, useCallback, useMemo, useState } from 'react';
 
 import {
 	Button,
@@ -303,7 +295,13 @@ export const EditView: FC<EditViewProp> = ({
 		},
 		[setText, text]
 	);
-	const onDragOverEvent = useCallback((event: SyntheticEvent): void => {
+	const onDragOverEvent = useCallback((event: React.DragEvent): void => {
+		const eventType = event?.dataTransfer?.types;
+		if (eventType?.includes('contact')) {
+			setDropZoneEnabled(false);
+
+			return;
+		}
 		event.preventDefault();
 		setDropZoneEnabled(true);
 	}, []);

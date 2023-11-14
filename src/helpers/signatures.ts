@@ -28,7 +28,7 @@ const PLAINTEXT_SIGNATURE_REGEX = new RegExp(
  * Returns signatures descriptors for the given account
  * @param account
  */
-const getSignatures = (account: Account): Array<SignatureDescriptor> => {
+const getSignatures = (account: Account | undefined): Array<SignatureDescriptor> => {
 	const signatureArray = [
 		{
 			label: NO_SIGNATURE_LABEL,
@@ -58,7 +58,7 @@ const getSignatures = (account: Account): Array<SignatureDescriptor> => {
  * first signature of the account is returned, instead of returning undefined
  */
 const getSignature = (
-	account: Account,
+	account: Account | undefined,
 	signatureId: string,
 	fallbackOnFirst?: boolean
 ): SignatureDescriptor | undefined => {
@@ -76,7 +76,7 @@ const getSignature = (
  * @param account
  * @param signatureId
  */
-const getSignatureValue = (account: Account, signatureId: string): string =>
+const getSignatureValue = (account: Account | undefined, signatureId: string): string =>
 	getSignature(account, signatureId)?.value.description ?? '';
 
 /**

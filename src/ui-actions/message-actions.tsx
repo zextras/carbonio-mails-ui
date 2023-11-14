@@ -8,7 +8,6 @@ import React from 'react';
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text } from '@zextras/carbonio-design-system';
 import {
-	Account,
 	addBoard,
 	FOLDERS,
 	getBridgedFunctions,
@@ -29,10 +28,13 @@ import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
 	BoardContext,
 	MailMessage,
+	MessageAction,
 	MessageActionReturnType,
 	MsgActionParameters,
 	MsgActionResult
 } from '../types';
+import { ConvActionReturnType, ExtraWindowCreationParams, ExtraWindowsContextType } from '../types';
+import { MessagePreviewPanel } from '../views/app/detail-panel/message-preview-panel';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -197,13 +199,52 @@ export function setMsgAsSpam({
 	};
 }
 
-export function printMsg({
-	message,
-	account
-}: {
-	account: Account;
-	message: MailMessage;
-}): MessageActionReturnType {
+export const previewOnSeparatedWindow = (
+	messageId: string,
+	folderId: string,
+	subject: string,
+	createWindow: ExtraWindowsContextType['createWindow'],
+	messageActions: Array<MessageAction>
+): void => {
+	if (!createWindow) {
+		return;
+	}
+
+	const createWindowParams: ExtraWindowCreationParams = {
+		name: `message-${messageId}`,
+		returnComponent: false,
+		children: (
+			<MessagePreviewPanel
+				messageId={messageId}
+				folderId={folderId}
+				messageActions={messageActions}
+			/>
+		),
+		title: subject,
+		closeOnUnmount: false
+	};
+	createWindow(createWindowParams);
+};
+
+export function previewMessageOnSeparatedWindow(
+	messageId: string,
+	folderId: string,
+	subject: string,
+	createWindow: ExtraWindowsContextType['createWindow'],
+	messageActions: Array<MessageAction>
+): ConvActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW;
+	return {
+		id: actDescriptor.id,
+		icon: 'BrowserOutline',
+		label: t('action.preview_on_separated_window', 'Open on a new window'),
+		onClick: (): void => {
+			previewOnSeparatedWindow(messageId, folderId, subject, createWindow, messageActions);
+		}
+	};
+}
+
+export function printMsg({ message }: { message: MailMessage }): MessageActionReturnType {
 	const conversations = map([message], (msg) => ({
 		conversation: msg.conversation,
 		subject: msg.subject
@@ -221,7 +262,6 @@ export function printMsg({
 				.then((res) => {
 					const content = getContentForPrint({
 						messages: res,
-						account,
 						conversations,
 						isMsg: true
 					});

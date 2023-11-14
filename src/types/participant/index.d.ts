@@ -13,6 +13,8 @@ export type Participant = {
 	fullName?: string;
 	email?: string;
 	error?: boolean;
+	exp?: boolean;
+	isGroup?: boolean;
 };
 
 export type SharedParticipant = {
