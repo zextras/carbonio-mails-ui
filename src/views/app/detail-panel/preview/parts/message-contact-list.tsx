@@ -95,11 +95,11 @@ const MessageContactList: FC<{
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [badgeWidth, setBadgeWidth] = useState('100%');
-	useLayoutEffect(() => {
+	/*useLayoutEffect(() => {
 		if (containerRef?.current?.clientWidth) {
 			setBadgeWidth(`calc(100% - ${containerRef.current.clientWidth + 25}px)`);
 		}
-	}, []);
+	}, []);*/
 	return (
 		<Container
 			crossAlignment="flex-start"
@@ -126,7 +126,7 @@ const MessageContactList: FC<{
 					/>
 				</Tooltip>
 			</Container>
-			<Container mainAlignment="flex-start" crossAlignment="flex-start" width={badgeWidth}>
+			<Container mainAlignment="flex-start" crossAlignment="flex-start" width="calc(100% - 3rem)">
 				{!open && (
 					<Container width="calc(100% - 1.5rem)" crossAlignment="flex-start">
 						<Row height="fit" crossAlignment="flex-start" mainAlignment="flex-start">
