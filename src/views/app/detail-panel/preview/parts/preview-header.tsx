@@ -304,7 +304,6 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 								style={{
 									flexGrow: 1,
 									flexBasis: 'fit-content',
-									overflow: 'hidden',
 									whiteSpace: 'nowrap'
 								}}
 								mainAlignment="flex-start"
