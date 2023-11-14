@@ -454,7 +454,9 @@
         "send_later_success": "La tua e-mail verrà inviata il {{date}} alle {{time}}",
         "select_date_time": "Seleziona la data e l’ora di invio di questo messaggio",
         "delete_attachment_message1": "L'allegato verrà eliminato permanentemente da Carbonio.",
-        "delete_attachment_message2": "Vuoi scaricarlo prima?"
+        "delete_attachment_message2": "Vuoi scaricarlo prima?",
+        "copy": "Copia",
+        "send_email": "Invia e-mail"
     },
     "snackbar": {
         "share_resend": "Invito condivisione inviato",
@@ -463,7 +465,8 @@
         "folder_shared": "Cartella creata",
         "email_moved_to_trash": "E-mail spostata nel cestino",
         "tag_applied": "Etichetta \"{{tag}}\" applicata",
-        "tag_removed": "Etichetta \"{{tag}}\" rimossa"
+        "tag_removed": "Etichetta \"{{tag}}\" rimossa",
+        "email_copied_to_clipboard": "Email copiata negli appunti."
     },
     "share": {
         "options": {
