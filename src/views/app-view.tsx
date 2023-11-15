@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import React, { FC, Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { FOLDERS, Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -46,7 +46,13 @@ const AppView: FC = () => {
 
 	return (
 		<Container orientation="horizontal" mainAlignment="flex-start">
-			<Container width="40%">
+			<Container width="40%"
+				id="appContainer"
+				style={{
+					overflow: 'auto',
+					resize: 'horizontal'
+				}}
+			>
 				<Switch>
 					<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
 						<Suspense fallback={<Spinner />}>
