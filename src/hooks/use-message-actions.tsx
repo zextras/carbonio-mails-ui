@@ -34,6 +34,7 @@ import {
 import { applyTag } from '../ui-actions/tag-actions';
 import { useExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';
+import { downloadMsg } from '../ui-actions/message-actions';
 
 /*
  * FIXME this hook is used only by the displayer. It should be aligned/merged with
@@ -146,6 +147,7 @@ export const useMessageActions = (
 			);
 		!isInsideExtraWindow &&
 			actions.push(deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }));
+			actions.push(showOriginalMsg({ id: message.id }));
 		actions.push(applyTag({ tags, conversation: message, isMessage: true }));
 	}
 
@@ -168,6 +170,7 @@ export const useMessageActions = (
 		actions.push(
 			previewMessageOnSeparatedWindow(message.id, folderId, message.subject, createWindow, actions)
 		);
+		actions.push(downloadMsg({ messageId: message.id },{ messageSubject: message.subject }));
 
 	return actions;
 };

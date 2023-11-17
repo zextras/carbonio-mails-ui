@@ -263,7 +263,11 @@ export const MessageActionsDescriptors = {
 	PREVIEW_ON_SEPARATED_WINDOW: {
 		id: 'preview-on-separated-window',
 		desc: 'Preview the message on a separated window'
-	}
+	},
+	DOWNLOAD: {
+		id: 'message-download',
+		desc: 'Download Message'
+	},
 } as const;
 
 export const ConversationActionsDescriptors = {
