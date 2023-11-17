@@ -84,7 +84,7 @@ export function useMsgConvActions({
 	const foldersExcludedTags = [FOLDERS.SPAM];
 	const foldersExcludedMarkUnmarkSpam = [FOLDERS.DRAFTS];
 	const folderExcludedPrintMessage = [FOLDERS.DRAFTS, FOLDERS.TRASH];
-	const folderExcludedShowOriginal = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+	const folderExcludedShowOriginal = [FOLDERS.DRAFTS];
 	const folderIncludeEditDraft = [FOLDERS.DRAFTS];
 	const folderExcludedReply = [FOLDERS.DRAFTS, FOLDERS.SPAM];
 	const folderExcludedReplyAll = [FOLDERS.DRAFTS, FOLDERS.SPAM];
