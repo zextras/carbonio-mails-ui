@@ -14,7 +14,7 @@ import {
 	replaceHistory,
 	t
 } from '@zextras/carbonio-shell-ui';
-import { map, noop } from 'lodash';
+import { map, noop, remove } from 'lodash';
 
 import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
@@ -655,6 +655,32 @@ export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
 				},
 				true
 			);
+		}
+	};
+}
+
+export function downloadMsg(
+	{ messageId }: { messageId: string },
+	{ messageSubject }: { messageSubject: string }
+	):
+	MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.DOWNLOAD;
+	const getLocationOrigin = (): string => window.location.origin;
+	return {
+		id: actDescriptor.id,
+		icon: 'DownloadOutline',
+		label: t('action.download', actDescriptor.desc),
+		onClick: (ev): void => {
+			if (ev) ev.preventDefault();
+			const link = document.createElement('a');
+			if (messageSubject !== "" && !messageSubject) {
+				link.download = `${messageSubject}.eml`;
+			} else {
+				link.download = `${messageId}.eml`;
+			}
+			link.href = `${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}`;
+			link.click();
+			link.remove();
 		}
 	};
 }
