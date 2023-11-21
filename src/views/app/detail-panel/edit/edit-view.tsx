@@ -50,15 +50,15 @@ import {
 	useEditorIdentityId,
 	useEditorIsRichText,
 	useEditorIsUrgent,
-	useEditorRecipients,
 	useEditorRequestReadReceipt,
 	useEditorSend,
 	useEditorSubject,
 	useEditorText,
 	useEditorAttachments,
-	deleteEditor
+	deleteEditor,
+	useEditorsStore
 } from '../../../../store/zustand/editor';
-import { BoardContext, CloseBoardReasons, EditorRecipients } from '../../../../types';
+import { BoardContext, CloseBoardReasons } from '../../../../types';
 
 export type EditViewProp = {
 	editorId: string;
@@ -75,18 +75,32 @@ type FileSelectProps = {
 
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
 
-export const EditView: FC<EditViewProp> = ({
-	editorId,
-	closeController,
-	hideController,
-	showController,
-	onMessageSent
-}) => {
+const SendToYourselfWarningBanner = ({ editorId }: { editorId: string }): JSX.Element | null => {
+	const toValue = useEditorsStore((state) => state.editors[editorId].recipients.to);
+
+	// TODO ask designers if the check must be performed only on TO or also on CC and BCC
+	const isSendingToYourself = useMemo(() => {
+		const availableAddresses = map(
+			getAvailableAddresses(),
+			(availableAddress) => availableAddress.address
+		);
+		const recipientsAddresses = map(toValue, (recipient) => recipient.address);
+
+		return (
+			filter(recipientsAddresses, (recipientAddress): boolean =>
+				availableAddresses.includes(recipientAddress)
+			).length > 0
+		);
+	}, [toValue]);
+
+	return isSendingToYourself ? <WarningBanner /> : null;
+};
+
+export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessageSent }) => {
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { text, setText } = useEditorText(editorId);
 	const { identityId, setIdentityId } = useEditorIdentityId(editorId);
-	const { recipients, setRecipients } = useEditorRecipients(editorId);
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
@@ -138,24 +152,21 @@ export const EditView: FC<EditViewProp> = ({
 		[createSnackbar, editorId]
 	);
 
-	const onSendError = useCallback(
-		(error: string): void => {
-			createSnackbar({
-				key: `mail-${editorId}`,
-				replace: true,
-				type: 'error',
-				label: t('label.error_try_again', 'Something went wrong, please try again'),
-				autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-				hideButton: true
-			});
-			// TODO move outside the component (editor-utils or a new help module?)
-			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
-				title: ''
-			});
-		},
-		[createSnackbar, editorId]
-	);
+	const onSendError = useCallback((): void => {
+		createSnackbar({
+			key: `mail-${editorId}`,
+			replace: true,
+			type: 'error',
+			label: t('label.error_try_again', 'Something went wrong, please try again'),
+			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+			hideButton: true
+		});
+		// TODO move outside the component (editor-utils or a new help module?)
+		addBoard<BoardContext>({
+			url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
+			title: ''
+		});
+	}, [createSnackbar, editorId]);
 
 	const onSendComplete = useCallback((): void => {
 		createSnackbar({
@@ -227,13 +238,6 @@ export const EditView: FC<EditViewProp> = ({
 		[setIdentityId, setText, text]
 	);
 
-	const onRecipientsChanged = useCallback(
-		(updatedRecipients: EditorRecipients): void => {
-			setRecipients(updatedRecipients);
-		},
-		[setRecipients]
-	);
-
 	const onSubjectChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
 			setSubject(event.target.value);
@@ -276,7 +280,7 @@ export const EditView: FC<EditViewProp> = ({
 		[addStandardAttachments]
 	);
 
-	const addFilesFromFiles = useCallback((filesResponse) => {
+	const addFilesFromFiles = useCallback(() => {
 		// TODO handle files response and update attachment in Editor store
 	}, []);
 
@@ -326,21 +330,6 @@ export const EditView: FC<EditViewProp> = ({
 		event.preventDefault();
 		setDropZoneEnabled(false);
 	}, []);
-
-	// TODO ask designers if the check must be performed only on TO or also on CC and BCC
-	const isSendingToYourself = useMemo(() => {
-		const availableAddresses = map(
-			getAvailableAddresses(),
-			(availableAddress) => availableAddress.address
-		);
-		const recipientsAddresses = map(recipients.to, (recipient) => recipient.address);
-
-		return (
-			filter(recipientsAddresses, (recipientAddress): boolean =>
-				availableAddresses.includes(recipientAddress)
-			).length > 0
-		);
-	}, [recipients.to]);
 
 	const flexStart = 'flex-start';
 	const composerOptions = useMemo(
@@ -437,7 +426,7 @@ export const EditView: FC<EditViewProp> = ({
 							addPublicLinkFromFiles={addPublicLinkFromFiles}
 							editorId={editorId}
 						/>
-						<Dropdown items={composerOptions} selectedBackgroundColor="gray5">
+						<Dropdown items={composerOptions} selectedBackgroundColor={'gray5'}>
 							<IconButton size="large" icon="MoreVertical" onClick={noop} />
 						</Dropdown>
 						<Tooltip
@@ -463,8 +452,7 @@ export const EditView: FC<EditViewProp> = ({
 
 				{/* Header end */}
 
-				{isSendingToYourself && <WarningBanner />}
-
+				<SendToYourselfWarningBanner editorId={editorId} />
 				<GapContainer
 					mainAlignment={flexStart}
 					crossAlignment={flexStart}
@@ -473,27 +461,27 @@ export const EditView: FC<EditViewProp> = ({
 					gap={'small'}
 				>
 					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
-						<RecipientsRows recipients={recipients} onRecipientsChange={onRecipientsChanged} />
+						<RecipientsRows editorId={editorId} />
 					</Container>
 					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
 						<Container
 							orientation="horizontal"
-							background="gray5"
+							background={'gray5'}
 							style={{ overflow: 'hidden' }}
 							padding={{ all: 'none' }}
 						>
-							<Container background="gray5" style={{ overflow: 'hidden' }} padding="0">
+							<Container background={'gray5'} style={{ overflow: 'hidden' }} padding="0">
 								<Input
 									data-testid={'subject'}
 									label={t('label.subject', 'Subject')}
 									value={subject}
 									onChange={onSubjectChange}
-								></Input>
+								/>
 							</Container>
 							{isIconsVisible && (
 								<Container
 									width="fit"
-									background="gray5"
+									background={'gray5'}
 									padding={{ right: 'medium', left: 'small' }}
 									orientation="horizontal"
 								>

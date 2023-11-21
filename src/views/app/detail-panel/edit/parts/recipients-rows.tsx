@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Button, Container, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -11,6 +11,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { RecipientsRow } from './recipients-row';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { GapContainer } from '../../../../../commons/gap-container';
+import { useEditorsStore } from '../../../../../store/zustand/editor';
 import { EditorRecipients, Participant } from '../../../../../types';
 
 export type RecipientsRowsProps = {
@@ -18,45 +19,51 @@ export type RecipientsRowsProps = {
 	onRecipientsChange: (recipients: EditorRecipients) => void;
 };
 
-export const RecipientsRows: FC<RecipientsRowsProps> = ({ recipients, onRecipientsChange }) => {
-	const [showCc, setShowCc] = useState(recipients.cc.length > 0);
-	const [showBcc, setShowBcc] = useState(recipients.bcc.length > 0);
+export const RecipientsRows = ({ editorId }: { editorId: string }): JSX.Element => {
+	const toValue = useEditorsStore((state) => state.editors[editorId].recipients.to);
+	const setToValue = useEditorsStore((state) => state.setToRecipients);
+
+	const ccValue = useEditorsStore((state) => state.editors[editorId].recipients.cc);
+	const setCcValue = useEditorsStore((state) => state.setCcRecipients);
+
+	const bccValue = useEditorsStore((state) => state.editors[editorId].recipients.bcc);
+	const setBccValue = useEditorsStore((state) => state.setBccRecipients);
+
+	const [showCc, setShowCc] = useState(ccValue.length > 0);
+	const [showBcc, setShowBcc] = useState(bccValue.length > 0);
 
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
 	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
 
 	const onToChange = useCallback(
-		(updatedRecipients: Array<Participant>) =>
-			onRecipientsChange({ ...recipients, to: updatedRecipients }),
-		[onRecipientsChange, recipients]
+		(updatedRecipients: Array<Participant>) => setToValue(editorId, updatedRecipients),
+		[editorId, setToValue]
 	);
 
 	const onCcChange = useCallback(
-		(updatedRecipients: Array<Participant>) =>
-			onRecipientsChange({ ...recipients, cc: updatedRecipients }),
-		[onRecipientsChange, recipients]
+		(updatedRecipients: Array<Participant>) => setCcValue(editorId, updatedRecipients),
+		[editorId, setCcValue]
 	);
 
 	const onBccChange = useCallback(
-		(updatedRecipients: Array<Participant>) =>
-			onRecipientsChange({ ...recipients, bcc: updatedRecipients }),
-		[onRecipientsChange, recipients]
+		(updatedRecipients: Array<Participant>) => setBccValue(editorId, updatedRecipients),
+		[editorId, setBccValue]
 	);
 
 	return (
 		<GapContainer gap={'small'}>
 			<Container
 				orientation="horizontal"
-				background="gray5"
+				background={'gray5'}
 				style={{ overflow: 'hidden' }}
 				padding={{ all: 'none' }}
 			>
-				<Container background="gray5" style={{ overflow: 'hidden' }}>
+				<Container background={'gray5'} style={{ overflow: 'hidden' }}>
 					<RecipientsRow
 						type={ParticipantRole.TO}
 						label={t('label.to', 'To')}
 						dataTestid={'RecipientTo'}
-						recipients={recipients.to}
+						recipients={toValue}
 						onRecipientsChange={onToChange}
 					/>
 				</Container>
@@ -92,7 +99,7 @@ export const RecipientsRows: FC<RecipientsRowsProps> = ({ recipients, onRecipien
 					type={ParticipantRole.CARBON_COPY}
 					label={t('label.cc', 'Cc')}
 					dataTestid={'RecipientCc'}
-					recipients={recipients.cc}
+					recipients={ccValue}
 					onRecipientsChange={onCcChange}
 				/>
 			)}
@@ -102,7 +109,7 @@ export const RecipientsRows: FC<RecipientsRowsProps> = ({ recipients, onRecipien
 					type={ParticipantRole.BLIND_CARBON_COPY}
 					label={t('label.bcc', 'Bcc')}
 					dataTestid={'RecipientBcc'}
-					recipients={recipients.bcc}
+					recipients={bccValue}
 					onRecipientsChange={onBccChange}
 				/>
 			)}
