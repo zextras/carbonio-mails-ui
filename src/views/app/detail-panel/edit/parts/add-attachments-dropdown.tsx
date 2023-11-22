@@ -7,17 +7,16 @@ import React, { FC, ReactElement, useCallback, useMemo, useRef } from 'react';
 
 import { Dropdown, Row, Text, Tooltip, Icon, Padding } from '@zextras/carbonio-design-system';
 import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
-import { compact } from 'lodash';
+import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 import * as StyledComp from './edit-view-styled-components';
+import { buildArrayFromFileList } from '../../../../../helpers/files';
+import { useEditorAttachments, useEditorText } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
-import {
-	useGetFilesFromDrive,
-	useGetFilesFromDriveRespType
-} from '../edit-utils-hooks/use-get-drive-files';
-import { useGetPublicUrl, UseGetPublicUrlRespType } from '../edit-utils-hooks/use-get-public-url';
+import { useGetFilesFromDrive } from '../edit-utils-hooks/use-get-drive-files';
+import { useGetPublicUrl } from '../edit-utils-hooks/use-get-public-url';
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;
@@ -27,27 +26,45 @@ const SelectorContainer = styled(Row)`
 	}
 `;
 
-/**
- *
- * @param addFilesFromLocal
- * @param addFilesFromFiles
- * @param addPublicLinkFromFiles
- */
 export type AddAttachmentsDropdownProps = {
-	addFilesFromLocal: (files: FileList) => void;
-	addFilesFromFiles: (files: useGetFilesFromDriveRespType[]) => void;
-	addPublicLinkFromFiles: (files: UseGetPublicUrlRespType[]) => void;
 	editorId: MailsEditorV2['id'];
 };
 
-export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({
-	addFilesFromLocal,
-	addFilesFromFiles,
-	addPublicLinkFromFiles,
-	editorId
-}) => {
+export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editorId }) => {
 	const { control } = useForm();
 	const inputRef = useRef<any>();
+
+	const { text, setText } = useEditorText(editorId);
+	const { addStandardAttachments, addInlineAttachments, hasStandardAttachments } =
+		useEditorAttachments(editorId);
+
+	const addFilesFromLocal = useCallback(
+		(fileList: FileList) => {
+			const files = buildArrayFromFileList(fileList);
+			addStandardAttachments(files, {});
+		},
+		[addStandardAttachments]
+	);
+
+	const addFilesFromFiles = useCallback(() => {
+		// TODO handle files response and update attachment in Editor store
+	}, []);
+
+	const addPublicLinkFromFiles = useCallback(
+		(filesResponse) => {
+			const textWithLink = {
+				plainText: map(filesResponse, (i: { value: { url: string } }) => i.value.url)
+					.join('\n')
+					.concat(text.plainText),
+				richText: ` ${map(
+					filesResponse,
+					(i: { value: { url: string } }) => `<p><a href="${i.value.url}"> ${i.value.url}</a></p>`
+				).join('')}`.concat(text.richText)
+			};
+			setText(textWithLink);
+		},
+		[setText, text]
+	);
 
 	const [getFilesFromDrive, getFilesAvailable] = useGetFilesFromDrive({ addFilesFromFiles });
 	const [getLink, getLinkAvailable] = useGetPublicUrl({ addPublicLinkFromFiles });

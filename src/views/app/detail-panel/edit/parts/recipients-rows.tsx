@@ -11,43 +11,41 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { RecipientsRow } from './recipients-row';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { GapContainer } from '../../../../../commons/gap-container';
-import { useEditorsStore } from '../../../../../store/zustand/editor';
-import { EditorRecipients, Participant } from '../../../../../types';
+import {
+	useEditorBccRecipients,
+	useEditorCcRecipients,
+	useEditorToRecipients
+} from '../../../../../store/zustand/editor';
+import { MailsEditorV2, Participant } from '../../../../../types';
 
 export type RecipientsRowsProps = {
-	recipients: EditorRecipients;
-	onRecipientsChange: (recipients: EditorRecipients) => void;
+	editorId: MailsEditorV2['id'];
 };
 
-export const RecipientsRows = ({ editorId }: { editorId: string }): JSX.Element => {
-	const toValue = useEditorsStore((state) => state.editors[editorId].recipients.to);
-	const setToValue = useEditorsStore((state) => state.setToRecipients);
+export const RecipientsRows = ({ editorId }: RecipientsRowsProps): JSX.Element => {
+	const { toRecipients, setToRecipients } = useEditorToRecipients(editorId);
+	const { ccRecipients, setCcRecipients } = useEditorCcRecipients(editorId);
+	const { bccRecipients, setBccRecipients } = useEditorBccRecipients(editorId);
 
-	const ccValue = useEditorsStore((state) => state.editors[editorId].recipients.cc);
-	const setCcValue = useEditorsStore((state) => state.setCcRecipients);
-
-	const bccValue = useEditorsStore((state) => state.editors[editorId].recipients.bcc);
-	const setBccValue = useEditorsStore((state) => state.setBccRecipients);
-
-	const [showCc, setShowCc] = useState(ccValue.length > 0);
-	const [showBcc, setShowBcc] = useState(bccValue.length > 0);
+	const [showCc, setShowCc] = useState(ccRecipients.length > 0);
+	const [showBcc, setShowBcc] = useState(bccRecipients.length > 0);
 
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
 	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
 
 	const onToChange = useCallback(
-		(updatedRecipients: Array<Participant>) => setToValue(editorId, updatedRecipients),
-		[editorId, setToValue]
+		(updatedRecipients: Array<Participant>) => setToRecipients(updatedRecipients),
+		[setToRecipients]
 	);
 
 	const onCcChange = useCallback(
-		(updatedRecipients: Array<Participant>) => setCcValue(editorId, updatedRecipients),
-		[editorId, setCcValue]
+		(updatedRecipients: Array<Participant>) => setCcRecipients(updatedRecipients),
+		[setCcRecipients]
 	);
 
 	const onBccChange = useCallback(
-		(updatedRecipients: Array<Participant>) => setBccValue(editorId, updatedRecipients),
-		[editorId, setBccValue]
+		(updatedRecipients: Array<Participant>) => setBccRecipients(updatedRecipients),
+		[setBccRecipients]
 	);
 
 	return (
@@ -63,7 +61,7 @@ export const RecipientsRows = ({ editorId }: { editorId: string }): JSX.Element 
 						type={ParticipantRole.TO}
 						label={t('label.to', 'To')}
 						dataTestid={'RecipientTo'}
-						recipients={toValue}
+						recipients={toRecipients}
 						onRecipientsChange={onToChange}
 					/>
 				</Container>
@@ -99,7 +97,7 @@ export const RecipientsRows = ({ editorId }: { editorId: string }): JSX.Element 
 					type={ParticipantRole.CARBON_COPY}
 					label={t('label.cc', 'Cc')}
 					dataTestid={'RecipientCc'}
-					recipients={ccValue}
+					recipients={ccRecipients}
 					onRecipientsChange={onCcChange}
 				/>
 			)}
@@ -109,7 +107,7 @@ export const RecipientsRows = ({ editorId }: { editorId: string }): JSX.Element 
 					type={ParticipantRole.BLIND_CARBON_COPY}
 					label={t('label.bcc', 'Bcc')}
 					dataTestid={'RecipientBcc'}
-					recipients={bccValue}
+					recipients={bccRecipients}
 					onRecipientsChange={onBccChange}
 				/>
 			)}

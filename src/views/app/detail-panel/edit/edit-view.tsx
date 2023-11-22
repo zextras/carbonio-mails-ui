@@ -4,23 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ChangeEvent, FC, memo, useCallback, useMemo, useState } from 'react';
+import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 
 import {
 	Button,
 	Container,
-	Dropdown,
-	IconButton,
 	Tooltip,
 	ButtonProps,
 	useSnackbar,
-	Icon,
-	Input,
-	Padding,
 	useModal
 } from '@zextras/carbonio-design-system';
 import { addBoard, t } from '@zextras/carbonio-shell-ui';
-import { filter, map, noop } from 'lodash';
+import { filter, map } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
@@ -30,30 +25,20 @@ import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
+import { OptionsDropdown } from './parts/options-dropdown';
 import { RecipientsRows } from './parts/recipients-rows';
-import { TextEditorContainer, TextEditorContent } from './parts/text-editor-container';
+import { SubjectRow } from './parts/subject-row';
+import { TextEditorContainer } from './parts/text-editor-container';
 import WarningBanner from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { CLOSE_BOARD_REASON, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
-import {
-	getAvailableAddresses,
-	getIdentitiesDescriptors,
-	getIdentityDescriptor,
-	IdentityDescriptor
-} from '../../../../helpers/identities';
-import { getMailBodyWithSignature } from '../../../../helpers/signatures';
+import { getAvailableAddresses, getIdentitiesDescriptors } from '../../../../helpers/identities';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
 	useEditorDraftSaveProcessStatus,
-	useEditorIdentityId,
-	useEditorIsRichText,
-	useEditorIsUrgent,
-	useEditorRequestReadReceipt,
 	useEditorSend,
-	useEditorSubject,
-	useEditorText,
 	useEditorAttachments,
 	deleteEditor,
 	useEditorsStore
@@ -74,6 +59,11 @@ type FileSelectProps = {
 };
 
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
+const MemoizedRecipientsRows = memo(RecipientsRows);
+const MemoizedSubjectRow = memo(SubjectRow);
+const MemoizedOptionsDropdown = memo(OptionsDropdown);
+const MemoizedAddAttachmentsDropdown = memo(AddAttachmentsDropdown);
+const MemoizedEditViewIdentitySelector = memo(EditViewIdentitySelector);
 
 const SendToYourselfWarningBanner = ({ editorId }: { editorId: string }): JSX.Element | null => {
 	const toValue = useEditorsStore((state) => state.editors[editorId].recipients.to);
@@ -97,14 +87,8 @@ const SendToYourselfWarningBanner = ({ editorId }: { editorId: string }): JSX.El
 };
 
 export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessageSent }) => {
-	const { subject, setSubject } = useEditorSubject(editorId);
-	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
-	const { text, setText } = useEditorText(editorId);
-	const { identityId, setIdentityId } = useEditorIdentityId(editorId);
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
-	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
-	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
@@ -190,15 +174,14 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 				close({ reason: CLOSE_BOARD_REASON.SEND_LATER });
 			};
 			checkSubjectAndAttachment({
-				text,
+				editorId,
 				hasAttachments: hasStandardAttachments,
-				subject,
 				onConfirmCallback,
 				close,
 				createModal
 			});
 		},
-		[close, createModal, hasStandardAttachments, saveDraft, setAutoSendTime, subject, text]
+		[close, createModal, editorId, hasStandardAttachments, saveDraft, setAutoSendTime]
 	);
 
 	const onSendClick = useCallback((): void => {
@@ -210,9 +193,8 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			});
 		};
 		checkSubjectAndAttachment({
-			text,
+			editorId,
 			hasAttachments: hasStandardAttachments,
-			subject,
 			onConfirmCallback,
 			close,
 			createModal
@@ -220,85 +202,16 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	}, [
 		close,
 		createModal,
+		editorId,
 		hasStandardAttachments,
 		onSendComplete,
 		onSendCountdownTick,
 		onSendError,
-		sendMessage,
-		subject,
-		text
+		sendMessage
 	]);
 
-	const onIdentityChanged = useCallback(
-		(identity: IdentityDescriptor): void => {
-			setIdentityId(identity.id);
-			const textWithSignature = getMailBodyWithSignature(text, identity.defaultSignatureId);
-			setText(textWithSignature);
-		},
-		[setIdentityId, setText, text]
-	);
+	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
-	const onSubjectChange = useCallback(
-		(event: ChangeEvent<HTMLInputElement>): void => {
-			setSubject(event.target.value);
-		},
-		[setSubject]
-	);
-
-	const onBodyChange = useCallback(
-		(content: TextEditorContent): void => {
-			setText({ plainText: content.plainText, richText: content.richText });
-		},
-		[setText]
-	);
-
-	const identitiesList = useMemo<Array<IdentityDescriptor>>(() => getIdentitiesDescriptors(), []);
-
-	const showIdentitySelector = useMemo<boolean>(() => identitiesList.length > 1, [identitiesList]);
-	const selectedIdentity = useMemo<IdentityDescriptor | null>(
-		() => getIdentityDescriptor(identityId),
-		[identityId]
-	);
-
-	const toggleRichTextEditor = useCallback(() => {
-		setIsRichText(!isRichText);
-	}, [isRichText, setIsRichText]);
-
-	const toggleImportant = useCallback(() => {
-		setIsUrgent(!isUrgent);
-	}, [isUrgent, setIsUrgent]);
-
-	const toggleReceiptRequest = useCallback(() => {
-		setRequestReadReceipt(!requestReadReceipt);
-	}, [requestReadReceipt, setRequestReadReceipt]);
-
-	const addFilesFromLocal = useCallback(
-		(fileList: FileList) => {
-			const files = buildArrayFromFileList(fileList);
-			addStandardAttachments(files, {});
-		},
-		[addStandardAttachments]
-	);
-
-	const addFilesFromFiles = useCallback(() => {
-		// TODO handle files response and update attachment in Editor store
-	}, []);
-
-	const addPublicLinkFromFiles = useCallback(
-		(filesResponse) => {
-			const textWithLink = {
-				plainText: map(filesResponse, (i: { value: { url: string } }) => i.value.url)
-					.join('\n')
-					.concat(text.plainText),
-				richText: ` ${map(
-					filesResponse,
-					(i: { value: { url: string } }) => `<p><a href="${i.value.url}"> ${i.value.url}</a></p>`
-				).join('')}`.concat(text.richText)
-			};
-			setText(textWithLink);
-		},
-		[setText, text]
-	);
 	const onDragOverEvent = useCallback((event: React.DragEvent): void => {
 		const eventType = event?.dataTransfer?.types;
 		if (eventType?.includes('contact')) {
@@ -332,44 +245,6 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	}, []);
 
 	const flexStart = 'flex-start';
-	const composerOptions = useMemo(
-		() => [
-			{
-				id: 'richText',
-				label: isRichText
-					? t('tooltip.disable_rich_text', 'Disable rich text editor')
-					: t('tooltip.enable_rich_text', 'Enable rich text editor'),
-				onClick: toggleRichTextEditor
-			},
-			{
-				id: 'urgent',
-				label: isUrgent
-					? t('label.mark_as_un_important', 'Mark as unimportant')
-					: t('label.mark_as_important', 'Mark as important'),
-				onClick: toggleImportant
-			},
-			{
-				id: 'read_receipt',
-				label: requestReadReceipt
-					? t('label.remove_request_receipt', 'Remove read receipt request')
-					: t('label.request_receipt', 'Request read receipt'),
-				onClick: toggleReceiptRequest
-			}
-		],
-		[
-			isRichText,
-			toggleRichTextEditor,
-			isUrgent,
-			toggleImportant,
-			requestReadReceipt,
-			toggleReceiptRequest
-		]
-	);
-
-	const isIconsVisible = useMemo(
-		() => requestReadReceipt || isUrgent,
-		[isUrgent, requestReadReceipt]
-	);
 
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
@@ -411,24 +286,11 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 					width="fill"
 					gap={'medium'}
 				>
-					{showIdentitySelector && (
-						<EditViewIdentitySelector
-							selected={selectedIdentity}
-							identities={identitiesList}
-							onIdentitySelected={onIdentityChanged}
-						/>
-					)}
+					{showIdentitySelector && <MemoizedEditViewIdentitySelector editorId={editorId} />}
 
 					<GapRow mainAlignment={'flex-end'} gap={'medium'}>
-						<AddAttachmentsDropdown
-							addFilesFromLocal={addFilesFromLocal}
-							addFilesFromFiles={addFilesFromFiles}
-							addPublicLinkFromFiles={addPublicLinkFromFiles}
-							editorId={editorId}
-						/>
-						<Dropdown items={composerOptions} selectedBackgroundColor={'gray5'}>
-							<IconButton size="large" icon="MoreVertical" onClick={noop} />
-						</Dropdown>
+						<MemoizedAddAttachmentsDropdown editorId={editorId} />
+						<MemoizedOptionsDropdown editorId={editorId} />
 						<Tooltip
 							label={saveDraftAllowedStatus?.reason}
 							disabled={saveDraftAllowedStatus?.allowed}
@@ -461,45 +323,10 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 					gap={'small'}
 				>
 					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
-						<RecipientsRows editorId={editorId} />
+						<MemoizedRecipientsRows editorId={editorId} />
 					</Container>
 					<Container mainAlignment={flexStart} crossAlignment={flexStart} height={'fit'}>
-						<Container
-							orientation="horizontal"
-							background={'gray5'}
-							style={{ overflow: 'hidden' }}
-							padding={{ all: 'none' }}
-						>
-							<Container background={'gray5'} style={{ overflow: 'hidden' }} padding="0">
-								<Input
-									data-testid={'subject'}
-									label={t('label.subject', 'Subject')}
-									value={subject}
-									onChange={onSubjectChange}
-								/>
-							</Container>
-							{isIconsVisible && (
-								<Container
-									width="fit"
-									background={'gray5'}
-									padding={{ right: 'medium', left: 'small' }}
-									orientation="horizontal"
-								>
-									{requestReadReceipt && (
-										<Tooltip label={t('label.request_receipt', 'Request read receipt')}>
-											<Padding right="small">
-												<Icon icon="CheckmarkSquare" color="secondary" size="large" />
-											</Padding>
-										</Tooltip>
-									)}
-									{isUrgent && (
-										<Tooltip label={t('tooltip.marked_as_important', 'Marked as important')}>
-											<Icon icon="ArrowUpward" color="secondary" size="large" />
-										</Tooltip>
-									)}
-								</Container>
-							)}
-						</Container>
+						<MemoizedSubjectRow editorId={editorId} />
 					</Container>
 
 					<EditAttachmentsBlock editorId={editorId} />
@@ -507,9 +334,6 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 					<MemoizedTextEditorContainer
 						onDragOver={onDragOverEvent}
 						onFilesSelected={onInlineAttachmentsSelected}
-						onContentChanged={onBodyChange}
-						richTextMode={isRichText}
-						content={text}
 						editorId={editorId}
 						minHeight={0}
 						disabled={false}
