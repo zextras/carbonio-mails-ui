@@ -108,6 +108,11 @@ describe('move-modal', () => {
 				actionLabel={t('label.move', 'Move')}
 				inputLabel={inputLabel}
 				confirmAction={confirmAction}
+				allowFolderCreation={false}
+				showSharedAccounts
+				showTrashFolder={false}
+				showSpamFolder={false}
+				allowRootSelection
 			/>,
 			{
 				store
@@ -126,6 +131,7 @@ describe('move-modal', () => {
 		});
 		expect(cancelButton).toBeEnabled();
 	});
+
 	test('move a nested folder to the root folder', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -145,6 +151,11 @@ describe('move-modal', () => {
 				actionLabel={t('label.move', 'Move')}
 				inputLabel={inputLabel}
 				confirmAction={confirmAction}
+				allowFolderCreation={false}
+				showSharedAccounts
+				showTrashFolder={false}
+				showSpamFolder={false}
+				allowRootSelection
 			/>,
 			{
 				store
@@ -153,7 +164,7 @@ describe('move-modal', () => {
 	});
 });
 
-test('API is called witht he proper parameters to move the selected folder into the root folder', async () => {
+test('API is called with the proper parameters to move the selected folder into the root folder', async () => {
 	const closeModal = jest.fn();
 	const store = generateStore();
 	populateFoldersStore();
@@ -168,6 +179,11 @@ test('API is called witht he proper parameters to move the selected folder into 
 			actionLabel={t('label.move', 'Move')}
 			inputLabel=""
 			confirmAction={confirmAction}
+			allowFolderCreation={false}
+			showSharedAccounts
+			showTrashFolder={false}
+			showSpamFolder={false}
+			allowRootSelection
 		/>,
 		{
 			store

@@ -77,12 +77,14 @@ export type FlatFoldersAccordionRootProps = FlatFoldersAccordionFolderProps & {
 	isOpen?: boolean;
 	onOpenStatusChange?: (isOpen: boolean) => void;
 	selectedFolderId?: string;
+	allowRootSelection?: boolean;
 };
 
 export type FlatFoldersAccordionProps = {
 	roots: Array<Folder>;
 	selectedFolderId?: string;
 	onFolderSelected?: (folder: Folder) => void;
+	allowRootSelection?: boolean;
 };
 
 /**
@@ -162,7 +164,8 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 	isOpen = false,
 	onFolderSelected,
 	onOpenStatusChange,
-	selectedFolderId
+	selectedFolderId,
+	allowRootSelection
 }) => {
 	const [open, setOpen] = useState(isOpen);
 	const account = useUserAccount();
@@ -186,9 +189,13 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 				setOpen(true);
 			}
 
+			if (!allowRootSelection) {
+				return;
+			}
+
 			onFolderSelected && onFolderSelected(folder);
 		},
-		[open, onFolderSelected, folder]
+		[open, allowRootSelection, onFolderSelected, folder]
 	);
 	return (
 		<RootAccordion width="fill" data-testid={`folder-accordion-root-${folder.id}`}>
@@ -249,7 +256,8 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 export const FlatFoldersAccordion: FC<FlatFoldersAccordionProps> = ({
 	roots,
 	onFolderSelected,
-	selectedFolderId
+	selectedFolderId,
+	allowRootSelection
 }) => (
 	<Container orientation={'vertical'} style={{ overflowY: 'auto' }}>
 		{roots.map<ReactElement>((root, index) => (
@@ -260,6 +268,7 @@ export const FlatFoldersAccordion: FC<FlatFoldersAccordionProps> = ({
 				isOpen
 				onFolderSelected={onFolderSelected}
 				selectedFolderId={selectedFolderId}
+				allowRootSelection={allowRootSelection}
 			/>
 		))}
 	</Container>

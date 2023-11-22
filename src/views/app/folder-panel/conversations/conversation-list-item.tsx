@@ -184,7 +184,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 						folderParent,
 						item.subject,
 						createWindow
-					).onClick({});
+					).onClick();
 				}
 			},
 

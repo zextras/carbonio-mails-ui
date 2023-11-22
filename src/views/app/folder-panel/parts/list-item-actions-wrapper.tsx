@@ -60,8 +60,7 @@ const HoverContainer = styled(Container).attrs(() => ({
 `;
 
 const HoverActionComponent = ({
-	action,
-	item
+	action
 }: {
 	action: MessageActionReturnType | ConvActionReturnType | TagActionItemType;
 	item: Conversation | MailMessage;
@@ -69,8 +68,8 @@ const HoverActionComponent = ({
 	const label = 'label' in action ? action.label : '';
 	const icon = 'icon' in action ? action.icon : '';
 	const onClick = useCallback(
-		(ev: SyntheticEvent<Element, Event> | KeyboardEvent): void => {
-			ev.stopPropagation();
+		(ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>): void => {
+			ev?.stopPropagation();
 			action.onClick && action.onClick(ev);
 		},
 		[action]
@@ -106,7 +105,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 
 	const dropdownActionsItems = dropdownActions.map((action) => ({
 		...action,
-		onClick: (ev: SyntheticEvent<Element, Event> | KeyboardEvent): void => {
+		onClick: (ev: KeyboardEvent | React.SyntheticEvent<HTMLElement, Event>): void => {
 			action.onClick && action.onClick(ev);
 		},
 		label: 'label' in action ? action.label : ''
