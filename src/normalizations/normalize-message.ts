@@ -285,7 +285,7 @@ export const normalizeMailMessageFromSoap = (
 			size: m.s,
 			parent: m.l,
 			fragment: m.fr,
-			subject: m.su,
+			subject: !isNil(m.su) ? m.su : '',
 			participants: m.e ? map(m.e || [], normalizeParticipantsFromSoap) : undefined,
 			tags: getTagIds(m.t, m.tn),
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
