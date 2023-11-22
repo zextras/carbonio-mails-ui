@@ -5,9 +5,10 @@
  */
 import { Tags } from '@zextras/carbonio-shell-ui';
 import { filter, find, isNil, map } from 'lodash';
+
+import { normalizeParticipantsFromSoap } from './normalize-message';
 import { omitBy } from '../commons/utils';
 import type { Conversation, SoapConversation, SoapIncompleteMessage } from '../types';
-import { normalizeParticipantsFromSoap } from './normalize-message';
 
 const getTagIdsFromName = (names: string | undefined, tags?: Tags): Array<string | undefined> =>
 	map(names?.split(','), (name) =>
@@ -54,7 +55,7 @@ export const normalizeConversation = ({
 			date: c.d,
 			messages,
 			participants: c.e ? map(c.e, normalizeParticipantsFromSoap) : undefined,
-			subject: c.su,
+			subject: !isNil(c.su) ? c.su : '',
 			fragment: c.fr,
 			read: !isNil(c.f) ? !/u/.test(c.f) : !(c.u > 0),
 			hasAttachment: !isNil(c.f) ? /a/.test(c.f) : undefined,
