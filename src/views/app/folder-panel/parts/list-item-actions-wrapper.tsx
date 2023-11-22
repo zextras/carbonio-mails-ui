@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback } from 'react';
+import React, { FC, ReactElement, SyntheticEvent, useCallback } from 'react';
 
 import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
 import { useTags } from '@zextras/carbonio-shell-ui';
@@ -60,8 +60,7 @@ const HoverContainer = styled(Container).attrs(() => ({
 `;
 
 const HoverActionComponent = ({
-	action,
-	item
+	action
 }: {
 	action: MessageActionReturnType | ConvActionReturnType | TagActionItemType;
 	item: Conversation | MailMessage;
@@ -69,8 +68,8 @@ const HoverActionComponent = ({
 	const label = 'label' in action ? action.label : '';
 	const icon = 'icon' in action ? action.icon : '';
 	const onClick = useCallback(
-		(ev): void => {
-			ev.stopPropagation();
+		(ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>): void => {
+			ev?.stopPropagation();
 			action.onClick && action.onClick(ev);
 		},
 		[action]

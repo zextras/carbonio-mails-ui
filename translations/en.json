@@ -622,7 +622,6 @@
             "title": "Application filter \"{{filterName}}\""
         }
     },
-    "nameTitle": "",
     "new_folder": "New Folder",
     "notification": {
         "new_message": "New Message",
