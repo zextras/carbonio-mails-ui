@@ -9,22 +9,29 @@ import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 
-import { FolderSelector } from './commons/folder-selector';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type { Folder, RootFolder } from '../../carbonio-ui-commons/types/folder';
+import { FolderSelector } from '../../views/sidebar/commons/folder-selector';
 
 type SelectFolderModalProps = {
 	folder?: Folder | RootFolder;
 	onClose: () => void;
 	headerTitle: string;
 	actionLabel: string;
+	actionTooltip?: string;
+	disabledActionTooltip?: string;
 	inputLabel: string;
 	confirmAction: (
 		folder: Folder | undefined,
 		setFolder: (_folder: Folder | undefined) => void,
 		onClose: () => void
 	) => void;
+	showSharedAccounts: boolean;
+	showTrashFolder: boolean;
+	showSpamFolder: boolean;
+	allowRootSelection: boolean;
+	allowFolderCreation: boolean;
 };
 
 export const SelectFolderModal: FC<SelectFolderModalProps> = ({
@@ -32,8 +39,15 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 	onClose,
 	headerTitle,
 	actionLabel,
+	actionTooltip,
+	disabledActionTooltip,
 	inputLabel,
-	confirmAction
+	confirmAction,
+	showSharedAccounts,
+	showTrashFolder,
+	showSpamFolder,
+	allowFolderCreation,
+	allowRootSelection
 }) => {
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
 
@@ -46,9 +60,10 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 		[folder?.l, folderDestination]
 	);
 
-	const modalFooterTooltip =
-		isConfirmDisabled &&
-		t('label.folder_not_valid_destination', 'The selected folder is not a valid destination');
+	const confirmActionTooltip = isConfirmDisabled
+		? disabledActionTooltip ??
+		  t('label.folder_not_valid_destination', 'The selected folder is not a valid destination')
+		: actionTooltip;
 
 	return (
 		<Container
@@ -76,9 +91,14 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 				<FolderSelector
 					selectedFolderId={folderDestination?.id}
 					onFolderSelected={setFolderDestination}
+					showTrashFolder={showTrashFolder}
+					showSpamFolder={showSpamFolder}
+					allowFolderCreation={allowFolderCreation}
+					allowRootSelection={allowRootSelection}
+					showSharedAccounts={showSharedAccounts}
 				/>
 				<ModalFooter
-					tooltip={modalFooterTooltip}
+					tooltip={confirmActionTooltip}
 					onConfirm={onConfirm}
 					secondaryAction={onClose}
 					label={actionLabel}
