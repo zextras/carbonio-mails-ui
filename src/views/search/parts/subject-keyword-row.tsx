@@ -3,9 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback } from 'react';
+
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
+
 import { isValidEmail } from './utils';
 import type { SubjectKeywordRowProps } from '../../../types';
 
@@ -88,7 +90,10 @@ const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({ compProps }): ReactElem
 						placeholder={t('label.keywords', 'Keywords')}
 						background="gray5"
 						value={otherKeywords}
-						confirmChipOnSpace={false}
+						separators={[
+							{ key: 'Enter', ctrlKey: false },
+							{ key: ',', ctrlKey: false }
+						]}
 						onChange={keywordOnChange}
 						onAdd={keywordChipOnAdd}
 					/>
@@ -98,7 +103,10 @@ const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({ compProps }): ReactElem
 						placeholder={subjectPlaceholder}
 						background="gray5"
 						value={subject}
-						confirmChipOnSpace={false}
+						separators={[
+							{ key: 'Enter', ctrlKey: false },
+							{ key: ',', ctrlKey: false }
+						]}
 						onChange={subjectOnChange}
 						onAdd={subjectChipOnAdd}
 						maxChips={1}
