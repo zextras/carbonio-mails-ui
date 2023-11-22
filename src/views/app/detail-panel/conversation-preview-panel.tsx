@@ -6,7 +6,7 @@
 import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
 
 import { Container, Shimmer } from '@zextras/carbonio-design-system';
-import { FOLDERS, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, find, map, sortBy } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -94,9 +94,10 @@ const useConversationPreviewPanelParameters = (
 	};
 };
 
+const tagsFromStore = getTags();
+
 export const ConversationPreviewPanel: FC<ConversationPreviewPanelProps> = (props) => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
-	const tagsFromStore = useTags();
 	const { isInsideExtraWindow } = useExtraWindow();
 
 	const dispatch = useAppDispatch();
@@ -122,7 +123,7 @@ export const ConversationPreviewPanel: FC<ConversationPreviewPanelProps> = (prop
 		) {
 			dispatch(searchConv({ conversationId, fetch: 'all', folderId, tags: tagsFromStore }));
 		}
-	}, [conversationId, conversationsStatus, dispatch, folderId, tagsFromStore]);
+	}, [conversationId, conversationsStatus, dispatch, folderId]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>

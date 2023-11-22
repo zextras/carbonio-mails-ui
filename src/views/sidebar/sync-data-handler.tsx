@@ -64,6 +64,8 @@ const InboxBadgeUpdater = (): null => {
 	return null;
 };
 
+const tags = getTags();
+
 export const SyncDataHandler: FC = () => {
 	const notifyList = useNotify();
 	const [seq, setSeq] = useState(-1);
@@ -71,7 +73,6 @@ export const SyncDataHandler: FC = () => {
 	const [initialized, setInitialized] = useState(false);
 	const currentFolder = useAppSelector(selectCurrentFolder);
 	const messagesState = useAppSelector(selectMessages);
-
 	const refresh = useRefresh();
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
@@ -93,7 +94,6 @@ export const SyncDataHandler: FC = () => {
 			if (notifyList.length > 0) {
 				forEach(sortBy(notifyList, 'seq'), (notify: any) => {
 					if (!isEmpty(notify) && (notify.seq > seq || (seq > 1 && notify.seq === 1))) {
-						const tags = getTags();
 						if (notify.created) {
 							if (notify.created.c && notify.created.m) {
 								const conversations = map(notify.created.c, (i) =>
