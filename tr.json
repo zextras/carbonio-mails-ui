@@ -28,7 +28,8 @@
         "click_preview": "Önizleme için tıklayın",
         "edit_anyway": "Yine de düzenle",
         "mark_all_read": "Tümünü okundu olarak işaretle",
-        "click_open": "Açmak için tıklayın"
+        "click_open": "Açmak için tıklayın",
+        "preview_on_separated_window": "Yeni pencerede aç"
     },
     "composer": {
         "attachment": {
@@ -49,7 +50,10 @@
                 "retention_message": "Bu klasördeki koruma döneminde olan dosyaları silmek için ayrıca onaylamanız gerekecek",
                 "add_share": "Paylaşım ekle",
                 "retention_duration_warning": "Koruma dönemi süresi positif bir sayı olmalıdır",
-                "threshold_message": "Bu klasördeki çöpe gönderme aralığından daha eski mesajlar otomatik olarak temizlenir ve silinir."
+                "threshold_message": "Bu klasördeki çöpe gönderme aralığından daha eski mesajlar otomatik olarak temizlenir ve silinir.",
+                "special_chars_warning_msg": "Klasör adında özel karakterler kullanılamaz",
+                "enter_valid_folder_name": "Geçerli bir klasör adı girin",
+                "invalid_folder_name_warning_msg": "Özel karakterler kullanılamaz. Maksimum uzunluk 128 karakter olabilir."
             }
         }
     },
@@ -88,7 +92,8 @@
         "select_date_time": "Bu mesajı göndermek için tarih ve saati seçin",
         "delete_attachment_message2": "Önce indirmek ister misiniz?",
         "delete_attachment_message1": "Ekiniz, Carbonio'dan tamamen silinecek.",
-        "": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin"
+        "send_email": "E-posta gönder",
+        "copy": "Kopyala"
     },
     "snackbar": {
         "share_resend": "Paylaşım davetini yeniden gönder",
@@ -97,7 +102,8 @@
         "folder_shared": "Klasör paylaşıldı",
         "email_moved_to_trash": "E-posta Çöp Kutusuna taşındı",
         "tag_applied": "\"{{tag}}\" etiketi uygulandı",
-        "tag_removed": "\"{{tag}}\" etiketi kaldırıldı"
+        "tag_removed": "\"{{tag}}\" etiketi kaldırıldı",
+        "email_copied_to_clipboard": "E-posta panoya kopyalandı."
     },
     "label": {
         "cancel": "İptal",
@@ -275,7 +281,7 @@
         "trusted_addresses": "Güvenilir adresler",
         "time_zone": "Saat Dilimi",
         "send_later": "Sonra gönder",
-        "searching": "Aranıyor...",
+        "searching": "Aranıyor…",
         "request_receipt": "Okundu onayı iste",
         "remove_request_receipt": "Okundu onay isteğini kaldır",
         "read_receipt_sent": "Bu mesaj için okundu onayı gönderildi",
@@ -333,7 +339,20 @@
         "admin_disabled_action": "Yönetici yönlendirme eylemini devre dışı bıraktı",
         "time": "Zaman",
         "exit_selection_mode": "Seçme modundan çık",
-        "all_items_selected": "Tüm görünür öğeler seçildi"
+        "all_items_selected": "Tüm görünür öğeler seçildi",
+        "do_not_have_perm": "Bunun için yetkiniz yok",
+        "folder_not_valid_destination": "Seçilen klasör geçerli bir hedef değil",
+        "attachment_upload_in_progress": "ek yükleme devam ediyor",
+        "errors": {
+            "upload_failed_generic": "\"{{ filename }}\" dosyası için yükleme başarısız oldu"
+        },
+        "invalid_recipients": "Alıcının adresi yanlış yazılmış",
+        "message_send_in_progress": "mesaj gönderme devam ediyor",
+        "missing_recipients": "geçerli alıcı yok",
+        "missing_sender": "mesajın göndericisi ayarlanmadı",
+        "no_sender": "mesajın göndericisi ayarlanmadı",
+        "upload_failed": "Yükleme başarısız",
+        "no_identity_selected": "<No identity selected>"
     },
     "share": {
         "options": {
@@ -409,7 +428,8 @@
                 "attachment": "ek",
                 "attaching": "ekleniyor",
                 "attached": "eklendi",
-                "attach": "ekle"
+                "attach": "ekle",
+                "subject": "Konu eksik"
             }
         },
         "new_email": "Yeni e-posta",
@@ -445,7 +465,8 @@
             "tag_updated": "Etiket başarıyla güncellendi",
             "tag_created": "{{name}} etiketi başarıyla oluşturuldu",
             "tag_deleted": "{{name}} Etiketi başarıyla silindi",
-            "tag_not_updated": "Bir hata oluştu, bu etiket güncellenemedi. Lütfen tekrar deneyin."
+            "tag_not_updated": "Bir hata oluştu, bu etiket güncellenemedi. Lütfen tekrar deneyin.",
+            "message_sending_aborted": "kullanıcı tarafından iptal edildi"
         },
         "invalid_address": "Şu adres geçersiz görünüyor",
         "invalid_address_plural": "Şu adres geçersiz görünüyor",
@@ -462,9 +483,9 @@
         "edit_schedule_warning": "Bu e-postayı düzenlediğinizde ertelenmiş gönderim için önceden belirlenen tarih ve saat sıfırlanacak.",
         "extra_windows": {
             "opening_blocked": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin",
-            "": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin",
             "popup_blocked": "Bu işlemi tamamlamak için Carbonio yeni bir pencere açacak.\nTarayıcı ayarlarınızı kontrol edin"
-        }
+        },
+        "enter_calendar_name": "Takvimi kabul etmek için bir ad girin"
     },
     "placeholder": {
         "add_new_recipients": "Yeni alıcılar ekle"
@@ -705,11 +726,13 @@
                 "title": "Yeni klasör oluştur"
             },
             "move": {
-                "title_modal": "Görüşmeyi taşı",
+                "title_modal_conversation": "Görüşmeyi taşı",
                 "body": {
                     "message1": "İçine taşınmasını istediğiniz bir klasör seçin:",
                     "message2": "İçine geri yüklemek istediğiniz bir klasör seçin:"
-                }
+                },
+                "title_modal_message": "Mesajı Taşı",
+                "title_modal": "Görüşmeyi taşı"
             },
             "delete": {
                 "body": {
@@ -805,5 +828,6 @@
         "composing_messages": "Mesaj Oluşturma",
         "compose_colin": "Oluştur:"
     },
-    "go_back": "Geriye git"
+    "go_back": "Geriye git",
+    "messages,new_email": "yeni e-posta"
 }

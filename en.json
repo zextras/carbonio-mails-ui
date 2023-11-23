@@ -18,6 +18,7 @@
         "ok": "Ok",
         "preview": "Preview",
         "preview_new_tab": "Click to preview in another tab",
+        "preview_on_separated_window": "Open on a new window",
         "print": "Print",
         "redirect": "Redirect",
         "reply": "Reply",
@@ -134,9 +135,12 @@
         "modal": {
             "edit": {
                 "add_share": "Add Share",
+                "enter_valid_folder_name": "Enter a valid folder name",
+                "invalid_folder_name_warning_msg": "Special characters not allowed. Max lenght is 128 characters.",
                 "rename_warning": "You cannot rename a folder as a system one.",
                 "retention_duration_warning": "The retention duration must be a positive number",
                 "retention_message": "Messages in this folder which fall within the retention range will require explicit confirmation before being deleted",
+                "special_chars_warning_msg": "Special characters are not allowed in the folder name",
                 "threshold_message": "Messages in this folder which are older than the disposal threshold will be subject to automated cleanup and deletion."
             }
         }
@@ -177,7 +181,9 @@
                     "message1": "Select a folder to move the considered one to:",
                     "message2": "Select a folder to restore to:"
                 },
-                "title_modal": "Move Conversation"
+                "title_modal": "Move Conversation",
+                "title_modal_conversation": "Move Conversation",
+                "title_modal_message": "Move Message"
             },
             "new": {
                 "create_footer": "Create and Move",
@@ -238,9 +244,14 @@
         "as_text": "As Text",
         "attachement_unknown": "Unknown <{{mimeType}}>",
         "attachment": "Attachment",
+        "attachment_error_status": {
+            "failed": "",
+            "uploading": ""
+        },
         "attachment_plural": "Attachments",
         "attachment_status": "Status of e-mail item",
         "attachment_type": "Attachment type",
+        "attachment_upload_in_progress": "attachment upload in progress",
         "attachment_with_count": "{{count}} Attachment",
         "attachment_with_count_plural": "{{count}} Attachments",
         "attachments_disclaimer": "You are viewing an attached message. The authenticity of the attached messages can not be verified.",
@@ -276,12 +287,14 @@
         "destination_folder": "Destination Folder",
         "discard_changes": "DISCARD CHANGES",
         "disposal_threshold": "Disposal Threshold",
+        "do_not_have_perm": "You don't have permission",
         "do_not_notify": "Do not notify",
         "download": "Download",
         "download_and_delete": "Download And Delete",
         "download_plural": "Download all",
         "draft": "Draft",
         "draft_folder": "[DRAFT]",
+        "draft_save_in_progress": "",
         "duplicate_messages": "Duplicate Messages",
         "edit": "Edit",
         "edit_access": "Edit access",
@@ -297,6 +310,9 @@
         "error": "Error",
         "error_address": "A valid e-mail is required",
         "error_try_again": "Something went wrong, please try again",
+        "errors": {
+            "upload_failed_generic": "Upload failed for the file \"{{filename}}\""
+        },
         "exit_selection_mode": "Exit selection mode",
         "expand": "Expand",
         "expand_receivers_list": "Expand recipients list",
@@ -316,6 +332,7 @@
         "flagged": "Flagged",
         "flash_browser_title": "Flash the browser title",
         "folder_name": "Folder name",
+        "folder_not_valid_destination": "The selected folder is not a valid destination",
         "forwarded": "Forwarded",
         "freebusy": "FreeBusy",
         "from": "From",
@@ -329,6 +346,7 @@
         "insert": "Insert",
         "invalid_destination": "This node is not a valid destination",
         "invalid_query": "Unable to parse the search query, clear it and retry",
+        "invalid_recipients": "A recipient's address is spelled incorrectly",
         "keep_draft": "Save Draft",
         "keywords": "Keywords",
         "loading_results": "Loading Results…",
@@ -344,13 +362,18 @@
         "me": "Me",
         "message_arrival": "Message Arrival",
         "message_from_me": "Messages from me",
+        "message_send_in_progress": "message send in progress",
         "messages": "Messages",
+        "missing_recipients": "there is no valid recipients",
+        "missing_sender": "the sender of the message is not set",
         "move": "Move",
         "need_to_select_atleast_one_item": "You need to select at least one item to perform the action",
         "new_email": "New E-mail",
         "new_folder": "New Folder",
+        "no_identity_selected": "<No identity selected>",
         "no_name": "<No Name>",
         "no_search_results_found": "No results found",
+        "no_sender": "the sender of the message is not set",
         "no_signature": "No signature",
         "no_special_char_allowed": "Name should not contain any special character",
         "no_subject": "No subject",
@@ -392,10 +415,13 @@
         "revoke_with_custom_message": "Revoke access sending a custom notification",
         "role": "Role: ",
         "save": "Save",
+        "save_draft": {
+            "incomplete_response": ""
+        },
         "save_to_files": "Save to Files",
         "schedule_send": "Schedule send",
         "search_activate_selection_mode": "Selection mode isn’t available yet on search results",
-        "searching": "Searching...",
+        "searching": "Searching…",
         "select": "Select",
         "select_all": "SELECT all",
         "select_color": "Select Color",
@@ -441,6 +467,7 @@
         "type": "Type",
         "type_name_here": "Item name",
         "undo": "Undo",
+        "upload_failed": "Upload failed",
         "upload_from_files": "Upload from Files",
         "using_signatures": "Signatures Usage",
         "view_images": "VIEW IMAGES",
@@ -456,8 +483,8 @@
         "composing_messages": "Composing Messages"
     },
     "message": {
-        "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
         "admin_rights": "View,Edit,Add,Remove,Administer",
+        "copy": "Copy",
         "delete_attachment_message1": "Your attachment will be permanently deleted from Carbonio.",
         "delete_attachment_message2": "Do you want to download it before?",
         "delete_tag_message1": "Are you sure to delete \"{{name}}\" Tag?",
@@ -469,6 +496,7 @@
         "schedule_mail": "Will be sent on: {{date}} at {{time}}",
         "schedule_time": "for {{date}} at {{time}}",
         "select_date_time": "Select a date and time to send this message",
+        "send_email": "Send e-mail",
         "send_later_success": "Your e-mail will be sent on {{date}} at {{time}}",
         "sending_mail_to_self": "It looks like you're about to send an e-mail to yourself",
         "snackbar": {
@@ -497,8 +525,8 @@
         "check_and_try_again": "Please, check Carbonio and try again",
         "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
         "edit_schedule_warning": "By editing this e-mail, the time and date previously set for delayed sending will be reset.",
+        "enter_calendar_name": "Enter a name to accept the calendar",
         "extra_windows": {
-            "": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
             "opening_blocked": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings",
             "popup_blocked": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings"
         },
@@ -526,7 +554,8 @@
                 "no_attachments": "You didn’t attach any files.",
                 "no_subject": "Email subject is empty.",
                 "no_subject_no_attachments": "Email subject is empty and you didn’t attach any files.",
-                "second": "Do you want to send the email anyway?"
+                "second": "Do you want to send the email anyway?",
+                "subject": "Subject is missing"
             }
         },
         "new_email": "New e-mail",
@@ -561,6 +590,7 @@
             "message_deleted": "Message deleted",
             "message_move": "Message successfully moved",
             "message_redirected": "The message has been redirected",
+            "message_sending_aborted": "canceled by the user",
             "sending_mail_in_count": "Sending your message in {{count}} second",
             "sending_mail_in_count_plural": "Sending your message in {{count}} seconds",
             "tag_created": "Tag {{name}} successfully created",
@@ -571,6 +601,7 @@
         "something_went_wrong": "SOMETHING WENT WRONG",
         "trustee_addresses": "Mail from these addresses or domains will be considered trusted and images will automatically be displayed."
     },
+    "messages,new_email": "new email",
     "modal": {
         "delete_draft": {
             "message1": "Do you want to keep this draft or delete it?"
@@ -783,6 +814,7 @@
         "signature_heading": "Signatures"
     },
     "snackbar": {
+        "email_copied_to_clipboard": "Email copied to clipboard.",
         "email_moved_to_trash": "E-mail moved to Trash",
         "folder_shared": "Folder shared",
         "share_resend": "Share invite resent",

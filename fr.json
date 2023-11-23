@@ -9,7 +9,7 @@
         "mark_as_read": "Marqué comme lu",
         "mark_as_spam": "Marqué comme spam",
         "ok": "Ok",
-        "preview": "Aperçu",
+        "preview": "Prévisualisation",
         "print": "Imprimer",
         "redirect": "Rediriger",
         "reply": "Répondre",
@@ -28,7 +28,8 @@
         "click_preview": "Cliquer pour prévisualiser",
         "edit_anyway": "Éditer malgré tout",
         "mark_all_read": "Définir comme lu",
-        "click_open": "Cliquer pour ouvrir"
+        "click_open": "Cliquer pour ouvrir",
+        "preview_on_separated_window": "Ouvrir dans une nouvelle fenêtre"
     },
     "composer": {
         "attachment": {
@@ -49,7 +50,10 @@
                 "retention_message": "Les messages de ce dossier qui se situent dans la plage de rétention devront être confirmés explicitement avant d'être supprimés",
                 "add_share": "Ajouter un Partage",
                 "retention_duration_warning": "La durée de rétention doit être un nombre positif",
-                "threshold_message": "Les messages de ce dossier qui sont plus anciens que le seuil d'élimination seront soumis à un nettoyage et une suppression automatiques."
+                "threshold_message": "Les messages de ce dossier qui sont plus anciens que le seuil d'élimination seront soumis à un nettoyage et une suppression automatiques.",
+                "enter_valid_folder_name": "Saisir un nom de dossier valide",
+                "special_chars_warning_msg": "Les caractères spéciaux ne sont pas autorisés dans le nom de dossier",
+                "invalid_folder_name_warning_msg": "Les caractères spéciaux ne sont pas autorisés. Le nombre de caractères maximum est de 128."
             }
         }
     },
@@ -95,8 +99,9 @@
         "no_subject": "Pas d'objet",
         "owner": "Propriétaire : ",
         "receive_message": "Réception de messages",
-        "remove": "Supprimer",
-        "remove_plural": "Tout supprimer",
+        "remove_0": "Supprimer",
+        "remove_1": "Tout supprimer",
+        "remove_2": "Tout supprimer",
         "resend": "Renvoyer",
         "retention_policy": "Politique de rétention",
         "revoke": "Révoquer",
@@ -133,8 +138,8 @@
         "activate_selection_mode": "Activer le mode de sélection",
         "add": "Ajouter",
         "administer": "Administrer",
-        "all": "tout",
-        "any": "tout",
+        "all": "toutes les conditions",
+        "any": "Au moins une condition",
         "attachment_status": "Statut de l'élément de l'email",
         "attachment_type": "Type de pièce jointe",
         "back": "Retour",
@@ -304,7 +309,20 @@
         "admin_disabled_action": "L'administrateur a désactivé l'action de redirection",
         "all_items_selected": "Tous les éléments visibles ont été sélectionnés",
         "exit_selection_mode": "Sortir du mode sélection",
-        "time": "Horaire"
+        "time": "Horaire",
+        "do_not_have_perm": "Vous n'avez pas les autorisations",
+        "folder_not_valid_destination": "Le dossier sélectionné n'est pas une destination valide",
+        "errors": {
+            "upload_failed_generic": "Le téléversement a échoué pour le fichier \"{{filename}}\""
+        },
+        "attachment_upload_in_progress": "téléversement de la pièce jointe en cours",
+        "invalid_recipients": "L'adresse d'un destinataire est mal orthographiée",
+        "message_send_in_progress": "envoi de message en cours",
+        "missing_recipients": "il n'y a pas de destinataires valides",
+        "missing_sender": "l'expéditeur du message n'est pas défini",
+        "no_identity_selected": "<Aucune identité sélectionnée>",
+        "no_sender": "l'expéditeur du message n'est pas défini",
+        "upload_failed": "Le téléversement a échoué"
     },
     "message": {
         "snackbar": {
@@ -341,7 +359,8 @@
         "select_date_time": "Sélectionner une date et une heure pour envoyer le message",
         "delete_attachment_message2": "Souhaitez-vous le télécharger avant ?",
         "delete_attachment_message1": "Votre pièce jointe sera définitivement supprimée de Carbonio.",
-        "": "Pour compléter l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur"
+        "copy": "Copier",
+        "send_email": "Envoyer l'email"
     },
     "messages": {
         "invalid_address": "L'adresse suivante semble être invalide",
@@ -368,7 +387,8 @@
                 "attachment": "pièce jointe",
                 "attaching": "attachement",
                 "attached": "attaché",
-                "attach": "attacher"
+                "attach": "attacher",
+                "subject": "Le sujet est manquant"
             }
         },
         "new_email": "Nouvel email",
@@ -405,7 +425,8 @@
             "tag_deleted": "L'étiquette {{name}} a été supprimée avec succès",
             "tag_created": "L'étiquette {{name}} a été créée avec succès",
             "tag_updated": "Étiquette mise à jour avec succès",
-            "tag_not_updated": "Quelque chose s'est mal passé, l'étiquette n'a pas pu être mise à jour. Merci de réessayer."
+            "tag_not_updated": "Quelque chose s'est mal passé, l'étiquette n'a pas pu être mise à jour. Merci de réessayer.",
+            "message_sending_aborted": "annulé par l'utilisateur"
         },
         "check_and_try_again": "Merci de vérifier Carbonio et de réessayer",
         "could_not_find_to_show": "Désolé, il n'est pas possible de trouver un élément à afficher",
@@ -418,10 +439,10 @@
         "cal_name_exist_warning": "Un calendrier porte déjà ce nom sur ce point de montage",
         "edit_schedule_warning": "En éditant cet email, l'heure et la date définie précédemment pour l'envoi planifiées seront annulées.",
         "extra_windows": {
-            "": "Pour terminer l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur",
             "opening_blocked": "Pour terminer l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur",
             "popup_blocked": "Pour terminer l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur"
-        }
+        },
+        "enter_calendar_name": "Entrer un nom pour accepter le calendrier"
     },
     "placeholder": {
         "add_new_recipients": "Ajouter de nouveaux destinataires"
@@ -469,8 +490,9 @@
         "new_mail_optn": {
             "when_arrive": "Au fur et à mesure que de nouveaux emails arrivent",
             "manually": "Manuellement",
-            "minute": "{{count}} minute",
-            "minute_plural": "{{count}} minutes"
+            "minute_0": "{{count}} minute",
+            "minute_1": "{{count}} minutes",
+            "minute_2": "{{count}} minutes"
         },
         "notify_folder_optn": {
             "new_message_inbox": "Afficher les notifications pour les nouveaux messages de la Boîte de Réception",
@@ -622,7 +644,8 @@
         "share_updated": "\"Droits d'accès mis à jour\"",
         "email_moved_to_trash": "L'email a été déplacé dans la corbeille",
         "tag_applied": "Étiquette \"{{tag}}\" appliquée",
-        "tag_removed": "L'étiquette \"{{tag}}\" a été supprimée"
+        "tag_removed": "L'étiquette \"{{tag}}\" a été supprimée",
+        "email_copied_to_clipboard": "L'email a été copié dans le presse papier."
     },
     "title": {
         "new_messages": "Nouveaux messages",
@@ -672,7 +695,7 @@
         "search_title3": "Il n'y a pas de résultats pour votre recherche.",
         "search_title4": "Sélectionner un ou plusieurs résultats pour effectuer des actions ou afficher des détails.",
         "sent_title2": "Sélectionner un email pour afficher ce que vous avez envoyé.",
-        "title3": "Rester en contact avec les autres utilisateurs.",
+        "title3": "Restez en contact avec les autres utilisateurs.",
         "title4": "Sélectionner un email pour le lire",
         "title8": "Sélectionner un email pour le lire ou le supprimer.",
         "trash_title2": "Sélectionner et restaurer les emails de la corbeille.",
@@ -704,11 +727,13 @@
         },
         "modal": {
             "move": {
-                "title_modal": "Déplacer la Conversation",
+                "title_modal_conversation": "Déplacer la Conversation",
                 "body": {
                     "message1": "Sélectionnez un dossier dans lequel le déplacer :",
                     "message2": "Sélectionnez un dossier à restaurer dans :"
-                }
+                },
+                "title_modal_message": "Déplacer le message",
+                "title_modal": "Déplacer la conversation"
             },
             "new": {
                 "input": {
@@ -806,5 +831,6 @@
         "composing_messages": "Composition des messages",
         "compose_colin": "Composer :"
     },
-    "go_back": "Retour"
+    "go_back": "Retour",
+    "messages,new_email": "Nouvel email"
 }

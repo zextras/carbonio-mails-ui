@@ -37,7 +37,10 @@
                 "add_share": "Compartir",
                 "retention_duration_warning": "La duración de la retención debe ser un valor positivo",
                 "retention_message": "Los mensajes en esta carpeta que estén dentro del intervalo de retención, requerirán una confirmación antes de ser eliminados",
-                "threshold_message": "Los mensajes de esta carpeta que excedan el umbral establecido, serán eliminados automáticamente."
+                "threshold_message": "Los mensajes de esta carpeta que excedan el umbral establecido, serán eliminados automáticamente.",
+                "invalid_folder_name_warning_msg": "No se permiten caracteres especiales. Tamaño máximo: 128 caracteres.",
+                "enter_valid_folder_name": "Escribe un nombre válido",
+                "special_chars_warning_msg": "No se permiten los caracteres especiales en las carpetas"
             }
         }
     },
@@ -293,7 +296,20 @@
         "admin_disabled_action": "El administrador ha desactivado el redireccionamiento",
         "exit_selection_mode": "Salir del modo de selección",
         "all_items_selected": "Todos los elementos visibles seleccionados",
-        "time": "Hora"
+        "time": "Hora",
+        "do_not_have_perm": "No tienes permiso",
+        "folder_not_valid_destination": "La carpeta seleccionada no es un destino válido",
+        "message_send_in_progress": "Envío en progreso",
+        "missing_recipients": "No hay destinatarios válidos",
+        "missing_sender": "el remitente del mensaje no ha sido definido",
+        "no_identity_selected": "<No hay una identidad definida>",
+        "upload_failed": "Carga fallida",
+        "attachment_upload_in_progress": "Carga de adjunto en progreso",
+        "errors": {
+            "upload_failed_generic": "Carga de archivo \" {{filename}}\" fallida"
+        },
+        "invalid_recipients": "La dirección de un destinatario está mal escrita",
+        "no_sender": "El remitente del mensaje no ha sido definido"
     },
     "messages": {
         "modal": {
@@ -318,7 +334,8 @@
                 "enclose": "incluir",
                 "attaching": "adjuntando",
                 "attached": "adjuntado",
-                "attach": "adjuntar"
+                "attach": "adjuntar",
+                "subject": "Falta el asunto"
             }
         },
         "new_email": "Nuevo correo",
@@ -355,7 +372,8 @@
             "tag_not_updated": "Algo salió mal, la etiqueta no pudo ser actualizada. Intenta nuevamente.",
             "tag_created": "Se ha creado la etiqueta \"{{name}}\"",
             "tag_deleted": "Se ha eliminado la etiqueta \"{{name}}\"",
-            "tag_updated": "La etiqueta ha sido actualizada"
+            "tag_updated": "La etiqueta ha sido actualizada",
+            "message_sending_aborted": "Cancelado por el usuario"
         },
         "invalid_address": "La siguiente dirección no parece válida",
         "invalid_address_plural": "Las siguientes direcciones no parecen válidas",
@@ -371,9 +389,9 @@
         "cal_name_exist_warning": "Ya existe un calendario con el mismo nombre en esta localización",
         "extra_windows": {
             "opening_blocked": "Para completar la operación Carbonio necesita abrir una nueva ventana.\nVerifica las configuraciones del navegador",
-            "popup_blocked": "Para completar la operación Carbonio necesita abrir una nueva ventana.\nVerifica las configuraciones del navegador",
-            "": "Para completar la operación Carbonio necesita abrir una nueva ventana.\nVerifica las configuraciones del navegador"
-        }
+            "popup_blocked": "Para completar la operación Carbonio necesita abrir una nueva ventana.\nVerifica las configuraciones del navegador"
+        },
+        "enter_calendar_name": "Ingresa un nombre para aceptar la invitación"
     },
     "placeholder": {
         "add_new_recipients": "Añadir destinatarios"
@@ -460,8 +478,7 @@
         "schedule_time": "para el {{date}} a las {{time}}",
         "schedule_mail": "Se enviará el: {{date}} a la(s) {{time}}",
         "delete_attachment_message1": "El adjunto se eliminará de forma permanente de Carbonio.",
-        "delete_attachment_message2": "¿Quieres decargarlo antes?",
-        "": "Para completar la operación Carbonio necesita abrir una nueva ventana.\nVerifica los ajustes del navegador"
+        "delete_attachment_message2": "¿Quieres decargarlo antes?"
     },
     "snackbar": {
         "folder_shared": "Se ha compartido la carpeta",
@@ -675,7 +692,9 @@
                     "message1": "Elige la carpeta hacia donde moverás la seleccionada:",
                     "message2": "Selecciona la carpeta en dónde quieres restaurar:"
                 },
-                "title_modal": "Selecciona la carpeta de destino"
+                "title_modal": "Selecciona la carpeta de destino",
+                "title_modal_conversation": "Mover conversación",
+                "title_modal_message": "Mover mensaje"
             },
             "wipe": {
                 "body": {
@@ -807,5 +826,6 @@
         "delete_draft": {
             "message1": "¿Quieres conservar el borrador o eliminarlo?"
         }
-    }
+    },
+    "messages,new_email": "Nuevo email"
 }

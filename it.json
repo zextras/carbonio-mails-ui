@@ -30,7 +30,8 @@
             "tag_created": "Etichetta {{name}} creata con successo",
             "tag_deleted": "Etichetta {{name}} eliminata con successo",
             "tag_not_updated": "Qualcosa è andato storto, l'etichetta non è stata aggiornata. Riprova.",
-            "tag_updated": "Etichetta aggiornata con successo"
+            "tag_updated": "Etichetta aggiornata con successo",
+            "message_sending_aborted": "annullato dall'utente"
         },
         "modal": {
             "delete": {
@@ -54,7 +55,8 @@
                 "attachment": "allegato",
                 "attach": "allega",
                 "enclosing": "includere",
-                "attaching": "allegare"
+                "attaching": "allegare",
+                "subject": "Oggetto mancante"
             }
         },
         "invalid_address": "Il seguente indirizzo sembra essere non valido",
@@ -74,10 +76,10 @@
         "trustee_addresses": "La posta proveniente da questi indirizzi o domini verrà considerata affidabile e le immagini saranno visualizzate automaticamente.",
         "edit_schedule_warning": "Modificando questa e-mail, l'ora e il giorno impostati per l'invio ritardato del messaggio saranno resettati.",
         "extra_windows": {
-            "": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser",
             "popup_blocked": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser",
             "opening_blocked": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser"
-        }
+        },
+        "enter_calendar_name": "Inserisci un nome per accettare il calendario"
     },
     "label": {
         "cc": "Cc",
@@ -312,7 +314,21 @@
         "sent_to_address": "Inviato a (indirizzo)",
         "admin_disabled_action": "L'amministratore ha disattivato l'opzione di reindirizzamento",
         "time": "Ora",
-        "all_items_selected": "Tutti gli elementi visibili sono stati selezionati"
+        "all_items_selected": "Tutti gli elementi visibili sono stati selezionati",
+        "do_not_have_perm": "Non hai l'autorizzazione",
+        "exit_selection_mode": "Esci dalla modalità selezione",
+        "folder_not_valid_destination": "La cartella selezionata non è una destinazione valida",
+        "attachment_upload_in_progress": "Caricamento dell'allegato in corso",
+        "errors": {
+            "upload_failed_generic": "Caricamento non riuscito per il file \"{{filename}}\""
+        },
+        "invalid_recipients": "L'indirizzo di un destinatario è scritto in modo errato",
+        "message_send_in_progress": "invio del messaggio in corso",
+        "missing_recipients": "non ci sono destinatari validi",
+        "missing_sender": "non è specificato il mittente del messaggio",
+        "no_sender": "non è specificato il mittente del messaggio",
+        "upload_failed": "Caricamento non riuscito",
+        "no_identity_selected": "<nessuna identità selezionata>"
     },
     "tooltip": {
         "add_attachments": "Aggiungi allegati",
@@ -377,7 +393,10 @@
                 "add_share": "Aggiungi Condivisione",
                 "retention_duration_warning": "Il periodo di conservazione dev'essere un numero positivo",
                 "retention_message": "All'interno di questa cartella, per i messaggi che rientrano nel periodo di conservazione, verrà chiesta conferma per la cancellazione",
-                "threshold_message": "In questa cartella, i messaggi più vecchi del limite consentito saranno soggetti a cancellazione automatica."
+                "threshold_message": "In questa cartella, i messaggi più vecchi del limite consentito saranno soggetti a cancellazione automatica.",
+                "enter_valid_folder_name": "Inserisci un nome valido per la cartella",
+                "invalid_folder_name_warning_msg": "Non sono consentiti i caratteri speciali. Lunghezza massima 128 caratteri.",
+                "special_chars_warning_msg": "Non sono consentiti i caratteri speciali nel nome della cartella"
             }
         }
     },
@@ -436,7 +455,8 @@
         "select_date_time": "Seleziona la data e l’ora di invio di questo messaggio",
         "delete_attachment_message1": "L'allegato verrà eliminato permanentemente da Carbonio.",
         "delete_attachment_message2": "Vuoi scaricarlo prima?",
-        "": "Per completare l'operazione, Carbonio deve aprire una nuova finestra.\nControlla le impostazioni del tuo browser"
+        "copy": "Copia",
+        "send_email": "Invia e-mail"
     },
     "snackbar": {
         "share_resend": "Invito condivisione inviato",
@@ -445,7 +465,8 @@
         "folder_shared": "Cartella creata",
         "email_moved_to_trash": "E-mail spostata nel cestino",
         "tag_applied": "Etichetta \"{{tag}}\" applicata",
-        "tag_removed": "Etichetta \"{{tag}}\" rimossa"
+        "tag_removed": "Etichetta \"{{tag}}\" rimossa",
+        "email_copied_to_clipboard": "Email copiata negli appunti."
     },
     "share": {
         "options": {
@@ -728,7 +749,9 @@
                 "body": {
                     "message1": "Seleziona una cartella in cui spostare quella selezionata:",
                     "message2": "Seleziona la cartella da ripristinare in:"
-                }
+                },
+                "title_modal_conversation": "Sposta Conversazione",
+                "title_modal_message": "Sposta Messaggio"
             }
         },
         "action": {
@@ -804,5 +827,6 @@
         "compose_colin": "Componi :",
         "composing_messages": "Composizione messaggi"
     },
-    "go_back": "Indietro"
+    "go_back": "Indietro",
+    "messages,new_email": "nuova email"
 }
