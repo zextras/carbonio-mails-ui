@@ -3,9 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
+
 import type { SizeLargerSizeSmallerRowProps } from '../../../types';
 
 const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
@@ -111,7 +113,7 @@ const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 					value={sizeSmaller}
 					onAdd={sizeSmallerChipOnAdd}
 					hasError={isInvalidSmallSize}
-					errorLabel={errorLabel}
+					description={isInvalidSmallSize ? errorLabel : undefined}
 					errorBackgroundColor="gray6"
 					onChange={sizeSmallerOnChange}
 					maxChips={1}
@@ -126,7 +128,7 @@ const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 					value={sizeLarger}
 					onAdd={sizeLargerChipOnAdd}
 					hasError={isInvalidLargeSize}
-					errorLabel={errorLabel}
+					description={isInvalidLargeSize ? errorLabel : undefined}
 					errorBackgroundColor="gray6"
 					onChange={sizeLargerOnChange}
 					maxChips={1}

@@ -680,6 +680,7 @@ export function moveMessageToFolder({
 			const closeModal = getBridgedFunctions()?.createModal(
 				{
 					maxHeight: '90vh',
+					size: 'medium',
 					children: (
 						<StoreProvider>
 							<MoveConvMessage

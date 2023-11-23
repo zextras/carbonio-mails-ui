@@ -95,7 +95,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
@@ -126,7 +126,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
@@ -157,7 +157,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
@@ -190,7 +190,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
@@ -222,7 +222,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
@@ -255,7 +255,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
@@ -287,7 +287,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
@@ -321,7 +321,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
@@ -353,7 +353,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
@@ -388,7 +388,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
@@ -421,7 +421,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
@@ -456,7 +456,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
@@ -488,7 +488,7 @@ describe('Messages actions calls', () => {
 		});
 
 		act(() => {
-			action.onClick(undefined);
+			action.onClick();
 		});
 
 		// Check that the getMsgsForPrint and the window.oepn functions are called
@@ -514,7 +514,7 @@ describe('Messages actions calls', () => {
 		});
 
 		act(() => {
-			action.onClick(undefined);
+			action.onClick();
 		});
 
 		// Check that the getMsgsForPrint and the window.oepn functions are called
@@ -540,7 +540,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
@@ -573,7 +573,7 @@ describe('Messages actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
@@ -796,7 +796,7 @@ describe('Messages actions calls', () => {
 		});
 
 		act(() => {
-			action.onClick(undefined);
+			action.onClick();
 		});
 
 		expect(addBoard).toBeCalledWith(
@@ -826,7 +826,7 @@ describe('Messages actions calls', () => {
 		});
 
 		act(() => {
-			action.onClick(undefined);
+			action.onClick();
 		});
 
 		expect(addBoard).toBeCalledWith(
@@ -854,7 +854,7 @@ describe('Messages actions calls', () => {
 		});
 
 		act(() => {
-			action.onClick(undefined);
+			action.onClick();
 		});
 
 		expect(addBoard).toBeCalledWith(
@@ -882,7 +882,7 @@ describe('Messages actions calls', () => {
 		});
 
 		act(() => {
-			action.onClick(undefined);
+			action.onClick();
 		});
 
 		expect(addBoard).toBeCalledWith(
@@ -910,7 +910,7 @@ describe('Messages actions calls', () => {
 		});
 
 		act(() => {
-			action.onClick(undefined);
+			action.onClick();
 		});
 
 		expect(addBoard).toBeCalledWith(
@@ -938,7 +938,7 @@ describe('Messages actions calls', () => {
 		});
 
 		act(() => {
-			action.onClick(undefined);
+			action.onClick();
 		});
 
 		const requestParameter = await createAPIInterceptor<SaveDraftRequest>('SendMsg');

@@ -182,6 +182,7 @@ const getAvailableAddresses = (): Array<AvailableAddress> => {
 };
 
 /**
+ * Returns the name of the account that owns the given address
  *
  * @param address
  */
@@ -202,13 +203,6 @@ const getAddressOwnerAccount = (address: string): string | null => {
  * @param rights
  */
 const generateIdentityId = (email: string, rights: string): string => email + rights;
-// const combinedString = email + rights;
-// const hash = combinedString
-// 	.split('')
-// 	.reduce((acc, char) => acc * 31 + char.charCodeAt(0) || 0, 0);
-
-// const positiveHash = Math.abs(hash);
-// return positiveHash.toString();
 
 /**
  *

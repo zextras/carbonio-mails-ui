@@ -4,16 +4,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
+
+import { Button, Padding, useModal } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
-import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { find } from 'lodash';
-import { StoreProvider } from '../../../../store/redux';
+
 import { removeFilter, addFilter } from './actions';
-import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
-import { FilterContext } from './filter-context';
 import CreateFilterModal from './create-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
+import { FilterContext } from './filter-context';
 import ModifyFilterModal from './modify-filter/modify-filter-modal';
+import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
+import { StoreProvider } from '../../../../store/redux';
+import {
+	ApplyFilterUIActionExecutionParams,
+	getApplyFilterUIAction
+} from '../../../../ui-actions/apply-filter';
 
 type FilterListType = {
 	active: boolean;
@@ -22,6 +28,7 @@ type FilterListType = {
 	id?: string;
 	name: string;
 };
+
 type ListType = {
 	isSelecting: boolean;
 	list: Array<FilterListType>;
@@ -31,6 +38,7 @@ type ListType = {
 	toggle: (arg: string) => void;
 	unSelect: () => void;
 };
+
 type ComponentProps = {
 	compProps: {
 		t: TFunction;
@@ -39,22 +47,40 @@ type ComponentProps = {
 		incomingFilters: ListType;
 	};
 };
+
 const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { t, availableList, activeList, incomingFilters } = compProps;
 	const { setFetchIncomingFilters, setIncomingFilters } = useContext(FilterContext);
-	const disableAdd = useMemo(
-		() => Object.keys(availableList.selected).length <= 0,
+	const createModal = useModal();
+
+	const isAvailableFilterSelected = useMemo(
+		() => Object.keys(availableList.selected).length > 0,
 		[availableList.selected]
 	);
-	const disableRemove = useMemo(
-		() => Object.keys(activeList.selected).length <= 0,
+
+	const isActiveFilterSelected = useMemo(
+		() => Object.keys(activeList.selected).length > 0,
 		[activeList.selected]
 	);
 
-	const selectedFilterName = useMemo(
-		() => Object.keys(activeList.selected)[0] || Object.keys(availableList.selected)[0],
-		[activeList.selected, availableList.selected]
+	const disableAdd = !isAvailableFilterSelected;
+	const disableRemove = !isActiveFilterSelected;
+	const disableEdit = !isAvailableFilterSelected && !isActiveFilterSelected;
+	const disableDelete = !isAvailableFilterSelected && !isActiveFilterSelected;
+	const disableApply = !isActiveFilterSelected;
+
+	const selectedActiveFilterName = useMemo(
+		() => Object.keys(activeList.selected)[0],
+		[activeList.selected]
 	);
+
+	const selectedAvailableFilterName = useMemo(
+		() => Object.keys(availableList.selected)[0],
+		[availableList.selected]
+	);
+
+	const selectedFilterName = selectedActiveFilterName || selectedAvailableFilterName;
+
 	const selectedFilter = useMemo(
 		() =>
 			find(availableList.list, { name: Object.keys(availableList.selected)[0] }) ||
@@ -62,22 +88,23 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		[availableList, activeList]
 	);
 
-	const disableEdit = useMemo(
-		() => !Object.keys(activeList.selected).length && !Object.keys(availableList.selected).length,
-		[activeList.selected, availableList.selected]
-	);
-	const disableRun = useMemo(() => true, []);
-	const disableDelete = useMemo(
-		() => !Object.keys(activeList.selected).length && !Object.keys(availableList.selected).length,
-		[activeList.selected, availableList.selected]
-	);
-	const disablCreate = useMemo(() => false, []);
-
-	const createModal = useContext(ModalManagerContext);
+	const applySelectedFilter = useCallback((): void => {
+		if (!selectedActiveFilterName) {
+			return;
+		}
+		const action = getApplyFilterUIAction();
+		const executionParams: ApplyFilterUIActionExecutionParams = {
+			uiUtilities: {
+				createModal
+			},
+			criteria: {
+				filterName: selectedActiveFilterName
+			}
+		};
+		action.execute && action.execute(executionParams);
+	}, [createModal, selectedActiveFilterName]);
 
 	const openCreateModal = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		const closeModal = createModal(
 			{
 				size: 'large',
@@ -97,9 +124,8 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			true
 		);
 	}, [createModal, t, incomingFilters, setIncomingFilters, setFetchIncomingFilters]);
+
 	const openDeleteModal = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		const closeModal = createModal(
 			{
 				size: 'small',
@@ -139,6 +165,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		setIncomingFilters,
 		t
 	]);
+
 	const onRemove = useCallback(
 		() =>
 			removeFilter({
@@ -174,8 +201,6 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 	);
 
 	const openFilterModifyModal = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		const closeModal = createModal(
 			{
 				size: 'large',
@@ -239,7 +264,13 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				onClick={openFilterModifyModal}
 			/>
 			<Padding bottom="medium" />
-			{/* <Button label={t('filters.run', 'Run')} type="outlined" disabled={disableRun} size="fill" /> */}
+			<Button
+				label={t('filters.apply', 'Apply')}
+				type="outlined"
+				disabled={disableApply}
+				width="fill"
+				onClick={applySelectedFilter}
+			/>
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.delete', 'Delete')}
@@ -253,7 +284,6 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			<Button
 				label={t('label.create', 'Create')}
 				type="outlined"
-				disabled={disablCreate}
 				width="fill"
 				onClick={openCreateModal}
 			/>

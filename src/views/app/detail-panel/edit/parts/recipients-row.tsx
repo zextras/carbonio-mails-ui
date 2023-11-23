@@ -71,7 +71,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 		[onRecipientsChange, type]
 	);
 
-	const chipInputValues = map<Participant, ChipItem<string>>(recipients, (recipient) => ({
+	const chipInputValues = map<Participant, ChipItem>(recipients, (recipient) => ({
 		label: recipient.address
 	}));
 
@@ -80,7 +80,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			? { label: value, error: !emailRegex.test(value) }
 			: { label: 'unknown data', error: true };
 
-	const onChipInputChange = (contacts: Array<ChipItem<string>>): void => {
+	const onChipInputChange = (contacts: Array<ChipItem>): void => {
 		const data = map(
 			reject(contacts, ['error', true]),
 			(contact) =>
