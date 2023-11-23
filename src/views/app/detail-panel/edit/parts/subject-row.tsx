@@ -1,82 +1,72 @@
 /*
- * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useContext, useMemo } from 'react';
+import React, { ChangeEvent, FC, useCallback } from 'react';
 
-import { Container, Input, Padding, Tooltip, Icon } from '@zextras/carbonio-design-system';
+import { Container, Icon, Input, Padding, Tooltip } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { Controller, useForm } from 'react-hook-form';
 
-import { EditViewContext } from './edit-view-context';
-import * as StyledComp from './edit-view-styled-components';
-import type { EditViewContextType } from '../../../../../types';
+import {
+	useEditorIsUrgent,
+	useEditorRequestReadReceipt,
+	useEditorSubject
+} from '../../../../../store/zustand/editor';
+import { MailsEditorV2 } from '../../../../../types';
 
-type PropType = { updateSubjectField: ({ subject }: { subject: string }) => void };
-
-const SubjectRow: FC<PropType> = ({ updateSubjectField }) => {
-	const { control } = useForm();
-
-	const { editor, throttledSaveToDraft } = useContext<EditViewContextType>(EditViewContext);
-
-	const isIconsVisible = useMemo(
-		() => editor?.requestReadReceipt || editor?.urgent,
-		[editor?.requestReadReceipt, editor?.urgent]
-	);
-	return (
-		<StyledComp.ColContainer occupyFull>
-			<Controller
-				name="subject"
-				control={control}
-				defaultValue={editor?.subject ?? ''}
-				render={({ field: { onChange, value } }): ReactElement => (
-					<Container
-						orientation="horizontal"
-						background="gray5"
-						style={{ overflow: 'hidden' }}
-						padding={{ all: 'none' }}
-					>
-						<Container background="gray5" style={{ overflow: 'hidden' }} padding="0">
-							<Input
-								data-testid="subject"
-								onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => {
-									updateSubjectField({ subject: ev.target.value });
-									onChange(ev.target.value);
-									throttledSaveToDraft({ subject: ev.target.value });
-								}}
-								label={t('label.subject', 'Subject')}
-								value={value}
-								backgroundColor="gray5"
-								hideBorder
-							/>
-						</Container>
-						{isIconsVisible && (
-							<Container
-								width="fit"
-								background="gray5"
-								padding={{ right: 'medium', left: 'extrasmall' }}
-								orientation="horizontal"
-							>
-								{editor?.requestReadReceipt && (
-									<Tooltip label={t('label.request_receipt', 'Request read receipt')}>
-										<Padding right="small">
-											<Icon icon="CheckmarkSquare" color="secondary" size="large" />
-										</Padding>
-									</Tooltip>
-								)}
-								{editor?.urgent && (
-									<Tooltip label={t('tooltip.marked_as_important', 'Marked as important')}>
-										<Icon icon="ArrowUpward" color="secondary" size="large" />
-									</Tooltip>
-								)}
-							</Container>
-						)}
-					</Container>
-				)}
-			/>
-		</StyledComp.ColContainer>
-	);
+export type SubjectRowProps = {
+	editorId: MailsEditorV2['id'];
 };
 
-export default SubjectRow;
+export const SubjectRow: FC<SubjectRowProps> = ({ editorId }: SubjectRowProps) => {
+	const { subject, setSubject } = useEditorSubject(editorId);
+	const { isUrgent } = useEditorIsUrgent(editorId);
+	const { requestReadReceipt } = useEditorRequestReadReceipt(editorId);
+
+	const onSubjectChange = useCallback(
+		(event: ChangeEvent<HTMLInputElement>): void => {
+			setSubject(event.target.value);
+		},
+		[setSubject]
+	);
+
+	return (
+		<Container
+			orientation="horizontal"
+			background={'gray5'}
+			style={{ overflow: 'hidden' }}
+			padding={{ all: 'none' }}
+		>
+			<Container background={'gray5'} style={{ overflow: 'hidden' }} padding="0">
+				<Input
+					data-testid={'subject'}
+					label={t('label.subject', 'Subject')}
+					value={subject}
+					onChange={onSubjectChange}
+				/>
+			</Container>
+			{(requestReadReceipt || isUrgent) && (
+				<Container
+					width="fit"
+					background={'gray5'}
+					padding={{ right: 'medium', left: 'small' }}
+					orientation="horizontal"
+				>
+					{requestReadReceipt && (
+						<Tooltip label={t('label.request_receipt', 'Request read receipt')}>
+							<Padding right="small">
+								<Icon icon="CheckmarkSquare" color="secondary" size="large" />
+							</Padding>
+						</Tooltip>
+					)}
+					{isUrgent && (
+						<Tooltip label={t('tooltip.marked_as_important', 'Marked as important')}>
+							<Icon icon="ArrowUpward" color="secondary" size="large" />
+						</Tooltip>
+					)}
+				</Container>
+			)}
+		</Container>
+	);
+};
