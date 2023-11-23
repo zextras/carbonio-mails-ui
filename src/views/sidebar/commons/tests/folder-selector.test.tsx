@@ -6,8 +6,6 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { getUserAccount } from '@zextras/carbonio-shell-ui';
-import { reject } from 'lodash';
 
 import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
 import {
@@ -36,6 +34,11 @@ describe('Folder selector', () => {
 	test('The selector is visible', () => {
 		populateFoldersStore();
 		const props: FolderSelectorProps = {
+			allowFolderCreation: false,
+			allowRootSelection: false,
+			showSharedAccounts: false,
+			showSpamFolder: false,
+			showTrashFolder: false,
 			selectedFolderId: FOLDERS.INBOX,
 			onFolderSelected: jest.fn()
 		};
@@ -46,7 +49,6 @@ describe('Folder selector', () => {
 
 	/**
 	 * Tests that the folder selector is rendering each folder for each root
-	 * (except trash and spam which are excluded by the folder selector)
 	 */
 	describe('Folders accordion items', () => {
 		populateFoldersStore();
@@ -55,12 +57,13 @@ describe('Folder selector', () => {
 			'Exists a folder accordion item for each folder of the root %s',
 			(rootId) => {
 				populateFoldersStore();
-				// Get the folders and remove those that are excluded from the folder selector
-				const folders = reject(
-					getFoldersArrayByRoot(rootId),
-					(folder) => isTrash(folder.id) || isSpam(folder.id) || isTrashed({ folder })
-				);
+				const folders = getFoldersArrayByRoot(rootId);
 				const props: FolderSelectorProps = {
+					allowFolderCreation: false,
+					allowRootSelection: false,
+					showSharedAccounts: true,
+					showSpamFolder: true,
+					showTrashFolder: true,
 					selectedFolderId: FOLDERS.INBOX,
 					onFolderSelected: jest.fn()
 				};
@@ -73,27 +76,26 @@ describe('Folder selector', () => {
 		);
 	});
 
-	describe('Folders accordion items', () => {
+	describe('Roots accordion items', () => {
 		populateFoldersStore();
 		const rootIds = Object.keys(getRootsMap());
-		test.each(rootIds)(
-			'There is a folder accordion item for each root, with the account owner name',
-			() => {
-				populateFoldersStore();
+		test.each(rootIds)('There is a folder accordion item for the root %s', (rootId) => {
+			populateFoldersStore();
+			const roots = getRootsMap();
+			const ownerAccountName = getFolderOwnerAccountName(rootId, roots);
 
-				const roots = getRootsMap();
-				const folderId = FOLDERS.INBOX;
-				const primaryAccount = getUserAccount();
-				const ownerAccountName = getFolderOwnerAccountName(folderId, roots);
-
-				const props: FolderSelectorProps = {
-					onFolderSelected: jest.fn()
-				};
-				setupTest(<FolderSelector {...props} />, { store });
-				makeListItemsVisible();
-				expect(screen.queryByText(ownerAccountName)).toBeVisible();
-			}
-		);
+			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: true,
+				showSpamFolder: false,
+				showTrashFolder: false,
+				onFolderSelected: jest.fn()
+			};
+			setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
+			expect(screen.queryByText(ownerAccountName)).toBeVisible();
+		});
 	});
 
 	describe('Filter', () => {
@@ -104,6 +106,11 @@ describe('Folder selector', () => {
 				0
 			);
 			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: true,
+				showSpamFolder: false,
+				showTrashFolder: false,
 				selectedFolderId: FOLDERS.INBOX,
 				onFolderSelected: jest.fn()
 			};
@@ -130,6 +137,11 @@ describe('Folder selector', () => {
 				0
 			);
 			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: true,
+				showSpamFolder: false,
+				showTrashFolder: false,
 				selectedFolderId: FOLDERS.INBOX,
 				onFolderSelected: jest.fn()
 			};
@@ -154,6 +166,11 @@ describe('Folder selector', () => {
 			}
 			const inboxFirstChild = inboxChildren[0];
 			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: false,
+				showSpamFolder: false,
+				showTrashFolder: false,
 				selectedFolderId: FOLDERS.INBOX,
 				onFolderSelected: jest.fn()
 			};
@@ -172,6 +189,11 @@ describe('Folder selector', () => {
 				(folder) => folder.name === 'Confluence'
 			) as Folder;
 			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: false,
+				showSpamFolder: false,
+				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
 			const { user } = setupTest(<FolderSelector {...props} />, { store });
@@ -179,7 +201,6 @@ describe('Folder selector', () => {
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, folderInPrimaryAccountOnly.name);
 			const roots = getRootsMap();
-			const primaryAccount = getUserAccount();
 			const ownerAccountName = getFolderOwnerAccountName(folderInPrimaryAccountOnly.id, roots);
 
 			rootIds.forEach((rootId) => {
@@ -194,6 +215,167 @@ describe('Folder selector', () => {
 					expect(screen.queryByText(nullResultsAccountName)).not.toBeInTheDocument();
 				}
 			});
+		});
+	});
+
+	describe('configuration options', () => {
+		test('no shared account is visible if the showSharedAccount is set to false', () => {
+			populateFoldersStore();
+			const roots = getRootsMap();
+			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: false,
+				showSpamFolder: false,
+				showTrashFolder: false,
+				onFolderSelected: jest.fn()
+			};
+			setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
+
+			// Cycle through all the roots, except for the primary account root
+			Object.keys(roots)
+				.filter((rootId) => rootId !== FOLDERS.USER_ROOT)
+				.forEach((rootId) => {
+					const ownerAccountName = getFolderOwnerAccountName(rootId, roots);
+					expect(screen.queryByText(ownerAccountName)).not.toBeInTheDocument();
+				});
+		});
+
+		test('no Trash folder is visible if the showTrashFolder is set to false', () => {
+			populateFoldersStore();
+			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: false,
+				showSpamFolder: false,
+				showTrashFolder: false,
+				onFolderSelected: jest.fn()
+			};
+			setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
+
+			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);
+			const trashFolder = folders.filter((folder) => isTrash(folder.id))?.[0];
+			if (!trashFolder) {
+				return;
+			}
+			expect(
+				screen.queryByTestId(`folder-accordion-item-${trashFolder.id}`)
+			).not.toBeInTheDocument();
+		});
+
+		test('Trash folder is visible if the showTrashFolder is set to true', () => {
+			populateFoldersStore();
+			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: false,
+				showSpamFolder: false,
+				showTrashFolder: true,
+				onFolderSelected: jest.fn()
+			};
+			setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
+
+			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);
+			const trashFolder = folders.filter((folder) => isTrash(folder.id))?.[0];
+			if (!trashFolder) {
+				return;
+			}
+			expect(screen.queryByTestId(`folder-accordion-item-${trashFolder.id}`)).toBeVisible();
+		});
+
+		test('no trashed folder is visible if the showTrashFolder is set to false', () => {
+			populateFoldersStore();
+			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: false,
+				showSpamFolder: false,
+				showTrashFolder: false,
+				onFolderSelected: jest.fn()
+			};
+			setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
+
+			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);
+			const trashedFolder = folders.filter(
+				(folder) => isTrashed({ folder }) && !isTrash(folder.id)
+			)?.[0];
+			if (!trashedFolder) {
+				return;
+			}
+			expect(
+				screen.queryByTestId(`folder-accordion-item-${trashedFolder.id}`)
+			).not.toBeInTheDocument();
+		});
+
+		test('Trashed folder is visible if the showTrashFolder is set to true', () => {
+			populateFoldersStore();
+			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: false,
+				showSpamFolder: false,
+				showTrashFolder: true,
+				onFolderSelected: jest.fn()
+			};
+			setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
+
+			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);
+			const trashedFolder = folders.filter(
+				(folder) => isTrashed({ folder }) && !isTrash(folder.id)
+			)?.[0];
+			if (!trashedFolder) {
+				return;
+			}
+			expect(screen.queryByTestId(`folder-accordion-item-${trashedFolder.id}`)).toBeVisible();
+		});
+
+		test('no Spam folder is visible if the showSpamFolder is set to false', () => {
+			populateFoldersStore();
+			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: false,
+				showSpamFolder: false,
+				showTrashFolder: false,
+				onFolderSelected: jest.fn()
+			};
+			setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
+
+			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);
+			const spamFolder = folders.filter((folder) => isSpam(folder.id))?.[0];
+			if (!spamFolder) {
+				return;
+			}
+			expect(
+				screen.queryByTestId(`folder-accordion-item-${spamFolder.id}`)
+			).not.toBeInTheDocument();
+		});
+
+		test('Spam folder is visible if the showSpamFolder is set to true', () => {
+			populateFoldersStore();
+			const props: FolderSelectorProps = {
+				allowFolderCreation: false,
+				allowRootSelection: false,
+				showSharedAccounts: false,
+				showSpamFolder: true,
+				showTrashFolder: false,
+				onFolderSelected: jest.fn()
+			};
+			setupTest(<FolderSelector {...props} />, { store });
+			makeListItemsVisible();
+
+			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);
+			const spamFolder = folders.filter((folder) => isSpam(folder.id))?.[0];
+			if (!spamFolder) {
+				return;
+			}
+			expect(screen.queryByTestId(`folder-accordion-item-${spamFolder.id}`)).toBeVisible();
 		});
 	});
 });

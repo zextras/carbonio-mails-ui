@@ -23,5 +23,6 @@ export type SoapMailParticipant = {
 	 */
 	p: string;
 	t: SoapEmailParticipantRole;
-	isGroup?: 0 | 1;
+	isGroup?: boolean;
+	exp?: boolean;
 };

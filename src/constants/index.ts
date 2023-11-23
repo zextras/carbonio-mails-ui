@@ -305,6 +305,20 @@ export const ConversationActionsDescriptors = {
 	}
 } as const;
 
+export const GenericActionDescriptors = {
+	SELECT_FOLDERS: {
+		id: 'select-folders',
+		desc: 'Select folders'
+	}
+};
+
+export const FilterActionsDescriptors = {
+	APPLY: {
+		id: 'apply-filter-on-folder',
+		desc: 'Apply filter to a folder'
+	}
+} as const;
+
 export const MSG_CONV_STATUS = {
 	FLAGGED: {
 		value: true,

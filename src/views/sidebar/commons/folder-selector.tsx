@@ -6,7 +6,7 @@
 import React, { ChangeEvent, ReactElement, useMemo, useState } from 'react';
 
 import { Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { filter, startsWith } from 'lodash';
 import styled from 'styled-components';
 
@@ -27,31 +27,53 @@ export type FolderSelectorProps = {
 	onNewFolderClick?: () => void;
 	selectedFolderId?: string;
 	onFolderSelected: (arg: Folder) => void;
+	showSharedAccounts: boolean;
+	showTrashFolder: boolean;
+	showSpamFolder: boolean;
+	allowRootSelection: boolean;
+	allowFolderCreation: boolean;
 };
 
-const flattenFolders = (folders: Array<Folder>): Array<Folder> => {
+const flattenFolders = (
+	folders: Array<Folder>,
+	options?: {
+		showTrashFolder?: boolean;
+		showSpamFolder?: boolean;
+	}
+): Array<Folder> => {
 	const result: Array<Folder> = [];
 	const sortedFolders = sortFolders({ children: folders, sortFunction: getSortCriteria });
 
 	sortedFolders.forEach((folder) => {
-		if (isTrash(folder.id) || isSpam(folder.id) || isTrashed({ folder })) {
+		if (!options?.showTrashFolder && (isTrash(folder.id) || isTrashed({ folder }))) {
 			return;
 		}
+
+		if (!options?.showSpamFolder && isSpam(folder.id)) {
+			return;
+		}
+
 		result.push({
 			...folder,
 			name: getSystemFolderTranslatedName({ folderName: folder.name }),
 			children: []
 		});
-		folder.children && result.push(...flattenFolders(folder.children));
+		folder.children && result.push(...flattenFolders(folder.children, options));
 	});
 
 	return result;
 };
 
-const flattenRootsFolders = (roots: Array<Folder>): Array<Folder> =>
+const flattenRootsFolders = (
+	roots: Array<Folder>,
+	options?: {
+		showTrashFolder?: boolean;
+		showSpamFolder?: boolean;
+	}
+): Array<Folder> =>
 	roots.map((root) => ({
 		...root,
-		children: flattenFolders(root.children)
+		children: flattenFolders(root.children, options)
 	}));
 
 function filterRootChildren(folders: Array<Folder>, nameCriteria: string): Array<Folder> {
@@ -77,12 +99,28 @@ export const FolderSelector = ({
 	inputLabel,
 	onNewFolderClick,
 	selectedFolderId,
-	onFolderSelected
+	onFolderSelected,
+	allowRootSelection,
+	allowFolderCreation,
+	showTrashFolder,
+	showSpamFolder,
+	showSharedAccounts
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const selectedFolder = selectedFolderId && getFolder(selectedFolderId);
 	const roots = useRootsArray();
-	const flattenRoots = useMemo(() => flattenRootsFolders(roots), [roots]);
+	const filteredAccountsRoots = useMemo<Array<Folder>>(
+		() => (showSharedAccounts ? roots : roots.filter((root) => root.id === FOLDERS.USER_ROOT)),
+		[roots, showSharedAccounts]
+	);
+	const flattenRoots = useMemo(
+		() =>
+			flattenRootsFolders(filteredAccountsRoots, {
+				showTrashFolder,
+				showSpamFolder
+			}),
+		[filteredAccountsRoots, showSpamFolder, showTrashFolder]
+	);
 	const filteredRoots = filterRoots(flattenRoots, inputValue);
 	const inputName = selectedFolder ? selectedFolder.name : '';
 	return (
@@ -106,6 +144,7 @@ export const FolderSelector = ({
 					roots={filteredRoots}
 					onFolderSelected={onFolderSelected}
 					selectedFolderId={selectedFolderId}
+					allowRootSelection={allowRootSelection}
 				/>
 			</ContainerEl>
 			{onNewFolderClick && (

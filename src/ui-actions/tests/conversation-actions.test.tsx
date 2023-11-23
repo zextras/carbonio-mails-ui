@@ -85,7 +85,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
@@ -128,7 +128,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
@@ -164,7 +164,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
@@ -207,7 +207,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
@@ -246,7 +246,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
@@ -292,7 +292,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
@@ -331,7 +331,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
@@ -376,7 +376,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
@@ -413,7 +413,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
@@ -457,7 +457,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
@@ -495,7 +495,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
@@ -539,7 +539,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
@@ -562,7 +562,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		act(() => {
-			action.onClick(undefined);
+			action.onClick();
 		});
 		const msgIds = conv.messages.map<string>((msg) => msg.id);
 		// Check that the getMsgsForPrint and the window.oepn functions are called
@@ -596,7 +596,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
@@ -639,7 +639,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			act(() => {
-				action.onClick(undefined);
+				action.onClick();
 			});
 
 			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');

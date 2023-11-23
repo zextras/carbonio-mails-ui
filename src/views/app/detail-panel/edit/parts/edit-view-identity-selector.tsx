@@ -20,10 +20,15 @@ import { noop } from 'lodash';
 import styled from 'styled-components';
 
 import {
+	getIdentitiesDescriptors,
 	getIdentityDescription,
+	getIdentityDescriptor,
 	getNoIdentityPlaceholder,
 	IdentityDescriptor
 } from '../../../../../helpers/identities';
+import { getMailBodyWithSignature } from '../../../../../helpers/signatures';
+import { useEditorIdentityId, useEditorText } from '../../../../../store/zustand/editor';
+import { MailsEditorV2 } from '../../../../../types';
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;
@@ -64,30 +69,32 @@ const createIdentitySelectorItemElement = (
 	);
 };
 
-/**
- *
- */
 export type EditViewIdentitySelectorProps = {
-	selected: IdentityDescriptor | null;
-	identities: Array<IdentityDescriptor>;
-	onIdentitySelected: (selected: IdentityDescriptor) => void;
+	editorId: MailsEditorV2['id'];
 };
 
-/**
- *
- * @param selected
- * @param identities
- * @param onIdentitySelected
- * @constructor
- */
-export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({
-	selected,
-	identities,
-	onIdentitySelected
-}) => {
+export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({ editorId }) => {
+	const { identityId, setIdentityId } = useEditorIdentityId(editorId);
+	const { text, setText } = useEditorText(editorId);
+
 	const [open, setOpen] = useState(false);
+
 	const noName = useMemo(() => getNoIdentityPlaceholder(), []);
+	const selected = useMemo<IdentityDescriptor | null>(
+		() => getIdentityDescriptor(identityId),
+		[identityId]
+	);
 	const selectedDescription = selected ? getIdentityDescription(selected, t) : noName;
+	const identities = useMemo<Array<IdentityDescriptor>>(() => getIdentitiesDescriptors(), []);
+
+	const onIdentitySelected = useCallback(
+		(identity: IdentityDescriptor): void => {
+			setIdentityId(identity.id);
+			const textWithSignature = getMailBodyWithSignature(text, identity.defaultSignatureId);
+			setText(textWithSignature);
+		},
+		[setIdentityId, setText, text]
+	);
 
 	const toggleOpen = useCallback(() => {
 		setOpen((s) => !s);

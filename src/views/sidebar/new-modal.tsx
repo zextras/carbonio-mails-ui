@@ -3,19 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 
+import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
 import { find, includes, noop } from 'lodash';
+
+import { FolderSelector } from './commons/folder-selector';
+import { translatedSystemFolders } from './utils';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import { isValidFolderName } from '../../carbonio-ui-commons/utils/utils';
 import { createFolder } from '../../store/actions/create-folder';
 import type { ModalProps } from '../../types';
-import { FolderSelector } from './commons/folder-selector';
-import { translatedSystemFolders } from './utils';
-import { isValidFolderName } from '../../carbonio-ui-commons/utils/utils';
 
 export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [inputValue, setInputValue] = useState(() => t('new_folder', 'New Folder'));
@@ -135,6 +136,11 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 				<FolderSelector
 					selectedFolderId={folderDestination?.id}
 					onFolderSelected={setFolderDestination}
+					showSharedAccounts
+					showTrashFolder={false}
+					showSpamFolder={false}
+					allowRootSelection
+					allowFolderCreation={false}
 				/>
 				<ModalFooter
 					onConfirm={onConfirm}

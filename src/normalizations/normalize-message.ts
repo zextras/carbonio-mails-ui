@@ -252,7 +252,9 @@ export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participa
 	address: e.a,
 	name: e.d || e.a,
 	fullName: e.p,
-	email: e.a
+	email: e.a,
+	exp: e.exp,
+	isGroup: e.isGroup
 });
 
 const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
@@ -283,7 +285,7 @@ export const normalizeMailMessageFromSoap = (
 			size: m.s,
 			parent: m.l,
 			fragment: m.fr,
-			subject: m.su,
+			subject: !isNil(m.su) ? m.su : '',
 			participants: m.e ? map(m.e || [], normalizeParticipantsFromSoap) : undefined,
 			tags: getTagIds(m.t, m.tn),
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
