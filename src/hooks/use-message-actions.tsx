@@ -79,8 +79,11 @@ function getDraftsActions({
 				closeEditor: isAlone
 			})
 		);
-	actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
-	actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+	!isInsideExtraWindow && actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
+	!isInsideExtraWindow && actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+	actions.push(printMsg({ message }));
+	actions.push(showOriginalMsg({ id: message.id }));
+	actions.push(downloadEml({ id: message.id }));
 	return actions;
 }
 
@@ -105,7 +108,10 @@ function getTrashActions({
 		);
 	!isInsideExtraWindow &&
 		actions.push(deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }));
-	actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+	!isInsideExtraWindow && actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+	actions.push(printMsg({ message }));
+	actions.push(showOriginalMsg({ id: message.id }));
+	actions.push(downloadEml({ id: message.id }));
 	return actions;
 }
 
@@ -164,7 +170,7 @@ function getDefatultActions({
 				closeEditor: isAlone
 			})
 		);
-	actions.push(
+	!isInsideExtraWindow && actions.push(
 		setMsgRead({
 			ids: [message.id],
 			value: message.read,
@@ -185,7 +191,7 @@ function getDefatultActions({
 			})
 		);
 
-	actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+	!isInsideExtraWindow && actions.push(applyTag({ tags, conversation: message, isMessage: true }));
 	!isInsideExtraWindow &&
 		isAvailable &&
 		actions.push(createAppointment({ item: message, openAppointmentComposer }));
@@ -194,7 +200,7 @@ function getDefatultActions({
 	!isInsideExtraWindow && actions.push(redirectMsg({ id: message.id }));
 	!isInsideExtraWindow && actions.push(editAsNewMsg({ id: message.id }));
 	!isInsideExtraWindow &&
-		actions.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }));
+	actions.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }));
 	actions.push(showOriginalMsg({ id: message.id }));
 	actions.push(downloadEml({ id: message.id }));
 
