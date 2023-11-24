@@ -103,16 +103,17 @@ export const useMessageActions = (
 					closeEditor: isAlone
 				})
 			);
-		actions.push(
-			setMsgRead({
-				ids: [message.id],
-				value: message.read,
-				dispatch,
-				folderId,
-				shouldReplaceHistory: true,
-				deselectAll
-			})
-		);
+		!isInsideExtraWindow &&
+			actions.push(
+				setMsgRead({
+					ids: [message.id],
+					value: message.read,
+					dispatch,
+					folderId,
+					shouldReplaceHistory: true,
+					deselectAll
+				})
+			);
 		!isInsideExtraWindow &&
 			actions.push(
 				moveMessageToFolder({
@@ -124,9 +125,9 @@ export const useMessageActions = (
 				})
 			);
 
-		actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+		!isInsideExtraWindow && actions.push(applyTag({ tags, conversation: message, isMessage: true }));
 		actions.push(printMsg({ message }));
-		actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
+		!isInsideExtraWindow && actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
 		!isInsideExtraWindow && actions.push(redirectMsg({ id: message.id }));
 		!isInsideExtraWindow && actions.push(editAsNewMsg({ id: message.id, folderId }));
 		!isInsideExtraWindow &&
@@ -147,8 +148,8 @@ export const useMessageActions = (
 			);
 		!isInsideExtraWindow &&
 			actions.push(deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }));
-			actions.push(showOriginalMsg({ id: message.id }));
-		actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+		actions.push(showOriginalMsg({ id: message.id }));
+		!isInsideExtraWindow && actions.push(applyTag({ tags, conversation: message, isMessage: true }));
 	}
 
 	if (message.parent === FOLDERS.SPAM) {
@@ -163,14 +164,14 @@ export const useMessageActions = (
 			actions.push(setMsgAsSpam({ ids: [message.id], value: true, dispatch, folderId }));
 		actions.push(printMsg({ message }));
 		actions.push(showOriginalMsg({ id: message.id }));
-		actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+		!isInsideExtraWindow && actions.push(applyTag({ tags, conversation: message, isMessage: true }));
 	}
 
 	!isInsideExtraWindow &&
 		actions.push(
 			previewMessageOnSeparatedWindow(message.id, folderId, message.subject, createWindow, actions)
 		);
-		actions.push(downloadMsg({ messageId: message.id },{ messageSubject: message.subject }));
+	actions.push(downloadMsg({ messageId: message.id },{ messageSubject: message.subject }));
 
 	return actions;
 };
