@@ -79,7 +79,7 @@ const sendFromEditor = (
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						const errorDescription: string = res.payload.Reason.Text;
-						useEditorsStore.getState().updateSendProcessStatus(editorId, {
+						useEditorsStore.getState().setSendProcessStatus(editorId, {
 							status: 'aborted',
 							abortReason: errorDescription
 						});

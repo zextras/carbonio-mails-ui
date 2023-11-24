@@ -90,7 +90,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 
 		}
 
-		useEditorsStore.getState().updateDraftSaveProcessStatus(editorId, {
+		useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 			status: 'aborted',
 			abortReason: err
 		});
