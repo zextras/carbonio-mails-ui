@@ -31,6 +31,7 @@ export type RecipientsRowProps = {
 	recipients: Array<Participant>;
 	onRecipientsChange: (recipients: Array<Participant>) => void;
 	dataTestid?: string;
+	extraAccountId?: Array<string>;
 };
 
 /**
@@ -40,6 +41,7 @@ export type RecipientsRowProps = {
  * @param recipients
  * @param onRecipientsChange
  * @param dataTestid
+ * @param extraAccountId
  * @constructor
  */
 export const RecipientsRow: FC<RecipientsRowProps> = ({
@@ -47,7 +49,8 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 	label,
 	recipients,
 	onRecipientsChange,
-	dataTestid
+	dataTestid,
+	extraAccountId
 }) => {
 	const [ContactInput, isAvailable] = useIntegratedComponent('contact-input');
 
@@ -108,6 +111,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					bottomBorderColor="transparent"
 					hasError={some(recipients || [], { error: true })}
 					dragAndDropEnabled
+					extraAccountId={extraAccountId}
 				/>
 			) : (
 				<ChipInput
