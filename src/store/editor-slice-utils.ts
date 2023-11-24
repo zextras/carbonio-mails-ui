@@ -19,7 +19,7 @@ import {
 import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { htmlEncode } from '../commons/get-quoted-text-util';
 import { LineType } from '../commons/utils';
-import { getIdentityDescriptor } from '../helpers/identities';
+import { getAddressOwnerAccount, getIdentityDescriptor } from '../helpers/identities';
 import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import type {
 	InlineAttachments,
@@ -131,7 +131,8 @@ export function retrieveALL(original: MailMessage, accountName: string): Array<P
 	);
 	const fromEmails = filter(
 		original.participants,
-		(c: Participant): boolean => c.type === ParticipantRole.FROM && c.address !== accountName
+		(c: Participant): boolean =>
+			c.type === ParticipantRole.FROM && accountName !== getAddressOwnerAccount(c.address)
 	);
 	const replyToParticipants = filter(
 		original.participants,
@@ -140,13 +141,13 @@ export function retrieveALL(original: MailMessage, accountName: string): Array<P
 
 	const isSentByMe = some(
 		filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.FROM),
-		{ address: accountName }
+		(c: Participant): boolean => accountName === getAddressOwnerAccount(c.address)
 	);
 	if (replyToParticipants.length === 0) {
 		if (original.parent === FOLDERS.SENT || original.isSentByMe || isSentByMe) {
-			return filter(toEmails, (c) => c.address !== accountName).length === 0
+			return filter(toEmails, (c) => accountName !== getAddressOwnerAccount(c.address)).length === 0
 				? toEmails
-				: filter(toEmails, (c) => c.address !== accountName);
+				: filter(toEmails, (c) => accountName !== getAddressOwnerAccount(c.address));
 		}
 		return changeTypeOfParticipants(fromEmails, ParticipantRole.TO);
 	}
@@ -162,14 +163,15 @@ export const retrieveCCForEditNew = (original: MailMessage): Array<Participant> 
 export function retrieveCC(original: MailMessage, accountName: string): Array<Participant> {
 	const toEmails = filter(
 		original.participants,
-		(c: Participant): boolean => c.type === ParticipantRole.TO && c.address !== accountName
+		(c: Participant): boolean =>
+			c.type === ParticipantRole.TO && accountName !== getAddressOwnerAccount(c.address)
 	);
 	const ccEmails = filter(
 		original.participants,
-		(c: Participant): boolean => c.type === ParticipantRole.CARBON_COPY && c.address !== accountName
+		(c: Participant): boolean =>
+			c.type === ParticipantRole.CARBON_COPY && accountName !== getAddressOwnerAccount(c.address)
 	);
 	const finalTo = retrieveALL(original, accountName);
-
 	const reducedCcEmails = reduce(
 		ccEmails,
 		(acc: Array<Participant>, v: Participant) => {
@@ -183,7 +185,6 @@ export function retrieveCC(original: MailMessage, accountName: string): Array<Pa
 		},
 		[]
 	);
-
 	if (original.parent !== FOLDERS.SENT && !original.isSentByMe) {
 		return reduce(
 			concat(toEmails, reducedCcEmails),
