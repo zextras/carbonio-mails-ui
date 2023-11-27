@@ -124,7 +124,10 @@ export const retrieveReplyTo = (original: MailMessage): Array<Participant> => {
 export const retrieveTO = (original: MailMessage): Array<Participant> =>
 	filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.TO);
 
-export function retrieveALL(original: MailMessage, accountName: string): Array<Participant> {
+export function retrieveALL(
+	original: MailMessage,
+	replySenderAccountName: string
+): Array<Participant> {
 	const toEmails = filter(
 		original.participants,
 		(c: Participant): boolean => c.type === ParticipantRole.TO
@@ -132,7 +135,8 @@ export function retrieveALL(original: MailMessage, accountName: string): Array<P
 	const fromEmails = filter(
 		original.participants,
 		(c: Participant): boolean =>
-			c.type === ParticipantRole.FROM && accountName !== getAddressOwnerAccount(c.address)
+			c.type === ParticipantRole.FROM &&
+			replySenderAccountName !== getAddressOwnerAccount(c.address)
 	);
 	const replyToParticipants = filter(
 		original.participants,
@@ -141,13 +145,14 @@ export function retrieveALL(original: MailMessage, accountName: string): Array<P
 
 	const isSentByMe = some(
 		filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.FROM),
-		(c: Participant): boolean => accountName === getAddressOwnerAccount(c.address)
+		(c: Participant): boolean => replySenderAccountName === getAddressOwnerAccount(c.address)
 	);
 	if (replyToParticipants.length === 0) {
 		if (original.parent === FOLDERS.SENT || original.isSentByMe || isSentByMe) {
-			return filter(toEmails, (c) => accountName !== getAddressOwnerAccount(c.address)).length === 0
+			return filter(toEmails, (c) => replySenderAccountName !== getAddressOwnerAccount(c.address))
+				.length === 0
 				? toEmails
-				: filter(toEmails, (c) => accountName !== getAddressOwnerAccount(c.address));
+				: filter(toEmails, (c) => replySenderAccountName !== getAddressOwnerAccount(c.address));
 		}
 		return changeTypeOfParticipants(fromEmails, ParticipantRole.TO);
 	}
@@ -160,18 +165,22 @@ export const retrieveCCForEditNew = (original: MailMessage): Array<Participant> 
 		(c: Participant): boolean => c.type === ParticipantRole.CARBON_COPY
 	);
 
-export function retrieveCC(original: MailMessage, accountName: string): Array<Participant> {
+export function retrieveCC(
+	original: MailMessage,
+	replySenderAccountName: string
+): Array<Participant> {
 	const toEmails = filter(
 		original.participants,
 		(c: Participant): boolean =>
-			c.type === ParticipantRole.TO && accountName !== getAddressOwnerAccount(c.address)
+			c.type === ParticipantRole.TO && replySenderAccountName !== getAddressOwnerAccount(c.address)
 	);
 	const ccEmails = filter(
 		original.participants,
 		(c: Participant): boolean =>
-			c.type === ParticipantRole.CARBON_COPY && accountName !== getAddressOwnerAccount(c.address)
+			c.type === ParticipantRole.CARBON_COPY &&
+			replySenderAccountName !== getAddressOwnerAccount(c.address)
 	);
-	const finalTo = retrieveALL(original, accountName);
+	const finalTo = retrieveALL(original, replySenderAccountName);
 	const reducedCcEmails = reduce(
 		ccEmails,
 		(acc: Array<Participant>, v: Participant) => {
