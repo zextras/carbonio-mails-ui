@@ -7,9 +7,8 @@ import { Account, getUserAccount, getUserSettings, t } from '@zextras/carbonio-s
 import { TFunction } from 'i18next';
 import { filter, findIndex, flatten, isArray, map, remove } from 'lodash';
 
-import { getFolderIdParts, getMessageOwnerAccountName } from './folders';
+import { getMessageOwnerAccountName } from './folders';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import { getLinksArray } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folders } from '../carbonio-ui-commons/types/folder';
 import { NO_ACCOUNT_NAME } from '../constants';
 import type { MailMessage, Participant } from '../types';
@@ -59,7 +58,6 @@ type AvailableAddress = {
  */
 type IdentityDescriptor = {
 	id: string;
-	ownerAccountId: string;
 	ownerAccount: string;
 	identityName: string;
 	identityDisplayName: string;
@@ -206,16 +204,6 @@ const getAddressOwnerAccount = (address: string): string | null => {
  */
 const generateIdentityId = (email: string, rights: string): string => email + rights;
 
-/** Get the account id of the sender identity
- * @param emailAddress the sender id
- * @returns the extra account id
- * */
-function getOwnerAccountId(emailAddress: string): string {
-	const links = getLinksArray();
-	const linkWithParts = links.find((link) => emailAddress === link.name)?.id;
-	return (linkWithParts && getFolderIdParts(linkWithParts)?.zid) ?? '';
-}
-
 /**
  *
  * @param identities
@@ -271,7 +259,6 @@ const getIdentitiesDescriptors = (): Array<IdentityDescriptor> => {
 
 			identities.push({
 				ownerAccount: matchingReceivingAddress?.ownerAccount ?? account.name,
-				ownerAccountId: identity._attrs?.zimbraPrefIdentityId ?? '',
 				receivingAddress,
 				id: identity._attrs?.zimbraPrefIdentityId ?? '',
 				identityName: identity.name ?? '',
@@ -296,7 +283,6 @@ const getIdentitiesDescriptors = (): Array<IdentityDescriptor> => {
 				ownerAccount: item.email[0].addr ?? account?.name ?? NO_ACCOUNT_NAME,
 				receivingAddress: item.email[0].addr,
 				id: generateIdentityId(item.email[0].addr, ele.right),
-				ownerAccountId: getOwnerAccountId(item.email[0].addr),
 				identityName: item.d,
 				identityDisplayName: item.d,
 				fromDisplay: item.d,
