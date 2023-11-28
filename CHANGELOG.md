@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.10.2...v1.10.3) (2023-11-28)
+
+
+### Bug Fixes
+
+* subject lost when read/unread the message ([061d91a](https://github.com/zextras/carbonio-mails-ui/commit/061d91a8f906f17cb5c4f1dc1ba23abb98d9397d))
+
 ### [1.10.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.10.1...v1.10.2) (2023-11-23)
 
 
