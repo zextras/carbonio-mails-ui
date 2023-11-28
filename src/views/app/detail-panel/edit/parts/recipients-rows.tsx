@@ -10,9 +10,8 @@ import { t } from '@zextras/carbonio-shell-ui';
 
 import { RecipientsRow } from './recipients-row';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { getRootsMap } from '../../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { GapContainer } from '../../../../../commons/gap-container';
-import { getFolderIdParts } from '../../../../../helpers/folders';
+import { getExtraAccountsIds } from '../../../../../helpers/identities';
 import {
 	useEditorBccRecipients,
 	useEditorCcRecipients,
@@ -23,18 +22,6 @@ import { MailsEditorV2, Participant } from '../../../../../types';
 export type RecipientsRowsProps = {
 	editorId: MailsEditorV2['id'];
 };
-
-function getExtraAccountsIds(): Array<string> {
-	const roots = Object.keys(getRootsMap());
-	const rootsZids: Array<string> = roots?.reduce((acc: Array<string>, root) => {
-		const { zid } = getFolderIdParts(root);
-		if (zid) {
-			acc.push(zid);
-		}
-		return acc;
-	}, []);
-	return rootsZids;
-}
 
 export const RecipientsRows = ({ editorId }: RecipientsRowsProps): JSX.Element => {
 	const { toRecipients, setToRecipients } = useEditorToRecipients(editorId);
