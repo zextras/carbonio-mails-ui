@@ -245,7 +245,9 @@ export const generateReplyAndReplyAllMsgEditor = (
 			cc: action === EditViewActions.REPLY_ALL ? retrieveCC(originalMessage, accountName) : [],
 			bcc: []
 		},
-		subject: `RE: ${originalMessage.subject.replace(REPLY_REGEX, '')}`,
+		subject: `RE: ${
+			originalMessage.subject ? originalMessage.subject.replace(REPLY_REGEX, '') : ''
+		}`,
 		text: textWithSignatureRepliesForwards,
 		requestReadReceipt: false,
 		replyType: 'r',
@@ -299,7 +301,9 @@ export const generateForwardMsgEditor = (
 			cc: [],
 			bcc: []
 		},
-		subject: `FWD: ${originalMessage.subject.replace(FORWARD_REGEX, '')}`,
+		subject: `FWD: ${
+			originalMessage.subject ? originalMessage.subject.replace(FORWARD_REGEX, '') : ''
+		}`,
 		text: textWithSignatureRepliesForwards,
 		requestReadReceipt: false,
 		replyType: 'w',
