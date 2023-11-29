@@ -3,12 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import type { RcvdSentAddressRowPropType, SearchChipItem } from '../../../types';
+
 import { isValidEmail } from './utils';
+import type { RcvdSentAddressRowPropType, SearchChipItem } from '../../../types';
 
 const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): ReactElement => {
 	const { receivedFromAddress, setReceivedFromAddress, sentFromAddress, setSentFromAddress } =
@@ -125,6 +127,16 @@ const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): 
 		[setSentFromAddress]
 	);
 
+	const receivedFromHasError = useMemo(
+		() => !!(receivedFromAddress && receivedFromAddress[0]?.hasError),
+		[receivedFromAddress]
+	);
+
+	const sentFromHasError = useMemo(
+		() => !!(sentFromAddress && sentFromAddress[0]?.hasError),
+		[sentFromAddress]
+	);
+
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
@@ -144,8 +156,12 @@ const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): 
 						onChange={recipOnChange}
 						onAdd={recipChipOnAdd}
 						maxChips={1}
-						errorLabel={t('label.error_address', 'A valid e-mail is required')}
-						hasError={!!(receivedFromAddress && receivedFromAddress[0]?.hasError)}
+						description={
+							receivedFromHasError
+								? t('label.error_address', 'A valid e-mail is required')
+								: undefined
+						}
+						hasError={receivedFromHasError}
 					/>
 				)}
 			</Container>
@@ -166,8 +182,10 @@ const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): 
 						onChange={senderOnChange}
 						onAdd={senderChipOnAdd}
 						maxChips={1}
-						errorLabel={t('label.error_address', 'A valid e-mail is required')}
-						hasError={!!(sentFromAddress && sentFromAddress[0]?.hasError)}
+						description={
+							sentFromHasError ? t('label.error_address', 'A valid e-mail is required') : undefined
+						}
+						hasError={sentFromHasError}
 					/>
 				)}
 			</Container>

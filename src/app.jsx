@@ -5,6 +5,7 @@
  */
 import React, { lazy, useEffect, Suspense } from 'react';
 
+import { ModalManager } from '@zextras/carbonio-design-system';
 import {
 	Spinner,
 	addRoute,
@@ -70,10 +71,13 @@ const EditView = () => (
 		</StoreProvider>
 	</Suspense>
 );
+
 const SettingsView = () => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
-			<LazySettingsView />
+			<ModalManager>
+				<LazySettingsView />
+			</ModalManager>
 		</StoreProvider>
 	</Suspense>
 );

@@ -14,7 +14,6 @@ import { EditModal } from './edit-modal';
 import EditPermissionsModal from './edit-permissions-modal';
 import { EmptyModal } from './empty-modal';
 import { NewModal } from './new-modal';
-import { SelectFolderModal } from './select-folder-modal';
 import { SharesInfoModal } from './shares-info-modal';
 import { FolderActionsType } from '../../carbonio-ui-commons/constants/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
@@ -26,6 +25,7 @@ import { folderAction } from '../../store/actions/folder-action';
 import { selectMessagesArray } from '../../store/messages-slice';
 import { StoreProvider } from '../../store/redux';
 import { AppContext } from '../../types';
+import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
 import MoveConvMessage from '../../ui-actions/move-conv-msg';
 
 type FolderActionsProps = {
@@ -67,6 +67,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					const closeModal = createModal(
 						{
 							maxHeight: '90vh',
+							size: 'medium',
 							children: (
 								<StoreProvider>
 									<NewModal folder={folder} onClose={(): void => closeModal()} />
@@ -95,6 +96,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						const closeModal = createModal(
 							{
 								maxHeight: '90vh',
+								size: 'medium',
 								children: (
 									<StoreProvider>
 										<MoveConvMessage
@@ -180,6 +182,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						const closeModal = createModal(
 							{
 								maxHeight: '90vh',
+								size: 'medium',
 								children: (
 									<StoreProvider>
 										<SelectFolderModal
@@ -189,6 +192,11 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 											actionLabel={t('label.move', 'Move')}
 											inputLabel={inputLabel}
 											confirmAction={confirmAction}
+											allowFolderCreation={false}
+											allowRootSelection
+											showSharedAccounts={false}
+											showTrashFolder={false}
+											showSpamFolder={false}
 										/>
 									</StoreProvider>
 								)

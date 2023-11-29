@@ -12,6 +12,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { LineType } from '../../../../commons/utils';
 import { CLOSE_BOARD_REASON } from '../../../../constants';
 import { StoreProvider } from '../../../../store/redux';
+import { getEditor } from '../../../../store/zustand/editor';
 import type { CloseBoardReasons, MailsEditorV2 } from '../../../../types';
 
 export const attachmentWords: Array<string> = [
@@ -51,20 +52,24 @@ function getSubjectOrAttachmentError({
 }
 
 export function checkSubjectAndAttachment({
-	text,
+	editorId,
 	hasAttachments,
-	subject,
 	onConfirmCallback,
 	close,
 	createModal
 }: {
-	text: MailsEditorV2['text'];
+	editorId: MailsEditorV2['id'];
 	hasAttachments: boolean;
-	subject: MailsEditorV2['subject'];
 	onConfirmCallback: () => void;
 	close: ({ reason }: { reason?: CloseBoardReasons }) => void;
 	createModal: any;
 }): void {
+	const editor = getEditor({ id: editorId });
+	if (!editor) {
+		return;
+	}
+	const { text } = editor;
+	const { subject } = editor;
 	const attachmentIsExpected = attachmentWords.some((el) => {
 		const [msgContent] = text.richText
 			? text.richText.split(LineType.HTML_SEP_ID)

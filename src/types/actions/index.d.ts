@@ -4,7 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { SyntheticEvent } from 'react';
+
+import { CreateModalFn } from '@zextras/carbonio-design-system';
+
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import { ItemType } from '../../carbonio-ui-commons/types/tags';
 import type { TagActionItemType } from '../tags';
 
 export type ActionProps = {
@@ -15,21 +20,33 @@ export type ActionProps = {
 	onMouseEnter: () => void;
 };
 
-export type MessageActionReturnType = {
+export type UIActionExecutionParams<CompleteResult> = {
+	uiUtilities: {
+		createModal: CreateModalFn;
+	};
+	callbacks?: {
+		onComplete?: (result: CompleteResult) => void;
+		onError?: (error: string) => void;
+		onCancel?: () => void;
+	};
+};
+
+export type UIAction<ExecutionParams extends UIActionExecutionParams> = {
 	id: string;
 	icon: string;
 	label: string;
-	onClick: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
+	execute?: (params: ExecutionParams) => void;
+};
+
+export type MessageActionReturnType = UIAction<never> & {
+	onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
 	items?: ItemType[];
 	customComponent?: React.ReactElement;
 };
 
-export type ConvActionReturnType = {
-	id: string;
-	icon: string;
-	label: string;
+export type ConvActionReturnType = UIAction<never> & {
 	disabled?: boolean;
-	onClick: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
+	onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
 	customComponent?: JSX.Element;
 	items?: ItemType[];
 };
