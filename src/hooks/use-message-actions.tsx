@@ -209,13 +209,14 @@ function getDefatultActions({
  */
 export const useMessageActions = (
 	message: MailMessage | undefined,
-	isAlone = false
+	isAlone = false,
+	isExtWin = false
 ): Array<MessageAction> => {
 	const { folderId }: { folderId: string } = useParams();
 	const dispatch = useAppDispatch();
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection({ currentFolderId: folderId, setCount, count: 0 });
-	const { isInsideExtraWindow } = useExtraWindow();
+	let { isInsideExtraWindow } = useExtraWindow();
 	const { createWindow } = useExtraWindowsManager();
 	const [openAppointmentComposer, isAvailable] = useIntegratedFunction('create_appointment');
 	const systemFolders = useMemo(
@@ -227,6 +228,10 @@ export const useMessageActions = (
 
 	if (!message) {
 		return [];
+	}
+
+	if (isInsideExtraWindow != isExtWin && !isInsideExtraWindow){
+		isInsideExtraWindow = isExtWin;
 	}
 
 	if (message.parent === FOLDERS.DRAFTS) {
