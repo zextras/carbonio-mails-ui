@@ -288,31 +288,30 @@ const Attachment: FC<AttachmentType> = ({
 				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
 					browserPdfPreview();
 				} else {
-					createPreview({
-						src: link,
-						previewType: pType,
-						/** Left Action for the preview */
-						closeAction: {
-							id: 'close',
-							icon: 'ArrowBack',
-							tooltipLabel: t('preview.close', 'Close Preview')
-						},
-						/** Actions for the preview */
-						actions: [
-							{
-								icon: 'DownloadOutline',
-								tooltipLabel: t('label.download', 'Download'),
-								id: 'DownloadOutline',
-								onClick: downloadAttachment
-							}
-						],
-						/** Extension of the file, shown as info */
-						extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
-						/** Name of the file, shown as info */
-						filename: att.filename,
-						/** Size of the file, shown as info */
-						size: humanFileSize(att.size)
-					});
+					if (isInsideExtraWindow){
+						window.open(link, '_blank', 'noopener,noreferrer');
+					} else {
+						createPreview({
+							src: link,
+							previewType: pType,
+							closeAction: {
+								id: 'close',
+								icon: 'ArrowBack',
+								tooltipLabel: t('preview.close', 'Close Preview')
+							},
+							actions: [
+								{
+									icon: 'DownloadOutline',
+									tooltipLabel: t('label.download', 'Download'),
+									id: 'DownloadOutline',
+									onClick: downloadAttachment
+								}
+							],
+							extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
+							filename: att.filename,
+							size: humanFileSize(att.size)
+						});
+					}
 				}
 			} else if (isEML) {
 				showEMLPreview();
