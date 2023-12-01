@@ -18,10 +18,12 @@ import type {
 	ListItemActionWrapperProps,
 	MailMessage,
 	MessageActionReturnType,
-	TagActionItemType
+	TagActionItemType,
+	MessageAction
 } from '../../../../types';
 import { getMsgConvActions } from '../../../../ui-actions/get-msg-conv-actions';
 import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
+import { printMsg } from '../../../../ui-actions/message-actions';
 
 const HoverBarContainer = styled(Container)<{ background: keyof DefaultTheme['palette'] }>`
 	top: 0;
@@ -92,8 +94,8 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	const dispatch = useAppDispatch();
 	const tags = useTags();
 	const { createWindow } = useExtraWindowsManager();
-	const messageActions = useMessageActions(isConversation(item) ? undefined : item, true);
-
+	const messageActions = useMessageActions(isConversation(item) ? undefined : item, true,true);
+	
 	const [hoverActions, dropdownActions] = getMsgConvActions({
 		item,
 		dispatch,
