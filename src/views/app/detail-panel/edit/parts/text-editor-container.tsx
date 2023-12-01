@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, SyntheticEvent, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -12,32 +12,37 @@ import type { TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
 import { plainTextToHTML } from '../../../../../commons/mail-message-renderer';
+import { useEditorIsRichText, useEditorText } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
 
 export type TextEditorContent = { plainText: string; richText: string };
 
 export type TextEditorContainerProps = {
+	editorId: MailsEditorV2['id'];
 	onDragOver: (event: React.DragEvent) => void;
 	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: FileList }) => void;
-	onContentChanged: (content: TextEditorContent) => void;
-	richTextMode: boolean;
-	content: TextEditorContent;
 	minHeight: number;
 	disabled: boolean;
-	editorId: MailsEditorV2['id'];
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({
+	editorId,
 	onDragOver,
 	onFilesSelected,
-	onContentChanged,
 	minHeight,
-	content,
-	richTextMode,
 	disabled
 }) => {
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const [isFirstChangeEventFired, setIsFirstChangeEventFired] = useState(false);
+	const { text, setText } = useEditorText(editorId);
+	const { isRichText } = useEditorIsRichText(editorId);
+
+	const onTextChanged = useCallback(
+		(text: TextEditorContent): void => {
+			setText({ plainText: text.plainText, richText: text.richText });
+		},
+		[setText]
+	);
 
 	const { prefs } = useUserSettings();
 	const defaultFontFamily = useMemo<string>(
@@ -52,14 +57,14 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 
 	return (
 		<>
-			{content && (
+			{text && (
 				<Container
 					height="fit"
 					padding={{ all: 'small' }}
 					background="gray6"
 					crossAlignment="flex-end"
 				>
-					{richTextMode && composerIsAvailable ? (
+					{isRichText && composerIsAvailable ? (
 						<Container
 							background="gray6"
 							mainAlignment="flex-start"
@@ -69,12 +74,12 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 								<Composer
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									value={content.richText}
+									value={text.richText}
 									disabled={disabled}
 									onFileSelect={onFilesSelected}
 									onEditorChange={(ev: [string, string]): void => {
 										if (isFirstChangeEventFired)
-											onContentChanged({ plainText: ev[0], richText: ev[1] });
+											onTextChanged({ plainText: ev[0], richText: ev[1] });
 										setIsFirstChangeEventFired(true);
 									}}
 									onDragOver={onDragOver}
@@ -86,13 +91,13 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 						<Container background="gray6" height="fit">
 							<StyledComp.TextArea
 								data-testid="MailPlainTextEditor"
-								value={content.plainText}
+								value={text.plainText}
 								style={{ fontFamily: defaultFontFamily }}
 								onFocus={(ev): void => {
 									ev.currentTarget.setSelectionRange(0, null);
 								}}
 								onChange={(ev): void => {
-									onContentChanged({
+									onTextChanged({
 										plainText: ev.target.value,
 										richText: plainTextToHTML(ev.target.value)
 									});

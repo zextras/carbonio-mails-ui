@@ -28,7 +28,8 @@
         "click_preview": "Cliquer pour prévisualiser",
         "edit_anyway": "Éditer malgré tout",
         "mark_all_read": "Définir comme lu",
-        "click_open": "Cliquer pour ouvrir"
+        "click_open": "Cliquer pour ouvrir",
+        "preview_on_separated_window": "Ouvrir dans une nouvelle fenêtre"
     },
     "composer": {
         "attachment": {
@@ -310,7 +311,18 @@
         "exit_selection_mode": "Sortir du mode sélection",
         "time": "Horaire",
         "do_not_have_perm": "Vous n'avez pas les autorisations",
-        "folder_not_valid_destination": "Le dossier sélectionné n'est pas une destination valide"
+        "folder_not_valid_destination": "Le dossier sélectionné n'est pas une destination valide",
+        "errors": {
+            "upload_failed_generic": "Le téléversement a échoué pour le fichier \"{{filename}}\""
+        },
+        "attachment_upload_in_progress": "téléversement de la pièce jointe en cours",
+        "invalid_recipients": "L'adresse d'un destinataire est mal orthographiée",
+        "message_send_in_progress": "envoi de message en cours",
+        "missing_recipients": "il n'y a pas de destinataires valides",
+        "missing_sender": "l'expéditeur du message n'est pas défini",
+        "no_identity_selected": "<Aucune identité sélectionnée>",
+        "no_sender": "l'expéditeur du message n'est pas défini",
+        "upload_failed": "Le téléversement a échoué"
     },
     "message": {
         "snackbar": {
@@ -346,7 +358,9 @@
         "send_later_success": "Votre email sera envoyé le {{date}} à {{time}}",
         "select_date_time": "Sélectionner une date et une heure pour envoyer le message",
         "delete_attachment_message2": "Souhaitez-vous le télécharger avant ?",
-        "delete_attachment_message1": "Votre pièce jointe sera définitivement supprimée de Carbonio."
+        "delete_attachment_message1": "Votre pièce jointe sera définitivement supprimée de Carbonio.",
+        "copy": "Copier",
+        "send_email": "Envoyer l'email"
     },
     "messages": {
         "invalid_address": "L'adresse suivante semble être invalide",
@@ -373,7 +387,8 @@
                 "attachment": "pièce jointe",
                 "attaching": "attachement",
                 "attached": "attaché",
-                "attach": "attacher"
+                "attach": "attacher",
+                "subject": "Le sujet est manquant"
             }
         },
         "new_email": "Nouvel email",
@@ -410,7 +425,8 @@
             "tag_deleted": "L'étiquette {{name}} a été supprimée avec succès",
             "tag_created": "L'étiquette {{name}} a été créée avec succès",
             "tag_updated": "Étiquette mise à jour avec succès",
-            "tag_not_updated": "Quelque chose s'est mal passé, l'étiquette n'a pas pu être mise à jour. Merci de réessayer."
+            "tag_not_updated": "Quelque chose s'est mal passé, l'étiquette n'a pas pu être mise à jour. Merci de réessayer.",
+            "message_sending_aborted": "annulé par l'utilisateur"
         },
         "check_and_try_again": "Merci de vérifier Carbonio et de réessayer",
         "could_not_find_to_show": "Désolé, il n'est pas possible de trouver un élément à afficher",
@@ -628,7 +644,8 @@
         "share_updated": "\"Droits d'accès mis à jour\"",
         "email_moved_to_trash": "L'email a été déplacé dans la corbeille",
         "tag_applied": "Étiquette \"{{tag}}\" appliquée",
-        "tag_removed": "L'étiquette \"{{tag}}\" a été supprimée"
+        "tag_removed": "L'étiquette \"{{tag}}\" a été supprimée",
+        "email_copied_to_clipboard": "L'email a été copié dans le presse papier."
     },
     "title": {
         "new_messages": "Nouveaux messages",

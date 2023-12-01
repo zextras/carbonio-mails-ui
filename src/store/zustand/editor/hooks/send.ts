@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { useCallback, useMemo } from 'react';
+
 import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
@@ -129,11 +131,16 @@ export const useEditorSend = (
 	send: (options?: SendMessageOptions) => SendMessageResult;
 } => {
 	const status = useEditorsStore((state) => state.editors[editorId].sendAllowedStatus);
-	const sendInvoker = (options?: SendMessageOptions): SendMessageResult =>
-		sendFromEditor(editorId, options);
+	const sendInvoker = useCallback(
+		(options?: SendMessageOptions): SendMessageResult => sendFromEditor(editorId, options),
+		[editorId]
+	);
 
-	return {
-		status,
-		send: sendInvoker
-	};
+	return useMemo(
+		() => ({
+			status,
+			send: sendInvoker
+		}),
+		[sendInvoker, status]
+	);
 };

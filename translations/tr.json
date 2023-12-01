@@ -28,7 +28,8 @@
         "click_preview": "Önizleme için tıklayın",
         "edit_anyway": "Yine de düzenle",
         "mark_all_read": "Tümünü okundu olarak işaretle",
-        "click_open": "Açmak için tıklayın"
+        "click_open": "Açmak için tıklayın",
+        "preview_on_separated_window": "Yeni pencerede aç"
     },
     "composer": {
         "attachment": {
@@ -90,7 +91,9 @@
         "send_later_success": "Mesajınız {{date}} - {{time}} tarih ve saatinde gönderilecek",
         "select_date_time": "Bu mesajı göndermek için tarih ve saati seçin",
         "delete_attachment_message2": "Önce indirmek ister misiniz?",
-        "delete_attachment_message1": "Ekiniz, Carbonio'dan tamamen silinecek."
+        "delete_attachment_message1": "Ekiniz, Carbonio'dan tamamen silinecek.",
+        "send_email": "E-posta gönder",
+        "copy": "Kopyala"
     },
     "snackbar": {
         "share_resend": "Paylaşım davetini yeniden gönder",
@@ -99,7 +102,8 @@
         "folder_shared": "Klasör paylaşıldı",
         "email_moved_to_trash": "E-posta Çöp Kutusuna taşındı",
         "tag_applied": "\"{{tag}}\" etiketi uygulandı",
-        "tag_removed": "\"{{tag}}\" etiketi kaldırıldı"
+        "tag_removed": "\"{{tag}}\" etiketi kaldırıldı",
+        "email_copied_to_clipboard": "E-posta panoya kopyalandı."
     },
     "label": {
         "cancel": "İptal",
