@@ -172,11 +172,18 @@ export const useMessageActions = (
 		!isInsideExtraWindow && actions.push(applyTag({ tags, conversation: message, isMessage: true }));
 	}
 
+	actions.push(downloadMsg({ messageId: message.id },{ messageSubject: message.subject }));
+
+	//only for preview message on separated folder
+	const actions2 = [];
+	actions2.push(printMsg({ message }));
+	actions2.push(showOriginalMsg({ id: message.id }));
+	actions2.push(downloadMsg({ messageId: message.id },{ messageSubject: message.subject }));
+
 	!isInsideExtraWindow &&
 		actions.push(
-			previewMessageOnSeparatedWindow(message.id, folderId, message.subject, createWindow, actions)
+			previewMessageOnSeparatedWindow(message.id, folderId, message.subject, createWindow, actions2)
 		);
-	actions.push(downloadMsg({ messageId: message.id },{ messageSubject: message.subject }));
 
 	return actions;
 };
