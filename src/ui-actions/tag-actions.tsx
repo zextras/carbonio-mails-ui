@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { ReactElement, useCallback, useContext, useMemo, useState } from 'react';
+
 import {
 	Checkbox,
 	Icon,
@@ -11,17 +13,16 @@ import {
 	Row,
 	Text
 } from '@zextras/carbonio-design-system';
-import React, { ReactElement, useCallback, useContext, useMemo, useState } from 'react';
-
 import {
 	Tag,
 	ZIMBRA_STANDARD_COLORS,
 	getBridgedFunctions,
 	replaceHistory,
 	t,
-	useTags
+	getTags
 } from '@zextras/carbonio-shell-ui';
 import { every, find, includes, map, reduce, some } from 'lodash';
+
 import DeleteTagModal from '../carbonio-ui-commons/components/tags/delete-tag-modal';
 import { TagsActionsType } from '../carbonio-ui-commons/constants';
 import { useAppDispatch } from '../hooks/redux';
@@ -36,7 +37,6 @@ import type {
 	TagsFromStoreType
 } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
-import { MessageActionsDescriptors } from '../constants';
 
 export const createTag = ({ createModal }: ArgumentType): TagActionsReturnType => ({
 	id: TagsActionsType.NEW,
@@ -425,10 +425,10 @@ export const useGetTagsActions = ({ tag }: ArgumentType): Array<TagActionsReturn
 		[createModal, tag]
 	);
 };
+const tagsFromStore = getTags();
 
-export const useTagsArrayFromStore = (): Array<ItemType> => {
-	const tagsFromStore = useTags();
-	return useMemo(
+export const useTagsArrayFromStore = (): Array<ItemType> =>
+	useMemo(
 		() =>
 			reduce(
 				tagsFromStore,
@@ -438,9 +438,8 @@ export const useTagsArrayFromStore = (): Array<ItemType> => {
 				},
 				[]
 			),
-		[tagsFromStore]
+		[]
 	);
-};
 
 export const useTagExist = (tags: Array<Tag>): boolean => {
 	const tagsArrayFromStore = useTagsArrayFromStore();

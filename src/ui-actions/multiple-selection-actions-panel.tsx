@@ -3,7 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import React, {
+	FC,
+	ReactElement,
+	SyntheticEvent,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState
+} from 'react';
 
 import {
 	Button,
@@ -13,7 +21,7 @@ import {
 	Row,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getBridgedFunctions, getTags, t } from '@zextras/carbonio-shell-ui';
 import { every, filter, findIndex, some } from 'lodash';
 
 import {
@@ -57,6 +65,8 @@ type MultipleSelectionActionsPanelProps = {
 };
 type MsgOrConv = (Partial<MailMessage> & Pick<MailMessage, 'id'>) | Conversation;
 
+const tagsFromStore = getTags();
+
 export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProps> = ({
 	items,
 	selectedIds,
@@ -84,7 +94,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	const dispatch = useAppDispatch();
 	const ids = Object.values(selectedIds ?? []);
 	const selectedConversation = filter(items, (item: MsgOrConv) => ids.includes(item.id ?? '0'));
-	const tags = useTags();
+	const tags = useMemo(() => tagsFromStore, []);
 	const foldersExcludedMarkReadUnread = [FOLDERS.DRAFTS, FOLDERS.SPAM, FOLDERS.TRASH];
 	const foldersExcludedTrash = [FOLDERS.TRASH];
 	const foldersIncludedDeletePermanently = [FOLDERS.TRASH];

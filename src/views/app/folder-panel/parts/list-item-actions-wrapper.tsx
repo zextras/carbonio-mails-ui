@@ -6,7 +6,7 @@
 import React, { FC, ReactElement, SyntheticEvent, useCallback } from 'react';
 
 import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
-import { useTags } from '@zextras/carbonio-shell-ui';
+import { getTags } from '@zextras/carbonio-shell-ui';
 import styled, { DefaultTheme } from 'styled-components';
 
 import { isConversation } from '../../../../helpers/messages';
@@ -81,6 +81,8 @@ const HoverActionComponent = ({
 	);
 };
 
+const tagsFromStore = getTags();
+
 export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	children,
 	onClick,
@@ -90,7 +92,6 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	deselectAll
 }) => {
 	const dispatch = useAppDispatch();
-	const tags = useTags();
 	const { createWindow } = useExtraWindowsManager();
 	const messageActions = useMessageActions(isConversation(item) ? undefined : item, true);
 
@@ -98,7 +99,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 		item,
 		dispatch,
 		deselectAll,
-		tags,
+		tags: tagsFromStore,
 		createWindow,
 		messageActions
 	});

@@ -23,9 +23,9 @@ import {
 	ZIMBRA_STANDARD_COLORS,
 	pushHistory,
 	t,
-	useTags,
 	useUserAccounts,
-	useUserSettings
+	useUserSettings,
+	getTags
 } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
 import styled from 'styled-components';
@@ -58,6 +58,8 @@ const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
 `;
 
+const tagsFromStore = getTags();
+
 export const ConversationListItem: FC<ConversationListItemProps> = memo(
 	function ConversationListItem({
 		item,
@@ -84,7 +86,6 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		const conversationStatus = useAppSelector((state: MailsStateType) =>
 			selectConversationExpandedStatus(state, item.id)
 		);
-		const tagsFromStore = useTags();
 		const tags = useMemo(
 			() =>
 				uniqBy(
@@ -116,7 +117,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 					),
 					'id'
 				),
-			[item.tags, tagsFromStore]
+			[item.tags]
 		);
 
 		const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';

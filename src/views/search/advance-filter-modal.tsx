@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useState, useCallback, useMemo, useEffect } from 'react';
+
 import {
 	CustomModal,
 	Container,
@@ -12,19 +13,22 @@ import {
 	TextWithTooltip,
 	Padding
 } from '@zextras/carbonio-design-system';
+import { QueryChip, ZIMBRA_STANDARD_COLORS, t, getTags } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map } from 'lodash';
-import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
+
+import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
+import ReceivedSentAddressRow from './parts/received-sent-address-row';
+import SendReceivedDateRow from './parts/send-date-row';
+import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
+import SubjectKeywordRow from './parts/subject-keyword-row';
+import TagFolderRow from './parts/tag-folder-row';
+import ToggleFilters from './parts/toggle-filters';
+import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import ToggleFilters from './parts/toggle-filters';
-import SubjectKeywordRow from './parts/subject-keyword-row';
-import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
-import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
-import TagFolderRow from './parts/tag-folder-row';
-import SendReceivedDateRow from './parts/send-date-row';
-import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
-import ReceivedSentAddressRow from './parts/received-sent-address-row';
 import type { AdvancedFilterModalProps, KeywordState } from '../../types';
+
+const tagsFromStore = getTags();
 
 const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	open,
@@ -55,9 +59,11 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 	const [isSharedFolderIncludedTobe, setIsSharedFolderIncludedTobe] =
 		useState(isSharedFolderIncluded);
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
+	const tags = useMemo(() => tagsFromStore, []);
+
 	const tagOptions = useMemo(
 		() =>
-			map(getTags(), (item) => ({
+			map(tags, (item) => ({
 				...item,
 				label: item.name,
 				customComponent: (
@@ -75,7 +81,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 					</Row>
 				)
 			})),
-		[]
+		[tags]
 	);
 	const [tag, setTag] = useState<KeywordState>([]);
 

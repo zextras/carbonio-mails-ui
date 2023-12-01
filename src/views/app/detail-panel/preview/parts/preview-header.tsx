@@ -31,11 +31,11 @@ import {
 	getColor
 } from '@zextras/carbonio-design-system';
 import {
-	useTags,
 	useUserAccounts,
 	ZIMBRA_STANDARD_COLORS,
 	runSearch,
-	t
+	t,
+	getTags
 } from '@zextras/carbonio-shell-ui';
 import {
 	capitalize,
@@ -97,6 +97,8 @@ const fallbackContact = {
 	fullName: ''
 };
 
+const tagsFromStore = getTags();
+
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactElement => {
 	const { message, onClick, open, isExternalMessage } = compProps;
 
@@ -137,7 +139,6 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 		textRef?.current?.clientWidth
 	]);
 
-	const tagsFromStore = useTags();
 	const tags = useMemo(
 		() =>
 			reduce(
@@ -205,7 +206,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 				},
 				[]
 			),
-		[message.tags, tagsFromStore]
+		[message.tags]
 	);
 
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);

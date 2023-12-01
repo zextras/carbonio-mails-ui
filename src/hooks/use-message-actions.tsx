@@ -5,7 +5,7 @@
  */
 import { useMemo } from 'react';
 
-import { FOLDERS, useAppContext, useTags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, getTags, useAppContext } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -35,6 +35,8 @@ import { applyTag } from '../ui-actions/tag-actions';
 import { useExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';
 
+const tagsFromStore = getTags();
+
 /*
  * FIXME this hook is used only by the displayer. It should be aligned/merged with
  * 	the others functions that are providing primary and secondary actions for a message
@@ -57,7 +59,8 @@ export const useMessageActions = (
 		() => [FOLDERS.INBOX, FOLDERS.SENT, FOLDERS.DRAFTS, FOLDERS.TRASH, FOLDERS.SPAM],
 		[]
 	);
-	const tags = useTags();
+	const tags = tagsFromStore;
+
 	const actions = [];
 
 	if (!message) {

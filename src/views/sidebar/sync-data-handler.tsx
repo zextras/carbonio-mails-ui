@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 
 import {
 	FOLDERS,
@@ -64,7 +64,7 @@ const InboxBadgeUpdater = (): null => {
 	return null;
 };
 
-const tags = getTags();
+const tagsFromStore = getTags();
 
 export const SyncDataHandler: FC = () => {
 	const notifyList = useNotify();
@@ -88,6 +88,7 @@ export const SyncDataHandler: FC = () => {
 			}
 		});
 	}, [currentFolder, dispatch, notifyList]);
+	const tags = useMemo(() => tagsFromStore, []);
 
 	useEffect(() => {
 		if (initialized) {
@@ -192,6 +193,6 @@ export const SyncDataHandler: FC = () => {
 				});
 			}
 		}
-	}, [dispatch, initialized, messagesState, notifyList, seq]);
+	}, [dispatch, initialized, messagesState, notifyList, seq, tags]);
 	return <InboxBadgeUpdater />;
 };

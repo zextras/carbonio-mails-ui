@@ -3,9 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
+
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type {
@@ -15,6 +17,8 @@ import type {
 	GetConvResponse,
 	IncompleteMessage
 } from '../../types';
+
+const tagsFromStore = getTags();
 
 export const getConv = createAsyncThunk<
 	{ conversation: Partial<Conversation>; messages: Array<IncompleteMessage> },
@@ -31,7 +35,7 @@ export const getConv = createAsyncThunk<
 				fetch
 			}
 		})) as GetConvResponse;
-		const tags = getTags();
+		const tags = tagsFromStore;
 		const conversation = normalizeConversation({ c: result.c[0], tags });
 		const messages = map(result.c[0].m, (item) =>
 			normalizeMailMessageFromSoap(item, false)

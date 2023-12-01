@@ -18,8 +18,8 @@ import {
 	ZIMBRA_STANDARD_COLORS,
 	runSearch,
 	t,
-	useTags,
-	QueryChip
+	QueryChip,
+	getTags
 } from '@zextras/carbonio-shell-ui';
 import { reduce } from 'lodash';
 
@@ -80,11 +80,10 @@ export const TagLabel: FC<ItemType> = (props) => {
 		</Dropdown>
 	);
 };
+const tagsFromStore = getTags();
 
-const useGetTagsAccordion = (): TagsAccordionItems => {
-	const tagsFromStore = useTags();
-
-	return useMemo(
+const useGetTagsAccordion = (): TagsAccordionItems =>
+	useMemo(
 		() => ({
 			id: 'Tags',
 			label: t('label.tags', 'Tags'),
@@ -113,8 +112,7 @@ const useGetTagsAccordion = (): TagsAccordionItems => {
 				[]
 			)
 		}),
-		[tagsFromStore]
+		[]
 	);
-};
 
 export default useGetTagsAccordion;

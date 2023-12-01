@@ -20,9 +20,9 @@ import {
 	addBoard,
 	replaceHistory,
 	t,
-	useTags,
 	useUserAccounts,
-	useUserSettings
+	useUserSettings,
+	getTags
 } from '@zextras/carbonio-shell-ui';
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
@@ -43,6 +43,8 @@ import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { SenderName } from '../parts/sender-name';
+
+const tagsFromStore = getTags();
 
 export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
 	item,
@@ -97,7 +99,6 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	);
 
 	const accounts = useUserAccounts();
-	const tagsFromStore = useTags();
 	const messageFolder = useFolder(item.parent);
 	const [date] = useMemo(() => {
 		if (item) {
@@ -155,7 +156,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				},
 				[] as Array<Tag & { color: string }>
 			),
-		[item.tags, tagsFromStore]
+		[item.tags]
 	);
 
 	const fragmentLabel = useMemo(
