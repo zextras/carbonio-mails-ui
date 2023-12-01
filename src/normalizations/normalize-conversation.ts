@@ -55,7 +55,7 @@ export const normalizeConversation = ({
 			date: c.d,
 			messages,
 			participants: c.e ? map(c.e, normalizeParticipantsFromSoap) : undefined,
-			subject: !isNil(c.su) ? c.su : '',
+			subject: c.su,
 			fragment: c.fr,
 			read: !isNil(c.f) ? !/u/.test(c.f) : !(c.u > 0),
 			hasAttachment: !isNil(c.f) ? /a/.test(c.f) : undefined,
