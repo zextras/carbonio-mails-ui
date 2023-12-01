@@ -292,9 +292,17 @@ export const useMessageActions = (
 		actions.push(...getSpamActions({ isInsideExtraWindow, message, dispatch, tags, folderId }));
 	}
 
+	actions.push(downloadEml({ id: message.id }));
+
+	//only for preview message on separated folder
+	const actions2 = [];
+	actions2.push(printMsg({ message }));
+	actions2.push(showOriginalMsg({ id: message.id }));
+	actions2.push(downloadEml({ id: message.id }));
+
 	!isInsideExtraWindow &&
 		actions.push(
-			previewMessageOnSeparatedWindow(message.id, folderId, message.subject, createWindow, actions)
+			previewMessageOnSeparatedWindow(message.id, folderId, message.subject, createWindow, actions2)
 		);
 
 	return actions;
