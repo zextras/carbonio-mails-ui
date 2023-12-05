@@ -3,12 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	Account,
-	AccountSettings,
-	AccountSettingsPrefs,
-	FOLDERS
-} from '@zextras/carbonio-shell-ui';
+import { AccountSettingsPrefs, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
 
@@ -20,7 +15,6 @@ import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { htmlEncode } from '../commons/get-quoted-text-util';
 import { LineType } from '../commons/utils';
 import { getIdentityDescriptor } from '../helpers/identities';
-import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
 import type {
 	InlineAttachments,
 	MailAttachmentParts,
@@ -44,46 +38,6 @@ export const retrieveAttachmentsType = (
 				: acc,
 		[] as Array<MailAttachmentParts>
 	);
-
-export const emptyEditor = (
-	editorId: string,
-	account: Account,
-	settings: AccountSettings
-): MailsEditor => {
-	const signatureNewMessageValue = getSignatureValue(
-		account,
-		String(settings.prefs.zimbraPrefDefaultSignatureId)
-	);
-
-	const textWithSignatureNewMessage: [string, string] = [
-		composeMailBodyWithSignature(signatureNewMessageValue, false),
-		composeMailBodyWithSignature(signatureNewMessageValue, true)
-	];
-
-	const isRichText = settings?.prefs?.zimbraPrefComposeFormat === 'html';
-	return {
-		richText: isRichText,
-		text: textWithSignatureNewMessage,
-		to: [],
-		cc: [],
-		bcc: [],
-		from: {
-			type: ParticipantRole.FROM,
-			address: account.name,
-			name: account.name,
-			fullName: account.displayName
-		},
-		inline: [],
-		sender: {},
-		editorId,
-		subject: '',
-		attach: { mp: [] },
-		urgent: false,
-		requestReadReceipt: false,
-		id: undefined,
-		attachmentFiles: []
-	};
-};
 
 export const retrieveFROM = (original: MailMessage): Array<Participant> =>
 	filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.FROM);
