@@ -46,7 +46,7 @@ export type FetchConversationsParameters = {
 	limit: number;
 	before?: Date | null;
 	types?: string;
-	sortBy?: 'dateDesc' | 'dateAsc';
+	sortBy?: SortBy;
 	query?: string;
 	offset?: undefined | number;
 	recip?: '0' | '1' | '2';

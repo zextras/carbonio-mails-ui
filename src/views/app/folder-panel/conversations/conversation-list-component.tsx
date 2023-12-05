@@ -4,17 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React, { FC, RefObject, memo, useEffect, useMemo } from 'react';
+
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
 import { find, map, noop, reduce } from 'lodash';
-import React, { FC, RefObject, memo, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+
+import { ConversationListItemComponent } from './conversation-list-item-component';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Conversation } from '../../../../types';
 import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
-import { ConversationListItemComponent } from './conversation-list-item-component';
 
 const DragImageContainer = styled.div`
 	position: absolute;
@@ -168,6 +170,7 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 							itemsCount={totalConversations}
 							isSelectModeOn={isSelectModeOn}
 							setIsSelectModeOn={setIsSelectModeOn}
+							folderId={folderId}
 						/>
 					)
 				)}

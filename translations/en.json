@@ -838,6 +838,31 @@
         "tag_applied": "\"{{tag}}\" tag applied",
         "tag_removed": "\"{{tag}}\" tag removed"
     },
+    "sortingDropdown": {
+        "ascendingOrder": "Ascending order",
+        "attachment": "Attachment",
+        "date": "Date",
+        "descendingOrder": "Descending order",
+        "flagged": "Flagged",
+        "from": "From",
+        "important": "Important",
+        "size": "Size",
+        "subject": "Subject",
+        "to": "To"
+    },
+    "sorting_dropdown": {
+        "ascendingOrder": "Ascending order",
+        "attachment": "Attachment",
+        "date": "Date",
+        "descendingOrder": "Descending order",
+        "flagged": "Flagged",
+        "from": "From",
+        "important": "Important",
+        "size": "Size",
+        "subject": "Subject",
+        "to": "To",
+        "unread": "Unread"
+    },
     "title": {
         "new_messages": "New Messages",
         "replies_forwards": "Replies & Forwards"
