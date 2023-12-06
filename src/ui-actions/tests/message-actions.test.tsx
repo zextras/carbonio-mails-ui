@@ -78,7 +78,7 @@ function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 describe('Messages actions calls', () => {
 	describe('Add flag action', () => {
 		test('Single id', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -107,7 +107,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -140,7 +140,7 @@ describe('Messages actions calls', () => {
 
 	describe('Remove flag action', () => {
 		test('Single id', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -169,7 +169,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -204,7 +204,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as read action', () => {
 		test('Single id', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -234,7 +234,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -269,7 +269,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as unread action', () => {
 		test('Single id', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -299,7 +299,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -335,7 +335,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as spam action', () => {
 		test('Single id', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -366,7 +366,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -403,7 +403,7 @@ describe('Messages actions calls', () => {
 
 	describe('Mark as not spam action', () => {
 		test('Single id', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -434,7 +434,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -470,7 +470,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Print action', () => {
-		populateFoldersStore(FOLDER_VIEW.message);
+		populateFoldersStore({ view: FOLDER_VIEW.message });
 		const msg = generateMessage({});
 		const store = generateStore({
 			messages: {
@@ -497,7 +497,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Show source', () => {
-		populateFoldersStore(FOLDER_VIEW.message);
+		populateFoldersStore({ view: FOLDER_VIEW.message });
 		const msg = generateMessage({});
 		const store = generateStore({
 			messages: {
@@ -523,7 +523,7 @@ describe('Messages actions calls', () => {
 
 	describe('Move to trash action', () => {
 		test('Single id', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -552,7 +552,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -587,7 +587,7 @@ describe('Messages actions calls', () => {
 
 	describe('Delete permanently action', () => {
 		test('Single id', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -621,7 +621,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
@@ -661,7 +661,7 @@ describe('Messages actions calls', () => {
 
 	describe('Move action', () => {
 		test('Single id', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 			const sourceFolder = inboxChildren?.[0].id ?? '';
 			const destinationFolder = FOLDERS.INBOX;
@@ -716,7 +716,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 
 			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 			const sourceFolder = inboxChildren?.[0].id ?? '';
@@ -778,7 +778,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Reply action', () => {
-		populateFoldersStore(FOLDER_VIEW.message);
+		populateFoldersStore({ view: FOLDER_VIEW.message });
 
 		const msg: MailMessage = generateMessage({});
 
@@ -808,7 +808,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Reply all action', () => {
-		populateFoldersStore(FOLDER_VIEW.message);
+		populateFoldersStore({ view: FOLDER_VIEW.message });
 
 		const msg: MailMessage = generateMessage({});
 
@@ -838,7 +838,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Forward action', () => {
-		populateFoldersStore(FOLDER_VIEW.message);
+		populateFoldersStore({ view: FOLDER_VIEW.message });
 		const msg: MailMessage = generateMessage({});
 		generateStore({
 			messages: {
@@ -866,7 +866,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Edit draft action', () => {
-		populateFoldersStore(FOLDER_VIEW.message);
+		populateFoldersStore({ view: FOLDER_VIEW.message });
 		const msg: MailMessage = generateMessage({});
 		generateStore({
 			messages: {
@@ -894,7 +894,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Edit as new action', () => {
-		populateFoldersStore(FOLDER_VIEW.message);
+		populateFoldersStore({ view: FOLDER_VIEW.message });
 		const msg: MailMessage = generateMessage({});
 		generateStore({
 			messages: {
@@ -922,7 +922,7 @@ describe('Messages actions calls', () => {
 	});
 
 	test('Send draft action', async () => {
-		populateFoldersStore(FOLDER_VIEW.message);
+		populateFoldersStore({ view: FOLDER_VIEW.message });
 		const msg = generateMessage({ folderId: FOLDERS.DRAFTS });
 		const store = generateStore({
 			messages: {
@@ -950,7 +950,7 @@ describe('Messages actions calls', () => {
 
 	describe('Redirect action', () => {
 		test('Redirect button is disabled when no recipients address is set', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -971,7 +971,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Redirect button is enabled when at least one recipient address is set', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -1003,7 +1003,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('API call for one recipients', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -1039,7 +1039,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('API call for 5 recipients', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -1090,7 +1090,7 @@ describe('Messages actions calls', () => {
 
 	describe('Tag action', () => {
 		test('Add a tag to a message', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -1120,7 +1120,7 @@ describe('Messages actions calls', () => {
 		});
 
 		test('Remove a tag from a message', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const tagKey = faker.helpers.arrayElement(Object.keys(getTags()));
 			const tag = getTag(tagKey);
 			const msg = generateMessage({ tags: [tag.id] });
