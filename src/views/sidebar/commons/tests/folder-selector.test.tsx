@@ -100,7 +100,7 @@ describe('Folder selector', () => {
 
 	describe('Filter', () => {
 		test('if the user type "inbox" in the filter only the Inbox folder is displayed', async () => {
-			populateFoldersStore(FOLDER_VIEW.message);
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const inboxCount = getFoldersArray().reduce<number>(
 				(result, folder) => (isInbox(folder.id) ? result + 1 : result),
 				0
