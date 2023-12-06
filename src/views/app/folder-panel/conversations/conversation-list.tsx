@@ -3,12 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+
+import { ConversationListComponent } from './conversation-list-component';
+import { ConversationListItemComponent } from './conversation-list-item-component';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { LIST_LIMIT } from '../../../../constants';
 import { handleKeyboardShortcuts } from '../../../../hooks/keyboard-shortcuts';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useConversationListItems } from '../../../../hooks/use-conversation-list';
@@ -19,9 +24,6 @@ import {
 	selectFolderSearchStatus
 } from '../../../../store/conversations-slice';
 import type { AppContext } from '../../../../types';
-import { ConversationListComponent } from './conversation-list-component';
-import { ConversationListItemComponent } from './conversation-list-item-component';
-import { LIST_LIMIT } from '../../../../constants';
 
 const ConversationList: FC = () => {
 	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
@@ -169,6 +171,7 @@ const ConversationList: FC = () => {
 			selected={selected}
 			deselectAll={deselectAll}
 			dragImageRef={dragImageRef}
+			hasMore={hasMore}
 		/>
 	);
 };
