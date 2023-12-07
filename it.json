@@ -31,7 +31,10 @@
             "tag_deleted": "Etichetta {{name}} eliminata con successo",
             "tag_not_updated": "Qualcosa è andato storto, l'etichetta non è stata aggiornata. Riprova.",
             "tag_updated": "Etichetta aggiornata con successo",
-            "message_sending_aborted": "annullato dall'utente"
+            "message_sending_aborted": "annullato dall'utente",
+            "apply_filter_rules_error": "Si è verificato un errore durante l'applicazione del filtro '{{filterName}}'",
+            "apply_filter_rules_started": "Filtro '{{filterName}}' viene applicato ai messaggi della cartella '{{folderPath}}'",
+            "apply_filter_rules_completed": "Filtro '{{filterName}}' applicato correttamente a {{involvedMessagesCount}} messaggi della cartella '{{folderPath}}'"
         },
         "modal": {
             "delete": {
@@ -328,7 +331,8 @@
         "missing_sender": "non è specificato il mittente del messaggio",
         "no_sender": "non è specificato il mittente del messaggio",
         "upload_failed": "Caricamento non riuscito",
-        "no_identity_selected": "<nessuna identità selezionata>"
+        "no_identity_selected": "<nessuna identità selezionata>",
+        "no_folder_selected": "Nessuna cartella selezionata"
     },
     "tooltip": {
         "add_attachments": "Aggiungi allegati",
@@ -384,7 +388,10 @@
         "click_preview": "Clicca per visualizzare l'anteprima",
         "edit_anyway": "Modifica comunque",
         "mark_all_read": "Segna tutti come letti",
-        "click_open": "Clicca per aprire"
+        "click_open": "Clicca per aprire",
+        "apply_filter_on_folder": "Applica filtro a questa cartella",
+        "select_folders": "Seleziona cartelle",
+        "preview_on_separated_window": "Apri in una nuova finestra"
     },
     "folder": {
         "modal": {
@@ -709,7 +716,8 @@
         "outgoing_message_filters": "Filtri Messaggi in uscita",
         "run": "Corri",
         "available_filters": "Filtri Disponibili",
-        "filter_note": "Nota: le modifiche effettuate alle regole dei filtri vengono salvate immediatamente"
+        "filter_note": "Nota: le modifiche effettuate alle regole dei filtri vengono salvate immediatamente",
+        "apply": "Applica"
     },
     "folder_panel": {
         "modal": {
@@ -828,5 +836,13 @@
         "composing_messages": "Composizione messaggi"
     },
     "go_back": "Indietro",
-    "messages,new_email": "nuova email"
+    "messages,new_email": "nuova email",
+    "modals": {
+        "apply_filters": {
+            "label_involved_messages": "<0>{{involvedMessagesCount}} messaggi</0> verranno elaborati all'interno della cartella selezionata.",
+            "title": "Applicazione filtro \"{{filterName}}\"",
+            "label_confirm_request": "Vuoi applicare il filtro?",
+            "button_apply": "Applica"
+        }
+    }
 }
