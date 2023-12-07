@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
 import { screen } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
-import React from 'react';
+
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateStore } from '../../../../../tests/generators/store';
