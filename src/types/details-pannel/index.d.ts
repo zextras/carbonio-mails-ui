@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { NameSpace } from '@zextras/carbonio-shell-ui';
+
 import { MailMessage } from '../messages';
 
 type OpenEmlPreviewType = (
@@ -40,6 +42,13 @@ export type PreviewPanelActionsType = {
 	folderId: string;
 	isMessageView: boolean;
 	conversation: Conversation;
+};
+
+export type CopyToFileRequest = {
+	_jsns: NameSpace;
+	mid: string;
+	part: string;
+	destinationFolderId: string;
 };
 
 export type CopyToFileResponse = {

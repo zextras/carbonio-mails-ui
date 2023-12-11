@@ -19,8 +19,13 @@ import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/account
 import { getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import {
+	makeListItemsVisible,
+	setupHook,
+	setupTest
+} from '../../carbonio-ui-commons/test/test-setup';
 import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../constants';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
@@ -33,21 +38,28 @@ import {
 import DeleteConvConfirm from '../delete-conv-modal';
 import {
 	editAsNewMsg,
-	editDraft,
 	forwardMsg,
-	moveMsgToTrash,
 	printMsg,
 	replyAllMsg,
 	replyMsg,
 	sendDraft,
-	setMsgAsSpam,
+	useSetMsgAsSpam,
 	setMsgFlag,
 	setMsgRead,
-	showOriginalMsg
+	showOriginalMsg,
+	useMoveMsgToTrash,
+	useEditDraft
 } from '../message-actions';
 import MoveConvMessage from '../move-conv-msg';
 import RedirectMessageAction from '../redirect-message-action';
 import { TagsDropdownItem } from '../tag-actions';
+
+jest.mock<typeof import('../../hooks/use-ui-utilities')>('../../hooks/use-ui-utilities', () => ({
+	useUiUtilities: (): ReturnType<typeof useUiUtilities> => ({
+		createSnackbar: jest.fn(),
+		createModal: jest.fn()
+	})
+}));
 
 function createAPIInterceptor<T>(apiAction: string): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
@@ -344,7 +356,9 @@ describe('Messages actions calls', () => {
 					status: {}
 				}
 			});
-
+			const {
+				result: { current: setMsgAsSpam }
+			} = setupHook(useSetMsgAsSpam);
 			const action = setMsgAsSpam({
 				ids: [msg.id],
 				dispatch: store.dispatch,
@@ -380,6 +394,10 @@ describe('Messages actions calls', () => {
 
 			const msgIds = msgs.map<string>((msg) => msg.id);
 
+			const {
+				result: { current: setMsgAsSpam }
+			} = setupHook(useSetMsgAsSpam);
+
 			const action = setMsgAsSpam({
 				ids: msgIds,
 				dispatch: store.dispatch,
@@ -412,6 +430,10 @@ describe('Messages actions calls', () => {
 					status: {}
 				}
 			});
+
+			const {
+				result: { current: setMsgAsSpam }
+			} = setupHook(useSetMsgAsSpam);
 
 			const action = setMsgAsSpam({
 				ids: [msg.id],
@@ -448,6 +470,9 @@ describe('Messages actions calls', () => {
 
 			const msgIds = msgs.map<string>((msg) => msg.id);
 
+			const {
+				result: { current: setMsgAsSpam }
+			} = setupHook(useSetMsgAsSpam);
 			const action = setMsgAsSpam({
 				ids: msgIds,
 				dispatch: store.dispatch,
@@ -533,6 +558,9 @@ describe('Messages actions calls', () => {
 				}
 			});
 
+			const {
+				result: { current: moveMsgToTrash }
+			} = setupHook(useMoveMsgToTrash);
 			const action = moveMsgToTrash({
 				ids: [msg.id],
 				dispatch: store.dispatch,
@@ -566,6 +594,9 @@ describe('Messages actions calls', () => {
 
 			const msgIds = msgs.map<string>((msg) => msg.id);
 
+			const {
+				result: { current: moveMsgToTrash }
+			} = setupHook(useMoveMsgToTrash);
 			const action = moveMsgToTrash({
 				ids: msgIds,
 				dispatch: store.dispatch,
@@ -582,6 +613,9 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+			act(() => {
+				jest.advanceTimersByTime(TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT);
+			});
 		});
 	});
 
@@ -613,6 +647,9 @@ describe('Messages actions calls', () => {
 			await user.click(button);
 
 			const requestParameter = await interceptor;
+			act(() => {
+				jest.runOnlyPendingTimers();
+			});
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('delete');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -876,6 +913,9 @@ describe('Messages actions calls', () => {
 			}
 		});
 
+		const {
+			result: { current: editDraft }
+		} = setupHook(useEditDraft);
 		const action = editDraft({
 			id: msg.id,
 			folderId: msg.parent

@@ -3,19 +3,24 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
 import React, { FC, useCallback, useMemo } from 'react';
+
+import { Container, Text } from '@zextras/carbonio-design-system';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { folderAction } from '../../store/actions/folder-action';
 import type { ModalProps } from '../../types';
 
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
+	const { createSnackbar } = useUiUtilities();
+
 	const onConfirm = useCallback(() => {
 		folderAction({ folder, recursive: true, op: 'empty' }).then((res) => {
 			if (!('Fault' in res)) {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `trash`,
 					replace: true,
 					type: 'info',
@@ -27,7 +32,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 					hideButton: true
 				});
 			} else {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `trash`,
 					replace: true,
 					type: 'error',
@@ -38,7 +43,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 			}
 		});
 		onClose();
-	}, [folder, onClose]);
+	}, [createSnackbar, folder, onClose]);
 
 	const title = useMemo(
 		() =>

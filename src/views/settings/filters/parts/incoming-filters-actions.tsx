@@ -4,16 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
-import type { TFunction } from 'i18next';
+
 import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
+import type { TFunction } from 'i18next';
 import { find } from 'lodash';
-import { StoreProvider } from '../../../../store/redux';
-import { removeFilter, addFilter } from './actions';
-import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
-import { FilterContext } from './filter-context';
+
+import { useRemoveFilter, useAddFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
+import { FilterContext } from './filter-context';
 import ModifyFilterModal from './modify-filter/modify-filter-modal';
+import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
+import { StoreProvider } from '../../../../store/redux';
 
 type FilterListType = {
 	active: boolean;
@@ -116,8 +118,6 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
 							setFetchFilters={setFetchIncomingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
 							modifierFunc={modifyFilterRules}
 							filterName={selectedFilterName}
 							selectedFilter={selectedFilter}
@@ -139,6 +139,8 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		setIncomingFilters,
 		t
 	]);
+
+	const removeFilter = useRemoveFilter();
 	const onRemove = useCallback(
 		() =>
 			removeFilter({
@@ -153,9 +155,10 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				setFetchFilters: setFetchIncomingFilters,
 				modifierFunc: modifyFilterRules
 			}),
-		[t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
+		[removeFilter, t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
 	);
 
+	const addFilter = useAddFilter();
 	const onAdd = useCallback(
 		() =>
 			addFilter({
@@ -170,7 +173,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				setFetchFilters: setFetchIncomingFilters,
 				modifierFunc: modifyFilterRules
 			}),
-		[t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
+		[addFilter, t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
 	);
 
 	const openFilterModifyModal = useCallback(() => {

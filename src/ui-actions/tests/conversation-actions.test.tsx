@@ -15,22 +15,34 @@ import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import { getTag, getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import {
+	makeListItemsVisible,
+	setupHook,
+	setupTest
+} from '../../carbonio-ui-commons/test/test-setup';
 import { TIMEOUTS } from '../../constants';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateStore } from '../../tests/generators/store';
 import { ConvActionRequest, Conversation, Status } from '../../types';
 import {
-	moveConversationToTrash,
 	printConversation,
 	setConversationsFlag,
 	setConversationsRead,
-	setConversationsSpam
+	useMoveConversationToTrash,
+	useSetConversationSpam
 } from '../conversation-actions';
 import DeleteConvConfirm from '../delete-conv-modal';
 import MoveConvMessage from '../move-conv-msg';
 import { TagsDropdownItem } from '../tag-actions';
+
+jest.mock<typeof import('../../hooks/use-ui-utilities')>('../../hooks/use-ui-utilities', () => ({
+	useUiUtilities: (): ReturnType<typeof useUiUtilities> => ({
+		createSnackbar: jest.fn(),
+		createModal: jest.fn()
+	})
+}));
 
 // TODO move into an utility module
 function createAPIInterceptor<T>(apiAction: string): Promise<T> {
@@ -405,7 +417,10 @@ describe('Conversation actions calls', () => {
 				}
 			});
 
-			const action = setConversationsSpam({
+			const {
+				result: { current: setConversationSpam }
+			} = setupHook(useSetConversationSpam);
+			const action = setConversationSpam({
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: false,
@@ -449,7 +464,11 @@ describe('Conversation actions calls', () => {
 			});
 
 			const convIds = conversations.map<string>((conv) => conv.id);
-			const action = setConversationsSpam({
+
+			const {
+				result: { current: setConversationSpam }
+			} = setupHook(useSetConversationSpam);
+			const action = setConversationSpam({
 				ids: convIds,
 				dispatch: store.dispatch,
 				value: false,
@@ -487,7 +506,10 @@ describe('Conversation actions calls', () => {
 				}
 			});
 
-			const action = setConversationsSpam({
+			const {
+				result: { current: setConversationSpam }
+			} = setupHook(useSetConversationSpam);
+			const action = setConversationSpam({
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: true,
@@ -531,7 +553,10 @@ describe('Conversation actions calls', () => {
 			});
 
 			const convIds = conversations.map<string>((conv) => conv.id);
-			const action = setConversationsSpam({
+			const {
+				result: { current: setConversationSpam }
+			} = setupHook(useSetConversationSpam);
+			const action = setConversationSpam({
 				ids: convIds,
 				dispatch: store.dispatch,
 				value: true,
@@ -588,6 +613,9 @@ describe('Conversation actions calls', () => {
 				}
 			});
 
+			const {
+				result: { current: moveConversationToTrash }
+			} = setupHook(useMoveConversationToTrash);
 			const action = moveConversationToTrash({
 				ids: [conv.id],
 				dispatch: store.dispatch,
@@ -604,6 +632,9 @@ describe('Conversation actions calls', () => {
 			expect(requestParameter.action.op).toBe('trash');
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+			act(() => {
+				jest.advanceTimersByTime(TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT);
+			});
 		});
 
 		test('Multiple ids', async () => {
@@ -631,6 +662,9 @@ describe('Conversation actions calls', () => {
 			});
 
 			const convIds = conversations.map<string>((conv) => conv.id);
+			const {
+				result: { current: moveConversationToTrash }
+			} = setupHook(useMoveConversationToTrash);
 			const action = moveConversationToTrash({
 				ids: convIds,
 				dispatch: store.dispatch,
@@ -681,12 +715,14 @@ describe('Conversation actions calls', () => {
 			const { user } = setupTest(component, { store });
 			const button = await screen.findByText(/label\.delete_permanently/i);
 			await user.click(button);
-
 			const requestParameter = await interceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
 			expect(requestParameter.action.op).toBe('delete');
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+			act(() => {
+				jest.runOnlyPendingTimers();
+			});
 		});
 
 		test('Multiple ids', async () => {

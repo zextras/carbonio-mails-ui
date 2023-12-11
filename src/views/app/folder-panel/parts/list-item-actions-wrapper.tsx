@@ -20,7 +20,7 @@ import type {
 	MessageActionReturnType,
 	TagActionItemType
 } from '../../../../types';
-import { getMsgConvActions } from '../../../../ui-actions/get-msg-conv-actions';
+import { useGetMsgConvActions } from '../../../../ui-actions/get-msg-conv-actions';
 import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
 
 const HoverBarContainer = styled(Container)<{ background: keyof DefaultTheme['palette'] }>`
@@ -95,6 +95,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	const { createWindow } = useExtraWindowsManager();
 	const messageActions = useMessageActions(isConversation(item) ? undefined : item, true);
 
+	const getMsgConvActions = useGetMsgConvActions();
 	const [hoverActions, dropdownActions] = getMsgConvActions({
 		item,
 		dispatch,

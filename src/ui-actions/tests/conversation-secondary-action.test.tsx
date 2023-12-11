@@ -6,6 +6,7 @@
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
 import { existsActionById } from './actions-tests-utils';
+import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import {
 	ASSERTION,
 	ConversationActionsDescriptors,
@@ -15,7 +16,7 @@ import {
 } from '../../constants';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
-import { getMsgConvActions } from '../get-msg-conv-actions';
+import { useGetMsgConvActions } from '../get-msg-conv-actions';
 
 describe('Actions visibility', () => {
 	describe('Conversation secondary actions', () => {
@@ -49,6 +50,9 @@ describe('Actions visibility', () => {
 				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
 				const account = getUserAccount();
+				const {
+					result: { current: getMsgConvActions }
+				} = setupHook(useGetMsgConvActions);
 				const actions = getMsgConvActions({
 					item: conv,
 					dispatch,
@@ -84,6 +88,9 @@ describe('Actions visibility', () => {
 				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
 				const account = getUserAccount();
+				const {
+					result: { current: getMsgConvActions }
+				} = setupHook(useGetMsgConvActions);
 				const actions = getMsgConvActions({
 					item: conv,
 					dispatch,
@@ -140,6 +147,9 @@ describe('Actions visibility', () => {
 				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
 				const account = getUserAccount();
+				const {
+					result: { current: getMsgConvActions }
+				} = setupHook(useGetMsgConvActions);
 				const actions = getMsgConvActions({
 					item: conv,
 					dispatch,
@@ -196,6 +206,9 @@ describe('Actions visibility', () => {
 				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
 				const account = getUserAccount();
+				const {
+					result: { current: getMsgConvActions }
+				} = setupHook(useGetMsgConvActions);
 				const actions = getMsgConvActions({
 					item: conv,
 					dispatch,

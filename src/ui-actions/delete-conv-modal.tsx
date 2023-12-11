@@ -3,12 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Text } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
 import React, { FC, useCallback } from 'react';
+
+import { Container, Text } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
+
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { useAppDispatch } from '../hooks/redux';
+import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction, msgAction } from '../store/actions';
 
 type DeleteConvConfirmPropType = {
@@ -24,6 +27,7 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 	onClose
 }) => {
 	const dispatch = useAppDispatch();
+	const { createSnackbar } = useUiUtilities();
 
 	const onConfirmConvDelete = useCallback(() => {
 		dispatch(
@@ -39,7 +43,7 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 		).then((res) => {
 			if (res.type.includes('fulfilled')) {
 				deselectAll && deselectAll();
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `trash-${selectedIDs}`,
 					replace: true,
 					type: 'info',
@@ -48,7 +52,7 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 					hideButton: true
 				});
 			} else {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `edit`,
 					replace: true,
 					type: 'error',
@@ -58,7 +62,7 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 			}
 			onClose();
 		});
-	}, [dispatch, isMessageView, selectedIDs, onClose, deselectAll]);
+	}, [dispatch, isMessageView, selectedIDs, onClose, deselectAll, createSnackbar]);
 
 	return (
 		<>

@@ -3,19 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import { find, includes, noop } from 'lodash';
+
+import { FolderSelector } from './commons/folder-selector';
+import { translatedSystemFolders } from './utils';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import { isValidFolderName } from '../../carbonio-ui-commons/utils/utils';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { createFolder } from '../../store/actions/create-folder';
 import type { ModalProps } from '../../types';
-import { FolderSelector } from './commons/folder-selector';
-import { translatedSystemFolders } from './utils';
-import { isValidFolderName } from '../../carbonio-ui-commons/utils/utils';
 
 export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [inputValue, setInputValue] = useState(() => t('new_folder', 'New Folder'));
@@ -46,6 +48,9 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		}
 		return false;
 	}, [inputValue]);
+
+	const { createSnackbar } = useUiUtilities();
+
 	useEffect(() => {
 		if (!folderDestination || !inputValue.length || showWarning) {
 			setDisabled(true);
@@ -68,7 +73,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		})
 			.then((res) => {
 				if (!('Fault' in res)) {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'success',
@@ -77,7 +82,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 						hideButton: true
 					});
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
@@ -93,7 +98,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		setFolderDestination(undefined);
 		setHasError(false);
 		onClose();
-	}, [folderDestination, inputValue, onClose]);
+	}, [createSnackbar, folderDestination?.id, inputValue, onClose]);
 
 	return folder ? (
 		<Container

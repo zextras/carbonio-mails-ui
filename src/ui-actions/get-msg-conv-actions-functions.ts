@@ -4,35 +4,37 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { useCallback } from 'react';
+
 import { FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
 
 import {
-	deleteConversationPermanently,
-	moveConversationToFolder,
-	moveConversationToTrash,
+	useMoveConversationToTrash,
 	previewConversationOnSeparatedWindowAction,
 	printConversation,
 	setConversationsFlag,
 	setConversationsRead,
-	setConversationsSpam
+	useDeleteConversationPermanently,
+	useSetConversationSpam,
+	useMoveConversationToFolder
 } from './conversation-actions';
 import {
-	deleteMessagePermanently,
 	editAsNewMsg,
-	editDraft,
 	forwardMsg,
-	moveMessageToFolder,
-	moveMsgToTrash,
+	useMoveMsgToTrash,
 	previewMessageOnSeparatedWindow,
 	printMsg,
-	redirectMsg,
 	replyAllMsg,
 	replyMsg,
 	sendDraft,
-	setMsgAsSpam,
 	setMsgFlag,
 	setMsgRead,
-	showOriginalMsg
+	showOriginalMsg,
+	useDeleteMessagePermanently,
+	useSetMsgAsSpam,
+	useMoveMessageToFolder,
+	useRedirectMsg,
+	useEditDraft
 } from './message-actions';
 import { applyTag } from './tag-actions';
 import { getFolderIdParts } from '../helpers/folders';
@@ -142,47 +144,49 @@ export function getForwardAction({
 	return !folderExcludedForward.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
-export function getMoveToTrashAction({
-	isConversation,
-	id,
-	dispatch,
-	folderId,
-	deselectAll,
-	foldersExcludedTrash
-}: {
+export const useMoveToTrashAction = (): ((arg: {
 	isConversation: boolean;
 	id: string;
 	dispatch: AppDispatch;
 	folderId: string;
 	deselectAll: () => void;
 	foldersExcludedTrash: string[];
-}): ActionReturnType {
-	const action = isConversation
-		? moveConversationToTrash({ ids: [id], dispatch, folderId, deselectAll })
-		: moveMsgToTrash({ ids: [id], dispatch, deselectAll });
-	return !foldersExcludedTrash.includes(getFolderIdParts(folderId).id ?? '0') && action;
-}
+}) => ActionReturnType) => {
+	const moveConversationToTrash = useMoveConversationToTrash();
+	const moveMsgToTrash = useMoveMsgToTrash();
+	return useCallback(
+		({ isConversation, id, dispatch, folderId, deselectAll, foldersExcludedTrash }) => {
+			const action = isConversation
+				? moveConversationToTrash({ ids: [id], dispatch, folderId, deselectAll })
+				: moveMsgToTrash({ ids: [id], dispatch, deselectAll });
+			return !foldersExcludedTrash.includes(getFolderIdParts(folderId).id ?? '0') && action;
+		},
+		[moveConversationToTrash, moveMsgToTrash]
+	);
+};
 
-export function getDeletePermanentlyAction({
-	isConversation,
-	id,
-	deselectAll,
-	dispatch,
-	foldersIncludedDeletePermanently,
-	folderId
-}: {
+export const useDeletePermanentlyAction = (): ((arg: {
 	isConversation: boolean;
 	id: string;
 	deselectAll: () => void;
 	dispatch: AppDispatch;
 	foldersIncludedDeletePermanently: string[];
 	folderId: string;
-}): ActionReturnType {
-	const action = isConversation
-		? deleteConversationPermanently({ ids: [id], deselectAll })
-		: deleteMessagePermanently({ ids: [id], dispatch, deselectAll });
-	return foldersIncludedDeletePermanently.includes(getFolderIdParts(folderId).id ?? '0') && action;
-}
+}) => ActionReturnType) => {
+	const deleteConversationPermanently = useDeleteConversationPermanently();
+	const deleteMessagePermanently = useDeleteMessagePermanently();
+	return useCallback(
+		({ isConversation, id, deselectAll, dispatch, foldersIncludedDeletePermanently, folderId }) => {
+			const action = isConversation
+				? deleteConversationPermanently({ ids: [id], deselectAll })
+				: deleteMessagePermanently({ ids: [id], dispatch, deselectAll });
+			return (
+				foldersIncludedDeletePermanently.includes(getFolderIdParts(folderId).id ?? '0') && action
+			);
+		},
+		[deleteConversationPermanently, deleteMessagePermanently]
+	);
+};
 
 export function getAddRemoveFlagAction({
 	isConversation,
@@ -217,36 +221,38 @@ export function getSendDraftAction({
 	return folderIncludedSendDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
-export function getMarkRemoveSpam({
-	isConversation,
-	id,
-	folderId,
-	dispatch,
-	deselectAll,
-	foldersExcludedMarkUnmarkSpam
-}: {
+export const useMarkRemoveSpam = (): ((arg: {
 	isConversation: boolean;
 	id: string;
 	folderId: string;
 	dispatch: AppDispatch;
 	deselectAll: () => void;
 	foldersExcludedMarkUnmarkSpam: string[];
-}): ActionReturnType {
-	const action = isConversation
-		? setConversationsSpam({
-				ids: [id],
-				value: folderId === FOLDERS.SPAM,
-				dispatch,
-				deselectAll
-		  })
-		: setMsgAsSpam({
-				ids: [id],
-				value: folderId === FOLDERS.SPAM,
-				dispatch,
-				folderId
-		  });
-	return !foldersExcludedMarkUnmarkSpam.includes(getFolderIdParts(folderId).id ?? '0') && action;
-}
+}) => ActionReturnType) => {
+	const setConversationSpam = useSetConversationSpam();
+	const setMsgAsSpam = useSetMsgAsSpam();
+	return useCallback(
+		({ isConversation, id, folderId, dispatch, deselectAll, foldersExcludedMarkUnmarkSpam }) => {
+			const action = isConversation
+				? setConversationSpam({
+						ids: [id],
+						value: folderId === FOLDERS.SPAM,
+						dispatch,
+						deselectAll
+				  })
+				: setMsgAsSpam({
+						ids: [id],
+						value: folderId === FOLDERS.SPAM,
+						dispatch,
+						folderId
+				  });
+			return (
+				!foldersExcludedMarkUnmarkSpam.includes(getFolderIdParts(folderId).id ?? '0') && action
+			);
+		},
+		[setConversationSpam, setMsgAsSpam]
+	);
+};
 
 export function getPreviewOnSeparatedWindowAction({
 	isConversation,
@@ -288,35 +294,35 @@ export function getApplyTagAction({
 	);
 }
 
-export function getMoveToFolderAction({
-	isConversation,
-	id,
-	dispatch,
-	folderId,
-	deselectAll
-}: {
+export const useMoveToFolderAction = (): ((arg: {
 	isConversation: boolean;
 	id: string;
 	dispatch: AppDispatch;
 	folderId: string;
 	deselectAll: () => void;
-}): ActionReturnType {
-	return isConversation
-		? moveConversationToFolder({
-				ids: [id],
-				dispatch,
-				folderId,
-				isRestore: folderId === FOLDERS.TRASH,
-				deselectAll
-		  })
-		: moveMessageToFolder({
-				id: [id],
-				folderId,
-				dispatch,
-				isRestore: folderId === FOLDERS.TRASH,
-				deselectAll
-		  });
-}
+}) => ActionReturnType) => {
+	const moveConversationToFolder = useMoveConversationToFolder();
+	const moveMessageToFolder = useMoveMessageToFolder();
+	return useCallback(
+		({ isConversation, id, dispatch, folderId, deselectAll }) =>
+			isConversation
+				? moveConversationToFolder({
+						ids: [id],
+						dispatch,
+						folderId,
+						isRestore: folderId === FOLDERS.TRASH,
+						deselectAll
+				  })
+				: moveMessageToFolder({
+						id: [id],
+						folderId,
+						dispatch,
+						isRestore: folderId === FOLDERS.TRASH,
+						deselectAll
+				  }),
+		[moveConversationToFolder, moveMessageToFolder]
+	);
+};
 
 export function getPrintAction({
 	isConversation,
@@ -337,35 +343,37 @@ export function getPrintAction({
 	return !folderExcludedPrintMessage.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
-export function getRedirectAction({
-	isConversation,
-	id,
-	folderExcludedRedirect,
-	folderId
-}: {
+export const useRedirectAction = (): ((arg: {
 	isConversation: boolean;
 	id: string;
 	folderExcludedRedirect: string[];
 	folderId: string;
-}): ActionReturnType {
-	const action = isConversation ? false : redirectMsg({ id });
-	return !folderExcludedRedirect.includes(getFolderIdParts(folderId).id ?? '0') && action;
-}
+}) => ActionReturnType) => {
+	const redirectMsg = useRedirectMsg();
+	return useCallback(
+		({ isConversation, id, folderExcludedRedirect, folderId }) => {
+			const action = isConversation ? false : redirectMsg({ id });
+			return !folderExcludedRedirect.includes(getFolderIdParts(folderId).id ?? '0') && action;
+		},
+		[redirectMsg]
+	);
+};
 
-export function getEditDraftAction({
-	isConversation,
-	id,
-	folderId,
-	folderIncludeEditDraft
-}: {
+export const useEditDraftAction = (): ((arg: {
 	isConversation: boolean;
 	id: string;
 	folderId: string;
 	folderIncludeEditDraft: string[];
-}): ActionReturnType {
-	const action = isConversation ? false : editDraft({ id, folderId });
-	return folderIncludeEditDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
-}
+}) => ActionReturnType) => {
+	const editDraft = useEditDraft();
+	return useCallback(
+		({ isConversation, id, folderId, folderIncludeEditDraft }) => {
+			const action = isConversation ? false : editDraft({ id, folderId });
+			return folderIncludeEditDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
+		},
+		[editDraft]
+	);
+};
 
 export function getEditAsNewAction({
 	isConversation,

@@ -23,7 +23,6 @@ import {
 	AppLink,
 	FOLDERS,
 	ROOT_NAME,
-	getBridgedFunctions,
 	pushHistory,
 	replaceHistory,
 	t,
@@ -39,6 +38,7 @@ import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { LIST_LIMIT } from '../../constants';
 import { useAppDispatch } from '../../hooks/redux';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
 
@@ -73,6 +73,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const accountName = useUserAccount().name;
 	const dispatch = useAppDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
+	const uiUtilities = useUiUtilities();
 
 	const onDragEnterAction = useCallback(
 		(data: OnDropActionProps): DragEnterAction => {
@@ -118,7 +119,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 			folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }).then(
 				(res) => {
 					if (!('Fault' in res)) {
-						getBridgedFunctions()?.createSnackbar({
+						uiUtilities.createSnackbar({
 							key: `move`,
 							replace: true,
 							type: 'success',
@@ -126,7 +127,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 							autoHideTimeout: 3000
 						});
 					} else {
-						getBridgedFunctions()?.createSnackbar({
+						uiUtilities.createSnackbar({
 							key: `move`,
 							replace: true,
 							type: 'error',
@@ -147,7 +148,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				if (res.type.includes('fulfilled')) {
 					replaceHistory(`/folder/${folderId}`);
 					data.data.deselectAll && data.data.deselectAll();
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -159,7 +160,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						}
 					});
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
@@ -179,7 +180,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					data.data.deselectAll && data.data.deselectAll();
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -191,7 +192,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						}
 					});
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					uiUtilities.createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',

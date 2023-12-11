@@ -4,23 +4,25 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { useCallback } from 'react';
+
 import { FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
 import {
 	getAddRemoveFlagAction,
 	getApplyTagAction,
-	getDeletePermanentlyAction,
+	useDeletePermanentlyAction,
 	getEditAsNewAction,
-	getEditDraftAction,
+	useEditDraftAction,
 	getForwardAction,
-	getMarkRemoveSpam,
-	getMoveToFolderAction,
-	getMoveToTrashAction,
+	useMarkRemoveSpam,
+	useMoveToFolderAction,
+	useMoveToTrashAction,
 	getPreviewOnSeparatedWindowAction,
 	getPrintAction,
 	getReadUnreadAction,
-	getRedirectAction,
+	useRedirectAction,
 	getReplyAction,
 	getReplyAllAction,
 	getSendDraftAction,
@@ -51,233 +53,248 @@ export type MsgConvActionsReturnType = [
 	Array<Exclude<ActionReturnType, false>>
 ];
 
-export function getMsgConvActions({
-	item,
-	dispatch,
-	deselectAll,
-	tags,
-	createWindow,
-	messageActions
-}: GetMessageActionsProps): MsgConvActionsReturnType {
-	const isConv = isConversation(item);
-	const folderId = getParentFolderId(item);
-	if (!folderId) {
-		return [[], []];
-	}
+export const useGetMsgConvActions = (): ((
+	arg: GetMessageActionsProps
+) => MsgConvActionsReturnType) => {
+	const getDeletePermanentlyAction = useDeletePermanentlyAction();
+	const getEditDraftAction = useEditDraftAction();
+	const getMarkRemoveSpam = useMarkRemoveSpam();
+	const getMoveToFolderAction = useMoveToFolderAction();
+	const getMoveToTrashAction = useMoveToTrashAction();
+	const getRedirectAction = useRedirectAction();
 
-	const firstConversationMessage = isConv
-		? filter(
-				item?.messages,
-				(msg) => ![FOLDERS.TRASH, FOLDERS.DRAFTS].includes(getFolderIdParts(msg.parent).id ?? '')
-		  )?.[0] ?? {}
-		: item;
-	const isSingleMsgConv = isSingleMessageConversation(item);
-	const { id } = item;
+	return useCallback(
+		({ item, dispatch, deselectAll, tags, createWindow, messageActions }) => {
+			const isConv = isConversation(item);
+			const folderId = getParentFolderId(item);
+			if (!folderId) {
+				return [[], []];
+			}
 
-	/**
-	 * Folders where the actions are enabled or disabled
-	 */
-	const foldersExcludedMarkReadUnread = [FOLDERS.DRAFTS];
-	const foldersExcludedTrash = [FOLDERS.TRASH];
-	const foldersIncludedDeletePermanently = [FOLDERS.TRASH, FOLDERS.SPAM];
-	const foldersExcludedTags = [FOLDERS.SPAM];
-	const foldersExcludedMarkUnmarkSpam = [FOLDERS.DRAFTS];
-	const folderExcludedPrintMessage = [FOLDERS.DRAFTS, FOLDERS.TRASH];
-	const folderExcludedShowOriginal = [FOLDERS.DRAFTS, FOLDERS.TRASH];
-	const folderIncludeEditDraft = [FOLDERS.DRAFTS];
-	const folderExcludedReply = [FOLDERS.DRAFTS, FOLDERS.SPAM];
-	const folderExcludedReplyAll = [FOLDERS.DRAFTS, FOLDERS.SPAM];
-	const folderExcludedForward = [FOLDERS.DRAFTS, FOLDERS.SPAM];
-	const folderExcludedEditAsNew = [FOLDERS.DRAFTS, FOLDERS.TRASH];
-	const folderIncludedSendDraft = [FOLDERS.DRAFTS];
-	const folderExcludedRedirect = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+			const firstConversationMessage = isConv
+				? filter(
+						item?.messages,
+						(msg) =>
+							![FOLDERS.TRASH, FOLDERS.DRAFTS].includes(getFolderIdParts(msg.parent).id ?? '')
+				  )?.[0] ?? {}
+				: item;
+			const isSingleMsgConv = isSingleMessageConversation(item);
+			const { id } = item;
 
-	const addRemoveFlagAction = getAddRemoveFlagAction({
-		isConversation: isConv,
-		id,
-		item,
-		dispatch
-	});
+			/**
+			 * Folders where the actions are enabled or disabled
+			 */
+			const foldersExcludedMarkReadUnread = [FOLDERS.DRAFTS];
+			const foldersExcludedTrash = [FOLDERS.TRASH];
+			const foldersIncludedDeletePermanently = [FOLDERS.TRASH, FOLDERS.SPAM];
+			const foldersExcludedTags = [FOLDERS.SPAM];
+			const foldersExcludedMarkUnmarkSpam = [FOLDERS.DRAFTS];
+			const folderExcludedPrintMessage = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+			const folderExcludedShowOriginal = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+			const folderIncludeEditDraft = [FOLDERS.DRAFTS];
+			const folderExcludedReply = [FOLDERS.DRAFTS, FOLDERS.SPAM];
+			const folderExcludedReplyAll = [FOLDERS.DRAFTS, FOLDERS.SPAM];
+			const folderExcludedForward = [FOLDERS.DRAFTS, FOLDERS.SPAM];
+			const folderExcludedEditAsNew = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+			const folderIncludedSendDraft = [FOLDERS.DRAFTS];
+			const folderExcludedRedirect = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 
-	const msgReadUnreadAction = getReadUnreadAction({
-		isConversation: isConv,
-		id,
-		item,
-		dispatch,
-		folderId,
-		deselectAll,
-		foldersExcludedMarkReadUnread
-	});
+			const addRemoveFlagAction = getAddRemoveFlagAction({
+				isConversation: isConv,
+				id,
+				item,
+				dispatch
+			});
 
-	const moveToTrashAction = getMoveToTrashAction({
-		isConversation: isConv,
-		id,
-		dispatch,
-		folderId: firstConversationMessage.parent,
-		deselectAll,
-		foldersExcludedTrash
-	});
+			const msgReadUnreadAction = getReadUnreadAction({
+				isConversation: isConv,
+				id,
+				item,
+				dispatch,
+				folderId,
+				deselectAll,
+				foldersExcludedMarkReadUnread
+			});
 
-	const deletePermanentlyAction = getDeletePermanentlyAction({
-		isConversation: isConv,
-		id,
-		deselectAll,
-		dispatch,
-		foldersIncludedDeletePermanently,
-		folderId: firstConversationMessage.parent
-	});
+			const moveToTrashAction = getMoveToTrashAction({
+				isConversation: isConv,
+				id,
+				dispatch,
+				folderId: firstConversationMessage.parent,
+				deselectAll,
+				foldersExcludedTrash
+			});
 
-	const moveToFolderAction = getMoveToFolderAction({
-		isConversation: isConv,
-		id,
-		dispatch,
-		folderId: firstConversationMessage.parent,
-		deselectAll
-	});
+			const deletePermanentlyAction = getDeletePermanentlyAction({
+				isConversation: isConv,
+				id,
+				deselectAll,
+				dispatch,
+				foldersIncludedDeletePermanently,
+				folderId: firstConversationMessage.parent
+			});
 
-	const printAction = getPrintAction({
-		isConversation: isConv,
-		item,
-		folderExcludedPrintMessage,
-		folderId
-	});
+			const moveToFolderAction = getMoveToFolderAction({
+				isConversation: isConv,
+				id,
+				dispatch,
+				folderId: firstConversationMessage.parent,
+				deselectAll
+			});
 
-	const applyTagAction = getApplyTagAction({
-		tags,
-		item,
-		isConversation: isConv,
-		foldersExcludedTags,
-		folderId
-	});
+			const printAction = getPrintAction({
+				isConversation: isConv,
+				item,
+				folderExcludedPrintMessage,
+				folderId
+			});
 
-	const markRemoveSpam = getMarkRemoveSpam({
-		isConversation: isConv,
-		id,
-		folderId,
-		dispatch,
-		deselectAll,
-		foldersExcludedMarkUnmarkSpam
-	});
+			const applyTagAction = getApplyTagAction({
+				tags,
+				item,
+				isConversation: isConv,
+				foldersExcludedTags,
+				folderId
+			});
 
-	const showOriginalAction = getShowOriginalAction({
-		isConversation: isConv,
-		id: firstConversationMessage.id,
-		folderExcludedShowOriginal,
-		folderId: firstConversationMessage.parent
-	});
+			const markRemoveSpam = getMarkRemoveSpam({
+				isConversation: isConv,
+				id,
+				folderId,
+				dispatch,
+				deselectAll,
+				foldersExcludedMarkUnmarkSpam
+			});
 
-	const editDraftAction = getEditDraftAction({
-		isConversation: isConv,
-		id,
-		folderId,
-		folderIncludeEditDraft
-	});
+			const showOriginalAction = getShowOriginalAction({
+				isConversation: isConv,
+				id: firstConversationMessage.id,
+				folderExcludedShowOriginal,
+				folderId: firstConversationMessage.parent
+			});
 
-	const replyAction = getReplyAction(
-		isConv,
-		isSingleMsgConv,
-		firstConversationMessage.id,
-		folderId,
-		id,
-		folderExcludedReply
+			const editDraftAction = getEditDraftAction({
+				isConversation: isConv,
+				id,
+				folderId,
+				folderIncludeEditDraft
+			});
+
+			const replyAction = getReplyAction(
+				isConv,
+				isSingleMsgConv,
+				firstConversationMessage.id,
+				folderId,
+				id,
+				folderExcludedReply
+			);
+
+			const replyAllAction = getReplyAllAction({
+				isConversation: isConv,
+				isSingleMessageConversation: isSingleMsgConv,
+				firstConversationMessageId: firstConversationMessage.id,
+				folderId,
+				id,
+				folderExcludedReplyAll
+			});
+
+			const forwardAction = getForwardAction({
+				isConversation: isConv,
+				isSingleMessageConversation: isSingleMsgConv,
+				firstConversationMessageId: firstConversationMessage.id,
+				folderId,
+				id,
+				folderExcludedForward
+			});
+
+			const editAsNewAction = getEditAsNewAction({
+				isConversation: isConv,
+				id,
+				folderId,
+				folderExcludedEditAsNew
+			});
+
+			const sendDraftAction = getSendDraftAction({
+				isConversation: isConv,
+				item,
+				dispatch,
+				folderIncludedSendDraft,
+				folderId
+			});
+
+			const redirectAction = getRedirectAction({
+				isConversation: isConv,
+				id,
+				folderExcludedRedirect,
+				folderId
+			});
+
+			const previewOnSeparatedWindow = getPreviewOnSeparatedWindowAction({
+				isConversation: isConv,
+				id,
+				folderId,
+				subject: item.subject,
+				createWindow,
+				messageActions
+			});
+
+			/**
+			 * Primary actions are the ones that are shown when the user hovers over a message
+			 * @returns an array of arrays of actions
+			 */
+			const primaryActions: Array<Exclude<ActionReturnType, false>> = [
+				replyAction,
+				replyAllAction,
+				forwardAction,
+				moveToTrashAction,
+				deletePermanentlyAction,
+				msgReadUnreadAction,
+				addRemoveFlagAction
+			].reduce((acc: Array<Exclude<ActionReturnType, false>>, action) => {
+				if (action) {
+					acc.push(action);
+				}
+				return acc;
+			}, []);
+
+			/**
+			 * Secondary actions are the ones that are shown when the user right-clicks on the message
+			 * @returns an array of arrays of actions
+			 */
+			const secondaryActions: Array<Exclude<ActionReturnType, false>> = [
+				replyAction,
+				replyAllAction,
+				forwardAction,
+				sendDraftAction,
+				moveToTrashAction,
+				deletePermanentlyAction,
+				msgReadUnreadAction,
+				addRemoveFlagAction,
+				markRemoveSpam,
+				applyTagAction,
+				moveToFolderAction,
+				printAction,
+				previewOnSeparatedWindow,
+				redirectAction,
+				editDraftAction,
+				editAsNewAction,
+				showOriginalAction
+			].reduce((acc: Array<Exclude<ActionReturnType, false>>, action) => {
+				if (action) {
+					acc.push(action);
+				}
+				return acc;
+			}, []);
+
+			return [primaryActions, secondaryActions];
+		},
+		[
+			getDeletePermanentlyAction,
+			getEditDraftAction,
+			getMarkRemoveSpam,
+			getMoveToFolderAction,
+			getMoveToTrashAction,
+			getRedirectAction
+		]
 	);
-
-	const replyAllAction = getReplyAllAction({
-		isConversation: isConv,
-		isSingleMessageConversation: isSingleMsgConv,
-		firstConversationMessageId: firstConversationMessage.id,
-		folderId,
-		id,
-		folderExcludedReplyAll
-	});
-
-	const forwardAction = getForwardAction({
-		isConversation: isConv,
-		isSingleMessageConversation: isSingleMsgConv,
-		firstConversationMessageId: firstConversationMessage.id,
-		folderId,
-		id,
-		folderExcludedForward
-	});
-
-	const editAsNewAction = getEditAsNewAction({
-		isConversation: isConv,
-		id,
-		folderId,
-		folderExcludedEditAsNew
-	});
-
-	const sendDraftAction = getSendDraftAction({
-		isConversation: isConv,
-		item,
-		dispatch,
-		folderIncludedSendDraft,
-		folderId
-	});
-
-	const redirectAction = getRedirectAction({
-		isConversation: isConv,
-		id,
-		folderExcludedRedirect,
-		folderId
-	});
-
-	const previewOnSeparatedWindow = getPreviewOnSeparatedWindowAction({
-		isConversation: isConv,
-		id,
-		folderId,
-		subject: item.subject,
-		createWindow,
-		messageActions
-	});
-
-	/**
-	 * Primary actions are the ones that are shown when the user hovers over a message
-	 * @returns an array of arrays of actions
-	 */
-	const primaryActions: Array<Exclude<ActionReturnType, false>> = [
-		replyAction,
-		replyAllAction,
-		forwardAction,
-		moveToTrashAction,
-		deletePermanentlyAction,
-		msgReadUnreadAction,
-		addRemoveFlagAction
-	].reduce((acc: Array<Exclude<ActionReturnType, false>>, action) => {
-		if (action) {
-			acc.push(action);
-		}
-		return acc;
-	}, []);
-
-	/**
-	 * Secondary actions are the ones that are shown when the user right-clicks on the message
-	 * @returns an array of arrays of actions
-	 */
-	const secondaryActions: Array<Exclude<ActionReturnType, false>> = [
-		replyAction,
-		replyAllAction,
-		forwardAction,
-		sendDraftAction,
-		moveToTrashAction,
-		deletePermanentlyAction,
-		msgReadUnreadAction,
-		addRemoveFlagAction,
-		markRemoveSpam,
-		applyTagAction,
-		moveToFolderAction,
-		printAction,
-		previewOnSeparatedWindow,
-		redirectAction,
-		editDraftAction,
-		editAsNewAction,
-		showOriginalAction
-	].reduce((acc: Array<Exclude<ActionReturnType, false>>, action) => {
-		if (action) {
-			acc.push(action);
-		}
-		return acc;
-	}, []);
-
-	return [primaryActions, secondaryActions];
-}
+};

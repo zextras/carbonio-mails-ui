@@ -3,13 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
-import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+
+import { useDeleteFilter } from './actions';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import type { FilterListType } from '../../../../types';
-import { deleteFilter } from './actions';
 
 type ListType = {
 	isSelecting: boolean;
@@ -28,7 +30,7 @@ type ComponentProps = {
 	activeList: ListType;
 	setFilters: (arg: Array<FilterListType>) => void;
 	setFetchFilters: (arg: boolean) => void;
-	modifierFunc: Promise<any>;
+	modifierFunc: (arg: FilterListType[]) => Promise<void>;
 	selectedFilter: any;
 	incomingFilters: any;
 };
@@ -46,6 +48,7 @@ const DeleteFilterModal: FC<ComponentProps> = ({
 }): ReactElement => {
 	const modalTitle = useMemo(() => t('settings.delete_filter', 'Delete filter'), [t]);
 
+	const deleteFilter = useDeleteFilter();
 	const onConfirmDelete = useCallback(() => {
 		deleteFilter({
 			t,
@@ -61,6 +64,7 @@ const DeleteFilterModal: FC<ComponentProps> = ({
 	}, [
 		activeList,
 		availableList,
+		deleteFilter,
 		incomingFilters,
 		modifierFunc,
 		onClose,

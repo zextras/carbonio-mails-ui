@@ -7,15 +7,16 @@
 import React, { useCallback } from 'react';
 
 import { Padding, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useAppDispatch } from '../../../../../hooks/redux';
+import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import { StoreProvider } from '../../../../../store/redux';
 import { deleteEditor } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
-import { moveMsgToTrash } from '../../../../../ui-actions/message-actions';
+import { useMoveMsgToTrash } from '../../../../../ui-actions/message-actions';
 
 type DeleteDraftModalProps = {
 	ids: Array<string>;
@@ -41,6 +42,7 @@ export const DeleteDraftModal = ({
 		onClose?.();
 	}, [onClose, onConfirm]);
 
+	const moveMsgToTrash = useMoveMsgToTrash();
 	const onDeleteAction = useCallback(
 		(ev) => {
 			moveMsgToTrash({
@@ -81,30 +83,32 @@ type KeepDraftModalProps = {
 	onConfirm?: () => void;
 };
 
-export function keepOrDiscardDraft({ editorId, draftId, onConfirm }: KeepDraftModalProps): void {
-	const onDelete = (): void => {
-		deleteEditor({ id: editorId });
-	};
+export const useKeepOrDiscardDraft = (): ((arg: KeepDraftModalProps) => void) => {
+	const { createModal } = useUiUtilities();
+	return useCallback(
+		({ editorId, draftId, onConfirm }) => {
+			const onDelete = (): void => {
+				deleteEditor({ id: editorId });
+			};
 
-	if (draftId && editorId) {
-		const closeModal = getBridgedFunctions()?.createModal(
-			{
-				children: (
-					<StoreProvider>
-						<DeleteDraftModal
-							ids={[draftId]}
-							onDelete={onDelete}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							onConfirm={(): void => onConfirm?.()}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							onClose={(): void => closeModal()}
-						/>
-					</StoreProvider>
-				)
-			},
-			true
-		);
-	}
-}
+			if (draftId && editorId) {
+				const closeModal = createModal(
+					{
+						children: (
+							<StoreProvider>
+								<DeleteDraftModal
+									ids={[draftId]}
+									onDelete={onDelete}
+									onConfirm={(): void => onConfirm?.()}
+									onClose={(): void => closeModal()}
+								/>
+							</StoreProvider>
+						)
+					},
+					true
+				);
+			}
+		},
+		[createModal]
+	);
+};

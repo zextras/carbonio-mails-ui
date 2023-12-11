@@ -16,7 +16,7 @@ import {
 import { noop } from 'lodash';
 
 import { EditView } from './edit-view';
-import { keepOrDiscardDraft } from './parts/delete-draft';
+import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { CLOSE_BOARD_REASON, EditViewActions } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
@@ -115,6 +115,7 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 	const draftId = useEditorDid(editor.id).did;
 	const { saveDraft } = useEditorDraftSave(editor.id);
 	const updateBoard = boardUtilities?.updateBoard;
+	const keepOrDiscardDraft = useKeepOrDiscardDraft();
 	const onClose = useCallback(
 		({ reason }: { reason?: CloseBoardReasons }) => {
 			if (
@@ -139,7 +140,7 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 				}
 			});
 		},
-		[board.id, draftId, editor.id, saveDraft, updateBoard]
+		[board.id, draftId, editor.id, keepOrDiscardDraft, saveDraft, updateBoard]
 	);
 
 	/*

@@ -7,6 +7,11 @@
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { TagActionItemType } from '../tags';
 
+export type UiUtilities = {
+	createModal: ReturnType<useModal>;
+	createSnackbar: ReturnType<useSnackbar>;
+};
+
 export type ActionProps = {
 	folder: Folder;
 	grant: Grant;

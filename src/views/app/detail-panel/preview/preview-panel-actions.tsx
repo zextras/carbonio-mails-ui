@@ -13,7 +13,7 @@ import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, PreviewPanelActionsType } from '../../../../types';
 import {
-	moveConversationToTrash,
+	useMoveConversationToTrash,
 	printConversation,
 	setConversationsFlag,
 	setConversationsRead
@@ -34,6 +34,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 
 	const ids = useMemo(() => [item?.id], [item?.id]);
 
+	const moveConversationToTrash = useMoveConversationToTrash();
 	const primaryActions = useMemo(() => {
 		switch (folderId) {
 			case FOLDERS.SENT:
@@ -52,7 +53,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 					// editTagsMsg
 				];
 		}
-	}, [dispatch, folderId, ids, item, deselectAll]);
+	}, [folderId, moveConversationToTrash, ids, dispatch, deselectAll, item?.messages, item?.id]);
 
 	const secondaryActions = useMemo(() => {
 		switch (folderId) {
