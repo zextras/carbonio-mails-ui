@@ -4,12 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { FC } from 'react';
+
 import { ChipProps } from '@zextras/carbonio-design-system';
 import { QueryChip } from '@zextras/carbonio-shell-ui';
-import { FC } from 'react';
+
+import { SortBy } from '../../carbonio-ui-commons/types/folder';
 import { Conversation } from '../conversations';
 import { KeywordState } from '../filters';
-import { IncompleteMessage, MailMessage } from '../messages';
+import { MailMessage } from '../messages';
 import { SearchesStateType } from '../state';
 
 export type SearchResults = {
@@ -17,7 +20,7 @@ export type SearchResults = {
 	conversations?: Record<string, Conversation>;
 	more: boolean;
 	offset: number;
-	sortBy: 'dateDesc' | 'dateAsc';
+	sortBy: SortBy;
 	query: Array<{
 		label: string;
 		value?: string;

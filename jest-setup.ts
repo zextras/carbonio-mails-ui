@@ -6,6 +6,7 @@
 import '@testing-library/jest-dom';
 import failOnConsole from 'jest-fail-on-console';
 import { rest } from 'msw';
+
 import {
 	defaultAfterAllTests,
 	defaultAfterEachTest,
@@ -22,8 +23,8 @@ failOnConsole({
 });
 
 beforeAll(() => {
-	const h = rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
-	registerRestHandler(h);
+	const j = rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
+	registerRestHandler(j);
 	defaultBeforeAllTests();
 });
 

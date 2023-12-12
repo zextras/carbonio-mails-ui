@@ -57,6 +57,7 @@ export type FetchConversationsReturn = {
 	conversations?: Record<string, Conversation>;
 	messages?: Record<string, IncompleteMessage>;
 	hasMore: boolean;
+	offset?: number;
 	types: string;
 	Detail: { Error: { Code: string; Message: string } };
 };

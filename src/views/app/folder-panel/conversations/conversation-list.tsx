@@ -3,12 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { FOLDERS, t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
+
+import { ConversationListComponent } from './conversation-list-component';
+import { ConversationListItemComponent } from './conversation-list-item-component';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { LIST_LIMIT } from '../../../../constants';
+import { parseMessageSortingOptions } from '../../../../helpers/sorting';
 import { handleKeyboardShortcuts } from '../../../../hooks/keyboard-shortcuts';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useConversationListItems } from '../../../../hooks/use-conversation-list';
@@ -19,9 +25,6 @@ import {
 	selectFolderSearchStatus
 } from '../../../../store/conversations-slice';
 import type { AppContext } from '../../../../types';
-import { ConversationListComponent } from './conversation-list-component';
-import { ConversationListItemComponent } from './conversation-list-item-component';
-import { LIST_LIMIT } from '../../../../constants';
 
 const ConversationList: FC = () => {
 	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
@@ -52,19 +55,18 @@ const ConversationList: FC = () => {
 	const folder = useFolder(folderId);
 	const hasMore = useMemo(() => status === 'hasMore', [status]);
 
+	const { prefs } = useUserSettings();
+	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 	const loadMore = useCallback(() => {
 		if (hasMore && !isLoading) {
-			const date =
-				conversations?.[conversations.length - 1]?.date ?? new Date().setHours(0, 0, 0, 0);
-			setIsLoading(true);
-			const dateOrNull = date ? new Date(date) : null;
-			dispatch(search({ folderId, before: dateOrNull, limit: LIST_LIMIT.LOAD_MORE_LIMIT })).then(
-				() => {
-					setIsLoading(false);
-				}
-			);
+			const offset = conversations.length;
+			dispatch(
+				search({ folderId, offset, sortBy: sortOrder, limit: LIST_LIMIT.LOAD_MORE_LIMIT })
+			).then(() => {
+				setIsLoading(false);
+			});
 		}
-	}, [hasMore, isLoading, conversations, dispatch, folderId]);
+	}, [hasMore, isLoading, conversations.length, dispatch, folderId, sortOrder]);
 
 	useEffect(() => {
 		const handler = (event: KeyboardEvent): void =>
@@ -169,6 +171,7 @@ const ConversationList: FC = () => {
 			selected={selected}
 			deselectAll={deselectAll}
 			dragImageRef={dragImageRef}
+			hasMore={hasMore}
 		/>
 	);
 };

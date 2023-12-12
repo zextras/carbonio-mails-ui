@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { SortBy } from '../../carbonio-ui-commons/types/folder';
 import type { AppDispatch } from '../../store/redux';
 import type { SavedAttachment, UnsavedAttachment } from '../attachments';
 import type { Conversation } from '../conversations';
@@ -106,7 +107,7 @@ export type SearchesStateType = {
 	messages?: Record<string, Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>>;
 	more: boolean;
 	offset: number;
-	sortBy: 'dateDesc' | 'dateAsc';
+	sortBy: SortBy;
 	query: string;
 	status: string;
 	parent?: string;

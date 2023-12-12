@@ -8,12 +8,12 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { act, screen } from '@testing-library/react';
 import { noop, times } from 'lodash';
-import { rest } from 'msw';
 
+import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
-import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import { getTag, getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
+import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { TIMEOUTS } from '../../constants';
@@ -32,37 +32,10 @@ import DeleteConvConfirm from '../delete-conv-modal';
 import MoveConvMessage from '../move-conv-msg';
 import { TagsDropdownItem } from '../tag-actions';
 
-// TODO move into an utility module
-function createAPIInterceptor<T>(apiAction: string): Promise<T> {
-	return new Promise<T>((resolve, reject) => {
-		// Register a handler for the REST call
-		getSetupServer().use(
-			rest.post(`/service/soap/${apiAction}Request`, async (req, res, ctx) => {
-				if (!req) {
-					reject(new Error('Empty request'));
-				}
-
-				const reqActionParamWrapper = `${apiAction}Request`;
-				const params = (await req.json()).Body?.[reqActionParamWrapper];
-				resolve(params);
-
-				// Don't care about the actual response
-				return res(
-					ctx.json({
-						Body: {
-							[`${apiAction}Response`]: {}
-						}
-					})
-				);
-			})
-		);
-	});
-}
-
 describe('Conversation actions calls', () => {
 	describe('Add flag action', () => {
 		test('Single id', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conv = generateConversation({});
 			const store = generateStore({
 				conversations: {
@@ -96,7 +69,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conversations: Array<Conversation> = times(10, () => generateConversation({}));
 			const store = generateStore({
 				conversations: {
@@ -141,7 +114,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Remove flag action', () => {
 		test('Single id', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conv = generateConversation({});
 			const store = generateStore({
 				conversations: {
@@ -175,7 +148,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conversations: Array<Conversation> = times(10, () => generateConversation({}));
 			const store = generateStore({
 				conversations: {
@@ -220,7 +193,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Mark as read action', () => {
 		test('Single id', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conv = generateConversation({});
 			const store = generateStore({
 				conversations: {
@@ -257,7 +230,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conversations: Array<Conversation> = times(10, () => generateConversation({}));
 			const store = generateStore({
 				conversations: {
@@ -305,7 +278,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Mark as unread action', () => {
 		test('Single id', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conv = generateConversation({});
 			const store = generateStore({
 				conversations: {
@@ -342,7 +315,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conversations: Array<Conversation> = times(10, () => generateConversation({}));
 			const store = generateStore({
 				conversations: {
@@ -389,7 +362,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Mark as spam action', () => {
 		test('Single id', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conv = generateConversation({});
 			const store = generateStore({
 				conversations: {
@@ -425,7 +398,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conversations: Array<Conversation> = times(10, () => generateConversation({}));
 			const store = generateStore({
 				conversations: {
@@ -471,7 +444,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Mark as not spam action', () => {
 		test('Single id', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conv = generateConversation({});
 			const store = generateStore({
 				conversations: {
@@ -507,7 +480,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conversations: Array<Conversation> = times(10, () => generateConversation({}));
 			const store = generateStore({
 				conversations: {
@@ -572,7 +545,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Move to trash action', () => {
 		test('Single id', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conv = generateConversation({});
 			const store = generateStore({
 				conversations: {
@@ -607,7 +580,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conversations: Array<Conversation> = times(10, () => generateConversation({}));
 			const store = generateStore({
 				conversations: {
@@ -652,7 +625,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Delete permanently action', () => {
 		test('Single id', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conv = generateConversation({});
 			const store = generateStore({
 				conversations: {
@@ -690,7 +663,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conversations: Array<Conversation> = times(10, () => generateConversation({}));
 			const store = generateStore({
 				conversations: {
@@ -738,7 +711,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Move action', () => {
 		test('Single id', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 			const sourceFolder = inboxChildren?.[0].id ?? '';
 			const destinationFolder = FOLDERS.INBOX;
@@ -798,7 +771,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Multiple ids', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 			const sourceFolder = inboxChildren?.[0].id ?? '';
 			const destinationFolder = FOLDERS.INBOX;
@@ -868,7 +841,7 @@ describe('Conversation actions calls', () => {
 
 	describe('Tag action', () => {
 		test('Add a tag to a conversation', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const conv = generateConversation({});
 			const store = generateStore({
 				conversations: {
@@ -903,7 +876,7 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('Remove a tag from a conversation', async () => {
-			populateFoldersStore('message');
+			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const tagKey = faker.helpers.arrayElement(Object.keys(getTags()));
 			const tag = getTag(tagKey);
 			const conv = generateConversation({ tags: [tag.id] });

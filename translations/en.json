@@ -848,7 +848,26 @@
         "important": "Important",
         "size": "Size",
         "subject": "Subject",
-        "to": "To"
+        "to": "To",
+        "tooltip": {
+            "attachmentAscending": "Ascending order by Attachment",
+            "attachmentDescending": "Ascending order by Attachment",
+            "dateAscending": "Ascending order by Size",
+            "dateDescending": "Ascending order by Date",
+            "flaggedAscending": "Ascending order by Flagged",
+            "flaggedDescending": "Ascending order by Flagged",
+            "fromAscending": "Ascending order by From",
+            "fromDescending": "Ascending order by From",
+            "importantAscending": "Ascending order by Important",
+            "importantDescending": "Ascending order by Important",
+            "sizeDescending": "Ascending order by Size",
+            "subjectAscending": "Ascending order by Subject",
+            "subjectDescending": "Ascending order by Subject",
+            "toAscending": "Ascending order by To",
+            "toDescending": "Ascending order by To",
+            "unreadAscending": "Ascending order by Unread",
+            "unreadDescending": "Ascending order by Unread"
+        }
     },
     "sorting_dropdown": {
         "ascendingOrder": "Ascending order",

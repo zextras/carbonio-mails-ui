@@ -80,7 +80,10 @@
         "click_preview": "Kliknij aby zobaczyć podgląd",
         "edit_anyway": "Edytuj mimo to",
         "mark_all_read": "Oznacz wszystkie jako przeczytane",
-        "click_open": "Kliknij, aby otworzyć"
+        "click_open": "Kliknij, aby otworzyć",
+        "select_folders": "Wybierz foldery",
+        "preview_on_separated_window": "Otwórz w nowym oknie",
+        "apply_filter_on_folder": "Zastosuj filtr na folderze"
     },
     "composer": {
         "attachment": {
@@ -104,7 +107,8 @@
         "filters": "Filtry",
         "outgoing_message_filters": "Filtry wysyłanych wiadomości",
         "incoming_msg_filters": "Filtry przychodzących wiadomości",
-        "run": "Uruchom"
+        "run": "Uruchom",
+        "apply": "Zastosuj"
     },
     "tooltip": {
         "add_attachments": "Dodaj załączniki",
@@ -292,7 +296,7 @@
         "always_allow_address": "Zawsze zezwalaj z <strong>{{from}}</strong>",
         "always_allow_domain": "Zawsze zezwalaj z domeny <strong>{{domain}}</strong>",
         "no_name": "<Brak nazwy>",
-        "share_public_link": "Udostępnij Publiczny Link",
+        "share_public_link": "Udostępnij publiczny link",
         "view_images": "ZOBACZ OBRAZKI",
         "keep_draft": "Zapisz wersję roboczą",
         "expand_receivers_list": "Rozwiń listę odbiorców",
@@ -374,7 +378,8 @@
             "upload_failed_generic": "Nie udało się przesłać pliku \"{{filename}}\""
         },
         "no_identity_selected": "<Nie wybrano tożsamości>",
-        "attachment_upload_in_progress": "trwa przesyłanie załącznika"
+        "attachment_upload_in_progress": "trwa przesyłanie załącznika",
+        "no_folder_selected": "Nie wybrano żadnego folderu"
     },
     "message": {
         "snackbar": {
@@ -552,7 +557,10 @@
             "tag_created": "Tag {{name}} został stworzony pomyślnie",
             "tag_deleted": "Tag {{name}} został usunięty",
             "tag_updated": "Tag został zaktualizowany pomyślnie",
-            "message_sending_aborted": "anulowano przez użytkownika"
+            "message_sending_aborted": "anulowano przez użytkownika",
+            "apply_filter_rules_error": "Wystąpił błąd podczas zastosowywania filtra \"{{filterName}}\"",
+            "apply_filter_rules_started": "Filtr \"{{filterName}}\" jest zastosowany do wiadomości w folderze \"{{folderPath}}\"",
+            "apply_filter_rules_completed": "Filtr \"{{filterName}}\" został zastosowany do {{involvedMessagesCount}} wiadomości w folderze \"{{folderPath}}\""
         },
         "modal": {
             "delete": {
@@ -837,5 +845,13 @@
         "compose_colin": "Stwórz:"
     },
     "go_back": "Powrót",
-    "messages,new_email": "nowy e-mail"
+    "messages,new_email": "nowy e-mail",
+    "modals": {
+        "apply_filters": {
+            "button_apply": "Zastosuj",
+            "label_confirm_request": "Czy chcesz zastosować filtr?",
+            "label_involved_messages": "<0>{{involvedMessagesCount}} wiadomości</0> zostanie przetworzonych w wybranym folderze.",
+            "title": "Zastosowywanie filtra \"{{filterName}}\""
+        }
+    }
 }

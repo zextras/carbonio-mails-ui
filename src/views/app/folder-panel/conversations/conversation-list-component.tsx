@@ -103,6 +103,7 @@ export type ConversationListComponentProps = {
 	// the reference to the dragged item
 	dragImageRef?: RefObject<HTMLInputElement>;
 	listRef?: React.RefObject<HTMLDivElement>;
+	hasMore?: boolean;
 };
 
 export const ConversationListComponent: FC<ConversationListComponentProps> = memo(
@@ -125,7 +126,8 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 		listItems,
 		totalConversations,
 		dragImageRef,
-		listRef
+		listRef,
+		hasMore
 	}) {
 		useEffect(() => {
 			setDraggedIds && setDraggedIds(selected);
@@ -171,13 +173,14 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 							isSelectModeOn={isSelectModeOn}
 							setIsSelectModeOn={setIsSelectModeOn}
 							folderId={folderId}
+							isSearchModule={isSearchModule}
 						/>
 					)
 				)}
 				{conversationsLoadingCompleted ? (
 					<>
 						<Divider color="gray2" />
-						{totalConversations > 0 ? (
+						{totalConversations > 0 || hasMore ? (
 							<CustomList
 								onListBottom={(): void => {
 									loadMore && loadMore();

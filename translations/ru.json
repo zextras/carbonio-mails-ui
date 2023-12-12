@@ -35,7 +35,10 @@
             "tag_deleted": "{{name}} Тег успешно удален",
             "tag_updated": "Тег успешно обновлен",
             "tag_not_updated": "Что-то пошло не так, тег не обновился. Повторите попытку.",
-            "message_sending_aborted": "отменено пользователем"
+            "message_sending_aborted": "отменено пользователем",
+            "apply_filter_rules_started": "Фильтр «{{filterName}}» применяется к сообщениям папки «{{folderPath}}»",
+            "apply_filter_rules_error": "Произошла ошибка при применении фильтра «{{filterName}}»",
+            "apply_filter_rules_completed": "Фильтр \"{{filterName}}\" успешно применен к сообщениям {{involvedMessagesCount}} в папке \"{{folderPath}}\""
         },
         "modal": {
             "delete": {
@@ -334,7 +337,12 @@
         "upload_failed": "Загрузка не удалась",
         "errors": {
             "upload_failed_generic": "Не удалось загрузить файл «{{filename}}»"
-        }
+        },
+        "message_send_in_progress": "идет отправка сообщения",
+        "missing_recipients": "нет действительных получателей",
+        "missing_sender": "отправитель письма не установлен",
+        "no_sender": "отправитель сообщения не установлен",
+        "no_folder_selected": "Папка не выбрана"
     },
     "header": {
         "warning": "Предупреждение",
@@ -373,7 +381,10 @@
         "click_preview": "Нажмите для предпросмотр",
         "edit_anyway": "Редактировать",
         "mark_all_read": "Пометить все как прочитанные",
-        "click_open": "Нажмите, чтобы открыть"
+        "click_open": "Нажмите, чтобы открыть",
+        "select_folders": "Выбрать папки",
+        "preview_on_separated_window": "Открыть в новом окне",
+        "apply_filter_on_folder": "Применить фильтр к папке"
     },
     "tooltip": {
         "add_attachments": "Добавить вложения",
@@ -618,7 +629,9 @@
         "select_date_time": "Выберите дату и время для отправки этого сообщения",
         "send_later_success": "Ваше письмо будет отправлено {{date}} в {{time}}",
         "delete_attachment_message1": "Ваше вложение будет удалено из Carbonio.",
-        "delete_attachment_message2": "Вы хотели бы загрузить вложение?"
+        "delete_attachment_message2": "Вы хотели бы загрузить вложение?",
+        "copy": "Копировать",
+        "send_email": "Отправить письмо"
     },
     "search": {
         "flagged_note": "Поиск всех помеченных писем.",
@@ -659,7 +672,8 @@
         "share_resend": "Уведомление о доступе отправлено повторно",
         "email_moved_to_trash": "Письмо перенесено в Корзину",
         "tag_applied": "Тег \"{{tag}}\" применен",
-        "tag_removed": "Тег \"{{tag}}\" удален"
+        "tag_removed": "Тег \"{{tag}}\" удален",
+        "email_copied_to_clipboard": "Письмо скопировано в буфер обмена."
     },
     "title": {
         "new_messages": "Новые Сообщения",
@@ -710,7 +724,8 @@
         "filters": "Фильтры",
         "incoming_msg_filters": "Фильтры входящих сообщений",
         "outgoing_message_filters": "Фильтры исходящих сообщений",
-        "run": "Запустить"
+        "run": "Запустить",
+        "apply": "Применить"
     },
     "board": {
         "show": "Открыть окно"
@@ -832,5 +847,13 @@
         "compose_colin": "Создать:",
         "composing_messages": "Создание сообщений"
     },
-    "messages,new_email": "Новое письмо"
+    "messages,new_email": "Новое письмо",
+    "modals": {
+        "apply_filters": {
+            "button_apply": "Применить",
+            "title": "Фильтр приложения \"{{filterName}}\"",
+            "label_confirm_request": "Применить фильтр?",
+            "label_involved_messages": "Сообщения <0>{{involvedMessagesCount}}</0> будут обрабатываться внутри выбранной папки."
+        }
+    }
 }

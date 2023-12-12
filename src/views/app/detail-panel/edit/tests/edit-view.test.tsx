@@ -25,6 +25,7 @@ import {
 	FOLDERS,
 	useBoard as mockedUseBoard
 } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { createAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -36,7 +37,6 @@ import { generateNewMessageEditor } from '../../../../../store/zustand/editor/ed
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
-import { saveDraftResult } from '../../../../../tests/mocks/network/msw/cases/saveDraft/saveDraft-1';
 import type {
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
@@ -306,23 +306,7 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-
-			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const msg = (await req.json()).Body.SaveDraftRequest.m;
-						resolve(msg);
-
-						// Don't care about the actual response
-						return res(ctx.json({}));
-					})
-				);
-			});
+			const draftSavingInterceptor = createAPIInterceptor<SoapDraftMessageObj>('SaveDraft', 'm');
 
 			const subject = faker.lorem.sentence(5);
 			// Get the default identity address
@@ -457,23 +441,10 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-
-			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const msg = (await req.json()).Body.SaveDraftRequest.m;
-						resolve(msg);
-
-						// Don't care about the actual response
-						return res(ctx.json({}));
-					})
-				);
-			});
+			const draftSavingInterceptor = createAPIInterceptor<SoapDraftMessageObj>(
+				'SaveDraftRequest',
+				'm'
+			);
 
 			const subjectText =
 				"This is the most interesting subject ever! It's all about unicorns brewing beers for the elves";
@@ -518,23 +489,10 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-
-			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const msg = (await req.json()).Body.SaveDraftRequest.m;
-						resolve(msg);
-
-						// Don't care about the actual response
-						return res(ctx.json({}));
-					})
-				);
-			});
+			const draftSavingInterceptor = createAPIInterceptor<SoapDraftMessageObj>(
+				'SaveDraftRequest',
+				'm'
+			);
 
 			const recipient = createFakeIdentity().email;
 			const subjectComponent = screen.getByTestId('subject');
@@ -590,23 +548,10 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-
-			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const msg = (await req.json()).Body.SaveDraftRequest.m;
-						resolve(msg);
-
-						// Don't care about the actual response
-						return res(ctx.json({}));
-					})
-				);
-			});
+			const draftSavingInterceptor = createAPIInterceptor<SoapDraftMessageObj>(
+				'SaveDraftRequest',
+				'm'
+			);
 
 			const body = faker.lorem.text();
 
@@ -699,25 +644,10 @@ describe('Edit view', () => {
 			});
 
 			const callTester = jest.fn();
-
-			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
-						callTester();
-
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const msg = (await req.json()).Body.SaveDraftRequest.m;
-						resolve(msg);
-
-						// Don't care about the response. Return a fake one
-						return res(ctx.json(saveDraftResult));
-					})
-				);
-			});
+			const draftSavingInterceptor = createAPIInterceptor<SoapDraftMessageObj>(
+				'SaveDraftRequest',
+				'm'
+			);
 
 			const fileInput = await screen.findByTestId('file-input');
 

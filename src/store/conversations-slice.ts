@@ -41,7 +41,11 @@ function fetchConversationsFulfilled(
 	{ payload, meta }: { payload: FetchConversationsReturn | undefined; meta: any }
 ): void {
 	if (payload?.types === 'conversation' && payload?.conversations) {
-		state.conversations = { ...state.conversations, ...payload.conversations };
+		const newConversationsState =
+			payload.offset && payload.offset > 0
+				? { ...state.conversations, ...payload.conversations }
+				: { ...payload.conversations };
+		state.conversations = newConversationsState;
 		state.searchedInFolder = {
 			...state.searchedInFolder,
 			[meta.arg.folderId]: 'complete'

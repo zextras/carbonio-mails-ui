@@ -171,6 +171,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 							isSelectModeOn={isSelectModeOn}
 							setIsSelectModeOn={setIsSelectModeOn}
 							folderId={folderId}
+							isSearchModule={isSearchModule}
 						/>
 					)
 				)}
