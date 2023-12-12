@@ -38,6 +38,7 @@ import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from '
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { LIST_LIMIT } from '../../constants';
+import { parseMessageSortingOptions } from '../../helpers/sorting';
 import { useAppDispatch } from '../../hooks/redux';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
@@ -73,6 +74,8 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const accountName = useUserAccount().name;
 	const dispatch = useAppDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
+	const { prefs } = useUserSettings();
+	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 
 	const onDragEnterAction = useCallback(
 		(data: OnDropActionProps): DragEnterAction => {
@@ -213,34 +216,20 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	);
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
 
-	/* NOTE: Need to comment out when need to sort as per the configured sort order */
-	// const { zimbraPrefSortOrder, zimbraPrefGroupMailBy } = useUserSettings().prefs;
-	// const sorting = useMemo(() => {
-	// 	if (typeof zimbraPrefSortOrder === 'string') {
-	// 		return (
-	// 			find(zimbraPrefSortOrder?.split(','), (f) => f?.split(':')?.[0] === folder.id)?.split(
-	// 				':'
-	// 			)?.[1] ?? 'dateDesc'
-	// 		);
-	// 	}
-	// 	return 'dateDesc';
-	// }, [zimbraPrefSortOrder, folder.id]) as 'dateDesc' | 'dateAsc';
-
 	const onClick = useCallback((): void => {
 		pushHistory(`/folder/${item.id}`);
 		dispatch(
 			search({
 				folderId: item.id,
 				limit: LIST_LIMIT.INITIAL_LIMIT,
-				sortBy: 'dateDesc',
-				// folder.id === FOLDERS.DRAFTS ? 'message' : zimbraPrefGroupMailBy
+				sortBy: sortOrder,
 				types:
 					item.id === FOLDERS.DRAFTS || typeof zimbraPrefGroupMailBy !== 'string'
 						? 'message'
 						: zimbraPrefGroupMailBy
 			})
 		);
-	}, [dispatch, item.id, zimbraPrefGroupMailBy]);
+	}, [dispatch, item.id, sortOrder, zimbraPrefGroupMailBy]);
 
 	const badgeType: 'read' | 'unread' = useMemo(
 		() => (item.id && item.id === FOLDERS.DRAFTS ? 'read' : 'unread'),

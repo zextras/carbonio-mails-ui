@@ -3,12 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	Account,
-	AccountSettings,
-	AccountSettingsPrefs,
-	FOLDERS
-} from '@zextras/carbonio-shell-ui';
+import { AccountSettingsPrefs, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
 
@@ -19,8 +14,7 @@ import {
 import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { htmlEncode } from '../commons/get-quoted-text-util';
 import { LineType } from '../commons/utils';
-import { getIdentityDescriptor } from '../helpers/identities';
-import { composeMailBodyWithSignature, getSignatureValue } from '../helpers/signatures';
+import { getAddressOwnerAccount, getIdentityDescriptor } from '../helpers/identities';
 import type {
 	InlineAttachments,
 	MailAttachmentParts,
@@ -44,46 +38,6 @@ export const retrieveAttachmentsType = (
 				: acc,
 		[] as Array<MailAttachmentParts>
 	);
-
-export const emptyEditor = (
-	editorId: string,
-	account: Account,
-	settings: AccountSettings
-): MailsEditor => {
-	const signatureNewMessageValue = getSignatureValue(
-		account,
-		String(settings.prefs.zimbraPrefDefaultSignatureId)
-	);
-
-	const textWithSignatureNewMessage: [string, string] = [
-		composeMailBodyWithSignature(signatureNewMessageValue, false),
-		composeMailBodyWithSignature(signatureNewMessageValue, true)
-	];
-
-	const isRichText = settings?.prefs?.zimbraPrefComposeFormat === 'html';
-	return {
-		richText: isRichText,
-		text: textWithSignatureNewMessage,
-		to: [],
-		cc: [],
-		bcc: [],
-		from: {
-			type: ParticipantRole.FROM,
-			address: account.name,
-			name: account.name,
-			fullName: account.displayName
-		},
-		inline: [],
-		sender: {},
-		editorId,
-		subject: '',
-		attach: { mp: [] },
-		urgent: false,
-		requestReadReceipt: false,
-		id: undefined,
-		attachmentFiles: []
-	};
-};
 
 export const retrieveFROM = (original: MailMessage): Array<Participant> =>
 	filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.FROM);
@@ -124,14 +78,19 @@ export const retrieveReplyTo = (original: MailMessage): Array<Participant> => {
 export const retrieveTO = (original: MailMessage): Array<Participant> =>
 	filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.TO);
 
-export function retrieveALL(original: MailMessage, accountName: string): Array<Participant> {
+export function retrieveALL(
+	original: MailMessage,
+	replySenderAccountName: string
+): Array<Participant> {
 	const toEmails = filter(
 		original.participants,
 		(c: Participant): boolean => c.type === ParticipantRole.TO
 	);
 	const fromEmails = filter(
 		original.participants,
-		(c: Participant): boolean => c.type === ParticipantRole.FROM && c.address !== accountName
+		(c: Participant): boolean =>
+			c.type === ParticipantRole.FROM &&
+			replySenderAccountName !== getAddressOwnerAccount(c.address)
 	);
 	const replyToParticipants = filter(
 		original.participants,
@@ -140,13 +99,14 @@ export function retrieveALL(original: MailMessage, accountName: string): Array<P
 
 	const isSentByMe = some(
 		filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.FROM),
-		{ address: accountName }
+		(c: Participant): boolean => replySenderAccountName === getAddressOwnerAccount(c.address)
 	);
 	if (replyToParticipants.length === 0) {
 		if (original.parent === FOLDERS.SENT || original.isSentByMe || isSentByMe) {
-			return filter(toEmails, (c) => c.address !== accountName).length === 0
+			return filter(toEmails, (c) => replySenderAccountName !== getAddressOwnerAccount(c.address))
+				.length === 0
 				? toEmails
-				: filter(toEmails, (c) => c.address !== accountName);
+				: filter(toEmails, (c) => replySenderAccountName !== getAddressOwnerAccount(c.address));
 		}
 		return changeTypeOfParticipants(fromEmails, ParticipantRole.TO);
 	}
@@ -159,17 +119,22 @@ export const retrieveCCForEditNew = (original: MailMessage): Array<Participant> 
 		(c: Participant): boolean => c.type === ParticipantRole.CARBON_COPY
 	);
 
-export function retrieveCC(original: MailMessage, accountName: string): Array<Participant> {
+export function retrieveCC(
+	original: MailMessage,
+	replySenderAccountName: string
+): Array<Participant> {
 	const toEmails = filter(
 		original.participants,
-		(c: Participant): boolean => c.type === ParticipantRole.TO && c.address !== accountName
+		(c: Participant): boolean =>
+			c.type === ParticipantRole.TO && replySenderAccountName !== getAddressOwnerAccount(c.address)
 	);
 	const ccEmails = filter(
 		original.participants,
-		(c: Participant): boolean => c.type === ParticipantRole.CARBON_COPY && c.address !== accountName
+		(c: Participant): boolean =>
+			c.type === ParticipantRole.CARBON_COPY &&
+			replySenderAccountName !== getAddressOwnerAccount(c.address)
 	);
-	const finalTo = retrieveALL(original, accountName);
-
+	const finalTo = retrieveALL(original, replySenderAccountName);
 	const reducedCcEmails = reduce(
 		ccEmails,
 		(acc: Array<Participant>, v: Participant) => {
@@ -183,7 +148,6 @@ export function retrieveCC(original: MailMessage, accountName: string): Array<Pa
 		},
 		[]
 	);
-
 	if (original.parent !== FOLDERS.SENT && !original.isSentByMe) {
 		return reduce(
 			concat(toEmails, reducedCcEmails),

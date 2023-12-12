@@ -3,14 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { orderBy, reduce, some } from 'lodash';
 import { useEffect, useMemo } from 'react';
+
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { reduce, some, sortBy } from 'lodash';
 import { useParams } from 'react-router-dom';
+
+import { useAppDispatch, useAppSelector } from './redux';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
+import { parseMessageSortingOptions } from '../helpers/sorting';
 import { search } from '../store/actions';
 import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
 import type { Conversation, MailsStateType } from '../types';
-import { useAppDispatch, useAppSelector } from './redux';
 
 type RouteParams = {
 	folderId: string;
@@ -19,21 +23,13 @@ type RouteParams = {
 export const useConversationListItems = (): Array<Conversation> => {
 	const { folderId } = <RouteParams>useParams();
 	const dispatch = useAppDispatch();
+	const { prefs } = useUserSettings();
+	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 	const folderStatus = useAppSelector((state: MailsStateType) =>
 		selectFolderSearchStatus(<MailsStateType>state, folderId)
 	);
 	const conversations = useAppSelector(selectConversationsArray);
 	const folder = getFolder(folderId);
-
-	/* NOTE: Need to comment out when need to sort as per the configured sort order */
-	// const { zimbraPrefSortOrder } = useUserSettings()?.prefs as Record<string, string>;
-	// const sorting = useMemo(
-	// 	() =>
-	// 		(find(zimbraPrefSortOrder?.split(','), (f) => f.split(':')?.[0] === folderId)?.split(
-	// 			':'
-	// 		)?.[1] as 'dateAsc' | 'dateDesc' | undefined) ?? 'dateDesc',
-	// 	[folderId, zimbraPrefSortOrder]
-	// );
 
 	const filteredConversations = useMemo(
 		() =>
@@ -52,17 +48,16 @@ export const useConversationListItems = (): Array<Conversation> => {
 				: [],
 		[folder, conversations]
 	);
-
+	// TODO: fix the unread sorting
 	const sortedConversations = useMemo(
-		() => orderBy(filteredConversations, 'date', 'desc'),
+		() => sortBy(filteredConversations, 'sortIndex'),
 		[filteredConversations]
 	);
-
 	useEffect(() => {
 		if (folderStatus !== 'complete' && folderStatus !== 'pending') {
-			dispatch(search({ folderId, limit: 101, sortBy: 'dateDesc', types: 'conversation' }));
+			dispatch(search({ folderId, limit: 101, sortBy: sortOrder, types: 'conversation' }));
 		}
-	}, [dispatch, folderId, folderStatus]);
+	}, [dispatch, folderId, folderStatus, sortOrder]);
 
 	return sortedConversations;
 };

@@ -31,7 +31,8 @@ export const Breadcrumbs: FC<{
 	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
 	folderPath: string;
 	folderId?: string;
-}> = ({ itemsCount, isSelectModeOn, setIsSelectModeOn, folderPath, folderId }) => {
+	isSearchModule?: boolean;
+}> = ({ itemsCount, isSelectModeOn, setIsSelectModeOn, folderPath, folderId, isSearchModule }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const folderPathLastPartRef = useRef<HTMLDivElement>(null);
 
@@ -125,7 +126,7 @@ export const Breadcrumbs: FC<{
 					{itemsCount > 100 ? '100+' : itemsCount}
 				</Text>
 				<Padding right="large" />
-				<SortingComponent folderId={folderId} />
+				{!isSearchModule && <SortingComponent folderId={folderId} />}
 			</Row>
 		</Container>
 	);
