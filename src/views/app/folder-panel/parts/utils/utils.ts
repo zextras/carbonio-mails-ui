@@ -30,23 +30,23 @@ export function getTooltipLabel(sortingType: string, sortingDirection: string): 
 		case `${SORTING_OPTIONS.attachment.value}${SORTING_DIRECTION.ASCENDING}`:
 			return t('sortingDropdown.tooltip.attachmentAscending', 'Ascending order by Attachment');
 		case `${SORTING_OPTIONS.to.value}${SORTING_DIRECTION.DESCENDING}`:
-			return t('sortingDropdown.tooltip.toDescending', 'Ascending order by To');
+			return t('sortingDropdown.tooltip.toDescending', 'Descending order by To');
 		case `${SORTING_OPTIONS.date.value}${SORTING_DIRECTION.DESCENDING}`:
-			return t('sortingDropdown.tooltip.dateDescending', 'Ascending order by Date');
+			return t('sortingDropdown.tooltip.dateDescending', 'Descending order by Date');
 		case `${SORTING_OPTIONS.from.value}${SORTING_DIRECTION.DESCENDING}`:
-			return t('sortingDropdown.tooltip.fromDescending', 'Ascending order by From');
+			return t('sortingDropdown.tooltip.fromDescending', 'Descending order by From');
 		case `${SORTING_OPTIONS.size.value}${SORTING_DIRECTION.DESCENDING}`:
-			return t('sortingDropdown.tooltip.sizeDescending', 'Ascending order by Size');
+			return t('sortingDropdown.tooltip.sizeDescending', 'Descending order by Size');
 		case `${SORTING_OPTIONS.unread.value}${SORTING_DIRECTION.DESCENDING}`:
-			return t('sortingDropdown.tooltip.unreadDescending', 'Ascending order by Unread');
+			return t('sortingDropdown.tooltip.unreadDescending', 'Descending order by Unread');
 		case `${SORTING_OPTIONS.flagged.value}${SORTING_DIRECTION.DESCENDING}`:
-			return t('sortingDropdown.tooltip.flaggedDescending', 'Ascending order by Flagged');
+			return t('sortingDropdown.tooltip.flaggedDescending', 'Descending order by Flagged');
 		case `${SORTING_OPTIONS.subject.value}${SORTING_DIRECTION.DESCENDING}`:
-			return t('sortingDropdown.tooltip.subjectDescending', 'Ascending order by Subject');
+			return t('sortingDropdown.tooltip.subjectDescending', 'Descending order by Subject');
 		case `${SORTING_OPTIONS.important.value}${SORTING_DIRECTION.DESCENDING}`:
-			return t('sortingDropdown.tooltip.importantDescending', 'Ascending order by Important');
+			return t('sortingDropdown.tooltip.importantDescending', 'Descending order by Important');
 		case `${SORTING_OPTIONS.attachment.value}${SORTING_DIRECTION.DESCENDING}`:
-			return t('sortingDropdown.tooltip.attachmentDescending', 'Ascending order by Attachment');
+			return t('sortingDropdown.tooltip.attachmentDescending', 'Descending order by Attachment');
 		default:
 			return '';
 	}
