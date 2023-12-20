@@ -23,8 +23,8 @@ failOnConsole({
 });
 
 beforeAll(() => {
-	const j = rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
-	registerRestHandler(j);
+	const h = rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
+	registerRestHandler(h);
 	defaultBeforeAllTests();
 });
 

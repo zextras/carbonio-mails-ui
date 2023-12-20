@@ -48,7 +48,7 @@ export const useConversationListItems = (): Array<Conversation> => {
 				: [],
 		[folder, conversations]
 	);
-	// TODO: fix the unread sorting
+
 	const sortedConversations = useMemo(
 		() => sortBy(filteredConversations, 'sortIndex'),
 		[filteredConversations]
