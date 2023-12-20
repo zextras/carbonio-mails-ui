@@ -22,10 +22,10 @@ import { FolderSortOrder } from '../types';
  * remainingFoldersSortOrder: the sort order of the other folders,
  * remainingSortOptions: the sort order of the other options not related to mails
  */
-export const parseMessageSortingOptions = (
+export function parseMessageSortingOptions(
 	folderId?: string,
 	zimbraPrefSortOrder?: string
-): FolderSortOrder => {
+): FolderSortOrder {
 	const fallbackSortOrder = {
 		sortType: 'date',
 		sortDirection: 'Desc' as 'Asc' | 'Desc',
@@ -55,30 +55,39 @@ export const parseMessageSortingOptions = (
 		return { sortType, sortDirection, sortOrder, remainingFoldersSortOrder, remainingSortOptions };
 	}
 	return fallbackSortOrder;
-};
+}
 
-const modifySettingString = (
+function modifySettingString(
 	inputStringA: string,
 	inputStringB: string,
 	folderId?: string
-): string => {
+): string {
 	const replaceStr = new RegExp(`${folderId}:(.*?)(Asc|Desc)`);
 	return replaceStr.test(inputStringA)
 		? inputStringA.replace(replaceStr, `${inputStringB}`)
 		: `${inputStringA},${inputStringB}`;
-};
+}
 
-export const updateSortingSettings = ({
+export function updateSortingSettings({
 	prefSortOrder,
 	sortingTypeValue,
 	sortingDirection,
 	folderId
 }: {
-	prefSortOrder: string;
+	prefSortOrder?: string;
 	sortingTypeValue: string;
 	sortingDirection: string;
 	folderId?: string;
-}): void => {
+}): void {
+	if (!prefSortOrder) {
+		const changes = {
+			prefs: {
+				zimbraPrefSortOrder: `${folderId}:${sortingTypeValue}${sortingDirection},BDLV`
+			}
+		};
+		editSettings(changes);
+		return;
+	}
 	const secondString = prefSortOrder.substring(prefSortOrder.indexOf(',BDLV'));
 	const sortingString = `${folderId}:${sortingTypeValue}${sortingDirection}`;
 	const splitString = ',BDLV';
@@ -92,4 +101,4 @@ export const updateSortingSettings = ({
 		}
 	};
 	editSettings(changes);
-};
+}
