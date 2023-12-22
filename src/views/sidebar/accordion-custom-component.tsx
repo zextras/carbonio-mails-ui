@@ -75,7 +75,6 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const dispatch = useAppDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
 	const { prefs } = useUserSettings();
-	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 
 	const onDragEnterAction = useCallback(
 		(data: OnDropActionProps): DragEnterAction => {
@@ -218,6 +217,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 
 	const onClick = useCallback((): void => {
 		pushHistory(`/folder/${item.id}`);
+		const { sortOrder } = parseMessageSortingOptions(item.id, prefs.zimbraPrefSortOrder as string);
 		dispatch(
 			search({
 				folderId: item.id,
@@ -229,7 +229,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						: zimbraPrefGroupMailBy
 			})
 		);
-	}, [dispatch, item.id, sortOrder, zimbraPrefGroupMailBy]);
+	}, [dispatch, item.id, prefs.zimbraPrefSortOrder, zimbraPrefGroupMailBy]);
 
 	const badgeType: 'read' | 'unread' = useMemo(
 		() => (item.id && item.id === FOLDERS.DRAFTS ? 'read' : 'unread'),

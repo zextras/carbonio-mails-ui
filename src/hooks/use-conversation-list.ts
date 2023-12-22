@@ -53,6 +53,7 @@ export const useConversationListItems = (): Array<Conversation> => {
 		() => sortBy(filteredConversations, 'sortIndex'),
 		[filteredConversations]
 	);
+	// this useEffect is used to trigger the search action when the folder is changed
 	useEffect(() => {
 		if (folderStatus !== 'complete' && folderStatus !== 'pending') {
 			dispatch(search({ folderId, limit: 101, sortBy: sortOrder, types: 'conversation' }));

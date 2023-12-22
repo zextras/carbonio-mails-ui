@@ -8,6 +8,7 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state", "conversation", "message", "cache"] }] */
 
 import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
 
@@ -171,7 +172,7 @@ function getConvRejected(state: ConversationsStateType, { meta }: any): void {
 
 export const getConversationsSliceInitialState = (): ConversationsStateType =>
 	({
-		currentFolder: '2',
+		currentFolder: FOLDERS.INBOX,
 		conversations: {},
 		expandedStatus: {},
 		searchedInFolder: {},
