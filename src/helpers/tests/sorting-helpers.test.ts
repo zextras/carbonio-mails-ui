@@ -63,4 +63,32 @@ describe('parseMessageSortingOptions', () => {
 				',BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc'
 		});
 	});
+
+	test('the function should handle sorting option for shared account folder correctly', () => {
+		const zimbraPrefSortOrder =
+			'2:subjAsc,366:dateDesc,5:attachDesc,a79fa996-e90e-4s04-85c4-c84209ab8266:2:readAsc,BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc';
+		const result = parseMessageSortingOptions(
+			'a79fa996-e90e-4s04-85c4-c84209ab8266:2',
+			zimbraPrefSortOrder
+		);
+
+		expect(result).toEqual({
+			sortType: 'read',
+			sortDirection: 'Asc',
+			sortOrder: 'readAsc',
+			remainingFoldersSortOrder: '2:subjAsc,366:dateDesc,5:attachDesc',
+			remainingSortOptions:
+				',BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc'
+		});
+	});
+
+	test('the function should return default sorting option for shared account folder in case not saved', () => {
+		const zimbraPrefSortOrder =
+			'BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc';
+		const result = parseMessageSortingOptions(
+			'a79fa996-e90e-4s04-85c4-c84209ab8266:2',
+			zimbraPrefSortOrder
+		);
+		expect(result).toStrictEqual(defaultSortingSettings);
+	});
 });

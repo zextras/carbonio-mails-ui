@@ -39,16 +39,18 @@ export function parseMessageSortingOptions(
 	const splitString = ',BDLV';
 	const sortOrderString = zimbraPrefSortOrder.split(splitString)[0];
 	const sortingFolders = sortOrderString.split(',');
-	const sortOrderOfFolder = find(sortingFolders, (item) => item.split(':')[0] === folderId);
+	const sortOrderOfFolder = find(
+		sortingFolders,
+		(item) => item.substring(0, item.lastIndexOf(':')) === folderId
+	);
+
 	const remainingSortOptions = splitString.concat(zimbraPrefSortOrder.split(splitString)[1]) ?? '';
 	const remainingFoldersSortOrder =
-		sortingFolders.filter((item) => item.split(':')[0] !== folderId).join(',') ?? '';
-	if (
-		!!sortOrderOfFolder &&
-		sortOrderOfFolder.split(':').length === 2 &&
-		!sortOrderOfFolder.includes(SORTING_OPTIONS.size.value)
-	) {
-		const sortOrder = sortOrderOfFolder.split(':')[1];
+		sortingFolders
+			.filter((item) => item.substring(0, item.lastIndexOf(':')) !== folderId)
+			.join(',') ?? '';
+	if (!!sortOrderOfFolder && !sortOrderOfFolder.includes(SORTING_OPTIONS.size.value)) {
+		const sortOrder = sortOrderOfFolder.substring(sortOrderOfFolder.lastIndexOf(':') + 1);
 		const sortDirection = sortOrder.includes('Desc') ? 'Desc' : 'Asc';
 		const sortType = sortOrder.split(/Asc|Desc/i)[0];
 
