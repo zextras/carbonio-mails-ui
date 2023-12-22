@@ -104,7 +104,8 @@ const generateConversation = ({
 		tags,
 		urgent: false,
 		messages: finalMessages,
-		messagesInConversation: finalMessages.length
+		messagesInConversation: finalMessages.length,
+		sortIndex: Number(Date.now())
 	};
 };
 

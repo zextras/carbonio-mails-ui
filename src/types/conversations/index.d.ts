@@ -27,6 +27,7 @@ export type Conversation = {
 	tags: string[];
 	parent: string;
 	messagesInConversation: number;
+	sortIndex: number;
 };
 
 export type ConvActionParameters = {

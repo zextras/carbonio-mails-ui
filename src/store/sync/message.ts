@@ -24,6 +24,7 @@ import {
 	find,
 	reject
 } from 'lodash';
+
 import { MAILS_ROUTE } from '../../constants';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type { SoapIncompleteMessage, MsgStateType, IncompleteMessage, Payload } from '../../types';
@@ -84,12 +85,11 @@ const triggerNotification = (m: Array<SoapIncompleteMessage>): void => {
 
 export const handleCreatedMessagesReducer = (state: MsgStateType, { payload }: Payload): void => {
 	const { m } = payload;
-
 	const mappedMsgs = <IncompleteMessage>reduce(
 		m,
 		(acc, v) => {
 			const msg = normalizeMailMessageFromSoap(v, false);
-			return { ...acc, [msg.id]: msg };
+			return { ...acc, [msg.id]: { ...msg, sortIndex: -JSON.stringify(Date.now()) } };
 		},
 		{}
 	);
