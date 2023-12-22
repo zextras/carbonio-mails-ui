@@ -57,7 +57,7 @@ describe('shareFolder', () => {
 		const requests = (await interceptor) as Array<{ action: FolderActionGrant }>;
 		requests.forEach((request) => {
 			const result = request.action.grant.inh;
-			expect(result).toBe(undefined);
+			expect(result).toBe('1');
 		});
 	});
 });

@@ -32,7 +32,8 @@ export const shareFolder = createAsyncThunk(
 					gt: 'usr',
 					d: trim(contact.email, '<>'),
 					perm: data.shareWithUserRole,
-					pw: ''
+					pw: '',
+					inh: '1'
 				}
 			}
 		}));
