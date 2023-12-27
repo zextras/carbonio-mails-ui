@@ -1,5 +1,6 @@
 {
     "action": {
+        "apply_filter_on_folder": "Apply filter on folder",
         "click_open": "Click to open",
         "click_preview": "Click to preview",
         "edit_anyway": "Edit anyway",
@@ -25,6 +26,7 @@
         "reply_all": "Reply all",
         "reset": "Reset",
         "search": "Search",
+        "select_folders": "Select folders",
         "send_anyway": "Send anyway",
         "share_folder": "Share folder",
         "show_details": "Show details",
@@ -124,6 +126,7 @@
     },
     "filters": {
         "active_filters": "Active Filters",
+        "apply": "Apply",
         "available_filters": "Available Filters",
         "filter_note": "Note: changes to filter rules are saved immediately",
         "filters": "Filters",
@@ -370,6 +373,7 @@
         "need_to_select_atleast_one_item": "You need to select at least one item to perform the action",
         "new_email": "New E-mail",
         "new_folder": "New Folder",
+        "no_folder_selected": "No folder selected",
         "no_identity_selected": "<No identity selected>",
         "no_name": "<No Name>",
         "no_search_results_found": "No results found",
@@ -566,6 +570,9 @@
         "read_receipt_1": "The sender of this message has requested to be notified when you read this message.",
         "read_receipt_2": "Do you wish to notify the sender?",
         "snackbar": {
+            "apply_filter_rules_completed": "Filter '{{filterName}}'successfully applied to {{involvedMessagesCount}} messages of the folder '{{folderPath}}'",
+            "apply_filter_rules_error": "An error occurred while applying the filter '{{filterName}}'",
+            "apply_filter_rules_started": "Filter '{{filterName}}' is being applied to the messages of the folder '{{folderPath}}'",
             "conversation_deleted": "Conversation deleted",
             "conversation_move": "Conversation successfully moved",
             "conversation_move_error": "Something went wrong, the conversation move was not completed. Please try again.",
@@ -605,6 +612,14 @@
     "modal": {
         "delete_draft": {
             "message1": "Do you want to keep this draft or delete it?"
+        }
+    },
+    "modals": {
+        "apply_filters": {
+            "button_apply": "Apply",
+            "label_confirm_request": "Do you want to apply the filter?",
+            "label_involved_messages": "<0>{{involvedMessagesCount}} messages</0> will be processed inside the selected folder.",
+            "title": "Application filter \"{{filterName}}\""
         }
     },
     "new_folder": "New Folder",

@@ -322,7 +322,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					id: 'label' in action ? action.label : action.id,
 					icon: 'icon' in action ? action.icon : '',
 					label: 'label' in action ? action.label : '',
-					onClick: (ev: KeyboardEvent | SyntheticEvent<HTMLElement, Event>): void => {
+					onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>): void => {
 						if (ev) ev.preventDefault();
 						action.onClick && action.onClick(ev);
 					},

@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+
 import {
 	Button,
 	ChipInput,
@@ -19,12 +21,12 @@ import {
 } from '@zextras/carbonio-design-system';
 import { ZIMBRA_STANDARD_COLORS, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { filter, omit } from 'lodash';
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
-import { SelectFolderModal } from '../../../sidebar/select-folder-modal';
+
 import CustomSelect from './custom-select';
 import { getActionOptions, getMarkAsOptions } from './utils';
+import { SelectFolderModal } from '../../../../ui-actions/modals/select-folder-modal';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
@@ -466,6 +468,11 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					actionLabel={actionLabel}
 					inputLabel={inputLabel}
 					confirmAction={confirmAction}
+					showSharedAccounts={false}
+					showSpamFolder={false}
+					showTrashFolder
+					allowFolderCreation={false}
+					allowRootSelection={false}
 				/>
 			</CustomModal>
 		</Container>

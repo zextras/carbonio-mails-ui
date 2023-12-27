@@ -11,7 +11,7 @@ import { filter } from 'lodash';
 
 import { isSharedAccountFolder } from '../../../helpers/folders';
 import type { ChipOnAdd, TagFolderRowProps } from '../../../types';
-import { SelectFolderModal } from '../../sidebar/select-folder-modal';
+import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
 import { getFolderIconColor } from '../../sidebar/utils';
 
 const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
@@ -129,13 +129,18 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 					iconAction={openFolderModal}
 					requireUniqueChips
 				/>
-				<CustomModal open={open} onClose={onClose} maxHeight="90vh">
+				<CustomModal open={open} onClose={onClose} maxHeight="90vh" size={'medium'}>
 					<SelectFolderModal
 						onClose={onClose}
 						headerTitle={headerTitle}
 						actionLabel={actionLabel}
 						inputLabel={inputLabel}
 						confirmAction={confirmAction}
+						allowRootSelection={false}
+						allowFolderCreation={false}
+						showSharedAccounts
+						showTrashFolder
+						showSpamFolder
 					/>
 				</CustomModal>
 			</Container>

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getUserAccount, getUserSettings, t } from '@zextras/carbonio-shell-ui';
+import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
 
 import { buildSavedAttachments, replaceCidUrlWithServiceUrl } from './editor-transformations';
@@ -18,6 +18,7 @@ import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { LineType } from '../../../commons/utils';
 import { EditViewActions, NO_ACCOUNT_NAME } from '../../../constants';
 import {
+	getAddressOwnerAccount,
 	getDefaultIdentity,
 	getIdentityFromParticipant,
 	getRecipientReplyIdentity
@@ -203,7 +204,6 @@ export const generateReplyAndReplyAllMsgEditor = (
 	originalMessage: MailMessage,
 	action: EditViewActionsType
 ): MailsEditorV2 => {
-	const accountName = getUserAccount()?.name ?? NO_ACCOUNT_NAME;
 	const editorId = uuid();
 	const savedInlineAttachments = filterSavedInlineAttachment(
 		buildSavedAttachments(originalMessage)
@@ -225,6 +225,7 @@ export const generateReplyAndReplyAllMsgEditor = (
 	};
 	const folderRoots = getRootsMap();
 	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
+	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const toParticipants =
 		action === EditViewActions.REPLY
@@ -245,7 +246,9 @@ export const generateReplyAndReplyAllMsgEditor = (
 			cc: action === EditViewActions.REPLY_ALL ? retrieveCC(originalMessage, accountName) : [],
 			bcc: []
 		},
-		subject: `RE: ${originalMessage.subject.replace(REPLY_REGEX, '')}`,
+		subject: `RE: ${
+			originalMessage.subject ? originalMessage.subject.replace(REPLY_REGEX, '') : ''
+		}`,
 		text: textWithSignatureRepliesForwards,
 		requestReadReceipt: false,
 		replyType: 'r',
@@ -299,7 +302,9 @@ export const generateForwardMsgEditor = (
 			cc: [],
 			bcc: []
 		},
-		subject: `FWD: ${originalMessage.subject.replace(FORWARD_REGEX, '')}`,
+		subject: `FWD: ${
+			originalMessage.subject ? originalMessage.subject.replace(FORWARD_REGEX, '') : ''
+		}`,
 		text: textWithSignatureRepliesForwards,
 		requestReadReceipt: false,
 		replyType: 'w',

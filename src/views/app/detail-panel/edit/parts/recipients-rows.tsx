@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { Button, Container, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -11,53 +11,61 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { RecipientsRow } from './recipients-row';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { GapContainer } from '../../../../../commons/gap-container';
-import { EditorRecipients, Participant } from '../../../../../types';
+import { getExtraAccountsIds } from '../../../../../helpers/identities';
+import {
+	useEditorBccRecipients,
+	useEditorCcRecipients,
+	useEditorToRecipients
+} from '../../../../../store/zustand/editor';
+import { MailsEditorV2, Participant } from '../../../../../types';
 
 export type RecipientsRowsProps = {
-	recipients: EditorRecipients;
-	onRecipientsChange: (recipients: EditorRecipients) => void;
+	editorId: MailsEditorV2['id'];
 };
 
-export const RecipientsRows: FC<RecipientsRowsProps> = ({ recipients, onRecipientsChange }) => {
-	const [showCc, setShowCc] = useState(recipients.cc.length > 0);
-	const [showBcc, setShowBcc] = useState(recipients.bcc.length > 0);
+export const RecipientsRows = ({ editorId }: RecipientsRowsProps): JSX.Element => {
+	const { toRecipients, setToRecipients } = useEditorToRecipients(editorId);
+	const { ccRecipients, setCcRecipients } = useEditorCcRecipients(editorId);
+	const { bccRecipients, setBccRecipients } = useEditorBccRecipients(editorId);
 
+	const [showCc, setShowCc] = useState(ccRecipients.length > 0);
+	const [showBcc, setShowBcc] = useState(bccRecipients.length > 0);
+
+	const extraAccountsIds = useMemo(() => getExtraAccountsIds(), []);
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
 	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
 
 	const onToChange = useCallback(
-		(updatedRecipients: Array<Participant>) =>
-			onRecipientsChange({ ...recipients, to: updatedRecipients }),
-		[onRecipientsChange, recipients]
+		(updatedRecipients: Array<Participant>) => setToRecipients(updatedRecipients),
+		[setToRecipients]
 	);
 
 	const onCcChange = useCallback(
-		(updatedRecipients: Array<Participant>) =>
-			onRecipientsChange({ ...recipients, cc: updatedRecipients }),
-		[onRecipientsChange, recipients]
+		(updatedRecipients: Array<Participant>) => setCcRecipients(updatedRecipients),
+		[setCcRecipients]
 	);
 
 	const onBccChange = useCallback(
-		(updatedRecipients: Array<Participant>) =>
-			onRecipientsChange({ ...recipients, bcc: updatedRecipients }),
-		[onRecipientsChange, recipients]
+		(updatedRecipients: Array<Participant>) => setBccRecipients(updatedRecipients),
+		[setBccRecipients]
 	);
 
 	return (
 		<GapContainer gap={'small'}>
 			<Container
 				orientation="horizontal"
-				background="gray5"
+				background={'gray5'}
 				style={{ overflow: 'hidden' }}
 				padding={{ all: 'none' }}
 			>
-				<Container background="gray5" style={{ overflow: 'hidden' }}>
+				<Container background={'gray5'} style={{ overflow: 'hidden' }}>
 					<RecipientsRow
 						type={ParticipantRole.TO}
 						label={t('label.to', 'To')}
 						dataTestid={'RecipientTo'}
-						recipients={recipients.to}
+						recipients={toRecipients}
 						onRecipientsChange={onToChange}
+						extraAccountsIds={extraAccountsIds}
 					/>
 				</Container>
 				<Container
@@ -92,7 +100,7 @@ export const RecipientsRows: FC<RecipientsRowsProps> = ({ recipients, onRecipien
 					type={ParticipantRole.CARBON_COPY}
 					label={t('label.cc', 'Cc')}
 					dataTestid={'RecipientCc'}
-					recipients={recipients.cc}
+					recipients={ccRecipients}
 					onRecipientsChange={onCcChange}
 				/>
 			)}
@@ -102,7 +110,7 @@ export const RecipientsRows: FC<RecipientsRowsProps> = ({ recipients, onRecipien
 					type={ParticipantRole.BLIND_CARBON_COPY}
 					label={t('label.bcc', 'Bcc')}
 					dataTestid={'RecipientBcc'}
-					recipients={recipients.bcc}
+					recipients={bccRecipients}
 					onRecipientsChange={onBccChange}
 				/>
 			)}

@@ -5,6 +5,8 @@
  */
 import { useCallback, useMemo } from 'react';
 
+import { useCallback, useMemo } from 'react';
+
 import { t } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
@@ -126,12 +128,15 @@ export const useEditorDraftSave = (
 ): { status: MailsEditorV2['draftSaveAllowedStatus']; saveDraft: () => void } => {
 	const saveDraftFromEditor = useSaveDraftFromEditor();
 	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
-	const invoker = (): void => saveDraftFromEditor(editorId);
+	const invoker = useCallback((): void => saveDraftFromEditor(editorId), [editorId]);
 
-	return {
-		status,
-		saveDraft: invoker
-	};
+	return useMemo(
+		() => ({
+			status,
+			saveDraft: invoker
+		}),
+		[invoker, status]
+	);
 };
 
 /**
@@ -142,13 +147,3 @@ export const useEditorDraftSaveProcessStatus = (
 	editorId: MailsEditorV2['id']
 ): MailsEditorV2['draftSaveProcessStatus'] =>
 	useEditorsStore((state) => state.editors[editorId].draftSaveProcessStatus);
-
-/**
- * Returns the reactive status for the message send operation.
- * If some change on the editor data will cause the ability/inability to
- * perform the send the status will be updated.
- *
- * The hook returns also the function to invoke the message send action
- *
- * @param editorId
- */

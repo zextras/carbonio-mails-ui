@@ -129,7 +129,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
-					state.editors[id].recipients.cc = recipients;
+					state.editors[id].recipients.bcc = recipients;
 				}
 			})
 		);

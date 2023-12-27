@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { useMemo } from 'react';
+
 import { computeAndUpdateEditorStatus } from './commons';
 import { useSaveDraftFromEditor } from './save-draft';
 import { AttachmentUploadProcessStatus, MailsEditorV2 } from '../../../../types';
@@ -26,17 +28,24 @@ export const useEditorUploadProcess = (
 				state.editors[editorId].unsavedAttachments[unsavedAttachmentIndex].uploadAbortController
 		};
 	});
-	if (!attachmentStateInfo || !attachmentStateInfo.status || !attachmentStateInfo.abortController) {
-		return null;
-	}
 
-	return {
-		status: attachmentStateInfo.status,
-		cancel: (): void => {
-			attachmentStateInfo.abortController?.abort();
-			useEditorsStore.getState().removeUnsavedAttachment(editorId, uploadId);
-			computeAndUpdateEditorStatus(editorId);
-			saveDraftFromEditor(editorId);
+	return useMemo(() => {
+		if (
+			!attachmentStateInfo ||
+			!attachmentStateInfo.status ||
+			!attachmentStateInfo.abortController
+		) {
+			return null;
 		}
-	};
+
+		return {
+			status: attachmentStateInfo.status,
+			cancel: (): void => {
+				attachmentStateInfo.abortController?.abort();
+				useEditorsStore.getState().removeUnsavedAttachment(editorId, uploadId);
+				computeAndUpdateEditorStatus(editorId);
+				saveDraftFromEditor(editorId);
+			}
+		};
+	}, [attachmentStateInfo, editorId, uploadId]);
 };

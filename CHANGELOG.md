@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.11.0...v1.11.1) (2023-12-07)
+
+## [1.11.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.10.3...v1.11.0) (2023-12-05)
+
+
+### Features
+
+* added extraAccountId prop to contact input ([b881652](https://github.com/zextras/carbonio-mails-ui/commit/b8816522b500def38ee0c2e5a96913c45c4651a2))
+
+
+### Bug Fixes
+
+* allow all user accounts to be passed to the contact input ([99e1ffb](https://github.com/zextras/carbonio-mails-ui/commit/99e1ffb84dcda597bf53ec11746d584eeb492a6e))
+
+### [1.10.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.10.2...v1.10.3) (2023-11-28)
+
+
+### Bug Fixes
+
+* subject lost when read/unread the message ([061d91a](https://github.com/zextras/carbonio-mails-ui/commit/061d91a8f906f17cb5c4f1dc1ba23abb98d9397d))
+
+### [1.10.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.10.1...v1.10.2) (2023-11-23)
+
+
+### Bug Fixes
+
+* getting error while reply/forward on specific mail and not able to forward ([6b412dc](https://github.com/zextras/carbonio-mails-ui/commit/6b412dc81fd1ad243af6285a57cc00a311fc82f1))
+* participant groups are correctly normalized ([3a5d1ac](https://github.com/zextras/carbonio-mails-ui/commit/3a5d1acb374fb1583cb343844e6037ca9e6a7a7f))
+* save signature selection and close modal after saving settings changes ([ababe55](https://github.com/zextras/carbonio-mails-ui/commit/ababe55d96dd8880f683748d96b0992323184f1a))
+* the mail editor is ignoring the mail text format setting ([3c13005](https://github.com/zextras/carbonio-mails-ui/commit/3c13005494d9ea25777e077ea01978a9315c1217))
+
 ### [1.10.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.10.0...v1.10.1) (2023-11-09)
 
 ## [1.10.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.9.3...v1.10.0) (2023-11-03)

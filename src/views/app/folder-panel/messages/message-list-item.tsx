@@ -89,7 +89,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 						item.subject,
 						createWindow,
 						messageActions
-					).onClick({});
+					).onClick();
 				}
 			}
 		},

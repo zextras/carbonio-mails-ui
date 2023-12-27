@@ -14,6 +14,7 @@ import { ConversationListItemComponent } from './conversation-list-item-componen
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { LIST_LIMIT } from '../../../../constants';
+import { LIST_LIMIT } from '../../../../constants';
 import { useKeyboardShortcuts } from '../../../../hooks/keyboard-shortcuts';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useConversationListItems } from '../../../../hooks/use-conversation-list';
@@ -172,6 +173,7 @@ const ConversationList: FC = () => {
 			selected={selected}
 			deselectAll={deselectAll}
 			dragImageRef={dragImageRef}
+			hasMore={hasMore}
 		/>
 	);
 };

@@ -140,6 +140,11 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 				<FolderSelector
 					selectedFolderId={folderDestination?.id}
 					onFolderSelected={setFolderDestination}
+					showSharedAccounts
+					showTrashFolder={false}
+					showSpamFolder={false}
+					allowRootSelection
+					allowFolderCreation={false}
 				/>
 				<ModalFooter
 					onConfirm={onConfirm}

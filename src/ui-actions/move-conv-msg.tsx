@@ -291,10 +291,13 @@ const MoveConvMessage = ({
 					</Text>
 				</Container>
 				<FolderSelector
-					// TODO: once the product team confirms the behavior of the new folder button, we can uncomment the following line
-					// onNewFolderClick={moveConvModal ? () => setMoveConvModal(false) : undefined}
 					selectedFolderId={folderDestination?.id}
 					onFolderSelected={setFolderDestination}
+					showSharedAccounts
+					showTrashFolder={false}
+					showSpamFolder={false}
+					allowRootSelection={false}
+					allowFolderCreation={false}
 				/>
 				<ModalFooter
 					tooltip={modalFooterTooltip}

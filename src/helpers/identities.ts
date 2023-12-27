@@ -7,8 +7,9 @@ import { Account, getUserAccount, getUserSettings, t } from '@zextras/carbonio-s
 import { TFunction } from 'i18next';
 import { filter, findIndex, flatten, isArray, map, remove } from 'lodash';
 
-import { getMessageOwnerAccountName } from './folders';
+import { getFolderIdParts, getMessageOwnerAccountName } from './folders';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
+import { getRootsMap } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folders } from '../carbonio-ui-commons/types/folder';
 import { NO_ACCOUNT_NAME } from '../constants';
 import type { MailMessage, Participant } from '../types';
@@ -182,6 +183,7 @@ const getAvailableAddresses = (): Array<AvailableAddress> => {
 };
 
 /**
+ * Returns the name of the account that owns the given address
  *
  * @param address
  */
@@ -202,13 +204,6 @@ const getAddressOwnerAccount = (address: string): string | null => {
  * @param rights
  */
 const generateIdentityId = (email: string, rights: string): string => email + rights;
-// const combinedString = email + rights;
-// const hash = combinedString
-// 	.split('')
-// 	.reduce((acc, char) => acc * 31 + char.charCodeAt(0) || 0, 0);
-
-// const positiveHash = Math.abs(hash);
-// return positiveHash.toString();
 
 /**
  *
@@ -549,6 +544,18 @@ const getIdentityDescription = (identity: IdentityDescriptor, t: TFunction): str
 		  } <${identity.fromAddress}>`
 		: `${identity.fromDisplay ?? identity.identityName} <${identity.fromAddress}>`;
 };
+
+export function getExtraAccountsIds(): Array<string> {
+	const roots = Object.keys(getRootsMap());
+	const rootsZids: Array<string> = roots?.reduce((acc: Array<string>, root) => {
+		const { zid } = getFolderIdParts(root);
+		if (zid) {
+			acc.push(zid);
+		}
+		return acc;
+	}, []);
+	return rootsZids;
+}
 
 export {
 	IdentityDescriptor,

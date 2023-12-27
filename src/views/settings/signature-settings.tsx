@@ -184,6 +184,10 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		);
 	};
 
+	const composerCustomOptions = {
+		auto_focus: false
+	};
+
 	return (
 		<>
 			<FormSubSection
@@ -256,6 +260,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									value={currentSignature?.description}
+									customInitOptions={composerCustomOptions}
 									onEditorChange={(ev: [string, string]): void => {
 										if (isFirstChangeEventFired) {
 											// Rich text signature
