@@ -5,8 +5,6 @@
  */
 import { useCallback, useMemo } from 'react';
 
-import { useCallback, useMemo } from 'react';
-
 import { t } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
 
@@ -128,7 +126,10 @@ export const useEditorDraftSave = (
 ): { status: MailsEditorV2['draftSaveAllowedStatus']; saveDraft: () => void } => {
 	const saveDraftFromEditor = useSaveDraftFromEditor();
 	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
-	const invoker = useCallback((): void => saveDraftFromEditor(editorId), [editorId]);
+	const invoker = useCallback(
+		(): void => saveDraftFromEditor(editorId),
+		[editorId, saveDraftFromEditor]
+	);
 
 	return useMemo(
 		() => ({

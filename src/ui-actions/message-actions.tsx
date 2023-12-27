@@ -419,7 +419,7 @@ export const useDeleteMsg = (): ((
 				id: actDescriptor.id,
 				icon: 'Trash2Outline',
 				label: t('label.delete', 'Delete'),
-				onClick: (ev: React.MouseEvent): void => {
+				onClick: (ev): void => {
 					if (ev) {
 						ev.preventDefault();
 					}
@@ -575,7 +575,7 @@ export const useEditDraft = (): ((
 				id: actDescriptor.id,
 				icon: 'Edit2Outline',
 				label: t('label.edit', 'Edit'),
-				onClick: (ev: KeyboardEvent | React.SyntheticEvent<HTMLElement>): void => {
+				onClick: (ev): void => {
 					if (ev) ev.preventDefault();
 					if (message?.isScheduled) {
 						const closeModal = createModal({
@@ -689,7 +689,8 @@ export const useMoveMessageToFolder = (): ((
 					const closeModal = createModal(
 						{
 							maxHeight: '90vh',
-							size: 'medium',children: (
+							size: 'medium',
+							children: (
 								<StoreProvider>
 									<MoveConvMessage
 										folderId={folderId ?? ''}

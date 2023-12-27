@@ -380,7 +380,8 @@ export const useMoveConversationToFolder = (): ((
 				const closeModal = createModal(
 					{
 						maxHeight: '90vh',
-						size: 'medium',children: (
+						size: 'medium',
+						children: (
 							<StoreProvider>
 								<MoveConvMessage
 									folderId={folderId}

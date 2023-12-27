@@ -44,7 +44,7 @@ export const useEditorSubject = (
 				saveDraftFromEditor(id);
 			}
 		}),
-		[id, setter, value]
+		[id, saveDraftFromEditor, setter, value]
 	);
 };
 
@@ -107,7 +107,7 @@ export const useEditorAutoSendTime = (
 				saveDraftFromEditor(id);
 			}
 		}),
-		[id, setter, value]
+		[id, saveDraftFromEditor, setter, value]
 	);
 };
 
@@ -133,7 +133,7 @@ export const useEditorDid = (
 				saveDraftFromEditor(id);
 			}
 		}),
-		[id, setter, value]
+		[id, saveDraftFromEditor, setter, value]
 	);
 };
 
@@ -159,7 +159,7 @@ export const useEditorIsRichText = (
 				saveDraftFromEditor(id);
 			}
 		}),
-		[id, setter, value]
+		[id, saveDraftFromEditor, setter, value]
 	);
 };
 
@@ -186,7 +186,7 @@ export const useEditorRecipients = (
 				saveDraftFromEditor(editorId);
 			}
 		}),
-		[editorId, setter, value]
+		[editorId, saveDraftFromEditor, setter, value]
 	);
 };
 
@@ -213,7 +213,7 @@ export const useEditorToRecipients = (
 				saveDraftFromEditor(editorId);
 			}
 		}),
-		[editorId, setter, value]
+		[editorId, saveDraftFromEditor, setter, value]
 	);
 };
 
@@ -240,7 +240,7 @@ export const useEditorCcRecipients = (
 				saveDraftFromEditor(editorId);
 			}
 		}),
-		[editorId, setter, value]
+		[editorId, saveDraftFromEditor, setter, value]
 	);
 };
 
@@ -267,7 +267,7 @@ export const useEditorBccRecipients = (
 				saveDraftFromEditor(editorId);
 			}
 		}),
-		[editorId, setter, value]
+		[editorId, saveDraftFromEditor, setter, value]
 	);
 };
 
@@ -294,7 +294,7 @@ export const useEditorIdentityId = (
 				saveDraftFromEditor(editorId);
 			}
 		}),
-		[editorId, setter, value]
+		[editorId, saveDraftFromEditor, setter, value]
 	);
 };
 
@@ -320,7 +320,7 @@ export const useEditorIsUrgent = (
 				saveDraftFromEditor(id);
 			}
 		}),
-		[id, setter, value]
+		[id, saveDraftFromEditor, setter, value]
 	);
 };
 
@@ -346,6 +346,6 @@ export const useEditorRequestReadReceipt = (
 				saveDraftFromEditor(id);
 			}
 		}),
-		[id, setter, value]
+		[id, saveDraftFromEditor, setter, value]
 	);
 };

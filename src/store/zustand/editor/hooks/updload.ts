@@ -47,5 +47,5 @@ export const useEditorUploadProcess = (
 				saveDraftFromEditor(editorId);
 			}
 		};
-	}, [attachmentStateInfo, editorId, uploadId]);
+	}, [attachmentStateInfo, editorId, saveDraftFromEditor, uploadId]);
 };

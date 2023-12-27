@@ -53,7 +53,7 @@ export const DeleteDraftModal = ({
 			onDelete?.();
 			onClose?.();
 		},
-		[dispatch, ids, onClose, onDelete]
+		[dispatch, ids, moveMsgToTrash, onClose, onDelete]
 	);
 
 	return (
