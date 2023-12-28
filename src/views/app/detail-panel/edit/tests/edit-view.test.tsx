@@ -174,6 +174,14 @@ describe('Edit view', () => {
 			// Insert a subject
 			await user.click(subjectInputElement);
 			await user.type(subjectInputElement, subject);
+
+			const optionIcon = screen.getByTestId('options-dropdown-icon');
+			expect(optionIcon).toBeInTheDocument();
+			await user.click(optionIcon);
+			const markAsImportantOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
+				/label\.mark_as_important/i
+			);
+			expect(markAsImportantOption).toBeVisible();
 			act(() => {
 				jest.advanceTimersByTime(10000);
 			});
