@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
 import { existsActionById } from './actions-tests-utils';
 import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
@@ -49,7 +48,6 @@ describe('Actions visibility', () => {
 				});
 				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
-				const account = getUserAccount();
 				const {
 					result: { current: getMsgConvActions }
 				} = setupHook(useGetMsgConvActions);
@@ -87,7 +85,6 @@ describe('Actions visibility', () => {
 				});
 				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
-				const account = getUserAccount();
 				const {
 					result: { current: getMsgConvActions }
 				} = setupHook(useGetMsgConvActions);
@@ -146,7 +143,6 @@ describe('Actions visibility', () => {
 				});
 				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
-				const account = getUserAccount();
 				const {
 					result: { current: getMsgConvActions }
 				} = setupHook(useGetMsgConvActions);
@@ -205,7 +201,6 @@ describe('Actions visibility', () => {
 				});
 				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
-				const account = getUserAccount();
 				const {
 					result: { current: getMsgConvActions }
 				} = setupHook(useGetMsgConvActions);

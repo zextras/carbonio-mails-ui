@@ -6,7 +6,7 @@
 import React, { FC, useMemo } from 'react';
 
 import { Container, Dropdown, IconButton, Padding } from '@zextras/carbonio-design-system';
-import { FOLDERS, useAppContext, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { useAppDispatch } from '../../../../hooks/redux';
@@ -27,7 +27,6 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 	conversation
 }) => {
 	const dispatch = useAppDispatch();
-	const account = useUserAccount();
 	const { setCount } = useAppContext<AppContext>();
 
 	const { deselectAll } = useSelection({ currentFolderId: folderId, setCount, count: 0 });
@@ -75,7 +74,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 								deselectAll
 						  }),
 					setConversationsFlag({ ids, value: item?.flagged, dispatch })
-					// setConversationsSpam(ids, true, t, dispatch)
+					// setConversationAsSpam(ids, true, t, dispatch)
 				];
 			case FOLDERS.INBOX:
 			default:
@@ -94,7 +93,7 @@ const PreviewPanelActions: FC<PreviewPanelActionsType> = ({
 						  }),
 					setConversationsFlag({ ids, value: item?.flagged, dispatch }),
 					printConversation({ conversation })
-					// setConversationsSpam(ids, false, t, dispatch)
+					// setConversationAsSpam(ids, false, t, dispatch)
 					// archiveMsg
 					// editTagsMsg
 				];

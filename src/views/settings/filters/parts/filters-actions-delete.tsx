@@ -93,8 +93,7 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		selectedFilterType === 'incoming-messages' ? setFetchIncomingFilters : setFetchOutgoingFilters;
 	const modifierFunc =
 		selectedFilterType === 'incoming-messages' ? modifyFilterRules : modifyOutgoingFilterRules;
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	const emptyFilter = (arg: any): void => {};
+	const emptyFilter = (): void => undefined;
 
 	const removeFilter = useRemoveFilter();
 	const onRemove = useCallback(() => {

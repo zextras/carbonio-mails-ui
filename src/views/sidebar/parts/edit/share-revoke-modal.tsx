@@ -71,7 +71,7 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 		sendNotification,
 		dispatch,
 		standardMessage,
-		grant?.d,
+		grant.d,
 		grant.zid,
 		folder,
 		accounts,

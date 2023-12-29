@@ -6,16 +6,11 @@
 
 import React, { SyntheticEvent } from 'react';
 
-import { CreateModalFn, CreateSnackbarFn } from '@zextras/carbonio-design-system';
+import { CreateModalFn } from '@zextras/carbonio-design-system';
 
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { ItemType } from '../../carbonio-ui-commons/types/tags';
 import type { TagActionItemType } from '../tags';
-
-export type UiUtilities = {
-	createModal: CreateModalFn;
-	createSnackbar: CreateSnackbarFn;
-};
 
 export type ActionProps = {
 	folder: Folder;

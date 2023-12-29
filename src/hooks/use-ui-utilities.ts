@@ -5,10 +5,19 @@
  */
 import { useContext, useMemo } from 'react';
 
-import { ModalManagerContext, useSnackbar } from '@zextras/carbonio-design-system';
+import {
+	CreateModalFn,
+	CreateSnackbarFn,
+	ModalManagerContext,
+	useSnackbar
+} from '@zextras/carbonio-design-system';
 
-import { UiUtilities } from '../types';
 import { useGlobalModal } from '../views/global-modal-manager';
+
+export type UiUtilities = {
+	createModal: CreateModalFn;
+	createSnackbar: CreateSnackbarFn;
+};
 
 export const useUiUtilities = (): UiUtilities => {
 	const createModal = useContext(ModalManagerContext);

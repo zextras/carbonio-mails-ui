@@ -15,7 +15,7 @@ import {
 	setConversationsFlag,
 	setConversationsRead,
 	useDeleteConversationPermanently,
-	useSetConversationSpam,
+	useSetConversationAsSpam,
 	useMoveConversationToFolder
 } from './conversation-actions';
 import {
@@ -229,12 +229,12 @@ export const useMarkRemoveSpam = (): ((arg: {
 	deselectAll: () => void;
 	foldersExcludedMarkUnmarkSpam: string[];
 }) => ActionReturnType) => {
-	const setConversationSpam = useSetConversationSpam();
+	const setConversationAsSpam = useSetConversationAsSpam();
 	const setMsgAsSpam = useSetMsgAsSpam();
 	return useCallback(
 		({ isConversation, id, folderId, dispatch, deselectAll, foldersExcludedMarkUnmarkSpam }) => {
 			const action = isConversation
-				? setConversationSpam({
+				? setConversationAsSpam({
 						ids: [id],
 						value: folderId === FOLDERS.SPAM,
 						dispatch,
@@ -250,7 +250,7 @@ export const useMarkRemoveSpam = (): ((arg: {
 				!foldersExcludedMarkUnmarkSpam.includes(getFolderIdParts(folderId).id ?? '0') && action
 			);
 		},
-		[setConversationSpam, setMsgAsSpam]
+		[setConversationAsSpam, setMsgAsSpam]
 	);
 };
 

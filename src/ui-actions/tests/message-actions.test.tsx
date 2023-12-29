@@ -613,9 +613,6 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
-			act(() => {
-				jest.advanceTimersByTime(TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT);
-			});
 		});
 	});
 
@@ -647,9 +644,6 @@ describe('Messages actions calls', () => {
 			await user.click(button);
 
 			const requestParameter = await interceptor;
-			act(() => {
-				jest.runOnlyPendingTimers();
-			});
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('delete');
 			expect(requestParameter.action.l).toBeUndefined();

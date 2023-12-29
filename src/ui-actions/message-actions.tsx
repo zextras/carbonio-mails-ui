@@ -305,13 +305,7 @@ const useRestoreMessage = (): ((
 ) => void) => {
 	const { createSnackbar } = useUiUtilities();
 	return useCallback(
-		(
-			dispatch: AppDispatch,
-			ids: MessageActionIdsType,
-			folderId: string,
-			closeEditor: boolean | undefined,
-			conversationId: string | undefined
-		): void => {
+		(dispatch, ids, folderId, closeEditor, conversationId): void => {
 			dispatchMsgMove(dispatch, ids, folderId)
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
@@ -351,14 +345,7 @@ export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageAct
 	const { createSnackbar } = useUiUtilities();
 	const restoreMessage = useRestoreMessage();
 	return useCallback(
-		({
-			ids,
-			dispatch,
-			deselectAll,
-			folderId = FOLDERS.INBOX,
-			conversationId,
-			closeEditor
-		}): MessageActionReturnType => {
+		({ ids, dispatch, deselectAll, folderId = FOLDERS.INBOX, conversationId, closeEditor }) => {
 			const actDescriptor = MessageActionsDescriptors.MOVE_TO_TRASH;
 
 			return {

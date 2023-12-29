@@ -22,7 +22,7 @@ import {
 	useMoveConversationToTrash,
 	setConversationsFlag,
 	setConversationsRead,
-	useSetConversationSpam
+	useSetConversationAsSpam
 } from './conversation-actions';
 import {
 	useDeleteMessagePermanently,
@@ -226,7 +226,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
 
-	const setConversationSpam = useSetConversationSpam();
+	const setConversationAsSpam = useSetConversationAsSpam();
 	const setMsgAsSpam = useSetMsgAsSpam();
 	const markMsgAsSpam = (): ActionReturnType => {
 		const selectedItems = filter(
@@ -236,7 +236,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 				!foldersExcludedMarkSpam.includes(getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
-			? setConversationSpam({
+			? setConversationAsSpam({
 					ids,
 					value: false,
 					dispatch,
@@ -255,7 +255,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 				foldersIncludedMarkNotSpam.includes(getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
-			? setConversationSpam({
+			? setConversationAsSpam({
 					ids,
 					value: true,
 					dispatch,

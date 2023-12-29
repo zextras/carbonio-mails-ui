@@ -32,7 +32,7 @@ import {
 	setConversationsFlag,
 	setConversationsRead,
 	useMoveConversationToTrash,
-	useSetConversationSpam
+	useSetConversationAsSpam
 } from '../conversation-actions';
 import DeleteConvConfirm from '../delete-conv-modal';
 import MoveConvMessage from '../move-conv-msg';
@@ -419,9 +419,9 @@ describe('Conversation actions calls', () => {
 			});
 
 			const {
-				result: { current: setConversationSpam }
-			} = setupHook(useSetConversationSpam);
-			const action = setConversationSpam({
+				result: { current: setConversationAsSpam }
+			} = setupHook(useSetConversationAsSpam);
+			const action = setConversationAsSpam({
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: false,
@@ -467,9 +467,9 @@ describe('Conversation actions calls', () => {
 			const convIds = conversations.map<string>((conv) => conv.id);
 
 			const {
-				result: { current: setConversationSpam }
-			} = setupHook(useSetConversationSpam);
-			const action = setConversationSpam({
+				result: { current: setConversationAsSpam }
+			} = setupHook(useSetConversationAsSpam);
+			const action = setConversationAsSpam({
 				ids: convIds,
 				dispatch: store.dispatch,
 				value: false,
@@ -508,9 +508,9 @@ describe('Conversation actions calls', () => {
 			});
 
 			const {
-				result: { current: setConversationSpam }
-			} = setupHook(useSetConversationSpam);
-			const action = setConversationSpam({
+				result: { current: setConversationAsSpam }
+			} = setupHook(useSetConversationAsSpam);
+			const action = setConversationAsSpam({
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: true,
@@ -555,9 +555,9 @@ describe('Conversation actions calls', () => {
 
 			const convIds = conversations.map<string>((conv) => conv.id);
 			const {
-				result: { current: setConversationSpam }
-			} = setupHook(useSetConversationSpam);
-			const action = setConversationSpam({
+				result: { current: setConversationAsSpam }
+			} = setupHook(useSetConversationAsSpam);
+			const action = setConversationAsSpam({
 				ids: convIds,
 				dispatch: store.dispatch,
 				value: true,
@@ -633,9 +633,6 @@ describe('Conversation actions calls', () => {
 			expect(requestParameter.action.op).toBe('trash');
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
-			act(() => {
-				jest.advanceTimersByTime(TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT);
-			});
 		});
 
 		test('Multiple ids', async () => {
@@ -716,14 +713,12 @@ describe('Conversation actions calls', () => {
 			const { user } = setupTest(component, { store });
 			const button = await screen.findByText(/label\.delete_permanently/i);
 			await user.click(button);
+
 			const requestParameter = await interceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
 			expect(requestParameter.action.op).toBe('delete');
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
-			act(() => {
-				jest.runOnlyPendingTimers();
-			});
 		});
 
 		test('Multiple ids', async () => {

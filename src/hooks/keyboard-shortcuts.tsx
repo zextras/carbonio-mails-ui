@@ -7,26 +7,29 @@ import { useCallback } from 'react';
 
 import { noop } from 'lodash';
 
+import { AppDispatch } from '../store/redux';
 import {
-	ConvActionPropType,
 	setConversationsFlag,
 	setConversationsRead,
 	useMoveConversationToTrash,
-	useSetConversationSpam
+	useSetConversationAsSpam
 } from '../ui-actions/conversation-actions';
 
 type HandleKeyboardShortcutsProps = {
 	event: KeyboardEvent;
 	itemId: string;
+	folderId: string;
+	dispatch: AppDispatch;
+	deselectAll: () => void;
 	conversations: Array<{ id: string; flagged: boolean }>;
-} & Pick<ConvActionPropType, 'folderId' | 'dispatch' | 'deselectAll'>;
+};
 
 const modifierKeysFirstTier: string[] = ['v', 'm', '.', 'n'];
 const modifierKeysSecondTier: string[] = [];
 
 let keySequence = '';
 export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) => void) => {
-	const setConversationsSpam = useSetConversationSpam();
+	const setConversationAsSpam = useSetConversationAsSpam();
 	const moveConversationToTrash = useMoveConversationToTrash();
 
 	return useCallback(
@@ -99,7 +102,7 @@ export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) =>
 					case 'ms': // Report (mark as) spam
 						if (isGlobalContext && itemId) {
 							eventActions();
-							setConversationsSpam({
+							setConversationAsSpam({
 								ids: [itemId],
 								value: false,
 								dispatch,
@@ -154,6 +157,6 @@ export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) =>
 				default:
 			}
 		},
-		[moveConversationToTrash, setConversationsSpam]
+		[moveConversationToTrash, setConversationAsSpam]
 	);
 };

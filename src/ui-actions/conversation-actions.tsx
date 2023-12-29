@@ -221,7 +221,7 @@ export function printConversation({
 	};
 }
 
-export const useSetConversationSpam = (): ((
+export const useSetConversationAsSpam = (): ((
 	arg: Pick<ConvActionPropType, 'ids' | 'dispatch' | 'value' | 'deselectAll'>
 ) => ConvActionReturnType) => {
 	const { createSnackbar } = useUiUtilities();

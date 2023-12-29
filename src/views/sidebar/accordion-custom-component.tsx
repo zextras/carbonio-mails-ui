@@ -73,7 +73,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const accountName = useUserAccount().name;
 	const dispatch = useAppDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
-	const uiUtilities = useUiUtilities();
+	const { createSnackbar } = useUiUtilities();
 
 	const onDragEnterAction = useCallback(
 		(data: OnDropActionProps): DragEnterAction => {
@@ -119,7 +119,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 			folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }).then(
 				(res) => {
 					if (!('Fault' in res)) {
-						uiUtilities.createSnackbar({
+						createSnackbar({
 							key: `move`,
 							replace: true,
 							type: 'success',
@@ -127,7 +127,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 							autoHideTimeout: 3000
 						});
 					} else {
-						uiUtilities.createSnackbar({
+						createSnackbar({
 							key: `move`,
 							replace: true,
 							type: 'error',
@@ -148,7 +148,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				if (res.type.includes('fulfilled')) {
 					replaceHistory(`/folder/${folderId}`);
 					data.data.deselectAll && data.data.deselectAll();
-					uiUtilities.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -160,7 +160,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						}
 					});
 				} else {
-					uiUtilities.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
@@ -180,7 +180,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					data.data.deselectAll && data.data.deselectAll();
-					uiUtilities.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -192,7 +192,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						}
 					});
 				} else {
-					uiUtilities.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
