@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
 
-import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
+import { Button, Padding } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { find, noop } from 'lodash';
 
@@ -13,6 +13,7 @@ import { useRemoveFilter, useAddFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
 import { FilterContext } from './filter-context';
 import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import {
 	modifyFilterRules,
 	modifyOutgoingFilterRules
@@ -71,7 +72,7 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const disableRun = useMemo(() => true, []);
 	const disableDelete = useMemo(() => true, []);
 	const disablCreate = useMemo(() => false, []);
-	const createModal = useContext(ModalManagerContext);
+	const { createModal } = useUiUtilities();
 	const openCreateModal = useCallback(() => {
 		const closeModal = createModal(
 			{

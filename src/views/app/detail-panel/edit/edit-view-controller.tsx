@@ -177,8 +177,7 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 				}
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [draftId]);
+	}, [board, draftId, editor.id, keepOrDiscardDraft, saveDraft, updateBoard]);
 
 	return (
 		<MemoizedEditView

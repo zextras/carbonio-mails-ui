@@ -3,29 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
-import { useModal, useSnackbar } from '@zextras/carbonio-design-system';
+import { ModalManagerContext, useSnackbar } from '@zextras/carbonio-design-system';
 
 import { UiUtilities } from '../types';
+import { useGlobalModal } from '../views/global-modal-manager';
 
 export const useUiUtilities = (): UiUtilities => {
-	const createModal = useModal();
+	const createModal = useContext(ModalManagerContext);
 	const createSnackbar = useSnackbar();
-
-	const createPlaceholderFn = useCallback(
-		(functionName: string): (() => void) =>
-			(): void => {
-				console.warn(`${functionName} not set`);
-			},
-		[]
-	);
+	const createGlobalModal = useGlobalModal();
 
 	return useMemo(
 		() => ({
-			createModal: createModal ?? createPlaceholderFn('createModal'),
-			createSnackbar: createSnackbar ?? createPlaceholderFn('createSnackbar')
+			createModal: createModal ?? createGlobalModal,
+			createSnackbar
 		}),
-		[createModal, createPlaceholderFn, createSnackbar]
+		[createGlobalModal, createModal, createSnackbar]
 	);
 };

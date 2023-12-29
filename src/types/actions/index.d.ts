@@ -6,19 +6,20 @@
 
 import { SyntheticEvent } from 'react';
 
-import { CreateModalFn } from '@zextras/carbonio-design-system';
+import { CreateModalFn, CreateSnackbarFn } from '@zextras/carbonio-design-system';
 
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { ItemType } from '../../carbonio-ui-commons/types/tags';
 import type { TagActionItemType } from '../tags';
 
 export type UiUtilities = {
-	createModal: ReturnType<useModal>;
-	createSnackbar: ReturnType<useSnackbar>;
+	createModal: CreateModalFn;
+	createSnackbar: CreateSnackbarFn;
 };
 
 export type ActionProps = {
 	folder: Folder;
+	// FIXME: IRIS-4953 Import the right type
 	grant: Grant;
 	setActiveModal: (arg: string) => void;
 	onMouseLeave: () => void;
