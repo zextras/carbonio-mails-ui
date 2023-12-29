@@ -3,17 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
+
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { find, map, noop, reduce } from 'lodash';
-import React, { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
+
+import { MessageListItem } from './message-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { IncompleteMessage, MailMessage, MessageListItemProps } from '../../../../types';
 import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
-import { MessageListItem } from './message-list-item';
 
 const DragImageContainer = styled.div`
 	position: absolute;
@@ -63,7 +65,7 @@ export type MessageListComponentProps = {
 	// the text to display in the side panel
 	displayerTitle: string | null;
 	// the list of messages to display
-	listItems: JSX.Element[];
+	listItems: React.JSX.Element[];
 	// the function to call when the list is scrolled to the bottom
 	loadMore?: () => void;
 	// the total number of messages in the list

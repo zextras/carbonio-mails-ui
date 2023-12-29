@@ -116,7 +116,7 @@ const ConversationList: FC = () => {
 						background={conversation.read ? 'gray6' : 'gray5'}
 						key={conversation.id}
 					>
-						{(visible: boolean): JSX.Element =>
+						{(visible: boolean): React.JSX.Element =>
 							visible ? (
 								<ConversationListItemComponent
 									item={conversation}

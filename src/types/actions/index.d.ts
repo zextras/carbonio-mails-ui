@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { SyntheticEvent } from 'react';
+import React, { SyntheticEvent } from 'react';
 
 import { CreateModalFn, CreateSnackbarFn } from '@zextras/carbonio-design-system';
 
@@ -53,7 +53,7 @@ export type MessageActionReturnType = UIAction<never> & {
 export type ConvActionReturnType = UIAction<never> & {
 	disabled?: boolean;
 	onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
-	customComponent?: JSX.Element;
+	customComponent?: React.JSX.Element;
 	items?: ItemType[];
 };
 

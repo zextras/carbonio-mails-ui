@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
 import { faker } from '@faker-js/faker';
 import { fireEvent, screen } from '@testing-library/react';
 import { noop } from 'lodash';
-import React from 'react';
+
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
@@ -28,7 +30,7 @@ describe.each`
 	const userFolder: Folder = {
 		isLink: false,
 		id: FOLDERS_DESCRIPTORS.USER_DEFINED.id,
-		uuid: faker.datatype.uuid(),
+		uuid: faker.string.uuid(),
 		name: FOLDERS_DESCRIPTORS.USER_DEFINED.desc,
 		activesyncdisabled: false,
 		recursive: false,

@@ -67,7 +67,7 @@ export type ConversationListComponentProps = {
 	// the text to display in the side panel
 	displayerTitle: string | null;
 	// the list of conversations to display
-	listItems: JSX.Element[];
+	listItems: React.JSX.Element[];
 	// the function to call when the list is scrolled to the bottom
 	loadMore?: () => void;
 	// the total number of conversations in the list

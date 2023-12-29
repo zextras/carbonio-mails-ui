@@ -4,16 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
+
+import { faker } from '@faker-js/faker';
 import { screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { faker } from '@faker-js/faker';
 import { rest } from 'msw';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../tests/generators/store';
-import { NewModal } from '../new-modal';
-import { Folder } from '../../../carbonio-ui-commons/types/folder';
+
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
+import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { Folder } from '../../../carbonio-ui-commons/types/folder';
+import { generateStore } from '../../../tests/generators/store';
+import { NewModal } from '../new-modal';
 
 describe('new-modal', () => {
 	test('add folder name and create button should enabled', async () => {
@@ -22,11 +24,11 @@ describe('new-modal', () => {
 		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -78,11 +80,11 @@ describe('new-modal', () => {
 		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -130,11 +132,11 @@ describe('new-modal', () => {
 		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,

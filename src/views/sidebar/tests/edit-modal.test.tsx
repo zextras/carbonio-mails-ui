@@ -4,18 +4,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
+
+import { faker } from '@faker-js/faker';
 import { screen, within } from '@testing-library/react';
 import { FOLDERS, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
-import { faker } from '@faker-js/faker';
 import { rest } from 'msw';
+
+import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
+import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
-import { EditModal } from '../edit-modal';
 import { FolderAction } from '../../../types';
-import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { EditModal } from '../edit-modal';
 
 describe('edit-modal', () => {
 	test('edit the folder excepting the system folders', async () => {
@@ -23,11 +25,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
@@ -77,11 +79,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'folders.inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -129,11 +131,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
@@ -171,11 +173,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
@@ -270,11 +272,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
@@ -348,11 +350,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'folders.inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -393,11 +395,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,

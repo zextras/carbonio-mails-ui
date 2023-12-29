@@ -274,7 +274,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const dropdownItems = useFolderActions(item);
 
 	const statusIcon = useMemo(() => {
-		const RowWithIcon = (icon: string, color: string, tooltipText: string): JSX.Element => (
+		const RowWithIcon = (icon: string, color: string, tooltipText: string): React.JSX.Element => (
 			<Padding left="small">
 				<Tooltip placement="right" label={tooltipText}>
 					<Row>
