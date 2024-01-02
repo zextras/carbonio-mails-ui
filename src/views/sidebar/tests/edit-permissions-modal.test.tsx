@@ -4,15 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
+
+import { faker } from '@faker-js/faker';
 import { screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { faker } from '@faker-js/faker';
+
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import * as shareFolderModule from '../../../store/actions/share-folder';
-import EditPermissionsModal from '../edit-permissions-modal';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import * as shareFolderModule from '../../../store/actions/share-folder';
 import { generateStore } from '../../../tests/generators/store';
+import EditPermissionsModal from '../edit-permissions-modal';
 
 describe('edit-permissions-modal', () => {
 	test('share with has 2 options, internal is selected by default, confirm button is disabled', async () => {
@@ -28,11 +30,11 @@ describe('edit-permissions-modal', () => {
 		const store = generateStore();
 		const folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -100,11 +102,11 @@ describe('edit-permissions-modal', () => {
 		const store = generateStore();
 		const folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -175,11 +177,11 @@ describe('edit-permissions-modal', () => {
 		const store = generateStore();
 		const folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -252,11 +254,11 @@ describe('edit-permissions-modal', () => {
 		const store = generateStore();
 		const folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -323,11 +325,11 @@ describe('edit-permissions-modal', () => {
 		const store = generateStore();
 		const folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,

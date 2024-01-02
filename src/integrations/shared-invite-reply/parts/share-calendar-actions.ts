@@ -3,9 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getBridgedFunctions } from '@zextras/carbonio-shell-ui';
+import { useCallback } from 'react';
+
 import { map } from 'lodash';
+
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
+import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { msgAction } from '../../../store/actions';
 import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCalendarReply';
 import { mountSharedCalendar } from '../../../store/actions/mount-share-calendar';
@@ -131,135 +134,155 @@ const sharedCalendarReplyFunc = ({
 	);
 };
 
-const moveInviteToTrashFunc = ({ msgId, dispatch, t }: MoveInviteToTrashType): any =>
-	dispatch(
-		msgAction({
-			operation: `trash`,
-			ids: [msgId]
-		})
-	).then((res2: any): void => {
-		if (!res2.type.includes('fulfilled')) {
-			getBridgedFunctions()?.createSnackbar({
-				key: `share`,
-				replace: true,
-				hideButton: true,
-				type: 'error',
-				label: t('label.error_try_again', 'Something went wrong, please try again'),
-				autoHideTimeout: 3000
-			});
-		}
-	});
+const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => any) => {
+	const { createSnackbar } = useUiUtilities();
+	return useCallback(
+		({ msgId, dispatch, t }) =>
+			dispatch(
+				msgAction({
+					operation: `trash`,
+					ids: [msgId]
+				})
+			).then((res2: any): void => {
+				if (!res2.type.includes('fulfilled')) {
+					createSnackbar({
+						key: `share`,
+						replace: true,
+						hideButton: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000
+					});
+				}
+			}),
+		[createSnackbar]
+	);
+};
 
-export const accept = ({
-	zid,
-	view,
-	rid,
-	calendarName,
-	color,
-	accounts,
-	t,
-	dispatch,
-	msgId,
-	sharedCalendarName,
-	owner,
-	participants,
-	grantee,
-	customMessage,
-	role,
-	allowedActions,
-	notifyOrganizer
-}: Accept): void =>
-	mountSharedCalendarFunc({
-		zid,
-		view,
-		rid,
-		calendarName,
-		color,
-		accounts,
-		dispatch
-	}).then((res: any): void => {
-		if (res.type.includes('fulfilled')) {
-			notifyOrganizer &&
-				sharedCalendarReplyFunc({
-					dispatch,
-					sharedCalendarName,
-					owner,
-					participants,
-					grantee,
-					customMessage,
-					role,
-					allowedActions,
-					isAccepted: true
-				});
-			moveInviteToTrashFunc({ msgId, dispatch, t });
-			getBridgedFunctions()?.createSnackbar({
-				key: `share_accepted`,
-				replace: true,
-				type: 'info',
-				label: t('message.snackbar.share.accepted', 'You have accepted the share request'),
-				autoHideTimeout: 3000,
-				hideButton: true
+export const useAccept = (): ((arg: Accept) => void) => {
+	const { createSnackbar } = useUiUtilities();
+	const moveInviteToTrashFunc = useMoveInviteToTrashFunc();
+	return useCallback(
+		({
+			zid,
+			view,
+			rid,
+			calendarName,
+			color,
+			accounts,
+			t,
+			dispatch,
+			msgId,
+			sharedCalendarName,
+			owner,
+			participants,
+			grantee,
+			customMessage,
+			role,
+			allowedActions,
+			notifyOrganizer
+		}) => {
+			mountSharedCalendarFunc({
+				zid,
+				view,
+				rid,
+				calendarName,
+				color,
+				accounts,
+				dispatch
+			}).then((res: any): void => {
+				if (res.type.includes('fulfilled')) {
+					notifyOrganizer &&
+						sharedCalendarReplyFunc({
+							dispatch,
+							sharedCalendarName,
+							owner,
+							participants,
+							grantee,
+							customMessage,
+							role,
+							allowedActions,
+							isAccepted: true
+						});
+					moveInviteToTrashFunc({ msgId, dispatch, t });
+					createSnackbar({
+						key: `share_accepted`,
+						replace: true,
+						type: 'info',
+						label: t('message.snackbar.share.accepted', 'You have accepted the share request'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				} else {
+					createSnackbar({
+						key: `share`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
 			});
-		} else {
-			getBridgedFunctions()?.createSnackbar({
-				key: `share`,
-				replace: true,
-				type: 'error',
-				label: t('label.error_try_again', 'Something went wrong, please try again'),
-				autoHideTimeout: 3000,
-				hideButton: true
-			});
-		}
-	});
+		},
+		[createSnackbar, moveInviteToTrashFunc]
+	);
+};
 
-export const decline = ({
-	dispatch,
-	t,
-	msgId,
-	sharedCalendarName,
-	owner,
-	participants,
-	grantee,
-	customMessage,
-	role,
-	allowedActions,
-	notifyOrganizer
-}: DeclineType): any =>
-	dispatch(
-		msgAction({
-			operation: `trash`,
-			ids: [msgId]
-		})
-	).then((res: any): void => {
-		if (res.type.includes('fulfilled')) {
-			notifyOrganizer &&
-				sharedCalendarReplyFunc({
-					dispatch,
-					sharedCalendarName,
-					owner,
-					participants,
-					grantee,
-					customMessage,
-					role,
-					allowedActions,
-					isAccepted: false
-				});
-			getBridgedFunctions()?.createSnackbar({
-				key: `share_declined`,
-				replace: true,
-				type: 'info',
-				label: t('message.snackbar.share.declined', 'You have declined the share request'),
-				autoHideTimeout: 3000,
-				hideButton: true
-			});
-		} else {
-			getBridgedFunctions()?.createSnackbar({
-				key: `share`,
-				replace: true,
-				type: 'error',
-				label: t('label.error_try_again', 'Something went wrong, please try again'),
-				autoHideTimeout: 3000,
-				hideButton: true
-			});
-		}
-	});
+export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
+	const { createSnackbar } = useUiUtilities();
+	return useCallback(
+		({
+			dispatch,
+			t,
+			msgId,
+			sharedCalendarName,
+			owner,
+			participants,
+			grantee,
+			customMessage,
+			role,
+			allowedActions,
+			notifyOrganizer
+		}) =>
+			dispatch(
+				msgAction({
+					operation: `trash`,
+					ids: [msgId]
+				})
+			).then((res): void => {
+				if (res.type.includes('fulfilled')) {
+					notifyOrganizer &&
+						sharedCalendarReplyFunc({
+							dispatch,
+							sharedCalendarName,
+							owner,
+							participants,
+							grantee,
+							customMessage,
+							role,
+							allowedActions,
+							isAccepted: false
+						});
+					createSnackbar({
+						key: `share_declined`,
+						replace: true,
+						type: 'info',
+						label: t('message.snackbar.share.declined', 'You have declined the share request'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				} else {
+					createSnackbar({
+						key: `share`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			}),
+		[createSnackbar]
+	);
+};

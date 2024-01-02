@@ -4,18 +4,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { screen } from '@testing-library/react';
+
 import { faker } from '@faker-js/faker';
+import { screen } from '@testing-library/react';
 import { rest } from 'msw';
+
+import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
+import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
+import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
-import { EmptyModal } from '../empty-modal';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { FolderAction } from '../../../types';
+import { EmptyModal } from '../empty-modal';
 
 describe('empty-modal', () => {
 	test('empty the folder except the trash folder', async () => {
@@ -23,11 +25,11 @@ describe('empty-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -69,11 +71,11 @@ describe('empty-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: FOLDERS.TRASH,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Trash',
 			absFolderPath: '/Trash',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			rev: 1,
 			ms: 28502,

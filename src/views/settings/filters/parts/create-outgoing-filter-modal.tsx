@@ -3,20 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
-import type { FilterActions } from '../../../../types';
+
 import { CreateFilterContext } from './create-filter-context';
 import ModalFooter from './create-filter-modal-footer';
 import DefaultCondition from './create-filters-conditions/default';
 import FilterTestConditionRow from './filter-test-condition-row';
 import FilterActionConditions from './new-filter-action-conditions';
 import { getButtonInfo } from './utils';
+import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
+import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
+import type { FilterActions } from '../../../../types';
 
 type ComponentProps = {
 	t: TFunction;
@@ -33,6 +36,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 	setFetchOutgoingFilters,
 	setOutgoingFilters
 }): ReactElement => {
+	const { createSnackbar } = useUiUtilities();
 	const [filterName, setFilterName] = useState('');
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
@@ -125,7 +129,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 				setFetchOutgoingFilters(true);
 			})
 			.catch((error) => {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `share`,
 					replace: true,
 					hideButton: true,
@@ -142,6 +146,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 		setOutgoingFilters,
 		onClose,
 		setFetchOutgoingFilters,
+		createSnackbar,
 		t
 	]);
 

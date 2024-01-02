@@ -60,9 +60,9 @@ const generateRandomParticipants = (count: number, type: ParticipantRoleType): A
  * @param messageGenerationCount
  */
 const generateConversation = ({
-	id = faker.datatype.number().toString(),
+	id = faker.number.int().toString(),
 	folderId = FOLDERS.INBOX,
-	receiveDate = faker.date.recent(1).valueOf(),
+	receiveDate = faker.date.recent({ days: 1 }).valueOf(),
 	to,
 	cc,
 	from,

@@ -6,13 +6,10 @@
 /build/
 /sdk/
 /dist/
-/.idea/workspace.xml
-/.idea/compiler.xml
 /e2e/output/
-.idea/
 /.idea
-.idea/jsLibraryMappings.xml
 /junit.xml
-/coverage/cobertura-coverage.xml
+/coverage
 .DS_Store
 .vscode/
+zextras-carbonio-*.tgz

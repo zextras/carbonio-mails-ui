@@ -3,22 +3,24 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useMemo } from 'react';
+
 import { IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import { useAppDispatch } from '../hooks/redux';
+
 import {
-	deleteMsg,
-	editDraft,
+	useDeleteMsg,
+	useEditDraft,
 	forwardMsg,
-	moveMsgToTrash,
+	useMoveMsgToTrash,
 	replyAllMsg,
 	replyMsg,
 	setMsgFlag,
 	setMsgRead
 } from './message-actions';
+import { useAppDispatch } from '../hooks/redux';
 
 const ButtonBar = styled(Row)`
 	position: absolute;
@@ -43,6 +45,9 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 	const dispatch = useAppDispatch();
 	const ids = useMemo(() => [messageId], [messageId]);
 
+	const deleteMsg = useDeleteMsg();
+	const moveMsgToTrash = useMoveMsgToTrash();
+	const editDraft = useEditDraft();
 	const actions = useMemo(() => {
 		switch (folderId) {
 			case FOLDERS.TRASH:
@@ -90,7 +95,18 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 							moveMsgToTrash({ ids, dispatch, folderId })
 					  ];
 		}
-	}, [folderId, ids, dispatch, read, flag, messageId, showReplyAll]);
+	}, [
+		folderId,
+		deleteMsg,
+		ids,
+		dispatch,
+		read,
+		flag,
+		moveMsgToTrash,
+		messageId,
+		editDraft,
+		showReplyAll
+	]);
 
 	return (
 		<ButtonBar orientation="horizontal">

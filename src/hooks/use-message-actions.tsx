@@ -13,20 +13,20 @@ import { useAppDispatch } from './redux';
 import { useSelection } from './use-selection';
 import type { AppContext, MailMessage, MessageAction } from '../types';
 import {
-	deleteMessagePermanently,
-	deleteMsg,
+	useDeleteMessagePermanently,
+	useDeleteMsg,
 	editAsNewMsg,
-	editDraft,
+	useEditDraft,
 	forwardMsg,
-	moveMessageToFolder,
-	moveMsgToTrash,
+	useMoveMessageToFolder,
+	useMoveMsgToTrash,
 	previewMessageOnSeparatedWindow,
 	printMsg,
-	redirectMsg,
+	useRedirectMsg,
 	replyAllMsg,
 	replyMsg,
 	sendDraft,
-	setMsgAsSpam,
+	useSetMsgAsSpam,
 	setMsgFlag,
 	setMsgRead,
 	showOriginalMsg
@@ -52,6 +52,13 @@ export const useMessageActions = (
 	const { deselectAll } = useSelection({ currentFolderId: folderId, setCount, count: 0 });
 	const { isInsideExtraWindow } = useExtraWindow();
 	const { createWindow } = useExtraWindowsManager();
+	const editDraft = useEditDraft();
+	const moveMsgToTrash = useMoveMsgToTrash();
+	const moveMessageToFolder = useMoveMessageToFolder();
+	const redirectMsg = useRedirectMsg();
+	const setMsgAsSpam = useSetMsgAsSpam();
+	const deleteMessagePermanently = useDeleteMessagePermanently();
+	const deleteMsg = useDeleteMsg();
 
 	const systemFolders = useMemo(
 		() => [FOLDERS.INBOX, FOLDERS.SENT, FOLDERS.DRAFTS, FOLDERS.TRASH, FOLDERS.SPAM],

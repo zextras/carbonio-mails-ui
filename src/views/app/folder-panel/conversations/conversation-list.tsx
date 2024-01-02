@@ -14,7 +14,7 @@ import { ConversationListItemComponent } from './conversation-list-item-componen
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { LIST_LIMIT } from '../../../../constants';
-import { handleKeyboardShortcuts } from '../../../../hooks/keyboard-shortcuts';
+import { useKeyboardShortcuts } from '../../../../hooks/keyboard-shortcuts';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useConversationListItems } from '../../../../hooks/use-conversation-list';
 import { useSelection } from '../../../../hooks/use-selection';
@@ -68,6 +68,7 @@ const ConversationList: FC = () => {
 		}
 	}, [hasMore, isLoading, conversations, dispatch, folderId]);
 
+	const handleKeyboardShortcuts = useKeyboardShortcuts();
 	useEffect(() => {
 		const handler = (event: KeyboardEvent): void =>
 			handleKeyboardShortcuts({
@@ -82,7 +83,7 @@ const ConversationList: FC = () => {
 		return () => {
 			document.removeEventListener('keydown', handler);
 		};
-	}, [folderId, itemId, conversations, dispatch, deselectAll]);
+	}, [folderId, itemId, conversations, dispatch, deselectAll, handleKeyboardShortcuts]);
 
 	const displayerTitle = useMemo(() => {
 		if (conversations?.length === 0) {
@@ -115,7 +116,7 @@ const ConversationList: FC = () => {
 						background={conversation.read ? 'gray6' : 'gray5'}
 						key={conversation.id}
 					>
-						{(visible: boolean): JSX.Element =>
+						{(visible: boolean): React.JSX.Element =>
 							visible ? (
 								<ConversationListItemComponent
 									item={conversation}

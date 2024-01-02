@@ -31,6 +31,7 @@ import {
 } from './integrations/shared-functions';
 import { StoreProvider } from './store/redux';
 import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-manager';
+import { GlobalModalManager } from './views/global-modal-manager';
 import { getSettingsSubSections } from './views/settings/subsections';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
@@ -57,9 +58,11 @@ const LazySidebarView = lazy(() =>
 const AppView = () => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
-			<ExtraWindowsManager>
-				<LazyAppView />
-			</ExtraWindowsManager>
+			<ModalManager>
+				<ExtraWindowsManager>
+					<LazyAppView />
+				</ExtraWindowsManager>
+			</ModalManager>
 		</StoreProvider>
 	</Suspense>
 );
@@ -86,7 +89,9 @@ const SearchView = (props) => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
 			<ExtraWindowsManager>
-				<LazySearchView {...props} />
+				<ModalManager>
+					<LazySearchView {...props} />
+				</ModalManager>
 			</ExtraWindowsManager>
 		</StoreProvider>
 	</Suspense>
@@ -95,7 +100,9 @@ const SearchView = (props) => (
 const SidebarView = (props) => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
-			<LazySidebarView {...props} />
+			<ModalManager>
+				<LazySidebarView {...props} />
+			</ModalManager>
 		</StoreProvider>
 	</Suspense>
 );
@@ -189,7 +196,9 @@ const App = () => {
 	useFoldersController(FOLDER_VIEW.message);
 	return (
 		<StoreProvider>
-			<SyncDataHandler />
+			<GlobalModalManager>
+				<SyncDataHandler />
+			</GlobalModalManager>
 		</StoreProvider>
 	);
 };

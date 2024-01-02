@@ -4,17 +4,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
+
+import { Button, Padding } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
-import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
 import { find, noop } from 'lodash';
-import { removeFilter, addFilter } from './actions';
+
+import { useRemoveFilter, useAddFilter } from './actions';
+import CreateFilterModal from './create-filter-modal';
+import { FilterContext } from './filter-context';
+import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import {
 	modifyFilterRules,
 	modifyOutgoingFilterRules
 } from '../../../../store/actions/modify-filter-rules';
-import { FilterContext } from './filter-context';
-import CreateFilterModal from './create-filter-modal';
-import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
 import { StoreProvider } from '../../../../store/redux';
 
 type FilterListType = {
@@ -69,13 +72,9 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const disableRun = useMemo(() => true, []);
 	const disableDelete = useMemo(() => true, []);
 	const disablCreate = useMemo(() => false, []);
-	const createModal = useContext(ModalManagerContext);
+	const { createModal } = useUiUtilities();
 	const openCreateModal = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		const closeModal = createModal(
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			{
 				size: 'large',
 				children: (
@@ -94,9 +93,9 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		selectedFilterType === 'incoming-messages' ? setFetchIncomingFilters : setFetchOutgoingFilters;
 	const modifierFunc =
 		selectedFilterType === 'incoming-messages' ? modifyFilterRules : modifyOutgoingFilterRules;
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	const emptyFilter = (arg: any): void => {};
+	const emptyFilter = (): void => undefined;
 
+	const removeFilter = useRemoveFilter();
 	const onRemove = useCallback(() => {
 		removeFilter({
 			t,
@@ -106,7 +105,9 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			setFetchFilters: setFetchFilters ?? emptyFilter,
 			modifierFunc
 		});
-	}, [t, availableList, activeList, setFilters, setFetchFilters, modifierFunc]);
+	}, [removeFilter, t, availableList, activeList, setFilters, setFetchFilters, modifierFunc]);
+
+	const addFilter = useAddFilter();
 	const onAdd = useCallback(
 		() =>
 			addFilter({
@@ -117,12 +118,10 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				setFetchFilters: setFetchFilters ?? emptyFilter,
 				modifierFunc
 			}),
-		[t, availableList, activeList, setFilters, setFetchFilters, modifierFunc]
+		[addFilter, t, availableList, activeList, setFilters, setFetchFilters, modifierFunc]
 	);
 
 	const openFilterModifyModal = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		const closeModal = createModal(
 			{
 				size: 'large',

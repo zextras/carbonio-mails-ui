@@ -7,11 +7,13 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { ChipInput, ChipItem, Container, Divider, Text } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, some } from 'lodash';
+
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { TIMEOUTS } from '../constants';
+import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { redirectMessageAction } from '../store/actions';
 
 type RedirectActionProps = { onClose: () => void; id: string };
@@ -27,6 +29,7 @@ type ContactType = {
 };
 
 const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactElement => {
+	const { createSnackbar } = useUiUtilities();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const [contacts, setContacts] = useState<ContactType[]>([]);
 	const onChipInputChange = useCallback((items: ChipItem[]) => {
@@ -47,14 +50,14 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 	);
 
 	const onRedirectError = useCallback(() => {
-		getBridgedFunctions()?.createSnackbar({
+		createSnackbar({
 			key: `redirect-${id}`,
 			replace: true,
 			type: 'error',
 			label: t('label.error_try_again', 'Something went wrong, please try again'),
 			autoHideTimeout: TIMEOUTS.REDIRECT
 		});
-	}, [id]);
+	}, [createSnackbar, id]);
 
 	const onConfirm = useCallback(
 		() =>
@@ -67,7 +70,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 			})
 				.then((res) => {
 					if (!('Fault' in res)) {
-						getBridgedFunctions()?.createSnackbar({
+						createSnackbar({
 							key: `redirect-${id}`,
 							replace: true,
 							type: 'success',
@@ -82,7 +85,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 				.catch(() => {
 					onRedirectError();
 				}),
-		[contacts, id, onClose, onRedirectError]
+		[contacts, createSnackbar, id, onClose, onRedirectError]
 	);
 
 	return (

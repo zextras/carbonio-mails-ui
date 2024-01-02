@@ -6,6 +6,7 @@
 
 import { faker } from '@faker-js/faker';
 import { FOLDERS, SoapResponse } from '@zextras/carbonio-shell-ui';
+
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import type { GetMsgResponse, Participant, SoapMailParticipant } from '../../types';
 
@@ -52,10 +53,10 @@ type GetMsgResponseGenerationParams = {
  * @param body
  */
 const generateGetMsgResponse = ({
-	id = faker.datatype.number().toString(),
+	id = faker.number.int().toString(),
 	folder = FOLDERS.INBOX,
-	sendDate = toUnixTimestamp(faker.date.recent(2)),
-	receiveDate = toUnixTimestamp(faker.date.recent(1)),
+	sendDate = toUnixTimestamp(faker.date.recent({ days: 2 })),
+	receiveDate = toUnixTimestamp(faker.date.recent({ days: 1 })),
 	to = [{ type: ParticipantRole.TO, address: faker.internet.email() }],
 	cc = [],
 	from = { type: ParticipantRole.FROM, address: faker.internet.email() },

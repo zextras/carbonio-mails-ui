@@ -3,15 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Divider, Padding, TabBar, TabBarProps } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
-import { useAppDispatch } from '../../../../hooks/redux';
-import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
-import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
+
+import { Container, Divider, Padding, TabBar, TabBarProps } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
+
 import { FilterContext } from './filter-context';
 import IncomingMessageFilterTab from './incoming-message-filter-tab';
 import OutgoingMessageFilterTab from './outgoing-message-filter-tab';
+import { useAppDispatch } from '../../../../hooks/redux';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
+import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
+import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
 
 type Item = {
 	active: boolean;
@@ -46,6 +49,7 @@ const FilterTabs: FC = (): ReactElement => {
 	const [outgoingFilters, setOutgoingFilters] = useState<Array<Item>>([]);
 	const [fetchIncomingFilters, setFetchIncomingFilters] = useState(true);
 	const [fetchOutgoingFilters, setFetchOutgoingFilters] = useState(true);
+	const { createSnackbar } = useUiUtilities();
 
 	useEffect(() => {
 		if (fetchIncomingFilters) {
@@ -56,7 +60,7 @@ const FilterTabs: FC = (): ReactElement => {
 					setFetchIncomingFilters(false);
 				})
 				.catch((error) => {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `share`,
 						replace: true,
 						hideButton: true,
@@ -70,7 +74,7 @@ const FilterTabs: FC = (): ReactElement => {
 					setFetchIncomingFilters(false);
 				});
 		}
-	}, [dispatch, fetchIncomingFilters]);
+	}, [createSnackbar, dispatch, fetchIncomingFilters]);
 
 	useEffect(() => {
 		if (fetchOutgoingFilters) {

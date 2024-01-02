@@ -14,12 +14,13 @@ import React, {
 } from 'react';
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
+import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import { modifyOutgoingFilterRules } from '../../../../../store/actions/modify-filter-rules';
 import type { FilterActions } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
@@ -55,6 +56,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	setOutgoingFilters,
 	selectedFilter
 }): ReactElement => {
+	const { createSnackbar } = useUiUtilities();
 	const [filterName, setFilterName] = useState('');
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
@@ -284,7 +286,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 		modifyOutgoingFilterRules(toSend)
 			.then(() => {
 				setFetchOutgoingFilters(true);
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `share`,
 					replace: true,
 					hideButton: true,
@@ -294,7 +296,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 				});
 			})
 			.catch((error) => {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `share`,
 					replace: true,
 					hideButton: true,
@@ -312,6 +314,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 		onClose,
 		selectedFilter?.name,
 		setFetchOutgoingFilters,
+		createSnackbar,
 		t
 	]);
 

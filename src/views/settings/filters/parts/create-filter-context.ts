@@ -5,13 +5,14 @@
  */
 import { createContext } from 'react';
 
-type CreateFilterContextType = {
+export type CreateFilterContextType = {
 	newFilters: Array<any>;
 	setNewFilters: (arg: any) => void;
 };
 
 export const CreateFilterContext = createContext<CreateFilterContextType>({
 	newFilters: [],
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	setNewFilters: (arg) => {}
+	setNewFilters: (arg) => {
+		/* default implementation */
+	}
 });

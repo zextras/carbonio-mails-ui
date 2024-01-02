@@ -17,12 +17,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import {
-	getBridgedFunctions,
-	getIntegratedFunction,
-	soapFetch,
-	t
-} from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, soapFetch, SoapResponse, t } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, find, map } from 'lodash';
 import styled from 'styled-components';
@@ -37,12 +32,14 @@ import {
 } from './utils';
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
 import type {
 	AttachmentPart,
 	AttachmentType,
+	CopyToFileRequest,
 	CopyToFileResponse,
 	MailMessage,
 	OpenEmlPreviewType
@@ -122,6 +119,7 @@ const Attachment: FC<AttachmentType> = ({
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
+	const { createSnackbar, createModal } = useUiUtilities();
 
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
@@ -140,8 +138,6 @@ const Attachment: FC<AttachmentType> = ({
 	// TODO remove it when IRIS-3918 will be implemented
 	const browserPdfPreview = useCallback(() => {
 		if (inputRef2.current) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			inputRef2.current.click();
 		}
 	}, [inputRef2]);
@@ -162,15 +158,12 @@ const Attachment: FC<AttachmentType> = ({
 	}, [downloadAttachment, onDeleteAttachment]);
 
 	const removeAttachment = useCallback(() => {
-		const closeModal = getBridgedFunctions()?.createModal(
+		const closeModal = createModal(
 			{
 				maxHeight: '90vh',
 				children: (
 					<StoreProvider>
 						<DeleteAttachmentModal
-							// TODO : fix it inside shell
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
 							onClose={(): void => closeModal()}
 							onDownloadAndDelete={onDownloadAndDelete}
 							onDeleteAttachment={onDeleteAttachment}
@@ -180,19 +173,19 @@ const Attachment: FC<AttachmentType> = ({
 			},
 			true
 		);
-	}, [onDeleteAttachment, onDownloadAndDelete]);
+	}, [createModal, onDeleteAttachment, onDownloadAndDelete]);
 
 	const confirmAction = useCallback(
 		(nodes) => {
-			soapFetch('CopyToFiles', {
+			soapFetch<CopyToFileRequest, SoapResponse<CopyToFileResponse>>('CopyToFiles', {
 				_jsns: 'urn:zimbraMail',
 				mid: message.id,
 				part: att.name,
 				destinationFolderId: nodes[0].id
 			})
-				.then((res: any) => {
-					if (!res?.Fault) {
-						getBridgedFunctions()?.createSnackbar({
+				.then((res) => {
+					if (!res.Body.Fault) {
+						createSnackbar({
 							key: `mail-moved-root`,
 							replace: true,
 							type: 'info',
@@ -201,7 +194,7 @@ const Attachment: FC<AttachmentType> = ({
 							autoHideTimeout: 3000
 						});
 					} else {
-						getBridgedFunctions()?.createSnackbar({
+						createSnackbar({
 							key: `mail-moved-root`,
 							replace: true,
 							type: 'warning',
@@ -215,7 +208,7 @@ const Attachment: FC<AttachmentType> = ({
 					}
 				})
 				.catch(() => {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `calendar-moved-root`,
 						replace: true,
 						type: 'warning',
@@ -228,7 +221,7 @@ const Attachment: FC<AttachmentType> = ({
 					});
 				});
 		},
-		[att, message]
+		[att.name, createSnackbar, message.id]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
@@ -256,7 +249,7 @@ const Attachment: FC<AttachmentType> = ({
 				openEmlPreview && openEmlPreview(message.id, att?.name, res[0]);
 			})
 			.catch(() => {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `eml-attachment-failed-download`,
 					replace: true,
 					type: 'error',
@@ -268,7 +261,7 @@ const Attachment: FC<AttachmentType> = ({
 					autoHideTimeout: 3000
 				});
 			});
-	}, [att?.name, message.id, openEmlPreview]);
+	}, [att?.name, createSnackbar, message.id, openEmlPreview]);
 
 	const preview = useCallback(
 		(ev) => {
@@ -439,6 +432,7 @@ const AttachmentsBlock: FC<{
 	isExternalMessage?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
 }> = ({ message, isExternalMessage = false, openEmlPreview }): ReactElement => {
+	const { createSnackbar } = useUiUtilities();
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(
 		() => filter(message?.attachments, { cd: 'attachment' }),
@@ -494,7 +488,7 @@ const AttachmentsBlock: FC<{
 				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
 				const type = allSuccess ? 'info' : 'warning';
 				const label = getLabel({ allSuccess, allFails });
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `calendar-moved-root`,
 					replace: true,
 					type,
@@ -504,7 +498,7 @@ const AttachmentsBlock: FC<{
 				});
 			});
 		},
-		[attachments, message]
+		[attachments, createSnackbar, message]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);

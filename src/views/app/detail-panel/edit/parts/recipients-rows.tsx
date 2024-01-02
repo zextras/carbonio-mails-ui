@@ -23,7 +23,7 @@ export type RecipientsRowsProps = {
 	editorId: MailsEditorV2['id'];
 };
 
-export const RecipientsRows = ({ editorId }: RecipientsRowsProps): JSX.Element => {
+export const RecipientsRows = ({ editorId }: RecipientsRowsProps): React.JSX.Element => {
 	const { toRecipients, setToRecipients } = useEditorToRecipients(editorId);
 	const { ccRecipients, setCcRecipients } = useEditorCcRecipients(editorId);
 	const { bccRecipients, setBccRecipients } = useEditorBccRecipients(editorId);
