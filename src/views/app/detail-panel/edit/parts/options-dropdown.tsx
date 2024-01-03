@@ -72,8 +72,13 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 	);
 
 	return (
-		<Dropdown items={options} selectedBackgroundColor={'gray5'}>
-			<IconButton size="large" icon="MoreVertical" onClick={noop} />
+		<Dropdown items={options} selectedBackgroundColor={'gray5'} data-testid="options-dropdown">
+			<IconButton
+				data-testid="options-dropdown-icon"
+				size="large"
+				icon="MoreVertical"
+				onClick={noop}
+			/>
 		</Dropdown>
 	);
 };
