@@ -24,11 +24,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
@@ -78,11 +78,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'folders.inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -130,11 +130,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
@@ -172,11 +172,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
@@ -250,11 +250,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
@@ -307,11 +307,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'folders.inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -352,11 +352,11 @@ describe('edit-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,

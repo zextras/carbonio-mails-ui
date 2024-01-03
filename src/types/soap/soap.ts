@@ -158,8 +158,19 @@ type FolderActionDelete = {
 	id: string;
 };
 
+export type FolderActionGrant = {
+	op: 'grant';
+	id: string;
+	grant: {
+		gt: 'usr';
+		d: string;
+		perm: string;
+		pw: string;
+		inh?: '0' | '1';
+	};
+};
 export type FolderActionRequest = {
-	action: FolderActionRename | FolderActionMove | FolderActionDelete;
+	action: FolderActionRename | FolderActionMove | FolderActionDelete | FolderActionGrant;
 };
 
 export type FolderActionResponse = {
@@ -245,6 +256,7 @@ export type BatchRequest = {
 export type BatchResponse = {
 	CreateFolderResponse?: Array<BatchedResponse & CreateFolderResponse>;
 	CreateContactResponse?: Array<BatchedResponse & CreateContactResponse>;
+	FolderActionResponse?: Array<BatchedResponse & FolderActionResponse>;
 };
 
 export type GetContactRequest = {

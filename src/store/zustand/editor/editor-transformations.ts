@@ -367,7 +367,8 @@ const createSoapMessageRequestFromEditor = (
 		rt: editor.replyType,
 		origid: editor.originalId,
 		e: soapParticipants,
-		mp: getMP(editor)
+		mp: getMP(editor),
+		...(editor.isUrgent ? { f: '!' } : {})
 	};
 
 	const attach = composeAttachField(editor);

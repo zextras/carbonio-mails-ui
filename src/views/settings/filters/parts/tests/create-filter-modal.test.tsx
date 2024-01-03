@@ -4,12 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { act, screen, within } from '@testing-library/react';
+
 import { faker } from '@faker-js/faker';
+import { act, screen, within } from '@testing-library/react';
 import { t } from '@zextras/carbonio-shell-ui';
-import CreateFilterModal from '../create-filter-modal';
+
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
+import CreateFilterModal from '../create-filter-modal';
 
 describe('create-filter-modal', () => {
 	test('create filter add filter name and by default it will be deactive', async () => {
@@ -27,13 +29,13 @@ describe('create-filter-modal', () => {
 		await user.clear(filterInputElement);
 
 		// Insert the new filter name into the text input
-		await user.type(filterInputElement, name);
+		await act(() => user.type(filterInputElement, name));
 
 		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
 			'icon: Square'
 		);
 		expect(filterActiveUnChecked).toBeInTheDocument();
-		await user.click(filterActiveUnChecked);
+		await act(() => user.click(filterActiveUnChecked));
 
 		const filterActiveChecked = within(screen.getByTestId('active-filter')).getByTestId(
 			'icon: CheckmarkSquare'
@@ -79,16 +81,16 @@ describe('create-filter-modal', () => {
 		const filterName = screen.getByTestId('filter-name');
 		const name = faker.lorem.word();
 		const filterInputElement = within(filterName).getByRole('textbox');
-		await user.clear(filterInputElement);
+		await act(() => user.clear(filterInputElement));
 
 		// Insert the new filter name into the text input
-		await user.type(filterInputElement, name);
+		await act(() => user.type(filterInputElement, name));
 
 		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
 			'icon: Square'
 		);
 		expect(filterActiveUnChecked).toBeInTheDocument();
-		await user.click(filterActiveUnChecked);
+		await act(() => user.click(filterActiveUnChecked));
 
 		const filterActiveChecked = within(screen.getByTestId('active-filter')).getByTestId(
 			'icon: CheckmarkSquare'
@@ -101,7 +103,7 @@ describe('create-filter-modal', () => {
 		const fieldLabel = screen.getByText(/settings\.field/i);
 		expect(fieldLabel).toBeInTheDocument();
 
-		await user.click(fieldLabel);
+		await act(() => user.click(fieldLabel));
 
 		const fieldAnyOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
 			/label\.any/i

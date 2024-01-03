@@ -26,11 +26,11 @@ describe('delete-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
@@ -73,11 +73,11 @@ describe('delete-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '109',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Trash/Confluence',
 			l: FOLDERS.TRASH,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
