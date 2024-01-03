@@ -23,11 +23,11 @@ describe('empty-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -69,11 +69,11 @@ describe('empty-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: FOLDERS.TRASH,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Trash',
 			absFolderPath: '/Trash',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			rev: 1,
 			ms: 28502,

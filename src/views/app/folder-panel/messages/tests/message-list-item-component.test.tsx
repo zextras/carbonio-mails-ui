@@ -28,7 +28,7 @@ describe.each`
 	const userFolder: Folder = {
 		isLink: false,
 		id: FOLDERS_DESCRIPTORS.USER_DEFINED.id,
-		uuid: faker.datatype.uuid(),
+		uuid: faker.string.uuid(),
 		name: FOLDERS_DESCRIPTORS.USER_DEFINED.desc,
 		activesyncdisabled: false,
 		recursive: false,
