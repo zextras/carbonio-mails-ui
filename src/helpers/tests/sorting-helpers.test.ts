@@ -15,11 +15,9 @@ const defaultSortingSettings = {
 	remainingSortOptions: ''
 };
 
-describe('Sorting', () => {
-	test('parseMessageSortingOptions returns the defaultSortingSettings when the sortOrder is not received', () => {
-		const folderId = FOLDERS.INBOX;
-		expect(parseMessageSortingOptions(folderId)).toStrictEqual(defaultSortingSettings);
-	});
+test('parseMessageSortingOptions returns the defaultSortingSettings when the sortOrder is not received', () => {
+	const folderId = FOLDERS.INBOX;
+	expect(parseMessageSortingOptions(folderId)).toStrictEqual(defaultSortingSettings);
 });
 describe('parseMessageSortingOptions', () => {
 	test('the function should return default sorting options when folderId or zimbraPrefSortOrder is undefined', () => {
