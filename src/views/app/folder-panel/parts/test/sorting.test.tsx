@@ -19,13 +19,11 @@ import {
 	RestGenericResponse
 } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/handlers';
 import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { screen } from '../../../../../carbonio-ui-commons/test/utils/utils';
+import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { SORTING_OPTIONS, SORTING_DIRECTION } from '../../../../../constants';
 import { generateStore } from '../../../../../tests/generators/store';
 import { SearchRequest } from '../../../../../types';
 import { Breadcrumbs } from '../breadcrumbs';
-
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/explicit-function-return-type
 const handleSearchRequest = async (
 	req: RestRequest<RestGenericRequest>,
@@ -38,17 +36,6 @@ const handleSearchRequest = async (
 	return res(ctx.json({ Body: {}, Header: {} }));
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/explicit-function-return-type
-const handleBatchRequest = async (
-	req: RestRequest<RestGenericRequest>,
-	res: ResponseComposition<RestGenericResponse>,
-	ctx: RestContext
-) => {
-	if (!req) {
-		return res(ctx.status(500, 'Empty request'));
-	}
-	return res(ctx.json({ Body: {}, Header: {} }));
-};
 function findStringsContainingRadiobutton(strings: Array<string>): Array<string> {
 	const resultArray = [] as Array<string>;
 
