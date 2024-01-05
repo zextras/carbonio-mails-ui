@@ -213,8 +213,13 @@ export const generateReplyAndReplyAllMsgEditor = (
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
 		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
+	const folderRoots = getRootsMap();
+	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const defaultIdentity = getDefaultIdentity();
-	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
+	const signatureId = from.identityId
+		? from.forwardReplySignatureId
+		: defaultIdentity.forwardReplySignatureId;
+	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 
 	const textWithSignatureRepliesForwards = {
 		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
@@ -223,8 +228,6 @@ export const generateReplyAndReplyAllMsgEditor = (
 			savedInlineAttachments
 		)
 	};
-	const folderRoots = getRootsMap();
-	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const toParticipants =
@@ -278,7 +281,12 @@ export const generateForwardMsgEditor = (
 		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity();
-	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
+	const folderRoots = getRootsMap();
+	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
+	const signatureId = from.identityId
+		? from.forwardReplySignatureId
+		: defaultIdentity.forwardReplySignatureId;
+	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 	const textWithSignatureRepliesForwards = {
 		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
 		richText: replaceCidUrlWithServiceUrl(
@@ -287,8 +295,6 @@ export const generateForwardMsgEditor = (
 		)
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
-	const folderRoots = getRootsMap();
-	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const editor = {
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
