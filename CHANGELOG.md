@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.12.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.11.1...v1.12.0) (2024-01-05)
+
+
+### Features
+
+* removed inherit from share folder request ([#508](https://github.com/zextras/carbonio-mails-ui/issues/508)) ([b217750](https://github.com/zextras/carbonio-mails-ui/commit/b217750465080a87ed8c3d2c92a1f96e9926d1ce))
+
+
+### Bug Fixes
+
+* 'delete all' is taking the ui to the wrong view ([a038154](https://github.com/zextras/carbonio-mails-ui/commit/a03815495fc960c9adde2f2967f28eb2182effcc))
+* marking mails high priority does not work ([#510](https://github.com/zextras/carbonio-mails-ui/issues/510)) ([b6bc202](https://github.com/zextras/carbonio-mails-ui/commit/b6bc20290de65bca05a670f5baccb77a44f9b7e5))
+* replace deprecated faker properties and fix tests ([#511](https://github.com/zextras/carbonio-mails-ui/issues/511)) ([5ae0d8f](https://github.com/zextras/carbonio-mails-ui/commit/5ae0d8f8bf003b42b51f5fa8daab92f963b747c2))
+* the sender is included in recipients when 'reply all' is used in a shared account ([94d1e3c](https://github.com/zextras/carbonio-mails-ui/commit/94d1e3cc0bfe49d1b3927980dce0f4e25de99b2e))
+* wrong signature when replying or forwarding a message ([#512](https://github.com/zextras/carbonio-mails-ui/issues/512)) ([3323847](https://github.com/zextras/carbonio-mails-ui/commit/33238472eded9bd6c27f03deedc76c4511dada7b))
+
 ### [1.11.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.11.0...v1.11.1) (2023-12-07)
 
 ## [1.11.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.10.3...v1.11.0) (2023-12-05)
