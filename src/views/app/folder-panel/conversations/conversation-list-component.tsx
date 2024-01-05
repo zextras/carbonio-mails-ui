@@ -172,6 +172,8 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 							itemsCount={totalConversations}
 							isSelectModeOn={isSelectModeOn}
 							setIsSelectModeOn={setIsSelectModeOn}
+							folderId={folderId}
+							isSearchModule={isSearchModule}
 						/>
 					)
 				)}

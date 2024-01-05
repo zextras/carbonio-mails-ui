@@ -8,6 +8,7 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state", "conversation", "message", "cache"] }] */
 
 import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
 
@@ -41,7 +42,11 @@ function fetchConversationsFulfilled(
 	{ payload, meta }: { payload: FetchConversationsReturn | undefined; meta: any }
 ): void {
 	if (payload?.types === 'conversation' && payload?.conversations) {
-		state.conversations = { ...state.conversations, ...payload.conversations };
+		const newConversationsState =
+			payload.offset && payload.offset > 0
+				? { ...state.conversations, ...payload.conversations }
+				: { ...payload.conversations };
+		state.conversations = newConversationsState;
 		state.searchedInFolder = {
 			...state.searchedInFolder,
 			[meta.arg.folderId]: 'complete'
@@ -167,7 +172,7 @@ function getConvRejected(state: ConversationsStateType, { meta }: any): void {
 
 export const getConversationsSliceInitialState = (): ConversationsStateType =>
 	({
-		currentFolder: '2',
+		currentFolder: FOLDERS.INBOX,
 		conversations: {},
 		expandedStatus: {},
 		searchedInFolder: {},

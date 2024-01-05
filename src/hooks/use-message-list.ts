@@ -5,11 +5,13 @@
  */
 import { useEffect, useMemo } from 'react';
 
-import { filter, orderBy } from 'lodash';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { filter, sortBy } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from './redux';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
+import { parseMessageSortingOptions } from '../helpers/sorting';
 import { search } from '../store/actions';
 import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
 import type { MailMessage } from '../types';
@@ -21,6 +23,8 @@ type RouteParams = {
 export const useMessageList = (): Array<MailMessage> => {
 	const { folderId } = <RouteParams>useParams();
 	const dispatch = useAppDispatch();
+	const { prefs } = useUserSettings();
+	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 
 	const folderMsgStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 	const messages = useAppSelector(selectMessagesArray);
@@ -37,26 +41,13 @@ export const useMessageList = (): Array<MailMessage> => {
 		[folder, messages]
 	);
 
-	/* NOTE: Need to comment out when need to sort as per the configured sort order */
-	// const { zimbraPrefSortOrder } = useUserSettings()?.prefs as Record<string, string>;
-	// const sorting = useMemo(
-	// 	() =>
-	// 		(find(zimbraPrefSortOrder?.split(','), (f) => f.split(':')?.[0] === folderId)?.split(
-	// 			':'
-	// 		)?.[1] as 'dateAsc' | 'dateDesc' | undefined) ?? 'dateDesc',
-	// 	[folderId, zimbraPrefSortOrder]
-	// );
-
-	const sortedMessages = useMemo(
-		() => orderBy(filteredMessages, 'date', 'desc'),
-		[filteredMessages]
-	);
+	const sortedMessages = useMemo(() => sortBy(filteredMessages, 'sortIndex'), [filteredMessages]);
 
 	useEffect(() => {
 		if (folderMsgStatus !== 'complete' && folderMsgStatus !== 'pending') {
-			dispatch(search({ folderId, limit: 101, sortBy: 'dateDesc', types: 'message' }));
+			dispatch(search({ folderId, limit: 101, sortBy: sortOrder, types: 'message' }));
 		}
-	}, [dispatch, folderId, folderMsgStatus]);
+	}, [dispatch, folderId, folderMsgStatus, sortOrder]);
 
 	return sortedMessages;
 };

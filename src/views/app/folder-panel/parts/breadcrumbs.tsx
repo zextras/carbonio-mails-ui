@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+
 import {
 	Container,
 	IconCheckbox,
@@ -12,8 +14,9 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+
+import { SortingComponent } from './sorting-component';
 import { getFolderPathForBreadcrumb } from '../../../../helpers/folders';
 
 const SelectIconCheckbox = styled(IconCheckbox)`
@@ -27,7 +30,9 @@ export const Breadcrumbs: FC<{
 	isSelectModeOn: boolean;
 	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
 	folderPath: string;
-}> = ({ itemsCount, isSelectModeOn, setIsSelectModeOn, folderPath }) => {
+	folderId?: string;
+	isSearchModule?: boolean;
+}> = ({ itemsCount, isSelectModeOn, setIsSelectModeOn, folderPath, folderId, isSearchModule }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const folderPathLastPartRef = useRef<HTMLDivElement>(null);
 
@@ -121,6 +126,7 @@ export const Breadcrumbs: FC<{
 					{itemsCount > 100 ? '100+' : itemsCount}
 				</Text>
 				<Padding right="large" />
+				{!isSearchModule && <SortingComponent folderId={folderId} />}
 			</Row>
 		</Container>
 	);
