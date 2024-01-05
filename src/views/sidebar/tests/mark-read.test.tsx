@@ -3,19 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { fireEvent, screen } from '@testing-library/react';
-import { rest } from 'msw';
 import React from 'react';
-import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
+
+import { fireEvent, screen } from '@testing-library/react';
+
+import { FolderActionsType } from '../../../carbonio-ui-commons/constants/folders';
 import * as shellMock from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { useLocalStorage } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
+import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
-import { useLocalStorage } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { FolderAction } from '../../../types';
 import Sidebar from '../sidebar';
-import { FolderActionsType } from '../../../carbonio-ui-commons/constants/folders';
 
 describe('Mark all as read', () => {
 	shellMock.getCurrentRoute.mockReturnValue({
@@ -43,29 +45,7 @@ describe('Mark all as read', () => {
 		const actionMenuItem = await screen.findByTestId(
 			`folder-action-${FolderActionsType.MARK_ALL_READ}`
 		);
-
-		const folderActionInterceptor = new Promise<{ l: string; op: string; id: string }>(
-			(resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const { action } = (await req.json()).Body.FolderActionRequest;
-						resolve(action);
-						return res(
-							ctx.json({
-								Body: {
-									Fault: {}
-								}
-							})
-						);
-					})
-				);
-			}
-		);
+		const folderActionInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
 
 		await user.click(actionMenuItem);
 

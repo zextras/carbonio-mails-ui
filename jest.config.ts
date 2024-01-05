@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Config } from 'jest';
+
 import { defaultConfig } from './src/carbonio-ui-commons/test/jest-config';
 
 /*

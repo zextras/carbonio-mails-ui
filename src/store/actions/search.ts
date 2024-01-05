@@ -8,6 +8,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ErrorSoapBodyResponse, getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { keyBy, map, reduce } from 'lodash';
+
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type {
@@ -41,6 +42,7 @@ export const search = createAsyncThunk<
 	) => {
 		const queryPart = [`inId:"${folderId}"`];
 		if (before) queryPart.push(`before:${before.getTime()}`);
+		if (sortBy === 'readAsc') queryPart.push('is:unread');
 
 		try {
 			const result = await soapFetch<SearchRequest, SearchResponse | ErrorSoapBodyResponse>(
@@ -58,7 +60,6 @@ export const search = createAsyncThunk<
 					types
 				}
 			);
-
 			if (!result) {
 				return rejectWithValue(undefined);
 			}
@@ -69,12 +70,14 @@ export const search = createAsyncThunk<
 
 			const tags = getTags();
 			if (types === 'conversation') {
-				const conversations = map(result?.c ?? [], (obj) =>
-					normalizeConversation({ c: obj, tags })
-				) as unknown as Array<Conversation>;
+				const conversations = map(result?.c ?? [], (obj, index) => ({
+					...normalizeConversation({ c: obj, tags }),
+					sortIndex: index + (offset ?? 0)
+				})) as unknown as Array<Conversation>;
 				return {
 					conversations: keyBy(conversations, 'id'),
 					hasMore: result.more,
+					offset: result.offset,
 					types
 				};
 			}
@@ -82,13 +85,14 @@ export const search = createAsyncThunk<
 				return {
 					messages: reduce(
 						result.m ?? [],
-						(acc, msg) => {
-							const normalized = normalizeMailMessageFromSoap(msg, false);
+						(acc, msg, index) => {
+							const normalized = { ...normalizeMailMessageFromSoap(msg, false), sortIndex: index };
 							return { ...acc, [normalized.id]: normalized };
 						},
 						{}
 					),
 					hasMore: result.more,
+					offset: result.offset,
 					types
 				};
 			}
