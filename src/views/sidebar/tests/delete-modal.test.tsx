@@ -4,20 +4,21 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
+
+import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { faker } from '@faker-js/faker';
-import { rest } from 'msw';
+
+import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
-import { generateStore } from '../../../tests/generators/store';
-import { DeleteModal } from '../delete-modal';
-import { FolderAction } from '../../../types';
-import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { FOLDER_ACTIONS } from '../../../commons/utilities';
 import { getFolders } from '../../../hooks/use-folders';
+import { generateStore } from '../../../tests/generators/store';
+import { FolderAction } from '../../../types';
+import { DeleteModal } from '../delete-modal';
 
 describe('delete-modal', () => {
 	test('delete the folder except the child of trash folder', async () => {
@@ -25,11 +26,11 @@ describe('delete-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '106',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Inbox/Confluence',
 			l: FOLDERS.INBOX,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
@@ -72,11 +73,11 @@ describe('delete-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: '109',
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Confluence',
 			absFolderPath: '/Trash/Confluence',
 			l: FOLDERS.TRASH,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'u',
 			u: 25,
@@ -132,29 +133,8 @@ describe('delete-modal', () => {
 			name: /action\.ok/i
 		});
 		expect(okButton).toBeEnabled();
+		const wipeInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
 
-		const wipeInterceptor = new Promise<FolderAction>((resolve, reject) => {
-			// Register a handler for the REST call
-			getSetupServer().use(
-				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
-					if (!req) {
-						reject(new Error('Empty request'));
-					}
-
-					const msg = (await req.json()).Body.FolderActionRequest.action;
-					resolve(msg);
-
-					// Don't care about the actual response
-					return res(
-						ctx.json({
-							Body: {
-								Fault: {}
-							}
-						})
-					);
-				})
-			);
-		});
 		await user.click(okButton);
 		const action = await wipeInterceptor;
 
@@ -178,29 +158,8 @@ describe('delete-modal', () => {
 			name: /action\.ok/i
 		});
 		expect(okButton).toBeEnabled();
+		const wipeInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
 
-		const wipeInterceptor = new Promise<FolderAction>((resolve, reject) => {
-			// Register a handler for the REST call
-			getSetupServer().use(
-				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
-					if (!req) {
-						reject(new Error('Empty request'));
-					}
-
-					const msg = (await req.json()).Body.FolderActionRequest.action;
-					resolve(msg);
-
-					// Don't care about the actual response
-					return res(
-						ctx.json({
-							Body: {
-								Fault: {}
-							}
-						})
-					);
-				})
-			);
-		});
 		await user.click(okButton);
 		const action = await wipeInterceptor;
 
@@ -229,29 +188,8 @@ describe('delete-modal', () => {
 			name: /action\.ok/i
 		});
 		expect(okButton).toBeEnabled();
+		const wipeInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
 
-		const wipeInterceptor = new Promise<FolderAction>((resolve, reject) => {
-			// Register a handler for the REST call
-			getSetupServer().use(
-				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
-					if (!req) {
-						reject(new Error('Empty request'));
-					}
-
-					const msg = (await req.json()).Body.FolderActionRequest.action;
-					resolve(msg);
-
-					// Don't care about the actual response
-					return res(
-						ctx.json({
-							Body: {
-								Fault: {}
-							}
-						})
-					);
-				})
-			);
-		});
 		await user.click(okButton);
 		const action = await wipeInterceptor;
 

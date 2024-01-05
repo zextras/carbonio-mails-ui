@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
 import { fireEvent, screen } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { noop, times } from 'lodash';
-import React from 'react';
+
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -14,8 +16,7 @@ import { FOLDERS_DESCRIPTORS, VISIBILITY_ASSERTION } from '../../../../../tests/
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
-import type { ConversationListItemProps, MessageListItemProps } from '../../../../../types';
-import { MessageListItem } from '../../messages/message-list-item';
+import type { ConversationListItemProps } from '../../../../../types';
 import { ConversationListItem } from '../conversation-list-item';
 
 describe.each`

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getUserAccount, getUserSettings, t } from '@zextras/carbonio-shell-ui';
+import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
 
 import { buildSavedAttachments, replaceCidUrlWithServiceUrl } from './editor-transformations';
@@ -18,6 +18,7 @@ import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { LineType } from '../../../commons/utils';
 import { EditViewActions, NO_ACCOUNT_NAME } from '../../../constants';
 import {
+	getAddressOwnerAccount,
 	getDefaultIdentity,
 	getIdentityFromParticipant,
 	getRecipientReplyIdentity
@@ -203,7 +204,6 @@ export const generateReplyAndReplyAllMsgEditor = (
 	originalMessage: MailMessage,
 	action: EditViewActionsType
 ): MailsEditorV2 => {
-	const accountName = getUserAccount()?.name ?? NO_ACCOUNT_NAME;
 	const editorId = uuid();
 	const savedInlineAttachments = filterSavedInlineAttachment(
 		buildSavedAttachments(originalMessage)
@@ -213,8 +213,13 @@ export const generateReplyAndReplyAllMsgEditor = (
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
 		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
+	const folderRoots = getRootsMap();
+	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const defaultIdentity = getDefaultIdentity();
-	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
+	const signatureId = from.identityId
+		? from.forwardReplySignatureId
+		: defaultIdentity.forwardReplySignatureId;
+	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 
 	const textWithSignatureRepliesForwards = {
 		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
@@ -223,8 +228,7 @@ export const generateReplyAndReplyAllMsgEditor = (
 			savedInlineAttachments
 		)
 	};
-	const folderRoots = getRootsMap();
-	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
+	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const toParticipants =
 		action === EditViewActions.REPLY
@@ -277,7 +281,12 @@ export const generateForwardMsgEditor = (
 		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity();
-	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
+	const folderRoots = getRootsMap();
+	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
+	const signatureId = from.identityId
+		? from.forwardReplySignatureId
+		: defaultIdentity.forwardReplySignatureId;
+	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 	const textWithSignatureRepliesForwards = {
 		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
 		richText: replaceCidUrlWithServiceUrl(
@@ -286,8 +295,6 @@ export const generateForwardMsgEditor = (
 		)
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
-	const folderRoots = getRootsMap();
-	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const editor = {
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,

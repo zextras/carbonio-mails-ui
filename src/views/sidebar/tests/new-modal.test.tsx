@@ -4,16 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
+
+import { faker } from '@faker-js/faker';
 import { screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { faker } from '@faker-js/faker';
-import { rest } from 'msw';
+
+import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
 import { NewModal } from '../new-modal';
-import { Folder } from '../../../carbonio-ui-commons/types/folder';
-import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 
 describe('new-modal', () => {
 	test('add folder name and create button should enabled', async () => {
@@ -22,11 +23,11 @@ describe('new-modal', () => {
 		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -78,11 +79,11 @@ describe('new-modal', () => {
 		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -130,11 +131,11 @@ describe('new-modal', () => {
 		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -173,29 +174,8 @@ describe('new-modal', () => {
 			name: /label.create/i
 		});
 		expect(createButton).toBeEnabled();
+		const wipeInterceptor = createAPIInterceptor<any>('CreateFolder', 'folder');
 
-		const wipeInterceptor = new Promise<any>((resolve, reject) => {
-			// Register a handler for the REST call
-			getSetupServer().use(
-				rest.post('/service/soap/CreateFolderRequest', async (req, res, ctx) => {
-					if (!req) {
-						reject(new Error('Empty request'));
-					}
-
-					const msg = (await req.json()).Body.CreateFolderRequest.folder;
-					resolve(msg);
-
-					// Don't care about the actual response
-					return res(
-						ctx.json({
-							Body: {
-								Fault: {}
-							}
-						})
-					);
-				})
-			);
-		});
 		await user.click(createButton);
 
 		const newFolder = await wipeInterceptor;

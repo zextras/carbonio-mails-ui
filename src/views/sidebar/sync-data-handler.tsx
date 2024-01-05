@@ -101,7 +101,7 @@ export const SyncDataHandler: FC = () => {
 								);
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
-								dispatch(handleNotifyCreatedConversations(keyBy(conversations, 'id')));
+								dispatch(handleNotifyCreatedConversations(conversations));
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								dispatch(handleNotifyCreatedSearchConversations(keyBy(conversations, 'id')));

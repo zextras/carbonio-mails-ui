@@ -17,7 +17,7 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 	const mocksContext = getMocksContext();
 
 	return {
-		id: faker.datatype.uuid(),
+		id: faker.string.uuid(),
 		did: FAKE_MESSAGE_ID,
 		action: EditViewActions.EDIT_AS_NEW,
 		identityId: mocksContext.identities.primary.identity.id,
@@ -30,7 +30,7 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 			plainText: 'test'
 		},
 		recipients: { to: [], cc: [], bcc: [] },
-		subject: faker.random.words(3),
+		subject: faker.lorem.words(3),
 		unsavedAttachments: [],
 		savedAttachments: [
 			{

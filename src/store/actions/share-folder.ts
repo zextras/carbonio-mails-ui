@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { Account } from '@zextras/carbonio-shell-ui';
-import { map, trim } from 'lodash';
+import { Account, BatchRequest, soapFetch } from '@zextras/carbonio-shell-ui';
+import { trim } from 'lodash';
+
 import { Folder } from '../../carbonio-ui-commons/types/folder';
+import { FolderActionGrant, FolderActionRequest } from '../../types';
 
 export type ShareFolderDataType = {
 	sendNotification?: boolean;
@@ -20,46 +22,30 @@ export type ShareFolderDataType = {
 
 export const shareFolder = createAsyncThunk(
 	'mail/shareFolder',
-	async (data: ShareFolderDataType, { getState }) => {
-		const requests: any = {};
-		requests.ShareCalendarRequest = `<BatchRequest xmlns="urn:zimbra" onerror="stop">
-        ${map(
-					data.contacts,
-					(
-						contact,
-						key
-					) => `<FolderActionRequest xmlns="urn:zimbraMail" requestId="${key}"><action op="grant" id="${
-						data.folder.id
-					}">
-        <grant gt="usr" inh="1" d="${trim(contact.email, '<>')}" perm="${
-						data.shareWithUserRole
-					}" pw=""/></action></FolderActionRequest>`
-				).join('')}    
-        </BatchRequest>`;
+	async (data: ShareFolderDataType) => {
+		const requests = data?.contacts?.map((contact, index) => ({
+			_jsns: 'urn:zimbraMail',
+			requestId: index,
+			action: {
+				id: data.folder.id,
+				op: 'grant',
+				grant: {
+					gt: 'usr',
+					d: trim(contact.email, '<>'),
+					perm: data.shareWithUserRole,
+					pw: '',
+					inh: '1'
+				}
+			} as FolderActionGrant
+		}));
 
-		const res = await fetch('/service/soap/BatchRequest', {
-			method: 'POST',
-			headers: {
-				'content-type': 'application/soap+xml'
-			},
-			body: `<?xml version="1.0" encoding="utf-8"?>
-			<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
-				<soap:Header>
-					<context xmlns="urn:zimbra">
-						<account by="name">${data.accounts[0].name}</account>
-						<format type="js"/>
-					</context>
-				</soap:Header>
-				<soap:Body>
-					${requests.ShareCalendarRequest ?? ''}				
-				</soap:Body>
-			</soap:Envelope>
-		`
+		const response = await soapFetch<
+			BatchRequest & { FolderActionRequest?: Array<FolderActionRequest> },
+			Response
+		>('Batch', {
+			_jsns: 'urn:zimbra',
+			FolderActionRequest: requests
 		});
-		const response = await res.json();
-		if (response.Body.Fault) {
-			throw new Error(response.Body.Fault.Reason.Text);
-		}
 
 		return { response };
 	}

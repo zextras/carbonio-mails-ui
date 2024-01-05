@@ -6,6 +6,7 @@
 import '@testing-library/jest-dom';
 import failOnConsole from 'jest-fail-on-console';
 import { rest } from 'msw';
+
 import {
 	defaultAfterAllTests,
 	defaultAfterEachTest,

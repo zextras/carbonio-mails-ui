@@ -4,18 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React from 'react';
-import { screen } from '@testing-library/react';
+
 import { faker } from '@faker-js/faker';
-import { rest } from 'msw';
+import { screen } from '@testing-library/react';
+
+import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
+import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
-import { EmptyModal } from '../empty-modal';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { FolderAction } from '../../../types';
+import { EmptyModal } from '../empty-modal';
 
 describe('empty-modal', () => {
 	test('empty the folder except the trash folder', async () => {
@@ -23,11 +24,11 @@ describe('empty-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Inbox',
 			absFolderPath: '/Inbox',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			f: 'ui',
 			u: 37,
@@ -69,11 +70,11 @@ describe('empty-modal', () => {
 		const store = generateStore();
 		const folder: Folder = {
 			id: FOLDERS.TRASH,
-			uuid: faker.datatype.uuid(),
+			uuid: faker.string.uuid(),
 			name: 'Trash',
 			absFolderPath: '/Trash',
 			l: FOLDERS.USER_ROOT,
-			luuid: faker.datatype.uuid(),
+			luuid: faker.string.uuid(),
 			checked: false,
 			rev: 1,
 			ms: 28502,
@@ -120,29 +121,7 @@ describe('empty-modal', () => {
 		const wipeButton = screen.getByRole('button', {
 			name: /label\.empty/i
 		});
-
-		const wipeInterceptor = new Promise<FolderAction>((resolve, reject) => {
-			// Register a handler for the REST call
-			getSetupServer().use(
-				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
-					if (!req) {
-						reject(new Error('Empty request'));
-					}
-
-					const msg = (await req.json()).Body.FolderActionRequest.action;
-					resolve(msg);
-
-					// Don't care about the actual response
-					return res(
-						ctx.json({
-							Body: {
-								Fault: {}
-							}
-						})
-					);
-				})
-			);
-		});
+		const wipeInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
 
 		await user.click(wipeButton);
 

@@ -3,12 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
 import React, { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { FOLDERS, t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
+
+import { MessageListComponent } from './message-list-component';
+import { MessageListItemComponent } from './message-list-item-component';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { LIST_LIMIT } from '../../../../constants';
+import { parseMessageSortingOptions } from '../../../../helpers/sorting';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useMessageList } from '../../../../hooks/use-message-list';
 import { useSelection } from '../../../../hooks/use-selection';
@@ -16,9 +22,6 @@ import { search } from '../../../../store/actions';
 import { selectConversationStatus } from '../../../../store/conversations-slice';
 import { selectFolderMsgSearchStatus } from '../../../../store/messages-slice';
 import type { AppContext } from '../../../../types';
-import { MessageListComponent } from './message-list-component';
-import { MessageListItemComponent } from './message-list-item-component';
-import { LIST_LIMIT } from '../../../../constants';
 
 export const MessageList: FC = () => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
@@ -31,6 +34,9 @@ export const MessageList: FC = () => {
 	const convListStatus = useAppSelector(selectConversationStatus);
 	const messageListStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 	const messages = useMessageList();
+
+	const { prefs } = useUserSettings();
+	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 
 	const {
 		selected,
@@ -52,12 +58,12 @@ export const MessageList: FC = () => {
 	const loadMore = useCallback(() => {
 		if (hasMore && !isLoading) {
 			setIsLoading(true);
-			const date = messages?.[messages.length - 1]?.date ?? new Date().setHours(0, 0, 0, 0);
-			const dateOrNull = date ? new Date(date) : null;
+			const offset = messages.length;
 			dispatch(
 				search({
 					folderId,
-					before: dateOrNull,
+					sortBy: sortOrder,
+					offset,
 					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 					types: 'message'
 				})
@@ -65,7 +71,7 @@ export const MessageList: FC = () => {
 				setIsLoading(false);
 			});
 		}
-	}, [hasMore, isLoading, messages, dispatch, folderId]);
+	}, [hasMore, isLoading, messages.length, dispatch, folderId, sortOrder]);
 
 	const displayerTitle = useMemo(() => {
 		if (messages?.length === 0) {
@@ -126,8 +132,8 @@ export const MessageList: FC = () => {
 	);
 
 	const totalMessages = useMemo(
-		() => folder?.n ?? messages.length ?? 0,
-		[folder?.n, messages?.length]
+		() => (sortOrder === 'readAsc' ? messages.length : folder?.n ?? messages.length ?? 0),
+		[folder?.n, messages.length, sortOrder]
 	);
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 	const messagesLoadingCompleted = useMemo(
