@@ -9,11 +9,19 @@ import { find } from 'lodash';
 import { SORTING_OPTIONS } from '../constants';
 import { FolderSortOrder } from '../types';
 
+const fallbackSortOrder = {
+	sortType: 'date',
+	sortDirection: 'Desc' as 'Asc' | 'Desc',
+	sortOrder: 'dateDesc',
+	remainingFoldersSortOrder: '',
+	remainingSortOptions: ''
+};
+
 /**
  * Returns sortType, sortDirection and sortOrder for the given folder
  *
  * @param folderId
- * @param zimbraPrefSortOrder
+ * @param prefSortOrder
  *
  * returns an object containing
  * sortType: the sort type for the given folder,
@@ -24,27 +32,20 @@ import { FolderSortOrder } from '../types';
  */
 export function parseMessageSortingOptions(
 	folderId?: string,
-	zimbraPrefSortOrder?: string
+	prefSortOrder?: string
 ): FolderSortOrder {
-	const fallbackSortOrder = {
-		sortType: 'date',
-		sortDirection: 'Desc' as 'Asc' | 'Desc',
-		sortOrder: 'dateDesc',
-		remainingFoldersSortOrder: '',
-		remainingSortOptions: ''
-	};
-	if (!zimbraPrefSortOrder || !folderId) {
+	if (!prefSortOrder || !folderId) {
 		return fallbackSortOrder;
 	}
 	const splitString = ',BDLV';
-	const sortOrderString = zimbraPrefSortOrder.split(splitString)[0];
+	const sortOrderString = prefSortOrder.split(splitString)[0];
 	const sortingFolders = sortOrderString.split(',');
 	const sortOrderOfFolder = find(
 		sortingFolders,
 		(item) => item.substring(0, item.lastIndexOf(':')) === folderId
 	);
 
-	const remainingSortOptions = splitString.concat(zimbraPrefSortOrder.split(splitString)[1]) ?? '';
+	const remainingSortOptions = splitString.concat(prefSortOrder.split(splitString)[1]) ?? '';
 	const remainingFoldersSortOrder =
 		sortingFolders
 			.filter((item) => item.substring(0, item.lastIndexOf(':')) !== folderId)
