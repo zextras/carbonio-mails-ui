@@ -61,10 +61,10 @@ type MessageGenerationParams = {
  * @param isSentByMe
  */
 const generateMessage = ({
-	id = faker.datatype.number().toString(),
+	id = faker.number.int().toString(),
 	folderId = FOLDERS.INBOX,
-	sendDate = faker.date.recent(2).valueOf(),
-	receiveDate = faker.date.recent(1).valueOf(),
+	sendDate = faker.date.recent({ days: 2 }).valueOf(),
+	receiveDate = faker.date.recent({ days: 1 }).valueOf(),
 	to = [{ type: ParticipantRole.TO, address: faker.internet.email() }],
 	cc = [],
 	from = { type: ParticipantRole.FROM, address: faker.internet.email() },

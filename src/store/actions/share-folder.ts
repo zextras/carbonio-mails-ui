@@ -8,6 +8,7 @@ import { Account, BatchRequest, soapFetch } from '@zextras/carbonio-shell-ui';
 import { trim } from 'lodash';
 
 import { Folder } from '../../carbonio-ui-commons/types/folder';
+import { FolderActionGrant, FolderActionRequest } from '../../types';
 
 export type ShareFolderDataType = {
 	sendNotification?: boolean;
@@ -35,10 +36,13 @@ export const shareFolder = createAsyncThunk(
 					pw: '',
 					inh: '1'
 				}
-			}
+			} as FolderActionGrant
 		}));
 
-		const response = await soapFetch<BatchRequest, Response>('Batch', {
+		const response = await soapFetch<
+			BatchRequest & { FolderActionRequest?: Array<FolderActionRequest> },
+			Response
+		>('Batch', {
 			_jsns: 'urn:zimbra',
 			FolderActionRequest: requests
 		});
