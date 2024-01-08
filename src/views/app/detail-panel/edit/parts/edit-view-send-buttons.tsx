@@ -38,6 +38,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 								onSendLater(autoSendTime);
 								closeModal();
 							}}
+							onClose={(): void => closeModal && closeModal()}
 						/>
 					</StoreProvider>
 				)

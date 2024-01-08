@@ -15,9 +15,10 @@ import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/mo
 
 type SendLaterModalProps = {
 	onAutoSendTimeSelected: (autoSendTime: number) => void;
+	onClose: () => void;
 };
 
-const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected }) => {
+const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected, onClose }) => {
 	const [selectedTime, setSelectedTime] = useState<Date | null>(null);
 	const modalTitle = t('label.send_later', 'Send Later');
 	const datePickerLabel = t('label.select_date_time', 'Select date and time');
@@ -45,7 +46,7 @@ const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected }) => 
 
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
-			<ModalHeader title={modalTitle} />
+			<ModalHeader onClose={onClose} title={modalTitle} />
 			<Container
 				padding={{ all: 'small' }}
 				mainAlignment="center"
@@ -73,7 +74,13 @@ const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected }) => 
 					/>
 				</Container>
 			</Container>
-			<ModalFooter onConfirm={onConfirm} label={confirmLabel} disabled={!selectedTime} />
+			<ModalFooter
+				onConfirm={onConfirm}
+				label={confirmLabel}
+				disabled={!selectedTime}
+				secondaryAction={onClose}
+				secondaryLabel={t('label.cancel', 'Cancel')}
+			/>
 		</Container>
 	);
 };
