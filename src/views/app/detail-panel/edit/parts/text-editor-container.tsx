@@ -52,7 +52,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 
 	const composerCustomOptions = {
 		toolbar_sticky: true,
-		ui_mode: 'split'
+		ui_mode: 'split',
+		newline_behavior: 'linebreak'
 	};
 
 	return (
