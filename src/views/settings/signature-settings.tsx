@@ -186,7 +186,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 
 	const composerCustomOptions = {
 		auto_focus: false,
-		newline_behavior: 'linebreak'
+		content_style: 'p { margin: 0; }'
 	};
 
 	return (
