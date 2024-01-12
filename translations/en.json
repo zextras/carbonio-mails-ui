@@ -838,6 +838,39 @@
         "tag_applied": "\"{{tag}}\" tag applied",
         "tag_removed": "\"{{tag}}\" tag removed"
     },
+    "sortingDropdown": {
+        "tooltip": {
+            "attachmentAscending": "Ascending order by Attachment",
+            "attachmentDescending": "Descending order by Attachment",
+            "dateAscending": "Ascending order by Size",
+            "dateDescending": "Descending order by Date",
+            "flaggedAscending": "Ascending order by Flagged",
+            "flaggedDescending": "Descending order by Flagged",
+            "fromAscending": "Ascending order by From",
+            "fromDescending": "Descending order by From",
+            "importantAscending": "Ascending order by Important",
+            "importantDescending": "Descending order by Important",
+            "sizeDescending": "Descending order by Size",
+            "subjectAscending": "Ascending order by Subject",
+            "subjectDescending": "Descending order by Subject",
+            "toAscending": "Ascending order by To",
+            "toDescending": "Descending order by To",
+            "unreadAscending": "Ascending order by Unread",
+            "unreadDescending": "Descending order by Unread"
+        }
+    },
+    "sorting_dropdown": {
+        "ascendingOrder": "Ascending order",
+        "attachment": "Attachment",
+        "date": "Date",
+        "descendingOrder": "Descending order",
+        "flagged": "Flagged",
+        "from": "From",
+        "important": "Important",
+        "subject": "Subject",
+        "to": "To",
+        "unread": "Unread"
+    },
     "title": {
         "new_messages": "New Messages",
         "replies_forwards": "Replies & Forwards"
