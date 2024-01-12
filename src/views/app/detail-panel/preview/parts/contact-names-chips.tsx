@@ -59,7 +59,8 @@ const ContactNameChip: FC<{
 							label={contact.address}
 							background="gray2"
 							color="text"
-							data-testid={'Chip'}
+							key={contact.address}
+							data-testid={`chip-${contact.address}`}
 							actions={[
 								{
 									id: 'action1',
