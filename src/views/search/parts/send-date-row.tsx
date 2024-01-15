@@ -3,18 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+
 import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
+
 import type { SendReceivedDateRowPropType } from '../../../types';
+
+const QUERY_DATE_FORMAT = 'P';
+const PICKER_DATE_FORMAT = 'P';
 
 const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): ReactElement => {
 	const { sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn } = compProps;
 
 	const onSentBeforeChange = useCallback(
 		(date) => {
-			const tmp = `before:${moment(date).format('M/D/YYYY')}`;
+			const tmp = `before:${moment(date).format(QUERY_DATE_FORMAT)}`;
 			date
 				? setSentBefore([
 						{
@@ -33,7 +38,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 
 	const onSentAfterChange = useCallback(
 		(date) => {
-			const tmp = `after:${moment(date).format('M/D/YYYY')}`;
+			const tmp = `after:${moment(date).format(QUERY_DATE_FORMAT)}`;
 			date
 				? setSentAfter([
 						{
@@ -51,7 +56,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 	);
 	const onSentOnChange = useCallback(
 		(date) => {
-			const tmp = `date:${moment(date).format('M/D/YYYY')}`;
+			const tmp = `date:${moment(date).format(QUERY_DATE_FORMAT)}`;
 			date
 				? setSentOn([
 						{
@@ -71,24 +76,27 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 	const sentBeforeDefault = useMemo(
 		() =>
 			sentBefore[0]?.label
-				? new Date(moment(sentBefore[0]?.label.split('before:')?.[1], 'M/D/YYYY').valueOf())
+				? new Date(moment(sentBefore[0]?.label.split('before:')?.[1], QUERY_DATE_FORMAT).valueOf())
 				: undefined,
 		[sentBefore]
 	);
 	const sentAfterDefault = useMemo(
 		() =>
 			sentAfter[0]?.label
-				? new Date(moment(sentAfter[0]?.label.split('after:')?.[1], 'M/D/YYYY').valueOf())
+				? new Date(moment(sentAfter[0]?.label.split('after:')?.[1], QUERY_DATE_FORMAT).valueOf())
 				: undefined,
 		[sentAfter]
 	);
 	const sentOnDefault = useMemo(
 		() =>
 			sentOn[0]?.label
-				? new Date(moment(sentOn[0]?.label.split('date:')?.[1], 'M/D/YYYY').valueOf())
+				? new Date(moment(sentOn[0]?.label.split('date:')?.[1], QUERY_DATE_FORMAT).valueOf())
 				: undefined,
 		[sentOn]
 	);
+
+	const datePickerLocale = useMemo(() => moment.locale(), []);
+
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }}>
@@ -97,7 +105,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					label={t('search.sent_before', 'Sent before')}
 					enableChips
 					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
-					dateFormat="MM/dd/yyyy"
+					dateFormat={PICKER_DATE_FORMAT}
 					includeTime={false}
 					defaultValue={sentBeforeDefault}
 					onChange={onSentBeforeChange}
@@ -109,7 +117,8 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					label={t('search.sent_after', 'Sent after')}
 					enableChips
 					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
-					dateFormat="MM/dd/yyyy"
+					dateFormat={PICKER_DATE_FORMAT}
+					locale={datePickerLocale}
 					includeTime={false}
 					defaultValue={sentAfterDefault}
 					onChange={onSentAfterChange}
@@ -121,7 +130,8 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					label={t('search.sent_on', 'Sent on')}
 					enableChips
 					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
-					dateFormat="MM/dd/yyyy"
+					dateFormat={PICKER_DATE_FORMAT}
+					locale={datePickerLocale}
 					includeTime={false}
 					onChange={onSentOnChange}
 					defaultValue={sentOnDefault}
