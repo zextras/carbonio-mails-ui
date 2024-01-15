@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
+import { Container, Button } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
 import type { TinyMCE } from 'tinymce/tinymce';
 
@@ -55,8 +55,18 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		ui_mode: 'split'
 	};
 
+	const editorRef = useRef(null);
+
+	const test = useCallback(() => {
+		console.log('***** editor', editorRef.current);
+		const tinymce = editorRef.current;
+		tinymce.hide();
+		tinymce.show();
+	}, []);
+
 	return (
 		<>
+			<Button value={'test'} onClick={test} />
 			{text && (
 				<Container
 					height="fit"
@@ -84,6 +94,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									}}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
+									onInit={(evt, editor) => (editorRef.current = editor)}
 								/>
 							</StyledComp.EditorWrapper>
 						</Container>
