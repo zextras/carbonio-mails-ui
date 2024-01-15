@@ -6,16 +6,21 @@
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
 import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 
 import type { SendReceivedDateRowPropType } from '../../../types';
 
-const QUERY_DATE_FORMAT = 'P';
+const QUERY_DATE_FORMAT = 'L';
 const PICKER_DATE_FORMAT = 'P';
 
 const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): ReactElement => {
 	const { sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn } = compProps;
+
+	const { zimbraPrefLocale: prefLocale } = useUserSettings().prefs;
+	if (prefLocale) {
+		moment.locale(prefLocale);
+	}
 
 	const onSentBeforeChange = useCallback(
 		(date) => {
@@ -95,8 +100,6 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 		[sentOn]
 	);
 
-	const datePickerLocale = useMemo(() => moment.locale(), []);
-
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }}>
@@ -106,6 +109,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					enableChips
 					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
 					dateFormat={PICKER_DATE_FORMAT}
+					locale={prefLocale}
 					includeTime={false}
 					defaultValue={sentBeforeDefault}
 					onChange={onSentBeforeChange}
@@ -118,7 +122,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					enableChips
 					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
 					dateFormat={PICKER_DATE_FORMAT}
-					locale={datePickerLocale}
+					locale={prefLocale}
 					includeTime={false}
 					defaultValue={sentAfterDefault}
 					onChange={onSentAfterChange}
@@ -131,7 +135,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					enableChips
 					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
 					dateFormat={PICKER_DATE_FORMAT}
-					locale={datePickerLocale}
+					locale={prefLocale}
 					includeTime={false}
 					onChange={onSentOnChange}
 					defaultValue={sentOnDefault}
