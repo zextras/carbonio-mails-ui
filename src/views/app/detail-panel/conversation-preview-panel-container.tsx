@@ -6,19 +6,19 @@
 import React, { FC, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, useTags } from '@zextras/carbonio-shell-ui';
-import { filter, find } from 'lodash';
+import { FOLDERS, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { filter } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { ConversationPreviewPanel } from './conversation-preview-component';
+import { ConversationPreviewPanel } from './conversation-preview-panel';
 import PreviewPanelHeader from './preview/preview-panel-header';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getConv, searchConv } from '../../../store/actions';
 import {
-	selectConversationExpandedStatus,
-	selectConversationsArray
+	selectConversation,
+	selectConversationExpandedStatus
 } from '../../../store/conversations-slice';
-import type { Conversation, MailsStateType } from '../../../types';
+import type { MailsStateType } from '../../../types';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
@@ -37,17 +37,14 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 	const tagsFromStore = useTags();
 	const { isInsideExtraWindow } = useExtraWindow();
-
 	const dispatch = useAppDispatch();
-	const conversations = useAppSelector(selectConversationsArray);
 	const conversationsStatus = useAppSelector((state: MailsStateType) =>
 		selectConversationExpandedStatus(state, conversationId)
 	);
 
-	const conversation = useMemo(
-		() => find(conversations, ['id', conversationId]) as Conversation,
-		[conversationId, conversations]
-	);
+	const conversation = useAppSelector(selectConversation(conversationId));
+	const settings = useUserSettings();
+	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 	useEffect(() => {
 		if (!conversation) {
 			dispatch(getConv({ conversationId }));
@@ -79,6 +76,7 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 					<ConversationPreviewPanel
 						conversation={conversation}
 						isInsideExtraWindow={isInsideExtraWindow}
+						convSortOrder={convSortOrder}
 					/>
 				</>
 			)}

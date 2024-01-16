@@ -8,11 +8,13 @@ import React, { FC } from 'react';
 import { Padding } from '@zextras/carbonio-design-system';
 
 import MailPreview from './preview/mail-preview';
+import { useAppSelector } from '../../../hooks/redux';
 import { useMessageActions } from '../../../hooks/use-message-actions';
-import { MailMessage } from '../../../types';
+import { selectMessage } from '../../../store/messages-slice';
+import { ConvMessage, MailsStateType } from '../../../types';
 
 export type ConversationMessagePreviewProps = {
-	message: MailMessage;
+	convMessage: ConvMessage;
 	idPrefix: string;
 	isExpanded: boolean;
 	isAlone: boolean;
@@ -21,11 +23,12 @@ export type ConversationMessagePreviewProps = {
 
 export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = ({
 	idPrefix,
-	message,
+	convMessage,
 	isExpanded,
 	isAlone,
 	isInsideExtraWindow
 }) => {
+	const message = useAppSelector((state: MailsStateType) => selectMessage(state, convMessage.id));
 	const messageActions = useMessageActions(message, isAlone);
 	return (
 		<Padding key={`${idPrefix}-${message.id}`} bottom="medium" width="100%">
