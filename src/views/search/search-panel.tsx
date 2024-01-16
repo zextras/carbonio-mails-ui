@@ -11,7 +11,7 @@ import { useRouteMatch, Switch, Route } from 'react-router-dom';
 
 import { EmptyFieldMessages, EmptyListMessages } from './utils';
 import type { SearchPanelProps } from '../../types';
-import { ConversationPreviewPanel } from '../app/detail-panel/conversation-preview-panel';
+import { ConversationPreviewPanelContainer } from '../app/detail-panel/conversation-preview-panel-container';
 import { MessagePreviewPanelContainer } from '../app/detail-panel/message-preview-panel-container';
 
 const generateRandomNumber = (): number => Math.floor(Math.random() * 3);
@@ -40,7 +40,7 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults, query }) => {
 	return (
 		<Switch>
 			<Route path={`${path}/folder/:folderId/conversation/:conversationId`}>
-				<ConversationPreviewPanel />
+				<ConversationPreviewPanelContainer />
 			</Route>
 			<Route path={`${path}/folder/:folderId/message/:messageId`}>
 				<MessagePreviewPanelContainer />
