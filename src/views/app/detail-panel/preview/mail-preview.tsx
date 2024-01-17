@@ -184,7 +184,7 @@ const MailContent: FC<{
 								<InviteResponse
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-								
+									onLoadChange={(): null => null}
 									mailMsg={message}
 									inviteId={inviteId}
 									participationStatus={participationStatus}
