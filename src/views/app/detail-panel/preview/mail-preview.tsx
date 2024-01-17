@@ -127,6 +127,16 @@ const MailContent: FC<{
 	);
 
 	const { inviteId, participationStatus } = {
+		/*
+		 * Compose the invite ID
+		 * The invite ID is composed by the following fields:
+		 * - the appointment ID (if present)
+		 * - the message ID
+		 * If the 2 fields are both present they will be separated by a hyphen otherwise only the message ID will be used
+		 *
+		 * The appointment ID is present only if the appointment was automatically added to the calendar (following the
+		 * user's preferences)
+		 */
 		inviteId: showAppointmentInvite
 			? message.invite[0].comp[0].apptId
 				? `${message.invite[0].comp[0].apptId}-${message.id}`

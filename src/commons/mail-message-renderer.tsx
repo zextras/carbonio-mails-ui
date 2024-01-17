@@ -459,14 +459,7 @@ const MailMessageRenderer: FC<MailMessageRendererProps> = memo(
 
 		if (body?.contentType === 'text/html') {
 			return (
-				<_HtmlMessageRenderer
-					msgId={id}
-					body={body}
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					parts={parts}
-					participants={participants}
-				/>
+				<_HtmlMessageRenderer msgId={id} body={body} parts={parts} participants={participants} />
 			);
 		}
 		if (body?.contentType === 'text/plain') {
