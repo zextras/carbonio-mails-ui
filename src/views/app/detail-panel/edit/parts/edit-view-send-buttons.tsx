@@ -8,7 +8,7 @@ import React, { FC, useCallback, useMemo } from 'react';
 import { Button, MultiButton, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import SendLaterModal from './send-later-modal';
+import { SendLaterModal } from './send-later-modal';
 import { StoreProvider } from '../../../../../store/redux';
 
 export type EditViewSendButtonsProps = {

@@ -7,9 +7,10 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { noop } from 'lodash';
 import moment from 'moment';
 
-import DatePickerCustomComponent from './date-picker-custom-component';
+import { DatePickerCustomComponent } from './date-picker-custom-component';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 
@@ -18,7 +19,7 @@ type SendLaterModalProps = {
 	onClose: () => void;
 };
 
-const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected, onClose }) => {
+export const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected, onClose }) => {
 	const [selectedTime, setSelectedTime] = useState<Date | null>(null);
 	const modalTitle = t('label.send_later', 'Send Later');
 	const datePickerLabel = t('label.select_date_time', 'Select date and time');
@@ -69,6 +70,7 @@ const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected, onClo
 							<DatePickerCustomComponent
 								label={datePickerLabel}
 								value={selectedTime?.toDateString() ?? ''}
+								onClick={noop}
 							/>
 						}
 					/>
@@ -84,5 +86,3 @@ const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected, onClo
 		</Container>
 	);
 };
-
-export default SendLaterModal;
