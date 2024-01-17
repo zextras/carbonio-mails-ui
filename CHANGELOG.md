@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.12.0...v1.13.0) (2024-01-12)
+
+
+### Features
+
+* change the icon position of the primary bar ([c0bd10a](https://github.com/zextras/carbonio-mails-ui/commit/c0bd10a1bfd3569acb12e321b00fe9d5ca724bb4))
+
 ## [1.12.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.11.1...v1.12.0) (2024-01-05)
 
 

@@ -104,7 +104,7 @@ const App = () => {
 	useEffect(() => {
 		addRoute({
 			route: MAILS_ROUTE,
-			position: 1,
+			position: 100,
 			visible: true,
 			label: t('label.app_name', 'Mails'),
 			primaryBar: 'MailModOutline',
