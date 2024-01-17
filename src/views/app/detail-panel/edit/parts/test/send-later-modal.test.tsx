@@ -10,25 +10,13 @@ import { noop } from 'lodash';
 
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../../tests/generators/store';
-// import * as customComponent from '../date-picker-custom-component';
 import { SendLaterModal } from '../send-later-modal';
-
-// jest.mock('../date-picker-custom-component', () => {
-// 	const { forwardRef } = jest.requireActual('react');
-// 	return {
-// 		__esModule: true,
-// 		default: forwardRef((props, ref) => <div ref={ref} />)
-// 	};
-// });
-
-// jest.mock('@zextras/carbonio-design-system/DateTimePicker', () => <div />);
 
 describe('send-later-modal', () => {
 	it('all elements of the component are visible', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
 
-		// jest.spyOn(customComponent, 'DatePickerCustomComponent').mockImplementation(() => <div />);
 		setupTest(<SendLaterModal onClose={(): void => closeModal()} onAutoSendTimeSelected={noop} />, {
 			store
 		});
