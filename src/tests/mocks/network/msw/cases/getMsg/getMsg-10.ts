@@ -9,6 +9,8 @@ import { createFakeIdentity } from '../../../../../../carbonio-ui-commons/test/m
  * MIME formatted email with PDF attachment
  */
 const identity1 = createFakeIdentity();
+const identity2 = createFakeIdentity();
+const identity3 = createFakeIdentity();
 
 export const getMsgResult = {
 	Header: {
@@ -47,6 +49,18 @@ export const getMsgResult = {
 							d: identity1.firstName,
 							p: identity1.fullName,
 							t: 't'
+						},
+						{
+							a: identity2.email,
+							d: identity2.firstName,
+							p: identity2.fullName,
+							t: 'c'
+						},
+						{
+							a: identity3.email,
+							d: identity3.firstName,
+							p: identity3.fullName,
+							t: 'b'
 						}
 					],
 					su: 'test inline attachments',
