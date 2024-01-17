@@ -10,7 +10,7 @@ describe('attachments', () => {
 	describe('getAttachmentParts', () => {
 		test('Inline attachment without content disposition are recognized anyway', async () => {
 			const msg = await getMsgCall({ msgId: '13' });
-			const attachmentParts = getAttachmentParts(msg);
+			const attachmentParts = getAttachmentParts(msg.parts);
 			expect(attachmentParts).toHaveLength(1);
 			expect(attachmentParts[0].name).toBe('2');
 			expect(attachmentParts[0].disposition).toBe('inline');

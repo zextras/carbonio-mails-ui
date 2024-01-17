@@ -12,7 +12,6 @@ import { isNil, reduce } from 'lodash';
 import { calcColor } from '../commons/utilities';
 import type {
 	AbstractAttachment,
-	MailMessage,
 	MailMessagePart,
 	SavedAttachment,
 	UnsavedAttachment
@@ -188,13 +187,9 @@ export function filterAttachmentsParts(
 	);
 }
 
-/**
- *
- * @param message
- */
-export function getAttachmentParts(message: MailMessage): Array<MailMessagePart> {
-	const referredCids = getReferredContentIds(message.parts);
-	return filterAttachmentsParts(message.parts, [], referredCids);
+export function getAttachmentParts(parts: Array<MailMessagePart>): Array<MailMessagePart> {
+	const referredCids = getReferredContentIds(parts);
+	return filterAttachmentsParts(parts, [], referredCids);
 }
 
 export const getAttachmentExtension = (

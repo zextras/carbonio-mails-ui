@@ -5,6 +5,7 @@
  */
 import React, {
 	FC,
+	memo,
 	useCallback,
 	useEffect,
 	useLayoutEffect,
@@ -31,9 +32,8 @@ import styled from 'styled-components';
 import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
 import { isAvailableInTrusteeList } from './utils';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import { getAttachmentParts } from '../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../helpers/identities';
-import type { MailMessage, MailMessagePart, Participant } from '../types';
+import type { MailMessagePart, Participant } from '../types';
 
 export const _CI_REGEX = /^<(.*)>$/;
 export const _CI_SRC_REGEX = /^cid:(.*)$/;
@@ -443,36 +443,29 @@ const EmptyBody: FC = () => (
 	</Container>
 );
 
-const MailMessageRenderer: FC<{ mailMsg: MailMessage; onLoadChange: () => void }> = ({
-	mailMsg,
-	onLoadChange
-}) => {
-	const parts = getAttachmentParts(mailMsg);
-
-	useEffect(() => {
-		if (!mailMsg.read) {
-			onLoadChange();
-		}
-	}, [mailMsg.read, onLoadChange]);
-	if (!mailMsg.body?.content?.length && !mailMsg.fragment) {
+const MailMessageRenderer: FC<any> = memo(({ parts, body, id, fragment, participants }) => {
+	if (!body?.content?.length && !fragment) {
 		return <EmptyBody />;
 	}
 
-	if (mailMsg.body?.contentType === 'text/html') {
+	if (body?.contentType === 'text/html') {
 		return (
 			<_HtmlMessageRenderer
-				msgId={mailMsg.id}
-				body={mailMsg.body}
+				msgId={id}
+				body={body}
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				parts={parts}
-				participants={mailMsg.participants}
+				participants={participants}
 			/>
 		);
 	}
-	if (mailMsg.body?.contentType === 'text/plain') {
-		return <_TextMessageRenderer body={mailMsg.body} />;
+	if (body?.contentType === 'text/plain') {
+		return <_TextMessageRenderer body={body} />;
 	}
 	return <EmptyBody />;
-};
+});
+
+MailMessageRenderer.displayName = 'MailMessageRenderer';
+
 export default MailMessageRenderer;
