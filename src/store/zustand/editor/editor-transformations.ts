@@ -383,7 +383,7 @@ export const createSoapSendMsgRequestFromEditor = (editor: MailsEditorV2): SoapD
 	createSoapMessageRequestFromEditor(editor, 'sendmsg');
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
-	const attachmentsParts = getAttachmentParts(message);
+	const attachmentsParts = getAttachmentParts(message.parts);
 	return attachmentsParts.map<SavedAttachment>((part) => ({
 		messageId: message.id,
 		// TODO create a function to determine if the attachment is an inline even when the disposition is not set

@@ -32,6 +32,7 @@ import ReadReceiptModal from './read-receipt-modal';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
 import { MessageActionsDescriptors } from '../../../../constants';
+import { getAttachmentParts } from '../../../../helpers/attachments';
 import { useAppDispatch } from '../../../../hooks/redux';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 import { getMsg, msgAction } from '../../../../store/actions';
@@ -125,102 +126,22 @@ const MailContent: FC<{
 		[loggedInUser, message]
 	);
 
-	const collapsedContent = useMemo(() => {
-		const { inviteId, participationStatus } = {
-			/*
-			 * Compose the invite ID
-			 * The invite ID is composed by the following fields:
-			 * - the appointment ID (if present)
-			 * - the message ID
-			 * If the 2 fields are both present they will be separated by a hyphen otherwise only the message ID will be used
-			 *
-			 * The appointment ID is present only if the appointment was automatically added to the calendar (following the
-			 * user's preferences)
-			 */
-			inviteId: showAppointmentInvite
-				? message.invite[0].comp[0].apptId
-					? `${message.invite[0].comp[0].apptId}-${message.id}`
-					: message.id
-				: '',
+	const { inviteId, participationStatus } = {
+		inviteId: showAppointmentInvite
+			? message.invite[0].comp[0].apptId
+				? `${message.invite[0].comp[0].apptId}-${message.id}`
+				: message.id
+			: '',
 
-			// Compose the participation status
-			participationStatus:
-				showAppointmentInvite && message.invite[0].replies
-					? message.invite[0].replies[0].reply[0].ptst
-					: ''
-		};
+		// Compose the participation status
+		participationStatus:
+			showAppointmentInvite && message.invite[0].replies
+				? message.invite[0].replies[0].reply[0].ptst
+				: ''
+	};
 
-		return (
-			<Container
-				data-testid="MessageBody"
-				width="100%"
-				height="fit"
-				crossAlignment="stretch"
-				padding={
-					isInsideExtraWindow ? { vertical: 'small' } : { horizontal: 'large', vertical: 'small' }
-				}
-				background="gray6"
-			>
-				<Row>
-					<AttachmentsBlock
-						message={message}
-						isExternalMessage={isExternalMessage}
-						openEmlPreview={openEmlPreview}
-					/>
-				</Row>
-				<Padding style={{ width: '100%' }} vertical="medium">
-					{showAppointmentInvite ? (
-						<Container width="100%">
-							<InviteResponse
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								onLoadChange={(): null => null}
-								mailMsg={message}
-								inviteId={inviteId}
-								participationStatus={participationStatus}
-								to={filter(message.participants, { type: 'f' })}
-								invite={message.invite}
-								method={message.invite[0]?.comp[0].method}
-								moveToTrash={moveToTrash}
-								isAttendee={isAttendee}
-								parent={message.parent}
-							/>
-						</Container>
-					) : showShareInvite ? (
-						<SharedInviteReply
-							// title={message?.fragment?.split('Shared item:')[0]}
-							sharedContent={message.shr[0].content}
-							mailMsg={message}
-						/>
-					) : (
-						<MailMessageRenderer
-							key={message.id}
-							mailMsg={message}
-							onLoadChange={(): null => null}
-						/>
-					)}
-				</Padding>
-				<ReadReceiptModal
-					open={showReadReceiptModal}
-					onClose={onModalClose}
-					message={message}
-					readReceiptSetting={readReceiptSetting}
-				/>
-			</Container>
-		);
-	}, [
-		showAppointmentInvite,
-		message,
-		isInsideExtraWindow,
-		isExternalMessage,
-		openEmlPreview,
-		moveToTrash,
-		isAttendee,
-		showShareInvite,
-		showReadReceiptModal,
-		onModalClose,
-		readReceiptSetting
-	]);
+	const parts = useMemo(() => getAttachmentParts(message.parts), [message.parts]);
+	const participants = useMemo(() => message.participants, [message.participants]);
 	return (
 		<Collapse
 			open={isMailPreviewOpen}
@@ -229,7 +150,66 @@ const MailContent: FC<{
 			disableTransition
 			data-testid="MailMessageRendererCollapse"
 		>
-			{message.isComplete && collapsedContent}
+			{message.isComplete && (
+				<Container
+					data-testid="MessageBody"
+					width="100%"
+					height="fit"
+					crossAlignment="stretch"
+					padding={
+						isInsideExtraWindow ? { vertical: 'small' } : { horizontal: 'large', vertical: 'small' }
+					}
+					background="gray6"
+				>
+					<Row>
+						<AttachmentsBlock
+							message={message}
+							isExternalMessage={isExternalMessage}
+							openEmlPreview={openEmlPreview}
+						/>
+					</Row>
+					<Padding style={{ width: '100%' }} vertical="medium">
+						{showAppointmentInvite ? (
+							<Container width="100%">
+								<InviteResponse
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
+									onLoadChange={(): null => null}
+									mailMsg={message}
+									inviteId={inviteId}
+									participationStatus={participationStatus}
+									to={filter(message.participants, { type: 'f' })}
+									invite={message.invite}
+									method={message.invite[0]?.comp[0].method}
+									moveToTrash={moveToTrash}
+									isAttendee={isAttendee}
+									parent={message.parent}
+								/>
+							</Container>
+						) : showShareInvite ? (
+							<SharedInviteReply
+								// title={message?.fragment?.split('Shared item:')[0]}
+								sharedContent={message.shr[0].content}
+								mailMsg={message}
+							/>
+						) : (
+							<MailMessageRenderer
+								parts={parts}
+								body={message.body}
+								id={message.id}
+								fragment={message.fragment}
+								participants={participants}
+							/>
+						)}
+					</Padding>
+					<ReadReceiptModal
+						open={showReadReceiptModal}
+						onClose={onModalClose}
+						message={message}
+						readReceiptSetting={readReceiptSetting}
+					/>
+				</Container>
+			)}
 		</Collapse>
 	);
 };
