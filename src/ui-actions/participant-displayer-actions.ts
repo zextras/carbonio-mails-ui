@@ -23,5 +23,6 @@ export const copyEmailToClipboard = (email: string, createSnackbar: CreateSnackb
 };
 
 export const sendMsg = (contact: Participant): void => {
-	mailToSharedFunction([contact]);
+	const updatedContact: Participant = { ...contact, type: 't' };
+	mailToSharedFunction([updatedContact]);
 };
