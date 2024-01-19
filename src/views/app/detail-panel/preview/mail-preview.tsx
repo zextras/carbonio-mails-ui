@@ -150,8 +150,12 @@ const MailContent: FC<{
 				: ''
 	};
 
-	const parts = useMemo(() => getAttachmentParts(message.parts), [message.parts]);
-	const participants = useMemo(() => message.participants, [message.participants]);
+	const parts = useMemo(
+		() => (message.parts ? getAttachmentParts(message.parts) : []),
+		[message?.parts]
+	);
+
+	const participants = useMemo(() => message?.participants, [message?.participants]);
 	return (
 		<Collapse
 			open={isMailPreviewOpen}
