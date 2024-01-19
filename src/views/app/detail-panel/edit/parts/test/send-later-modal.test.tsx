@@ -22,12 +22,12 @@ describe('send-later-modal', () => {
 		});
 
 		const modalTitle = screen.getByText(/label\.send_later/i);
-		expect(modalTitle).toBeInTheDocument();
+		expect(modalTitle).toBeVisible();
 
 		const confirmButton = screen.getByRole('button', {
 			name: /label\.schedule_send/i
 		});
-		expect(confirmButton).toBeInTheDocument();
+		expect(confirmButton).toBeVisible();
 
 		const cancelButton = screen.getByRole('button', {
 			name: /label\.cancel/i
