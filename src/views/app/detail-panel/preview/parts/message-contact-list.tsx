@@ -123,6 +123,7 @@ const MessageContactList: FC<{
 							iconSize: 'small',
 							paddingSize: ''
 						}}
+						data-testid="contacs-list-toggle-icon"
 					/>
 				</Tooltip>
 			</Container>
