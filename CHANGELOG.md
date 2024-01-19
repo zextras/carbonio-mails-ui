@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.13.1...v1.13.2) (2024-01-19)
+
+### [1.13.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.13.0...v1.13.1) (2024-01-17)
+
+
+### Bug Fixes
+
+* fix rerender of mail message renderer ([8c9f840](https://github.com/zextras/carbonio-mails-ui/commit/8c9f840e9cd5fcb2a73cc986a8eb58474fd02b9a))
+
 ## [1.13.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.12.0...v1.13.0) (2024-01-12)
 
 
