@@ -3,14 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { noop } from 'lodash';
-import React, { FC, ReactElement, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, forwardRef, MouseEvent } from 'react';
+
 import { Row, IconButton, Input } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
 type CustomComponentProps = {
 	value: string | number;
-	onClick?: () => void;
+	onClick: ((e: MouseEvent | KeyboardEvent) => void) &
+		((e: MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => void);
+
 	label: string;
 };
 
@@ -29,35 +31,33 @@ const CustomButtonWrapper = styled(Row)`
 	cursor: pointer;
 	padding: 0 !important;
 `;
+export const DatePickerCustomComponent: FC<CustomComponentProps> = forwardRef(
+	function DatePickerCustomComponentFn(
+		{ value, onClick, label }: CustomComponentProps,
+		ref: React.Ref<HTMLInputElement>
+	) {
+		const [input, setInput] = useState<string | number>(value);
 
-const DatePickerCustomComponent: FC<CustomComponentProps> = ({
-	value,
-	onClick = noop,
-	label
-}): ReactElement => {
-	const [input, setInput] = useState<string | number>(value);
+		useEffect(() => {
+			setInput(value);
+		}, [value]);
 
-	useEffect(() => {
-		setInput(value);
-	}, [value]);
+		return (
+			<CustomInputWrapper background="gray4">
+				<Row takeAvailableSpace minWidth="9.375rem" background="transparent">
+					<Input label={label} value={input} hideBorder disabled ref={ref} />
+				</Row>
 
-	return (
-		<CustomInputWrapper background="gray4">
-			<Row takeAvailableSpace minWidth="9.375rem" background="transparent">
-				<Input label={label} value={input} hideBorder disabled />
-			</Row>
-
-			<CustomButtonWrapper>
-				<IconButton
-					icon="CalendarOutline"
-					size="large"
-					onClick={onClick}
-					backgroundColor="transparent"
-					iconColor="text"
-				/>
-			</CustomButtonWrapper>
-		</CustomInputWrapper>
-	);
-};
-
-export default DatePickerCustomComponent;
+				<CustomButtonWrapper>
+					<IconButton
+						icon="CalendarOutline"
+						size="large"
+						onClick={onClick}
+						backgroundColor="transparent"
+						iconColor="text"
+					/>
+				</CustomButtonWrapper>
+			</CustomInputWrapper>
+		);
+	}
+);
