@@ -11,7 +11,7 @@ export function getBodyWrapper({ content, subject }: { content: string; subject:
 				<tr>
 					<td>
 						<div className="ZhPrintSubject" 
-                        style="background: rgba(176, 195, 231, 0.8);height: 1.75rem;
+                        style="background: rgba(176, 195, 231, 0.8);
                         padding-left: 0.25rem;
                         display: flex;
                         align-items: center;">

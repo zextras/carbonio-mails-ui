@@ -94,7 +94,10 @@ export const search = createAsyncThunk<
 					messages: reduce(
 						result.m ?? [],
 						(acc, msg, index) => {
-							const normalized = { ...normalizeMailMessageFromSoap(msg, false), sortIndex: index };
+							const normalized = {
+								...normalizeMailMessageFromSoap(msg, false),
+								sortIndex: index + (offset ?? 0)
+							};
 							return { ...acc, [normalized.id]: normalized };
 						},
 						{}

@@ -17,7 +17,7 @@ import { convAction, getMsgsForPrint } from '../store/actions';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import { ExtraWindowCreationParams, ExtraWindowsContextType } from '../types';
 import type { ConvActionReturnType, Conversation, MailMessage } from '../types';
-import { ConversationPreviewPanel } from '../views/app/detail-panel/conversation-preview-panel';
+import { ConversationPreviewPanelContainer } from '../views/app/detail-panel/conversation-preview-panel-container';
 
 type ConvActionIdsType = Array<string>;
 type ConvActionValueType = string | boolean;
@@ -74,7 +74,9 @@ export const previewConversationOnSeparatedWindow = (
 	const createWindowParams: ExtraWindowCreationParams = {
 		name: `conversation-${conversationId}`,
 		returnComponent: false,
-		children: <ConversationPreviewPanel conversationId={conversationId} folderId={folderId} />,
+		children: (
+			<ConversationPreviewPanelContainer conversationId={conversationId} folderId={folderId} />
+		),
 		title: subject,
 		closeOnUnmount: false
 	};
