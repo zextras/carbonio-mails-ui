@@ -52,6 +52,7 @@ export type FetchConversationsParameters = {
 	offset?: undefined | number;
 	recip?: '0' | '1' | '2';
 	wantContent?: 'full' | 'original' | 'both';
+	locale?: string;
 };
 
 export type FetchConversationsReturn = {
