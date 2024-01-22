@@ -7,7 +7,6 @@ import React, { FC, ReactElement, useState, useCallback, useMemo, useEffect } fr
 
 import {
 	CustomModal,
-	Container,
 	Icon,
 	Row,
 	TextWithTooltip,
@@ -27,6 +26,7 @@ import SubjectKeywordRow from './parts/subject-keyword-row';
 import TagFolderRow from './parts/tag-folder-row';
 import ToggleFilters from './parts/toggle-filters';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
+import { ScrollableContainer } from '../../commons/scrollable-container';
 import type { AdvancedFilterModalProps, KeywordState } from '../../types';
 
 const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
@@ -351,33 +351,34 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
-			<Container>
-				<ModalHeader
-					onClose={onClose}
-					title={t('label.single_advanced_filter', 'Advanced Filters')}
-					showCloseIcon
-				/>
-				<Divider />
+			<ModalHeader
+				onClose={onClose}
+				title={t('label.single_advanced_filter', 'Advanced Filters')}
+				showCloseIcon
+			/>
+			<Divider />
 
-				<Container padding={{ horizontal: 'medium', vertical: 'small' }}>
-					<ToggleFilters compProps={toggleFiltersProps} />
-					<SubjectKeywordRow compProps={subjectKeywordRowProps} />
-					<ReceivedSentAddressRow compProps={receivedSentAddressRowProps} />
-					<AttachmentTypeEmailStatusRow compProps={attachmentTypeEmailStatusRowProps} />
-					<SizeSmallerSizeLargerRow compProps={sizeSmallerSizeLargerRowProps} />
-					<SendReceivedDateRow compProps={sendDateRowProps} />
-					<TagFolderRow compProps={tagFolderRowProps} />
-				</Container>
-				<Divider />
-				<ModalFooter
-					onConfirm={onConfirm}
-					confirmDisabled={disabled}
-					secondaryActionDisabled={secondaryDisabled}
-					confirmLabel={t('action.search', 'Search')}
-					secondaryActionLabel={t('action.reset', 'Reset')}
-					onSecondaryAction={resetFilters}
-				/>
-			</Container>
+			<ScrollableContainer
+				padding={{ horizontal: 'medium', vertical: 'small' }}
+				mainAlignment={'flex-start'}
+			>
+				<ToggleFilters compProps={toggleFiltersProps} />
+				<SubjectKeywordRow compProps={subjectKeywordRowProps} />
+				<ReceivedSentAddressRow compProps={receivedSentAddressRowProps} />
+				<AttachmentTypeEmailStatusRow compProps={attachmentTypeEmailStatusRowProps} />
+				<SizeSmallerSizeLargerRow compProps={sizeSmallerSizeLargerRowProps} />
+				<SendReceivedDateRow compProps={sendDateRowProps} />
+				<TagFolderRow compProps={tagFolderRowProps} />
+			</ScrollableContainer>
+			<Divider />
+			<ModalFooter
+				onConfirm={onConfirm}
+				confirmDisabled={disabled}
+				secondaryActionDisabled={secondaryDisabled}
+				confirmLabel={t('action.search', 'Search')}
+				secondaryActionLabel={t('action.reset', 'Reset')}
+				onSecondaryAction={resetFilters}
+			/>
 		</CustomModal>
 	);
 };
