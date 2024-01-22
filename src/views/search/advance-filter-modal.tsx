@@ -4,26 +4,29 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useState, useCallback, useMemo, useEffect } from 'react';
+
 import {
 	CustomModal,
 	Container,
 	Icon,
 	Row,
 	TextWithTooltip,
-	Padding
+	Padding,
+	ModalHeader,
+	ModalFooter,
+	Divider
 } from '@zextras/carbonio-design-system';
-import { concat, filter, includes, map } from 'lodash';
 import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
-import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import ToggleFilters from './parts/toggle-filters';
-import SubjectKeywordRow from './parts/subject-keyword-row';
+import { concat, filter, includes, map } from 'lodash';
+
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
-import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
-import TagFolderRow from './parts/tag-folder-row';
-import SendReceivedDateRow from './parts/send-date-row';
-import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
 import ReceivedSentAddressRow from './parts/received-sent-address-row';
+import SendReceivedDateRow from './parts/send-date-row';
+import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
+import SubjectKeywordRow from './parts/subject-keyword-row';
+import TagFolderRow from './parts/tag-folder-row';
+import ToggleFilters from './parts/toggle-filters';
+import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
 import type { AdvancedFilterModalProps, KeywordState } from '../../types';
 
 const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
@@ -348,11 +351,13 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
-			<Container padding={{ bottom: 'medium' }}>
+			<Container>
 				<ModalHeader
 					onClose={onClose}
 					title={t('label.single_advanced_filter', 'Advanced Filters')}
+					showCloseIcon
 				/>
+				<Divider />
 
 				<Container padding={{ horizontal: 'medium', vertical: 'small' }}>
 					<ToggleFilters compProps={toggleFiltersProps} />
@@ -363,16 +368,14 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 					<SendReceivedDateRow compProps={sendDateRowProps} />
 					<TagFolderRow compProps={tagFolderRowProps} />
 				</Container>
+				<Divider />
 				<ModalFooter
 					onConfirm={onConfirm}
-					disabled={disabled}
-					secondaryDisabled={secondaryDisabled}
-					label={t('action.search', 'Search')}
-					secondaryLabel={t('action.reset', 'Reset')}
-					secondaryAction={resetFilters}
-					secondaryBtnType="outlined"
-					secondaryColor="primary"
-					paddingTop="small"
+					confirmDisabled={disabled}
+					secondaryActionDisabled={secondaryDisabled}
+					confirmLabel={t('action.search', 'Search')}
+					secondaryActionLabel={t('action.reset', 'Reset')}
+					onSecondaryAction={resetFilters}
 				/>
 			</Container>
 		</CustomModal>
