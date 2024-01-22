@@ -36,7 +36,8 @@ export const search = createAsyncThunk<
 			query,
 			offset,
 			recip = '2',
-			wantContent = 'full'
+			wantContent = 'full',
+			locale
 		},
 		{ rejectWithValue }
 	) => {
@@ -57,7 +58,14 @@ export const search = createAsyncThunk<
 					sortBy,
 					query: query || queryPart.join(' '),
 					offset,
-					types
+					types,
+					...(locale
+						? {
+								locale: {
+									_content: locale
+								}
+						  }
+						: undefined)
 				}
 			);
 			if (!result) {
