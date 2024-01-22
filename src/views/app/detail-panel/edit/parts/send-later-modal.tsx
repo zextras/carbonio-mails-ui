@@ -7,17 +7,19 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { noop } from 'lodash';
 import moment from 'moment';
 
-import DatePickerCustomComponent from './date-picker-custom-component';
+import { DatePickerCustomComponent } from './date-picker-custom-component';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 
 type SendLaterModalProps = {
 	onAutoSendTimeSelected: (autoSendTime: number) => void;
+	onClose: () => void;
 };
 
-const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected }) => {
+export const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected, onClose }) => {
 	const [selectedTime, setSelectedTime] = useState<Date | null>(null);
 	const modalTitle = t('label.send_later', 'Send Later');
 	const datePickerLabel = t('label.select_date_time', 'Select date and time');
@@ -45,7 +47,7 @@ const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected }) => 
 
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
-			<ModalHeader title={modalTitle} />
+			<ModalHeader onClose={onClose} title={modalTitle} />
 			<Container
 				padding={{ all: 'small' }}
 				mainAlignment="center"
@@ -68,14 +70,19 @@ const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected }) => 
 							<DatePickerCustomComponent
 								label={datePickerLabel}
 								value={selectedTime?.toDateString() ?? ''}
+								onClick={noop}
 							/>
 						}
 					/>
 				</Container>
 			</Container>
-			<ModalFooter onConfirm={onConfirm} label={confirmLabel} disabled={!selectedTime} />
+			<ModalFooter
+				onConfirm={onConfirm}
+				label={confirmLabel}
+				disabled={!selectedTime}
+				secondaryAction={onClose}
+				secondaryLabel={t('label.cancel', 'Cancel')}
+			/>
 		</Container>
 	);
 };
-
-export default SendLaterModal;
