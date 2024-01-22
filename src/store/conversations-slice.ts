@@ -253,9 +253,11 @@ export const selectConversationsArray = createSelector([selectConversationsSlice
 	Object.values(slice.conversations ?? [])
 );
 
-export function selectConversation({ conversations }: MailsStateType, id: string): Conversation {
-	return conversations?.conversations?.[id] ?? {};
-}
+export const selectConversation =
+	(id: string) =>
+	({ conversations }: MailsStateType): Conversation =>
+		conversations?.conversations?.[id] ?? {};
+
 export function selectFolderSearchStatus(
 	{ conversations }: MailsStateType,
 	folderId: string
