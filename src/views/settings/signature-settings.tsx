@@ -14,7 +14,8 @@ import {
 	Row,
 	Button,
 	Padding,
-	SelectItem
+	SelectItem,
+	ButtonProps
 } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, unescape, reject, concat } from 'lodash';
@@ -27,6 +28,10 @@ import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from '../../types';
 
+const DeleteButton = styled(Button)`
+	display: none;
+`;
+
 const Signature = styled(Row)`
 	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
 	display: block;
@@ -34,6 +39,9 @@ const Signature = styled(Row)`
 	cursor: pointer;
 	&:hover {
 		background-color: ${({ theme }): string => theme.palette.gray6.focus};
+		& ${DeleteButton} {
+			display: flex;
+		}
 	}
 `;
 const EditorWrapper = styled.div`
@@ -132,26 +140,24 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	);
 
 	const ListItem = ({ item }: { item: SignItemType }): ReactElement => {
-		const [hovered, setHovered] = useState(false);
-		const onMouseEnter = useCallback(() => setHovered(true), []);
-		const onMouseLeave = useCallback(() => setHovered(false), []);
-
-		const onDelete = (): void => {
-			// Create a new signature array copy without the deleted element
-			const updatedSignatureList = reject(signatures, ['id', item.id]);
-			if (currentSignature?.id === item.id) {
-				setCurrentSignature(undefined);
-			}
-			setSignatures(updatedSignatureList);
-			setDisabled(false);
-		};
+		const onDeleteButtonClick = useCallback(
+			(ev: Parameters<ButtonProps['onClick']>[0]): void => {
+				ev.stopPropagation();
+				// Create a new signature array copy without the deleted element
+				const updatedSignatureList = reject(signatures, ['id', item.id]);
+				if (currentSignature?.id === item.id) {
+					setCurrentSignature(undefined);
+				}
+				setSignatures(updatedSignatureList);
+				setDisabled(false);
+			},
+			[item.id]
+		);
 
 		return (
 			<Signature
 				height="fit"
 				orientation="horizontal"
-				onMouseEnter={onMouseEnter}
-				onMouseLeave={onMouseLeave}
 				background={currentSignature?.id === item.id ? 'highlight' : ''}
 				onClick={(ev: React.MouseEvent & { target: { innerText?: string } }): void => {
 					setCurrentSignature({
@@ -166,23 +172,23 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				<Row height="2.5rem" padding={{ all: 'small' }}>
 					<Container orientation="horizontal" mainAlignment="space-between">
 						<TextWithTooltip weight="bold">{item.label}</TextWithTooltip>
-						{hovered && (
-							<Button
-								label={t('label.delete', 'Delete')}
-								type="outlined"
-								color="error"
-								width="fit"
-								onClick={(ev): void => {
-									ev.stopPropagation();
-									onDelete();
-								}}
-							/>
-						)}
+						<DeleteButton
+							label={t('label.delete', 'Delete')}
+							type="outlined"
+							color="error"
+							width="fit"
+							onClick={onDeleteButtonClick}
+						/>
 					</Container>
 				</Row>
 			</Signature>
 		);
 	};
+
+	const editingDisabled = useMemo<boolean>(
+		(): boolean => currentSignature === undefined,
+		[currentSignature]
+	);
 
 	const composerCustomOptions = {
 		auto_focus: false,
@@ -210,7 +216,13 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 							<Padding all="small" />
 
 							<Container height="31.25rem">
-								{signaturesLoaded && <List items={signatures ?? []} ItemComponent={ListItem} />}
+								{signaturesLoaded && (
+									<List
+										data-testid={'signatures-list'}
+										items={signatures ?? []}
+										ItemComponent={ListItem}
+									/>
+								)}
 							</Container>
 						</Container>
 					</Container>
@@ -218,7 +230,8 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						<Container orientation="vertical" mainAlignment="space-around" width="100%">
 							<Input
 								label={t('signatures.name', 'Name')}
-								value={currentSignature?.name}
+								value={currentSignature?.name ?? ''}
+								disabled={editingDisabled}
 								backgroundColor="gray5"
 								onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => {
 									if (!currentSignature) {
@@ -258,14 +271,21 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						{composerIsAvailable && (
 							<EditorWrapper>
 								<Composer
+									data-testid={'signature-editor'}
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									value={currentSignature?.description}
+									value={currentSignature?.description ?? ''}
 									customInitOptions={composerCustomOptions}
+									disabled={editingDisabled}
 									onEditorChange={(ev: [string, string]): void => {
+										if (currentSignature === undefined) {
+											return;
+										}
+
 										if (isFirstChangeEventFired) {
 											// Rich text signature
 											const newDescription = ev[1];
+
 											if (currentSignature?.description === newDescription) {
 												return;
 											}

@@ -4,15 +4,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { JSNS, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map, escape } from 'lodash';
 
-export const GetAllSignatures = async (): Promise<any> => {
-	const result = await soapFetch('GetSignatures', {
+import { SignItemType } from '../../types';
+
+export type GetSignaturesRequest = {
+	_jsns: typeof JSNS.ACCOUNT;
+};
+
+export type GetSignaturesResponse = {
+	signature: Array<SignItemType>;
+	_jsns: typeof JSNS.ACCOUNT;
+};
+
+export const GetAllSignatures = (): Promise<GetSignaturesResponse> =>
+	soapFetch('GetSignatures', {
 		_jsns: 'urn:zimbraAccount'
 	});
-	return result;
-};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data: any) => {
