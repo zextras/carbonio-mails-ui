@@ -64,7 +64,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
 	const [signaturesLoaded, setSignaturesLoaded] = useState(false);
-	const [isFirstChangeEventFired, setIsFirstChangeEventFired] = useState(false);
 
 	// Fetches signatures from the BE
 	useEffect(() => {
@@ -102,21 +101,24 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	}, [currentSignature, signatures]);
 
 	// Creates an empty signature
-	const createEmptySignature = (): SignItemType => ({
-		id: uuidv4(),
-		label: t('label.enter_name', 'Enter Name'),
-		name: t('label.enter_name', 'Enter Name'),
-		description: ''
-	});
+	const createEmptySignature = useCallback(
+		(): SignItemType => ({
+			id: uuidv4(),
+			label: t('label.enter_name', 'Enter Name'),
+			name: t('label.enter_name', 'Enter Name'),
+			description: ''
+		}),
+		[]
+	);
 
 	// Creates and adds a new signature to the signatures list
-	const addNewSignature = (): void => {
+	const addNewSignature = useCallback((): void => {
 		const updatedSign = [...signatures];
 		const newSignature = createEmptySignature();
 		updatedSign.push(newSignature);
 		setSignatures(updatedSign);
 		setCurrentSignature(newSignature);
-	};
+	}, [createEmptySignature, setSignatures, signatures]);
 
 	// Create the fake signature for the "no signature"
 	const noSignature: SignItemType = useMemo(
@@ -140,6 +142,18 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	);
 
 	const ListItem = ({ item }: { item: SignItemType }): ReactElement => {
+		const onSignatureClick = useCallback(
+			(ev: React.MouseEvent & { target: { innerText?: string } }): void => {
+				setCurrentSignature({
+					id: item.id,
+					name: item.label ?? '',
+					label: item.label ?? '',
+					description: item.description ?? ''
+				});
+			},
+			[item.description, item.id, item.label]
+		);
+
 		const onDeleteButtonClick = useCallback(
 			(ev: Parameters<ButtonProps['onClick']>[0]): void => {
 				ev.stopPropagation();
@@ -159,15 +173,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				height="fit"
 				orientation="horizontal"
 				background={currentSignature?.id === item.id ? 'highlight' : ''}
-				onClick={(ev: React.MouseEvent & { target: { innerText?: string } }): void => {
-					setCurrentSignature({
-						id: item.id,
-						name: item.label ?? '',
-						label: item.label ?? '',
-						description: item.description ?? ''
-					});
-					setIsFirstChangeEventFired(false);
-				}}
+				onClick={onSignatureClick}
 			>
 				<Row height="2.5rem" padding={{ all: 'small' }}>
 					<Container orientation="horizontal" mainAlignment="space-between">
@@ -190,10 +196,13 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		[currentSignature]
 	);
 
-	const composerCustomOptions = {
-		auto_focus: false,
-		content_style: 'p { margin: 0; }'
-	};
+	const composerCustomOptions = useMemo(
+		() => ({
+			auto_focus: false,
+			content_style: 'p { margin: 0; }'
+		}),
+		[]
+	);
 
 	return (
 		<>
@@ -282,38 +291,35 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 											return;
 										}
 
-										if (isFirstChangeEventFired) {
-											// Rich text signature
-											const newDescription = ev[1];
+										// Rich text signature
+										const newDescription = ev[1];
 
-											if (currentSignature?.description === newDescription) {
-												return;
-											}
-											setCurrentSignature(
-												(current) =>
-													({
-														...current,
-														description: newDescription
-													} as SignItemType)
-											);
-
-											const updatedSign = signatures.map((signature) => {
-												if (
-													signature.id === currentSignature?.id &&
-													signature.description !== newDescription
-												) {
-													return {
-														...signature,
-														description: newDescription
-													};
-												}
-												return signature;
-											});
-
-											setDisabled(false);
-											setSignatures(updatedSign);
+										if (currentSignature?.description === newDescription) {
+											return;
 										}
-										setIsFirstChangeEventFired(true);
+										setCurrentSignature(
+											(current) =>
+												({
+													...current,
+													description: newDescription
+												} as SignItemType)
+										);
+
+										const updatedSign = signatures.map((signature) => {
+											if (
+												signature.id === currentSignature?.id &&
+												signature.description !== newDescription
+											) {
+												return {
+													...signature,
+													description: newDescription
+												};
+											}
+											return signature;
+										});
+
+										setDisabled(false);
+										setSignatures(updatedSign);
 									}}
 								/>
 							</EditorWrapper>
