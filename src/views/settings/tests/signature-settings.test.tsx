@@ -104,14 +104,7 @@ describe('Signature settings', () => {
 		);
 	});
 
-	it.todo(
-		'should display an error if the request for the list of signatures fails'
-		/* , () => {
-		const signatures: Array<SignItemType> = times(12, () => buildSignature({}));
-		handleGetSignaturesRequest([], 'GetSignatures fails');
-		setupTest(<SignatureSettings {...buildProps({ signatures })} />);
-		} */
-	);
+	it.todo('should display an error if the request for the list of signatures fails');
 
 	it('should render the list of signatures', async () => {
 		const signatures: Array<SignItemType> = times(12, () => buildSignature({}));
