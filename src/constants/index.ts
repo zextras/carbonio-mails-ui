@@ -441,3 +441,19 @@ export const SORT_ICONS = {
 	ASCENDING: 'ZaListOutline',
 	DESCENDING: 'AzListOutline'
 } as const;
+
+export const API_REQUEST_STATUS = {
+	pending: 'pending',
+	error: 'error',
+	fulfilled: 'fulfilled'
+} as const;
+
+export const SEARCHED_FOLDER_STATE_STATUS = {
+	empty: 'empty',
+	pending: 'pending',
+	complete: 'complete',
+	hasMore: 'hasMore',
+	hasChange: 'hasChange',
+	error: 'error',
+	incomplete: 'incomplete'
+} as const;

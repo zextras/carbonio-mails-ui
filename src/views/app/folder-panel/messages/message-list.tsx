@@ -13,14 +13,20 @@ import { MessageListComponent } from './message-list-component';
 import { MessageListItemComponent } from './message-list-item-component';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { LIST_LIMIT } from '../../../../constants';
+import {
+	API_REQUEST_STATUS,
+	LIST_LIMIT,
+	SEARCHED_FOLDER_STATE_STATUS
+} from '../../../../constants';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useMessageList } from '../../../../hooks/use-message-list';
 import { useSelection } from '../../../../hooks/use-selection';
 import { search } from '../../../../store/actions';
-import { selectConversationStatus } from '../../../../store/conversations-slice';
-import { selectFolderMsgSearchStatus } from '../../../../store/messages-slice';
+import {
+	selectFolderMsgSearchStatus,
+	selectMessagesSearchRequestStatus
+} from '../../../../store/messages-slice';
 import type { AppContext } from '../../../../types';
 
 export const MessageList: FC = () => {
@@ -29,10 +35,10 @@ export const MessageList: FC = () => {
 	const dispatch = useAppDispatch();
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
-	const [isLoading, setIsLoading] = useState(false);
 	const dragImageRef = useRef(null);
-	const convListStatus = useAppSelector(selectConversationStatus);
-	const messageListStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
+	const searchRequestStatus = useAppSelector(selectMessagesSearchRequestStatus);
+	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
+
 	const messages = useMessageList();
 
 	const { prefs } = useUserSettings();
@@ -54,24 +60,24 @@ export const MessageList: FC = () => {
 		items: messages
 	});
 
-	const hasMore = useMemo(() => convListStatus === 'hasMore', [convListStatus]);
+	const hasMore = useMemo(
+		() => searchedInFolderStatus === SEARCHED_FOLDER_STATE_STATUS.hasMore,
+		[searchedInFolderStatus]
+	);
+
 	const loadMore = useCallback(() => {
-		if (hasMore && !isLoading) {
-			setIsLoading(true);
-			const offset = messages.length;
-			dispatch(
-				search({
-					folderId,
-					sortBy: sortOrder,
-					offset,
-					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
-					types: 'message'
-				})
-			).then(() => {
-				setIsLoading(false);
-			});
-		}
-	}, [hasMore, isLoading, messages.length, dispatch, folderId, sortOrder]);
+		if (!hasMore) return;
+		const offset = messages.length;
+		dispatch(
+			search({
+				folderId,
+				sortBy: sortOrder,
+				offset,
+				limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+				types: 'message'
+			})
+		);
+	}, [dispatch, folderId, hasMore, messages.length, sortOrder]);
 
 	const displayerTitle = useMemo(() => {
 		if (messages?.length === 0) {
@@ -128,17 +134,19 @@ export const MessageList: FC = () => {
 					</CustomListItem>
 				);
 			}),
-		[deselectAll, draggedIds, isSelectModeOn, itemId, messages, selected, toggle, folderId]
+		[deselectAll, draggedIds, folderId, isSelectModeOn, itemId, messages, selected, toggle]
 	);
 
 	const totalMessages = useMemo(
 		() => (sortOrder === 'readAsc' ? messages.length : folder?.n ?? messages.length ?? 0),
 		[folder?.n, messages.length, sortOrder]
 	);
+
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+
 	const messagesLoadingCompleted = useMemo(
-		() => messageListStatus === 'complete',
-		[messageListStatus]
+		() => searchRequestStatus === API_REQUEST_STATUS.fulfilled,
+		[searchRequestStatus]
 	);
 
 	useEffect(() => {
@@ -165,6 +173,7 @@ export const MessageList: FC = () => {
 			selected={selected}
 			selectAllModeOff={selectAllModeOff}
 			dragImageRef={dragImageRef}
+			hasMore={hasMore}
 		/>
 	);
 };

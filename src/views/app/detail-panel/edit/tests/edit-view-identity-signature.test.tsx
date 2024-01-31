@@ -110,7 +110,7 @@ describe('New and Replay email view', () => {
 					messages: {
 						[msg.id]: msg
 					},
-					status: {}
+					searchRequestStatus: null
 				}
 			});
 
