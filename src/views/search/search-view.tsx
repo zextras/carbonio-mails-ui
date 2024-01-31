@@ -35,6 +35,23 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
 	const folders = useFoldersMap();
 	const [count, setCount] = useState(0);
+	const [containerWidth, setContainerWidth] = useState('70%');
+
+	useEffect(() => {
+		const element = document.getElementById("appContainerSearch");
+		if (!element) return;
+
+		const observer = new ResizeObserver(() => {
+			// 👉 Do something when the element is resized
+			setContainerWidth(`calc(100% - ${element.offsetWidth}px)`);
+		});
+
+		observer.observe(element);
+		return () => {
+			// Cleanup the observer by unobserving all elements
+			observer.disconnect();
+		};
+	}, []);
 
 	useEffect(() => {
 		setAppContext({ isMessageView, count, setCount });
@@ -248,7 +265,12 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 						</Route>
 					</Switch>
 					<Suspense fallback={<Spinner />}>
-						<Container mainAlignment="flex-start" width="75%">
+						<Container mainAlignment="flex-start" width={containerWidth} data-testid="search-view-panel"
+							style={{
+								maxWidth: '100%',
+								minWidth: '30%'
+							}}
+						>
 							<SearchPanel searchResults={searchResults} query={query} />
 						</Container>
 					</Suspense>

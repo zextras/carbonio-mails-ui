@@ -161,10 +161,12 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	return (
 		<Container
 			background="gray6"
-			width="25%"
+			width="30%"
 			height="fill"
 			mainAlignment="flex-start"
 			data-testid="MailsSearchResultListContainer"
+			style={{ overflow: 'auto', resize: 'horizontal' }}
+			id="appContainerSearch"
 		>
 			<AdvancedFilterButton
 				setShowAdvanceFilters={setShowAdvanceFilters}
