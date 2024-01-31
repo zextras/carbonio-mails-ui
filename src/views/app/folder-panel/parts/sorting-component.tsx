@@ -152,7 +152,7 @@ export const SortingComponent: FC<{ folderId?: string }> = ({ folderId }) => {
 					? SORT_ICONS.ASCENDING
 					: SORT_ICONS.DESCENDING
 		},
-		{
+		/*{
 			id: `${SORTING_OPTIONS.unread.value}-id`,
 			label: t('sorting_dropdown.unread', 'Unread'),
 			selected: sortingTypeState === SORTING_OPTIONS.unread.value,
@@ -181,7 +181,7 @@ export const SortingComponent: FC<{ folderId?: string }> = ({ folderId }) => {
 			onClick: sortAttachment,
 			icon:
 				sortingTypeState === SORTING_OPTIONS.attachment.value ? 'RadioButtonOn' : 'RadioButtonOff'
-		},
+		},*/
 		...(folderId !== FOLDERS.SENT
 			? [
 					{
