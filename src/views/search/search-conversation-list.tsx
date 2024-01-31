@@ -161,7 +161,10 @@ const SearchConversationList: FC<SearchListProps> = ({
 	);
 
 	return (
-		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
+		<Container background="gray6" width="30%" height="fill" mainAlignment="flex-start" 
+			id="appContainerSearch"
+			style={{ overflow: 'auto', resize: 'horizontal' }} 
+		>
 			<AdvancedFilterButton
 				setShowAdvanceFilters={setShowAdvanceFilters}
 				filterCount={filterCount}
