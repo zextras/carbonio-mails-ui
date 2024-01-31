@@ -42,7 +42,35 @@ export const search = createAsyncThunk<
 	) => {
 		const queryPart = [`inId:"${folderId}"`];
 		if (before) queryPart.push(`before:${before.getTime()}`);
-		if (sortBy === 'readAsc') queryPart.push('is:unread');
+		switch(sortBy){
+			case 'readAsc':
+				queryPart.push('is:unread');
+				sortBy = "dateAsc";
+				break;
+			case 'readDesc':
+				queryPart.push('is:unread');
+				sortBy = "dateDesc";
+				break;
+			case 'priorityAsc':
+			case 'priorityDesc':
+				queryPart.push('priority:high');
+				break;
+			case 'flagAsc':
+			case 'flagDesc':
+				queryPart.push('is:flagged');
+				break;
+			case 'attachAsc':
+			case 'attachDesc':
+				queryPart.push('has:attachment');
+				break;
+			default:
+				break;
+		}
+
+		var finalQuery = '';
+
+		if (folderId) { finalQuery = queryPart.join(' '); }
+		if (!folderId && query) { finalQuery = query; }
 
 		try {
 			const result = await soapFetch<SearchRequest, SearchResponse | ErrorSoapBodyResponse>(
@@ -55,7 +83,7 @@ export const search = createAsyncThunk<
 					fullConversation: 1,
 					wantContent,
 					sortBy,
-					query: query || queryPart.join(' '),
+					query: finalQuery,
 					offset,
 					types
 				}
