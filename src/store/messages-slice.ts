@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable unused-imports/no-unused-vars */
+/* eslint-disable no-param-reassign */
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
@@ -42,9 +44,6 @@ function getMsgFulfilled({ messages }: MsgStateType, { payload }: { payload: Mai
 			participants: payload.participants
 		};
 	}
-}
-function fetchMessagesPending(state: MsgStateType, { meta }: any): void {
-	// if (meta.arg.types === 'message') state.searchRequestStatus = meta.requestStatus;
 }
 
 function fetchMessagesRejected(state: MsgStateType, { meta }: { meta: any }): void {
@@ -174,7 +173,6 @@ export const messagesSlice = createSlice({
 		builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
 		builder.addCase(saveDraftAsyncThunk.fulfilled, produce(saveDraftFulfilled));
 		builder.addCase(search.fulfilled, produce(fetchMessagesFulfilled));
-		builder.addCase(search.pending, produce(fetchMessagesPending));
 		builder.addCase(search.rejected, produce(fetchMessagesRejected));
 		builder.addCase(deleteAttachments.fulfilled, produce(deleteAttachmentsFulfilled));
 	}
