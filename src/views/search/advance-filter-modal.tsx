@@ -19,7 +19,7 @@ import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio
 import { concat, filter, includes, map } from 'lodash';
 
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
-import ReceivedSentAddressRow from './parts/received-sent-address-row';
+import { ReceivedSentAddressRow } from './parts/received-sent-address-row';
 import SendReceivedDateRow from './parts/send-date-row';
 import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
 import SubjectKeywordRow from './parts/subject-keyword-row';

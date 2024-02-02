@@ -12,7 +12,9 @@ import { map } from 'lodash';
 import { isValidEmail } from './utils';
 import type { RcvdSentAddressRowPropType, SearchChipItem } from '../../../types';
 
-const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): ReactElement => {
+export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
+	compProps
+}): ReactElement => {
 	const { receivedFromAddress, setReceivedFromAddress, sentFromAddress, setSentFromAddress } =
 		compProps;
 
@@ -93,9 +95,9 @@ const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): 
 				label: /^from:*/.test(contact.fullName || contact.label)
 					? contact.fullName || contact.label
 					: `from:${contact.fullName || contact.label}`,
-				fullName: /^to:*/.test(contact.fullName || contact.label)
+				fullName: /^from:*/.test(contact.fullName || contact.label)
 					? contact.fullName || contact.label
-					: `to:${contact.fullName || contact.label}`,
+					: `from:${contact.fullName || contact.label}`,
 				value: /^from:*/.test(contact.email || contact.value)
 					? contact.email || contact.value
 					: `from:${contact.email}`
@@ -105,16 +107,16 @@ const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): 
 		[setReceivedFromAddress]
 	);
 
-	const handleSendToChange = useCallback(
+	const handleSentToChange = useCallback(
 		(contacts) => {
 			const chips = map(contacts, (contact) => ({
 				hasAvatar: true,
 				avatarIcon: 'EmailOutline',
 				isGeneric: false,
 				isQueryFilter: true,
-				label: /^from:*/.test(contact.fullName || contact.label)
+				label: /^to:*/.test(contact.fullName || contact.label)
 					? contact.fullName || contact.label
-					: `from:${contact.fullName || contact.label}`,
+					: `to:${contact.fullName || contact.label}`,
 				fullName: /^to:*/.test(contact.fullName || contact.label)
 					? contact.fullName || contact.label
 					: `to:${contact.fullName || contact.label}`,
@@ -171,7 +173,7 @@ const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): 
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						placeholder={t('label.to', 'To')}
-						onChange={handleSendToChange}
+						onChange={handleSentToChange}
 						defaultValue={sentFromAddress ?? []}
 					/>
 				) : (
@@ -192,5 +194,3 @@ const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({ compProps }): 
 		</Container>
 	);
 };
-
-export default ReceivedSentAddressRow;
