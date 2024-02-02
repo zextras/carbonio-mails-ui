@@ -81,7 +81,6 @@ const SearchConversationList: FC<SearchListProps> = ({
 		return null;
 	}, [isInvalidQuery, searchResults.conversations, randomListIndex]);
 
-	// Sorts the conversation list by date and reverses it to show the most recent ones first
 	const conversationList = useMemo(
 		() => sortBy(filter(Object.values(searchResults?.conversations ?? [])), 'sortIndex'),
 		[searchResults?.conversations]
