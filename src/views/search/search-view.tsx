@@ -143,7 +143,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 
 	useEffect(() => {
 		let _count = 0;
-		if (query && query.length > 0 && queryToString !== searchResults.query && !isInvalidQuery) {
+		if (query && query.length > 0 && !isInvalidQuery) {
 			const modifiedQuery = map(query, (q) => {
 				if (
 					// TODO: fix type definition
@@ -197,7 +197,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	}, [searchResults.status]);
 
 	useEffect(() => {
-		if (query && query.length > 0 && queryToString !== searchResults.query && !isInvalidQuery) {
+		if (query && query.length > 0 && !isInvalidQuery) {
 			setFilterCount(query.length);
 			searchQuery(queryToString, true);
 		}
