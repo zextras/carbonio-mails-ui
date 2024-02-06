@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ChipItem, ChipProps } from '@zextras/carbonio-design-system';
+import { ChipProps } from '@zextras/carbonio-design-system';
 
 export type FilterTest = Record<string, string | Array<any>>;
 
@@ -31,6 +31,7 @@ export type KeywordState = Array<{
 	avatarBackground?: ChipProps['background'];
 	hasError?: boolean;
 	error?: boolean;
+	fullName?: string;
 }>;
 
 export type FilterListType = {

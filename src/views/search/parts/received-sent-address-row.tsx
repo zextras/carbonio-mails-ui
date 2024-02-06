@@ -7,15 +7,15 @@ import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
 
 import { isValidEmail } from './utils';
-import type { RcvdSentAddressRowPropType, SearchChipItem } from '../../../types';
+import type { ContactInputItem, RcvdSentAddressRowPropType, SearchChipItem } from '../../../types';
+import { getChipItems } from '../utils';
 
 export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 	compProps
 }): ReactElement => {
-	const { receivedFromAddress, setReceivedFromAddress, sentFromAddress, setSentFromAddress } =
+	const { receivedFromAddress, setReceivedFromAddress, sentToAddress, setSentToAddress } =
 		compProps;
 
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
@@ -29,9 +29,9 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 		[onChange, setReceivedFromAddress]
 	);
 
-	const senderOnChange = useCallback(
-		(label: ChipItem[]): void => onChange(label, setSentFromAddress),
-		[onChange, setSentFromAddress]
+	const sentToOnChange = useCallback(
+		(label: ChipItem[]): void => onChange(label, setSentToAddress),
+		[onChange, setSentToAddress]
 	);
 
 	const chipOnAdded = useCallback(
@@ -69,7 +69,7 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 		[chipOnAdded]
 	);
 
-	const senderChipOnAdd = useCallback(
+	const sentToChipOnAdd = useCallback(
 		(label: string | unknown): SearchChipItem =>
 			chipOnAdded(
 				label,
@@ -86,22 +86,8 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 	const chipBackground = 'gray5';
 
 	const handleReceivedFromChange = useCallback(
-		(contacts) => {
-			const chips = map(contacts, (contact) => ({
-				hasAvatar: true,
-				avatarIcon: 'EmailOutline',
-				isGeneric: false,
-				isQueryFilter: true,
-				label: /^from:*/.test(contact.fullName || contact.label)
-					? contact.fullName || contact.label
-					: `from:${contact.fullName || contact.label}`,
-				fullName: /^from:*/.test(contact.fullName || contact.label)
-					? contact.fullName || contact.label
-					: `from:${contact.fullName || contact.label}`,
-				value: /^from:*/.test(contact.email || contact.value)
-					? contact.email || contact.value
-					: `from:${contact.email}`
-			}));
+		(contacts: Array<ContactInputItem>) => {
+			const chips = getChipItems(contacts, 'from');
 			setReceivedFromAddress(chips);
 		},
 		[setReceivedFromAddress]
@@ -109,24 +95,10 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 
 	const handleSentToChange = useCallback(
 		(contacts) => {
-			const chips = map(contacts, (contact) => ({
-				hasAvatar: true,
-				avatarIcon: 'EmailOutline',
-				isGeneric: false,
-				isQueryFilter: true,
-				label: /^to:*/.test(contact.fullName || contact.label)
-					? contact.fullName || contact.label
-					: `to:${contact.fullName || contact.label}`,
-				fullName: /^to:*/.test(contact.fullName || contact.label)
-					? contact.fullName || contact.label
-					: `to:${contact.fullName || contact.label}`,
-				value: /^to:*/.test(contact.email || contact.value)
-					? contact.email || contact.value
-					: `to:${contact.email}`
-			}));
-			setSentFromAddress(chips);
+			const chips = getChipItems(contacts, 'to');
+			setSentToAddress(chips);
 		},
-		[setSentFromAddress]
+		[setSentToAddress]
 	);
 
 	const receivedFromHasError = useMemo(
@@ -135,8 +107,8 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 	);
 
 	const sentFromHasError = useMemo(
-		() => !!(sentFromAddress && sentFromAddress[0]?.hasError),
-		[sentFromAddress]
+		() => !!(sentToAddress && sentToAddress[0]?.hasError),
+		[sentToAddress]
 	);
 
 	return (
@@ -174,15 +146,15 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 						// @ts-ignore
 						placeholder={t('label.to', 'To')}
 						onChange={handleSentToChange}
-						defaultValue={sentFromAddress ?? []}
+						defaultValue={sentToAddress ?? []}
 					/>
 				) : (
 					<ChipInput
 						placeholder={t('label.to', 'To')}
 						background={chipBackground}
-						value={sentFromAddress}
-						onChange={senderOnChange}
-						onAdd={senderChipOnAdd}
+						value={sentToAddress}
+						onChange={sentToOnChange}
+						onAdd={sentToChipOnAdd}
 						maxChips={1}
 						description={
 							sentFromHasError ? t('label.error_address', 'A valid e-mail is required') : undefined

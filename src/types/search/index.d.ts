@@ -6,7 +6,7 @@
 
 import { FC } from 'react';
 
-import { ChipProps } from '@zextras/carbonio-design-system';
+import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
 import { QueryChip } from '@zextras/carbonio-shell-ui';
 
 import { SortBy } from '../../carbonio-ui-commons/types/folder';
@@ -68,16 +68,20 @@ export type SearchConversationListItemProps = {
 	active: boolean;
 };
 
+export type SearchQueryItem = {
+	id: string;
+	label: string;
+	value?: string;
+	isGeneric?: boolean;
+	isQueryFilter?: boolean;
+};
+
+export type Query = Array<SearchQueryItem>;
+
 export type AdvancedFilterModalProps = {
 	open: boolean;
 	onClose: () => void;
-	query: Array<{
-		id: string;
-		label: string;
-		value?: string;
-		isGeneric?: boolean;
-		isQueryFilter?: boolean;
-	}>;
+	query: Query;
 	updateQuery: (arg: Array<QueryChip>) => void;
 	isSharedFolderIncluded: boolean;
 	setIsSharedFolderIncluded: (arg: boolean) => void;
@@ -112,6 +116,42 @@ export type ChipOnAddProps = {
 	isQueryFilter: boolean;
 };
 
+export type Contact = {
+	_id?: string;
+	/* Zimbra ID */ id: string;
+	tags?: string[];
+	firstName: string;
+	middleName: string;
+	lastName: string;
+	nickName: string;
+	parent: string;
+	address: ContactAddressMap;
+	company: string;
+	department: string;
+	email: ContactEmailMap;
+	image: string;
+	jobTitle: string;
+	notes: string;
+	phone: ContactPhoneMap;
+	nameSuffix: string;
+	namePrefix: string;
+	URL: ContactUrlMap;
+	fileAsStr: string;
+	avatarBackground?: ChipProps['background'];
+};
+
+export type ContactInputContact = Partial<Omit<Contact, 'email'>> & { email?: string };
+
+export type ContactInputItem = ChipItem &
+	ContactInputContact & {
+		address?: string | Contact['address'];
+		fullName?: string;
+		name?: string;
+		display?: string;
+		isGroup?: boolean;
+		groupId?: string;
+	};
+
 export type ChipOnAdd = ChipItem & {
 	label: string;
 	hasAvatar: boolean;
@@ -119,14 +159,13 @@ export type ChipOnAdd = ChipItem & {
 	isQueryFilter: boolean;
 	value: string;
 	avatarIcon: string;
-	avatarColor: string;
 };
 export type RcvdSentAddressRowPropType = {
 	compProps: {
 		receivedFromAddress: Array<any>;
 		setReceivedFromAddress: (arg: any) => void;
-		sentFromAddress: Array<any>;
-		setSentFromAddress: (arg: any) => void;
+		sentToAddress: Array<any>;
+		setSentToAddress: (arg: any) => void;
 	};
 };
 
@@ -220,6 +259,6 @@ export type ChipType = {
 	isQueryFilter?: boolean;
 	isGeneric?: boolean;
 	avatarIcon?: string;
-	avatarBackground?: string;
+	avatarBackground?: ChipProps['background'];
 	hasError?: boolean;
 };
