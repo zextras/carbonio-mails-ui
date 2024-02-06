@@ -10,7 +10,7 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { mergeWith, forEach, map, merge } from 'lodash';
+import { forEach, map, merge } from 'lodash';
 
 import { search, getMsg, msgAction, getConv, searchConv } from './actions';
 import { deleteAttachments } from './actions/delete-all-attachments';
@@ -62,12 +62,11 @@ function fetchMessagesFulfilled(
 ): void {
 	if (payload?.messages && payload?.types === 'message') {
 		state.searchRequestStatus = meta.requestStatus;
-		mergeWith(state?.messages, payload.messages, (objValue, srcValue, key, object, source) => {
-			if (key !== 'participants') {
-				return undefined;
-			}
-			return source.participants;
-		});
+		const newMessagesState =
+			payload.offset && payload.offset > 0
+				? { ...state.messages, ...payload.messages }
+				: { ...payload.messages };
+		state.messages = newMessagesState;
 		state.searchedInFolder = {
 			...state.searchedInFolder,
 			[meta.arg.folderId]: payload.hasMore
