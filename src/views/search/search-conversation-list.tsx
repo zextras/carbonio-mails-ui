@@ -3,22 +3,24 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+
 import { Container } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { filter, isEmpty, map, noop, sortBy } from 'lodash';
-import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
-import { useSelection } from '../../hooks/use-selection';
-import type { AppContext, SearchListProps } from '../../types';
-import { ConversationListComponent } from '../app/folder-panel/conversations/conversation-list-component';
-import { ConversationListItemComponent } from '../app/folder-panel/conversations/conversation-list-item-component';
+
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import ShimmerList from './shimmer-list';
-import { getFolderParentId } from '../../ui-actions/utils';
-import { useAppDispatch } from '../../hooks/redux';
-import { search } from '../../store/actions';
+import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import { LIST_LIMIT } from '../../constants';
+import { useAppDispatch } from '../../hooks/redux';
+import { useSelection } from '../../hooks/use-selection';
+import { search } from '../../store/actions';
+import type { AppContext, SearchListProps } from '../../types';
+import { getFolderParentId } from '../../ui-actions/utils';
+import { ConversationListComponent } from '../app/folder-panel/conversations/conversation-list-component';
+import { ConversationListItemComponent } from '../app/folder-panel/conversations/conversation-list-item-component';
 
 const SearchConversationList: FC<SearchListProps> = ({
 	searchResults,
@@ -79,9 +81,8 @@ const SearchConversationList: FC<SearchListProps> = ({
 		return null;
 	}, [isInvalidQuery, searchResults.conversations, randomListIndex]);
 
-	// Sorts the conversation list by date and reverses it to show the most recent ones first
 	const conversationList = useMemo(
-		() => sortBy(filter(Object.values(searchResults?.conversations ?? [])), 'date').reverse(),
+		() => sortBy(filter(Object.values(searchResults?.conversations ?? [])), 'sortIndex'),
 		[searchResults?.conversations]
 	);
 
