@@ -3,9 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container } from '@zextras/carbonio-design-system';
-import { t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { isArray, isEmpty, map, noop, sortBy } from 'lodash';
+
 import React, {
 	FC,
 	ReactElement,
@@ -16,17 +14,22 @@ import React, {
 	useRef,
 	useState
 } from 'react';
+
+import { Container } from '@zextras/carbonio-design-system';
+import { t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { isArray, isEmpty, map, noop, sortBy } from 'lodash';
 import { useParams } from 'react-router-dom';
-import { useSelection } from '../../hooks/use-selection';
-import type { AppContext, SearchListProps } from '../../types';
-import { MessageListComponent } from '../app/folder-panel/messages/message-list-component';
-import { MessageListItemComponent } from '../app/folder-panel/messages/message-list-item-component';
+
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import ShimmerList from './shimmer-list';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
-import { useAppDispatch } from '../../hooks/redux';
-import { search } from '../../store/actions';
 import { LIST_LIMIT } from '../../constants';
+import { useAppDispatch } from '../../hooks/redux';
+import { useSelection } from '../../hooks/use-selection';
+import { search } from '../../store/actions';
+import type { AppContext, SearchListProps } from '../../types';
+import { MessageListComponent } from '../app/folder-panel/messages/message-list-component';
+import { MessageListItemComponent } from '../app/folder-panel/messages/message-list-item-component';
 
 export const SearchMessageList: FC<SearchListProps> = ({
 	searchDisabled,
@@ -80,7 +83,8 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	}, [isInvalidQuery, searchResults.messages, randomListIndex]);
 
 	const messageList = useMemo(
-		() => sortBy(Object.values(searchResults?.messages ?? []), 'date').reverse(),
+		() => sortBy(Object.values(searchResults?.messages ?? []), 'sortIndex'),
+
 		[searchResults?.messages]
 	);
 
