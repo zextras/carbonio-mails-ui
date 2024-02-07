@@ -37,8 +37,10 @@ const Signature = styled(Row)`
 	display: block;
 	border-radius: 0;
 	cursor: pointer;
+
 	&:hover {
 		background-color: ${({ theme }): string => theme.palette.gray6.focus};
+
 		& ${DeleteButton} {
 			display: flex;
 		}
@@ -196,12 +198,93 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		[currentSignature]
 	);
 
+	const onSignatureNameChange = useCallback(
+		(ev: React.ChangeEvent<HTMLInputElement>): void => {
+			if (!currentSignature) {
+				return;
+			}
+			const newName = ev.target.value;
+			if (currentSignature.name === newName) {
+				return;
+			}
+
+			setCurrentSignature(
+				(current) =>
+					({
+						...current,
+						name: newName,
+						label: newName
+					} as SignItemType)
+			);
+
+			const updatedSignatures = signatures.map((signature) => {
+				if (signature.id === currentSignature.id) {
+					return {
+						...signature,
+						label: newName,
+						name: newName
+					};
+				}
+				return signature;
+			});
+
+			setDisabled(false);
+			setSignatures(updatedSignatures);
+		},
+		[currentSignature, setDisabled, setSignatures, signatures]
+	);
+
+	const onSignatureContentChange = useCallback(
+		(ev: [string, string]) => {
+			if (currentSignature === undefined) {
+				return;
+			}
+
+			// Rich text signature
+			const newDescription = ev[1];
+
+			if (currentSignature?.description === newDescription) {
+				return;
+			}
+			setCurrentSignature(
+				(current) =>
+					({
+						...current,
+						description: newDescription
+					} as SignItemType)
+			);
+
+			const updatedSign = signatures.map((signature) => {
+				if (signature.id === currentSignature?.id && signature.description !== newDescription) {
+					return {
+						...signature,
+						description: newDescription
+					};
+				}
+				return signature;
+			});
+
+			setDisabled(false);
+			setSignatures(updatedSign);
+		},
+		[currentSignature, setDisabled, setSignatures, signatures]
+	);
+
 	const composerCustomOptions = useMemo(
 		() => ({
 			auto_focus: false,
-			content_style: 'p { margin: 0; }'
+			content_style: 'p { margin: 0; }',
+			init_instance_callback: (editor: any): void => {
+				editor.on('input', () => {
+					const editorValue: [string, string] = [
+						editor.getContent({ format: 'text' }),
+						editor.getContent({ format: 'html' })
+					];
+					onSignatureContentChange(editorValue);
+				});
+			}
 		}),
-		[]
+		[onSignatureContentChange]
 	);
 
 	return (
@@ -242,38 +325,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								value={currentSignature?.name ?? ''}
 								disabled={editingDisabled}
 								backgroundColor="gray5"
-								onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => {
-									if (!currentSignature) {
-										return;
-									}
-									const newName = ev.target.value;
-									if (currentSignature.name === newName) {
-										return;
-									}
-
-									setCurrentSignature(
-										(current) =>
-											({
-												...current,
-												name: newName,
-												label: newName
-											} as SignItemType)
-									);
-
-									const updatedSign = signatures.map((signature) => {
-										if (signature.id === currentSignature.id) {
-											return {
-												...signature,
-												label: newName,
-												name: newName
-											};
-										}
-										return signature;
-									});
-
-									setDisabled(false);
-									setSignatures(updatedSign);
-								}}
+								onChange={onSignatureNameChange}
 							/>
 						</Container>
 						<Padding all="small" />
@@ -286,41 +338,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 									value={currentSignature?.description ?? ''}
 									customInitOptions={composerCustomOptions}
 									disabled={editingDisabled}
-									onEditorChange={(ev: [string, string]): void => {
-										if (currentSignature === undefined) {
-											return;
-										}
-
-										// Rich text signature
-										const newDescription = ev[1];
-
-										if (currentSignature?.description === newDescription) {
-											return;
-										}
-										setCurrentSignature(
-											(current) =>
-												({
-													...current,
-													description: newDescription
-												} as SignItemType)
-										);
-
-										const updatedSign = signatures.map((signature) => {
-											if (
-												signature.id === currentSignature?.id &&
-												signature.description !== newDescription
-											) {
-												return {
-													...signature,
-													description: newDescription
-												};
-											}
-											return signature;
-										});
-
-										setDisabled(false);
-										setSignatures(updatedSign);
-									}}
 								/>
 							</EditorWrapper>
 						)}
