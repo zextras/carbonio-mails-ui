@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement, useRef } from 'react';
 
 import {
 	Container,
@@ -53,6 +53,13 @@ const EditorWrapper = styled.div`
 	position: relative;
 `;
 
+/**
+ * Temporary type narrowed to the only properties/methods used in this context
+ */
+type EditorType = {
+	hasFocus: () => boolean;
+};
+
 const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	updatedIdentities,
 	updateIdentities,
@@ -66,6 +73,15 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
 	const [signaturesLoaded, setSignaturesLoaded] = useState(false);
+	const editorRef = useRef<{ editor: EditorType | undefined }>({
+		editor: undefined
+	});
+
+	const getEditor = (): EditorType | undefined => editorRef.current.editor;
+
+	const setEditor = (editor: EditorType): void => {
+		editorRef.current.editor = editor;
+	};
 
 	// Fetches signatures from the BE
 	useEffect(() => {
@@ -100,7 +116,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		if (signatures?.length && !currentSignature) {
 			setCurrentSignature(signatures[0]);
 		}
-	}, [currentSignature, signatures]);
+	}, [currentSignature, setCurrentSignature, signatures]);
 
 	// Creates an empty signature
 	const createEmptySignature = useCallback(
@@ -204,7 +220,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				return;
 			}
 			const newName = ev.target.value;
-			if (currentSignature.name === newName) {
+			if (currentSignature?.name === newName) {
 				return;
 			}
 
@@ -218,7 +234,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			);
 
 			const updatedSignatures = signatures.map((signature) => {
-				if (signature.id === currentSignature.id) {
+				if (signature.id === currentSignature?.id) {
 					return {
 						...signature,
 						label: newName,
@@ -231,11 +247,15 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			setDisabled(false);
 			setSignatures(updatedSignatures);
 		},
-		[currentSignature, setDisabled, setSignatures, signatures]
+		[currentSignature, setCurrentSignature, setDisabled, setSignatures, signatures]
 	);
 
 	const onSignatureContentChange = useCallback(
-		(ev: [string, string]) => {
+		(ev: [string, string]): void => {
+			if (!getEditor()?.hasFocus()) {
+				return;
+			}
+
 			if (currentSignature === undefined) {
 				return;
 			}
@@ -267,25 +287,18 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			setDisabled(false);
 			setSignatures(updatedSign);
 		},
-		[currentSignature, setDisabled, setSignatures, signatures]
+		[currentSignature, setCurrentSignature, setDisabled, setSignatures, signatures]
 	);
 
-	const composerCustomOptions = useMemo(
-		() => ({
-			auto_focus: false,
-			content_style: 'p { margin: 0; }',
-			init_instance_callback: (editor: any): void => {
-				editor.on('input', () => {
-					const editorValue: [string, string] = [
-						editor.getContent({ format: 'text' }),
-						editor.getContent({ format: 'html' })
-					];
-					onSignatureContentChange(editorValue);
-				});
-			}
-		}),
-		[onSignatureContentChange]
-	);
+	const onEditorInitialization = (editor: EditorType): void => {
+		setEditor(editor);
+	};
+
+	const composerCustomOptions = {
+		auto_focus: false,
+		content_style: 'p { margin: 0; }',
+		init_instance_callback: onEditorInitialization
+	};
 
 	return (
 		<>
@@ -338,6 +351,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 									value={currentSignature?.description ?? ''}
 									customInitOptions={composerCustomOptions}
 									disabled={editingDisabled}
+									onEditorChange={onSignatureContentChange}
 								/>
 							</EditorWrapper>
 						)}
