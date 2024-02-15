@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import PreviewPanelHeader from './preview/preview-panel-header';
+import { API_REQUEST_STATUS } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getConv, searchConv } from '../../../store/actions';
 import {
@@ -53,7 +54,8 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 
 	useEffect(() => {
 		if (
-			(conversationsStatus !== 'complete' && conversationsStatus !== 'pending') ||
+			(conversationsStatus !== API_REQUEST_STATUS.fulfilled &&
+				conversationsStatus !== API_REQUEST_STATUS.pending) ||
 			!conversationsStatus
 		) {
 			dispatch(searchConv({ conversationId, fetch: 'all', folderId, tags: tagsFromStore }));

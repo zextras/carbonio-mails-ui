@@ -11,9 +11,10 @@ import { useParams } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from './redux';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
+import { LIST_LIMIT } from '../constants';
 import { parseMessageSortingOptions } from '../helpers/sorting';
 import { search } from '../store/actions';
-import { selectFolderMsgSearchStatus, selectMessagesArray } from '../store/messages-slice';
+import { selectMessagesArray, selectMessagesSearchRequestStatus } from '../store/messages-slice';
 import type { MailMessage } from '../types';
 
 type RouteParams = {
@@ -26,7 +27,7 @@ export const useMessageList = (): Array<MailMessage> => {
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 
-	const folderMsgStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
+	const searchRequestStatus = useAppSelector(selectMessagesSearchRequestStatus);
 	const messages = useAppSelector(selectMessagesArray);
 	const folder = getFolder(folderId);
 
@@ -44,10 +45,16 @@ export const useMessageList = (): Array<MailMessage> => {
 	const sortedMessages = useMemo(() => sortBy(filteredMessages, 'sortIndex'), [filteredMessages]);
 
 	useEffect(() => {
-		if (folderMsgStatus !== 'complete' && folderMsgStatus !== 'pending') {
-			dispatch(search({ folderId, limit: 101, sortBy: sortOrder, types: 'message' }));
-		}
-	}, [dispatch, folderId, folderMsgStatus, sortOrder]);
+		if (searchRequestStatus !== null) return;
+		dispatch(
+			search({
+				folderId,
+				limit: LIST_LIMIT.INITIAL_LIMIT + 1,
+				sortBy: sortOrder,
+				types: 'message'
+			})
+		);
+	}, [dispatch, folderId, searchRequestStatus, sortOrder]);
 
 	return sortedMessages;
 };
