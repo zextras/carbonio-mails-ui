@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
 import { faker } from '@faker-js/faker';
 import { fireEvent, screen } from '@testing-library/react';
 import { noop } from 'lodash';
-import React from 'react';
+
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
@@ -75,7 +77,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -117,7 +119,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -163,7 +165,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -210,7 +212,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -256,7 +258,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -301,7 +303,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -334,7 +336,7 @@ describe.each`
 		// 		messages: {
 		// 			searchedInFolder: {},
 		// 			messages: [msg],
-		// 			status: {}
+		// 			searchRequestStatus: null
 		// 		}
 		// 	});
 		//
@@ -378,7 +380,7 @@ describe.each`
 				messages: {
 					searchedInFolder: {},
 					messages: [msg],
-					status: {}
+					searchRequestStatus: null
 				}
 			});
 
@@ -425,7 +427,7 @@ describe('in the drafts folder', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: [msg],
-					status: {}
+					searchRequestStatus: null
 				}
 			});
 
@@ -466,7 +468,7 @@ describe('in the drafts folder', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: [msg],
-					status: {}
+					searchRequestStatus: null
 				}
 			});
 
@@ -508,7 +510,7 @@ describe('in the drafts folder', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: [msg],
-					status: {}
+					searchRequestStatus: null
 				}
 			});
 
@@ -549,7 +551,7 @@ describe('in the trash folder', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: [msg],
-				status: {}
+				searchRequestStatus: null
 			}
 		});
 
@@ -586,7 +588,7 @@ describe('in the trash folder', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: [msg],
-					status: {}
+					searchRequestStatus: null
 				}
 			});
 
