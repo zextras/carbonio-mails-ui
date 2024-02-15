@@ -35,8 +35,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	const inputRef = useRef<any>();
 
 	const { text, setText } = useEditorText(editorId);
-	const { addStandardAttachments, addInlineAttachments, hasStandardAttachments } =
-		useEditorAttachments(editorId);
+	const { addStandardAttachments, addUploadedAttachment } = useEditorAttachments(editorId);
 
 	const addFilesFromLocal = useCallback(
 		(fileList: FileList) => {
@@ -46,9 +45,19 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 		[addStandardAttachments]
 	);
 
-	const addFilesFromFiles = useCallback(() => {
-		// TODO handle files response and update attachment in Editor store
-	}, []);
+	const addFilesFromFiles = useCallback(
+		(filesNode: Promise<{ attachmentId: string }>) => {
+			// TODO handle files response and update attachment in Editor store
+			filesNode
+				.then(({ attachmentId }) => {
+					addUploadedAttachment(attachmentId);
+				})
+				.catch((err) => {
+					// TODO handlererror
+				});
+		},
+		[addUploadedAttachment]
+	);
 
 	const addPublicLinkFromFiles = useCallback(
 		(filesResponse) => {
@@ -68,6 +77,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 
 	const [getFilesFromDrive, getFilesAvailable] = useGetFilesFromDrive({ addFilesFromFiles });
 	const [getLink, getLinkAvailable] = useGetPublicUrl({ addPublicLinkFromFiles });
+	const [getFilesAction, getFilesActionAvailable] = getIntegratedFunction('select-nodes');
 
 	const actionTarget = useMemo(
 		() => ({
@@ -90,21 +100,20 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 		}),
 		[getLink]
 	);
-	const [getFilesAction, getFilesActionAvailable] = getIntegratedFunction('select-nodes');
 
-	const onFileClick = useCallback(() => {
+	const onLocalFileClick = useCallback(() => {
 		if (inputRef.current) {
 			inputRef.current.value = null;
 			inputRef.current.click();
 		}
 	}, []);
 
-	const attachmentsItems = useMemo(() => {
-		const localItem = {
+	const actionsItems = useMemo(() => {
+		const localFileAction = {
 			id: 'localAttachment',
 			icon: 'MonitorOutline',
 			label: t('composer.attachment.local', 'Add from local'),
-			onClick: onFileClick,
+			onClick: onLocalFileClick,
 			customComponent: (
 				<>
 					<Icon icon="MonitorOutline" size="medium" />
@@ -114,16 +123,15 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 			)
 		};
 
-		const contactItem = {
+		const contactCardAction = {
 			id: 'contactsModAttachment',
 			icon: 'ContactsModOutline',
 			label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
-			onClick: (): void => {
-				// setOpenDD(false);
-			},
+			onClick: (): void => undefined,
 			disabled: true
 		};
-		const driveItem =
+
+		const filesNodeAction =
 			getFilesActionAvailable && getFilesAvailable
 				? {
 						id: 'driveItem',
@@ -134,7 +142,8 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 						}
 				  }
 				: undefined;
-		const fileUrl =
+
+		const filesLinkAction =
 			getFilesActionAvailable && getLinkAvailable
 				? {
 						id: 'fileUrl',
@@ -146,9 +155,9 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				  }
 				: undefined;
 
-		return compact([localItem, driveItem, fileUrl, contactItem]);
+		return compact([localFileAction, filesNodeAction, filesLinkAction, contactCardAction]);
 	}, [
-		onFileClick,
+		onLocalFileClick,
 		getFilesAvailable,
 		actionTarget,
 		getFilesActionAvailable,
@@ -181,7 +190,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				<Dropdown
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					items={attachmentsItems}
+					items={actionsItems}
 					display="inline-block"
 					width="fit"
 				>
