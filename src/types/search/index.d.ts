@@ -144,6 +144,7 @@ export type ContactInputContact = Partial<Omit<Contact, 'email'>> & { email?: st
 
 export type ContactInputItem = ChipItem &
 	ContactInputContact & {
+		email?: Contact['email'];
 		address?: string | Contact['address'];
 		fullName?: string;
 		name?: string;

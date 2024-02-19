@@ -53,7 +53,22 @@ export function getChipString(item: SearchQueryItem | ContactInputItem, prefix: 
 		resultString = (item as SearchQueryItem).label;
 	}
 	if ((item as ContactInputItem).fullName) {
-		resultString = (item.label || (item as ContactInputItem).fullName) ?? '';
+		resultString = (item as ContactInputItem).fullName ?? '';
+	}
+	return regex.test(resultString) ? resultString : `${prefix}:${resultString}`;
+}
+
+export function getChipValue(item: SearchQueryItem | ContactInputItem, prefix: string): string {
+	const regex = getRegex(prefix);
+	let resultString = '';
+	if ((item as SearchQueryItem).value) {
+		resultString = (item as SearchQueryItem).value ?? '';
+	}
+	if ((item as ContactInputItem).email) {
+		resultString = (item as ContactInputItem).email ?? '';
+	}
+	if ((item as ContactInputItem).fullName) {
+		resultString = (item as ContactInputItem).fullName ?? '';
 	}
 	return regex.test(resultString) ? resultString : `${prefix}:${resultString}`;
 }
@@ -70,6 +85,6 @@ export function getChipItems(chips: Query | Array<ContactInputItem>, prefix: str
 		isQueryFilter: true,
 		label: getChipString(chip, prefix),
 		fullName: getChipString(chip, prefix),
-		value: getChipString(chip, prefix)
+		value: getChipValue(chip, prefix)
 	}));
 }
