@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.14.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.13.3...v1.14.0) (2024-02-19)
+
+
+### Features
+
+* changed newline_behavior of tinyMCE to 'linebreak' ([#515](https://github.com/zextras/carbonio-mails-ui/issues/515)) ([e14796b](https://github.com/zextras/carbonio-mails-ui/commit/e14796bdebc58adaa1ccf8c841d6e669622b2231))
+
+
+### Bug Fixes
+
+* avoid marking settings as unsaved when user doesn't change any signature ([6991d75](https://github.com/zextras/carbonio-mails-ui/commit/6991d75e0eb24eb5d57b38c4f997bf700df1de03))
+* avoid useless email refresh ([#523](https://github.com/zextras/carbonio-mails-ui/issues/523)) ([a3c04b6](https://github.com/zextras/carbonio-mails-ui/commit/a3c04b6757c1050c10c30069a835683e61e8de8b))
+* disable signature settings fields if no signature is selected ([4073557](https://github.com/zextras/carbonio-mails-ui/commit/40735578c695b84f8fc074e6efc3e83cfcbd2ef9))
+* fix on composer adding a new line when opened ([#531](https://github.com/zextras/carbonio-mails-ui/issues/531)) ([2748aca](https://github.com/zextras/carbonio-mails-ui/commit/2748aca7776ba5cad54402fa93e355799f1c048c))
+* fix sorting order of searched messages ([#536](https://github.com/zextras/carbonio-mails-ui/issues/536)) ([799ed58](https://github.com/zextras/carbonio-mails-ui/commit/799ed58d952febb454039d8381440c338f7139c6))
+* fix type error in contact-names-chips ([e8a343b](https://github.com/zextras/carbonio-mails-ui/commit/e8a343b472ce8ac579c21a36d807327c1157f9d7))
+* no email address address in the sent email list ([ea5c17f](https://github.com/zextras/carbonio-mails-ui/commit/ea5c17f2e5069ed33f8b8251a3c33aeddcc19d6c))
+* print an email with long subject it is broken ([#525](https://github.com/zextras/carbonio-mails-ui/issues/525)) ([1913b80](https://github.com/zextras/carbonio-mails-ui/commit/1913b8063bb5f57f113fdfe3885094bb984f394b))
+* remove double api call when clicking on a folder ([#534](https://github.com/zextras/carbonio-mails-ui/issues/534)) ([f1f109f](https://github.com/zextras/carbonio-mails-ui/commit/f1f109fefd6d7ad46fbdb98a8ae6bd56e900e8ce))
+* set the advanced search dates format based on the selected locale ([b0f063f](https://github.com/zextras/carbonio-mails-ui/commit/b0f063f13ae18fc4b5629d6b14f532c93cf69017))
+* there is no way to force the search to be executed again ([c891ca2](https://github.com/zextras/carbonio-mails-ui/commit/c891ca2326d86b410d2ddd21c4210836e15005a8))
+* updating trusted address from settings breaks all previous data ([92908af](https://github.com/zextras/carbonio-mails-ui/commit/92908af733c96f60c6f121e532f9e85db6f5648d))
+
 ### [1.13.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.13.2...v1.13.3) (2024-01-22)
 
 

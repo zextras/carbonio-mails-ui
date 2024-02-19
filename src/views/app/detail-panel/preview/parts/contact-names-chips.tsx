@@ -4,15 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, ReactElement, useContext } from 'react';
+import React, { FC, ReactElement } from 'react';
 
-import {
-	Row,
-	Text,
-	Chip,
-	Container,
-	SnackbarManagerContext
-} from '@zextras/carbonio-design-system';
+import { Row, Text, Chip, Container, useSnackbar } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
@@ -27,7 +21,7 @@ const ContactNameChip: FC<{
 	contacts: Participant[];
 	label: string;
 }> = ({ contacts, label }): ReactElement => {
-	const createSnackbar = useContext(SnackbarManagerContext);
+	const createSnackbar = useSnackbar();
 	return (
 		<>
 			<Row mainAlignment="flex-start">
