@@ -17,7 +17,7 @@ import {
 import { includes, map, reduce } from 'lodash';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import AdvancedFilterModal from './advance-filter-modal';
+import { AdvancedFilterModal } from './advanced-filter-modal';
 import { findIconFromChip } from './parts/use-find-icon';
 import SearchConversationList from './search-conversation-list';
 import { SearchMessageList } from './search-message-list';

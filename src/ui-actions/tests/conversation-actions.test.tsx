@@ -16,11 +16,11 @@ import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { TIMEOUTS } from '../../constants';
+import { API_REQUEST_STATUS, TIMEOUTS } from '../../constants';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateStore } from '../../tests/generators/store';
-import { ConvActionRequest, Conversation, Status } from '../../types';
+import { ConvActionRequest, Conversation, SearchRequestStatus } from '../../types';
 import {
 	moveConversationToTrash,
 	printConversation,
@@ -41,13 +41,13 @@ describe('Conversation actions calls', () => {
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
-						[conv.id]: 'complete'
+						[conv.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conv.id]: conv
 					},
-					status: 'complete'
+					searchRequestStatus: null
 				}
 			});
 
@@ -74,10 +74,10 @@ describe('Conversation actions calls', () => {
 			const store = generateStore({
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
-					expandedStatus: conversations.reduce<Record<string, Status>>(
-						(result, conversation): Record<string, Status> => ({
+					expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
+						(result, conversation): Record<string, SearchRequestStatus> => ({
 							...result,
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						}),
 						{}
 					),
@@ -88,7 +88,7 @@ describe('Conversation actions calls', () => {
 							{}
 						)
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -120,13 +120,13 @@ describe('Conversation actions calls', () => {
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
-						[conv.id]: 'complete'
+						[conv.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conv.id]: conv
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -153,10 +153,10 @@ describe('Conversation actions calls', () => {
 			const store = generateStore({
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
-					expandedStatus: conversations.reduce<Record<string, Status>>(
-						(result, conversation): Record<string, Status> => ({
+					expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
+						(result, conversation): Record<string, SearchRequestStatus> => ({
 							...result,
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						}),
 						{}
 					),
@@ -167,7 +167,7 @@ describe('Conversation actions calls', () => {
 							{}
 						)
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -199,13 +199,13 @@ describe('Conversation actions calls', () => {
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
-						[conv.id]: 'complete'
+						[conv.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conv.id]: conv
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -235,10 +235,10 @@ describe('Conversation actions calls', () => {
 			const store = generateStore({
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
-					expandedStatus: conversations.reduce<Record<string, Status>>(
-						(result, conversation): Record<string, Status> => ({
+					expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
+						(result, conversation): Record<string, SearchRequestStatus> => ({
 							...result,
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						}),
 						{}
 					),
@@ -249,7 +249,7 @@ describe('Conversation actions calls', () => {
 							{}
 						)
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -284,13 +284,13 @@ describe('Conversation actions calls', () => {
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
-						[conv.id]: 'complete'
+						[conv.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conv.id]: conv
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -320,10 +320,10 @@ describe('Conversation actions calls', () => {
 			const store = generateStore({
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
-					expandedStatus: conversations.reduce<Record<string, Status>>(
-						(result, conversation): Record<string, Status> => ({
+					expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
+						(result, conversation): Record<string, SearchRequestStatus> => ({
 							...result,
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						}),
 						{}
 					),
@@ -334,7 +334,7 @@ describe('Conversation actions calls', () => {
 							{}
 						)
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -368,13 +368,13 @@ describe('Conversation actions calls', () => {
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
-						[conv.id]: 'complete'
+						[conv.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conv.id]: conv
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -403,10 +403,10 @@ describe('Conversation actions calls', () => {
 			const store = generateStore({
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
-					expandedStatus: conversations.reduce<Record<string, Status>>(
-						(result, conversation): Record<string, Status> => ({
+					expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
+						(result, conversation): Record<string, SearchRequestStatus> => ({
 							...result,
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						}),
 						{}
 					),
@@ -417,7 +417,7 @@ describe('Conversation actions calls', () => {
 							{}
 						)
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -450,13 +450,13 @@ describe('Conversation actions calls', () => {
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
-						[conv.id]: 'complete'
+						[conv.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conv.id]: conv
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -485,10 +485,10 @@ describe('Conversation actions calls', () => {
 			const store = generateStore({
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
-					expandedStatus: conversations.reduce<Record<string, Status>>(
-						(result, conversation): Record<string, Status> => ({
+					expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
+						(result, conversation): Record<string, SearchRequestStatus> => ({
 							...result,
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						}),
 						{}
 					),
@@ -499,7 +499,7 @@ describe('Conversation actions calls', () => {
 							{}
 						)
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -551,13 +551,13 @@ describe('Conversation actions calls', () => {
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
-						[conv.id]: 'complete'
+						[conv.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conv.id]: conv
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -585,10 +585,10 @@ describe('Conversation actions calls', () => {
 			const store = generateStore({
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
-					expandedStatus: conversations.reduce<Record<string, Status>>(
-						(result, conversation): Record<string, Status> => ({
+					expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
+						(result, conversation): Record<string, SearchRequestStatus> => ({
 							...result,
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						}),
 						{}
 					),
@@ -599,7 +599,7 @@ describe('Conversation actions calls', () => {
 							{}
 						)
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -631,13 +631,13 @@ describe('Conversation actions calls', () => {
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
-						[conv.id]: 'complete'
+						[conv.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conv.id]: conv
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -668,10 +668,10 @@ describe('Conversation actions calls', () => {
 			const store = generateStore({
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
-					expandedStatus: conversations.reduce<Record<string, Status>>(
-						(result, conversation): Record<string, Status> => ({
+					expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
+						(result, conversation): Record<string, SearchRequestStatus> => ({
 							...result,
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						}),
 						{}
 					),
@@ -682,7 +682,7 @@ describe('Conversation actions calls', () => {
 							{}
 						)
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -721,13 +721,13 @@ describe('Conversation actions calls', () => {
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
-						[conv.id]: 'complete'
+						[conv.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conv.id]: conv
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -779,10 +779,10 @@ describe('Conversation actions calls', () => {
 			const store = generateStore({
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
-					expandedStatus: conversations.reduce<Record<string, Status>>(
-						(result, conversation): Record<string, Status> => ({
+					expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
+						(result, conversation): Record<string, SearchRequestStatus> => ({
 							...result,
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						}),
 						{}
 					),
@@ -793,7 +793,7 @@ describe('Conversation actions calls', () => {
 							{}
 						)
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -847,13 +847,13 @@ describe('Conversation actions calls', () => {
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
-						[conv.id]: 'complete'
+						[conv.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conv.id]: conv
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -884,13 +884,13 @@ describe('Conversation actions calls', () => {
 				conversations: {
 					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
-						[conv.id]: 'complete'
+						[conv.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conv.id]: conv
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 

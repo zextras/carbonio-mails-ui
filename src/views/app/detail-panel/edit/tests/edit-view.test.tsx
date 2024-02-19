@@ -772,7 +772,7 @@ describe('Edit view', () => {
 							messages: {
 								[msg.id]: msg
 							},
-							status: {}
+							searchRequestStatus: null
 						}
 					});
 
@@ -841,7 +841,7 @@ describe('Edit view', () => {
 							messages: {
 								[msg.id]: msg
 							},
-							status: {}
+							searchRequestStatus: null
 						}
 					});
 
@@ -904,7 +904,7 @@ describe('Edit view', () => {
 							messages: {
 								[msg.id]: msg
 							},
-							status: {}
+							searchRequestStatus: null
 						}
 					});
 

@@ -19,7 +19,7 @@ import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../constants';
+import { API_REQUEST_STATUS, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../constants';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
@@ -57,7 +57,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -86,7 +86,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { ...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {}) },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -119,7 +119,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -150,7 +150,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -183,7 +183,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -215,7 +215,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -248,7 +248,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -280,7 +280,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -314,7 +314,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -347,7 +347,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -382,7 +382,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -415,7 +415,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -449,7 +449,7 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
@@ -476,7 +476,7 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
@@ -502,7 +502,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -533,7 +533,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -566,7 +566,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -602,7 +602,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -644,7 +644,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -702,7 +702,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: msgs,
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -759,7 +759,7 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
@@ -789,7 +789,7 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
@@ -817,7 +817,7 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
@@ -845,7 +845,7 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
@@ -873,7 +873,7 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
@@ -901,7 +901,7 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
@@ -929,7 +929,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -950,7 +950,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -982,7 +982,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -1018,7 +1018,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -1069,7 +1069,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -1101,7 +1101,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 

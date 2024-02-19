@@ -10,9 +10,10 @@ import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { API_REQUEST_STATUS } from '../../../../../constants';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateStore } from '../../../../../tests/generators/store';
-import type { Status } from '../../../../../types';
+import type { SearchRequestStatus } from '../../../../../types';
 import {
 	ConversationListComponent,
 	ConversationListComponentProps
@@ -76,10 +77,10 @@ describe.each`
 		const store = generateStore({
 			conversations: {
 				currentFolder: folderId,
-				expandedStatus: conversations.reduce<Record<string, Status>>(
-					(result, conversation): Record<string, Status> => ({
+				expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
+					(result, conversation): Record<string, SearchRequestStatus> => ({
 						...result,
-						[conversation.id]: 'complete'
+						[conversation.id]: API_REQUEST_STATUS.fulfilled
 					}),
 					{}
 				),
@@ -90,7 +91,7 @@ describe.each`
 						{}
 					)
 				},
-				status: 'complete'
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 

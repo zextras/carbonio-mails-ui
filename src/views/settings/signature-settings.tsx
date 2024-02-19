@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement, useRef } from 'react';
 
 import {
 	Container,
@@ -37,8 +37,10 @@ const Signature = styled(Row)`
 	display: block;
 	border-radius: 0;
 	cursor: pointer;
+
 	&:hover {
 		background-color: ${({ theme }): string => theme.palette.gray6.focus};
+
 		& ${DeleteButton} {
 			display: flex;
 		}
@@ -50,6 +52,13 @@ const EditorWrapper = styled.div`
 	overflow-y: auto;
 	position: relative;
 `;
+
+/**
+ * Temporary type narrowed to the only properties/methods used in this context
+ */
+type EditorType = {
+	hasFocus: () => boolean;
+};
 
 const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	updatedIdentities,
@@ -64,6 +73,15 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
 	const [signaturesLoaded, setSignaturesLoaded] = useState(false);
+	const editorRef = useRef<{ editor: EditorType | undefined }>({
+		editor: undefined
+	});
+
+	const getEditor = (): EditorType | undefined => editorRef.current.editor;
+
+	const setEditor = (editor: EditorType): void => {
+		editorRef.current.editor = editor;
+	};
 
 	// Fetches signatures from the BE
 	useEffect(() => {
@@ -98,7 +116,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		if (signatures?.length && !currentSignature) {
 			setCurrentSignature(signatures[0]);
 		}
-	}, [currentSignature, signatures]);
+	}, [currentSignature, setCurrentSignature, signatures]);
 
 	// Creates an empty signature
 	const createEmptySignature = useCallback(
@@ -196,13 +214,91 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		[currentSignature]
 	);
 
-	const composerCustomOptions = useMemo(
-		() => ({
-			auto_focus: false,
-			content_style: 'p { margin: 0; }'
-		}),
-		[]
+	const onSignatureNameChange = useCallback(
+		(ev: React.ChangeEvent<HTMLInputElement>): void => {
+			if (!currentSignature) {
+				return;
+			}
+			const newName = ev.target.value;
+			if (currentSignature?.name === newName) {
+				return;
+			}
+
+			setCurrentSignature(
+				(current) =>
+					({
+						...current,
+						name: newName,
+						label: newName
+					} as SignItemType)
+			);
+
+			const updatedSignatures = signatures.map((signature) => {
+				if (signature.id === currentSignature?.id) {
+					return {
+						...signature,
+						label: newName,
+						name: newName
+					};
+				}
+				return signature;
+			});
+
+			setDisabled(false);
+			setSignatures(updatedSignatures);
+		},
+		[currentSignature, setCurrentSignature, setDisabled, setSignatures, signatures]
 	);
+
+	const onSignatureContentChange = useCallback(
+		(ev: [string, string]): void => {
+			if (!getEditor()?.hasFocus()) {
+				return;
+			}
+
+			if (currentSignature === undefined) {
+				return;
+			}
+
+			// Rich text signature
+			const newDescription = ev[1];
+
+			if (currentSignature?.description === newDescription) {
+				return;
+			}
+			setCurrentSignature(
+				(current) =>
+					({
+						...current,
+						description: newDescription
+					} as SignItemType)
+			);
+
+			const updatedSign = signatures.map((signature) => {
+				if (signature.id === currentSignature?.id && signature.description !== newDescription) {
+					return {
+						...signature,
+						description: newDescription
+					};
+				}
+				return signature;
+			});
+
+			setDisabled(false);
+			setSignatures(updatedSign);
+		},
+		[currentSignature, setCurrentSignature, setDisabled, setSignatures, signatures]
+	);
+
+	const onEditorInitialization = (editor: EditorType): void => {
+		setEditor(editor);
+	};
+
+	const composerCustomOptions = {
+		auto_focus: false,
+		content_style: 'p { margin: 0; }',
+		init_instance_callback: onEditorInitialization
+	};
 
 	return (
 		<>
@@ -242,38 +338,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								value={currentSignature?.name ?? ''}
 								disabled={editingDisabled}
 								backgroundColor="gray5"
-								onChange={(ev: React.ChangeEvent<HTMLInputElement>): void => {
-									if (!currentSignature) {
-										return;
-									}
-									const newName = ev.target.value;
-									if (currentSignature.name === newName) {
-										return;
-									}
-
-									setCurrentSignature(
-										(current) =>
-											({
-												...current,
-												name: newName,
-												label: newName
-											} as SignItemType)
-									);
-
-									const updatedSign = signatures.map((signature) => {
-										if (signature.id === currentSignature.id) {
-											return {
-												...signature,
-												label: newName,
-												name: newName
-											};
-										}
-										return signature;
-									});
-
-									setDisabled(false);
-									setSignatures(updatedSign);
-								}}
+								onChange={onSignatureNameChange}
 							/>
 						</Container>
 						<Padding all="small" />
@@ -286,41 +351,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 									value={currentSignature?.description ?? ''}
 									customInitOptions={composerCustomOptions}
 									disabled={editingDisabled}
-									onEditorChange={(ev: [string, string]): void => {
-										if (currentSignature === undefined) {
-											return;
-										}
-
-										// Rich text signature
-										const newDescription = ev[1];
-
-										if (currentSignature?.description === newDescription) {
-											return;
-										}
-										setCurrentSignature(
-											(current) =>
-												({
-													...current,
-													description: newDescription
-												} as SignItemType)
-										);
-
-										const updatedSign = signatures.map((signature) => {
-											if (
-												signature.id === currentSignature?.id &&
-												signature.description !== newDescription
-											) {
-												return {
-													...signature,
-													description: newDescription
-												};
-											}
-											return signature;
-										});
-
-										setDisabled(false);
-										setSignatures(updatedSign);
-									}}
+									onEditorChange={onSignatureContentChange}
 								/>
 							</EditorWrapper>
 						)}

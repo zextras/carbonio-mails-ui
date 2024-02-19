@@ -4,10 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ContainerProps } from '@zextras/carbonio-design-system';
 import React, { ReactNode } from 'react';
+
+import { ContainerProps } from '@zextras/carbonio-design-system';
+
 import { Conversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
+import { SearchRequestStatus } from '../state';
 import { TextReadValuesProps } from '../utils';
 
 export type FolderType = {
@@ -98,7 +101,7 @@ export type CustomListItem = Partial<MailMessage> & { id: string; isSearchModule
 
 export type ConversationMessagesListProps = {
 	active: string;
-	conversationStatus: string | undefined;
+	conversationStatus: SearchRequestStatus | undefined;
 	messages: Array<IncompleteMessage>;
 	folderId: string;
 	length: number;
