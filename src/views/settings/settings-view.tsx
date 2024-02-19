@@ -46,7 +46,7 @@ const SettingsView: FC = () => {
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	const [settingsObj, setSettingsObj] = useState<PrefsType>({ ...prefs });
+	const [settingsObj, setSettingsObj] = useState<AccountSettingsPrefs>({ ...prefs });
 	const [updatedSettings, setUpdatedSettings] = useState({});
 	const originalProps = useMemo(
 		() =>
@@ -271,7 +271,6 @@ const SettingsView: FC = () => {
 					});
 				}
 			});
-			return Promise.allSettled([Promise.resolve()]);
 		}
 
 		if (Object.keys(settingsToUpdate).length > 0) {

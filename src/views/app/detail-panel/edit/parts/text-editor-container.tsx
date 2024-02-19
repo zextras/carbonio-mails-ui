@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -52,7 +52,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 
 	const composerCustomOptions = {
 		toolbar_sticky: true,
-		ui_mode: 'split'
+		ui_mode: 'split',
+		content_style: 'p { margin: 0; }'
 	};
 
 	return (
@@ -80,10 +81,12 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									onEditorChange={(ev: [string, string]): void => {
 										if (isFirstChangeEventFired)
 											onTextChanged({ plainText: ev[0], richText: ev[1] });
-										setIsFirstChangeEventFired(true);
 									}}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
+									onFocus={(): void => {
+										if (!isFirstChangeEventFired) setIsFirstChangeEventFired(true);
+									}}
 								/>
 							</StyledComp.EditorWrapper>
 						</Container>

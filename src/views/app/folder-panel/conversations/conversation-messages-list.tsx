@@ -11,6 +11,7 @@ import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
 
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, ConversationMessagesListProps } from '../../../../types';
 import { MessageListItem } from '../messages/message-list-item';
@@ -94,7 +95,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 			]
 		);
 
-		if (conversationStatus !== 'complete') {
+		if (conversationStatus !== API_REQUEST_STATUS.fulfilled) {
 			return (
 				<Container height={64 * length}>
 					<Button loading disabled label="" type="ghost" onClick={noop} />
