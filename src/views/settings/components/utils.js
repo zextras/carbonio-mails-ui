@@ -14,8 +14,13 @@ export const differenceObject = (object, base) => {
 	function changes(object, base) {
 		return transform(object, (result, value, key) => {
 			if (!isEqual(value, base[key])) {
-				// eslint-disable-next-line no-param-reassign
-				result[key] = isObject(value) && isObject(base[key]) ? changes(value, base[key]) : value;
+				if (key === 'zimbraPrefMailTrustedSenderList') {
+					// eslint-disable-next-line no-param-reassign
+					result[key] = value;
+				} else {
+					// eslint-disable-next-line no-param-reassign
+					result[key] = isObject(value) && isObject(base[key]) ? changes(value, base[key]) : value;
+				}
 			}
 		});
 	}

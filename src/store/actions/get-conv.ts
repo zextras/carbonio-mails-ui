@@ -6,6 +6,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
+
+import { API_REQUEST_STATUS } from '../../constants';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type {
@@ -42,8 +44,8 @@ export const getConv = createAsyncThunk<
 		condition: ({ folderId, conversationId }: GetConvParameters, { getState }: any) => {
 			if (!folderId) return true;
 			return (
-				getState().conversations?.expandedStatus[conversationId] !== 'complete' &&
-				getState().conversations?.expandedStatus[conversationId] !== 'pending'
+				getState().conversations?.expandedStatus[conversationId] !== API_REQUEST_STATUS.fulfilled &&
+				getState().conversations?.expandedStatus[conversationId] !== API_REQUEST_STATUS.pending
 			);
 		}
 	}

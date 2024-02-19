@@ -29,7 +29,9 @@
         "edit_anyway": "Yine de düzenle",
         "mark_all_read": "Tümünü okundu olarak işaretle",
         "click_open": "Açmak için tıklayın",
-        "preview_on_separated_window": "Yeni pencerede aç"
+        "preview_on_separated_window": "Yeni pencerede aç",
+        "apply_filter_on_folder": "Klasöre filtre uygula",
+        "select_folders": "Klasörleri seçin"
     },
     "composer": {
         "attachment": {
@@ -352,7 +354,8 @@
         "missing_sender": "mesajın göndericisi ayarlanmadı",
         "no_sender": "mesajın göndericisi ayarlanmadı",
         "upload_failed": "Yükleme başarısız",
-        "no_identity_selected": "<No identity selected>"
+        "no_identity_selected": "<No identity selected>",
+        "no_folder_selected": "Hiçbir klasör seçilmedi"
     },
     "share": {
         "options": {
@@ -466,7 +469,10 @@
             "tag_created": "{{name}} etiketi başarıyla oluşturuldu",
             "tag_deleted": "{{name}} Etiketi başarıyla silindi",
             "tag_not_updated": "Bir hata oluştu, bu etiket güncellenemedi. Lütfen tekrar deneyin.",
-            "message_sending_aborted": "kullanıcı tarafından iptal edildi"
+            "message_sending_aborted": "kullanıcı tarafından iptal edildi",
+            "apply_filter_rules_error": "'{{filterName}}' filtresi uygulanırken bir hata oluştu",
+            "apply_filter_rules_started": "'{{filterName}}' filtresi, '{{folderPath}}' klasörünün iletilerine uygulanıyor",
+            "apply_filter_rules_completed": "'{{filterName}}' filtresi, '{{folderPath}}' klasörünün {{involvedMessagesCount}} iletilerine başarıyla uygulandı"
         },
         "invalid_address": "Şu adres geçersiz görünüyor",
         "invalid_address_plural": "Şu adres geçersiz görünüyor",
@@ -707,7 +713,8 @@
         "filters": "Filtreler",
         "incoming_msg_filters": "Gelen Mesaj Filtreleri",
         "outgoing_message_filters": "Giden Mesaj Filtreleri",
-        "run": "Çalıştır"
+        "run": "Çalıştır",
+        "apply": "Uygula"
     },
     "board": {
         "show": "Panoyu göster"
@@ -829,5 +836,13 @@
         "compose_colin": "Oluştur:"
     },
     "go_back": "Geriye git",
-    "messages,new_email": "yeni e-posta"
+    "messages,new_email": "yeni e-posta",
+    "modals": {
+        "apply_filters": {
+            "button_apply": "Uygula",
+            "label_confirm_request": "Filtreyi uygulamak istiyor musunuz?",
+            "label_involved_messages": "<0>{{involvedMessagesCount}} iletileri</0> seçilen klasör içinde işlenecektir.",
+            "title": "Uygulama filtresi \"{{filterName}}\""
+        }
+    }
 }

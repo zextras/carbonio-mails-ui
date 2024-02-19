@@ -33,6 +33,7 @@ import styled from 'styled-components';
 import { ConversationMessagesList } from './conversation-messages-list';
 import { getFolderParentId } from './utils';
 import { participantToString } from '../../../../commons/utils';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
@@ -137,8 +138,8 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 				setOpen((currentlyOpen) => {
 					if (
 						!currentlyOpen &&
-						conversationStatus !== 'complete' &&
-						conversationStatus !== 'pending'
+						conversationStatus !== API_REQUEST_STATUS.fulfilled &&
+						conversationStatus !== API_REQUEST_STATUS.pending
 					) {
 						dispatch(searchConv({ folderId: folderParent, conversationId: item.id, fetch: 'all' }));
 					}

@@ -12,6 +12,7 @@ import { noop, times } from 'lodash';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { API_REQUEST_STATUS } from '../../../../../constants';
 import { FOLDERS_DESCRIPTORS, VISIBILITY_ASSERTION } from '../../../../../tests/constants';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
@@ -46,13 +47,13 @@ describe.each`
 				conversations: {
 					currentFolder: folderId,
 					expandedStatus: {
-						[conversation.id]: 'complete'
+						[conversation.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conversation.id]: conversation
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -94,13 +95,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -146,13 +147,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -201,13 +202,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -257,13 +258,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -311,13 +312,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -365,13 +366,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -412,13 +413,13 @@ describe.each`
 				conversations: {
 					currentFolder: folderId,
 					expandedStatus: {
-						[conversation.id]: 'complete'
+						[conversation.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conversation.id]: conversation
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -453,13 +454,13 @@ describe.each`
 				conversations: {
 					currentFolder: folderId,
 					expandedStatus: {
-						[conversation.id]: 'complete'
+						[conversation.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conversation.id]: conversation
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -488,13 +489,13 @@ describe.each`
 				conversations: {
 					currentFolder: folderId,
 					expandedStatus: {
-						[conversation.id]: 'complete'
+						[conversation.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conversation.id]: conversation
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -524,13 +525,13 @@ describe.each`
 			conversations: {
 				currentFolder: folderId,
 				expandedStatus: {
-					[conversation.id]: 'complete'
+					[conversation.id]: API_REQUEST_STATUS.fulfilled
 				},
 				searchedInFolder: {},
 				conversations: {
 					[conversation.id]: conversation
 				},
-				status: 'complete'
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 

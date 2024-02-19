@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, FC, useState, useCallback, useEffect } from 'react';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
+
 import {
 	Container,
 	Input,
@@ -16,19 +17,19 @@ import {
 	Row
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, find } from 'lodash';
+import { filter, find, map } from 'lodash';
+
 import Heading from './components/settings-heading';
-import { domainWhitelistSubSection } from './subsections';
 import TrusteeListItem from './components/trustee-list-item';
 import LoadingShimmer from './filters/parts/loading-shimmer';
+import { domainWhitelistSubSection } from './subsections';
 import type { InputProps } from '../../types';
 
 const NonSupportedCharacters = /[!#$%^&*()+=[\]{};':"\\|,<>/?|/^\s*$/]+/;
-const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
+const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JSX.Element => {
 	const [address, setAddress] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 	const [trusteeAddressesList, setTrusteeAddressList] = useState<string[]>([]);
-
 	const sectionTitle = useMemo(() => domainWhitelistSubSection(), []);
 	const message = useMemo(
 		() =>
@@ -87,6 +88,16 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 		[isInvalid]
 	);
 
+	const trusteeAddressesListItems = useMemo(
+		() =>
+			map(trusteeAddressesList, (el) => ({
+				id: el,
+				value: el,
+				label: el
+			})),
+		[trusteeAddressesList]
+	);
+
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
 			<Container orientation="horizontal" padding={{ horizontal: 'medium', top: 'medium' }}>
@@ -133,9 +144,10 @@ const TrusteeAddresses: FC<InputProps> = ({ settingsObj, updateSettings }) => {
 					<LoadingShimmer />
 				) : (
 					<List
-						items={trusteeAddressesList}
+						items={trusteeAddressesListItems}
 						ItemComponent={TrusteeListItem}
 						itemProps={{ onRemove }}
+						data-testid={'trustee-list'}
 					/>
 				)}
 			</Container>

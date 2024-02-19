@@ -11,10 +11,14 @@ import { useParams } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from './redux';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
+import { LIST_LIMIT } from '../constants';
 import { parseMessageSortingOptions } from '../helpers/sorting';
 import { search } from '../store/actions';
-import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
-import type { Conversation, MailsStateType } from '../types';
+import {
+	selectConversationsArray,
+	selectConversationsSearchRequestStatus
+} from '../store/conversations-slice';
+import type { Conversation } from '../types';
 
 type RouteParams = {
 	folderId: string;
@@ -25,9 +29,7 @@ export const useConversationListItems = (): Array<Conversation> => {
 	const dispatch = useAppDispatch();
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
-	const folderStatus = useAppSelector((state: MailsStateType) =>
-		selectFolderSearchStatus(<MailsStateType>state, folderId)
-	);
+	const searchRequestStatus = useAppSelector(selectConversationsSearchRequestStatus);
 	const conversations = useAppSelector(selectConversationsArray);
 	const folder = getFolder(folderId);
 
@@ -55,10 +57,16 @@ export const useConversationListItems = (): Array<Conversation> => {
 	);
 	// this useEffect is used to trigger the search action when the folder is changed
 	useEffect(() => {
-		if (folderStatus !== 'complete' && folderStatus !== 'pending') {
-			dispatch(search({ folderId, limit: 101, sortBy: sortOrder, types: 'conversation' }));
-		}
-	}, [dispatch, folderId, folderStatus, sortOrder]);
+		if (searchRequestStatus !== null) return;
+		dispatch(
+			search({
+				folderId,
+				limit: LIST_LIMIT.INITIAL_LIMIT,
+				sortBy: sortOrder,
+				types: 'conversation'
+			})
+		);
+	}, [dispatch, folderId, searchRequestStatus, sortOrder]);
 
 	return sortedConversations;
 };

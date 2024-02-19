@@ -101,13 +101,14 @@ export type MessageListComponentProps = {
 	// the ref to the item being dragged
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 	listRef?: React.RefObject<HTMLDivElement>;
+	hasMore?: boolean;
 };
 
 export const MessageListComponent: FC<MessageListComponentProps> = memo(
 	function MessageListComponent({
 		displayerTitle,
 		listItems,
-		loadMore,
+		loadMore = noop,
 		totalMessages,
 		messagesLoadingCompleted,
 		selectedIds,
@@ -124,13 +125,14 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		selectAllModeOff,
 		setIsSelectModeOn,
 		dragImageRef,
+		hasMore,
 		listRef
 	}) {
 		useEffect(() => {
 			setDraggedIds && setDraggedIds(selected);
 		}, [selected, setDraggedIds]);
 
-		const folder = useFolder(folderId?.toString());
+		const folder = useFolder(folderId);
 		const showBreadcrumbs = useMemo(
 			() =>
 				!isSearchModule ||
@@ -177,7 +179,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 				)}
 				{messagesLoadingCompleted ? (
 					<>
-						{totalMessages > 0 ? (
+						{totalMessages > 0 || hasMore ? (
 							<CustomList
 								onListBottom={onListBottom}
 								data-testid={`message-list-${folderId}`}

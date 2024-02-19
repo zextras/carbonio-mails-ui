@@ -22,19 +22,22 @@ import {
 	handleModifiedConversationsReducer,
 	handleModifiedMessagesInConversationReducer
 } from './sync/conversation';
+import { API_REQUEST_STATUS, SEARCHED_FOLDER_STATE_STATUS } from '../constants';
 import type {
-	ConversationsFolderStatus,
 	ConversationsStateType,
 	MailsStateType,
 	FetchConversationsReturn,
 	ConvMessage,
 	ConvActionParameters,
 	ConvActionResult,
-	Conversation
+	Conversation,
+	SearchRequestStatus
 } from '../types';
 
-function fetchConversationsPending(state: ConversationsStateType): void {
-	state.status = 'pending';
+function fetchConversationsPending(state: ConversationsStateType, { payload, meta }: any): void {
+	if (meta?.arg?.types === 'conversation') {
+		state.searchRequestStatus = meta.requestStatus;
+	}
 }
 
 function fetchConversationsFulfilled(
@@ -42,6 +45,7 @@ function fetchConversationsFulfilled(
 	{ payload, meta }: { payload: FetchConversationsReturn | undefined; meta: any }
 ): void {
 	if (payload?.types === 'conversation' && payload?.conversations) {
+		state.searchRequestStatus = meta.requestStatus;
 		const newConversationsState =
 			payload.offset && payload.offset > 0
 				? { ...state.conversations, ...payload.conversations }
@@ -49,23 +53,26 @@ function fetchConversationsFulfilled(
 		state.conversations = newConversationsState;
 		state.searchedInFolder = {
 			...state.searchedInFolder,
-			[meta.arg.folderId]: 'complete'
+			[meta.arg.folderId]: payload?.hasMore
+				? SEARCHED_FOLDER_STATE_STATUS.hasMore
+				: SEARCHED_FOLDER_STATE_STATUS.complete
 		};
 		state.expandedStatus = {};
 	}
-	state.status = payload?.hasMore ? 'hasMore' : 'complete';
 }
 
-function fetchConversationsRejected(state: ConversationsStateType, { meta }: { meta: any }): void {
-	state.status = 'error';
-	state.searchedInFolder = {
-		...state.searchedInFolder,
-		[meta.arg.folderId]: 'incomplete'
-	};
+function fetchConversationsRejected(state: ConversationsStateType, { payload, meta }: any): void {
+	if (payload?.types === 'conversation' && payload?.conversations) {
+		state.searchRequestStatus = meta.requestStatus;
+		state.searchedInFolder = {
+			...state.searchedInFolder,
+			[meta.arg.folderId]: SEARCHED_FOLDER_STATE_STATUS.incomplete
+		};
+	}
 }
 
 function searchConvFulfilled(state: ConversationsStateType, { payload, meta }: any): void {
-	state.expandedStatus[meta.arg.conversationId] = 'complete';
+	state.expandedStatus[meta.arg.conversationId] = meta.requestStatus;
 	const conversation = state.conversations[meta.arg.conversationId];
 	if (conversation) {
 		conversation.messages = reduce(
@@ -77,11 +84,11 @@ function searchConvFulfilled(state: ConversationsStateType, { payload, meta }: a
 }
 
 function searchConvPending(state: ConversationsStateType, { meta }: any): void {
-	state.expandedStatus[meta.arg.conversationId] = 'pending';
+	state.expandedStatus[meta.arg.conversationId] = meta.requestStatus;
 }
 
 function searchConvRejected(state: ConversationsStateType, { meta }: any): void {
-	state.expandedStatus[meta.arg.conversationId] = 'error';
+	state.expandedStatus[meta.arg.conversationId] = meta.requestStatus;
 }
 
 function convActionPending(
@@ -155,19 +162,19 @@ function getConvFulfilled(state: ConversationsStateType, { payload }: any): void
 	const conv = payload.conversation;
 	if (conv?.id && state.conversations?.[conv.id]) {
 		state.conversations[conv.id] = merge(state.conversations[conv.id], conv);
-		state.expandedStatus[conv.id] = 'complete';
+		state.expandedStatus[conv.id] = API_REQUEST_STATUS.fulfilled;
 	} else if (conv?.id && !state.conversations?.[conv.id]) {
 		state.conversations[conv.id] = conv;
-		state.expandedStatus[conv.id] = 'complete';
+		state.expandedStatus[conv.id] = API_REQUEST_STATUS.fulfilled;
 	}
 }
 
 function getConvPending(state: ConversationsStateType, { meta }: any): void {
-	state.expandedStatus[meta.arg.conversationId] = 'pending';
+	state.expandedStatus[meta.arg.conversationId] = meta.requestStatus;
 }
 
 function getConvRejected(state: ConversationsStateType, { meta }: any): void {
-	state.expandedStatus[meta.arg.conversationId] = 'error';
+	state.expandedStatus[meta.arg.conversationId] = meta.requestStatus;
 }
 
 export const getConversationsSliceInitialState = (): ConversationsStateType =>
@@ -176,7 +183,7 @@ export const getConversationsSliceInitialState = (): ConversationsStateType =>
 		conversations: {},
 		expandedStatus: {},
 		searchedInFolder: {},
-		status: 'empty'
+		searchRequestStatus: null
 	} as ConversationsStateType);
 
 export const conversationsSlice = createSlice({
@@ -226,23 +233,19 @@ const selectConversationsSlice = (state: MailsStateType): MailsStateType['conver
 
 export function selectCurrentFolderExpandedStatus({
 	conversations
-}: MailsStateType): Record<string, string> {
+}: MailsStateType): Record<string, SearchRequestStatus> {
 	return conversations.expandedStatus;
 }
 
 export function selectConversationExpandedStatus(
 	{ conversations }: MailsStateType,
 	id: string
-): 'pending' | 'error' | 'complete' | undefined {
+): SearchRequestStatus | undefined {
 	return conversations?.expandedStatus?.[id];
 }
 
 export function selectCurrentFolder({ conversations }: MailsStateType): string {
 	return conversations?.currentFolder;
-}
-
-export function selectConversationStatus(state: MailsStateType): ConversationsFolderStatus {
-	return state.conversations.status;
 }
 
 export function selectSearchedFolder({ conversations }: MailsStateType, id: string): string {
@@ -258,9 +261,13 @@ export const selectConversation =
 	({ conversations }: MailsStateType): Conversation =>
 		conversations?.conversations?.[id] ?? {};
 
-export function selectFolderSearchStatus(
-	{ conversations }: MailsStateType,
-	folderId: string
-): string | undefined {
-	return conversations?.searchedInFolder?.[folderId] ?? undefined;
+export const selectFolderSearchStatus =
+	(folderId: string) =>
+	({ conversations }: MailsStateType): string | undefined =>
+		conversations?.searchedInFolder?.[folderId];
+
+export function selectConversationsSearchRequestStatus(
+	state: MailsStateType
+): MailsStateType['conversations']['searchRequestStatus'] {
+	return state?.conversations?.searchRequestStatus;
 }

@@ -9,6 +9,7 @@ import { Container, Shimmer } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 
 import { ConversationMessagePreview } from './conversation-message-preview';
+import { API_REQUEST_STATUS } from '../../../constants';
 import { useAppSelector } from '../../../hooks/redux';
 import { selectCurrentFolderExpandedStatus } from '../../../store/conversations-slice';
 import type { Conversation } from '../../../types';
@@ -43,7 +44,7 @@ export const ConversationPreviewPanel = ({
 			mainAlignment="flex-start"
 		>
 			<Container height="fit" mainAlignment="flex-start" background="gray5">
-				{conversation && conversationStatus === 'complete' ? (
+				{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled ? (
 					<>
 						{map(conversation.messages, (message, index) =>
 							message ? (
