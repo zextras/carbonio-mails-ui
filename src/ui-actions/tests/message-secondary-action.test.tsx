@@ -265,7 +265,6 @@ describe('Secondary actions visibility', () => {
 			).toBe(assertion.value);
 		}
 	);
-
 	/**
 	 * 21. secondary actions for a message in any folder except spam contains the tag action
 	 */
@@ -284,7 +283,6 @@ describe('Secondary actions visibility', () => {
 			const msg = generateMessage({ folderId: folder.id });
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
-			const account = getUserAccount();
 			const secondaryActions = getMsgConvActions({
 				item: msg,
 				dispatch,
@@ -296,6 +294,38 @@ describe('Secondary actions visibility', () => {
 			expect(existsActionById({ id: action, actions: secondaryActions, type: 'secondary' })).toBe(
 				assertion.value
 			);
+		}
+	);
+
+	/**
+	 * 22. secondary actions for a message in any folder except spam contains the download EML action
+	 */
+	test.each`
+		case  | folder                  | assertion                | action
+		${22} | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${22} | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${22} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${22} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${22} | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${22} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DOWNLOAD_EML}
+	`(
+		`(case #$case) secondary actions for a message in $folder.desc folder $assertion.desc the $action.desc action`,
+		async ({ folder, assertion, action }) => {
+			const createWindow = jest.fn();
+			const msg = generateMessage({ folderId: folder.id });
+			const dispatch = jest.fn();
+			const deselectAll = jest.fn();
+			const secondaryActions = getMsgConvActions({
+				item: msg,
+				dispatch,
+				deselectAll,
+				tags,
+				createWindow,
+				messageActionsForExtraWindow: []
+			});
+			expect(
+				existsActionById({ id: action.id, actions: secondaryActions, type: 'secondary' })
+			).toBe(assertion.value);
 		}
 	);
 });

@@ -11,6 +11,7 @@ import {
 	getAddRemoveFlagAction,
 	getApplyTagAction,
 	getDeletePermanentlyAction,
+	getDownloadEmlAction,
 	getEditAsNewAction,
 	getEditDraftAction,
 	getForwardAction,
@@ -91,6 +92,7 @@ export function getMsgConvActions({
 	const folderExcludedEditAsNew = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const folderIncludedSendDraft = [FOLDERS.DRAFTS];
 	const folderExcludedRedirect = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+	const folderExcludedDownloadEML = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 
 	const addRemoveFlagAction = getAddRemoveFlagAction({
 		isConversation: isConv,
@@ -231,6 +233,14 @@ export function getMsgConvActions({
 		messageActions: messageActionsForExtraWindow
 	});
 
+	const downloadEmlAction = getDownloadEmlAction({
+		isConversation: isConv,
+		id,
+		folderId,
+		folderExcludedDownloadEML,
+		subject: item.subject
+	});
+
 	/**
 	 * Primary actions are the ones that are shown when the user hovers over a message
 	 * @returns an array of arrays of actions
@@ -271,7 +281,8 @@ export function getMsgConvActions({
 		redirectAction,
 		editDraftAction,
 		editAsNewAction,
-		showOriginalAction
+		showOriginalAction,
+		downloadEmlAction
 	].reduce((acc: Array<Exclude<ActionReturnType, false>>, action) => {
 		if (action) {
 			acc.push(action);

@@ -263,6 +263,10 @@ export const MessageActionsDescriptors = {
 	PREVIEW_ON_SEPARATED_WINDOW: {
 		id: 'preview-on-separated-window',
 		desc: 'Preview the message on a separated window'
+	},
+	DOWNLOAD_EML: {
+		id: 'download-eml',
+		desc: 'Download EML'
 	}
 } as const;
 
