@@ -16,6 +16,7 @@ import type { AppContext, MailMessage, MessageAction } from '../types';
 import {
 	deleteMessagePermanently,
 	deleteMsg,
+	downloadEml,
 	editAsNewMsg,
 	editDraft,
 	forwardMsg,
@@ -132,6 +133,7 @@ export const useMessageActions = (
 		!isInsideExtraWindow &&
 			actions.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }));
 		actions.push(showOriginalMsg({ id: message.id }));
+		actions.push(downloadEml({ id: message.id }));
 	}
 
 	if (message.parent === FOLDERS.TRASH) {
@@ -169,6 +171,7 @@ export const useMessageActions = (
 		actions.push(
 			previewMessageOnSeparatedWindow(message.id, folderId, message.subject, createWindow, actions)
 		);
+	actions.push(downloadEml({ id: message.id }));
 
 	return actions;
 };
