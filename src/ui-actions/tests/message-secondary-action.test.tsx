@@ -154,7 +154,7 @@ describe('Secondary actions visibility', () => {
 				deselectAll,
 				tags,
 				createWindow,
-				messageActions: []
+				messageActionsForExtraWindow: []
 			});
 			expect(
 				existsActionById({ id: action.id, actions: secondaryActions, type: 'secondary' })
@@ -206,7 +206,7 @@ describe('Secondary actions visibility', () => {
 				deselectAll,
 				tags: {},
 				createWindow,
-				messageActions: []
+				messageActionsForExtraWindow: []
 			});
 			expect(
 				existsActionById({ id: action.id, actions: secondaryActions, type: 'secondary' })
@@ -258,7 +258,7 @@ describe('Secondary actions visibility', () => {
 				deselectAll,
 				tags: {},
 				createWindow,
-				messageActions: []
+				messageActionsForExtraWindow: []
 			});
 			expect(
 				existsActionById({ id: action.id, actions: secondaryActions, type: 'secondary' })
@@ -291,7 +291,7 @@ describe('Secondary actions visibility', () => {
 				deselectAll,
 				tags,
 				createWindow,
-				messageActions: []
+				messageActionsForExtraWindow: []
 			});
 			expect(existsActionById({ id: action, actions: secondaryActions, type: 'secondary' })).toBe(
 				assertion.value

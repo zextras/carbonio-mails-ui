@@ -45,7 +45,7 @@ describe('Actions visibility', () => {
 					deselectAll,
 					tags: {},
 					createWindow,
-					messageActions: []
+					messageActionsForExtraWindow: []
 				});
 				expect(existsActionById({ id: action.id, actions })).toBe(assertion.value);
 			}
@@ -99,7 +99,7 @@ describe('Actions visibility', () => {
 					deselectAll,
 					tags: {},
 					createWindow,
-					messageActions: []
+					messageActionsForExtraWindow: []
 				});
 				expect(existsActionById({ id: action.id, actions })).toBe(assertion.value);
 			}
@@ -153,7 +153,7 @@ describe('Actions visibility', () => {
 					deselectAll,
 					tags: {},
 					createWindow,
-					messageActions: []
+					messageActionsForExtraWindow: []
 				});
 				expect(existsActionById({ id: action.id, actions })).toBe(assertion.value);
 			}

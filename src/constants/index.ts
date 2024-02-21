@@ -457,3 +457,5 @@ export const SEARCHED_FOLDER_STATE_STATUS = {
 	error: 'error',
 	incomplete: 'incomplete'
 } as const;
+
+export const EXTRA_WINDOW_ACTION_ID = 'extraWindowActions';

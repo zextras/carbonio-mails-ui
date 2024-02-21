@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom';
 
 import { useAppDispatch } from './redux';
 import { useSelection } from './use-selection';
+import { EXTRA_WINDOW_ACTION_ID } from '../constants';
 import type { AppContext, MailMessage, MessageAction } from '../types';
 import {
 	deleteMessagePermanently,
@@ -58,7 +59,7 @@ export const useMessageActions = (
 		[]
 	);
 	const tags = useTags();
-	const actions = [];
+	const actions: Array<MessageAction> = [{ id: EXTRA_WINDOW_ACTION_ID }];
 
 	if (!message) {
 		return [];

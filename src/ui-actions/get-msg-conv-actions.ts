@@ -43,7 +43,7 @@ type GetMessageActionsProps = {
 	deselectAll: () => void;
 	tags: Tags;
 	createWindow: ExtraWindowsContextType['createWindow'];
-	messageActions: Array<MessageAction>;
+	messageActionsForExtraWindow: Array<MessageAction>;
 };
 
 export type MsgConvActionsReturnType = [
@@ -57,7 +57,7 @@ export function getMsgConvActions({
 	deselectAll,
 	tags,
 	createWindow,
-	messageActions
+	messageActionsForExtraWindow
 }: GetMessageActionsProps): MsgConvActionsReturnType {
 	const isConv = isConversation(item);
 	const folderId = getParentFolderId(item);
@@ -228,7 +228,7 @@ export function getMsgConvActions({
 		folderId,
 		subject: item.subject,
 		createWindow,
-		messageActions
+		messageActions: messageActionsForExtraWindow
 	});
 
 	/**
