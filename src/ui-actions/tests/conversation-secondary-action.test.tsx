@@ -210,4 +210,33 @@ describe('Actions visibility', () => {
 			}
 		);
 	});
+	test.each`
+		case | folder                    | assertion                | action
+		${7} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${7} | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${7} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${7} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${7} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${7} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+	`(
+		`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
+		async ({ folder, assertion, action }) => {
+			const createWindow = jest.fn();
+			const conv = generateConversation({
+				folderId: folder.id,
+				messageGenerationCount: 5
+			});
+			const dispatch = jest.fn();
+			const deselectAll = jest.fn();
+			const actions = getMsgConvActions({
+				item: conv,
+				dispatch,
+				deselectAll,
+				tags: {},
+				createWindow,
+				messageActionsForExtraWindow: []
+			});
+			expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(assertion.value);
+		}
+	);
 });
