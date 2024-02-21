@@ -237,8 +237,7 @@ export function getMsgConvActions({
 		isConversation: isConv,
 		id,
 		folderId,
-		folderExcludedDownloadEML,
-		subject: item.subject
+		folderExcludedDownloadEML
 	});
 
 	/**

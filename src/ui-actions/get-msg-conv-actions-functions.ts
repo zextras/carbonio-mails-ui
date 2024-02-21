@@ -400,7 +400,6 @@ export function getShowOriginalAction({
 
 export function getDownloadEmlAction({
 	id,
-	subject,
 	folderId,
 	folderExcludedDownloadEML,
 	isConversation
@@ -409,9 +408,8 @@ export function getDownloadEmlAction({
 	folderId: string;
 	folderExcludedDownloadEML: string[];
 	isConversation: boolean;
-	subject?: string;
 }): ActionReturnType {
-	const action = isConversation ? false : downloadEml({ id, subject });
+	const action = isConversation ? false : downloadEml({ id });
 
 	return !folderExcludedDownloadEML.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }

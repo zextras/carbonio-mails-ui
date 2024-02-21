@@ -737,13 +737,7 @@ export function deleteMessagePermanently({
 	};
 }
 
-export function downloadEml({
-	id,
-	subject
-}: {
-	id: string;
-	subject?: string;
-}): MessageActionReturnType {
+export function downloadEml({ id }: { id: string }): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.DOWNLOAD_EML;
 
 	return {
