@@ -171,7 +171,6 @@ export const useMessageActions = (
 		actions.push(
 			previewMessageOnSeparatedWindow(message.id, folderId, message.subject, createWindow, actions)
 		);
-	actions.push(downloadEml({ id: message.id }));
 
 	return actions;
 };
