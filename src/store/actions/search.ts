@@ -44,7 +44,6 @@ export const search = createAsyncThunk<
 		const queryPart = [`inId:"${folderId}"`];
 		let finalsortBy = sortBy;
 		if (before) queryPart.push(`before:${before.getTime()}`);
-		// if (sortBy === 'readAsc') queryPart.push('is:unread');
 		switch (sortBy) {
 			case 'readAsc':
 				queryPart.push('is:unread');
