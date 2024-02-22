@@ -36,7 +36,7 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 	);
 
 	const actions = isExtraWindowActions
-		? messageActions.filter((action: MessageAction) => action.id !== 'extraWindowAction')
+		? messageActions.filter((action: MessageAction) => action.id !== EXTRA_WINDOW_ACTION_ID)
 		: uniqBy([...messageActions[0], ...messageActions[1]], 'id');
 
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
