@@ -35,6 +35,9 @@ export const ConversationPreviewPanel = ({
 		[convSortOrder, conversation.messages.length]
 	);
 
+	const messages =
+		convSortOrder === 'dateAsc' ? conversation.messages.slice().reverse() : conversation.messages;
+
 	return (
 		<Container
 			style={{ overflowY: 'auto' }}
@@ -46,7 +49,7 @@ export const ConversationPreviewPanel = ({
 			<Container height="fit" mainAlignment="flex-start" background="gray5">
 				{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled ? (
 					<>
-						{map(conversation.messages, (message, index) =>
+						{map(messages, (message, index) =>
 							message ? (
 								<ConversationMessagePreview
 									idPrefix={conversation.id}
