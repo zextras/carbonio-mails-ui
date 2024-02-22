@@ -92,7 +92,7 @@ export function getMsgConvActions({
 	const folderExcludedEditAsNew = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const folderIncludedSendDraft = [FOLDERS.DRAFTS];
 	const folderExcludedRedirect = [FOLDERS.DRAFTS, FOLDERS.TRASH];
-	const folderExcludedDownloadEML = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+	const folderExcludedDownloadEML = [FOLDERS.DRAFTS];
 
 	const addRemoveFlagAction = getAddRemoveFlagAction({
 		isConversation: isConv,

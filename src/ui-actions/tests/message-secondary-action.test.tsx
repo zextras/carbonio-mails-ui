@@ -305,7 +305,7 @@ describe('Secondary actions visibility', () => {
 		${22} | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DOWNLOAD_EML}
 		${22} | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DOWNLOAD_EML}
 		${22} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
-		${22} | ${FOLDERS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${22} | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DOWNLOAD_EML}
 		${22} | ${FOLDERS.SPAM}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DOWNLOAD_EML}
 		${22} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.DOWNLOAD_EML}
 	`(
