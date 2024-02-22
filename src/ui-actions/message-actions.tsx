@@ -742,7 +742,7 @@ export function downloadEml({ id }: { id: string }): MessageActionReturnType {
 
 	return {
 		id: actDescriptor.id,
-		icon: 'FileMessageOutline',
+		icon: 'DownloadOutline',
 		label: t('action.download_eml', 'Download EML'),
 		onClick: (ev): void => {
 			ev?.preventDefault();
