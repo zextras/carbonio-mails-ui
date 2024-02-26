@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback } from 'react';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 
 import { Container, Shimmer } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
@@ -35,8 +35,9 @@ export const ConversationPreviewPanel = ({
 		[convSortOrder, conversation.messages.length]
 	);
 
-	const messages =
-		convSortOrder === 'dateAsc' ? conversation.messages.slice().reverse() : conversation.messages;
+	const sortSign = useMemo(() => (convSortOrder === 'dateDesc' ? -1 : 1), [convSortOrder]);
+
+	const messages = conversation.messages.slice().sort((a, b) => sortSign * (a.date - b.date));
 
 	return (
 		<Container
