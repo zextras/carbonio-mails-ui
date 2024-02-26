@@ -100,7 +100,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 		deselectAll,
 		tags,
 		createWindow,
-		messageActions
+		messageActionsForExtraWindow: messageActions
 	});
 
 	const dropdownActionsItems = dropdownActions.map((action) => ({

@@ -11,10 +11,12 @@ import { useParams } from 'react-router-dom';
 
 import { useAppDispatch } from './redux';
 import { useSelection } from './use-selection';
+import { EXTRA_WINDOW_ACTION_ID } from '../constants';
 import type { AppContext, MailMessage, MessageAction } from '../types';
 import {
 	deleteMessagePermanently,
 	deleteMsg,
+	downloadEml,
 	editAsNewMsg,
 	editDraft,
 	forwardMsg,
@@ -58,7 +60,7 @@ export const useMessageActions = (
 		[]
 	);
 	const tags = useTags();
-	const actions = [];
+	const actions: Array<MessageAction> = [{ id: EXTRA_WINDOW_ACTION_ID }];
 
 	if (!message) {
 		return [];
@@ -131,6 +133,7 @@ export const useMessageActions = (
 		!isInsideExtraWindow &&
 			actions.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }));
 		actions.push(showOriginalMsg({ id: message.id }));
+		actions.push(downloadEml({ id: message.id }));
 	}
 
 	if (message.parent === FOLDERS.TRASH) {

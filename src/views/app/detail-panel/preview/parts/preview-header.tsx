@@ -61,7 +61,7 @@ import { getTimeLabel, participantToString } from '../../../../../commons/utils'
 import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
 import type { MailMessage, MessageAction } from '../../../../../types';
-import MailMsgPreviewActions from '../../../../../ui-actions/mail-message-preview-actions';
+import { MailMsgPreviewActions } from '../../../../../ui-actions/mail-message-preview-actions';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean }>`
