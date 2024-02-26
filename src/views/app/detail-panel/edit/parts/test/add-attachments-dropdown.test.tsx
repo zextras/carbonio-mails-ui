@@ -168,22 +168,6 @@ describe('AddAttachmentsDropdown', () => {
 
 	describe('Actions', () => {
 		describe('Add files from Files', () => {
-			it('should call the editor hook function to add an uploaded file', async () => {
-				const FILES_COUNT = 4;
-
-				generateFilesIntegrationMocks(FILES_COUNT);
-
-				const editor = generateNewMessageEditor(generateStore().dispatch);
-				setupEditorStore({ editors: [editor] });
-				const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
-				const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
-				await act(() => user.click(dropdownIcon));
-				await act(() => user.click(screen.getByText('composer.attachment.files')));
-
-				const updatedEditor = getEditor({ id: editor.id });
-				expect(updatedEditor?.unsavedAttachments).toHaveLength(FILES_COUNT);
-			});
-
 			it('should update the store with the uploaded attachments', async () => {
 				const FILES_COUNT = 4;
 				const { attachments } = generateFilesIntegrationMocks(FILES_COUNT);
@@ -196,6 +180,7 @@ describe('AddAttachmentsDropdown', () => {
 				await act(() => user.click(screen.getByText('composer.attachment.files')));
 
 				const updatedEditor = getEditor({ id: editor.id });
+				expect(updatedEditor?.unsavedAttachments).toHaveLength(FILES_COUNT);
 				const nodeIds = Object.keys(attachments);
 				forEach(nodeIds, (nodeId) => {
 					expect(
