@@ -25,6 +25,12 @@ import { AddAttachmentsDropdown } from '../add-attachments-dropdown';
 type FilesNode = { id: string; name: string; size: number; mime_type: string };
 type FilesUploadResult = { attachmentId: string };
 
+type SelectNodesFunction = ({
+	confirmAction
+}: {
+	confirmAction: (nodes: Array<FileNode>) => void;
+}) => void;
+
 const generateFilesIntegrationMocks = (
 	filesCount: number
 ): { nodes: Array<FilesNode>; attachments: Record<string, string> } => {
@@ -44,11 +50,7 @@ const generateFilesIntegrationMocks = (
 		{}
 	);
 
-	const selectNodes = ({
-		confirmAction
-	}: {
-		confirmAction: (nodes: Array<FileNode>) => void;
-	}): void => confirmAction(nodes);
+	const selectNodes: SelectNodesFunction = ({ confirmAction }): void => confirmAction(nodes);
 
 	const uploadToTarget = ({ nodeId }: { nodeId: string }): Promise<FilesUploadResult> =>
 		Promise.resolve({ attachmentId: attachments[nodeId] });
