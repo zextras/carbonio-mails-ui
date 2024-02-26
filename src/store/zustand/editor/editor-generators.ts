@@ -489,7 +489,6 @@ export const generateEditor = ({
 		case EditViewActions.COMPOSE:
 		case EditViewActions.PREFILL_COMPOSE:
 			return generateIntegratedNewEditor(messagesStoreDispatch, compositionData);
-			break;
 		default:
 			return null;
 	}
