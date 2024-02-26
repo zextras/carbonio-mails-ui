@@ -3,9 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { isEqualWith } from 'lodash';
 import { useMemo } from 'react';
+
+import { QueryChip } from '@zextras/carbonio-shell-ui';
+import { isEqual, sortBy } from 'lodash';
+
 import type { UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
+
+const isQueryArraysAreEqual = (newQuery: QueryChip[], currentQuery: QueryChip[]): boolean => {
+	if (newQuery.length === 0 && currentQuery.length === 0) return true;
+	const sortedNewQuery = sortBy(newQuery.map((item) => item.label));
+	const sortedCurrentQuery = sortBy(currentQuery.map((item) => item.label));
+	return isEqual(sortedNewQuery, sortedCurrentQuery);
+};
 
 export const useDisabled = ({
 	queryToBe,
@@ -17,11 +27,7 @@ export const useDisabled = ({
 		() =>
 			isSharedFolderIncluded !== isSharedFolderIncludedTobe
 				? false
-				: isEqualWith(queryToBe, query, (newQuery, currentQuery) => {
-						if (newQuery.length === 0 && currentQuery.length === 0) return true;
-						if (newQuery.length !== currentQuery.length) return false;
-						return newQuery[0].value === currentQuery[0].value;
-				  }),
+				: isQueryArraysAreEqual(queryToBe, query),
 		[isSharedFolderIncluded, isSharedFolderIncludedTobe, query, queryToBe]
 	);
 
