@@ -495,13 +495,3 @@ export const generateEditor = ({
 
 	return null;
 };
-//
-// export const useGenerateEditor = ({
-// 	action,
-// 	id,
-// 	compositionData
-// }: Omit<GenerateEditorParams, 'message' | 'messagesStoreDispatch'>): MailsEditorV2 | null => {
-// 	const messagesStoreDispatch = useAppDispatch();
-// 	const message = use;
-// 	return generateEditor({ action, id, messagesStoreDispatch, message });
-// };

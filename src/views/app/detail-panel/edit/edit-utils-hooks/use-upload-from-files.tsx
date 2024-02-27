@@ -8,32 +8,48 @@ import { useCallback } from 'react';
 import { getBridgedFunctions, t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 
-export const uploadToFiles = async (
-	node: { id: string },
-	uploadTo: (arg: { nodeId: string; targetModule: string }) => any
-): Promise<unknown> => uploadTo({ nodeId: node.id, targetModule: 'MAILS' });
+export type FileNode = { id: string; name: string; size: number; mime_type: string };
 
-type UseGetFilesFromDrivePropType = {
-	addFilesFromFiles: (filesResponse: useGetFilesFromDriveRespType[]) => void;
+export type UploadToTargetIntegratedFunction = (arg: {
+	nodeId: string;
+	targetModule: string;
+}) => Promise<{ attachmentId: string }>;
+
+export const uploadToTarget = async (
+	node: FileNode,
+	uploadTo: UploadToTargetIntegratedFunction
+): Promise<{ attachmentId: string }> => uploadTo({ nodeId: node.id, targetModule: 'MAILS' });
+
+export type UploadMetadata = {
+	attachmentId: string;
+	fileName: string;
+	contentType: string;
+	size: number;
 };
 
-export type useGetFilesFromDriveRespType = {
-	status: string;
-	value: {
-		attachmentId: string;
-	};
+export type UseUploadFromFilesResult = Array<PromiseSettledResult<UploadMetadata>>;
+
+export type UseUploadFromFilesParams = {
+	onComplete: (filesResponse: UseUploadFromFilesResult) => void;
 };
 
-export const useGetFilesFromDrive = ({
-	addFilesFromFiles
-}: UseGetFilesFromDrivePropType): [(arg: any) => void, boolean] => {
+export const useUploadFromFiles = ({
+	onComplete
+}: UseUploadFromFilesParams): [(nodes: Array<FileNode>) => void, boolean] => {
 	const [uploadTo, isAvailable] = useIntegratedFunction('upload-to-target-and-get-target-id');
 
 	const confirmAction = useCallback(
-		(nodes) => {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			const promises = map(nodes, (node) => uploadToFiles(node, uploadTo));
+		(nodes: Array<FileNode>) => {
+			const promises = map(nodes, (node) =>
+				uploadToTarget(node, uploadTo as UploadToTargetIntegratedFunction).then<UploadMetadata>(
+					({ attachmentId }) => ({
+						attachmentId,
+						fileName: node.name,
+						contentType: node.mime_type,
+						size: node.size
+					})
+				)
+			);
 
 			if (isAvailable) {
 				Promise.allSettled(promises).then((res) => {
@@ -61,11 +77,12 @@ export const useGetFilesFromDrive = ({
 						label,
 						autoHideTimeout: 4000
 					});
-					addFilesFromFiles(success as useGetFilesFromDriveRespType[]);
+
+					onComplete(success);
 				});
 			}
 		},
-		[addFilesFromFiles, isAvailable, uploadTo]
+		[onComplete, isAvailable, uploadTo]
 	);
 	return [confirmAction, isAvailable];
 };

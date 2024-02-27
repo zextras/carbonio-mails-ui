@@ -47,6 +47,17 @@ export const useEditorAttachments = (
 		files: Array<File>,
 		callbacks?: UploadCallbacks
 	) => Array<UnsavedAttachment>;
+	addUploadedAttachment: ({
+		attachmentId,
+		fileName,
+		contentType,
+		size
+	}: {
+		attachmentId: string;
+		fileName: string;
+		contentType: string;
+		size: number;
+	}) => UnsavedAttachment;
 	addInlineAttachments: (
 		files: Array<File>,
 		options?: UploadCallbacks & {
@@ -186,10 +197,55 @@ export const useEditorAttachments = (
 		return addGenericUnsavedAttachments(files, areInline, customizedCallbacks);
 	};
 
+	const addAndSaveUploadedAttachment = ({
+		attachmentId,
+		fileName,
+		contentType,
+		size
+	}: {
+		attachmentId: string;
+		fileName: string;
+		contentType: string;
+		size: number;
+	}): UnsavedAttachment => {
+		const { addUnsavedAttachments } = useEditorsStore.getState();
+
+		const unsavedAttachment = {
+			filename: fileName,
+			contentType,
+			size,
+			aid: attachmentId,
+			isInline: false,
+			uploadStatus: {
+				status: 'completed',
+				progress: 0
+			}
+		} satisfies UnsavedAttachment;
+		addUnsavedAttachments(editorId, [unsavedAttachment]);
+		computeAndUpdateEditorStatus(editorId);
+
+		debouncedSaveDraftFromEditor(editorId);
+
+		return unsavedAttachment;
+	};
+
 	const addStandardAttachments = (
 		files: Array<File>,
 		callbacks?: UploadCallbacks
 	): Array<UnsavedAttachment> => addAndSaveGenericAttachments(files, false, callbacks);
+
+	const addUploadedAttachment = ({
+		attachmentId,
+		fileName,
+		contentType,
+		size
+	}: {
+		attachmentId: string;
+		fileName: string;
+		contentType: string;
+		size: number;
+	}): UnsavedAttachment =>
+		addAndSaveUploadedAttachment({ attachmentId, fileName, contentType, size });
 
 	const addInlineAttachments = (
 		files: Array<File>,
@@ -253,6 +309,7 @@ export const useEditorAttachments = (
 			debouncedSaveDraftFromEditor(editorId);
 		},
 		addStandardAttachments,
-		addInlineAttachments
+		addInlineAttachments,
+		addUploadedAttachment
 	};
 };
