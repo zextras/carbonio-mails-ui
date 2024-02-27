@@ -15,7 +15,7 @@ import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/st
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
-import { FolderAction } from '../../../types';
+import { SoapFolderAction } from '../../../types';
 import { EditModal } from '../edit-modal';
 
 describe('edit-modal', () => {
@@ -234,7 +234,7 @@ describe('edit-modal', () => {
 		const editButton = screen.getByRole('button', {
 			name: /label\.edit/i
 		});
-		const wipeInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
+		const wipeInterceptor = createAPIInterceptor<SoapFolderAction>('FolderAction', 'action');
 
 		await user.click(editButton);
 		const action = await wipeInterceptor;
@@ -291,7 +291,7 @@ describe('edit-modal', () => {
 		const folderName = faker.lorem.word();
 		// update the existing folder name into the text input
 		await user.type(folderInputElement, folderName);
-		const wipeInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
+		const wipeInterceptor = createAPIInterceptor<SoapFolderAction>('FolderAction', 'action');
 
 		await user.click(editButton);
 		const action = await wipeInterceptor;

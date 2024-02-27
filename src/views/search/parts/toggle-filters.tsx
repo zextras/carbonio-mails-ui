@@ -3,11 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { nanoid } from '@reduxjs/toolkit';
 import React, { useCallback, useState, useEffect, FC, ReactElement } from 'react';
+
+import { nanoid } from '@reduxjs/toolkit';
 import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
-import { filter } from 'lodash';
 import { t } from '@zextras/carbonio-shell-ui';
+import { filter } from 'lodash';
 
 import type { ToggleFiltersProps } from '../../../types';
 

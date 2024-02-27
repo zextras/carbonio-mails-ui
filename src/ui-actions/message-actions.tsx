@@ -35,6 +35,7 @@ import type {
 } from '../types';
 import { ConvActionReturnType, ExtraWindowCreationParams, ExtraWindowsContextType } from '../types';
 import { MessagePreviewPanel } from '../views/app/detail-panel/message-preview-panel';
+import { getLocationOrigin } from '../views/app/detail-panel/preview/utils';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -732,6 +733,24 @@ export function deleteMessagePermanently({
 				},
 				true
 			);
+		}
+	};
+}
+
+export function downloadEml({ id }: { id: string }): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.DOWNLOAD_EML;
+
+	return {
+		id: actDescriptor.id,
+		icon: 'DownloadOutline',
+		label: t('action.download_eml', 'Download EML'),
+		onClick: (ev): void => {
+			ev?.preventDefault();
+			const link = document.createElement('a');
+			link.download = `${id}.eml`;
+			link.href = `${getLocationOrigin()}/service/home/~/?auth=co&id=${id}`;
+			link.click();
+			link.remove();
 		}
 	};
 }

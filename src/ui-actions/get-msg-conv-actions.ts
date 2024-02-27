@@ -11,6 +11,7 @@ import {
 	getAddRemoveFlagAction,
 	getApplyTagAction,
 	getDeletePermanentlyAction,
+	getDownloadEmlAction,
 	getEditAsNewAction,
 	getEditDraftAction,
 	getForwardAction,
@@ -43,7 +44,7 @@ type GetMessageActionsProps = {
 	deselectAll: () => void;
 	tags: Tags;
 	createWindow: ExtraWindowsContextType['createWindow'];
-	messageActions: Array<MessageAction>;
+	messageActionsForExtraWindow: Array<MessageAction>;
 };
 
 export type MsgConvActionsReturnType = [
@@ -57,7 +58,7 @@ export function getMsgConvActions({
 	deselectAll,
 	tags,
 	createWindow,
-	messageActions
+	messageActionsForExtraWindow
 }: GetMessageActionsProps): MsgConvActionsReturnType {
 	const isConv = isConversation(item);
 	const folderId = getParentFolderId(item);
@@ -91,6 +92,7 @@ export function getMsgConvActions({
 	const folderExcludedEditAsNew = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const folderIncludedSendDraft = [FOLDERS.DRAFTS];
 	const folderExcludedRedirect = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+	const folderExcludedDownloadEML = [FOLDERS.DRAFTS];
 
 	const addRemoveFlagAction = getAddRemoveFlagAction({
 		isConversation: isConv,
@@ -228,7 +230,14 @@ export function getMsgConvActions({
 		folderId,
 		subject: item.subject,
 		createWindow,
-		messageActions
+		messageActions: messageActionsForExtraWindow
+	});
+
+	const downloadEmlAction = getDownloadEmlAction({
+		isConversation: isConv,
+		id,
+		folderId,
+		folderExcludedDownloadEML
 	});
 
 	/**
@@ -271,7 +280,8 @@ export function getMsgConvActions({
 		redirectAction,
 		editDraftAction,
 		editAsNewAction,
-		showOriginalAction
+		showOriginalAction,
+		downloadEmlAction
 	].reduce((acc: Array<Exclude<ActionReturnType, false>>, action) => {
 		if (action) {
 			acc.push(action);

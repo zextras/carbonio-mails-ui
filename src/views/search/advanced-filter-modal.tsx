@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 
 import {
 	CustomModal,
@@ -12,8 +12,8 @@ import {
 	TextWithTooltip,
 	Padding,
 	ModalHeader,
-	ModalFooter,
-	Divider
+	Divider,
+	ModalFooter
 } from '@zextras/carbonio-design-system';
 import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map } from 'lodash';
@@ -30,14 +30,14 @@ import { getChipItems } from './utils';
 import { ScrollableContainer } from '../../commons/scrollable-container';
 import type { AdvancedFilterModalProps, KeywordState } from '../../types';
 
-export const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
+export const AdvancedFilterModal = ({
 	open,
 	onClose,
 	query,
 	updateQuery,
 	setIsSharedFolderIncluded,
 	isSharedFolderIncluded
-}): ReactElement => {
+}: AdvancedFilterModalProps): React.JSX.Element => {
 	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
 	const [attachmentFilter, setAttachmentFilter] = useState<KeywordState>([]);
 	const [unreadFilter, setUnreadFilter] = useState<KeywordState>([]);

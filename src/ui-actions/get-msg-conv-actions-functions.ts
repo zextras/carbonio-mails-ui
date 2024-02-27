@@ -18,6 +18,7 @@ import {
 } from './conversation-actions';
 import {
 	deleteMessagePermanently,
+	downloadEml,
 	editAsNewMsg,
 	editDraft,
 	forwardMsg,
@@ -395,4 +396,20 @@ export function getShowOriginalAction({
 	const action = showOriginalMsg({ id });
 
 	return !folderExcludedShowOriginal.includes(getFolderIdParts(folderId).id ?? '0') && action;
+}
+
+export function getDownloadEmlAction({
+	id,
+	folderId,
+	folderExcludedDownloadEML,
+	isConversation
+}: {
+	id: string;
+	folderId: string;
+	folderExcludedDownloadEML: string[];
+	isConversation: boolean;
+}): ActionReturnType {
+	const action = isConversation ? false : downloadEml({ id });
+
+	return !folderExcludedDownloadEML.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
