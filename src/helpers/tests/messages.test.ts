@@ -31,7 +31,7 @@ describe('Messages helpers', () => {
 		});
 
 		test('returns true when a conversation with only one message is passed as parameter', () => {
-			const conv = generateConversation({ messageGenerationCount: 1 });
+			const conv = generateConversation({ messagesGenerationCount: 1 });
 			expect(isConversation(conv)).toBe(true);
 		});
 	});
@@ -54,12 +54,12 @@ describe('Messages helpers', () => {
 		});
 
 		test('returns false when a conversation with 2 messages is passed as parameter', () => {
-			const conv = generateConversation({ messageGenerationCount: 2 });
+			const conv = generateConversation({ messagesGenerationCount: 2 });
 			expect(isSingleMessageConversation(conv)).toBe(false);
 		});
 
 		test('returns false when a conversation with only one message is passed as parameter', () => {
-			const conv = generateConversation({ messageGenerationCount: 1 });
+			const conv = generateConversation({ messagesGenerationCount: 1 });
 			expect(isSingleMessageConversation(conv)).toBe(true);
 		});
 	});

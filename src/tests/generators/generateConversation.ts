@@ -31,7 +31,8 @@ type ConversationGenerationParams = {
 	isFlagged?: boolean;
 	isSingleMessageConversation?: boolean;
 	messages?: Array<MailMessage>;
-	messageGenerationCount?: number;
+	messagesGenerationCount?: number;
+	draftsGenerationCount?: number;
 	tags?: Array<string>;
 };
 
@@ -70,26 +71,31 @@ const generateConversation = ({
 	isRead = false,
 	isFlagged = false,
 	messages,
-	messageGenerationCount = 1,
+	messagesGenerationCount = 1,
+	draftsGenerationCount = 0,
 	tags = []
 }: ConversationGenerationParams): Conversation => {
 	const finalFrom =
 		from ??
 		(messages && messages.length
 			? getParticipantsFromMessages(messages, ParticipantRole.FROM)
-			: generateRandomParticipants(messageGenerationCount, ParticipantRole.FROM));
+			: generateRandomParticipants(messagesGenerationCount, ParticipantRole.FROM));
 	const finalTo =
 		to ??
 		(messages && messages.length
 			? getParticipantsFromMessages(messages, ParticipantRole.TO)
-			: generateRandomParticipants(messageGenerationCount, ParticipantRole.TO));
+			: generateRandomParticipants(messagesGenerationCount, ParticipantRole.TO));
 	const finalCc =
 		cc ??
 		(messages && messages.length
 			? getParticipantsFromMessages(messages, ParticipantRole.CARBON_COPY)
-			: generateRandomParticipants(messageGenerationCount, ParticipantRole.CARBON_COPY));
-	const finalMessages =
-		messages ?? times(messageGenerationCount, () => generateMessage({ folderId }));
+			: generateRandomParticipants(messagesGenerationCount, ParticipantRole.CARBON_COPY));
+	const finalMessages = messages ?? [
+		...times(messagesGenerationCount - draftsGenerationCount, () => generateMessage({ folderId })),
+		...times(draftsGenerationCount, () =>
+			generateMessage({ isDraft: true, folderId: FOLDERS.DRAFT })
+		)
+	];
 
 	return {
 		date: receiveDate,

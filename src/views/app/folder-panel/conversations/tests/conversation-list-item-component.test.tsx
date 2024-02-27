@@ -435,7 +435,7 @@ describe.each`
 			const conversation = generateConversation({
 				folderId,
 				isSingleMessageConversation: false,
-				messageGenerationCount: 2
+				messagesGenerationCount: 2
 			});
 
 			const props: ConversationListItemProps = {

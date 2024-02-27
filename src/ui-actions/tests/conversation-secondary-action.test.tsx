@@ -23,21 +23,21 @@ describe('Actions visibility', () => {
 		 * 4. secondary actions for a conversation in any folder except trash contain the trash action
 		 */
 		test.each`
-			case | folder                    | assertion            | action
-			${4} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
-			${4} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
-			${4} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
-			${4} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
-			${4} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
-			${5} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
-			${5} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
-			${5} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
-			${5} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.SHOW_SOURCE}
-			${6} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
-			${6} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
-			${6} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
-			${6} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
-			${6} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
+			case | folder                    | assertion             | action
+			${4} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
+			${4} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
+			${4} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAINS} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
+			${4} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAINS} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
+			${4} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS} | ${ConversationActionsDescriptors.MOVE_TO_TRASH}
+			${5} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${5} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${5} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAINS} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${5} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS} | ${MessageActionsDescriptors.SHOW_SOURCE}
+			${6} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
+			${6} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
+			${6} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAINS} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
+			${6} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAINS} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
+			${6} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS} | ${ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW}
 		`(
 			`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
@@ -67,13 +67,13 @@ describe('Actions visibility', () => {
 		 * 11. secondary actions for a single message conversation in any folder except trash contain the reply action
 		 */
 		test.each`
-			case  | folder                    | assertion                | action
-			${11} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
-			${11} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
-			${11} | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
-			${11} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.REPLY}
-			${11} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.REPLY}
-			${11} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.REPLY}
+			case  | folder                    | assertion                 | action
+			${11} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS}     | ${MessageActionsDescriptors.REPLY}
+			${11} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS}     | ${MessageActionsDescriptors.REPLY}
+			${11} | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAINS}     | ${MessageActionsDescriptors.REPLY}
+			${11} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.REPLY}
+			${11} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.REPLY}
+			${11} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS}     | ${MessageActionsDescriptors.REPLY}
 		`(
 			`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
@@ -103,31 +103,31 @@ describe('Actions visibility', () => {
 		 * 3. secondary actions for a read conversation in any folder except draft contain the mark as unread action
 		 */
 		test.each`
-			case | read                        | folder                    | assertion                | action
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_READ}
-			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.MARK_AS_READ}
+			case | read                        | folder                    | assertion                 | action
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${2} | ${MSG_CONV_STATUS.NOT_READ} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.MARK_AS_UNREAD}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_READ}
+			${3} | ${MSG_CONV_STATUS.READ}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.MARK_AS_READ}
 		`(
 			`(case #$case) secondary actions for a $read.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, read, assertion, action }) => {
@@ -159,31 +159,31 @@ describe('Actions visibility', () => {
 		 * 6. secondary actions for an unflagged conversation in any folder contain the flag action
 		 */
 		test.each`
-			case | flagged                        | folder                    | assertion                | action
-			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.UNFLAG}
-			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.UNFLAG}
-			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.UNFLAG}
-			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.UNFLAG}
-			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.UNFLAG}
-			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.UNFLAG}
-			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.UNFLAG}
-			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.UNFLAG}
-			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.UNFLAG}
-			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.UNFLAG}
-			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.UNFLAG}
-			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.UNFLAG}
-			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.FLAG}
-			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.FLAG}
-			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.FLAG}
-			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.FLAG}
-			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.FLAG}
-			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${ConversationActionsDescriptors.FLAG}
-			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.FLAG}
-			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.FLAG}
-			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.FLAG}
-			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.FLAG}
-			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.FLAG}
-			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${ConversationActionsDescriptors.FLAG}
+			case | flagged                        | folder                    | assertion                 | action
+			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.UNFLAG}
+			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.UNFLAG}
+			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.UNFLAG}
+			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.UNFLAG}
+			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.UNFLAG}
+			${5} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.UNFLAG}
+			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.UNFLAG}
+			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.UNFLAG}
+			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.UNFLAG}
+			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.UNFLAG}
+			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.UNFLAG}
+			${5} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.UNFLAG}
+			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FLAG}
+			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FLAG}
+			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FLAG}
+			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.TRASH}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FLAG}
+			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.SPAM}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FLAG}
+			${6} | ${MSG_CONV_STATUS.NOT_FLAGGED} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FLAG}
+			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FLAG}
+			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FLAG}
+			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FLAG}
+			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FLAG}
+			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FLAG}
+			${6} | ${MSG_CONV_STATUS.FLAGGED}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FLAG}
 		`(
 			`(case #$case) secondary actions for a $flagged.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, flagged, assertion, action }) => {
@@ -211,20 +211,20 @@ describe('Actions visibility', () => {
 		);
 	});
 	test.each`
-		case | folder                    | assertion                | action
-		${7} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
-		${7} | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
-		${7} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
-		${7} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
-		${7} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
-		${7} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		case | folder                    | assertion                 | action
+		${7} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${7} | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${7} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${7} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${7} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.DOWNLOAD_EML}
+		${7} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.DOWNLOAD_EML}
 	`(
 		`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, assertion, action }) => {
 			const createWindow = jest.fn();
 			const conv = generateConversation({
 				folderId: folder.id,
-				messageGenerationCount: 5
+				messagesGenerationCount: 5
 			});
 			const dispatch = jest.fn();
 			const deselectAll = jest.fn();

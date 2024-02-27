@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React from 'react';
+
 import { screen } from '@testing-library/react';
 import { forEach, noop, reduce } from 'lodash';
-import React from 'react';
+
 import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { ASSERTION, FOLDERIDS, MSG_CONV_STATUS, MessageActionsDescriptors } from '../../constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
@@ -51,11 +53,10 @@ function getFoldersAllowed(
 		},
 		[] as Array<string>
 	);
-	const result = {
+	return {
 		...generalFolders,
 		value: filteredFolderValues
 	};
-	return result;
 }
 
 const deselectAll = jest.fn();
@@ -74,11 +75,11 @@ const props = {
 };
 describe('Actions visibility', () => {
 	test.each`
-		case | read                        | excludedFolders                  | assertion                | action
-		${1} | ${MSG_CONV_STATUS.READ}     | ${foldersExcludedMarkReadUnread} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
-		${2} | ${MSG_CONV_STATUS.NOT_READ} | ${foldersExcludedMarkReadUnread} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.MARK_AS_READ}
-		${3} | ${MSG_CONV_STATUS.READ}     | ${foldersExcludedMarkReadUnread} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_READ}
-		${4} | ${MSG_CONV_STATUS.NOT_READ} | ${foldersExcludedMarkReadUnread} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+		case | read                        | excludedFolders                  | assertion                 | action
+		${1} | ${MSG_CONV_STATUS.READ}     | ${foldersExcludedMarkReadUnread} | ${ASSERTION.CONTAINS}     | ${MessageActionsDescriptors.MARK_AS_UNREAD}
+		${2} | ${MSG_CONV_STATUS.NOT_READ} | ${foldersExcludedMarkReadUnread} | ${ASSERTION.CONTAINS}     | ${MessageActionsDescriptors.MARK_AS_READ}
+		${3} | ${MSG_CONV_STATUS.READ}     | ${foldersExcludedMarkReadUnread} | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.MARK_AS_READ}
+		${4} | ${MSG_CONV_STATUS.NOT_READ} | ${foldersExcludedMarkReadUnread} | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.MARK_AS_UNREAD}
 	`(
 		`(case #$case) primary actions for a message in $folders.desc $assertion.desc the $action.desc action`,
 		async ({ excludedFolders, action, read, assertion }) => {
@@ -131,8 +132,8 @@ describe('Actions visibility', () => {
 	);
 
 	test.each`
-		case | excludedFolders         | assertion            | action
-		${1} | ${foldersExcludedTrash} | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.MOVE_TO_TRASH}
+		case | excludedFolders         | assertion             | action
+		${1} | ${foldersExcludedTrash} | ${ASSERTION.CONTAINS} | ${MessageActionsDescriptors.MOVE_TO_TRASH}
 	`(
 		`(case #$case) primary actions for a message in $folders.desc $assertion.desc the $action.desc action`,
 		async ({ excludedFolders, action, assertion }) => {
@@ -184,8 +185,8 @@ describe('Actions visibility', () => {
 	);
 
 	test.each`
-		case | excludedFolders                     | assertion            | action
-		${1} | ${foldersIncludedDeletePermanently} | ${ASSERTION.CONTAIN} | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
+		case | excludedFolders                     | assertion             | action
+		${1} | ${foldersIncludedDeletePermanently} | ${ASSERTION.CONTAINS} | ${MessageActionsDescriptors.DELETE_PERMANENTLY}
 	`(
 		`(case #$case) primary actions for a message in $folders.desc $assertion.desc the $action.desc action`,
 		async ({ excludedFolders, action, assertion }) => {

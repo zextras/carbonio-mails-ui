@@ -307,6 +307,10 @@ export const MessageActionsDescriptors = {
 } as const;
 
 export const ConversationActionsDescriptors = {
+	EDIT_DRAFT: {
+		id: 'conversation-edit_as_draft',
+		desc: 'Edit'
+	},
 	PREVIEW_ON_SEPARATED_WINDOW: {
 		id: 'preview-on-separated-window',
 		desc: 'Preview the conversation on a separated window'
@@ -375,17 +379,25 @@ export const MSG_CONV_STATUS = {
 	NOT_READ: {
 		value: false,
 		desc: 'not read'
+	},
+	CONTAINS_DRAFT: {
+		value: true,
+		desc: 'contains a draft'
+	},
+	NOT_CONTAINS_DRAFT: {
+		value: false,
+		desc: 'not contains a draft'
 	}
 };
 
 export const ASSERTION = {
-	CONTAIN: {
+	CONTAINS: {
 		value: true,
-		desc: 'contain'
+		desc: 'contains'
 	},
-	NOT_CONTAIN: {
+	NOT_CONTAINS: {
 		value: false,
-		desc: 'not contain'
+		desc: 'not contains'
 	}
 };
 
