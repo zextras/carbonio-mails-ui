@@ -5,33 +5,27 @@
  */
 import React, { FC } from 'react';
 
-import { useAppContext, useTags } from '@zextras/carbonio-shell-ui';
+import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
 import { MessagePreviewPanel } from './message-preview-panel';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { useAppSelector } from '../../../hooks/redux';
 import { useMessageActions } from '../../../hooks/use-message-actions';
 import { useSelection } from '../../../hooks/use-selection';
 import { selectMessage } from '../../../store/messages-slice';
 import { AppContext, MailsStateType } from '../../../types';
-import { getMsgConvActions } from '../../../ui-actions/get-msg-conv-actions';
-import { useExtraWindowsManager } from '../extra-windows/extra-window-manager';
+import { useMsgConvActions } from '../../../ui-actions/use-msg-conv-actions';
 
 export const MessagePreviewPanelContainer: FC = () => {
 	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
-	const dispatch = useAppDispatch();
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection({ currentFolderId: folderId, setCount, count: 0 });
-	const tags = useTags();
-	const { createWindow } = useExtraWindowsManager();
+
 	const messageActionsForExtraWindow = useMessageActions(message, true);
-	const messageActions = getMsgConvActions({
+	const messageActions = useMsgConvActions({
 		item: message,
-		dispatch,
 		deselectAll,
-		tags,
-		createWindow,
 		messageActionsForExtraWindow
 	});
 	return (

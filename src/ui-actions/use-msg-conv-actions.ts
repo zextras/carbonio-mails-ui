@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useTags } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
 import {
@@ -29,21 +29,13 @@ import {
 } from './get-msg-conv-actions-functions';
 import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
 import { isConversation, isSingleMessageConversation } from '../helpers/messages';
-import { AppDispatch } from '../store/redux';
-import type {
-	ActionReturnType,
-	Conversation,
-	ExtraWindowsContextType,
-	MailMessage,
-	MessageAction
-} from '../types';
+import { useAppDispatch } from '../hooks/redux';
+import type { ActionReturnType, Conversation, MailMessage, MessageAction } from '../types';
+import { useExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 
-type GetMessageActionsProps = {
+type useMsgConvActionsProps = {
 	item: MailMessage | Conversation;
-	dispatch: AppDispatch;
 	deselectAll: () => void;
-	tags: Tags;
-	createWindow: ExtraWindowsContextType['createWindow'];
 	messageActionsForExtraWindow: Array<MessageAction>;
 };
 
@@ -52,16 +44,16 @@ export type MsgConvActionsReturnType = [
 	Array<Exclude<ActionReturnType, false>>
 ];
 
-export function getMsgConvActions({
+export function useMsgConvActions({
 	item,
-	dispatch,
 	deselectAll,
-	tags,
-	createWindow,
 	messageActionsForExtraWindow
-}: GetMessageActionsProps): MsgConvActionsReturnType {
+}: useMsgConvActionsProps): MsgConvActionsReturnType {
 	const isConv = isConversation(item);
 	const folderId = getParentFolderId(item);
+	const dispatch = useAppDispatch();
+	const tags = useTags();
+	const { createWindow } = useExtraWindowsManager();
 	if (!folderId) {
 		return [[], []];
 	}
