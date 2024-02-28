@@ -15,14 +15,12 @@ import { ConvMessage, MailsStateType } from '../../../types';
 
 export type ConversationMessagePreviewProps = {
 	convMessage: ConvMessage;
-	idPrefix: string;
 	isExpanded: boolean;
 	isAlone: boolean;
 	isInsideExtraWindow: boolean;
 };
 
 export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = ({
-	idPrefix,
 	convMessage,
 	isExpanded,
 	isAlone,
@@ -31,7 +29,7 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, convMessage.id));
 	const messageActions = useMessageActions(message, isAlone);
 	return (
-		<Padding key={`${idPrefix}-${message.id}`} bottom="medium" width="100%">
+		<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>
 			<MailPreview
 				message={message}
 				expanded={isExpanded}
