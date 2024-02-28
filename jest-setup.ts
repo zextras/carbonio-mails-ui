@@ -15,6 +15,7 @@ import {
 	getFailOnConsoleDefaultConfig
 } from './src/carbonio-ui-commons/test/jest-setup';
 import { registerRestHandler } from './src/carbonio-ui-commons/test/mocks/network/msw/handlers';
+import { handleGetConvRequest } from './src/tests/mocks/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
 
 failOnConsole({
@@ -24,7 +25,9 @@ failOnConsole({
 
 beforeAll(() => {
 	const h = rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
+	const j = rest.post('/service/soap/GetConvRequest', handleGetConvRequest);
 	registerRestHandler(h);
+	registerRestHandler(j);
 	defaultBeforeAllTests();
 });
 

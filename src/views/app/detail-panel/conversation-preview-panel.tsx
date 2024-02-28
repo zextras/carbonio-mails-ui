@@ -53,7 +53,7 @@ export const ConversationPreviewPanel = ({
 						{map(messages, (message, index) =>
 							message ? (
 								<ConversationMessagePreview
-									idPrefix={conversation.id}
+									key={message.id}
 									convMessage={message}
 									isExpanded={isExpanded(index)}
 									isAlone={conversation.messages?.length === 1}
