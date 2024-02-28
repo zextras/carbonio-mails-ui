@@ -3,6 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, {
+	FC,
+	ReactElement,
+	useCallback,
+	useContext,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
+
 import {
 	Dropdown,
 	IconButton,
@@ -14,16 +25,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { difference, map, noop, slice } from 'lodash';
-import React, {
-	FC,
-	ReactElement,
-	useCallback,
-	useContext,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useVisibleActionsCount } from '../hooks/use-visible-actions-count';
@@ -35,7 +36,7 @@ type MailMsgPreviewActionsType = {
 	mainAlignment?: RowProps['mainAlignment'];
 };
 
-const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
+export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	actions,
 	maxWidth = '7.5rem',
 	mainAlignment = 'flex-end'
@@ -140,5 +141,3 @@ const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		</Row>
 	);
 };
-
-export default MailMsgPreviewActions;

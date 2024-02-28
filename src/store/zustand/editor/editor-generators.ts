@@ -489,20 +489,9 @@ export const generateEditor = ({
 		case EditViewActions.COMPOSE:
 		case EditViewActions.PREFILL_COMPOSE:
 			return generateIntegratedNewEditor(messagesStoreDispatch, compositionData);
-			break;
 		default:
 			return null;
 	}
 
 	return null;
 };
-//
-// export const useGenerateEditor = ({
-// 	action,
-// 	id,
-// 	compositionData
-// }: Omit<GenerateEditorParams, 'message' | 'messagesStoreDispatch'>): MailsEditorV2 | null => {
-// 	const messagesStoreDispatch = useAppDispatch();
-// 	const message = use;
-// 	return generateEditor({ action, id, messagesStoreDispatch, message });
-// };

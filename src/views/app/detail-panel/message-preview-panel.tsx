@@ -6,9 +6,11 @@
 import React, { FC, useEffect } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
+import { uniqBy } from 'lodash';
 
 import MailPreview from './preview/mail-preview';
 import PreviewPanelHeader from './preview/preview-panel-header';
+import { EXTRA_WINDOW_ACTION_ID } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getMsg } from '../../../store/actions';
 import { selectMessage } from '../../../store/messages-slice';
@@ -28,6 +30,14 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 }) => {
 	const { isInsideExtraWindow } = useExtraWindow();
 	const dispatch = useAppDispatch();
+
+	const isExtraWindowActions = messageActions.some(
+		(action: MessageAction) => action.id === EXTRA_WINDOW_ACTION_ID
+	);
+
+	const actions = isExtraWindowActions
+		? messageActions.filter((action: MessageAction) => action.id !== EXTRA_WINDOW_ACTION_ID)
+		: uniqBy([...messageActions[0], ...messageActions[1]], 'id');
 
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
 
@@ -55,7 +65,7 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 									message={message}
 									expanded
 									isAlone
-									messageActions={messageActions}
+									messageActions={actions}
 									isMessageView
 									isInsideExtraWindow={isInsideExtraWindow}
 								/>
