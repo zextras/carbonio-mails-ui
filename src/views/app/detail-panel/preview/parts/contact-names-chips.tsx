@@ -16,7 +16,7 @@ import {
 	sendMsg
 } from '../../../../../ui-actions/participant-displayer-actions';
 
-const ContactNameChip: FC<{
+export const ContactNameChip: FC<{
 	showOverflow?: boolean;
 	contacts: Participant[];
 	label: string;
@@ -80,5 +80,3 @@ const ContactNameChip: FC<{
 		</>
 	);
 };
-
-export default ContactNameChip;
