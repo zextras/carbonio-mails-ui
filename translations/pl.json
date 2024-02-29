@@ -242,9 +242,9 @@
         "type": "Typ",
         "type_name_here": "Nazwa elementu",
         "wipe": "Wyczyść",
-        "with_you": "z tobą",
+        "with_you": "Tobie",
         "workflow": "Organizacja Pracy",
-        "would_like_to_share": "udostępniono jego",
+        "would_like_to_share": "udostępnił(a) swój",
         "write": "Pisanie",
         "signature_required": "Informacje dot. podpisu są wymagane.",
         "cc_bcc": "DW UDW",
@@ -853,5 +853,38 @@
             "label_involved_messages": "<0>{{involvedMessagesCount}} wiadomości</0> zostanie przetworzonych w wybranym folderze.",
             "title": "Zastosowywanie filtra \"{{filterName}}\""
         }
+    },
+    "sortingDropdown": {
+        "tooltip": {
+            "attachmentAscending": "Rosnąco wg załącznika",
+            "attachmentDescending": "Malejąco wg załącznika",
+            "dateAscending": "Rosnąco wg rozmiaru",
+            "dateDescending": "Malejąco wg daty",
+            "fromDescending": "Malejąco wg od",
+            "flaggedAscending": "Rosnąco wg oflagowanych",
+            "flaggedDescending": "Malejąco wg oflagowanych",
+            "importantAscending": "Rosnąco wg ważnych",
+            "importantDescending": "Malejąco wg ważnych",
+            "subjectAscending": "Rosnąco wg tematu",
+            "unreadAscending": "Rosnąco wg nieprzeczytanych",
+            "unreadDescending": "Malejąco wg nieprzeczytanych",
+            "toAscending": "Rosnąco wg do",
+            "toDescending": "Malejąco wg do",
+            "subjectDescending": "Malejąco wg tematu",
+            "fromAscending": "Rosnąco wg od",
+            "sizeDescending": "Malejąco wg rozmiaru"
+        }
+    },
+    "sorting_dropdown": {
+        "ascendingOrder": "Rosnąco",
+        "attachment": "Załącznik",
+        "date": "Data",
+        "flagged": "Oflagowane",
+        "from": "Od",
+        "important": "Ważne",
+        "subject": "Temat",
+        "to": "Do",
+        "unread": "Nieprzeczytane",
+        "descendingOrder": "Malejąco"
     }
 }

@@ -847,5 +847,38 @@
             "title": "Traitement du filtre '{{filterName}}'",
             "label_involved_messages": "<0>{{involvedMessagesCount}} messages</0> seront traités dans le dossier sélectionné."
         }
+    },
+    "sortingDropdown": {
+        "tooltip": {
+            "attachmentAscending": "Ordre croissant de rattachement",
+            "attachmentDescending": "Ordre décroissant par rattachement",
+            "dateAscending": "Ordre croissant par taille",
+            "dateDescending": "Ordre décroissant par date",
+            "fromAscending": "Ordre croissant par Expéditeur",
+            "fromDescending": "Ordre décroissant par Expéditeur",
+            "flaggedAscending": "Ordre croissant par Marqué",
+            "flaggedDescending": "Ordre décroissant par Marqué",
+            "importantAscending": "Ordre croissant par Important",
+            "importantDescending": "Ordre décroissant par Important",
+            "sizeDescending": "Ordre décroissant par taille",
+            "subjectAscending": "Ordre croissant par Objet",
+            "subjectDescending": "Ordre décroissant par Objet",
+            "toAscending": "Ordre croissant par Destinataire",
+            "toDescending": "Ordre décroissant par Destinataire",
+            "unreadAscending": "Ordre croissant par Non lu",
+            "unreadDescending": "Ordre décroissant par Non lu"
+        }
+    },
+    "sorting_dropdown": {
+        "ascendingOrder": "Ordre croissant",
+        "attachment": "Pièce jointe",
+        "date": "Date",
+        "flagged": "Marqué",
+        "from": "De",
+        "important": "Important",
+        "subject": "Objet",
+        "to": "À",
+        "unread": "Non lu",
+        "descendingOrder": "Ordre décroissant"
     }
 }
