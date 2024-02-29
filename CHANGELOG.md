@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.14.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.14.1...v1.14.2) (2024-02-28)
+
+
+### Bug Fixes
+
+* fix conversation messages order in preview panel ([1acd518](https://github.com/zextras/carbonio-mails-ui/commit/1acd51864b1a331ce92bd1ab86a34ff126d3eb14))
+
 ### [1.14.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.14.0...v1.14.1) (2024-02-22)
 
 
