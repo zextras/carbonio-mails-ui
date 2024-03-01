@@ -103,13 +103,13 @@ export function useMsgConvActions({
 	const foldersIncludedDeletePermanently = [FOLDERS.TRASH, FOLDERS.SPAM];
 	const foldersExcludedTags = [FOLDERS.SPAM];
 	const foldersExcludedMarkUnmarkSpam = [FOLDERS.DRAFTS];
-	const folderExcludedPrintMessage = [FOLDERS.DRAFTS, FOLDERS.TRASH];
-	const folderExcludedShowOriginal = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+	const folderExcludedPrintMessage = [FOLDERS.TRASH];
+	const folderExcludedShowOriginal = [FOLDERS.DRAFTS];
 	const folderIncludeEditDraft = [FOLDERS.DRAFTS];
 	const folderExcludedReply = [FOLDERS.DRAFTS, FOLDERS.SPAM];
 	const folderExcludedReplyAll = [FOLDERS.DRAFTS, FOLDERS.SPAM];
 	const folderExcludedForward = [FOLDERS.DRAFTS, FOLDERS.SPAM];
-	const folderExcludedEditAsNew = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+	const folderExcludedEditAsNew = [FOLDERS.TRASH, FOLDERS.SPAM];
 	const folderIncludedSendDraft = [FOLDERS.DRAFTS];
 	const folderExcludedRedirect = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const folderExcludedDownloadEML = [FOLDERS.DRAFTS];
