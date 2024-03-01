@@ -379,17 +379,10 @@ export const MSG_CONV_STATUS = {
 	NOT_READ: {
 		value: false,
 		desc: 'not read'
-	},
-	CONTAINS_DRAFT: {
-		value: true,
-		desc: 'contains a draft'
-	},
-	NOT_CONTAINS_DRAFT: {
-		value: false,
-		desc: 'not contains a draft'
 	}
 };
 
+// TODO
 export const ASSERTION = {
 	CONTAINS: {
 		value: true,

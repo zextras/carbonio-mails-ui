@@ -87,7 +87,7 @@ export const setMsgRead = ({
 				}
 			});
 		}
-	};
+	} satisfies MessageActionReturnType;
 };
 
 export function setMsgFlag({

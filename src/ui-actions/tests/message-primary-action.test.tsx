@@ -70,7 +70,7 @@ describe('Primary actions visibility', () => {
 		${11} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.MARK_AS_NOT_SPAM}
 		${12} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.EDIT_DRAFT}
 		${12} | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.EDIT_DRAFT}
-		${12} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.EDIT_DRAFT}
+		${12} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAINS}     | ${MessageActionsDescriptors.EDIT_DRAFT}
 		${12} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.EDIT_DRAFT}
 		${12} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.EDIT_DRAFT}
 		${12} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAINS} | ${MessageActionsDescriptors.EDIT_DRAFT}

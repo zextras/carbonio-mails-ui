@@ -163,77 +163,47 @@ describe('Actions visibility', () => {
 		);
 
 		test.each`
-			contains_draft                        | folder                    | assertion                 | action
-			${MSG_CONV_STATUS.CONTAINS_DRAFT}     | ${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.EDIT_DRAFT}
-			${MSG_CONV_STATUS.CONTAINS_DRAFT}     | ${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.EDIT_DRAFT}
-			${MSG_CONV_STATUS.CONTAINS_DRAFT}     | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.EDIT_DRAFT}
-			${MSG_CONV_STATUS.CONTAINS_DRAFT}     | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.EDIT_DRAFT}
-			${MSG_CONV_STATUS.CONTAINS_DRAFT}     | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.EDIT_DRAFT}
-			${MSG_CONV_STATUS.NOT_CONTAINS_DRAFT} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.EDIT_DRAFT}
-			${MSG_CONV_STATUS.NOT_CONTAINS_DRAFT} | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.EDIT_DRAFT}
-			${MSG_CONV_STATUS.NOT_CONTAINS_DRAFT} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.EDIT_DRAFT}
-			${MSG_CONV_STATUS.NOT_CONTAINS_DRAFT} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.EDIT_DRAFT}
-			${MSG_CONV_STATUS.NOT_CONTAINS_DRAFT} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.EDIT_DRAFT}
-		`(
-			`primary actions for a conversation that $contains_draft.desc in $folder.desc folder $assertion.desc the $action.desc action`,
-			async ({ contains_draft: containsDraft, folder, assertion, action }) => {
-				const createWindow = jest.fn();
-				const conv = generateConversation({
-					isSingleMessageConversation: false,
-					folderId: folder.id,
-					draftsGenerationCount: containsDraft ? 1 : 0
-				});
-				const dispatch = jest.fn();
-				const deselectAll = jest.fn();
-				const actions = getMsgConvActions({
-					item: conv,
-					dispatch,
-					deselectAll,
-					tags: {},
-					createWindow,
-					messageActionsForExtraWindow: []
-				});
-				expect(existsActionById({ id: action.id, actions })).toBe(assertion.value);
-			}
-		);
-
-		test.each`
 			folder                    | assertion                 | action
 			${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.REPLY}
-			${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.REPLY}
-			${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.REPLY}
+			${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.REPLY}
+			${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.REPLY}
 			${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.REPLY}
+			${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.REPLY}
 			${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.REPLY}
 			${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.REPLY_ALL}
-			${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.REPLY_ALL}
-			${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.REPLY_ALL}
+			${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.REPLY_ALL}
+			${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.REPLY_ALL}
 			${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.REPLY_ALL}
+			${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.REPLY_ALL}
 			${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.REPLY_ALL}
 			${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FORWARD}
-			${FOLDERIDS.SENT}         | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FORWARD}
-			${FOLDERIDS.DRAFTS}       | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FORWARD}
+			${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FORWARD}
+			${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FORWARD}
 			${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FORWARD}
+			${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FORWARD}
 			${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FORWARD}
 		`(
-			`primary actions for a conversation that $contains_draft.desc in $folder.desc folder $assertion.desc the $action.desc action`,
+			`primary actions for a conversation that $assertion.desc in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
-				const createWindow = jest.fn();
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id,
 					messagesGenerationCount: 4
 				});
-				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
-				const actions = getMsgConvActions({
-					item: conv,
-					dispatch,
-					deselectAll,
-					tags: {},
-					createWindow,
-					messageActionsForExtraWindow: []
+				const { result: hookResult } = setupHook(useMsgConvActions, {
+					store: generateStore(),
+					initialProps: [
+						{
+							item: conv,
+							deselectAll,
+							messageActionsForExtraWindow: []
+						}
+					]
 				});
-				expect(existsActionById({ id: action.id, actions })).toBe(assertion.value);
+				expect(existsActionById({ id: action.id, actions: hookResult.current })).toBe(
+					assertion.value
+				);
 			}
 		);
 	});

@@ -6,11 +6,10 @@
 import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
-import { isConversation } from './messages';
 import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
 import type { Folder, Folders } from '../carbonio-ui-commons/types/folder';
 import { NO_ACCOUNT_NAME } from '../constants';
-import type { MailMessage, Conversation } from '../types';
+import type { MailMessage } from '../types';
 
 /*
  * Describe the folder id syntax
@@ -218,47 +217,6 @@ export const isInboxSubfolder = ({
 	}
 
 	return path.toLowerCase().startsWith('/inbox');
-};
-
-/**
- * Returns the parent folder id of the given message.
- *
- * In most of the cases the id coincide with the "parent" property of
- * the message, but they differ when the message is contained in a linked folder: in this
- * case the "parent" refers to the original owner folder zid and id, so there is the need
- * to "translate" those ids
- *
- * @param item - Message or conversation
- */
-export const getParentFolderId = (item: MailMessage | Conversation): string | null => {
-	if (!item) {
-		return null;
-	}
-
-	const parentId = isConversation(item) ? item.messages[0].parent : item.parent;
-	const parentParts = getFolderIdParts(parentId);
-
-	/*
-	 * If the zid is not present the id is referring to a normal user's folder
-	 * so there is no need to search among the stored folders
-	 */
-	if (!parentParts.zid) {
-		return parentId;
-	}
-
-	/*
-	 * If the parentId is in the form zid:(r)id it could refer to a shared account folder
-	 * or a linked folder.
-	 */
-
-	// First attempt: search for a shared account folder among the stored folders.
-	if (useFolderStore.getState()?.folders?.[parentId]) {
-		return parentId;
-	}
-
-	// Second attempt: search for an entry on the links id map, or return null otherwise
-	const state = useFolderStore.getState();
-	return state.linksIdMap[parentId] ?? null;
 };
 
 /*

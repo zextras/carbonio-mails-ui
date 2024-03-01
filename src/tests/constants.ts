@@ -51,6 +51,17 @@ export const FOLDERS_DESCRIPTORS = {
 	}
 };
 
+export const ASSERTION = {
+	YES: {
+		value: true,
+		desc: ''
+	},
+	NO: {
+		value: false,
+		desc: 'not'
+	}
+};
+
 export const CONTAIN_ASSERTION = {
 	CONTAIN: {
 		value: true,

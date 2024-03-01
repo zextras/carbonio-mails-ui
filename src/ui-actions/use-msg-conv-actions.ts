@@ -4,9 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { SyntheticEvent } from 'react';
+
 import { FOLDERS, useTags } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
+import { useUIActionConvForward } from './conv-forward';
+import { useUIActionConvReply } from './conv-reply';
+import { useUIActionConvReplyAll } from './conv-reply-all';
 import {
 	getAddRemoveFlagAction,
 	getApplyTagAction,
@@ -27,10 +32,20 @@ import {
 	getSendDraftAction,
 	getShowOriginalAction
 } from './get-msg-conv-actions-functions';
-import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
-import { isConversation, isSingleMessageConversation } from '../helpers/messages';
+import { getFolderIdParts } from '../helpers/folders';
+import {
+	getParentFolderId,
+	isConversation,
+	isSingleMessageConversation
+} from '../helpers/messages';
 import { useAppDispatch } from '../hooks/redux';
-import type { ActionReturnType, Conversation, MailMessage, MessageAction } from '../types';
+import type {
+	ActionReturnType,
+	Conversation,
+	MailMessage,
+	MessageAction,
+	UIAction
+} from '../types';
 import { useExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 
 type useMsgConvActionsProps = {
@@ -44,6 +59,14 @@ export type MsgConvActionsReturnType = [
 	Array<Exclude<ActionReturnType, false>>
 ];
 
+const createUIActionAdapter = <T extends UIAction>(
+	action: T,
+	invoker: () => void
+): T & { onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void } => ({
+	...action,
+	onClick: invoker
+});
+
 export function useMsgConvActions({
 	item,
 	deselectAll,
@@ -54,6 +77,11 @@ export function useMsgConvActions({
 	const dispatch = useAppDispatch();
 	const tags = useTags();
 	const { createWindow } = useExtraWindowsManager();
+
+	const uiActionConvReply = useUIActionConvReply();
+	const uiActionConvReplyAll = useUIActionConvReplyAll();
+	const uiActionConvForward = useUIActionConvForward();
+
 	if (!folderId) {
 		return [[], []];
 	}
@@ -167,32 +195,52 @@ export function useMsgConvActions({
 		folderIncludeEditDraft
 	});
 
-	const replyAction = getReplyAction(
-		isConv,
-		isSingleMsgConv,
-		firstConversationMessage.id,
-		folderId,
-		id,
-		folderExcludedReply
-	);
+	const msgReplyAction = isConv
+		? false
+		: getReplyAction(false, false, id, folderId, id, folderExcludedReply);
 
-	const replyAllAction = getReplyAllAction({
-		isConversation: isConv,
-		isSingleMessageConversation: isSingleMsgConv,
-		firstConversationMessageId: firstConversationMessage.id,
-		folderId,
-		id,
-		folderExcludedReplyAll
-	});
+	const convReplyAction: ActionReturnType =
+		isConv && uiActionConvReply.canExecute?.(item)
+			? createUIActionAdapter(uiActionConvReply, () =>
+					uiActionConvReply.execute?.({ conversation: item })
+			  )
+			: false;
 
-	const forwardAction = getForwardAction({
-		isConversation: isConv,
-		isSingleMessageConversation: isSingleMsgConv,
-		firstConversationMessageId: firstConversationMessage.id,
-		folderId,
-		id,
-		folderExcludedForward
-	});
+	const msgReplyAllAction = isConv
+		? false
+		: getReplyAllAction({
+				isConversation: false,
+				isSingleMessageConversation: false,
+				firstConversationMessageId: id,
+				folderId,
+				id,
+				folderExcludedReplyAll
+		  });
+
+	const convReplyAllAction: ActionReturnType =
+		isConv && uiActionConvReplyAll.canExecute?.(item)
+			? createUIActionAdapter(uiActionConvReplyAll, () =>
+					uiActionConvReplyAll.execute?.({ conversation: item })
+			  )
+			: false;
+
+	const msgForwardAction = isConv
+		? false
+		: getForwardAction({
+				isConversation: false,
+				isSingleMessageConversation: false,
+				firstConversationMessageId: id,
+				folderId,
+				id,
+				folderExcludedForward
+		  });
+
+	const convForwardAction: ActionReturnType =
+		isConv && uiActionConvForward.canExecute?.(item)
+			? createUIActionAdapter(uiActionConvForward, () =>
+					uiActionConvForward.execute?.({ conversation: item })
+			  )
+			: false;
 
 	const editAsNewAction = getEditAsNewAction({
 		isConversation: isConv,
@@ -237,9 +285,13 @@ export function useMsgConvActions({
 	 * @returns an array of arrays of actions
 	 */
 	const primaryActions: Array<Exclude<ActionReturnType, false>> = [
-		replyAction,
-		replyAllAction,
-		forwardAction,
+		editDraftAction,
+		msgReplyAction,
+		convReplyAction,
+		msgReplyAllAction,
+		convReplyAllAction,
+		msgForwardAction,
+		convForwardAction,
 		moveToTrashAction,
 		deletePermanentlyAction,
 		msgReadUnreadAction,
@@ -256,9 +308,12 @@ export function useMsgConvActions({
 	 * @returns an array of arrays of actions
 	 */
 	const secondaryActions: Array<Exclude<ActionReturnType, false>> = [
-		replyAction,
-		replyAllAction,
-		forwardAction,
+		msgReplyAction,
+		convReplyAction,
+		msgReplyAllAction,
+		convReplyAllAction,
+		msgForwardAction,
+		convForwardAction,
 		sendDraftAction,
 		moveToTrashAction,
 		deletePermanentlyAction,

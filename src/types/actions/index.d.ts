@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { SyntheticEvent } from 'react';
+import React, { SyntheticEvent } from 'react';
 
 import { CreateModalFn } from '@zextras/carbonio-design-system';
+import { Grant } from '@zextras/carbonio-shell-ui';
 
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { ItemType } from '../../carbonio-ui-commons/types/tags';
@@ -20,8 +21,11 @@ export type ActionProps = {
 	onMouseEnter: () => void;
 };
 
-export type UIActionExecutionParams<CompleteResult> = {
-	uiUtilities: {
+export interface UIActionExecutionParams<CompleteResult = never> {
+	/**
+	 * @deprecated remove it as soon as all the actions are provided by hooks
+	 */
+	uiUtilities?: {
 		createModal: CreateModalFn;
 	};
 	callbacks?: {
@@ -29,13 +33,17 @@ export type UIActionExecutionParams<CompleteResult> = {
 		onError?: (error: string) => void;
 		onCancel?: () => void;
 	};
-};
+}
 
-export type UIAction<ExecutionParams extends UIActionExecutionParams> = {
+export type UIAction<
+	ExecutionParams extends UIActionExecutionParams = never,
+	CanExecuteParams = never
+> = {
 	id: string;
 	icon: string;
 	label: string;
 	execute?: (params: ExecutionParams) => void;
+	canExecute?: (params: CanExecuteParams) => boolean;
 };
 
 export type MessageActionReturnType = UIAction<never> & {
