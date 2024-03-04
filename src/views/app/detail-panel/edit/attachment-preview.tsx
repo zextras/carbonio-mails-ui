@@ -142,7 +142,6 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 			(isUnsavedAttachment(attachment) && !isAttachmentUploading(attachment)),
 		[attachment]
 	);
-	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 	const [getLink] = getIntegratedFunction('get-link');
 
 	const { text, setText } = useEditorText(editorId);
@@ -168,8 +167,8 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 			destinationFolderId: 'LOCAL_ROOT'
 		})
 			.then((fileNode) => getLink({ node: { id: fileNode.nodeId }, type: 'createLink' }))
-			.then((link) => {
-				addPublicLinkFromFiles(link);
+			.then((fileLink) => {
+				addPublicLinkFromFiles(fileLink);
 				removeAttachment();
 			});
 	}, [
@@ -179,7 +178,6 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		getLink,
 		removeAttachment
 	]);
-	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
 
 	return (
 		<StyledWrapper>
