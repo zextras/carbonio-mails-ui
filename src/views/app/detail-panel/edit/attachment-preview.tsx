@@ -168,23 +168,18 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 			destinationFolderId: 'LOCAL_ROOT'
 		})
 			.then((fileNode) => getLink({ node: { id: fileNode.nodeId }, type: 'createLink' }))
-			.then((link) => addPublicLinkFromFiles(link));
-	}, [addPublicLinkFromFiles, attachment?.messageId, attachment?.partName, getLink]);
+			.then((link) => {
+				addPublicLinkFromFiles(link);
+				removeAttachment();
+			});
+	}, [
+		addPublicLinkFromFiles,
+		attachment?.messageId,
+		attachment?.partName,
+		getLink,
+		removeAttachment
+	]);
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
-	const actionTarget = useMemo(
-		() => ({
-			title: t('label.select_folder', 'Select folder'),
-			confirmAction,
-			confirmLabel: t('label.save', 'Save'),
-			disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
-			allowFiles: false,
-			allowFolders: true,
-			isValidSelection: isAValidDestination,
-			canSelectOpenedFolder: true,
-			maxSelection: 1
-		}),
-		[confirmAction, isAValidDestination]
-	);
 
 	return (
 		<StyledWrapper>
