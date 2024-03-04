@@ -27,7 +27,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
 import ContactNames from './contact-names';
-import ContactNameChip from './contact-names-chips';
+import { ContactNameChip } from './contact-names-chips';
 import { useFoldersMap } from '../../../../../carbonio-ui-commons/store/zustand/folder';
 import type { MailMessage, TextReadValuesProps } from '../../../../../types';
 import { getFolderTranslatedName } from '../../../../sidebar/utils';

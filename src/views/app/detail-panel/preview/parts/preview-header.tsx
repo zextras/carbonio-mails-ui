@@ -53,7 +53,7 @@ import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import ContactNameChip from './contact-names-chips';
+import { ContactNameChip } from './contact-names-chips';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
