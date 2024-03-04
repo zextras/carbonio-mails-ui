@@ -11,7 +11,7 @@ import * as shell from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { screen, setupTest, within } from '../../../carbonio-ui-commons/test/test-setup';
-import { TESTID_SELECTORS } from '../../../constants/tests';
+import { TESTID_SELECTORS } from '../../../tests/constants';
 import { handleGetSignaturesRequest } from '../../../tests/mocks/network/msw/handle-get-signatures';
 import type { SignatureSettingsPropsType, SignItemType } from '../../../types';
 import SignatureSettings from '../signature-settings';
