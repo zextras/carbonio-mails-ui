@@ -14,7 +14,7 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, soapFetch, t } from '@zextras/carbonio-shell-ui';
 import styled, { SimpleInterpolation } from 'styled-components';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
@@ -27,7 +27,8 @@ import {
 import {
 	getEditor,
 	useEditorAttachments,
-	useEditorSubject
+	useEditorSubject,
+    useEditorText
 } from '../../../../store/zustand/editor';
 import {
 	isAttachmentUploading,
@@ -38,6 +39,8 @@ import { useEditorUploadProcess } from '../../../../store/zustand/editor/hooks/u
 import StyledWrapper from '../../../../styled-wrapper';
 import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../types';
 import { getAttachmentsLink } from '../preview/utils';
+import { useGetPublicUrl } from './edit-utils-hooks/use-get-public-url';
+import { map } from 'lodash';
 
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
@@ -141,6 +144,52 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 			(isUnsavedAttachment(attachment) && !isAttachmentUploading(attachment)),
 		[attachment]
 	);
+	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
+	const [getLink] = getIntegratedFunction('get-link');
+
+	const { text, setText } = useEditorText(editorId);
+
+	const addPublicLinkFromFiles = useCallback(
+		(filesResponse) => {
+			const textWithLink = {
+				plainText: filesResponse.url.concat(text.plainText),
+				richText: `<p><a href="${filesResponse.url}"> ${filesResponse.url}</a></p>`.concat(
+					text.richText
+				)
+			};
+			setText(textWithLink);
+		},
+		[setText, text]
+	);
+
+	const confirmAction = useCallback(
+		(nodes) => {
+			soapFetch('CopyToFiles', {
+				_jsns: 'urn:zimbraMail',
+				mid: attachment?.messageId,
+				part: attachment?.partName,
+				destinationFolderId: nodes[0].id
+			})
+				.then((fileNode) => getLink({ node: { id: fileNode.nodeId }, type: 'createLink' }))
+				.then((link) => addPublicLinkFromFiles(link));
+		},
+		[addPublicLinkFromFiles, attachment?.messageId, attachment?.partName, getLink]
+	);
+	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
+	const actionTarget = useMemo(
+		() => ({
+			title: t('label.select_folder', 'Select folder'),
+			confirmAction,
+			confirmLabel: t('label.save', 'Save'),
+			disabledTooltip: t('label.invalid_destination', 'This node is not a valid destination'),
+			allowFiles: false,
+			allowFolders: true,
+			isValidSelection: isAValidDestination,
+			canSelectOpenedFolder: true,
+			maxSelection: 1
+		}),
+		[confirmAction, isAValidDestination]
+	);
 
 	return (
 		<StyledWrapper>
@@ -192,6 +241,13 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				<Row orientation="horizontal" crossAlignment="center">
 					{isDeletable && (
 						<AttachmentHoverBarContainer>
+							<IconButton
+								size="medium"
+								icon="DriveOutline"
+								onClick={(): void => {
+									uploadIntegration && uploadIntegration(actionTarget);
+								}}
+							/>
 							<Padding right="small">
 								<Tooltip label={t('label.delete', 'Delete')}>
 									<IconButton
