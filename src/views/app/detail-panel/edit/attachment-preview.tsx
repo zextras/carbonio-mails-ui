@@ -114,6 +114,10 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		isSavedAttachment(attachment) && removeSavedAttachment(attachment.partName);
 	}, [attachment, removeSavedAttachment, removeUnsavedAttachment]);
 
+	const convertToSmartLinkAction = useCallback(() => {
+		isSavedAttachment(attachment) && convertToSmartLink(attachment.partName);
+	}, [attachment, convertToSmartLink]);
+
 	const iconColor = useAttachmentIconColor(attachment);
 
 	const isUploading = useMemo<boolean>(
@@ -161,11 +165,11 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 	);
 
 	const backgroundColor = useMemo(() => {
-		if (attachment?.isSmartLink) {
+		if (isSavedAttachment(attachment) && attachment.isSmartLink) {
 			return '#2196d3';
 		}
 		return 'gray3';
-	}, [attachment?.isSmartLink]);
+	}, [attachment]);
 
 	return (
 		<StyledWrapper>
@@ -217,13 +221,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				<Row orientation="horizontal" crossAlignment="center">
 					{isDeletable && (
 						<AttachmentHoverBarContainer>
-							<IconButton
-								size="medium"
-								icon="DriveOutline"
-								onClick={(): void => {
-									convertToSmartLink(attachment.partName);
-								}}
-							/>
+							<IconButton size="medium" icon="DriveOutline" onClick={convertToSmartLinkAction} />
 							<Padding right="small">
 								<Tooltip label={t('label.delete', 'Delete')}>
 									<IconButton

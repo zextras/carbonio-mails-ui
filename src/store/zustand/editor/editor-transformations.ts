@@ -392,6 +392,7 @@ export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachme
 		filename: part.filename ?? '',
 		partName: part.name,
 		contentType: part.contentType,
-		size: part.size
+		size: part.size,
+		isSmartLink: false
 	}));
 };

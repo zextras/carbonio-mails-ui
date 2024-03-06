@@ -37,9 +37,7 @@ const notifyUploadError = (file: File, err: string): void => {
 	});
 };
 
-export const useEditorAttachments = (
-	editorId: MailsEditorV2['id']
-): {
+type EditorAttachmentHook = {
 	hasStandardAttachments: boolean;
 	unsavedStandardAttachments: MailsEditorV2['unsavedAttachments'];
 	savedStandardAttachments: MailsEditorV2['savedAttachments'];
@@ -74,7 +72,9 @@ export const useEditorAttachments = (
 	removeUnsavedAttachment: (uploadId: string) => void;
 	removeStandardAttachments: () => void;
 	convertToSmartLink: (partName: string) => void;
-} => {
+};
+
+export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
 	const unsavedStandardAttachments = reject(
 		useEditorsStore((state) => state.editors[editorId].unsavedAttachments),
 		'isInline'
