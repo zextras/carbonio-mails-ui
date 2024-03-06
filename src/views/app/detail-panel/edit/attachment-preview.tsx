@@ -14,7 +14,7 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, soapFetch, t } from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import styled, { SimpleInterpolation } from 'styled-components';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
@@ -105,7 +105,8 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		editorId,
 		isUnsavedAttachment(attachment) ? (attachment.uploadId as string) : ''
 	);
-	const { removeUnsavedAttachment, removeSavedAttachment } = useEditorAttachments(editorId);
+	const { removeUnsavedAttachment, removeSavedAttachment, convertToSmartLink } =
+		useEditorAttachments(editorId);
 	const { subject } = useEditorSubject(editorId);
 
 	const removeAttachment = useCallback(() => {
@@ -159,25 +160,12 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		[setText, text]
 	);
 
-	const confirmAction = useCallback(() => {
-		soapFetch('CopyToFiles', {
-			_jsns: 'urn:zimbraMail',
-			mid: attachment?.messageId,
-			part: attachment?.partName,
-			destinationFolderId: 'LOCAL_ROOT'
-		})
-			.then((fileNode) => getLink({ node: { id: fileNode.nodeId }, type: 'createLink' }))
-			.then((fileLink) => {
-				addPublicLinkFromFiles(fileLink);
-				removeAttachment();
-			});
-	}, [
-		addPublicLinkFromFiles,
-		attachment?.messageId,
-		attachment?.partName,
-		getLink,
-		removeAttachment
-	]);
+	const backgroundColor = useMemo(() => {
+		if (attachment?.isSmartLink) {
+			return '#2196d3';
+		}
+		return 'gray3';
+	}, [attachment?.isSmartLink]);
 
 	return (
 		<StyledWrapper>
@@ -186,7 +174,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				mainAlignment="flex-start"
 				crossAlignment={'center'}
 				height="fit"
-				background="gray3"
+				background={backgroundColor}
 				data-testid={`attachment-container-${attachment.filename}`}
 				hoverBarDisabled={isUploading}
 			>
@@ -233,7 +221,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 								size="medium"
 								icon="DriveOutline"
 								onClick={(): void => {
-									confirmAction();
+									convertToSmartLink(attachment.partName);
 								}}
 							/>
 							<Padding right="small">

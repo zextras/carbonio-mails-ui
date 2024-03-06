@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { produce } from 'immer';
-import { remove } from 'lodash';
+import { find, remove } from 'lodash';
 import { create } from 'zustand';
 
 import { filterSavedInlineAttachment, filterUnsavedInlineAttachment } from './editor-utils';
@@ -196,6 +196,18 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].sendProcessStatus = status;
+				}
+			})
+		);
+	},
+	convertToSmartLink: (id: MailsEditorV2['id'], partName: string): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					const attach = find(state.editors[id].savedAttachments, ['partName', partName]);
+					if (attach) {
+						attach.isSmartLink = true;
+					}
 				}
 			})
 		);

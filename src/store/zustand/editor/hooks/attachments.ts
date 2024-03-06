@@ -73,6 +73,7 @@ export const useEditorAttachments = (
 	removeSavedAttachment: (partName: string) => void;
 	removeUnsavedAttachment: (uploadId: string) => void;
 	removeStandardAttachments: () => void;
+	convertToSmartLink: (partName: string) => void;
 } => {
 	const unsavedStandardAttachments = reject(
 		useEditorsStore((state) => state.editors[editorId].unsavedAttachments),
@@ -87,6 +88,7 @@ export const useEditorAttachments = (
 	);
 	const removeSavedAttachmentsInvoker = useEditorsStore((state) => state.removeSavedAttachment);
 	const removeUnsavedAttachmentsInvoker = useEditorsStore((state) => state.removeUnsavedAttachment);
+	const convertToSmartLinkInvoker = useEditorsStore((state) => state.convertToSmartLink);
 
 	const addGenericUnsavedAttachments = (
 		files: Array<File>,
@@ -310,6 +312,9 @@ export const useEditorAttachments = (
 		},
 		addStandardAttachments,
 		addInlineAttachments,
-		addUploadedAttachment
+		addUploadedAttachment,
+		convertToSmartLink: (partName: string): void => {
+			convertToSmartLinkInvoker(editorId, partName);
+		}
 	};
 };
