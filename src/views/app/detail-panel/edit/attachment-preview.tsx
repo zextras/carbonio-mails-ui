@@ -12,7 +12,8 @@ import {
 	Padding,
 	Row,
 	Text,
-	Tooltip
+	Tooltip,
+	useTheme
 } from '@zextras/carbonio-design-system';
 import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import styled, { SimpleInterpolation } from 'styled-components';
@@ -147,29 +148,15 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 			(isUnsavedAttachment(attachment) && !isAttachmentUploading(attachment)),
 		[attachment]
 	);
-	const [getLink] = getIntegratedFunction('get-link');
 
-	const { text, setText } = useEditorText(editorId);
-
-	const addPublicLinkFromFiles = useCallback(
-		(filesResponse) => {
-			const textWithLink = {
-				plainText: filesResponse.url.concat(text.plainText),
-				richText: `<p><a href="${filesResponse.url}"> ${filesResponse.url}</a></p>`.concat(
-					text.richText
-				)
-			};
-			setText(textWithLink);
-		},
-		[setText, text]
-	);
+	const theme = useTheme();
 
 	const backgroundColor = useMemo(() => {
 		if (isSavedAttachment(attachment) && attachment.isSmartLink) {
-			return '#2196d3';
+			return theme.palette.info.regular;
 		}
 		return 'gray3';
-	}, [attachment]);
+	}, [attachment, theme.palette.info.regular]);
 
 	return (
 		<StyledWrapper>
