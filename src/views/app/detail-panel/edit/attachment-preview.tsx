@@ -15,7 +15,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, t, useLocalStorage } from '@zextras/carbonio-shell-ui';
 import styled, { SimpleInterpolation } from 'styled-components';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
@@ -115,9 +115,18 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		isSavedAttachment(attachment) && removeSavedAttachment(attachment.partName);
 	}, [attachment, removeSavedAttachment, removeUnsavedAttachment]);
 
+	const [smartLinks, setSmartLinks] = useLocalStorage<Array<{ partName:string, draftId:string }>>(
+		`smartlinks`,
+		[]
+	);
+
 	const convertToSmartLinkAction = useCallback(() => {
-		isSavedAttachment(attachment) && convertToSmartLink(attachment.partName);
-	}, [attachment, convertToSmartLink]);
+		if (isSavedAttachment(attachment)) {
+			const partName = attachment.partName;
+			convertToSmartLink(partName) 
+			setSmartLinks( st => st.concat({partName, draftId:editor.did!! }) )
+		} 
+	}, [attachment, convertToSmartLink, smartLinks]);
 
 	const iconColor = useAttachmentIconColor(attachment);
 
@@ -152,7 +161,8 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 	const theme = useTheme();
 
 	const backgroundColor = useMemo(() => {
-		if (isSavedAttachment(attachment) && attachment.isSmartLink) {
+		if (isSavedAttachment(attachment) && (attachment.isSmartLink || 
+			smartLinks.some( sm => sm.partName === attachment.partName && sm.draftId === editor.did) )) {
 			return theme.palette.info.regular;
 		}
 		return 'gray3';
