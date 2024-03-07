@@ -5,13 +5,19 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { filter, map } from 'lodash';
 
 import { getConv } from './get-conv';
 import { getMsg } from './get-msg';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/identities';
 import { getParticipantsFromMessage } from '../../helpers/messages';
-import { MailMessage, SendMsgResult } from '../../types';
+import {
+	MailMessage,
+	SendMsgResult,
+	SendMsgWithSmartLinkRequest,
+	SendMsgWithSmartLinkResponse
+} from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { generateMailRequest } from '../editor-slice-utils';
 import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
@@ -57,7 +63,7 @@ export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
 
 export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParameters>(
 	'sendMsg',
-	async ({ editor }, { rejectWithValue, getState, dispatch }) => {
+	async ({ editor }, { rejectWithValue, dispatch }) => {
 		if (!editor) {
 			return rejectWithValue('No editor provided');
 		}
@@ -68,17 +74,24 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 
 		const msg = createSoapSendMsgRequestFromEditor(editor);
 
-		// console.log(editor);
-
 		const identity = getIdentityDescriptor(editor.identityId);
 
-		let resp: SaveDraftResponse;
+		const smartLinksAttachment = filter(
+			editor.savedAttachments,
+			(attachment) => attachment.isSmartLink
+		);
+		const smartlinks = map(smartLinksAttachment, (smartlink) => ({
+			partName: smartlink.partName,
+			messageId: smartlink.messageId
+		}));
+		let resp: SendMsgWithSmartLinkResponse;
 		try {
-			resp = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
-				'SendMsg',
+			resp = await soapFetch<SendMsgWithSmartLinkRequest, SendMsgWithSmartLinkResponse>(
+				'SendMsgWithSmartLink',
 				{
 					_jsns: 'urn:zimbraMail',
-					m: msg
+					m: msg,
+					smartlinks
 				},
 				identity?.ownerAccount ?? undefined
 			);
