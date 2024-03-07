@@ -176,12 +176,12 @@ describe('Actions visibility', () => {
 			${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.REPLY_ALL}
 			${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.REPLY_ALL}
 			${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.REPLY_ALL}
-			${FOLDERIDS.INBOX}        | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FORWARD}
+			${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FORWARD}
 			${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FORWARD}
 			${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FORWARD}
 			${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FORWARD}
 			${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FORWARD}
-			${FOLDERIDS.USER_DEFINED} | ${ASSERTION.CONTAINS}     | ${ConversationActionsDescriptors.FORWARD}
+			${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAINS} | ${ConversationActionsDescriptors.FORWARD}
 		`(
 			`primary actions for a conversation that $assertion.desc in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {

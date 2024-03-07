@@ -33,11 +33,7 @@ import {
 	getShowOriginalAction
 } from './get-msg-conv-actions-functions';
 import { getFolderIdParts } from '../helpers/folders';
-import {
-	getParentFolderId,
-	isConversation,
-	isSingleMessageConversation
-} from '../helpers/messages';
+import { getParentFolderId, isConversation } from '../helpers/messages';
 import { useAppDispatch } from '../hooks/redux';
 import type {
 	ActionReturnType,
@@ -92,7 +88,6 @@ export function useMsgConvActions({
 				(msg) => ![FOLDERS.TRASH, FOLDERS.DRAFTS].includes(getFolderIdParts(msg.parent).id ?? '')
 		  )?.[0] ?? {}
 		: item;
-	const isSingleMsgConv = isSingleMessageConversation(item);
 	const { id } = item;
 
 	/**
@@ -291,7 +286,6 @@ export function useMsgConvActions({
 		msgReplyAllAction,
 		convReplyAllAction,
 		msgForwardAction,
-		convForwardAction,
 		moveToTrashAction,
 		deletePermanentlyAction,
 		msgReadUnreadAction,
