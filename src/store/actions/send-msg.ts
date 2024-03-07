@@ -68,7 +68,7 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 
 		const msg = createSoapSendMsgRequestFromEditor(editor);
 
-		console.log(editor);
+		// console.log(editor);
 
 		const identity = getIdentityDescriptor(editor.identityId);
 

@@ -331,11 +331,25 @@ export const generateEditAsDraftEditor = (
 ): MailsEditorV2 => {
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
-  console.log("TODO: READ FROM LOCAL_STORAGE", savedAttachments);
+
+	const smartLinksString = localStorage.getItem('smartlinks') ?? '[]';
+	const smartLinks = JSON.parse(smartLinksString);
+
+	const correctSavedAttachments = savedAttachments.map((attachment) => {
+		const isSmartLink = smartLinks.some(
+			(sm: { partName: string; draftId: string }) =>
+				sm.partName === attachment.partName && sm.draftId === originalMessage.id
+		);
+		attachment.isSmartLink = isSmartLink;
+		return attachment;
+	});
 
 	const text = {
 		plainText: `${extractBody(originalMessage)[0]}`,
-		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
+		richText: replaceCidUrlWithServiceUrl(
+			`${extractBody(originalMessage)[1]}`,
+			correctSavedAttachments
+		)
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
@@ -345,7 +359,7 @@ export const generateEditAsDraftEditor = (
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
 		unsavedAttachments: [],
-		savedAttachments: buildSavedAttachments(originalMessage),
+		savedAttachments: correctSavedAttachments,
 		isRichText,
 		isUrgent: originalMessage.urgent,
 		recipients: {
