@@ -4,12 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS, useTags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useIntegratedFunction, useTags } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
 import {
 	getAddRemoveFlagAction,
 	getApplyTagAction,
+	getCreateAppointmentAction,
 	getDeletePermanentlyAction,
 	getDownloadEmlAction,
 	getEditAsNewAction,
@@ -54,6 +55,7 @@ export function useMsgConvActions({
 	const dispatch = useAppDispatch();
 	const tags = useTags();
 	const { createWindow } = useExtraWindowsManager();
+	const [openAppointmentComposer, isAvailable] = useIntegratedFunction('create_appointment');
 	if (!folderId) {
 		return [[], []];
 	}
@@ -85,6 +87,7 @@ export function useMsgConvActions({
 	const folderIncludedSendDraft = [FOLDERS.DRAFTS];
 	const folderExcludedRedirect = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const folderExcludedDownloadEML = [FOLDERS.DRAFTS];
+	const folderExcludedCreateAppointment = [FOLDERS.DRAFTS, FOLDERS.SPAM];
 
 	const addRemoveFlagAction = getAddRemoveFlagAction({
 		isConversation: isConv,
@@ -232,6 +235,15 @@ export function useMsgConvActions({
 		folderExcludedDownloadEML
 	});
 
+	const createAppointmentAction = getCreateAppointmentAction({
+		isConversation: isConv,
+		item,
+		folderId,
+		folderExcludedCreateAppointment,
+		openAppointmentComposer,
+		isAvailable
+	});
+
 	/**
 	 * Primary actions are the ones that are shown when the user hovers over a message
 	 * @returns an array of arrays of actions
@@ -267,6 +279,7 @@ export function useMsgConvActions({
 		markRemoveSpam,
 		applyTagAction,
 		moveToFolderAction,
+		createAppointmentAction,
 		printAction,
 		previewOnSeparatedWindow,
 		redirectAction,

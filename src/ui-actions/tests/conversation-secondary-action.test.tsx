@@ -5,6 +5,7 @@
  */
 
 import { existsActionById } from './actions-tests-utils';
+import { useIntegratedFunction } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import {
 	ASSERTION,
@@ -218,6 +219,38 @@ describe('Actions visibility', () => {
 	`(
 		`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, assertion, action }) => {
+			const conv = generateConversation({
+				folderId: folder.id,
+				messageGenerationCount: 5
+			});
+			const deselectAll = jest.fn();
+			const { result: hookResult } = setupHook(useMsgConvActions, {
+				store: generateStore(),
+				initialProps: [
+					{
+						item: conv,
+						deselectAll,
+						messageActionsForExtraWindow: []
+					}
+				]
+			});
+			expect(
+				existsActionById({ id: action.id, actions: hookResult.current, type: 'secondary' })
+			).toBe(assertion.value);
+		}
+	);
+	test.each`
+		case | folder                    | assertion                | action
+		${7} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+	`(
+		`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
+		async ({ folder, assertion, action }) => {
+			useIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
 			const conv = generateConversation({
 				folderId: folder.id,
 				messageGenerationCount: 5

@@ -6,6 +6,7 @@
 
 import { existsActionById } from './actions-tests-utils';
 import { TagsActionsType } from '../../carbonio-ui-commons/constants';
+import { useIntegratedFunction } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import { MessageActionsDescriptors } from '../../constants';
 import {
@@ -308,6 +309,43 @@ describe('Secondary actions visibility', () => {
 	`(
 		`(case #$case) secondary actions for a message in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, assertion, action }) => {
+			const msg = generateMessage({ folderId: folder.id });
+			const deselectAll = jest.fn();
+			const { result: hookResult } = setupHook(useMsgConvActions, {
+				store: generateStore(),
+				initialProps: [
+					{
+						item: msg,
+						deselectAll,
+						messageActionsForExtraWindow: []
+					}
+				]
+			});
+			expect(
+				existsActionById({
+					id: action.id,
+					actions: hookResult.current,
+					type: 'secondary'
+				})
+			).toBe(assertion.value);
+		}
+	);
+
+	/**
+	 * 23. secondary actions for a message in any folder except draft and spam contains the Create Appointment action
+	 */
+	test.each`
+		case  | folder                  | assertion                | action
+		${22} | ${FOLDERS.INBOX}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${22} | ${FOLDERS.SENT}         | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${22} | ${FOLDERS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${22} | ${FOLDERS.TRASH}        | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${22} | ${FOLDERS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${22} | ${FOLDERS.USER_DEFINED} | ${ASSERTION.CONTAIN}     | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+	`(
+		`(case #$case) secondary actions for a message in $folder.desc folder $assertion.desc the $action.desc action`,
+		async ({ folder, assertion, action }) => {
+			useIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
 			const msg = generateMessage({ folderId: folder.id });
 			const deselectAll = jest.fn();
 			const { result: hookResult } = setupHook(useMsgConvActions, {

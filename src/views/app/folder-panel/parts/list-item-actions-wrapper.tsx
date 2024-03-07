@@ -8,6 +8,7 @@ import React, { FC, ReactElement, SyntheticEvent, useCallback } from 'react';
 import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
 import styled, { DefaultTheme } from 'styled-components';
 
+import { MessageActionsDescriptors } from '../../../../constants';
 import { isConversation } from '../../../../helpers/messages';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
 import type {
@@ -15,6 +16,7 @@ import type {
 	Conversation,
 	ListItemActionWrapperProps,
 	MailMessage,
+	MessageAction,
 	MessageActionReturnType,
 	TagActionItemType
 } from '../../../../types';
@@ -93,8 +95,11 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 		deselectAll,
 		messageActionsForExtraWindow: messageActions
 	});
+	const finalDropdownActions = dropdownActions.filter(
+		(action: MessageAction) => action.id !== MessageActionsDescriptors.CREATE_APPOINTMENT.id
+	);
 
-	const dropdownActionsItems = dropdownActions.map((action) => ({
+	const dropdownActionsItems = finalDropdownActions.map((action) => ({
 		...action,
 		onClick: (ev: KeyboardEvent | React.SyntheticEvent<HTMLElement, Event>): void => {
 			action.onClick && action.onClick(ev);

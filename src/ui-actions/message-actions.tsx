@@ -14,16 +14,25 @@ import {
 	replaceHistory,
 	t
 } from '@zextras/carbonio-shell-ui';
-import { map, noop } from 'lodash';
+import { isNull, map, noop } from 'lodash';
 
 import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
 import MoveConvMessage from './move-conv-msg';
 import RedirectAction from './redirect-message-action';
+import { getRoot } from '../carbonio-ui-commons/store/zustand/folder';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { EditViewActions, MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
-import { getMsgsForPrint, msgAction } from '../store/actions';
+import {
+	CalendarType,
+	SenderType,
+	getAttendees,
+	getOptionalsAttendees,
+	getSenderByOwner
+} from '../helpers/appointmemt';
+import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg } from '../store/actions/send-msg';
+import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
 	BoardContext,
@@ -751,6 +760,63 @@ export function downloadEml({ id }: { id: string }): MessageActionReturnType {
 			link.href = `${getLocationOrigin()}/service/home/~/?auth=co&id=${id}`;
 			link.click();
 			link.remove();
+		}
+	};
+}
+
+export function createAppointment({
+	item,
+	openAppointmentComposer
+}: {
+	item: MailMessage;
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	openAppointmentComposer: Function;
+}): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.CREATE_APPOINTMENT;
+	return {
+		id: actDescriptor.id,
+		icon: 'CalendarModOutline',
+		label: t('action.create_appointment', 'Create Appointment'),
+		onClick: (ev): void => {
+			ev?.preventDefault();
+			const attendees = getAttendees(item);
+			const optionalAttendees = getOptionalsAttendees(item);
+			const rooFolder = getRoot(item.parent);
+			let calendar: CalendarType | null = null;
+			let sender: SenderType | null = null;
+			const htmlBody = extractBody(item)[1];
+			if (rooFolder && rooFolder?.isLink) {
+				const calendarId = `${rooFolder.id.split(':')[0]}:${FOLDERS.CALENDAR}`;
+				calendar = {
+					id: calendarId,
+					owner: rooFolder?.isLink && rooFolder.owner
+				};
+				sender = getSenderByOwner(rooFolder?.owner);
+			}
+			if (!item?.isComplete) {
+				getMsgCall({ msgId: item.id }).then((message: MailMessage) => {
+					const mailHtmlBody = extractBody(message)[1];
+					openAppointmentComposer({
+						title: message.subject,
+						isRichText: true,
+						richText: mailHtmlBody,
+						...(!isNull(calendar) ? { calendar } : {}),
+						...(!isNull(sender) ? { sender } : {}),
+						attendees,
+						optionalAttendees
+					});
+				});
+			} else {
+				openAppointmentComposer({
+					title: item.subject,
+					isRichText: true,
+					richText: htmlBody,
+					...(!isNull(calendar) ? { calendar } : {}),
+					...(!isNull(sender) ? { sender } : {}),
+					attendees,
+					optionalAttendees
+				});
+			}
 		}
 	};
 }
