@@ -8,6 +8,7 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
+import { useLocalStorage } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { addEditor } from '../../../../../store/zustand/editor';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
@@ -23,6 +24,7 @@ describe('Attachments visualization', () => {
 		// Generate editor info for the store
 		const reduxStore = generateStore();
 		setupEditorStore({ editors: [] });
+		useLocalStorage.mockReturnValue([[], jest.fn()]);
 		const editor = await generateEditorV2Case(editorTestCaseId, reduxStore.dispatch);
 		addEditor({ id: editor.id, editor });
 

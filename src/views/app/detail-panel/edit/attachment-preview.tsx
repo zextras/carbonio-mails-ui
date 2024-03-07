@@ -15,7 +15,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, t, useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { t, useLocalStorage } from '@zextras/carbonio-shell-ui';
 import styled, { SimpleInterpolation } from 'styled-components';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
@@ -28,8 +28,7 @@ import {
 import {
 	getEditor,
 	useEditorAttachments,
-	useEditorSubject,
-	useEditorText
+	useEditorSubject
 } from '../../../../store/zustand/editor';
 import {
 	isAttachmentUploading,
@@ -115,18 +114,19 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		isSavedAttachment(attachment) && removeSavedAttachment(attachment.partName);
 	}, [attachment, removeSavedAttachment, removeUnsavedAttachment]);
 
-	const [smartLinks, setSmartLinks] = useLocalStorage<Array<{ partName:string, draftId:string }>>(
+	const [smartLinks, setSmartLinks] = useLocalStorage<Array<{ partName: string; draftId: string }>>(
 		`smartlinks`,
 		[]
 	);
 
 	const convertToSmartLinkAction = useCallback(() => {
-		if (isSavedAttachment(attachment)) {
-			const partName = attachment.partName;
-			convertToSmartLink(partName) 
-			setSmartLinks( st => st.concat({partName, draftId:editor.did!! }) )
-		} 
-	}, [attachment, convertToSmartLink, smartLinks]);
+		const draftId = editor.did;
+		if (isSavedAttachment(attachment) && draftId) {
+			const { partName } = attachment;
+			convertToSmartLink(partName);
+			setSmartLinks((st) => st.concat({ partName, draftId }));
+		}
+	}, [attachment, convertToSmartLink, editor.did, setSmartLinks]);
 
 	const iconColor = useAttachmentIconColor(attachment);
 
@@ -161,12 +161,15 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 	const theme = useTheme();
 
 	const backgroundColor = useMemo(() => {
-		if (isSavedAttachment(attachment) && (attachment.isSmartLink || 
-			smartLinks.some( sm => sm.partName === attachment.partName && sm.draftId === editor.did) )) {
+		if (
+			isSavedAttachment(attachment) &&
+			(attachment.isSmartLink ||
+				smartLinks.some((sm) => sm.partName === attachment.partName && sm.draftId === editor.did))
+		) {
 			return theme.palette.info.regular;
 		}
 		return 'gray3';
-	}, [attachment, theme.palette.info.regular]);
+	}, [attachment, editor.did, smartLinks, theme.palette.info.regular]);
 
 	return (
 		<StyledWrapper>
