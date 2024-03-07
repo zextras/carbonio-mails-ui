@@ -163,8 +163,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 	const backgroundColor = useMemo(() => {
 		if (
 			isSavedAttachment(attachment) &&
-			(attachment.isSmartLink ||
-				smartLinks.some((sm) => sm.partName === attachment.partName && sm.draftId === editor.did))
+			attachment.isSmartLink
 		) {
 			return theme.palette.info.regular;
 		}

@@ -331,6 +331,7 @@ export const generateEditAsDraftEditor = (
 ): MailsEditorV2 => {
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
+  console.log("TODO: READ FROM LOCAL_STORAGE", savedAttachments);
 
 	const text = {
 		plainText: `${extractBody(originalMessage)[0]}`,
