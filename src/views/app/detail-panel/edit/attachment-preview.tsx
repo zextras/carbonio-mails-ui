@@ -124,7 +124,20 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		if (isSavedAttachment(attachment) && draftId) {
 			const { partName } = attachment;
 			convertToSmartLink(partName);
-			setSmartLinks((st) => st.concat({ partName, draftId }));
+			const newSmartLink = { partName, draftId };
+			setSmartLinks((state) =>
+				state.some(
+					(smartLink) =>
+						smartLink.partName === newSmartLink.partName &&
+						smartLink.draftId === newSmartLink.draftId
+				)
+					? state.filter(
+							(smartLink) =>
+								smartLink.partName !== newSmartLink.partName ||
+								smartLink.draftId !== newSmartLink.draftId
+					  )
+					: [...state, newSmartLink]
+			);
 		}
 	}, [attachment, convertToSmartLink, editor.did, setSmartLinks]);
 
