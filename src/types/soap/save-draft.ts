@@ -66,7 +66,7 @@ export type SaveDraftResponse = {
 export type SendMsgWithSmartLinksRequest = {
 	_jsns: 'urn:zimbraMail';
 	m: SoapDraftMessageObj;
-	smartlinks: Array<{ partName: string; messageId: string }>;
+	smartlinks: Array<{ partName: string; draftId: string }>;
 };
 
 export type SendMsgWithSmartLinksResponse = {

@@ -82,7 +82,7 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 		);
 		const smartlinks = map(smartLinksAttachment, (smartlink) => ({
 			partName: smartlink.partName,
-			messageId: smartlink.messageId
+			draftId: smartlink.messageId
 		}));
 		let resp: SendMsgWithSmartLinksResponse;
 		try {
