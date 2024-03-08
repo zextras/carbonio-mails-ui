@@ -15,8 +15,8 @@ import { getParticipantsFromMessage } from '../../helpers/messages';
 import {
 	MailMessage,
 	SendMsgResult,
-	SendMsgWithSmartLinkRequest,
-	SendMsgWithSmartLinkResponse
+	SendMsgWithSmartLinksRequest,
+	SendMsgWithSmartLinksResponse
 } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { generateMailRequest } from '../editor-slice-utils';
@@ -84,10 +84,10 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 			partName: smartlink.partName,
 			messageId: smartlink.messageId
 		}));
-		let resp: SendMsgWithSmartLinkResponse;
+		let resp: SendMsgWithSmartLinksResponse;
 		try {
-			resp = await soapFetch<SendMsgWithSmartLinkRequest, SendMsgWithSmartLinkResponse>(
-				'SendMsgWithSmartLink',
+			resp = await soapFetch<SendMsgWithSmartLinksRequest, SendMsgWithSmartLinksResponse>(
+				'SendMsgWithSmartLinks',
 				{
 					_jsns: 'urn:zimbraMail',
 					m: msg,

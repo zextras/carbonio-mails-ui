@@ -63,13 +63,13 @@ export type SaveDraftResponse = {
 	Fault?: any;
 };
 
-export type SendMsgWithSmartLinkRequest = {
+export type SendMsgWithSmartLinksRequest = {
 	_jsns: 'urn:zimbraMail';
 	m: SoapDraftMessageObj;
 	smartlinks: Array<{ partName: string; messageId: string }>;
 };
 
-export type SendMsgWithSmartLinkResponse = {
+export type SendMsgWithSmartLinksResponse = {
 	[x: string]: any;
 	m?: Array<SoapMailMessage>;
 	Fault?: any;
