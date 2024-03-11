@@ -239,13 +239,13 @@ describe('Actions visibility', () => {
 		}
 	);
 	test.each`
-		case | folder                    | assertion                | action
-		${7} | ${FOLDERIDS.INBOX}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
-		${7} | ${FOLDERIDS.SENT}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
-		${7} | ${FOLDERIDS.TRASH}        | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
-		${7} | ${FOLDERIDS.DRAFTS}       | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
-		${7} | ${FOLDERIDS.SPAM}         | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
-		${7} | ${FOLDERIDS.USER_DEFINED} | ${ASSERTION.NOT_CONTAIN} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		case | folder                              | assertion                  | action
+		${7} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
 	`(
 		`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, assertion, action }) => {
