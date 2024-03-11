@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useCallback } from 'react';
+
 import { Container, Divider, Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, report, t } from '@zextras/carbonio-shell-ui';
 import { startsWith } from 'lodash';
-import React, { FC, useCallback } from 'react';
+
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { FOLDER_ACTIONS } from '../../commons/utilities';
@@ -53,7 +55,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 						folder,
 						l: FOLDERS.TRASH,
 						op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
-				  }
+					}
 		)
 			.then((res) => {
 				if (!('Fault' in res)) {

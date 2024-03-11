@@ -94,7 +94,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						name: item.name,
 						id: item.id,
 						description: unescape(item?.content?.[0]?._content)
-					} as SignItemType)
+					}) as SignItemType
 			);
 			setSignatures(signaturesItems);
 			setOriginalSignatures(
@@ -230,7 +230,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						...current,
 						name: newName,
 						label: newName
-					} as SignItemType)
+					}) as SignItemType
 			);
 
 			const updatedSignatures = signatures.map((signature) => {
@@ -271,7 +271,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					({
 						...current,
 						description: newDescription
-					} as SignItemType)
+					}) as SignItemType
 			);
 
 			const updatedSign = signatures.map((signature) => {

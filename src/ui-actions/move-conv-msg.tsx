@@ -214,7 +214,7 @@ const MoveConvMessage = ({
 				? onClose
 				: (): void => {
 						setMoveConvModal(true);
-				  },
+					},
 		[moveConvModal, onClose]
 	);
 
@@ -278,7 +278,7 @@ const MoveConvMessage = ({
 							: t(
 									'folder_panel.modal.move.body.message1',
 									'Select a folder to move the considered one to:'
-							  )}
+								)}
 					</Text>
 				</Container>
 				<FolderSelector

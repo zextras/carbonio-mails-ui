@@ -24,11 +24,12 @@ import { SORTING_OPTIONS, SORTING_DIRECTION } from '../../../../../constants';
 import { generateStore } from '../../../../../tests/generators/store';
 import { SearchRequest } from '../../../../../types';
 import { Breadcrumbs } from '../breadcrumbs';
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/explicit-function-return-type
+
 const handleSearchRequest = async (
 	req: RestRequest<RestGenericRequest>,
 	res: ResponseComposition<RestGenericResponse>,
 	ctx: RestContext
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/explicit-function-return-type
 ) => {
 	if (!req) {
 		return res(ctx.status(500, 'Empty request'));

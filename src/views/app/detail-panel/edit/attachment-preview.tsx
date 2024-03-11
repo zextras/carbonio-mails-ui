@@ -125,7 +125,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				messageSubject: subject,
 				attachments: [attachment.partName],
 				attachmentType: attachment.contentType
-		  })
+			})
 		: null;
 
 	const cancelUpload = useCallback(() => {

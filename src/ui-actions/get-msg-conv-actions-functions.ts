@@ -82,7 +82,7 @@ export function getReadUnreadAction({
 				folderId,
 				deselectAll,
 				shouldReplaceHistory: false
-		  })
+			})
 		: setMsgRead({ ids: [id], value: item.read, dispatch, folderId });
 	return !foldersExcludedMarkReadUnread.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
@@ -239,13 +239,13 @@ export function getMarkRemoveSpam({
 				value: folderId === FOLDERS.SPAM,
 				dispatch,
 				deselectAll
-		  })
+			})
 		: setMsgAsSpam({
 				ids: [id],
 				value: folderId === FOLDERS.SPAM,
 				dispatch,
 				folderId
-		  });
+			});
 	return !foldersExcludedMarkUnmarkSpam.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -309,14 +309,14 @@ export function getMoveToFolderAction({
 				folderId,
 				isRestore: folderId === FOLDERS.TRASH,
 				deselectAll
-		  })
+			})
 		: moveMessageToFolder({
 				id: [id],
 				folderId,
 				dispatch,
 				isRestore: folderId === FOLDERS.TRASH,
 				deselectAll
-		  });
+			});
 }
 
 export function getPrintAction({
@@ -333,7 +333,7 @@ export function getPrintAction({
 	const action = isConversation
 		? printConversation({
 				conversation: [item as Conversation]
-		  })
+			})
 		: printMsg({ message: item as MailMessage });
 	return !folderExcludedPrintMessage.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }

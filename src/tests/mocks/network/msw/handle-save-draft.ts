@@ -10,11 +10,11 @@ import {
 	RestGenericResponse
 } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handlers';
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/explicit-function-return-type
 export const handleSaveDraftRequest = async (
 	req: RestRequest<RestGenericRequest>,
 	res: ResponseComposition<RestGenericResponse>,
 	ctx: RestContext
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/explicit-function-return-type
 ) => {
 	if (!req) {
 		return res(ctx.status(500, 'Empty request'));

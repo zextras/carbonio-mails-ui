@@ -61,14 +61,14 @@ export const useUploadFromFiles = ({
 					const label = allSuccess
 						? t('message.snackbar.all_att_added', 'Attachments added successfully')
 						: allFails
-						? t(
-								'message.snackbar.att_err_adding',
-								'There seems to be a problem when adding attachments, please try again'
-						  )
-						: t(
-								'message.snackbar.some_att_add_fails',
-								'There seems to be a problem when adding some attachments, please try again'
-						  );
+							? t(
+									'message.snackbar.att_err_adding',
+									'There seems to be a problem when adding attachments, please try again'
+								)
+							: t(
+									'message.snackbar.some_att_add_fails',
+									'There seems to be a problem when adding some attachments, please try again'
+								);
 					getBridgedFunctions()?.createSnackbar({
 						key: `calendar-moved-root`,
 						replace: true,
