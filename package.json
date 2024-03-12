@@ -21,7 +21,8 @@
 		"lint-stats": "eslint --ext .js,.jsx,.ts,.tsx --format node_modules/eslint-stats/byErrorAndWarningStacked --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"test": "jest",
 		"pull-translations": "git subtree pull -P translations git@github.com:Zextras/carbonio-mails-ui-i18n.git master --squash",
-		"push-translations": "git subtree push -P translations git@github.com:Zextras/carbonio-mails-ui-i18n.git"
+		"push-translations": "git subtree push -P translations git@github.com:Zextras/carbonio-mails-ui-i18n.git",
+		"build:dev": "sdk build --dev --pkgRel $(date +%s)"
 	},
 	"files": [
 		"src/types/"
