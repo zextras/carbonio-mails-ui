@@ -14,7 +14,7 @@ import {
 	useSnackbar,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { addBoard, t } from '@zextras/carbonio-shell-ui';
+import { addBoard, soapFetch, t, useLocalStorage } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
@@ -41,9 +41,14 @@ import {
 	useEditorSend,
 	useEditorAttachments,
 	deleteEditor,
-	useEditorsStore
+	useEditorsStore,
+	getEditor
 } from '../../../../store/zustand/editor';
-import { BoardContext, CloseBoardReasons } from '../../../../types';
+import { BoardContext, CloseBoardReasons, SmartLinkAttachment } from '../../../../types';
+import {
+	CreateSmartLinksRequest,
+	CreateSmartLinksResponse
+} from '../../../../types/soap/create-smart-links';
 
 export type EditViewProp = {
 	editorId: string;
@@ -245,7 +250,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	}, []);
 
 	const flexStart = 'flex-start';
-
+	const [_, setSmartLinks] = useLocalStorage<SmartLinkAttachment[]>('smartLinks', []);
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
 			const files = buildArrayFromFileList(fileList);
@@ -260,6 +265,36 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		},
 		[addInlineAttachments]
 	);
+
+	const smartLinksString = localStorage.getItem('smartlinks') ?? '[]';
+	const smartLinks = JSON.parse(smartLinksString);
+	const draftId = getEditor({ id: editorId })?.did;
+	const createSmartLinksAction = useCallback((): void => {
+		const resp = soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
+			_jsns: 'urn:zimbraMail',
+			smartLinks
+		}).then((response) => {
+			console.log('response', { response });
+			if ('Fault' in response) {
+				createSnackbar({
+					key: `save-draft`,
+					replace: true,
+					type: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: 3000
+				});
+			} else {
+				setSmartLinks((state) => state.filter((smartLink) => smartLink.draftId !== draftId));
+				createSnackbar({
+					key: 'smartLinksCreated',
+					replace: true,
+					type: 'success',
+					label: t('label.smart_links_created', 'smart links created'),
+					autoHideTimeout: 3000
+				});
+			}
+		});
+	}, [createSnackbar, draftId, setSmartLinks, smartLinks]);
 
 	return (
 		<Container
@@ -303,6 +338,12 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 								disabled={!saveDraftAllowedStatus?.allowed}
 							/>
 						</Tooltip>
+						<Button
+							type="outlined"
+							onClick={createSmartLinksAction}
+							label={`${t('label.create_smart_links', 'create smart links')}`}
+							disabled={smartLinks?.length === 0}
+						></Button>
 						<EditViewSendButtons
 							onSendLater={onScheduledSendClick}
 							onSendNow={onSendClick}

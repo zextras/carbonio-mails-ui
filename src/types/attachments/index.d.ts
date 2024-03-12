@@ -27,3 +27,5 @@ export type SavedAttachment = AbstractAttachment & {
 	partName: string;
 	isSmartLink: boolean;
 };
+
+export type SmartLinkAttachment = { partName: string; draftId: string };
