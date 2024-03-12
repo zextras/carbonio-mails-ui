@@ -269,12 +269,12 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 
 	const { text, setText } = useEditorText(editorId);
 	const smartLinksString = localStorage.getItem('smartlinks') ?? '[]';
-	const smartLinks = JSON.parse(smartLinksString);
+	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(smartLinksString);
 	const draftId = getEditor({ id: editorId })?.did;
 	const createSmartLinksAction = useCallback((): void => {
 		soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
 			_jsns: 'urn:zimbraMail',
-			attachments: smartLinks
+			attachments: smartLinks.filter((smartLink) => smartLink.draftId === draftId)
 		}).then((response) => {
 			if ('Fault' in response) {
 				createSnackbar({
