@@ -42,7 +42,8 @@ import {
 	useEditorAttachments,
 	deleteEditor,
 	useEditorsStore,
-	getEditor
+	getEditor,
+	useEditorText
 } from '../../../../store/zustand/editor';
 import { BoardContext, CloseBoardReasons, SmartLinkAttachment } from '../../../../types';
 import {
@@ -266,15 +267,15 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		[addInlineAttachments]
 	);
 
+	const { text, setText } = useEditorText(editorId);
 	const smartLinksString = localStorage.getItem('smartlinks') ?? '[]';
 	const smartLinks = JSON.parse(smartLinksString);
 	const draftId = getEditor({ id: editorId })?.did;
 	const createSmartLinksAction = useCallback((): void => {
-		const resp = soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
+		soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
 			_jsns: 'urn:zimbraMail',
 			attachments: smartLinks
 		}).then((response) => {
-			console.log('response', { response });
 			if ('Fault' in response) {
 				createSnackbar({
 					key: `save-draft`,
@@ -285,6 +286,15 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 				});
 			} else {
 				setSmartLinks((state) => state.filter((smartLink) => smartLink.draftId !== draftId));
+				const textWithLink = {
+					plainText: map(response.smartLinks, (smartLink) => smartLink.publicUrl)
+						.join('\n')
+						.concat(text.plainText),
+					richText: text.richText.concat(
+						` ${map(response.smartLinks, (smartLink) => `<p>${smartLink.publicUrl}</p>`).join('')}`
+					)
+				};
+				setText(textWithLink);
 				createSnackbar({
 					key: 'smartLinksCreated',
 					replace: true,
@@ -294,7 +304,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 				});
 			}
 		});
-	}, [createSnackbar, draftId, setSmartLinks, smartLinks]);
+	}, [createSnackbar, draftId, setSmartLinks, setText, smartLinks, text.plainText, text.richText]);
 
 	return (
 		<Container
