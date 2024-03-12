@@ -8,7 +8,7 @@ import { ZimbraRequest } from './zimbra-request';
 import { SmartLinkAttachment } from '../attachments';
 
 export type CreateSmartLinksRequest = ZimbraRequest & {
-	smartLinks: Array<SmartLinkAttachment>;
+	attachments: Array<SmartLinkAttachment>;
 };
 
 export type CreateSmartLinksResponse = Array<{

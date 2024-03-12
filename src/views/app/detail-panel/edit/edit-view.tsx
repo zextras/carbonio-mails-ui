@@ -272,7 +272,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const createSmartLinksAction = useCallback((): void => {
 		const resp = soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
 			_jsns: 'urn:zimbraMail',
-			smartLinks
+			attachments: smartLinks
 		}).then((response) => {
 			console.log('response', { response });
 			if ('Fault' in response) {
