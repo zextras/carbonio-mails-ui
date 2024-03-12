@@ -276,6 +276,8 @@
         "collapse_receivers_list": "Collapse recipients list",
         "confirm": "Confirm",
         "contact_folder": "Contact Folder",
+        "convert_back_to_attachment": "Convert back to attachment",
+        "convert_to_smart_link": "Convert to smart link",
         "create": "Create",
         "create_and_move": "Create and move",
         "create_new_task": "Create New Task",

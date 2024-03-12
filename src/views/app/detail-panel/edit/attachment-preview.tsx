@@ -228,21 +228,37 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 					/>
 				)}
 				<Row orientation="horizontal" crossAlignment="center">
-					{isDeletable && (
-						<AttachmentHoverBarContainer>
-							<IconButton size="medium" icon="DriveOutline" onClick={convertToSmartLinkAction} />
-							<Padding right="small">
-								<Tooltip label={t('label.delete', 'Delete')}>
+					<AttachmentHoverBarContainer>
+						<Row>
+							{isSavedAttachment(attachment) && (
+								<Tooltip
+									label={
+										attachment.isSmartLink
+											? t('label.convert_back_to_attachment', 'Convert back to attachment')
+											: t('label.convert_to_smart_link', 'Convert to smart link')
+									}
+								>
 									<IconButton
-										size="large"
-										icon="DeletePermanentlyOutline"
-										data-testid={'btn-delete-attachment'}
-										onClick={removeAttachment}
+										size="medium"
+										icon="DriveOutline"
+										onClick={convertToSmartLinkAction}
 									/>
 								</Tooltip>
-							</Padding>
-						</AttachmentHoverBarContainer>
-					)}
+							)}
+							{isDeletable && (
+								<Padding right="small">
+									<Tooltip label={t('label.delete', 'Delete')}>
+										<IconButton
+											size="large"
+											icon="DeletePermanentlyOutline"
+											data-testid={'btn-delete-attachment'}
+											onClick={removeAttachment}
+										/>
+									</Tooltip>
+								</Padding>
+							)}
+						</Row>
+					</AttachmentHoverBarContainer>
 				</Row>
 				{isSavedAttachment(attachment) && link && (
 					<>
