@@ -190,32 +190,6 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		[close, createModal, editorId, hasStandardAttachments, saveDraft, setAutoSendTime]
 	);
 
-	const onSendClick = useCallback((): void => {
-		const onConfirmCallback = (): void => {
-			sendMessage({
-				onCountdownTick: onSendCountdownTick,
-				onComplete: onSendComplete,
-				onError: onSendError
-			});
-		};
-		checkSubjectAndAttachment({
-			editorId,
-			hasAttachments: hasStandardAttachments,
-			onConfirmCallback,
-			close,
-			createModal
-		});
-	}, [
-		close,
-		createModal,
-		editorId,
-		hasStandardAttachments,
-		onSendComplete,
-		onSendCountdownTick,
-		onSendError,
-		sendMessage
-	]);
-
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
 	const onDragOverEvent = useCallback((event: React.DragEvent): void => {
@@ -271,11 +245,14 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const smartLinksString = localStorage.getItem('smartlinks') ?? '[]';
 	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(smartLinksString);
 	const draftId = getEditor({ id: editorId })?.did;
-	const createSmartLinksAction = useCallback((): void => {
-		soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
+	const [isConvertingToSmartLink, setIsConvertingToSmartLink] = useState(false);
+	const createSmartLinksAction = useCallback((): Promise<void> => {
+		setIsConvertingToSmartLink(true);
+		return soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
 			_jsns: 'urn:zimbraMail',
 			attachments: smartLinks.filter((smartLink) => smartLink.draftId === draftId)
 		}).then((response) => {
+			setIsConvertingToSmartLink(false);
 			if ('Fault' in response) {
 				createSnackbar({
 					key: `save-draft`,
@@ -291,7 +268,10 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 						.join('\n')
 						.concat(text.plainText),
 					richText: text.richText.concat(
-						` ${map(response.smartLinks, (smartLink) => `<p >${smartLink.publicUrl}</p>`).join('')}`
+						` ${map(
+							response.smartLinks,
+							(smartLink) => `<a href='${smartLink.publicUrl}' download>${smartLink.publicUrl}</a>`
+						).join('')}`
 					)
 				};
 				setText(textWithLink);
@@ -305,6 +285,35 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			}
 		});
 	}, [createSnackbar, draftId, setSmartLinks, setText, smartLinks, text.plainText, text.richText]);
+
+	const onSendClick = useCallback((): void => {
+		const onConfirmCallback = async (): Promise<void> => {
+			await createSmartLinksAction();
+			close({ reason: CLOSE_BOARD_REASON.SEND });
+			sendMessage({
+				onCountdownTick: onSendCountdownTick,
+				onComplete: onSendComplete,
+				onError: onSendError
+			});
+		};
+		checkSubjectAndAttachment({
+			editorId,
+			hasAttachments: hasStandardAttachments,
+			onConfirmCallback,
+			close,
+			createModal
+		});
+	}, [
+		close,
+		createModal,
+		createSmartLinksAction,
+		editorId,
+		hasStandardAttachments,
+		onSendComplete,
+		onSendCountdownTick,
+		onSendError,
+		sendMessage
+	]);
 
 	return (
 		<Container
@@ -348,17 +357,12 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 								disabled={!saveDraftAllowedStatus?.allowed}
 							/>
 						</Tooltip>
-						<Button
-							type="outlined"
-							onClick={createSmartLinksAction}
-							label={`${t('label.create_smart_links', 'create smart links')}`}
-							disabled={smartLinks?.length === 0}
-						></Button>
 						<EditViewSendButtons
 							onSendLater={onScheduledSendClick}
 							onSendNow={onSendClick}
-							disabled={!sendAllowedStatus?.allowed}
+							disabled={!sendAllowedStatus?.allowed || isConvertingToSmartLink}
 							tooltip={sendAllowedStatus?.reason ?? ''}
+							isLoading={isConvertingToSmartLink}
 						/>
 					</GapRow>
 				</GapRow>

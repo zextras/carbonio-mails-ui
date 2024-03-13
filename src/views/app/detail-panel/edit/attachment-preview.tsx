@@ -175,10 +175,10 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 
 	const backgroundColor = useMemo(() => {
 		if (isSavedAttachment(attachment) && attachment.isSmartLink) {
-			return theme.palette.info.regular;
+			return theme.palette.infoBanner.regular;
 		}
 		return 'gray3';
-	}, [attachment, theme.palette.info.regular]);
+	}, [attachment, theme.palette.infoBanner.regular]);
 
 	return (
 		<StyledWrapper>

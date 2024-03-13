@@ -16,13 +16,15 @@ export type EditViewSendButtonsProps = {
 	onSendNow: () => void;
 	disabled: boolean;
 	tooltip: string;
+	isLoading: boolean;
 };
 
 export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 	onSendLater,
 	onSendNow,
 	disabled,
-	tooltip
+	tooltip,
+	isLoading = false
 }) => {
 	const { attrs } = useUserSettings();
 	const createModal = useModal();
@@ -87,7 +89,8 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						color="primary"
 						data-testid="BtnSendMail"
 						disabled={disabled}
-						icon="PaperPlane"
+						// icon={isLoading ? (): JSX.Element => <Icon icon={'AnimatedLoader'} /> : 'PaperPlane'}
+						icon={isLoading ? 'LoaderOutline' : 'PaperPlane'}
 						onClick={onSendNow}
 						label={t('label.send', 'Send')}
 					/>

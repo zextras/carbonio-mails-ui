@@ -55,7 +55,6 @@ export function checkSubjectAndAttachment({
 	editorId,
 	hasAttachments,
 	onConfirmCallback,
-	close,
 	createModal
 }: {
 	editorId: MailsEditorV2['id'];
@@ -84,7 +83,6 @@ export function checkSubjectAndAttachment({
 			showCloseIcon: true,
 			onConfirm: () => {
 				onConfirmCallback();
-				close({ reason: CLOSE_BOARD_REASON.SEND });
 				closeModal();
 			},
 			onClose: () => {
@@ -106,6 +104,5 @@ export function checkSubjectAndAttachment({
 		});
 	} else {
 		onConfirmCallback();
-		close({ reason: CLOSE_BOARD_REASON.SEND });
 	}
 }
