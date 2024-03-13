@@ -23,13 +23,7 @@ import RedirectAction from './redirect-message-action';
 import { getRoot } from '../carbonio-ui-commons/store/zustand/folder';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { EditViewActions, MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
-import {
-	CalendarType,
-	SenderType,
-	getAttendees,
-	getOptionalsAttendees,
-	getSenderByOwner
-} from '../helpers/appointmemt';
+import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../helpers/appointmemt';
 import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg } from '../store/actions/send-msg';
 import { extractBody } from '../store/editor-slice-utils';
@@ -43,6 +37,7 @@ import type {
 	MsgActionResult
 } from '../types';
 import { ConvActionReturnType, ExtraWindowCreationParams, ExtraWindowsContextType } from '../types';
+import { CalendarType, SenderType } from '../types/calendar';
 import { MessagePreviewPanel } from '../views/app/detail-panel/message-preview-panel';
 import { getLocationOrigin } from '../views/app/detail-panel/preview/utils';
 
@@ -794,18 +789,32 @@ export function createAppointment({
 				sender = getSenderByOwner(rooFolder?.owner);
 			}
 			if (!item?.isComplete) {
-				getMsgCall({ msgId: item.id }).then((message: MailMessage) => {
-					const mailHtmlBody = extractBody(message)[1];
-					openAppointmentComposer({
-						title: message.subject,
-						isRichText: true,
-						richText: mailHtmlBody,
-						...(!isNull(calendar) ? { calendar } : {}),
-						...(!isNull(sender) ? { sender } : {}),
-						attendees,
-						optionalAttendees
+				getMsgCall({ msgId: item.id })
+					.then((message: MailMessage) => {
+						const mailHtmlBody = extractBody(message)[1];
+						openAppointmentComposer({
+							title: message.subject,
+							isRichText: true,
+							richText: mailHtmlBody,
+							...(!isNull(calendar) ? { calendar } : {}),
+							...(!isNull(sender) ? { sender } : {}),
+							attendees,
+							optionalAttendees
+						});
+					})
+					.catch(() => {
+						getBridgedFunctions()?.createSnackbar({
+							key: `get-msg-on-new-appointment`,
+							replace: true,
+							type: 'warning',
+							hideButton: true,
+							label: t(
+								'message.snackbar.att_err',
+								'There seems to be a problem when saving, please try again'
+							),
+							autoHideTimeout: 3000
+						});
 					});
-				});
 			} else {
 				openAppointmentComposer({
 					title: item.subject,

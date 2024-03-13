@@ -13,39 +13,7 @@ import { getRootsMap } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { NO_ACCOUNT_NAME } from '../constants';
 import { retrieveALL, retrieveCC } from '../store/editor-slice-utils';
 import type { MailMessage } from '../types';
-
-type MatchingReplyIdentity = {
-	address: string;
-	name: string;
-	identityId: string | undefined;
-	identityName: string | undefined;
-	defaultSignatureId?: string;
-	forwardReplySignatureId?: string;
-};
-
-export type CalendarType = {
-	id: string;
-	name?: string;
-	rgb?: string;
-	color?: number;
-	owner?: string;
-};
-
-/**
- * The type describe the recipient of a message, its matching identity
- * and the weight to sort it within the list of other recipients
- */
-
-type Attendee = {
-	email: string;
-};
-
-export type SenderType = {
-	address: string;
-	fullName: string;
-	identityName: string;
-	label: string;
-};
+import { Attendee, MatchingReplyIdentity, SenderType } from '../types/calendar';
 
 /**
  * Analyze the message and return the identity that should be used as organizer.
