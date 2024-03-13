@@ -3,9 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
 import { existsActionById } from './actions-tests-utils';
+import { useIntegratedFunction } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import {
 	ConversationActionsDescriptors,
 	FOLDERS_DESCRIPTORS,
@@ -14,7 +15,8 @@ import {
 import { ASSERTIONS, MSG_CONV_STATUS_DESCRIPTORS } from '../../tests/constants';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
-import { getMsgConvActions } from '../get-msg-conv-actions';
+import { generateStore } from '../../tests/generators/store';
+import { useMsgConvActions } from '../use-msg-conv-actions';
 
 describe('Actions visibility', () => {
 	describe('Conversation secondary actions', () => {
@@ -40,25 +42,24 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
-				const createWindow = jest.fn();
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id
 				});
-				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
-				const account = getUserAccount();
-				const actions = getMsgConvActions({
-					item: conv,
-					dispatch,
-					deselectAll,
-					tags: {},
-					createWindow,
-					messageActionsForExtraWindow: []
+				const { result: hookResult } = setupHook(useMsgConvActions, {
+					store: generateStore(),
+					initialProps: [
+						{
+							item: conv,
+							deselectAll,
+							messageActionsForExtraWindow: []
+						}
+					]
 				});
-				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
-					assertion.value
-				);
+				expect(
+					existsActionById({ id: action.id, actions: hookResult.current, type: 'secondary' })
+				).toBe(assertion.value);
 			}
 		);
 
@@ -76,24 +77,23 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, assertion, action }) => {
-				const createWindow = jest.fn();
 				const conv = generateMessage({
 					folderId: folder.id
 				});
-				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
-				const account = getUserAccount();
-				const actions = getMsgConvActions({
-					item: conv,
-					dispatch,
-					deselectAll,
-					tags: {},
-					createWindow,
-					messageActionsForExtraWindow: []
+				const { result: hookResult } = setupHook(useMsgConvActions, {
+					store: generateStore(),
+					initialProps: [
+						{
+							item: conv,
+							deselectAll,
+							messageActionsForExtraWindow: []
+						}
+					]
 				});
-				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
-					assertion.value
-				);
+				expect(
+					existsActionById({ id: action.id, actions: hookResult.current, type: 'secondary' })
+				).toBe(assertion.value);
 			}
 		);
 
@@ -130,26 +130,25 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) secondary actions for a $read.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, read, assertion, action }) => {
-				const createWindow = jest.fn();
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id,
 					isRead: read.value
 				});
-				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
-				const account = getUserAccount();
-				const actions = getMsgConvActions({
-					item: conv,
-					dispatch,
-					deselectAll,
-					tags: {},
-					createWindow,
-					messageActionsForExtraWindow: []
+				const { result: hookResult } = setupHook(useMsgConvActions, {
+					store: generateStore(),
+					initialProps: [
+						{
+							item: conv,
+							deselectAll,
+							messageActionsForExtraWindow: []
+						}
+					]
 				});
-				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
-					assertion.value
-				);
+				expect(
+					existsActionById({ id: action.id, actions: hookResult.current, type: 'secondary' })
+				).toBe(assertion.value);
 			}
 		);
 
@@ -186,26 +185,25 @@ describe('Actions visibility', () => {
 		`(
 			`(case #$case) secondary actions for a $flagged.desc conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 			async ({ folder, flagged, assertion, action }) => {
-				const createWindow = jest.fn();
 				const conv = generateConversation({
 					isSingleMessageConversation: false,
 					folderId: folder.id,
 					isFlagged: flagged.value
 				});
-				const dispatch = jest.fn();
 				const deselectAll = jest.fn();
-				const account = getUserAccount();
-				const actions = getMsgConvActions({
-					item: conv,
-					dispatch,
-					deselectAll,
-					tags: {},
-					createWindow,
-					messageActionsForExtraWindow: []
+				const { result: hookResult } = setupHook(useMsgConvActions, {
+					store: generateStore(),
+					initialProps: [
+						{
+							item: conv,
+							deselectAll,
+							messageActionsForExtraWindow: []
+						}
+					]
 				});
-				expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(
-					assertion.value
-				);
+				expect(
+					existsActionById({ id: action.id, actions: hookResult.current, type: 'secondary' })
+				).toBe(assertion.value);
 			}
 		);
 	});
@@ -220,22 +218,56 @@ describe('Actions visibility', () => {
 	`(
 		`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
 		async ({ folder, assertion, action }) => {
-			const createWindow = jest.fn();
 			const conv = generateConversation({
 				folderId: folder.id,
 				messageGenerationCount: 5
 			});
-			const dispatch = jest.fn();
 			const deselectAll = jest.fn();
-			const actions = getMsgConvActions({
-				item: conv,
-				dispatch,
-				deselectAll,
-				tags: {},
-				createWindow,
-				messageActionsForExtraWindow: []
+			const { result: hookResult } = setupHook(useMsgConvActions, {
+				store: generateStore(),
+				initialProps: [
+					{
+						item: conv,
+						deselectAll,
+						messageActionsForExtraWindow: []
+					}
+				]
 			});
-			expect(existsActionById({ id: action.id, actions, type: 'secondary' })).toBe(assertion.value);
+			expect(
+				existsActionById({ id: action.id, actions: hookResult.current, type: 'secondary' })
+			).toBe(assertion.value);
+		}
+	);
+	test.each`
+		case | folder                              | assertion                  | action
+		${7} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+		${7} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.NOT_CONTAINS} | ${MessageActionsDescriptors.CREATE_APPOINTMENT}
+	`(
+		`(case #$case) secondary actions for a conversation in $folder.desc folder $assertion.desc the $action.desc action`,
+		async ({ folder, assertion, action }) => {
+			useIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
+			const conv = generateConversation({
+				folderId: folder.id,
+				messageGenerationCount: 5
+			});
+			const deselectAll = jest.fn();
+			const { result: hookResult } = setupHook(useMsgConvActions, {
+				store: generateStore(),
+				initialProps: [
+					{
+						item: conv,
+						deselectAll,
+						messageActionsForExtraWindow: []
+					}
+				]
+			});
+			expect(
+				existsActionById({ id: action.id, actions: hookResult.current, type: 'secondary' })
+			).toBe(assertion.value);
 		}
 	);
 });
