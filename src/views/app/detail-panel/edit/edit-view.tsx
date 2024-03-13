@@ -291,10 +291,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 						.join('\n')
 						.concat(text.plainText),
 					richText: text.richText.concat(
-						` ${map(
-							response.smartLinks,
-							(smartLink) => `<p hidden>${smartLink.publicUrl}</p>`
-						).join('')}`
+						` ${map(response.smartLinks, (smartLink) => `<p >${smartLink.publicUrl}</p>`).join('')}`
 					)
 				};
 				setText(textWithLink);
