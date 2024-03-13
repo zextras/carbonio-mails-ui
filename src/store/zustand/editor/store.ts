@@ -200,7 +200,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
-	convertToSmartLink: (id: MailsEditorV2['id'], partName: string): void => {
+	toggleSmartLink: (id: MailsEditorV2['id'], partName: string): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
 				const currentEditor = state?.editors?.[id];
@@ -210,7 +210,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 
 				const attachment = find(currentEditor.savedAttachments, ['partName', partName]);
 				if (attachment) {
-					attachment.isSmartLink = true;
+					attachment.isSmartLink = !attachment.isSmartLink;
 				}
 			})
 		);

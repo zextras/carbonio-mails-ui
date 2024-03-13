@@ -28,6 +28,7 @@ import {
 import {
 	getEditor,
 	useEditorAttachments,
+	useEditorDraftSave,
 	useEditorSubject
 } from '../../../../store/zustand/editor';
 import {
@@ -105,7 +106,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		editorId,
 		isUnsavedAttachment(attachment) ? (attachment.uploadId as string) : ''
 	);
-	const { removeUnsavedAttachment, removeSavedAttachment, convertToSmartLink } =
+	const { removeUnsavedAttachment, removeSavedAttachment, toggleSmartLink } =
 		useEditorAttachments(editorId);
 	const { subject } = useEditorSubject(editorId);
 
@@ -114,16 +115,17 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		isSavedAttachment(attachment) && removeSavedAttachment(attachment.partName);
 	}, [attachment, removeSavedAttachment, removeUnsavedAttachment]);
 
+	const { saveDraft } = useEditorDraftSave(editor.id);
 	const [smartLinks, setSmartLinks] = useLocalStorage<Array<{ partName: string; draftId: string }>>(
 		`smartlinks`,
 		[]
 	);
 
-	const convertToSmartLinkAction = useCallback(() => {
+	const toggleSmartLinkAction = useCallback(() => {
 		const draftId = editor.did;
 		if (isSavedAttachment(attachment) && draftId) {
 			const { partName } = attachment;
-			convertToSmartLink(partName);
+			toggleSmartLink(partName);
 			const newSmartLink = { partName, draftId };
 			setSmartLinks((state) =>
 				state.some(
@@ -138,8 +140,9 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 					  )
 					: [...state, newSmartLink]
 			);
+			saveDraft();
 		}
-	}, [attachment, convertToSmartLink, editor.did, setSmartLinks]);
+	}, [attachment, editor.did, saveDraft, setSmartLinks, toggleSmartLink]);
 
 	const iconColor = useAttachmentIconColor(attachment);
 
@@ -238,11 +241,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 											: t('label.convert_to_smart_link', 'Convert to smart link')
 									}
 								>
-									<IconButton
-										size="medium"
-										icon="DriveOutline"
-										onClick={convertToSmartLinkAction}
-									/>
+									<IconButton size="medium" icon="DriveOutline" onClick={toggleSmartLinkAction} />
 								</Tooltip>
 							)}
 							{isDeletable && (
