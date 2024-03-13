@@ -288,7 +288,9 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
-			await createSmartLinksAction();
+			if (smartLinks.filter((smartLink) => smartLink.draftId === draftId).length > 0) {
+				await createSmartLinksAction();
+			}
 			close({ reason: CLOSE_BOARD_REASON.SEND });
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
@@ -307,12 +309,14 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		close,
 		createModal,
 		createSmartLinksAction,
+		draftId,
 		editorId,
 		hasStandardAttachments,
 		onSendComplete,
 		onSendCountdownTick,
 		onSendError,
-		sendMessage
+		sendMessage,
+		smartLinks
 	]);
 
 	return (
