@@ -8,6 +8,7 @@ import React, { FC, SyntheticEvent, useCallback, useMemo, useRef } from 'react';
 import {
 	Container,
 	getColor,
+	Icon,
 	IconButton,
 	Padding,
 	Row,
@@ -45,9 +46,14 @@ const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
 `;
 
-const AttachmentContainer = styled(Container).attrs((props: { hoverBarDisabled: boolean }) => ({
-	hoverBarDisabled: props.hoverBarDisabled
-}))`
+const AttachmentContainer = styled(Container).attrs(
+	(props: { hoverBarDisabled: boolean; isSmartLink: boolean }) => ({
+		hoverBarDisabled: props.hoverBarDisabled,
+		isSmartLink: props.isSmartLink
+	})
+)`
+	border-bottom: ${(props): string =>
+		props.isSmartLink ? `1px solid ${props.theme.palette.primary.regular}` : 'none'};
 	border-radius: 0.125rem;
 	width: calc(50% - 0.25rem);
 	transition: 0.2s ease-out;
@@ -95,6 +101,17 @@ type AttachmentCardProps = {
 
 export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachment }) => {
 	const extension = getAttachmentExtension(attachment).value;
+
+	const attachmentExtensionContent = useMemo(
+		() =>
+			isSavedAttachment(attachment) && attachment.isSmartLink ? (
+				<Icon icon="Link2Outline" size="large" color="primary" />
+			) : (
+				extension
+			),
+		[attachment, extension]
+	);
+
 	const sizeLabel = getSizeDescription(attachment.size);
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
@@ -144,7 +161,12 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		}
 	}, [attachment, editor.did, saveDraft, setSmartLinks, toggleSmartLink]);
 
-	const iconColor = useAttachmentIconColor(attachment);
+	const attachItemColor = useAttachmentIconColor(attachment);
+	const attachmentExtensionColor = useMemo(
+		() =>
+			isSavedAttachment(attachment) && attachment.isSmartLink ? 'transparent' : attachItemColor,
+		[attachItemColor, attachment]
+	);
 
 	const isUploading = useMemo<boolean>(
 		() => isUnsavedAttachment(attachment) && isAttachmentUploading(attachment),
@@ -193,6 +215,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				background={backgroundColor}
 				data-testid={`attachment-container-${attachment.filename}`}
 				hoverBarDisabled={isUploading}
+				isSmartLink={isSavedAttachment(attachment) && attachment.isSmartLink}
 			>
 				<Tooltip label={t('action.preview', 'Preview')}>
 					<Row
@@ -206,7 +229,9 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 						}}
 						takeAvailableSpace
 					>
-						<AttachmentExtension background={iconColor}>{extension}</AttachmentExtension>
+						<AttachmentExtension background={attachmentExtensionColor}>
+							{attachmentExtensionContent}
+						</AttachmentExtension>
 						<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
 							<Padding style={{ width: '100%' }} bottom="extrasmall">
 								<Text size={'small'}>
@@ -217,9 +242,11 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 										})}
 								</Text>
 							</Padding>
-							<Text color="gray1" size={'small'}>
-								{sizeLabel}
-							</Text>
+							{!(isSavedAttachment(attachment) && attachment?.isSmartLink) && (
+								<Text color="gray1" size={'small'}>
+									{sizeLabel}
+								</Text>
+							)}
 						</Row>
 					</Row>
 				</Tooltip>
