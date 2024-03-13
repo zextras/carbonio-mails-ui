@@ -240,12 +240,14 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		},
 		[addInlineAttachments]
 	);
+	const { removeSavedAttachment } = useEditorAttachments(editorId);
 
 	const { text, setText } = useEditorText(editorId);
 	const smartLinksString = localStorage.getItem('smartlinks') ?? '[]';
 	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(smartLinksString);
 	const draftId = getEditor({ id: editorId })?.did;
 	const [isConvertingToSmartLink, setIsConvertingToSmartLink] = useState(false);
+
 	const createSmartLinksAction = useCallback((): Promise<void> => {
 		setIsConvertingToSmartLink(true);
 		return soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
@@ -275,6 +277,9 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 					)
 				};
 				setText(textWithLink);
+				smartLinks.forEach((smartLink) => {
+					removeSavedAttachment(smartLink.partName);
+				});
 				createSnackbar({
 					key: 'smartLinksCreated',
 					replace: true,
@@ -284,7 +289,16 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 				});
 			}
 		});
-	}, [createSnackbar, draftId, setSmartLinks, setText, smartLinks, text.plainText, text.richText]);
+	}, [
+		createSnackbar,
+		draftId,
+		removeSavedAttachment,
+		setSmartLinks,
+		setText,
+		smartLinks,
+		text.plainText,
+		text.richText
+	]);
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
