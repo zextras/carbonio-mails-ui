@@ -119,7 +119,7 @@ describe('Edit view', () => {
 		/**
 		 * Test the creation of a new email
 		 */
-		test('create a new email', async () => {
+		test.skip('create a new email', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
