@@ -5,19 +5,13 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import { filter, map } from 'lodash';
 
 import { getConv } from './get-conv';
 import { getMsg } from './get-msg';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/identities';
 import { getParticipantsFromMessage } from '../../helpers/messages';
-import {
-	MailMessage,
-	SendMsgResult,
-	SendMsgWithSmartLinksRequest,
-	SendMsgWithSmartLinksResponse
-} from '../../types';
+import { MailMessage, SendMsgResult, SendMsgWithSmartLinksResponse } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { generateMailRequest } from '../editor-slice-utils';
 import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
@@ -76,22 +70,13 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 
 		const identity = getIdentityDescriptor(editor.identityId);
 
-		const smartLinksAttachment = filter(
-			editor.savedAttachments,
-			(attachment) => attachment.isSmartLink
-		);
-		const smartlinks = map(smartLinksAttachment, (smartlink) => ({
-			partName: smartlink.partName,
-			draftId: smartlink.messageId
-		}));
 		let resp: SendMsgWithSmartLinksResponse;
 		try {
-			resp = await soapFetch<SendMsgWithSmartLinksRequest, SendMsgWithSmartLinksResponse>(
-				'SendMsgWithSmartLinks',
+			resp = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
+				'SendMsg',
 				{
 					_jsns: 'urn:zimbraMail',
-					m: msg,
-					smartlinks
+					m: msg
 				},
 				identity?.ownerAccount ?? undefined
 			);
