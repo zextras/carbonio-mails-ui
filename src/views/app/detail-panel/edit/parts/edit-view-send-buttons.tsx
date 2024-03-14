@@ -25,7 +25,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 	onSendNow,
 	disabled,
 	tooltip,
-	isLoading = false
+	isLoading
 }) => {
 	const { attrs } = useUserSettings();
 	const createModal = useModal();
@@ -42,14 +42,13 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 								// closeModal();
 							}}
 							onClose={(): void => closeModal && closeModal()}
-							isLoading={isLoading}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [createModal, isLoading, onSendLater]);
+	}, [createModal, onSendLater]);
 
 	const isSendLaterAllowed = useMemo(
 		() => attrs?.zimbraFeatureMailSendLaterEnabled === 'TRUE' || true,
@@ -82,6 +81,10 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						onClick={onSendNow}
 						disabledPrimary={disabled}
 						disabledSecondary={disabled}
+						// TODO: remove this ts-ignore once the type is fixed in the DS
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						icon={isLoading ? AnimatedLoader : 'ChevronDownOutline'}
 						items={multiBtnActions}
 					/>
 				</Tooltip>
