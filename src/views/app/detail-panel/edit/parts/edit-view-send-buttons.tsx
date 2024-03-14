@@ -9,6 +9,7 @@ import { Button, MultiButton, Tooltip, useModal } from '@zextras/carbonio-design
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { SendLaterModal } from './send-later-modal';
+import { AnimatedLoader } from '../../../../../assets/animated-loader';
 import { StoreProvider } from '../../../../../store/redux';
 
 export type EditViewSendButtonsProps = {
@@ -89,8 +90,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						color="primary"
 						data-testid="BtnSendMail"
 						disabled={disabled}
-						// icon={isLoading ? (): JSX.Element => <Icon icon={'AnimatedLoader'} /> : 'PaperPlane'}
-						icon={isLoading ? 'LoaderOutline' : 'PaperPlane'}
+						icon={isLoading ? AnimatedLoader : 'PaperPlane'}
 						onClick={onSendNow}
 						label={t('label.send', 'Send')}
 					/>
