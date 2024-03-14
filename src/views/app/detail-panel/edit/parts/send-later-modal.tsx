@@ -11,15 +11,21 @@ import { noop } from 'lodash';
 import moment from 'moment';
 
 import { DatePickerCustomComponent } from './date-picker-custom-component';
+import { AnimatedLoader } from '../../../../../assets/animated-loader';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 
 type SendLaterModalProps = {
 	onAutoSendTimeSelected: (autoSendTime: number) => void;
 	onClose: () => void;
+	isLoading: boolean;
 };
 
-export const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected, onClose }) => {
+export const SendLaterModal: FC<SendLaterModalProps> = ({
+	onAutoSendTimeSelected,
+	onClose,
+	isLoading
+}) => {
 	const [selectedTime, setSelectedTime] = useState<Date | null>(null);
 	const modalTitle = t('label.send_later', 'Send Later');
 	const datePickerLabel = t('label.select_date_time', 'Select date and time');
@@ -79,6 +85,7 @@ export const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected
 			<ModalFooter
 				onConfirm={onConfirm}
 				label={confirmLabel}
+				confirmButtonIcon={isLoading ? AnimatedLoader : undefined}
 				disabled={!selectedTime}
 				secondaryAction={onClose}
 				secondaryLabel={t('label.cancel', 'Cancel')}

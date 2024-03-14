@@ -39,19 +39,20 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						<SendLaterModal
 							onAutoSendTimeSelected={(autoSendTime): void => {
 								onSendLater(autoSendTime);
-								closeModal();
+								// closeModal();
 							}}
 							onClose={(): void => closeModal && closeModal()}
+							isLoading={isLoading}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [createModal, onSendLater]);
+	}, [createModal, isLoading, onSendLater]);
 
 	const isSendLaterAllowed = useMemo(
-		() => attrs?.zimbraFeatureMailSendLaterEnabled === 'TRUE',
+		() => attrs?.zimbraFeatureMailSendLaterEnabled === 'TRUE' || true,
 		[attrs?.zimbraFeatureMailSendLaterEnabled]
 	);
 

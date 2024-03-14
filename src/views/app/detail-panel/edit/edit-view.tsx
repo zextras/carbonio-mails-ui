@@ -172,23 +172,6 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	}, [createSnackbar, editorId, onMessageSent]);
 
 	const createModal = useModal();
-	const onScheduledSendClick = useCallback(
-		(scheduledTime: number): void => {
-			const onConfirmCallback = (): void => {
-				setAutoSendTime(scheduledTime);
-				saveDraft();
-				close({ reason: CLOSE_BOARD_REASON.SEND_LATER });
-			};
-			checkSubjectAndAttachment({
-				editorId,
-				hasAttachments: hasStandardAttachments,
-				onConfirmCallback,
-				close,
-				createModal
-			});
-		},
-		[close, createModal, editorId, hasStandardAttachments, saveDraft, setAutoSendTime]
-	);
 
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
@@ -253,42 +236,53 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		return soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
 			_jsns: 'urn:zimbraMail',
 			attachments: smartLinks.filter((smartLink) => smartLink.draftId === draftId)
-		}).then((response) => {
-			setIsConvertingToSmartLink(false);
-			if ('Fault' in response) {
-				createSnackbar({
-					key: `save-draft`,
-					replace: true,
-					type: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000
-				});
-			} else {
-				setSmartLinks((state) => state.filter((smartLink) => smartLink.draftId !== draftId));
-				const textWithLink = {
-					plainText: map(response.smartLinks, (smartLink) => smartLink.publicUrl)
-						.join('\n')
-						.concat(text.plainText),
-					richText: text.richText.concat(
-						` ${map(
-							response.smartLinks,
-							(smartLink) => `<a href='${smartLink.publicUrl}' download>${smartLink.publicUrl}</a>`
-						).join('')}`
-					)
-				};
-				setText(textWithLink);
-				smartLinks.forEach((smartLink) => {
-					removeSavedAttachment(smartLink.partName);
-				});
-				createSnackbar({
-					key: 'smartLinksCreated',
-					replace: true,
-					type: 'success',
-					label: t('label.smart_links_created', 'smart links created'),
-					autoHideTimeout: 3000
-				});
-			}
-		});
+		})
+			.then((response) =>
+				setTimeout(
+					() =>
+						new Promise((resolve, reject) => {
+							resolve(response);
+						}),
+					5000
+				)
+			)
+			.then((response) => {
+				setIsConvertingToSmartLink(false);
+				if ('Fault' in response) {
+					createSnackbar({
+						key: `save-draft`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000
+					});
+				} else {
+					setSmartLinks((state) => state.filter((smartLink) => smartLink.draftId !== draftId));
+					const textWithLink = {
+						plainText: map(response.smartLinks, (smartLink) => smartLink.publicUrl)
+							.join('\n')
+							.concat(text.plainText),
+						richText: text.richText.concat(
+							` ${map(
+								response.smartLinks,
+								(smartLink) =>
+									`<a href='${smartLink.publicUrl}' download>${smartLink.publicUrl}</a>`
+							).join('')}`
+						)
+					};
+					setText(textWithLink);
+					smartLinks.forEach((smartLink) => {
+						removeSavedAttachment(smartLink.partName);
+					});
+					createSnackbar({
+						key: 'smartLinksCreated',
+						replace: true,
+						type: 'success',
+						label: t('label.smart_links_created', 'smart links created'),
+						autoHideTimeout: 3000
+					});
+				}
+			});
 	}, [
 		createSnackbar,
 		draftId,
@@ -332,7 +326,36 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		sendMessage,
 		smartLinks
 	]);
-
+	const onSendLaterClick = useCallback(
+		(scheduledTime: number): void => {
+			const onConfirmCallback = async (): Promise<void> => {
+				if (smartLinks.filter((smartLink) => smartLink.draftId === draftId).length > 0) {
+					await createSmartLinksAction();
+				}
+				setAutoSendTime(scheduledTime);
+				saveDraft();
+				close({ reason: CLOSE_BOARD_REASON.SEND_LATER });
+			};
+			checkSubjectAndAttachment({
+				editorId,
+				hasAttachments: hasStandardAttachments,
+				onConfirmCallback,
+				close,
+				createModal
+			});
+		},
+		[
+			close,
+			createModal,
+			createSmartLinksAction,
+			draftId,
+			editorId,
+			hasStandardAttachments,
+			saveDraft,
+			setAutoSendTime,
+			smartLinks
+		]
+	);
 	return (
 		<Container
 			data-testid={'edit-view-editor'}
@@ -376,7 +399,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 							/>
 						</Tooltip>
 						<EditViewSendButtons
-							onSendLater={onScheduledSendClick}
+							onSendLater={onSendLaterClick}
 							onSendNow={onSendClick}
 							disabled={!sendAllowedStatus?.allowed || isConvertingToSmartLink}
 							tooltip={sendAllowedStatus?.reason ?? ''}
