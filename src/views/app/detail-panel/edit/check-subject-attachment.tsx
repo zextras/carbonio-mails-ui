@@ -10,7 +10,6 @@ import { Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { LineType } from '../../../../commons/utils';
-import { CLOSE_BOARD_REASON } from '../../../../constants';
 import { StoreProvider } from '../../../../store/redux';
 import { getEditor } from '../../../../store/zustand/editor';
 import type { CloseBoardReasons, MailsEditorV2 } from '../../../../types';

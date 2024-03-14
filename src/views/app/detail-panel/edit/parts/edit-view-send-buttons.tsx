@@ -39,7 +39,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						<SendLaterModal
 							onAutoSendTimeSelected={(autoSendTime): void => {
 								onSendLater(autoSendTime);
-								closeModal();
+								// closeModal();
 							}}
 							onClose={(): void => closeModal && closeModal()}
 							isLoading={isLoading}

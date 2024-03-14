@@ -227,15 +227,19 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 
 	const { text, setText } = useEditorText(editorId);
 	const smartLinksString = localStorage.getItem('smartlinks') ?? '[]';
-	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(smartLinksString);
 	const draftId = getEditor({ id: editorId })?.did;
+	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(smartLinksString);
+	const draftSmartLinks = useMemo(
+		() => smartLinks.filter((smartLink) => smartLink.draftId === draftId),
+		[draftId, smartLinks]
+	);
 	const [isConvertingToSmartLink, setIsConvertingToSmartLink] = useState(false);
 
 	const createSmartLinksAction = useCallback((): Promise<void> => {
 		setIsConvertingToSmartLink(true);
 		return soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
 			_jsns: 'urn:zimbraMail',
-			attachments: smartLinks.filter((smartLink) => smartLink.draftId === draftId)
+			attachments: draftSmartLinks
 		}).then((response) => {
 			setIsConvertingToSmartLink(false);
 			if ('Fault' in response) {
@@ -260,11 +264,9 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 					)
 				};
 				setText(textWithLink);
-				smartLinks
-					.filter((smartLink) => smartLink.draftId === draftId)
-					.forEach((smartLink) => {
-						removeSavedAttachment(smartLink.partName);
-					});
+				draftSmartLinks.forEach((smartLink) => {
+					removeSavedAttachment(smartLink.partName);
+				});
 				createSnackbar({
 					key: 'smartLinksCreated',
 					replace: true,
@@ -280,14 +282,14 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		removeSavedAttachment,
 		setSmartLinks,
 		setText,
-		smartLinks,
+		draftSmartLinks,
 		text.plainText,
 		text.richText
 	]);
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
-			if (smartLinks.filter((smartLink) => smartLink.draftId === draftId).length > 0) {
+			if (draftSmartLinks.length > 0) {
 				await createSmartLinksAction();
 			}
 			close({ reason: CLOSE_BOARD_REASON.SEND });
@@ -308,19 +310,18 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		close,
 		createModal,
 		createSmartLinksAction,
-		draftId,
 		editorId,
 		hasStandardAttachments,
 		onSendComplete,
 		onSendCountdownTick,
 		onSendError,
 		sendMessage,
-		smartLinks
+		draftSmartLinks.length
 	]);
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {
 			const onConfirmCallback = async (): Promise<void> => {
-				if (smartLinks.filter((smartLink) => smartLink.draftId === draftId).length > 0) {
+				if (draftSmartLinks.length > 0) {
 					await createSmartLinksAction();
 				}
 				setAutoSendTime(scheduledTime);
@@ -339,12 +340,11 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			close,
 			createModal,
 			createSmartLinksAction,
-			draftId,
 			editorId,
 			hasStandardAttachments,
 			saveDraft,
 			setAutoSendTime,
-			smartLinks
+			draftSmartLinks.length
 		]
 	);
 	return (
