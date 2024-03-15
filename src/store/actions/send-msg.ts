@@ -9,6 +9,7 @@ import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { getConv } from './get-conv';
 import { getMsg } from './get-msg';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
+import { removeSmartLinksFromLocalStorage } from '../../helpers/attachments';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/identities';
 import { getParticipantsFromMessage } from '../../helpers/messages';
 import { MailMessage, SendMsgResult, SendMsgWithSmartLinksResponse } from '../../types';
@@ -45,6 +46,7 @@ export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
 			return rejectWithValue(response);
 		}
 
+		removeSmartLinksFromLocalStorage(msg.id);
 		if (response?.m && response?.m[0]?.id) {
 			dispatch(getMsg({ msgId: response.m[0].id }));
 		}
@@ -89,7 +91,7 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 		if (response?.error) {
 			return rejectWithValue(response);
 		}
-
+		if (editor.did) removeSmartLinksFromLocalStorage(editor.did);
 		if (response?.m && response?.m[0]?.id) {
 			dispatch(getMsg({ msgId: response.m[0].id }));
 		}
