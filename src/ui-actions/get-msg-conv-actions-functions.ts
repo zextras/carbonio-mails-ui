@@ -17,6 +17,7 @@ import {
 	setConversationsSpam
 } from './conversation-actions';
 import {
+	createAppointment,
 	deleteMessagePermanently,
 	downloadEml,
 	editAsNewMsg,
@@ -412,4 +413,28 @@ export function getDownloadEmlAction({
 	const action = isConversation ? false : downloadEml({ id });
 
 	return !folderExcludedDownloadEML.includes(getFolderIdParts(folderId).id ?? '0') && action;
+}
+
+export function getCreateAppointmentAction({
+	item,
+	folderId,
+	folderExcludedCreateAppointment,
+	isConversation,
+	openAppointmentComposer,
+	isAvailable
+}: {
+	item: MailMessage | Conversation;
+	folderId: string;
+	folderExcludedCreateAppointment: string[];
+	isConversation: boolean;
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	openAppointmentComposer: Function;
+	isAvailable: boolean;
+}): ActionReturnType {
+	const action =
+		isConversation || !isAvailable
+			? false
+			: createAppointment({ item: item as MailMessage, openAppointmentComposer });
+
+	return !folderExcludedCreateAppointment.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }

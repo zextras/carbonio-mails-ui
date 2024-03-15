@@ -303,6 +303,10 @@ export const MessageActionsDescriptors = {
 	DOWNLOAD_EML: {
 		id: 'download-eml',
 		desc: 'Download EML'
+	},
+	CREATE_APPOINTMENT: {
+		id: 'create-appointment',
+		desc: 'Create Appointment'
 	}
 } as const;
 
