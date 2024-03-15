@@ -127,16 +127,25 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		useEditorAttachments(editorId);
 	const { subject } = useEditorSubject(editorId);
 
-	const removeAttachment = useCallback(() => {
-		isUnsavedAttachment(attachment) && removeUnsavedAttachment(attachment.uploadId as string);
-		isSavedAttachment(attachment) && removeSavedAttachment(attachment.partName);
-	}, [attachment, removeSavedAttachment, removeUnsavedAttachment]);
-
 	const { saveDraft } = useEditorDraftSave(editor.id);
 	const [smartLinks, setSmartLinks] = useLocalStorage<Array<{ partName: string; draftId: string }>>(
 		`smartlinks`,
 		[]
 	);
+	const removeSmartLink = useCallback(() => {
+		const draftId = editor.did;
+		if (isSavedAttachment(attachment) && draftId) {
+			const { partName } = attachment;
+			const newSmartLink = { partName, draftId };
+			setSmartLinks((state) =>
+				state.filter(
+					(smartLink) =>
+						smartLink.partName !== newSmartLink.partName ||
+						smartLink.draftId !== newSmartLink.draftId
+				)
+			);
+		}
+	}, [attachment, editor.did, setSmartLinks]);
 
 	const toggleSmartLinkAction = useCallback(() => {
 		const draftId = editor.did;
@@ -160,6 +169,12 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 			saveDraft();
 		}
 	}, [attachment, editor.did, saveDraft, setSmartLinks, toggleSmartLink]);
+
+	const removeAttachment = useCallback(() => {
+		removeSmartLink();
+		isUnsavedAttachment(attachment) && removeUnsavedAttachment(attachment.uploadId as string);
+		isSavedAttachment(attachment) && removeSavedAttachment(attachment.partName);
+	}, [attachment, removeSavedAttachment, removeSmartLink, removeUnsavedAttachment]);
 
 	const attachItemColor = useAttachmentIconColor(attachment);
 	const attachmentExtensionColor = useMemo(
