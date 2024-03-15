@@ -12,7 +12,8 @@ import {
 	Tooltip,
 	ButtonProps,
 	useSnackbar,
-	useModal
+	useModal,
+	useTheme
 } from '@zextras/carbonio-design-system';
 import { addBoard, soapFetch, t, useLocalStorage } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
@@ -30,6 +31,7 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import WarningBanner from './parts/warning-banner';
+import { generateSmartLinkHtml } from './utils/edit-view-utils';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { CLOSE_BOARD_REASON, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
@@ -68,7 +70,6 @@ type FileSelectProps = {
 	editor: TinyMCE;
 	files: FileList;
 };
-
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
 const MemoizedSubjectRow = memo(SubjectRow);
@@ -123,6 +124,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const { addStandardAttachments, addInlineAttachments, hasStandardAttachments } =
 		useEditorAttachments(editorId);
+	const theme = useTheme();
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(
@@ -283,12 +285,8 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 						.join('\n')
 						.concat(text.plainText),
 					richText: text.richText.concat(
-						` ${map(
-							response.smartLinks,
-							(smartLink, index) =>
-								`<a href='${smartLink.publicUrl}' download>${
-									convertedAttachments[index].filename ?? smartLink.publicUrl
-								}</a>`
+						` ${map(response.smartLinks, (smartLink, index) =>
+							generateSmartLinkHtml({ smartLink, convertedAttachments, index, theme })
 						).join('<br/>')}`
 					)
 				};
@@ -314,6 +312,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		setText,
 		draftId,
 		convertedAttachments,
+		theme,
 		removeSavedAttachment
 	]);
 

@@ -11,8 +11,10 @@ export type CreateSmartLinksRequest = ZimbraRequest & {
 	attachments: Array<SmartLinkAttachment>;
 };
 
+export type SmartLinkUrl = {
+	publicUrl: string;
+};
+
 export type CreateSmartLinksResponse = {
-	smartLinks: Array<{
-		publicUrl: string;
-	}>;
+	smartLinks: Array<SmartLinkUrl>;
 };
