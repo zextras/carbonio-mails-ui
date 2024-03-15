@@ -248,19 +248,19 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 							{attachmentExtensionContent}
 						</AttachmentExtension>
 						<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
-							<Padding style={{ width: '100%' }} bottom="extrasmall">
-								<Text size={'small'}>
-									{attachment.filename ||
-										t('label.attachement_unknown', {
-											mimeType: attachment?.contentType,
-											defaultValue: 'Unknown <{{mimeType}}>'
-										})}
-								</Text>
-							</Padding>
+							<Text size={'small'}>
+								{attachment.filename ||
+									t('label.attachement_unknown', {
+										mimeType: attachment?.contentType,
+										defaultValue: 'Unknown <{{mimeType}}>'
+									})}
+							</Text>
 							{!(isSavedAttachment(attachment) && attachment?.isSmartLink) && (
-								<Text color="gray1" size={'small'}>
-									{sizeLabel}
-								</Text>
+								<Padding style={{ width: '100%' }} top="extrasmall">
+									<Text color="gray1" size={'small'}>
+										{sizeLabel}
+									</Text>
+								</Padding>
 							)}
 						</Row>
 					</Row>
