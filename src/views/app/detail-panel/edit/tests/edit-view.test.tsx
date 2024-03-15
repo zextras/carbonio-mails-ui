@@ -23,8 +23,7 @@ import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-set
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import {
 	FOLDERS,
-	useBoard as mockedUseBoard,
-	useLocalStorage
+	useBoard as mockedUseBoard
 } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { createAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
@@ -119,13 +118,12 @@ describe('Edit view', () => {
 		/**
 		 * Test the creation of a new email
 		 */
-		test.skip('create a new email', async () => {
+		test('create a new email', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
 			addEditor({ id: editor.id, editor });
 
-			useLocalStorage.mockReturnValue([[], jest.fn()]);
 			// Get the default identity address
 			const mocksContext = getMocksContext();
 			const from = mocksContext.identities.primary.identity.email;
