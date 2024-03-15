@@ -107,14 +107,10 @@ type AttachmentCardProps = {
 export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachment }) => {
 	const extension = getAttachmentExtension(attachment).value;
 
+	const isSmartLink = isSavedAttachment(attachment) && attachment?.isSmartLink;
 	const attachmentExtensionContent = useMemo(
-		() =>
-			isSavedAttachment(attachment) && attachment.isSmartLink ? (
-				<Icon icon="Link2Outline" size="large" color="primary" />
-			) : (
-				extension
-			),
-		[attachment, extension]
+		() => (isSmartLink ? <Icon icon="Link2Outline" size="large" color="primary" /> : extension),
+		[extension, isSmartLink]
 	);
 
 	const sizeLabel = getSizeDescription(attachment.size);
@@ -141,7 +137,12 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 			const smartLinks: Array<SmartLinkAttachment> = JSON.parse(
 				localStorage.getItem('smartlinks') || '[]'
 			);
-			const newSmartLink = { partName, draftId };
+			const newSmartLink = {
+				partName,
+				draftId,
+				fileName: attachment.filename,
+				size: attachment.size
+			};
 
 			localStorage.setItem(
 				'smartlinks',
@@ -164,7 +165,12 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 			const smartLinks: Array<SmartLinkAttachment> = JSON.parse(
 				localStorage.getItem('smartlinks') || '[]'
 			);
-			const newSmartLink = { partName, draftId };
+			const newSmartLink = {
+				partName,
+				draftId,
+				fileName: attachment.filename,
+				size: attachment.size
+			};
 			localStorage.setItem(
 				'smartlinks',
 				JSON.stringify(
@@ -193,9 +199,8 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 
 	const attachItemColor = useAttachmentIconColor(attachment);
 	const attachmentExtensionColor = useMemo(
-		() =>
-			isSavedAttachment(attachment) && attachment.isSmartLink ? 'transparent' : attachItemColor,
-		[attachItemColor, attachment]
+		() => (isSmartLink ? 'transparent' : attachItemColor),
+		[attachItemColor, isSmartLink]
 	);
 
 	const isUploading = useMemo<boolean>(
@@ -229,11 +234,11 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 	const theme = useTheme();
 
 	const backgroundColor = useMemo(() => {
-		if (isSavedAttachment(attachment) && attachment.isSmartLink) {
+		if (isSmartLink) {
 			return theme.palette.infoBanner.regular;
 		}
 		return 'gray3';
-	}, [attachment, theme.palette.infoBanner.regular]);
+	}, [isSmartLink, theme.palette.infoBanner.regular]);
 
 	return (
 		<StyledWrapper>
@@ -245,7 +250,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				background={backgroundColor}
 				data-testid={`attachment-container-${attachment.filename}`}
 				hoverBarDisabled={isUploading}
-				isSmartLink={isSavedAttachment(attachment) && attachment.isSmartLink}
+				isSmartLink={isSmartLink}
 			>
 				<Tooltip label={t('action.preview', 'Preview')}>
 					<Row
@@ -263,19 +268,22 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 							{attachmentExtensionContent}
 						</AttachmentExtension>
 						<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
-							<Text size={'small'}>
-								{attachment.filename ||
-									t('label.attachement_unknown', {
-										mimeType: attachment?.contentType,
-										defaultValue: 'Unknown <{{mimeType}}>'
-									})}
-							</Text>
-							{!(isSavedAttachment(attachment) && attachment?.isSmartLink) && (
-								<Padding style={{ width: '100%' }} top="extrasmall">
-									<Text color="gray1" size={'small'}>
-										{sizeLabel}
-									</Text>
-								</Padding>
+							{isSmartLink && <Padding top="small" />}
+							<Padding style={{ width: '100%' }} bottom="extrasmall">
+								<Text size={'small'}>
+									{attachment.filename ||
+										t('label.attachement_unknown', {
+											mimeType: attachment?.contentType,
+											defaultValue: 'Unknown <{{mimeType}}>'
+										})}
+								</Text>
+							</Padding>
+							{!isSmartLink ? (
+								<Text color="gray1" size={'small'}>
+									{sizeLabel}
+								</Text>
+							) : (
+								<Padding top="small" />
 							)}
 						</Row>
 					</Row>

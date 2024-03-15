@@ -28,4 +28,9 @@ export type SavedAttachment = AbstractAttachment & {
 	isSmartLink: boolean;
 };
 
-export type SmartLinkAttachment = { partName: string; draftId: string };
+export type SmartLinkAttachment = {
+	partName: string;
+	draftId: string;
+	fileName: string;
+	size: number;
+};
