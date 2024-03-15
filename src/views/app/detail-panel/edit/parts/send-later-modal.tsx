@@ -17,14 +17,9 @@ import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/mo
 type SendLaterModalProps = {
 	onAutoSendTimeSelected: (autoSendTime: number) => void;
 	onClose: () => void;
-	isLoading?: boolean;
 };
 
-export const SendLaterModal: FC<SendLaterModalProps> = ({
-	onAutoSendTimeSelected,
-	onClose,
-	isLoading
-}) => {
+export const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected, onClose }) => {
 	const [selectedTime, setSelectedTime] = useState<Date | null>(null);
 	const modalTitle = t('label.send_later', 'Send Later');
 	const datePickerLabel = t('label.select_date_time', 'Select date and time');
