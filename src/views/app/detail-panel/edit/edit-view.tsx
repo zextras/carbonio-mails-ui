@@ -45,7 +45,12 @@ import {
 	getEditor,
 	useEditorText
 } from '../../../../store/zustand/editor';
-import { BoardContext, CloseBoardReasons, SmartLinkAttachment } from '../../../../types';
+import {
+	BoardContext,
+	CloseBoardReasons,
+	MailsEditorV2,
+	SmartLinkAttachment
+} from '../../../../types';
 import {
 	CreateSmartLinksRequest,
 	CreateSmartLinksResponse
@@ -91,6 +96,22 @@ const SendToYourselfWarningBanner = ({ editorId }: { editorId: string }): JSX.El
 
 	return isSendingToYourself ? <WarningBanner /> : null;
 };
+
+function filterMatchingObjects(
+	smartLinks: SmartLinkAttachment[],
+	savedAttachments: MailsEditorV2['savedAttachments']
+): MailsEditorV2['savedAttachments'] {
+	return savedAttachments.reduce((accumulator, attachment) => {
+		const isMatching = smartLinks.some(
+			(smartLink) =>
+				smartLink.draftId === attachment.messageId && smartLink.partName === attachment.partName
+		);
+		if (isMatching) {
+			accumulator.push(attachment);
+		}
+		return accumulator;
+	}, [] as MailsEditorV2['savedAttachments']);
+}
 
 export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessageSent }) => {
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
@@ -228,12 +249,17 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const { text, setText } = useEditorText(editorId);
 	const smartLinksString = localStorage.getItem('smartlinks') ?? '[]';
 	const draftId = getEditor({ id: editorId })?.did;
+
 	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(smartLinksString);
 	const draftSmartLinks = useMemo(
 		() => smartLinks.filter((smartLink) => smartLink.draftId === draftId),
 		[draftId, smartLinks]
 	);
 	const [isConvertingToSmartLink, setIsConvertingToSmartLink] = useState(false);
+
+	const { savedStandardAttachments } = useEditorAttachments(editorId);
+
+	const convertedAttachments = filterMatchingObjects(smartLinks, savedStandardAttachments);
 
 	const createSmartLinksAction = useCallback((): Promise<void> => {
 		setIsConvertingToSmartLink(true);
@@ -259,7 +285,10 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 					richText: text.richText.concat(
 						` ${map(
 							response.smartLinks,
-							(smartLink) => `<a href='${smartLink.publicUrl}' download>${smartLink.publicUrl}</a>`
+							(smartLink, index) =>
+								`<a href='${smartLink.publicUrl}' download>${
+									convertedAttachments[index].filename ?? smartLink.publicUrl
+								}</a>`
 						).join('<br/>')}`
 					)
 				};
@@ -277,14 +306,15 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			}
 		});
 	}, [
-		createSnackbar,
-		draftId,
-		removeSavedAttachment,
-		setSmartLinks,
-		setText,
 		draftSmartLinks,
+		createSnackbar,
+		setSmartLinks,
 		text.plainText,
-		text.richText
+		text.richText,
+		setText,
+		draftId,
+		convertedAttachments,
+		removeSavedAttachment
 	]);
 
 	const onSendClick = useCallback((): void => {
