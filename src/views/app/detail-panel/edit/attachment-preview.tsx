@@ -16,7 +16,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { t, useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import styled, { SimpleInterpolation } from 'styled-components';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
@@ -39,7 +39,12 @@ import {
 } from '../../../../store/zustand/editor/editor-utils';
 import { useEditorUploadProcess } from '../../../../store/zustand/editor/hooks/updload';
 import StyledWrapper from '../../../../styled-wrapper';
-import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../types';
+import {
+	MailsEditorV2,
+	SavedAttachment,
+	SmartLinkAttachment,
+	UnsavedAttachment
+} from '../../../../types';
 import { getAttachmentsLink } from '../preview/utils';
 
 const AttachmentHoverBarContainer = styled(Container)`
@@ -128,47 +133,57 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 	const { subject } = useEditorSubject(editorId);
 
 	const { saveDraft } = useEditorDraftSave(editor.id);
-	const [smartLinks, setSmartLinks] = useLocalStorage<Array<{ partName: string; draftId: string }>>(
-		`smartlinks`,
-		[]
-	);
+
 	const removeSmartLink = useCallback(() => {
 		const draftId = editor.did;
 		if (isSavedAttachment(attachment) && draftId) {
 			const { partName } = attachment;
+			const smartLinks: Array<SmartLinkAttachment> = JSON.parse(
+				localStorage.getItem('smartlinks') || '[]'
+			);
 			const newSmartLink = { partName, draftId };
-			setSmartLinks((state) =>
-				state.filter(
-					(smartLink) =>
-						smartLink.partName !== newSmartLink.partName ||
-						smartLink.draftId !== newSmartLink.draftId
+
+			localStorage.setItem(
+				'smartlinks',
+				JSON.stringify(
+					smartLinks.filter(
+						(smartLink) =>
+							smartLink.partName !== newSmartLink.partName ||
+							smartLink.draftId !== newSmartLink.draftId
+					)
 				)
 			);
 		}
-	}, [attachment, editor.did, setSmartLinks]);
+	}, [attachment, editor.did]);
 
 	const toggleSmartLinkAction = useCallback(() => {
 		const draftId = editor.did;
 		if (isSavedAttachment(attachment) && draftId) {
 			const { partName } = attachment;
 			toggleSmartLink(partName);
+			const smartLinks: Array<SmartLinkAttachment> = JSON.parse(
+				localStorage.getItem('smartlinks') || '[]'
+			);
 			const newSmartLink = { partName, draftId };
-			setSmartLinks((state) =>
-				state.some(
-					(smartLink) =>
-						smartLink.partName === newSmartLink.partName &&
-						smartLink.draftId === newSmartLink.draftId
+			localStorage.setItem(
+				'smartlinks',
+				JSON.stringify(
+					smartLinks.some(
+						(smartLink) =>
+							smartLink.partName === newSmartLink.partName &&
+							smartLink.draftId === newSmartLink.draftId
+					)
+						? smartLinks.filter(
+								(smartLink) =>
+									smartLink.partName !== newSmartLink.partName ||
+									smartLink.draftId !== newSmartLink.draftId
+						  )
+						: [...smartLinks, newSmartLink]
 				)
-					? state.filter(
-							(smartLink) =>
-								smartLink.partName !== newSmartLink.partName ||
-								smartLink.draftId !== newSmartLink.draftId
-					  )
-					: [...state, newSmartLink]
 			);
 			saveDraft();
 		}
-	}, [attachment, editor.did, saveDraft, setSmartLinks, toggleSmartLink]);
+	}, [attachment, editor.did, saveDraft, toggleSmartLink]);
 
 	const removeAttachment = useCallback(() => {
 		removeSmartLink();

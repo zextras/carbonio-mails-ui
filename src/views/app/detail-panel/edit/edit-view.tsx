@@ -15,7 +15,7 @@ import {
 	useModal,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { addBoard, soapFetch, t, useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { addBoard, soapFetch, t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
@@ -231,7 +231,6 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	}, []);
 
 	const flexStart = 'flex-start';
-	const [_, setSmartLinks] = useLocalStorage<SmartLinkAttachment[]>('smartLinks', []);
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
 			const files = buildArrayFromFileList(fileList);
@@ -249,10 +248,11 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const { removeSavedAttachment } = useEditorAttachments(editorId);
 
 	const { text, setText } = useEditorText(editorId);
-	const smartLinksString = localStorage.getItem('smartlinks') ?? '[]';
+	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(
+		localStorage.getItem('smartlinks') ?? '[]'
+	);
 	const draftId = getEditor({ id: editorId })?.did;
 
-	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(smartLinksString);
 	const draftSmartLinks = useMemo(
 		() => smartLinks.filter((smartLink) => smartLink.draftId === draftId),
 		[draftId, smartLinks]
@@ -279,7 +279,10 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 					autoHideTimeout: 3000
 				});
 			} else {
-				setSmartLinks((state) => state.filter((smartLink) => smartLink.draftId !== draftId));
+				localStorage.setItem(
+					'smartlinks',
+					JSON.stringify(smartLinks.filter((smartLink) => smartLink.draftId !== draftId))
+				);
 				const textWithLink = {
 					plainText: map(response.smartLinks, (smartLink) => smartLink.publicUrl)
 						.join('\n')
@@ -306,7 +309,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	}, [
 		draftSmartLinks,
 		createSnackbar,
-		setSmartLinks,
+		smartLinks,
 		text.plainText,
 		text.richText,
 		setText,
