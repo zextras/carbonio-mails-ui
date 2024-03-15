@@ -5,7 +5,7 @@
  */
 import '@testing-library/jest-dom';
 import failOnConsole from 'jest-fail-on-console';
-import { rest } from 'msw';
+import { http } from 'msw';
 
 import {
 	defaultAfterAllTests,
@@ -24,8 +24,8 @@ failOnConsole({
 });
 
 beforeAll(() => {
-	const h = rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
-	const j = rest.post('/service/soap/GetConvRequest', handleGetConvRequest);
+	const h = http.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
+	const j = http.post('/service/soap/GetConvRequest', handleGetConvRequest);
 	registerRestHandler(h);
 	registerRestHandler(j);
 	defaultBeforeAllTests();

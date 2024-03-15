@@ -72,7 +72,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
-	const [signaturesLoaded, setSignaturesLoaded] = useState(false);
 	const editorRef = useRef<{ editor: EditorType | undefined }>({
 		editor: undefined
 	});
@@ -83,9 +82,8 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		editorRef.current.editor = editor;
 	};
 
-	// Fetches signatures from the BE
-	useEffect(() => {
-		GetAllSignatures().then(({ signature: signs }) => {
+	const onSignaturesLoaded = useCallback(
+		(signs: Array<SignItemType>) => {
 			const signaturesItems = map(
 				signs,
 				(item: SignItemType, idx) =>
@@ -106,10 +104,20 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				}))
 			);
 
-			// Updates state to enable the loading of all signatures-dependent component
-			setSignaturesLoaded(true);
-		});
-	}, [setSignatures, setOriginalSignatures]);
+			// // Updates state to enable the loading of all signatures-dependent component
+			// setSignaturesLoaded(true);
+		},
+		[setOriginalSignatures, setSignatures]
+	);
+
+	// Fetches signatures from the BE
+	useEffect(() => {
+		GetAllSignatures()
+			.then(({ signature: signs }) => onSignaturesLoaded(signs))
+			.catch((err) => {
+				console.error(err);
+			});
+	}, [onSignaturesLoaded]);
 
 	// Set the default current signature if missing
 	useEffect(() => {
@@ -321,7 +329,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 							<Padding all="small" />
 
 							<Container height="31.25rem">
-								{signaturesLoaded && (
+								{signatures.length > 0 && (
 									<List
 										data-testid={'signatures-list'}
 										items={signatures ?? []}
@@ -364,7 +372,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				padding={{ all: 'large' }}
 			>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-					{signaturesLoaded &&
+					{signatures.length > 0 &&
 						map(updatedIdentities, (acc) => (
 							<SelectIdentitySignature
 								acc={acc}

@@ -7,11 +7,12 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen, within } from '@testing-library/react';
-import { FOLDERS, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, FOLDERS, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
+import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
@@ -234,10 +235,10 @@ describe('edit-modal', () => {
 		const editButton = screen.getByRole('button', {
 			name: /label\.edit/i
 		});
-		const wipeInterceptor = createAPIInterceptor<SoapFolderAction>('FolderAction', 'action');
+		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(editButton);
-		const action = await wipeInterceptor;
+		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(FOLDERS.TRASH);
 		expect(action.op).toBe('update');
@@ -291,10 +292,13 @@ describe('edit-modal', () => {
 		const folderName = faker.lorem.word();
 		// update the existing folder name into the text input
 		await user.type(folderInputElement, folderName);
-		const wipeInterceptor = createAPIInterceptor<SoapFolderAction>('FolderAction', 'action');
+		const wipeInterceptor = createAPIInterceptor<
+			{ action: SoapFolderAction },
+			ErrorSoapBodyResponse
+		>('FolderAction', buildSoapErrorResponseBody());
 
 		await user.click(editButton);
-		const action = await wipeInterceptor;
+		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(folder.id);
 		expect(action.op).toBe('update');

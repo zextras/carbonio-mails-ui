@@ -26,6 +26,7 @@ import { generateStore } from '../../tests/generators/store';
 import {
 	MailMessage,
 	MsgActionRequest,
+	MsgActionResponse,
 	RedirectMessageActionRequest,
 	SaveDraftRequest
 } from '../../types';
@@ -98,11 +99,13 @@ describe('Messages actions calls', () => {
 				value: false
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -128,12 +131,13 @@ describe('Messages actions calls', () => {
 				dispatch: store.dispatch,
 				value: true
 			});
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('!flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -162,11 +166,13 @@ describe('Messages actions calls', () => {
 				value: false
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -194,11 +200,13 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -227,11 +235,13 @@ describe('Messages actions calls', () => {
 				value: false
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -259,11 +269,13 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('!read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -293,11 +305,13 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('!read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -325,12 +339,14 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('!spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -360,12 +376,14 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('!spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -393,12 +411,14 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -428,12 +448,14 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -512,11 +534,13 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('trash');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -545,11 +569,13 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('trash');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -678,7 +704,9 @@ describe('Messages actions calls', () => {
 				name: /label\.move/i
 			});
 			expect(button).toBeEnabled();
-			await user.click(button);
+			await act(async () => {
+				await user.click(button);
+			});
 
 			const requestParameter = await interceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
@@ -706,6 +734,13 @@ describe('Messages actions calls', () => {
 				}
 			});
 
+			const interceptor = createAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
+				action: {
+					id: msgIds.join(','),
+					op: 'move'
+				}
+			});
+
 			const component = (
 				<MoveConvMessage
 					folderId={sourceFolder}
@@ -717,8 +752,6 @@ describe('Messages actions calls', () => {
 					dispatch={store.dispatch}
 				/>
 			);
-
-			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			const { user } = setupTest(component, { store });
 			makeListItemsVisible();
@@ -733,13 +766,18 @@ describe('Messages actions calls', () => {
 				jest.advanceTimersByTime(1000);
 			});
 
-			await user.click(inboxFolderListItem);
+			await act(async () => {
+				await user.click(inboxFolderListItem);
+			});
 
 			const button = screen.getByRole('button', {
 				name: /label\.move/i
 			});
 			expect(button).toBeEnabled();
-			await user.click(button);
+
+			await act(async () => {
+				await user.click(button);
+			});
 
 			const requestParameter = await interceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
