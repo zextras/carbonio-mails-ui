@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { MailsEditorV2 } from '../../../../types';
+import { MailsEditorV2, SmartLinkAttachment } from '../../../../types';
 import { useEditorsStore } from '../store';
 
 export const getEditor = ({ id }: { id: MailsEditorV2['id'] }): MailsEditorV2 | null =>
@@ -27,5 +27,14 @@ export const addEditor = ({
  * Remove a specific editor.
  * @params id
  */
-export const deleteEditor = ({ id }: { id: MailsEditorV2['id'] }): void =>
-	useEditorsStore.getState().deleteEditor(id);
+export const deleteEditor = ({ id }: { id: MailsEditorV2['id'] }): void => {
+	const editor = getEditor({ id });
+	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(
+		localStorage.getItem('smartlinks') ?? '[]'
+	);
+	localStorage.setItem(
+		'smartlinks',
+		JSON.stringify(smartLinks.filter((item: SmartLinkAttachment) => item.draftId !== editor?.did))
+	);
+	return useEditorsStore.getState().deleteEditor(id);
+};
