@@ -68,11 +68,15 @@ const AttachmentHoverBarContainer = styled(Container)`
 	height: 0;
 `;
 
-const AttachmentContainer = styled(Container).attrs((props: { isSmartLink: boolean }) => ({
-	isSmartLink: props.isSmartLink
-}))`
+const AttachmentContainer = styled(Container).attrs(
+	(props: { requiresSmartLinkConversion: boolean }) => ({
+		requiresSmartLinkConversion: props.requiresSmartLinkConversion
+	})
+)`
 	border-bottom: ${(props): string =>
-		props.isSmartLink ? `1px solid ${props.theme.palette.primary.regular}` : 'none'};
+		props.requiresSmartLinkConversion
+			? `1px solid ${props.theme.palette.primary.regular}`
+			: 'none'};
 
 	border-radius: 0.125rem;
 	width: calc(50% - 0.25rem);
@@ -122,7 +126,6 @@ const Attachment: FC<AttachmentType> = ({
 	message,
 	isExternalMessage = false,
 	part,
-	iconColors,
 	att,
 	openEmlPreview
 }) => {
@@ -340,27 +343,32 @@ const Attachment: FC<AttachmentType> = ({
 	);
 
 	const theme = useTheme();
-	const isSmartLink = smartLinks.some(
+	const requiresSmartLinkConversion = smartLinks.some(
 		(smartLink) => part === smartLink.partName && smartLink.fileName === att.filename
 	);
 
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const backgroundColor = useMemo(() => {
-		if (isSmartLink) {
+		if (requiresSmartLinkConversion) {
 			return theme.palette.infoBanner.regular;
 		}
 		return 'gray3';
-	}, [isSmartLink, theme.palette.infoBanner.regular]);
+	}, [requiresSmartLinkConversion, theme.palette.infoBanner.regular]);
 
 	const attachmentExtensionContent = useMemo(
-		() => (isSmartLink ? <Icon icon="Link2Outline" size="large" color="primary" /> : extension),
-		[extension, isSmartLink]
+		() =>
+			requiresSmartLinkConversion ? (
+				<Icon icon="Link2Outline" size="large" color="primary" />
+			) : (
+				extension
+			),
+		[extension, requiresSmartLinkConversion]
 	);
 
 	const attachItemColor = useAttachmentIconColor(att);
 	const attachmentExtensionColor = useMemo(
-		() => (isSmartLink ? 'transparent' : attachItemColor),
-		[attachItemColor, isSmartLink]
+		() => (requiresSmartLinkConversion ? 'transparent' : attachItemColor),
+		[attachItemColor, requiresSmartLinkConversion]
 	);
 
 	return (
@@ -370,7 +378,7 @@ const Attachment: FC<AttachmentType> = ({
 			height="fit"
 			background={backgroundColor}
 			data-testid={`attachment-container-${filename}`}
-			isSmartLink={isSmartLink}
+			requiresSmartLinkConversion
 		>
 			<Tooltip key={`${message.id}-Preview`} label={actionTooltipText}>
 				<Row
@@ -383,7 +391,7 @@ const Attachment: FC<AttachmentType> = ({
 						{attachmentExtensionContent}
 					</AttachmentExtension>
 					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
-						{isSmartLink && <Padding top="small" />}
+						{requiresSmartLinkConversion && <Padding top="small" />}
 						<Padding style={{ width: '100%' }} bottom="extrasmall">
 							<Text>
 								{filename ||
@@ -393,7 +401,7 @@ const Attachment: FC<AttachmentType> = ({
 									})}
 							</Text>
 						</Padding>
-						{!isSmartLink ? (
+						{!requiresSmartLinkConversion ? (
 							<Text color="gray1" size="small">
 								{sizeLabel}
 							</Text>

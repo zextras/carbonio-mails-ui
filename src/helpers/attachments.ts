@@ -14,7 +14,6 @@ import type {
 	AbstractAttachment,
 	MailMessagePart,
 	SavedAttachment,
-	SmartLinkAttachment,
 	UnsavedAttachment
 } from '../types';
 
@@ -420,12 +419,3 @@ export const isDownloadServicedUrl = (url: string): boolean =>
 
 export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): string =>
 	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
-
-export function removeSmartLinksFromLocalStorage(draftId: string): void {
-	const smartLinksString = localStorage.getItem('smartlinks') || '[]';
-	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(smartLinksString);
-	localStorage.setItem(
-		'smartlinks',
-		JSON.stringify(smartLinks.filter((smartLink) => smartLink.draftId !== draftId))
-	);
-}

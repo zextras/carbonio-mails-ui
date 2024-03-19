@@ -52,13 +52,15 @@ const AttachmentHoverBarContainer = styled(Container)`
 `;
 
 const AttachmentContainer = styled(Container).attrs(
-	(props: { hoverBarDisabled: boolean; isSmartLink: boolean }) => ({
+	(props: { hoverBarDisabled: boolean; requiresSmartLinkConversion: boolean }) => ({
 		hoverBarDisabled: props.hoverBarDisabled,
-		isSmartLink: props.isSmartLink
+		requiresSmartLinkConversion: props.requiresSmartLinkConversion
 	})
 )`
 	border-bottom: ${(props): string =>
-		props.isSmartLink ? `1px solid ${props.theme.palette.primary.regular}` : 'none'};
+		props.requiresSmartLinkConversion
+			? `1px solid ${props.theme.palette.primary.regular}`
+			: 'none'};
 	border-radius: 0.125rem;
 	width: calc(50% - 0.25rem);
 	transition: 0.2s ease-out;
@@ -107,10 +109,16 @@ type AttachmentCardProps = {
 export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachment }) => {
 	const extension = getAttachmentExtension(attachment).value;
 
-	const isSmartLink = isSavedAttachment(attachment) && attachment?.isSmartLink;
+	const requiresSmartLinkConversion =
+		isSavedAttachment(attachment) && attachment?.requiresSmartLinkConversion;
 	const attachmentExtensionContent = useMemo(
-		() => (isSmartLink ? <Icon icon="Link2Outline" size="large" color="primary" /> : extension),
-		[extension, isSmartLink]
+		() =>
+			requiresSmartLinkConversion ? (
+				<Icon icon="Link2Outline" size="large" color="primary" />
+			) : (
+				extension
+			),
+		[extension, requiresSmartLinkConversion]
 	);
 
 	const sizeLabel = getSizeDescription(attachment.size);
@@ -199,8 +207,8 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 
 	const attachItemColor = useAttachmentIconColor(attachment);
 	const attachmentExtensionColor = useMemo(
-		() => (isSmartLink ? 'transparent' : attachItemColor),
-		[attachItemColor, isSmartLink]
+		() => (requiresSmartLinkConversion ? 'transparent' : attachItemColor),
+		[attachItemColor, requiresSmartLinkConversion]
 	);
 
 	const isUploading = useMemo<boolean>(
@@ -234,11 +242,11 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 	const theme = useTheme();
 
 	const backgroundColor = useMemo(() => {
-		if (isSmartLink) {
+		if (requiresSmartLinkConversion) {
 			return theme.palette.infoBanner.regular;
 		}
 		return 'gray3';
-	}, [isSmartLink, theme.palette.infoBanner.regular]);
+	}, [requiresSmartLinkConversion, theme.palette.infoBanner.regular]);
 
 	return (
 		<StyledWrapper>
@@ -250,7 +258,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				background={backgroundColor}
 				data-testid={`attachment-container-${attachment.filename}`}
 				hoverBarDisabled={isUploading}
-				isSmartLink={isSmartLink}
+				requiresSmartLinkConversion
 			>
 				<Tooltip label={t('action.preview', 'Preview')}>
 					<Row
@@ -268,7 +276,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 							{attachmentExtensionContent}
 						</AttachmentExtension>
 						<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
-							{isSmartLink && <Padding top="small" />}
+							{requiresSmartLinkConversion && <Padding top="small" />}
 							<Padding style={{ width: '100%' }} bottom="extrasmall">
 								<Text size={'small'}>
 									{attachment.filename ||
@@ -278,7 +286,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 										})}
 								</Text>
 							</Padding>
-							{!isSmartLink ? (
+							{!requiresSmartLinkConversion ? (
 								<Text color="gray1" size={'small'}>
 									{sizeLabel}
 								</Text>
@@ -301,7 +309,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 							{isSavedAttachment(attachment) && (
 								<Tooltip
 									label={
-										attachment.isSmartLink
+										attachment.requiresSmartLinkConversion
 											? t('label.convert_back_to_attachment', 'Convert back to attachment')
 											: t('label.convert_to_smart_link', 'Convert to smart link')
 									}

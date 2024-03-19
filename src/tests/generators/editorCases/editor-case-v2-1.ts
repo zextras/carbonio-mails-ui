@@ -40,7 +40,7 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 				filename: 'Conquista del mondo senza meeting room.eml',
 				partName: '2',
 				messageId: FAKE_MESSAGE_ID,
-				isSmartLink: false
+				requiresSmartLinkConversion: false
 			},
 			{
 				contentType: 'message/rfc822',
@@ -49,7 +49,7 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 				messageId: FAKE_MESSAGE_ID,
 				isInline: false,
 				filename: 'Conquista di Giove (con meeting room) - carbonio.eml',
-				isSmartLink: false
+				requiresSmartLinkConversion: false
 			},
 			{
 				contentType: 'message/rfc822',
@@ -58,7 +58,7 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 				isInline: false,
 				messageId: FAKE_MESSAGE_ID,
 				filename: 'Conquista di Giove (con meeting room) - gmail.eml',
-				isSmartLink: false
+				requiresSmartLinkConversion: false
 			},
 			{
 				contentType: 'message/rfc822',
@@ -67,7 +67,7 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 				isInline: false,
 				messageId: FAKE_MESSAGE_ID,
 				filename: 'Conquista di Giove (con meeting room) - outlook.eml',
-				isSmartLink: false
+				requiresSmartLinkConversion: false
 			},
 			{
 				contentType: 'message/rfc822',
@@ -76,7 +76,7 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 				isInline: false,
 				messageId: FAKE_MESSAGE_ID,
 				filename: 'Conquista di Giove (con meeting room).eml',
-				isSmartLink: false
+				requiresSmartLinkConversion: false
 			},
 			{
 				contentType: 'message/rfc822',
@@ -85,7 +85,7 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 				isInline: false,
 				messageId: FAKE_MESSAGE_ID,
 				filename: 'Conquista di Nettuno (senza meeting room)-carbonio.eml',
-				isSmartLink: false
+				requiresSmartLinkConversion: false
 			},
 			{
 				contentType: 'message/rfc822',
@@ -94,7 +94,7 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 				isInline: false,
 				messageId: FAKE_MESSAGE_ID,
 				filename: 'Conquista di Nettuno (senza meeting room)-gmail.eml',
-				isSmartLink: false
+				requiresSmartLinkConversion: false
 			},
 			{
 				contentType: 'message/rfc822',
@@ -103,7 +103,7 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 				isInline: false,
 				messageId: FAKE_MESSAGE_ID,
 				filename: 'Conquista di Nettuno (senza meeting room)-outlook.eml',
-				isSmartLink: false
+				requiresSmartLinkConversion: false
 			},
 			{
 				contentType: 'image/jpeg',
@@ -112,7 +112,7 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 				isInline: false,
 				messageId: FAKE_MESSAGE_ID,
 				filename: 'cool-4k-wallpaper-10.jpg',
-				isSmartLink: false
+				requiresSmartLinkConversion: false
 			}
 		],
 		messagesStoreDispatch

@@ -210,7 +210,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 
 				const attachment = find(currentEditor.savedAttachments, ['partName', partName]);
 				if (attachment) {
-					attachment.isSmartLink = !attachment.isSmartLink;
+					attachment.requiresSmartLinkConversion = !attachment.requiresSmartLinkConversion;
 				}
 			})
 		);

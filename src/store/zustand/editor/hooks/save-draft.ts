@@ -74,15 +74,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 			useEditorsStore.getState().removeUnsavedAttachments(editorId);
 			const savedAttachments = buildSavedAttachments(mailMessage);
 
-			const correctSavedAttachment = savedAttachments.map((attachment) => {
-				const oldAttachment = editor.savedAttachments.find(
-					(old) => old.partName === attachment.partName && old.messageId === attachment.messageId
-				);
-				attachment.isSmartLink = oldAttachment?.isSmartLink || false;
-				return attachment;
-			});
-
-			useEditorsStore.getState().setSavedAttachments(editorId, correctSavedAttachment);
+			useEditorsStore.getState().setSavedAttachments(editorId, savedAttachments);
 
 			useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 				status: 'completed',

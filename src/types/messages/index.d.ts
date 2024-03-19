@@ -53,6 +53,7 @@ export type MailMessagePart = {
 	ci?: string;
 	cd?: string;
 	disposition?: 'inline' | 'attachment';
+	requiresSmartLinkConversion: boolean;
 };
 
 export type AttachmentPart = {
