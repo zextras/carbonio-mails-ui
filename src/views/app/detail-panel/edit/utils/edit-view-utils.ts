@@ -5,17 +5,18 @@
  */
 
 import { DefaultTheme } from 'styled-components';
+
 import { MailsEditorV2 } from '../../../../../types';
 import { SmartLinkUrl } from '../../../../../types/soap/create-smart-links';
 
 export const generateSmartLinkHtml = ({
 	smartLink,
-	convertedAttachments,
+	attachments,
 	index,
 	theme
 }: {
 	smartLink: SmartLinkUrl;
-	convertedAttachments: MailsEditorV2['savedAttachments'];
+	attachments: MailsEditorV2['savedAttachments'];
 	index: number;
 	theme: DefaultTheme;
 }): string =>
@@ -30,5 +31,5 @@ export const generateSmartLinkHtml = ({
                             max-width: 80%;
                             border: 1px solid ${theme.palette.primary.regular}';
                             href='${smartLink.publicUrl}' download>${
-		convertedAttachments[index].filename ?? smartLink.publicUrl
+		attachments[index].filename ?? smartLink.publicUrl
 	}</a>`;

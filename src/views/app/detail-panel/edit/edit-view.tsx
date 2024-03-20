@@ -248,20 +248,18 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const { removeSavedAttachment } = useEditorAttachments(editorId);
 
 	const { text, setText } = useEditorText(editorId);
-	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(
-		localStorage.getItem('smartlinks') ?? '[]'
-	);
 	const draftId = getEditor({ id: editorId })?.did;
-
-	const draftSmartLinks = useMemo(
-		() => smartLinks.filter((smartLink) => smartLink.draftId === draftId),
-		[draftId, smartLinks]
-	);
-	const [isConvertingToSmartLink, setIsConvertingToSmartLink] = useState(false);
 
 	const { savedStandardAttachments } = useEditorAttachments(editorId);
 
-	const convertedAttachments = filterMatchingObjects(smartLinks, savedStandardAttachments);
+	const draftSmartLinks = useMemo(
+		() =>
+			savedStandardAttachments
+				.filter((attachment) => attachment.requiresSmartLinkConversion)
+				.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName })),
+		[savedStandardAttachments]
+	);
+	const [isConvertingToSmartLink, setIsConvertingToSmartLink] = useState(false);
 
 	const createSmartLinksAction = useCallback((): Promise<void> => {
 		setIsConvertingToSmartLink(true);
@@ -279,17 +277,18 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 					autoHideTimeout: 3000
 				});
 			} else {
-				localStorage.setItem(
-					'smartlinks',
-					JSON.stringify(smartLinks.filter((smartLink) => smartLink.draftId !== draftId))
-				);
 				const textWithLink = {
 					plainText: map(response.smartLinks, (smartLink) => smartLink.publicUrl)
 						.join('\n')
 						.concat(text.plainText),
 					richText: text.richText.concat(
 						` ${map(response.smartLinks, (smartLink, index) =>
-							generateSmartLinkHtml({ smartLink, convertedAttachments, index, theme })
+							generateSmartLinkHtml({
+								smartLink,
+								attachments: savedStandardAttachments,
+								index,
+								theme
+							})
 						).join('<br/>')}`
 					)
 				};
@@ -309,12 +308,10 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	}, [
 		draftSmartLinks,
 		createSnackbar,
-		smartLinks,
 		text.plainText,
 		text.richText,
 		setText,
-		draftId,
-		convertedAttachments,
+		savedStandardAttachments,
 		theme,
 		removeSavedAttachment
 	]);

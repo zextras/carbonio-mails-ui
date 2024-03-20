@@ -46,8 +46,7 @@ import type {
 	AttachmentType,
 	CopyToFileResponse,
 	MailMessage,
-	OpenEmlPreviewType,
-	SmartLinkAttachment
+	OpenEmlPreviewType
 } from '../../../../types';
 import { useExtraWindow } from '../../extra-windows/use-extra-window';
 
@@ -338,14 +337,8 @@ const Attachment: FC<AttachmentType> = ({
 		]
 	);
 
-	const smartLinks: Array<SmartLinkAttachment> = JSON.parse(
-		localStorage.getItem('smartlinks') || '[]'
-	);
-
 	const theme = useTheme();
-	const requiresSmartLinkConversion = smartLinks.some(
-		(smartLink) => part === smartLink.partName && smartLink.fileName === att.filename
-	);
+	const requiresSmartLinkConversion = !!att.requireSmartLinkConversion;
 
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const backgroundColor = useMemo(() => {

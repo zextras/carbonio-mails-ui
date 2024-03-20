@@ -5,13 +5,13 @@
  */
 import { useCallback, useMemo } from 'react';
 
-import { getUserSettings, t, useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
 import { computeAndUpdateEditorStatus } from './commons';
 import { getEditor } from './editors';
 import { createCancelableTimer } from '../../../../helpers/timers';
-import { MailsEditorV2, SmartLinkAttachment } from '../../../../types';
+import { MailsEditorV2 } from '../../../../types';
 import { sendMsgFromEditor } from '../../../actions/send-msg';
 import { useEditorsStore } from '../store';
 

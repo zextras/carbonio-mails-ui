@@ -31,6 +31,4 @@ export type SavedAttachment = AbstractAttachment & {
 export type SmartLinkAttachment = {
 	partName: string;
 	draftId: string;
-	fileName: string;
-	size: number;
 };

@@ -39,12 +39,7 @@ import {
 } from '../../../../store/zustand/editor/editor-utils';
 import { useEditorUploadProcess } from '../../../../store/zustand/editor/hooks/updload';
 import StyledWrapper from '../../../../styled-wrapper';
-import {
-	MailsEditorV2,
-	SavedAttachment,
-	SmartLinkAttachment,
-	UnsavedAttachment
-} from '../../../../types';
+import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../types';
 import { getAttachmentsLink } from '../preview/utils';
 
 const AttachmentHoverBarContainer = styled(Container)`
@@ -138,72 +133,19 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 
 	const { saveDraft } = useEditorDraftSave(editor.id);
 
-	const removeSmartLink = useCallback(() => {
-		const draftId = editor.did;
-		if (isSavedAttachment(attachment) && draftId) {
-			const { partName } = attachment;
-			const smartLinks: Array<SmartLinkAttachment> = JSON.parse(
-				localStorage.getItem('smartlinks') || '[]'
-			);
-			const newSmartLink = {
-				partName,
-				draftId,
-				fileName: attachment.filename,
-				size: attachment.size
-			};
-
-			localStorage.setItem(
-				'smartlinks',
-				JSON.stringify(
-					smartLinks.filter(
-						(smartLink) =>
-							smartLink.partName !== newSmartLink.partName ||
-							smartLink.draftId !== newSmartLink.draftId
-					)
-				)
-			);
-		}
-	}, [attachment, editor.did]);
-
 	const toggleSmartLinkAction = useCallback(() => {
 		const draftId = editor.did;
 		if (isSavedAttachment(attachment) && draftId) {
 			const { partName } = attachment;
 			toggleSmartLink(partName);
-			const smartLinks: Array<SmartLinkAttachment> = JSON.parse(
-				localStorage.getItem('smartlinks') || '[]'
-			);
-			const newSmartLink = {
-				partName,
-				draftId,
-				fileName: attachment.filename,
-				size: attachment.size
-			};
-			localStorage.setItem(
-				'smartlinks',
-				JSON.stringify(
-					smartLinks.some(
-						(smartLink) =>
-							smartLink.partName === newSmartLink.partName &&
-							smartLink.draftId === newSmartLink.draftId
-					)
-						? smartLinks.filter(
-								(smartLink) =>
-									smartLink.partName !== newSmartLink.partName ||
-									smartLink.draftId !== newSmartLink.draftId
-						  )
-						: [...smartLinks, newSmartLink]
-				)
-			);
 			saveDraft();
 		}
 	}, [attachment, editor.did, saveDraft, toggleSmartLink]);
 
 	const removeAttachment = useCallback(() => {
-		removeSmartLink();
 		isUnsavedAttachment(attachment) && removeUnsavedAttachment(attachment.uploadId as string);
 		isSavedAttachment(attachment) && removeSavedAttachment(attachment.partName);
-	}, [attachment, removeSavedAttachment, removeSmartLink, removeUnsavedAttachment]);
+	}, [attachment, removeSavedAttachment, removeUnsavedAttachment]);
 
 	const attachItemColor = useAttachmentIconColor(attachment);
 	const attachmentExtensionColor = useMemo(
