@@ -10,6 +10,7 @@ import { ParticipantRoleType } from '../../carbonio-ui-commons/constants/partici
 export type MailAttachmentParts = {
 	mid: string;
 	part: string;
+	requiresSmartLinkConversion: boolean;
 };
 
 export type MailAttachment = {

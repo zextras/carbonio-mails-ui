@@ -34,7 +34,14 @@ export const retrieveAttachmentsType = (
 		original?.parts?.[0]?.parts ?? [],
 		(acc, part) =>
 			part.disposition && part.disposition === disposition
-				? [...acc, { part: part.name, mid: original.id }]
+				? [
+						...acc,
+						{
+							part: part.name,
+							mid: original.id,
+							requiresSmartLinkConversion: !!part.requiresSmartLinkConversion
+						}
+				  ]
 				: acc,
 		[] as Array<MailAttachmentParts>
 	);
