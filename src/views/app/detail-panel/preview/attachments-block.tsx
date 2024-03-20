@@ -338,7 +338,7 @@ const Attachment: FC<AttachmentType> = ({
 	);
 
 	const theme = useTheme();
-	const requiresSmartLinkConversion = !!att.requireSmartLinkConversion;
+	const requiresSmartLinkConversion = !!att.requiresSmartLinkConversion;
 
 	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const backgroundColor = useMemo(() => {
