@@ -33,7 +33,7 @@ import {
 	replyAllMsg,
 	replyMsg,
 	sendDraft,
-	sendDraftWithSmartLinks,
+	sendDraftNew,
 	setMsgAsSpam,
 	setMsgFlag,
 	setMsgRead,
@@ -44,6 +44,7 @@ import { getFolderIdParts } from '../helpers/folders';
 import { AppDispatch } from '../store/redux';
 import type {
 	ActionReturnType,
+	AddEditorParams,
 	Conversation,
 	ExtraWindowsContextType,
 	MailMessage,
@@ -56,6 +57,9 @@ import {
 	createSmartLinkFromMsgSoap
 } from '../views/app/detail-panel/edit/utils/edit-view-utils';
 import { generateMailRequest } from '../store/editor-slice-utils';
+import { GenerateEditorParams } from '../store/zustand/editor/editor-generators';
+import { EditViewActions } from '../constants';
+import { DispatchFunc } from '../hooks/redux';
 
 /**
  * get the action to be executed when the user clicks on the "Mark as read/unread" button
@@ -212,62 +216,52 @@ export function getAddRemoveFlagAction({
 		: setMsgFlag({ ids: [id], value: item.flagged, dispatch });
 }
 
-export async function getSendDraftAction({
+export function getSendDraftAction({
 	isConversation,
 	item,
 	dispatch,
 	folderIncludedSendDraft,
 	folderId,
-	createSnackbar,
-	t
+	generateEditor,
+	addEditor
 }: {
 	isConversation: boolean;
 	item: MailMessage;
 	dispatch: AppDispatch;
 	folderIncludedSendDraft: string[];
 	folderId: string;
-	saveDraft: () => void;
-	onResponseCallback?: () => void;
-	createSnackbar: CreateSnackbarFn;
-	t: TFunction;
-}): Promise<ActionReturnType> {
-	const sendAction = (): ActionReturnType => {
-		const smartLinkAttachments: Array<SmartLinkAttachment> =
-			item.attachments
-				?.filter((attachment) => attachment.requiresSmartLinkConversion)
-				.map((attachment) => ({
-					draftId: item.did as string,
-					partName: attachment.part as string
-				})) ?? [];
+	generateEditor: (params: GenerateEditorParams) => MailsEditorV2 | null;
+	addEditor: ({ id, editor }: AddEditorParams) => void;
+}): ActionReturnType {
+  if (
+    isConversation ||
+    !folderIncludedSendDraft.includes(getFolderIdParts(folderId).id ?? '0')
+  ) {
+    return false
+  }
 
-		if (smartLinkAttachments.length === 0) {
-			return sendDraft({ message: item as MailMessage, dispatch });
+  const getMessage = (): MailMessage => {
+		const editor = generateEditor({
+			action: EditViewActions.EDIT_AS_DRAFT,
+			id: item.id,
+			messagesStoreDispatch: dispatch,
+			message: item,
+			compositionData: undefined
+		});
+		if (!editor) {
+			throw new Error('No editor provided');
 		}
-		async function generateMessageWithSmartLinks(): Promise<MailMessage> {
-			const createSmartLinkResponse = await createSmartLinkFromMsgSoap({
-				message: item as MailMessage,
-				createSnackbar,
-				t
-			});
-			// removes the attachments that requires smart link conversion
-			// if ('isDraft' in item)
-			// 	// inject the message with the smart links
-			// 	item.body. = addSmartLinksToText({
-			// 		response: createSmartLinkResponse,
-			// 		text: item.body.content,
-			// 		attachments: item.attachments
-			// 	});
-			// item.attachments = item.attachments?.filter((attachment) =>
-			// 	smartLinkAttachments.some(
-			// 		(smartLinkAttachment) => smartLinkAttachment.partName !== attachment.part
-			// 	)
-			// );
-			return item as MailMessage;
-		}
-		return sendDraftWithSmartLinks({ messageGenerator: generateMessageWithSmartLinks, dispatch });
-	};
-	const action = isConversation ? false : sendAction();
-	return folderIncludedSendDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
+		addEditor({ id: editor.id, editor });
+
+		// TODO: search for the 3 functions we already have them in the composer flow
+		// 1. soap createSmartLinks
+		// 2. remove the attachments that are already markes as smartLinks
+		// 3. update the editor body and pass it inside the item
+
+		return item as MailMessage
+	}
+
+  return sendDraftNew({ getMessage, dispatch });
 }
 
 export function getMarkRemoveSpam({

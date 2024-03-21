@@ -420,18 +420,3 @@ export const isDownloadServicedUrl = (url: string): boolean =>
 
 export const composeAttachmentDownloadUrl = (attachment: SavedAttachment): string =>
 	`/service/home/~/?auth=co&id=${attachment.messageId}&part=${attachment.partName}`;
-
-export function removeAttachmentByPartName(
-	multipart: Array<AttachmentPart>,
-	partName: string
-): Array<AttachmentPart> {
-	return multipart.reduce((acc, part) => {
-		if (part.part !== partName) {
-			acc.push(part);
-		}
-		if (part.mp) {
-			part.mp = removeAttachmentByPartName(part.mp, partName);
-		}
-		return acc;
-	}, [] as Array<AttachmentPart>);
-}

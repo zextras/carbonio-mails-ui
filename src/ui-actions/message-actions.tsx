@@ -638,11 +638,11 @@ export function sendDraft({
 	};
 }
 
-export function sendDraftWithSmartLinks({
-	messageGenerator,
+export function sendDraftNew({
+	getMessage,
 	dispatch
 }: {
-	messageGenerator: () => Promise<MailMessage>;
+	getMessage: () => MailMessage;
 	dispatch: AppDispatch;
 }): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.SEND;
@@ -650,11 +650,11 @@ export function sendDraftWithSmartLinks({
 		id: actDescriptor.id,
 		icon: 'PaperPlaneOutline',
 		label: t('label.send', 'Send'),
-		onClick: async (ev): Promise<void> => {
+		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			dispatch(
 				sendMsg({
-					msg: await messageGenerator()
+					msg: getMessage()
 				})
 			)
 				.then() // TODO IRIS-4400
