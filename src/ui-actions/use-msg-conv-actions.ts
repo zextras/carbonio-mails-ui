@@ -217,12 +217,8 @@ export function useMsgConvActions({
 		dispatch,
 		folderIncludedSendDraft,
 		folderId,
-		savedStandardAttachments,
 		createSnackbar,
-		t,
-		text,
-		removeSavedAttachment,
-		setText
+		t
 	});
 
 	const redirectAction = getRedirectAction({

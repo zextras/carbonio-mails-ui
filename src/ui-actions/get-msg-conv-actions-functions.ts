@@ -48,7 +48,8 @@ import type {
 	ExtraWindowsContextType,
 	MailMessage,
 	MailsEditorV2,
-	MessageAction
+	MessageAction,
+	SmartLinkAttachment
 } from '../types';
 import {
 	addSmartLinksToText,
@@ -217,12 +218,11 @@ export async function getSendDraftAction({
 	dispatch,
 	folderIncludedSendDraft,
 	folderId,
-	savedStandardAttachments,
 	createSnackbar,
 	t
 }: {
 	isConversation: boolean;
-	item: MailMessage | Conversation;
+	item: MailMessage;
 	dispatch: AppDispatch;
 	folderIncludedSendDraft: string[];
 	folderId: string;
@@ -230,15 +230,15 @@ export async function getSendDraftAction({
 	onResponseCallback?: () => void;
 	createSnackbar: CreateSnackbarFn;
 	t: TFunction;
-	text: MailsEditorV2['text'];
-	setText: (text: MailsEditorV2['text']) => void;
-	savedStandardAttachments: MailsEditorV2['savedAttachments'];
-	removeSavedAttachment: (partName: string) => void;
 }): Promise<ActionReturnType> {
 	const sendAction = (): ActionReturnType => {
-		const smartLinkAttachments = savedStandardAttachments
-			.filter((attachment) => attachment.requiresSmartLinkConversion)
-			.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName }));
+		const smartLinkAttachments: Array<SmartLinkAttachment> =
+			item.attachments
+				?.filter((attachment) => attachment.requiresSmartLinkConversion)
+				.map((attachment) => ({
+					draftId: item.did as string,
+					partName: attachment.part as string
+				})) ?? [];
 
 		if (smartLinkAttachments.length === 0) {
 			return sendDraft({ message: item as MailMessage, dispatch });
@@ -250,18 +250,18 @@ export async function getSendDraftAction({
 				t
 			});
 			// removes the attachments that requires smart link conversion
-			if ('isDraft' in item)
-				// inject the message with the smart links
-				item.body. = addSmartLinksToText({
-					response: createSmartLinkResponse,
-					text: item.body.content,
-					attachments: item.attachments
-				});
-			item.attachments = item.attachments?.filter((attachment) =>
-				smartLinkAttachments.some(
-					(smartLinkAttachment) => smartLinkAttachment.partName !== attachment.part
-				)
-			);
+			// if ('isDraft' in item)
+			// 	// inject the message with the smart links
+			// 	item.body. = addSmartLinksToText({
+			// 		response: createSmartLinkResponse,
+			// 		text: item.body.content,
+			// 		attachments: item.attachments
+			// 	});
+			// item.attachments = item.attachments?.filter((attachment) =>
+			// 	smartLinkAttachments.some(
+			// 		(smartLinkAttachment) => smartLinkAttachment.partName !== attachment.part
+			// 	)
+			// );
 			return item as MailMessage;
 		}
 		return sendDraftWithSmartLinks({ messageGenerator: generateMessageWithSmartLinks, dispatch });
