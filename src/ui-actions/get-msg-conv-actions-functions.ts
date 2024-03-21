@@ -54,6 +54,7 @@ import {
 	addSmartLinksToText,
 	createSmartLinkFromMsgSoap
 } from '../views/app/detail-panel/edit/utils/edit-view-utils';
+import { generateMailRequest } from '../store/editor-slice-utils';
 
 /**
  * get the action to be executed when the user clicks on the "Mark as read/unread" button
@@ -251,7 +252,7 @@ export async function getSendDraftAction({
 			// removes the attachments that requires smart link conversion
 			if ('isDraft' in item)
 				// inject the message with the smart links
-				item.body.content = addSmartLinksToText({
+				item.body. = addSmartLinksToText({
 					response: createSmartLinkResponse,
 					text: item.body.content,
 					attachments: item.attachments

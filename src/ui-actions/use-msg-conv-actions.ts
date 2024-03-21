@@ -34,7 +34,6 @@ import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
 import { isConversation, isSingleMessageConversation } from '../helpers/messages';
 import { useAppDispatch } from '../hooks/redux';
 import { useEditorAttachments } from '../store/zustand/editor/hooks/attachments';
-import { useEditorText } from '../store/zustand/editor/hooks/editor';
 import type { ActionReturnType, Conversation, MailMessage, MessageAction } from '../types';
 import { useExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 
@@ -57,7 +56,7 @@ export function useMsgConvActions({
 	const isConv = isConversation(item);
 	const folderId = getParentFolderId(item);
 	const dispatch = useAppDispatch();
-	const { text, setText } = useEditorText(item.id);
+	// const { text, setText } = useEditorText(item.id);
 	const { savedStandardAttachments, removeSavedAttachment } = useEditorAttachments(item.id);
 	const createSnackbar = useSnackbar();
 	const { t } = useTranslation();
