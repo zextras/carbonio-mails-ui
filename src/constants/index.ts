@@ -303,6 +303,10 @@ export const MessageActionsDescriptors = {
 	DOWNLOAD_EML: {
 		id: 'download-eml',
 		desc: 'Download EML'
+	},
+	CREATE_APPOINTMENT: {
+		id: 'create-appointment',
+		desc: 'Create Appointment'
 	}
 } as const;
 
@@ -359,37 +363,7 @@ export const FilterActionsDescriptors = {
 	}
 } as const;
 
-export const MSG_CONV_STATUS = {
-	FLAGGED: {
-		value: true,
-		desc: 'flagged'
-	},
-	NOT_FLAGGED: {
-		value: false,
-		desc: 'not flagged'
-	},
-	READ: {
-		value: true,
-		desc: 'read'
-	},
-	NOT_READ: {
-		value: false,
-		desc: 'not read'
-	}
-};
-
-export const ASSERTION = {
-	CONTAIN: {
-		value: true,
-		desc: 'contain'
-	},
-	NOT_CONTAIN: {
-		value: false,
-		desc: 'not contain'
-	}
-};
-
-export const FOLDERIDS = {
+export const FOLDERS_DESCRIPTORS = {
 	INBOX: {
 		id: FOLDERS.INBOX,
 		desc: 'inbox'

@@ -5,7 +5,7 @@
  */
 import { useMemo } from 'react';
 
-import { FOLDERS, useAppContext, useTags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useAppContext, useIntegratedFunction, useTags } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -14,6 +14,7 @@ import { useSelection } from './use-selection';
 import { EXTRA_WINDOW_ACTION_ID } from '../constants';
 import type { AppContext, MailMessage, MessageAction } from '../types';
 import {
+	createAppointment,
 	deleteMessagePermanently,
 	deleteMsg,
 	downloadEml,
@@ -54,7 +55,7 @@ export const useMessageActions = (
 	const { deselectAll } = useSelection({ currentFolderId: folderId, setCount, count: 0 });
 	const { isInsideExtraWindow } = useExtraWindow();
 	const { createWindow } = useExtraWindowsManager();
-
+	const [openAppointmentComposer, isAvailable] = useIntegratedFunction('create_appointment');
 	const systemFolders = useMemo(
 		() => [FOLDERS.INBOX, FOLDERS.SENT, FOLDERS.DRAFTS, FOLDERS.TRASH, FOLDERS.SPAM],
 		[]
@@ -126,6 +127,9 @@ export const useMessageActions = (
 			);
 
 		actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+		!isInsideExtraWindow &&
+			isAvailable &&
+			actions.push(createAppointment({ item: message, openAppointmentComposer }));
 		actions.push(printMsg({ message }));
 		actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
 		!isInsideExtraWindow && actions.push(redirectMsg({ id: message.id }));

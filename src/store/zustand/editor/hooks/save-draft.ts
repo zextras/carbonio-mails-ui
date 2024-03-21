@@ -111,23 +111,29 @@ export const debouncedSaveDraftFromEditor = debounce(saveDraftFromEditor, delay)
  * If some change on the editor data will cause the ability/inability to
  * perform a draft save the status will be updated.
  *
- * The hook returns also the function to invoke the draft save
- * NOTE: the save operation is debounced
+ * The hook returns also the functions to invoke the draft save, a debounced version
+ * and a normal version
  *
  * @param editorId
  */
 export const useEditorDraftSave = (
 	editorId: MailsEditorV2['id']
-): { status: MailsEditorV2['draftSaveAllowedStatus']; saveDraft: () => void } => {
+): {
+	status: MailsEditorV2['draftSaveAllowedStatus'];
+	saveDraft: () => void;
+} => {
 	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
-	const invoker = useCallback((): void => debouncedSaveDraftFromEditor(editorId), [editorId]);
+	const immediateInvoker = useCallback((): void => {
+		debouncedSaveDraftFromEditor.cancel();
+		saveDraftFromEditor(editorId);
+	}, [editorId]);
 
 	return useMemo(
 		() => ({
 			status,
-			saveDraft: invoker
+			saveDraft: immediateInvoker
 		}),
-		[invoker, status]
+		[immediateInvoker, status]
 	);
 };
 

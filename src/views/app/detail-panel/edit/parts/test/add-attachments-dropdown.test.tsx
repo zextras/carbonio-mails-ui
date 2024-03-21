@@ -14,9 +14,9 @@ import {
 	useIntegratedFunction
 } from '../../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { TESTID_SELECTORS } from '../../../../../../constants/tests';
 import { getEditor } from '../../../../../../store/zustand/editor';
 import { generateNewMessageEditor } from '../../../../../../store/zustand/editor/editor-generators';
+import { TESTID_SELECTORS } from '../../../../../../tests/constants';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { generateStore } from '../../../../../../tests/generators/store';
 import { FileNode } from '../../edit-utils-hooks/use-upload-from-files';
