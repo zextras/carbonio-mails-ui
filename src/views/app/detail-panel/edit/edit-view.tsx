@@ -12,10 +12,9 @@ import {
 	Tooltip,
 	ButtonProps,
 	useSnackbar,
-	useModal,
-	useTheme
+	useModal
 } from '@zextras/carbonio-design-system';
-import { addBoard, soapFetch, t } from '@zextras/carbonio-shell-ui';
+import { addBoard, t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
@@ -31,7 +30,7 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import WarningBanner from './parts/warning-banner';
-import { generateSmartLinkHtml } from './utils/edit-view-utils';
+import { createSmartLinkSoap } from './utils/edit-view-utils';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { CLOSE_BOARD_REASON, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
@@ -44,19 +43,9 @@ import {
 	useEditorAttachments,
 	deleteEditor,
 	useEditorsStore,
-	getEditor,
 	useEditorText
 } from '../../../../store/zustand/editor';
-import {
-	BoardContext,
-	CloseBoardReasons,
-	MailsEditorV2,
-	SmartLinkAttachment
-} from '../../../../types';
-import {
-	CreateSmartLinksRequest,
-	CreateSmartLinksResponse
-} from '../../../../types/soap/create-smart-links';
+import { BoardContext, CloseBoardReasons } from '../../../../types';
 
 export type EditViewProp = {
 	editorId: string;
@@ -98,22 +87,6 @@ const SendToYourselfWarningBanner = ({ editorId }: { editorId: string }): JSX.El
 	return isSendingToYourself ? <WarningBanner /> : null;
 };
 
-function filterMatchingObjects(
-	smartLinks: SmartLinkAttachment[],
-	savedAttachments: MailsEditorV2['savedAttachments']
-): MailsEditorV2['savedAttachments'] {
-	return savedAttachments.reduce((accumulator, attachment) => {
-		const isMatching = smartLinks.some(
-			(smartLink) =>
-				smartLink.draftId === attachment.messageId && smartLink.partName === attachment.partName
-		);
-		if (isMatching) {
-			accumulator.push(attachment);
-		}
-		return accumulator;
-	}, [] as MailsEditorV2['savedAttachments']);
-}
-
 export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessageSent }) => {
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
@@ -124,7 +97,6 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const { addStandardAttachments, addInlineAttachments, hasStandardAttachments } =
 		useEditorAttachments(editorId);
-	const theme = useTheme();
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(
@@ -248,7 +220,6 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const { removeSavedAttachment } = useEditorAttachments(editorId);
 
 	const { text, setText } = useEditorText(editorId);
-	const draftId = getEditor({ id: editorId })?.did;
 
 	const { savedStandardAttachments } = useEditorAttachments(editorId);
 
@@ -263,58 +234,17 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 
 	const createSmartLinksAction = useCallback((): Promise<void> => {
 		setIsConvertingToSmartLink(true);
-		return soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
-			_jsns: 'urn:zimbraMail',
-			attachments: draftSmartLinks
-		}).then((response) => {
-			setIsConvertingToSmartLink(false);
-			if ('Fault' in response) {
-				createSnackbar({
-					key: `save-draft`,
-					replace: true,
-					type: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000
-				});
-			} else {
-				const textWithLink = {
-					plainText: map(response.smartLinks, (smartLink) => smartLink.publicUrl)
-						.join('\n')
-						.concat(text.plainText),
-					richText: text.richText.concat(
-						` ${map(response.smartLinks, (smartLink, index) =>
-							generateSmartLinkHtml({
-								smartLink,
-								attachments: savedStandardAttachments,
-								index,
-								theme
-							})
-						).join('<br/>')}`
-					)
-				};
-				setText(textWithLink);
-				draftSmartLinks.forEach((smartLink) => {
-					removeSavedAttachment(smartLink.partName);
-				});
-				createSnackbar({
-					key: 'smartLinksCreated',
-					replace: true,
-					type: 'success',
-					label: t('label.smart_links_created', 'smart links created'),
-					autoHideTimeout: 3000
-				});
-			}
+
+		return createSmartLinkSoap({
+			text,
+			setText,
+			savedStandardAttachments,
+			removeSavedAttachment,
+			t,
+			createSnackbar,
+			onResponseCallback: () => setIsConvertingToSmartLink(false)
 		});
-	}, [
-		draftSmartLinks,
-		createSnackbar,
-		text.plainText,
-		text.richText,
-		setText,
-		savedStandardAttachments,
-		theme,
-		removeSavedAttachment
-	]);
+	}, [text, setText, savedStandardAttachments, removeSavedAttachment, createSnackbar]);
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {

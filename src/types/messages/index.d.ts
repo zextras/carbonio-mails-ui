@@ -71,6 +71,7 @@ export type AttachmentPart = {
 	disposition?: 'inline' | 'attachment';
 	cd?: 'inline' | 'attachment';
 	mp?: Array<AttachmentPart>;
+	requiresSmartLinkConversion: boolean;
 };
 
 export type MailMessage = IncompleteMessage & {

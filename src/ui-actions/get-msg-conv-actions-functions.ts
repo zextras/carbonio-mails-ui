@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
 import { FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
+import { TFunction } from 'i18next';
 
 import {
 	deleteConversationPermanently,
@@ -31,6 +33,7 @@ import {
 	replyAllMsg,
 	replyMsg,
 	sendDraft,
+	sendDraftWithSmartLinks,
 	setMsgAsSpam,
 	setMsgFlag,
 	setMsgRead,
@@ -44,8 +47,13 @@ import type {
 	Conversation,
 	ExtraWindowsContextType,
 	MailMessage,
+	MailsEditorV2,
 	MessageAction
 } from '../types';
+import {
+	addSmartLinksToText,
+	createSmartLinkFromMsgSoap
+} from '../views/app/detail-panel/edit/utils/edit-view-utils';
 
 /**
  * get the action to be executed when the user clicks on the "Mark as read/unread" button
@@ -202,20 +210,62 @@ export function getAddRemoveFlagAction({
 		: setMsgFlag({ ids: [id], value: item.flagged, dispatch });
 }
 
-export function getSendDraftAction({
+export async function getSendDraftAction({
 	isConversation,
 	item,
 	dispatch,
 	folderIncludedSendDraft,
-	folderId
+	folderId,
+	savedStandardAttachments,
+	createSnackbar,
+	t
 }: {
 	isConversation: boolean;
 	item: MailMessage | Conversation;
 	dispatch: AppDispatch;
 	folderIncludedSendDraft: string[];
 	folderId: string;
-}): ActionReturnType {
-	const action = isConversation ? false : sendDraft({ message: item as MailMessage, dispatch });
+	saveDraft: () => void;
+	onResponseCallback?: () => void;
+	createSnackbar: CreateSnackbarFn;
+	t: TFunction;
+	text: MailsEditorV2['text'];
+	setText: (text: MailsEditorV2['text']) => void;
+	savedStandardAttachments: MailsEditorV2['savedAttachments'];
+	removeSavedAttachment: (partName: string) => void;
+}): Promise<ActionReturnType> {
+	const sendAction = (): ActionReturnType => {
+		const smartLinkAttachments = savedStandardAttachments
+			.filter((attachment) => attachment.requiresSmartLinkConversion)
+			.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName }));
+
+		if (smartLinkAttachments.length === 0) {
+			return sendDraft({ message: item as MailMessage, dispatch });
+		}
+		async function generateMessageWithSmartLinks(): Promise<MailMessage> {
+			const createSmartLinkResponse = await createSmartLinkFromMsgSoap({
+				message: item as MailMessage,
+				createSnackbar,
+				t
+			});
+			// removes the attachments that requires smart link conversion
+			if ('isDraft' in item)
+				// inject the message with the smart links
+				item.body.content = addSmartLinksToText({
+					response: createSmartLinkResponse,
+					text: item.body.content,
+					attachments: item.attachments
+				});
+			item.attachments = item.attachments?.filter((attachment) =>
+				smartLinkAttachments.some(
+					(smartLinkAttachment) => smartLinkAttachment.partName !== attachment.part
+				)
+			);
+			return item as MailMessage;
+		}
+		return sendDraftWithSmartLinks({ messageGenerator: generateMessageWithSmartLinks, dispatch });
+	};
+	const action = isConversation ? false : sendAction();
 	return folderIncludedSendDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 

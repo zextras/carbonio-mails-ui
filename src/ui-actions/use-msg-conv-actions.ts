@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { useSnackbar } from '@zextras/carbonio-design-system';
 import { FOLDERS, useIntegratedFunction, useTags } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import {
 	getAddRemoveFlagAction,
@@ -31,6 +33,8 @@ import {
 import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
 import { isConversation, isSingleMessageConversation } from '../helpers/messages';
 import { useAppDispatch } from '../hooks/redux';
+import { useEditorAttachments } from '../store/zustand/editor/hooks/attachments';
+import { useEditorText } from '../store/zustand/editor/hooks/editor';
 import type { ActionReturnType, Conversation, MailMessage, MessageAction } from '../types';
 import { useExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 
@@ -53,6 +57,10 @@ export function useMsgConvActions({
 	const isConv = isConversation(item);
 	const folderId = getParentFolderId(item);
 	const dispatch = useAppDispatch();
+	const { text, setText } = useEditorText(item.id);
+	const { savedStandardAttachments, removeSavedAttachment } = useEditorAttachments(item.id);
+	const createSnackbar = useSnackbar();
+	const { t } = useTranslation();
 	const tags = useTags();
 	const { createWindow } = useExtraWindowsManager();
 	const [openAppointmentComposer, isAvailable] = useIntegratedFunction('create_appointment');
@@ -209,7 +217,13 @@ export function useMsgConvActions({
 		item,
 		dispatch,
 		folderIncludedSendDraft,
-		folderId
+		folderId,
+		savedStandardAttachments,
+		createSnackbar,
+		t,
+		text,
+		removeSavedAttachment,
+		setText
 	});
 
 	const redirectAction = getRedirectAction({

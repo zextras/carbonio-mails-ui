@@ -638,6 +638,31 @@ export function sendDraft({
 	};
 }
 
+export function sendDraftWithSmartLinks({
+	messageGenerator,
+	dispatch
+}: {
+	messageGenerator: () => Promise<MailMessage>;
+	dispatch: AppDispatch;
+}): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.SEND;
+	return {
+		id: actDescriptor.id,
+		icon: 'PaperPlaneOutline',
+		label: t('label.send', 'Send'),
+		onClick: async (ev): Promise<void> => {
+			if (ev) ev.preventDefault();
+			dispatch(
+				sendMsg({
+					msg: await messageGenerator()
+				})
+			)
+				.then() // TODO IRIS-4400
+				.catch(); // TODO IRIS-4400
+		}
+	};
+}
+
 export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.REDIRECT;
 	return {
