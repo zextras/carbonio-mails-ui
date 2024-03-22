@@ -8,6 +8,7 @@ import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { find } from 'lodash';
+import { saveDraftFromEditor } from '../store/zustand/editor/hooks/save-draft';
 
 import { useEditorsStore } from '../store/zustand/editor/store';
 import type {
@@ -153,6 +154,7 @@ export async function createSmartLink({
 				autoHideTimeout: 3000
 			});
 		} else {
+			saveDraftFromEditor(editorId);
 			const { text } = useEditorsStore.getState().editors[editorId];
 			const textWithLinks = addSmartLinksToText({
 				response,

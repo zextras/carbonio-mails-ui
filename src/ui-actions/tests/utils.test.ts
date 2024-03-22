@@ -4,11 +4,23 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { useEditorsStore } from '../../store/zustand/editor/store';
 import { setupEditorStore } from '../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../tests/generators/editors';
 import { generateStore } from '../../tests/generators/store';
-import { MailsEditorV2, MessageAction } from '../../types';
-import { addSmartLinksToText, findMessageActionById, generateSmartLinkHtml } from '../utils';
+import {
+	CreateSmartLinksRequest,
+	CreateSmartLinksResponse,
+	MailsEditorV2,
+	MessageAction
+} from '../../types';
+import {
+	addSmartLinksToText,
+	createSmartLink,
+	findMessageActionById,
+	generateSmartLinkHtml
+} from '../utils';
 
 describe('findMessageActionById', () => {
 	test('returns undefined if an empty actions array is passed', () => {
@@ -164,4 +176,68 @@ test('addSmartLinksToText add smartlinks to both plain and rich text correctly',
 	expect(result.plainText).toContain(plainTextResponse);
 	expect(result.richText).toContain(expectedUrl1);
 	expect(result.richText).toContain(expectedUrl2);
+});
+
+// createSmartLink
+
+describe('createSmartLink', () => {
+	it('request should contain the correct array of smart link attachments', async () => {
+		const editor = await generateEditorV2Case(1, generateStore().dispatch);
+		const attachmentToConvert = editor.savedAttachments[0];
+		attachmentToConvert.requiresSmartLinkConversion = true;
+		setupEditorStore({ editors: [editor] });
+
+		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
+			'CreateSmartLinks',
+			undefined,
+			{
+				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
+			}
+		);
+		createSmartLink({
+			onResponseCallback: jest.fn(),
+			createSnackbar: jest.fn(),
+			t: jest.fn(),
+			editorId: editor.id
+		});
+		const request = await interceptor;
+		const smartLink = {
+			draftId: attachmentToConvert.messageId,
+			partName: attachmentToConvert.partName
+		};
+		expect(request.attachments[0]).toMatchObject(smartLink);
+		expect(request.attachments).toHaveLength(1);
+	});
+
+	it('should modify the editor store correctly', async () => {
+		const editor = await generateEditorV2Case(1, generateStore().dispatch);
+		const oldSavedAttachments = editor.savedAttachments;
+		const oldSavedAttachmentsLength = oldSavedAttachments.length;
+		const attachmentToConvert = oldSavedAttachments[0];
+		attachmentToConvert.requiresSmartLinkConversion = true;
+		setupEditorStore({ editors: [editor] });
+
+		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
+			'CreateSmartLinks',
+			undefined,
+			{
+				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
+			}
+		);
+		createSmartLink({
+			onResponseCallback: jest.fn(),
+			createSnackbar: jest.fn(),
+			t: jest.fn(),
+			editorId: editor.id
+		});
+		await interceptor;
+		// const smartLink = {
+		// 	draftId: attachmentToConvert.messageId,
+		// 	partName: attachmentToConvert.partName
+		// };
+
+		const savedStandardAttachments = useEditorsStore.getState().editors[editor.id].savedAttachments;
+		// console.log(savedStandardAttachments);
+		expect(savedStandardAttachments).toHaveLength(oldSavedAttachmentsLength - 1);
+	});
 });

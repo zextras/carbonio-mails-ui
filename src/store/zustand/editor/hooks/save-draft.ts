@@ -27,7 +27,10 @@ export type SaveDraftOptions = {
  * @param editorId
  * @param options
  */
-const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftOptions): void => {
+export const saveDraftFromEditor = (
+	editorId: MailsEditorV2['id'],
+	options?: SaveDraftOptions
+): void => {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {
 		console.warn('Cannot find the editor', editorId);
