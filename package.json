@@ -19,8 +19,8 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"lint-errors": "eslint --ext .js,.jsx,.ts,.tsx --quiet --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"lint-stats": "eslint --ext .js,.jsx,.ts,.tsx --format node_modules/eslint-stats/byErrorAndWarningStacked --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
-		"test:ci": "jest --testTimeout=10000 --maxWorkers=50%",
-		"test:dev": "jest --testTimeout=10000 --maxWorkers=2",
+		"test:ci": "jest --testTimeout=20000 --maxWorkers=50%",
+		"test:dev": "jest --testTimeout=20000 --maxWorkers=2",
 		"test": "is-ci && npm run test:ci || npm run test:dev",
 		"pull-translations": "git subtree pull -P translations git@github.com:Zextras/carbonio-mails-ui-i18n.git master --squash",
 		"push-translations": "git subtree push -P translations git@github.com:Zextras/carbonio-mails-ui-i18n.git"

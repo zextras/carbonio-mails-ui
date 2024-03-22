@@ -50,6 +50,11 @@ import RedirectMessageAction from '../redirect-message-action';
 import { TagsDropdownItem } from '../tag-actions';
 
 describe('Messages actions calls', () => {
+	beforeAll(() => {
+		createAPIInterceptor('MsgAction', {});
+		createAPIInterceptor('Batch', {});
+		createAPIInterceptor('SendMsg', {});
+	});
 	describe('Add flag action', () => {
 		test('Single id', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
@@ -62,6 +67,8 @@ describe('Messages actions calls', () => {
 				}
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			const action = setMsgFlag({
 				ids: [msg.id],
 				dispatch: store.dispatch,
@@ -72,7 +79,7 @@ describe('Messages actions calls', () => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -943,6 +950,8 @@ describe('Messages actions calls', () => {
 			}
 		});
 
+		const apiInterceptor = createAPIInterceptor<SaveDraftRequest>('SendMsg');
+
 		const action = sendDraft({
 			message: msg,
 			dispatch: store.dispatch
@@ -952,7 +961,7 @@ describe('Messages actions calls', () => {
 			action.onClick();
 		});
 
-		const requestParameter = await createAPIInterceptor<SaveDraftRequest>('SendMsg');
+		const requestParameter = await apiInterceptor;
 		expect(requestParameter.m.id).toBe(msg.id);
 		expect(requestParameter.m.su).not.toBeUndefined();
 		expect(requestParameter.m.e).not.toBeUndefined();

@@ -5,6 +5,7 @@
  */
 import '@testing-library/jest-dom';
 import failOnConsole from 'jest-fail-on-console';
+import fetchMock from 'jest-fetch-mock';
 import { http } from 'msw';
 
 import {
@@ -24,6 +25,7 @@ failOnConsole({
 });
 
 beforeAll(() => {
+	fetchMock.doMock();
 	const h = http.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
 	const j = http.post('/service/soap/GetConvRequest', handleGetConvRequest);
 	registerRestHandler(h);
