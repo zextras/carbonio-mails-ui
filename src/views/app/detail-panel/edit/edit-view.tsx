@@ -18,7 +18,7 @@ import { addBoard, t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
-import { checkSubjectAndAttachment } from './check-subject-attachment';
+import { checkSubject } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
@@ -94,8 +94,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-	const { addStandardAttachments, addInlineAttachments, hasStandardAttachments } =
-		useEditorAttachments(editorId);
+	const { addStandardAttachments, addInlineAttachments } = useEditorAttachments(editorId);
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(
@@ -173,15 +172,14 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 				saveDraft();
 				close({ reason: CLOSE_BOARD_REASON.SEND_LATER });
 			};
-			checkSubjectAndAttachment({
+			checkSubject({
 				editorId,
-				hasAttachments: hasStandardAttachments,
 				onConfirmCallback,
 				close,
 				createModal
 			});
 		},
-		[close, createModal, editorId, hasStandardAttachments, saveDraft, setAutoSendTime]
+		[close, createModal, editorId, saveDraft, setAutoSendTime]
 	);
 
 	const onSendClick = useCallback((): void => {
@@ -192,23 +190,13 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 				onError: onSendError
 			});
 		};
-		checkSubjectAndAttachment({
+		checkSubject({
 			editorId,
-			hasAttachments: hasStandardAttachments,
 			onConfirmCallback,
 			close,
 			createModal
 		});
-	}, [
-		close,
-		createModal,
-		editorId,
-		hasStandardAttachments,
-		onSendComplete,
-		onSendCountdownTick,
-		onSendError,
-		sendMessage
-	]);
+	}, [close, createModal, editorId, onSendComplete, onSendCountdownTick, onSendError, sendMessage]);
 
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
