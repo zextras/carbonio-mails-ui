@@ -25,12 +25,13 @@ import { getContentForPrint } from '../commons/print-conversation/print-conversa
 import { EditViewActions, MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
 import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../helpers/appointmemt';
 import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
-import { sendMsg } from '../store/actions/send-msg';
+import { sendMsg, sendMsgFromEditor } from '../store/actions/send-msg';
 import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
 	BoardContext,
 	MailMessage,
+	MailsEditorV2,
 	MessageAction,
 	MessageActionReturnType,
 	MsgActionParameters,
@@ -638,11 +639,11 @@ export function sendDraft({
 	};
 }
 
-export function sendDraftNew({
-	getMessage,
+export function sendDraftFromPreview({
+	getEditor,
 	dispatch
 }: {
-	getMessage: () => MailMessage;
+	getEditor: () => Promise<MailsEditorV2>;
 	dispatch: AppDispatch;
 }): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.SEND;
@@ -650,11 +651,12 @@ export function sendDraftNew({
 		id: actDescriptor.id,
 		icon: 'PaperPlaneOutline',
 		label: t('label.send', 'Send'),
-		onClick: (ev): void => {
+		onClick: async (ev): Promise<void> => {
 			if (ev) ev.preventDefault();
+			const editor = await getEditor();
 			dispatch(
-				sendMsg({
-					msg: getMessage()
+				sendMsgFromEditor({
+					editor
 				})
 			)
 				.then() // TODO IRIS-4400

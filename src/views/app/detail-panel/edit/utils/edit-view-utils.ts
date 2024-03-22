@@ -8,6 +8,7 @@ import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
+import { useEditorsStore } from '../../../../../store/zustand/editor/store';
 import { MailMessage, MailsEditorV2 } from '../../../../../types';
 import {
 	CreateSmartLinksRequest,
@@ -66,23 +67,18 @@ export function addSmartLinksToText({
 	};
 }
 
-export async function createSmartLinkSoap({
-	savedStandardAttachments,
+export async function createSmartLink({
 	onResponseCallback,
 	createSnackbar,
 	t,
-	text,
-	removeSavedAttachment,
-	setText
+	editorId
 }: {
 	onResponseCallback?: () => void;
+	editorId: MailsEditorV2['id'];
 	createSnackbar: CreateSnackbarFn;
 	t: TFunction;
-	text: MailsEditorV2['text'];
-	setText: (text: MailsEditorV2['text']) => void;
-	savedStandardAttachments: MailsEditorV2['savedAttachments'];
-	removeSavedAttachment: (partName: string) => void;
 }): Promise<void> {
+	const savedStandardAttachments = useEditorsStore.getState().editors[editorId].savedAttachments;
 	const draftSmartLinks = savedStandardAttachments
 		.filter((attachment) => attachment.requiresSmartLinkConversion)
 		.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName }));
@@ -100,9 +96,16 @@ export async function createSmartLinkSoap({
 				autoHideTimeout: 3000
 			});
 		} else {
-			setText(addSmartLinksToText({ response, text, savedStandardAttachments }));
+			const { text } = useEditorsStore.getState().editors[editorId];
+			const textWithLinks = addSmartLinksToText({
+				response,
+				text,
+				attachments: savedStandardAttachments
+			});
+			useEditorsStore.getState().setText(editorId, textWithLinks);
+			const { removeSavedAttachment } = useEditorsStore.getState();
 			draftSmartLinks.forEach((smartLink) => {
-				removeSavedAttachment(smartLink.partName);
+				removeSavedAttachment(editorId, smartLink.partName);
 			});
 			createSnackbar({
 				key: 'smartLinksCreated',

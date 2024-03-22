@@ -30,7 +30,7 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import WarningBanner from './parts/warning-banner';
-import { createSmartLinkSoap } from './utils/edit-view-utils';
+import { createSmartLink } from './utils/edit-view-utils';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { CLOSE_BOARD_REASON, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
@@ -42,8 +42,7 @@ import {
 	useEditorSend,
 	useEditorAttachments,
 	deleteEditor,
-	useEditorsStore,
-	useEditorText
+	useEditorsStore
 } from '../../../../store/zustand/editor';
 import { BoardContext, CloseBoardReasons } from '../../../../types';
 
@@ -217,9 +216,6 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		},
 		[addInlineAttachments]
 	);
-	const { removeSavedAttachment } = useEditorAttachments(editorId);
-
-	const { text, setText } = useEditorText(editorId);
 
 	const { savedStandardAttachments } = useEditorAttachments(editorId);
 
@@ -235,16 +231,13 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const createSmartLinksAction = useCallback((): Promise<void> => {
 		setIsConvertingToSmartLink(true);
 
-		return createSmartLinkSoap({
-			text,
-			setText,
-			savedStandardAttachments,
-			removeSavedAttachment,
+		return createSmartLink({
+			editorId,
 			t,
 			createSnackbar,
 			onResponseCallback: () => setIsConvertingToSmartLink(false)
 		});
-	}, [text, setText, savedStandardAttachments, removeSavedAttachment, createSnackbar]);
+	}, [editorId, createSnackbar]);
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {

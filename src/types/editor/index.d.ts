@@ -128,7 +128,7 @@ export type EditViewActionsType = (typeof EditViewActions)[keyof typeof EditView
 export type AddEditorParams = {
 	id: MailsEditorV2['id'];
 	editor: MailsEditorV2;
-}
+};
 
 export type MailsEditorV2 = {
 	// the id of the editor (used to identify the editor in the store)

@@ -6,6 +6,7 @@
 
 import { faker } from '@faker-js/faker';
 import { FOLDERS, SoapResponse } from '@zextras/carbonio-shell-ui';
+
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import type { GetMsgResponse, Participant, SoapMailParticipant } from '../../types';
 
@@ -92,14 +93,21 @@ const generateGetMsgResponse = ({
 							{
 								part: 'TEXT',
 								ct: 'multipart/alternative',
+								requiresSmartLinkConversion: false,
 								mp: [
-									{ part: '1', ct: 'text/plain', s: body?.length },
+									{
+										part: '1',
+										ct: 'text/plain',
+										s: body?.length,
+										requiresSmartLinkConversion: false
+									},
 									{
 										part: '2',
 										ct: 'text/html',
 										s: body?.length,
 										body: true,
-										content: body
+										content: body,
+										requiresSmartLinkConversion: false
 									}
 								]
 							}
