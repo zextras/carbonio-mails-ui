@@ -7,8 +7,8 @@
 import { setupEditorStore } from '../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../tests/generators/editors';
 import { generateStore } from '../../tests/generators/store';
-import { MessageAction } from '../../types';
-import { findMessageActionById, generateSmartLinkHtml } from '../utils';
+import { MailsEditorV2, MessageAction } from '../../types';
+import { addSmartLinksToText, findMessageActionById, generateSmartLinkHtml } from '../utils';
 
 describe('findMessageActionById', () => {
 	test('returns undefined if an empty actions array is passed', () => {
@@ -121,7 +121,6 @@ describe('generateSmartLinkHtml', () => {
 
 	it('falls back to publicUrl when filename is undefined', async () => {
 		const editor = await generateEditorV2Case(1, generateStore().dispatch);
-		setupEditorStore({ editors: [editor] });
 
 		const smartLink = { publicUrl: 'https://example.com/file' };
 		const index = 0;
@@ -139,4 +138,30 @@ describe('generateSmartLinkHtml', () => {
 		expect(result).toContain(expectedUrl);
 		expect(result).toContain(expectedFileName);
 	});
+});
+
+test('addSmartLinksToText add smartlinks to both plain and rich text correctly', async () => {
+	const editor = await generateEditorV2Case(1, generateStore().dispatch);
+	const createSmartLinkResponse = {
+		smartLinks: [
+			{ publicUrl: 'https://example.com/file1' },
+			{ publicUrl: 'https://example.com/file2' }
+		]
+	};
+	const result = addSmartLinksToText({
+		response: createSmartLinkResponse,
+		text: editor.text,
+		attachments: editor.savedAttachments
+	});
+	const plainTextResponse = createSmartLinkResponse.smartLinks
+		.map((smartLink) => smartLink.publicUrl)
+		.join('\n')
+		.concat(editor.text.plainText);
+
+	const expectedUrl1 = `href='${createSmartLinkResponse.smartLinks[0].publicUrl}' download>${editor.savedAttachments[0].filename}`;
+	const expectedUrl2 = `href='${createSmartLinkResponse.smartLinks[0].publicUrl}' download>${editor.savedAttachments[0].filename}`;
+
+	expect(result.plainText).toContain(plainTextResponse);
+	expect(result.richText).toContain(expectedUrl1);
+	expect(result.richText).toContain(expectedUrl2);
 });
