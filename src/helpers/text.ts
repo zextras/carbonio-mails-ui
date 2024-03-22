@@ -6,3 +6,8 @@
 
 // TODO: implement this function
 // export const insertIntoText = (text: string, textToInsert: string, position: number): string => {};
+//
+export function parseTextToHTMLDocument(text: string): Document {
+	const parser = new DOMParser();
+	return parser.parseFromString(text, 'text/html');
+}

@@ -5,16 +5,12 @@
  */
 
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { parseTextToHTMLDocument } from '../../helpers/text';
 import { useEditorsStore } from '../../store/zustand/editor/store';
 import { setupEditorStore } from '../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../tests/generators/editors';
 import { generateStore } from '../../tests/generators/store';
-import {
-	CreateSmartLinksRequest,
-	CreateSmartLinksResponse,
-	MailsEditorV2,
-	MessageAction
-} from '../../types';
+import { CreateSmartLinksRequest, CreateSmartLinksResponse, MessageAction } from '../../types';
 import {
 	addSmartLinksToText,
 	createSmartLink,
@@ -125,10 +121,12 @@ describe('generateSmartLinkHtml', () => {
 			attachments: editor.savedAttachments,
 			index
 		});
+		const htmlDoc = parseTextToHTMLDocument(result);
 		const expectedFileName = editor.savedAttachments[index].filename;
-		const expectedUrl = `href='${smartLink.publicUrl}'`;
-		expect(result).toContain(expectedUrl);
-		expect(result).toContain(expectedFileName);
+		const linkElement = htmlDoc.getElementsByTagName('a')[0];
+		const hrefValue = linkElement.getAttribute('href');
+		expect(hrefValue).toBe(smartLink.publicUrl);
+		expect(linkElement.text).toBe(expectedFileName);
 	});
 
 	it('falls back to publicUrl when filename is undefined', async () => {
@@ -145,10 +143,10 @@ describe('generateSmartLinkHtml', () => {
 			attachments: attachmentsWithoutFileName,
 			index
 		});
-		const expectedUrl = `href='${smartLink.publicUrl}'`;
-		const expectedFileName = `download>${smartLink.publicUrl}</a>`;
-		expect(result).toContain(expectedUrl);
-		expect(result).toContain(expectedFileName);
+
+		const htmlDoc = parseTextToHTMLDocument(result);
+		const linkElement = htmlDoc.getElementsByTagName('a')[0];
+		expect(linkElement.text).toBe(smartLink.publicUrl);
 	});
 });
 
@@ -209,7 +207,7 @@ describe('createSmartLink', () => {
 		expect(request.attachments).toHaveLength(1);
 	});
 
-	it('should modify the editor store correctly', async () => {
+	it('should remove the attachment that has been converted to smartLink', async () => {
 		const editor = await generateEditorV2Case(1, generateStore().dispatch);
 		const oldSavedAttachments = editor.savedAttachments;
 		const oldSavedAttachmentsLength = oldSavedAttachments.length;
@@ -224,20 +222,15 @@ describe('createSmartLink', () => {
 				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
 			}
 		);
-		createSmartLink({
+		await createSmartLink({
 			onResponseCallback: jest.fn(),
 			createSnackbar: jest.fn(),
 			t: jest.fn(),
 			editorId: editor.id
 		});
 		await interceptor;
-		// const smartLink = {
-		// 	draftId: attachmentToConvert.messageId,
-		// 	partName: attachmentToConvert.partName
-		// };
 
 		const savedStandardAttachments = useEditorsStore.getState().editors[editor.id].savedAttachments;
-		// console.log(savedStandardAttachments);
 		expect(savedStandardAttachments).toHaveLength(oldSavedAttachmentsLength - 1);
 	});
 });
