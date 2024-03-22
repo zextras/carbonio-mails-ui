@@ -39,6 +39,7 @@ import {
 	showOriginalMsg
 } from './message-actions';
 import { applyTag } from './tag-actions';
+import { createSmartLink } from './utils';
 import { EditViewActions } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { AppDispatch } from '../store/redux';
@@ -53,7 +54,6 @@ import type {
 	MailsEditorV2,
 	MessageAction
 } from '../types';
-import { createSmartLink } from '../views/app/detail-panel/edit/utils/edit-view-utils';
 
 /**
  * get the action to be executed when the user clicks on the "Mark as read/unread" button

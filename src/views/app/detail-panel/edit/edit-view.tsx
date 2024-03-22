@@ -30,7 +30,6 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import WarningBanner from './parts/warning-banner';
-import { createSmartLink } from './utils/edit-view-utils';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { CLOSE_BOARD_REASON, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
@@ -45,6 +44,7 @@ import {
 	useEditorsStore
 } from '../../../../store/zustand/editor';
 import { BoardContext, CloseBoardReasons } from '../../../../types';
+import { createSmartLink } from '../../../../ui-actions/utils';
 
 export type EditViewProp = {
 	editorId: string;
