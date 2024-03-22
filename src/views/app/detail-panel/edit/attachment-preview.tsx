@@ -251,12 +251,16 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 							{isSavedAttachment(attachment) && (
 								<Tooltip
 									label={
-										attachment.requiresSmartLinkConversion
+										requiresSmartLinkConversion
 											? t('label.convert_back_to_attachment', 'Convert back to attachment')
 											: t('label.convert_to_smart_link', 'Convert to smart link')
 									}
 								>
-									<IconButton size="medium" icon="DriveOutline" onClick={toggleSmartLinkAction} />
+									<IconButton
+										size="medium"
+										icon={requiresSmartLinkConversion ? 'Refresh' : 'DriveOutline'}
+										onClick={toggleSmartLinkAction}
+									/>
 								</Tooltip>
 							)}
 							{isDeletable && (
