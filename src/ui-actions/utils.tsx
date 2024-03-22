@@ -8,7 +8,6 @@ import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { find } from 'lodash';
-import { saveDraftFromEditor } from '../store/zustand/editor/hooks/save-draft';
 
 import { useEditorsStore } from '../store/zustand/editor/store';
 import type {
@@ -69,19 +68,17 @@ export const generateSmartLinkHtml = ({
 	attachments: MailsEditorV2['savedAttachments'];
 	index: number;
 }): string =>
-	`<a style='background-color: #D3EBF8; 
-                            padding: 7px 15px;
-                            color: black;
-                            display: inline-block;
-                            margin-top: 5px;
-                            text-overflow: ellipsis;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            max-width: 80%;
-                            border: 1px solid #2b73d2;
-                            href='${smartLink.publicUrl}' download>${
-		attachments[index].filename ?? smartLink.publicUrl
-	}</a>`;
+	`<a style='background-color: #D3EBF8;
+padding: 7px 15px;
+color: black;
+display: inline-block;
+margin-top: 5px;
+text-overflow: ellipsis;
+white-space: nowrap;
+overflow: hidden;
+max-width: 80%;
+border: 1px solid #2b73d2;'
+ href='${smartLink.publicUrl}' download>${attachments[index].filename ?? smartLink.publicUrl}</a>`;
 
 /**
  * Add smart links to the text of the editor
@@ -154,12 +151,14 @@ export async function createSmartLink({
 				autoHideTimeout: 3000
 			});
 		} else {
-			saveDraftFromEditor(editorId);
 			const { text } = useEditorsStore.getState().editors[editorId];
+			const attachmentsToAddToBody = savedStandardAttachments.filter(
+				(attachment) => attachment.requiresSmartLinkConversion
+			);
 			const textWithLinks = addSmartLinksToText({
 				response,
 				text,
-				attachments: savedStandardAttachments
+				attachments: attachmentsToAddToBody
 			});
 			useEditorsStore.getState().setText(editorId, textWithLinks);
 			const { removeSavedAttachment } = useEditorsStore.getState();
