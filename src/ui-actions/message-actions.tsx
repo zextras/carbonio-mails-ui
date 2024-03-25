@@ -635,10 +635,10 @@ export function sendDraft({
 }
 
 export function sendDraftFromPreview({
-	getEditor,
+	generateEditorWithSmartLinks,
 	dispatch
 }: {
-	getEditor: () => Promise<MailsEditorV2>;
+	generateEditorWithSmartLinks: () => Promise<MailsEditorV2>;
 	dispatch: AppDispatch;
 }): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.SEND;
@@ -648,7 +648,7 @@ export function sendDraftFromPreview({
 		label: t('label.send', 'Send'),
 		onClick: async (ev): Promise<void> => {
 			if (ev) ev.preventDefault();
-			const editor = await getEditor();
+			const editor = await generateEditorWithSmartLinks();
 			dispatch(
 				sendMsgFromEditor({
 					editor

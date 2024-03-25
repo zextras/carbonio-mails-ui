@@ -118,8 +118,7 @@ describe('generateSmartLinkHtml', () => {
 		const index = 0;
 		const result = generateSmartLinkHtml({
 			smartLink,
-			attachments: editor.savedAttachments,
-			index
+			filename: editor.savedAttachments[index].filename
 		});
 		const htmlDoc = parseTextToHTMLDocument(result);
 		const expectedFileName = editor.savedAttachments[index].filename;
@@ -140,8 +139,7 @@ describe('generateSmartLinkHtml', () => {
 			// disable typescript to check the fallback
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			attachments: attachmentsWithoutFileName,
-			index
+			filename: attachmentsWithoutFileName[index].filename
 		});
 
 		const htmlDoc = parseTextToHTMLDocument(result);
@@ -163,10 +161,9 @@ test('addSmartLinksToText add smartlinks to both plain and rich text correctly',
 		text: editor.text,
 		attachments: editor.savedAttachments
 	});
-	const plainTextResponse = createSmartLinkResponse.smartLinks
-		.map((smartLink) => smartLink.publicUrl)
-		.join('\n')
-		.concat(editor.text.plainText);
+	const plainTextResponse = editor.text.plainText.concat(
+		createSmartLinkResponse.smartLinks.map((smartLink) => smartLink.publicUrl).join('\n')
+	);
 
 	const expectedUrl1 = `href='${createSmartLinkResponse.smartLinks[0].publicUrl}' download>${editor.savedAttachments[0].filename}`;
 	const expectedUrl2 = `href='${createSmartLinkResponse.smartLinks[0].publicUrl}' download>${editor.savedAttachments[0].filename}`;

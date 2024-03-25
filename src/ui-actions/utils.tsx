@@ -61,12 +61,10 @@ export const findMessageActionById = (
  */
 export const generateSmartLinkHtml = ({
 	smartLink,
-	attachments,
-	index
+	filename
 }: {
 	smartLink: SmartLinkUrl;
-	attachments: MailsEditorV2['savedAttachments'];
-	index: number;
+	filename: MailsEditorV2['savedAttachments'][0]['filename'];
 }): string =>
 	`<a style='background-color: #D3EBF8;
 padding: 7px 15px;
@@ -78,7 +76,7 @@ white-space: nowrap;
 overflow: hidden;
 max-width: 80%;
 border: 1px solid #2b73d2;'
- href='${smartLink.publicUrl}' download>${attachments[index].filename ?? smartLink.publicUrl}</a>`;
+ href='${smartLink.publicUrl}' download>${filename ?? smartLink.publicUrl}</a>`;
 
 /**
  * Add smart links to the text of the editor
@@ -94,17 +92,15 @@ export function addSmartLinksToText({
 	attachments: MailsEditorV2['savedAttachments'];
 }): MailsEditorV2['text'] {
 	return {
-		plainText: response.smartLinks
-			.map((smartLink) => smartLink.publicUrl)
-			.join('\n')
-			.concat(text.plainText),
+		plainText: text.plainText.concat(
+			response.smartLinks.map((smartLink) => smartLink.publicUrl).join('\n')
+		),
 		richText: text.richText.concat(
 			` ${response.smartLinks
 				.map((smartLink, index) =>
 					generateSmartLinkHtml({
 						smartLink,
-						attachments,
-						index
+						filename: attachments[index]?.filename
 					})
 				)
 				.join('<br/>')}`

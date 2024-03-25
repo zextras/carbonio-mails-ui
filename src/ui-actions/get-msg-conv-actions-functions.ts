@@ -235,7 +235,7 @@ export function getSendDraftAction({
 		return false;
 	}
 
-	const getEditor = async (): Promise<MailsEditorV2> => {
+	const generateEditorWithSmartLinks = async (): Promise<MailsEditorV2> => {
 		const editor = generateEditor({
 			action: EditViewActions.EDIT_AS_DRAFT,
 			id: item.id,
@@ -256,7 +256,7 @@ export function getSendDraftAction({
 		return useEditorsStore.getState().editors[editor.id];
 	};
 
-	return sendDraftFromPreview({ getEditor, dispatch });
+	return sendDraftFromPreview({ generateEditorWithSmartLinks, dispatch });
 }
 
 export function getMarkRemoveSpam({
