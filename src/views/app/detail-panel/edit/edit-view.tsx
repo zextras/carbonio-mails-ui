@@ -44,7 +44,7 @@ import {
 	useEditorsStore
 } from '../../../../store/zustand/editor';
 import { BoardContext, CloseBoardReasons } from '../../../../types';
-import { createSmartLink } from '../../../../ui-actions/utils';
+import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 
 export type EditViewProp = {
 	editorId: string;
@@ -230,7 +230,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const createSmartLinksAction = useCallback((): Promise<void> => {
 		setIsConvertingToSmartLink(true);
 
-		return createSmartLink({
+		return updateEditorWithSmartLinks({
 			editorId,
 			t,
 			createSnackbar,

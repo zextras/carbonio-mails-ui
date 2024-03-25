@@ -13,7 +13,7 @@ import { generateStore } from '../../tests/generators/store';
 import { CreateSmartLinksRequest, CreateSmartLinksResponse, MessageAction } from '../../types';
 import {
 	addSmartLinksToText,
-	createSmartLink,
+	updateEditorWithSmartLinks,
 	findMessageActionById,
 	generateSmartLinkHtml
 } from '../utils';
@@ -189,7 +189,7 @@ describe('createSmartLink', () => {
 				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
 			}
 		);
-		createSmartLink({
+		updateEditorWithSmartLinks({
 			onResponseCallback: jest.fn(),
 			createSnackbar: jest.fn(),
 			t: jest.fn(),
@@ -219,7 +219,7 @@ describe('createSmartLink', () => {
 				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
 			}
 		);
-		await createSmartLink({
+		await updateEditorWithSmartLinks({
 			onResponseCallback: jest.fn(),
 			createSnackbar: jest.fn(),
 			t: jest.fn(),

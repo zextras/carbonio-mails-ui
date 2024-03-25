@@ -39,7 +39,7 @@ import {
 	showOriginalMsg
 } from './message-actions';
 import { applyTag } from './tag-actions';
-import { createSmartLink } from './utils';
+import { updateEditorWithSmartLinks } from './utils';
 import { EditViewActions } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { AppDispatch } from '../store/redux';
@@ -248,7 +248,7 @@ export function getSendDraftAction({
 		}
 		addEditor({ id: editor.id, editor });
 
-		await createSmartLink({
+		await updateEditorWithSmartLinks({
 			createSnackbar,
 			t,
 			editorId: editor.id

@@ -5,13 +5,12 @@
  */
 
 import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
-import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { find } from 'lodash';
 
+import { createSmartLinksSoapAPI } from '../store/actions/create-smart-links';
 import { useEditorsStore } from '../store/zustand/editor/store';
 import type {
-	CreateSmartLinksRequest,
 	CreateSmartLinksResponse,
 	SmartLinkUrl,
 	Conversation,
@@ -118,7 +117,7 @@ export function addSmartLinksToText({
  * @param t
  * @returns Promise<void>
  */
-export async function createSmartLink({
+export async function updateEditorWithSmartLinks({
 	onResponseCallback,
 	createSnackbar,
 	t,
@@ -130,44 +129,38 @@ export async function createSmartLink({
 	t: TFunction;
 }): Promise<void> {
 	const savedStandardAttachments = useEditorsStore.getState().editors[editorId].savedAttachments;
-	const draftSmartLinks = savedStandardAttachments
+
+	const attachmentsToConvert = savedStandardAttachments
 		.filter((attachment) => attachment.requiresSmartLinkConversion)
 		.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName }));
-	return soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
-		_jsns: 'urn:zimbraMail',
-		attachments: draftSmartLinks
-	}).then((response) => {
-		onResponseCallback && onResponseCallback();
-		if ('Fault' in response) {
-			createSnackbar({
-				key: `save-draft`,
-				replace: true,
-				type: 'error',
-				label: t('label.error_try_again', 'Something went wrong, please try again'),
-				autoHideTimeout: 3000
-			});
-		} else {
-			const { text } = useEditorsStore.getState().editors[editorId];
-			const attachmentsToAddToBody = savedStandardAttachments.filter(
-				(attachment) => attachment.requiresSmartLinkConversion
-			);
-			const textWithLinks = addSmartLinksToText({
-				response,
-				text,
-				attachments: attachmentsToAddToBody
-			});
-			useEditorsStore.getState().setText(editorId, textWithLinks);
-			const { removeSavedAttachment } = useEditorsStore.getState();
-			draftSmartLinks.forEach((smartLink) => {
-				removeSavedAttachment(editorId, smartLink.partName);
-			});
-			createSnackbar({
-				key: 'smartLinksCreated',
-				replace: true,
-				type: 'success',
-				label: t('label.smart_links_created', 'smart links created'),
-				autoHideTimeout: 3000
-			});
-		}
-	});
+
+	const result = await createSmartLinksSoapAPI(attachmentsToConvert);
+
+	onResponseCallback && onResponseCallback();
+	if ('Fault' in result) {
+		createSnackbar({
+			key: `save-draft`,
+			replace: true,
+			type: 'error',
+			label: t('label.error_try_again', 'Something went wrong, please try again'),
+			autoHideTimeout: 3000
+		});
+	} else {
+		const { text } = useEditorsStore.getState().editors[editorId];
+
+		const attachmentsToAddToBody = savedStandardAttachments.filter(
+			(attachment) => attachment.requiresSmartLinkConversion
+		);
+
+		const textWithLinks = addSmartLinksToText({
+			response: result,
+			text,
+			attachments: attachmentsToAddToBody
+		});
+		useEditorsStore.getState().setText(editorId, textWithLinks);
+		const { removeSavedAttachment } = useEditorsStore.getState();
+		attachmentsToConvert.forEach((smartLink) => {
+			removeSavedAttachment(editorId, smartLink.partName);
+		});
+	}
 }
