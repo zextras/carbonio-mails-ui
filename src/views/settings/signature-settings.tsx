@@ -103,9 +103,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					description: el.description ?? ''
 				}))
 			);
-
-			// // Updates state to enable the loading of all signatures-dependent component
-			// setSignaturesLoaded(true);
 		},
 		[setOriginalSignatures, setSignatures]
 	);
