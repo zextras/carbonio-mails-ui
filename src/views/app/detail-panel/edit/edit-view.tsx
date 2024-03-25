@@ -233,9 +233,8 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		return updateEditorWithSmartLinks({
 			editorId,
 			t,
-			createSnackbar,
-			onResponseCallback: () => setIsConvertingToSmartLink(false)
-		});
+			createSnackbar
+    }).finally(() => setIsConvertingToSmartLink(false));
 	}, [editorId, createSnackbar]);
 
 	const onSendClick = useCallback((): void => {

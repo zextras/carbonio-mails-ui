@@ -190,7 +190,6 @@ describe('createSmartLink', () => {
 			}
 		);
 		updateEditorWithSmartLinks({
-			onResponseCallback: jest.fn(),
 			createSnackbar: jest.fn(),
 			t: jest.fn(),
 			editorId: editor.id
@@ -220,7 +219,34 @@ describe('createSmartLink', () => {
 			}
 		);
 		await updateEditorWithSmartLinks({
-			onResponseCallback: jest.fn(),
+			createSnackbar: jest.fn(),
+			t: jest.fn(),
+			editorId: editor.id
+		});
+		await interceptor;
+
+		const savedStandardAttachments = useEditorsStore.getState().editors[editor.id].savedAttachments;
+		expect(savedStandardAttachments).toHaveLength(oldSavedAttachmentsLength - 1);
+	});
+
+  it.skip('TODO: error scenario', async () => {
+		const editor = await generateEditorV2Case(1, generateStore().dispatch);
+		const oldSavedAttachments = editor.savedAttachments;
+		const oldSavedAttachmentsLength = oldSavedAttachments.length;
+		const attachmentToConvert = oldSavedAttachments[0];
+		attachmentToConvert.requiresSmartLinkConversion = true;
+		setupEditorStore({ editors: [editor] });
+
+		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, any>(
+			'CreateSmartLinks',
+			undefined,
+			{
+				Fault: "reason"
+			}
+		);
+
+    // TODO check the promise rejection and the sneakbar is opened with the correct message
+    await updateEditorWithSmartLinks({
 			createSnackbar: jest.fn(),
 			t: jest.fn(),
 			editorId: editor.id

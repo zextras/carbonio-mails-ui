@@ -118,12 +118,10 @@ export function addSmartLinksToText({
  * @returns Promise<void>
  */
 export async function updateEditorWithSmartLinks({
-	onResponseCallback,
 	createSnackbar,
 	t,
 	editorId
 }: {
-	onResponseCallback?: () => void;
 	editorId: MailsEditorV2['id'];
 	createSnackbar: CreateSnackbarFn;
 	t: TFunction;
@@ -134,19 +132,10 @@ export async function updateEditorWithSmartLinks({
 		.filter((attachment) => attachment.requiresSmartLinkConversion)
 		.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName }));
 
-	const result = await createSmartLinksSoapAPI(attachmentsToConvert);
+	try {
+	  const result = await createSmartLinksSoapAPI(attachmentsToConvert);
 
-	onResponseCallback && onResponseCallback();
-	if ('Fault' in result) {
-		createSnackbar({
-			key: `save-draft`,
-			replace: true,
-			type: 'error',
-			label: t('label.error_try_again', 'Something went wrong, please try again'),
-			autoHideTimeout: 3000
-		});
-	} else {
-		const { text } = useEditorsStore.getState().editors[editorId];
+    const { text } = useEditorsStore.getState().editors[editorId];
 
 		const attachmentsToAddToBody = savedStandardAttachments.filter(
 			(attachment) => attachment.requiresSmartLinkConversion
@@ -162,5 +151,14 @@ export async function updateEditorWithSmartLinks({
 		attachmentsToConvert.forEach((smartLink) => {
 			removeSavedAttachment(editorId, smartLink.partName);
 		});
-	}
+  } catch(err) {
+    createSnackbar({
+			key: `save-draft`,
+			replace: true,
+			type: 'error',
+			label: t('label.error_try_again', 'Something went wrong, please try again'),
+			autoHideTimeout: 3000
+		});
+    throw err
+  }
 }
