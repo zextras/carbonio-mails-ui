@@ -74,7 +74,7 @@ text-overflow: ellipsis;
 white-space: nowrap;
 overflow: hidden;
 max-width: 80%;
-border: 1px solid #2b73d2;'
+border-radius: 5px;'
  href='${smartLink.publicUrl}' download>${filename ?? smartLink.publicUrl}</a>`;
 
 /**

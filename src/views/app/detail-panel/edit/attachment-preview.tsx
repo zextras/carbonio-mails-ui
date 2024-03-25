@@ -52,16 +52,17 @@ const AttachmentContainer = styled(Container).attrs(
 		requiresSmartLinkConversion: props.requiresSmartLinkConversion
 	})
 )`
-	border-bottom: ${({ requiresSmartLinkConversion, theme, background}): string =>
+	border-bottom: ${({ requiresSmartLinkConversion, theme, background }): string =>
 		requiresSmartLinkConversion
 			? `1px solid ${theme.palette.primary.regular}`
 			: `1px solid ${getColor(`${background}.regular`, theme)}`};
 	border-radius: 0.125rem;
 	width: calc(50% - 0.25rem);
 	transition: 0.2s ease-out;
-	margin-bottom: ${({ theme }) => theme.sizes.padding.small};
+	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
 	&:hover {
-    border-bottom: ${({ theme, background }) => `1px solid ${getColor(`${background}.hover`, theme)}`};
+		border-bottom: ${({ theme, background }): string =>
+			`1px solid ${getColor(`${background}.hover`, theme)}`};
 		background-color: ${({ theme, background }): SimpleInterpolation =>
 			background && getColor(`${background}.hover`, theme)};
 		& ${AttachmentHoverBarContainer} {
@@ -69,7 +70,8 @@ const AttachmentContainer = styled(Container).attrs(
 		}
 	}
 	&:focus {
-    border-bottom: ${({ theme, background }) => `1px solid ${getColor(`${background}.focus`, theme)}`};
+		border-bottom: ${({ theme, background }): string =>
+			`1px solid ${getColor(`${background}.focus`, theme)}`};
 		background-color: ${({ theme, background }): SimpleInterpolation =>
 			background && getColor(`${background}.focus`, theme)};
 	}
