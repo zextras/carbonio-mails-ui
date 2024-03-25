@@ -260,6 +260,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 										size="medium"
 										icon={requiresSmartLinkConversion ? 'Refresh' : 'DriveOutline'}
 										onClick={toggleSmartLinkAction}
+										style={requiresSmartLinkConversion ? { transform: 'scale(-1, 1)' } : {}}
 									/>
 								</Tooltip>
 							)}
