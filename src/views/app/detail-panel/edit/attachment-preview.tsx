@@ -200,7 +200,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				background={backgroundColor}
 				data-testid={`attachment-container-${attachment.filename}`}
 				hoverBarDisabled={isUploading}
-				requiresSmartLinkConversion
+				requiresSmartLinkConversion={requiresSmartLinkConversion}
 			>
 				<Tooltip label={t('action.preview', 'Preview')}>
 					<Row

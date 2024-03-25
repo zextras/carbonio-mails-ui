@@ -371,7 +371,7 @@ const Attachment: FC<AttachmentType> = ({
 			height="fit"
 			background={backgroundColor}
 			data-testid={`attachment-container-${filename}`}
-			requiresSmartLinkConversion
+			requiresSmartLinkConversion={requiresSmartLinkConversion}
 		>
 			<Tooltip key={`${message.id}-Preview`} label={actionTooltipText}>
 				<Row
