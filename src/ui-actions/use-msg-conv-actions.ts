@@ -212,6 +212,8 @@ export function useMsgConvActions({
 
 	const sendDraftAction = getSendDraftAction({
 		isConversation: isConv,
+		// TODO: fix the type of item
+		// at the moment it's being casted as the function that consumes the item expects a MailMessage | Conversation
 		item: item as MailMessage,
 		dispatch,
 		folderIncludedSendDraft,
