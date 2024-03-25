@@ -258,7 +258,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 								>
 									<IconButton
 										size="medium"
-										icon={requiresSmartLinkConversion ? 'Refresh' : 'DriveOutline'}
+										icon={requiresSmartLinkConversion ? 'Refresh' : 'Link2Outline'}
 										onClick={toggleSmartLinkAction}
 										style={requiresSmartLinkConversion ? { transform: 'scale(-1, 1)' } : {}}
 									/>
