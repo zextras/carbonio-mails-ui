@@ -1,4 +1,4 @@
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
 import {
 	CreateSmartLinksRequest,
@@ -14,13 +14,16 @@ import {
 export async function createSmartLinksSoapAPI(
 	attachmentsToConvert: Array<SmartLinkAttachment>
 ): Promise<CreateSmartLinksResponse> {
-	return soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse>('CreateSmartLinks', {
-		_jsns: 'urn:zimbraMail',
-		attachments: attachmentsToConvert
-	}).then((resp) => {
-    if ('Fault' in resp) {
-      return Promise.reject(resp.Fault)
-    }
-    return resp
-  });
+	return soapFetch<CreateSmartLinksRequest, CreateSmartLinksResponse | ErrorSoapBodyResponse>(
+		'CreateSmartLinks',
+		{
+			_jsns: 'urn:zimbraMail',
+			attachments: attachmentsToConvert
+		}
+	).then((resp) => {
+		if ('Fault' in resp) {
+			return Promise.reject(resp.Fault);
+		}
+		return resp;
+	});
 }
