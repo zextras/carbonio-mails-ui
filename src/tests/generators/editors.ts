@@ -4,7 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { AppDispatch } from '../../store/redux';
-import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from '../../store/zustand/editor/editor-utils';
+import {
+	computeDraftSaveAllowedStatus,
+	computeSendAllowedStatus
+} from '../../store/zustand/editor/editor-utils';
 import type { MailsEditorV2 } from '../../types';
 
 export const generateEditorV2Case = async (

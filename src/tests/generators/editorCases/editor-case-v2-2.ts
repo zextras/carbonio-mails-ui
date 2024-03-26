@@ -6,11 +6,11 @@
 
 import { faker } from '@faker-js/faker';
 
+import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getMocksContext } from '../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { EditViewActions } from '../../../constants';
 import { AppDispatch } from '../../../store/redux';
 import { MailsEditorV2 } from '../../../types';
-import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 
 const FAKE_MESSAGE_ID = '11215';
 
@@ -25,15 +25,15 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 		isRichText: true,
 		isUrgent: false,
 		requestReadReceipt: false,
+		size: 9999999,
+		totalSmartLinksSize: 0,
 		text: {
 			richText:
 				'<html><body><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"></div></body></html>',
 			plainText: 'test'
 		},
 		recipients: {
-			to: [
-				{ type: ParticipantRole.TO, address: faker.internet.email() },
-			],
+			to: [{ type: ParticipantRole.TO, address: faker.internet.email() }],
 			cc: [],
 			bcc: []
 		},

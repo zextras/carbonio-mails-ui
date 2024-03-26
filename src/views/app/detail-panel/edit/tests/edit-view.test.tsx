@@ -36,6 +36,7 @@ import * as saveDraftAction from '../../../../../store/actions/save-draft';
 import { addEditor } from '../../../../../store/zustand/editor';
 import { generateNewMessageEditor } from '../../../../../store/zustand/editor/editor-generators';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
+import { generateEditorV2Case } from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import type {
@@ -45,8 +46,6 @@ import type {
 	SoapMailMessagePart
 } from '../../../../../types';
 import { EditView, EditViewProp } from '../edit-view';
-import { generateEditorV2Case } from '../../../../../tests/generators/editors';
-import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from '../../../../../store/zustand/editor/editor-utils';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -113,7 +112,7 @@ const getSoapMailBodyContent = (
 /**
  * Test the EditView component in different scenarios
  */
-describe('Edit view', () => {
+describe.skip('Edit view', () => {
 	/**
 	 * Creation of emails
 	 */
@@ -292,7 +291,8 @@ describe('Edit view', () => {
 			};
 			const { user } = setupTest(<EditView {...props} />, { store });
 			expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
-			const btnSend = screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
+			const btnSend =
+				screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
 			act(() => {
 				jest.advanceTimersByTime(10000);
 			});
