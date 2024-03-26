@@ -244,19 +244,22 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const createSmartLinksAction = useCallback((): Promise<void> => {
 		setIsConvertingToSmartLink(true);
 
-		return updateEditorWithSmartLinks({
-			editorId,
-			t,
-			createSnackbar
-		}).finally(() => setIsConvertingToSmartLink(false));
+		return updateEditorWithSmartLinks({ editorId, t, createSnackbar }).finally(() =>
+			setIsConvertingToSmartLink(false)
+		);
 	}, [editorId, createSnackbar]);
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
-			if (draftSmartLinks.length > 0) {
-				await createSmartLinksAction();
-			}
 			close({ reason: CLOSE_BOARD_REASON.SEND });
+			if (draftSmartLinks.length > 0) {
+				try {
+					await createSmartLinksAction();
+				} catch (err) {
+					onSendError && onSendError();
+					return;
+				}
+			}
 			sendMessage({
 				onCountdownTick: onSendCountdownTick,
 				onComplete: onSendComplete,

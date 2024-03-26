@@ -15,6 +15,7 @@ import {
 	waitForElementToBeRemoved,
 	within
 } from '@testing-library/react';
+import { ErrorSoapResponse } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { rest } from 'msw';
 
@@ -44,6 +45,8 @@ import type {
 	SoapMailMessagePart
 } from '../../../../../types';
 import { EditView, EditViewProp } from '../edit-view';
+import { generateEditorV2Case } from '../../../../../tests/generators/editors';
+import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from '../../../../../store/zustand/editor/editor-utils';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -275,6 +278,61 @@ describe('Edit view', () => {
 			// await screen.findByText('messages.snackbar.mail_sent', {}, { timeout: 5000 });
 			// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
 			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
+		}, 200000);
+
+		test('Send email with CreateSmartLink failure should show error snackbar', async () => {
+			setupEditorStore({ editors: [] });
+			const store = generateStore();
+			const editor = await generateEditorV2Case(2, store.dispatch);
+
+			addEditor({ id: editor.id, editor });
+			const props: EditViewProp = {
+				editorId: editor.id,
+				closeController: noop
+			};
+			const { user } = setupTest(<EditView {...props} />, { store });
+			expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
+			const btnSend = screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
+			act(() => {
+				jest.advanceTimersByTime(10000);
+			});
+			await waitFor(() => {
+				expect(btnSend).toBeEnabled();
+			});
+
+			getSetupServer().use(
+				rest.post('/service/soap/CreateSmartLinksRequest', async (req, res, ctx) => {
+					const response: ErrorSoapResponse = {
+						Header: {
+							context: {
+								session: {
+									id: 1220806,
+									_content: 1220806
+								}
+							}
+						},
+						Body: {
+							Fault: {
+								Reason: { Text: 'Failed upload to Files' },
+								Detail: {
+									Error: { Code: '123', Detail: 'Failed due to connection timeout' }
+								}
+							}
+						}
+					};
+					return res(ctx.json(response));
+				})
+			);
+
+			await user.click(btnSend as Element);
+
+			await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
+
+			// TODO: assert editor still open
+
+			act(() => {
+				jest.advanceTimersByTime(4000);
+			});
 		}, 200000);
 
 		/**
