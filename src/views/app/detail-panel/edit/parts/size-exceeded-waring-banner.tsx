@@ -23,6 +23,7 @@ export const SizeExceededWarningBanner = ({
 }): JSX.Element => {
 	const maxMessageSize = useUserSettings().attrs?.zimbraMtaMaxMessageSize;
 	const { t } = useTranslation();
+	// FIXME: maxMessageSize fallback to 10MB for testing purposes
 	const maxAllowedMailSize = maxMessageSize
 		? // casting to string as they type definition in shell is not correct
 		  // remove once the type definition is corrected
@@ -33,10 +34,10 @@ export const SizeExceededWarningBanner = ({
 	const totalSmartLinksSize = editor?.totalSmartLinksSize ?? 0;
 	const expectedNewMailSize = saveDraftSize - totalSmartLinksSize * 0.9;
 	setIsMailSizeWarning(expectedNewMailSize > maxAllowedMailSize);
-	const mailSizeWarningBannerText = t('editor.warning.mail_size_exceeds_limit', {
-		defaultValue:
-			'The message size exceeds the limit. Please remove some attachments or convert them to smart links.'
-	});
+	const mailSizeWarningBannerText = t(
+		'editor.warning.mail_size_exceeds_limit',
+		'The message size exceeds the limit. Please convert some attachments to smart links.'
+	);
 	const mailSizeWarningBannerIcon = 'AlertCircleOutline';
 	const mailSizeWarningBannerIconColor = 'info';
 	return isMailSizeWarning ? (
