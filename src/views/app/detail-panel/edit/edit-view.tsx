@@ -27,9 +27,10 @@ import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
 import { OptionsDropdown } from './parts/options-dropdown';
 import { RecipientsRows } from './parts/recipients-rows';
+import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
-import WarningBanner from './parts/warning-banner';
+import { WarningBanner } from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { CLOSE_BOARD_REASON, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
@@ -83,12 +84,25 @@ const SendToYourselfWarningBanner = ({ editorId }: { editorId: string }): JSX.El
 		);
 	}, [toValue]);
 
-	return isSendingToYourself ? <WarningBanner /> : null;
+	const warningBannerText = t('messages.warning.sending_to_yourself', {
+		defaultValue: 'You are sending this message to yourself'
+	});
+	const WarningBannerIcon = 'AlertCircleOutline';
+	const WarningBannerIconColor = 'info';
+
+	return isSendingToYourself ? (
+		<WarningBanner
+			text={warningBannerText}
+			icon={WarningBannerIcon}
+			iconColor={WarningBannerIconColor}
+		/>
+	) : null;
 };
 
 export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessageSent }) => {
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
+	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
@@ -234,7 +248,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			editorId,
 			t,
 			createSnackbar
-    }).finally(() => setIsConvertingToSmartLink(false));
+		}).finally(() => setIsConvertingToSmartLink(false));
 	}, [editorId, createSnackbar]);
 
 	const onSendClick = useCallback((): void => {
@@ -338,7 +352,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 						<EditViewSendButtons
 							onSendLater={onSendLaterClick}
 							onSendNow={onSendClick}
-							disabled={!sendAllowedStatus?.allowed || isConvertingToSmartLink}
+							disabled={isMailSizeWarning || !sendAllowedStatus?.allowed || isConvertingToSmartLink}
 							tooltip={sendAllowedStatus?.reason ?? ''}
 							isLoading={isConvertingToSmartLink}
 						/>
@@ -348,6 +362,11 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 				{/* Header end */}
 
 				<SendToYourselfWarningBanner editorId={editorId} />
+				<SizeExceededWarningBanner
+					editorId={editorId}
+					isMailSizeWarning={isMailSizeWarning}
+					setIsMailSizeWarning={setIsMailSizeWarning}
+				/>
 				<GapContainer
 					mainAlignment={flexStart}
 					crossAlignment={flexStart}

@@ -18,9 +18,9 @@ export async function createSmartLinksSoapAPI(
 		_jsns: 'urn:zimbraMail',
 		attachments: attachmentsToConvert
 	}).then((resp) => {
-    if ('Fault' in resp) {
-      return Promise.reject(resp.Fault)
-    }
-    return resp
-  });
+		if ('Fault' in resp) {
+			return Promise.reject(resp.Fault);
+		}
+		return resp;
+	});
 }

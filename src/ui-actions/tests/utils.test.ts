@@ -229,7 +229,7 @@ describe('createSmartLink', () => {
 		expect(savedStandardAttachments).toHaveLength(oldSavedAttachmentsLength - 1);
 	});
 
-  it.skip('TODO: error scenario', async () => {
+	it.skip('TODO: error scenario', async () => {
 		const editor = await generateEditorV2Case(1, generateStore().dispatch);
 		const oldSavedAttachments = editor.savedAttachments;
 		const oldSavedAttachmentsLength = oldSavedAttachments.length;
@@ -241,12 +241,12 @@ describe('createSmartLink', () => {
 			'CreateSmartLinks',
 			undefined,
 			{
-				Fault: "reason"
+				Fault: 'reason'
 			}
 		);
 
-    // TODO check the promise rejection and the sneakbar is opened with the correct message
-    await updateEditorWithSmartLinks({
+		// TODO check the promise rejection and the sneakbar is opened with the correct message
+		await updateEditorWithSmartLinks({
 			createSnackbar: jest.fn(),
 			t: jest.fn(),
 			editorId: editor.id

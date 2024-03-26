@@ -89,7 +89,9 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 		text: textWithSignature,
 		requestReadReceipt: false,
 		// signature,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: 0,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -188,7 +190,9 @@ export const generateIntegratedNewEditor = (
 		subject: compositionData?.subject ?? '',
 		text: textWithSignature,
 		requestReadReceipt: false,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: 0,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -257,7 +261,9 @@ export const generateReplyAndReplyAllMsgEditor = (
 		replyType: 'r',
 		originalId: originalMessage.id,
 		originalMessage,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: originalMessage.size,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -316,7 +322,9 @@ export const generateForwardMsgEditor = (
 		replyType: 'w',
 		originalId: originalMessage.id,
 		originalMessage,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: originalMessage.size,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -356,7 +364,9 @@ export const generateEditAsDraftEditor = (
 		text,
 		requestReadReceipt: false,
 		did: originalMessage.id,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: originalMessage.size,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -397,7 +407,9 @@ export const generateEditAsNewEditor = (
 		requestReadReceipt: false,
 		originalId: originalMessage.id,
 		originalMessage,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: originalMessage.size,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);

@@ -74,11 +74,12 @@ export const saveDraftFromEditor = (
 
 			const mailMessage = normalizeMailMessageFromSoap(res.m[0]);
 			useEditorsStore.getState().setDid(editorId, mailMessage.id);
+			useEditorsStore.getState().setSize(editorId, mailMessage.size);
 			useEditorsStore.getState().removeUnsavedAttachments(editorId);
 			const savedAttachments = buildSavedAttachments(mailMessage);
 
 			useEditorsStore.getState().setSavedAttachments(editorId, savedAttachments);
-
+			useEditorsStore.getState().setTotalSmartLinksSize(editorId);
 			useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 				status: 'completed',
 				lastSaveTimestamp: new Date()
