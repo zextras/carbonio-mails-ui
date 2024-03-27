@@ -248,13 +248,11 @@ export function getSendDraftAction({
 		}
 		addEditor({ id: editor.id, editor });
 
-		try {
-			await updateEditorWithSmartLinks({
-				createSnackbar,
-				t,
-				editorId: editor.id
-			});
-		} catch {}
+		await updateEditorWithSmartLinks({
+			createSnackbar,
+			t,
+			editorId: editor.id
+		});
 
 		return useEditorsStore.getState().editors[editor.id];
 	};
