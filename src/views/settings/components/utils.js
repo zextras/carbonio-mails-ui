@@ -324,51 +324,47 @@ export const getFontSizesOptions = () => [
 
 export const getFonts = () => [
 	{
-		label: t('settings.fonts.sans_serif', 'Sans Serif'),
+		label: 'Arial',
 		value: 'arial,helvetica,sans-serif'
 	},
 	{
-		label: t('settings.fonts.serif', 'Serif'),
+		label: 'Times New Roman',
 		value: 'times new roman,new york,times,serif'
 	},
 	{
-		label: t('settings.fonts.wide_block', 'Wide Block'),
+		label: 'Arial Black',
 		value: 'arial black,avant garde'
 	},
 	{
-		label: t('settings.fonts.monospaced', 'Monospaced'),
+		label: 'Courier New',
 		value: 'courier new,courier,monaco,monospace,sans-serif'
 	},
 	{
-		label: t('settings.fonts.comic', 'Comic'),
+		label: 'Comic Sans MS',
 		value: 'comic sans ms,comic sans,sans-serif'
 	},
 	{
-		label: t('settings.fonts.console', 'Console'),
+		label: 'Lucida Console',
 		value: 'lucida console,sans-serif'
 	},
 	{
-		label: t('settings.fonts.garamond', 'Garamond'),
-		value: 'garamond,new york,times,serif'
-	},
-	{
-		label: t('settings.fonts.elegant', 'Elegant'),
+		label: 'Georgia',
 		value: 'georgia,serif'
 	},
 	{
-		label: t('settings.fonts.professional', 'Professional'),
+		label: 'Tahoma',
 		value: 'tahoma,new york,times,serif'
 	},
 	{
-		label: t('settings.fonts.terminal', 'Terminal'),
+		label: 'Terminal',
 		value: 'terminal,monaco'
 	},
 	{
-		label: t('settings.fonts.modern', 'Modern'),
+		label: 'Trebuchet MS',
 		value: 'trebuchet ms,sans-serif'
 	},
 	{
-		label: t('settings.fonts.wide', 'Wide'),
+		label: 'Verdana',
 		value: 'verdana,helvetica,sans-serif'
 	}
 ];
