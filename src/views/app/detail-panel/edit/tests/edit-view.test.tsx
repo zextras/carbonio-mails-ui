@@ -45,7 +45,10 @@ import type {
 	SoapMailMessagePart
 } from '../../../../../types';
 import { EditView, EditViewProp } from '../edit-view';
-import { readyToBeSentEditorTestCase, changeEditorValues } from '../../../../../tests/generators/editors';
+import {
+	readyToBeSentEditorTestCase,
+	changeEditorValues
+} from '../../../../../tests/generators/editors';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 const CT_HTML = 'text/html' as const;
@@ -109,6 +112,20 @@ const getSoapMailBodyContent = (
 
 	return '';
 };
+
+const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest> =>
+	createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
+		'CreateSmartLinks',
+		undefined,
+		{
+			Fault: {
+				Reason: { Text: 'Failed upload to Files' },
+				Detail: {
+					Error: { Code: '123', Detail: 'Failed due to connection timeout' }
+				}
+			}
+		}
+	);
 
 /**
  * Test the EditView component in different scenarios
@@ -281,7 +298,6 @@ describe('Edit view', () => {
 		}, 200000);
 
 		describe('send email with attachment to convert in smart link', () => {
-
 			test('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
 				// setup api interceptor and mail to send editor
 				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
@@ -297,10 +313,10 @@ describe('Edit view', () => {
 							size: 81290955,
 							messageId: e.did!,
 							partName: '2',
-							isInline: false,
+							isInline: false
 						}
-					]
-				})
+					];
+				});
 				addEditor({ id: editor.id, editor });
 
 				// render the component
@@ -311,7 +327,7 @@ describe('Edit view', () => {
 				expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 				// trigger mail sending
-				const btnSend = screen.queryByTestId('BtnSendMailMulti')
+				const btnSend = screen.queryByTestId('BtnSendMailMulti');
 				expect(btnSend).toBeEnabled();
 				await user.click(btnSend as Element);
 
@@ -989,18 +1005,3 @@ describe('Edit view', () => {
 		});
 	});
 });
-
-function createSmartLinkFailureAPIInterceptor() {
-	return createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
-		'CreateSmartLinks',
-		undefined,
-		{
-			Fault: {
-				Reason: { Text: 'Failed upload to Files' },
-				Detail: {
-					Error: { Code: '123', Detail: 'Failed due to connection timeout' }
-				}
-			}
-		}
-	);
-}
