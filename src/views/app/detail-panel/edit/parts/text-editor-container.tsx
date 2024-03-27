@@ -53,7 +53,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	const composerCustomOptions = {
 		toolbar_sticky: true,
 		ui_mode: 'split',
-		content_style: 'p { margin: 0; }'
+		content_style: 'p { margin: 0; }',
+		valid_styles: { '*': '*' }
 	};
 
 	return (

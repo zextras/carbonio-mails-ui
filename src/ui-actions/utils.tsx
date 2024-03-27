@@ -6,7 +6,7 @@
 
 import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
-import { find } from 'lodash';
+import { find, truncate } from 'lodash';
 
 import { createSmartLinksSoapAPI } from '../store/actions/create-smart-links';
 import { useEditorsStore } from '../store/zustand/editor/store';
@@ -66,16 +66,16 @@ export const generateSmartLinkHtml = ({
 	filename: MailsEditorV2['savedAttachments'][0]['filename'];
 }): string =>
 	`<a style='background-color: #D3EBF8;
-padding: 7px 15px;
-color: black;
+padding: 11px 16px;
+color: #2B73D2;
 display: inline-block;
 margin-top: 5px;
-text-overflow: ellipsis;
-white-space: nowrap;
-overflow: hidden;
 max-width: 80%;
 border-radius: 5px;'
- href='${smartLink.publicUrl}' download>${filename ?? smartLink.publicUrl}</a>`;
+ href='${smartLink.publicUrl}' download>${truncate(filename ?? smartLink.publicUrl, {
+		length: 76,
+		omission: '...'
+	})}</a>`;
 
 /**
  * Add smart links to the text of the editor
