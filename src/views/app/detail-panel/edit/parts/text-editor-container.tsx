@@ -46,14 +46,24 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 
 	const { prefs } = useUserSettings();
 	const defaultFontFamily = useMemo<string>(
-		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontFamily) ?? 'sans-serif',
+		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontFamily) ?? 'arial,helvetica,sans-serif',
+		[prefs]
+	);
+
+	const defaultFontColor = useMemo<string>(
+		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontColor) ?? '#000000',
+		[prefs]
+	);
+
+	const defaultFontSize = useMemo<string>(
+		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontSize) ?? '12pt',
 		[prefs]
 	);
 
 	const composerCustomOptions = {
 		toolbar_sticky: true,
 		ui_mode: 'split',
-		content_style: 'p { margin: 0; }'
+		content_style: `body  {  color: ${defaultFontColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; } p { margin: 0; }`
 	};
 
 	return (
