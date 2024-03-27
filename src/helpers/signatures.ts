@@ -93,7 +93,7 @@ const composeMailBodyWithSignature = (
 	}
 
 	return isRichText
-		? `<p></p><div class="${LineType.SIGNATURE_CLASS}">${signatureValue}</div>`
+		? `<p></p><br><div class="${LineType.SIGNATURE_CLASS}">${signatureValue}</div>`
 		: `\n\n${LineType.SIGNATURE_PRE_SEP}\n${convertHtmlToPlainText(signatureValue)}`;
 };
 

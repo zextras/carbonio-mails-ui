@@ -63,7 +63,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		ui_mode: 'split',
 		font_size_formats: fontSizesOptionsToString,
 		font_family_formats: fontsOptionsToString,
-		content_style: `p  {margin: 0;  color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`
+		content_style: `body  {  color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; } p { margin: 0; }`
 	};
 
 	return (
