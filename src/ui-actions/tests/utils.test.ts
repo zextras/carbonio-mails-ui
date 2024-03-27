@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { parseTextToHTMLDocument } from '../../helpers/text';
 import { useEditorsStore } from '../../store/zustand/editor/store';
@@ -237,11 +238,16 @@ describe('createSmartLink', () => {
 		attachmentToConvert.requiresSmartLinkConversion = true;
 		setupEditorStore({ editors: [editor] });
 
-		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, any>(
+		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
 			'CreateSmartLinks',
 			undefined,
 			{
-				Fault: 'reason'
+				Fault: {
+					Reason: { Text: 'Failed upload to Files' },
+					Detail: {
+						Error: { Code: '123', Detail: 'Failed due to connection timeout' }
+					}
+				}
 			}
 		);
 

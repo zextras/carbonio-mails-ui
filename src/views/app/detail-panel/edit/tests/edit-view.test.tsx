@@ -20,7 +20,10 @@ import { find, noop } from 'lodash';
 import { rest } from 'msw';
 
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
+import {
+	defaultBeforeAllTests,
+	getSetupServer
+} from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import {
 	FOLDERS,
@@ -40,12 +43,18 @@ import { generateEditorV2Case } from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import type {
+	CreateSmartLinksRequest,
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
 	SoapMailMessage,
 	SoapMailMessagePart
 } from '../../../../../types';
 import { EditView, EditViewProp } from '../edit-view';
+import {
+	readyToBeSentEditorTestCase,
+	changeEditorValues
+} from '../../../../../tests/generators/editors';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -108,6 +117,20 @@ const getSoapMailBodyContent = (
 
 	return '';
 };
+
+const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest> =>
+	createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
+		'CreateSmartLinks',
+		undefined,
+		{
+			Fault: {
+				Reason: { Text: 'Failed upload to Files' },
+				Detail: {
+					Error: { Code: '123', Detail: 'Failed due to connection timeout' }
+				}
+			}
+		}
+	);
 
 /**
  * Test the EditView component in different scenarios
@@ -279,61 +302,54 @@ describe.skip('Edit view', () => {
 			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
 		}, 200000);
 
-		test('Send email with CreateSmartLink failure should show error snackbar', async () => {
-			setupEditorStore({ editors: [] });
-			const store = generateStore();
-			const editor = await generateEditorV2Case(2, store.dispatch);
-
-			addEditor({ id: editor.id, editor });
-			const props: EditViewProp = {
-				editorId: editor.id,
-				closeController: noop
-			};
-			const { user } = setupTest(<EditView {...props} />, { store });
-			expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
-			const btnSend =
-				screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
-			act(() => {
-				jest.advanceTimersByTime(10000);
-			});
-			await waitFor(() => {
-				expect(btnSend).toBeEnabled();
+		describe('send email with attachment to convert in smart link', () => {
+			beforeAll(() => {
+				defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 			});
 
-			getSetupServer().use(
-				rest.post('/service/soap/CreateSmartLinksRequest', async (req, res, ctx) => {
-					const response: ErrorSoapResponse = {
-						Header: {
-							context: {
-								session: {
-									id: 1220806,
-									_content: 1220806
-								}
-							}
-						},
-						Body: {
-							Fault: {
-								Reason: { Text: 'Failed upload to Files' },
-								Detail: {
-									Error: { Code: '123', Detail: 'Failed due to connection timeout' }
-								}
-							}
+			test('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+				// setup api interceptor and mail to send editor
+				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
+				setupEditorStore({ editors: [] });
+				const store = generateStore();
+				const editor = await readyToBeSentEditorTestCase(store.dispatch);
+				changeEditorValues(editor, (e) => {
+					e.savedAttachments = [
+						{
+							filename: 'large-document.pdf',
+							contentType: 'application/pdf',
+							requiresSmartLinkConversion: true,
+							size: 81290955,
+							messageId: e.did!,
+							partName: '2',
+							isInline: false
 						}
-					};
-					return res(ctx.json(response));
-				})
-			);
+					];
+				});
+				addEditor({ id: editor.id, editor });
 
-			await user.click(btnSend as Element);
+				// render the component
+				const { user } = setupTest(
+					<EditView {...{ editorId: editor.id, closeController: noop }} />,
+					{ store }
+				);
+				expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
-			await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
+				// trigger mail sending
+				const btnSend = screen.queryByTestId('BtnSendMailMulti');
+				expect(btnSend).toBeEnabled();
+				await user.click(btnSend as Element);
 
-			// TODO: assert editor still open
+				// assertions
+				await apiInterceptor;
+				await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
+				expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
 
-			act(() => {
-				jest.advanceTimersByTime(4000);
-			});
-		}, 200000);
+				act(() => {
+					jest.advanceTimersByTime(4000);
+				});
+			}, 200000);
+		});
 
 		/**
 		 * Test the creation of a new email
