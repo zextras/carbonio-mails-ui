@@ -3,8 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { faker } from '@faker-js/faker';
 import { AppDispatch } from '../../store/redux';
+import { computeDraftSaveAllowedStatus, computeSendAllowedStatus } from '../../store/zustand/editor/editor-utils';
 import type { MailsEditorV2 } from '../../types';
+import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 
 export const generateEditorV2Case = async (
 	id: number,
@@ -13,3 +16,28 @@ export const generateEditorV2Case = async (
 	const { buildEditorCase } = await import(`./editorCases/editor-case-v2-${id}`);
 	return buildEditorCase(messagesStoreDispatch);
 };
+
+export const readyToBeSentEditorTestCase = async (messagesStoreDispatch: AppDispatch): Promise<MailsEditorV2> => {
+	const editor = await generateEditorV2Case(1, messagesStoreDispatch);
+	changeEditorValues(editor, (e) => {
+		e.subject = faker.lorem.words(3);
+		e.recipients = {
+			to: [
+				{ type: ParticipantRole.TO, address: faker.internet.email() },
+			],
+			cc: [],
+			bcc: []
+		}
+	})
+	return editor;
+};
+
+export const changeEditorValues = (editor: MailsEditorV2, editorModifier: (e: MailsEditorV2) => void) => {
+	editorModifier(editor);
+	finalzeEditorState(editor);
+}
+
+function finalzeEditorState(editor: MailsEditorV2) {
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+}

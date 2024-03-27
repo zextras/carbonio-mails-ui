@@ -38,12 +38,15 @@ import { setupEditorStore } from '../../../../../tests/generators/editor-store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import type {
+	CreateSmartLinksRequest,
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
 	SoapMailMessage,
 	SoapMailMessagePart
 } from '../../../../../types';
 import { EditView, EditViewProp } from '../edit-view';
+import { readyToBeSentEditorTestCase, changeEditorValues } from '../../../../../tests/generators/editors';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -276,6 +279,49 @@ describe('Edit view', () => {
 			// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
 			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
 		}, 200000);
+
+		describe('send email with attachment to convert in smart link', () => {
+
+			test('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+				// setup api interceptor and mail to send editor
+				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
+				setupEditorStore({ editors: [] });
+				const store = generateStore();
+				const editor = await readyToBeSentEditorTestCase(store.dispatch);
+				changeEditorValues(editor, (e) => {
+					e.savedAttachments = [
+						{
+							filename: 'large-document.pdf',
+							contentType: 'application/pdf',
+							requiresSmartLinkConversion: true,
+							size: 81290955,
+							messageId: e.did!,
+							partName: '2',
+							isInline: false,
+						}
+					]
+				})
+				addEditor({ id: editor.id, editor });
+
+				// render the component
+				const { user } = setupTest(
+					<EditView {...{ editorId: editor.id, closeController: noop }} />,
+					{ store }
+				);
+				expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
+
+				// trigger mail sending
+				const btnSend = screen.queryByTestId('BtnSendMailMulti')
+				expect(btnSend).toBeEnabled();
+				await user.click(btnSend as Element);
+
+				// assertions
+				await apiInterceptor;
+				await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
+				// TODO: assert editor still open (or re-opened)
+				// TODO: assert email do not sent
+			}, 200000);
+		});
 
 		/**
 		 * Test the creation of a new email
@@ -943,3 +989,18 @@ describe('Edit view', () => {
 		});
 	});
 });
+
+function createSmartLinkFailureAPIInterceptor() {
+	return createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
+		'CreateSmartLinks',
+		undefined,
+		{
+			Fault: {
+				Reason: { Text: 'Failed upload to Files' },
+				Detail: {
+					Error: { Code: '123', Detail: 'Failed due to connection timeout' }
+				}
+			}
+		}
+	);
+}
