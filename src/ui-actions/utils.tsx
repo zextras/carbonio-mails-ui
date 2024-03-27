@@ -66,8 +66,8 @@ export const generateSmartLinkHtml = ({
 	filename: MailsEditorV2['savedAttachments'][0]['filename'];
 }): string =>
 	`<a style='background-color: #D3EBF8;
-padding: 7px 15px;
-color: black;
+padding: 11px 16px;
+color: #2B73D2;
 display: inline-block;
 margin-top: 5px;
 text-overflow: ellipsis;
