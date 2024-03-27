@@ -15,7 +15,7 @@ import {
 	waitForElementToBeRemoved,
 	within
 } from '@testing-library/react';
-import { ErrorSoapResponse } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { rest } from 'msw';
 
@@ -39,7 +39,10 @@ import * as saveDraftAction from '../../../../../store/actions/save-draft';
 import { addEditor } from '../../../../../store/zustand/editor';
 import { generateNewMessageEditor } from '../../../../../store/zustand/editor/editor-generators';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
-import { generateEditorV2Case } from '../../../../../tests/generators/editors';
+import {
+	readyToBeSentEditorTestCase,
+	changeEditorValues
+} from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import type {
@@ -50,11 +53,6 @@ import type {
 	SoapMailMessagePart
 } from '../../../../../types';
 import { EditView, EditViewProp } from '../edit-view';
-import {
-	readyToBeSentEditorTestCase,
-	changeEditorValues
-} from '../../../../../tests/generators/editors';
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
