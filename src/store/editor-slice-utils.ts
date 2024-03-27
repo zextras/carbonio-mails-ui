@@ -277,12 +277,12 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 								content: { _content: richText[0] ?? '' }
 							}
 						]
-				  }
+					}
 				: {
 						ct: 'text/plain',
 						body: true,
 						content: { _content: richText[0] ?? '' }
-				  }
+					}
 		]
 	};
 };
@@ -403,8 +403,8 @@ export const generateRequest = (
 		data.recipients
 			? data.recipients
 			: isEmpty(data.sender)
-			? [from, ...data.to, ...data.cc, ...data.bcc]
-			: [from, data.sender, ...data.to, ...data.cc, ...data.bcc],
+				? [from, ...data.to, ...data.cc, ...data.bcc]
+				: [from, data.sender, ...data.to, ...data.cc, ...data.bcc],
 		(c) => ({
 			t: c.type,
 			a: c.email ?? c.address,

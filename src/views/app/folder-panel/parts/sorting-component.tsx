@@ -192,7 +192,7 @@ export const SortingComponent: FC<{ folderId?: string }> = ({ folderId }) => {
 						icon:
 							sortingTypeState === SORTING_OPTIONS.from.value ? 'RadioButtonOn' : 'RadioButtonOff'
 					}
-			  ]
+				]
 			: []),
 		...(folderId === FOLDERS.SENT
 			? [
@@ -203,7 +203,7 @@ export const SortingComponent: FC<{ folderId?: string }> = ({ folderId }) => {
 						onClick: sortTo,
 						icon: sortingTypeState === SORTING_OPTIONS.to.value ? 'RadioButtonOn' : 'RadioButtonOff'
 					}
-			  ]
+				]
 			: []),
 		{
 			id: `${SORTING_OPTIONS.date.value}-id`,

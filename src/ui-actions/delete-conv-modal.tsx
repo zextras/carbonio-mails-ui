@@ -31,11 +31,11 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 				? msgAction({
 						operation: 'delete',
 						ids: selectedIDs
-				  })
+					})
 				: convAction({
 						operation: 'delete',
 						ids: selectedIDs
-				  })
+					})
 		).then((res) => {
 			if (res.type.includes('fulfilled')) {
 				deselectAll && deselectAll();

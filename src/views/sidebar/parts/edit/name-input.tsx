@@ -3,12 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { ChangeEvent, FC } from 'react';
+
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import React, { ChangeEvent, FC } from 'react';
+
 import type { NameInputRowProps } from '../../../../carbonio-ui-commons/types/sidebar';
-import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
 import { isValidFolderName } from '../../../../carbonio-ui-commons/utils/utils';
+import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
 
 const NameInputRow: FC<NameInputRowProps> = ({
 	setInputValue,
@@ -34,7 +36,7 @@ const NameInputRow: FC<NameInputRowProps> = ({
 						? t(
 								'folder.modal.edit.invalid_folder_name_warning_msg',
 								'Special characters not allowed. Max lenght is 128 characters.'
-						  )
+							)
 						: t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one')}
 				</Text>
 			</Padding>

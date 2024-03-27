@@ -57,11 +57,13 @@ describe('Conversation actions calls', () => {
 				value: false
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
 			expect(requestParameter.action.op).toBe('flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -100,11 +102,13 @@ describe('Conversation actions calls', () => {
 				value: false
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(convIds.join(','));
 			expect(requestParameter.action.op).toBe('flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -136,11 +140,13 @@ describe('Conversation actions calls', () => {
 				value: true
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
 			expect(requestParameter.action.op).toBe('!flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -179,11 +185,13 @@ describe('Conversation actions calls', () => {
 				value: true
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(convIds.join(','));
 			expect(requestParameter.action.op).toBe('!flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -218,11 +226,13 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
 			expect(requestParameter.action.op).toBe('read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -264,11 +274,13 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(convIds.join(','));
 			expect(requestParameter.action.op).toBe('read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -303,11 +315,13 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
 			expect(requestParameter.action.op).toBe('!read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -348,11 +362,13 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(convIds.join(','));
 			expect(requestParameter.action.op).toBe('!read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -385,12 +401,14 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
 			expect(requestParameter.action.op).toBe('spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -429,12 +447,14 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(convIds.join(','));
 			expect(requestParameter.action.op).toBe('spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -467,12 +487,14 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
 			expect(requestParameter.action.op).toBe('!spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -511,12 +533,14 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(convIds.join(','));
 			expect(requestParameter.action.op).toBe('!spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -568,11 +592,13 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
 			expect(requestParameter.action.op).toBe('trash');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -611,11 +637,13 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
+			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(convIds.join(','));
 			expect(requestParameter.action.op).toBe('trash');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -761,9 +789,12 @@ describe('Conversation actions calls', () => {
 				name: /label\.move/i
 			});
 			expect(button).toBeEnabled();
-			await user.click(button);
+			await act(async () => {
+				await user.click(button);
+			});
 
 			const requestParameter = await interceptor;
+
 			expect(requestParameter.action.id).toBe(conv.id);
 			expect(requestParameter.action.op).toBe('move');
 			expect(requestParameter.action.l).toBe(destinationFolder);
@@ -820,7 +851,7 @@ describe('Conversation actions calls', () => {
 			);
 
 			act(() => {
-				jest.advanceTimersByTime(1000);
+				jest.advanceTimersByTime(10000);
 			});
 
 			await user.click(inboxFolderListItem);

@@ -45,16 +45,15 @@ describe('Mark all as read', () => {
 		const actionMenuItem = await screen.findByTestId(
 			`folder-action-${FolderActionsType.MARK_ALL_READ}`
 		);
-		const folderActionInterceptor = createAPIInterceptor<SoapFolderAction>(
-			'FolderAction',
-			'action'
+		const folderActionInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>(
+			'FolderAction'
 		);
 
 		await user.click(actionMenuItem);
 
-		const actionParams = await folderActionInterceptor;
-		expect(actionParams.l).toBe(folderId);
-		expect(actionParams.op).toBe('read');
-		expect(actionParams.id).toBe(folderId);
+		const { action } = await folderActionInterceptor;
+		expect(action.l).toBe(folderId);
+		expect(action.op).toBe('read');
+		expect(action.id).toBe(folderId);
 	});
 });

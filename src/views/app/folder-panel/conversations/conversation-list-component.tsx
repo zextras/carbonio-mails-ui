@@ -145,7 +145,7 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 		const showBreadcrumbs = useMemo(
 			() =>
 				!isSearchModule ||
-				typeof isSearchModule === undefined ||
+				typeof isSearchModule === 'undefined' ||
 				(isSearchModule && totalConversations > 0),
 			[isSearchModule, totalConversations]
 		);

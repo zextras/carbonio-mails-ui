@@ -16,10 +16,8 @@ import {
 	within
 } from '@testing-library/react';
 import { find, noop } from 'lodash';
-import { rest } from 'msw';
 
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import {
 	FOLDERS,
@@ -43,6 +41,7 @@ import type {
 	SoapMailMessage,
 	SoapMailMessagePart
 } from '../../../../../types';
+import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
 import { EditView, EditViewProp } from '../edit-view';
 
 const CT_HTML = 'text/html' as const;
@@ -196,42 +195,18 @@ describe('Edit view', () => {
 			// Check for the status of the "send" button to be enabled
 			expect(btnSend).toBeEnabled();
 
-			const sendMsgPromise = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SendMsgRequest', async (req, res, ctx) => {
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const sentMsg = (await req.json()).Body.SendMsgRequest.m;
-						resolve(sentMsg);
-						const response = {
-							Header: {
-								context: {
-									session: {
-										id: '1220806',
-										_content: '1220806'
-									}
-								}
-							},
-							Body: {
-								SendMsgResponse: {
-									m: [
-										{
-											id: '1'
-										}
-									],
-									_jsns: 'urn:zimbraMail'
-								}
-							},
-							_jsns: 'urn:zimbraSoap'
-						};
-
-						return res(ctx.json(response));
-					})
-				);
-			});
+			const response = {
+				m: [
+					{
+						id: '1'
+					}
+				],
+				_jsns: 'urn:zimbraMail'
+			};
+			const sendMsgPromise = createAPIInterceptor<{ m: SoapDraftMessageObj }, SoapSendMsgResponse>(
+				'SendMsg',
+				response
+			);
 
 			await waitFor(() => {
 				expect(btnSend).toBeEnabled();
@@ -257,7 +232,7 @@ describe('Edit view', () => {
 			});
 
 			// Obtain the message from the rest handler
-			const msg = await sendMsgPromise;
+			const { m: msg } = await sendMsgPromise;
 
 			// Check the content of the message
 			expect(msg.su._content).toBe(subject);
@@ -314,7 +289,7 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<SoapDraftMessageObj>('SaveDraft', 'm');
+			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>('SaveDraft');
 
 			const subject = faker.lorem.sentence(5);
 			// Get the default identity address
@@ -370,7 +345,7 @@ describe('Edit view', () => {
 			await user.click(btnSave);
 
 			// Obtain the message from the rest handler
-			const msg = await draftSavingInterceptor;
+			const { m: msg } = await draftSavingInterceptor;
 
 			// Check the content of the message
 			expect(msg.su._content).toBe(subject);
@@ -449,9 +424,8 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<SoapDraftMessageObj>(
-				'SaveDraftRequest',
-				'm'
+			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+				'SaveDraftRequest'
 			);
 
 			const subjectText =
@@ -466,7 +440,7 @@ describe('Edit view', () => {
 				jest.advanceTimersByTime(10000);
 			});
 
-			const msg = await draftSavingInterceptor;
+			const { m: msg } = await draftSavingInterceptor;
 			expect(msg.su._content).toBe(subjectText);
 		}, 50000);
 
@@ -497,9 +471,8 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<SoapDraftMessageObj>(
-				'SaveDraftRequest',
-				'm'
+			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+				'SaveDraftRequest'
 			);
 
 			const recipient = createFakeIdentity().email;
@@ -521,7 +494,7 @@ describe('Edit view', () => {
 				jest.advanceTimersByTime(10000);
 			});
 
-			const msg = await draftSavingInterceptor;
+			const { m: msg } = await draftSavingInterceptor;
 			const sentRecipient = msg.e.reduce((prev, participant) =>
 				participant.t === 't' ? participant : prev
 			);
@@ -556,9 +529,8 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<SoapDraftMessageObj>(
-				'SaveDraftRequest',
-				'm'
+			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+				'SaveDraftRequest'
 			);
 
 			const body = faker.lorem.text();
@@ -576,7 +548,7 @@ describe('Edit view', () => {
 				jest.advanceTimersByTime(2000);
 			});
 
-			const msg = await draftSavingInterceptor;
+			const { m: msg } = await draftSavingInterceptor;
 			expect(msg.mp[0]?.content?._content).toBe(body);
 		}, 50000);
 
@@ -652,9 +624,8 @@ describe('Edit view', () => {
 			});
 
 			const callTester = jest.fn();
-			const draftSavingInterceptor = createAPIInterceptor<SoapDraftMessageObj>(
-				'SaveDraftRequest',
-				'm'
+			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+				'SaveDraftRequest'
 			);
 
 			const fileInput = await screen.findByTestId('file-input');

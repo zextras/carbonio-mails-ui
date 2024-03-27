@@ -137,7 +137,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 							avatarIcon: 'FolderOutline',
 							value: folder.id
 						}
-				  ]
+					]
 				: [],
 		[folder]
 	);

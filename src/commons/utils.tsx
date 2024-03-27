@@ -45,8 +45,8 @@ export const isAvailableInTrusteeList = (
 		trusteeAddress = isArray(trusteeList)
 			? (trusteeList as string[])
 			: typeof trusteeList === 'string'
-			? trusteeList?.split(',')
-			: [`${trusteeList}`];
+				? trusteeList?.split(',')
+				: [`${trusteeList}`];
 	}
 	if (trusteeAddress.length > 0) {
 		const domain = address.substring(address.lastIndexOf('@') + 1);

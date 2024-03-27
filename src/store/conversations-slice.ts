@@ -184,7 +184,7 @@ export const getConversationsSliceInitialState = (): ConversationsStateType =>
 		expandedStatus: {},
 		searchedInFolder: {},
 		searchRequestStatus: null
-	} as ConversationsStateType);
+	}) as ConversationsStateType;
 
 export const conversationsSlice = createSlice({
 	name: 'conversations',

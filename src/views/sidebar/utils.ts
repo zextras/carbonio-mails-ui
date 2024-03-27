@@ -6,6 +6,7 @@
 import { type AccordionItemType } from '@zextras/carbonio-design-system';
 import { FOLDERS, ROOT_NAME, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
+
 import {
 	type AccordionFolder,
 	type Folder,
@@ -55,7 +56,7 @@ export const extractFolders = (accordion: Array<any>, acc = {}): any =>
 							...acc2,
 							[folder.id]: normalizeFolder(folder),
 							...extractFolders(folder.folder, acc2)
-					  }
+						}
 					: { ...acc2, ...extractFolders(folder.folder, acc2) };
 			}
 			return (folder.view === 'message' &&
@@ -65,7 +66,7 @@ export const extractFolders = (accordion: Array<any>, acc = {}): any =>
 				? {
 						...acc2,
 						[folder.id]: normalizeFolder(folder)
-				  }
+					}
 				: acc2;
 		},
 		acc

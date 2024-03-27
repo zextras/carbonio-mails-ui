@@ -136,7 +136,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		const showBreadcrumbs = useMemo(
 			() =>
 				!isSearchModule ||
-				typeof isSearchModule === undefined ||
+				typeof isSearchModule === 'undefined' ||
 				(isSearchModule && totalMessages > 0),
 			[isSearchModule, totalMessages]
 		);

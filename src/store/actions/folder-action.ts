@@ -54,7 +54,7 @@ export async function folderAction({
 					}
 				],
 				_jsns: 'urn:zimbra'
-		  })
+			})
 		: await soapFetch('FolderAction', {
 				action: omitBy(
 					{
@@ -69,6 +69,6 @@ export async function folderAction({
 					isNil
 				),
 				_jsns: 'urn:zimbraMail'
-		  });
+			});
 	return result as FolderActionResponse;
 }

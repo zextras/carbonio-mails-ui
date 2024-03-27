@@ -36,7 +36,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 					({
 						address: item.label,
 						email: item.label
-					} as ContactType)
+					}) as ContactType
 			)
 		);
 	}, []);

@@ -64,7 +64,7 @@ export function useMsgConvActions({
 		? filter(
 				item?.messages,
 				(msg) => ![FOLDERS.TRASH, FOLDERS.DRAFTS].includes(getFolderIdParts(msg.parent).id ?? '')
-		  )?.[0] ?? {}
+			)?.[0] ?? {}
 		: item;
 	const isSingleMsgConv = isSingleMessageConversation(item);
 	const { id } = item;

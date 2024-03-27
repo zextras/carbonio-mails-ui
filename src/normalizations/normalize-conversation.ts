@@ -45,7 +45,7 @@ export const normalizeConversation = ({
 				id: msg.id,
 				parent: msg.l,
 				date: Number(msg?.d)
-		  }))
+			}))
 		: undefined;
 
 	return omitBy(

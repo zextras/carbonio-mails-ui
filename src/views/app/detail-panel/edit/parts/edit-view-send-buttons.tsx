@@ -62,7 +62,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 							label: t('label.send_later', 'Send later'),
 							onClick: onSendLaterClick
 						}
-				  ]
+					]
 				: [])
 		],
 		[isSendLaterAllowed, onSendLaterClick]

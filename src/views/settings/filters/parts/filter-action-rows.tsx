@@ -150,7 +150,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 									background: 'gray2',
 									avatarBackground: ZIMBRA_STANDARD_COLORS[chipBg?.color]?.hex
 								}
-						  ]
+							]
 						: []
 				);
 				return actionOptions[3];

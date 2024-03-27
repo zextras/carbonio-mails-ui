@@ -74,7 +74,7 @@ const SizeCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 						defaultValue?.sizeTest?.[0]?.negative
 							? { numberComparison: defaultValue?.sizeTest?.[0]?.numberComparison, negative: '1' }
 							: { numberComparison: defaultValue?.sizeTest?.[0]?.numberComparison }
-				  )
+					)
 				: sizeOptions[0],
 		[defaultValue, sizeOptions]
 	);

@@ -547,7 +547,7 @@ const getIdentityDescription = (identity: IdentityDescriptor, t: TFunction): str
 	return identity.right === 'sendOnBehalfOf'
 		? `${defaultIdentity.fromDisplay} ${t('label.on_behalf_of', 'on behalf of')} ${
 				identity.fromDisplay ?? identity.identityName
-		  } <${identity.fromAddress}>`
+			} <${identity.fromAddress}>`
 		: `${identity.fromDisplay ?? identity.identityName} <${identity.fromAddress}>`;
 };
 
