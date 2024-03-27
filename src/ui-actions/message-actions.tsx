@@ -648,14 +648,10 @@ export function sendDraftFromPreview({
 		label: t('label.send', 'Send'),
 		onClick: async (ev): Promise<void> => {
 			if (ev) ev.preventDefault();
-			const editor = await generateEditorWithSmartLinks();
-			dispatch(
-				sendMsgFromEditor({
-					editor
-				})
-			)
+			generateEditorWithSmartLinks()
+				.then((editor) => dispatch(sendMsgFromEditor({ editor })))
 				.then() // TODO IRIS-4400
-				.catch(); // TODO IRIS-4400
+				.catch(noop); // TODO IRIS-4400
 		}
 	};
 }
