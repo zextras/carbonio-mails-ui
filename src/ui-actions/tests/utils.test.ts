@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { parseTextToHTMLDocument } from '../../helpers/text';
 import { useEditorsStore } from '../../store/zustand/editor/store';
@@ -229,7 +230,7 @@ describe('createSmartLink', () => {
 		expect(savedStandardAttachments).toHaveLength(oldSavedAttachmentsLength - 1);
 	});
 
-  it.skip('TODO: error scenario', async () => {
+	it.skip('TODO: error scenario', async () => {
 		const editor = await generateEditorV2Case(1, generateStore().dispatch);
 		const oldSavedAttachments = editor.savedAttachments;
 		const oldSavedAttachmentsLength = oldSavedAttachments.length;
@@ -237,16 +238,21 @@ describe('createSmartLink', () => {
 		attachmentToConvert.requiresSmartLinkConversion = true;
 		setupEditorStore({ editors: [editor] });
 
-		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, any>(
+		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
 			'CreateSmartLinks',
 			undefined,
 			{
-				Fault: "reason"
+				Fault: {
+					Reason: { Text: 'Failed upload to Files' },
+					Detail: {
+						Error: { Code: '123', Detail: 'Failed due to connection timeout' }
+					}
+				}
 			}
 		);
 
-    // TODO check the promise rejection and the sneakbar is opened with the correct message
-    await updateEditorWithSmartLinks({
+		// TODO check the promise rejection and the sneakbar is opened with the correct message
+		await updateEditorWithSmartLinks({
 			createSnackbar: jest.fn(),
 			t: jest.fn(),
 			editorId: editor.id
