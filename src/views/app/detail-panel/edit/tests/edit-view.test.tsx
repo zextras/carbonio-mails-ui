@@ -19,7 +19,10 @@ import { find, noop } from 'lodash';
 import { rest } from 'msw';
 
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
+import {
+	defaultBeforeAllTests,
+	getSetupServer
+} from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import {
 	FOLDERS,
@@ -298,6 +301,10 @@ describe('Edit view', () => {
 		}, 200000);
 
 		describe('send email with attachment to convert in smart link', () => {
+			beforeAll(() => {
+				defaultBeforeAllTests({ onUnhandledRequest: 'error' });
+			});
+
 			test('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
 				// setup api interceptor and mail to send editor
 				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
@@ -334,8 +341,11 @@ describe('Edit view', () => {
 				// assertions
 				await apiInterceptor;
 				await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
-				// TODO: assert editor still open (or re-opened)
-				// TODO: assert email do not sent
+				expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
+
+				act(() => {
+					jest.advanceTimersByTime(4000);
+				});
 			}, 200000);
 		});
 
