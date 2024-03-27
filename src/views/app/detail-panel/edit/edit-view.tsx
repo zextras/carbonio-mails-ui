@@ -273,7 +273,12 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		(scheduledTime: number): void => {
 			const onConfirmCallback = async (): Promise<void> => {
 				if (draftSmartLinks.length > 0) {
-					await createSmartLinksAction();
+					try {
+						await createSmartLinksAction();
+					} catch (err) {
+						onSendError && onSendError();
+						return;
+					}
 				}
 				setAutoSendTime(scheduledTime);
 				saveDraft();
@@ -287,13 +292,14 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			});
 		},
 		[
+			editorId,
 			close,
 			createModal,
-			createSmartLinksAction,
-			editorId,
-			saveDraft,
+			draftSmartLinks.length,
 			setAutoSendTime,
-			draftSmartLinks.length
+			saveDraft,
+			createSmartLinksAction,
+			onSendError
 		]
 	);
 	return (
