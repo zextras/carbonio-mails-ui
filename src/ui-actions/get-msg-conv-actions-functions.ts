@@ -254,7 +254,7 @@ export function getSendDraftAction({
 				t,
 				editorId: editor.id
 			});
-		} catch { }
+		} catch {}
 
 		return useEditorsStore.getState().editors[editor.id];
 	};
