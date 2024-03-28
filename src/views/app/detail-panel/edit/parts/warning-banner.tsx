@@ -6,6 +6,7 @@
 import React from 'react';
 
 import { Icon, IconProps, Padding, Text } from '@zextras/carbonio-design-system';
+import { DefaultTheme } from 'styled-components';
 
 import * as StyledComp from './edit-view-styled-components';
 
@@ -13,9 +14,15 @@ type WarningBannerProps = {
 	text: string;
 	icon: IconProps['icon'];
 	iconColor: IconProps['color'];
+	bottomBorderColor: keyof DefaultTheme['palette'];
 };
 
-export const WarningBanner = ({ text, icon, iconColor }: WarningBannerProps): JSX.Element => (
+export const WarningBanner = ({
+	text,
+	icon,
+	iconColor,
+	bottomBorderColor
+}: WarningBannerProps): JSX.Element => (
 	<>
 		<StyledComp.BannerContainer
 			orientation="horizontal"
@@ -24,6 +31,7 @@ export const WarningBanner = ({ text, icon, iconColor }: WarningBannerProps): JS
 			background="gray6"
 			height="fit"
 			padding={{ all: 'large' }}
+			$bottomBorderColor={bottomBorderColor}
 		>
 			<Padding right="large">
 				<Icon icon={icon} color={iconColor} size="large" />

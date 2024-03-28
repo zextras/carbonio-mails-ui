@@ -95,6 +95,7 @@ const SendToYourselfWarningBanner = ({ editorId }: { editorId: string }): JSX.El
 			text={warningBannerText}
 			icon={WarningBannerIcon}
 			iconColor={WarningBannerIconColor}
+			bottomBorderColor="info"
 		/>
 	) : null;
 };
