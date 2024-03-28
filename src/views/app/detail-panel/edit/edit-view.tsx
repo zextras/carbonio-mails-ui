@@ -99,7 +99,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(
 		({ reason }: { reason?: CloseBoardReasons }) => {
-			closeController && closeController({ reason });
+			closeController?.({ reason });
 		},
 		[closeController]
 	);
@@ -160,7 +160,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
-		onMessageSent && onMessageSent();
+		onMessageSent?.();
 		deleteEditor({ id: editorId });
 	}, [createSnackbar, editorId, onMessageSent]);
 
@@ -242,7 +242,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 				try {
 					await createSmartLinksAction();
 				} catch (err) {
-					onSendError && onSendError();
+					onSendError?.();
 					return;
 				}
 			}
@@ -277,7 +277,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 					try {
 						await createSmartLinksAction();
 					} catch (err) {
-						onSendError && onSendError();
+						onSendError?.();
 						return;
 					}
 				}

@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { Text } from '@zextras/carbonio-design-system';
+import { CreateModalFn, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { LineType } from '../../../../commons/utils';
@@ -58,8 +58,8 @@ export function checkSubjectAndAttachment({
 }: {
 	editorId: MailsEditorV2['id'];
 	hasAttachments: boolean;
-	onConfirmCallback: () => void;
-	createModal: any;
+	onConfirmCallback: () => void | Promise<void>;
+	createModal: CreateModalFn;
 }): void {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {

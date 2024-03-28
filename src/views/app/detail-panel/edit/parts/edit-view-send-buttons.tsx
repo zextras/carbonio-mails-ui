@@ -51,7 +51,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 	}, [createModal, onSendLater]);
 
 	const isSendLaterAllowed = useMemo(
-		() => attrs?.zimbraFeatureMailSendLaterEnabled === 'TRUE' || true,
+		() => attrs?.zimbraFeatureMailSendLaterEnabled === 'TRUE',
 		[attrs?.zimbraFeatureMailSendLaterEnabled]
 	);
 
@@ -81,7 +81,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						onClick={onSendNow}
 						disabledPrimary={disabled}
 						disabledSecondary={disabled}
-						// TODO: remove this ts-ignore once the type is fixed in the DS
+						// TODO: remove this ts-ignore once SHELL 5.3.0 is released
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						icon={isLoading ? AnimatedLoader : 'ChevronDownOutline'}

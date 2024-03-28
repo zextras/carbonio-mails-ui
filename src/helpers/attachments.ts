@@ -12,7 +12,6 @@ import { isNil, reduce } from 'lodash';
 import { calcColor } from '../commons/utilities';
 import type {
 	AbstractAttachment,
-	AttachmentPart,
 	MailMessagePart,
 	SavedAttachment,
 	UnsavedAttachment
