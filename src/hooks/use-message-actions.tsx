@@ -51,11 +51,6 @@ type ActionGeneratorProps = {
 	dispatch: Dispatch;
 	folderId: string;
 	tags: Tags;
-	deselectAll?: () => void;
-	isAlone?: boolean;
-	isAvailable?: boolean;
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	openAppointmentComposer?: Function;
 };
 
 function getDraftsActions({
@@ -66,7 +61,10 @@ function getDraftsActions({
 	folderId,
 	isAlone,
 	tags
-}: ActionGeneratorProps): Array<MessageAction> {
+}: ActionGeneratorProps & {
+	deselectAll: () => void;
+	isAlone: boolean;
+}): Array<MessageAction> {
 	const actions: Array<MessageAction> = [];
 	!isInsideExtraWindow && actions.push(sendDraft({ message, dispatch }));
 	!isInsideExtraWindow && actions.push(editDraft({ id: message.id, message }));
@@ -93,7 +91,7 @@ function getTrashActions({
 	deselectAll,
 	folderId,
 	tags
-}: ActionGeneratorProps): Array<MessageAction> {
+}: ActionGeneratorProps & { deselectAll: () => void }): Array<MessageAction> {
 	const actions: Array<MessageAction> = [];
 	!isInsideExtraWindow &&
 		actions.push(
@@ -144,7 +142,13 @@ function getDefatultActions({
 	tags,
 	isAvailable,
 	openAppointmentComposer
-}: ActionGeneratorProps): Array<MessageAction> {
+}: ActionGeneratorProps & {
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	openAppointmentComposer: Function;
+	deselectAll: () => void;
+	isAlone: boolean;
+	isAvailable: boolean;
+}): Array<MessageAction> {
 	const actions: Array<MessageAction> = [];
 	!isInsideExtraWindow && actions.push(replyMsg({ id: message.id }));
 	!isInsideExtraWindow && actions.push(replyAllMsg({ id: message.id }));
@@ -184,7 +188,6 @@ function getDefatultActions({
 	actions.push(applyTag({ tags, conversation: message, isMessage: true }));
 	!isInsideExtraWindow &&
 		isAvailable &&
-		openAppointmentComposer &&
 		actions.push(createAppointment({ item: message, openAppointmentComposer }));
 	actions.push(printMsg({ message }));
 	actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
