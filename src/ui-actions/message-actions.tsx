@@ -423,7 +423,7 @@ export function deleteMsg({
 							ids
 						})
 					).then((res) => {
-						// TODO: Fix it in DS
+						// TOFIX: Fix it in DS
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						closeModal();
@@ -447,13 +447,13 @@ export function deleteMsg({
 					});
 				},
 				onClose: () => {
-					// TODO: Fix it in DS
+					// TOFIX: Fix it in DS
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					closeModal();
 				},
 				onSecondaryAction: () => {
-					// TODO: Fix it in DS
+					// TOFIX: Fix it in DS
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					closeModal();
@@ -620,8 +620,8 @@ export function sendDraft({
 					msg: message
 				})
 			)
-				.then() // TODO IRIS-4400
-				.catch(); // TODO IRIS-4400
+				.then() // TOFIX IRIS-4400
+				.catch(); // TOFIX IRIS-4400
 		}
 	};
 }
@@ -643,8 +643,8 @@ export function sendDraftFromPreview({
 
 			generateEditorFunction()
 				.then((editor) => dispatch(sendMsgFromEditor({ editor })))
-				.then() // TODO IRIS-4400
-				.catch(noop); // TODO IRIS-4400
+				.then() // TOFIX IRIS-4400
+				.catch(noop); // TOFIX IRIS-4400
 		}
 	};
 }
@@ -662,7 +662,7 @@ export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
 					maxHeight: '90vh',
 					children: (
 						<StoreProvider>
-							{/* TODO: Fix it in DS */}
+							{/* TOFIX: Fix it in DS */}
 							{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 							{/* @ts-ignore */}
 							<RedirectAction onClose={(): void => closeModal()} id={id} />
@@ -702,7 +702,7 @@ export function moveMessageToFolder({
 							<MoveConvMessage
 								folderId={folderId ?? ''}
 								selectedIDs={[id as string]}
-								// TODO: Fix it in DS
+								// TOFIX: Fix it in DS
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								onClose={(): void => closeModal()}
@@ -737,7 +737,7 @@ export function deleteMessagePermanently({
 							<DeleteConvConfirm
 								selectedIDs={ids}
 								isMessageView
-								// TODO: Fix it in DS
+								// TOFIX: Fix it in DS
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								onClose={(): void => closeModal()}

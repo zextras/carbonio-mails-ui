@@ -201,10 +201,10 @@ function getDefatultActions({
 	return actions;
 }
 /*
- * FIXME this hook is used only by the displayer. It should be aligned/merged with
+ * TOFIX this hook is used only by the displayer. It should be aligned/merged with
  * 	the others functions that are providing primary and secondary actions for a message
  *
- * FIXME the folder id comparisons are weak: they're not working for shared folders nor for subfolders.
+ * TOFIX the folder id comparisons are weak: they're not working for shared folders nor for subfolders.
  *  Consider using/creating common utility functions
  */
 export const useMessageActions = (
