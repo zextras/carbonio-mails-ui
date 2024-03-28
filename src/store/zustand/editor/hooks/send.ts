@@ -71,6 +71,7 @@ const sendFromEditor = (
 		onTick: onTimerTick,
 		onCancel: onTimerCanceled
 	});
+
 	cancelableTimer.promise
 		.then(() => {
 			editor

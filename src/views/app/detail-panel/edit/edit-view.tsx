@@ -44,6 +44,7 @@ import {
 	useEditorsStore
 } from '../../../../store/zustand/editor';
 import { BoardContext, CloseBoardReasons } from '../../../../types';
+import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 
 export type EditViewProp = {
 	editorId: string;
@@ -57,7 +58,6 @@ type FileSelectProps = {
 	editor: TinyMCE;
 	files: FileList;
 };
-
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
 const MemoizedSubjectRow = memo(SubjectRow);
@@ -94,13 +94,12 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-	const { addStandardAttachments, addInlineAttachments, hasStandardAttachments } =
-		useEditorAttachments(editorId);
+	const { addStandardAttachments, addInlineAttachments } = useEditorAttachments(editorId);
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(
 		({ reason }: { reason?: CloseBoardReasons }) => {
-			closeController && closeController({ reason });
+			closeController?.({ reason });
 		},
 		[closeController]
 	);
@@ -161,54 +160,11 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
-		onMessageSent && onMessageSent();
+		onMessageSent?.();
 		deleteEditor({ id: editorId });
 	}, [createSnackbar, editorId, onMessageSent]);
 
 	const createModal = useModal();
-	const onScheduledSendClick = useCallback(
-		(scheduledTime: number): void => {
-			const onConfirmCallback = (): void => {
-				setAutoSendTime(scheduledTime);
-				saveDraft();
-				close({ reason: CLOSE_BOARD_REASON.SEND_LATER });
-			};
-			checkSubjectAndAttachment({
-				editorId,
-				hasAttachments: hasStandardAttachments,
-				onConfirmCallback,
-				close,
-				createModal
-			});
-		},
-		[close, createModal, editorId, hasStandardAttachments, saveDraft, setAutoSendTime]
-	);
-
-	const onSendClick = useCallback((): void => {
-		const onConfirmCallback = (): void => {
-			sendMessage({
-				onCountdownTick: onSendCountdownTick,
-				onComplete: onSendComplete,
-				onError: onSendError
-			});
-		};
-		checkSubjectAndAttachment({
-			editorId,
-			hasAttachments: hasStandardAttachments,
-			onConfirmCallback,
-			close,
-			createModal
-		});
-	}, [
-		close,
-		createModal,
-		editorId,
-		hasStandardAttachments,
-		onSendComplete,
-		onSendCountdownTick,
-		onSendError,
-		sendMessage
-	]);
 
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
@@ -245,7 +201,6 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	}, []);
 
 	const flexStart = 'flex-start';
-
 	const onInlineAttachmentsSelected = useCallback(
 		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
 			const files = buildArrayFromFileList(fileList);
@@ -261,6 +216,94 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		[addInlineAttachments]
 	);
 
+	const { savedStandardAttachments } = useEditorAttachments(editorId);
+
+	const draftSmartLinks = useMemo(
+		() =>
+			savedStandardAttachments
+				.filter((attachment) => attachment.requiresSmartLinkConversion)
+				.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName })),
+		[savedStandardAttachments]
+	);
+	const [isConvertingToSmartLink, setIsConvertingToSmartLink] = useState(false);
+
+	const createSmartLinksAction = useCallback((): Promise<void> => {
+		setIsConvertingToSmartLink(true);
+
+		return updateEditorWithSmartLinks({ editorId, t, createSnackbar }).finally(() =>
+			setIsConvertingToSmartLink(false)
+		);
+	}, [editorId, createSnackbar]);
+
+	const onSendClick = useCallback((): void => {
+		const onConfirmCallback = async (): Promise<void> => {
+			close({ reason: CLOSE_BOARD_REASON.SEND });
+			if (draftSmartLinks.length > 0) {
+				try {
+					await createSmartLinksAction();
+				} catch (err) {
+					onSendError?.();
+					return;
+				}
+			}
+			sendMessage({
+				onCountdownTick: onSendCountdownTick,
+				onComplete: onSendComplete,
+				onError: onSendError
+			});
+		};
+		checkSubjectAndAttachment({
+			editorId,
+			hasAttachments: savedStandardAttachments.length > 0,
+			onConfirmCallback,
+			createModal
+		});
+	}, [
+		editorId,
+		savedStandardAttachments,
+		close,
+		createModal,
+		draftSmartLinks.length,
+		sendMessage,
+		onSendCountdownTick,
+		onSendComplete,
+		onSendError,
+		createSmartLinksAction
+	]);
+	const onSendLaterClick = useCallback(
+		(scheduledTime: number): void => {
+			const onConfirmCallback = async (): Promise<void> => {
+				if (draftSmartLinks.length > 0) {
+					try {
+						await createSmartLinksAction();
+					} catch (err) {
+						onSendError?.();
+						return;
+					}
+				}
+				setAutoSendTime(scheduledTime);
+				saveDraft();
+				close({ reason: CLOSE_BOARD_REASON.SEND_LATER });
+			};
+			checkSubjectAndAttachment({
+				editorId,
+				onConfirmCallback,
+				createModal,
+				hasAttachments: savedStandardAttachments.length > 0
+			});
+		},
+		[
+			editorId,
+			createModal,
+			savedStandardAttachments,
+			draftSmartLinks.length,
+			setAutoSendTime,
+			saveDraft,
+			close,
+			createSmartLinksAction,
+			onSendError
+		]
+	);
 	return (
 		<Container
 			data-testid={'edit-view-editor'}
@@ -304,10 +347,11 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 							/>
 						</Tooltip>
 						<EditViewSendButtons
-							onSendLater={onScheduledSendClick}
+							onSendLater={onSendLaterClick}
 							onSendNow={onSendClick}
-							disabled={!sendAllowedStatus?.allowed}
+							disabled={!sendAllowedStatus?.allowed || isConvertingToSmartLink}
 							tooltip={sendAllowedStatus?.reason ?? ''}
+							isLoading={isConvertingToSmartLink}
 						/>
 					</GapRow>
 				</GapRow>

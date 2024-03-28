@@ -24,7 +24,7 @@ import {
 	t
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
-import { filter, find, map } from 'lodash';
+import { filter, map } from 'lodash';
 import styled from 'styled-components';
 
 import DeleteAttachmentModal from './delete-attachment-modal';
@@ -36,6 +36,7 @@ import {
 	getLocationOrigin
 } from './utils';
 import { getFileExtension } from '../../../../commons/utilities';
+import { useAttachmentIconColor } from '../../../../helpers/attachments';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
@@ -66,7 +67,16 @@ const AttachmentHoverBarContainer = styled(Container)`
 	height: 0;
 `;
 
-const AttachmentContainer = styled(Container)`
+const AttachmentContainer = styled(Container).attrs(
+	(props: { requiresSmartLinkConversion: boolean }) => ({
+		requiresSmartLinkConversion: props.requiresSmartLinkConversion
+	})
+)`
+	border-bottom: ${(props): string =>
+		props.requiresSmartLinkConversion
+			? `1px solid ${props.theme.palette.primary.regular}`
+			: 'none'};
+
 	border-radius: 0.125rem;
 	width: calc(50% - 0.25rem);
 	transition: 0.2s ease-out;
@@ -92,7 +102,7 @@ const AttachmentLink = styled.a`
 `;
 
 const AttachmentExtension = styled(Text)<{
-	background: { color: string };
+	background: string;
 }>`
 	display: flex;
 	justify-content: center;
@@ -100,7 +110,7 @@ const AttachmentExtension = styled(Text)<{
 	width: 2rem;
 	height: 2rem;
 	border-radius: ${({ theme }): string => theme.borderRadius};
-	background-color: ${({ background }): string => background.color};
+	background-color: ${({ background }): string => background};
 	color: ${({ theme }): string => theme.palette.gray6.regular};
 	font-size: calc(${({ theme }): string => theme.sizes.font.small} - 0.125rem);
 	text-transform: uppercase;
@@ -115,7 +125,6 @@ const Attachment: FC<AttachmentType> = ({
 	message,
 	isExternalMessage = false,
 	part,
-	iconColors,
 	att,
 	openEmlPreview
 }) => {
@@ -123,7 +132,6 @@ const Attachment: FC<AttachmentType> = ({
 	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
 
-	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
 	const dispatch = useAppDispatch();
@@ -329,13 +337,41 @@ const Attachment: FC<AttachmentType> = ({
 		]
 	);
 
+	const theme = useTheme();
+	const requiresSmartLinkConversion = !!att.requiresSmartLinkConversion;
+
+	const sizeLabel = useMemo(() => humanFileSize(size), [size]);
+	const backgroundColor = useMemo(() => {
+		if (requiresSmartLinkConversion) {
+			return theme.palette.infoBanner.regular;
+		}
+		return 'gray3';
+	}, [requiresSmartLinkConversion, theme.palette.infoBanner.regular]);
+
+	const attachmentExtensionContent = useMemo(
+		() =>
+			requiresSmartLinkConversion ? (
+				<Icon icon="Link2Outline" size="large" color="primary" />
+			) : (
+				extension
+			),
+		[extension, requiresSmartLinkConversion]
+	);
+
+	const attachItemColor = useAttachmentIconColor(att);
+	const attachmentExtensionColor = useMemo(
+		() => (requiresSmartLinkConversion ? 'transparent' : attachItemColor),
+		[attachItemColor, requiresSmartLinkConversion]
+	);
+
 	return (
 		<AttachmentContainer
 			orientation="horizontal"
 			mainAlignment="flex-start"
 			height="fit"
-			background="gray3"
+			background={backgroundColor}
 			data-testid={`attachment-container-${filename}`}
+			requiresSmartLinkConversion={requiresSmartLinkConversion}
 		>
 			<Tooltip key={`${message.id}-Preview`} label={actionTooltipText}>
 				<Row
@@ -344,12 +380,11 @@ const Attachment: FC<AttachmentType> = ({
 					onClick={preview}
 					takeAvailableSpace
 				>
-					<AttachmentExtension
-						background={find(iconColors, (ic) => ic.extension === extension) ?? { color: '' }}
-					>
-						{extension}
+					<AttachmentExtension background={attachmentExtensionColor}>
+						{attachmentExtensionContent}
 					</AttachmentExtension>
 					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
+						{requiresSmartLinkConversion && <Padding top="small" />}
 						<Padding style={{ width: '100%' }} bottom="extrasmall">
 							<Text>
 								{filename ||
@@ -359,9 +394,13 @@ const Attachment: FC<AttachmentType> = ({
 									})}
 							</Text>
 						</Padding>
-						<Text color="gray1" size="small">
-							{sizeLabel}
-						</Text>
+						{!requiresSmartLinkConversion ? (
+							<Text color="gray1" size="small">
+								{sizeLabel}
+							</Text>
+						) : (
+							<Padding top="small" />
+						)}
 					</Row>
 				</Row>
 			</Tooltip>

@@ -331,11 +331,11 @@ export const generateEditAsDraftEditor = (
 ): MailsEditorV2 => {
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
-
 	const text = {
 		plainText: `${extractBody(originalMessage)[0]}`,
 		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
 	};
+
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
@@ -344,7 +344,7 @@ export const generateEditAsDraftEditor = (
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
 		unsavedAttachments: [],
-		savedAttachments: buildSavedAttachments(originalMessage),
+		savedAttachments,
 		isRichText,
 		isUrgent: originalMessage.urgent,
 		recipients: {

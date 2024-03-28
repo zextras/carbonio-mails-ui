@@ -4,5 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-// TODO: implement this function
-// export const insertIntoText = (text: string, textToInsert: string, position: number): string => {};
+/**
+ * Parse a text into a HTML document
+ * @param text - the text to parse
+ * @returns the HTML document
+ */
+export function parseTextToHTMLDocument(text: string): Document {
+	const parser = new DOMParser();
+	return parser.parseFromString(text, 'text/html');
+}

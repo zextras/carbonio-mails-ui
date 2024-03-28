@@ -25,12 +25,13 @@ import { getContentForPrint } from '../commons/print-conversation/print-conversa
 import { EditViewActions, MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
 import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../helpers/appointmemt';
 import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
-import { sendMsg } from '../store/actions/send-msg';
+import { sendMsg, sendMsgFromEditor } from '../store/actions/send-msg';
 import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
 	BoardContext,
 	MailMessage,
+	MailsEditorV2,
 	MessageAction,
 	MessageActionReturnType,
 	MsgActionParameters,
@@ -422,7 +423,7 @@ export function deleteMsg({
 							ids
 						})
 					).then((res) => {
-						// TODO: Fix it in DS
+						// TOFIX: Fix it in DS
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						closeModal();
@@ -446,13 +447,13 @@ export function deleteMsg({
 					});
 				},
 				onClose: () => {
-					// TODO: Fix it in DS
+					// TOFIX: Fix it in DS
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					closeModal();
 				},
 				onSecondaryAction: () => {
-					// TODO: Fix it in DS
+					// TOFIX: Fix it in DS
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					closeModal();
@@ -479,10 +480,7 @@ export function deleteMsg({
 	};
 }
 
-export function replyMsg({
-	id,
-	folderId
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function replyMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.REPLY;
 	return {
 		id: actDescriptor.id,
@@ -499,10 +497,7 @@ export function replyMsg({
 	};
 }
 
-export function replyAllMsg({
-	id,
-	folderId
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function replyAllMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.REPLY_ALL;
 	return {
 		id: actDescriptor.id,
@@ -519,10 +514,7 @@ export function replyAllMsg({
 	};
 }
 
-export function forwardMsg({
-	id,
-	folderId
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function forwardMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.FORWARD;
 	return {
 		id: actDescriptor.id,
@@ -539,10 +531,7 @@ export function forwardMsg({
 	};
 }
 
-export function editAsNewMsg({
-	id,
-	folderId
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function editAsNewMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.EDIT_AS_NEW;
 	return {
 		id: actDescriptor.id,
@@ -561,9 +550,8 @@ export function editAsNewMsg({
 
 export function editDraft({
 	id,
-	folderId,
 	message
-}: Pick<MessageActionPropType, 'id' | 'folderId' | 'message'>): MessageActionReturnType {
+}: Pick<MessageActionPropType, 'id' | 'message'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.EDIT_DRAFT;
 	return {
 		id: actDescriptor.id,
@@ -632,8 +620,31 @@ export function sendDraft({
 					msg: message
 				})
 			)
-				.then() // TODO IRIS-4400
-				.catch(); // TODO IRIS-4400
+				.then() // TOFIX IRIS-4400
+				.catch(); // TOFIX IRIS-4400
+		}
+	};
+}
+
+export function sendDraftFromPreview({
+	generateEditorFunction,
+	dispatch
+}: {
+	generateEditorFunction: () => Promise<MailsEditorV2>;
+	dispatch: AppDispatch;
+}): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.SEND;
+	return {
+		id: actDescriptor.id,
+		icon: 'PaperPlaneOutline',
+		label: t('label.send', 'Send'),
+		onClick: async (ev): Promise<void> => {
+			if (ev) ev.preventDefault();
+
+			generateEditorFunction()
+				.then((editor) => dispatch(sendMsgFromEditor({ editor })))
+				.then() // TOFIX IRIS-4400
+				.catch(noop); // TOFIX IRIS-4400
 		}
 	};
 }
@@ -651,7 +662,7 @@ export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
 					maxHeight: '90vh',
 					children: (
 						<StoreProvider>
-							{/* TODO: Fix it in DS */}
+							{/* TOFIX: Fix it in DS */}
 							{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 							{/* @ts-ignore */}
 							<RedirectAction onClose={(): void => closeModal()} id={id} />
@@ -691,7 +702,7 @@ export function moveMessageToFolder({
 							<MoveConvMessage
 								folderId={folderId ?? ''}
 								selectedIDs={[id as string]}
-								// TODO: Fix it in DS
+								// TOFIX: Fix it in DS
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								onClose={(): void => closeModal()}
@@ -726,7 +737,7 @@ export function deleteMessagePermanently({
 							<DeleteConvConfirm
 								selectedIDs={ids}
 								isMessageView
-								// TODO: Fix it in DS
+								// TOFIX: Fix it in DS
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								onClose={(): void => closeModal()}

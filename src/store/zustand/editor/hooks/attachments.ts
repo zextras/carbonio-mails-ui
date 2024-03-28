@@ -37,9 +37,7 @@ const notifyUploadError = (file: File, err: string): void => {
 	});
 };
 
-export const useEditorAttachments = (
-	editorId: MailsEditorV2['id']
-): {
+type EditorAttachmentHook = {
 	hasStandardAttachments: boolean;
 	unsavedStandardAttachments: MailsEditorV2['unsavedAttachments'];
 	savedStandardAttachments: MailsEditorV2['savedAttachments'];
@@ -73,7 +71,10 @@ export const useEditorAttachments = (
 	removeSavedAttachment: (partName: string) => void;
 	removeUnsavedAttachment: (uploadId: string) => void;
 	removeStandardAttachments: () => void;
-} => {
+	toggleSmartLink: (partName: string) => void;
+};
+
+export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
 	const unsavedStandardAttachments = reject(
 		useEditorsStore((state) => state.editors[editorId].unsavedAttachments),
 		'isInline'
@@ -87,6 +88,7 @@ export const useEditorAttachments = (
 	);
 	const removeSavedAttachmentsInvoker = useEditorsStore((state) => state.removeSavedAttachment);
 	const removeUnsavedAttachmentsInvoker = useEditorsStore((state) => state.removeUnsavedAttachment);
+	const toggleSmartLinkInvoker = useEditorsStore((state) => state.toggleSmartLink);
 
 	const addGenericUnsavedAttachments = (
 		files: Array<File>,
@@ -310,6 +312,9 @@ export const useEditorAttachments = (
 		},
 		addStandardAttachments,
 		addInlineAttachments,
-		addUploadedAttachment
+		addUploadedAttachment,
+		toggleSmartLink: (partName: string): void => {
+			toggleSmartLinkInvoker(editorId, partName);
+		}
 	};
 };

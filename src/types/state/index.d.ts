@@ -80,6 +80,7 @@ export type EditorsStateTypeV2 = {
 	removeUnsavedAttachment: (id: MailsEditorV2['id'], uploadId: string) => void;
 	clearStandardAttachments: (id: MailsEditorV2['id']) => void;
 	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
+	toggleSmartLink: (id: MailsEditorV2['id'], partName: string) => void;
 };
 
 export type MsgStateType = {
