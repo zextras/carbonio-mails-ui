@@ -235,7 +235,7 @@ export function getSendDraftAction({
 		return false;
 	}
 
-	const generateEditorWithSmartLinks = async (): Promise<MailsEditorV2> => {
+	const generateEditorFunction = async (): Promise<MailsEditorV2> => {
 		const editor = generateEditor({
 			action: EditViewActions.EDIT_AS_DRAFT,
 			id: item.id,
@@ -247,17 +247,20 @@ export function getSendDraftAction({
 			throw new Error('No editor provided');
 		}
 		addEditor({ id: editor.id, editor });
-
-		await updateEditorWithSmartLinks({
-			createSnackbar,
-			t,
-			editorId: editor.id
-		});
+		const { savedAttachments } = editor;
+		const hasSmartLinks =
+			savedAttachments.filter((attachment) => attachment.requiresSmartLinkConversion).length > 0;
+		if (hasSmartLinks)
+			await updateEditorWithSmartLinks({
+				createSnackbar,
+				t,
+				editorId: editor.id
+			});
 
 		return useEditorsStore.getState().editors[editor.id];
 	};
 
-	return sendDraftFromPreview({ generateEditorWithSmartLinks, dispatch });
+	return sendDraftFromPreview({ generateEditorFunction, dispatch });
 }
 
 export function getMarkRemoveSpam({

@@ -627,10 +627,10 @@ export function sendDraft({
 }
 
 export function sendDraftFromPreview({
-	generateEditorWithSmartLinks,
+	generateEditorFunction,
 	dispatch
 }: {
-	generateEditorWithSmartLinks: () => Promise<MailsEditorV2>;
+	generateEditorFunction: () => Promise<MailsEditorV2>;
 	dispatch: AppDispatch;
 }): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.SEND;
@@ -640,7 +640,8 @@ export function sendDraftFromPreview({
 		label: t('label.send', 'Send'),
 		onClick: async (ev): Promise<void> => {
 			if (ev) ev.preventDefault();
-			generateEditorWithSmartLinks()
+
+			generateEditorFunction()
 				.then((editor) => dispatch(sendMsgFromEditor({ editor })))
 				.then() // TODO IRIS-4400
 				.catch(noop); // TODO IRIS-4400
