@@ -306,7 +306,7 @@ export const normalizeMailMessageFromSoap = (
 			isSentByMe: !isNil(m.f) ? /s/.test(m.f) : undefined,
 			isInvite: !isNil(m.f) ? /v/.test(m.f) : undefined,
 			isReplied: !isNil(m.f) ? /r/.test(m.f) : undefined,
-			isReadReceiptRequested: !isNil(m.f) ? !/n/.test(m.f) : true
+			isReadReceiptRequested: isNil(m.f) && !isNil(isComplete) && isComplete
 		},
 		isNil
 	);
