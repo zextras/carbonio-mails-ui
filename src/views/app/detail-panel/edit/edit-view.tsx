@@ -18,7 +18,7 @@ import { addBoard, t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
-import { checkSubject } from './check-subject-attachment';
+import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
@@ -252,22 +252,23 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 				onError: onSendError
 			});
 		};
-		checkSubject({
+		checkSubjectAndAttachment({
 			editorId,
+			hasAttachments: savedStandardAttachments.length > 0,
 			onConfirmCallback,
-			close,
 			createModal
 		});
 	}, [
+		editorId,
+		savedStandardAttachments,
 		close,
 		createModal,
-		createSmartLinksAction,
-		editorId,
-		onSendComplete,
-		onSendCountdownTick,
-		onSendError,
+		draftSmartLinks.length,
 		sendMessage,
-		draftSmartLinks.length
+		onSendCountdownTick,
+		onSendComplete,
+		onSendError,
+		createSmartLinksAction
 	]);
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {
@@ -284,20 +285,21 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 				saveDraft();
 				close({ reason: CLOSE_BOARD_REASON.SEND_LATER });
 			};
-			checkSubject({
+			checkSubjectAndAttachment({
 				editorId,
 				onConfirmCallback,
-				close,
-				createModal
+				createModal,
+				hasAttachments: savedStandardAttachments.length > 0
 			});
 		},
 		[
 			editorId,
-			close,
 			createModal,
+			savedStandardAttachments,
 			draftSmartLinks.length,
 			setAutoSendTime,
 			saveDraft,
+			close,
 			createSmartLinksAction,
 			onSendError
 		]
