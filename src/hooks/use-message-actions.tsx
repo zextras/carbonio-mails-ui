@@ -5,7 +5,14 @@
  */
 import { useMemo } from 'react';
 
-import { FOLDERS, useAppContext, useIntegratedFunction, useTags } from '@zextras/carbonio-shell-ui';
+import { Dispatch } from '@reduxjs/toolkit';
+import {
+	FOLDERS,
+	Tags,
+	useAppContext,
+	useIntegratedFunction,
+	useTags
+} from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -38,6 +45,158 @@ import { applyTag } from '../ui-actions/tag-actions';
 import { useExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';
 
+type ActionGeneratorProps = {
+	isInsideExtraWindow: boolean;
+	message: MailMessage;
+	dispatch: Dispatch;
+	folderId: string;
+	tags: Tags;
+	deselectAll?: () => void;
+	isAlone?: boolean;
+	isAvailable?: boolean;
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	openAppointmentComposer?: Function;
+};
+
+function getDraftsActions({
+	isInsideExtraWindow,
+	message,
+	dispatch,
+	deselectAll,
+	folderId,
+	isAlone,
+	tags
+}: ActionGeneratorProps): Array<MessageAction> {
+	const actions: Array<MessageAction> = [];
+	!isInsideExtraWindow && actions.push(sendDraft({ message, dispatch }));
+	!isInsideExtraWindow && actions.push(editDraft({ id: message.id, message }));
+	!isInsideExtraWindow &&
+		actions.push(
+			moveMsgToTrash({
+				ids: [message.id],
+				dispatch,
+				deselectAll,
+				folderId,
+				conversationId: message?.conversation,
+				closeEditor: isAlone
+			})
+		);
+	actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
+	actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+	return actions;
+}
+
+function getTrashActions({
+	isInsideExtraWindow,
+	message,
+	dispatch,
+	deselectAll,
+	folderId,
+	tags
+}: ActionGeneratorProps): Array<MessageAction> {
+	const actions: Array<MessageAction> = [];
+	!isInsideExtraWindow &&
+		actions.push(
+			moveMessageToFolder({
+				id: [message.id],
+				folderId,
+				dispatch,
+				isRestore: true,
+				deselectAll
+			})
+		);
+	!isInsideExtraWindow &&
+		actions.push(deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }));
+	actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+	return actions;
+}
+
+function getSpamActions({
+	isInsideExtraWindow,
+	message,
+	dispatch,
+	tags,
+	folderId
+}: ActionGeneratorProps): Array<MessageAction> {
+	const actions: Array<MessageAction> = [];
+	!isInsideExtraWindow &&
+		actions.push(
+			deleteMsg({
+				ids: [message.id],
+				dispatch
+			})
+		);
+	!isInsideExtraWindow &&
+		actions.push(setMsgAsSpam({ ids: [message.id], value: true, dispatch, folderId }));
+	actions.push(printMsg({ message }));
+	actions.push(showOriginalMsg({ id: message.id }));
+	actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+	return actions;
+}
+
+function getDefatultActions({
+	isInsideExtraWindow,
+	message,
+	dispatch,
+	deselectAll,
+	folderId,
+	isAlone,
+	tags,
+	isAvailable,
+	openAppointmentComposer
+}: ActionGeneratorProps): Array<MessageAction> {
+	const actions: Array<MessageAction> = [];
+	!isInsideExtraWindow && actions.push(replyMsg({ id: message.id }));
+	!isInsideExtraWindow && actions.push(replyAllMsg({ id: message.id }));
+	!isInsideExtraWindow && actions.push(forwardMsg({ id: message.id }));
+	!isInsideExtraWindow &&
+		actions.push(
+			moveMsgToTrash({
+				ids: [message.id],
+				dispatch,
+				deselectAll,
+				folderId,
+				conversationId: message?.conversation,
+				closeEditor: isAlone
+			})
+		);
+	actions.push(
+		setMsgRead({
+			ids: [message.id],
+			value: message.read,
+			dispatch,
+			folderId,
+			shouldReplaceHistory: true,
+			deselectAll
+		})
+	);
+	!isInsideExtraWindow &&
+		actions.push(
+			moveMessageToFolder({
+				id: [message.id],
+				folderId,
+				dispatch,
+				isRestore: false,
+				deselectAll
+			})
+		);
+
+	actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+	!isInsideExtraWindow &&
+		isAvailable &&
+		openAppointmentComposer &&
+		actions.push(createAppointment({ item: message, openAppointmentComposer }));
+	actions.push(printMsg({ message }));
+	actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
+	!isInsideExtraWindow && actions.push(redirectMsg({ id: message.id }));
+	!isInsideExtraWindow && actions.push(editAsNewMsg({ id: message.id }));
+	!isInsideExtraWindow &&
+		actions.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }));
+	actions.push(showOriginalMsg({ id: message.id }));
+	actions.push(downloadEml({ id: message.id }));
+
+	return actions;
+}
 /*
  * FIXME this hook is used only by the displayer. It should be aligned/merged with
  * 	the others functions that are providing primary and secondary actions for a message
@@ -68,21 +227,17 @@ export const useMessageActions = (
 	}
 
 	if (message.parent === FOLDERS.DRAFTS) {
-		!isInsideExtraWindow && actions.push(sendDraft({ message, dispatch }));
-		!isInsideExtraWindow && actions.push(editDraft({ id: message.id, message }));
-		!isInsideExtraWindow &&
-			actions.push(
-				moveMsgToTrash({
-					ids: [message.id],
-					dispatch,
-					deselectAll,
-					folderId,
-					conversationId: message?.conversation,
-					closeEditor: isAlone
-				})
-			);
-		actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
-		actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+		actions.push(
+			...getDraftsActions({
+				isInsideExtraWindow,
+				message,
+				dispatch,
+				deselectAll,
+				folderId,
+				isAlone,
+				tags
+			})
+		);
 	}
 
 	if (
@@ -90,85 +245,37 @@ export const useMessageActions = (
 		message.parent === FOLDERS.SENT ||
 		!includes(systemFolders, message.parent)
 	) {
-		// INBOX, SENT OR CREATED_FOLDER
-		!isInsideExtraWindow && actions.push(replyMsg({ id: message.id }));
-		!isInsideExtraWindow && actions.push(replyAllMsg({ id: message.id }));
-		!isInsideExtraWindow && actions.push(forwardMsg({ id: message.id }));
-		!isInsideExtraWindow &&
-			actions.push(
-				moveMsgToTrash({
-					ids: [message.id],
-					dispatch,
-					deselectAll,
-					folderId,
-					conversationId: message?.conversation,
-					closeEditor: isAlone
-				})
-			);
 		actions.push(
-			setMsgRead({
-				ids: [message.id],
-				value: message.read,
+			...getDefatultActions({
+				isInsideExtraWindow,
+				message,
 				dispatch,
+				deselectAll,
 				folderId,
-				shouldReplaceHistory: true,
-				deselectAll
+				isAlone,
+				tags,
+				isAvailable,
+				openAppointmentComposer
 			})
 		);
-		!isInsideExtraWindow &&
-			actions.push(
-				moveMessageToFolder({
-					id: [message.id],
-					folderId,
-					dispatch,
-					isRestore: false,
-					deselectAll
-				})
-			);
-
-		actions.push(applyTag({ tags, conversation: message, isMessage: true }));
-		!isInsideExtraWindow &&
-			isAvailable &&
-			actions.push(createAppointment({ item: message, openAppointmentComposer }));
-		actions.push(printMsg({ message }));
-		actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
-		!isInsideExtraWindow && actions.push(redirectMsg({ id: message.id }));
-		!isInsideExtraWindow && actions.push(editAsNewMsg({ id: message.id }));
-		!isInsideExtraWindow &&
-			actions.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }));
-		actions.push(showOriginalMsg({ id: message.id }));
-		actions.push(downloadEml({ id: message.id }));
+		// INBOX, SENT OR CREATED_FOLDER
 	}
 
 	if (message.parent === FOLDERS.TRASH) {
-		!isInsideExtraWindow &&
-			actions.push(
-				moveMessageToFolder({
-					id: [message.id],
-					folderId,
-					dispatch,
-					isRestore: true,
-					deselectAll
-				})
-			);
-		!isInsideExtraWindow &&
-			actions.push(deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }));
-		actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+		actions.push(
+			...getTrashActions({
+				isInsideExtraWindow,
+				message,
+				dispatch,
+				deselectAll,
+				folderId,
+				tags
+			})
+		);
 	}
 
 	if (message.parent === FOLDERS.SPAM) {
-		!isInsideExtraWindow &&
-			actions.push(
-				deleteMsg({
-					ids: [message.id],
-					dispatch
-				})
-			);
-		!isInsideExtraWindow &&
-			actions.push(setMsgAsSpam({ ids: [message.id], value: true, dispatch, folderId }));
-		actions.push(printMsg({ message }));
-		actions.push(showOriginalMsg({ id: message.id }));
-		actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+		actions.push(...getSpamActions({ isInsideExtraWindow, message, dispatch, tags, folderId }));
 	}
 
 	!isInsideExtraWindow &&
