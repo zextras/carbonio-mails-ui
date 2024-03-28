@@ -69,7 +69,7 @@ export const useMessageActions = (
 
 	if (message.parent === FOLDERS.DRAFTS) {
 		!isInsideExtraWindow && actions.push(sendDraft({ message, dispatch }));
-		!isInsideExtraWindow && actions.push(editDraft({ id: message.id, folderId, message }));
+		!isInsideExtraWindow && actions.push(editDraft({ id: message.id, message }));
 		!isInsideExtraWindow &&
 			actions.push(
 				moveMsgToTrash({
@@ -91,9 +91,9 @@ export const useMessageActions = (
 		!includes(systemFolders, message.parent)
 	) {
 		// INBOX, SENT OR CREATED_FOLDER
-		!isInsideExtraWindow && actions.push(replyMsg({ id: message.id, folderId }));
-		!isInsideExtraWindow && actions.push(replyAllMsg({ id: message.id, folderId }));
-		!isInsideExtraWindow && actions.push(forwardMsg({ id: message.id, folderId }));
+		!isInsideExtraWindow && actions.push(replyMsg({ id: message.id }));
+		!isInsideExtraWindow && actions.push(replyAllMsg({ id: message.id }));
+		!isInsideExtraWindow && actions.push(forwardMsg({ id: message.id }));
 		!isInsideExtraWindow &&
 			actions.push(
 				moveMsgToTrash({
@@ -133,7 +133,7 @@ export const useMessageActions = (
 		actions.push(printMsg({ message }));
 		actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
 		!isInsideExtraWindow && actions.push(redirectMsg({ id: message.id }));
-		!isInsideExtraWindow && actions.push(editAsNewMsg({ id: message.id, folderId }));
+		!isInsideExtraWindow && actions.push(editAsNewMsg({ id: message.id }));
 		!isInsideExtraWindow &&
 			actions.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }));
 		actions.push(showOriginalMsg({ id: message.id }));

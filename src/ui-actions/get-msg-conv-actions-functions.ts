@@ -105,8 +105,8 @@ export function getReplyAction(
 	folderExcludedReply: string[]
 ): ActionReturnType {
 	const action = isConversation
-		? isSingleMessageConversation && replyMsg({ id: firstConversationMessageId, folderId })
-		: replyMsg({ id, folderId });
+		? isSingleMessageConversation && replyMsg({ id: firstConversationMessageId })
+		: replyMsg({ id });
 	return !folderExcludedReply.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -126,8 +126,8 @@ export function getReplyAllAction({
 	folderExcludedReplyAll: string[];
 }): ActionReturnType {
 	const action = isConversation
-		? isSingleMessageConversation && replyAllMsg({ id: firstConversationMessageId, folderId })
-		: replyAllMsg({ id, folderId });
+		? isSingleMessageConversation && replyAllMsg({ id: firstConversationMessageId })
+		: replyAllMsg({ id });
 	return !folderExcludedReplyAll.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -147,8 +147,8 @@ export function getForwardAction({
 	folderExcludedForward: string[];
 }): ActionReturnType {
 	const action = isConversation
-		? isSingleMessageConversation && forwardMsg({ id: firstConversationMessageId, folderId })
-		: forwardMsg({ id, folderId });
+		? isSingleMessageConversation && forwardMsg({ id: firstConversationMessageId })
+		: forwardMsg({ id });
 	return !folderExcludedForward.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -406,7 +406,7 @@ export function getEditDraftAction({
 	folderId: string;
 	folderIncludeEditDraft: string[];
 }): ActionReturnType {
-	const action = isConversation ? false : editDraft({ id, folderId });
+	const action = isConversation ? false : editDraft({ id });
 	return folderIncludeEditDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -421,7 +421,7 @@ export function getEditAsNewAction({
 	folderId: string;
 	folderExcludedEditAsNew: string[];
 }): ActionReturnType {
-	const action = isConversation ? false : editAsNewMsg({ id, folderId });
+	const action = isConversation ? false : editAsNewMsg({ id });
 	return !folderExcludedEditAsNew.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 

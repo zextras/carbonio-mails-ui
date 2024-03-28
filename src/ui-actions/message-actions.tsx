@@ -480,9 +480,7 @@ export function deleteMsg({
 	};
 }
 
-export function replyMsg({
-	id
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function replyMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.REPLY;
 	return {
 		id: actDescriptor.id,
@@ -499,9 +497,7 @@ export function replyMsg({
 	};
 }
 
-export function replyAllMsg({
-	id
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function replyAllMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.REPLY_ALL;
 	return {
 		id: actDescriptor.id,
@@ -518,9 +514,7 @@ export function replyAllMsg({
 	};
 }
 
-export function forwardMsg({
-	id
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function forwardMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.FORWARD;
 	return {
 		id: actDescriptor.id,
@@ -537,9 +531,7 @@ export function forwardMsg({
 	};
 }
 
-export function editAsNewMsg({
-	id
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function editAsNewMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.EDIT_AS_NEW;
 	return {
 		id: actDescriptor.id,
@@ -559,7 +551,7 @@ export function editAsNewMsg({
 export function editDraft({
 	id,
 	message
-}: Pick<MessageActionPropType, 'id' | 'folderId' | 'message'>): MessageActionReturnType {
+}: Pick<MessageActionPropType, 'id' | 'message'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.EDIT_DRAFT;
 	return {
 		id: actDescriptor.id,
