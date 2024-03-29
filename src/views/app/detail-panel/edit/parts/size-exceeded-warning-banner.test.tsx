@@ -12,14 +12,22 @@ import { calculateMailSize, SizeExceededWarningBanner } from './size-exceeded-wa
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateEditorV2Case } from '../../../../../tests/generators/editors';
 import { generateStore } from '../../../../../tests/generators/store';
+import { setupEditorStore } from '../../../../../tests/generators/editor-store';
+import { generateNewMessageEditor } from '../../../../../store/zustand/editor/editor-generators';
+import { addEditor } from '../../../../../store/zustand/editor';
 
 const ERROR_MSG_EXCEED_LIMIT =
 	'The message size exceeds the limit. Please convert some attachments to smart links.';
-describe('SizeExceededWarningBanner', () => {
-	it('render warning banner when the mail size exceeds limit', () => {
+describe('sizeExceededWarningBanner', () => {
+	it('render warning banner when the mail size exceeds limit', async () => {
+		setupEditorStore({ editors: [] });
+		const editor = await generateEditorV2Case(2, generateStore().dispatch);
+		editor.size = 999999999;
+		addEditor({ id: editor.id, editor });
+
 		const { getByText } = setupTest(
 			<SizeExceededWarningBanner
-				editorId="editor1"
+				editorId={editor.id}
 				isMailSizeWarning
 				setIsMailSizeWarning={noop}
 			/>,
@@ -28,10 +36,15 @@ describe('SizeExceededWarningBanner', () => {
 		expect(getByText(ERROR_MSG_EXCEED_LIMIT)).toBeInTheDocument();
 	});
 
-	it('does not render warning banner when the mail size does not exceed limit', () => {
+	it('does not render warning banner when the mail size does not exceed limit', async () => {
+		setupEditorStore({ editors: [] });
+		const editor = await generateEditorV2Case(1, generateStore().dispatch);
+		editor.size = 0;
+		addEditor({ id: editor.id, editor });
+
 		const { queryByText } = setupTest(
 			<SizeExceededWarningBanner
-				editorId="editor1"
+				editorId={editor.id}
 				isMailSizeWarning={false}
 				setIsMailSizeWarning={noop}
 			/>

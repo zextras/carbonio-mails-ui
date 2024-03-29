@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
@@ -33,7 +33,9 @@ export const SizeExceededWarningBanner = ({
 	const editor = getEditor({ id: editorId });
 	const editorSize = editor ? calculateMailSize(editor) : 0;
 
-	setIsMailSizeWarning(editorSize > maxAllowedMailSize);
+	useEffect(() => {
+		setIsMailSizeWarning(editorSize > maxAllowedMailSize);
+	}, [editorSize, maxAllowedMailSize, setIsMailSizeWarning]);
 
 	const mailSizeWarningBannerText = t(
 		'editor.warning.mail_size_exceeds_limit',
@@ -41,7 +43,7 @@ export const SizeExceededWarningBanner = ({
 	);
 	const mailSizeWarningBannerIcon = 'CloseCircleOutline';
 	const mailSizeWarningBannerIconColor = 'error';
-	return isMailSizeWarning ? (
+	return editor && isMailSizeWarning ? (
 		<WarningBanner
 			text={mailSizeWarningBannerText}
 			icon={mailSizeWarningBannerIcon}

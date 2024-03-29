@@ -126,7 +126,7 @@ const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest
 /**
  * Test the EditView component in different scenarios
  */
-describe.skip('Edit view', () => {
+describe('Edit view', () => {
 	/**
 	 * Creation of emails
 	 */
@@ -134,7 +134,7 @@ describe.skip('Edit view', () => {
 		/**
 		 * Test the creation of a new email
 		 */
-		test.skip('create a new email', async () => {
+		test('create a new email', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
