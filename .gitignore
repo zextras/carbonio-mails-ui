@@ -16,3 +16,4 @@
 /coverage/cobertura-coverage.xml
 .DS_Store
 .vscode/
+coverage
