@@ -12,6 +12,12 @@ import { WarningBanner } from './warning-banner';
 import { getEditor } from '../../../../../store/zustand/editor/hooks/editors';
 import { MailsEditorV2 } from '../../../../../types';
 
+export const calculateMailSize = (editor: MailsEditorV2): number => {
+	const saveDraftSize = editor?.size ?? 0;
+	const totalSmartLinksSize = editor?.totalSmartLinksSize ?? 0;
+	return saveDraftSize - totalSmartLinksSize * 0.9;
+};
+
 export const SizeExceededWarningBanner = ({
 	editorId,
 	isMailSizeWarning,
@@ -25,10 +31,10 @@ export const SizeExceededWarningBanner = ({
 	const { t } = useTranslation();
 	const maxAllowedMailSize = parseInt(maxMessageSize as string, 10);
 	const editor = getEditor({ id: editorId });
-	const saveDraftSize = editor?.size ?? 0;
-	const totalSmartLinksSize = editor?.totalSmartLinksSize ?? 0;
-	const expectedNewMailSize = saveDraftSize - totalSmartLinksSize * 0.9;
-	setIsMailSizeWarning(expectedNewMailSize > maxAllowedMailSize);
+	const editorSize = editor ? calculateMailSize(editor) : 0;
+
+	setIsMailSizeWarning(editorSize > maxAllowedMailSize);
+
 	const mailSizeWarningBannerText = t(
 		'editor.warning.mail_size_exceeds_limit',
 		'The message size exceeds the limit. Please convert some attachments to smart links.'
