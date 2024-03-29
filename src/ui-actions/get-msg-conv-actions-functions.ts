@@ -211,7 +211,6 @@ export function getAddRemoveFlagAction({
 }
 
 export function getSendDraftAction({
-	isConversation,
 	item,
 	dispatch,
 	folderIncludedSendDraft,
@@ -221,7 +220,6 @@ export function getSendDraftAction({
 	createSnackbar,
 	t
 }: {
-	isConversation: boolean;
 	item: MailMessage;
 	dispatch: AppDispatch;
 	folderIncludedSendDraft: string[];
@@ -231,7 +229,7 @@ export function getSendDraftAction({
 	createSnackbar: CreateSnackbarFn;
 	t: TFunction;
 }): ActionReturnType {
-	if (isConversation || !folderIncludedSendDraft.includes(getFolderIdParts(folderId).id ?? '0')) {
+	if (!folderIncludedSendDraft.includes(getFolderIdParts(folderId).id ?? '0')) {
 		return false;
 	}
 
