@@ -46,7 +46,7 @@ export const useConversationListItems = (): Array<Conversation> => {
 								? [...acc, v]
 								: acc,
 						[] as Array<Conversation>
-				  )
+					)
 				: [],
 		[folder, conversations]
 	);

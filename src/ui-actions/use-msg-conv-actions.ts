@@ -70,7 +70,7 @@ export function useMsgConvActions({
 		? filter(
 				item?.messages,
 				(msg) => ![FOLDERS.TRASH, FOLDERS.DRAFTS].includes(getFolderIdParts(msg.parent).id ?? '')
-		  )?.[0] ?? {}
+			)?.[0] ?? {}
 		: item;
 	const isSingleMsgConv = isSingleMessageConversation(item);
 	const { id } = item;
@@ -210,19 +210,18 @@ export function useMsgConvActions({
 		folderExcludedEditAsNew
 	});
 
-	const sendDraftAction = getSendDraftAction({
-		isConversation: isConv,
-		// TODO: fix the type of item
-		// at the moment it's being casted as the function that consumes the item expects a MailMessage | Conversation
-		item: item as MailMessage,
-		dispatch,
-		folderIncludedSendDraft,
-		folderId,
-		generateEditor,
-		addEditor,
-		createSnackbar,
-		t
-	});
+	const sendDraftAction = isConversation(item)
+		? false
+		: getSendDraftAction({
+				item,
+				dispatch,
+				folderIncludedSendDraft,
+				folderId,
+				generateEditor,
+				addEditor,
+				createSnackbar,
+				t
+			});
 
 	const redirectAction = getRedirectAction({
 		isConversation: isConv,

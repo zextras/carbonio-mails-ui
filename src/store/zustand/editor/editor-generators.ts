@@ -172,7 +172,7 @@ export const generateIntegratedNewEditor = (
 					size: 0,
 					contentType: 'application/octet-stream'
 				})
-		  );
+			);
 
 	const editor = {
 		action: EditViewActions.NEW,

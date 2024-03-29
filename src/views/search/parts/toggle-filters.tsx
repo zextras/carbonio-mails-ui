@@ -39,7 +39,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 						avatarIcon: 'EmailOutline',
 						avatarBackground: 'gray1'
 					}
-			  ]);
+				]);
 	}, [isUnread, setUnreadFilter]);
 
 	const toggleFlagged = useCallback(() => {
@@ -55,7 +55,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 						avatarIcon: 'FlagOutline',
 						avatarBackground: 'error'
 					}
-			  ]);
+				]);
 	}, [isFlagged, setFlaggedFilter]);
 
 	const toggleAttachment = useCallback(() => {
@@ -71,7 +71,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 						avatarIcon: 'AttachOutline',
 						avatarBackground: 'gray1'
 					}
-			  ]);
+				]);
 	}, [hasAttachment, setAttachmentFilter]);
 
 	const toggleSharedFolder = useCallback(() => {

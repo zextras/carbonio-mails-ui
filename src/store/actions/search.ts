@@ -97,7 +97,7 @@ export const search = createAsyncThunk<
 								locale: {
 									_content: locale
 								}
-						  }
+							}
 						: undefined)
 				}
 			);

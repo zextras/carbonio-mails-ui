@@ -5,6 +5,7 @@
  */
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { parseTextToHTMLDocument } from '../../helpers/text';
 import { useEditorsStore } from '../../store/zustand/editor/store';
@@ -185,7 +186,6 @@ describe('createSmartLink', () => {
 
 		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
 			'CreateSmartLinks',
-			undefined,
 			{
 				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
 			}
@@ -214,7 +214,6 @@ describe('createSmartLink', () => {
 
 		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
 			'CreateSmartLinks',
-			undefined,
 			{
 				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
 			}
@@ -230,36 +229,32 @@ describe('createSmartLink', () => {
 		expect(savedStandardAttachments).toHaveLength(oldSavedAttachmentsLength - 1);
 	});
 
-	it.skip('TODO: error scenario', async () => {
+	it('should throw an error when the API call fails', async () => {
 		const editor = await generateEditorV2Case(1, generateStore().dispatch);
 		const oldSavedAttachments = editor.savedAttachments;
 		const oldSavedAttachmentsLength = oldSavedAttachments.length;
 		const attachmentToConvert = oldSavedAttachments[0];
 		attachmentToConvert.requiresSmartLinkConversion = true;
 		setupEditorStore({ editors: [editor] });
-
-		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
-			'CreateSmartLinks',
-			undefined,
-			{
-				Fault: {
-					Reason: { Text: 'Failed upload to Files' },
-					Detail: {
-						Error: { Code: '123', Detail: 'Failed due to connection timeout' }
-					}
-				}
+		const expectedRejectReason = {
+			Reason: { Text: 'Failed upload to Files' },
+			Detail: {
+				Error: { Code: '123', Detail: 'Failed due to connection timeout' }
 			}
-		);
+		};
 
-		// TODO check the promise rejection and the sneakbar is opened with the correct message
-		await updateEditorWithSmartLinks({
-			createSnackbar: jest.fn(),
-			t: jest.fn(),
-			editorId: editor.id
+		createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
+			Fault: expectedRejectReason
 		});
-		await interceptor;
 
+		expect(
+			updateEditorWithSmartLinks({
+				createSnackbar: jest.fn(),
+				t: jest.fn(),
+				editorId: editor.id
+			})
+		).rejects.toEqual(expectedRejectReason);
 		const savedStandardAttachments = useEditorsStore.getState().editors[editor.id].savedAttachments;
-		expect(savedStandardAttachments).toHaveLength(oldSavedAttachmentsLength - 1);
+		expect(savedStandardAttachments).toHaveLength(oldSavedAttachmentsLength);
 	});
 });

@@ -414,7 +414,7 @@ const Attachment: FC<AttachmentType> = ({
 									? t(
 											'label.extra_window.save_to_files_disabled',
 											'Files’ attachments saving is available only from the main tab'
-									  )
+										)
 									: t('label.save_to_files', 'Save to Files')
 							}
 						>
@@ -596,7 +596,7 @@ const AttachmentsBlock: FC<{
 						? t(
 								'label.extra_window.save_to_files_disabled',
 								'Files’ attachments saving is available only from the main tab'
-						  )
+							)
 						: ''
 				}
 			>

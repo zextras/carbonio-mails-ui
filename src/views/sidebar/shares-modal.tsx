@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+
 import {
 	Accordion,
 	AccordionDivider,
@@ -30,9 +32,9 @@ import {
 	uniqWith,
 	values
 } from 'lodash';
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type {
@@ -111,7 +113,7 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 				setLinks,
 				links,
 				CustomComponent: CustomItem
-			} as SharedObject)
+			}) as SharedObject
 	);
 
 	const filteredFolders = useMemo<GroupedShare>(() => groupBy(shared, 'ownerName'), [shared]);
@@ -130,10 +132,10 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 						open: true,
 						items: v,
 						background: undefined
-				  }
+					}
 				: {
 						divider: true
-				  }
+					}
 		);
 	}, [data, filteredFolders, t]);
 

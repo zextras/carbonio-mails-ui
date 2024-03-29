@@ -39,7 +39,7 @@ export type UIAction<ExecutionParams extends UIActionExecutionParams> = {
 };
 
 export type MessageActionReturnType = UIAction<never> & {
-	onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void;
+	onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>) => void | Promise<void>;
 	items?: ItemType[];
 	customComponent?: React.ReactElement;
 };

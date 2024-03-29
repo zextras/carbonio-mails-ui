@@ -65,7 +65,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 							label: t('label.send_later', 'Send later'),
 							onClick: onSendLaterClick
 						}
-				  ]
+					]
 				: [])
 		],
 		[isSendLaterAllowed, onSendLaterClick]
@@ -81,7 +81,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						onClick={onSendNow}
 						disabledPrimary={disabled}
 						disabledSecondary={disabled}
-						// TODO: remove this ts-ignore once SHELL 5.3.0 is released
+						// TOFIX: remove this ts-ignore once SHELL 5.3.0 is released
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						icon={isLoading ? AnimatedLoader : 'ChevronDownOutline'}

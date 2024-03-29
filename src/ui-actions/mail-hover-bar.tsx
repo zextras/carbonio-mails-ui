@@ -82,7 +82,7 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 							forwardMsg({ id: messageId }),
 							// archiveMsg(),
 							moveMsgToTrash({ ids, dispatch, folderId })
-					  ]
+						]
 					: [
 							setMsgRead({ ids, value: read, dispatch }),
 							replyMsg({ id: messageId }),
@@ -90,7 +90,7 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 							forwardMsg({ id: messageId }),
 							// archiveMsg(),
 							moveMsgToTrash({ ids, dispatch, folderId })
-					  ];
+						];
 		}
 	}, [folderId, ids, dispatch, read, flag, messageId, showReplyAll]);
 
