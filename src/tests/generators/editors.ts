@@ -17,7 +17,10 @@ export const generateEditorV2Case = async (
 	messagesStoreDispatch: AppDispatch
 ): Promise<MailsEditorV2> => {
 	const { buildEditorCase } = await import(`./editorCases/editor-case-v2-${id}`);
-	return buildEditorCase(messagesStoreDispatch);
+	const editor = buildEditorCase(messagesStoreDispatch);
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+	return editor;
 };
 
 export const changeEditorValues = (

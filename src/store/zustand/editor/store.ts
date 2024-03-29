@@ -71,6 +71,35 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	setSize: (id: MailsEditorV2['id'], size: MailsEditorV2['size']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].size = size;
+				}
+			})
+		);
+	},
+	setTotalSmartLinksSize: (id: MailsEditorV2['id']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					const currentEditor = state?.editors?.[id];
+					if (!currentEditor) {
+						return;
+					}
+					const { savedAttachments } = currentEditor;
+					const totalSmartLinksSize = savedAttachments.reduce(
+						(acc, attachment) =>
+							attachment.requiresSmartLinkConversion ? acc + attachment.size : acc,
+						0
+					);
+					currentEditor.totalSmartLinksSize = totalSmartLinksSize;
+				}
+			})
+		);
+	},
+
 	setIsRichText: (id: MailsEditorV2['id'], value: MailsEditorV2['isRichText']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {

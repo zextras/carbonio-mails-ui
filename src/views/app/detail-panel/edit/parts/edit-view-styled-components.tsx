@@ -5,7 +5,7 @@
  */
 
 import { Container, IconCheckbox, Row } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
+import styled, { DefaultTheme } from 'styled-components';
 
 export const FileInput = styled.input`
 	display: none;
@@ -81,8 +81,11 @@ export const EditorWrapper = styled.div`
 	}
 `;
 
-export const BannerContainer = styled(Container)`
-	border-bottom: 0.0625rem solid ${(props): string => props.theme.palette.info.regular};
+export const BannerContainer = styled(Container).attrs(() => ({
+	bottomBorderColor: undefined
+}))<{ $bottomBorderColor: keyof DefaultTheme['palette'] }>`
+	border-bottom: 0.0625rem solid
+		${({ theme, $bottomBorderColor }): string => theme.palette[$bottomBorderColor].regular};
 	border-top-right-radius: 0.25rem;
 	border-top-left-radius: 0.25rem;
 	padding: 1rem;

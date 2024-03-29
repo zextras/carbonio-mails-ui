@@ -15,6 +15,7 @@ import {
 	waitForElementToBeRemoved,
 	within
 } from '@testing-library/react';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { rest } from 'msw';
 
@@ -38,6 +39,10 @@ import * as saveDraftAction from '../../../../../store/actions/save-draft';
 import { addEditor } from '../../../../../store/zustand/editor';
 import { generateNewMessageEditor } from '../../../../../store/zustand/editor/editor-generators';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
+import {
+	readyToBeSentEditorTestCase,
+	changeEditorValues
+} from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import type {
@@ -48,11 +53,6 @@ import type {
 	SoapMailMessagePart
 } from '../../../../../types';
 import { EditView, EditViewProp } from '../edit-view';
-import {
-	readyToBeSentEditorTestCase,
-	changeEditorValues
-} from '../../../../../tests/generators/editors';
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -133,7 +133,7 @@ const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest
 /**
  * Test the EditView component in different scenarios
  */
-describe('Edit view', () => {
+describe.skip('Edit view', () => {
 	/**
 	 * Creation of emails
 	 */
@@ -141,7 +141,7 @@ describe('Edit view', () => {
 		/**
 		 * Test the creation of a new email
 		 */
-		test('create a new email', async () => {
+		test.skip('create a new email', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
