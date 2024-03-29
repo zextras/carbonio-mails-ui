@@ -72,7 +72,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const sectionTitleSignatures = useMemo(() => signaturesSubSection(), []);
 	const sectionTitleSetSignatures = useMemo(() => setDefaultSignaturesSubSection(), []);
-	const [signaturesLoaded, setSignaturesLoaded] = useState(false);
 	const editorRef = useRef<{ editor: EditorType | undefined }>({
 		editor: undefined
 	});
@@ -83,9 +82,8 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		editorRef.current.editor = editor;
 	};
 
-	// Fetches signatures from the BE
-	useEffect(() => {
-		GetAllSignatures().then(({ signature: signs }) => {
+	const onSignaturesLoaded = useCallback(
+		(signs: Array<SignItemType>) => {
 			const signaturesItems = map(
 				signs,
 				(item: SignItemType, idx) =>
@@ -94,7 +92,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						name: item.name,
 						id: item.id,
 						description: unescape(item?.content?.[0]?._content)
-					} as SignItemType)
+					}) as SignItemType
 			);
 			setSignatures(signaturesItems);
 			setOriginalSignatures(
@@ -105,11 +103,18 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					description: el.description ?? ''
 				}))
 			);
+		},
+		[setOriginalSignatures, setSignatures]
+	);
 
-			// Updates state to enable the loading of all signatures-dependent component
-			setSignaturesLoaded(true);
-		});
-	}, [setSignatures, setOriginalSignatures]);
+	// Fetches signatures from the BE
+	useEffect(() => {
+		GetAllSignatures()
+			.then(({ signature: signs }) => onSignaturesLoaded(signs))
+			.catch((err) => {
+				console.error(err);
+			});
+	}, [onSignaturesLoaded]);
 
 	// Set the default current signature if missing
 	useEffect(() => {
@@ -230,7 +235,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						...current,
 						name: newName,
 						label: newName
-					} as SignItemType)
+					}) as SignItemType
 			);
 
 			const updatedSignatures = signatures.map((signature) => {
@@ -271,7 +276,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					({
 						...current,
 						description: newDescription
-					} as SignItemType)
+					}) as SignItemType
 			);
 
 			const updatedSign = signatures.map((signature) => {
@@ -321,7 +326,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 							<Padding all="small" />
 
 							<Container height="31.25rem">
-								{signaturesLoaded && (
+								{signatures.length > 0 && (
 									<List
 										data-testid={'signatures-list'}
 										items={signatures ?? []}
@@ -364,7 +369,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				padding={{ all: 'large' }}
 			>
 				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-					{signaturesLoaded &&
+					{signatures.length > 0 &&
 						map(updatedIdentities, (acc) => (
 							<SelectIdentitySignature
 								acc={acc}

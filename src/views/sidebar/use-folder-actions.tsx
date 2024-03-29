@@ -407,7 +407,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							action.id === FolderActionsType.SHARES_INFO ||
 							action.id === FolderActionsType.REMOVE_FROM_LIST ||
 							action.id === FolderActionsType.EDIT
-				  )
+					)
 				: defaultFolderActions.map((action) => {
 						if (
 							startsWith(folder.absFolderPath, '/Trash') &&
@@ -416,6 +416,6 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							return { ...action, disabled: true };
 						}
 						return action;
-				  });
+					});
 	}
 };

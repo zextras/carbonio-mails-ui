@@ -15,7 +15,9 @@ const ColorBox = styled(Container)<ContainerProps & { disabled: boolean; color: 
 	height: 1.75rem;
 	border-radius: 0.5rem;
 	border: 0.1875rem solid #fff;
-	box-shadow: 0 0 0 0.0625rem rgba(0, 0, 0, 0.1), inset 0 0 0 0.0625rem rgba(0, 0, 0, 0.1);
+	box-shadow:
+		0 0 0 0.0625rem rgba(0, 0, 0, 0.1),
+		inset 0 0 0 0.0625rem rgba(0, 0, 0, 0.1);
 	cursor: ${({ disabled }): string => (disabled ? 'no-drop' : 'pointer')};
 	background-color: ${({ color }): string => color};
 	opacity: ${({ disabled }): string => (disabled ? '0.5' : '1')};

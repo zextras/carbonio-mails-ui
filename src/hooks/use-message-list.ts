@@ -37,7 +37,7 @@ export const useMessageList = (): Array<MailMessage> => {
 				? filter(messages, [
 						'parent',
 						'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id
-				  ])
+					])
 				: [],
 		[folder, messages]
 	);

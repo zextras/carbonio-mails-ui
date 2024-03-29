@@ -121,11 +121,11 @@ describe('empty-modal', () => {
 		const wipeButton = screen.getByRole('button', {
 			name: /label\.empty/i
 		});
-		const wipeInterceptor = createAPIInterceptor<SoapFolderAction>('FolderAction', 'action');
+		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(wipeButton);
 
-		const action = await wipeInterceptor;
+		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(FOLDERS.TRASH);
 		expect(action.op).toBe('empty');

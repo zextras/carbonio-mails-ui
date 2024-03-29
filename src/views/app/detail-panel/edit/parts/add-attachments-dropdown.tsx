@@ -147,7 +147,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 						onClick: (): void => {
 							selectNodes(uploadFromFilesSelectionConfig);
 						}
-				  }
+					}
 				: undefined;
 
 		const filesLinkAction: DropdownItem | undefined =
@@ -159,7 +159,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 						onClick: (): void => {
 							selectNodes(getPublicLinkSelectionConfig);
 						}
-				  }
+					}
 				: undefined;
 
 		return compact([localFileAction, filesNodeAction, filesLinkAction]);

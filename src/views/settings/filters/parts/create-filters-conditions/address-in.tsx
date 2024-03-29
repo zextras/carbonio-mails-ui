@@ -45,10 +45,10 @@ const AddressInCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }
 					sender.key === 'in'
 						? {
 								addressBookTest: [{ header, type: 'contacts', ...sender.value }]
-						  }
+							}
 						: {
 								contactRankingTest: [{ header, type: 'contacts', ...sender.value }]
-						  }
+							}
 				]
 			};
 			setNewFilters(tmpFilters);

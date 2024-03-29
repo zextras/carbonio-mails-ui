@@ -67,7 +67,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 						address: contact.email,
 						name: contact.firstName,
 						fullName: contact.fullName
-					} as Participant)
+					}) as Participant
 			);
 			onRecipientsChange(updatedRecipients);
 		},
@@ -92,7 +92,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					address: contact.label,
 					fullName: contact.label,
 					type
-				} as Participant)
+				}) as Participant
 		);
 		onRecipientsChange(data);
 	};
