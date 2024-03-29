@@ -299,7 +299,9 @@ const composeAttachAidField = (attachments: Array<UnsavedAttachment>): string | 
 		.join(',');
 };
 
-const composeAttachMpField = (attachments: Array<SavedAttachment>): Array<MailAttachmentParts> => {
+export const composeAttachMpField = (
+	attachments: Array<SavedAttachment>
+): Array<MailAttachmentParts> => {
 	const result: Array<MailAttachmentParts> = [];
 	attachments.forEach((attachment) => {
 		result.push({
