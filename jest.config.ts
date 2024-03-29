@@ -20,7 +20,7 @@ const config: Config = {
 		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js'
 	},
 	collectCoverage: true,
-	coverageReporters: ['lcov'],
+	coverageReporters: ['lcov', 'html'],
 	testTimeout: 20000
 };
 
