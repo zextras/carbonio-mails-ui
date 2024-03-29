@@ -55,7 +55,7 @@ function getSs(conversationMessage: Array<MailMessage>): Array<string> {
 			}
 			case 'text/plain': {
 				return !isEmpty(body.content)
-					? getHeader(msg, `<p>${plainTextToHTML(body.content)}</p>`)
+					? getHeader(msg, `<p style='display:inline'>${plainTextToHTML(body.content)}</p>`)
 					: getHeader(msg, '<p>No Content</p>');
 			}
 			default:
