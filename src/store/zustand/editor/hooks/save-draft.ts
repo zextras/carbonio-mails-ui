@@ -18,6 +18,7 @@ import { buildSavedAttachments } from '../editor-transformations';
 import { useEditorsStore } from '../store';
 import { getDraftSaveDelay } from '../store-utils';
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
+import { PROCESS_STATUS } from '../../../../constants';
 
 
 export type SaveDraftOptions = {
@@ -50,6 +51,10 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 	}
 
 	if (!editor.draftSaveAllowedStatus?.allowed) {
+		return;
+	}
+
+	if (editor.sendProcessStatus?.status == PROCESS_STATUS.RUNNING) {
 		return;
 	}
 

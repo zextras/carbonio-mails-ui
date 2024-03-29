@@ -92,7 +92,6 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
-	const { status: saveDraftAllowedStatusNoTimeout, saveDraftNoTimeout } = useEditorDraftSaveNoTimeout(editorId);
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
@@ -109,8 +108,8 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	);
 
 	const onSaveClick = useCallback<ButtonProps['onClick']>((): void => {
-		saveDraftNoTimeout();
-	}, [saveDraftNoTimeout]);
+		saveDraft();
+	}, [saveDraft]);
 
 	const onSendCountdownTick = useCallback(
 		(countdown: number, cancel: () => void): void => {
@@ -286,6 +285,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			close,
 			createModal
 		});
+		saveDraft();
 	}, [
 		close,
 		createModal,
@@ -294,7 +294,8 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		onSendComplete,
 		onSendCountdownTick,
 		onSendError,
-		sendMessage
+		sendMessage,
+		saveDraft
 	]);
 
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
@@ -387,7 +388,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 								type="outlined"
 								onClick={onSaveClick}
 								label={`${t('label.save', 'Save')}`}
-								disabled={!saveDraftAllowedStatusNoTimeout?.allowed}
+								disabled={!saveDraftAllowedStatus?.allowed}
 							/>
 						</Tooltip>
 						<EditViewSendButtons
