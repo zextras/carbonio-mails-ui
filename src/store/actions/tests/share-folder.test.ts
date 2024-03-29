@@ -5,7 +5,7 @@
  */
 
 import { faker } from '@faker-js/faker';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
@@ -13,25 +13,26 @@ import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
-import { BatchResponse, FolderActionGrant } from '../../../types';
+import { FolderActionGrant } from '../../../types';
 import { shareFolder, ShareFolderDataType } from '../share-folder';
 
-const setupInterceptor = (): Promise<BatchResponse> =>
-	new Promise<BatchResponse>((resolve, reject) => {
+const setupInterceptor = (): Promise<Array<{ action: FolderActionGrant }>> =>
+	new Promise<Array<{ action: FolderActionGrant }>>((resolve, reject) => {
 		getSetupServer().use(
-			rest.post('/service/soap/BatchRequest', async (req, res, ctx) => {
-				if (!req) {
+			http.post<
+				never,
+				{ Body: { BatchRequest: { FolderActionRequest: Array<{ action: FolderActionGrant }> } } }
+			>('/service/soap/BatchRequest', async ({ request }) => {
+				if (request === undefined) {
 					reject(new Error('Empty request'));
 				}
-				const response = (await req.json()).Body.BatchRequest.FolderActionRequest;
+				const response = (await request.json()).Body.BatchRequest.FolderActionRequest;
 				resolve(response);
-				return res(
-					ctx.json({
-						Body: {
-							FolderActionResponse: response
-						}
-					})
-				);
+				return HttpResponse.json({
+					Body: {
+						FolderActionResponse: response
+					}
+				});
 			})
 		);
 	});
@@ -54,7 +55,7 @@ describe('shareFolder', () => {
 			// @ts-ignore
 			shareFolder(shareFolderArgs)
 		);
-		const requests = (await interceptor) as Array<{ action: FolderActionGrant }>;
+		const requests = await interceptor;
 		requests.forEach((request) => {
 			const result = request.action.grant.inh;
 			expect(result).toBe('1');

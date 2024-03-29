@@ -202,8 +202,8 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				trusteeAddress = isArray(settingsPref.zimbraPrefMailTrustedSenderList)
 					? settingsPref.zimbraPrefMailTrustedSenderList
 					: // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					  // @ts-ignore
-					  settingsPref.zimbraPrefMailTrustedSenderList?.split(',');
+						// @ts-ignore
+						settingsPref.zimbraPrefMailTrustedSenderList?.split(',');
 			}
 
 			editSettings({

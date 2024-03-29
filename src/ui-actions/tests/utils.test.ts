@@ -186,7 +186,6 @@ describe('createSmartLink', () => {
 
 		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
 			'CreateSmartLinks',
-			undefined,
 			{
 				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
 			}
@@ -215,7 +214,6 @@ describe('createSmartLink', () => {
 
 		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
 			'CreateSmartLinks',
-			undefined,
 			{
 				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
 			}
@@ -245,13 +243,9 @@ describe('createSmartLink', () => {
 			}
 		};
 
-		createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
-			'CreateSmartLinks',
-			undefined,
-			{
-				Fault: expectedRejectReason
-			}
-		);
+		createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
+			Fault: expectedRejectReason
+		});
 
 		expect(
 			updateEditorWithSmartLinks({

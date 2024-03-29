@@ -18,8 +18,8 @@ const StyledText = styled.span<{ isRead?: string | boolean; color?: string }>`
 		color
 			? getColor(color, theme)
 			: isRead
-			? theme.palette.text.regular
-			: theme.palette.primary.regular};
+				? theme.palette.text.regular
+				: theme.palette.primary.regular};
 
 	font-weight: ${({ theme, isRead }): number =>
 		isRead ? theme.fonts.weight.regular : theme.fonts.weight.bold};

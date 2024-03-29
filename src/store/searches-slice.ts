@@ -45,7 +45,7 @@ export const getSearchSliceInitialiState = (): SearchesStateType =>
 		loadingMessage: '',
 		parent: '',
 		error: undefined
-	} as SearchesStateType);
+	}) as SearchesStateType;
 
 const resetResultReducer = (state: SearchesStateType): SearchesStateType =>
 	getSearchSliceInitialiState();

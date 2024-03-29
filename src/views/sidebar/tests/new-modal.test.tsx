@@ -12,7 +12,7 @@ import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { Folder } from '../../../carbonio-ui-commons/types/folder';
+import { Folder, SoapFolder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
 import { NewModal } from '../new-modal';
 
@@ -174,11 +174,11 @@ describe('new-modal', () => {
 			name: /label.create/i
 		});
 		expect(createButton).toBeEnabled();
-		const wipeInterceptor = createAPIInterceptor<any>('CreateFolder', 'folder');
+		const apiInterceptor = createAPIInterceptor<{ folder: SoapFolder }>('CreateFolder');
 
 		await user.click(createButton);
 
-		const newFolder = await wipeInterceptor;
+		const { folder: newFolder } = await apiInterceptor;
 		expect(newFolder.view).toBe('message');
 		expect(newFolder.l).toBe(folder.id);
 		expect(newFolder.name).toBe(folderName);

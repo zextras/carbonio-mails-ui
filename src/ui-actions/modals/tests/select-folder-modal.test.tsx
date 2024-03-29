@@ -192,9 +192,11 @@ test('API is called with the proper parameters to move the selected folder into 
 		name: /label\.move/i
 	});
 
-	const folderActionInterceptor = createAPIInterceptor<SoapFolderAction>('FolderAction', 'action');
+	const folderActionInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>(
+		'FolderAction'
+	);
 	await user.click(actionButton);
-	const action = await folderActionInterceptor;
+	const { action } = await folderActionInterceptor;
 	expect(action.id).toBe(folderToMove.id);
 	expect(action.op).toBe(FOLDER_ACTIONS.MOVE);
 	expect(action.l).toBe(rootFolder.id);

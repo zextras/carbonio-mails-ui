@@ -258,7 +258,7 @@ const createParticipantFromIdentity = (
 		address: identity.fromAddress,
 		name: identity.identityDisplayName,
 		fullName: identity.fromDisplay
-	} as Participant);
+	}) as Participant;
 
 /**
  *

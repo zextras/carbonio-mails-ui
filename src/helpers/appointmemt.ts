@@ -67,7 +67,7 @@ const getSenderByOwner = (address?: string): SenderType | null => {
 				fullName: matchIdentity.fromDisplay ?? matchIdentity.identityName,
 				identityName: matchIdentity.identityName,
 				label: matchIdentity.identityName
-		  }
+			}
 		: null;
 };
 

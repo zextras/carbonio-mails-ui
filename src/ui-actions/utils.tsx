@@ -75,7 +75,7 @@ border-radius: 5px;'
  href='${smartLink.publicUrl}' download>${truncate(filename ?? smartLink.publicUrl, {
 		length: 76,
 		omission: '...'
-	})}</a>`;
+ })}</a>`;
 
 /**
  * Add smart links to the text of the editor

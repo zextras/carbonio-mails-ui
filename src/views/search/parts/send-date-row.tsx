@@ -35,7 +35,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 							isQueryFilter: true,
 							avatarIcon: 'CalendarOutline'
 						}
-				  ])
+					])
 				: setSentBefore([]);
 		},
 		[setSentBefore]
@@ -54,7 +54,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 							isQueryFilter: true,
 							avatarIcon: 'CalendarOutline'
 						}
-				  ])
+					])
 				: setSentAfter([]);
 		},
 		[setSentAfter]
@@ -72,7 +72,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 							isQueryFilter: true,
 							avatarIcon: 'CalendarOutline'
 						}
-				  ])
+					])
 				: setSentOn([]);
 		},
 		[setSentOn]
