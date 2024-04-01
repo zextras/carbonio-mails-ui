@@ -18,7 +18,7 @@ import {
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { cloneDeep, filter, find, isEmpty, isEqual, map, reduce, remove } from 'lodash';
+import { cloneDeep, filter, find, forEach, isEmpty, isEqual, map, reduce, remove } from 'lodash';
 
 import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
 import ComposeMessage from './compose-msg-settings';
@@ -182,7 +182,26 @@ const SettingsView: FC = () => {
 	);
 
 	const saveChanges = useCallback<SettingsHeaderProps['onSave']>(() => {
+		let changes = {};
 		if (!isEqual(signatures, originalSignatures)) {
+
+			let hasError = false;
+			forEach(signatures, (i: SignItemType) => {
+				if (!i.label || !i.usedSign) hasError = true;
+			});
+
+			if (hasError) {
+				createSnackbar({
+					key: `error`,
+					type: 'error',
+					label: t('label.signature_required', 'Signature information is required.'),
+					autoHideTimeout: 3000,
+					hideButton: true,
+					replace: true
+				});
+				return Promise.allSettled([Promise.reject(new Error('Invalid signature'))]);
+			}
+
 			const validationResult = validateSignatures(signatures);
 			if (validationResult.length) {
 				// At the moment we show only the last error
@@ -216,7 +235,7 @@ const SettingsView: FC = () => {
 				find(
 					originalSignatures,
 					(c: SignItemType): unknown =>
-						item.id === c.id && (item.label !== c.label || item.description !== c.description)
+						item.id === c.id && (item.label !== c.label || item.usedSign !== c.usedSign)
 				)
 			);
 
@@ -247,7 +266,7 @@ const SettingsView: FC = () => {
 			}
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			dispatch(SignatureRequest({ itemsAdd, itemsEdit, itemsDelete, account })).then((resp) => {
+			dispatch(SignatureRequest({ itemsAdd, itemsEdit, itemsDelete, account, settingsObj })).then((resp) => {
 				// setFetchSigns(true);
 				if (setForwardReplySignatureId !== '') {
 					setNewOrForwardSignatureId(itemsAdd, resp, setForwardReplySignatureId, true);
@@ -279,7 +298,6 @@ const SettingsView: FC = () => {
 			});
 		}
 
-		let changes = {};
 		if (Object.keys(settingsToUpdate).length > 0) {
 			changes = { ...changes, prefs: settingsToUpdate };
 		}
