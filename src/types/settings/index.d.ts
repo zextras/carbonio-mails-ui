@@ -189,15 +189,20 @@ export type InputProps = {
 export type SignItemType = {
 	name: string;
 	id: string;
-	description: string;
+	usedSign: string;
 	label: string;
-	content?: [
+	content: [
 		{
-			type: 'text/plain' | 'text/html';
-			_content: string;
+			type: 'text/plain' | 'text/html' | undefined;
+			_content: string | undefined;
 		}
 	];
 };
+
+export type SignItemContent = {
+	type: 'text/plain' | 'text/html' | undefined;
+	_content: string | undefined;
+}
 
 type AccountIdentity = Account['identities']['identity'][number];
 

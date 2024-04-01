@@ -177,7 +177,7 @@ const SettingsView: FC = () => {
 		if (!isEqual(signatures, originalSignatures)) {
 			let hasError = false;
 			forEach(signatures, (i: SignItemType) => {
-				if (!i.label || !i.description) hasError = true;
+				if (!i.label || !i.usedSign) hasError = true;
 			});
 
 			if (hasError) {
@@ -210,7 +210,7 @@ const SettingsView: FC = () => {
 				find(
 					originalSignatures,
 					(c: SignItemType): unknown =>
-						item.id === c.id && (item.label !== c.label || item.description !== c.description)
+						item.id === c.id && (item.label !== c.label || item.usedSign !== c.usedSign)
 				)
 			);
 
@@ -241,7 +241,7 @@ const SettingsView: FC = () => {
 			}
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			dispatch(SignatureRequest({ itemsAdd, itemsEdit, itemsDelete, account })).then((resp) => {
+			dispatch(SignatureRequest({ itemsAdd, itemsEdit, itemsDelete, account, settingsObj })).then((resp) => {
 				// setFetchSigns(true);
 				if (setForwardReplySignatureId !== '') {
 					setNewOrForwardSignatureId(itemsAdd, resp, setForwardReplySignatureId, true);

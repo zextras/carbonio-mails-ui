@@ -17,8 +17,8 @@ import {
 	SelectItem,
 	ButtonProps
 } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import { map, unescape, reject, concat } from 'lodash';
+import { t, useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { map, reject, concat } from 'lodash';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -27,6 +27,7 @@ import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsecti
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from '../../types';
+import { useAppContext } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 
 const DeleteButton = styled(Button)`
 	display: none;
@@ -83,38 +84,85 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		editorRef.current.editor = editor;
 	};
 
+	const { prefs } = useUserSettings();
+	const defaultFontFamily = useMemo<string>(
+		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontFamily) ?? 'arial,helvetica,sans-serif',
+		[prefs]
+	);
+
+	const defaultFontColor = useMemo<string>(
+		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontColor) ?? '#000000',
+		[prefs]
+	);
+
+	const defaultFontSize = useMemo<string>(
+		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontSize) ?? '12pt',
+		[prefs]
+	);
+
+	const prefComposeFormat = useMemo<string>(
+		() => String(prefs?.zimbraPrefComposeFormat) ?? 'text',
+		[prefs]
+	);
+
+	const getSignatureFormat = (format: string): "text/html" | "text/plain" | undefined => {
+		if (format == "html") return 'text/html';
+		if (format == "text") return 'text/plain';
+		return undefined;
+	}
+
+	const signatureFormat = getSignatureFormat(prefComposeFormat);
+
 	// Fetches signatures from the BE
 	useEffect(() => {
 		GetAllSignatures().then(({ signature: signs }) => {
-			const signaturesItems = map(
-				signs,
-				(item: SignItemType, idx) =>
-					({
+			const signaturesItems = map(signs,(item: SignItemType, idx) =>
+				{
+					const signContents = item.content;
+					let usedSign = "";
+					for (const sContent of signContents) {
+						if (sContent.type == signatureFormat &&
+							sContent._content !== undefined) {
+							usedSign = sContent._content;
+						}
+					}
+				    return ({
 						label: item.name,
 						name: item.name,
 						id: item.id,
-						description: unescape(item?.content?.[0]?._content)
-					} as SignItemType)
-			);
+						usedSign: usedSign,
+						content : item?.content
+					} as SignItemType);
+			});
 			setSignatures(signaturesItems);
 			setOriginalSignatures(
 				signaturesItems.map((el) => ({
 					id: el.id,
 					name: el.label ?? '',
 					label: el.label ?? '',
-					description: el.description ?? ''
+					usedSign: el.usedSign ?? '',
+					content: [{
+						type: el.content?.[0]?.type,
+						_content: el.content?.[0]?._content
+					}]
 				}))
 			);
 
 			// Updates state to enable the loading of all signatures-dependent component
 			setSignaturesLoaded(true);
 		});
-	}, [setSignatures, setOriginalSignatures]);
+	}, [setSignatures, setOriginalSignatures, signatureFormat]);
 
 	// Set the default current signature if missing
 	useEffect(() => {
 		if (signatures?.length && !currentSignature) {
 			setCurrentSignature(signatures[0]);
+			/*for (const signs of signatures) {
+				if (signs.id == signatureId && typeof(signs?.content) != "undefined") {
+					setCurrentSignature(signs);
+					break;
+				}
+			}*/
 		}
 	}, [currentSignature, setCurrentSignature, signatures]);
 
@@ -124,7 +172,11 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			id: uuidv4(),
 			label: t('label.enter_name', 'Enter Name'),
 			name: t('label.enter_name', 'Enter Name'),
-			description: ''
+			usedSign: '',
+			content: [{
+				type: signatureFormat,
+				_content: ''
+			}]
 		}),
 		[]
 	);
@@ -143,8 +195,12 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		() => ({
 			label: t('label.no_signature', NO_SIGNATURE_LABEL),
 			name: 'no signature',
-			description: '',
-			id: NO_SIGNATURE_ID
+			usedSign: '',
+			id: NO_SIGNATURE_ID,
+			content: [{
+				type: signatureFormat,
+				_content: ''
+			}]
 		}),
 		[]
 	);
@@ -166,10 +222,11 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					id: item.id,
 					name: item.label ?? '',
 					label: item.label ?? '',
-					description: item.description ?? ''
+					usedSign: item.usedSign ?? '',
+					content: item.content
 				});
 			},
-			[item.description, item.id, item.label]
+			[item.usedSign, item.id, item.label]
 		);
 
 		const onDeleteButtonClick = useCallback(
@@ -256,29 +313,42 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				return;
 			}
 
-			if (currentSignature === undefined) {
+			if (currentSignature === undefined || currentSignature.content === undefined) {
 				return;
 			}
 
 			// Rich text signature
-			const newDescription = ev[1];
+			const newSignature = ev[1];
 
-			if (currentSignature?.description === newDescription) {
+			if (currentSignature?.usedSign === newSignature) {
 				return;
 			}
+
+			const contentSigns = currentSignature.content;
+			contentSigns.map((contentSign) => {
+				if ( contentSign.type == signatureFormat) {
+					return {
+						...contentSign,
+						_content : newSignature
+					}
+				}
+			});
+
 			setCurrentSignature(
 				(current) =>
 					({
 						...current,
-						description: newDescription
+						usedSign: newSignature,
+						content: contentSigns
 					} as SignItemType)
 			);
 
 			const updatedSign = signatures.map((signature) => {
-				if (signature.id === currentSignature?.id && signature.description !== newDescription) {
+				if (signature.id === currentSignature?.id && signature.usedSign !== newSignature) {
 					return {
 						...signature,
-						description: newDescription
+						usedSign: newSignature,
+						content: contentSigns
 					};
 				}
 				return signature;
@@ -287,7 +357,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			setDisabled(false);
 			setSignatures(updatedSign);
 		},
-		[currentSignature, setCurrentSignature, setDisabled, setSignatures, signatures]
+		[currentSignature, setCurrentSignature, setDisabled, setSignatures, signatures, signatureFormat]
 	);
 
 	const onEditorInitialization = (editor: EditorType): void => {
@@ -296,7 +366,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 
 	const composerCustomOptions = {
 		auto_focus: false,
-		content_style: 'p { margin: 0; }',
+		content_style: `body  {  color: ${defaultFontColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; } p { margin: 0; }`,
 		init_instance_callback: onEditorInitialization
 	};
 
@@ -348,7 +418,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 									data-testid={'signature-editor'}
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									value={currentSignature?.description ?? ''}
+									value={currentSignature?.usedSign}
 									customInitOptions={composerCustomOptions}
 									disabled={editingDisabled}
 									onEditorChange={onSignatureContentChange}

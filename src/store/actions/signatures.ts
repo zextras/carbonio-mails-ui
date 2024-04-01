@@ -6,6 +6,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { JSNS, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map, escape } from 'lodash';
+import { useMemo } from 'react';
 
 import { SignItemType } from '../../types';
 
@@ -26,7 +27,16 @@ export const GetAllSignatures = (): Promise<GetSignaturesResponse> =>
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data: any) => {
 	const requests: any = {};
-	const { itemsAdd, itemsEdit, itemsDelete, account } = data;
+	const { itemsAdd, itemsEdit, itemsDelete, account, settingsObj } = data;
+	
+	const getSignatureFormat = (format: string): "text/html" | "text/plain" | undefined => {
+		if (format == "html") return 'text/html';
+		if (format == "text") return 'text/plain';
+		return undefined;
+	}
+
+	const signatureFormat = getSignatureFormat(settingsObj.zimbraPrefComposeFormat);
+
 	let ItemsDeleteRequest = '';
 	let ItemsAddRequest = '';
 	let ItemsEditRequest = '';
@@ -43,8 +53,8 @@ export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data
 			(sign) =>
 				`<CreateSignatureRequest  xmlns="urn:zimbraAccount"><signature name='${
 					sign.label
-				}'><content type="text/html">${escape(
-					sign.description
+				}'><content type="${signatureFormat}">${escape(
+					sign.usedSign
 				)}</content></signature></CreateSignatureRequest>`
 		).join('');
 	}
@@ -53,7 +63,7 @@ export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data
 			itemsEdit,
 			(sign) => `<ModifySignatureRequest  xmlns="urn:zimbraAccount"> 
 			<signature id='${sign.id}' name='${sign.label}'> 
-				<content type="text/html">${escape(sign.description)}</content>
+				<content type="${signatureFormat}">${escape(sign.usedSign)}</content>
 			</signature>
 		</ModifySignatureRequest>`
 		).join('');
@@ -86,6 +96,7 @@ export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data
 	});
 	const response = await res.json();
 	if (response.Body.Fault) {
+		console.log(response.Body.Fault.Reason.Text);
 		throw new Error(response.Body.Fault.Reason.Text);
 	}
 
