@@ -79,6 +79,8 @@ export const saveDraftFromEditor = (
 			const savedAttachments = buildSavedAttachments(mailMessage);
 
 			useEditorsStore.getState().setSavedAttachments(editorId, savedAttachments);
+
+			useEditorsStore.getState().setSavedAttachments(editorId, savedAttachments);
 			useEditorsStore.getState().setTotalSmartLinksSize(editorId);
 			useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 				status: 'completed',

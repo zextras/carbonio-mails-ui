@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
+
+import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { AppDispatch } from '../../store/redux';
 import {
 	computeDraftSaveAllowedStatus,
 	computeSendAllowedStatus
 } from '../../store/zustand/editor/editor-utils';
 import type { MailsEditorV2 } from '../../types';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 
 export const generateEditorV2Case = async (
 	id: number,
