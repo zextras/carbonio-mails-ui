@@ -85,9 +85,6 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					const currentEditor = state?.editors?.[id];
-					if (!currentEditor) {
-						return;
-					}
 					const { savedAttachments } = currentEditor;
 					const totalSmartLinksSize = savedAttachments.reduce(
 						(acc, attachment) =>

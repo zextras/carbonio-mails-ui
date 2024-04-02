@@ -7,61 +7,85 @@
 import { setupEditorStore } from '../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../tests/generators/editors';
 import { generateStore } from '../../../tests/generators/store';
-import { addEditor } from '../editor/hooks/editors';
+import { SavedAttachment } from '../../../types';
 import { useEditorsStore } from '../editor/store';
 
-describe('store', () => {
-	test('toggleSmartLink should invert the value of requiresSmartLinkConversion of the attachment', async () => {
-		const oldEditor = await generateEditorV2Case(1, generateStore().dispatch);
+const smartLinkAttachment = (size: number, partName: string): SavedAttachment => ({
+	contentType: 'message/rfc822',
+	size,
+	partName,
+	messageId: '2',
+	isInline: false,
+	filename: `smartlink-${partName}`,
+	requiresSmartLinkConversion: true
+});
 
-		useEditorsStore.getState().addEditor(oldEditor.id, oldEditor);
-		useEditorsStore
-			.getState()
-			.toggleSmartLink(oldEditor.id, oldEditor.savedAttachments[0].partName);
+const attachment = (size: number, partName: string): SavedAttachment => ({
+	contentType: 'message/rfc822',
+	size,
+	partName,
+	messageId: '2',
+	isInline: false,
+	filename: `attachment-${partName}`,
+	requiresSmartLinkConversion: false
+});
+
+describe('store', () => {
+	test('toggleSmartLink should set to true the requiresSmartLinkConversion value of an attachment', async () => {
+		const reduxStore = generateStore();
+		const oldEditor = await generateEditorV2Case(1, reduxStore.dispatch);
+		oldEditor.savedAttachments = [attachment(444, '2')];
+		setupEditorStore({ editors: [oldEditor] });
+
+		useEditorsStore.getState().toggleSmartLink(oldEditor.id, '2');
 
 		const newEditor = useEditorsStore.getState().editors[oldEditor.id];
+		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(true);
+	});
+	test('toggleSmartLink should set to false the requiresSmartLinkConversion value of a smartlink attachment', async () => {
+		const reduxStore = generateStore();
+		const oldEditor = await generateEditorV2Case(1, reduxStore.dispatch);
+		oldEditor.savedAttachments = [smartLinkAttachment(444, '2')];
+		setupEditorStore({ editors: [oldEditor] });
 
-		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).not.toBe(
-			oldEditor.savedAttachments[0].requiresSmartLinkConversion
-		);
+		useEditorsStore.getState().toggleSmartLink(oldEditor.id, '2');
+
+		const newEditor = useEditorsStore.getState().editors[oldEditor.id];
+		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(false);
 	});
 
 	test('toggleSmartLink should not change the value of requiresSmartLinkConversion if there is no current editor', async () => {
-		const oldEditor = await generateEditorV2Case(1, generateStore().dispatch);
+		const reduxStore = generateStore();
+		const oldEditor = await generateEditorV2Case(1, reduxStore.dispatch);
+		oldEditor.savedAttachments = [attachment(444, '2')];
+		setupEditorStore({ editors: [oldEditor] });
 
-		useEditorsStore.getState().addEditor(oldEditor.id, oldEditor);
-		useEditorsStore
-			.getState()
-			.toggleSmartLink('wrong-editor-id', oldEditor.savedAttachments[0].partName);
+		useEditorsStore.getState().toggleSmartLink('wrong-editor-id', '2');
 
 		const newEditor = useEditorsStore.getState().editors[oldEditor.id];
-
-		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(
-			oldEditor.savedAttachments[0].requiresSmartLinkConversion
-		);
+		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(false);
 	});
-});
 
-describe.skip('setTotalSmartLinksSize', () => {
-	it('should calculate the right total size for smart link attachments', async () => {
-		setupEditorStore({ editors: [] });
+	test('setTotalSmartLinksSize should calculate the right total size for smart link attachments', async () => {
 		const reduxStore = generateStore();
 		const editor = await generateEditorV2Case(1, reduxStore.dispatch);
-		editor.savedAttachments = editor.savedAttachments.map((attachment) => ({
-			...attachment,
-			requiresSmartLinkConversion: true,
-			size: 100
-		}));
-		addEditor({ id: editor.id, editor });
-		useEditorsStore.getState().setTotalSmartLinksSize(editor.id);
-		const expectedSize = editor.savedAttachments.reduce((acc, attachment) => {
-			if (attachment.requiresSmartLinkConversion) {
-				return acc + attachment.size;
-			}
-			return acc;
-		}, 0);
+		editor.savedAttachments = [smartLinkAttachment(333, '2'), attachment(444, '3')];
+		setupEditorStore({ editors: [editor] });
 
-		const editorFromStore = useEditorsStore.getState().editors[editor.id];
-		expect(editorFromStore.totalSmartLinksSize).toEqual(expectedSize);
+		useEditorsStore.getState().setTotalSmartLinksSize(editor.id);
+
+		const newEditor = useEditorsStore.getState().editors[editor.id];
+		expect(newEditor.totalSmartLinksSize).toEqual(333);
+	});
+
+	test('setSize should set the editor size for the provided editor id', async () => {
+		const reduxStore = generateStore();
+		const editor = await generateEditorV2Case(1, reduxStore.dispatch);
+		setupEditorStore({ editors: [editor] });
+
+		useEditorsStore.getState().setSize(editor.id, 123);
+
+		const newEditor = useEditorsStore.getState().editors[editor.id];
+		expect(newEditor.size).toEqual(123);
 	});
 });
