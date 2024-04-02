@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { addEditor } from './hooks/editors';
-import { useEditorsStore } from './store';
 import { setupEditorStore } from '../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../tests/generators/editors';
 import { generateStore } from '../../../tests/generators/store';
+import { addEditor } from '../editor/hooks/editors';
+import { useEditorsStore } from '../editor/store';
 
 describe('store', () => {
 	test('toggleSmartLink should invert the value of requiresSmartLinkConversion of the attachment', async () => {
