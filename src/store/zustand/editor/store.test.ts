@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { addEditor } from './hooks/editors';
 import { useEditorsStore } from './store';
+import { setupEditorStore } from '../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../tests/generators/editors';
 import { generateStore } from '../../../tests/generators/store';
 
@@ -37,5 +39,29 @@ describe('store', () => {
 		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(
 			oldEditor.savedAttachments[0].requiresSmartLinkConversion
 		);
+	});
+});
+
+describe.skip('setTotalSmartLinksSize', () => {
+	it('should calculate the right total size for smart link attachments', async () => {
+		setupEditorStore({ editors: [] });
+		const reduxStore = generateStore();
+		const editor = await generateEditorV2Case(1, reduxStore.dispatch);
+		editor.savedAttachments = editor.savedAttachments.map((attachment) => ({
+			...attachment,
+			requiresSmartLinkConversion: true,
+			size: 100
+		}));
+		addEditor({ id: editor.id, editor });
+		useEditorsStore.getState().setTotalSmartLinksSize(editor.id);
+		const expectedSize = editor.savedAttachments.reduce((acc, attachment) => {
+			if (attachment.requiresSmartLinkConversion) {
+				return acc + attachment.size;
+			}
+			return acc;
+		}, 0);
+
+		const editorFromStore = useEditorsStore.getState().editors[editor.id];
+		expect(editorFromStore.totalSmartLinksSize).toEqual(expectedSize);
 	});
 });
