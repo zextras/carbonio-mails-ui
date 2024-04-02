@@ -10,11 +10,10 @@ import { noop } from 'lodash';
 
 import { calculateMailSize, SizeExceededWarningBanner } from './size-exceeded-waring-banner';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { addEditor } from '../../../../../store/zustand/editor';
+import { setupEditorStore } from '../../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../../tests/generators/editors';
 import { generateStore } from '../../../../../tests/generators/store';
-import { setupEditorStore } from '../../../../../tests/generators/editor-store';
-import { generateNewMessageEditor } from '../../../../../store/zustand/editor/editor-generators';
-import { addEditor } from '../../../../../store/zustand/editor';
 
 const ERROR_MSG_EXCEED_LIMIT =
 	'The message size exceeds the limit. Please convert some attachments to smart links.';

@@ -23,20 +23,18 @@ export const WarningBanner = ({
 	iconColor,
 	bottomBorderColor
 }: WarningBannerProps): JSX.Element => (
-	<>
-		<StyledComp.BannerContainer
-			orientation="horizontal"
-			mainAlignment="flex-start"
-			crossAlignment="center"
-			background="gray6"
-			height="fit"
-			padding={{ all: 'large' }}
-			$bottomBorderColor={bottomBorderColor}
-		>
-			<Padding right="large">
-				<Icon icon={icon} color={iconColor} size="large" />
-			</Padding>
-			<Text>{text}</Text>
-		</StyledComp.BannerContainer>
-	</>
+	<StyledComp.BannerContainer
+		orientation="horizontal"
+		mainAlignment="flex-start"
+		crossAlignment="center"
+		background="gray6"
+		height="fit"
+		padding={{ all: 'large' }}
+		$bottomBorderColor={bottomBorderColor}
+	>
+		<Padding right="large">
+			<Icon icon={icon} color={iconColor} size="large" />
+		</Padding>
+		<Text>{text}</Text>
+	</StyledComp.BannerContainer>
 );
