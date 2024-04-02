@@ -42,7 +42,7 @@ describe('store', () => {
 	});
 });
 
-describe.skip('setTotalSmartLinksSize', () => {
+describe('setTotalSmartLinksSize', () => {
 	it('should calculate the right total size for smart link attachments', async () => {
 		setupEditorStore({ editors: [] });
 		const reduxStore = generateStore();
