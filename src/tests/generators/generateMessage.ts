@@ -5,7 +5,7 @@
  */
 
 import { faker } from '@faker-js/faker';
-import { FOLDERS, Tag } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../../carbonio-ui-commons/utils/text/html';
 import type { MailMessage, Participant } from '../../types';
@@ -19,7 +19,6 @@ type MessageGenerationParams = {
 	from?: Participant;
 	to?: Array<Participant>;
 	cc?: Array<Participant>;
-	sendDate?: number;
 	receiveDate?: number;
 	subject?: string;
 	body?: string;
@@ -63,7 +62,6 @@ type MessageGenerationParams = {
 const generateMessage = ({
 	id = faker.number.int().toString(),
 	folderId = FOLDERS.INBOX,
-	sendDate = faker.date.recent({ days: 2 }).valueOf(),
 	receiveDate = faker.date.recent({ days: 1 }).valueOf(),
 	to = [{ type: ParticipantRole.TO, address: faker.internet.email() }],
 	cc = [],
@@ -110,18 +108,26 @@ const generateMessage = ({
 			name: 'TEXT',
 			contentType: 'multipart/mixed',
 			size: 0,
+			requiresSmartLinkConversion: false,
 			parts: [
 				{
 					name: '1',
 					size: 0,
 					contentType: 'multipart/alternative',
+					requiresSmartLinkConversion: false,
 					parts: [
-						{ name: '1.1', contentType: 'text/plain', size: body?.length },
+						{
+							name: '1.1',
+							contentType: 'text/plain',
+							size: body?.length,
+							requiresSmartLinkConversion: false
+						},
 						{
 							name: '1.2',
 							contentType: 'text/html',
 							size: body?.length,
-							content: body
+							content: body,
+							requiresSmartLinkConversion: false
 						}
 					]
 				}

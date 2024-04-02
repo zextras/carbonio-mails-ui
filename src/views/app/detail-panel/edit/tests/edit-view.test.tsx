@@ -15,9 +15,11 @@ import {
 	waitForElementToBeRemoved,
 	within
 } from '@testing-library/react';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
+import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import {
 	FOLDERS,
@@ -33,9 +35,14 @@ import * as saveDraftAction from '../../../../../store/actions/save-draft';
 import { addEditor } from '../../../../../store/zustand/editor';
 import { generateNewMessageEditor } from '../../../../../store/zustand/editor/editor-generators';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
+import {
+	readyToBeSentEditorTestCase,
+	changeEditorValues
+} from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import type {
+	CreateSmartLinksRequest,
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
 	SoapMailMessage,
@@ -105,6 +112,16 @@ const getSoapMailBodyContent = (
 
 	return '';
 };
+
+const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest> =>
+	createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
+		Fault: {
+			Reason: { Text: 'Failed upload to Files' },
+			Detail: {
+				Error: { Code: '123', Detail: 'Failed due to connection timeout' }
+			}
+		}
+	});
 
 /**
  * Test the EditView component in different scenarios
@@ -251,6 +268,55 @@ describe('Edit view', () => {
 			// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
 			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
 		}, 200000);
+
+		describe('send email with attachment to convert in smart link', () => {
+			beforeAll(() => {
+				defaultBeforeAllTests({ onUnhandledRequest: 'error' });
+			});
+
+			test('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+				// setup api interceptor and mail to send editor
+				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
+				setupEditorStore({ editors: [] });
+				const store = generateStore();
+				const editor = await readyToBeSentEditorTestCase(store.dispatch);
+				changeEditorValues(editor, (e) => {
+					e.savedAttachments = [
+						{
+							filename: 'large-document.pdf',
+							contentType: 'application/pdf',
+							requiresSmartLinkConversion: true,
+							size: 81290955,
+							messageId: e.did!,
+							partName: '2',
+							isInline: false
+						}
+					];
+				});
+				addEditor({ id: editor.id, editor });
+
+				// render the component
+				const { user } = setupTest(
+					<EditView {...{ editorId: editor.id, closeController: noop }} />,
+					{ store }
+				);
+				expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
+
+				// trigger mail sending
+				const btnSend = screen.queryByTestId('BtnSendMailMulti');
+				expect(btnSend).toBeEnabled();
+				await user.click(btnSend as Element);
+
+				// assertions
+				await apiInterceptor;
+				await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
+				expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
+
+				act(() => {
+					jest.advanceTimersByTime(4000);
+				});
+			}, 200000);
+		});
 
 		/**
 		 * Test the creation of a new email

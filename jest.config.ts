@@ -18,7 +18,8 @@ const config: Config = {
 		...defaultConfig.moduleNameMapper,
 		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js'
 	},
-	collectCoverage: false,
+	collectCoverage: true,
+	coverageReporters: ['lcov', 'html'],
 	testTimeout: 20000
 };
 

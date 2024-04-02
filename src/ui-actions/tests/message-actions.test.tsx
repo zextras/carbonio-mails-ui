@@ -809,8 +809,7 @@ describe('Messages actions calls', () => {
 		});
 
 		const action = replyMsg({
-			id: msg.id,
-			folderId: msg.parent
+			id: msg.id
 		});
 
 		act(() => {
@@ -839,8 +838,7 @@ describe('Messages actions calls', () => {
 		});
 
 		const action = replyAllMsg({
-			id: msg.id,
-			folderId: msg.parent
+			id: msg.id
 		});
 
 		act(() => {
@@ -867,8 +865,7 @@ describe('Messages actions calls', () => {
 		});
 
 		const action = forwardMsg({
-			id: msg.id,
-			folderId: msg.parent
+			id: msg.id
 		});
 
 		act(() => {
@@ -895,8 +892,7 @@ describe('Messages actions calls', () => {
 		});
 
 		const action = editDraft({
-			id: msg.id,
-			folderId: msg.parent
+			id: msg.id
 		});
 
 		act(() => {
@@ -923,8 +919,7 @@ describe('Messages actions calls', () => {
 		});
 
 		const action = editAsNewMsg({
-			id: msg.id,
-			folderId: msg.parent
+			id: msg.id
 		});
 
 		act(() => {

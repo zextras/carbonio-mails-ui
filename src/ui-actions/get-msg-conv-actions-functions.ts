@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
 import { FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
+import { TFunction } from 'i18next';
 
 import {
 	deleteConversationPermanently,
@@ -30,20 +32,26 @@ import {
 	redirectMsg,
 	replyAllMsg,
 	replyMsg,
-	sendDraft,
+	sendDraftFromPreview,
 	setMsgAsSpam,
 	setMsgFlag,
 	setMsgRead,
 	showOriginalMsg
 } from './message-actions';
 import { applyTag } from './tag-actions';
+import { updateEditorWithSmartLinks } from './utils';
+import { EditViewActions } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { AppDispatch } from '../store/redux';
+import { GenerateEditorParams } from '../store/zustand/editor/editor-generators';
+import { useEditorsStore } from '../store/zustand/editor/store';
 import type {
 	ActionReturnType,
+	AddEditorParams,
 	Conversation,
 	ExtraWindowsContextType,
 	MailMessage,
+	MailsEditorV2,
 	MessageAction
 } from '../types';
 
@@ -97,8 +105,8 @@ export function getReplyAction(
 	folderExcludedReply: string[]
 ): ActionReturnType {
 	const action = isConversation
-		? isSingleMessageConversation && replyMsg({ id: firstConversationMessageId, folderId })
-		: replyMsg({ id, folderId });
+		? isSingleMessageConversation && replyMsg({ id: firstConversationMessageId })
+		: replyMsg({ id });
 	return !folderExcludedReply.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -118,8 +126,8 @@ export function getReplyAllAction({
 	folderExcludedReplyAll: string[];
 }): ActionReturnType {
 	const action = isConversation
-		? isSingleMessageConversation && replyAllMsg({ id: firstConversationMessageId, folderId })
-		: replyAllMsg({ id, folderId });
+		? isSingleMessageConversation && replyAllMsg({ id: firstConversationMessageId })
+		: replyAllMsg({ id });
 	return !folderExcludedReplyAll.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -139,8 +147,8 @@ export function getForwardAction({
 	folderExcludedForward: string[];
 }): ActionReturnType {
 	const action = isConversation
-		? isSingleMessageConversation && forwardMsg({ id: firstConversationMessageId, folderId })
-		: forwardMsg({ id, folderId });
+		? isSingleMessageConversation && forwardMsg({ id: firstConversationMessageId })
+		: forwardMsg({ id });
 	return !folderExcludedForward.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -203,20 +211,54 @@ export function getAddRemoveFlagAction({
 }
 
 export function getSendDraftAction({
-	isConversation,
 	item,
 	dispatch,
 	folderIncludedSendDraft,
-	folderId
+	folderId,
+	generateEditor,
+	addEditor,
+	createSnackbar,
+	t
 }: {
-	isConversation: boolean;
-	item: MailMessage | Conversation;
+	item: MailMessage;
 	dispatch: AppDispatch;
 	folderIncludedSendDraft: string[];
 	folderId: string;
+	generateEditor: (params: GenerateEditorParams) => MailsEditorV2 | null;
+	addEditor: ({ id, editor }: AddEditorParams) => void;
+	createSnackbar: CreateSnackbarFn;
+	t: TFunction;
 }): ActionReturnType {
-	const action = isConversation ? false : sendDraft({ message: item as MailMessage, dispatch });
-	return folderIncludedSendDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
+	if (!folderIncludedSendDraft.includes(getFolderIdParts(folderId).id ?? '0')) {
+		return false;
+	}
+
+	const generateEditorFunction = async (): Promise<MailsEditorV2> => {
+		const editor = generateEditor({
+			action: EditViewActions.EDIT_AS_DRAFT,
+			id: item.id,
+			messagesStoreDispatch: dispatch,
+			message: item,
+			compositionData: undefined
+		});
+		if (!editor) {
+			throw new Error('No editor provided');
+		}
+		addEditor({ id: editor.id, editor });
+		const { savedAttachments } = editor;
+		const hasSmartLinks =
+			savedAttachments.filter((attachment) => attachment.requiresSmartLinkConversion).length > 0;
+		if (hasSmartLinks)
+			await updateEditorWithSmartLinks({
+				createSnackbar,
+				t,
+				editorId: editor.id
+			});
+
+		return useEditorsStore.getState().editors[editor.id];
+	};
+
+	return sendDraftFromPreview({ generateEditorFunction, dispatch });
 }
 
 export function getMarkRemoveSpam({
@@ -365,7 +407,7 @@ export function getEditDraftAction({
 	folderId: string;
 	folderIncludeEditDraft: string[];
 }): ActionReturnType {
-	const action = isConversation ? false : editDraft({ id, folderId });
+	const action = isConversation ? false : editDraft({ id });
 	return folderIncludeEditDraft.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 
@@ -380,7 +422,7 @@ export function getEditAsNewAction({
 	folderId: string;
 	folderExcludedEditAsNew: string[];
 }): ActionReturnType {
-	const action = isConversation ? false : editAsNewMsg({ id, folderId });
+	const action = isConversation ? false : editAsNewMsg({ id });
 	return !folderExcludedEditAsNew.includes(getFolderIdParts(folderId).id ?? '0') && action;
 }
 

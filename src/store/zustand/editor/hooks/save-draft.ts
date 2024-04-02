@@ -27,7 +27,10 @@ export type SaveDraftOptions = {
  * @param editorId
  * @param options
  */
-const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftOptions): void => {
+export const saveDraftFromEditor = (
+	editorId: MailsEditorV2['id'],
+	options?: SaveDraftOptions
+): void => {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {
 		console.warn('Cannot find the editor', editorId);
@@ -73,6 +76,7 @@ const saveDraftFromEditor = (editorId: MailsEditorV2['id'], options?: SaveDraftO
 			useEditorsStore.getState().setDid(editorId, mailMessage.id);
 			useEditorsStore.getState().removeUnsavedAttachments(editorId);
 			const savedAttachments = buildSavedAttachments(mailMessage);
+
 			useEditorsStore.getState().setSavedAttachments(editorId, savedAttachments);
 
 			useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {

@@ -11,7 +11,7 @@ import { getMsg } from './get-msg';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/identities';
 import { getParticipantsFromMessage } from '../../helpers/messages';
-import { MailMessage, SendMsgResult } from '../../types';
+import { MailMessage, SendMsgResult, SendMsgWithSmartLinksResponse } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { generateMailRequest } from '../editor-slice-utils';
 import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
@@ -57,7 +57,7 @@ export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
 
 export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParameters>(
 	'sendMsg',
-	async ({ editor }, { rejectWithValue, getState, dispatch }) => {
+	async ({ editor }, { rejectWithValue, dispatch }) => {
 		if (!editor) {
 			return rejectWithValue('No editor provided');
 		}
@@ -67,9 +67,10 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 		}
 
 		const msg = createSoapSendMsgRequestFromEditor(editor);
+
 		const identity = getIdentityDescriptor(editor.identityId);
 
-		let resp: SaveDraftResponse;
+		let resp: SendMsgWithSmartLinksResponse;
 		try {
 			resp = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
 				'SendMsg',
@@ -88,7 +89,6 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 		if (response?.error) {
 			return rejectWithValue(response);
 		}
-
 		if (response?.m && response?.m[0]?.id) {
 			dispatch(getMsg({ msgId: response.m[0].id }));
 		}
