@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
-import { find, map } from 'lodash';
+import { Account, getUserAccount, useUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
 
 import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { LineType } from '../commons/utils';
@@ -32,20 +32,44 @@ const getSignatures = (account: Account | undefined): Array<SignatureDescriptor>
 	const signatureArray = [
 		{
 			label: NO_SIGNATURE_LABEL,
-			value: { description: '', id: NO_SIGNATURE_ID }
-		}
+			value: {
+				html: '',
+				text: '',
+				id: NO_SIGNATURE_ID
+			}
+		} as SignatureDescriptor
 	];
+
 	map(account?.signatures?.signature, (item) =>
-		signatureArray.push({
-			// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+
+		{
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			label: item.name,
-			// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+			const htmlIndex = item.content.findIndex(obj => obj.type == "text/html");
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			value: { description: item.content ? item.content[0]._content : '', id: item?.id }
-		})
+			const textIndex = item.content.findIndex(obj => obj.type == "text/plain");
+			signatureArray.push({
+				// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				label: item.name,
+				value: {
+					// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					html: htmlIndex !== -1 ? item.content[htmlIndex]._content : '',
+					// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					text: textIndex !== -1 ? item.content[textIndex]._content : '',
+					// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					id: item?.id
+				}
+			})
+		}
 	);
 	return signatureArray;
 };
@@ -60,15 +84,15 @@ const getSignatures = (account: Account | undefined): Array<SignatureDescriptor>
 const getSignature = (
 	account: Account | undefined,
 	signatureId: string,
-	fallbackOnFirst?: boolean
-): SignatureDescriptor | undefined => {
+	fallbackOnFirst?: boolean,
+): SignatureDescriptor => {
 	const signatures = getSignatures(account);
-	const result = find(
-		signatures,
-		(signature: SignatureDescriptor) => signature.value.id === signatureId
-	);
+	const objIndex = signatures.findIndex(obj => obj.value.id == signatureId);
+	if (objIndex === -1) {
+		return signatures?.[0];
+	}
 
-	return result ?? (fallbackOnFirst ? signatures?.[0] : undefined);
+	return signatures[objIndex];
 };
 
 /**
@@ -76,8 +100,8 @@ const getSignature = (
  * @param account
  * @param signatureId
  */
-const getSignatureValue = (account: Account | undefined, signatureId: string): string =>
-	getSignature(account, signatureId)?.value.description ?? '';
+/*const getSignatureValue = (account: Account | undefined, signatureId: string): string =>
+	getSignature(account, signatureId,)?.value.description ?? '';*/
 
 /**
  * Composes the body of an email with the given signature
@@ -173,10 +197,12 @@ const replaceSignatureOnPlainTextBody = (body: string, newSignature: string): st
  * @param signatureId
  */
 const getMailBodyWithSignature = (text: EditorText, signatureId = ''): EditorText => {
-	const signatureValue = signatureId !== '' ? getSignatureValue(getUserAccount(), signatureId) : '';
+	const signatureValue = signatureId !== '' ? getSignature(getUserAccount(), signatureId) : '';
 	const plainSignatureValue =
-		signatureValue !== '' ? `\n${convertHtmlToPlainText(signatureValue)}\n\n` : '';
-	const richText = replaceSignatureOnHtmlBody(text.richText, signatureValue);
+		signatureValue !== '' ? `\n${convertHtmlToPlainText(signatureValue.value.text)}\n\n` : '';
+	const htmlSignatureValue =
+		signatureValue !== '' ? `${signatureValue.value.html}` : '';
+	const richText = replaceSignatureOnHtmlBody(text.richText, htmlSignatureValue);
 	const plainText = replaceSignatureOnPlainTextBody(text.plainText, plainSignatureValue);
 	return { plainText, richText };
 };
@@ -186,7 +212,6 @@ export {
 	NO_SIGNATURE_LABEL,
 	getSignatures,
 	getSignature,
-	getSignatureValue,
 	composeMailBodyWithSignature,
 	replaceSignatureOnPlainTextBody,
 	getMailBodyWithSignature
