@@ -13,28 +13,19 @@ import {
 } from '../../store/zustand/editor/editor-utils';
 import type { MailsEditorV2 } from '../../types';
 
+const alignState = (editor: MailsEditorV2): void => {
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+};
+
 export const generateEditorV2Case = async (
 	id: number,
 	messagesStoreDispatch: AppDispatch
 ): Promise<MailsEditorV2> => {
 	const { buildEditorCase } = await import(`./editorCases/editor-case-v2-${id}`);
 	const editor = buildEditorCase(messagesStoreDispatch);
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
-	return editor;
-};
-
-const alignState = (editor: MailsEditorV2): void => {
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
-};
-
-export const changeEditorValues = (
-	editor: MailsEditorV2,
-	editorModifier: (e: MailsEditorV2) => void
-): void => {
-	editorModifier(editor);
 	alignState(editor);
+	return editor;
 };
 
 export const readyToBeSentEditorTestCase = async (
