@@ -16,7 +16,7 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import styled, { SimpleInterpolation } from 'styled-components';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
@@ -46,6 +46,7 @@ const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
 `;
 
+const [_, isFilesUiAvailable] = getIntegratedFunction('select-nodes');
 const AttachmentContainer = styled(Container).attrs(
 	(props: { hoverBarDisabled: boolean; requiresSmartLinkConversion: boolean }) => ({
 		hoverBarDisabled: props.hoverBarDisabled,
@@ -116,6 +117,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 
 	const requiresSmartLinkConversion =
 		isSavedAttachment(attachment) && attachment?.requiresSmartLinkConversion;
+
 	const attachmentExtensionContent = useMemo(
 		() =>
 			requiresSmartLinkConversion ? (
@@ -266,12 +268,16 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 											: t('label.convert_to_smart_link', 'Convert to smart link')
 									}
 								>
-									<IconButton
-										size="medium"
-										icon={requiresSmartLinkConversion ? 'Refresh' : 'Link2Outline'}
-										onClick={toggleSmartLinkAction}
-										style={requiresSmartLinkConversion ? { transform: 'scale(-1, 1)' } : {}}
-									/>
+									{isFilesUiAvailable ? (
+										<IconButton
+											size="medium"
+											icon={requiresSmartLinkConversion ? 'Refresh' : 'Link2Outline'}
+											onClick={toggleSmartLinkAction}
+											style={requiresSmartLinkConversion ? { transform: 'scale(-1, 1)' } : {}}
+										/>
+									) : (
+										<></>
+									)}
 								</Tooltip>
 							)}
 							{isDeletable && (
