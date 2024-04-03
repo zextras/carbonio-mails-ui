@@ -16,10 +16,11 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import styled, { SimpleInterpolation } from 'styled-components';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
+import { ToggleSmartLinkButton } from './parts/toggle-smart-link-button';
 import {
 	composeAttachmentDownloadUrl,
 	getAttachmentExtension,
@@ -29,7 +30,6 @@ import {
 import {
 	getEditor,
 	useEditorAttachments,
-	useEditorDraftSave,
 	useEditorSubject
 } from '../../../../store/zustand/editor';
 import {
@@ -46,7 +46,6 @@ const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
 `;
 
-const [_, isFilesUiAvailable] = getIntegratedFunction('select-nodes');
 const AttachmentContainer = styled(Container).attrs(
 	(props: { hoverBarDisabled: boolean; requiresSmartLinkConversion: boolean }) => ({
 		hoverBarDisabled: props.hoverBarDisabled,
@@ -139,20 +138,8 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		editorId,
 		isUnsavedAttachment(attachment) ? (attachment.uploadId as string) : ''
 	);
-	const { removeUnsavedAttachment, removeSavedAttachment, toggleSmartLink } =
-		useEditorAttachments(editorId);
+	const { removeUnsavedAttachment, removeSavedAttachment } = useEditorAttachments(editorId);
 	const { subject } = useEditorSubject(editorId);
-
-	const { saveDraft } = useEditorDraftSave(editor.id);
-
-	const toggleSmartLinkAction = useCallback(() => {
-		const draftId = editor.did;
-		if (isSavedAttachment(attachment) && draftId) {
-			const { partName } = attachment;
-			toggleSmartLink(partName);
-			saveDraft();
-		}
-	}, [attachment, editor.did, saveDraft, toggleSmartLink]);
 
 	const removeAttachment = useCallback(() => {
 		isUnsavedAttachment(attachment) && removeUnsavedAttachment(attachment.uploadId as string);
@@ -260,26 +247,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				<Row orientation="horizontal" crossAlignment="center">
 					<AttachmentHoverBarContainer>
 						<Row>
-							{isSavedAttachment(attachment) && (
-								<Tooltip
-									label={
-										requiresSmartLinkConversion
-											? t('label.convert_back_to_attachment', 'Convert back to attachment')
-											: t('label.convert_to_smart_link', 'Convert to smart link')
-									}
-								>
-									{isFilesUiAvailable ? (
-										<IconButton
-											size="medium"
-											icon={requiresSmartLinkConversion ? 'Refresh' : 'Link2Outline'}
-											onClick={toggleSmartLinkAction}
-											style={requiresSmartLinkConversion ? { transform: 'scale(-1, 1)' } : {}}
-										/>
-									) : (
-										<></>
-									)}
-								</Tooltip>
-							)}
+							<ToggleSmartLinkButton editorId={editorId} attachment={attachment} />
 							{isDeletable && (
 								<Padding right="small">
 									<Tooltip label={t('label.delete', 'Delete')}>
