@@ -24,6 +24,8 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 		isRichText: true,
 		isUrgent: false,
 		requestReadReceipt: false,
+		totalSmartLinksSize: 0,
+		size: 5433935,
 		text: {
 			richText:
 				'<html><body><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"></div></body></html>',
