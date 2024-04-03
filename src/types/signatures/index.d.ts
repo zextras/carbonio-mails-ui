@@ -8,6 +8,7 @@ export type SignatureDescriptor = {
 	label: string;
 	value: {
 		id: string;
-		description: string;
+		html: string;
+		text: string;
 	};
 };
