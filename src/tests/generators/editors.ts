@@ -63,3 +63,10 @@ export const aSavedAttachment = (): SavedAttachment => ({
 	filename: `saved-attachment`,
 	requiresSmartLinkConversion: false
 });
+
+export const anUnsavedAttachment = (): UnsavedAttachment => ({
+	contentType: 'message/rfc822',
+	size: 13,
+	isInline: false,
+	filename: `saved-attachment`
+});
