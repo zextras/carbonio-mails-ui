@@ -24,26 +24,31 @@ export const generateEditorV2Case = async (
 	return editor;
 };
 
+const alignState = (editor: MailsEditorV2): void => {
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+};
+
 export const changeEditorValues = (
 	editor: MailsEditorV2,
 	editorModifier: (e: MailsEditorV2) => void
 ): void => {
 	editorModifier(editor);
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+	alignState(editor);
 };
 
 export const readyToBeSentEditorTestCase = async (
-	messagesStoreDispatch: AppDispatch
+	messagesStoreDispatch: AppDispatch,
+	editorPropsOverride: Partial<MailsEditorV2> = {}
 ): Promise<MailsEditorV2> => {
-	const editor = await generateEditorV2Case(1, messagesStoreDispatch);
-	changeEditorValues(editor, (e) => {
-		e.subject = faker.lorem.words(3);
-		e.recipients = {
-			to: [{ type: ParticipantRole.TO, address: faker.internet.email() }],
-			cc: [],
-			bcc: []
-		};
-	});
+	let editor = await generateEditorV2Case(1, messagesStoreDispatch);
+	editor.subject = faker.lorem.words(3);
+	editor.recipients = {
+		to: [{ type: ParticipantRole.TO, address: faker.internet.email() }],
+		cc: [],
+		bcc: []
+	};
+	editor = { ...editor, ...editorPropsOverride };
+	alignState(editor);
 	return editor;
 };

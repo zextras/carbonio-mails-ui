@@ -5,7 +5,11 @@
  */
 
 import { setupEditorStore } from '../../../tests/generators/editor-store';
-import { generateEditorV2Case } from '../../../tests/generators/editors';
+import {
+	changeEditorValues,
+	generateEditorV2Case,
+	readyToBeSentEditorTestCase
+} from '../../../tests/generators/editors';
 import { generateStore } from '../../../tests/generators/store';
 import { SavedAttachment } from '../../../types';
 import { useEditorsStore } from '../editor/store';
@@ -32,9 +36,10 @@ const attachment = (size: number, partName: string): SavedAttachment => ({
 
 describe('store', () => {
 	test('toggleSmartLink should set to true the requiresSmartLinkConversion value of an attachment', async () => {
-		const reduxStore = generateStore();
-		const oldEditor = await generateEditorV2Case(1, reduxStore.dispatch);
-		oldEditor.savedAttachments = [attachment(444, '2')];
+		const store = generateStore();
+		const oldEditor = await readyToBeSentEditorTestCase(store.dispatch, {
+			savedAttachments: [attachment(444, '2')]
+		});
 		setupEditorStore({ editors: [oldEditor] });
 
 		useEditorsStore.getState().toggleSmartLink(oldEditor.id, '2');
@@ -43,9 +48,10 @@ describe('store', () => {
 		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(true);
 	});
 	test('toggleSmartLink should set to false the requiresSmartLinkConversion value of a smartlink attachment', async () => {
-		const reduxStore = generateStore();
-		const oldEditor = await generateEditorV2Case(1, reduxStore.dispatch);
-		oldEditor.savedAttachments = [smartLinkAttachment(444, '2')];
+		const store = generateStore();
+		const oldEditor = await readyToBeSentEditorTestCase(store.dispatch, {
+			savedAttachments: [smartLinkAttachment(444, '2')]
+		});
 		setupEditorStore({ editors: [oldEditor] });
 
 		useEditorsStore.getState().toggleSmartLink(oldEditor.id, '2');
