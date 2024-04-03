@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Account } from '@zextras/carbonio-shell-ui';
+import { Account, AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 
 export type PrefsType = {
 	zimbraPrefCalendarReminderMobile: string;
@@ -223,6 +223,8 @@ type IdentityProps = AccountIdentity['_attrs'];
 // };
 
 type SignatureSettingsPropsType = {
+	settingsObj: AccountSettingsPrefs;
+	account: Account;
 	updatedIdentities: AccountIdentity[];
 	updateIdentities: (arg: {
 		target?: {
@@ -233,6 +235,7 @@ type SignatureSettingsPropsType = {
 	}) => void;
 	setDisabled: (arg: boolean) => void;
 	signatures: SignItemType[];
+	originalSignatures: SignItemType[];
 	setSignatures: (signatures: SignItemType[]) => void;
 	setOriginalSignatures: (signatures: SignItemType[]) => void;
 };
