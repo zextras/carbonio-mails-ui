@@ -72,7 +72,7 @@ const SettingsView: FC = () => {
 	const [currentIdentities, setCurrentIdentities] = useState(identities);
 	const [updatedIdentities, setUpdatedIdentities] = useState(identities);
 	const [signatures, setSignatures] = useState<SignItemType[]>(() => []);
-	const [originalSignatures, setOriginalSignatures] = useState(() => []);
+	const [originalSignatures, setOriginalSignatures] = useState<SignItemType[]>(() => []);
 	const [disabled, setDisabled] = useState(true);
 	const [flag, setFlag] = useState(false);
 
@@ -181,13 +181,44 @@ const SettingsView: FC = () => {
 		[]
 	);
 
+	const getNewSignatureIdByPayload = useCallback(
+		(itemsAdd, resp): [ signatureId: string, signatureName: string ]  => {
+			if (
+				itemsAdd.length > 0 &&
+				resp?.payload?.response?.Body?.BatchResponse?.CreateSignatureResponse
+			) {
+				const createdSignature =
+					resp.payload.response.Body.BatchResponse.CreateSignatureResponse[0].signature;
+				const signatureId = createdSignature.find(
+					(item: SignItemType) => item.name === itemsAdd[0].name
+				).id;
+				const updatedSign = signatures.map((signature) => {
+					if (signature.name === itemsAdd[0].name) {
+						return {
+							...signature,
+							id: signatureId
+						};
+					}
+					return signature;
+				});
+				setOriginalSignatures(updatedSign);
+				setSignatures(updatedSign);
+				return [ signatureId, itemsAdd[0].name ];
+			}
+			return ['',''];
+		},
+		[setOriginalSignatures,setSignatures,signatures]
+	);
+
+	// eslint-disable-next-line consistent-return
 	const saveChanges = useCallback<SettingsHeaderProps['onSave']>(() => {
+
 		let changes = {};
 		if (!isEqual(signatures, originalSignatures)) {
 
 			let hasError = false;
 			forEach(signatures, (i: SignItemType) => {
-				if (!i.label || !i.usedSign) hasError = true;
+				if (!i.label) hasError = true;
 			});
 
 			if (hasError) {
@@ -275,6 +306,29 @@ const SettingsView: FC = () => {
 					setNewOrForwardSignatureId(itemsAdd, resp, setDefaultSignatureId, false);
 				}
 				if (resp.type.includes('fulfilled')) {
+
+					const signatureArray: unknown[] = [];
+					const [signatureId,signatureName] = getNewSignatureIdByPayload(itemsAdd, resp);
+					if (signatureId == "") {
+						setOriginalSignatures(signatures);
+					}
+					map(signatures, (item) =>
+							{if (item.name == signatureName) {
+								signatureArray.push({
+									id: signatureId,
+									name: item.name,
+									content: item.content
+								})
+							} else {
+								signatureArray.push({
+									id: item.id,
+									name: item.name,
+									content: item.content
+								})
+							}}
+					);
+					account.signatures.signature = signatureArray;
+
 					createSnackbar({
 						key: `new`,
 						replace: true,
@@ -352,7 +406,8 @@ const SettingsView: FC = () => {
 		createSnackbar,
 		setNewOrForwardSignatureId,
 		flag,
-		updatedIdentities
+		updatedIdentities,
+		setOriginalSignatures
 	]);
 
 	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), []);
@@ -384,16 +439,14 @@ const SettingsView: FC = () => {
 					<RecoverMessages />
 					<SignatureSettings
 						settingsObj={settingsObj}
+						account={account}
 						setSignatures={setSignatures}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						setOriginalSignatures={setOriginalSignatures}
-						updateSettings={updateSettings}
 						updatedIdentities={updatedIdentities}
 						updateIdentities={updateIdentities}
 						setDisabled={setDisabled}
 						signatures={signatures}
-						flag={flag}
+						originalSignatures={originalSignatures}
 					/>
 					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 					{/* @ts-ignore */}
