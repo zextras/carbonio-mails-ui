@@ -6,18 +6,54 @@
 
 import React from 'react';
 
-import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
+import { getIntegratedFunction } from '../../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
 import { addEditor } from '../../../../../../store/zustand/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import {
 	readyToBeSentEditorTestCase,
-	anUnsavedAttachment
+	anUnsavedAttachment,
+	aSavedAttachment,
+	aSmartLinkAttachment
 } from '../../../../../../tests/generators/editors';
 import { generateStore } from '../../../../../../tests/generators/store';
 import { ToggleSmartLinkButton } from '../toggle-smart-link-button';
 
 describe('ToggleSmartLinkButton', () => {
-	it('unsavedAttachment ', async () => {
+	it('should render a button with Link2Outline icon if a savedAttachment not marked for conversion is present', async () => {
+		getIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
+		const store = generateStore();
+		setupEditorStore({ editors: [] });
+		const attachment = aSavedAttachment();
+		const editor = await readyToBeSentEditorTestCase(store.dispatch, {
+			savedAttachments: [attachment]
+		});
+		addEditor({ id: editor.id, editor });
+
+		setupTest(<ToggleSmartLinkButton editorId={editor.id} attachment={attachment} />);
+
+		const button = screen.getByRoleWithIcon('button', { icon: /Link2Outline/i });
+		expect(button).toBeInTheDocument();
+	});
+
+	it('should render a button with Refresh icon if a savedAttachment marked for conversion is present', async () => {
+		getIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
+		const store = generateStore();
+		setupEditorStore({ editors: [] });
+		const attachment = aSmartLinkAttachment();
+		const editor = await readyToBeSentEditorTestCase(store.dispatch, {
+			savedAttachments: [attachment]
+		});
+		addEditor({ id: editor.id, editor });
+
+		setupTest(<ToggleSmartLinkButton editorId={editor.id} attachment={attachment} />);
+
+		const button = screen.getByRoleWithIcon('button', { icon: /Refresh/i });
+		expect(button).toBeInTheDocument();
+	});
+
+	it('should render an empty fragment if a unsavedAttachment is present', async () => {
+		getIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
 		const store = generateStore();
 		setupEditorStore({ editors: [] });
 		const attachment = anUnsavedAttachment();
@@ -26,17 +62,27 @@ describe('ToggleSmartLinkButton', () => {
 		});
 		addEditor({ id: editor.id, editor });
 
-		const { getByText } = setupTest(
+		const { container } = setupTest(
 			<ToggleSmartLinkButton editorId={editor.id} attachment={attachment} />
 		);
 
-		// expect(getByText("label.convert_back_to_attachment")).not.toBeInTheDocument();
-		// expect(getByText("label.convert_to_smart_link")).not.toBeInTheDocument();
+		expect(container).toBeEmptyDOMElement();
 	});
-	// unsaved attachment
-	// saved ma non c'è files
-	// saved e c'è files
 
-	// saved da convertire
-	// saved convertito
+	it('should render an empty fragment if a savedAttachment is present and the files intergrated function is not available', async () => {
+		getIntegratedFunction.mockImplementation(() => [jest.fn(), false]);
+		const store = generateStore();
+		setupEditorStore({ editors: [] });
+		const attachment = aSavedAttachment();
+		const editor = await readyToBeSentEditorTestCase(store.dispatch, {
+			savedAttachments: [attachment]
+		});
+		addEditor({ id: editor.id, editor });
+
+		const { container } = setupTest(
+			<ToggleSmartLinkButton editorId={editor.id} attachment={attachment} />
+		);
+
+		expect(container).toBeEmptyDOMElement();
+	});
 });
