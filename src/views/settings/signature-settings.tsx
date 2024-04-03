@@ -17,7 +17,7 @@ import {
 	SelectItem,
 	ButtonProps
 } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, reject, concat } from 'lodash';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
@@ -27,7 +27,7 @@ import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsecti
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from '../../types';
-import { useAppContext } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { TextArea } from '../app/detail-panel/edit/parts/edit-view-styled-components';
 
 const DeleteButton = styled(Button)`
 	display: none;
@@ -62,12 +62,15 @@ type EditorType = {
 };
 
 const SignatureSettings: FC<SignatureSettingsPropsType> = ({
+	settingsObj,
+	account,
 	updatedIdentities,
 	updateIdentities,
 	setDisabled,
 	signatures,
 	setSignatures,
-	setOriginalSignatures
+	setOriginalSignatures,
+	originalSignatures
 }): ReactElement => {
 	const [currentSignature, setCurrentSignature] = useState<SignItemType | undefined>(undefined);
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
@@ -84,25 +87,24 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		editorRef.current.editor = editor;
 	};
 
-	const { prefs } = useUserSettings();
 	const defaultFontFamily = useMemo<string>(
-		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontFamily) ?? 'arial,helvetica,sans-serif',
-		[prefs]
+		() => String(settingsObj?.zimbraPrefHtmlEditorDefaultFontFamily) ?? 'arial,helvetica,sans-serif',
+		[settingsObj]
 	);
 
 	const defaultFontColor = useMemo<string>(
-		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontColor) ?? '#000000',
-		[prefs]
+		() => String(settingsObj?.zimbraPrefHtmlEditorDefaultFontColor) ?? '#000000',
+		[settingsObj]
 	);
 
 	const defaultFontSize = useMemo<string>(
-		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontSize) ?? '12pt',
-		[prefs]
+		() => String(settingsObj?.zimbraPrefHtmlEditorDefaultFontSize) ?? '12pt',
+		[settingsObj]
 	);
 
 	const prefComposeFormat = useMemo<string>(
-		() => String(prefs?.zimbraPrefComposeFormat) ?? 'text',
-		[prefs]
+		() => String(settingsObj?.zimbraPrefComposeFormat) ?? 'text',
+		[settingsObj]
 	);
 
 	const getSignatureFormat = (format: string): "text/html" | "text/plain" | undefined => {
@@ -111,7 +113,18 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		return undefined;
 	}
 
+	const getCurrentSignature = (cSign: SignItemType|undefined, cFormat: "text/html" | "text/plain" | undefined ): string => {
+		if ( cSign === undefined || cSign.content === undefined ) return "";
+		const objIndex = cSign.content.findIndex(obj => obj.type == cFormat);
+		if (objIndex !== -1) {
+			const content = cSign.content[objIndex]._content;
+			return content !== undefined ? content : "";
+		}
+		return "";
+	}
+
 	const signatureFormat = getSignatureFormat(prefComposeFormat);
+	const signatureValue = getCurrentSignature(currentSignature,signatureFormat);
 
 	// Fetches signatures from the BE
 	useEffect(() => {
@@ -120,10 +133,12 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				{
 					const signContents = item.content;
 					let usedSign = "";
-					for (const sContent of signContents) {
-						if (sContent.type == signatureFormat &&
-							sContent._content !== undefined) {
-							usedSign = sContent._content;
+					if (signContents !== undefined) {
+						for (const sContent of signContents) {
+							if (sContent.type == signatureFormat &&
+								sContent._content !== undefined) {
+								usedSign = sContent._content;
+							}
 						}
 					}
 				    return ({
@@ -141,10 +156,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 					name: el.label ?? '',
 					label: el.label ?? '',
 					usedSign: el.usedSign ?? '',
-					content: [{
-						type: el.content?.[0]?.type,
-						_content: el.content?.[0]?._content
-					}]
+					content: el.content
 				}))
 			);
 
@@ -188,7 +200,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		updatedSign.push(newSignature);
 		setSignatures(updatedSign);
 		setCurrentSignature(newSignature);
-	}, [createEmptySignature, setSignatures, signatures]);
+	}, [createEmptySignature, setSignatures, signatures, setSignaturesLoaded]);
 
 	// Create the fake signature for the "no signature"
 	const noSignature: SignItemType = useMemo(
@@ -208,11 +220,11 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	// Composes the SelectItem array for the signature selects
 	const signatureSelectItems: SelectItem[] = useMemo(
 		(): SelectItem[] =>
-			concat(noSignature, signatures).map((signature) => ({
+			concat(noSignature, originalSignatures).map((signature) => ({
 				label: signature.label,
 				value: signature.id
 			})),
-		[noSignature, signatures]
+		[noSignature, originalSignatures]
 	);
 
 	const ListItem = ({ item }: { item: SignItemType }): ReactElement => {
@@ -309,11 +321,11 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 
 	const onSignatureContentChange = useCallback(
 		(ev: [string, string]): void => {
-			if (!getEditor()?.hasFocus()) {
+			if (signatureFormat == "text/html" && !getEditor()?.hasFocus()) {
 				return;
 			}
 
-			if (currentSignature === undefined || currentSignature.content === undefined) {
+			if (currentSignature === undefined) {
 				return;
 			}
 
@@ -324,15 +336,28 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 				return;
 			}
 
-			const contentSigns = currentSignature.content;
-			contentSigns.map((contentSign) => {
-				if ( contentSign.type == signatureFormat) {
-					return {
-						...contentSign,
-						_content : newSignature
-					}
+			let contentSigns = currentSignature.content;
+			if  (
+				contentSigns !== undefined
+					&& contentSigns.findIndex(obj => obj.type == signatureFormat) !== -1
+				) {
+				const objIndex = contentSigns.findIndex(obj => obj.type == signatureFormat);
+				const updatedObj = {
+					...contentSigns[objIndex],
+					_content: newSignature
+				};
+				contentSigns[objIndex] = updatedObj;
+			} else {
+				const newObj = {
+					type: signatureFormat,
+					_content: newSignature
+				};
+				if (contentSigns !== undefined) {
+					contentSigns.push(newObj);
+				} else {
+					contentSigns = [newObj];
 				}
-			});
+			}
 
 			setCurrentSignature(
 				(current) =>
@@ -356,8 +381,9 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 
 			setDisabled(false);
 			setSignatures(updatedSign);
+
 		},
-		[currentSignature, setCurrentSignature, setDisabled, setSignatures, signatures, signatureFormat]
+		[currentSignature, setCurrentSignature, setDisabled, setSignatures, signatures, signatureFormat, account]
 	);
 
 	const onEditorInitialization = (editor: EditorType): void => {
@@ -385,7 +411,9 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 									label={t('signatures.add_signature', 'Add signature')}
 									type="outlined"
 									onClick={addNewSignature}
-									disabled={signatures?.length > 0 && !currentSignature?.name}
+									disabled={
+										(signatures?.length > 0 && !currentSignature?.name) ||
+										(originalSignatures?.length < signatures?.length)}
 								/>
 							</Container>
 							<Padding all="small" />
@@ -412,17 +440,37 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 							/>
 						</Container>
 						<Padding all="small" />
-						{composerIsAvailable && (
+						{composerIsAvailable && prefComposeFormat == "html" && (
 							<EditorWrapper>
 								<Composer
 									data-testid={'signature-editor'}
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									value={currentSignature?.usedSign}
+									value={signatureValue}
 									customInitOptions={composerCustomOptions}
 									disabled={editingDisabled}
 									onEditorChange={onSignatureContentChange}
 								/>
+							</EditorWrapper>
+						)}
+						{(!composerIsAvailable || prefComposeFormat == "text") && (
+							<EditorWrapper>
+								<TextArea
+								data-testid="MailPlainTextEditor"
+								value={signatureValue}
+								style={{
+									fontFamily: defaultFontFamily,
+									fontSize: defaultFontSize,
+									color: defaultFontColor,
+									border: "solid 1px black"
+								}}
+								onChange={(ev): void => {
+									onSignatureContentChange([
+										ev.target.value,
+										ev.target.value
+									])
+								}}
+							/>
 							</EditorWrapper>
 						)}
 					</Container>
@@ -438,7 +486,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 						map(updatedIdentities, (acc) => (
 							<SelectIdentitySignature
 								acc={acc}
-								signatures={signatures}
+								signatures={originalSignatures}
 								signatureSelectItems={signatureSelectItems}
 								updateIdentities={updateIdentities}
 							/>
