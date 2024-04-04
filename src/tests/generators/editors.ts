@@ -11,7 +11,7 @@ import {
 	computeDraftSaveAllowedStatus,
 	computeSendAllowedStatus
 } from '../../store/zustand/editor/editor-utils';
-import type { MailsEditorV2 } from '../../types';
+import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../types';
 
 const alignState = (editor: MailsEditorV2): void => {
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -43,3 +43,30 @@ export const readyToBeSentEditorTestCase = async (
 	alignState(editor);
 	return editor;
 };
+
+export const aSmartLinkAttachment = (): SavedAttachment => ({
+	contentType: 'message/rfc822',
+	size: 12,
+	partName: '2',
+	messageId: '11215',
+	isInline: false,
+	filename: `smartlink-attachment`,
+	requiresSmartLinkConversion: true
+});
+
+export const aSavedAttachment = (): SavedAttachment => ({
+	contentType: 'message/rfc822',
+	size: 13,
+	partName: '2',
+	messageId: '11215',
+	isInline: false,
+	filename: `saved-attachment`,
+	requiresSmartLinkConversion: false
+});
+
+export const anUnsavedAttachment = (): UnsavedAttachment => ({
+	contentType: 'message/rfc822',
+	size: 13,
+	isInline: false,
+	filename: `saved-attachment`
+});
