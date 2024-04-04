@@ -24,7 +24,6 @@ export const getMsgsForPrint = async ({
 					html: 1,
 					id,
 					needExp: 1,
-					max: 250000,
 					part,
 					read: 1
 				},
