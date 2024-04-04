@@ -102,7 +102,9 @@ const SettingsView: FC = () => {
 		// we discard only latest updates keeping successfully saved changes
 		setUpdatedProps(currentProps);
 		setUpdatedIdentities(identities);
-	}, [currentProps, identities, prefs]);
+		setSignatures(originalSignatures);
+		setDisabled(true);
+	}, [currentProps, identities, prefs, originalSignatures]);
 
 	const updateSettings = useCallback(
 		(e) => {
