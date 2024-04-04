@@ -33,8 +33,8 @@ describe('ToggleSmartLinkButton', () => {
 
 		setupTest(<ToggleSmartLinkButton editorId={editor.id} attachment={attachment} />);
 
-		const buttonOutline = screen.getByRoleWithIcon('button', { icon: /Link2Outline/i });
-		expect(buttonOutline).toBeInTheDocument();
+		const button = screen.getByRoleWithIcon('button', { icon: /Link2Outline/i });
+		expect(button).toBeInTheDocument();
 	});
 	it('should render an IconButton with Refresh icon when the user click on Link2Outline IconButton', async () => {
 		getIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
@@ -50,9 +50,9 @@ describe('ToggleSmartLinkButton', () => {
 			<ToggleSmartLinkButton editorId={editor.id} attachment={attachment} />
 		);
 
-		const buttonOutline = screen.getByRoleWithIcon('button', { icon: /Link2Outline/i });
+		const buttonLink = screen.getByRoleWithIcon('button', { icon: /Link2Outline/i });
 
-		await act(() => user.click(buttonOutline));
+		await act(() => user.click(buttonLink));
 
 		const updatedAttachment = useEditorsStore.getState().editors[editor.id].savedAttachments[0];
 		rerender(<ToggleSmartLinkButton editorId={editor.id} attachment={updatedAttachment} />);
