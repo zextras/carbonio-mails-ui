@@ -75,25 +75,10 @@ export function getCompleteHTML({ content }: { content: string }): string {
                     }
                         
                     @page {
-                        size: A4;
-                        margin: 11mm 17mm 17mm 17mm;
+                        size: auto;
+                        margin: auto;
                     }
                         
-                    @media print {
-                        .footer {
-                            position: fixed;
-                            bottom: 0;
-                        }
-                        
-                        .content-block, p {
-                            page-break-inside: avoid;
-                        }
-                        
-                        html, body {
-                            width: 210mm;
-                            height: 297mm;
-                        }
-                    }
              </style>
 		</head>
 		<body>
