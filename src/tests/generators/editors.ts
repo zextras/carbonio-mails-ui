@@ -48,7 +48,7 @@ export const aSmartLinkAttachment = (): SavedAttachment => ({
 	contentType: 'message/rfc822',
 	size: 12,
 	partName: '2',
-	messageId: '3',
+	messageId: '11215',
 	isInline: false,
 	filename: `smartlink-attachment`,
 	requiresSmartLinkConversion: true
@@ -58,7 +58,7 @@ export const aSavedAttachment = (): SavedAttachment => ({
 	contentType: 'message/rfc822',
 	size: 13,
 	partName: '2',
-	messageId: '3',
+	messageId: '11215',
 	isInline: false,
 	filename: `saved-attachment`,
 	requiresSmartLinkConversion: false
