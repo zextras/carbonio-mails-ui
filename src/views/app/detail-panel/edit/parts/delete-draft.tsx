@@ -46,7 +46,7 @@ export const DeleteDraftModal = ({
 			moveMsgToTrash({
 				ids,
 				dispatch,
-				folderId: FOLDERS.TRASH
+				folderId: FOLDERS.DRAFTS
 			})?.onClick(ev);
 			onDelete?.();
 			onClose?.();
