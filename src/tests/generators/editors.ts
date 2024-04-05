@@ -4,42 +4,69 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
+
+import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { AppDispatch } from '../../store/redux';
 import {
 	computeDraftSaveAllowedStatus,
 	computeSendAllowedStatus
 } from '../../store/zustand/editor/editor-utils';
-import type { MailsEditorV2 } from '../../types';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
+import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../types';
+
+const alignState = (editor: MailsEditorV2): void => {
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+};
 
 export const generateEditorV2Case = async (
 	id: number,
 	messagesStoreDispatch: AppDispatch
 ): Promise<MailsEditorV2> => {
 	const { buildEditorCase } = await import(`./editorCases/editor-case-v2-${id}`);
-	return buildEditorCase(messagesStoreDispatch);
-};
-
-export const changeEditorValues = (
-	editor: MailsEditorV2,
-	editorModifier: (e: MailsEditorV2) => void
-): void => {
-	editorModifier(editor);
-	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
-	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+	const editor = buildEditorCase(messagesStoreDispatch);
+	alignState(editor);
+	return editor;
 };
 
 export const readyToBeSentEditorTestCase = async (
-	messagesStoreDispatch: AppDispatch
+	messagesStoreDispatch: AppDispatch,
+	editorPropsOverride: Partial<MailsEditorV2> = {}
 ): Promise<MailsEditorV2> => {
-	const editor = await generateEditorV2Case(1, messagesStoreDispatch);
-	changeEditorValues(editor, (e) => {
-		e.subject = faker.lorem.words(3);
-		e.recipients = {
-			to: [{ type: ParticipantRole.TO, address: faker.internet.email() }],
-			cc: [],
-			bcc: []
-		};
-	});
+	let editor = await generateEditorV2Case(1, messagesStoreDispatch);
+	editor.subject = faker.lorem.words(3);
+	editor.recipients = {
+		to: [{ type: ParticipantRole.TO, address: faker.internet.email() }],
+		cc: [],
+		bcc: []
+	};
+	editor = { ...editor, ...editorPropsOverride };
+	alignState(editor);
 	return editor;
 };
+
+export const aSmartLinkAttachment = (): SavedAttachment => ({
+	contentType: 'message/rfc822',
+	size: 12,
+	partName: '2',
+	messageId: '11215',
+	isInline: false,
+	filename: `smartlink-attachment`,
+	requiresSmartLinkConversion: true
+});
+
+export const aSavedAttachment = (): SavedAttachment => ({
+	contentType: 'message/rfc822',
+	size: 13,
+	partName: '2',
+	messageId: '11215',
+	isInline: false,
+	filename: `saved-attachment`,
+	requiresSmartLinkConversion: false
+});
+
+export const anUnsavedAttachment = (): UnsavedAttachment => ({
+	contentType: 'message/rfc822',
+	size: 13,
+	isInline: false,
+	filename: `saved-attachment`
+});

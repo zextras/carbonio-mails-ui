@@ -173,6 +173,10 @@ export type MailsEditorV2 = {
 	signature?: string;
 	// dispatch function for the messages store
 	messagesStoreDispatch: AppDispatch;
+	// the size of the draft
+	size: number;
+	// the sum of the size of the attachments requiring smart link conversion
+	totalSmartLinksSize: number;
 };
 
 type IdentityType = {
