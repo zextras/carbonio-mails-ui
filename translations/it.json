@@ -178,7 +178,7 @@
         "messages": "Messaggi",
         "on_behalf_of": "per conto di",
         "show_all": "Mostra tutto",
-        "signature_required": "Sono richieste le informazioni della firma.",
+        "signature_required": "È necessario compilare sia il campo Nome che il contenuto della firma.",
         "size_larger": "Dimensione più grande di (MB)",
         "size_smaller": "Dimensione minore di (MB)",
         "any": "qualsiasi",

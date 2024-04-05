@@ -203,26 +203,25 @@ const SettingsView: FC = () => {
 		[setOriginalSignatures,setSignatures,signatures]
 	);
 
+	const checkPayloadErrors = useCallback(
+		(resp): [boolean,string]  => {
+			if (
+				resp?.payload?.response?.Body?.BatchResponse?.Fault 
+			) {
+				const reason = resp?.payload?.response?.Body?.BatchResponse?.Fault[0]?.Reason?.Text;
+				return [true,reason];
+			}
+			return [false,""];
+		},
+		[]
+	);
+
 	// eslint-disable-next-line consistent-return
 	const saveChanges = useCallback(() => {
 		let changes = {};
 		if (!isEqual(signatures, originalSignatures)) {
 			let hasError = false;
-			forEach(signatures, (i: SignItemType) => {
-				if (!i.label) hasError = true;
-			});
-
-			if (hasError) {
-				getBridgedFunctions()?.createSnackbar({
-					key: `error`,
-					type: 'error',
-					label: t('label.signature_required', 'Signature information is required.'),
-					autoHideTimeout: 3000,
-					hideButton: true,
-					replace: true
-				});
-				return false;
-			}
+			
 			const itemsDelete = filter(originalSignatures, (x: SignItemType) => {
 				let toggle = false;
 				map(signatures, (ele: SignItemType) => {
@@ -244,7 +243,7 @@ const SettingsView: FC = () => {
 					(c: SignItemType): unknown =>
 						item.id === c.id && (item.label !== c.label || item.usedSign !== c.usedSign)
 				)
-			);
+			) as Array<SignItemType>;
 
 			const isReplySignaturePrefisNew = settingsToUpdate.zimbraPrefForwardReplySignatureId;
 			let setForwardReplySignatureId = '';
@@ -271,10 +270,47 @@ const SettingsView: FC = () => {
 				setDefaultSignatureId = settingsToUpdate.zimbraPrefDefaultSignatureId;
 				delete settingsToUpdate.zimbraPrefDefaultSignatureId;
 			}
+
+			const checkSignature = itemsAdd.concat(itemsEdit);
+
+			forEach(checkSignature, (i: SignItemType) => {
+				if (!i.usedSign || !i.label) hasError = true;
+			});
+
+			if (hasError) {
+				getBridgedFunctions()?.createSnackbar({
+					key: `error`,
+					type: 'error',
+					label: t('label.signature_required', 'Signature information is required.'),
+					autoHideTimeout: 3000,
+					hideButton: true,
+					replace: true
+				});
+				return false;
+			}
+
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			dispatch(SignatureRequest({ itemsAdd, itemsEdit, itemsDelete, account, settingsObj })).then((resp) => {
-				// setFetchSigns(true);
+
+				//check payload error
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				if ( typeof(resp.payload.response.BatchResponse) !== undefined ) {
+					const [payloadError,reason] = checkPayloadErrors(resp);
+					if (payloadError){
+						getBridgedFunctions()?.createSnackbar({
+							key: `new`,
+							replace: true,
+							type: 'error',
+							label: reason,
+							autoHideTimeout: 3000,
+							hideButton: true
+						});
+						return false;
+					}
+				}
+
 				if (setForwardReplySignatureId !== '') {
 					setNewOrForwardSignatureId(itemsAdd, resp, setForwardReplySignatureId, true);
 				}
