@@ -30,6 +30,7 @@ import {
 	openPrefilledComposerSharedFunction
 } from './integrations/shared-functions';
 import { StoreProvider } from './store/redux';
+import { useProductFlavorStore } from './store/zustand/product-flavor/store';
 import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from './views/settings/subsections';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
@@ -126,6 +127,14 @@ const App = () => {
 		addBoardView({
 			route: MAILS_ROUTE,
 			component: EditView
+		});
+	}, []);
+
+	useEffect(() => {
+		fetch('/zx/auth/supported').then((data) => {
+			if (data?.domain) {
+				useProductFlavorStore.getState().setAdvanced();
+			}
 		});
 	}, []);
 
