@@ -25,7 +25,7 @@
 		"test": "is-ci && npm run test:ci || npm run test:dev",
 		"pull-translations": "git subtree pull -P translations git@github.com:Zextras/carbonio-mails-ui-i18n.git master --squash",
 		"push-translations": "git subtree push -P translations git@github.com:Zextras/carbonio-mails-ui-i18n.git",
-		"build:dev": "sdk build --dev --pkgRel $(date +%s)"
+		"build:dev": "sdk build --dev --pkgRel $(date +%s000)"
 	},
 	"files": [
 		"src/types/"
