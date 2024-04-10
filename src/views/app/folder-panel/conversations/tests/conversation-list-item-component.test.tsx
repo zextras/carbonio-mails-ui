@@ -3,19 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
 import { fireEvent, screen } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { noop, times } from 'lodash';
-import React from 'react';
+
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS, VISIBILITY_ASSERTION } from '../../../../../tests/constants';
+import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../../../constants';
+import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
-import type { ConversationListItemProps, MessageListItemProps } from '../../../../../types';
-import { MessageListItem } from '../../messages/message-list-item';
+import type { ConversationListItemProps } from '../../../../../types';
 import { ConversationListItem } from '../conversation-list-item';
 
 describe.each`
@@ -45,13 +47,13 @@ describe.each`
 				conversations: {
 					currentFolder: folderId,
 					expandedStatus: {
-						[conversation.id]: 'complete'
+						[conversation.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conversation.id]: conversation
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -63,12 +65,12 @@ describe.each`
 
 		test.each`
 			case | folder                              | assertion
-			${1} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${1} | ${FOLDERS_DESCRIPTORS.SENT}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${1} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${1} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${1} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${1} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.IS_VISIBLE}
 		`(
 			`(case #$case) the avatar $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
@@ -93,13 +95,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -113,12 +115,12 @@ describe.each`
 
 		test.each`
 			case | folder                              | assertion
-			${2} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${2} | ${FOLDERS_DESCRIPTORS.SENT}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${2} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${2} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${2} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${2} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.IS_VISIBLE}
 		`(
 			`(case #$case) the date $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
@@ -145,13 +147,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -168,12 +170,12 @@ describe.each`
 
 		test.each`
 			case | folder                              | assertion
-			${3} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${3} | ${FOLDERS_DESCRIPTORS.SENT}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${3} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${3} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${3} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${3} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.IS_VISIBLE}
 		`(
 			`(case #$case) if set, the subject $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
@@ -200,13 +202,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -224,12 +226,12 @@ describe.each`
 
 		test.each`
 			case | folder                              | assertion
-			${4} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${4} | ${FOLDERS_DESCRIPTORS.SENT}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${4} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${4} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${4} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${4} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.IS_VISIBLE}
 		`(
 			`(case #$case) if set, the subject $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
@@ -256,13 +258,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -280,12 +282,12 @@ describe.each`
 
 		test.each`
 			case | folder                              | assertion
-			${5} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${5} | ${FOLDERS_DESCRIPTORS.SENT}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${5} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${5} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${5} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${5} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.IS_VISIBLE}
 		`(
 			`(case #$case) the sender label $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
@@ -310,13 +312,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -364,13 +366,13 @@ describe.each`
 					conversations: {
 						currentFolder: folder.id,
 						expandedStatus: {
-							[conversation.id]: 'complete'
+							[conversation.id]: API_REQUEST_STATUS.fulfilled
 						},
 						searchedInFolder: {},
 						conversations: {
 							[conversation.id]: conversation
 						},
-						status: 'complete'
+						searchRequestStatus: API_REQUEST_STATUS.fulfilled
 					}
 				});
 
@@ -411,13 +413,13 @@ describe.each`
 				conversations: {
 					currentFolder: folderId,
 					expandedStatus: {
-						[conversation.id]: 'complete'
+						[conversation.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conversation.id]: conversation
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -452,13 +454,13 @@ describe.each`
 				conversations: {
 					currentFolder: folderId,
 					expandedStatus: {
-						[conversation.id]: 'complete'
+						[conversation.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conversation.id]: conversation
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -487,13 +489,13 @@ describe.each`
 				conversations: {
 					currentFolder: folderId,
 					expandedStatus: {
-						[conversation.id]: 'complete'
+						[conversation.id]: API_REQUEST_STATUS.fulfilled
 					},
 					searchedInFolder: {},
 					conversations: {
 						[conversation.id]: conversation
 					},
-					status: 'complete'
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -523,13 +525,13 @@ describe.each`
 			conversations: {
 				currentFolder: folderId,
 				expandedStatus: {
-					[conversation.id]: 'complete'
+					[conversation.id]: API_REQUEST_STATUS.fulfilled
 				},
 				searchedInFolder: {},
 				conversations: {
 					[conversation.id]: conversation
 				},
-				status: 'complete'
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 

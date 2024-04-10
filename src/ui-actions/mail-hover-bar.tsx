@@ -62,13 +62,13 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 				return [
 					moveMsgToTrash({ ids, dispatch, folderId }),
 					// archiveMsg(),
-					forwardMsg({ id: messageId, folderId }),
+					forwardMsg({ id: messageId }),
 					setMsgFlag({ ids, value: flag, dispatch })
 				];
 			case FOLDERS.DRAFTS:
 				return [
 					moveMsgToTrash({ ids, dispatch, folderId }),
-					editDraft({ id: messageId, folderId }),
+					editDraft({ id: messageId }),
 					// archiveMsg(),
 					setMsgFlag({ ids, value: flag, dispatch })
 				];
@@ -78,22 +78,22 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 				return showReplyAll
 					? [
 							setMsgRead({ ids, value: read, dispatch }),
-							replyMsg({ id: messageId, folderId }),
+							replyMsg({ id: messageId }),
 							//	showReplyAll && replyAllMsg(messageId, folderId, t),
-							replyAllMsg({ id: messageId, folderId }),
+							replyAllMsg({ id: messageId }),
 							setMsgFlag({ ids, value: flag, dispatch }),
-							forwardMsg({ id: messageId, folderId }),
+							forwardMsg({ id: messageId }),
 							// archiveMsg(),
 							moveMsgToTrash({ ids, dispatch, folderId })
-					  ]
+						]
 					: [
 							setMsgRead({ ids, value: read, dispatch }),
-							replyMsg({ id: messageId, folderId }),
+							replyMsg({ id: messageId }),
 							setMsgFlag({ ids, value: flag, dispatch }),
-							forwardMsg({ id: messageId, folderId }),
+							forwardMsg({ id: messageId }),
 							// archiveMsg(),
 							moveMsgToTrash({ ids, dispatch, folderId })
-					  ];
+						];
 		}
 	}, [
 		folderId,

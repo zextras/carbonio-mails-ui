@@ -78,7 +78,7 @@ export const SelectionInteractive: FC<{ count: number }> = ({ count }) => {
 						count,
 						defaultValue: '{{count}} e-mail selected',
 						defaultValue_plural: '{{count}} e-mails selected'
-				  })
+					})
 				: displayerMessage?.title,
 		[count, displayerMessage?.title]
 	);

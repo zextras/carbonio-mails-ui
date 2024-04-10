@@ -15,7 +15,7 @@ export const useEditorUploadProcess = (
 	editorId: MailsEditorV2['id'],
 	uploadId: string
 ): { status: AttachmentUploadProcessStatus; cancel: () => void } | null => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const attachmentStateInfo = useEditorsStore((state) => {
 		const unsavedAttachmentIndex = getUnsavedAttachmentIndex(state, editorId, uploadId);
 		if (unsavedAttachmentIndex === null) {
@@ -44,8 +44,8 @@ export const useEditorUploadProcess = (
 				attachmentStateInfo.abortController?.abort();
 				useEditorsStore.getState().removeUnsavedAttachment(editorId, uploadId);
 				computeAndUpdateEditorStatus(editorId);
-				saveDraftFromEditor(editorId);
+				debouncedSaveDraft(editorId);
 			}
 		};
-	}, [attachmentStateInfo, editorId, saveDraftFromEditor, uploadId]);
+	}, [attachmentStateInfo, editorId, debouncedSaveDraft, uploadId]);
 };

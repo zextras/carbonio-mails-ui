@@ -73,7 +73,7 @@ export const handleModifiedMessagesInConversationReducer = (
 						? {
 								...msg,
 								...messageToUpdate
-						  }
+							}
 						: msg;
 				})
 			}

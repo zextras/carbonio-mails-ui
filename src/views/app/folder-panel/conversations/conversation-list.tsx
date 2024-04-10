@@ -5,7 +5,7 @@
  */
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -13,32 +13,34 @@ import { ConversationListComponent } from './conversation-list-component';
 import { ConversationListItemComponent } from './conversation-list-item-component';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { LIST_LIMIT } from '../../../../constants';
+import {
+	API_REQUEST_STATUS,
+	LIST_LIMIT,
+	SEARCHED_FOLDER_STATE_STATUS
+} from '../../../../constants';
+import { parseMessageSortingOptions } from '../../../../helpers/sorting';
 import { useKeyboardShortcuts } from '../../../../hooks/keyboard-shortcuts';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useConversationListItems } from '../../../../hooks/use-conversation-list';
 import { useSelection } from '../../../../hooks/use-selection';
 import { search } from '../../../../store/actions';
 import {
-	selectConversationStatus,
+	selectConversationsSearchRequestStatus,
 	selectFolderSearchStatus
 } from '../../../../store/conversations-slice';
 import type { AppContext } from '../../../../types';
 
-const ConversationList: FC = () => {
+export const ConversationList: FC = () => {
 	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
 	const conversations = useConversationListItems();
 
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
-	const [isLoading, setIsLoading] = useState(false);
 	const dragImageRef = useRef(null);
 	const dispatch = useAppDispatch();
-	const status = useAppSelector(selectConversationStatus);
+	const searchRequestStatus = useAppSelector(selectConversationsSearchRequestStatus);
 
-	const conversationListStatus = useAppSelector((store) =>
-		selectFolderSearchStatus(store, folderId)
-	);
+	const searchedInFolderStatus = useAppSelector(selectFolderSearchStatus(folderId));
 
 	const {
 		selected,
@@ -52,21 +54,19 @@ const ConversationList: FC = () => {
 	} = useSelection({ currentFolderId: folderId, setCount, count, items: conversations });
 
 	const folder = useFolder(folderId);
-	const hasMore = useMemo(() => status === 'hasMore', [status]);
+	const hasMore = useMemo(
+		() => searchedInFolderStatus === SEARCHED_FOLDER_STATE_STATUS.hasMore,
+		[searchedInFolderStatus]
+	);
+
+	const { prefs } = useUserSettings();
+	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 
 	const loadMore = useCallback(() => {
-		if (hasMore && !isLoading) {
-			const date =
-				conversations?.[conversations.length - 1]?.date ?? new Date().setHours(0, 0, 0, 0);
-			setIsLoading(true);
-			const dateOrNull = date ? new Date(date) : null;
-			dispatch(search({ folderId, before: dateOrNull, limit: LIST_LIMIT.LOAD_MORE_LIMIT })).then(
-				() => {
-					setIsLoading(false);
-				}
-			);
-		}
-	}, [hasMore, isLoading, conversations, dispatch, folderId]);
+		if (!hasMore) return;
+		const offset = conversations.length;
+		dispatch(search({ folderId, offset, sortBy: sortOrder, limit: LIST_LIMIT.LOAD_MORE_LIMIT }));
+	}, [hasMore, conversations.length, dispatch, folderId, sortOrder]);
 
 	const handleKeyboardShortcuts = useKeyboardShortcuts();
 	useEffect(() => {
@@ -148,9 +148,10 @@ const ConversationList: FC = () => {
 		[conversations.length, folder?.n]
 	);
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+
 	const conversationsLoadingCompleted = useMemo(
-		() => conversationListStatus === 'complete',
-		[conversationListStatus]
+		() => searchRequestStatus === API_REQUEST_STATUS.fulfilled,
+		[searchRequestStatus]
 	);
 
 	return (
@@ -176,4 +177,3 @@ const ConversationList: FC = () => {
 		/>
 	);
 };
-export default ConversationList;

@@ -8,12 +8,11 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { rest } from 'msw';
 
-import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
+import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { Folder } from '../../../carbonio-ui-commons/types/folder';
+import { Folder, SoapFolder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
 import { NewModal } from '../new-modal';
 
@@ -175,32 +174,11 @@ describe('new-modal', () => {
 			name: /label.create/i
 		});
 		expect(createButton).toBeEnabled();
+		const apiInterceptor = createAPIInterceptor<{ folder: SoapFolder }>('CreateFolder');
 
-		const wipeInterceptor = new Promise<any>((resolve, reject) => {
-			// Register a handler for the REST call
-			getSetupServer().use(
-				rest.post('/service/soap/CreateFolderRequest', async (req, res, ctx) => {
-					if (!req) {
-						reject(new Error('Empty request'));
-					}
-
-					const msg = (await req.json()).Body.CreateFolderRequest.folder;
-					resolve(msg);
-
-					// Don't care about the actual response
-					return res(
-						ctx.json({
-							Body: {
-								Fault: {}
-							}
-						})
-					);
-				})
-			);
-		});
 		await user.click(createButton);
 
-		const newFolder = await wipeInterceptor;
+		const { folder: newFolder } = await apiInterceptor;
 		expect(newFolder.view).toBe('message');
 		expect(newFolder.l).toBe(folder.id);
 		expect(newFolder.name).toBe(folderName);

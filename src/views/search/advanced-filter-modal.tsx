@@ -3,44 +3,48 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+
 import {
 	CustomModal,
-	Container,
 	Icon,
 	Row,
 	TextWithTooltip,
-	Padding
+	Padding,
+	ModalHeader,
+	Divider,
+	ModalFooter
 } from '@zextras/carbonio-design-system';
-import { concat, filter, includes, map } from 'lodash';
 import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
-import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import ToggleFilters from './parts/toggle-filters';
-import SubjectKeywordRow from './parts/subject-keyword-row';
+import { concat, filter, includes, map } from 'lodash';
+
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
-import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
-import TagFolderRow from './parts/tag-folder-row';
+import { ReceivedSentAddressRow } from './parts/received-sent-address-row';
 import SendReceivedDateRow from './parts/send-date-row';
+import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
+import SubjectKeywordRow from './parts/subject-keyword-row';
+import TagFolderRow from './parts/tag-folder-row';
+import ToggleFilters from './parts/toggle-filters';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
-import ReceivedSentAddressRow from './parts/received-sent-address-row';
+import { getChipItems } from './utils';
+import { ScrollableContainer } from '../../commons/scrollable-container';
 import type { AdvancedFilterModalProps, KeywordState } from '../../types';
 
-const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
+export const AdvancedFilterModal = ({
 	open,
 	onClose,
 	query,
 	updateQuery,
 	setIsSharedFolderIncluded,
 	isSharedFolderIncluded
-}): ReactElement => {
+}: AdvancedFilterModalProps): React.JSX.Element => {
 	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
 	const [attachmentFilter, setAttachmentFilter] = useState<KeywordState>([]);
 	const [unreadFilter, setUnreadFilter] = useState<KeywordState>([]);
 	const [flaggedFilter, setFlaggedFilter] = useState<KeywordState>([]);
 
 	const [receivedFromAddress, setReceivedFromAddress] = useState<KeywordState>([]);
-	const [sentFromAddress, setSentFromAddress] = useState<KeywordState>([]);
+	const [sentToAddress, setSentToAddress] = useState<KeywordState>([]);
 	const [folder, setFolder] = useState<KeywordState>([]);
 	const [sentBefore, setSentBefore] = useState<KeywordState>([]);
 	const [sentOn, setSentOn] = useState<KeywordState>([]);
@@ -96,65 +100,75 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 					!/^after:/.test(v.label) &&
 					!/^date:/.test(v.label) &&
 					!/^tag:/.test(v.label) &&
+					!/^to:/.test(v.label) &&
+					!/^from:/.test(v.label) &&
 					!v.isQueryFilter
 			),
 			(q) => ({ ...q, hasAvatar: false })
 		);
 
-		const subjectsFromQuery = map(
+		const subjectsInQuery = map(
 			filter(query, (v) => /^Subject:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: false })
 		);
-		setSubject(subjectsFromQuery);
+		setSubject(subjectsInQuery);
 
-		const attachmentTypeFromQuery = map(
+		const attachmentTypeInQuery = map(
 			filter(query, (v) => /^Attachment:/.test(v.label)),
 			(q) => ({ ...q })
 		);
-		setAttachmentType(attachmentTypeFromQuery);
+		setAttachmentType(attachmentTypeInQuery);
 
-		const emailStatusFromQuery = map(
+		const emailStatusInQuery = map(
 			filter(query, (v) => /^Is:/.test(v.label)),
 			(q) => ({ ...q })
 		);
-		setEmailStatus(emailStatusFromQuery);
+		setEmailStatus(emailStatusInQuery);
 
-		const sizeSmallerFromQuery = map(
+		const sizeSmallerInQuery = map(
 			filter(query, (v) => /^Smaller:/.test(v.label)),
 			(q) => ({ ...q })
 		);
-		setSizeSmaller(sizeSmallerFromQuery);
+		setSizeSmaller(sizeSmallerInQuery);
 
-		const sizeLargerFromQuery = map(
+		const sizeLargerInQuery = map(
 			filter(query, (v) => /^Larger:/.test(v.label)),
 			(q) => ({ ...q })
 		);
-		setSizeLarger(sizeLargerFromQuery);
-		const sentBeforeFromQuery = map(
+		setSizeLarger(sizeLargerInQuery);
+		const sentBeforeInQuery = map(
 			filter(query, (v) => /^before:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: true, icon: 'CalendarOutline' })
 		);
-		setSentBefore(sentBeforeFromQuery);
+		setSentBefore(sentBeforeInQuery);
 
-		const sentAfterFromQuery = map(
+		const sentAfterInQuery = map(
 			filter(query, (v) => /^after:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: true, icon: 'CalendarOutline' })
 		);
-		setSentAfter(sentAfterFromQuery);
+		setSentAfter(sentAfterInQuery);
 
-		const tagFromQuery = map(
+		const tagInQuery = map(
 			filter(query, (v) => /^tag:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: true, icon: 'TagOutline' })
 		);
-		setTag(tagFromQuery);
+		setTag(tagInQuery);
 
-		const sentOnFromQuery = map(
+		const sentOnInQuery = map(
 			filter(query, (v) => /^date:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: true, icon: 'CalendarOutline' })
 		);
-		setSentOn(sentOnFromQuery);
+		setSentOn(sentOnInQuery);
 
-		const folderFromQuery = map(
+		const filteredToChips = query.filter((chip) => /^to:*/.test(chip.label));
+		const sentToInQuery = getChipItems(filteredToChips, 'to');
+		setSentToAddress(sentToInQuery);
+
+		const filteredFromChips = query.filter((chip) => /^from:*/.test(chip.label));
+		const receivedFromInQuery = getChipItems(filteredFromChips, 'from');
+		setReceivedFromAddress(receivedFromInQuery);
+
+		const folderInQuery = map(
 			filter(query, (v) => /^in:/.test(v.label)),
 			(q) => ({
 				...q,
@@ -163,7 +177,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 			})
 		);
 
-		setFolder(folderFromQuery);
+		setFolder(folderInQuery);
 
 		setOtherKeywords(updatedQuery);
 	}, [query, queryArray]);
@@ -182,7 +196,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 		receivedFromAddress,
 		sentAfter,
 		sentBefore,
-		sentFromAddress,
+		sentFromAddress: sentToAddress,
 		sentOn,
 		sizeLarger,
 		sizeSmaller,
@@ -204,7 +218,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 		setSizeLargerErrorLabel('');
 		updateQuery([]);
 		setReceivedFromAddress([]);
-		setSentFromAddress([]);
+		setSentToAddress([]);
 		setFolder([]);
 		setTag([]);
 	}, [updateQuery]);
@@ -232,7 +246,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 				sizeLarger,
 				sizeSmaller,
 				receivedFromAddress,
-				sentFromAddress
+				sentToAddress
 			),
 		[
 			attachmentFilter,
@@ -244,7 +258,7 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 			receivedFromAddress,
 			sentAfter,
 			sentBefore,
-			sentFromAddress,
+			sentToAddress,
 			sentOn,
 			sizeLarger,
 			sizeSmaller,
@@ -276,10 +290,10 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 		() => ({
 			receivedFromAddress,
 			setReceivedFromAddress,
-			sentFromAddress,
-			setSentFromAddress
+			sentToAddress,
+			setSentToAddress
 		}),
-		[receivedFromAddress, sentFromAddress]
+		[receivedFromAddress, sentToAddress]
 	);
 
 	const attachmentTypeEmailStatusRowProps = useMemo(
@@ -348,35 +362,34 @@ const AdvancedFilterModal: FC<AdvancedFilterModalProps> = ({
 
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
-			<Container padding={{ bottom: 'medium' }}>
-				<ModalHeader
-					onClose={onClose}
-					title={t('label.single_advanced_filter', 'Advanced Filters')}
-				/>
+			<ModalHeader
+				onClose={onClose}
+				title={t('label.single_advanced_filter', 'Advanced Filters')}
+				showCloseIcon
+			/>
+			<Divider />
 
-				<Container padding={{ horizontal: 'medium', vertical: 'small' }}>
-					<ToggleFilters compProps={toggleFiltersProps} />
-					<SubjectKeywordRow compProps={subjectKeywordRowProps} />
-					<ReceivedSentAddressRow compProps={receivedSentAddressRowProps} />
-					<AttachmentTypeEmailStatusRow compProps={attachmentTypeEmailStatusRowProps} />
-					<SizeSmallerSizeLargerRow compProps={sizeSmallerSizeLargerRowProps} />
-					<SendReceivedDateRow compProps={sendDateRowProps} />
-					<TagFolderRow compProps={tagFolderRowProps} />
-				</Container>
-				<ModalFooter
-					onConfirm={onConfirm}
-					disabled={disabled}
-					secondaryDisabled={secondaryDisabled}
-					label={t('action.search', 'Search')}
-					secondaryLabel={t('action.reset', 'Reset')}
-					secondaryAction={resetFilters}
-					secondaryBtnType="outlined"
-					secondaryColor="primary"
-					paddingTop="small"
-				/>
-			</Container>
+			<ScrollableContainer
+				padding={{ horizontal: 'medium', vertical: 'small' }}
+				mainAlignment={'flex-start'}
+			>
+				<ToggleFilters compProps={toggleFiltersProps} />
+				<SubjectKeywordRow compProps={subjectKeywordRowProps} />
+				<ReceivedSentAddressRow compProps={receivedSentAddressRowProps} />
+				<AttachmentTypeEmailStatusRow compProps={attachmentTypeEmailStatusRowProps} />
+				<SizeSmallerSizeLargerRow compProps={sizeSmallerSizeLargerRowProps} />
+				<SendReceivedDateRow compProps={sendDateRowProps} />
+				<TagFolderRow compProps={tagFolderRowProps} />
+			</ScrollableContainer>
+			<Divider />
+			<ModalFooter
+				onConfirm={onConfirm}
+				confirmDisabled={disabled}
+				secondaryActionDisabled={secondaryDisabled}
+				confirmLabel={t('action.search', 'Search')}
+				secondaryActionLabel={t('action.reset', 'Reset')}
+				onSecondaryAction={resetFilters}
+			/>
 		</CustomModal>
 	);
 };
-
-export default AdvancedFilterModal;

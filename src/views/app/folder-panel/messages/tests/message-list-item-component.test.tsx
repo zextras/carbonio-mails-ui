@@ -14,7 +14,8 @@ import { FOLDERS } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-
 import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import type { Folder } from '../../../../../carbonio-ui-commons/types/folder';
-import { FOLDERS_DESCRIPTORS, VISIBILITY_ASSERTION } from '../../../../../tests/constants';
+import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
+import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import type { MessageListItemProps } from '../../../../../types';
@@ -49,12 +50,12 @@ describe.each`
 	describe('in any folders', () => {
 		test.each`
 			case | folder                              | assertion
-			${1} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${1} | ${FOLDERS_DESCRIPTORS.SENT}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${1} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${1} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${1} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${1} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.IS_VISIBLE}
+			${1} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.IS_VISIBLE}
 		`(
 			`(case #$case) the avatar $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
@@ -77,7 +78,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -90,12 +91,12 @@ describe.each`
 
 		test.each`
 			case | folder                              | assertion
-			${2} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${2} | ${FOLDERS_DESCRIPTORS.SENT}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${2} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${2} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${2} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${2} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.IS_VISIBLE}
+			${2} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.IS_VISIBLE}
 		`(
 			`(case #$case) the date $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
@@ -119,7 +120,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -136,12 +137,12 @@ describe.each`
 
 		test.each`
 			case | folder                              | assertion
-			${3} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${3} | ${FOLDERS_DESCRIPTORS.SENT}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${3} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${3} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${3} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${3} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.IS_VISIBLE}
+			${3} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.IS_VISIBLE}
 		`(
 			`(case #$case) if set, the subject $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
@@ -165,7 +166,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -183,12 +184,12 @@ describe.each`
 
 		test.each`
 			case | folder                              | assertion
-			${4} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${4} | ${FOLDERS_DESCRIPTORS.SENT}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${4} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${4} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${4} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${4} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.IS_VISIBLE}
+			${4} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.IS_VISIBLE}
 		`(
 			`(case #$case) if set, the subject $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
@@ -212,7 +213,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -230,12 +231,12 @@ describe.each`
 
 		test.each`
 			case | folder                              | assertion
-			${5} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${5} | ${FOLDERS_DESCRIPTORS.SENT}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${5} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${5} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${5} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-			${5} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${ASSERTIONS.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.SENT}         | ${ASSERTIONS.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${ASSERTIONS.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.TRASH}        | ${ASSERTIONS.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.SPAM}         | ${ASSERTIONS.IS_VISIBLE}
+			${5} | ${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${ASSERTIONS.IS_VISIBLE}
 		`(
 			`(case #$case) the sender label $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
@@ -258,7 +259,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -303,7 +304,7 @@ describe.each`
 					messages: {
 						searchedInFolder: {},
 						messages: [msg],
-						status: {}
+						searchRequestStatus: null
 					}
 				});
 
@@ -336,7 +337,7 @@ describe.each`
 		// 		messages: {
 		// 			searchedInFolder: {},
 		// 			messages: [msg],
-		// 			status: {}
+		// 			searchRequestStatus: null
 		// 		}
 		// 	});
 		//
@@ -380,7 +381,7 @@ describe.each`
 				messages: {
 					searchedInFolder: {},
 					messages: [msg],
-					status: {}
+					searchRequestStatus: null
 				}
 			});
 
@@ -403,8 +404,8 @@ describe('in the drafts folder', () => {
 	const folderId = FOLDERS.DRAFTS;
 	test.each`
 		case | listType                 | isSearchModule | assertion
-		${4} | ${'message list'}        | ${false}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-		${0} | ${'search message list'} | ${true}        | ${VISIBILITY_ASSERTION.IS_NOT_VISIBLE}
+		${4} | ${'message list'}        | ${false}       | ${ASSERTIONS.IS_VISIBLE}
+		${0} | ${'search message list'} | ${true}        | ${ASSERTIONS.IS_NOT_VISIBLE}
 	`(
 		'(case #$case) in a $listType item the string [DRAFT] $assertion.desc',
 		async ({ isSearchModule, assertion }) => {
@@ -427,7 +428,7 @@ describe('in the drafts folder', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: [msg],
-					status: {}
+					searchRequestStatus: null
 				}
 			});
 
@@ -438,10 +439,10 @@ describe('in the drafts folder', () => {
 	);
 
 	// TODO add the following test parameters:
-	// ${0} | ${'search message list'} | ${true}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+	// ${0} | ${'search message list'} | ${true}        | ${ASSERTIONS.IS_VISIBLE}
 	test.each`
 		case | listType          | isSearchModule | assertion
-		${2} | ${'message list'} | ${false}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+		${2} | ${'message list'} | ${false}       | ${ASSERTIONS.IS_VISIBLE}
 	`(
 		"(case #$case) in a $listType item the recipients' names, if set, $assertion.desc",
 		async ({ isSearchModule, assertion }) => {
@@ -468,7 +469,7 @@ describe('in the drafts folder', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: [msg],
-					status: {}
+					searchRequestStatus: null
 				}
 			});
 
@@ -485,8 +486,8 @@ describe('in the drafts folder', () => {
 
 	test.each`
 		case | listType                 | isSearchModule | assertion
-		${3} | ${'message list'}        | ${false}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-		${0} | ${'search message list'} | ${true}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+		${3} | ${'message list'}        | ${false}       | ${ASSERTIONS.IS_VISIBLE}
+		${0} | ${'search message list'} | ${true}        | ${ASSERTIONS.IS_VISIBLE}
 	`(
 		'(case #$case) in a $listType item, if the body content is set, the fragment $assertion.desc',
 		async ({ isSearchModule, assertion }) => {
@@ -510,7 +511,7 @@ describe('in the drafts folder', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: [msg],
-					status: {}
+					searchRequestStatus: null
 				}
 			});
 
@@ -551,7 +552,7 @@ describe('in the trash folder', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: [msg],
-				status: {}
+				searchRequestStatus: null
 			}
 		});
 
@@ -563,8 +564,8 @@ describe('in the trash folder', () => {
 
 	test.each`
 		case | listType                 | isSearchModule | assertion
-		${3} | ${'message list'}        | ${false}       | ${VISIBILITY_ASSERTION.IS_VISIBLE}
-		${0} | ${'search message list'} | ${true}        | ${VISIBILITY_ASSERTION.IS_VISIBLE}
+		${3} | ${'message list'}        | ${false}       | ${ASSERTIONS.IS_VISIBLE}
+		${0} | ${'search message list'} | ${true}        | ${ASSERTIONS.IS_VISIBLE}
 	`(
 		'(case #$case) in a $listType item, if the body content is set, the fragment $assertion.desc',
 		async ({ isSearchModule, assertion }) => {
@@ -588,7 +589,7 @@ describe('in the trash folder', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: [msg],
-					status: {}
+					searchRequestStatus: null
 				}
 			});
 

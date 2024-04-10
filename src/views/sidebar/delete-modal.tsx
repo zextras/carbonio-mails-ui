@@ -58,7 +58,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 						folder,
 						l: FOLDERS.TRASH,
 						op: inTrash ? FOLDER_ACTIONS.DELETE : FOLDER_ACTIONS.MOVE
-				  }
+					}
 		)
 			.then((res) => {
 				if (!('Fault' in res)) {

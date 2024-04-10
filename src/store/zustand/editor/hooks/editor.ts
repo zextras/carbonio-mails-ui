@@ -32,7 +32,7 @@ import { useEditorsStore } from '../store';
 export const useEditorSubject = (
 	id: MailsEditorV2['id']
 ): { subject: string; setSubject: (subject: string) => void } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].subject);
 	const setter = useEditorsStore((state) => state.setSubject);
 
@@ -41,10 +41,10 @@ export const useEditorSubject = (
 			subject: value,
 			setSubject: (val: string): void => {
 				setter(id, val);
-				saveDraftFromEditor(id);
+				debouncedSaveDraft(id);
 			}
 		}),
-		[id, saveDraftFromEditor, setter, value]
+		[id, debouncedSaveDraft, setter, value]
 	);
 };
 
@@ -59,21 +59,21 @@ export const useEditorText = (
 	setText: (text: MailsEditorV2['text']) => void;
 	resetText: () => void;
 } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].text);
 	const setter = useEditorsStore((state) => state.setText);
 	const setText = useCallback(
 		(val: MailsEditorV2['text']): void => {
 			setter(id, val);
-			saveDraftFromEditor(id);
+			debouncedSaveDraft(id);
 		},
-		[id, saveDraftFromEditor, setter]
+		[id, debouncedSaveDraft, setter]
 	);
 
 	const resetText = useCallback((): void => {
 		setter(id, { plainText: '', richText: '' });
-		saveDraftFromEditor(id);
-	}, [id, saveDraftFromEditor, setter]);
+		debouncedSaveDraft(id);
+	}, [id, debouncedSaveDraft, setter]);
 
 	return useMemo(
 		() => ({
@@ -95,7 +95,7 @@ export const useEditorAutoSendTime = (
 	autoSendTime: MailsEditorV2['autoSendTime'];
 	setAutoSendTime: (autoSendTime: MailsEditorV2['autoSendTime']) => void;
 } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].autoSendTime);
 	const setter = useEditorsStore((state) => state.setAutoSendTime);
 
@@ -104,10 +104,10 @@ export const useEditorAutoSendTime = (
 			autoSendTime: value,
 			setAutoSendTime: (val: MailsEditorV2['autoSendTime']): void => {
 				setter(id, val);
-				saveDraftFromEditor(id);
+				debouncedSaveDraft(id);
 			}
 		}),
-		[id, saveDraftFromEditor, setter, value]
+		[id, debouncedSaveDraft, setter, value]
 	);
 };
 
@@ -121,7 +121,7 @@ export const useEditorDid = (
 	did: MailsEditorV2['did'];
 	setDid: (did: MailsEditorV2['did']) => void;
 } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].did);
 	const setter = useEditorsStore((state) => state.setDid);
 
@@ -130,10 +130,10 @@ export const useEditorDid = (
 			did: value,
 			setDid: (val: MailsEditorV2['did']): void => {
 				setter(id, val);
-				saveDraftFromEditor(id);
+				debouncedSaveDraft(id);
 			}
 		}),
-		[id, saveDraftFromEditor, setter, value]
+		[id, debouncedSaveDraft, setter, value]
 	);
 };
 
@@ -147,7 +147,7 @@ export const useEditorIsRichText = (
 	isRichText: MailsEditorV2['isRichText'];
 	setIsRichText: (isRichText: MailsEditorV2['isRichText']) => void;
 } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].isRichText);
 	const setter = useEditorsStore((state) => state.setIsRichText);
 
@@ -156,10 +156,10 @@ export const useEditorIsRichText = (
 			isRichText: value,
 			setIsRichText: (val: MailsEditorV2['isRichText']): void => {
 				setter(id, val);
-				saveDraftFromEditor(id);
+				debouncedSaveDraft(id);
 			}
 		}),
-		[id, saveDraftFromEditor, setter, value]
+		[id, debouncedSaveDraft, setter, value]
 	);
 };
 
@@ -173,7 +173,7 @@ export const useEditorRecipients = (
 	recipients: MailsEditorV2['recipients'];
 	setRecipients: (recipient: MailsEditorV2['recipients']) => void;
 } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[editorId].recipients);
 	const setter = useEditorsStore((state) => state.setRecipients);
 
@@ -183,10 +183,10 @@ export const useEditorRecipients = (
 			setRecipients: (val: MailsEditorV2['recipients']): void => {
 				setter(editorId, val);
 				computeAndUpdateEditorStatus(editorId);
-				saveDraftFromEditor(editorId);
+				debouncedSaveDraft(editorId);
 			}
 		}),
-		[editorId, saveDraftFromEditor, setter, value]
+		[editorId, debouncedSaveDraft, setter, value]
 	);
 };
 
@@ -200,7 +200,7 @@ export const useEditorToRecipients = (
 	toRecipients: MailsEditorV2['recipients']['to'];
 	setToRecipients: (recipient: MailsEditorV2['recipients']['to']) => void;
 } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.to);
 	const setter = useEditorsStore((state) => state.setToRecipients);
 
@@ -210,10 +210,10 @@ export const useEditorToRecipients = (
 			setToRecipients: (val: MailsEditorV2['recipients']['to']): void => {
 				setter(editorId, val);
 				computeAndUpdateEditorStatus(editorId);
-				saveDraftFromEditor(editorId);
+				debouncedSaveDraft(editorId);
 			}
 		}),
-		[editorId, saveDraftFromEditor, setter, value]
+		[editorId, debouncedSaveDraft, setter, value]
 	);
 };
 
@@ -227,7 +227,7 @@ export const useEditorCcRecipients = (
 	ccRecipients: MailsEditorV2['recipients']['cc'];
 	setCcRecipients: (recipient: MailsEditorV2['recipients']['cc']) => void;
 } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.cc);
 	const setter = useEditorsStore((state) => state.setCcRecipients);
 
@@ -237,10 +237,10 @@ export const useEditorCcRecipients = (
 			setCcRecipients: (val: MailsEditorV2['recipients']['cc']): void => {
 				setter(editorId, val);
 				computeAndUpdateEditorStatus(editorId);
-				saveDraftFromEditor(editorId);
+				debouncedSaveDraft(editorId);
 			}
 		}),
-		[editorId, saveDraftFromEditor, setter, value]
+		[editorId, debouncedSaveDraft, setter, value]
 	);
 };
 
@@ -254,7 +254,7 @@ export const useEditorBccRecipients = (
 	bccRecipients: MailsEditorV2['recipients']['bcc'];
 	setBccRecipients: (recipient: MailsEditorV2['recipients']['bcc']) => void;
 } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[editorId].recipients.bcc);
 	const setter = useEditorsStore((state) => state.setBccRecipients);
 
@@ -264,10 +264,10 @@ export const useEditorBccRecipients = (
 			setBccRecipients: (val: MailsEditorV2['recipients']['bcc']): void => {
 				setter(editorId, val);
 				computeAndUpdateEditorStatus(editorId);
-				saveDraftFromEditor(editorId);
+				debouncedSaveDraft(editorId);
 			}
 		}),
-		[editorId, saveDraftFromEditor, setter, value]
+		[editorId, debouncedSaveDraft, setter, value]
 	);
 };
 
@@ -281,7 +281,7 @@ export const useEditorIdentityId = (
 	identityId: MailsEditorV2['identityId'];
 	setIdentityId: (from: MailsEditorV2['identityId']) => void;
 } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[editorId].identityId);
 	const setter = useEditorsStore((state) => state.setIdentityId);
 
@@ -291,10 +291,10 @@ export const useEditorIdentityId = (
 			setIdentityId: (val: MailsEditorV2['identityId']): void => {
 				setter(editorId, val);
 				computeAndUpdateEditorStatus(editorId);
-				saveDraftFromEditor(editorId);
+				debouncedSaveDraft(editorId);
 			}
 		}),
-		[editorId, saveDraftFromEditor, setter, value]
+		[editorId, debouncedSaveDraft, setter, value]
 	);
 };
 
@@ -308,7 +308,7 @@ export const useEditorIsUrgent = (
 	isUrgent: MailsEditorV2['isUrgent'];
 	setIsUrgent: (isUrgent: MailsEditorV2['isUrgent']) => void;
 } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].isUrgent);
 	const setter = useEditorsStore((state) => state.setIsUrgent);
 
@@ -317,10 +317,10 @@ export const useEditorIsUrgent = (
 			isUrgent: value,
 			setIsUrgent: (val: MailsEditorV2['isUrgent']): void => {
 				setter(id, val);
-				saveDraftFromEditor(id);
+				debouncedSaveDraft(id);
 			}
 		}),
-		[id, saveDraftFromEditor, setter, value]
+		[id, debouncedSaveDraft, setter, value]
 	);
 };
 
@@ -334,7 +334,7 @@ export const useEditorRequestReadReceipt = (
 	requestReadReceipt: MailsEditorV2['requestReadReceipt'];
 	setRequestReadReceipt: (requestReadReceipt: MailsEditorV2['requestReadReceipt']) => void;
 } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].requestReadReceipt);
 	const setter = useEditorsStore((state) => state.setRequestReadReceipt);
 
@@ -343,9 +343,9 @@ export const useEditorRequestReadReceipt = (
 			requestReadReceipt: value,
 			setRequestReadReceipt: (val: MailsEditorV2['requestReadReceipt']): void => {
 				setter(id, val);
-				saveDraftFromEditor(id);
+				debouncedSaveDraft(id);
 			}
 		}),
-		[id, saveDraftFromEditor, setter, value]
+		[id, debouncedSaveDraft, setter, value]
 	);
 };

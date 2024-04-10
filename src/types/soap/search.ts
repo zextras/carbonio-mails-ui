@@ -6,9 +6,10 @@
 import { SoapConversation } from './soap-conversation';
 import { SoapIncompleteMessage } from './soap-mail-message';
 import { ZimbraRequest } from './zimbra-request';
+import { SortBy } from '../../carbonio-ui-commons/types/folder';
 
 export type SearchRequest = ZimbraRequest & {
-	sortBy: 'dateDesc' | 'dateAsc';
+	sortBy: SortBy;
 	types: string;
 	fullConversation: 0 | 1;
 	needExp: 0 | 1;
@@ -25,5 +26,5 @@ export type SearchResponse = {
 	m?: SoapIncompleteMessage[];
 	more: boolean;
 	offset?: number;
-	sortBy?: 'dateDesc' | 'dateAsc';
+	sortBy?: SortBy;
 };

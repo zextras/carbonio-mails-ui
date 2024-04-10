@@ -8,6 +8,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ErrorSoapBodyResponse, getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { keyBy, map, reduce } from 'lodash';
+
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type {
@@ -35,12 +36,47 @@ export const search = createAsyncThunk<
 			query,
 			offset,
 			recip = '2',
-			wantContent = 'full'
+			wantContent = 'full',
+			locale
 		},
 		{ rejectWithValue }
 	) => {
 		const queryPart = [`inId:"${folderId}"`];
+		let finalsortBy = sortBy;
 		if (before) queryPart.push(`before:${before.getTime()}`);
+		switch (sortBy) {
+			case 'readAsc':
+				queryPart.push('is:unread');
+				finalsortBy = 'dateAsc';
+				break;
+			case 'readDesc':
+				queryPart.push('is:unread');
+				finalsortBy = 'dateDesc';
+				break;
+			case 'priorityAsc':
+			case 'priorityDesc':
+				queryPart.push('priority:high');
+				break;
+			case 'flagAsc':
+			case 'flagDesc':
+				queryPart.push('is:flagged');
+				break;
+			case 'attachAsc':
+			case 'attachDesc':
+				queryPart.push('has:attachment');
+				break;
+			default:
+				break;
+		}
+
+		let finalQuery = '';
+
+		if (folderId) {
+			finalQuery = queryPart.join(' ');
+		}
+		if (!folderId && query) {
+			finalQuery = query;
+		}
 
 		try {
 			const result = await soapFetch<SearchRequest, SearchResponse | ErrorSoapBodyResponse>(
@@ -52,13 +88,19 @@ export const search = createAsyncThunk<
 					recip,
 					fullConversation: 1,
 					wantContent,
-					sortBy,
-					query: query || queryPart.join(' '),
+					sortBy: finalsortBy,
+					query: finalQuery,
 					offset,
-					types
+					types,
+					...(locale
+						? {
+								locale: {
+									_content: locale
+								}
+							}
+						: undefined)
 				}
 			);
-
 			if (!result) {
 				return rejectWithValue(undefined);
 			}
@@ -69,12 +111,14 @@ export const search = createAsyncThunk<
 
 			const tags = getTags();
 			if (types === 'conversation') {
-				const conversations = map(result?.c ?? [], (obj) =>
-					normalizeConversation({ c: obj, tags })
-				) as unknown as Array<Conversation>;
+				const conversations = map(result?.c ?? [], (obj, index) => ({
+					...normalizeConversation({ c: obj, tags }),
+					sortIndex: index + (offset ?? 0)
+				})) as unknown as Array<Conversation>;
 				return {
 					conversations: keyBy(conversations, 'id'),
 					hasMore: result.more,
+					offset: result.offset,
 					types
 				};
 			}
@@ -82,13 +126,17 @@ export const search = createAsyncThunk<
 				return {
 					messages: reduce(
 						result.m ?? [],
-						(acc, msg) => {
-							const normalized = normalizeMailMessageFromSoap(msg, false);
+						(acc, msg, index) => {
+							const normalized = {
+								...normalizeMailMessageFromSoap(msg, false),
+								sortIndex: index + (offset ?? 0)
+							};
 							return { ...acc, [normalized.id]: normalized };
 						},
 						{}
 					),
 					hasMore: result.more,
+					offset: result.offset,
 					types
 				};
 			}

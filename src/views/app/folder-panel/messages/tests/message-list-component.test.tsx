@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
+import { screen } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { noop, times } from 'lodash';
-import React from 'react';
-import { screen } from '@testing-library/react';
+
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
@@ -66,7 +68,7 @@ describe.each`
 				messages: {
 					...messages.map((msg) => ({ [msg.id]: msg }))
 				},
-				status: {}
+				searchRequestStatus: null
 			}
 		});
 

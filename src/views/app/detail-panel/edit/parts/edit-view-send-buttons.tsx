@@ -8,7 +8,8 @@ import React, { FC, useCallback, useMemo } from 'react';
 import { Button, MultiButton, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import SendLaterModal from './send-later-modal';
+import { SendLaterModal } from './send-later-modal';
+import { AnimatedLoader } from '../../../../../assets/animated-loader';
 import { StoreProvider } from '../../../../../store/redux';
 
 export type EditViewSendButtonsProps = {
@@ -16,13 +17,15 @@ export type EditViewSendButtonsProps = {
 	onSendNow: () => void;
 	disabled: boolean;
 	tooltip: string;
+	isLoading: boolean;
 };
 
 export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 	onSendLater,
 	onSendNow,
 	disabled,
-	tooltip
+	tooltip,
+	isLoading
 }) => {
 	const { attrs } = useUserSettings();
 	const createModal = useModal();
@@ -38,6 +41,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 								onSendLater(autoSendTime);
 								closeModal();
 							}}
+							onClose={(): void => closeModal && closeModal()}
 						/>
 					</StoreProvider>
 				)
@@ -61,7 +65,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 							label: t('label.send_later', 'Send later'),
 							onClick: onSendLaterClick
 						}
-				  ]
+					]
 				: [])
 		],
 		[isSendLaterAllowed, onSendLaterClick]
@@ -77,6 +81,10 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						onClick={onSendNow}
 						disabledPrimary={disabled}
 						disabledSecondary={disabled}
+						// TOFIX: remove this ts-ignore once SHELL 5.3.0 is released
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						icon={isLoading ? AnimatedLoader : 'ChevronDownOutline'}
 						items={multiBtnActions}
 					/>
 				</Tooltip>
@@ -86,7 +94,7 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 						color="primary"
 						data-testid="BtnSendMail"
 						disabled={disabled}
-						icon="PaperPlane"
+						icon={isLoading ? AnimatedLoader : 'PaperPlane'}
 						onClick={onSendNow}
 						label={t('label.send', 'Send')}
 					/>

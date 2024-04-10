@@ -5,18 +5,29 @@
  */
 import React, { FC } from 'react';
 
+import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
 import { MessagePreviewPanel } from './message-preview-panel';
 import { useAppSelector } from '../../../hooks/redux';
 import { useMessageActions } from '../../../hooks/use-message-actions';
+import { useSelection } from '../../../hooks/use-selection';
 import { selectMessage } from '../../../store/messages-slice';
-import { MailsStateType } from '../../../types';
+import { AppContext, MailsStateType } from '../../../types';
+import { useMsgConvActions } from '../../../ui-actions/use-msg-conv-actions';
 
 export const MessagePreviewPanelContainer: FC = () => {
 	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
-	const messageActions = useMessageActions(message, true);
+	const { setCount } = useAppContext<AppContext>();
+	const { deselectAll } = useSelection({ currentFolderId: folderId, setCount, count: 0 });
+
+	const messageActionsForExtraWindow = useMessageActions(message, true);
+	const messageActions = useMsgConvActions({
+		item: message,
+		deselectAll,
+		messageActionsForExtraWindow
+	});
 	return (
 		<MessagePreviewPanel
 			folderId={folderId}

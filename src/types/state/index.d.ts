@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { SortBy } from '../../carbonio-ui-commons/types/folder';
+import { API_REQUEST_STATUS } from '../../constants';
 import type { AppDispatch } from '../../store/redux';
 import type { SavedAttachment, UnsavedAttachment } from '../attachments';
 import type { Conversation } from '../conversations';
@@ -27,6 +29,8 @@ export type EditorsStateTypeV2 = {
 	setText: (id: MailsEditorV2['id'], text: MailsEditorV2['text']) => void;
 	setAutoSendTime: (id: MailsEditorV2['id'], autoSendTime: MailsEditorV2['autoSendTime']) => void;
 	setDid: (id: MailsEditorV2['id'], did: MailsEditorV2['did']) => void;
+	setSize: (id: MailsEditorV2['id'], size: MailsEditorV2['size']) => void;
+	setTotalSmartLinksSize: (id: MailsEditorV2['id']) => void;
 	setIsRichText: (id: MailsEditorV2['id'], isRichText: MailsEditorV2['isRichText']) => void;
 	setIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
 	setRequestReadReceipt: (
@@ -78,12 +82,13 @@ export type EditorsStateTypeV2 = {
 	removeUnsavedAttachment: (id: MailsEditorV2['id'], uploadId: string) => void;
 	clearStandardAttachments: (id: MailsEditorV2['id']) => void;
 	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
+	toggleSmartLink: (id: MailsEditorV2['id'], partName: string) => void;
 };
 
 export type MsgStateType = {
-	searchedInFolder: Record<string, string>;
+	searchedInFolder: Record<string, SearchedFolderStateStatus>;
 	messages: MsgMap;
-	status: Record<string, Status>;
+	searchRequestStatus: SearchRequestStatus;
 };
 
 export type ErrorType = {
@@ -93,10 +98,10 @@ export type ErrorType = {
 
 export type ConversationsStateType = {
 	currentFolder: string;
-	searchedInFolder: Record<string, string>;
+	searchedInFolder: Record<string, SearchedFolderStateStatus>;
 	conversations: Record<string, Conversation>;
-	expandedStatus: Record<string, Status>;
-	status: ConversationsFolderStatus;
+	expandedStatus: Record<string, SearchRequestStatus>;
+	searchRequestStatus: SearchRequestStatus;
 };
 
 export type SearchesStateType = {
@@ -106,7 +111,7 @@ export type SearchesStateType = {
 	messages?: Record<string, Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>>;
 	more: boolean;
 	offset: number;
-	sortBy: 'dateDesc' | 'dateAsc';
+	sortBy: SortBy;
 	query: string;
 	status: string;
 	parent?: string;
@@ -122,14 +127,12 @@ export type MailsEditorMapV2 = Record<string, MailsEditorV2>;
 
 export type MsgMap = Record<string, MsgMapValue>;
 
-export type ConversationsFolderStatus =
-	| 'empty'
-	| 'pending'
-	| 'complete'
-	| 'hasMore'
-	| 'hasChange'
-	| 'error';
-export type Status = 'pending' | 'error' | 'complete';
+type SearchedFolderStateStatusKey = keyof typeof SEARCHED_FOLDER_STATE_STATUS;
+export type SearchedFolderStateStatus =
+	(typeof SEARCHED_FOLDER_STATE_STATUS)[SearchedFolderStateStatusKey];
+
+type ApiRequestStatusKey = keyof typeof API_REQUEST_STATUS;
+export type SearchRequestStatus = (typeof API_REQUEST_STATUS)[ApiRequestStatusKey] | null;
 
 export type Payload = {
 	payload: { m: Array<SoapIncompleteMessage>; t?: any };

@@ -1,0 +1,37 @@
+{
+    "action": {
+        "apply_filter_on_folder": "Застосувати фільтр до папки",
+        "click_preview": "Натисніть, щоб переглянути",
+        "click_open": "Натисніть, щоб відкрити",
+        "edit_anyway": "Відредагувати все одно",
+        "edit_as_new": "Редагувати як нове",
+        "edit_share": "Редагувати спільний доступ",
+        "flag": "Позначити",
+        "search": "Пошук",
+        "share_folder": "Поділитися папкою",
+        "goto_folder": "ПЕРЕЙТИ ДО ПАПКИ",
+        "reset": "Скинути",
+        "hide_details": "Приховати деталі",
+        "mark_as_non_spam": "Не спам",
+        "mark_as_read": "Позначити як прочитане",
+        "mark_all_read": "Позначити все як прочитане"
+    },
+    "label": {
+        "cancel": "Скасувати",
+        "delete": "Видалити",
+        "discard_changes": "СКАСУВАТИ ЗМІНИ",
+        "filter_folders": "Фільтр папок",
+        "go_back": "Назад",
+        "new_folder": "Нова папка",
+        "save": "Зберегти",
+        "time_zone": "Часовий пояс"
+    },
+    "messages": {
+        "permanent_delete_title": "Ви впевнені, що хочете назавжди видалити цей елемент?"
+    },
+    "message": {
+        "snackbar": {
+            "settings_saved": "Зміни збережено"
+        }
+    }
+}

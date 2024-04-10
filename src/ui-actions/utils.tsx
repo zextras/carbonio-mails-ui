@@ -4,9 +4,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { find } from 'lodash';
+import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
+import { TFunction } from 'i18next';
+import { find, truncate } from 'lodash';
 
-import type { Conversation, MailMessage, MessageAction } from '../types';
+import { createSmartLinksSoapAPI } from '../store/actions/create-smart-links';
+import { useEditorsStore } from '../store/zustand/editor/store';
+import type {
+	CreateSmartLinksResponse,
+	SmartLinkUrl,
+	Conversation,
+	MailMessage,
+	MailsEditorV2,
+	MessageAction
+} from '../types';
 
 type GetFolderParentIdProps = {
 	folderId: string;
@@ -43,3 +54,111 @@ export const findMessageActionById = (
 
 	return find(actions, ['id', id]);
 };
+
+/**
+ * Generate the html for the smart link
+ */
+export const generateSmartLinkHtml = ({
+	smartLink,
+	filename
+}: {
+	smartLink: SmartLinkUrl;
+	filename: MailsEditorV2['savedAttachments'][0]['filename'];
+}): string =>
+	`<a style='background-color: #D3EBF8;
+padding: 11px 16px;
+color: #2B73D2;
+display: inline-block;
+margin-top: 5px;
+max-width: 80%;
+border-radius: 5px;'
+ href='${smartLink.publicUrl}' download>${truncate(filename ?? smartLink.publicUrl, {
+		length: 76,
+		omission: '...'
+ })}</a>`;
+
+/**
+ * Add smart links to the text of the editor
+ * both in plain text and rich text
+ */
+export function addSmartLinksToText({
+	response,
+	text,
+	attachments
+}: {
+	response: CreateSmartLinksResponse;
+	text: MailsEditorV2['text'];
+	attachments: MailsEditorV2['savedAttachments'];
+}): MailsEditorV2['text'] {
+	return {
+		plainText: text.plainText.concat(
+			response.smartLinks.map((smartLink) => smartLink.publicUrl).join('\n')
+		),
+		richText: text.richText.concat(
+			` ${response.smartLinks
+				.map((smartLink, index) =>
+					generateSmartLinkHtml({
+						smartLink,
+						filename: attachments[index]?.filename
+					})
+				)
+				.join('<br/>')}`
+		)
+	};
+}
+
+/**
+ * Create smart links for the attachments that require it
+ * once obtained the response, the text of the editor is updated with the smart links
+ * the attachments that have been converted are removed from the saved attachments
+ * @param editorId
+ * @param onResponseCallback
+ * @param createSnackbar
+ * @param t
+ * @returns Promise<void>
+ */
+export async function updateEditorWithSmartLinks({
+	createSnackbar,
+	t,
+	editorId
+}: {
+	editorId: MailsEditorV2['id'];
+	createSnackbar: CreateSnackbarFn;
+	t: TFunction;
+}): Promise<void> {
+	const savedStandardAttachments = useEditorsStore.getState().editors[editorId].savedAttachments;
+
+	const attachmentsToConvert = savedStandardAttachments
+		.filter((attachment) => attachment.requiresSmartLinkConversion)
+		.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName }));
+
+	try {
+		const result = await createSmartLinksSoapAPI(attachmentsToConvert);
+
+		const { text } = useEditorsStore.getState().editors[editorId];
+
+		const attachmentsToAddToBody = savedStandardAttachments.filter(
+			(attachment) => attachment.requiresSmartLinkConversion
+		);
+
+		const textWithLinks = addSmartLinksToText({
+			response: result,
+			text,
+			attachments: attachmentsToAddToBody
+		});
+		useEditorsStore.getState().setText(editorId, textWithLinks);
+		const { removeSavedAttachment } = useEditorsStore.getState();
+		attachmentsToConvert.forEach((smartLink) => {
+			removeSavedAttachment(editorId, smartLink.partName);
+		});
+	} catch (err) {
+		createSnackbar({
+			key: `save-draft`,
+			replace: true,
+			type: 'error',
+			label: t('label.error_try_again', 'Something went wrong, please try again'),
+			autoHideTimeout: 3000
+		});
+		throw err;
+	}
+}

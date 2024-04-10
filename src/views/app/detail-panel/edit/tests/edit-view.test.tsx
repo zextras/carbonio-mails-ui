@@ -15,16 +15,17 @@ import {
 	waitForElementToBeRemoved,
 	within
 } from '@testing-library/react';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
-import { rest } from 'msw';
 
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
+import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import {
 	FOLDERS,
 	useBoard as mockedUseBoard
 } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { createAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -34,20 +35,23 @@ import * as saveDraftAction from '../../../../../store/actions/save-draft';
 import { addEditor } from '../../../../../store/zustand/editor';
 import { generateNewMessageEditor } from '../../../../../store/zustand/editor/editor-generators';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
+import { readyToBeSentEditorTestCase } from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
-import { saveDraftResult } from '../../../../../tests/mocks/network/msw/cases/saveDraft/saveDraft-1';
 import type {
+	CreateSmartLinksRequest,
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
 	SoapMailMessage,
 	SoapMailMessagePart
 } from '../../../../../types';
+import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
 import { EditView, EditViewProp } from '../edit-view';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
 const CT_MULTIPART_ALTERNATIVE = 'multipart/alternative';
+const FAKE_MESSAGE_ID = '11215';
 
 const extractPartContent = (content: string | { _content: string } | undefined): string => {
 	if (!content) {
@@ -107,6 +111,16 @@ const getSoapMailBodyContent = (
 	return '';
 };
 
+const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest> =>
+	createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
+		Fault: {
+			Reason: { Text: 'Failed upload to Files' },
+			Detail: {
+				Error: { Code: '123', Detail: 'Failed due to connection timeout' }
+			}
+		}
+	});
+
 /**
  * Test the EditView component in different scenarios
  */
@@ -157,73 +171,57 @@ describe('Edit view', () => {
 			expect(btnSend).toBeDisabled();
 
 			// Reset the content of the "to" component and type the address
-			await user.click(toInputElement);
-			await user.clear(toInputElement);
-			await user.type(toInputElement, address);
+			await act(() => user.click(toInputElement));
+			await act(() => user.clear(toInputElement));
+			await act(() => user.type(toInputElement, address));
 
 			// Click on the "CC" button to show CC Recipient field
-			await user.click(btnCc);
+			await act(() => user.click(btnCc));
 			const ccComponent = screen.getByTestId('RecipientCc');
 			const ccInputElement = within(ccComponent).getByRole('textbox');
 
 			// Reset the content of the "Cc" component and type the address
-			await user.click(ccInputElement);
-			await user.clear(ccInputElement);
-			await user.type(ccInputElement, ccAddress);
+			await act(() => user.click(ccInputElement));
+			await act(() => user.clear(ccInputElement));
+			await act(() => user.type(ccInputElement, ccAddress));
 
 			// Insert a subject
-			await user.click(subjectInputElement);
-			await user.type(subjectInputElement, subject);
+			await act(() => user.click(subjectInputElement));
+			await act(() => user.type(subjectInputElement, subject));
+
+			const optionIcon = screen.getByTestId('options-dropdown-icon');
+			expect(optionIcon).toBeInTheDocument();
+			await act(() => user.click(optionIcon));
+			const markAsImportantOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
+				/label\.mark_as_important/i
+			);
+			expect(markAsImportantOption).toBeVisible();
 			act(() => {
 				jest.advanceTimersByTime(10000);
 			});
 
 			// Workaround of typing problem in the preset textarea
-			await user.clear(editorTextareaElement);
+			await act(() => user.clear(editorTextareaElement));
 
 			// Insert a text inside editor
-			await user.type(editorTextareaElement, body);
-			await user.click(subjectInputElement);
+			await act(() => user.type(editorTextareaElement, body));
+			await act(() => user.click(subjectInputElement));
 
 			// Check for the status of the "send" button to be enabled
 			expect(btnSend).toBeEnabled();
 
-			const sendMsgPromise = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SendMsgRequest', async (req, res, ctx) => {
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const sentMsg = (await req.json()).Body.SendMsgRequest.m;
-						resolve(sentMsg);
-						const response = {
-							Header: {
-								context: {
-									session: {
-										id: '1220806',
-										_content: '1220806'
-									}
-								}
-							},
-							Body: {
-								SendMsgResponse: {
-									m: [
-										{
-											id: '1'
-										}
-									],
-									_jsns: 'urn:zimbraMail'
-								}
-							},
-							_jsns: 'urn:zimbraSoap'
-						};
-
-						return res(ctx.json(response));
-					})
-				);
-			});
+			const response = {
+				m: [
+					{
+						id: '1'
+					}
+				],
+				_jsns: 'urn:zimbraMail'
+			};
+			const sendMsgPromise = createAPIInterceptor<{ m: SoapDraftMessageObj }, SoapSendMsgResponse>(
+				'SendMsg',
+				response
+			);
 
 			await waitFor(() => {
 				expect(btnSend).toBeEnabled();
@@ -249,7 +247,7 @@ describe('Edit view', () => {
 			});
 
 			// Obtain the message from the rest handler
-			const msg = await sendMsgPromise;
+			const { m: msg } = await sendMsgPromise;
 
 			// Check the content of the message
 			expect(msg.su._content).toBe(subject);
@@ -268,6 +266,53 @@ describe('Edit view', () => {
 			// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
 			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
 		}, 200000);
+
+		describe('send email with attachment to convert in smart link', () => {
+			beforeAll(() => {
+				defaultBeforeAllTests({ onUnhandledRequest: 'error' });
+			});
+
+			test('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+				// setup api interceptor and mail to send editor
+				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
+				setupEditorStore({ editors: [] });
+				const store = generateStore();
+				const editor = await readyToBeSentEditorTestCase(store.dispatch, {
+					savedAttachments: [
+						{
+							filename: 'large-document.pdf',
+							contentType: 'application/pdf',
+							requiresSmartLinkConversion: true,
+							size: 81290955,
+							messageId: FAKE_MESSAGE_ID,
+							partName: '2',
+							isInline: false
+						}
+					]
+				});
+				addEditor({ id: editor.id, editor });
+				// render the component
+				const { user } = setupTest(
+					<EditView {...{ editorId: editor.id, closeController: noop }} />,
+					{ store }
+				);
+				expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
+
+				// trigger mail sending
+				const btnSend = screen.queryByTestId('BtnSendMailMulti');
+				expect(btnSend).toBeEnabled();
+				await user.click(btnSend as Element);
+
+				// assertions
+				await apiInterceptor;
+				await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
+				expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
+
+				act(() => {
+					jest.advanceTimersByTime(4000);
+				});
+			}, 200000);
+		});
 
 		/**
 		 * Test the creation of a new email
@@ -306,23 +351,7 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-
-			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const msg = (await req.json()).Body.SaveDraftRequest.m;
-						resolve(msg);
-
-						// Don't care about the actual response
-						return res(ctx.json({}));
-					})
-				);
-			});
+			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>('SaveDraft');
 
 			const subject = faker.lorem.sentence(5);
 			// Get the default identity address
@@ -378,7 +407,7 @@ describe('Edit view', () => {
 			await user.click(btnSave);
 
 			// Obtain the message from the rest handler
-			const msg = await draftSavingInterceptor;
+			const { m: msg } = await draftSavingInterceptor;
 
 			// Check the content of the message
 			expect(msg.su._content).toBe(subject);
@@ -457,23 +486,9 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-
-			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const msg = (await req.json()).Body.SaveDraftRequest.m;
-						resolve(msg);
-
-						// Don't care about the actual response
-						return res(ctx.json({}));
-					})
-				);
-			});
+			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+				'SaveDraftRequest'
+			);
 
 			const subjectText =
 				"This is the most interesting subject ever! It's all about unicorns brewing beers for the elves";
@@ -487,7 +502,7 @@ describe('Edit view', () => {
 				jest.advanceTimersByTime(10000);
 			});
 
-			const msg = await draftSavingInterceptor;
+			const { m: msg } = await draftSavingInterceptor;
 			expect(msg.su._content).toBe(subjectText);
 		}, 50000);
 
@@ -518,23 +533,9 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-
-			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const msg = (await req.json()).Body.SaveDraftRequest.m;
-						resolve(msg);
-
-						// Don't care about the actual response
-						return res(ctx.json({}));
-					})
-				);
-			});
+			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+				'SaveDraftRequest'
+			);
 
 			const recipient = createFakeIdentity().email;
 			const subjectComponent = screen.getByTestId('subject');
@@ -555,7 +556,7 @@ describe('Edit view', () => {
 				jest.advanceTimersByTime(10000);
 			});
 
-			const msg = await draftSavingInterceptor;
+			const { m: msg } = await draftSavingInterceptor;
 			const sentRecipient = msg.e.reduce((prev, participant) =>
 				participant.t === 't' ? participant : prev
 			);
@@ -590,23 +591,9 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-
-			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const msg = (await req.json()).Body.SaveDraftRequest.m;
-						resolve(msg);
-
-						// Don't care about the actual response
-						return res(ctx.json({}));
-					})
-				);
-			});
+			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+				'SaveDraftRequest'
+			);
 
 			const body = faker.lorem.text();
 
@@ -623,7 +610,7 @@ describe('Edit view', () => {
 				jest.advanceTimersByTime(2000);
 			});
 
-			const msg = await draftSavingInterceptor;
+			const { m: msg } = await draftSavingInterceptor;
 			expect(msg.mp[0]?.content?._content).toBe(body);
 		}, 50000);
 
@@ -699,25 +686,9 @@ describe('Edit view', () => {
 			});
 
 			const callTester = jest.fn();
-
-			const draftSavingInterceptor = new Promise<SoapDraftMessageObj>((resolve, reject) => {
-				// Register a handler for the REST call
-				getSetupServer().use(
-					rest.post('/service/soap/SaveDraftRequest', async (req, res, ctx) => {
-						callTester();
-
-						if (!req) {
-							reject(new Error('Empty request'));
-						}
-
-						const msg = (await req.json()).Body.SaveDraftRequest.m;
-						resolve(msg);
-
-						// Don't care about the response. Return a fake one
-						return res(ctx.json(saveDraftResult));
-					})
-				);
-			});
+			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+				'SaveDraftRequest'
+			);
 
 			const fileInput = await screen.findByTestId('file-input');
 
@@ -834,7 +805,7 @@ describe('Edit view', () => {
 							messages: {
 								[msg.id]: msg
 							},
-							status: {}
+							searchRequestStatus: null
 						}
 					});
 
@@ -903,7 +874,7 @@ describe('Edit view', () => {
 							messages: {
 								[msg.id]: msg
 							},
-							status: {}
+							searchRequestStatus: null
 						}
 					});
 
@@ -966,7 +937,7 @@ describe('Edit view', () => {
 							messages: {
 								[msg.id]: msg
 							},
-							status: {}
+							searchRequestStatus: null
 						}
 					});
 

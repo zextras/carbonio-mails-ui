@@ -22,3 +22,4 @@ export * from './state';
 export * from './tags';
 export * from './utils';
 export * from './attachments';
+export * from './sorting';

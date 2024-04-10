@@ -7,16 +7,15 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
-import { rest } from 'msw';
 
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
+import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
-import { FolderAction } from '../../../types';
+import { SoapFolderAction } from '../../../types';
 import { EmptyModal } from '../empty-modal';
 
 describe('empty-modal', () => {
@@ -122,33 +121,11 @@ describe('empty-modal', () => {
 		const wipeButton = screen.getByRole('button', {
 			name: /label\.empty/i
 		});
-
-		const wipeInterceptor = new Promise<FolderAction>((resolve, reject) => {
-			// Register a handler for the REST call
-			getSetupServer().use(
-				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
-					if (!req) {
-						reject(new Error('Empty request'));
-					}
-
-					const msg = (await req.json()).Body.FolderActionRequest.action;
-					resolve(msg);
-
-					// Don't care about the actual response
-					return res(
-						ctx.json({
-							Body: {
-								Fault: {}
-							}
-						})
-					);
-				})
-			);
-		});
+		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(wipeButton);
 
-		const action = await wipeInterceptor;
+		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(FOLDERS.TRASH);
 		expect(action.op).toBe('empty');

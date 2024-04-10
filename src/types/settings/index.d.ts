@@ -182,7 +182,7 @@ export type UpdateSettingsProps = {
 };
 
 export type InputProps = {
-	settingsObj: PrefsType;
+	settingsObj: AccountSettingsPrefs;
 	updateSettings: (arg: UpdateSettingsProps) => void;
 };
 

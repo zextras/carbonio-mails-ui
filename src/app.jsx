@@ -35,24 +35,25 @@ import { GlobalModalManager } from './views/global-modal-manager';
 import { getSettingsSubSections } from './views/settings/subsections';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
-const LazyAppView = lazy(() =>
-	import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
+const LazyAppView = lazy(
+	() => import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
 );
 
-const LazyEditView = lazy(() =>
-	import(
-		/* webpackChunkName: "mails-edit-view" */ './views/app/detail-panel/edit/edit-view-controller'
-	)
+const LazyEditView = lazy(
+	() =>
+		import(
+			/* webpackChunkName: "mails-edit-view" */ './views/app/detail-panel/edit/edit-view-controller'
+		)
 );
 
-const LazySettingsView = lazy(() =>
-	import(/* webpackChunkName: "mail-setting-view" */ './views/settings/settings-view')
+const LazySettingsView = lazy(
+	() => import(/* webpackChunkName: "mail-setting-view" */ './views/settings/settings-view')
 );
-const LazySearchView = lazy(() =>
-	import(/* webpackChunkName: "mail-search-view" */ './views/search/search-view')
+const LazySearchView = lazy(
+	() => import(/* webpackChunkName: "mail-search-view" */ './views/search/search-view')
 );
-const LazySidebarView = lazy(() =>
-	import(/* webpackChunkName: "mail-sidebar-view" */ './views/sidebar/sidebar')
+const LazySidebarView = lazy(
+	() => import(/* webpackChunkName: "mail-sidebar-view" */ './views/sidebar/sidebar')
 );
 
 const AppView = () => (
@@ -111,7 +112,7 @@ const App = () => {
 	useEffect(() => {
 		addRoute({
 			route: MAILS_ROUTE,
-			position: 1,
+			position: 100,
 			visible: true,
 			label: t('label.app_name', 'Mails'),
 			primaryBar: 'MailModOutline',
@@ -152,7 +153,7 @@ const App = () => {
 											address: contacts[0].email.email.mail,
 											fullName: `${contacts[0].firstName} ${contacts[0].middleName}`.trim()
 										}
-								  ]
+									]
 								: [];
 						mailToSharedFunction(participant);
 					},

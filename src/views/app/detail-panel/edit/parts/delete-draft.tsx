@@ -12,11 +12,11 @@ import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useAppDispatch } from '../../../../../hooks/redux';
-import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import { StoreProvider } from '../../../../../store/redux';
 import { deleteEditor } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { useMoveMsgToTrash } from '../../../../../ui-actions/message-actions';
+import { useGlobalModal } from '../../../../global-modal-manager';
 
 type DeleteDraftModalProps = {
 	ids: Array<string>;
@@ -48,7 +48,7 @@ export const DeleteDraftModal = ({
 			moveMsgToTrash({
 				ids,
 				dispatch,
-				folderId: FOLDERS.TRASH
+				folderId: FOLDERS.DRAFTS
 			})?.onClick(ev);
 			onDelete?.();
 			onClose?.();
@@ -84,7 +84,7 @@ type KeepDraftModalProps = {
 };
 
 export const useKeepOrDiscardDraft = (): ((arg: KeepDraftModalProps) => void) => {
-	const { createModal } = useUiUtilities();
+	const createModal = useGlobalModal();
 	return useCallback(
 		({ editorId, draftId, onConfirm }) => {
 			const onDelete = (): void => {

@@ -7,6 +7,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
+import { API_REQUEST_STATUS } from '../../constants';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type {
 	SearchConvParameters,
@@ -41,7 +42,7 @@ export const searchConv = createAsyncThunk<SearchConvReturn, SearchConvParameter
 	},
 	{
 		condition: ({ conversationId }: SearchConvParameters, { getState }: any) =>
-			getState().conversations?.expandedStatus[conversationId] !== 'complete' &&
-			getState().conversations?.expandedStatus[conversationId] !== 'pending'
+			getState().conversations?.expandedStatus[conversationId] !== API_REQUEST_STATUS.fulfilled &&
+			getState().conversations?.expandedStatus[conversationId] !== API_REQUEST_STATUS.pending
 	}
 );

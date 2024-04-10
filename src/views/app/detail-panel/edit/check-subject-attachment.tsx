@@ -6,14 +6,13 @@
 
 import React from 'react';
 
-import { Text } from '@zextras/carbonio-design-system';
+import { CreateModalFn, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { LineType } from '../../../../commons/utils';
-import { CLOSE_BOARD_REASON } from '../../../../constants';
 import { StoreProvider } from '../../../../store/redux';
 import { getEditor } from '../../../../store/zustand/editor';
-import type { CloseBoardReasons, MailsEditorV2 } from '../../../../types';
+import type { MailsEditorV2 } from '../../../../types';
 
 export const attachmentWords: Array<string> = [
 	t('messages.modal.send_anyway.attach', 'attach'),
@@ -55,14 +54,12 @@ export function checkSubjectAndAttachment({
 	editorId,
 	hasAttachments,
 	onConfirmCallback,
-	close,
 	createModal
 }: {
 	editorId: MailsEditorV2['id'];
 	hasAttachments: boolean;
-	onConfirmCallback: () => void;
-	close: ({ reason }: { reason?: CloseBoardReasons }) => void;
-	createModal: any;
+	onConfirmCallback: () => void | Promise<void>;
+	createModal: CreateModalFn;
 }): void {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {
@@ -84,7 +81,6 @@ export function checkSubjectAndAttachment({
 			showCloseIcon: true,
 			onConfirm: () => {
 				onConfirmCallback();
-				close({ reason: CLOSE_BOARD_REASON.SEND });
 				closeModal();
 			},
 			onClose: () => {
@@ -106,6 +102,5 @@ export function checkSubjectAndAttachment({
 		});
 	} else {
 		onConfirmCallback();
-		close({ reason: CLOSE_BOARD_REASON.SEND });
 	}
 }

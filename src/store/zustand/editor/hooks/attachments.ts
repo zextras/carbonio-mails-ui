@@ -46,9 +46,7 @@ const useNotifyUploadError = (): ((file: File) => void) => {
 	);
 };
 
-export const useEditorAttachments = (
-	editorId: MailsEditorV2['id']
-): {
+type EditorAttachmentHook = {
 	hasStandardAttachments: boolean;
 	unsavedStandardAttachments: MailsEditorV2['unsavedAttachments'];
 	savedStandardAttachments: MailsEditorV2['savedAttachments'];
@@ -56,6 +54,17 @@ export const useEditorAttachments = (
 		files: Array<File>,
 		callbacks?: UploadCallbacks
 	) => Array<UnsavedAttachment>;
+	addUploadedAttachment: ({
+		attachmentId,
+		fileName,
+		contentType,
+		size
+	}: {
+		attachmentId: string;
+		fileName: string;
+		contentType: string;
+		size: number;
+	}) => UnsavedAttachment;
 	addInlineAttachments: (
 		files: Array<File>,
 		options?: UploadCallbacks & {
@@ -71,9 +80,13 @@ export const useEditorAttachments = (
 	removeSavedAttachment: (partName: string) => void;
 	removeUnsavedAttachment: (uploadId: string) => void;
 	removeStandardAttachments: () => void;
-} => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+	toggleSmartLink: (partName: string) => void;
+};
+
+export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const notifyUploadError = useNotifyUploadError();
+
 	const unsavedStandardAttachments = reject(
 		useEditorsStore((state) => state.editors[editorId].unsavedAttachments),
 		'isInline'
@@ -87,6 +100,7 @@ export const useEditorAttachments = (
 	);
 	const removeSavedAttachmentsInvoker = useEditorsStore((state) => state.removeSavedAttachment);
 	const removeUnsavedAttachmentsInvoker = useEditorsStore((state) => state.removeUnsavedAttachment);
+	const toggleSmartLinkInvoker = useEditorsStore((state) => state.toggleSmartLink);
 
 	const addGenericUnsavedAttachments = (
 		files: Array<File>,
@@ -187,7 +201,7 @@ export const useEditorAttachments = (
 							callbacks?.onSaveComplete && callbacks.onSaveComplete(uploadedContentIds);
 						}
 					};
-					saveDraftFromEditor(editorId, saveDraftOptions);
+					debouncedSaveDraft(editorId, saveDraftOptions);
 				}
 
 				callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
@@ -197,10 +211,55 @@ export const useEditorAttachments = (
 		return addGenericUnsavedAttachments(files, areInline, customizedCallbacks);
 	};
 
+	const addAndSaveUploadedAttachment = ({
+		attachmentId,
+		fileName,
+		contentType,
+		size
+	}: {
+		attachmentId: string;
+		fileName: string;
+		contentType: string;
+		size: number;
+	}): UnsavedAttachment => {
+		const { addUnsavedAttachments } = useEditorsStore.getState();
+
+		const unsavedAttachment = {
+			filename: fileName,
+			contentType,
+			size,
+			aid: attachmentId,
+			isInline: false,
+			uploadStatus: {
+				status: 'completed',
+				progress: 0
+			}
+		} satisfies UnsavedAttachment;
+		addUnsavedAttachments(editorId, [unsavedAttachment]);
+		computeAndUpdateEditorStatus(editorId);
+
+		debouncedSaveDraft(editorId);
+
+		return unsavedAttachment;
+	};
+
 	const addStandardAttachments = (
 		files: Array<File>,
 		callbacks?: UploadCallbacks
 	): Array<UnsavedAttachment> => addAndSaveGenericAttachments(files, false, callbacks);
+
+	const addUploadedAttachment = ({
+		attachmentId,
+		fileName,
+		contentType,
+		size
+	}: {
+		attachmentId: string;
+		fileName: string;
+		contentType: string;
+		size: number;
+	}): UnsavedAttachment =>
+		addAndSaveUploadedAttachment({ attachmentId, fileName, contentType, size });
 
 	const addInlineAttachments = (
 		files: Array<File>,
@@ -250,20 +309,24 @@ export const useEditorAttachments = (
 		removeUnsavedAttachment: (uploadId: string): void => {
 			removeUnsavedAttachmentsInvoker(editorId, uploadId);
 			computeAndUpdateEditorStatus(editorId);
-			saveDraftFromEditor(editorId);
+			debouncedSaveDraft(editorId);
 		},
 
 		removeSavedAttachment: (partName: string): void => {
 			removeSavedAttachmentsInvoker(editorId, partName);
 			computeAndUpdateEditorStatus(editorId);
-			saveDraftFromEditor(editorId);
+			debouncedSaveDraft(editorId);
 		},
 		removeStandardAttachments: (): void => {
 			removeStandardAttachmentsInvoker(editorId);
 			computeAndUpdateEditorStatus(editorId);
-			saveDraftFromEditor(editorId);
+			debouncedSaveDraft(editorId);
 		},
 		addStandardAttachments,
-		addInlineAttachments
+		addInlineAttachments,
+		addUploadedAttachment,
+		toggleSmartLink: (partName: string): void => {
+			toggleSmartLinkInvoker(editorId, partName);
+		}
 	};
 };

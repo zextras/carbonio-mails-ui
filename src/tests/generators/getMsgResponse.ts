@@ -93,14 +93,21 @@ const generateGetMsgResponse = ({
 							{
 								part: 'TEXT',
 								ct: 'multipart/alternative',
+								requiresSmartLinkConversion: false,
 								mp: [
-									{ part: '1', ct: 'text/plain', s: body?.length },
+									{
+										part: '1',
+										ct: 'text/plain',
+										s: body?.length,
+										requiresSmartLinkConversion: false
+									},
 									{
 										part: '2',
 										ct: 'text/html',
 										s: body?.length,
 										body: true,
-										content: body
+										content: body,
+										requiresSmartLinkConversion: false
 									}
 								]
 							}

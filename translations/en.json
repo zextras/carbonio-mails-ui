@@ -3,6 +3,8 @@
         "apply_filter_on_folder": "Apply filter on folder",
         "click_open": "Click to open",
         "click_preview": "Click to preview",
+        "create_appointment": "Create Appointment",
+        "download_eml": "Download EML",
         "edit_anyway": "Edit anyway",
         "edit_as_new": "Edit as new",
         "edit_share": "Edit Share",
@@ -98,6 +100,11 @@
         "title8": "Select an e-mail to read or delete it.",
         "trash_title1": "Click the trash icon to delete an e-mail",
         "trash_title2": "Select and restore e-mails from the trash."
+    },
+    "editor": {
+        "warning": {
+            "mail_size_exceeds_limit": "The message size exceeds the limit. Please convert some attachments to smart links"
+        }
     },
     "email_status": {
         "anywhere": "in all the folders",
@@ -275,9 +282,12 @@
         "collapse_receivers_list": "Collapse recipients list",
         "confirm": "Confirm",
         "contact_folder": "Contact Folder",
+        "convert_back_to_attachment": "Convert back to attachment",
+        "convert_to_smart_link": "Convert to smart link",
         "create": "Create",
         "create_and_move": "Create and move",
         "create_new_task": "Create New Task",
+        "create_smart_links": "create smart links",
         "create_tag": "Create Tag",
         "decline": "Decline",
         "delayed_sending": "Delayed send",
@@ -458,6 +468,7 @@
         "size": "Size",
         "size_larger": "Size larger than (MB)",
         "size_smaller": "Size smaller than (MB)",
+        "smart_links_created": "smart links created",
         "spam": "Spam",
         "subject": "Subject",
         "tag": "Tag",
@@ -606,7 +617,10 @@
             "tag_updated": "Tag successfully updated"
         },
         "something_went_wrong": "SOMETHING WENT WRONG",
-        "trustee_addresses": "Mail from these addresses or domains will be considered trusted and images will automatically be displayed."
+        "trustee_addresses": "Mail from these addresses or domains will be considered trusted and images will automatically be displayed.",
+        "warning": {
+            "sending_to_yourself": "You are sending this message to yourself"
+        }
     },
     "messages,new_email": "new email",
     "modal": {
@@ -837,6 +851,39 @@
         "share_updated": "\"Access rights updated\"",
         "tag_applied": "\"{{tag}}\" tag applied",
         "tag_removed": "\"{{tag}}\" tag removed"
+    },
+    "sortingDropdown": {
+        "tooltip": {
+            "attachmentAscending": "Ascending order by Attachment",
+            "attachmentDescending": "Descending order by Attachment",
+            "dateAscending": "Ascending order by Size",
+            "dateDescending": "Descending order by Date",
+            "flaggedAscending": "Ascending order by Flagged",
+            "flaggedDescending": "Descending order by Flagged",
+            "fromAscending": "Ascending order by From",
+            "fromDescending": "Descending order by From",
+            "importantAscending": "Ascending order by Important",
+            "importantDescending": "Descending order by Important",
+            "sizeDescending": "Descending order by Size",
+            "subjectAscending": "Ascending order by Subject",
+            "subjectDescending": "Descending order by Subject",
+            "toAscending": "Ascending order by To",
+            "toDescending": "Descending order by To",
+            "unreadAscending": "Ascending order by Unread",
+            "unreadDescending": "Descending order by Unread"
+        }
+    },
+    "sorting_dropdown": {
+        "ascendingOrder": "Ascending order",
+        "attachment": "Attachment",
+        "date": "Date",
+        "descendingOrder": "Descending order",
+        "flagged": "Flagged",
+        "from": "From",
+        "important": "Important",
+        "subject": "Subject",
+        "to": "To",
+        "unread": "Unread"
     },
     "title": {
         "new_messages": "New Messages",

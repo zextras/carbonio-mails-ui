@@ -79,9 +79,9 @@ const FromToCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): 
 							? {
 									stringComparison: defaultValue?.addressTest?.[0]?.stringComparison,
 									negative: '1'
-							  }
+								}
 							: { stringComparison: defaultValue?.addressTest?.[0]?.stringComparison }
-				  )
+					)
 				: conditionStatementsOptions[2],
 		[conditionStatementsOptions, defaultValue]
 	);

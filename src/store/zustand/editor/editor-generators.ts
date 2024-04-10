@@ -89,7 +89,9 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 		text: textWithSignature,
 		requestReadReceipt: false,
 		// signature,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: 0,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -170,7 +172,7 @@ export const generateIntegratedNewEditor = (
 					size: 0,
 					contentType: 'application/octet-stream'
 				})
-		  );
+			);
 
 	const editor = {
 		action: EditViewActions.NEW,
@@ -188,7 +190,9 @@ export const generateIntegratedNewEditor = (
 		subject: compositionData?.subject ?? '',
 		text: textWithSignature,
 		requestReadReceipt: false,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: 0,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -213,8 +217,13 @@ export const generateReplyAndReplyAllMsgEditor = (
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
 		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
+	const folderRoots = getRootsMap();
+	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const defaultIdentity = getDefaultIdentity();
-	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
+	const signatureId = from.identityId
+		? from.forwardReplySignatureId
+		: defaultIdentity.forwardReplySignatureId;
+	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 
 	const textWithSignatureRepliesForwards = {
 		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
@@ -223,8 +232,6 @@ export const generateReplyAndReplyAllMsgEditor = (
 			savedInlineAttachments
 		)
 	};
-	const folderRoots = getRootsMap();
-	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const toParticipants =
@@ -254,7 +261,9 @@ export const generateReplyAndReplyAllMsgEditor = (
 		replyType: 'r',
 		originalId: originalMessage.id,
 		originalMessage,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: originalMessage.size,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -278,7 +287,12 @@ export const generateForwardMsgEditor = (
 		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
 	};
 	const defaultIdentity = getDefaultIdentity();
-	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.forwardReplySignatureId);
+	const folderRoots = getRootsMap();
+	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
+	const signatureId = from.identityId
+		? from.forwardReplySignatureId
+		: defaultIdentity.forwardReplySignatureId;
+	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 	const textWithSignatureRepliesForwards = {
 		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
 		richText: replaceCidUrlWithServiceUrl(
@@ -287,8 +301,6 @@ export const generateForwardMsgEditor = (
 		)
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
-	const folderRoots = getRootsMap();
-	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
 	const editor = {
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
@@ -310,7 +322,9 @@ export const generateForwardMsgEditor = (
 		replyType: 'w',
 		originalId: originalMessage.id,
 		originalMessage,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: originalMessage.size,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -325,11 +339,11 @@ export const generateEditAsDraftEditor = (
 ): MailsEditorV2 => {
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
-
 	const text = {
 		plainText: `${extractBody(originalMessage)[0]}`,
 		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
 	};
+
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
@@ -338,7 +352,7 @@ export const generateEditAsDraftEditor = (
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
 		unsavedAttachments: [],
-		savedAttachments: buildSavedAttachments(originalMessage),
+		savedAttachments,
 		isRichText,
 		isUrgent: originalMessage.urgent,
 		recipients: {
@@ -350,7 +364,9 @@ export const generateEditAsDraftEditor = (
 		text,
 		requestReadReceipt: false,
 		did: originalMessage.id,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: originalMessage.size,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -391,7 +407,9 @@ export const generateEditAsNewEditor = (
 		requestReadReceipt: false,
 		originalId: originalMessage.id,
 		originalMessage,
-		messagesStoreDispatch
+		messagesStoreDispatch,
+		size: originalMessage.size,
+		totalSmartLinksSize: 0
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -483,20 +501,9 @@ export const generateEditor = ({
 		case EditViewActions.COMPOSE:
 		case EditViewActions.PREFILL_COMPOSE:
 			return generateIntegratedNewEditor(messagesStoreDispatch, compositionData);
-			break;
 		default:
 			return null;
 	}
 
 	return null;
 };
-//
-// export const useGenerateEditor = ({
-// 	action,
-// 	id,
-// 	compositionData
-// }: Omit<GenerateEditorParams, 'message' | 'messagesStoreDispatch'>): MailsEditorV2 | null => {
-// 	const messagesStoreDispatch = useAppDispatch();
-// 	const message = use;
-// 	return generateEditor({ action, id, messagesStoreDispatch, message });
-// };

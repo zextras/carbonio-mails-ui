@@ -34,7 +34,14 @@ export const retrieveAttachmentsType = (
 		original?.parts?.[0]?.parts ?? [],
 		(acc, part) =>
 			part.disposition && part.disposition === disposition
-				? [...acc, { part: part.name, mid: original.id }]
+				? [
+						...acc,
+						{
+							part: part.name,
+							mid: original.id,
+							requiresSmartLinkConversion: !!part.requiresSmartLinkConversion
+						}
+					]
 				: acc,
 		[] as Array<MailAttachmentParts>
 	);
@@ -277,12 +284,12 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 								content: { _content: richText[0] ?? '' }
 							}
 						]
-				  }
+					}
 				: {
 						ct: 'text/plain',
 						body: true,
 						content: { _content: richText[0] ?? '' }
-				  }
+					}
 		]
 	};
 };
@@ -291,7 +298,7 @@ export const getHtmlWithPreAppliedStyled = (
 	content: string,
 	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
 ): string =>
-	`<html><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
+	`<html><style>p {margin: 0};</style><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
 
 export const findCidFromPart = (inline: InlineAttachments | undefined, part: string): string => {
 	const ci = find(inline, (i) => i.attach?.mp?.[0]?.part === part)?.ci;
@@ -403,8 +410,8 @@ export const generateRequest = (
 		data.recipients
 			? data.recipients
 			: isEmpty(data.sender)
-			? [from, ...data.to, ...data.cc, ...data.bcc]
-			: [from, data.sender, ...data.to, ...data.cc, ...data.bcc],
+				? [from, ...data.to, ...data.cc, ...data.bcc]
+				: [from, data.sender, ...data.to, ...data.cc, ...data.bcc],
 		(c) => ({
 			t: c.type,
 			a: c.email ?? c.address,

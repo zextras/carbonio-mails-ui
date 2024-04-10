@@ -126,7 +126,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					folderId,
 					deselectAll,
 					shouldReplaceHistory: false
-			  })
+				})
 			: setMsgRead({ ids, value: false, dispatch, folderId: folderParentId });
 		return findIndex(selectedItems, ['read', false]) !== -1 && action;
 	};
@@ -146,7 +146,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					folderId,
 					deselectAll,
 					shouldReplaceHistory: false
-			  })
+				})
 			: setMsgRead({ ids, value: true, dispatch, folderId: folderParentId });
 		return selectedItems.length > 0 && every(selectedItems, ['read', true]) && action;
 	};
@@ -197,14 +197,14 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					folderId,
 					isRestore: false,
 					deselectAll
-			  })
+				})
 			: moveMessageToFolder({
 					id: ids,
 					folderId: folderParentId,
 					dispatch,
 					isRestore: false,
 					deselectAll
-			  });
+				});
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
 
@@ -241,7 +241,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					value: false,
 					dispatch,
 					deselectAll
-			  })
+				})
 			: setMsgAsSpam({ ids, value: false, dispatch, folderId: folderParentId });
 
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
@@ -260,7 +260,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					value: true,
 					dispatch,
 					deselectAll
-			  })
+				})
 			: setMsgAsSpam({ ids, value: true, dispatch, folderId: folderParentId });
 
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
@@ -316,21 +316,24 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	}, [] as Array<ReactElement>);
 
 	const secondaryActionsArray: Array<Exclude<ActionReturnType, false> & { label: string }> =
-		secondaryActions()?.reduce((acc, action) => {
-			if (action)
-				acc.push({
-					id: 'label' in action ? action.label : action.id,
-					icon: 'icon' in action ? action.icon : '',
-					label: 'label' in action ? action.label : '',
-					onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>): void => {
-						if (ev) ev.preventDefault();
-						action.onClick && action.onClick(ev);
-					},
-					customComponent: action.customComponent,
-					items: action.items
-				});
-			return acc;
-		}, [] as Array<Exclude<ActionReturnType, false> & { label: string }>);
+		secondaryActions()?.reduce(
+			(acc, action) => {
+				if (action)
+					acc.push({
+						id: 'label' in action ? action.label : action.id,
+						icon: 'icon' in action ? action.icon : '',
+						label: 'label' in action ? action.label : '',
+						onClick: (ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>): void => {
+							if (ev) ev.preventDefault();
+							action.onClick && action.onClick(ev);
+						},
+						customComponent: action.customComponent,
+						items: action.items
+					});
+				return acc;
+			},
+			[] as Array<Exclude<ActionReturnType, false> & { label: string }>
+		);
 
 	const arrowBackOnClick = useCallback(() => {
 		deselectAll();

@@ -210,7 +210,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 												lifetime: `${lt}d`,
 												type: 'user'
 											}
-									  }
+										}
 									: {},
 								purge: dsblMsgDis
 									? {
@@ -218,9 +218,9 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 												lifetime: `${pr}d`,
 												type: 'user'
 											}
-									  }
+										}
 									: {}
-						  }
+							}
 						: {}
 			}).then((res) => {
 				if (!('Fault' in res)) {

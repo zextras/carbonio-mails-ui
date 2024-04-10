@@ -9,22 +9,21 @@ import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { addBoard, getTag } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
-import { rest } from 'msw';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
-import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import { getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
+import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import {
 	makeListItemsVisible,
-	setupHook,
-	setupTest
+	setupTest,
+	setupHook
 } from '../../carbonio-ui-commons/test/test-setup';
-import { EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../constants';
+import { API_REQUEST_STATUS, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../constants';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateMessage } from '../../tests/generators/generateMessage';
@@ -32,6 +31,7 @@ import { generateStore } from '../../tests/generators/store';
 import {
 	MailMessage,
 	MsgActionRequest,
+	MsgActionResponse,
 	RedirectMessageActionRequest,
 	SaveDraftRequest
 } from '../../types';
@@ -61,33 +61,12 @@ jest.mock<typeof import('../../hooks/use-ui-utilities')>('../../hooks/use-ui-uti
 	})
 }));
 
-function createAPIInterceptor<T>(apiAction: string): Promise<T> {
-	return new Promise<T>((resolve, reject) => {
-		// Register a handler for the REST call
-		getSetupServer().use(
-			rest.post(`/service/soap/${apiAction}Request`, async (req, res, ctx) => {
-				if (!req) {
-					reject(new Error('Empty request'));
-				}
-
-				const reqActionParamWrapper = `${apiAction}Request`;
-				const params = (await req.json()).Body?.[reqActionParamWrapper];
-				resolve(params);
-
-				// Don't care about the actual response
-				return res(
-					ctx.json({
-						Body: {
-							[`${apiAction}Response`]: {}
-						}
-					})
-				);
-			})
-		);
-	});
-}
-
 describe('Messages actions calls', () => {
+	beforeAll(() => {
+		createAPIInterceptor('MsgAction', {});
+		createAPIInterceptor('Batch', {});
+		createAPIInterceptor('SendMsg', {});
+	});
 	describe('Add flag action', () => {
 		test('Single id', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
@@ -96,9 +75,11 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
+
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			const action = setMsgFlag({
 				ids: [msg.id],
@@ -110,7 +91,7 @@ describe('Messages actions calls', () => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -125,7 +106,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { ...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {}) },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -137,11 +118,13 @@ describe('Messages actions calls', () => {
 				value: false
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -158,7 +141,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -167,12 +150,13 @@ describe('Messages actions calls', () => {
 				dispatch: store.dispatch,
 				value: true
 			});
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('!flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -189,7 +173,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -201,11 +185,13 @@ describe('Messages actions calls', () => {
 				value: false
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('flag');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -222,7 +208,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -233,11 +219,13 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -254,7 +242,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -266,11 +254,13 @@ describe('Messages actions calls', () => {
 				value: false
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -287,7 +277,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -298,11 +288,13 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('!read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -319,7 +311,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -332,11 +324,13 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('!read');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -353,7 +347,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 			const {
@@ -366,12 +360,14 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('!spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -388,7 +384,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -405,12 +401,14 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('!spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -427,7 +425,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -442,12 +440,14 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -464,7 +464,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -480,12 +480,14 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('spam');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -501,7 +503,7 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
@@ -528,7 +530,7 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
@@ -554,7 +556,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -567,11 +569,13 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
 			expect(requestParameter.action.op).toBe('trash');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -588,7 +592,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -603,11 +607,13 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
+			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			act(() => {
 				action.onClick();
 			});
 
-			const requestParameter = await createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
 			expect(requestParameter.action.op).toBe('trash');
 			expect(requestParameter.action.l).toBeUndefined();
@@ -624,7 +630,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -660,7 +666,7 @@ describe('Messages actions calls', () => {
 					messages: {
 						...msgs.reduce((result, msg) => ({ ...result, [msg.id]: msg }), {})
 					},
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -702,7 +708,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -736,7 +742,9 @@ describe('Messages actions calls', () => {
 				name: /label\.move/i
 			});
 			expect(button).toBeEnabled();
-			await user.click(button);
+			await act(async () => {
+				await user.click(button);
+			});
 
 			const requestParameter = await interceptor;
 			expect(requestParameter.action.id).toBe(msg.id);
@@ -760,7 +768,14 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: msgs,
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
+				}
+			});
+
+			const interceptor = createAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
+				action: {
+					id: msgIds.join(','),
+					op: 'move'
 				}
 			});
 
@@ -776,8 +791,6 @@ describe('Messages actions calls', () => {
 				/>
 			);
 
-			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
-
 			const { user } = setupTest(component, { store });
 			makeListItemsVisible();
 
@@ -791,13 +804,18 @@ describe('Messages actions calls', () => {
 				jest.advanceTimersByTime(1000);
 			});
 
-			await user.click(inboxFolderListItem);
+			await act(async () => {
+				await user.click(inboxFolderListItem);
+			});
 
 			const button = screen.getByRole('button', {
 				name: /label\.move/i
 			});
 			expect(button).toBeEnabled();
-			await user.click(button);
+
+			await act(async () => {
+				await user.click(button);
+			});
 
 			const requestParameter = await interceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
@@ -817,13 +835,12 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
 		const action = replyMsg({
-			id: msg.id,
-			folderId: msg.parent
+			id: msg.id
 		});
 
 		act(() => {
@@ -847,13 +864,12 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
 		const action = replyAllMsg({
-			id: msg.id,
-			folderId: msg.parent
+			id: msg.id
 		});
 
 		act(() => {
@@ -875,13 +891,12 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
 		const action = forwardMsg({
-			id: msg.id,
-			folderId: msg.parent
+			id: msg.id
 		});
 
 		act(() => {
@@ -903,7 +918,7 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
@@ -911,8 +926,7 @@ describe('Messages actions calls', () => {
 			result: { current: editDraft }
 		} = setupHook(useEditDraft);
 		const action = editDraft({
-			id: msg.id,
-			folderId: msg.parent
+			id: msg.id
 		});
 
 		act(() => {
@@ -934,13 +948,12 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
 
 		const action = editAsNewMsg({
-			id: msg.id,
-			folderId: msg.parent
+			id: msg.id
 		});
 
 		act(() => {
@@ -962,9 +975,11 @@ describe('Messages actions calls', () => {
 			messages: {
 				searchedInFolder: {},
 				messages: { [msg.id]: msg },
-				status: {}
+				searchRequestStatus: API_REQUEST_STATUS.fulfilled
 			}
 		});
+
+		const apiInterceptor = createAPIInterceptor<SaveDraftRequest>('SendMsg');
 
 		const action = sendDraft({
 			message: msg,
@@ -975,7 +990,7 @@ describe('Messages actions calls', () => {
 			action.onClick();
 		});
 
-		const requestParameter = await createAPIInterceptor<SaveDraftRequest>('SendMsg');
+		const requestParameter = await apiInterceptor;
 		expect(requestParameter.m.id).toBe(msg.id);
 		expect(requestParameter.m.su).not.toBeUndefined();
 		expect(requestParameter.m.e).not.toBeUndefined();
@@ -990,7 +1005,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -1011,7 +1026,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -1043,7 +1058,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -1079,7 +1094,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -1130,7 +1145,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 
@@ -1162,7 +1177,7 @@ describe('Messages actions calls', () => {
 				messages: {
 					searchedInFolder: {},
 					messages: { [msg.id]: msg },
-					status: {}
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
 

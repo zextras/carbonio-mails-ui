@@ -5,7 +5,15 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useRef } from 'react';
 
-import { Dropdown, Row, Text, Tooltip, Icon, Padding } from '@zextras/carbonio-design-system';
+import {
+	Dropdown,
+	Row,
+	Text,
+	Tooltip,
+	Icon,
+	Padding,
+	DropdownItem
+} from '@zextras/carbonio-design-system';
 import { getIntegratedFunction, t } from '@zextras/carbonio-shell-ui';
 import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
@@ -13,10 +21,14 @@ import styled from 'styled-components';
 
 import * as StyledComp from './edit-view-styled-components';
 import { buildArrayFromFileList } from '../../../../../helpers/files';
+import { isFulfilled } from '../../../../../helpers/promises';
 import { useEditorAttachments, useEditorText } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
-import { useGetFilesFromDrive } from '../edit-utils-hooks/use-get-drive-files';
 import { useGetPublicUrl } from '../edit-utils-hooks/use-get-public-url';
+import {
+	useUploadFromFiles,
+	UseUploadFromFilesResult
+} from '../edit-utils-hooks/use-upload-from-files';
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;
@@ -32,11 +44,10 @@ export type AddAttachmentsDropdownProps = {
 
 export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editorId }) => {
 	const { control } = useForm();
-	const inputRef = useRef<any>();
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	const { text, setText } = useEditorText(editorId);
-	const { addStandardAttachments, addInlineAttachments, hasStandardAttachments } =
-		useEditorAttachments(editorId);
+	const { addStandardAttachments, addUploadedAttachment } = useEditorAttachments(editorId);
 
 	const addFilesFromLocal = useCallback(
 		(fileList: FileList) => {
@@ -46,9 +57,20 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 		[addStandardAttachments]
 	);
 
-	const addFilesFromFiles = useCallback(() => {
-		// TODO handle files response and update attachment in Editor store
-	}, []);
+	const onUploadFromFilesComplete = useCallback(
+		(filesNodes: UseUploadFromFilesResult) => {
+			filesNodes.forEach((filesNode) => {
+				isFulfilled(filesNode) &&
+					addUploadedAttachment({
+						attachmentId: filesNode.value.attachmentId,
+						fileName: filesNode.value.fileName,
+						contentType: filesNode.value.contentType,
+						size: filesNode.value.size
+					});
+			});
+		},
+		[addUploadedAttachment]
+	);
 
 	const addPublicLinkFromFiles = useCallback(
 		(filesResponse) => {
@@ -66,21 +88,24 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 		[setText, text]
 	);
 
-	const [getFilesFromDrive, getFilesAvailable] = useGetFilesFromDrive({ addFilesFromFiles });
-	const [getLink, getLinkAvailable] = useGetPublicUrl({ addPublicLinkFromFiles });
+	const [uploadFromFiles, isUploadFromFiles] = useUploadFromFiles({
+		onComplete: onUploadFromFilesComplete
+	});
+	const [getLink, isGetLinkAvailable] = useGetPublicUrl({ addPublicLinkFromFiles });
+	const [selectNodes, isSelectNodesAvailable] = getIntegratedFunction('select-nodes');
 
-	const actionTarget = useMemo(
+	const uploadFromFilesSelectionConfig = useMemo(
 		() => ({
 			title: t('label.choose_file', 'Choose file'),
-			confirmAction: getFilesFromDrive,
+			confirmAction: uploadFromFiles,
 			confirmLabel: t('label.select', 'Select'),
 			allowFiles: true,
 			allowFolders: false
 		}),
-		[getFilesFromDrive]
+		[uploadFromFiles]
 	);
 
-	const actionURLTarget = useMemo(
+	const getPublicLinkSelectionConfig = useMemo(
 		() => ({
 			title: t('label.choose_file', 'Choose file'),
 			confirmAction: getLink,
@@ -90,21 +115,20 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 		}),
 		[getLink]
 	);
-	const [getFilesAction, getFilesActionAvailable] = getIntegratedFunction('select-nodes');
 
-	const onFileClick = useCallback(() => {
+	const onLocalFileClick = useCallback(() => {
 		if (inputRef.current) {
-			inputRef.current.value = null;
+			inputRef.current.value = '';
 			inputRef.current.click();
 		}
 	}, []);
 
-	const attachmentsItems = useMemo(() => {
-		const localItem = {
+	const actionsItems = useMemo<Array<DropdownItem>>(() => {
+		const localFileAction: DropdownItem = {
 			id: 'localAttachment',
 			icon: 'MonitorOutline',
 			label: t('composer.attachment.local', 'Add from local'),
-			onClick: onFileClick,
+			onClick: onLocalFileClick,
 			customComponent: (
 				<>
 					<Icon icon="MonitorOutline" size="medium" />
@@ -114,47 +138,39 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 			)
 		};
 
-		const contactItem = {
-			id: 'contactsModAttachment',
-			icon: 'ContactsModOutline',
-			label: t('composer.attachment.contacts_mod', 'Add Contact Card'),
-			onClick: (): void => {
-				// setOpenDD(false);
-			},
-			disabled: true
-		};
-		const driveItem =
-			getFilesActionAvailable && getFilesAvailable
+		const filesNodeAction: DropdownItem | undefined =
+			isSelectNodesAvailable && isUploadFromFiles
 				? {
 						id: 'driveItem',
 						label: t('composer.attachment.files', 'Add from Files'),
 						icon: 'DriveOutline',
 						onClick: (): void => {
-							getFilesAction(actionTarget);
+							selectNodes(uploadFromFilesSelectionConfig);
 						}
-				  }
+					}
 				: undefined;
-		const fileUrl =
-			getFilesActionAvailable && getLinkAvailable
+
+		const filesLinkAction: DropdownItem | undefined =
+			isSelectNodesAvailable && isGetLinkAvailable
 				? {
 						id: 'fileUrl',
 						label: t('composer.attachment.url', 'Add public link from Files'),
 						icon: 'Link2',
 						onClick: (): void => {
-							getFilesAction(actionURLTarget);
+							selectNodes(getPublicLinkSelectionConfig);
 						}
-				  }
+					}
 				: undefined;
 
-		return compact([localItem, driveItem, fileUrl, contactItem]);
+		return compact([localFileAction, filesNodeAction, filesLinkAction]);
 	}, [
-		onFileClick,
-		getFilesAvailable,
-		actionTarget,
-		getFilesActionAvailable,
-		getLinkAvailable,
-		getFilesAction,
-		actionURLTarget
+		onLocalFileClick,
+		isUploadFromFiles,
+		uploadFromFilesSelectionConfig,
+		isSelectNodesAvailable,
+		isGetLinkAvailable,
+		selectNodes,
+		getPublicLinkSelectionConfig
 	]);
 
 	return (
@@ -166,25 +182,19 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				render={(): ReactElement => (
 					<StyledComp.FileInput
 						type="file"
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						ref={inputRef}
 						data-testid="file-input"
 						onChange={(): void => {
-							addFilesFromLocal && addFilesFromLocal(inputRef?.current?.files);
+							addFilesFromLocal &&
+								inputRef?.current?.files &&
+								addFilesFromLocal(inputRef.current.files);
 						}}
 						multiple
 					/>
 				)}
 			/>
 			<Tooltip label={t('tooltip.add_attachments', 'Add attachments')}>
-				<Dropdown
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					items={attachmentsItems}
-					display="inline-block"
-					width="fit"
-				>
+				<Dropdown items={actionsItems} display="inline-block" width="fit">
 					<StyledComp.ResizedIconCheckbox onChange={(): null => null} icon="AttachOutline" />
 				</Dropdown>
 			</Tooltip>

@@ -5,8 +5,8 @@
  */
 import { useCallback, useMemo } from 'react';
 
-import { t } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { computeAndUpdateEditorStatus } from './commons';
 import { getEditor } from './editors';
@@ -23,16 +23,22 @@ export type SaveDraftOptions = {
 	onError?: (error: string) => void;
 };
 
-const delay = getDraftSaveDelay();
+export type SaveDraftFunction = (editorId: MailsEditorV2['id'], options?: SaveDraftOptions) => void;
 
-export const useSaveDraftFromEditor = (): ((
-	editorId: MailsEditorV2['id'],
-	options?: SaveDraftOptions
-) => void) => {
+/**
+ *
+ * @param editorId
+ * @param options
+ */
+export const useSaveDraftFromEditor = (): {
+	debouncedSaveDraft: ReturnType<typeof debounce<SaveDraftFunction>>;
+	immediateSaveDraft: SaveDraftFunction;
+} => {
 	const { createSnackbar } = useUiUtilities();
+	const [t] = useTranslation();
 
 	const saveDraftFromEditor = useCallback(
-		(editorId, options) => {
+		(editorId: MailsEditorV2['id'], options?: SaveDraftOptions): void => {
 			const editor = getEditor({ id: editorId });
 			if (!editor) {
 				console.warn('Cannot find the editor', editorId);
@@ -48,6 +54,7 @@ export const useSaveDraftFromEditor = (): ((
 					status: 'aborted',
 					abortReason: err
 				});
+
 				createSnackbar({
 					key: `save-draft`,
 					replace: true,
@@ -76,10 +83,14 @@ export const useSaveDraftFromEditor = (): ((
 
 					const mailMessage = normalizeMailMessageFromSoap(res.m[0]);
 					useEditorsStore.getState().setDid(editorId, mailMessage.id);
+					useEditorsStore.getState().setSize(editorId, mailMessage.size);
 					useEditorsStore.getState().removeUnsavedAttachments(editorId);
 					const savedAttachments = buildSavedAttachments(mailMessage);
+
 					useEditorsStore.getState().setSavedAttachments(editorId, savedAttachments);
 
+					useEditorsStore.getState().setSavedAttachments(editorId, savedAttachments);
+					useEditorsStore.getState().setTotalSmartLinksSize(editorId);
 					useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
 						status: 'completed',
 						lastSaveTimestamp: new Date()
@@ -106,37 +117,48 @@ export const useSaveDraftFromEditor = (): ((
 			// FIXME use a subscription to the store update
 			computeAndUpdateEditorStatus(editorId);
 		},
-		[createSnackbar]
+		[createSnackbar, t]
 	);
 
-	return useMemo(() => debounce(saveDraftFromEditor, delay), [saveDraftFromEditor]);
+	const delay = getDraftSaveDelay();
+	return useMemo(
+		() => ({
+			debouncedSaveDraft: debounce(saveDraftFromEditor, delay),
+			immediateSaveDraft: saveDraftFromEditor
+		}),
+		[delay, saveDraftFromEditor]
+	);
 };
+
 /**
  * Returns the reactive status for the draft save operation.
  * If some change on the editor data will cause the ability/inability to
  * perform a draft save the status will be updated.
  *
- * The hook returns also the function to invoke the draft save
- * NOTE: the save operation is debounced
+ * The hook returns also the functions to invoke the draft save, a debounced version
+ * and a normal version
  *
  * @param editorId
  */
 export const useEditorDraftSave = (
 	editorId: MailsEditorV2['id']
-): { status: MailsEditorV2['draftSaveAllowedStatus']; saveDraft: () => void } => {
-	const saveDraftFromEditor = useSaveDraftFromEditor();
+): {
+	status: MailsEditorV2['draftSaveAllowedStatus'];
+	saveDraft: () => void;
+} => {
+	const { immediateSaveDraft, debouncedSaveDraft } = useSaveDraftFromEditor();
 	const status = useEditorsStore((state) => state.editors[editorId].draftSaveAllowedStatus);
-	const invoker = useCallback(
-		(): void => saveDraftFromEditor(editorId),
-		[editorId, saveDraftFromEditor]
-	);
+	const immediateInvoker = useCallback((): void => {
+		debouncedSaveDraft.cancel();
+		immediateSaveDraft(editorId);
+	}, [debouncedSaveDraft, editorId, immediateSaveDraft]);
 
 	return useMemo(
 		() => ({
 			status,
-			saveDraft: invoker
+			saveDraft: immediateInvoker
 		}),
-		[invoker, status]
+		[immediateInvoker, status]
 	);
 };
 

@@ -155,7 +155,7 @@ const getHtmlWithPreAppliedStyled = (
 	content: string,
 	style: { font: string | undefined; fontSize: string | undefined; color: string | undefined }
 ): string =>
-	`<html><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
+	`<html><style>p {margin:0};</style><body><div style="font-family: ${style?.font}; font-size: ${style?.fontSize}; color: ${style?.color}">${content}</div></body></html>`;
 
 export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	const { prefs } = getUserSettings();
@@ -258,7 +258,7 @@ const createParticipantFromIdentity = (
 		address: identity.fromAddress,
 		name: identity.identityDisplayName,
 		fullName: identity.fromDisplay
-	} as Participant);
+	}) as Participant;
 
 /**
  *
@@ -299,10 +299,16 @@ const composeAttachAidField = (attachments: Array<UnsavedAttachment>): string | 
 		.join(',');
 };
 
-const composeAttachMpField = (attachments: Array<SavedAttachment>): Array<MailAttachmentParts> => {
+export const composeAttachMpField = (
+	attachments: Array<SavedAttachment>
+): Array<MailAttachmentParts> => {
 	const result: Array<MailAttachmentParts> = [];
 	attachments.forEach((attachment) => {
-		result.push({ mid: attachment.messageId, part: attachment.partName });
+		result.push({
+			mid: attachment.messageId,
+			part: attachment.partName,
+			requiresSmartLinkConversion: attachment.requiresSmartLinkConversion
+		});
 	});
 	return result;
 };
@@ -367,7 +373,8 @@ const createSoapMessageRequestFromEditor = (
 		rt: editor.replyType,
 		origid: editor.originalId,
 		e: soapParticipants,
-		mp: getMP(editor)
+		mp: getMP(editor),
+		...(editor.isUrgent ? { f: '!' } : {})
 	};
 
 	const attach = composeAttachField(editor);
@@ -382,7 +389,7 @@ export const createSoapSendMsgRequestFromEditor = (editor: MailsEditorV2): SoapD
 	createSoapMessageRequestFromEditor(editor, 'sendmsg');
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
-	const attachmentsParts = getAttachmentParts(message);
+	const attachmentsParts = getAttachmentParts(message.parts);
 	return attachmentsParts.map<SavedAttachment>((part) => ({
 		messageId: message.id,
 		// TODO create a function to determine if the attachment is an inline even when the disposition is not set
@@ -391,6 +398,7 @@ export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachme
 		filename: part.filename ?? '',
 		partName: part.name,
 		contentType: part.contentType,
-		size: part.size
+		size: part.size,
+		requiresSmartLinkConversion: part.requiresSmartLinkConversion
 	}));
 };

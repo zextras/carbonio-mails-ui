@@ -8,16 +8,19 @@ import React, { FC, SyntheticEvent, useCallback, useMemo, useRef } from 'react';
 import {
 	Container,
 	getColor,
+	Icon,
 	IconButton,
 	Padding,
 	Row,
 	Text,
-	Tooltip
+	Tooltip,
+	useTheme
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import styled, { SimpleInterpolation } from 'styled-components';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
+import { ToggleSmartLinkButton } from './parts/toggle-smart-link-button';
 import {
 	composeAttachmentDownloadUrl,
 	getAttachmentExtension,
@@ -43,14 +46,27 @@ const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
 `;
 
-const AttachmentContainer = styled(Container).attrs((props: { hoverBarDisabled: boolean }) => ({
-	hoverBarDisabled: props.hoverBarDisabled
-}))`
+const AttachmentContainer = styled(Container).attrs(
+	(props: { hoverBarDisabled: boolean; requiresSmartLinkConversion: boolean }) => ({
+		hoverBarDisabled: props.hoverBarDisabled,
+		requiresSmartLinkConversion: props.requiresSmartLinkConversion
+	})
+)`
+	border-bottom: ${({ requiresSmartLinkConversion, theme, background }): string => {
+		const color = getColor(`${background}.regular`, theme);
+		return requiresSmartLinkConversion
+			? `1px solid ${theme.palette.primary.regular}`
+			: `1px solid ${color}`;
+	}};
 	border-radius: 0.125rem;
 	width: calc(50% - 0.25rem);
 	transition: 0.2s ease-out;
 	margin-bottom: ${({ theme }): string => theme.sizes.padding.small};
 	&:hover {
+		border-bottom: ${({ theme, background }): string => {
+			const color = getColor(`${background}.hover`, theme);
+			return `1px solid ${color}`;
+		}};
 		background-color: ${({ theme, background }): SimpleInterpolation =>
 			background && getColor(`${background}.hover`, theme)};
 		& ${AttachmentHoverBarContainer} {
@@ -58,6 +74,10 @@ const AttachmentContainer = styled(Container).attrs((props: { hoverBarDisabled: 
 		}
 	}
 	&:focus {
+		border-bottom: ${({ theme, background }): string => {
+			const color = getColor(`${background}.focus`, theme);
+			return `1px solid ${color}`;
+		}};
 		background-color: ${({ theme, background }): SimpleInterpolation =>
 			background && getColor(`${background}.focus`, theme)};
 	}
@@ -93,6 +113,20 @@ type AttachmentCardProps = {
 
 export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachment }) => {
 	const extension = getAttachmentExtension(attachment).value;
+
+	const requiresSmartLinkConversion =
+		isSavedAttachment(attachment) && attachment?.requiresSmartLinkConversion;
+
+	const attachmentExtensionContent = useMemo(
+		() =>
+			requiresSmartLinkConversion ? (
+				<Icon icon="Link2Outline" size="large" color="primary" />
+			) : (
+				extension
+			),
+		[extension, requiresSmartLinkConversion]
+	);
+
 	const sizeLabel = getSizeDescription(attachment.size);
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
@@ -112,7 +146,11 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		isSavedAttachment(attachment) && removeSavedAttachment(attachment.partName);
 	}, [attachment, removeSavedAttachment, removeUnsavedAttachment]);
 
-	const iconColor = useAttachmentIconColor(attachment);
+	const attachItemColor = useAttachmentIconColor(attachment);
+	const attachmentExtensionColor = useMemo(
+		() => (requiresSmartLinkConversion ? 'transparent' : attachItemColor),
+		[attachItemColor, requiresSmartLinkConversion]
+	);
 
 	const isUploading = useMemo<boolean>(
 		() => isUnsavedAttachment(attachment) && isAttachmentUploading(attachment),
@@ -125,7 +163,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				messageSubject: subject,
 				attachments: [attachment.partName],
 				attachmentType: attachment.contentType
-		  })
+			})
 		: null;
 
 	const cancelUpload = useCallback(() => {
@@ -142,6 +180,15 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 		[attachment]
 	);
 
+	const theme = useTheme();
+
+	const backgroundColor = useMemo(() => {
+		if (requiresSmartLinkConversion) {
+			return theme.palette.infoBanner.regular;
+		}
+		return 'gray3';
+	}, [requiresSmartLinkConversion, theme.palette.infoBanner.regular]);
+
 	return (
 		<StyledWrapper>
 			<AttachmentContainer
@@ -149,9 +196,10 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				mainAlignment="flex-start"
 				crossAlignment={'center'}
 				height="fit"
-				background="gray3"
+				background={backgroundColor}
 				data-testid={`attachment-container-${attachment.filename}`}
 				hoverBarDisabled={isUploading}
+				requiresSmartLinkConversion={requiresSmartLinkConversion}
 			>
 				<Tooltip label={t('action.preview', 'Preview')}>
 					<Row
@@ -165,8 +213,11 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 						}}
 						takeAvailableSpace
 					>
-						<AttachmentExtension background={iconColor}>{extension}</AttachmentExtension>
+						<AttachmentExtension background={attachmentExtensionColor}>
+							{attachmentExtensionContent}
+						</AttachmentExtension>
 						<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
+							{requiresSmartLinkConversion && <Padding top="small" />}
 							<Padding style={{ width: '100%' }} bottom="extrasmall">
 								<Text size={'small'}>
 									{attachment.filename ||
@@ -176,9 +227,13 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 										})}
 								</Text>
 							</Padding>
-							<Text color="gray1" size={'small'}>
-								{sizeLabel}
-							</Text>
+							{!requiresSmartLinkConversion ? (
+								<Text color="gray1" size={'small'}>
+									{sizeLabel}
+								</Text>
+							) : (
+								<Padding top="small" />
+							)}
 						</Row>
 					</Row>
 				</Tooltip>
@@ -190,20 +245,23 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 					/>
 				)}
 				<Row orientation="horizontal" crossAlignment="center">
-					{isDeletable && (
-						<AttachmentHoverBarContainer>
-							<Padding right="small">
-								<Tooltip label={t('label.delete', 'Delete')}>
-									<IconButton
-										size="large"
-										icon="DeletePermanentlyOutline"
-										data-testid={'btn-delete-attachment'}
-										onClick={removeAttachment}
-									/>
-								</Tooltip>
-							</Padding>
-						</AttachmentHoverBarContainer>
-					)}
+					<AttachmentHoverBarContainer>
+						<Row>
+							<ToggleSmartLinkButton editorId={editorId} attachment={attachment} />
+							{isDeletable && (
+								<Padding right="small">
+									<Tooltip label={t('label.delete', 'Delete')}>
+										<IconButton
+											size="large"
+											icon="DeletePermanentlyOutline"
+											data-testid={'btn-delete-attachment'}
+											onClick={removeAttachment}
+										/>
+									</Tooltip>
+								</Padding>
+							)}
+						</Row>
+					</AttachmentHoverBarContainer>
 				</Row>
 				{isSavedAttachment(attachment) && link && (
 					<>

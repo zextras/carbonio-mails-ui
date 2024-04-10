@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+
 import { Container } from '@zextras/carbonio-design-system';
 import {
 	SEARCH_APP_ID,
@@ -13,8 +15,13 @@ import {
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { includes, map, reduce } from 'lodash';
-import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
+
+import { AdvancedFilterModal } from './advanced-filter-modal';
+import { findIconFromChip } from './parts/use-find-icon';
+import SearchConversationList from './search-conversation-list';
+import { SearchMessageList } from './search-message-list';
+import SearchPanel from './search-panel';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
@@ -22,11 +29,6 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
 import type { SearchProps } from '../../types';
-import AdvancedFilterModal from './advance-filter-modal';
-import { findIconFromChip } from './parts/use-find-icon';
-import SearchConversationList from './search-conversation-list';
-import { SearchMessageList } from './search-message-list';
-import SearchPanel from './search-panel';
 
 const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -35,6 +37,11 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
 	const folders = useFoldersMap();
 	const [count, setCount] = useState(0);
+
+	const prefLocale = useMemo(
+		() => settings.prefs.zimbraPrefLocale,
+		[settings.prefs.zimbraPrefLocale]
+	);
 
 	useEffect(() => {
 		setAppContext({ isMessageView, count, setCount });
@@ -104,7 +111,8 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 					sortBy: 'dateDesc',
 					types: isMessageView ? 'message' : 'conversation',
 					offset: reset ? 0 : searchResults.offset,
-					recip: '0'
+					recip: '0',
+					locale: prefLocale
 				})
 			);
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -120,7 +128,14 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 				}
 			}
 		},
-		[dispatch, invalidQueryTooltip, isMessageView, searchResults.offset, setSearchDisabled]
+		[
+			dispatch,
+			invalidQueryTooltip,
+			isMessageView,
+			prefLocale,
+			searchResults.offset,
+			setSearchDisabled
+		]
 	);
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
@@ -128,7 +143,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 
 	useEffect(() => {
 		let _count = 0;
-		if (query && query.length > 0 && queryToString !== searchResults.query && !isInvalidQuery) {
+		if (query && query.length > 0 && !isInvalidQuery) {
 			const modifiedQuery = map(query, (q) => {
 				if (
 					// TODO: fix type definition
@@ -182,7 +197,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	}, [searchResults.status]);
 
 	useEffect(() => {
-		if (query && query.length > 0 && queryToString !== searchResults.query && !isInvalidQuery) {
+		if (query && query.length > 0 && !isInvalidQuery) {
 			setFilterCount(query.length);
 			searchQuery(queryToString, true);
 		}

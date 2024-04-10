@@ -88,6 +88,7 @@ const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({ compProps }): ReactElem
 				<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 					<ChipInput
 						placeholder={t('label.keywords', 'Keywords')}
+						data-testid={'keywords-input'}
 						background="gray5"
 						value={otherKeywords}
 						separators={[
@@ -101,6 +102,7 @@ const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({ compProps }): ReactElem
 				<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 					<ChipInput
 						placeholder={subjectPlaceholder}
+						data-testid={'subject-input'}
 						background="gray5"
 						value={subject}
 						separators={[

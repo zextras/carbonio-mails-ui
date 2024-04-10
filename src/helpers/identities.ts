@@ -76,6 +76,8 @@ type MatchingReplyIdentity = {
 	name: string;
 	identityId: string | undefined;
 	identityName: string | undefined;
+	defaultSignatureId?: string;
+	forwardReplySignatureId?: string;
 };
 
 /**
@@ -467,7 +469,9 @@ const getRecipientReplyIdentity = (
 			name: defaultIdentity?.fromDisplay ?? '',
 			address: defaultIdentity?.fromAddress ?? defaultIdentity?.receivingAddress ?? '',
 			identityId: defaultIdentity?.id,
-			identityName: defaultIdentity?.identityName
+			identityName: defaultIdentity?.identityName,
+			defaultSignatureId: defaultIdentity?.defaultSignatureId,
+			forwardReplySignatureId: defaultIdentity?.forwardReplySignatureId
 		};
 	}
 	// Return the identity with the highest weight
@@ -475,7 +479,9 @@ const getRecipientReplyIdentity = (
 		name: replyIdentity?.recipientFullName ?? '',
 		address: replyIdentity?.matchingIdentity?.fromAddress ?? replyIdentity?.recipientAddress ?? '',
 		identityId: replyIdentity?.matchingIdentity?.id,
-		identityName: replyIdentity?.matchingIdentity?.identityName
+		identityName: replyIdentity?.matchingIdentity?.identityName,
+		defaultSignatureId: replyIdentity?.matchingIdentity?.defaultSignatureId,
+		forwardReplySignatureId: replyIdentity?.matchingIdentity?.forwardReplySignatureId
 	};
 };
 
@@ -541,7 +547,7 @@ const getIdentityDescription = (identity: IdentityDescriptor, t: TFunction): str
 	return identity.right === 'sendOnBehalfOf'
 		? `${defaultIdentity.fromDisplay} ${t('label.on_behalf_of', 'on behalf of')} ${
 				identity.fromDisplay ?? identity.identityName
-		  } <${identity.fromAddress}>`
+			} <${identity.fromAddress}>`
 		: `${identity.fromDisplay ?? identity.identityName} <${identity.fromAddress}>`;
 };
 

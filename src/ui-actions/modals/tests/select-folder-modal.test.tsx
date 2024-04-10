@@ -8,16 +8,15 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 import { t } from '@zextras/carbonio-shell-ui';
-import { rest } from 'msw';
 
-import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
+import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, RootFolder } from '../../../carbonio-ui-commons/types/folder';
 import { FOLDER_ACTIONS } from '../../../commons/utilities';
 import { folderAction } from '../../../store/actions/folder-action';
 import { generateStore } from '../../../tests/generators/store';
-import { FolderActionResponse } from '../../../types';
+import { FolderActionResponse, SoapFolderAction } from '../../../types';
 import { SelectFolderModal } from '../select-folder-modal';
 
 const folderToMove: Folder = {
@@ -193,32 +192,11 @@ test('API is called with the proper parameters to move the selected folder into 
 		name: /label\.move/i
 	});
 
-	const folderActionInterceptor = new Promise<{ l: string; op: string; id: string }>(
-		(resolve, reject) => {
-			getSetupServer().use(
-				rest.post('/service/soap/FolderActionRequest', async (req, res, ctx) => {
-					if (!req) {
-						reject(new Error('Empty request'));
-					}
-
-					const { action } = (await req.json()).Body.FolderActionRequest;
-					resolve(action);
-
-					// Don't care about the actual response
-					return res(
-						ctx.json({
-							Body: {
-								Fault: {}
-							}
-						})
-					);
-				})
-			);
-		}
+	const folderActionInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>(
+		'FolderAction'
 	);
-
 	await user.click(actionButton);
-	const action = await folderActionInterceptor;
+	const { action } = await folderActionInterceptor;
 	expect(action.id).toBe(folderToMove.id);
 	expect(action.op).toBe(FOLDER_ACTIONS.MOVE);
 	expect(action.l).toBe(rootFolder.id);

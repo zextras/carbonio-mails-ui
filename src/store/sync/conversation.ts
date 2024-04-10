@@ -14,7 +14,9 @@ export const handleCreatedConversationsReducer = (
 ): void => {
 	forEach(payload, (conv) => {
 		if (conv?.id) {
-			state.conversations = merge(state.conversations, { [conv.id]: conv });
+			state.conversations = merge(state.conversations, {
+				[conv.id]: { ...conv, sortIndex: -JSON.stringify(Date.now()) }
+			});
 		}
 	});
 };
@@ -57,7 +59,8 @@ export const handleCreatedMessagesInConversationsReducer = (
 					...conversation,
 					messages,
 					fragment: msg?.fr ?? '',
-					date
+					date,
+					sortIndex: -JSON.stringify(Date.now())
 				}
 			};
 

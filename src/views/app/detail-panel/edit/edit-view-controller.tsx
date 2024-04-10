@@ -112,8 +112,16 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 			});
 	}, [board.context?.onConfirm, editor.text.plainText, editor.text.richText]);
 
-	const draftId = useEditorDid(editor.id).did;
 	const { saveDraft } = useEditorDraftSave(editor.id);
+	const draftId = useEditorDid(editor.id).did;
+
+	// triggers a saveDraft on prefillCompose action
+	// FIXME: this is a temporary fix until the backend exposes the required data
+	// REF IRIS-4205
+	if (action === EditViewActions.PREFILL_COMPOSE && editor.unsavedAttachments.length > 0) {
+		saveDraft();
+	}
+
 	const updateBoard = boardUtilities?.updateBoard;
 	const keepOrDiscardDraft = useKeepOrDiscardDraft();
 	const onClose = useCallback(

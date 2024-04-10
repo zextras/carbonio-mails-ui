@@ -5,7 +5,9 @@
  */
 import '@testing-library/jest-dom';
 import failOnConsole from 'jest-fail-on-console';
-import { rest } from 'msw';
+import fetchMock from 'jest-fetch-mock';
+import { http } from 'msw';
+
 import {
 	defaultAfterAllTests,
 	defaultAfterEachTest,
@@ -14,6 +16,7 @@ import {
 	getFailOnConsoleDefaultConfig
 } from './src/carbonio-ui-commons/test/jest-setup';
 import { registerRestHandler } from './src/carbonio-ui-commons/test/mocks/network/msw/handlers';
+import { handleGetConvRequest } from './src/tests/mocks/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
 
 failOnConsole({
@@ -22,8 +25,11 @@ failOnConsole({
 });
 
 beforeAll(() => {
-	const h = rest.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
+	fetchMock.doMock();
+	const h = http.post('/service/soap/GetMsgRequest', handleGetMsgRequest);
+	const j = http.post('/service/soap/GetConvRequest', handleGetConvRequest);
 	registerRestHandler(h);
+	registerRestHandler(j);
 	defaultBeforeAllTests();
 });
 

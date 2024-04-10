@@ -27,6 +27,7 @@ export type Conversation = {
 	tags: string[];
 	parent: string;
 	messagesInConversation: number;
+	sortIndex: number;
 };
 
 export type ConvActionParameters = {
@@ -46,17 +47,19 @@ export type FetchConversationsParameters = {
 	limit: number;
 	before?: Date | null;
 	types?: string;
-	sortBy?: 'dateDesc' | 'dateAsc';
+	sortBy?: SortBy;
 	query?: string;
 	offset?: undefined | number;
 	recip?: '0' | '1' | '2';
 	wantContent?: 'full' | 'original' | 'both';
+	locale?: string;
 };
 
 export type FetchConversationsReturn = {
 	conversations?: Record<string, Conversation>;
 	messages?: Record<string, IncompleteMessage>;
 	hasMore: boolean;
+	offset?: number;
 	types: string;
 	Detail: { Error: { Code: string; Message: string } };
 };

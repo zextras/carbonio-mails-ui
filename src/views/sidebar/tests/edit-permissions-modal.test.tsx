@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
@@ -302,7 +302,7 @@ describe('edit-permissions-modal', () => {
 		});
 		expect(standardMessage).toBeEnabled();
 
-		await user.click(sendNotificationUnCheckbox);
+		await act(() => user.click(sendNotificationUnCheckbox));
 		const sendNotificationCheckbox = within(
 			screen.getByTestId('sendNotificationCheckboxContainer')
 		).getByTestId('icon: Square');
@@ -616,7 +616,9 @@ describe('edit-permissions-modal', () => {
 
 			const store = generateStore();
 			populateFoldersStore();
-			const folder = getFolder(folderId);
+			const folder = act(() => {
+				getFolder(folderId);
+			});
 			const { user } = setupTest(
 				<EditPermissionsModal
 					folder={folder}
@@ -647,7 +649,6 @@ describe('edit-permissions-modal', () => {
 			await user.click(managerRoleOption);
 			await user.type(userInput, viewer);
 			await user.tab();
-
 			const sendNotificationUnCheckbox = within(
 				screen.getByTestId('sendNotificationCheckboxContainer')
 			).getByTestId('icon: CheckmarkSquare');
@@ -659,7 +660,7 @@ describe('edit-permissions-modal', () => {
 			});
 			expect(standardMessage).toBeEnabled();
 
-			await user.click(sendNotificationUnCheckbox);
+			await act(() => user.click(sendNotificationUnCheckbox));
 			const sendNotificationCheckbox = within(
 				screen.getByTestId('sendNotificationCheckboxContainer')
 			).getByTestId('icon: Square');

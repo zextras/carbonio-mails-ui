@@ -3,14 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { orderBy, reduce, some } from 'lodash';
 import { useEffect, useMemo } from 'react';
+
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { reduce, some, sortBy } from 'lodash';
 import { useParams } from 'react-router-dom';
-import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
-import { search } from '../store/actions';
-import { selectConversationsArray, selectFolderSearchStatus } from '../store/conversations-slice';
-import type { Conversation, MailsStateType } from '../types';
+
 import { useAppDispatch, useAppSelector } from './redux';
+import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
+import { LIST_LIMIT } from '../constants';
+import { parseMessageSortingOptions } from '../helpers/sorting';
+import { search } from '../store/actions';
+import {
+	selectConversationsArray,
+	selectConversationsSearchRequestStatus
+} from '../store/conversations-slice';
+import type { Conversation } from '../types';
 
 type RouteParams = {
 	folderId: string;
@@ -19,21 +27,11 @@ type RouteParams = {
 export const useConversationListItems = (): Array<Conversation> => {
 	const { folderId } = <RouteParams>useParams();
 	const dispatch = useAppDispatch();
-	const folderStatus = useAppSelector((state: MailsStateType) =>
-		selectFolderSearchStatus(<MailsStateType>state, folderId)
-	);
+	const { prefs } = useUserSettings();
+	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
+	const searchRequestStatus = useAppSelector(selectConversationsSearchRequestStatus);
 	const conversations = useAppSelector(selectConversationsArray);
 	const folder = getFolder(folderId);
-
-	/* NOTE: Need to comment out when need to sort as per the configured sort order */
-	// const { zimbraPrefSortOrder } = useUserSettings()?.prefs as Record<string, string>;
-	// const sorting = useMemo(
-	// 	() =>
-	// 		(find(zimbraPrefSortOrder?.split(','), (f) => f.split(':')?.[0] === folderId)?.split(
-	// 			':'
-	// 		)?.[1] as 'dateAsc' | 'dateDesc' | undefined) ?? 'dateDesc',
-	// 	[folderId, zimbraPrefSortOrder]
-	// );
 
 	const filteredConversations = useMemo(
 		() =>
@@ -48,21 +46,27 @@ export const useConversationListItems = (): Array<Conversation> => {
 								? [...acc, v]
 								: acc,
 						[] as Array<Conversation>
-				  )
+					)
 				: [],
 		[folder, conversations]
 	);
 
 	const sortedConversations = useMemo(
-		() => orderBy(filteredConversations, 'date', 'desc'),
+		() => sortBy(filteredConversations, 'sortIndex'),
 		[filteredConversations]
 	);
-
+	// this useEffect is used to trigger the search action when the folder is changed
 	useEffect(() => {
-		if (folderStatus !== 'complete' && folderStatus !== 'pending') {
-			dispatch(search({ folderId, limit: 101, sortBy: 'dateDesc', types: 'conversation' }));
-		}
-	}, [dispatch, folderId, folderStatus]);
+		if (searchRequestStatus !== null) return;
+		dispatch(
+			search({
+				folderId,
+				limit: LIST_LIMIT.INITIAL_LIMIT,
+				sortBy: sortOrder,
+				types: 'conversation'
+			})
+		);
+	}, [dispatch, folderId, searchRequestStatus, sortOrder]);
 
 	return sortedConversations;
 };
