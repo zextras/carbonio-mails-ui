@@ -278,7 +278,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 				// @ts-ignore
 				query={query}
 				updateQuery={updateQuery}
-				isSharedFolderIncluded={includeSharedItemsInSearch}
+				isSharedFolderIncluded={isSharedFolderIncluded}
 				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
 				open={showAdvanceFilters}
 				onClose={(): void => setShowAdvanceFilters(false)}
