@@ -3,34 +3,38 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC } from 'react';
+import React from 'react';
 
-import { Icon, Padding, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { Icon, IconProps, Padding, Text } from '@zextras/carbonio-design-system';
+import { DefaultTheme } from 'styled-components';
 
 import * as StyledComp from './edit-view-styled-components';
 
-const WarningBanner: FC = () => (
-	<>
-		<StyledComp.BannerContainer
-			orientation="horizontal"
-			mainAlignment="flex-start"
-			crossAlignment="center"
-			background="gray6"
-			height="fit"
-			padding={{ all: 'large' }}
-		>
-			<Padding right="large">
-				<Icon icon="AlertCircleOutline" color="info" size="large" />
-			</Padding>
-			<Text>
-				{t(
-					'message.sending_mail_to_self',
-					"It looks like you're about to send an e-mail to yourself"
-				)}
-			</Text>
-		</StyledComp.BannerContainer>
-	</>
-);
+type WarningBannerProps = {
+	text: string;
+	icon: IconProps['icon'];
+	iconColor: IconProps['color'];
+	bottomBorderColor: keyof DefaultTheme['palette'];
+};
 
-export default WarningBanner;
+export const WarningBanner = ({
+	text,
+	icon,
+	iconColor,
+	bottomBorderColor
+}: WarningBannerProps): JSX.Element => (
+	<StyledComp.BannerContainer
+		orientation="horizontal"
+		mainAlignment="flex-start"
+		crossAlignment="center"
+		background="gray6"
+		height="fit"
+		padding={{ all: 'large' }}
+		$bottomBorderColor={bottomBorderColor}
+	>
+		<Padding right="large">
+			<Icon icon={icon} color={iconColor} size="large" />
+		</Padding>
+		<Text>{text}</Text>
+	</StyledComp.BannerContainer>
+);

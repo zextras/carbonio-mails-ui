@@ -35,10 +35,7 @@ import * as saveDraftAction from '../../../../../store/actions/save-draft';
 import { addEditor } from '../../../../../store/zustand/editor';
 import { generateNewMessageEditor } from '../../../../../store/zustand/editor/editor-generators';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
-import {
-	readyToBeSentEditorTestCase,
-	changeEditorValues
-} from '../../../../../tests/generators/editors';
+import { readyToBeSentEditorTestCase } from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import type {
@@ -54,6 +51,7 @@ import { EditView, EditViewProp } from '../edit-view';
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
 const CT_MULTIPART_ALTERNATIVE = 'multipart/alternative';
+const FAKE_MESSAGE_ID = '11215';
 
 const extractPartContent = (content: string | { _content: string } | undefined): string => {
 	if (!content) {
@@ -279,22 +277,20 @@ describe('Edit view', () => {
 				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
 				setupEditorStore({ editors: [] });
 				const store = generateStore();
-				const editor = await readyToBeSentEditorTestCase(store.dispatch);
-				changeEditorValues(editor, (e) => {
-					e.savedAttachments = [
+				const editor = await readyToBeSentEditorTestCase(store.dispatch, {
+					savedAttachments: [
 						{
 							filename: 'large-document.pdf',
 							contentType: 'application/pdf',
 							requiresSmartLinkConversion: true,
 							size: 81290955,
-							messageId: e.did!,
+							messageId: FAKE_MESSAGE_ID,
 							partName: '2',
 							isInline: false
 						}
-					];
+					]
 				});
 				addEditor({ id: editor.id, editor });
-
 				// render the component
 				const { user } = setupTest(
 					<EditView {...{ editorId: editor.id, closeController: noop }} />,
