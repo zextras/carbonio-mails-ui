@@ -35,6 +35,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
 	const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
+	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
 	const folders = useFoldersMap();
 	const [count, setCount] = useState(0);
 
@@ -71,7 +72,9 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
-	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(true);
+	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState<boolean>(
+		includeSharedItemsInSearch
+	);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 	const searchResults = useAppSelector(selectSearches);
 
