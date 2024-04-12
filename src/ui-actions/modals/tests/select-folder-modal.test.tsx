@@ -16,7 +16,7 @@ import { Folder, RootFolder } from '../../../carbonio-ui-commons/types/folder';
 import { FOLDER_ACTIONS } from '../../../commons/utilities';
 import { folderAction } from '../../../store/actions/folder-action';
 import { generateStore } from '../../../tests/generators/store';
-import { FolderAction, FolderActionResponse } from '../../../types';
+import { FolderActionResponse, SoapFolderAction } from '../../../types';
 import { SelectFolderModal } from '../select-folder-modal';
 
 const folderToMove: Folder = {
@@ -192,9 +192,11 @@ test('API is called with the proper parameters to move the selected folder into 
 		name: /label\.move/i
 	});
 
-	const folderActionInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
+	const folderActionInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>(
+		'FolderAction'
+	);
 	await user.click(actionButton);
-	const action = await folderActionInterceptor;
+	const { action } = await folderActionInterceptor;
 	expect(action.id).toBe(folderToMove.id);
 	expect(action.op).toBe(FOLDER_ACTIONS.MOVE);
 	expect(action.l).toBe(rootFolder.id);

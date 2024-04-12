@@ -10,6 +10,7 @@ import { ParticipantRoleType } from '../../carbonio-ui-commons/constants/partici
 export type MailAttachmentParts = {
 	mid: string;
 	part: string;
+	requiresSmartLinkConversion: boolean;
 };
 
 export type MailAttachment = {
@@ -58,6 +59,18 @@ export type SaveDraftRequest = {
 };
 
 export type SaveDraftResponse = {
+	[x: string]: any;
+	m?: Array<SoapMailMessage>;
+	Fault?: any;
+};
+
+export type SendMsgWithSmartLinksRequest = {
+	_jsns: 'urn:zimbraMail';
+	m: SoapDraftMessageObj;
+	smartlinks: Array<{ partName: string; draftId: string }>;
+};
+
+export type SendMsgWithSmartLinksResponse = {
 	[x: string]: any;
 	m?: Array<SoapMailMessage>;
 	Fault?: any;

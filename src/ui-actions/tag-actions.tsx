@@ -132,12 +132,12 @@ export const TagsDropdownItem = ({
 							operation: value ? '!tag' : 'tag',
 							ids: [conversation.id],
 							tagName: tag.name
-					  })
+						})
 					: convAction({
 							operation: value ? '!tag' : 'tag',
 							ids: [conversation.id],
 							tagName: tag.name
-					  })
+						})
 			).then((res: any) => {
 				if (res.type.includes('fulfilled')) {
 					getBridgedFunctions()?.createSnackbar({
@@ -150,7 +150,7 @@ export const TagsDropdownItem = ({
 							: t('snackbar.tag_applied', {
 									tag: tag.name,
 									defaultValue: '"{{tag}}" tag applied'
-							  }),
+								}),
 						autoHideTimeout: 3000
 					});
 				} else {
@@ -235,12 +235,12 @@ export const MultiSelectTagsDropdownItem = ({
 							operation: value ? '!tag' : 'tag',
 							ids,
 							tagName: tag.name
-					  })
+						})
 					: convAction({
 							operation: value ? '!tag' : 'tag',
 							ids,
 							tagName: tag.name
-					  })
+						})
 			).then((res: any) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll && deselectAll();
@@ -255,7 +255,7 @@ export const MultiSelectTagsDropdownItem = ({
 							: t('snackbar.tag_applied', {
 									tag: tag.name,
 									defaultValue: '"{{tag}}" tag applied'
-							  }),
+								}),
 						autoHideTimeout: 3000
 					});
 				} else {

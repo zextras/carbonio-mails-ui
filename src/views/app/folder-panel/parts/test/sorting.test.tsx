@@ -10,31 +10,14 @@ import { within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
 import { forEach, indexOf, noop, without } from 'lodash';
-import { ResponseComposition, rest, RestContext, RestRequest } from 'msw';
 
-import { getSetupServer } from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import {
-	RestGenericRequest,
-	RestGenericResponse
-} from '../../../../../carbonio-ui-commons/test/mocks/network/msw/handlers';
 import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { SORTING_OPTIONS, SORTING_DIRECTION } from '../../../../../constants';
 import { generateStore } from '../../../../../tests/generators/store';
 import { SearchRequest } from '../../../../../types';
 import { Breadcrumbs } from '../breadcrumbs';
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/explicit-function-return-type
-const handleSearchRequest = async (
-	req: RestRequest<RestGenericRequest>,
-	res: ResponseComposition<RestGenericResponse>,
-	ctx: RestContext
-) => {
-	if (!req) {
-		return res(ctx.status(500, 'Empty request'));
-	}
-	return res(ctx.json({ Body: {}, Header: {} }));
-};
 
 function findStringsContainingRadiobutton(strings: Array<string>): Array<string> {
 	const resultArray = [] as Array<string>;
@@ -146,7 +129,7 @@ describe('Sorting component', () => {
 	});
 
 	test('clicking on the sorting direction icon switches from name descending to name ascending order and back', async () => {
-		getSetupServer().use(rest.post('/service/soap/SearchRequest', handleSearchRequest));
+		createAPIInterceptor('Search');
 		const store = generateStore();
 		const { user } = setupTest(<Breadcrumbs {...defaultProps} />, { store });
 
@@ -312,7 +295,7 @@ describe('Sorting component', () => {
 		expect(req.query).toBe(expectedRequest.query);
 	});
 	test('clicking on the sorting direction icon makes a SearchRequest api call with correct parameters types, sortBy and query', async () => {
-		getSetupServer().use(rest.post('/service/soap/SearchRequest', handleSearchRequest));
+		createAPIInterceptor('Search');
 		const store = generateStore();
 		const folderId = FOLDERS.INBOX;
 		const sortingOption = SORTING_OPTIONS.date;
@@ -388,7 +371,7 @@ describe('Sorting component', () => {
 		expect(descendingOption).toBeInTheDocument();
 	});
 	test('clicking on the sorting direction icon makes a SearchRequest api call with correct parameters types, sortBy and query', async () => {
-		getSetupServer().use(rest.post('/service/soap/SearchRequest', handleSearchRequest));
+		createAPIInterceptor('Search');
 		const store = generateStore();
 		const folderId = FOLDERS.INBOX;
 		const sortingOption = SORTING_OPTIONS.date;
@@ -420,6 +403,53 @@ describe('Sorting component', () => {
 			sortBy: `${sortingOption.value}${SORTING_DIRECTION.ASCENDING}`,
 			types: isMessageView ? 'message' : 'conversation',
 			query: `inId:${JSON.stringify(folderId)}`,
+			limit: 100,
+			fetch: '0',
+			fullConversation: 1,
+			needExp: 0,
+			recip: '0'
+		};
+
+		const interceptor = createAPIInterceptor<SearchRequest>('Search');
+		await user.click(ascendingOption);
+		const req = await interceptor;
+		expect(req.sortBy).toBe(expectedRequest.sortBy);
+		expect(req.types).toBe(expectedRequest.types);
+		expect(req.query).toBe(expectedRequest.query);
+	});
+	test('clicking on the sorting direction icon with unread sortype makes a SearchRequest api call with correct parameters', async () => {
+		createAPIInterceptor('Search');
+		const store = generateStore();
+		const folderId = FOLDERS.INBOX;
+		const sortingOption = SORTING_OPTIONS.unread;
+		const sortingDirection = SORTING_DIRECTION.DESCENDING;
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				zimbraPrefSortOrder: `${folderId}:${sortingOption.value}${sortingDirection},BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc`,
+				zimbraPrefGroupMailBy: 'message'
+			}
+		};
+		const settings = generateSettings(customSettings);
+
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+
+		const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
+		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView });
+
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />, { store });
+
+		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
+		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
+		if (sortIcon) await user.click(sortIcon);
+		expect(await screen.findByTestId(dropdownRegex)).toBeInTheDocument();
+		const ascendingOption = within(screen.getByTestId(dropdownRegex)).getByText(
+			/sorting_dropdown\.ascendingOrder/i
+		);
+		const expectedRequest: SearchRequest = {
+			_jsns: 'urn:zimbraMail',
+			sortBy: `date${SORTING_DIRECTION.ASCENDING}`,
+			types: isMessageView ? 'message' : 'conversation',
+			query: `inId:${JSON.stringify(folderId)} is:unread`,
 			limit: 100,
 			fetch: '0',
 			fullConversation: 1,

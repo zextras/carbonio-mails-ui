@@ -16,7 +16,7 @@ import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/st
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
-import { FolderAction } from '../../../types';
+import { SoapFolderAction } from '../../../types';
 import Sidebar from '../sidebar';
 
 describe('Mark all as read', () => {
@@ -45,13 +45,15 @@ describe('Mark all as read', () => {
 		const actionMenuItem = await screen.findByTestId(
 			`folder-action-${FolderActionsType.MARK_ALL_READ}`
 		);
-		const folderActionInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
+		const folderActionInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>(
+			'FolderAction'
+		);
 
 		await user.click(actionMenuItem);
 
-		const actionParams = await folderActionInterceptor;
-		expect(actionParams.l).toBe(folderId);
-		expect(actionParams.op).toBe('read');
-		expect(actionParams.id).toBe(folderId);
+		const { action } = await folderActionInterceptor;
+		expect(action.l).toBe(folderId);
+		expect(action.op).toBe('read');
+		expect(action.id).toBe(folderId);
 	});
 });

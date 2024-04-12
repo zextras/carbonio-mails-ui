@@ -17,7 +17,7 @@ import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { FOLDER_ACTIONS } from '../../../commons/utilities';
 import { getFolders } from '../../../hooks/use-folders';
 import { generateStore } from '../../../tests/generators/store';
-import { FolderAction } from '../../../types';
+import { SoapFolderAction } from '../../../types';
 import { DeleteModal } from '../delete-modal';
 
 describe('delete-modal', () => {
@@ -133,10 +133,10 @@ describe('delete-modal', () => {
 			name: /action\.ok/i
 		});
 		expect(okButton).toBeEnabled();
-		const wipeInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
+		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(okButton);
-		const action = await wipeInterceptor;
+		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(FOLDERS.INBOX);
 		expect(action.op).toBe(FOLDER_ACTIONS.MOVE);
@@ -158,10 +158,10 @@ describe('delete-modal', () => {
 			name: /action\.ok/i
 		});
 		expect(okButton).toBeEnabled();
-		const wipeInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
+		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(okButton);
-		const action = await wipeInterceptor;
+		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(FOLDERS.TRASH);
 		expect(action.op).toBe(FOLDER_ACTIONS.DELETE);
@@ -188,10 +188,10 @@ describe('delete-modal', () => {
 			name: /action\.ok/i
 		});
 		expect(okButton).toBeEnabled();
-		const wipeInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
+		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(okButton);
-		const action = await wipeInterceptor;
+		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(sharedAccountSecondFolder.id);
 		expect(action.op).toBe(FOLDER_ACTIONS.TRASH);

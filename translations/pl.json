@@ -44,7 +44,7 @@
                 "add_share": "Dodaj udostępnienie",
                 "rename_warning": "Nie możesz zmienić nazwy folderu na nazwę znajdującą się już w systemie.",
                 "retention_duration_warning": "Okres przechowywania musi być liczbą większą od zera",
-                "threshold_message": "Wiadomości z tego folderu, wykraczające poza Próg pozbywania się będą poddawane automatycznemu usunięciu.",
+                "threshold_message": "Wiadomości z tego folderu, wykraczające poza próg pozbywania się będą poddawane automatycznemu usunięciu.",
                 "enter_valid_folder_name": "Wprowadź prawidłową nazwę folderu",
                 "invalid_folder_name_warning_msg": "Znaki specjalne nie są dozwolone. Max. długość to 128 znaków.",
                 "special_chars_warning_msg": "Znaki specjalne w nazwie folderu nie są dozwolone"
@@ -198,7 +198,7 @@
         "insert": "Wstaw",
         "keywords": "Słowa kluczowe",
         "loading_results": "Ładowanie wyników…",
-        "mail_folder": "Folder E-maile",
+        "mail_folder": "Folder e-mail",
         "mail_settings": "Ustawienia skrzynki odbiorczej",
         "me": "Ja",
         "messages": "Wiadomości",
@@ -225,7 +225,7 @@
         "send_notification": "Wyślij powiadomienie tekstowe do",
         "sending": "Wysyłanie",
         "sent": "Wysłane",
-        "shared_folders": "Udostępnione Foldery",
+        "shared_folders": "Udostępnione foldery",
         "shared_item": "Udostępniony element",
         "shares_folder_edit": "Udostępnianie tego folderu",
         "shares_info": "Informacje o udostępnionym folderze",
@@ -242,9 +242,9 @@
         "type": "Typ",
         "type_name_here": "Nazwa elementu",
         "wipe": "Wyczyść",
-        "with_you": "z tobą",
+        "with_you": "Tobie",
         "workflow": "Organizacja Pracy",
-        "would_like_to_share": "udostępniono jego",
+        "would_like_to_share": "udostępnił(a) swój",
         "write": "Pisanie",
         "signature_required": "Informacje dot. podpisu są wymagane.",
         "cc_bcc": "DW UDW",
@@ -255,7 +255,7 @@
         "set_default_signatures": "Ustaw domyślne podpisy",
         "show_quoted_text": "Pokaż zacytowany tekst",
         "share_with": "Udostępnij",
-        "contact_folder": "Folder Kontakty",
+        "contact_folder": "Folder kontaktów",
         "create_and_move": "Stwórz i przenieś",
         "error": "Błąd",
         "no_subject_with_tags": "<Brak tematu>",
@@ -375,7 +375,7 @@
         "message_send_in_progress": "trwa wysyłanie wiadomości",
         "upload_failed": "Przesyłanie się nie powiodło",
         "errors": {
-            "upload_failed_generic": "Nie udało się przesłać pliku \"{{filename}}\""
+            "upload_failed_generic": "Przesyłanie pliku {{filename}} się nie powiodło"
         },
         "no_identity_selected": "<Nie wybrano tożsamości>",
         "attachment_upload_in_progress": "trwa przesyłanie załącznika",
@@ -468,8 +468,8 @@
                 "body": {
                     "message1": "Czy na pewno chcesz opróżnić wybrany folder?",
                     "message2": "Czy na pewno chcesz trwale usunąć wybrany folder?",
-                    "message3": "Jeśli go usuniesz, cała powiązana z nim zawartość zostanie przeniesiona do Kosza oraz folder przestanie być widoczny.",
-                    "message4": "Jeśli go usuniesz, cała powiązana z nim zawartość zostanie przeniesiona do Kosza. Folderu nie będzie można odzyskać."
+                    "message3": "Jeśli go usuniesz, cała powiązana z nim zawartość zostanie przeniesiona do kosza oraz folder przestanie być widoczny.",
+                    "message4": "Jeśli go usuniesz, cała powiązana z nim zawartość zostanie przeniesiona do kosza. Folderu nie będzie można odzyskać."
                 }
             },
             "empty": {
@@ -853,5 +853,38 @@
             "label_involved_messages": "<0>{{involvedMessagesCount}} wiadomości</0> zostanie przetworzonych w wybranym folderze.",
             "title": "Zastosowywanie filtra \"{{filterName}}\""
         }
+    },
+    "sortingDropdown": {
+        "tooltip": {
+            "attachmentAscending": "Rosnąco wg załącznika",
+            "attachmentDescending": "Malejąco wg załącznika",
+            "dateAscending": "Rosnąco wg rozmiaru",
+            "dateDescending": "Malejąco wg daty",
+            "fromDescending": "Malejąco wg od",
+            "flaggedAscending": "Rosnąco wg oflagowanych",
+            "flaggedDescending": "Malejąco wg oflagowanych",
+            "importantAscending": "Rosnąco wg ważnych",
+            "importantDescending": "Malejąco wg ważnych",
+            "subjectAscending": "Rosnąco wg tematu",
+            "unreadAscending": "Rosnąco wg nieprzeczytanych",
+            "unreadDescending": "Malejąco wg nieprzeczytanych",
+            "toAscending": "Rosnąco wg do",
+            "toDescending": "Malejąco wg do",
+            "subjectDescending": "Malejąco wg tematu",
+            "fromAscending": "Rosnąco wg od",
+            "sizeDescending": "Malejąco wg rozmiaru"
+        }
+    },
+    "sorting_dropdown": {
+        "ascendingOrder": "Rosnąco",
+        "attachment": "Załącznik",
+        "date": "Data",
+        "flagged": "Oflagowane",
+        "from": "Od",
+        "important": "Ważne",
+        "subject": "Temat",
+        "to": "Do",
+        "unread": "Nieprzeczytane",
+        "descendingOrder": "Malejąco"
     }
 }

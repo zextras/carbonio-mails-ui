@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { produce } from 'immer';
-import { remove } from 'lodash';
+import { find, remove } from 'lodash';
 import { create } from 'zustand';
 
 import { filterSavedInlineAttachment, filterUnsavedInlineAttachment } from './editor-utils';
@@ -71,6 +71,32 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			})
 		);
 	},
+	setSize: (id: MailsEditorV2['id'], size: MailsEditorV2['size']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].size = size;
+				}
+			})
+		);
+	},
+	setTotalSmartLinksSize: (id: MailsEditorV2['id']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					const currentEditor = state?.editors?.[id];
+					const { savedAttachments } = currentEditor;
+					const totalSmartLinksSize = savedAttachments.reduce(
+						(acc, attachment) =>
+							attachment.requiresSmartLinkConversion ? acc + attachment.size : acc,
+						0
+					);
+					currentEditor.totalSmartLinksSize = totalSmartLinksSize;
+				}
+			})
+		);
+	},
+
 	setIsRichText: (id: MailsEditorV2['id'], value: MailsEditorV2['isRichText']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {
@@ -196,6 +222,21 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].sendProcessStatus = status;
+				}
+			})
+		);
+	},
+	toggleSmartLink: (id: MailsEditorV2['id'], partName: string): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				const currentEditor = state?.editors?.[id];
+				if (!currentEditor) {
+					return;
+				}
+
+				const attachment = find(currentEditor.savedAttachments, ['partName', partName]);
+				if (attachment) {
+					attachment.requiresSmartLinkConversion = !attachment.requiresSmartLinkConversion;
 				}
 			})
 		);

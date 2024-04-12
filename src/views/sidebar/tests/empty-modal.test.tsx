@@ -15,7 +15,7 @@ import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/st
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
-import { FolderAction } from '../../../types';
+import { SoapFolderAction } from '../../../types';
 import { EmptyModal } from '../empty-modal';
 
 describe('empty-modal', () => {
@@ -121,11 +121,11 @@ describe('empty-modal', () => {
 		const wipeButton = screen.getByRole('button', {
 			name: /label\.empty/i
 		});
-		const wipeInterceptor = createAPIInterceptor<FolderAction>('FolderAction', 'action');
+		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(wipeButton);
 
-		const action = await wipeInterceptor;
+		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(FOLDERS.TRASH);
 		expect(action.op).toBe('empty');

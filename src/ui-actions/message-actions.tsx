@@ -14,27 +14,33 @@ import {
 	replaceHistory,
 	t
 } from '@zextras/carbonio-shell-ui';
-import { map, noop } from 'lodash';
+import { isNull, map, noop } from 'lodash';
 
 import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
 import MoveConvMessage from './move-conv-msg';
 import RedirectAction from './redirect-message-action';
+import { getRoot } from '../carbonio-ui-commons/store/zustand/folder';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { EditViewActions, MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
-import { getMsgsForPrint, msgAction } from '../store/actions';
-import { sendMsg } from '../store/actions/send-msg';
+import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../helpers/appointmemt';
+import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
+import { sendMsg, sendMsgFromEditor } from '../store/actions/send-msg';
+import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
 	BoardContext,
 	MailMessage,
+	MailsEditorV2,
 	MessageAction,
 	MessageActionReturnType,
 	MsgActionParameters,
 	MsgActionResult
 } from '../types';
 import { ConvActionReturnType, ExtraWindowCreationParams, ExtraWindowsContextType } from '../types';
+import { CalendarType, SenderType } from '../types/calendar';
 import { MessagePreviewPanel } from '../views/app/detail-panel/message-preview-panel';
+import { getLocationOrigin } from '../views/app/detail-panel/preview/utils';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -417,7 +423,7 @@ export function deleteMsg({
 							ids
 						})
 					).then((res) => {
-						// TODO: Fix it in DS
+						// TOFIX: Fix it in DS
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						closeModal();
@@ -441,13 +447,13 @@ export function deleteMsg({
 					});
 				},
 				onClose: () => {
-					// TODO: Fix it in DS
+					// TOFIX: Fix it in DS
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					closeModal();
 				},
 				onSecondaryAction: () => {
-					// TODO: Fix it in DS
+					// TOFIX: Fix it in DS
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					closeModal();
@@ -474,10 +480,7 @@ export function deleteMsg({
 	};
 }
 
-export function replyMsg({
-	id,
-	folderId
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function replyMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.REPLY;
 	return {
 		id: actDescriptor.id,
@@ -494,10 +497,7 @@ export function replyMsg({
 	};
 }
 
-export function replyAllMsg({
-	id,
-	folderId
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function replyAllMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.REPLY_ALL;
 	return {
 		id: actDescriptor.id,
@@ -514,10 +514,7 @@ export function replyAllMsg({
 	};
 }
 
-export function forwardMsg({
-	id,
-	folderId
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function forwardMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.FORWARD;
 	return {
 		id: actDescriptor.id,
@@ -534,10 +531,7 @@ export function forwardMsg({
 	};
 }
 
-export function editAsNewMsg({
-	id,
-	folderId
-}: Pick<MessageActionPropType, 'id' | 'folderId'>): MessageActionReturnType {
+export function editAsNewMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.EDIT_AS_NEW;
 	return {
 		id: actDescriptor.id,
@@ -556,9 +550,8 @@ export function editAsNewMsg({
 
 export function editDraft({
 	id,
-	folderId,
 	message
-}: Pick<MessageActionPropType, 'id' | 'folderId' | 'message'>): MessageActionReturnType {
+}: Pick<MessageActionPropType, 'id' | 'message'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.EDIT_DRAFT;
 	return {
 		id: actDescriptor.id,
@@ -627,8 +620,31 @@ export function sendDraft({
 					msg: message
 				})
 			)
-				.then() // TODO IRIS-4400
-				.catch(); // TODO IRIS-4400
+				.then() // TOFIX IRIS-4400
+				.catch(); // TOFIX IRIS-4400
+		}
+	};
+}
+
+export function sendDraftFromPreview({
+	generateEditorFunction,
+	dispatch
+}: {
+	generateEditorFunction: () => Promise<MailsEditorV2>;
+	dispatch: AppDispatch;
+}): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.SEND;
+	return {
+		id: actDescriptor.id,
+		icon: 'PaperPlaneOutline',
+		label: t('label.send', 'Send'),
+		onClick: async (ev): Promise<void> => {
+			if (ev) ev.preventDefault();
+
+			generateEditorFunction()
+				.then((editor) => dispatch(sendMsgFromEditor({ editor })))
+				.then() // TOFIX IRIS-4400
+				.catch(noop); // TOFIX IRIS-4400
 		}
 	};
 }
@@ -646,7 +662,7 @@ export function redirectMsg({ id }: { id: string }): MessageActionReturnType {
 					maxHeight: '90vh',
 					children: (
 						<StoreProvider>
-							{/* TODO: Fix it in DS */}
+							{/* TOFIX: Fix it in DS */}
 							{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 							{/* @ts-ignore */}
 							<RedirectAction onClose={(): void => closeModal()} id={id} />
@@ -686,7 +702,7 @@ export function moveMessageToFolder({
 							<MoveConvMessage
 								folderId={folderId ?? ''}
 								selectedIDs={[id as string]}
-								// TODO: Fix it in DS
+								// TOFIX: Fix it in DS
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								onClose={(): void => closeModal()}
@@ -721,7 +737,7 @@ export function deleteMessagePermanently({
 							<DeleteConvConfirm
 								selectedIDs={ids}
 								isMessageView
-								// TODO: Fix it in DS
+								// TOFIX: Fix it in DS
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								onClose={(): void => closeModal()}
@@ -732,6 +748,95 @@ export function deleteMessagePermanently({
 				},
 				true
 			);
+		}
+	};
+}
+
+export function downloadEml({ id }: { id: string }): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.DOWNLOAD_EML;
+
+	return {
+		id: actDescriptor.id,
+		icon: 'DownloadOutline',
+		label: t('action.download_eml', 'Download EML'),
+		onClick: (ev): void => {
+			ev?.preventDefault();
+			const link = document.createElement('a');
+			link.download = `${id}.eml`;
+			link.href = `${getLocationOrigin()}/service/home/~/?auth=co&id=${id}`;
+			link.click();
+			link.remove();
+		}
+	};
+}
+
+export function createAppointment({
+	item,
+	openAppointmentComposer
+}: {
+	item: MailMessage;
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	openAppointmentComposer: Function;
+}): MessageActionReturnType {
+	const actDescriptor = MessageActionsDescriptors.CREATE_APPOINTMENT;
+	return {
+		id: actDescriptor.id,
+		icon: 'CalendarModOutline',
+		label: t('action.create_appointment', 'Create Appointment'),
+		onClick: (ev): void => {
+			ev?.preventDefault();
+			const attendees = getAttendees(item);
+			const optionalAttendees = getOptionalsAttendees(item);
+			const rooFolder = getRoot(item.parent);
+			let calendar: CalendarType | null = null;
+			let sender: SenderType | null = null;
+			const htmlBody = extractBody(item)[1];
+			if (rooFolder && rooFolder?.isLink) {
+				const calendarId = `${rooFolder.id.split(':')[0]}:${FOLDERS.CALENDAR}`;
+				calendar = {
+					id: calendarId,
+					owner: rooFolder?.isLink && rooFolder.owner
+				};
+				sender = getSenderByOwner(rooFolder?.owner);
+			}
+			if (!item?.isComplete) {
+				getMsgCall({ msgId: item.id })
+					.then((message: MailMessage) => {
+						const mailHtmlBody = extractBody(message)[1];
+						openAppointmentComposer({
+							title: message.subject,
+							isRichText: true,
+							richText: mailHtmlBody,
+							...(!isNull(calendar) ? { calendar } : {}),
+							...(!isNull(sender) ? { sender } : {}),
+							attendees,
+							optionalAttendees
+						});
+					})
+					.catch(() => {
+						getBridgedFunctions()?.createSnackbar({
+							key: `get-msg-on-new-appointment`,
+							replace: true,
+							type: 'warning',
+							hideButton: true,
+							label: t(
+								'message.snackbar.att_err',
+								'There seems to be a problem when saving, please try again'
+							),
+							autoHideTimeout: 3000
+						});
+					});
+			} else {
+				openAppointmentComposer({
+					title: item.subject,
+					isRichText: true,
+					richText: htmlBody,
+					...(!isNull(calendar) ? { calendar } : {}),
+					...(!isNull(sender) ? { sender } : {}),
+					attendees,
+					optionalAttendees
+				});
+			}
 		}
 	};
 }

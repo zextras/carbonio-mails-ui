@@ -6,22 +6,21 @@
 import React, { FC, ReactElement, SyntheticEvent, useCallback } from 'react';
 
 import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
-import { useTags } from '@zextras/carbonio-shell-ui';
 import styled, { DefaultTheme } from 'styled-components';
 
+import { MessageActionsDescriptors } from '../../../../constants';
 import { isConversation } from '../../../../helpers/messages';
-import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
 import type {
 	ConvActionReturnType,
 	Conversation,
 	ListItemActionWrapperProps,
 	MailMessage,
+	MessageAction,
 	MessageActionReturnType,
 	TagActionItemType
 } from '../../../../types';
-import { getMsgConvActions } from '../../../../ui-actions/get-msg-conv-actions';
-import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
+import { useMsgConvActions } from '../../../../ui-actions/use-msg-conv-actions';
 
 const HoverBarContainer = styled(Container)<{ background: keyof DefaultTheme['palette'] }>`
 	top: 0;
@@ -89,21 +88,18 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	active,
 	deselectAll
 }) => {
-	const dispatch = useAppDispatch();
-	const tags = useTags();
-	const { createWindow } = useExtraWindowsManager();
 	const messageActions = useMessageActions(isConversation(item) ? undefined : item, true);
 
-	const [hoverActions, dropdownActions] = getMsgConvActions({
+	const [hoverActions, dropdownActions] = useMsgConvActions({
 		item,
-		dispatch,
 		deselectAll,
-		tags,
-		createWindow,
-		messageActions
+		messageActionsForExtraWindow: messageActions
 	});
+	const finalDropdownActions = dropdownActions.filter(
+		(action: MessageAction) => action.id !== MessageActionsDescriptors.CREATE_APPOINTMENT.id
+	);
 
-	const dropdownActionsItems = dropdownActions.map((action) => ({
+	const dropdownActionsItems = finalDropdownActions.map((action) => ({
 		...action,
 		onClick: (ev: KeyboardEvent | React.SyntheticEvent<HTMLElement, Event>): void => {
 			action.onClick && action.onClick(ev);

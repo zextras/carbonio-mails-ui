@@ -4,13 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS, Tags } from '@zextras/carbonio-shell-ui';
+import { useSnackbar } from '@zextras/carbonio-design-system';
+import { FOLDERS, useIntegratedFunction, useTags } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import {
 	getAddRemoveFlagAction,
 	getApplyTagAction,
+	getCreateAppointmentAction,
 	getDeletePermanentlyAction,
+	getDownloadEmlAction,
 	getEditAsNewAction,
 	getEditDraftAction,
 	getForwardAction,
@@ -28,22 +32,16 @@ import {
 } from './get-msg-conv-actions-functions';
 import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
 import { isConversation, isSingleMessageConversation } from '../helpers/messages';
-import { AppDispatch } from '../store/redux';
-import type {
-	ActionReturnType,
-	Conversation,
-	ExtraWindowsContextType,
-	MailMessage,
-	MessageAction
-} from '../types';
+import { useAppDispatch } from '../hooks/redux';
+import { addEditor } from '../store/zustand/editor';
+import { generateEditor } from '../store/zustand/editor/editor-generators';
+import type { ActionReturnType, Conversation, MailMessage, MessageAction } from '../types';
+import { useExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 
-type GetMessageActionsProps = {
+type useMsgConvActionsProps = {
 	item: MailMessage | Conversation;
-	dispatch: AppDispatch;
 	deselectAll: () => void;
-	tags: Tags;
-	createWindow: ExtraWindowsContextType['createWindow'];
-	messageActions: Array<MessageAction>;
+	messageActionsForExtraWindow: Array<MessageAction>;
 };
 
 export type MsgConvActionsReturnType = [
@@ -51,16 +49,19 @@ export type MsgConvActionsReturnType = [
 	Array<Exclude<ActionReturnType, false>>
 ];
 
-export function getMsgConvActions({
+export function useMsgConvActions({
 	item,
-	dispatch,
 	deselectAll,
-	tags,
-	createWindow,
-	messageActions
-}: GetMessageActionsProps): MsgConvActionsReturnType {
+	messageActionsForExtraWindow
+}: useMsgConvActionsProps): MsgConvActionsReturnType {
 	const isConv = isConversation(item);
 	const folderId = getParentFolderId(item);
+	const dispatch = useAppDispatch();
+	const tags = useTags();
+	const createSnackbar = useSnackbar();
+	const { t } = useTranslation();
+	const { createWindow } = useExtraWindowsManager();
+	const [openAppointmentComposer, isAvailable] = useIntegratedFunction('create_appointment');
 	if (!folderId) {
 		return [[], []];
 	}
@@ -69,7 +70,7 @@ export function getMsgConvActions({
 		? filter(
 				item?.messages,
 				(msg) => ![FOLDERS.TRASH, FOLDERS.DRAFTS].includes(getFolderIdParts(msg.parent).id ?? '')
-		  )?.[0] ?? {}
+			)?.[0] ?? {}
 		: item;
 	const isSingleMsgConv = isSingleMessageConversation(item);
 	const { id } = item;
@@ -91,6 +92,8 @@ export function getMsgConvActions({
 	const folderExcludedEditAsNew = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const folderIncludedSendDraft = [FOLDERS.DRAFTS];
 	const folderExcludedRedirect = [FOLDERS.DRAFTS, FOLDERS.TRASH];
+	const folderExcludedDownloadEML = [FOLDERS.DRAFTS];
+	const folderExcludedCreateAppointment = [FOLDERS.DRAFTS, FOLDERS.SPAM];
 
 	const addRemoveFlagAction = getAddRemoveFlagAction({
 		isConversation: isConv,
@@ -207,13 +210,18 @@ export function getMsgConvActions({
 		folderExcludedEditAsNew
 	});
 
-	const sendDraftAction = getSendDraftAction({
-		isConversation: isConv,
-		item,
-		dispatch,
-		folderIncludedSendDraft,
-		folderId
-	});
+	const sendDraftAction = isConversation(item)
+		? false
+		: getSendDraftAction({
+				item,
+				dispatch,
+				folderIncludedSendDraft,
+				folderId,
+				generateEditor,
+				addEditor,
+				createSnackbar,
+				t
+			});
 
 	const redirectAction = getRedirectAction({
 		isConversation: isConv,
@@ -228,7 +236,23 @@ export function getMsgConvActions({
 		folderId,
 		subject: item.subject,
 		createWindow,
-		messageActions
+		messageActions: messageActionsForExtraWindow
+	});
+
+	const downloadEmlAction = getDownloadEmlAction({
+		isConversation: isConv,
+		id,
+		folderId,
+		folderExcludedDownloadEML
+	});
+
+	const createAppointmentAction = getCreateAppointmentAction({
+		isConversation: isConv,
+		item,
+		folderId,
+		folderExcludedCreateAppointment,
+		openAppointmentComposer,
+		isAvailable
 	});
 
 	/**
@@ -266,12 +290,14 @@ export function getMsgConvActions({
 		markRemoveSpam,
 		applyTagAction,
 		moveToFolderAction,
+		createAppointmentAction,
 		printAction,
 		previewOnSeparatedWindow,
 		redirectAction,
 		editDraftAction,
 		editAsNewAction,
-		showOriginalAction
+		showOriginalAction,
+		downloadEmlAction
 	].reduce((acc: Array<Exclude<ActionReturnType, false>>, action) => {
 		if (action) {
 			acc.push(action);

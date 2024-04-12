@@ -66,7 +66,7 @@ const DateCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 						defaultValue?.dateTest?.[0].negative
 							? { dateComparison: defaultValue?.dateTest?.[0]?.dateComparison, negative: '1' }
 							: { dateComparison: defaultValue?.dateTest?.[0]?.dateComparison }
-				  )
+					)
 				: dateOptions[0],
 		[dateOptions, defaultValue]
 	);

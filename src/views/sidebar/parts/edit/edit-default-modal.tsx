@@ -3,24 +3,26 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+
 import { Container } from '@zextras/carbonio-design-system';
 import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
 import { includes, isEmpty } from 'lodash';
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import type { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
-import { folderAction } from '../../../../store/actions/folder-action';
-import { translatedSystemFolders } from '../../utils';
+
 import { FolderDetails } from './folder-details';
 import NameInputRow from './name-input';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
+import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
+import { FolderActionsType } from '../../../../carbonio-ui-commons/constants/folders';
+import type { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
 import {
 	allowedActionOnSharedAccount,
 	isValidFolderName
 } from '../../../../carbonio-ui-commons/utils/utils';
-import { FolderActionsType } from '../../../../carbonio-ui-commons/constants/folders';
+import { folderAction } from '../../../../store/actions/folder-action';
+import { translatedSystemFolders } from '../../utils';
 
 const retentionPeriod = [
 	{
@@ -205,7 +207,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 												lifetime: `${lt}d`,
 												type: 'user'
 											}
-									  }
+										}
 									: {},
 								purge: dsblMsgDis
 									? {
@@ -213,9 +215,9 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 												lifetime: `${pr}d`,
 												type: 'user'
 											}
-									  }
+										}
 									: {}
-						  }
+							}
 						: {}
 			}).then((res) => {
 				if (!('Fault' in res)) {

@@ -29,6 +29,8 @@ export type EditorsStateTypeV2 = {
 	setText: (id: MailsEditorV2['id'], text: MailsEditorV2['text']) => void;
 	setAutoSendTime: (id: MailsEditorV2['id'], autoSendTime: MailsEditorV2['autoSendTime']) => void;
 	setDid: (id: MailsEditorV2['id'], did: MailsEditorV2['did']) => void;
+	setSize: (id: MailsEditorV2['id'], size: MailsEditorV2['size']) => void;
+	setTotalSmartLinksSize: (id: MailsEditorV2['id']) => void;
 	setIsRichText: (id: MailsEditorV2['id'], isRichText: MailsEditorV2['isRichText']) => void;
 	setIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
 	setRequestReadReceipt: (
@@ -80,6 +82,7 @@ export type EditorsStateTypeV2 = {
 	removeUnsavedAttachment: (id: MailsEditorV2['id'], uploadId: string) => void;
 	clearStandardAttachments: (id: MailsEditorV2['id']) => void;
 	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
+	toggleSmartLink: (id: MailsEditorV2['id'], partName: string) => void;
 };
 
 export type MsgStateType = {

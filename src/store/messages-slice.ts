@@ -152,7 +152,7 @@ export const getMessagesSliceInitialState = (): MsgStateType =>
 	({
 		messages: {} as MsgMap,
 		searchRequestStatus: null
-	} as MsgStateType);
+	}) as MsgStateType;
 
 const selectMessagesSlice = (state: MailsStateType): MailsStateType['messages'] => state.messages;
 
