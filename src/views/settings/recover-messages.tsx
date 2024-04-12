@@ -17,8 +17,11 @@ export const RecoverMessages = (): React.JSX.Element => {
 			credentials: 'same-origin'
 		});
 	}, []);
-	const informativeText = `You can still retrieve emails deleted from Trash within the past 7 days.
-By clicking “START RECOVERY will initiate the process to retrieve the mails. Once process is completed you will receive a notification in your Inbox and a new folder will be created.`;
+	const informativeText = t(
+		'settings.label.recover_messages_infotext',
+		`You can still recover emails deleted within the past 7 days from the Trash folder. \n
+    By clicking “START RECOVERY” you will initiate the process to recover deleted emails. Once the process is completed you will receive a notification in your Inbox and find the recovered emails in a new dedicated folder.`
+	);
 
 	const buttonLabel = t('label.start_recovery', 'Start Recovery');
 
@@ -27,7 +30,7 @@ By clicking “START RECOVERY will initiate the process to retrieve the mails. O
 	return (
 		<FormSubSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
 			<Padding top="large" />
-			<Text>{informativeText}</Text>
+			<Text style={{ whiteSpace: 'pre-line' }}>{informativeText}</Text>
 			<Padding top="large" />
 			<Button type={'outlined'} onClick={restoreMessages} label={buttonLabel} />
 		</FormSubSection>
