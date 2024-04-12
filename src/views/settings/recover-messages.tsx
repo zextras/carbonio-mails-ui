@@ -37,7 +37,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const productflavour = useProductFlavorStore.getState().productFlavor;
 
 	return productflavour === PRODUCT_FLAVOUR.ADVANCED ? (
-		<FormSubSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
+		<FormSubSection id={sectionTitle.id} data-testid="product-flavour-form" label={sectionTitle.label} padding={{ all: 'medium' }}>
 			<Padding top="large" />
 			<Text style={{ whiteSpace: 'pre-line' }}>{informativeText}</Text>
 			<Padding top="large" />
