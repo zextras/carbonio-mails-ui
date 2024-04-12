@@ -473,3 +473,8 @@ export const SEARCHED_FOLDER_STATE_STATUS = {
 } as const;
 
 export const EXTRA_WINDOW_ACTION_ID = 'extraWindowActions';
+
+export const PRODUCT_FLAVOUR = {
+	ADVANCED: 'advanced',
+	COMMUNITY: 'community'
+} as const;
