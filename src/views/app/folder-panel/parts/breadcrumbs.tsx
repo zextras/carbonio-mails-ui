@@ -84,13 +84,6 @@ export const Breadcrumbs: FC<{
 
 	const { folderPathFirstPart, folderPathLastPart } = getFolderPathForBreadcrumb(folderPath);
 
-	const restoreMessages = useCallback(() => {
-		fetch('/zx/backup/v1/undelete?start=2024-04-08T00:00:00Z&end=2024-04-12T00:00:00Z', {
-			method: 'POST',
-			credentials: 'same-origin'
-		});
-	}, []);
-
 	return (
 		<Container
 			background="gray5"
@@ -119,7 +112,6 @@ export const Breadcrumbs: FC<{
 							}}
 						/>
 					</Tooltip>
-					<Button onClick={restoreMessages} label={'restoremessages'} />
 					<Row maxWidth={availableWidth} mainAlignment="flex-start">
 						<Text
 							size="medium"

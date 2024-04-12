@@ -14,6 +14,11 @@ export const receivingMessagesSubSection = (): SettingsSubSection => ({
 	id: 'receiving_messages'
 });
 
+export const recoverMessagesSubSection = (): SettingsSubSection => ({
+	label: t('label.recover_messages', 'Recover Messages'),
+	id: 'recover_messages'
+});
+
 export const domainWhitelistSubSection = (): SettingsSubSection => ({
 	label: t('label.trusted_addresses', 'Trusted addresses'),
 	id: 'trusted_addresses'
@@ -34,6 +39,7 @@ export const filtersSubSection = (): SettingsSubSection => ({
 export const getSettingsSubSections = (): Array<SettingsSubSection> => [
 	displayingMessagesSubSection(),
 	receivingMessagesSubSection(),
+	recoverMessagesSubSection(),
 	signaturesSubSection(),
 	setDefaultSignaturesSubSection(),
 	filtersSubSection(),
