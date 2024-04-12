@@ -7,16 +7,21 @@ import React, { useCallback } from 'react';
 
 import { Text, Button, FormSubSection, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import moment from 'moment';
 
 import { recoverMessagesSubSection } from './subsections';
 
 export const RecoverMessages = (): React.JSX.Element => {
+	const now = moment().utc();
+	const endDate = now.format();
+	const startDate = now.subtract(1, 'week').format();
+
 	const restoreMessages = useCallback(() => {
-		fetch('/zx/backup/v1/undelete?start=2024-04-08T00:00:00Z&end=2024-04-12T00:00:00Z', {
+		fetch(`/zx/backup/v1/undelete?start=${startDate}&end=${endDate}`, {
 			method: 'POST',
 			credentials: 'same-origin'
 		});
-	}, []);
+	}, [endDate, startDate]);
 	const informativeText = t(
 		'settings.label.recover_messages_infotext',
 		`You can still recover emails deleted within the past 7 days from the Trash folder. \n
