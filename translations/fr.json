@@ -103,7 +103,7 @@
         "receive_message": "Réception de messages",
         "remove_0": "Supprimer",
         "remove_1": "Tout supprimer",
-        "remove_2": "Tout supprimer",
+        "remove_2": "",
         "resend": "Renvoyer",
         "retention_policy": "Politique de rétention",
         "revoke": "Révoquer",
@@ -243,7 +243,7 @@
         "notification_folders": "Notifications de Dossiers",
         "save_to_files": "Enregistrer dans Files",
         "upload_from_files": "Téléverser depuis Files",
-        "always_allow_domain": "Toujours autorisé depuis le domaine <strong>{{domain}}</strong>",
+        "always_allow_domain": "Toujours autoriser depuis le domaine <strong>{{domain}}</strong>",
         "no_name": "<Pas de Nom>",
         "view_images": "VISUALISER LES IMAGES",
         "always_allow_address": "Toujours autoriser depuis <strong>{{from}}</strong>",
@@ -651,7 +651,7 @@
         "email_moved_to_trash": "L'email a été déplacé dans la corbeille",
         "tag_applied": "Étiquette \"{{tag}}\" appliquée",
         "tag_removed": "L'étiquette \"{{tag}}\" a été supprimée",
-        "email_copied_to_clipboard": "L'email a été copié dans le presse papier."
+        "email_copied_to_clipboard": "Email copié dans le presse papier."
     },
     "title": {
         "new_messages": "Nouveaux messages",
@@ -847,5 +847,38 @@
             "title": "Traitement du filtre '{{filterName}}'",
             "label_involved_messages": "<0>{{involvedMessagesCount}} messages</0> seront traités dans le dossier sélectionné."
         }
+    },
+    "sortingDropdown": {
+        "tooltip": {
+            "attachmentAscending": "Ordre croissant de rattachement",
+            "attachmentDescending": "Ordre décroissant par rattachement",
+            "dateAscending": "Ordre croissant par taille",
+            "dateDescending": "Ordre décroissant par date",
+            "fromAscending": "Ordre croissant par Expéditeur",
+            "fromDescending": "Ordre décroissant par Expéditeur",
+            "flaggedAscending": "Ordre croissant par Marqué",
+            "flaggedDescending": "Ordre décroissant par Marqué",
+            "importantAscending": "Ordre croissant par Important",
+            "importantDescending": "Ordre décroissant par Important",
+            "sizeDescending": "Ordre décroissant par taille",
+            "subjectAscending": "Ordre croissant par Objet",
+            "subjectDescending": "Ordre décroissant par Objet",
+            "toAscending": "Ordre croissant par Destinataire",
+            "toDescending": "Ordre décroissant par Destinataire",
+            "unreadAscending": "Ordre croissant par Non lu",
+            "unreadDescending": "Ordre décroissant par Non lu"
+        }
+    },
+    "sorting_dropdown": {
+        "ascendingOrder": "Ordre croissant",
+        "attachment": "Pièce jointe",
+        "date": "Date",
+        "flagged": "Marqué",
+        "from": "De",
+        "important": "Important",
+        "subject": "Objet",
+        "to": "À",
+        "unread": "Non lu",
+        "descendingOrder": "Ordre décroissant"
     }
 }
