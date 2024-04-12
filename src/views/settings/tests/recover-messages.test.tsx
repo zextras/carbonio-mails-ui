@@ -39,6 +39,7 @@ describe('Recover messages', () => {
 		useProductFlavorStore.getState().setAdvanced();
 		const { user } = setupTest(<RecoverMessages />, {});
 		await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+
 		getSetupServer().use(
 			http.post('/zx/backup/v1/undelete', ({ request }) => {
 				const params = getParams(request.url);
