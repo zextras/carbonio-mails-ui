@@ -35,7 +35,7 @@
             "tag_deleted": "{{name}} Тег успешно удален",
             "tag_updated": "Тег успешно обновлен",
             "tag_not_updated": "Что-то пошло не так, тег не обновился. Повторите попытку.",
-            "message_sending_aborted": "отменено пользователем",
+            "message_sending_aborted": "Отменено пользователем",
             "apply_filter_rules_started": "Фильтр «{{filterName}}» применяется к сообщениям папки «{{folderPath}}»",
             "apply_filter_rules_error": "Произошла ошибка при применении фильтра «{{filterName}}»",
             "apply_filter_rules_completed": "Фильтр \"{{filterName}}\" успешно применен к сообщениям {{involvedMessagesCount}} в папке \"{{folderPath}}\""
@@ -341,8 +341,9 @@
         "message_send_in_progress": "идет отправка сообщения",
         "missing_recipients": "нет действительных получателей",
         "missing_sender": "отправитель письма не установлен",
-        "no_sender": "отправитель сообщения не установлен",
-        "no_folder_selected": "Папка не выбрана"
+        "no_sender": "Отправитель письма не указан",
+        "no_folder_selected": "Папка не выбрана",
+        "no_identity_selected": "<Имя не выбрано>"
     },
     "header": {
         "warning": "Предупреждение",
@@ -855,5 +856,38 @@
             "label_confirm_request": "Применить фильтр?",
             "label_involved_messages": "Сообщения <0>{{involvedMessagesCount}}</0> будут обрабатываться внутри выбранной папки."
         }
+    },
+    "sortingDropdown": {
+        "tooltip": {
+            "attachmentAscending": "Сортировать по вложениям в порядке возрастания",
+            "attachmentDescending": "Сортировать по вложениям в порядке убывания",
+            "dateAscending": "Сортировать по размеру",
+            "dateDescending": "Сортировка по дате в порядке убывания",
+            "flaggedAscending": "Сортировка по отметкам в порядке возрастания",
+            "fromDescending": "Сортировка по отправителю в порядке убывания",
+            "importantDescending": "Сортировка по важности в порядке убывания",
+            "subjectAscending": "Сортировка по Теме в порядке возрастания",
+            "subjectDescending": "Сортировка по Теме в порядке убывания",
+            "toDescending": "Сортировка по Адресату в порядке убывания",
+            "unreadAscending": "Сортировка по непрочитанным в порядке возрастания",
+            "fromAscending": "Сортировка по отправителю в порядке возрастания",
+            "toAscending": "Сортировка по Адресату в порядке возрастания",
+            "unreadDescending": "Сортировка по непрочитанным в порядке убывания",
+            "flaggedDescending": "Сортировка по отметкам в порядке убывания",
+            "importantAscending": "Сортировка по важности в порядке возрастания",
+            "sizeDescending": "Сортировка по размеру в порядке убывания"
+        }
+    },
+    "sorting_dropdown": {
+        "ascendingOrder": "По возрастанию",
+        "attachment": "Вложение",
+        "date": "Дата",
+        "descendingOrder": "По убыванию",
+        "flagged": "Помечено",
+        "from": "От",
+        "important": "Важное",
+        "subject": "Тема",
+        "to": "Кому",
+        "unread": "Не прочитано"
     }
 }

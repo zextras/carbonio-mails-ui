@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.15.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.14.2...v1.15.0) (2024-04-12)
+
+
+### Features
+
+* create a new appointment from a mail ([243d82d](https://github.com/zextras/carbonio-mails-ui/commit/243d82d80b7acba9854a28736a1d7f54115659a5))
+
+
+### Bug Fixes
+
+* block ascending/descending for options not supported by the back-end ([8abb528](https://github.com/zextras/carbonio-mails-ui/commit/8abb528886b97debe69110b38f8bf7ef6b495b21))
+* don't check the word 'attachment' on the body of the email ([4bcf7d7](https://github.com/zextras/carbonio-mails-ui/commit/4bcf7d744d73581f4a76e9581fb6e4094f829592))
+* enable attachment from Files ([957ac4e](https://github.com/zextras/carbonio-mails-ui/commit/957ac4ef95ae8e30941888892a4b3729bd7e6e20))
+* fixed import in test ([ecb80d5](https://github.com/zextras/carbonio-mails-ui/commit/ecb80d58b7a778fd0c52efab9be76303a2dc7137))
+* immediate save draft after clicking the save button ([3e63342](https://github.com/zextras/carbonio-mails-ui/commit/3e63342857b799c407d4c533a88aa786520efcf6))
+* search button in advaced search not always clickable ([ced818d](https://github.com/zextras/carbonio-mails-ui/commit/ced818d2d0b3d08d14045d0af373cb91fbb4aad0))
+* search settings are ignored by search ([156e7bd](https://github.com/zextras/carbonio-mails-ui/commit/156e7bdb08357451a67c631212210ce76fd4aa7c))
+* when we click delete draft and then click undo, letter remains in the trash ([b3d7b86](https://github.com/zextras/carbonio-mails-ui/commit/b3d7b86895e40461a226348d4e3eead6f3349908))
+
 ### [1.14.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.14.1...v1.14.2) (2024-02-28)
 
 

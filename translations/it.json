@@ -844,5 +844,38 @@
             "label_confirm_request": "Vuoi applicare il filtro?",
             "button_apply": "Applica"
         }
+    },
+    "sortingDropdown": {
+        "tooltip": {
+            "attachmentDescending": "Ordine decrescente per Allegato",
+            "dateAscending": "Ordine crescente per Dimensione",
+            "dateDescending": "Ordine decrescente per Data",
+            "flaggedAscending": "Ordine crescente per Contrassegnato",
+            "fromAscending": "Ordine crescente per Da",
+            "fromDescending": "Ordine decrescente per Da",
+            "importantAscending": "Ordine crescente per Importante",
+            "importantDescending": "Ordine decrescente per Importante",
+            "sizeDescending": "Ordine decrescente per Dimensione",
+            "subjectAscending": "Ordine crescente per Oggetto",
+            "subjectDescending": "Ordine decrescente per Soggetto",
+            "toAscending": "Ordine crescente per A",
+            "toDescending": "Ordine decrescente per A",
+            "unreadAscending": "Ordine crescente per Non letto",
+            "unreadDescending": "Ordine decrescente per Non letto",
+            "attachmentAscending": "Ordine crescente per Allegato",
+            "flaggedDescending": "Ordine decrescente per Contrassegnato"
+        }
+    },
+    "sorting_dropdown": {
+        "ascendingOrder": "Ordine crescente",
+        "attachment": "Allegato",
+        "date": "Data",
+        "descendingOrder": "Ordine decrescente",
+        "flagged": "Contrassegnato",
+        "from": "Da",
+        "important": "Importante",
+        "subject": "Oggetto",
+        "to": "A",
+        "unread": "Non letto"
     }
 }
