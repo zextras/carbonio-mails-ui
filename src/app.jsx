@@ -113,6 +113,18 @@ const App = () => {
 			secondaryBar: SidebarView,
 			appView: AppView
 		});
+		addSearchView({
+			route: MAILS_ROUTE,
+			component: SearchView,
+			label: t('label.app_name', 'Mails')
+		});
+		addBoardView({
+			route: MAILS_ROUTE,
+			component: EditView
+		});
+	}, []);
+
+	useEffect(() => {
 		// Check if advanced is installed
 		fetch('/zx/auth/supported')
 			.then((data) => {
@@ -130,17 +142,7 @@ const App = () => {
 					component: SettingsView
 				});
 			});
-		addSearchView({
-			route: MAILS_ROUTE,
-			component: SearchView,
-			label: t('label.app_name', 'Mails')
-		});
-		addBoardView({
-			route: MAILS_ROUTE,
-			component: EditView
-		});
 	}, []);
-
 	useEffect(() => {
 		registerActions(
 			{
