@@ -23,7 +23,7 @@ import { some } from 'lodash';
 import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
 import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
-import { MAILS_ROUTE, MAIL_APP_ID, EditViewActions } from './constants';
+import { PRODUCT_FLAVOR, MAILS_ROUTE, MAIL_APP_ID, EditViewActions } from './constants';
 import {
 	mailToSharedFunction,
 	openComposerSharedFunction,
@@ -113,12 +113,23 @@ const App = () => {
 			secondaryBar: SidebarView,
 			appView: AppView
 		});
-		addSettingsView({
-			route: MAILS_ROUTE,
-			label: t('label.app_name', 'Mails'),
-			subSections: getSettingsSubSections(t),
-			component: SettingsView
-		});
+		// Check if advanced is installed
+		fetch('/zx/auth/supported')
+			.then((data) => {
+				if (data.status === 200) {
+					useProductFlavorStore.getState().setAdvanced();
+					return PRODUCT_FLAVOR.ADVANCED;
+				}
+				return PRODUCT_FLAVOR.COMMUNITY;
+			})
+			.then((productFlavor) => {
+				addSettingsView({
+					route: MAILS_ROUTE,
+					label: t('label.app_name', 'Mails'),
+					subSections: getSettingsSubSections(productFlavor),
+					component: SettingsView
+				});
+			});
 		addSearchView({
 			route: MAILS_ROUTE,
 			component: SearchView,
@@ -127,14 +138,6 @@ const App = () => {
 		addBoardView({
 			route: MAILS_ROUTE,
 			component: EditView
-		});
-	}, []);
-
-	useEffect(() => {
-		fetch('/zx/auth/supported').then((data) => {
-			if (data?.domain) {
-				useProductFlavorStore.getState().setAdvanced();
-			}
 		});
 	}, []);
 

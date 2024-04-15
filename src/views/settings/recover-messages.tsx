@@ -10,7 +10,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 
 import { recoverMessagesSubSection } from './subsections';
-import { PRODUCT_FLAVOUR } from '../../constants';
+import { PRODUCT_FLAVOR } from '../../constants';
 import { useProductFlavorStore } from '../../store/zustand/product-flavor/store';
 
 export const RecoverMessages = (): React.JSX.Element => {
@@ -34,9 +34,9 @@ export const RecoverMessages = (): React.JSX.Element => {
 
 	const sectionTitle = recoverMessagesSubSection();
 
-	const productflavour = useProductFlavorStore.getState().productFlavor;
+	const { productFlavor } = useProductFlavorStore();
 
-	return productflavour === PRODUCT_FLAVOUR.ADVANCED ? (
+	return productFlavor === PRODUCT_FLAVOR.ADVANCED ? (
 		<FormSubSection
 			id={sectionTitle.id}
 			data-testid="product-flavour-form"

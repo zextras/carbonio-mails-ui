@@ -6,18 +6,19 @@
 
 import { create } from 'zustand';
 
-import { PRODUCT_FLAVOUR } from '../../../constants';
+import { PRODUCT_FLAVOR } from '../../../constants';
 
-type ProductFlavorType = typeof PRODUCT_FLAVOUR;
+type ProductFlavorType = typeof PRODUCT_FLAVOR;
+export type ProductFlavor = ProductFlavorType[keyof typeof PRODUCT_FLAVOR];
 
 type ProductFlavorStore = {
-	productFlavor: ProductFlavorType[keyof typeof PRODUCT_FLAVOUR];
+	productFlavor: ProductFlavor;
 	setAdvanced: () => void;
 	setCommunity: () => void;
 };
 
 export const useProductFlavorStore = create<ProductFlavorStore>()((set) => ({
-	productFlavor: PRODUCT_FLAVOUR.COMMUNITY,
-	setAdvanced: (): void => set({ productFlavor: PRODUCT_FLAVOUR.ADVANCED }),
-	setCommunity: (): void => set({ productFlavor: PRODUCT_FLAVOUR.COMMUNITY })
+	productFlavor: PRODUCT_FLAVOR.COMMUNITY,
+	setAdvanced: (): void => set({ productFlavor: PRODUCT_FLAVOR.ADVANCED }),
+	setCommunity: (): void => set({ productFlavor: PRODUCT_FLAVOR.COMMUNITY })
 }));

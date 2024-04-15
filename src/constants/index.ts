@@ -474,7 +474,7 @@ export const SEARCHED_FOLDER_STATE_STATUS = {
 
 export const EXTRA_WINDOW_ACTION_ID = 'extraWindowActions';
 
-export const PRODUCT_FLAVOUR = {
+export const PRODUCT_FLAVOR = {
 	ADVANCED: 'advanced',
 	COMMUNITY: 'community'
 } as const;
