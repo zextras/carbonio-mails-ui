@@ -5,25 +5,57 @@
  */
 import React, { useCallback } from 'react';
 
-import { Text, Button, FormSubSection, Padding } from '@zextras/carbonio-design-system';
+import {
+	Text,
+	Button,
+	FormSubSection,
+	Padding,
+	useModal,
+	CloseModalFn,
+	useSnackbar
+} from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import moment from 'moment';
 
+import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
 import { PRODUCT_FLAVOR } from '../../constants';
+import { StoreProvider } from '../../store/redux';
 import { useProductFlavorStore } from '../../store/zustand/product-flavor/store';
 
 export const RecoverMessages = (): React.JSX.Element => {
+	const createModal = useModal();
+	const createSnackbar = useSnackbar();
+
 	const now = moment().utc();
 	const endDate = now.format();
 	const startDate = now.subtract(1, 'week').format();
 
-	const restoreMessages = useCallback(() => {
-		fetch(`/zx/backup/v1/undelete?start=${startDate}&end=${endDate}`, {
-			method: 'POST',
-			credentials: 'same-origin'
-		});
-	}, [endDate, startDate]);
+	const restoreMessages = useCallback(
+		(closeModal: CloseModalFn) => {
+			fetch(`/zx/backup/v1/undelete?start=${startDate}&end=${endDate}`, {
+				method: 'POST',
+				credentials: 'same-origin'
+			})
+				.then((response) => {
+					if (response?.status !== 202) {
+						throw new Error('Something went wrong with messages restoration');
+					}
+					closeModal();
+				})
+				.catch(() => {
+					createSnackbar({
+						key: `recover-messages-error`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				});
+		},
+		[createSnackbar, endDate, startDate]
+	);
 	const informativeText = t(
 		'settings.label.recover_messages_infotext',
 		`You can still recover emails deleted within the past 7 days from the Trash folder. \n
@@ -46,7 +78,25 @@ export const RecoverMessages = (): React.JSX.Element => {
 			<Padding top="large" />
 			<Text style={{ whiteSpace: 'pre-line' }}>{informativeText}</Text>
 			<Padding top="large" />
-			<Button type={'outlined'} onClick={restoreMessages} label={buttonLabel} />
+			<Button
+				type={'outlined'}
+				onClick={(): void => {
+					const closeModal = createModal(
+						{
+							children: (
+								<StoreProvider>
+									<RecoverMessagesModal
+										onClose={(): void => closeModal()}
+										onConfirm={(): void => restoreMessages(closeModal)}
+									/>
+								</StoreProvider>
+							)
+						},
+						true
+					);
+				}}
+				label={buttonLabel}
+			/>
 		</FormSubSection>
 	) : (
 		<></>
