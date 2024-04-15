@@ -3,13 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Avatar, Container, Tooltip } from '@zextras/carbonio-design-system';
-import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
+
+import { Avatar, Container } from '@zextras/carbonio-design-system';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
-import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
-import type { ItemAvatarType, Participant } from '../../../../types';
+
 import { TooltipWrapper } from './tooltip-wrapper';
+import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
+import { getFolderIdParts } from '../../../../helpers/folders';
+import type { ItemAvatarType, Participant } from '../../../../types';
 
 const AvatarElement = styled(Avatar)`
 	width: 2.625rem !important;
@@ -22,7 +25,8 @@ const AvatarElement = styled(Avatar)`
 `;
 
 export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, toggle, folderId }) => {
-	const targetParticipants = folderId === FOLDERS.SPAM ? ParticipantRole.TO : ParticipantRole.FROM;
+	const targetParticipants =
+		getFolderIdParts(folderId).id === FOLDERS.SPAM ? ParticipantRole.TO : ParticipantRole.FROM;
 	const [avatarLabel, avatarEmail] = useMemo(() => {
 		let sender = item?.participants?.find((p: Participant) => p.type === targetParticipants);
 		if (!sender) [sender] = item.participants ?? [];
