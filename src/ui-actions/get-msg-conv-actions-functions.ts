@@ -279,13 +279,13 @@ export function getMarkRemoveSpam({
 	const action = isConversation
 		? setConversationsSpam({
 				ids: [id],
-				value: folderId === FOLDERS.SPAM,
+				value: getFolderIdParts(folderId).id === FOLDERS.SPAM,
 				dispatch,
 				deselectAll
 			})
 		: setMsgAsSpam({
 				ids: [id],
-				value: folderId === FOLDERS.SPAM,
+				value: getFolderIdParts(folderId).id === FOLDERS.SPAM,
 				dispatch,
 				folderId
 			});
@@ -350,14 +350,14 @@ export function getMoveToFolderAction({
 				ids: [id],
 				dispatch,
 				folderId,
-				isRestore: folderId === FOLDERS.TRASH,
+				isRestore: getFolderIdParts(folderId).id === FOLDERS.TRASH,
 				deselectAll
 			})
 		: moveMessageToFolder({
 				id: [id],
 				folderId,
 				dispatch,
-				isRestore: folderId === FOLDERS.TRASH,
+				isRestore: getFolderIdParts(folderId).id === FOLDERS.TRASH,
 				deselectAll
 			});
 }
