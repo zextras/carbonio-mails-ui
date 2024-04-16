@@ -6,13 +6,15 @@
 
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
+import { noop } from 'lodash';
 import moment from 'moment';
 import { http } from 'msw';
 
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useProductFlavorStore } from '../../../store/zustand/product-flavor/store';
+import { generateStore } from '../../../tests/generators/store';
 import { RecoverMessages } from '../recover-messages';
 
 function getParams(url: string): Record<string, string> {
@@ -30,11 +32,13 @@ describe('Recover messages', () => {
 		setupTest(<RecoverMessages />, {});
 		expect(screen.getByTestId('product-flavour-form')).toBeInTheDocument();
 	});
+
 	it('should not render view if product flavour is community', () => {
 		useProductFlavorStore.getState().setCommunity();
 		setupTest(<RecoverMessages />, {});
 		expect(screen.queryByTestId('product-flavour-form')).not.toBeInTheDocument();
 	});
+
 	it('should call undelete API when recovery button is pressed', async () => {
 		useProductFlavorStore.getState().setAdvanced();
 		const { user } = setupTest(<RecoverMessages />, {});
@@ -60,5 +64,19 @@ describe('Recover messages', () => {
 		expect(end).toBeDefined();
 		const oneWeek = moment(end).utc().diff(moment(start).utc());
 		expect(oneWeek).toBe(60 * 1000 * 60 * 24 * 7);
+	});
+
+	it('should not close the recover messages modal when the API call fails', async () => {
+		useProductFlavorStore.getState().setAdvanced();
+		const store = generateStore();
+		const { user } = setupTest(<RecoverMessages />, { store });
+		await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+		await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+		getSetupServer().use(http.post('/zx/backup/v1/undelete', noop));
+		act(() => {
+			jest.advanceTimersByTime(1000);
+		});
+		const confirmButton = screen.queryByText('label.confirm');
+		expect(confirmButton).toBeInTheDocument();
 	});
 });
