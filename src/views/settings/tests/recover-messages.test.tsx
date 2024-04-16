@@ -39,6 +39,7 @@ describe('Recover messages', () => {
 		useProductFlavorStore.getState().setAdvanced();
 		const { user } = setupTest(<RecoverMessages />, {});
 		await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+		await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 
 		const APIrequestStartEnd = (): Promise<{ start: string; end: string }> =>
 			new Promise((resolve, reject) => {
