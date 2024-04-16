@@ -45,30 +45,55 @@ const getSignatures = (account: Account | undefined): Array<SignatureDescriptor>
 		{
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			const htmlIndex = item.content.findIndex(obj => obj.type == "text/html");
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			const textIndex = item.content.findIndex(obj => obj.type == "text/plain");
-			signatureArray.push({
-				// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+			if (typeof(item.content) != undefined) {
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				label: item.name,
-				value: {
+				const htmlIndex = item.content.findIndex(obj => obj.type == "text/html");
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				const textIndex = item.content.findIndex(obj => obj.type == "text/plain");
+				signatureArray.push({
 					// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					html: htmlIndex !== -1 ? item.content[htmlIndex]._content : '',
+					label: item.name,
+					value: {
+						// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						html: htmlIndex !== -1 ? item.content[htmlIndex]._content : '',
+						// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						text: textIndex !== -1 ? item.content[textIndex]._content : '',
+						// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						id: item?.id
+					}
+				})
+			} else {
+				signatureArray.push({
 					// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					text: textIndex !== -1 ? item.content[textIndex]._content : '',
-					// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					id: item?.id
-				}
-			})
+					label: item.name,
+					value: {
+						// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						html: '',
+						// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						text: '',
+						// FIXME the Account type defined in Shell needs to be refactored (signatures and identities type)
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						id: item?.id
+					}
+				})
+			}
 		}
 	);
 	return signatureArray;
