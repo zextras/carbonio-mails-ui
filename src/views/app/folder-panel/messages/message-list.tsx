@@ -18,6 +18,7 @@ import {
 	LIST_LIMIT,
 	SEARCHED_FOLDER_STATE_STATUS
 } from '../../../../constants';
+import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useMessageList } from '../../../../hooks/use-message-list';
@@ -81,16 +82,16 @@ export const MessageList: FC = () => {
 
 	const displayerTitle = useMemo(() => {
 		if (messages?.length === 0) {
-			if (folderId === FOLDERS.SPAM) {
+			if (getFolderIdParts(folderId).id === FOLDERS.SPAM) {
 				return t('displayer.list_spam_title', 'There are no spam e-mails');
 			}
-			if (folderId === FOLDERS.SENT) {
+			if (getFolderIdParts(folderId).id === FOLDERS.SENT) {
 				return t('displayer.list_sent_title', 'You haven’t sent any e-mail yet');
 			}
-			if (folderId === FOLDERS.DRAFTS) {
+			if (getFolderIdParts(folderId).id === FOLDERS.DRAFTS) {
 				return t('displayer.list_draft_title', 'There are no saved drafts');
 			}
-			if (folderId === FOLDERS.TRASH) {
+			if (getFolderIdParts(folderId).id === FOLDERS.TRASH) {
 				return t('displayer.list_trash_title', 'The trash is empty');
 			}
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');

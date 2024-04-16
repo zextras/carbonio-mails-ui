@@ -209,9 +209,12 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			{
 				id: FolderActionsType.EMPTY,
 				'data-testid': `folder-action-${FolderActionsType.EMPTY}`,
-				icon: folder.id === FOLDERS.TRASH ? 'DeletePermanentlyOutline' : 'EmptyFolderOutline',
+				icon:
+					getFolderIdParts(folder.id).id === FOLDERS.TRASH
+						? 'DeletePermanentlyOutline'
+						: 'EmptyFolderOutline',
 				label:
-					folder.id === FOLDERS.TRASH
+					getFolderIdParts(folder.id).id === FOLDERS.TRASH
 						? t('folder_panel.action.empty.trash', 'Empty Trash')
 						: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
 				disabled: folder.n === 0 && folder.children?.length === 0,

@@ -27,6 +27,7 @@ import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { difference, map, noop, slice } from 'lodash';
 import { useParams } from 'react-router-dom';
 
+import { getFolderIdParts } from '../helpers/folders';
 import { useVisibleActionsCount } from '../hooks/use-visible-actions-count';
 
 type MailMsgPreviewActionsType = {
@@ -47,8 +48,8 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	const theme = useContext(ThemeContext);
 
 	const maxActions = useMemo(() => {
-		if (folderId === FOLDERS.TRASH) return 2;
-		if (folderId === FOLDERS.DRAFTS) return 4;
+		if (getFolderIdParts(folderId).id === FOLDERS.TRASH) return 2;
+		if (getFolderIdParts(folderId).id === FOLDERS.DRAFTS) return 4;
 		return 6;
 	}, [folderId]);
 
@@ -88,7 +89,9 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 
 	const _minWidth = useMemo(
 		() =>
-			folderId === FOLDERS.TRASH ? `calc(${iconSize} * ${maxActions})` : theme.sizes.icon.large,
+			getFolderIdParts(folderId).id === FOLDERS.TRASH
+				? `calc(${iconSize} * ${maxActions})`
+				: theme.sizes.icon.large,
 		[folderId, iconSize, maxActions, theme?.sizes?.icon?.large]
 	);
 

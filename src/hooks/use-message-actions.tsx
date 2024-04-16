@@ -19,6 +19,7 @@ import { useParams } from 'react-router-dom';
 import { useAppDispatch } from './redux';
 import { useSelection } from './use-selection';
 import { EXTRA_WINDOW_ACTION_ID } from '../constants';
+import { getFolderIdParts } from '../helpers/folders';
 import type { AppContext, MailMessage, MessageAction } from '../types';
 import {
 	createAppointment,
@@ -229,7 +230,7 @@ export const useMessageActions = (
 		return [];
 	}
 
-	if (message.parent === FOLDERS.DRAFTS) {
+	if (getFolderIdParts(message.parent).id === FOLDERS.DRAFTS) {
 		actions.push(
 			...getDraftsActions({
 				isInsideExtraWindow,
@@ -244,9 +245,9 @@ export const useMessageActions = (
 	}
 
 	if (
-		message.parent === FOLDERS.INBOX ||
-		message.parent === FOLDERS.SENT ||
-		!includes(systemFolders, message.parent)
+		getFolderIdParts(message.parent).id === FOLDERS.INBOX ||
+		getFolderIdParts(message.parent).id === FOLDERS.SENT ||
+		!includes(systemFolders, getFolderIdParts(message.parent).id)
 	) {
 		actions.push(
 			...getDefatultActions({
@@ -264,7 +265,7 @@ export const useMessageActions = (
 		// INBOX, SENT OR CREATED_FOLDER
 	}
 
-	if (message.parent === FOLDERS.TRASH) {
+	if (getFolderIdParts(message.parent).id === FOLDERS.TRASH) {
 		actions.push(
 			...getTrashActions({
 				isInsideExtraWindow,
@@ -277,7 +278,7 @@ export const useMessageActions = (
 		);
 	}
 
-	if (message.parent === FOLDERS.SPAM) {
+	if (getFolderIdParts(message.parent).id === FOLDERS.SPAM) {
 		actions.push(...getSpamActions({ isInsideExtraWindow, message, dispatch, tags, folderId }));
 	}
 
