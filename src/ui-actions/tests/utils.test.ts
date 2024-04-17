@@ -6,7 +6,7 @@
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { parseTextToHTMLDocument } from '../../helpers/text';
 import { useEditorsStore } from '../../store/zustand/editor/store';
 import { setupEditorStore } from '../../tests/generators/editor-store';
@@ -184,7 +184,7 @@ describe('createSmartLink', () => {
 		attachmentToConvert.requiresSmartLinkConversion = true;
 		setupEditorStore({ editors: [editor] });
 
-		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
+		const interceptor = createSoapAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
 			'CreateSmartLinks',
 			{
 				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
@@ -212,7 +212,7 @@ describe('createSmartLink', () => {
 		attachmentToConvert.requiresSmartLinkConversion = true;
 		setupEditorStore({ editors: [editor] });
 
-		const interceptor = createAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
+		const interceptor = createSoapAPIInterceptor<CreateSmartLinksRequest, CreateSmartLinksResponse>(
 			'CreateSmartLinks',
 			{
 				smartLinks: [{ publicUrl: 'https://example.com/file1' }]
@@ -243,7 +243,7 @@ describe('createSmartLink', () => {
 			}
 		};
 
-		createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
+		createSoapAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
 			Fault: expectedRejectReason
 		});
 

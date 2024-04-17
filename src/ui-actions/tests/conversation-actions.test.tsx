@@ -13,7 +13,7 @@ import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getTag, getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS, TIMEOUTS } from '../../constants';
@@ -57,7 +57,7 @@ describe('Conversation actions calls', () => {
 				value: false
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -102,7 +102,7 @@ describe('Conversation actions calls', () => {
 				value: false
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -140,7 +140,7 @@ describe('Conversation actions calls', () => {
 				value: true
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -185,7 +185,7 @@ describe('Conversation actions calls', () => {
 				value: true
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -226,7 +226,7 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -274,7 +274,7 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -315,7 +315,7 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -362,7 +362,7 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -401,7 +401,7 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -447,7 +447,7 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -487,7 +487,7 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -533,7 +533,7 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -592,7 +592,7 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -637,7 +637,7 @@ describe('Conversation actions calls', () => {
 				deselectAll: noop
 			});
 
-			const apiInterceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			act(() => {
 				action.onClick();
@@ -678,7 +678,7 @@ describe('Conversation actions calls', () => {
 				/>
 			);
 
-			const interceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			const { user } = setupTest(component, { store });
 			const button = await screen.findByText(/label\.delete_permanently/i);
 			await user.click(button);
@@ -724,7 +724,7 @@ describe('Conversation actions calls', () => {
 				/>
 			);
 
-			const interceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			const { user } = setupTest(component, { store });
 			const button = await screen.findByText(/label\.delete_permanently/i);
 			await user.click(button);
@@ -771,7 +771,7 @@ describe('Conversation actions calls', () => {
 				/>
 			);
 
-			const interceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			const { user } = setupTest(component, { store });
 			makeListItemsVisible();
@@ -842,7 +842,7 @@ describe('Conversation actions calls', () => {
 				/>
 			);
 
-			const interceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			const { user } = setupTest(component, { store });
 			makeListItemsVisible();
@@ -893,7 +893,7 @@ describe('Conversation actions calls', () => {
 
 			const component = <TagsDropdownItem tag={tag} conversation={conv} isMessage={false} />;
 
-			const interceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			const { user } = setupTest(component, { store });
 
 			const tagElement = screen.getByTestId(`tag-item-${tag.id}`);
@@ -927,7 +927,7 @@ describe('Conversation actions calls', () => {
 
 			const component = <TagsDropdownItem tag={tag} conversation={conv} isMessage={false} />;
 
-			const interceptor = createAPIInterceptor<ConvActionRequest>('ConvAction');
+			const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			const { user } = setupTest(component, { store });
 
 			const tagElement = screen.getByTestId(`tag-item-${tag.id}`);

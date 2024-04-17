@@ -9,7 +9,7 @@ import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, RootFolder } from '../../../carbonio-ui-commons/types/folder';
@@ -192,7 +192,7 @@ test('API is called with the proper parameters to move the selected folder into 
 		name: /label\.move/i
 	});
 
-	const folderActionInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>(
+	const folderActionInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>(
 		'FolderAction'
 	);
 	await user.click(actionButton);
