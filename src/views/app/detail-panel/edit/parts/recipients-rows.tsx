@@ -3,18 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Button, Container, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { RecipientsRow } from './recipients-row';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
+import { getOrderedAccountIds } from '../../../../../carbonio-ui-commons/helpers/identities';
 import { GapContainer } from '../../../../../commons/gap-container';
-import { getExtraAccountsIds } from '../../../../../helpers/identities';
+import { getIdentityDescriptor } from '../../../../../helpers/identities';
 import {
 	useEditorBccRecipients,
 	useEditorCcRecipients,
+	useEditorIdentityId,
 	useEditorToRecipients
 } from '../../../../../store/zustand/editor';
 import { MailsEditorV2, Participant } from '../../../../../types';
@@ -28,12 +30,22 @@ export const RecipientsRows = ({ editorId }: RecipientsRowsProps): JSX.Element =
 	const { ccRecipients, setCcRecipients } = useEditorCcRecipients(editorId);
 	const { bccRecipients, setBccRecipients } = useEditorBccRecipients(editorId);
 
+	const { identityId } = useEditorIdentityId(editorId);
 	const [showCc, setShowCc] = useState(ccRecipients.length > 0);
 	const [showBcc, setShowBcc] = useState(bccRecipients.length > 0);
 
-	const extraAccountsIds = useMemo(() => getExtraAccountsIds(), []);
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
 	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
+	const [orderedAccountIds, setOrderedAccountIds] = useState<Array<string>>([]);
+
+	useEffect(() => {
+		const selectedIdentity = getIdentityDescriptor(identityId);
+		const fetchData = async (): Promise<void> => {
+			const ids = await getOrderedAccountIds(selectedIdentity ? selectedIdentity.ownerAccount : '');
+			setOrderedAccountIds(ids);
+		};
+		fetchData();
+	}, [identityId]);
 
 	const onToChange = useCallback(
 		(updatedRecipients: Array<Participant>) => setToRecipients(updatedRecipients),
@@ -65,7 +77,7 @@ export const RecipientsRows = ({ editorId }: RecipientsRowsProps): JSX.Element =
 						dataTestid={'RecipientTo'}
 						recipients={toRecipients}
 						onRecipientsChange={onToChange}
-						extraAccountsIds={extraAccountsIds}
+						orderedAccountIds={orderedAccountIds}
 					/>
 				</Container>
 				<Container
@@ -102,6 +114,7 @@ export const RecipientsRows = ({ editorId }: RecipientsRowsProps): JSX.Element =
 					dataTestid={'RecipientCc'}
 					recipients={ccRecipients}
 					onRecipientsChange={onCcChange}
+					orderedAccountIds={orderedAccountIds}
 				/>
 			)}
 
@@ -112,6 +125,7 @@ export const RecipientsRows = ({ editorId }: RecipientsRowsProps): JSX.Element =
 					dataTestid={'RecipientBcc'}
 					recipients={bccRecipients}
 					onRecipientsChange={onBccChange}
+					orderedAccountIds={orderedAccountIds}
 				/>
 			)}
 		</GapContainer>
