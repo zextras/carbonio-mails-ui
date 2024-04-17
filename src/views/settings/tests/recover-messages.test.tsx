@@ -70,30 +70,30 @@ describe('Recover messages', () => {
 		useProductFlavorStore.getState().setAdvanced();
 		const store = generateStore();
 		const { user } = setupTest(<RecoverMessages />, { store });
-		await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
-		await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		getSetupServer().use(http.post('/zx/backup/v1/undelete', noop));
-		act(() => {
-			jest.advanceTimersByTime(1000);
+
+		await act(async () => {
+			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
-		const confirmButton = screen.queryByText('label.confirm');
-		expect(confirmButton).toBeInTheDocument();
+
+		expect(screen.getByText('label.confirm')).toBeInTheDocument();
 	});
 
 	it('should close the recover messages modal when the API call succedes', async () => {
+		jest.spyOn(console, 'error').mockImplementation();
 		useProductFlavorStore.getState().setAdvanced();
 		const store = generateStore();
 		const { user } = setupTest(<RecoverMessages />, { store });
-		await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
-		await user.click(screen.getByRole('button', { name: 'label.confirm' }));
-
 		getSetupServer().use(
-			http.post('/zx/backup/v1/undelete', () => new HttpResponse(null, { status: 202 }))
+			http.post('/zx/backup/v1/undelete', async () => HttpResponse.json(null, { status: 202 }))
 		);
-		// act(() => {
-		// 	jest.advanceTimersByTime(1000);
-		// });
-		const confirmButton = screen.queryByText('label.confirm');
-		expect(confirmButton).not.toBeInTheDocument();
+
+		await act(async () => {
+			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+		});
+
+		expect(screen.queryByText('label.confirm')).not.toBeInTheDocument();
 	});
 });

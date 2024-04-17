@@ -38,7 +38,6 @@ export const RecoverMessages = (): React.JSX.Element => {
 				credentials: 'same-origin'
 			})
 				.then((response) => {
-					console.log(response);
 					if (response?.status !== 202) {
 						throw new Error('Something went wrong with messages restoration');
 					}
