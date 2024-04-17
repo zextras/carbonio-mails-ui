@@ -29,6 +29,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
 import type { SearchProps } from '../../types';
+import { isSharedAccountFolder } from '../../helpers/folders';
 
 const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -39,6 +40,8 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	const folders = useFoldersMap();
 	const [count, setCount] = useState(0);
 	const [containerWidth, setContainerWidth] = useState('70%');
+	const dispatch = useAppDispatch();
+	const [newSearch, setNewSearch] = useState(true);
 
 	useEffect(() => {
 		const element = document.getElementById("appContainerSearch");
@@ -62,15 +65,21 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	);
 
 	useEffect(() => {
+		const lastApp = localStorage.getItem('lastApp');
+		if ( lastApp == "mail" || lastApp == "" ) {
+			localStorage.setItem('lastApp','search');
+			dispatch(resetSearchResults());
+			setNewSearch(true);
+		}
 		setAppContext({ isMessageView, count, setCount });
-	}, [count, isMessageView]);
+	}, [count, isMessageView, dispatch]);
 
 	const searchInFolders = useMemo(
 		() =>
 			reduce(
 				folders,
 				(acc: Array<string>, v: Folder, k: string) => {
-					if (('isShared' in v && v.isShared) || v.perm) {
+					if (isSharedAccountFolder(v.id) || v.perm) {
 						acc.push(k);
 					}
 					return acc;
@@ -85,7 +94,6 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		[searchInFolders]
 	);
 
-	const dispatch = useAppDispatch();
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
@@ -108,11 +116,11 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		if (searchResults.status === 'fulfilled') {
 			return t('label.results_for', 'Results for: ');
 		}
-		if (searchResults.status === 'pending') {
+		if (searchResults.status === 'pending' && loading) {
 			return t('label.loading_results', 'Loading Results...');
 		}
 		return '';
-	}, [isInvalidQuery, searchResults.status, invalidQueryTooltip]);
+	}, [isInvalidQuery, searchResults.status, invalidQueryTooltip, loading]);
 
 	const queryToString = useMemo(
 		() =>
@@ -135,8 +143,6 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 					locale: prefLocale
 				})
 			);
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			if (search.rejected.match(resultAction)) {
 				if (
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -212,16 +218,29 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	useEffect(() => {
 		if (searchResults.status === 'pending') {
 			setLoading(true);
+		} else {
+			setLoading(false);
 		}
-		setLoading(false);
 	}, [searchResults.status]);
 
 	useEffect(() => {
-		if (query && query.length > 0 && !isInvalidQuery) {
+		if (query && query.length > 0 && !newSearch && searchResults.query !== '' && queryToString !== searchResults.query) {
+			setNewSearch(true);
+			setFilterCount(0);
+			setIsInvalidQuery(false);
+			dispatch(resetSearchResults());
+			replaceHistory({
+				path: MAILS_ROUTE,
+				route: SEARCH_APP_ID
+			});
+		}
+		if (query && query.length > 0 && !isInvalidQuery && newSearch && queryToString !== searchResults.query) {
 			setFilterCount(query.length);
 			searchQuery(queryToString, true);
+			setNewSearch(false);
 		}
 		if (query && query.length === 0) {
+			setNewSearch(true);
 			setFilterCount(0);
 			setIsInvalidQuery(false);
 			dispatch(resetSearchResults());
@@ -236,6 +255,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 		isInvalidQuery,
 		searchQuery,
 		searchResults.query,
+		newSearch,
 		queryToString,
 		dispatch
 	]);
