@@ -34,6 +34,9 @@ import type {
 	SearchRequestStatus
 } from '../types';
 
+const resetConversationReducer = (state: ConversationsStateType): ConversationsStateType =>
+getConversationsSliceInitialState();
+
 function fetchConversationsPending(state: ConversationsStateType, { payload, meta }: any): void {
 	if (meta?.arg?.types === 'conversation') {
 		state.searchRequestStatus = meta.requestStatus;
@@ -190,6 +193,7 @@ export const conversationsSlice = createSlice({
 	name: 'conversations',
 	initialState: getConversationsSliceInitialState(),
 	reducers: {
+		resetConversationSlice:resetConversationReducer,
 		handleNotifyCreatedConversations: produce(handleCreatedConversationsReducer),
 		handleNotifyModifiedConversations: produce(handleModifiedConversationsReducer),
 		handleNotifyDeletedConversations: produce(handleDeletedConversationsReducer),
@@ -230,6 +234,9 @@ export const conversationsSliceReducer = conversationsSlice.reducer;
 
 const selectConversationsSlice = (state: MailsStateType): MailsStateType['conversations'] =>
 	state.conversations;
+
+
+export const { resetConversationSlice } = conversationsSlice.actions;
 
 export function selectCurrentFolderExpandedStatus({
 	conversations
