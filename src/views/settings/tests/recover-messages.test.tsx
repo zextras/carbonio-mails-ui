@@ -7,14 +7,12 @@
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
-import { noop } from 'lodash';
 import moment from 'moment';
 import { HttpResponse, http } from 'msw';
 
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useProductFlavorStore } from '../../../store/zustand/product-flavor/store';
-import { generateStore } from '../../../tests/generators/store';
 import { RecoverMessages } from '../recover-messages';
 
 function getParams(url: string): Record<string, string> {
@@ -42,11 +40,8 @@ describe('Recover messages', () => {
 	it('should call undelete API when recovery button is pressed', async () => {
 		useProductFlavorStore.getState().setAdvanced();
 		const { user } = setupTest(<RecoverMessages />, {});
-		await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
-		await user.click(screen.getByRole('button', { name: 'label.confirm' }));
-
-		const APIrequestStartEnd = (): Promise<{ start: string; end: string }> =>
-			new Promise((resolve, reject) => {
+		const APIrequestStartEnd: Promise<{ start: string; end: string }> = new Promise(
+			(resolve, reject) => {
 				getSetupServer().use(
 					http.post('/zx/backup/v1/undelete', async ({ request }) => {
 						if (request === undefined) {
@@ -56,10 +51,18 @@ describe('Recover messages', () => {
 						const { start } = params;
 						const { end } = params;
 						resolve({ start, end });
+						return HttpResponse.json(null, { status: 202 });
 					})
 				);
-			});
-		const { start, end } = await APIrequestStartEnd();
+			}
+		);
+
+		await act(async () => {
+			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+		});
+
+		const { start, end } = await APIrequestStartEnd;
 		expect(start).toBeDefined();
 		expect(end).toBeDefined();
 		const oneWeek = moment(end).utc().diff(moment(start).utc());
@@ -68,10 +71,10 @@ describe('Recover messages', () => {
 
 	it('should not close the recover messages modal when the API call fails', async () => {
 		useProductFlavorStore.getState().setAdvanced();
-		const store = generateStore();
-		const { user } = setupTest(<RecoverMessages />, { store });
-		getSetupServer().use(http.post('/zx/backup/v1/undelete', noop));
-
+		const { user } = setupTest(<RecoverMessages />, {});
+		getSetupServer().use(
+			http.post('/zx/backup/v1/undelete', async () => HttpResponse.json(null, { status: 500 }))
+		);
 		await act(async () => {
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
@@ -81,10 +84,8 @@ describe('Recover messages', () => {
 	});
 
 	it('should close the recover messages modal when the API call succedes', async () => {
-		jest.spyOn(console, 'error').mockImplementation();
 		useProductFlavorStore.getState().setAdvanced();
-		const store = generateStore();
-		const { user } = setupTest(<RecoverMessages />, { store });
+		const { user } = setupTest(<RecoverMessages />, {});
 		getSetupServer().use(
 			http.post('/zx/backup/v1/undelete', async () => HttpResponse.json(null, { status: 202 }))
 		);
