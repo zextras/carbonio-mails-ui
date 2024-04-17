@@ -38,6 +38,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				credentials: 'same-origin'
 			})
 				.then((response) => {
+					console.log(response);
 					if (response?.status !== 202) {
 						throw new Error('Something went wrong with messages restoration');
 					}
@@ -62,6 +63,22 @@ export const RecoverMessages = (): React.JSX.Element => {
     By clicking “START RECOVERY” you will initiate the process to recover deleted emails. Once the process is completed you will receive a notification in your Inbox and find the recovered emails in a new dedicated folder.`
 	);
 
+	const onClick = useCallback(() => {
+		const closeModal = createModal(
+			{
+				children: (
+					<StoreProvider>
+						<RecoverMessagesModal
+							onClose={(): void => closeModal()}
+							onConfirm={(): void => restoreMessages(closeModal)}
+						/>
+					</StoreProvider>
+				)
+			},
+			true
+		);
+	}, [createModal, restoreMessages]);
+
 	const buttonLabel = t('label.start_recovery', 'Start Recovery');
 
 	const sectionTitle = recoverMessagesSubSection();
@@ -78,25 +95,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 			<Padding top="large" />
 			<Text style={{ whiteSpace: 'pre-line' }}>{informativeText}</Text>
 			<Padding top="large" />
-			<Button
-				type={'outlined'}
-				onClick={(): void => {
-					const closeModal = createModal(
-						{
-							children: (
-								<StoreProvider>
-									<RecoverMessagesModal
-										onClose={(): void => closeModal()}
-										onConfirm={(): void => restoreMessages(closeModal)}
-									/>
-								</StoreProvider>
-							)
-						},
-						true
-					);
-				}}
-				label={buttonLabel}
-			/>
+			<Button type={'outlined'} onClick={onClick} label={buttonLabel} />
 		</FormSubSection>
 	) : (
 		<></>
