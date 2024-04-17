@@ -9,7 +9,7 @@ import React from 'react';
 import { act, screen } from '@testing-library/react';
 import { noop } from 'lodash';
 import moment from 'moment';
-import { http } from 'msw';
+import { HttpResponse, http } from 'msw';
 
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
@@ -78,5 +78,22 @@ describe('Recover messages', () => {
 		});
 		const confirmButton = screen.queryByText('label.confirm');
 		expect(confirmButton).toBeInTheDocument();
+	});
+
+	it('should close the recover messages modal when the API call succedes', async () => {
+		useProductFlavorStore.getState().setAdvanced();
+		const store = generateStore();
+		const { user } = setupTest(<RecoverMessages />, { store });
+		await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+		await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+
+		getSetupServer().use(
+			http.post('/zx/backup/v1/undelete', () => new HttpResponse(null, { status: 202 }))
+		);
+		// act(() => {
+		// 	jest.advanceTimersByTime(1000);
+		// });
+		const confirmButton = screen.queryByText('label.confirm');
+		expect(confirmButton).not.toBeInTheDocument();
 	});
 });
