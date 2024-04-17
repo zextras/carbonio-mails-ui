@@ -5,7 +5,6 @@
  */
 import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { isRejected } from '@reduxjs/toolkit';
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import {
 	SEARCH_APP_ID,
@@ -29,6 +28,8 @@ import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
+import type { SearchProps } from '../../types';
+import { isSharedAccountFolder } from '../../helpers/folders';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -39,6 +40,8 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	const folders = useFoldersMap();
 	const [count, setCount] = useState(0);
 	const [containerWidth, setContainerWidth] = useState('70%');
+	const dispatch = useAppDispatch();
+	const [newSearch, setNewSearch] = useState(true);
 
 	useEffect(() => {
 		const element = document.getElementById("appContainerSearch");
@@ -62,15 +65,22 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	);
 
 	useEffect(() => {
+		const lastApp = localStorage.getItem('lastApp');
+		if ( lastApp == "mail" || lastApp == "" ) {
+			localStorage.setItem('lastApp','search');
+			dispatch(resetSearchResults());
+			setNewSearch(true);
+		}
 		setAppContext({ isMessageView, count, setCount });
-	}, [count, isMessageView]);
+	}, [count, isMessageView, dispatch]);
 
 	const searchInFolders = useMemo(
 		() =>
 			reduce(
 				folders,
 				(acc: Array<string>, v: Folder, k: string) => {
-					if (v.perm) {
+
+					if (isSharedAccountFolder(v.id) || v.perm) {
 						acc.push(k);
 					}
 					return acc;
@@ -85,7 +95,6 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		[searchInFolders]
 	);
 
-	const dispatch = useAppDispatch();
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
@@ -108,11 +117,11 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		if (searchResults.status === 'fulfilled') {
 			return t('label.results_for', 'Results for: ');
 		}
-		if (searchResults.status === 'pending') {
+		if (searchResults.status === 'pending' && loading) {
 			return t('label.loading_results', 'Loading Results...');
 		}
 		return '';
-	}, [isInvalidQuery, searchResults.status, invalidQueryTooltip]);
+	}, [isInvalidQuery, searchResults.status, invalidQueryTooltip, loading]);
 
 	const queryToString = useMemo(
 		() =>
@@ -135,14 +144,16 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 					locale: prefLocale
 				})
 			);
-			if (
-				isRejected(resultAction) &&
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				resultAction?.payload?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
-			) {
-				setIsInvalidQuery(true);
-				setSearchDisabled(true, invalidQueryTooltip);
+
+			if (search.rejected.match(resultAction)) {
+				if (
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					resultAction?.payload?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
+				) {
+					setIsInvalidQuery(true);
+					setSearchDisabled(true, invalidQueryTooltip);
+				}
 			}
 		},
 		[
@@ -209,16 +220,14 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	useEffect(() => {
 		if (searchResults.status === 'pending') {
 			setLoading(true);
+		} else {
+			setLoading(false);
 		}
-		setLoading(false);
 	}, [searchResults.status]);
 
 	useEffect(() => {
-		if (query?.length > 0 && !isInvalidQuery) {
-			setFilterCount(query.length);
-			searchQuery(queryToString, false);
-		}
-		if (query?.length === 0) {
+		if (query && query.length > 0 && !newSearch && searchResults.query !== '' && queryToString !== searchResults.query) {
+			setNewSearch(true);
 			setFilterCount(0);
 			setIsInvalidQuery(false);
 			dispatch(resetSearchResults());
@@ -227,7 +236,31 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [dispatch, isInvalidQuery, query.length, queryToString, searchQuery]);
+		if (query && query.length > 0 && !isInvalidQuery && newSearch && queryToString !== searchResults.query) {
+			setFilterCount(query.length);
+			searchQuery(queryToString, true);
+			setNewSearch(false);
+		}
+		if (query && query.length === 0) {
+			setNewSearch(true);
+			setFilterCount(0);
+			setIsInvalidQuery(false);
+			dispatch(resetSearchResults());
+			replaceHistory({
+				path: MAILS_ROUTE,
+				route: SEARCH_APP_ID
+			});
+		}
+	}, [
+		query,
+		queryArray,
+		isInvalidQuery,
+		searchQuery,
+		searchResults.query,
+		newSearch,
+		queryToString,
+		dispatch
+	]);
 
 	const { path } = useRouteMatch();
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;

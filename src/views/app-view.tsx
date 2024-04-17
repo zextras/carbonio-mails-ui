@@ -12,8 +12,9 @@ import moment from 'moment';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { getFolderIdParts } from '../helpers/folders';
-import { useAppSelector } from '../hooks/redux';
-import { selectCurrentFolder } from '../store/conversations-slice';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import { resetConversationSlice, selectCurrentFolder } from '../store/conversations-slice';
+import { resetMessageSlice } from '../store/messages-slice';
 
 const LazyFolderView = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/folder-panel')
@@ -40,9 +41,17 @@ const AppView: FC = () => {
 		moment.locale(zimbraPrefLocale as string);
 	}
 
+	const dispatch = useAppDispatch();
+
 	useEffect(() => {
+		const lastApp = localStorage.getItem('lastApp');
+		if ( lastApp == "search" || lastApp == "" ) {
+			dispatch(resetConversationSlice());
+			dispatch(resetMessageSlice());
+			localStorage.setItem('lastApp','mail');
+		}
 		setAppContext({ isMessageView, count, setCount });
-	}, [count, isMessageView]);
+	}, [path, count, isMessageView,dispatch]);
 
 	return (
 		<Container orientation="horizontal" mainAlignment="flex-start">
