@@ -36,6 +36,10 @@ import type {
 	SaveDraftResponse
 } from '../types';
 
+
+const resetMessageReducer = (state: MsgStateType): MsgStateType =>
+getMessagesSliceInitialState();
+
 function getMsgFulfilled({ messages }: MsgStateType, { payload }: { payload: MailMessage }): void {
 	if (payload?.id) {
 		const mergedMessages = merge(messages?.[payload.id] ?? {}, { ...payload, isComplete: true });
@@ -160,6 +164,7 @@ export const messagesSlice = createSlice({
 	name: 'messages',
 	initialState: getMessagesSliceInitialState(),
 	reducers: {
+		resetMessageSlice: resetMessageReducer,
 		handleCreatedMessages: produce(handleCreatedMessagesReducer),
 		handleModifiedMessages: produce(handleModifiedMessagesReducer),
 		handleDeletedMessages: produce(handleDeletedMessagesReducer)
@@ -209,3 +214,5 @@ export const selectFolderMsgSearchStatus =
 	(id: string): (({ messages }: MailsStateType) => string | undefined) =>
 	({ messages }: MailsStateType): string | undefined =>
 		messages?.searchedInFolder?.[id];
+
+export const { resetMessageSlice } = messagesSlice.actions;
