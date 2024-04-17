@@ -8,12 +8,13 @@ import React from 'react';
 
 import { act, screen } from '@testing-library/react';
 import moment from 'moment';
-import { HttpResponse, http } from 'msw';
+import { HttpResponse } from 'msw';
 
-import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useProductFlavorStore } from '../../../store/zustand/product-flavor/store';
 import { RecoverMessages } from '../recover-messages';
+import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { defaultBeforeAllTests } from '../../../carbonio-ui-commons/test/jest-setup';
 
 function getParams(url: string): Record<string, string> {
 	const params = [...new URLSearchParams(new URL(url).searchParams)];
@@ -25,6 +26,10 @@ function getParams(url: string): Record<string, string> {
 }
 
 describe('Recover messages', () => {
+	beforeAll(() => {
+		defaultBeforeAllTests({ onUnhandledRequest: 'error' });
+	});
+
 	it('should render view if product flavour is advanced', () => {
 		useProductFlavorStore.getState().setAdvanced();
 		setupTest(<RecoverMessages />, {});
@@ -40,21 +45,9 @@ describe('Recover messages', () => {
 	it('should call undelete API when recovery button is pressed', async () => {
 		useProductFlavorStore.getState().setAdvanced();
 		const { user } = setupTest(<RecoverMessages />, {});
-		const APIrequestStartEnd: Promise<{ start: string; end: string }> = new Promise(
-			(resolve, reject) => {
-				getSetupServer().use(
-					http.post('/zx/backup/v1/undelete', async ({ request }) => {
-						if (request === undefined) {
-							reject(new Error('Empty request'));
-						}
-						const params = getParams(request.url);
-						const { start } = params;
-						const { end } = params;
-						resolve({ start, end });
-						return HttpResponse.json(null, { status: 202 });
-					})
-				);
-			}
+		const apiInterceptor = createAPIInterceptor(
+			'/zx/backup/v1/undelete',
+			HttpResponse.json(null, { status: 202 })
 		);
 
 		await act(async () => {
@@ -62,7 +55,7 @@ describe('Recover messages', () => {
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
-		const { start, end } = await APIrequestStartEnd;
+		const { start, end } = getParams((await apiInterceptor).url);
 		expect(start).toBeDefined();
 		expect(end).toBeDefined();
 		const oneWeek = moment(end).utc().diff(moment(start).utc());
@@ -72,9 +65,8 @@ describe('Recover messages', () => {
 	it('should not close the recover messages modal when the API call fails', async () => {
 		useProductFlavorStore.getState().setAdvanced();
 		const { user } = setupTest(<RecoverMessages />, {});
-		getSetupServer().use(
-			http.post('/zx/backup/v1/undelete', async () => HttpResponse.json(null, { status: 500 }))
-		);
+		createAPIInterceptor('/zx/backup/v1/undelete', HttpResponse.json(null, { status: 500 }));
+
 		await act(async () => {
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
@@ -86,9 +78,7 @@ describe('Recover messages', () => {
 	it('should close the recover messages modal when the API call succedes', async () => {
 		useProductFlavorStore.getState().setAdvanced();
 		const { user } = setupTest(<RecoverMessages />, {});
-		getSetupServer().use(
-			http.post('/zx/backup/v1/undelete', async () => HttpResponse.json(null, { status: 202 }))
-		);
+		createAPIInterceptor('/zx/backup/v1/undelete', HttpResponse.json(null, { status: 202 }));
 
 		await act(async () => {
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));

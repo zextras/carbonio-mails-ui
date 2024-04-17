@@ -741,12 +741,15 @@ describe('Messages actions calls', () => {
 				}
 			});
 
-			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
-				action: {
-					id: msgIds.join(','),
-					op: 'move'
+			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: msgIds.join(','),
+						op: 'move'
+					}
 				}
-			});
+			);
 
 			const component = (
 				<MoveConvMessage

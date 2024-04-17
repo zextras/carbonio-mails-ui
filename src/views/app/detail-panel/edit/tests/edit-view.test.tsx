@@ -218,10 +218,10 @@ describe('Edit view', () => {
 				],
 				_jsns: 'urn:zimbraMail'
 			};
-			const sendMsgPromise = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }, SoapSendMsgResponse>(
-				'SendMsg',
-				response
-			);
+			const sendMsgPromise = createSoapAPIInterceptor<
+				{ m: SoapDraftMessageObj },
+				SoapSendMsgResponse
+			>('SendMsg', response);
 
 			await waitFor(() => {
 				expect(btnSend).toBeEnabled();
@@ -351,7 +351,9 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>('SaveDraft');
+			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
+				'SaveDraft'
+			);
 
 			const subject = faker.lorem.sentence(5);
 			// Get the default identity address
