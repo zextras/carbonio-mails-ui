@@ -9,7 +9,6 @@ import { ModalManager } from '@zextras/carbonio-design-system';
 import {
 	Spinner,
 	addRoute,
-	addSettingsView,
 	addSearchView,
 	addBoardView,
 	registerActions,
@@ -23,16 +22,15 @@ import { some } from 'lodash';
 import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
 import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
-import { PRODUCT_FLAVOR, MAILS_ROUTE, MAIL_APP_ID, EditViewActions } from './constants';
+import { MAILS_ROUTE, MAIL_APP_ID, EditViewActions } from './constants';
+import { advancedSupportedAPI } from './integrations/advanced';
 import {
 	mailToSharedFunction,
 	openComposerSharedFunction,
 	openPrefilledComposerSharedFunction
 } from './integrations/shared-functions';
 import { StoreProvider } from './store/redux';
-import { useProductFlavorStore } from './store/zustand/product-flavor/store';
 import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-manager';
-import { getSettingsSubSections } from './views/settings/subsections';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
 const LazyAppView = lazy(
@@ -126,22 +124,7 @@ const App = () => {
 
 	useEffect(() => {
 		// Check if advanced is installed
-		fetch('/zx/auth/supported')
-			.then((data) => {
-				if (data.status === 200) {
-					useProductFlavorStore.getState().setAdvanced();
-					return PRODUCT_FLAVOR.ADVANCED;
-				}
-				return PRODUCT_FLAVOR.COMMUNITY;
-			})
-			.then((productFlavor) => {
-				addSettingsView({
-					route: MAILS_ROUTE,
-					label: t('label.app_name', 'Mails'),
-					subSections: getSettingsSubSections(productFlavor),
-					component: SettingsView
-				});
-			});
+		advancedSupportedAPI();
 	}, []);
 	useEffect(() => {
 		registerActions(
