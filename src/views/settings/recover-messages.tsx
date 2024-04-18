@@ -15,7 +15,6 @@ import {
 	useSnackbar
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import moment from 'moment';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
@@ -27,9 +26,9 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
 
-	const now = moment().utc();
-	const endDate = now.format();
-	const startDate = now.subtract(1, 'week').format();
+	const now = new Date();
+	const endDate = now.toISOString();
+	const startDate = new Date(now.setUTCDate(now.getUTCDate() - 7)).toISOString();
 
 	const restoreMessages = useCallback(
 		(closeModal: CloseModalFn) => {

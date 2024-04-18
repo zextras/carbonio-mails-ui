@@ -7,14 +7,13 @@
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
-import moment from 'moment';
 import { HttpResponse } from 'msw';
 
+import { defaultBeforeAllTests } from '../../../carbonio-ui-commons/test/jest-setup';
+import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useProductFlavorStore } from '../../../store/zustand/product-flavor/store';
 import { RecoverMessages } from '../recover-messages';
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { defaultBeforeAllTests } from '../../../carbonio-ui-commons/test/jest-setup';
 
 function getParams(url: string): Record<string, string> {
 	const params = [...new URLSearchParams(new URL(url).searchParams)];
@@ -58,8 +57,8 @@ describe('Recover messages', () => {
 		const { start, end } = getParams((await apiInterceptor).url);
 		expect(start).toBeDefined();
 		expect(end).toBeDefined();
-		const oneWeek = moment(end).utc().diff(moment(start).utc());
-		expect(oneWeek).toBe(60 * 1000 * 60 * 24 * 7);
+		const oneWeek = new Date(end).getUTCDate() - new Date(start).getUTCDate();
+		expect(oneWeek).toBe(7);
 	});
 
 	it('should not close the recover messages modal when the API call fails', async () => {
