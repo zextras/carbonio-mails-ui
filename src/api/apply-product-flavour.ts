@@ -7,7 +7,7 @@
 import { PRODUCT_FLAVOR } from '../constants';
 import { ProductFlavor, useProductFlavorStore } from '../store/zustand/product-flavor/store';
 
-export const setProductFlavourAPI = (): Promise<ProductFlavor> =>
+export const applyProductFlavourAPI = (): Promise<ProductFlavor> =>
 	fetch('/zx/auth/supported').then((data) => {
 		if (data.status === 200) {
 			useProductFlavorStore.getState().setAdvanced();

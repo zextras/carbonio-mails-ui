@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { lazy, useEffect, Suspense } from 'react';
+import React, { lazy, useEffect, Suspense, useMemo } from 'react';
 
 import { ModalManager } from '@zextras/carbonio-design-system';
 import {
@@ -20,7 +20,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 
-import { setProductFlavourAPI } from './api/set-product-flavour';
+import { applyProductFlavourAPI } from './api/apply-product-flavour';
 import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
 import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
@@ -102,97 +102,96 @@ const SidebarView = (props) => (
 	</Suspense>
 );
 
-const App = () => {
-	useEffect(() => {
-		addRoute({
-			route: MAILS_ROUTE,
-			position: 100,
-			visible: true,
-			label: t('label.app_name', 'Mails'),
-			primaryBar: 'MailModOutline',
-			secondaryBar: SidebarView,
-			appView: AppView
-		});
-		addSearchView({
-			route: MAILS_ROUTE,
-			component: SearchView,
-			label: t('label.app_name', 'Mails')
-		});
-		addBoardView({
-			route: MAILS_ROUTE,
-			component: EditView
-		});
-	}, []);
+const setupShellComponents = async () => {
+	addRoute({
+		route: MAILS_ROUTE,
+		position: 100,
+		visible: true,
+		label: t('label.app_name', 'Mails'),
+		primaryBar: 'MailModOutline',
+		secondaryBar: SidebarView,
+		appView: AppView
+	});
+	addSearchView({
+		route: MAILS_ROUTE,
+		component: SearchView,
+		label: t('label.app_name', 'Mails')
+	});
+	addBoardView({
+		route: MAILS_ROUTE,
+		component: EditView
+	});
+	const productFlavor = await applyProductFlavourAPI();
+	addSettingsView({
+		route: MAILS_ROUTE,
+		label: t('label.app_name', 'Mails'),
+		subSections: getSettingsSubSections(productFlavor),
+		component: SettingsView
+	});
+};
 
-	useEffect(() => {
-		// Check if advanced is installed
-		setProductFlavourAPI().then((productFlavor) => {
-			addSettingsView({
-				route: MAILS_ROUTE,
-				label: t('label.app_name', 'Mails'),
-				subSections: getSettingsSubSections(productFlavor),
-				component: SettingsView
-			});
-		});
-	}, []);
-	useEffect(() => {
-		registerActions(
-			{
-				action: (contacts) => ({
-					id: 'mail-to',
-					label: 'Send Mail',
-					icon: 'MailModOutline',
-					onClick: (ev) => {
-						ev?.preventDefault?.();
-						const participant =
-							!!contacts[0].email && Object.keys(contacts[0].email).length !== 0
-								? [
-										{
-											type: ParticipantRole.TO,
-											address: contacts[0].email.email.mail,
-											fullName: `${contacts[0].firstName} ${contacts[0].middleName}`.trim()
-										}
-									]
-								: [];
-						mailToSharedFunction(participant);
-					},
-					disabled: some(contacts, (contact) => !contact.address)
-				}),
+const registerMailModuleToShell = () => {
+	registerActions(
+		{
+			action: (contacts) => ({
 				id: 'mail-to',
-				type: 'contact-list'
-			},
-			{
-				action: () => ({
-					id: 'new-email',
-					label: t('label.new_email', 'New E-mail'),
-					icon: 'MailModOutline',
-					onClick: (ev) => {
-						ev?.preventDefault?.();
-						addBoard({
-							url: `${MAILS_ROUTE}/edit?action=${EditViewActions.NEW}`,
-							title: t('label.new_email', 'New E-mail')
-							// TODO provide the context filled with the current folder id
-						});
-					},
-					disabled: false,
-					group: MAIL_APP_ID,
-					primary: true
-				}),
+				label: 'Send Mail',
+				icon: 'MailModOutline',
+				onClick: (ev) => {
+					ev?.preventDefault?.();
+					const participant =
+						!!contacts[0].email && Object.keys(contacts[0].email).length !== 0
+							? [
+									{
+										type: ParticipantRole.TO,
+										address: contacts[0].email.email.mail,
+										fullName: `${contacts[0].firstName} ${contacts[0].middleName}`.trim()
+									}
+								]
+							: [];
+					mailToSharedFunction(participant);
+				},
+				disabled: some(contacts, (contact) => !contact.address)
+			}),
+			id: 'mail-to',
+			type: 'contact-list'
+		},
+		{
+			action: () => ({
 				id: 'new-email',
-				type: ACTION_TYPES.NEW
-			}
-		);
-		registerFunctions(
-			{
-				id: 'compose',
-				fn: openComposerSharedFunction
-			},
-			{
-				id: 'composePrefillMessage',
-				fn: openPrefilledComposerSharedFunction
-			}
-		);
-	}, []);
+				label: t('label.new_email', 'New E-mail'),
+				icon: 'MailModOutline',
+				onClick: (ev) => {
+					ev?.preventDefault?.();
+					addBoard({
+						url: `${MAILS_ROUTE}/edit?action=${EditViewActions.NEW}`,
+						title: t('label.new_email', 'New E-mail')
+						// TODO provide the context filled with the current folder id
+					});
+				},
+				disabled: false,
+				group: MAIL_APP_ID,
+				primary: true
+			}),
+			id: 'new-email',
+			type: ACTION_TYPES.NEW
+		}
+	);
+	registerFunctions(
+		{
+			id: 'compose',
+			fn: openComposerSharedFunction
+		},
+		{
+			id: 'composePrefillMessage',
+			fn: openPrefilledComposerSharedFunction
+		}
+	);
+};
+
+const App = () => {
+	useEffect(() => setupShellComponents(), []);
+	useEffect(registerMailModuleToShell, []);
 	useFoldersController(FOLDER_VIEW.message);
 	return (
 		<StoreProvider>
