@@ -9,12 +9,15 @@ import { applyProductFlavourAPI } from '../apply-product-flavour';
 
 describe('applyProductFlavourAPI', () => {
 	describe('when supported api is not present', () => {
-		// Nice to have: simulate network error response with msw interceptor to avoid msw warning
+		beforeAll(() => {
+			createAPIInterceptor('get', '/zx/auth/supported', HttpResponse.json(null, { type: 'error' }));
+		});
 
 		it('should return the community flavour by default', async () => {
 			expect(await applyProductFlavourAPI()).toBe('community');
 		});
 	});
+
 	describe('when advanced is not installed', () => {
 		beforeAll(() => {
 			createAPIInterceptor('get', '/zx/auth/supported', HttpResponse.json(null, { status: 500 }));
@@ -23,8 +26,10 @@ describe('applyProductFlavourAPI', () => {
 		it('should return the community flavour by default', async () => {
 			expect(await applyProductFlavourAPI()).toBe('community');
 		});
+
 		it.skip('the store should have the community flavour by default', () => {});
 	});
+
 	describe('when advanced is installed', () => {
 		it.skip('should return the advance flavour', () => {});
 		it.skip('should set the advance flavour into the store', () => {});
