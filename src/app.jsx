@@ -3,16 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { lazy, useEffect, Suspense, useMemo } from 'react';
+import React, { useEffect } from 'react';
 
-import { ModalManager } from '@zextras/carbonio-design-system';
 import {
-	Spinner,
-	addRoute,
-	addSearchView,
-	addBoardView,
 	registerActions,
-	addSettingsView,
 	registerFunctions,
 	ACTION_TYPES,
 	addBoard,
@@ -20,7 +14,6 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 
-import { applyProductFlavourAPI } from './api/apply-product-flavour';
 import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
 import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
@@ -31,104 +24,8 @@ import {
 	openPrefilledComposerSharedFunction
 } from './integrations/shared-functions';
 import { StoreProvider } from './store/redux';
-import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-manager';
-import { getSettingsSubSections } from './views/settings/subsections';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
-
-const LazyAppView = lazy(
-	() => import(/* webpackChunkName: "mails-folder-panel-view" */ './views/app-view')
-);
-
-const LazyEditView = lazy(
-	() =>
-		import(
-			/* webpackChunkName: "mails-edit-view" */ './views/app/detail-panel/edit/edit-view-controller'
-		)
-);
-
-const LazySettingsView = lazy(
-	() => import(/* webpackChunkName: "mail-setting-view" */ './views/settings/settings-view')
-);
-const LazySearchView = lazy(
-	() => import(/* webpackChunkName: "mail-search-view" */ './views/search/search-view')
-);
-const LazySidebarView = lazy(
-	() => import(/* webpackChunkName: "mail-sidebar-view" */ './views/sidebar/sidebar')
-);
-
-const AppView = () => (
-	<Suspense fallback={<Spinner />}>
-		<StoreProvider>
-			<ExtraWindowsManager>
-				<LazyAppView />
-			</ExtraWindowsManager>
-		</StoreProvider>
-	</Suspense>
-);
-
-const EditView = () => (
-	<Suspense fallback={<Spinner />}>
-		<StoreProvider>
-			<LazyEditView />
-		</StoreProvider>
-	</Suspense>
-);
-
-const SettingsView = () => (
-	<Suspense fallback={<Spinner />}>
-		<StoreProvider>
-			<ModalManager>
-				<LazySettingsView />
-			</ModalManager>
-		</StoreProvider>
-	</Suspense>
-);
-
-const SearchView = (props) => (
-	<Suspense fallback={<Spinner />}>
-		<StoreProvider>
-			<ExtraWindowsManager>
-				<LazySearchView {...props} />
-			</ExtraWindowsManager>
-		</StoreProvider>
-	</Suspense>
-);
-
-const SidebarView = (props) => (
-	<Suspense fallback={<Spinner />}>
-		<StoreProvider>
-			<LazySidebarView {...props} />
-		</StoreProvider>
-	</Suspense>
-);
-
-const setupShellComponents = async () => {
-	addRoute({
-		route: MAILS_ROUTE,
-		position: 100,
-		visible: true,
-		label: t('label.app_name', 'Mails'),
-		primaryBar: 'MailModOutline',
-		secondaryBar: SidebarView,
-		appView: AppView
-	});
-	addSearchView({
-		route: MAILS_ROUTE,
-		component: SearchView,
-		label: t('label.app_name', 'Mails')
-	});
-	addBoardView({
-		route: MAILS_ROUTE,
-		component: EditView
-	});
-	const productFlavor = await applyProductFlavourAPI();
-	addSettingsView({
-		route: MAILS_ROUTE,
-		label: t('label.app_name', 'Mails'),
-		subSections: getSettingsSubSections(productFlavor),
-		component: SettingsView
-	});
-};
+import { setupShellComponents } from './app-utils/setup-shell-components'
 
 const registerMailModuleToShell = () => {
 	registerActions(
@@ -190,7 +87,7 @@ const registerMailModuleToShell = () => {
 };
 
 const App = () => {
-	useEffect(() => setupShellComponents(), []);
+	useEffect(() => { setupShellComponents() }, []);
 	useEffect(registerMailModuleToShell, []);
 	useFoldersController(FOLDER_VIEW.message);
 	return (
