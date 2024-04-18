@@ -12,6 +12,7 @@ import {
 	addSearchView,
 	addBoardView,
 	registerActions,
+	addSettingsView,
 	registerFunctions,
 	ACTION_TYPES,
 	addBoard,
@@ -19,11 +20,11 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 
+import { setProductFlavourAPI } from './api/set-product-flavour';
 import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
 import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
 import { MAILS_ROUTE, MAIL_APP_ID, EditViewActions } from './constants';
-import { advancedSupportedAPI } from './integrations/advanced';
 import {
 	mailToSharedFunction,
 	openComposerSharedFunction,
@@ -31,6 +32,7 @@ import {
 } from './integrations/shared-functions';
 import { StoreProvider } from './store/redux';
 import { ExtraWindowsManager } from './views/app/extra-windows/extra-window-manager';
+import { getSettingsSubSections } from './views/settings/subsections';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
 const LazyAppView = lazy(
@@ -124,7 +126,14 @@ const App = () => {
 
 	useEffect(() => {
 		// Check if advanced is installed
-		advancedSupportedAPI();
+		setProductFlavourAPI().then((productFlavor) => {
+			addSettingsView({
+				route: MAILS_ROUTE,
+				label: t('label.app_name', 'Mails'),
+				subSections: getSettingsSubSections(productFlavor),
+				component: SettingsView
+			});
+		});
 	}, []);
 	useEffect(() => {
 		registerActions(
