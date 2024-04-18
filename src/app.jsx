@@ -14,6 +14,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 
+import { setupShellComponents } from './app-utils/setup-shell-components';
 import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
 import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
@@ -25,7 +26,6 @@ import {
 } from './integrations/shared-functions';
 import { StoreProvider } from './store/redux';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
-import { setupShellComponents } from './app-utils/setup-shell-components'
 
 const registerMailModuleToShell = () => {
 	registerActions(
@@ -87,7 +87,9 @@ const registerMailModuleToShell = () => {
 };
 
 const App = () => {
-	useEffect(() => { setupShellComponents() }, []);
+	useEffect(() => {
+		setupShellComponents();
+	}, []);
 	useEffect(registerMailModuleToShell, []);
 	useFoldersController(FOLDER_VIEW.message);
 	return (

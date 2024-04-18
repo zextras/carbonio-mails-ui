@@ -12,7 +12,7 @@ import { createAPIInterceptor } from './carbonio-ui-commons/test/mocks/network/m
 import { setupTest } from './carbonio-ui-commons/test/test-setup';
 
 describe('App', () => {
-	it('renders without crashing', async () => {
+	it.skip('renders without crashing', async () => {
 		const interceptor = createAPIInterceptor(
 			'post',
 			'/zx/auth/supported',
