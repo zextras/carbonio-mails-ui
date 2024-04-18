@@ -45,6 +45,7 @@ describe('Recover messages', () => {
 		useProductFlavorStore.getState().setAdvanced();
 		const { user } = setupTest(<RecoverMessages />, {});
 		const apiInterceptor = createAPIInterceptor(
+			'post',
 			'/zx/backup/v1/undelete',
 			HttpResponse.json(null, { status: 202 })
 		);
@@ -64,7 +65,11 @@ describe('Recover messages', () => {
 	it('should not close the recover messages modal when the API call fails', async () => {
 		useProductFlavorStore.getState().setAdvanced();
 		const { user } = setupTest(<RecoverMessages />, {});
-		createAPIInterceptor('/zx/backup/v1/undelete', HttpResponse.json(null, { status: 500 }));
+		createAPIInterceptor(
+			'post',
+			'/zx/backup/v1/undelete',
+			HttpResponse.json(null, { status: 500 })
+		);
 
 		await act(async () => {
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
@@ -77,7 +82,11 @@ describe('Recover messages', () => {
 	it('should close the recover messages modal when the API call succedes', async () => {
 		useProductFlavorStore.getState().setAdvanced();
 		const { user } = setupTest(<RecoverMessages />, {});
-		createAPIInterceptor('/zx/backup/v1/undelete', HttpResponse.json(null, { status: 202 }));
+		createAPIInterceptor(
+			'post',
+			'/zx/backup/v1/undelete',
+			HttpResponse.json(null, { status: 202 })
+		);
 
 		await act(async () => {
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
