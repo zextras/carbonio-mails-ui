@@ -27,7 +27,7 @@ import {
 import { StoreProvider } from './store/redux';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
-const registerMailModuleToShell = () => {
+const registerIntegrations = () => {
 	registerActions(
 		{
 			action: (contacts) => ({
@@ -90,8 +90,11 @@ const App = () => {
 	useEffect(() => {
 		setupShellComponents();
 	}, []);
-	useEffect(registerMailModuleToShell, []);
+
+	useEffect(registerIntegrations, []);
+
 	useFoldersController(FOLDER_VIEW.message);
+
 	return (
 		<StoreProvider>
 			<SyncDataHandler />
