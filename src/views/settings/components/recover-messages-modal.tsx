@@ -12,10 +12,12 @@ import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-fo
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 
 type RecoverMessagesModalPropType = {
+	daysToRecover: number | null;
 	onConfirm: () => void;
 	onClose: () => void;
 };
 export const RecoverMessagesModal = ({
+	daysToRecover,
 	onConfirm,
 	onClose
 }: RecoverMessagesModalPropType): React.JSX.Element => (
@@ -33,10 +35,11 @@ export const RecoverMessagesModal = ({
 			height="fit"
 		>
 			<Text style={{ whiteSpace: 'pre-line' }}>
-				{t(
-					'messages.recover_messages_modal_body',
-					'Do you want to recover emails deleted within the past 7 days from the Trash folder?\nRecovering emails deleted from Trash can take some time.'
-				)}
+				{t('messages.recover_messages_modal_body', {
+					daysToRecover,
+					defaultValue:
+						'Do you want to recover emails deleted within the past {{daysToRecover}} days from the Trash folder?\nRecovering emails deleted from Trash can take some time.'
+				})}
 			</Text>
 			<ModalFooter onConfirm={onConfirm} label={t('label.confirm', 'Confirm')} />
 		</Container>

@@ -13,7 +13,8 @@ import {
 	useModal,
 	CloseModalFn,
 	useSnackbar,
-	Select
+	Select,
+	Row
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
@@ -73,8 +74,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 	);
 	const informativeText = t(
 		'settings.label.recover_messages_infotext',
-		`You can still recover emails deleted within the past ${daysToRemove} days from the Trash folder. \n
-    By clicking “START RECOVERY” you will initiate the process to recover deleted emails. Once the process is completed you will receive a notification in your Inbox and find the recovered emails in a new dedicated folder.`
+		`You can still retrieve emails deleted from Trash in a period.\nBy clicking “START RECOVERY” you will initiate the process to recover deleted emails. Once the process is completed you will receive a notification in your Inbox and find the recovered emails in Recovered mails folder.`
 	);
 
 	const onClick = useCallback(() => {
@@ -83,6 +83,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				children: (
 					<StoreProvider>
 						<RecoverMessagesModal
+							daysToRecover={daysToRemove}
 							onClose={(): void => closeModal()}
 							onConfirm={(): void => restoreMessages(closeModal)}
 						/>
@@ -91,7 +92,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 			},
 			true
 		);
-	}, [createModal, restoreMessages]);
+	}, [createModal, daysToRemove, restoreMessages]);
 
 	const buttonLabel = t('label.start_recovery', 'Start Recovery');
 
@@ -119,19 +120,23 @@ export const RecoverMessages = (): React.JSX.Element => {
 			<Padding top="large" />
 			<Text style={{ whiteSpace: 'pre-line' }}>{informativeText}</Text>
 			<Padding top="large" />
-			<Select
-				label={selectLabel}
-				onChange={onSelectChange}
-				items={selectItems}
-				selection={selectValue}
-				showCheckbox={false}
-			/>
-			<Button
-				type={'outlined'}
-				onClick={onClick}
-				label={buttonLabel}
-				disabled={daysToRemove === null}
-			/>
+			<Row width="100%" mainAlignment="flex-start">
+				<Select
+					label={selectLabel}
+					onChange={onSelectChange}
+					items={selectItems}
+					selection={selectValue}
+					showCheckbox={false}
+					style={{ maxWidth: '19rem' }}
+				/>
+				<Padding left="large" />
+				<Button
+					type={'outlined'}
+					onClick={onClick}
+					label={buttonLabel}
+					disabled={daysToRemove === null}
+				/>
+			</Row>
 		</FormSubSection>
 	) : (
 		<></>
