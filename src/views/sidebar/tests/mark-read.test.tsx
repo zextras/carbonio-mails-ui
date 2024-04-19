@@ -11,7 +11,7 @@ import { FolderActionsType } from '../../../carbonio-ui-commons/constants/folder
 import * as shellMock from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { useLocalStorage } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
@@ -45,7 +45,7 @@ describe('Mark all as read', () => {
 		const actionMenuItem = await screen.findByTestId(
 			`folder-action-${FolderActionsType.MARK_ALL_READ}`
 		);
-		const folderActionInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>(
+		const folderActionInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>(
 			'FolderAction'
 		);
 

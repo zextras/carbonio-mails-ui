@@ -5,12 +5,12 @@
  */
 import { JSNS } from '@zextras/carbonio-shell-ui';
 
-import { createAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { GetSignaturesRequest, GetSignaturesResponse } from '../../../../store/actions/signatures';
 import { SignItemType } from '../../../../types';
 
 export const handleGetSignaturesRequest = (signatures: Array<SignItemType>): void => {
-	createAPIInterceptor<GetSignaturesRequest, GetSignaturesResponse>('GetSignatures', {
+	createSoapAPIInterceptor<GetSignaturesRequest, GetSignaturesResponse>('GetSignatures', {
 		signature: signatures,
 		_jsns: JSNS.ACCOUNT
 	});

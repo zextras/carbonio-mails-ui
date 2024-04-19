@@ -10,7 +10,7 @@ import { screen } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
@@ -133,7 +133,7 @@ describe('delete-modal', () => {
 			name: /action\.ok/i
 		});
 		expect(okButton).toBeEnabled();
-		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
+		const wipeInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(okButton);
 		const { action } = await wipeInterceptor;
@@ -158,7 +158,7 @@ describe('delete-modal', () => {
 			name: /action\.ok/i
 		});
 		expect(okButton).toBeEnabled();
-		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
+		const wipeInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(okButton);
 		const { action } = await wipeInterceptor;
@@ -188,7 +188,7 @@ describe('delete-modal', () => {
 			name: /action\.ok/i
 		});
 		expect(okButton).toBeEnabled();
-		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
+		const wipeInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(okButton);
 		const { action } = await wipeInterceptor;
