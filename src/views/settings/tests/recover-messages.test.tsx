@@ -101,4 +101,27 @@ describe('Recover messages', () => {
 
 		expect(screen.queryByText('label.confirm')).not.toBeInTheDocument();
 	});
+
+	it('should not fail if recovery period exceed the previous month', async () => {
+		useProductFlavorStore.getState().setAdvanced();
+		const { user } = setupTest(<RecoverMessages />, {});
+		const apiInterceptor = createAPIInterceptor(
+			'post',
+			'/zx/backup/v1/undelete',
+			HttpResponse.json(null, { status: 202 })
+		);
+
+		await act(async () => {
+			await user.click(screen.getByText(/label\.recovery_period/i));
+			await user.click(screen.getByText(/label\.last_90_days/i));
+			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+		});
+
+		const { start, end } = getParams((await apiInterceptor).url);
+		expect(start).toBeDefined();
+		expect(end).toBeDefined();
+		const oneWeek = new Date(end).getUTCDate() - new Date(start).getUTCDate();
+		expect(oneWeek).toBe(90);
+	});
 });
