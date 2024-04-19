@@ -28,6 +28,7 @@ import { useProductFlavorStore } from '../../store/zustand/product-flavor/store'
 export const RecoverMessages = (): React.JSX.Element => {
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
+
 	const selectInitialValue = useMemo(() => ({ label: '', value: 0 }), []);
 	const selectItems = useMemo(
 		() => [
@@ -38,24 +39,24 @@ export const RecoverMessages = (): React.JSX.Element => {
 		],
 		[]
 	);
-	const [daysToRemove, setDaysToRemove] = useState(null);
+	const [daysToRecover, setDaysToRecover] = useState(null);
 	const [selectValue, setSelectValue] = useState(selectInitialValue);
 
 	const restoreMessages = useCallback(
 		(closeModal: CloseModalFn) => {
-			if (!daysToRemove) {
+			if (!daysToRecover) {
 				return;
 			}
 			const now = new Date();
 			const endDate = now.toISOString();
-			const startDate = new Date(now.setUTCDate(now.getUTCDate() - daysToRemove)).toISOString();
+			const startDate = new Date(now.setUTCDate(now.getUTCDate() - daysToRecover)).toISOString();
 
 			undeleteAPI(startDate, endDate)
 				.then((response) => {
 					if (response?.status !== 202) {
 						throw new Error('Something went wrong with messages restoration');
 					}
-					setDaysToRemove(null);
+					setDaysToRecover(null);
 					setSelectValue(selectInitialValue);
 					closeModal();
 				})
@@ -70,12 +71,17 @@ export const RecoverMessages = (): React.JSX.Element => {
 					});
 				});
 		},
-		[createSnackbar, daysToRemove, selectInitialValue]
+		[createSnackbar, daysToRecover, selectInitialValue]
 	);
+
 	const informativeText = t(
 		'settings.label.recover_messages_infotext',
 		`You can still retrieve emails deleted from Trash in a period.\nBy clicking “START RECOVERY” you will initiate the process to recover deleted emails. Once the process is completed you will receive a notification in your Inbox and find the recovered emails in Recovered mails folder.`
 	);
+	const buttonLabel = t('label.start_recovery', 'Start Recovery');
+	const selectLabel = t('label.recovery_period', 'Select recovery period');
+	const sectionTitle = recoverMessagesSubSection();
+	const { productFlavor } = useProductFlavorStore();
 
 	const onClick = useCallback(() => {
 		const closeModal = createModal(
@@ -83,7 +89,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				children: (
 					<StoreProvider>
 						<RecoverMessagesModal
-							daysToRecover={daysToRemove}
+							daysToRecover={daysToRecover}
 							onClose={(): void => closeModal()}
 							onConfirm={(): void => restoreMessages(closeModal)}
 						/>
@@ -92,18 +98,11 @@ export const RecoverMessages = (): React.JSX.Element => {
 			},
 			true
 		);
-	}, [createModal, daysToRemove, restoreMessages]);
-
-	const buttonLabel = t('label.start_recovery', 'Start Recovery');
-
-	const sectionTitle = recoverMessagesSubSection();
-
-	const { productFlavor } = useProductFlavorStore();
-	const selectLabel = t('label.recovery_period', 'Select recovery period');
+	}, [createModal, daysToRecover, restoreMessages]);
 
 	const onSelectChange = useCallback(
 		(value) => {
-			setDaysToRemove(value);
+			setDaysToRecover(value);
 			const selectedItem = selectItems.find((item) => item.value === value);
 			selectedItem && setSelectValue(selectedItem);
 		},
@@ -134,7 +133,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 					type={'outlined'}
 					onClick={onClick}
 					label={buttonLabel}
-					disabled={daysToRemove === null}
+					disabled={daysToRecover === null}
 				/>
 			</Row>
 		</FormSubSection>

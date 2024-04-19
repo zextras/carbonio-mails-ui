@@ -51,6 +51,8 @@ describe('Recover messages', () => {
 		);
 
 		await act(async () => {
+			await user.click(screen.getByText(/label\.recovery_period/i));
+			await user.click(screen.getByText(/label\.last_7_days/i));
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
@@ -72,6 +74,8 @@ describe('Recover messages', () => {
 		);
 
 		await act(async () => {
+			await user.click(screen.getByText(/label\.recovery_period/i));
+			await user.click(screen.getByText(/label\.last_7_days/i));
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
@@ -89,6 +93,8 @@ describe('Recover messages', () => {
 		);
 
 		await act(async () => {
+			await user.click(screen.getByText(/label\.recovery_period/i));
+			await user.click(screen.getByText(/label\.last_7_days/i));
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
