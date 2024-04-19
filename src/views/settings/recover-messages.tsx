@@ -21,6 +21,7 @@ import { recoverMessagesSubSection } from './subsections';
 import { PRODUCT_FLAVOR } from '../../constants';
 import { StoreProvider } from '../../store/redux';
 import { useProductFlavorStore } from '../../store/zustand/product-flavor/store';
+import { undeleteAPI } from '../../api/undelete';
 
 export const RecoverMessages = (): React.JSX.Element => {
 	const createModal = useModal();
@@ -32,10 +33,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 
 	const restoreMessages = useCallback(
 		(closeModal: CloseModalFn) => {
-			fetch(`/zx/backup/v1/undelete?start=${startDate}&end=${endDate}`, {
-				method: 'POST',
-				credentials: 'same-origin'
-			})
+			undeleteAPI(startDate, endDate)
 				.then((response) => {
 					if (response?.status !== 202) {
 						throw new Error('Something went wrong with messages restoration');
@@ -99,3 +97,4 @@ export const RecoverMessages = (): React.JSX.Element => {
 		<></>
 	);
 };
+
