@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import {
 	Text,
@@ -12,32 +12,50 @@ import {
 	Padding,
 	useModal,
 	CloseModalFn,
-	useSnackbar
+	useSnackbar,
+	Select
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
+import { undeleteAPI } from '../../api/undelete';
 import { PRODUCT_FLAVOR } from '../../constants';
 import { StoreProvider } from '../../store/redux';
 import { useProductFlavorStore } from '../../store/zustand/product-flavor/store';
-import { undeleteAPI } from '../../api/undelete';
 
 export const RecoverMessages = (): React.JSX.Element => {
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
-
-	const now = new Date();
-	const endDate = now.toISOString();
-	const startDate = new Date(now.setUTCDate(now.getUTCDate() - 7)).toISOString();
+	const selectInitialValue = useMemo(() => ({ label: '', value: 0 }), []);
+	const selectItems = useMemo(
+		() => [
+			{ label: t('label.last_7_days', 'Last 7 days'), value: 7 },
+			{ label: t('label.last_14_days', 'Last 14 days'), value: 14 },
+			{ label: t('label.last_30_days', 'Last 30 days'), value: 30 },
+			{ label: t('label.last_90_days', 'Last 90 days'), value: 90 }
+		],
+		[]
+	);
+	const [daysToRemove, setDaysToRemove] = useState(null);
+	const [selectValue, setSelectValue] = useState(selectInitialValue);
 
 	const restoreMessages = useCallback(
 		(closeModal: CloseModalFn) => {
+			if (!daysToRemove) {
+				return;
+			}
+			const now = new Date();
+			const endDate = now.toISOString();
+			const startDate = new Date(now.setUTCDate(now.getUTCDate() - daysToRemove)).toISOString();
+
 			undeleteAPI(startDate, endDate)
 				.then((response) => {
 					if (response?.status !== 202) {
 						throw new Error('Something went wrong with messages restoration');
 					}
+					setDaysToRemove(null);
+					setSelectValue(selectInitialValue);
 					closeModal();
 				})
 				.catch(() => {
@@ -51,11 +69,11 @@ export const RecoverMessages = (): React.JSX.Element => {
 					});
 				});
 		},
-		[createSnackbar, endDate, startDate]
+		[createSnackbar, daysToRemove, selectInitialValue]
 	);
 	const informativeText = t(
 		'settings.label.recover_messages_infotext',
-		`You can still recover emails deleted within the past 7 days from the Trash folder. \n
+		`You can still recover emails deleted within the past ${daysToRemove} days from the Trash folder. \n
     By clicking “START RECOVERY” you will initiate the process to recover deleted emails. Once the process is completed you will receive a notification in your Inbox and find the recovered emails in a new dedicated folder.`
 	);
 
@@ -80,6 +98,16 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const sectionTitle = recoverMessagesSubSection();
 
 	const { productFlavor } = useProductFlavorStore();
+	const selectLabel = t('label.recovery_period', 'Select recovery period');
+
+	const onSelectChange = useCallback(
+		(value) => {
+			setDaysToRemove(value);
+			const selectedItem = selectItems.find((item) => item.value === value);
+			selectedItem && setSelectValue(selectedItem);
+		},
+		[selectItems]
+	);
 
 	return productFlavor === PRODUCT_FLAVOR.ADVANCED ? (
 		<FormSubSection
@@ -91,7 +119,19 @@ export const RecoverMessages = (): React.JSX.Element => {
 			<Padding top="large" />
 			<Text style={{ whiteSpace: 'pre-line' }}>{informativeText}</Text>
 			<Padding top="large" />
-			<Button type={'outlined'} onClick={onClick} label={buttonLabel} />
+			<Select
+				label={selectLabel}
+				onChange={onSelectChange}
+				items={selectItems}
+				selection={selectValue}
+				showCheckbox={false}
+			/>
+			<Button
+				type={'outlined'}
+				onClick={onClick}
+				label={buttonLabel}
+				disabled={daysToRemove === null}
+			/>
 		</FormSubSection>
 	) : (
 		<></>
