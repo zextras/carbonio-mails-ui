@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import {
 	Text,
@@ -12,32 +12,53 @@ import {
 	Padding,
 	useModal,
 	CloseModalFn,
-	useSnackbar
+	useSnackbar,
+	Select,
+	Row
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
+import { undeleteAPI } from '../../api/undelete';
 import { PRODUCT_FLAVOR } from '../../constants';
 import { StoreProvider } from '../../store/redux';
 import { useProductFlavorStore } from '../../store/zustand/product-flavor/store';
-import { undeleteAPI } from '../../api/undelete';
 
 export const RecoverMessages = (): React.JSX.Element => {
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
 
-	const now = new Date();
-	const endDate = now.toISOString();
-	const startDate = new Date(now.setUTCDate(now.getUTCDate() - 7)).toISOString();
+	const selectInitialValue = useMemo(() => ({ label: '', value: 0 }), []);
+	const selectItems = useMemo(
+		() => [
+			{ label: t('label.last_7_days', 'Last 7 days'), value: 7 },
+			{ label: t('label.last_14_days', 'Last 14 days'), value: 14 },
+			{ label: t('label.last_30_days', 'Last 30 days'), value: 30 },
+			{ label: t('label.last_90_days', 'Last 90 days'), value: 90 }
+		],
+		[]
+	);
+	const [daysToRecover, setDaysToRecover] = useState(null);
+	const [selectValue, setSelectValue] = useState(selectInitialValue);
 
 	const restoreMessages = useCallback(
 		(closeModal: CloseModalFn) => {
+			if (!daysToRecover) {
+				return;
+			}
+			const now = new Date();
+			const endDate = now.toISOString();
+			now.setUTCDate(now.getUTCDate() - daysToRecover);
+			const startDate = now.toISOString();
+
 			undeleteAPI(startDate, endDate)
 				.then((response) => {
 					if (response?.status !== 202) {
 						throw new Error('Something went wrong with messages restoration');
 					}
+					setDaysToRecover(null);
+					setSelectValue(selectInitialValue);
 					closeModal();
 				})
 				.catch(() => {
@@ -51,13 +72,17 @@ export const RecoverMessages = (): React.JSX.Element => {
 					});
 				});
 		},
-		[createSnackbar, endDate, startDate]
+		[createSnackbar, daysToRecover, selectInitialValue]
 	);
+
 	const informativeText = t(
 		'settings.label.recover_messages_infotext',
-		`You can still recover emails deleted within the past 7 days from the Trash folder. \n
-    By clicking “START RECOVERY” you will initiate the process to recover deleted emails. Once the process is completed you will receive a notification in your Inbox and find the recovered emails in a new dedicated folder.`
+		`You can still retrieve emails deleted from Trash in a period.\nBy clicking “START RECOVERY” you will initiate the process to recover deleted emails. Once the process is completed you will receive a notification in your Inbox and find the recovered emails in Recovered mails folder.`
 	);
+	const buttonLabel = t('label.start_recovery', 'Start Recovery');
+	const selectLabel = t('label.recovery_period', 'Select recovery period');
+	const sectionTitle = recoverMessagesSubSection();
+	const { productFlavor } = useProductFlavorStore();
 
 	const onClick = useCallback(() => {
 		const closeModal = createModal(
@@ -65,6 +90,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				children: (
 					<StoreProvider>
 						<RecoverMessagesModal
+							daysToRecover={daysToRecover}
 							onClose={(): void => closeModal()}
 							onConfirm={(): void => restoreMessages(closeModal)}
 						/>
@@ -73,13 +99,16 @@ export const RecoverMessages = (): React.JSX.Element => {
 			},
 			true
 		);
-	}, [createModal, restoreMessages]);
+	}, [createModal, daysToRecover, restoreMessages]);
 
-	const buttonLabel = t('label.start_recovery', 'Start Recovery');
-
-	const sectionTitle = recoverMessagesSubSection();
-
-	const { productFlavor } = useProductFlavorStore();
+	const onSelectChange = useCallback(
+		(value) => {
+			setDaysToRecover(value);
+			const selectedItem = selectItems.find((item) => item.value === value);
+			selectedItem && setSelectValue(selectedItem);
+		},
+		[selectItems]
+	);
 
 	return productFlavor === PRODUCT_FLAVOR.ADVANCED ? (
 		<FormSubSection
@@ -91,7 +120,23 @@ export const RecoverMessages = (): React.JSX.Element => {
 			<Padding top="large" />
 			<Text style={{ whiteSpace: 'pre-line' }}>{informativeText}</Text>
 			<Padding top="large" />
-			<Button type={'outlined'} onClick={onClick} label={buttonLabel} />
+			<Row width="100%" mainAlignment="flex-start">
+				<Select
+					label={selectLabel}
+					onChange={onSelectChange}
+					items={selectItems}
+					selection={selectValue}
+					showCheckbox={false}
+					style={{ maxWidth: '19rem' }}
+				/>
+				<Padding left="large" />
+				<Button
+					type={'outlined'}
+					onClick={onClick}
+					label={buttonLabel}
+					disabled={daysToRecover === null}
+				/>
+			</Row>
 		</FormSubSection>
 	) : (
 		<></>

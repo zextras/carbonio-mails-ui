@@ -51,6 +51,8 @@ describe('Recover messages', () => {
 		);
 
 		await act(async () => {
+			await user.click(screen.getByText(/label\.recovery_period/i));
+			await user.click(screen.getByText(/label\.last_7_days/i));
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
@@ -72,6 +74,8 @@ describe('Recover messages', () => {
 		);
 
 		await act(async () => {
+			await user.click(screen.getByText(/label\.recovery_period/i));
+			await user.click(screen.getByText(/label\.last_7_days/i));
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
@@ -89,10 +93,34 @@ describe('Recover messages', () => {
 		);
 
 		await act(async () => {
+			await user.click(screen.getByText(/label\.recovery_period/i));
+			await user.click(screen.getByText(/label\.last_7_days/i));
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
 		expect(screen.queryByText('label.confirm')).not.toBeInTheDocument();
+	});
+
+	it('should correcly evaluate 90 days difference between start and end dates', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2024-01-01T10:30:35.550Z'));
+		useProductFlavorStore.getState().setAdvanced();
+		const { user } = setupTest(<RecoverMessages />, {});
+		const apiInterceptor = createAPIInterceptor(
+			'post',
+			'/zx/backup/v1/undelete',
+			HttpResponse.json(null, { status: 202 })
+		);
+
+		await act(async () => {
+			await user.click(screen.getByText(/label\.recovery_period/i));
+			await user.click(screen.getByText(/label\.last_90_days/i));
+			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+		});
+
+		const { start, end } = getParams((await apiInterceptor).url);
+		expect(start).toBe('2023-10-03T10:30:35.550Z');
+		expect(end).toBe('2024-01-01T10:30:35.550Z');
 	});
 });
