@@ -102,7 +102,8 @@ describe('Recover messages', () => {
 		expect(screen.queryByText('label.confirm')).not.toBeInTheDocument();
 	});
 
-	it('should not fail if recovery period exceed the previous month', async () => {
+	it('should correcly evaluate 90 days difference between start and end dates', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2024-01-01T10:30:35.550Z'));
 		useProductFlavorStore.getState().setAdvanced();
 		const { user } = setupTest(<RecoverMessages />, {});
 		const apiInterceptor = createAPIInterceptor(
@@ -119,9 +120,7 @@ describe('Recover messages', () => {
 		});
 
 		const { start, end } = getParams((await apiInterceptor).url);
-		expect(start).toBeDefined();
-		expect(end).toBeDefined();
-		const oneWeek = new Date(end).getUTCDate() - new Date(start).getUTCDate();
-		expect(oneWeek).toBe(90);
+		expect(start).toBe('2024-05-23T09:13:14.550Z');
+		expect(end).toBe('2024-01-01T10:30:35.550Z');
 	});
 });

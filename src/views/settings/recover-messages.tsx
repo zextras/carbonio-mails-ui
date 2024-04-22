@@ -49,7 +49,8 @@ export const RecoverMessages = (): React.JSX.Element => {
 			}
 			const now = new Date();
 			const endDate = now.toISOString();
-			const startDate = new Date(now.setUTCDate(now.getUTCDate() - daysToRecover)).toISOString();
+			now.setUTCDate(now.getUTCDate() - daysToRecover);
+			const startDate = now.toISOString();
 
 			undeleteAPI(startDate, endDate)
 				.then((response) => {
