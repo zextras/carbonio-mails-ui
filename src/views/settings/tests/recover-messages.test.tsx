@@ -120,7 +120,7 @@ describe('Recover messages', () => {
 		});
 
 		const { start, end } = getParams((await apiInterceptor).url);
-		expect(start).toBe('2024-05-23T09:13:14.550Z');
+		expect(start).toBe('2023-10-03T10:30:35.550Z');
 		expect(end).toBe('2024-01-01T10:30:35.550Z');
 	});
 });
