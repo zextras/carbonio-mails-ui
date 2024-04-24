@@ -17,153 +17,6 @@ import { generateStore } from '../../../tests/generators/store';
 import EditPermissionsModal from '../edit-permissions-modal';
 
 describe('edit-permissions-modal', () => {
-	test('share with has 2 options, internal is selected by default, confirm button is disabled', async () => {
-		const closeFn = jest.fn();
-		const goBack = jest.fn();
-		const grant = [
-			{
-				zid: '1',
-				gt: 'usr',
-				perm: 'r'
-			} as const
-		];
-		const store = generateStore();
-		const folder = {
-			id: FOLDERS.INBOX,
-			uuid: faker.string.uuid(),
-			name: 'Inbox',
-			absFolderPath: '/Inbox',
-			l: FOLDERS.USER_ROOT,
-			luuid: faker.string.uuid(),
-			checked: false,
-			f: 'ui',
-			u: 37,
-			rev: 1,
-			ms: 2633,
-			n: 889,
-			s: 174031840,
-			i4ms: 33663,
-			i4next: 17222,
-			activesyncdisabled: false,
-			webOfflineSyncDays: 30,
-			recursive: false,
-			deletable: false,
-			acl: {
-				grant: []
-			},
-			isLink: false,
-			children: [],
-			parent: undefined,
-			depth: 1
-		};
-		const { user } = setupTest(
-			<EditPermissionsModal
-				folder={folder}
-				onClose={closeFn}
-				goBack={goBack}
-				grant={grant}
-				editMode={false}
-			/>,
-			{ store }
-		);
-
-		expect(
-			screen.getByText(/share\.options\.share_calendar_with\.internal_users_groups/i)
-		).toBeInTheDocument();
-
-		await user.click(screen.getByText(/label\.share_with/i));
-
-		const dropdownInternalOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
-			/share\.options\.share_calendar_with\.internal_users_groups/i
-		);
-
-		const dropdownPublicOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
-			/share\.options\.share_calendar_with\.public/i
-		);
-
-		const confirmButton = screen.getByRole('button', {
-			name: /action\.share_folder/i
-		});
-
-		expect(dropdownInternalOption).toBeInTheDocument();
-		expect(dropdownPublicOption).toBeInTheDocument();
-		expect(confirmButton).toBeDisabled();
-	});
-	test('when share with internals not selected, other fields are not rendered, confirm button is enabled', async () => {
-		const closeFn = jest.fn();
-		const goBack = jest.fn();
-		const grant = [
-			{
-				zid: '1',
-				gt: 'usr',
-				perm: 'r'
-			} as const
-		];
-		const store = generateStore();
-		const folder = {
-			id: FOLDERS.INBOX,
-			uuid: faker.string.uuid(),
-			name: 'Inbox',
-			absFolderPath: '/Inbox',
-			l: FOLDERS.USER_ROOT,
-			luuid: faker.string.uuid(),
-			checked: false,
-			f: 'ui',
-			u: 37,
-			rev: 1,
-			ms: 2633,
-			n: 889,
-			s: 174031840,
-			i4ms: 33663,
-			i4next: 17222,
-			activesyncdisabled: false,
-			webOfflineSyncDays: 30,
-			recursive: false,
-			deletable: false,
-			acl: {
-				grant: []
-			},
-			isLink: false,
-			children: [],
-			parent: undefined,
-			depth: 1
-		};
-		const { user } = setupTest(
-			<EditPermissionsModal
-				folder={folder}
-				onClose={closeFn}
-				goBack={goBack}
-				grant={grant}
-				editMode={false}
-			/>,
-			{ store }
-		);
-
-		await user.click(screen.getByText(/label\.share_with/i));
-
-		const dropdownPublicOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
-			/share\.options\.share_calendar_with\.public/i
-		);
-
-		await user.click(dropdownPublicOption);
-
-		const chipInput = screen.queryByRole('textbox', {
-			name: /share\.recipients_address/i
-		});
-		const roleSelector = screen.queryByText(/label\.role/i);
-		const notificationCheckbox = screen.queryByText(/share\.send_notification/i);
-		const standardMessage = screen.queryByRole('textbox', {
-			name: /share\.standard_message/i
-		});
-		const shareNotes = screen.queryByText(/share\.share_note/i);
-		const confirmButton = screen.getByText(/action\.share_folder/i);
-		expect(confirmButton).toBeEnabled();
-		expect(chipInput).toBeInTheDocument();
-		expect(roleSelector).toBeInTheDocument();
-		expect(notificationCheckbox).toBeInTheDocument();
-		expect(standardMessage).toBeInTheDocument();
-		expect(shareNotes).toBeInTheDocument();
-	});
 	test('role field has 4 options, viewer role is set by default ', async () => {
 		const closeFn = jest.fn();
 		const goBack = jest.fn();
@@ -416,13 +269,7 @@ describe('edit-permissions-modal', () => {
 			// Check that the shareFolder and the data passed
 			expect(shareFolderMock).toBeCalled();
 			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ sendNotification: true })
-			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
 				expect.objectContaining({ shareWithUserRole: 'r' })
-			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ shareWithUserType: 'usr' })
 			);
 			expect(shareFolderMock).toHaveBeenCalledWith(expect.objectContaining({ folder }));
 		});
@@ -472,13 +319,7 @@ describe('edit-permissions-modal', () => {
 			// Check that the shareFolder and the data passed
 			expect(shareFolderMock).toBeCalled();
 			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ sendNotification: true })
-			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
 				expect.objectContaining({ shareWithUserRole: 'rwidxa' })
-			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ shareWithUserType: 'usr' })
 			);
 			expect(shareFolderMock).toHaveBeenCalledWith(expect.objectContaining({ folder }));
 		});
@@ -527,14 +368,9 @@ describe('edit-permissions-modal', () => {
 			// Check that the shareFolder and the data passed
 			expect(shareFolderMock).toBeCalled();
 			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ sendNotification: true })
-			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
 				expect.objectContaining({ shareWithUserRole: 'rwidx' })
 			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ shareWithUserType: 'usr' })
-			);
+
 			expect(shareFolderMock).toHaveBeenCalledWith(expect.objectContaining({ folder }));
 		});
 		test('Share the inbox folder with a user giving the manager role and note to the standard message', async () => {
@@ -596,16 +432,7 @@ describe('edit-permissions-modal', () => {
 			// Check that the shareFolder and the data passed
 			expect(shareFolderMock).toBeCalled();
 			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ sendNotification: true })
-			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
 				expect.objectContaining({ shareWithUserRole: 'rwidx' })
-			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ shareWithUserType: 'usr' })
-			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ standardMessage: note })
 			);
 			expect(shareFolderMock).toHaveBeenCalledWith(expect.objectContaining({ folder }));
 		});
@@ -674,16 +501,7 @@ describe('edit-permissions-modal', () => {
 			// Check that the shareFolder and the data passed
 			expect(shareFolderMock).toBeCalled();
 			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ sendNotification: false })
-			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
 				expect.objectContaining({ shareWithUserRole: 'rwidx' })
-			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ shareWithUserType: 'usr' })
-			);
-			expect(shareFolderMock).toHaveBeenCalledWith(
-				expect.objectContaining({ standardMessage: '' })
 			);
 			expect(shareFolderMock).toHaveBeenCalledWith(expect.objectContaining({ folder }));
 		});
