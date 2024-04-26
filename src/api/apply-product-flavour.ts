@@ -8,8 +8,9 @@ import { PRODUCT_FLAVOR } from '../constants';
 import { ProductFlavor, useProductFlavorStore } from '../store/zustand/product-flavor/store';
 
 export const applyProductFlavourAPI = (): Promise<ProductFlavor> =>
-	fetch('/zx/auth/supported')
-		.then((data) => {
+	fetch('/zx/login/v3/account')
+		.then(async (data) => {
+			const { backupSelfUndeleteAllowed } = await data.json();
 			if (data.status === 200) {
 				useProductFlavorStore.getState().setAdvanced();
 				return PRODUCT_FLAVOR.ADVANCED;
