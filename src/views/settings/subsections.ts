@@ -5,8 +5,7 @@
  */
 import { t, SettingsSubSection } from '@zextras/carbonio-shell-ui';
 
-import { PRODUCT_FLAVOR } from '../../constants';
-import { ProductFlavor } from '../../store/zustand/product-flavor/store';
+import { AdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 
 export const displayingMessagesSubSection = (): SettingsSubSection => ({
 	label: t('settings.label.display_messages', 'Displaying Messages'),
@@ -40,9 +39,11 @@ export const filtersSubSection = (): SettingsSubSection => ({
 	id: 'filters'
 });
 
-export const getSettingsSubSections = (productFlavor: ProductFlavor): Array<SettingsSubSection> =>
+export const getSettingsSubSections = (
+	backupSelfUndeleteAllowed: AdvancedAccountStore['backupSelfUndeleteAllowed']
+): Array<SettingsSubSection> =>
 	[displayingMessagesSubSection(), receivingMessagesSubSection()]
-		.concat(productFlavor === PRODUCT_FLAVOR.ADVANCED ? recoverMessagesSubSection() : [])
+		.concat(backupSelfUndeleteAllowed ? recoverMessagesSubSection() : [])
 		.concat([signaturesSubSection(), setDefaultSignaturesSubSection(), filtersSubSection()]);
 
 export const composingMsgSubSection = (): SettingsSubSection => ({
