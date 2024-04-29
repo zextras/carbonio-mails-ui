@@ -12,7 +12,7 @@ import { HttpResponse } from 'msw';
 import { defaultBeforeAllTests } from '../../../carbonio-ui-commons/test/jest-setup';
 import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { useProductFlavorStore } from '../../../store/zustand/product-flavor/store';
+import { useAdvancedAccountStore } from '../../../store/zustand/advanced-account/store';
 import { RecoverMessages } from '../recover-messages';
 
 function getParams(url: string): Record<string, string> {
@@ -29,20 +29,20 @@ describe('Recover messages', () => {
 		defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 	});
 
-	it('should render view if product flavour is advanced', () => {
-		useProductFlavorStore.getState().setAdvanced();
+	it('should render view if backupSelfUndelete is allowed', () => {
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		setupTest(<RecoverMessages />, {});
-		expect(screen.getByTestId('product-flavour-form')).toBeInTheDocument();
+		expect(screen.getByTestId('backup-self-undelete-form')).toBeInTheDocument();
 	});
 
-	it('should not render view if product flavour is community', () => {
-		useProductFlavorStore.getState().setCommunity();
+	it('should not render view if backupSelfUndelete is denied', () => {
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(false);
 		setupTest(<RecoverMessages />, {});
-		expect(screen.queryByTestId('product-flavour-form')).not.toBeInTheDocument();
+		expect(screen.queryByTestId('backup-self-undelete-form')).not.toBeInTheDocument();
 	});
 
 	it('should call undelete API when recovery button is pressed', async () => {
-		useProductFlavorStore.getState().setAdvanced();
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		const { user } = setupTest(<RecoverMessages />, {});
 		const apiInterceptor = createAPIInterceptor(
 			'post',
@@ -65,7 +65,7 @@ describe('Recover messages', () => {
 	});
 
 	it('should not close the recover messages modal when the API call fails', async () => {
-		useProductFlavorStore.getState().setAdvanced();
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		const { user } = setupTest(<RecoverMessages />, {});
 		createAPIInterceptor(
 			'post',
@@ -84,7 +84,7 @@ describe('Recover messages', () => {
 	});
 
 	it('should close the recover messages modal when the API call succedes', async () => {
-		useProductFlavorStore.getState().setAdvanced();
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		const { user } = setupTest(<RecoverMessages />, {});
 		createAPIInterceptor(
 			'post',
@@ -104,7 +104,7 @@ describe('Recover messages', () => {
 
 	it('should correcly evaluate 90 days difference between start and end dates', async () => {
 		jest.useFakeTimers().setSystemTime(new Date('2024-01-01T10:30:35.550Z'));
-		useProductFlavorStore.getState().setAdvanced();
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		const { user } = setupTest(<RecoverMessages />, {});
 		const apiInterceptor = createAPIInterceptor(
 			'post',
