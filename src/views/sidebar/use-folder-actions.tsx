@@ -11,7 +11,6 @@ import { noop, startsWith } from 'lodash';
 
 import { DeleteModal } from './delete-modal';
 import { EditModal } from './edit-modal';
-import EditPermissionsModal from './edit-permissions-modal';
 import { EmptyModal } from './empty-modal';
 import { NewModal } from './new-modal';
 import { SharesInfoModal } from './shares-info-modal';
@@ -212,9 +211,12 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			{
 				id: FolderActionsType.EMPTY,
 				'data-testid': `folder-action-${FolderActionsType.EMPTY}`,
-				icon: folder.id === FOLDERS.TRASH ? 'DeletePermanentlyOutline' : 'EmptyFolderOutline',
+				icon:
+					getFolderIdParts(folder.id).id === FOLDERS.TRASH
+						? 'DeletePermanentlyOutline'
+						: 'EmptyFolderOutline',
 				label:
-					folder.id === FOLDERS.TRASH
+					getFolderIdParts(folder.id).id === FOLDERS.TRASH
 						? t('folder_panel.action.empty.trash', 'Empty Trash')
 						: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
 				disabled: folder.n === 0 && folder.children?.length === 0,
@@ -280,31 +282,6 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						true
 					);
 				}
-			},
-			{
-				id: FolderActionsType.SHARE,
-				'data-testid': `folder-action-${FolderActionsType.SHARE}`,
-				icon: 'ShareOutline',
-				label: t('action.share_folder', 'Share folder'),
-				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
-					if (e) {
-						e.stopPropagation();
-					}
-					const closeModal = createModal(
-						{
-							children: (
-								<StoreProvider>
-									<EditPermissionsModal onClose={(): void => closeModal()} folder={folder} />
-								</StoreProvider>
-							)
-						},
-						true
-					);
-				},
-				tooltipLabel: !allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)
-					? t('label.do_not_have_perm', `You don't have permission`)
-					: '',
-				disabled: !allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)
 			},
 			{
 				id: FolderActionsType.REMOVE_FROM_LIST,
@@ -397,8 +374,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			return defaultFolderActions.map((action) =>
 				(action.id === FolderActionsType.MOVE && trashMessages.length === 0) ||
 				action.id === FolderActionsType.DELETE ||
-				action.id === FolderActionsType.EDIT ||
-				action.id === FolderActionsType.SHARE
+				action.id === FolderActionsType.EDIT
 					? { ...action, disabled: true }
 					: action
 			);

@@ -229,7 +229,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	return (
 		<>
 			<Container>
-				<ResultsHeader label={resultLabel} labelType={resultLabelType} />
+				<ResultsHeader label={resultLabel} />
 				<Container
 					orientation="horizontal"
 					background="gray4"

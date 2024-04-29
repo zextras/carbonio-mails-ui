@@ -16,7 +16,7 @@ import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import { getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import {
 	makeListItemsVisible,
@@ -63,9 +63,9 @@ jest.mock<typeof import('../../hooks/use-ui-utilities')>('../../hooks/use-ui-uti
 
 describe('Messages actions calls', () => {
 	beforeAll(() => {
-		createAPIInterceptor('MsgAction', {});
-		createAPIInterceptor('Batch', {});
-		createAPIInterceptor('SendMsg', {});
+		createSoapAPIInterceptor('MsgAction', {});
+		createSoapAPIInterceptor('Batch', {});
+		createSoapAPIInterceptor('SendMsg', {});
 	});
 	describe('Add flag action', () => {
 		test('Single id', async () => {
@@ -79,7 +79,7 @@ describe('Messages actions calls', () => {
 				}
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			const action = setMsgFlag({
 				ids: [msg.id],
@@ -118,7 +118,7 @@ describe('Messages actions calls', () => {
 				value: false
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -150,7 +150,7 @@ describe('Messages actions calls', () => {
 				dispatch: store.dispatch,
 				value: true
 			});
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -185,7 +185,7 @@ describe('Messages actions calls', () => {
 				value: false
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -219,7 +219,7 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -254,7 +254,7 @@ describe('Messages actions calls', () => {
 				value: false
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -288,7 +288,7 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -324,7 +324,7 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -360,7 +360,7 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -401,7 +401,7 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -440,7 +440,7 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -480,7 +480,7 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -569,7 +569,7 @@ describe('Messages actions calls', () => {
 				folderId: msg.parent
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -607,7 +607,7 @@ describe('Messages actions calls', () => {
 				folderId: FOLDERS.INBOX
 			});
 
-			const apiInterceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			act(() => {
 				action.onClick();
@@ -643,7 +643,7 @@ describe('Messages actions calls', () => {
 				/>
 			);
 
-			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			const { user } = setupTest(component, { store });
 			const button = await screen.findByText(/label\.delete_permanently/i);
@@ -681,7 +681,7 @@ describe('Messages actions calls', () => {
 				/>
 			);
 
-			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			const { user } = setupTest(component, { store });
 			const button = await screen.findByText(/label\.delete_permanently/i);
@@ -724,7 +724,7 @@ describe('Messages actions calls', () => {
 				/>
 			);
 
-			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 
 			const { user } = setupTest(component, { store });
 			makeListItemsVisible();
@@ -772,12 +772,15 @@ describe('Messages actions calls', () => {
 				}
 			});
 
-			const interceptor = createAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
-				action: {
-					id: msgIds.join(','),
-					op: 'move'
+			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: msgIds.join(','),
+						op: 'move'
+					}
 				}
-			});
+			);
 
 			const component = (
 				<MoveConvMessage
@@ -979,7 +982,7 @@ describe('Messages actions calls', () => {
 			}
 		});
 
-		const apiInterceptor = createAPIInterceptor<SaveDraftRequest>('SendMsg');
+		const apiInterceptor = createSoapAPIInterceptor<SaveDraftRequest>('SendMsg');
 
 		const action = sendDraft({
 			message: msg,
@@ -1064,7 +1067,7 @@ describe('Messages actions calls', () => {
 
 			const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
 
-			const interceptor = createAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
+			const interceptor = createSoapAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
 
 			const { user } = setupTest(component, { store });
 
@@ -1100,7 +1103,7 @@ describe('Messages actions calls', () => {
 
 			const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
 
-			const interceptor = createAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
+			const interceptor = createSoapAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
 
 			const { user } = setupTest(component, { store });
 
@@ -1154,7 +1157,7 @@ describe('Messages actions calls', () => {
 
 			const component = <TagsDropdownItem tag={tag} conversation={msg} isMessage />;
 
-			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 			const { user } = setupTest(component, { store });
 
 			const tagElement = screen.getByTestId(`tag-item-${tag.id}`);
@@ -1183,7 +1186,7 @@ describe('Messages actions calls', () => {
 
 			const component = <TagsDropdownItem tag={tag} conversation={msg} isMessage />;
 
-			const interceptor = createAPIInterceptor<MsgActionRequest>('MsgAction');
+			const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 			const { user } = setupTest(component, { store });
 
 			const tagElement = screen.getByTestId(`tag-item-${tag.id}`);

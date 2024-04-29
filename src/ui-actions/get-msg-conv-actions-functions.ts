@@ -280,13 +280,13 @@ export const useMarkRemoveSpam = (): ((arg: {
 			const action = isConversation
 				? setConversationAsSpam({
 						ids: [id],
-						value: folderId === FOLDERS.SPAM,
+						value: getFolderIdParts(folderId).id === FOLDERS.SPAM,
 						dispatch,
 						deselectAll
 					})
 				: setMsgAsSpam({
 						ids: [id],
-						value: folderId === FOLDERS.SPAM,
+						value: getFolderIdParts(folderId).id === FOLDERS.SPAM,
 						dispatch,
 						folderId
 					});
@@ -354,14 +354,14 @@ export const useMoveToFolderAction = (): ((arg: {
 						ids: [id],
 						dispatch,
 						folderId,
-						isRestore: folderId === FOLDERS.TRASH,
+						isRestore: getFolderIdParts(folderId).id === FOLDERS.TRASH,
 						deselectAll
 					})
 				: moveMessageToFolder({
 						id: [id],
 						folderId,
 						dispatch,
-						isRestore: folderId === FOLDERS.TRASH,
+						isRestore: getFolderIdParts(folderId).id === FOLDERS.TRASH,
 						deselectAll
 					}),
 		[moveConversationToFolder, moveMessageToFolder]

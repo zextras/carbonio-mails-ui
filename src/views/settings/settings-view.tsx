@@ -22,6 +22,7 @@ import ComposeMessage from './compose-msg-settings';
 import DisplayMessagesSettings from './displaying-messages-settings';
 import FilterModule from './filters';
 import ReceivingMessagesSettings from './receiving-messages-settings';
+import { RecoverMessages } from './recover-messages';
 import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
@@ -356,6 +357,7 @@ const SettingsView: FC = () => {
 						updatedProps={updatedProps}
 						updateProps={updateProps}
 					/>
+					<RecoverMessages />
 					<SignatureSettings
 						settingsObj={settingsObj}
 						setSignatures={setSignatures}

@@ -5,7 +5,7 @@
  */
 
 import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateStore } from '../../../tests/generators/store';
 import { SearchRequest } from '../../../types';
 import { searchConv } from '../search-conv';
@@ -14,7 +14,7 @@ describe('searchConv', () => {
 	test('the max property is not set', async () => {
 		// Generate the state store
 		const store = generateStore();
-		const interceptor = createAPIInterceptor<SearchRequest>('SearchConv');
+		const interceptor = createSoapAPIInterceptor<SearchRequest>('SearchConv');
 
 		store.dispatch(
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment

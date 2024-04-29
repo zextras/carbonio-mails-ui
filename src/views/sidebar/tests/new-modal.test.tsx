@@ -9,7 +9,7 @@ import { faker } from '@faker-js/faker';
 import { screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, SoapFolder } from '../../../carbonio-ui-commons/types/folder';
@@ -174,7 +174,7 @@ describe('new-modal', () => {
 			name: /label.create/i
 		});
 		expect(createButton).toBeEnabled();
-		const apiInterceptor = createAPIInterceptor<{ folder: SoapFolder }>('CreateFolder');
+		const apiInterceptor = createSoapAPIInterceptor<{ folder: SoapFolder }>('CreateFolder');
 
 		await user.click(createButton);
 
