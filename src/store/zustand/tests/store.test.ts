@@ -82,7 +82,6 @@ describe('store', () => {
 		const newEditor = useEditorsStore.getState().editors[editor.id];
 		expect(newEditor.size).toEqual(123);
 	});
-
 	test('size should be aligned in the new editor', async () => {
 		const store = generateStore();
 		const editor = await readyToBeSentEditorTestCase(store.dispatch, { size: 123 });

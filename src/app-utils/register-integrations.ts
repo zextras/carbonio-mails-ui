@@ -1,41 +1,39 @@
 /*
- * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useEffect } from 'react';
+
+import { SyntheticEvent } from 'react';
 
 import {
-	registerActions,
-	registerFunctions,
 	ACTION_TYPES,
 	addBoard,
-	t
+	registerActions,
+	registerFunctions
 } from '@zextras/carbonio-shell-ui';
+import { t } from 'i18next';
 import { some } from 'lodash';
 
-import { setupShellComponents } from './app-utils/setup-shell-components';
-import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
-import { ParticipantRole } from './carbonio-ui-commons/constants/participants';
-import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
-import { MAILS_ROUTE, MAIL_APP_ID, EditViewActions } from './constants';
+import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
+import { EditViewActions, MAILS_ROUTE, MAIL_APP_ID } from '../constants';
 import {
 	mailToSharedFunction,
 	openComposerSharedFunction,
 	openPrefilledComposerSharedFunction
-} from './integrations/shared-functions';
-import { StoreProvider } from './store/redux';
-import { SyncDataHandler } from './views/sidebar/sync-data-handler';
+} from '../integrations/shared-functions';
 
-const registerIntegrations = () => {
+export const registerIntegrations = (): void => {
 	registerActions(
 		{
-			action: (contacts) => ({
+			// TODO-SHELL: update the action type definition
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			action: (contacts: any) => ({
 				id: 'mail-to',
 				label: 'Send Mail',
 				icon: 'MailModOutline',
-				onClick: (ev) => {
-					ev?.preventDefault?.();
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+					e?.preventDefault?.();
 					const participant =
 						!!contacts[0].email && Object.keys(contacts[0].email).length !== 0
 							? [
@@ -58,8 +56,8 @@ const registerIntegrations = () => {
 				id: 'new-email',
 				label: t('label.new_email', 'New E-mail'),
 				icon: 'MailModOutline',
-				onClick: (ev) => {
-					ev?.preventDefault?.();
+				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
+					e?.preventDefault?.();
 					addBoard({
 						url: `${MAILS_ROUTE}/edit?action=${EditViewActions.NEW}`,
 						title: t('label.new_email', 'New E-mail')
@@ -77,6 +75,9 @@ const registerIntegrations = () => {
 	registerFunctions(
 		{
 			id: 'compose',
+			// TODO-SHELL: fix the function type definition
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			fn: openComposerSharedFunction
 		},
 		{
@@ -85,21 +86,3 @@ const registerIntegrations = () => {
 		}
 	);
 };
-
-const App = () => {
-	useEffect(() => {
-		setupShellComponents();
-	}, []);
-
-	useEffect(registerIntegrations, []);
-
-	useFoldersController(FOLDER_VIEW.message);
-
-	return (
-		<StoreProvider>
-			<SyncDataHandler />
-		</StoreProvider>
-	);
-};
-
-export default App;
