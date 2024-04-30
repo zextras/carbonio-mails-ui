@@ -12,12 +12,14 @@ import {
 	addSearchView,
 	addBoardView,
 	addSettingsView,
-	t
+	t,
+	SearchViewProps
 } from '@zextras/carbonio-shell-ui';
 
 import { advancedAccountAPI } from '../api/advanced-account';
 import { MAILS_ROUTE } from '../constants';
 import { StoreProvider } from '../store/redux';
+import { SidebarProps } from '../types/sidebar';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from '../views/settings/subsections';
 
@@ -69,7 +71,7 @@ const SettingsView = (): React.JSX.Element => (
 	</Suspense>
 );
 
-const SearchView = (props: any): React.JSX.Element => (
+const SearchView = (props: SearchViewProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
 			<ExtraWindowsManager>
@@ -79,7 +81,7 @@ const SearchView = (props: any): React.JSX.Element => (
 	</Suspense>
 );
 
-const SidebarView = (props: any): React.JSX.Element => (
+const SidebarView = (props: SidebarProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
 			<LazySidebarView {...props} />
