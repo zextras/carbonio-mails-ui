@@ -5,19 +5,20 @@
  */
 
 import { addSettingsView } from '@zextras/carbonio-shell-ui';
-import { setupShellComponents } from '../setup-shell-components';
-import { ProductFlavor } from '../../store/zustand/product-flavor/store';
-import * as applyProductFlavourModule from '../../api/apply-product-flavour';
+import { noop } from 'lodash';
 
-function mockApplyProductFlavourAPI(flavour: ProductFlavor): void {
+import * as advancedAccount from '../../api/advanced-account';
+import { setupShellComponents } from '../setup-shell-components';
+
+function mockAdvancedAccountAPI(store: { backupSelfUndeleteAllowed: boolean }): void {
 	jest
-		.spyOn(applyProductFlavourModule, 'applyProductFlavourAPI')
-		.mockImplementation(() => Promise.resolve(flavour));
+		.spyOn(advancedAccount, 'advancedAccountAPI')
+		.mockImplementation(() => Promise.resolve({ ...store, updateBackupSelfUndeleteAllowed: noop }));
 }
 
 describe('setupShellComponents', () => {
-	it('should not render Recover Messages menu item when ProductFlavour is community', async () => {
-		mockApplyProductFlavourAPI('community');
+	it('should not render Recover Messages menu item when backupSelfUndeleteAllowed is false', async () => {
+		mockAdvancedAccountAPI({ backupSelfUndeleteAllowed: false });
 
 		await setupShellComponents();
 
@@ -33,8 +34,8 @@ describe('setupShellComponents', () => {
 			})
 		);
 	});
-	it('should render Recover Messages menu item when ProductFlavour is advanced ', async () => {
-		mockApplyProductFlavourAPI('advanced');
+	it('should render Recover Messages menu item when backupSelfUndeleteAllowed is true ', async () => {
+		mockAdvancedAccountAPI({ backupSelfUndeleteAllowed: true });
 
 		await setupShellComponents();
 

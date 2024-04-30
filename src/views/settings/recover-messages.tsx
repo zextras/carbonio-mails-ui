@@ -21,9 +21,8 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
 import { undeleteAPI } from '../../api/undelete';
-import { PRODUCT_FLAVOR } from '../../constants';
 import { StoreProvider } from '../../store/redux';
-import { useProductFlavorStore } from '../../store/zustand/product-flavor/store';
+import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 
 export const RecoverMessages = (): React.JSX.Element => {
 	const createModal = useModal();
@@ -82,7 +81,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const buttonLabel = t('label.start_recovery', 'Start Recovery');
 	const selectLabel = t('label.recovery_period', 'Select recovery period');
 	const sectionTitle = recoverMessagesSubSection();
-	const { productFlavor } = useProductFlavorStore();
+	const { backupSelfUndeleteAllowed } = useAdvancedAccountStore();
 
 	const onClick = useCallback(() => {
 		const closeModal = createModal(
@@ -110,10 +109,10 @@ export const RecoverMessages = (): React.JSX.Element => {
 		[selectItems]
 	);
 
-	return productFlavor === PRODUCT_FLAVOR.ADVANCED ? (
+	return backupSelfUndeleteAllowed ? (
 		<FormSubSection
 			id={sectionTitle.id}
-			data-testid="product-flavour-form"
+			data-testid="backup-self-undelete-form"
 			label={sectionTitle.label}
 			padding={{ all: 'medium' }}
 		>

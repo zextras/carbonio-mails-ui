@@ -15,7 +15,7 @@ import {
 	t
 } from '@zextras/carbonio-shell-ui';
 
-import { applyProductFlavourAPI } from '../api/apply-product-flavour';
+import { advancedAccountAPI } from '../api/advanced-account';
 import type { SidebarProps } from '../carbonio-ui-commons/types/sidebar';
 import { MAILS_ROUTE } from '../constants';
 import { StoreProvider } from '../store/redux';
@@ -117,12 +117,11 @@ export const setupShellComponents = async (): Promise<void> => {
 		route: MAILS_ROUTE,
 		component: EditView
 	});
-
-	const productFlavor = await applyProductFlavourAPI();
+	const { backupSelfUndeleteAllowed } = await advancedAccountAPI();
 	addSettingsView({
 		route: MAILS_ROUTE,
 		label,
-		subSections: getSettingsSubSections(productFlavor),
+		subSections: getSettingsSubSections(backupSelfUndeleteAllowed),
 		component: SettingsView
 	});
 };
