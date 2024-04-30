@@ -7,7 +7,8 @@ import React from 'react';
 
 import App from './app';
 import * as addShellComponents from './app-utils/add-shell-components';
-import * as registerShellActionsAndFunctions from './app-utils/register-shell-actions-and-functions';
+import * as registerShellActions from './app-utils/register-shell-actions';
+import * as registerShellIntegrations from './app-utils/register-shell-integrations';
 import * as useFoldersController from './carbonio-ui-commons/hooks/use-folders-controller';
 import { setupTest } from './carbonio-ui-commons/test/test-setup';
 
@@ -15,13 +16,15 @@ describe('App', () => {
 	it.only('should register a "mails" route accessible from the primary bar with specific position, name and icon', () => {
 		const useFoldersControllerSpy = jest.spyOn(useFoldersController, 'useFoldersController');
 		const addShellComponentsSpy = jest.spyOn(addShellComponents, 'addShellComponents');
-		const registerShellActionsAndFunctionsSpy = jest.spyOn(
-			registerShellActionsAndFunctions,
-			'registerShellActionsAndFunctions'
+		const registerShellActionSpy = jest.spyOn(registerShellActions, 'registerShellActions');
+		const registerShellIntegrationsSpy = jest.spyOn(
+			registerShellIntegrations,
+			'registerShellIntegrations'
 		);
 		setupTest(<App />);
 		expect(addShellComponentsSpy).toHaveBeenCalled();
-		expect(registerShellActionsAndFunctionsSpy).toHaveBeenCalled();
+		expect(registerShellActionSpy).toHaveBeenCalled();
+		expect(registerShellIntegrationsSpy).toHaveBeenCalled();
 		expect(useFoldersControllerSpy).toHaveBeenCalledWith('message');
 	});
 });

@@ -6,24 +6,14 @@
 
 import { SyntheticEvent } from 'react';
 
-import {
-	ACTION_TYPES,
-	addBoard,
-	registerActions,
-	registerFunctions,
-	t
-} from '@zextras/carbonio-shell-ui';
+import { ACTION_TYPES, addBoard, registerActions, t } from '@zextras/carbonio-shell-ui';
 import { some } from 'lodash';
 
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import { EditViewActions, MAILS_ROUTE, MAIL_APP_ID } from '../constants';
-import {
-	mailToSharedFunction,
-	openComposerSharedFunction,
-	openPrefilledComposerSharedFunction
-} from '../integrations/shared-functions';
+import { mailToSharedFunction } from '../integrations/shared-functions';
 
-export const registerShellActionsAndFunctions = (): void => {
+export const registerShellActions = (): void => {
 	registerActions(
 		{
 			// TODO-SHELL: update the action type definition
@@ -70,19 +60,6 @@ export const registerShellActionsAndFunctions = (): void => {
 			}),
 			id: 'new-email',
 			type: ACTION_TYPES.NEW
-		}
-	);
-	registerFunctions(
-		{
-			id: 'compose',
-			// TODO-SHELL: fix the function type definition
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			fn: openComposerSharedFunction
-		},
-		{
-			id: 'composePrefillMessage',
-			fn: openPrefilledComposerSharedFunction
 		}
 	);
 };
