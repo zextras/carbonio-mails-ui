@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Button, Container, Padding } from '@zextras/carbonio-design-system';
+import { Button, Container, Padding, useSnackbar } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { RecipientsRow } from './recipients-row';
@@ -37,15 +37,25 @@ export const RecipientsRows = ({ editorId }: RecipientsRowsProps): JSX.Element =
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
 	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
 	const [orderedAccountIds, setOrderedAccountIds] = useState<Array<string>>([]);
+	const createSnackbar = useSnackbar();
 
 	useEffect(() => {
 		const selectedIdentity = getIdentityDescriptor(identityId);
-		const fetchData = async (): Promise<void> => {
-			const ids = await getOrderedAccountIds(selectedIdentity ? selectedIdentity.ownerAccount : '');
-			setOrderedAccountIds(ids);
-		};
-		fetchData();
-	}, [identityId]);
+		getOrderedAccountIds(selectedIdentity ? selectedIdentity.ownerAccount : '')
+			.then((ids) => {
+				setOrderedAccountIds(ids);
+			})
+			.catch(() => {
+				createSnackbar({
+					key: `ordered-account-ids`,
+					replace: true,
+					type: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			});
+	}, [createSnackbar, identityId]);
 
 	const onToChange = useCallback(
 		(updatedRecipients: Array<Participant>) => setToRecipients(updatedRecipients),
