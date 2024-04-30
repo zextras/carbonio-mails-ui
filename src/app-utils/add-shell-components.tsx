@@ -12,8 +12,8 @@ import {
 	addSearchView,
 	addBoardView,
 	addSettingsView,
-	t,
-	SearchViewProps
+	SearchViewProps,
+	t
 } from '@zextras/carbonio-shell-ui';
 
 import { advancedAccountAPI } from '../api/advanced-account';
@@ -89,7 +89,7 @@ const SidebarView = (props: SidebarProps): React.JSX.Element => (
 	</Suspense>
 );
 
-export const setupShellComponents = async (): Promise<void> => {
+export const addShellComponents = async (): Promise<void> => {
 	const label = t('label.app_name', 'Mails');
 	addRoute({
 		route: MAILS_ROUTE,

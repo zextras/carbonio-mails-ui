@@ -10,9 +10,9 @@ import {
 	ACTION_TYPES,
 	addBoard,
 	registerActions,
-	registerFunctions
+	registerFunctions,
+	t
 } from '@zextras/carbonio-shell-ui';
-import { t } from 'i18next';
 import { some } from 'lodash';
 
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
@@ -23,14 +23,14 @@ import {
 	openPrefilledComposerSharedFunction
 } from '../integrations/shared-functions';
 
-export const registerIntegrations = (): void => {
+export const registerShellActionsAndFunctions = (): void => {
 	registerActions(
 		{
 			// TODO-SHELL: update the action type definition
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			action: (contacts: any) => ({
 				id: 'mail-to',
-				label: 'Send Mail',
+				label: t('label.send_mail', 'Send Mail'),
 				icon: 'MailModOutline',
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					e?.preventDefault?.();

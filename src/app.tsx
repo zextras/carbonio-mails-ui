@@ -6,8 +6,8 @@
 
 import React, { useEffect } from 'react';
 
-import { registerIntegrations } from './app-utils/register-integrations';
-import { setupShellComponents } from './app-utils/setup-shell-components';
+import { addShellComponents } from './app-utils/add-shell-components';
+import { registerShellActionsAndFunctions } from './app-utils/register-shell-actions-and-functions';
 import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
 import { StoreProvider } from './store/redux';
@@ -15,10 +15,9 @@ import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
 const App = (): React.JSX.Element => {
 	useEffect(() => {
-		setupShellComponents();
+		addShellComponents();
+		registerShellActionsAndFunctions();
 	}, []);
-
-	useEffect(registerIntegrations, []);
 
 	useFoldersController(FOLDER_VIEW.message);
 

@@ -5,25 +5,19 @@
  */
 
 import { addSettingsView } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
 
-import * as advancedAccount from '../../api/advanced-account';
-import { setupShellComponents } from '../setup-shell-components';
+import { mockAdvancedAccountAPI } from '../../tests/utils';
+import { addShellComponents } from '../add-shell-components';
 
-function mockAdvancedAccountAPI(store: { backupSelfUndeleteAllowed: boolean }): void {
-	jest
-		.spyOn(advancedAccount, 'advancedAccountAPI')
-		.mockImplementation(() => Promise.resolve({ ...store, updateBackupSelfUndeleteAllowed: noop }));
-}
-
-describe('setupShellComponents', () => {
+describe('addShellComponents', () => {
 	it('should not render Recover Messages menu item when backupSelfUndeleteAllowed is false', async () => {
 		mockAdvancedAccountAPI({ backupSelfUndeleteAllowed: false });
 
-		await setupShellComponents();
+		await addShellComponents();
 
 		expect(addSettingsView).toBeCalledWith(
 			expect.objectContaining({
+				route: 'mails',
 				subSections: [
 					{ id: 'displaying_messages', label: 'settings.label.display_messages' },
 					{ id: 'receiving_messages', label: 'label.receive_message' },
@@ -37,7 +31,7 @@ describe('setupShellComponents', () => {
 	it('should render Recover Messages menu item when backupSelfUndeleteAllowed is true ', async () => {
 		mockAdvancedAccountAPI({ backupSelfUndeleteAllowed: true });
 
-		await setupShellComponents();
+		await addShellComponents();
 
 		expect(addSettingsView).toBeCalledWith(
 			expect.objectContaining({
