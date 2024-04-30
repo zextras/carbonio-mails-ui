@@ -2,7 +2,7 @@
 	"name": "carbonio-mails-ui",
 	"version": "1.15.0",
 	"description": "Mails module",
-	"main": "src/app.jsx",
+	"main": "src/app.tsx",
 	"engines": {
 		"node": "v18",
 		"npm": "v10"
@@ -110,6 +110,8 @@
 		"react-router-dom": "^5.3.4",
 		"styled-components": "^5.3.6",
 		"uuid": "^9.0.0",
+		"@types/webpack": "^5.28.2",
+		"@types/webpack-env": "^1.18.1",
 		"zustand": "^4.5.2"
 	},
 	"browserslist": [
