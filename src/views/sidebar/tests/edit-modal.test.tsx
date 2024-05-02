@@ -10,7 +10,7 @@ import { screen, within } from '@testing-library/react';
 import { ErrorSoapBodyResponse, FOLDERS, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
@@ -235,7 +235,7 @@ describe('edit-modal', () => {
 		const editButton = screen.getByRole('button', {
 			name: /label\.edit/i
 		});
-		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
+		const wipeInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(editButton);
 		const { action } = await wipeInterceptor;
@@ -292,7 +292,7 @@ describe('edit-modal', () => {
 		const folderName = faker.lorem.word();
 		// update the existing folder name into the text input
 		await user.type(folderInputElement, folderName);
-		const wipeInterceptor = createAPIInterceptor<
+		const wipeInterceptor = createSoapAPIInterceptor<
 			{ action: SoapFolderAction },
 			ErrorSoapBodyResponse
 		>('FolderAction', buildSoapErrorResponseBody());

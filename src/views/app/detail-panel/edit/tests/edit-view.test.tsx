@@ -25,7 +25,7 @@ import {
 	FOLDERS,
 	useBoard as mockedUseBoard
 } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { createAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -112,7 +112,7 @@ const getSoapMailBodyContent = (
 };
 
 const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest> =>
-	createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
+	createSoapAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
 		Fault: {
 			Reason: { Text: 'Failed upload to Files' },
 			Detail: {
@@ -218,10 +218,10 @@ describe('Edit view', () => {
 				],
 				_jsns: 'urn:zimbraMail'
 			};
-			const sendMsgPromise = createAPIInterceptor<{ m: SoapDraftMessageObj }, SoapSendMsgResponse>(
-				'SendMsg',
-				response
-			);
+			const sendMsgPromise = createSoapAPIInterceptor<
+				{ m: SoapDraftMessageObj },
+				SoapSendMsgResponse
+			>('SendMsg', response);
 
 			await waitFor(() => {
 				expect(btnSend).toBeEnabled();
@@ -351,7 +351,9 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>('SaveDraft');
+			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
+				'SaveDraft'
+			);
 
 			const subject = faker.lorem.sentence(5);
 			// Get the default identity address
@@ -486,7 +488,7 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
 				'SaveDraftRequest'
 			);
 
@@ -533,7 +535,7 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
 				'SaveDraftRequest'
 			);
 
@@ -591,7 +593,7 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
 				'SaveDraftRequest'
 			);
 
@@ -686,7 +688,7 @@ describe('Edit view', () => {
 			});
 
 			const callTester = jest.fn();
-			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
 				'SaveDraftRequest'
 			);
 

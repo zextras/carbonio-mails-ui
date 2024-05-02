@@ -10,7 +10,7 @@ import { screen } from '@testing-library/react';
 
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
@@ -69,7 +69,7 @@ describe('empty-modal', () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
 		const folder: Folder = {
-			id: FOLDERS.TRASH,
+			id: `dfer4567-hy0e-i984-kjh6-c842dfr5tgyh:${FOLDERS.TRASH}`,
 			uuid: faker.string.uuid(),
 			name: 'Trash',
 			absFolderPath: '/Trash',
@@ -105,6 +105,46 @@ describe('empty-modal', () => {
 		expect(wipeButton).toBeEnabled();
 	});
 
+	test('empty the trash folder of the shared account', async () => {
+		const closeModal = jest.fn();
+		const store = generateStore();
+		const folder: Folder = {
+			id: `dfer4567-hy0e-i984-kjh6-c842dfr5tgyh:${FOLDERS.TRASH}`,
+			uuid: faker.string.uuid(),
+			name: 'Trash',
+			absFolderPath: '/Trash',
+			l: FOLDERS.USER_ROOT,
+			luuid: faker.string.uuid(),
+			checked: false,
+			rev: 1,
+			ms: 28502,
+			n: 16,
+			s: 319017,
+			i4ms: 33653,
+			i4next: 17212,
+			activesyncdisabled: false,
+			webOfflineSyncDays: 30,
+			recursive: false,
+			deletable: false,
+			isLink: false,
+			children: [],
+			parent: undefined,
+			depth: 1
+		};
+
+		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {
+			store
+		});
+
+		expect(screen.getByText(/folder_panel\.modal\.empty\.body\.message1/i)).toBeInTheDocument();
+		expect(screen.getByText(/folder_panel\.modal\.empty\.body\.message2/i)).toBeInTheDocument();
+
+		const wipeButton = screen.getByRole('button', {
+			name: /label\.empty/i
+		});
+		expect(wipeButton).toBeEnabled();
+	});
+
 	test('API is called with the proper parameters', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -121,7 +161,7 @@ describe('empty-modal', () => {
 		const wipeButton = screen.getByRole('button', {
 			name: /label\.empty/i
 		});
-		const wipeInterceptor = createAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
+		const wipeInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
 		await user.click(wipeButton);
 
