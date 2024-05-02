@@ -4,24 +4,88 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { registerActions } from '@zextras/carbonio-shell-ui';
+import { addBoard, registerActions } from '@zextras/carbonio-shell-ui';
 
-import { registerShellActions } from '../register-shell-actions';
+import * as sharedFunctions from '../../integrations/shared-functions';
+import {
+	mailToAction,
+	mailToActionOnClick,
+	newEmailAction,
+	newEmailActionOnClick,
+	registerShellActions
+} from '../register-shell-actions';
 
 describe('registerShellActions', () => {
-	it('should called with the correct parameters', async () => {
+	it('should register the correct objects', async () => {
 		registerShellActions();
+
 		expect(registerActions).toHaveBeenCalledWith(
 			{
-				action: expect.anything(),
+				action: expect.any(Function),
 				id: 'mail-to',
 				type: 'contact-list'
 			},
 			{
-				action: expect.anything(),
+				action: expect.any(Function),
 				id: 'new-email',
 				type: 'new'
 			}
 		);
+	});
+});
+
+describe('mailToAction', () => {
+	it('when called it should return the correct object', () => {
+		const expectedMailToActionResult = {
+			id: 'mail-to',
+			label: 'label.send_mail',
+			icon: 'MailModOutline',
+			onClick: expect.any(Function),
+			disabled: false
+		};
+		expect(mailToAction({})).toMatchObject(expectedMailToActionResult);
+	});
+});
+
+describe('mailToActionOnClick', () => {
+	it('when called it should invoke mailToSharedFunction with the correct parameter', async () => {
+		jest.spyOn(sharedFunctions, 'mailToSharedFunction');
+
+		const contacts = [
+			{ email: { email: { mail: 'anymail' } }, firstName: 'any', middleName: 'any' }
+		];
+
+		mailToActionOnClick({} as KeyboardEvent, contacts);
+		const expectedMailToSharedFunctionArgument = [
+			{ address: 'anymail', fullName: 'any any', type: 't' }
+		];
+		expect(sharedFunctions.mailToSharedFunction).toHaveBeenCalledWith(
+			expectedMailToSharedFunctionArgument
+		);
+	});
+});
+
+describe('newEmailAction', () => {
+	it('when called it should return the correct object', () => {
+		const expectedNewEmailActionResult = {
+			id: 'new-email',
+			label: 'label.new_email',
+			icon: 'MailModOutline',
+			onClick: expect.any(Function),
+			disabled: false,
+			group: 'carbonio-mails-ui',
+			primary: true
+		};
+		expect(newEmailAction()).toMatchObject(expectedNewEmailActionResult);
+	});
+});
+
+describe('newEmailActionOnClick', () => {
+	it('when called it should invoke addBoard with the correct parameters', async () => {
+		newEmailActionOnClick({} as KeyboardEvent);
+		expect(addBoard).toHaveBeenCalledWith({
+			url: 'mails/edit?action=new',
+			title: 'label.new_email'
+		});
 	});
 });
