@@ -229,7 +229,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	return (
 		<>
 			<Container>
-				{/* TODO-SHELL: labetype is missing in shell type declaration as optional and string */}
+				{/* TOFIX-SHELL: labetype is missing in shell type declaration as optional and string */}
 				<ResultsHeader
 					label={resultLabel}
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
