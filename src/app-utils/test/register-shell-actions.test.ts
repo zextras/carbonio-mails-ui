@@ -35,7 +35,7 @@ describe('registerShellActions', () => {
 });
 
 describe('mailToAction', () => {
-	it('when called it should return the correct object', () => {
+	it('should return an object with disabled property set to false when contacts is not an array', () => {
 		const expectedMailToActionResult = {
 			id: 'mail-to',
 			label: 'label.send_mail',
@@ -44,6 +44,21 @@ describe('mailToAction', () => {
 			disabled: false
 		};
 		expect(mailToAction({})).toMatchObject(expectedMailToActionResult);
+	});
+
+	it('should return an object with disabled property set to true when a contact does not have an address', () => {
+		const expectedMailToActionResult = {
+			id: 'mail-to',
+			label: 'label.send_mail',
+			icon: 'MailModOutline',
+			onClick: expect.any(Function),
+			disabled: true
+		};
+		const contacts = [
+			{ email: { email: { mail: 'anymail' } }, firstName: 'any', middleName: 'any' }
+		];
+
+		expect(mailToAction(contacts)).toMatchObject(expectedMailToActionResult);
 	});
 });
 
