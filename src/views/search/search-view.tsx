@@ -279,11 +279,11 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				</Container>
 			</Container>
 			<AdvancedFilterModal
-				// TODO: fix type definition
+				// TOFIX: fix type definition
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				query={query}
-				// TODO-SHELL: fix updateQUeryFunction inside shell type
+				// TOFIX-SHELL: fix updateQUeryFunction inside shell type
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				updateQuery={updateQuery}

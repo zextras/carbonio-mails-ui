@@ -15,7 +15,7 @@ export const registerShellIntegrations = (): void => {
 	registerFunctions(
 		{
 			id: 'compose',
-			// TODO-SHELL: fix the function type definition
+			// TOFIX-SHELL: fix the function type definition
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			fn: openComposerSharedFunction

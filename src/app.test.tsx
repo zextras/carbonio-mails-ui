@@ -13,7 +13,7 @@ import * as useFoldersController from './carbonio-ui-commons/hooks/use-folders-c
 import { setupTest } from './carbonio-ui-commons/test/test-setup';
 
 describe('App', () => {
-	it.only('should register a "mails" route accessible from the primary bar with specific position, name and icon', () => {
+	it('should register a "mails" route accessible from the primary bar with specific position, name and icon', () => {
 		const useFoldersControllerSpy = jest.spyOn(useFoldersController, 'useFoldersController');
 		const addShellComponentsSpy = jest.spyOn(addShellComponents, 'addShellComponents');
 		const registerShellActionSpy = jest.spyOn(registerShellActions, 'registerShellActions');

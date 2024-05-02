@@ -16,7 +16,7 @@ import { mailToSharedFunction } from '../integrations/shared-functions';
 export const registerShellActions = (): void => {
 	registerActions(
 		{
-			// TODO-SHELL: update the action type definition
+			// TOFIX-SHELL: update the action type definition
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			action: (contacts: any) => ({
 				id: 'mail-to',
@@ -51,7 +51,7 @@ export const registerShellActions = (): void => {
 					addBoard({
 						url: `${MAILS_ROUTE}/edit?action=${EditViewActions.NEW}`,
 						title: t('label.new_email', 'New E-mail')
-						// TODO provide the context filled with the current folder id
+						// TOFIX provide the context filled with the current folder id
 					});
 				},
 				disabled: false,
