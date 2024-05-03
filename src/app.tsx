@@ -12,6 +12,7 @@ import { registerShellIntegrations } from './app-utils/register-shell-integratio
 import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
 import { StoreProvider } from './store/redux';
+import { GlobalExtraWindowManager } from './views/app/extra-windows/global-extra-window-manager';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
 const App = (): React.JSX.Element => {
@@ -25,7 +26,9 @@ const App = (): React.JSX.Element => {
 
 	return (
 		<StoreProvider>
-			<SyncDataHandler />
+			<GlobalExtraWindowManager>
+				<SyncDataHandler />
+			</GlobalExtraWindowManager>
 		</StoreProvider>
 	);
 };

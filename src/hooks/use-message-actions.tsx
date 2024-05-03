@@ -43,7 +43,7 @@ import {
 	showOriginalMsg
 } from '../ui-actions/message-actions';
 import { applyTag } from '../ui-actions/tag-actions';
-import { useExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
+import { useGlobalExtraWindowManager } from '../views/app/extra-windows/global-extra-window-manager';
 import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';
 
 type ActionGeneratorProps = {
@@ -217,7 +217,7 @@ export const useMessageActions = (
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection({ currentFolderId: folderId, setCount, count: 0 });
 	const { isInsideExtraWindow } = useExtraWindow();
-	const { createWindow } = useExtraWindowsManager();
+	const { createWindow } = useGlobalExtraWindowManager();
 	const [openAppointmentComposer, isAvailable] = useIntegratedFunction('create_appointment');
 	const systemFolders = useMemo(
 		() => [FOLDERS.INBOX, FOLDERS.SENT, FOLDERS.DRAFTS, FOLDERS.TRASH, FOLDERS.SPAM],
