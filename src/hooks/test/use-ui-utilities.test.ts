@@ -12,7 +12,7 @@ describe('useUiUtilities', () => {
 		expect('createModal' in hookResult.current).toBeTruthy();
 	});
 
-	test('the result contains the createModal function', () => {
+	test('the result contains the createSnackbar function', () => {
 		const { result: hookResult } = setupHook(useUiUtilities);
 		expect('createSnackbar' in hookResult.current).toBeTruthy();
 	});
