@@ -39,7 +39,7 @@ import type { AccountIdentity, PropsType, SignItemType } from '../../types';
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
 const SettingsView: FC = () => {
-	const { prefs, props } = useUserSettings();
+	const { prefs, props, attrs } = useUserSettings();
 	const account = useUserAccount();
 	const { identity } = cloneDeep(account.identities);
 	const defaultAccount = remove(identity, (acc: AccountIdentity) => acc.name === 'DEFAULT');
@@ -174,16 +174,38 @@ const SettingsView: FC = () => {
 		},
 		[]
 	);
-	// eslint-disable-next-line consistent-return
+
+	const isSignatureSizeValid = useCallback(
+		(signature: SignItemType): boolean => {
+			if (!attrs.zimbraMailSignatureMaxLength || !signature.description) {
+				return true;
+			}
+
+			const sizeLimit = Number(attrs.zimbraMailSignatureMaxLength);
+			if (sizeLimit === 0) {
+				return true;
+			}
+
+			return signature.description.length > sizeLimit;
+		},
+		[attrs.zimbraMailSignatureMaxLength]
+	);
+
 	const saveChanges = useCallback(() => {
 		let changes = {};
 		if (!isEqual(signatures, originalSignatures)) {
-			let hasError = false;
+			let isMissingInformation = false;
+			let isSignatureSizeInvalid = false;
 			forEach(signatures, (i: SignItemType) => {
-				if (!i.label || !i.description) hasError = true;
+				if (!i.label || !i.description) {
+					isMissingInformation = true;
+				}
+				if (!isSignatureSizeValid(i)) {
+					isSignatureSizeInvalid = true;
+				}
 			});
 
-			if (hasError) {
+			if (isMissingInformation) {
 				createSnackbar({
 					key: `error`,
 					type: 'error',
@@ -194,6 +216,19 @@ const SettingsView: FC = () => {
 				});
 				return false;
 			}
+
+			if (isSignatureSizeInvalid) {
+				createSnackbar({
+					key: `error`,
+					type: 'error',
+					label: t('label.signature_size_exceed', 'One or more signatures exceed the size limit.'),
+					autoHideTimeout: 3000,
+					hideButton: true,
+					replace: true
+				});
+				return false;
+			}
+
 			const itemsDelete = filter(originalSignatures, (x: SignItemType) => {
 				let toggle = false;
 				map(signatures, (ele: SignItemType) => {
@@ -325,6 +360,7 @@ const SettingsView: FC = () => {
 		identitiesToUpdate,
 		dispatch,
 		account,
+		isSignatureSizeValid,
 		createSnackbar,
 		setNewOrForwardSignatureId,
 		flag,
