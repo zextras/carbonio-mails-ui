@@ -12,7 +12,8 @@ import {
 	replaceHistory,
 	setAppContext,
 	t,
-	useUserSettings
+	useUserSettings,
+	SearchViewProps
 } from '@zextras/carbonio-shell-ui';
 import { includes, map, reduce } from 'lodash';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
@@ -28,9 +29,8 @@ import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
-import type { SearchProps } from '../../types';
 
-const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
+const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
@@ -53,7 +53,7 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 			reduce(
 				folders,
 				(acc: Array<string>, v: Folder, k: string) => {
-					if (('isShared' in v && v.isShared) || v.perm) {
+					if (v.perm) {
 						acc.push(k);
 					}
 					return acc;
@@ -229,7 +229,13 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	return (
 		<>
 			<Container>
-				<ResultsHeader label={resultLabel} labelType={resultLabelType} />
+				{/* TOFIX-SHELL: labetype is missing in shell type declaration as optional and string */}
+				<ResultsHeader
+					label={resultLabel}
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					labelType={resultLabelType}
+				/>
 				<Container
 					orientation="horizontal"
 					background="gray4"
@@ -273,10 +279,13 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 				</Container>
 			</Container>
 			<AdvancedFilterModal
-				// TODO: fix type definition
+				// TOFIX: fix type definition
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				query={query}
+				// TOFIX-SHELL: fix updateQUeryFunction inside shell type
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				updateQuery={updateQuery}
 				isSharedFolderIncluded={isSharedFolderIncluded}
 				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
