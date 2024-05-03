@@ -29,7 +29,6 @@ import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import {
 	ShareCalendarRoleOptions,
-	ShareCalendarWithOptions,
 	findLabel
 } from '../../integrations/shared-invite-reply/parts/utils';
 import { sendShareNotification } from '../../store/actions/send-share-notification';
@@ -45,12 +44,10 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 }) => {
 	const dispatch = useAppDispatch();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
-	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
 	const [sendNotification, setSendNotification] = useState(true);
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<any>([]);
-	const [shareWithUserType, setshareWithUserType] = useState('usr');
 	const [shareWithUserRole, setshareWithUserRole] = useState(editMode ? grant.perm : 'r');
 
 	const { createSnackbar } = useUiUtilities();
@@ -65,10 +62,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 		[editMode, folder.name]
 	);
 
-	const onShareWithChange = useCallback((shareWith) => {
-		setshareWithUserType(shareWith);
-	}, []);
-
 	const onShareRoleChange = useCallback((shareRole) => {
 		setshareWithUserRole(shareRole);
 	}, []);
@@ -79,7 +72,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 				sendNotification,
 				standardMessage,
 				contacts: editMode ? [{ email: grant.d || grant.zid }] : contacts,
-				shareWithUserType,
 				shareWithUserRole,
 				folder,
 				accounts
@@ -102,7 +94,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 							sendNotification,
 							standardMessage,
 							contacts: editMode ? [{ email: grant.d || grant.zid }] : contacts,
-							shareWithUserType,
 							shareWithUserRole,
 							folder,
 							accounts
@@ -129,7 +120,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 		editMode,
 		grant,
 		contacts,
-		shareWithUserType,
 		shareWithUserRole,
 		folder,
 		accounts,
@@ -152,20 +142,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 			>
 				<ModalHeader title={title} onClose={onClose} />
 				<Padding top="small" />
-				{!editMode && (
-					<Container height="fit">
-						<Select
-							items={shareCalendarWithOptions}
-							background="gray5"
-							label={t('label.share_with', 'Share with')}
-							onChange={onShareWithChange}
-							defaultSelection={{
-								value: 'usr',
-								label: findLabel(shareCalendarWithOptions, 'usr')
-							}}
-						/>
-					</Container>
-				)}
 				{editMode ? (
 					<Container
 						orientation="horizontal"

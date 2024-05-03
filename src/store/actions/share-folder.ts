@@ -16,7 +16,6 @@ export type ShareFolderDataType = {
 	contacts: Array<{ email: string }>;
 	folder: Folder;
 	shareWithUserRole: string;
-	shareWithUserType?: string;
 	accounts: Array<Account>;
 };
 
