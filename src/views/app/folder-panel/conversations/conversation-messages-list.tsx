@@ -50,7 +50,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 							key={message.id}
 							background={'transparent'}
 						>
-							{(visible: boolean): JSX.Element =>
+							{(visible: boolean): React.JSX.Element =>
 								visible ? (
 									<DragItemWrapper
 										item={message}

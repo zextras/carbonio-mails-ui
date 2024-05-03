@@ -6,7 +6,7 @@
 import React, { SyntheticEvent, useContext, useMemo } from 'react';
 
 import { ModalManagerContext } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { noop, startsWith } from 'lodash';
 
 import { DeleteModal } from './delete-modal';
@@ -20,6 +20,7 @@ import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/ut
 import { getFolderIdParts } from '../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { folderAction } from '../../store/actions/folder-action';
 import { selectMessagesArray } from '../../store/messages-slice';
 import { StoreProvider } from '../../store/redux';
@@ -51,6 +52,8 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	const { setCount } = useAppContext<AppContext>();
 
 	const { deselectAll } = useSelection({ currentFolderId: folder.id, setCount, count: 0 });
+
+	const { createSnackbar } = useUiUtilities();
 
 	const actions = useMemo(
 		() => [
@@ -128,7 +131,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							const restoreFolder = (): Promise<void> =>
 								folderAction({ folder, l: folder.l, op: 'move' }).then((res) => {
 									if (!('Fault' in res)) {
-										getBridgedFunctions()?.createSnackbar({
+										createSnackbar({
 											key: `move-folder`,
 											replace: true,
 											type: 'success',
@@ -137,7 +140,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 											hideButton: true
 										});
 									} else {
-										getBridgedFunctions()?.createSnackbar({
+										createSnackbar({
 											key: `move`,
 											replace: true,
 											type: 'error',
@@ -154,7 +157,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							})
 								.then((res) => {
 									if (!('Fault' in res)) {
-										getBridgedFunctions()?.createSnackbar({
+										createSnackbar({
 											key: `move`,
 											replace: true,
 											type: 'success',
@@ -165,7 +168,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 											onActionClick: () => restoreFolder()
 										});
 									} else {
-										getBridgedFunctions()?.createSnackbar({
+										createSnackbar({
 											key: `move`,
 											replace: true,
 											type: 'error',
@@ -326,7 +329,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				}
 			}
 		],
-		[createModal, deselectAll, dispatch, folder, folderIsTrash, moveMessagesIds]
+		[createModal, createSnackbar, deselectAll, dispatch, folder, folderIsTrash, moveMessagesIds]
 	);
 
 	const defaultFolderActions = useMemo(

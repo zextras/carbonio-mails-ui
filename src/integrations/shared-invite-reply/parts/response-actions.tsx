@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
+
 import {
 	Button,
 	Checkbox,
@@ -14,11 +16,11 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
-import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
+
+import ColorSelect from './color-select';
+import { useAccept, useDecline } from './share-calendar-actions';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { ResponseActionsProps } from '../../../types';
-import ColorSelect from './color-select';
-import { accept, decline } from './share-calendar-actions';
 
 const ResponseActions: FC<ResponseActionsProps> = ({
 	dispatch,
@@ -52,6 +54,8 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 		() => !!(calendarName.length === 0 || showError),
 		[calendarName, showError]
 	);
+
+	const accept = useAccept();
 	const acceptShare = useCallback(
 		() =>
 			accept({
@@ -74,6 +78,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				notifyOrganizer
 			}),
 		[
+			accept,
 			zid,
 			view,
 			rid,
@@ -94,6 +99,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 		]
 	);
 
+	const decline = useDecline();
 	const declined = useCallback(() => {
 		decline({
 			dispatch,
@@ -109,9 +115,9 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 			notifyOrganizer
 		});
 	}, [
+		decline,
 		dispatch,
 		t,
-
 		msgId,
 		sharedCalendarName,
 		owner,

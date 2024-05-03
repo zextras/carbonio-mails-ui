@@ -11,7 +11,6 @@ import {
 	// @ts-ignore
 	SettingsHeader,
 	editSettings,
-	getBridgedFunctions,
 	t,
 	useUserAccount,
 	useUserSettings
@@ -28,6 +27,7 @@ import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useAppDispatch } from '../../hooks/redux';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { SignatureRequest } from '../../store/actions/signatures';
 import type { AccountIdentity, PropsType, SignItemType } from '../../types';
 
@@ -71,6 +71,8 @@ const SettingsView: FC = () => {
 	const [flag, setFlag] = useState(false);
 
 	const dispatch = useAppDispatch();
+
+	const { createSnackbar } = useUiUtilities();
 
 	const oldSettings = useMemo(() => {
 		const s = cloneDeep(prefs);
@@ -182,7 +184,7 @@ const SettingsView: FC = () => {
 			});
 
 			if (hasError) {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `error`,
 					type: 'error',
 					label: t('label.signature_required', 'Signature information is required.'),
@@ -251,7 +253,7 @@ const SettingsView: FC = () => {
 					setNewOrForwardSignatureId(itemsAdd, resp, setDefaultSignatureId, false);
 				}
 				if (resp.type.includes('fulfilled')) {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'info',
@@ -262,7 +264,7 @@ const SettingsView: FC = () => {
 					setFlag(!flag);
 					setDisabled(true);
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'error',
@@ -286,7 +288,7 @@ const SettingsView: FC = () => {
 		if (!isEmpty(changes)) {
 			return editSettings(changes).then((res) => {
 				if (res.type.includes('fulfilled')) {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'info',
@@ -303,7 +305,7 @@ const SettingsView: FC = () => {
 						setCurrentIdentities(updatedIdentities);
 					}
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'error',
@@ -323,6 +325,7 @@ const SettingsView: FC = () => {
 		identitiesToUpdate,
 		dispatch,
 		account,
+		createSnackbar,
 		setNewOrForwardSignatureId,
 		flag,
 		updatedIdentities

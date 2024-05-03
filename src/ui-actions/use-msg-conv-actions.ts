@@ -12,19 +12,19 @@ import { useTranslation } from 'react-i18next';
 import {
 	getAddRemoveFlagAction,
 	getApplyTagAction,
-	getCreateAppointmentAction,
-	getDeletePermanentlyAction,
+	useDeletePermanentlyAction,
+	useCreateAppointmentAction,
 	getDownloadEmlAction,
 	getEditAsNewAction,
-	getEditDraftAction,
+	useEditDraftAction,
 	getForwardAction,
-	getMarkRemoveSpam,
-	getMoveToFolderAction,
-	getMoveToTrashAction,
+	useMarkRemoveSpam,
+	useMoveToFolderAction,
+	useMoveToTrashAction,
 	getPreviewOnSeparatedWindowAction,
 	getPrintAction,
 	getReadUnreadAction,
-	getRedirectAction,
+	useRedirectAction,
 	getReplyAction,
 	getReplyAllAction,
 	getSendDraftAction,
@@ -54,6 +54,14 @@ export function useMsgConvActions({
 	deselectAll,
 	messageActionsForExtraWindow
 }: useMsgConvActionsProps): MsgConvActionsReturnType {
+	const getDeletePermanentlyAction = useDeletePermanentlyAction();
+	const getEditDraftAction = useEditDraftAction();
+	const getMarkRemoveSpam = useMarkRemoveSpam();
+	const getMoveToFolderAction = useMoveToFolderAction();
+	const getMoveToTrashAction = useMoveToTrashAction();
+	const getRedirectAction = useRedirectAction();
+	const getCreateAppointmentAction = useCreateAppointmentAction();
+
 	const isConv = isConversation(item);
 	const folderId = getParentFolderId(item);
 	const dispatch = useAppDispatch();
