@@ -17,6 +17,7 @@ import {
 } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
+import { HttpResponse } from 'msw';
 
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
@@ -25,7 +26,11 @@ import {
 	FOLDERS,
 	useBoard as mockedUseBoard
 } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { getEmptyMSWShareInfoResponse } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -273,6 +278,11 @@ describe('Edit view', () => {
 			});
 
 			test('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+				createAPIInterceptor(
+					'post',
+					'/service/soap/GetShareInfoRequest',
+					HttpResponse.json(getEmptyMSWShareInfoResponse())
+				);
 				// setup api interceptor and mail to send editor
 				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
 				setupEditorStore({ editors: [] });
