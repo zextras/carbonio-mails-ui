@@ -14,12 +14,13 @@ import React, {
 } from 'react';
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
+import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import { modifyFilterRules } from '../../../../../store/actions/modify-filter-rules';
 import type { FilterActions } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
@@ -64,6 +65,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const [reFetch, setReFetch] = useState(false);
 	const [updateRequiredFilters, setUpdateRequiredFilters] = useState(true);
 	const { zimbraFeatureMailForwardingInFiltersEnabled } = useUserSettings().attrs;
+	const { createSnackbar } = useUiUtilities();
 
 	const [newFilters, setNewFilters] = useState([
 		{
@@ -286,7 +288,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		modifyFilterRules(toSend)
 			.then(() => {
 				setFetchIncomingFilters(true);
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `share`,
 					replace: true,
 					hideButton: true,
@@ -296,7 +298,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 				});
 			})
 			.catch((error) => {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `share`,
 					replace: true,
 					hideButton: true,
@@ -308,12 +310,13 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 			});
 		onClose();
 	}, [
-		requiredFilters,
-		onClose,
-		selectedFilter,
 		incomingFiltersCopy,
+		requiredFilters,
 		setIncomingFilters,
+		onClose,
+		selectedFilter?.name,
 		setFetchIncomingFilters,
+		createSnackbar,
 		t
 	]);
 

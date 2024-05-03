@@ -8,7 +8,7 @@ import React, { FC, memo, useMemo } from 'react';
 
 import { ThemeProvider } from '@mui/material';
 import { Accordion, Container, Divider } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, SecondaryBarComponentProps } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 
@@ -18,7 +18,6 @@ import CollapsedSideBarItems from './collapsed-sidebar-items';
 import { SidebarAccordionMui } from '../../carbonio-ui-commons/components/sidebar/sidebar-accordion-mui';
 import { themeMui } from '../../carbonio-ui-commons/theme/theme-mui';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import type { SidebarProps } from '../../carbonio-ui-commons/types/sidebar';
 import { LOCAL_STORAGES } from '../../constants';
 import { useFolders } from '../../hooks/use-folders';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
@@ -56,7 +55,7 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 	);
 });
 
-const Sidebar: FC<SidebarProps> = ({ expanded }) => {
+const Sidebar: FC<SecondaryBarComponentProps> = ({ expanded }) => {
 	const { path } = useRouteMatch();
 	const accordions = useFolders();
 

@@ -13,29 +13,30 @@ import {
 	Row,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useTags } from '@zextras/carbonio-shell-ui';
 import { every, filter, findIndex, some } from 'lodash';
 
 import {
-	deleteConversationPermanently,
-	moveConversationToFolder,
-	moveConversationToTrash,
+	useDeleteConversationPermanently,
+	useMoveConversationToFolder,
+	useMoveConversationToTrash,
 	setConversationsFlag,
 	setConversationsRead,
-	setConversationsSpam
+	useSetConversationAsSpam
 } from './conversation-actions';
 import {
-	deleteMessagePermanently,
-	moveMessageToFolder,
-	moveMsgToTrash,
-	setMsgAsSpam,
+	useDeleteMessagePermanently,
+	useMoveMessageToFolder,
+	useMoveMsgToTrash,
 	setMsgFlag,
-	setMsgRead
+	setMsgRead,
+	useSetMsgAsSpam
 } from './message-actions';
 import { applyMultiTag } from './tag-actions';
 import { getFolderParentId } from './utils';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppDispatch } from '../hooks/redux';
+import { useUiUtilities } from '../hooks/use-ui-utilities';
 import type {
 	ActionReturnType,
 	ConvActionReturnType,
@@ -67,6 +68,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	setIsSelectModeOn,
 	folderId
 }) => {
+	const { createSnackbar } = useUiUtilities();
 	const isConversation = 'messages' in (items?.[0] || {});
 
 	const folderParentId = getFolderParentId({ folderId, isConversation, items });
@@ -149,6 +151,8 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		return selectedItems.length > 0 && every(selectedItems, ['read', true]) && action;
 	};
 
+	const moveConversationToTrash = useMoveConversationToTrash();
+	const moveMsgToTrash = useMoveMsgToTrash();
 	const getMoveToTrashAction = (): false | ConvActionReturnType | MessageActionReturnType => {
 		const selectedItems = filter(
 			items,
@@ -162,6 +166,8 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
 
+	const deleteConversationPermanently = useDeleteConversationPermanently();
+	const deleteMessagePermanently = useDeleteMessagePermanently();
 	const deletePermanentlyAction = (): ActionReturnType => {
 		const selectedItems = filter(
 			items,
@@ -175,6 +181,8 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
 
+	const moveConversationToFolder = useMoveConversationToFolder();
+	const moveMessageToFolder = useMoveMessageToFolder();
 	const moveToFolderAction = (): ActionReturnType => {
 		const selectedItems = filter(
 			items,
@@ -218,6 +226,8 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
 
+	const setConversationAsSpam = useSetConversationAsSpam();
+	const setMsgAsSpam = useSetMsgAsSpam();
 	const markMsgAsSpam = (): ActionReturnType => {
 		const selectedItems = filter(
 			items,
@@ -226,7 +236,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 				!foldersExcludedMarkSpam.includes(getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
-			? setConversationsSpam({
+			? setConversationAsSpam({
 					ids,
 					value: false,
 					dispatch,
@@ -245,7 +255,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 				foldersIncludedMarkNotSpam.includes(getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
-			? setConversationsSpam({
+			? setConversationAsSpam({
 					ids,
 					value: true,
 					dispatch,
@@ -332,7 +342,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 
 	const selectAllOnClick = useCallback(() => {
 		selectAll();
-		getBridgedFunctions()?.createSnackbar({
+		createSnackbar({
 			key: `selected-${ids}`,
 			replace: true,
 			type: 'info',
@@ -340,7 +350,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			autoHideTimeout: 5000,
 			hideButton: true
 		});
-	}, [selectAll, ids]);
+	}, [selectAll, createSnackbar, ids]);
 
 	const actionsIsNotEmpty = primaryActionsArray.length > 0 || secondaryActionsArray.length > 0;
 

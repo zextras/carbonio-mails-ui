@@ -48,7 +48,7 @@ const createIdentitySelectorItemElement = (
 	identity: IdentityDescriptor | null,
 	useExtendedDescription: boolean,
 	fallbackDescription: string
-): JSX.Element => {
+): React.JSX.Element => {
 	// eslint-disable-next-line no-nested-ternary
 	const identityDescription = identity
 		? useExtendedDescription

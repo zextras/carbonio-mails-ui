@@ -66,7 +66,11 @@ const MemoizedOptionsDropdown = memo(OptionsDropdown);
 const MemoizedAddAttachmentsDropdown = memo(AddAttachmentsDropdown);
 const MemoizedEditViewIdentitySelector = memo(EditViewIdentitySelector);
 
-const SendToYourselfWarningBanner = ({ editorId }: { editorId: string }): JSX.Element | null => {
+const SendToYourselfWarningBanner = ({
+	editorId
+}: {
+	editorId: string;
+}): React.JSX.Element | null => {
 	const toValue = useEditorsStore((state) => state.editors[editorId].recipients.to);
 
 	// TODO ask designers if the check must be performed only on TO or also on CC and BCC

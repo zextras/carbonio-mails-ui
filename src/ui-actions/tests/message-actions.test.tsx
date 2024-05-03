@@ -18,8 +18,13 @@ import { getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui'
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import {
+	makeListItemsVisible,
+	setupTest,
+	setupHook
+} from '../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../constants';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
@@ -33,21 +38,28 @@ import {
 import DeleteConvConfirm from '../delete-conv-modal';
 import {
 	editAsNewMsg,
-	editDraft,
 	forwardMsg,
-	moveMsgToTrash,
 	printMsg,
 	replyAllMsg,
 	replyMsg,
 	sendDraft,
-	setMsgAsSpam,
+	useSetMsgAsSpam,
 	setMsgFlag,
 	setMsgRead,
-	showOriginalMsg
+	showOriginalMsg,
+	useMoveMsgToTrash,
+	useEditDraft
 } from '../message-actions';
 import MoveConvMessage from '../move-conv-msg';
 import RedirectMessageAction from '../redirect-message-action';
 import { TagsDropdownItem } from '../tag-actions';
+
+jest.mock<typeof import('../../hooks/use-ui-utilities')>('../../hooks/use-ui-utilities', () => ({
+	useUiUtilities: (): ReturnType<typeof useUiUtilities> => ({
+		createSnackbar: jest.fn(),
+		createModal: jest.fn()
+	})
+}));
 
 describe('Messages actions calls', () => {
 	beforeAll(() => {
@@ -338,7 +350,9 @@ describe('Messages actions calls', () => {
 					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
-
+			const {
+				result: { current: setMsgAsSpam }
+			} = setupHook(useSetMsgAsSpam);
 			const action = setMsgAsSpam({
 				ids: [msg.id],
 				dispatch: store.dispatch,
@@ -376,6 +390,10 @@ describe('Messages actions calls', () => {
 
 			const msgIds = msgs.map<string>((msg) => msg.id);
 
+			const {
+				result: { current: setMsgAsSpam }
+			} = setupHook(useSetMsgAsSpam);
+
 			const action = setMsgAsSpam({
 				ids: msgIds,
 				dispatch: store.dispatch,
@@ -410,6 +428,10 @@ describe('Messages actions calls', () => {
 					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
+
+			const {
+				result: { current: setMsgAsSpam }
+			} = setupHook(useSetMsgAsSpam);
 
 			const action = setMsgAsSpam({
 				ids: [msg.id],
@@ -448,6 +470,9 @@ describe('Messages actions calls', () => {
 
 			const msgIds = msgs.map<string>((msg) => msg.id);
 
+			const {
+				result: { current: setMsgAsSpam }
+			} = setupHook(useSetMsgAsSpam);
 			const action = setMsgAsSpam({
 				ids: msgIds,
 				dispatch: store.dispatch,
@@ -535,6 +560,9 @@ describe('Messages actions calls', () => {
 				}
 			});
 
+			const {
+				result: { current: moveMsgToTrash }
+			} = setupHook(useMoveMsgToTrash);
 			const action = moveMsgToTrash({
 				ids: [msg.id],
 				dispatch: store.dispatch,
@@ -570,6 +598,9 @@ describe('Messages actions calls', () => {
 
 			const msgIds = msgs.map<string>((msg) => msg.id);
 
+			const {
+				result: { current: moveMsgToTrash }
+			} = setupHook(useMoveMsgToTrash);
 			const action = moveMsgToTrash({
 				ids: msgIds,
 				dispatch: store.dispatch,
@@ -894,6 +925,9 @@ describe('Messages actions calls', () => {
 			}
 		});
 
+		const {
+			result: { current: editDraft }
+		} = setupHook(useEditDraft);
 		const action = editDraft({
 			id: msg.id
 		});

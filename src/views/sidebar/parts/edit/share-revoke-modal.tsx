@@ -3,17 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
-import { getBridgedFunctions, t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import React, { FC, useCallback, useMemo, useState } from 'react';
+
+import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
+import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+
+import { GranteeInfo } from './share-folder-properties';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import type { ShareRevokeModalType } from '../../../../carbonio-ui-commons/types/sidebar';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite-reply/parts/utils';
 import { folderAction } from '../../../../store/actions/folder-action';
 import { sendShareNotification } from '../../../../store/actions/send-share-notification';
-import { GranteeInfo } from './share-folder-properties';
 
 const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, goBack }) => {
 	const [sendNotification, setSendNotification] = useState(false);
@@ -21,6 +24,8 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 
 	const accounts = useUserAccounts();
 	const dispatch = useAppDispatch();
+
+	const { createSnackbar } = useUiUtilities();
 
 	const onConfirm = useCallback(() => {
 		if (sendNotification) {
@@ -35,7 +40,7 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 			).then(() => {
 				folderAction({ folder, zid: grant.zid, op: '!grant' }).then((res) => {
 					if (!('Fault' in res)) {
-						getBridgedFunctions()?.createSnackbar({
+						createSnackbar({
 							key: `remove-share-${folder.id}`,
 							replace: true,
 							type: 'info',
@@ -50,7 +55,7 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 		} else {
 			folderAction({ folder, zid: grant.zid, op: '!grant' }).then((res) => {
 				if (!('Fault' in res)) {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `remove-share-${folder.id}`,
 						replace: true,
 						type: 'info',
@@ -62,7 +67,17 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 				goBack();
 			});
 		}
-	}, [accounts, dispatch, grant.d, grant.zid, sendNotification, standardMessage, folder, goBack]);
+	}, [
+		sendNotification,
+		dispatch,
+		standardMessage,
+		grant.d,
+		grant.zid,
+		folder,
+		accounts,
+		goBack,
+		createSnackbar
+	]);
 	const shareCalendarRoleOptions = useMemo(
 		() => ShareCalendarRoleOptions(t, grant.perm?.includes('p')),
 		[grant.perm]

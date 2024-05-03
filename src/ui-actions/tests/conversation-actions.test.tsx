@@ -15,22 +15,34 @@ import { getTag, getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-s
 import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS, TIMEOUTS } from '../../constants';
+import {
+	makeListItemsVisible,
+	setupHook,
+	setupTest
+} from '../../carbonio-ui-commons/test/test-setup';
+import { TIMEOUTS, API_REQUEST_STATUS } from '../../constants';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateStore } from '../../tests/generators/store';
 import { ConvActionRequest, Conversation, SearchRequestStatus } from '../../types';
 import {
-	moveConversationToTrash,
 	printConversation,
 	setConversationsFlag,
 	setConversationsRead,
-	setConversationsSpam
+	useMoveConversationToTrash,
+	useSetConversationAsSpam
 } from '../conversation-actions';
 import DeleteConvConfirm from '../delete-conv-modal';
 import MoveConvMessage from '../move-conv-msg';
 import { TagsDropdownItem } from '../tag-actions';
+
+jest.mock<typeof import('../../hooks/use-ui-utilities')>('../../hooks/use-ui-utilities', () => ({
+	useUiUtilities: (): ReturnType<typeof useUiUtilities> => ({
+		createSnackbar: jest.fn(),
+		createModal: jest.fn()
+	})
+}));
 
 describe('Conversation actions calls', () => {
 	describe('Add flag action', () => {
@@ -394,7 +406,10 @@ describe('Conversation actions calls', () => {
 				}
 			});
 
-			const action = setConversationsSpam({
+			const {
+				result: { current: setConversationAsSpam }
+			} = setupHook(useSetConversationAsSpam);
+			const action = setConversationAsSpam({
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: false,
@@ -440,7 +455,11 @@ describe('Conversation actions calls', () => {
 			});
 
 			const convIds = conversations.map<string>((conv) => conv.id);
-			const action = setConversationsSpam({
+
+			const {
+				result: { current: setConversationAsSpam }
+			} = setupHook(useSetConversationAsSpam);
+			const action = setConversationAsSpam({
 				ids: convIds,
 				dispatch: store.dispatch,
 				value: false,
@@ -480,7 +499,10 @@ describe('Conversation actions calls', () => {
 				}
 			});
 
-			const action = setConversationsSpam({
+			const {
+				result: { current: setConversationAsSpam }
+			} = setupHook(useSetConversationAsSpam);
+			const action = setConversationAsSpam({
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: true,
@@ -526,7 +548,10 @@ describe('Conversation actions calls', () => {
 			});
 
 			const convIds = conversations.map<string>((conv) => conv.id);
-			const action = setConversationsSpam({
+			const {
+				result: { current: setConversationAsSpam }
+			} = setupHook(useSetConversationAsSpam);
+			const action = setConversationAsSpam({
 				ids: convIds,
 				dispatch: store.dispatch,
 				value: true,
@@ -585,6 +610,9 @@ describe('Conversation actions calls', () => {
 				}
 			});
 
+			const {
+				result: { current: moveConversationToTrash }
+			} = setupHook(useMoveConversationToTrash);
 			const action = moveConversationToTrash({
 				ids: [conv.id],
 				dispatch: store.dispatch,
@@ -630,6 +658,9 @@ describe('Conversation actions calls', () => {
 			});
 
 			const convIds = conversations.map<string>((conv) => conv.id);
+			const {
+				result: { current: moveConversationToTrash }
+			} = setupHook(useMoveConversationToTrash);
 			const action = moveConversationToTrash({
 				ids: convIds,
 				dispatch: store.dispatch,

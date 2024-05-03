@@ -10,6 +10,7 @@ import { Row, Text, Chip, Container, useSnackbar, Padding } from '@zextras/carbo
 import { t } from '@zextras/carbonio-shell-ui';
 import { capitalize, map } from 'lodash';
 
+import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import type { Participant } from '../../../../../types';
 import {
 	copyEmailToClipboard,
@@ -38,7 +39,7 @@ export const ContactNameChip: FC<{
 	contacts: Participant[];
 	label: string;
 }> = ({ contacts, label }): ReactElement => {
-	const createSnackbar = useSnackbar();
+	const { createSnackbar } = useUiUtilities();
 	const separator = ',';
 	return (
 		<>

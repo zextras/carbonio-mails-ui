@@ -6,7 +6,7 @@
 import { useMemo } from 'react';
 
 import { computeAndUpdateEditorStatus } from './commons';
-import { debouncedSaveDraftFromEditor } from './save-draft';
+import { useSaveDraftFromEditor } from './save-draft';
 import { AttachmentUploadProcessStatus, MailsEditorV2 } from '../../../../types';
 import { useEditorsStore } from '../store';
 import { getUnsavedAttachmentIndex } from '../store-utils';
@@ -15,6 +15,7 @@ export const useEditorUploadProcess = (
 	editorId: MailsEditorV2['id'],
 	uploadId: string
 ): { status: AttachmentUploadProcessStatus; cancel: () => void } | null => {
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const attachmentStateInfo = useEditorsStore((state) => {
 		const unsavedAttachmentIndex = getUnsavedAttachmentIndex(state, editorId, uploadId);
 		if (unsavedAttachmentIndex === null) {
@@ -43,8 +44,8 @@ export const useEditorUploadProcess = (
 				attachmentStateInfo.abortController?.abort();
 				useEditorsStore.getState().removeUnsavedAttachment(editorId, uploadId);
 				computeAndUpdateEditorStatus(editorId);
-				debouncedSaveDraftFromEditor(editorId);
+				debouncedSaveDraft(editorId);
 			}
 		};
-	}, [attachmentStateInfo, editorId, uploadId]);
+	}, [attachmentStateInfo, editorId, debouncedSaveDraft, uploadId]);
 };

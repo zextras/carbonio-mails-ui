@@ -13,13 +13,13 @@ import {
 	addBoardView,
 	addSettingsView,
 	SearchViewProps,
-	t
+	t,
+	SecondaryBarComponentProps
 } from '@zextras/carbonio-shell-ui';
 
 import { advancedAccountAPI } from '../api/advanced-account';
 import { MAILS_ROUTE } from '../constants';
 import { StoreProvider } from '../store/redux';
-import { SidebarProps } from '../types/sidebar';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from '../views/settings/subsections';
 
@@ -37,18 +37,23 @@ const LazyEditView = lazy(
 const LazySettingsView = lazy(
 	() => import(/* webpackChunkName: "mail-setting-view" */ '../views/settings/settings-view')
 );
+
 const LazySearchView = lazy(
 	() => import(/* webpackChunkName: "mail-search-view" */ '../views/search/search-view')
 );
+
 const LazySidebarView = lazy(
 	() => import(/* webpackChunkName: "mail-sidebar-view" */ '../views/sidebar/sidebar')
 );
+
 const AppView = (): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
-			<ExtraWindowsManager>
-				<LazyAppView />
-			</ExtraWindowsManager>
+			<ModalManager>
+				<ExtraWindowsManager>
+					<LazyAppView />
+				</ExtraWindowsManager>
+			</ModalManager>
 		</StoreProvider>
 	</Suspense>
 );
@@ -75,16 +80,20 @@ const SearchView = (props: SearchViewProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
 			<ExtraWindowsManager>
-				<LazySearchView {...props} />
+				<ModalManager>
+					<LazySearchView {...props} />
+				</ModalManager>
 			</ExtraWindowsManager>
 		</StoreProvider>
 	</Suspense>
 );
 
-const SidebarView = (props: SidebarProps): React.JSX.Element => (
+const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
-			<LazySidebarView {...props} />
+			<ModalManager>
+				<LazySidebarView {...props} />
+			</ModalManager>
 		</StoreProvider>
 	</Suspense>
 );

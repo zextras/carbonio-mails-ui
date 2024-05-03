@@ -18,12 +18,7 @@ import {
 	SelectItem,
 	Text
 } from '@zextras/carbonio-design-system';
-import {
-	getBridgedFunctions,
-	t,
-	useIntegratedComponent,
-	useUserAccounts
-} from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { GranteeInfo } from './parts/edit/share-folder-properties';
@@ -31,6 +26,7 @@ import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-foote
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
 import { useAppDispatch } from '../../hooks/redux';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import {
 	ShareCalendarRoleOptions,
 	findLabel
@@ -53,6 +49,8 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<any>([]);
 	const [shareWithUserRole, setshareWithUserRole] = useState(editMode ? grant.perm : 'r');
+
+	const { createSnackbar } = useUiUtilities();
 
 	const accounts = useUserAccounts();
 
@@ -80,7 +78,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 			})
 		).then((res: { type: string }) => {
 			if (!('Fault' in res)) {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `share-${folder.id}`,
 					replace: true,
 					hideButton: true,
@@ -102,7 +100,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 						})
 					).then((res2: { type: string }) => {
 						if (!res2.type.includes('fulfilled')) {
-							getBridgedFunctions()?.createSnackbar({
+							createSnackbar({
 								key: `share-${folder.id}`,
 								replace: true,
 								type: 'error',
@@ -125,7 +123,8 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 		shareWithUserRole,
 		folder,
 		accounts,
-		onClose
+		onClose,
+		createSnackbar
 	]);
 
 	const disableEdit = useMemo(
