@@ -12,11 +12,12 @@ import {
 	addSearchView,
 	addBoardView,
 	addSettingsView,
-	t
+	SearchViewProps,
+	t,
+	SecondaryBarComponentProps
 } from '@zextras/carbonio-shell-ui';
 
 import { advancedAccountAPI } from '../api/advanced-account';
-import type { SidebarProps } from '../carbonio-ui-commons/types/sidebar';
 import { MAILS_ROUTE } from '../constants';
 import { StoreProvider } from '../store/redux';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
@@ -75,7 +76,7 @@ const SettingsView = (): React.JSX.Element => (
 	</Suspense>
 );
 
-const SearchView = (props: any): React.JSX.Element => (
+const SearchView = (props: SearchViewProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
 			<ExtraWindowsManager>
@@ -87,7 +88,7 @@ const SearchView = (props: any): React.JSX.Element => (
 	</Suspense>
 );
 
-const SidebarView = (props: SidebarProps): React.JSX.Element => (
+const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
 			<ModalManager>
@@ -97,7 +98,7 @@ const SidebarView = (props: SidebarProps): React.JSX.Element => (
 	</Suspense>
 );
 
-export const setupShellComponents = async (): Promise<void> => {
+export const addShellComponents = async (): Promise<void> => {
 	const label = t('label.app_name', 'Mails');
 	addRoute({
 		route: MAILS_ROUTE,
