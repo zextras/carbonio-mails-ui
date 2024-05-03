@@ -43,6 +43,7 @@ describe('Recover messages', () => {
 
 	it('should call undelete API when recovery button is pressed', async () => {
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
+		jest.useFakeTimers().setSystemTime(new Date('2024-01-01T10:30:35.550Z'));
 		const { user } = setupTest(<RecoverMessages />, {});
 		const apiInterceptor = createAPIInterceptor(
 			'post',
@@ -60,8 +61,8 @@ describe('Recover messages', () => {
 		const { start, end } = getParams((await apiInterceptor).url);
 		expect(start).toBeDefined();
 		expect(end).toBeDefined();
-		const oneWeek = new Date(end).getUTCDate() - new Date(start).getUTCDate();
-		expect(oneWeek).toBe(7);
+		expect(start).toBe('2023-12-25T10:30:35.550Z');
+		expect(end).toBe('2024-01-01T10:30:35.550Z');
 	});
 
 	it('should not close the recover messages modal when the API call fails', async () => {
