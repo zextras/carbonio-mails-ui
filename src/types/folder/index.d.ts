@@ -13,34 +13,6 @@ import { IncompleteMessage, MailMessage } from '../messages';
 import { SearchRequestStatus } from '../state';
 import { TextReadValuesProps } from '../utils';
 
-export type FolderType = {
-	id: string;
-	uuid: string;
-	name: string;
-	path: string | undefined;
-	parent: string;
-	parentUuid: string;
-	unreadCount: number;
-	size: number;
-	itemsCount: number;
-	synced: boolean;
-	absParent: string;
-	items: FolderType[];
-	level: number;
-	to: string;
-	color: string;
-	rgb: string;
-	rid?: string;
-	isSharedFolder?: boolean;
-	isShared?: boolean;
-	owner?: string;
-	zid?: string;
-	acl?: unknown;
-	perm?: string;
-	retentionPolicy?: unknown;
-	children?: Array<unknown>;
-};
-
 export type GrantType = { gt: string; perm: string; zid: string; d?: string };
 
 export type SenderNameProps = {
