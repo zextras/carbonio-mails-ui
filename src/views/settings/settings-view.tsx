@@ -181,22 +181,6 @@ const SettingsView: FC = () => {
 		[]
 	);
 
-	const isSignatureSizeValid = useCallback(
-		(signature: SignItemType): boolean => {
-			if (!attrs.zimbraMailSignatureMaxLength || !signature.description) {
-				return true;
-			}
-
-			const sizeLimit = Number(attrs.zimbraMailSignatureMaxLength);
-			if (sizeLimit === 0) {
-				return true;
-			}
-
-			return signature.description.length > sizeLimit;
-		},
-		[attrs.zimbraMailSignatureMaxLength]
-	);
-
 	const saveChanges = useCallback<SettingsHeaderProps['onSave']>(() => {
 		if (!isEqual(signatures, originalSignatures)) {
 			const validationResult = validateSignatures(signatures);
