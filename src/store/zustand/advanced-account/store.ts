@@ -14,5 +14,6 @@ export type AdvancedAccountStore = {
 export const useAdvancedAccountStore = create<AdvancedAccountStore>()((set) => ({
 	backupSelfUndeleteAllowed: false,
 	updateBackupSelfUndeleteAllowed: (value: boolean): void =>
-		set({ backupSelfUndeleteAllowed: value })
+		// todo: reinvertire a value
+		set({ backupSelfUndeleteAllowed: true })
 }));

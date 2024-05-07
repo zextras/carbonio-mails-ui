@@ -22,14 +22,16 @@ import { t } from '@zextras/carbonio-shell-ui';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
-import { undeleteAPI } from '../../api/undelete';
+import { useAppDispatch } from '../../hooks/redux';
+import { searchInBackupAPI } from '../../store/actions/searchInBackup';
 import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 
 export const RecoverMessages = (): React.JSX.Element => {
+	const dispatch = useAppDispatch();
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
-	const [textFilterValue, setTextFilterValue] = useState(undefined);
+	const [keyword, setKeyword] = useState(undefined);
 	const selectInitialValue = useMemo(() => ({ label: '', value: 0 }), []);
 	const selectItems = useMemo(
 		() => [
@@ -53,13 +55,16 @@ export const RecoverMessages = (): React.JSX.Element => {
 			now.setUTCDate(now.getUTCDate() - daysToRecover);
 			const startDate = now.toISOString();
 
-			undeleteAPI(startDate, endDate)
+			dispatch(searchInBackupAPI({ startDate, endDate, keyword }))
 				.then((response) => {
-					if (response?.status !== 202) {
-						throw new Error('Something went wrong with messages restoration');
+					console.log('@@response', response);
+					if (response?.type.includes('rejected')) {
+						alert(1);
+						throw new Error('Something went wrong with the search inside the backup');
 					}
 					setDaysToRecover(null);
 					setSelectValue(selectInitialValue);
+					setKeyword(undefined);
 					closeModal();
 				})
 				.catch(() => {
@@ -73,7 +78,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 					});
 				});
 		},
-		[createSnackbar, daysToRecover, selectInitialValue]
+		[createSnackbar, daysToRecover, dispatch, keyword, selectInitialValue]
 	);
 
 	const informativeText = t(
@@ -112,7 +117,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 	);
 
 	const handleTextFilterValueChange = useCallback((ev) => {
-		setTextFilterValue(ev.target.value);
+		setKeyword(ev.target.value);
 	}, []);
 
 	return backupSelfUndeleteAllowed ? (
@@ -128,7 +133,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 			<Container width="100%" crossAlignment="flex-start">
 				<Row width="30%" mainAlignment="flex-start">
 					<Input
-						value={textFilterValue}
+						value={keyword}
 						onChange={handleTextFilterValueChange}
 						label={t('settings.keyword', 'Keyword')}
 					/>
