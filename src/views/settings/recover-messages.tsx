@@ -14,7 +14,9 @@ import {
 	CloseModalFn,
 	useSnackbar,
 	Select,
-	Row
+	Row,
+	Input,
+	Container
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
@@ -27,7 +29,7 @@ import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/st
 export const RecoverMessages = (): React.JSX.Element => {
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
-
+	const [textFilterValue, setTextFilterValue] = useState(undefined);
 	const selectInitialValue = useMemo(() => ({ label: '', value: 0 }), []);
 	const selectItems = useMemo(
 		() => [
@@ -109,6 +111,10 @@ export const RecoverMessages = (): React.JSX.Element => {
 		[selectItems]
 	);
 
+	const handleTextFilterValueChange = useCallback((ev) => {
+		setTextFilterValue(ev.target.value);
+	}, []);
+
 	return backupSelfUndeleteAllowed ? (
 		<FormSubSection
 			id={sectionTitle.id}
@@ -119,23 +125,35 @@ export const RecoverMessages = (): React.JSX.Element => {
 			<Padding top="large" />
 			<Text style={{ whiteSpace: 'pre-line' }}>{informativeText}</Text>
 			<Padding top="large" />
-			<Row width="100%" mainAlignment="flex-start">
-				<Select
-					label={selectLabel}
-					onChange={onSelectChange}
-					items={selectItems}
-					selection={selectValue}
-					showCheckbox={false}
-					style={{ maxWidth: '19rem' }}
-				/>
-				<Padding left="large" />
-				<Button
-					type={'outlined'}
-					onClick={onClick}
-					label={buttonLabel}
-					disabled={daysToRecover === null}
-				/>
-			</Row>
+			<Container width="100%" crossAlignment="flex-start">
+				<Row width="30%" mainAlignment="flex-start">
+					<Input
+						value={textFilterValue}
+						onChange={handleTextFilterValueChange}
+						label={t('settings.keyword', 'Keyword')}
+					/>
+				</Row>
+				<Padding top="large" />
+				<Row width="30%" mainAlignment="flex-start">
+					<Select
+						label={selectLabel}
+						onChange={onSelectChange}
+						items={selectItems}
+						selection={selectValue}
+						showCheckbox={false}
+					/>
+				</Row>
+				<Padding top="large" />
+				<Row width="30%" mainAlignment="flex-start">
+					<Button
+						type={'outlined'}
+						onClick={onClick}
+						label={buttonLabel}
+						// todo: change the disabled btn condition based on the mock
+						disabled={false}
+					/>
+				</Row>
+			</Container>
 		</FormSubSection>
 	) : (
 		<></>
