@@ -274,6 +274,22 @@ const getTagIds = (t: string | undefined, tn: string | undefined): Array<string 
 	return [];
 };
 
+const haveReadReceipt = (partecipants: Array<SoapMailParticipant> | undefined,flags: string|undefined) : boolean => {
+	if (isNil(partecipants)) return false;
+	for (let key in partecipants) {
+		const partecipant = partecipants[key];
+		if (partecipant.t == "n") {
+			if (isNil(flags)) {
+				return true;
+			}
+			if (!isNil(flags) && !/n/.test(flags)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 export const normalizeMailMessageFromSoap = (
 	m: SoapIncompleteMessage,
 	isComplete?: boolean
@@ -306,7 +322,7 @@ export const normalizeMailMessageFromSoap = (
 			isSentByMe: !isNil(m.f) ? /s/.test(m.f) : undefined,
 			isInvite: !isNil(m.f) ? /v/.test(m.f) : undefined,
 			isReplied: !isNil(m.f) ? /r/.test(m.f) : undefined,
-			isReadReceiptRequested: isNil(m.f) && !isNil(isComplete) && isComplete
+			isReadReceiptRequested: haveReadReceipt(m.e,m.f) && !isNil(isComplete) && isComplete
 		},
 		isNil
 	);
