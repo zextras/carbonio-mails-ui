@@ -44,6 +44,7 @@ import {
 	retrieveTO
 } from '../../editor-slice-utils';
 import { AppDispatch } from '../../redux';
+import { convertHtmlToPlainText } from '../../../carbonio-ui-commons/utils/text/html';
 
 // Regex reply msg title
 const REPLY_REGEX = /(^(re:\s)+)/i;
@@ -333,7 +334,7 @@ export const generateEditAsDraftEditor = (
 	const savedAttachments = buildSavedAttachments(originalMessage);
 
 	const text = {
-		plainText: `${extractBody(originalMessage)[0]}`,
+		plainText: `${convertHtmlToPlainText(extractBody(originalMessage)[0])}`,
 		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
@@ -373,7 +374,7 @@ export const generateEditAsNewEditor = (
 	const savedAttachments = buildSavedAttachments(originalMessage);
 
 	const text = {
-		plainText: `${extractBody(originalMessage)[0]}`,
+		plainText: `${convertHtmlToPlainText(extractBody(originalMessage)[0])}`,
 		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
