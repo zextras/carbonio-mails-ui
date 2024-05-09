@@ -83,7 +83,9 @@
         "click_open": "Kliknij, aby otworzyć",
         "select_folders": "Wybierz foldery",
         "preview_on_separated_window": "Otwórz w nowym oknie",
-        "apply_filter_on_folder": "Zastosuj filtr na folderze"
+        "apply_filter_on_folder": "Zastosuj filtr na folderze",
+        "create_appointment": "Stwórz spotkanie",
+        "download_eml": "Pobierz EML"
     },
     "composer": {
         "attachment": {
@@ -379,7 +381,11 @@
         },
         "no_identity_selected": "<Nie wybrano tożsamości>",
         "attachment_upload_in_progress": "trwa przesyłanie załącznika",
-        "no_folder_selected": "Nie wybrano żadnego folderu"
+        "no_folder_selected": "Nie wybrano żadnego folderu",
+        "create_smart_links": "stwórz inteligentne linki",
+        "convert_back_to_attachment": "Przekształć na załącznik",
+        "convert_to_smart_link": "Przekształć na inteligentny link",
+        "smart_links_created": "inteligentne linki zostały stworzone"
     },
     "message": {
         "snackbar": {
@@ -605,7 +611,10 @@
             "popup_blocked": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień",
             "opening_blocked": "Aby ukończyć operację, Carbonio musi móc otworzyć nowe okno.\nSprawdź ustawienia przeglądarki i udziel odpowiednich uprawnień"
         },
-        "enter_calendar_name": "Wprowadź nazwę, aby zaakceptować kalendarz"
+        "enter_calendar_name": "Wprowadź nazwę, aby zaakceptować kalendarz",
+        "warning": {
+            "sending_to_yourself": "Wysyłasz tę wiadomość do siebie"
+        }
     },
     "settings": {
         "conv_is_participated": "w konwersacjach, w których uczestniczyłem",
@@ -886,5 +895,10 @@
         "to": "Do",
         "unread": "Nieprzeczytane",
         "descendingOrder": "Malejąco"
+    },
+    "editor": {
+        "warning": {
+            "mail_size_exceeds_limit": "Rozmiar wiadomości przekracza limit. Przekształć załączniki w inteligentne linki"
+        }
     }
 }

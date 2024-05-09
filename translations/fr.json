@@ -31,7 +31,9 @@
         "click_open": "Cliquer pour ouvrir",
         "preview_on_separated_window": "Ouvrir dans une nouvelle fenêtre",
         "select_folders": "Sélection des dossiers",
-        "apply_filter_on_folder": "Appliquer le filtre sur le dossier"
+        "apply_filter_on_folder": "Appliquer le filtre sur le dossier",
+        "create_appointment": "Créer un rendez-vous",
+        "download_eml": "Télécharger le fichier EML"
     },
     "composer": {
         "attachment": {
@@ -325,7 +327,11 @@
         "no_identity_selected": "<Aucune identité sélectionnée>",
         "no_sender": "l'expéditeur du message n'est pas défini",
         "upload_failed": "Le téléversement a échoué",
-        "no_folder_selected": "Pas de dossier sélectionné"
+        "no_folder_selected": "Pas de dossier sélectionné",
+        "convert_back_to_attachment": "Convertir en pièce jointe",
+        "convert_to_smart_link": "Convertir en \"smart link\"",
+        "create_smart_links": "créer un \"smart link\"",
+        "smart_links_created": "\"smart link\" créé"
     },
     "message": {
         "snackbar": {
@@ -448,7 +454,10 @@
             "opening_blocked": "Pour terminer l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur",
             "popup_blocked": "Pour terminer l'opération, Carbonio a besoin d'ouvrir une nouvelle fenêtre.\nVérifiez les paramètres de votre navigateur"
         },
-        "enter_calendar_name": "Entrer un nom pour accepter le calendrier"
+        "enter_calendar_name": "Entrer un nom pour accepter le calendrier",
+        "warning": {
+            "sending_to_yourself": "Vous êtes sur le point d'envoyer un email à vous-même"
+        }
     },
     "placeholder": {
         "add_new_recipients": "Ajouter de nouveaux destinataires"
@@ -582,7 +591,7 @@
         "not_in": "pas dans",
         "not_over": "pas plus que",
         "not_under": "pas moins que",
-        "over": "sur",
+        "over": "au delà de",
         "perform_following_action": "Effectuez les actions suivantes :",
         "read_receipt": "Lire le reçu",
         "redirect_to_address": "Rediriger vers l'adresse",
@@ -591,7 +600,7 @@
         "tag_with": "Marquer avec",
         "to_cc": "A ou CC",
         "twitter_notification": "Notifications Twitter",
-        "under": "sous",
+        "under": "en dessous de",
         "conv_is_started": "Dans la conversation que j'ai lancé",
         "fonts": {
             "wide_block": "Wide Block",
@@ -880,5 +889,10 @@
         "to": "À",
         "unread": "Non lu",
         "descendingOrder": "Ordre décroissant"
+    },
+    "editor": {
+        "warning": {
+            "mail_size_exceeds_limit": "Le message dépasse la taille limite. Merci de convertir des pièces jointes en \"smart links\""
+        }
     }
 }
