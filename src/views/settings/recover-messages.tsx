@@ -23,7 +23,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
 import { useAppDispatch } from '../../hooks/redux';
-import { searchInBackupAPI } from '../../store/actions/searchInBackup';
+import { searchDeletedMessages } from '../../store/actions/searchInBackup';
 import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 
@@ -47,19 +47,16 @@ export const RecoverMessages = (): React.JSX.Element => {
 
 	const restoreMessages = useCallback(
 		(closeModal: CloseModalFn) => {
-			if (!daysToRecover) {
-				return;
-			}
+			if (!daysToRecover && !keyword) return;
 			const now = new Date();
 			const endDate = now.toISOString();
-			now.setUTCDate(now.getUTCDate() - daysToRecover);
+			now.setUTCDate(now.getUTCDate() - (daysToRecover ?? 365));
 			const startDate = now.toISOString();
 
-			dispatch(searchInBackupAPI({ startDate, endDate, keyword }))
+			dispatch(searchDeletedMessages({ startDate, endDate, searchString: keyword }))
 				.then((response) => {
 					console.log('@@response', response);
 					if (response?.type.includes('rejected')) {
-						alert(1);
 						throw new Error('Something went wrong with the search inside the backup');
 					}
 					setDaysToRecover(null);

@@ -6,21 +6,21 @@
 
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-export const searchInBackupAPI = createAsyncThunk<
-	{ status: number; messages?: Array<any> },
-	{
-		startDate: string;
-		endDate: string;
-		keyword?: string;
-	}
+import { searchBackupDeletedMessagesAPI } from '../../api/search-backup-deleted-messages';
+import { type SearchBackupDeletedMessagesAPIProps } from '../../types';
+
+type SearchInBackupResponse = {
+	messages: [];
+};
+
+export const searchDeletedMessages = createAsyncThunk<
+	SearchInBackupResponse,
+	SearchBackupDeletedMessagesAPIProps
 >(
 	'searchInBackup',
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	async (startDate, endDate, keyword) => {
-		fetch(`/zx/backup/v1/search?start=${startDate}&end=${endDate}&keyword=${keyword}`, {
-			method: 'POST',
-			credentials: 'same-origin'
-		}).then((res) => res);
+	async (props) => {
+		searchBackupDeletedMessagesAPI(props).then((res) => res);
 	}
 );
