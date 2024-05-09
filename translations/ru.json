@@ -87,7 +87,10 @@
             "opening_blocked": "Для завершения операции Carbonio необходимо открыть новое окно.\nПроверьте настройки браузера",
             "popup_blocked": "Для завершения операции Carbonio необходимо открыть новое окно.\nПроверьте настройки браузера"
         },
-        "enter_calendar_name": "Введите имя, чтобы принять календарь"
+        "enter_calendar_name": "Введите имя, чтобы принять календарь",
+        "warning": {
+            "sending_to_yourself": "Вы отправляете это сообщение самому себе"
+        }
     },
     "label": {
         "to": "Кому",
@@ -343,7 +346,11 @@
         "missing_sender": "отправитель письма не установлен",
         "no_sender": "Отправитель письма не указан",
         "no_folder_selected": "Папка не выбрана",
-        "no_identity_selected": "<Имя не выбрано>"
+        "no_identity_selected": "<Имя не выбрано>",
+        "convert_to_smart_link": "Преобразовать в смарт-ссылку",
+        "convert_back_to_attachment": "Преобразовать обратно во вложение",
+        "create_smart_links": "создать умные ссылки",
+        "smart_links_created": "созданы умные ссылки"
     },
     "header": {
         "warning": "Предупреждение",
@@ -385,7 +392,9 @@
         "click_open": "Нажмите, чтобы открыть",
         "select_folders": "Выбрать папки",
         "preview_on_separated_window": "Открыть в новом окне",
-        "apply_filter_on_folder": "Применить фильтр к папке"
+        "apply_filter_on_folder": "Применить фильтр к папке",
+        "download_eml": "Скачать EML",
+        "create_appointment": "Создать встречу"
     },
     "tooltip": {
         "add_attachments": "Добавить вложения",
@@ -889,5 +898,10 @@
         "subject": "Тема",
         "to": "Кому",
         "unread": "Не прочитано"
+    },
+    "editor": {
+        "warning": {
+            "mail_size_exceeds_limit": "Размер сообщения превышает лимит. Пожалуйста, преобразуйте некоторые вложения в смарт-ссылки"
+        }
     }
 }
