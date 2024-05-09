@@ -29,6 +29,8 @@ import {
 } from './search-slice-reducers';
 import { extractIds, isItemInSearches } from './utils';
 import { LIST_LIMIT } from '../constants';
+import { searchDeletedMessages } from './actions/searchInBackup';
+import { SearchBackupDeletedMessagesResponse } from '../api/search-backup-deleted-messages';
 
 export const getSearchSliceInitialiState = (): SearchesStateType =>
 	({

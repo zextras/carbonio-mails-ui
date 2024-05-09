@@ -17,6 +17,7 @@ export type MailsStateType = {
 	conversations: ConversationsStateType;
 	messages: MsgStateType;
 	searches: SearchesStateType;
+	backupSearches: BackupSearchesStateType;
 };
 
 export type EditorsStateTypeV2 = {
@@ -111,8 +112,8 @@ export type SearchesStateType = {
 	messages?: Record<string, Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>>;
 	more: boolean;
 	offset: number;
-	sortBy: SortBy;
-	query: string;
+	sortBy?: SortBy;
+	query?: string;
 	status: string;
 	parent?: string;
 	tagName?: string;

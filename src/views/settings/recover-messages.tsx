@@ -160,8 +160,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 						type={'outlined'}
 						onClick={onClick}
 						label={buttonLabel}
-						// todo: change the disabled btn condition based on the mock
-						disabled={false}
+						disabled={!daysToRecover && !searchString}
 					/>
 				</Row>
 			</Container>

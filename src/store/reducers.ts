@@ -12,5 +12,6 @@ import { searchesSliceReducer } from './searches-slice';
 export const storeReducers = combineReducers({
 	conversations: conversationsSliceReducer,
 	messages: messageSliceReducer,
-	searches: searchesSliceReducer
+	searches: searchesSliceReducer,
+	backupSearches: backupSearchesReducer
 });
