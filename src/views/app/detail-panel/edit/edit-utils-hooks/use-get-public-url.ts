@@ -6,8 +6,10 @@
 
 import { useCallback } from 'react';
 
-import { getBridgedFunctions, t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
+
+import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 
 type UseGetPublicUrlPropType = {
 	addPublicLinkFromFiles: (filesResponse: UseGetPublicUrlRespType[]) => void;
@@ -32,6 +34,7 @@ export type UseGetPublicUrlRespType = {
 export const useGetPublicUrl = ({
 	addPublicLinkFromFiles
 }: UseGetPublicUrlPropType): [(nodes: any) => void, boolean] => {
+	const { createSnackbar } = useUiUtilities();
 	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
 
 	const getPublicUrl = useCallback(
@@ -57,7 +60,7 @@ export const useGetPublicUrl = ({
 								'message.snackbar.some_link_copying_error',
 								'There seems to be a problem while generating public url for some files, please try again'
 							);
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `public-link`,
 					replace: true,
 					type,
@@ -68,7 +71,7 @@ export const useGetPublicUrl = ({
 				addPublicLinkFromFiles(success as UseGetPublicUrlRespType[]);
 			});
 		},
-		[addPublicLinkFromFiles, getLink]
+		[addPublicLinkFromFiles, createSnackbar, getLink]
 	);
 	return [getPublicUrl, getLinkAvailable];
 };

@@ -34,6 +34,7 @@ import { ConversationMessagesList } from './conversation-messages-list';
 import { getFolderParentId } from './utils';
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
+import { getFolderIdParts } from '../../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
@@ -217,7 +218,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 
 							if (msg) {
 								// in trash, we show all messages of the conversation even if only one is deleted
-								if (folderParent === FOLDERS.TRASH) {
+								if (getFolderIdParts(folderParent).id === FOLDERS.TRASH) {
 									return [...acc, msg];
 								}
 								// all other messages are valid and must be showed in the conversation

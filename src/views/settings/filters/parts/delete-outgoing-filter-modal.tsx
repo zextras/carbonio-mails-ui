@@ -3,13 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
-import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+
+import { useDeleteOutgoingFilter } from './actions';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import type { FilterListType } from '../../../../types';
-import { deleteOutgoingFilter } from './actions';
 
 type ListType = {
 	isSelecting: boolean;
@@ -28,7 +30,7 @@ type ComponentProps = {
 	activeList: ListType;
 	setFilters: (arg: Array<FilterListType>) => void;
 	setFetchFilters: (arg: boolean) => void;
-	modifierFunc: Promise<any>;
+	modifierFunc: (arg: FilterListType[]) => Promise<void>;
 	selectedFilter: any;
 	outgoingFilters: any;
 };
@@ -45,6 +47,7 @@ const DeleteOutgoingFilterModal: FC<ComponentProps> = ({
 	outgoingFilters
 }): ReactElement => {
 	const modalTitle = useMemo(() => t('settings.delete_filter', 'Delete filter'), [t]);
+	const deleteOutgoingFilter = useDeleteOutgoingFilter();
 	const onConfirmDelete = useCallback(() => {
 		deleteOutgoingFilter({
 			t,
@@ -58,6 +61,7 @@ const DeleteOutgoingFilterModal: FC<ComponentProps> = ({
 			outgoingFilters
 		});
 	}, [
+		deleteOutgoingFilter,
 		t,
 		onClose,
 		availableList,

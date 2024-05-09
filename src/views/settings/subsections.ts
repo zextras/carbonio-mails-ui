@@ -5,13 +5,21 @@
  */
 import { t, SettingsSubSection } from '@zextras/carbonio-shell-ui';
 
+import { AdvancedAccountStore } from '../../store/zustand/advanced-account/store';
+
 export const displayingMessagesSubSection = (): SettingsSubSection => ({
 	label: t('settings.label.display_messages', 'Displaying Messages'),
 	id: 'displaying_messages'
 });
+
 export const receivingMessagesSubSection = (): SettingsSubSection => ({
 	label: t('label.receive_message', 'Receiving Messages'),
 	id: 'receiving_messages'
+});
+
+export const recoverMessagesSubSection = (): SettingsSubSection => ({
+	label: t('label.recover_messages', 'Recover Messages'),
+	id: 'recover_messages'
 });
 
 export const domainWhitelistSubSection = (): SettingsSubSection => ({
@@ -31,14 +39,12 @@ export const filtersSubSection = (): SettingsSubSection => ({
 	id: 'filters'
 });
 
-export const getSettingsSubSections = (): Array<SettingsSubSection> => [
-	displayingMessagesSubSection(),
-	receivingMessagesSubSection(),
-	signaturesSubSection(),
-	setDefaultSignaturesSubSection(),
-	filtersSubSection(),
-	domainWhitelistSubSection()
-];
+export const getSettingsSubSections = (
+	backupSelfUndeleteAllowed: AdvancedAccountStore['backupSelfUndeleteAllowed']
+): Array<SettingsSubSection> =>
+	[displayingMessagesSubSection(), receivingMessagesSubSection()]
+		.concat(backupSelfUndeleteAllowed ? recoverMessagesSubSection() : [])
+		.concat([signaturesSubSection(), setDefaultSignaturesSubSection(), filtersSubSection()]);
 
 export const composingMsgSubSection = (): SettingsSubSection => ({
 	label: t('labels.composing_messages', 'Composing Messages'),

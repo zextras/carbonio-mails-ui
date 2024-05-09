@@ -3,18 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useMemo } from 'react';
+
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
-import React, { FC, useMemo } from 'react';
+
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { participantToString } from '../../../../commons/utils';
+import { getFolderIdParts } from '../../../../helpers/folders';
 import type { SenderNameProps } from '../../../../types';
 
 // TODO since it renders also the recipients we should rename it to ParticipantsName
 export const SenderName: FC<SenderNameProps> = ({ item, textValues, isSearchModule = false }) => {
 	const account = useUserAccount();
-	const folderId = item.parent;
+	const folderId = getFolderIdParts(item.parent).id;
 	const participantsString = useMemo(() => {
 		const participants = filter(item.participants, (p) => {
 			if (folderId === FOLDERS.INBOX) return p.type === ParticipantRole.FROM; // inbox

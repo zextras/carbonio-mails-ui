@@ -18,12 +18,7 @@ import {
 	SelectItem,
 	Text
 } from '@zextras/carbonio-design-system';
-import {
-	getBridgedFunctions,
-	t,
-	useIntegratedComponent,
-	useUserAccounts
-} from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { GranteeInfo } from './parts/edit/share-folder-properties';
@@ -31,9 +26,9 @@ import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-foote
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
 import { useAppDispatch } from '../../hooks/redux';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import {
 	ShareCalendarRoleOptions,
-	ShareCalendarWithOptions,
 	findLabel
 } from '../../integrations/shared-invite-reply/parts/utils';
 import { sendShareNotification } from '../../store/actions/send-share-notification';
@@ -49,13 +44,13 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 }) => {
 	const dispatch = useAppDispatch();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
-	const shareCalendarWithOptions = useMemo(() => ShareCalendarWithOptions(t), []);
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
 	const [sendNotification, setSendNotification] = useState(true);
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<any>([]);
-	const [shareWithUserType, setshareWithUserType] = useState('usr');
 	const [shareWithUserRole, setshareWithUserRole] = useState(editMode ? grant.perm : 'r');
+
+	const { createSnackbar } = useUiUtilities();
 
 	const accounts = useUserAccounts();
 
@@ -67,10 +62,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 		[editMode, folder.name]
 	);
 
-	const onShareWithChange = useCallback((shareWith) => {
-		setshareWithUserType(shareWith);
-	}, []);
-
 	const onShareRoleChange = useCallback((shareRole) => {
 		setshareWithUserRole(shareRole);
 	}, []);
@@ -81,14 +72,13 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 				sendNotification,
 				standardMessage,
 				contacts: editMode ? [{ email: grant.d || grant.zid }] : contacts,
-				shareWithUserType,
 				shareWithUserRole,
 				folder,
 				accounts
 			})
 		).then((res: { type: string }) => {
 			if (!('Fault' in res)) {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `share-${folder.id}`,
 					replace: true,
 					hideButton: true,
@@ -104,14 +94,13 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 							sendNotification,
 							standardMessage,
 							contacts: editMode ? [{ email: grant.d || grant.zid }] : contacts,
-							shareWithUserType,
 							shareWithUserRole,
 							folder,
 							accounts
 						})
 					).then((res2: { type: string }) => {
 						if (!res2.type.includes('fulfilled')) {
-							getBridgedFunctions()?.createSnackbar({
+							createSnackbar({
 								key: `share-${folder.id}`,
 								replace: true,
 								type: 'error',
@@ -131,11 +120,11 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 		editMode,
 		grant,
 		contacts,
-		shareWithUserType,
 		shareWithUserRole,
 		folder,
 		accounts,
-		onClose
+		onClose,
+		createSnackbar
 	]);
 
 	const disableEdit = useMemo(
@@ -153,20 +142,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 			>
 				<ModalHeader title={title} onClose={onClose} />
 				<Padding top="small" />
-				{!editMode && (
-					<Container height="fit">
-						<Select
-							items={shareCalendarWithOptions}
-							background="gray5"
-							label={t('label.share_with', 'Share with')}
-							onChange={onShareWithChange}
-							defaultSelection={{
-								value: 'usr',
-								label: findLabel(shareCalendarWithOptions, 'usr')
-							}}
-						/>
-					</Container>
-				)}
 				{editMode ? (
 					<Container
 						orientation="horizontal"

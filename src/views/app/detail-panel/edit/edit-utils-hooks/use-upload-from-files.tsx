@@ -5,7 +5,8 @@
  */
 import { useCallback } from 'react';
 
-import { getBridgedFunctions, t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
+import { useSnackbar } from '@zextras/carbonio-design-system';
+import { t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 
 export type FileNode = { id: string; name: string; size: number; mime_type: string };
@@ -37,6 +38,7 @@ export const useUploadFromFiles = ({
 	onComplete
 }: UseUploadFromFilesParams): [(nodes: Array<FileNode>) => void, boolean] => {
 	const [uploadTo, isAvailable] = useIntegratedFunction('upload-to-target-and-get-target-id');
+	const createSnackbar = useSnackbar();
 
 	const confirmAction = useCallback(
 		(nodes: Array<FileNode>) => {
@@ -69,7 +71,7 @@ export const useUploadFromFiles = ({
 									'message.snackbar.some_att_add_fails',
 									'There seems to be a problem when adding some attachments, please try again'
 								);
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `calendar-moved-root`,
 						replace: true,
 						type,
@@ -82,7 +84,7 @@ export const useUploadFromFiles = ({
 				});
 			}
 		},
-		[onComplete, isAvailable, uploadTo]
+		[isAvailable, uploadTo, createSnackbar, onComplete]
 	);
 	return [confirmAction, isAvailable];
 };

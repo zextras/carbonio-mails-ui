@@ -25,7 +25,7 @@ export const mailToSharedFunction: (contacts: Array<Partial<Participant>>) => vo
 export const openComposerSharedFunction: (
 	onConfirm: () => void,
 	compositionData: EditorPrefillData,
-	...rest: any[]
+	...rest: never[]
 ) => void = (onConfirm, compositionData, ...rest) => {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore

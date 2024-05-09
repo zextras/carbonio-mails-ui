@@ -6,6 +6,7 @@
 
 import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
+
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../../carbonio-ui-commons/utils/text/html';
 import type { MailMessage, Participant } from '../../types';
@@ -40,7 +41,6 @@ type MessageGenerationParams = {
  *
  * @param id
  * @param folderId
- * @param sendDate
  * @param receiveDate
  * @param to
  * @param cc

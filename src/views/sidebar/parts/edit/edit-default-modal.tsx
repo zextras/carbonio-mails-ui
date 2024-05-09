@@ -6,7 +6,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
 import { includes, isEmpty } from 'lodash';
 
 import { FolderDetails } from './folder-details';
@@ -21,6 +21,7 @@ import {
 	allowedActionOnSharedAccount,
 	isValidFolderName
 } from '../../../../carbonio-ui-commons/utils/utils';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { folderAction } from '../../../../store/actions/folder-action';
 import { translatedSystemFolders } from '../../utils';
 
@@ -58,6 +59,8 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 	const [emptyRtnValue, setEmptyRtnValue] = useState(false);
 	const [emptyDisValue, setEmptyDisValue] = useState(false);
 	const [folderColor, setFolderColor] = useState(folder?.color ?? 0);
+
+	const { createSnackbar } = useUiUtilities();
 
 	useEffect(() => {
 		if (
@@ -221,7 +224,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 						: {}
 			}).then((res) => {
 				if (!('Fault' in res)) {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -230,7 +233,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 						autoHideTimeout: 3000
 					});
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
@@ -253,7 +256,8 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 		rtnYear,
 		dspYear,
 		folder,
-		folderColor
+		folderColor,
+		createSnackbar
 	]);
 
 	const title = t('label.edit_folder_properties', {

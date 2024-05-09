@@ -5,6 +5,10 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/pkg" />
+      <excludeFolder url="file://$MODULE_DIR$/.husky/_" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/sonarlint" />
+      <excludeFolder url="file://$MODULE_DIR$/coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
