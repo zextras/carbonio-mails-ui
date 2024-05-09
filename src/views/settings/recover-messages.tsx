@@ -27,11 +27,20 @@ import { searchDeletedMessages } from '../../store/actions/searchInBackup';
 import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 
+function calculateInterval(daysToRecover: number | null): { startDate?: string; endDate?: string } {
+	if (!daysToRecover) return {};
+	const now = new Date();
+	const endDate = now.toISOString();
+	now.setUTCDate(now.getUTCDate() - daysToRecover);
+	const startDate = now.toISOString();
+	return { startDate, endDate };
+}
+
 export const RecoverMessages = (): React.JSX.Element => {
 	const dispatch = useAppDispatch();
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
-	const [keyword, setKeyword] = useState(undefined);
+	const [searchString, setSearchString] = useState(undefined);
 	const selectInitialValue = useMemo(() => ({ label: '', value: 0 }), []);
 	const selectItems = useMemo(
 		() => [
@@ -47,21 +56,21 @@ export const RecoverMessages = (): React.JSX.Element => {
 
 	const restoreMessages = useCallback(
 		(closeModal: CloseModalFn) => {
-			if (!daysToRecover && !keyword) return;
-			const now = new Date();
-			const endDate = now.toISOString();
-			now.setUTCDate(now.getUTCDate() - (daysToRecover ?? 365));
-			const startDate = now.toISOString();
-
-			dispatch(searchDeletedMessages({ startDate, endDate, searchString: keyword }))
+			if (!daysToRecover && !searchString) return;
+			const interval = calculateInterval(daysToRecover);
+			dispatch(
+				searchDeletedMessages({
+					...interval,
+					...(searchString || { searchString })
+				})
+			)
 				.then((response) => {
-					console.log('@@response', response);
 					if (response?.type.includes('rejected')) {
 						throw new Error('Something went wrong with the search inside the backup');
 					}
 					setDaysToRecover(null);
 					setSelectValue(selectInitialValue);
-					setKeyword(undefined);
+					setSearchString(undefined);
 					closeModal();
 				})
 				.catch(() => {
@@ -75,7 +84,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 					});
 				});
 		},
-		[createSnackbar, daysToRecover, dispatch, keyword, selectInitialValue]
+		[createSnackbar, daysToRecover, dispatch, searchString, selectInitialValue]
 	);
 
 	const informativeText = t(
@@ -114,7 +123,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 	);
 
 	const handleTextFilterValueChange = useCallback((ev) => {
-		setKeyword(ev.target.value);
+		setSearchString(ev.target.value);
 	}, []);
 
 	return backupSelfUndeleteAllowed ? (
@@ -130,7 +139,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 			<Container width="100%" crossAlignment="flex-start">
 				<Row width="30%" mainAlignment="flex-start">
 					<Input
-						value={keyword}
+						value={searchString}
 						onChange={handleTextFilterValueChange}
 						label={t('settings.keyword', 'Keyword')}
 					/>
