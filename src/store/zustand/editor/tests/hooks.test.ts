@@ -6,10 +6,10 @@
 
 import { act } from '@testing-library/react';
 
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { setupEditorStore } from '../../../tests/generators/editor-store';
-import { generateEditorV2Case } from '../../../tests/generators/editors';
-import { generateStore } from '../../../tests/generators/store';
+import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
+import { setupEditorStore } from '../../../../tests/generators/editor-store';
+import { generateEditorV2Case } from '../../../../tests/generators/editors';
+import { generateStore } from '../../../../tests/generators/store';
 import {
 	addEditor,
 	getEditor,
@@ -25,7 +25,7 @@ import {
 	// useEditorDraftSave,
 	// useEditorDraftSaveProcessStatus,
 	// useEditorSend
-} from '../editor/hooks';
+} from '../hooks';
 
 describe('all editor hooks', () => {
 	describe('adding, updating, removing editors', () => {
