@@ -8,6 +8,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 
+import { searchDeletedMessages } from './actions/searchInBackup';
 import {
 	DeletedMessage,
 	SearchBackupDeletedMessagesResponse
@@ -23,6 +24,10 @@ export const getBackupSearchSliceInitialiState = (): BackupSearchesStateType => 
 	status: 'empty'
 });
 
+const resetBackupSearchResultsReducer = (): void => {
+	getBackupSearchSliceInitialiState();
+};
+
 const handleBackupSearchMessagesReducer = (
 	state: BackupSearchesStateType,
 	{ payload, meta }: { payload: SearchBackupDeletedMessagesResponse; meta: any }
@@ -36,15 +41,15 @@ const handleBackupSearchMessagesReducer = (
 	state.messages = messages;
 };
 
-export const backupMessagesSlice = createSlice({
+export const backupSearchSlice = createSlice({
 	name: 'backupSearchMessages',
 	initialState: getBackupSearchSliceInitialiState(),
 	reducers: {
-		handleBackupSearchMessages: produce(handleBackupSearchMessagesReducer)
+		resetBackupSearchResults: resetBackupSearchResultsReducer
 	},
 	extraReducers: (builder) => {
-		// builder.addCase(searchDeletedMessages.fulfilled, produce(searchDeletedMessagesFulfilled));
+		builder.addCase(searchDeletedMessages.fulfilled, produce(handleBackupSearchMessagesReducer));
 	}
 });
 
-export const backupSearchMessagesReducer = backupMessagesSlice.reducers;
+export const backupSearchSliceReducer = backupSearchSlice.reducer;
