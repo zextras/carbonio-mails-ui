@@ -355,6 +355,7 @@
         "hide": "Hide",
         "hide_more_info": "Hide more information",
         "highlight_tab": "Highlight the Mail tab",
+        "import_to_contacts": "Import to Contacts",
         "include_shared_folders": "Include shared folders",
         "insert": "Insert",
         "invalid_destination": "This node is not a valid destination",

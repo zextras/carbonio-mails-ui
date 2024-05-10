@@ -17,7 +17,13 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, soapFetch, SoapResponse, t } from '@zextras/carbonio-shell-ui';
+import {
+	getIntegratedFunction,
+	soapFetch,
+	SoapResponse,
+	t,
+	useIntegratedFunction
+} from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, map } from 'lodash';
 import styled from 'styled-components';
@@ -134,6 +140,8 @@ const Attachment: FC<AttachmentType> = ({
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
 	const dispatch = useAppDispatch();
 
+	const pType = previewType(att.contentType);
+	const [createContact, isAvailable] = useIntegratedFunction('create_contact_from_vcard');
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -231,7 +239,9 @@ const Attachment: FC<AttachmentType> = ({
 		},
 		[att.name, createSnackbar, message.id]
 	);
-
+	const onCreateContact = useCallback(() => {
+		createContact({ messageId: message.id, part });
+	}, [createContact, message.id, part]);
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
 
 	const actionTarget = useMemo(
@@ -276,7 +286,7 @@ const Attachment: FC<AttachmentType> = ({
 			ev.preventDefault();
 			const pType = previewType(att.contentType);
 
-			if (pType) {
+			if (pType === 'pdf' || pType === 'image') {
 				// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
 				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
 					browserPdfPreview();
@@ -424,7 +434,12 @@ const Attachment: FC<AttachmentType> = ({
 
 					<Padding right="small">
 						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
-							<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
+							<IconButton
+								data-testid={`download-attachment-${filename}`}
+								size="medium"
+								icon="DownloadOutline"
+								onClick={downloadAttachment}
+							/>
 						</Tooltip>
 					</Padding>
 					{!isExternalMessage && (
@@ -434,9 +449,25 @@ const Attachment: FC<AttachmentType> = ({
 								label={t('label.delete', 'Delete')}
 							>
 								<IconButton
+									data-testid={`remove-attachments-${filename}`}
 									size="medium"
 									icon="DeletePermanentlyOutline"
 									onClick={removeAttachment}
+								/>
+							</Tooltip>
+						</Padding>
+					)}
+					{isAvailable && pType === 'vcard' && (
+						<Padding right="small">
+							<Tooltip
+								key={`${message.id}-UploadOutline`}
+								label={t('label.import_to_contacts', 'Import to Contacts')}
+							>
+								<IconButton
+									data-testid={`import-contacts-${filename}`}
+									size="medium"
+									icon="UploadOutline"
+									onClick={onCreateContact}
 								/>
 							</Tooltip>
 						</Padding>
