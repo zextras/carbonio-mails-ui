@@ -53,3 +53,9 @@ export const backupSearchSlice = createSlice({
 });
 
 export const backupSearchSliceReducer = backupSearchSlice.reducer;
+
+export const { resetBackupSearchResults } = backupSearchSlice.actions;
+
+export const selectBackupSearchMessagesStore = (state: {
+	backupSearches: BackupSearchesStateType;
+}): BackupSearchesStateType => state.backupSearches;
