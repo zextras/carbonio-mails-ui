@@ -33,7 +33,7 @@ const handleBackupSearchMessagesReducer = (
 	{ payload, meta }: { payload: SearchBackupDeletedMessagesResponse; meta: any }
 ): void => {
 	state.status = meta.requestStatus;
-
+	console.log(' handleBackupSearchMessagesReducer payload', payload);
 	const messages = payload?.messages.reduce((acc, message) => {
 		const { messageId } = message;
 		return { ...acc, [messageId]: message };
