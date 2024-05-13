@@ -67,7 +67,7 @@ describe('Recover messages', () => {
 		expect(before).toBe('2024-01-01T10:30:35.550Z');
 	});
 
-	it.only('should call searchDeleted API with the correct searchString when a searchString is entered', async () => {
+	it('should call searchDeleted API with the correct searchString when a searchString is entered', async () => {
 		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		const { user } = setupTest(<RecoverMessages />, { store });
@@ -77,10 +77,8 @@ describe('Recover messages', () => {
 			HttpResponse.json(null, { status: 200 })
 		);
 
-		const keywordInput = screen.getByRole('textbox', { name: 'settings.keyword' });
-
 		await act(async () => {
-			await user.type(keywordInput, 'test keyword');
+			await user.type(screen.getByRole('textbox', { name: 'settings.keyword' }), 'test keyword');
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
@@ -91,16 +89,27 @@ describe('Recover messages', () => {
 		expect(searchString).toBe('test keyword');
 	});
 
-	it('should not close the recover messages modal when the API call fails', async () => {
+	it('start recovery button should be disabled if both searchString and dates are not entered', async () => {
+		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
-		const { user } = setupTest(<RecoverMessages />, {});
+		setupTest(<RecoverMessages />, { store });
+
+		const recoveryButton = screen.getByRole('button', { name: 'label.start_recovery' });
+		expect(recoveryButton).toBeDisabled();
+	});
+
+	it('should not close the recover messages modal when the API call fails', async () => {
+		const store = generateStore();
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
+		const { user } = setupTest(<RecoverMessages />, { store });
 		createAPIInterceptor(
-			'post',
-			'/zx/backup/v1/undelete',
+			'get',
+			'/zx/backup/v1/searchDeleted',
 			HttpResponse.json(null, { status: 500 })
 		);
 
 		await act(async () => {
+			await user.type(screen.getByRole('textbox', { name: 'settings.keyword' }), 'test keyword');
 			await user.click(screen.getByText(/label\.recovery_period/i));
 			await user.click(screen.getByText(/label\.last_7_days/i));
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
@@ -111,11 +120,12 @@ describe('Recover messages', () => {
 	});
 
 	it('should close the recover messages modal when the API call succedes', async () => {
+		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
-		const { user } = setupTest(<RecoverMessages />, {});
+		const { user } = setupTest(<RecoverMessages />, { store });
 		createAPIInterceptor(
-			'post',
-			'/zx/backup/v1/undelete',
+			'get',
+			'/zx/backup/v1/searchDeleted',
 			HttpResponse.json(null, { status: 202 })
 		);
 
@@ -131,11 +141,12 @@ describe('Recover messages', () => {
 
 	it('should correcly evaluate 90 days difference between start and end dates', async () => {
 		jest.useFakeTimers().setSystemTime(new Date('2024-01-01T10:30:35.550Z'));
+		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
-		const { user } = setupTest(<RecoverMessages />, {});
+		const { user } = setupTest(<RecoverMessages />, { store });
 		const apiInterceptor = createAPIInterceptor(
-			'post',
-			'/zx/backup/v1/undelete',
+			'get',
+			'/zx/backup/v1/searchDeleted',
 			HttpResponse.json(null, { status: 202 })
 		);
 
@@ -146,8 +157,8 @@ describe('Recover messages', () => {
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
-		const { start, end } = getParams((await apiInterceptor).url);
-		expect(start).toBe('2023-10-03T10:30:35.550Z');
-		expect(end).toBe('2024-01-01T10:30:35.550Z');
+		const { after, before } = getParams((await apiInterceptor).url);
+		expect(before).toBe('2024-01-01T10:30:35.550Z');
+		expect(after).toBe('2023-10-03T10:30:35.550Z');
 	});
 });

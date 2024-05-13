@@ -38,7 +38,16 @@ export const searchBackupDeletedMessagesAPI = async ({
 	const result = await fetch(`${searchURL}?${searchParams}`, {
 		method: 'GET',
 		credentials: 'same-origin'
-	});
+	})
+		.then((resp) => {
+			if (!resp.ok) {
+				throw new Error('Something went wrong with the search inside the backup');
+			}
+			return resp;
+		})
+		.catch(() => {
+			throw new Error('Something went wrong with the search inside the backup');
+		});
 
 	return result.json();
 };

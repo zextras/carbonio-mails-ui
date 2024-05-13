@@ -28,7 +28,7 @@ const resetBackupSearchResultsReducer = (): void => {
 	getBackupSearchSliceInitialiState();
 };
 
-const handleBackupSearchMessagesReducer = (
+const handleBackupSearchMessagesFullfilledReducer = (
 	state: BackupSearchesStateType,
 	{ payload, meta }: { payload: SearchBackupDeletedMessagesResponse; meta: any }
 ): void => {
@@ -40,6 +40,14 @@ const handleBackupSearchMessagesReducer = (
 	state.messages = messages;
 };
 
+const handleBackupSearchMessagesRejectedReducer = (
+	state: BackupSearchesStateType,
+	{ meta }: { meta: any }
+): void => {
+	state.status = meta.requestStatus;
+	state.messages = {};
+};
+
 export const backupSearchSlice = createSlice({
 	name: 'backupSearchMessages',
 	initialState: getBackupSearchSliceInitialiState(),
@@ -47,7 +55,14 @@ export const backupSearchSlice = createSlice({
 		resetBackupSearchResults: resetBackupSearchResultsReducer
 	},
 	extraReducers: (builder) => {
-		builder.addCase(searchDeletedMessages.fulfilled, produce(handleBackupSearchMessagesReducer));
+		builder.addCase(
+			searchDeletedMessages.fulfilled,
+			produce(handleBackupSearchMessagesFullfilledReducer)
+		);
+		builder.addCase(
+			searchDeletedMessages.rejected,
+			produce(handleBackupSearchMessagesRejectedReducer)
+		);
 	}
 });
 
