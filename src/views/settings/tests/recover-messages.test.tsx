@@ -13,6 +13,7 @@ import { defaultBeforeAllTests } from '../../../carbonio-ui-commons/test/jest-se
 import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useAdvancedAccountStore } from '../../../store/zustand/advanced-account/store';
+import { generateStore } from '../../../tests/generators/store';
 import { RecoverMessages } from '../recover-messages';
 
 function getParams(url: string): Record<string, string> {
@@ -24,34 +25,35 @@ function getParams(url: string): Record<string, string> {
 	return rec;
 }
 
-// TODO-1038 fix tests
-describe.skip('Recover messages', () => {
+describe('Recover messages', () => {
 	beforeAll(() => {
 		defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 	});
 
 	it('should render view if backupSelfUndelete is allowed', () => {
+		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
-		setupTest(<RecoverMessages />, {});
+		setupTest(<RecoverMessages />, { store });
 		expect(screen.getByTestId('backup-self-undelete-form')).toBeInTheDocument();
 	});
 
 	it('should not render view if backupSelfUndelete is denied', () => {
+		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(false);
-		setupTest(<RecoverMessages />, {});
+		setupTest(<RecoverMessages />, { store });
 		expect(screen.queryByTestId('backup-self-undelete-form')).not.toBeInTheDocument();
 	});
 
-	it('should call undelete API when recovery button is pressed', async () => {
+	it('should call searchDeleted API with the correct dates when a time interval is set', async () => {
+		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		jest.useFakeTimers().setSystemTime(new Date('2024-01-01T10:30:35.550Z'));
-		const { user } = setupTest(<RecoverMessages />, {});
+		const { user } = setupTest(<RecoverMessages />, { store });
 		const apiInterceptor = createAPIInterceptor(
-			'post',
-			'/zx/backup/v1/undelete',
-			HttpResponse.json(null, { status: 202 })
+			'get',
+			'/zx/backup/v1/searchDeleted',
+			HttpResponse.json(null, { status: 200 })
 		);
-
 		await act(async () => {
 			await user.click(screen.getByText(/label\.recovery_period/i));
 			await user.click(screen.getByText(/label\.last_7_days/i));
@@ -59,11 +61,30 @@ describe.skip('Recover messages', () => {
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
-		const { start, end } = getParams((await apiInterceptor).url);
-		expect(start).toBeDefined();
-		expect(end).toBeDefined();
-		expect(start).toBe('2023-12-25T10:30:35.550Z');
-		expect(end).toBe('2024-01-01T10:30:35.550Z');
+		const { before, after, searchString } = getParams((await apiInterceptor).url);
+		expect(searchString).not.toBeDefined();
+		expect(after).toBe('2023-12-25T10:30:35.550Z');
+		expect(before).toBe('2024-01-01T10:30:35.550Z');
+	});
+
+	it.only('should call searchDeleted API with the correct searchString when a searchString is entered', async () => {
+		const store = generateStore();
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
+		const { user } = setupTest(<RecoverMessages />, { store });
+		const apiInterceptor = createAPIInterceptor(
+			'get',
+			'/zx/backup/v1/searchDeleted',
+			HttpResponse.json(null, { status: 200 })
+		);
+		await act(async () => {
+			await user.type(screen.getByRole('textbox', { name: 'settings.keyword' }), 'keyword');
+			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+		});
+
+		const { before, after, searchString } = getParams((await apiInterceptor).url);
+		expect(after).not.toBeDefined();
+		expect(before).not.toBeDefined();
+		expect(searchString).toBe('keyword');
 	});
 
 	it('should not close the recover messages modal when the API call fails', async () => {
