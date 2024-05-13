@@ -61,7 +61,7 @@ describe('Recover messages', () => {
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
-		const { before, after, searchString } = getParams((await apiInterceptor).url);
+		const { before, after, searchString } = getParams(apiInterceptor.getLastRequest().url);
 		expect(searchString).not.toBeDefined();
 		expect(after).toBe('2023-12-25T10:30:35.550Z');
 		expect(before).toBe('2024-01-01T10:30:35.550Z');
@@ -83,7 +83,7 @@ describe('Recover messages', () => {
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
-		const { before, after, searchString } = getParams((await apiInterceptor).url);
+		const { before, after, searchString } = getParams(apiInterceptor.getLastRequest().url);
 		expect(after).not.toBeDefined();
 		expect(before).not.toBeDefined();
 		expect(searchString).toBe('test keyword');
@@ -139,6 +139,27 @@ describe('Recover messages', () => {
 		expect(screen.queryByText('label.confirm')).not.toBeInTheDocument();
 	});
 
+	it('should not click the confirm button twice', async () => {
+		const store = generateStore();
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
+		const { user } = setupTest(<RecoverMessages />, { store });
+		const interceptor = createAPIInterceptor(
+			'get',
+			'/zx/backup/v1/searchDeleted',
+			HttpResponse.json(null, { status: 202 })
+		);
+
+		await act(async () => {
+			await user.click(screen.getByText(/label\.recovery_period/i));
+			await user.click(screen.getByText(/label\.last_7_days/i));
+			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+		});
+
+		expect(interceptor.getCalledTimes()).toBe(1);
+	});
+
 	it('should correcly evaluate 90 days difference between start and end dates', async () => {
 		jest.useFakeTimers().setSystemTime(new Date('2024-01-01T10:30:35.550Z'));
 		const store = generateStore();
@@ -157,7 +178,7 @@ describe('Recover messages', () => {
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
-		const { after, before } = getParams((await apiInterceptor).url);
+		const { after, before } = getParams(apiInterceptor.getLastRequest().url);
 		expect(before).toBe('2024-01-01T10:30:35.550Z');
 		expect(after).toBe('2023-10-03T10:30:35.550Z');
 	});
