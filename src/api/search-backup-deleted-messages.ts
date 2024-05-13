@@ -24,7 +24,6 @@ export const searchBackupDeletedMessagesAPI = async ({
 	searchString
 }: SearchBackupDeletedMessagesAPIProps): Promise<SearchBackupDeletedMessagesResponse> => {
 	const searchURL = '/zx/backup/v1/searchDeleted';
-
 	const searchParams = new URLSearchParams();
 	if (startDate) {
 		searchParams.set('after', startDate);

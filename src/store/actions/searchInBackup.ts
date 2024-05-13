@@ -17,10 +17,8 @@ export const searchDeletedMessages = createAsyncThunk<
 	SearchInBackupResponse,
 	SearchBackupDeletedMessagesAPIProps
 >(
-	'searchInBackup',
+	'searchDeletedMessages ',
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	async (props) => {
-		searchBackupDeletedMessagesAPI(props).then((res) => res);
-	}
+	async (props) => searchBackupDeletedMessagesAPI(props)
 );
