@@ -40,7 +40,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const dispatch = useAppDispatch();
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
-	const [searchString, setSearchString] = useState(undefined);
+	const [searchString, setSearchString] = useState('');
 	const selectInitialValue = useMemo(() => ({ label: '', value: 0 }), []);
 	const selectItems = useMemo(
 		() => [
@@ -61,7 +61,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 			dispatch(
 				searchDeletedMessages({
 					...interval,
-					...(searchString || { searchString })
+					...(searchString === '' ? {} : { searchString })
 				})
 			)
 				.then((response) => {
@@ -70,7 +70,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 					}
 					setDaysToRecover(null);
 					setSelectValue(selectInitialValue);
-					setSearchString(undefined);
+					setSearchString('');
 					closeModal();
 				})
 				.catch(() => {

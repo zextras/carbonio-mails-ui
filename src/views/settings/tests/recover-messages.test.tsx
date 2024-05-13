@@ -76,15 +76,19 @@ describe('Recover messages', () => {
 			'/zx/backup/v1/searchDeleted',
 			HttpResponse.json(null, { status: 200 })
 		);
+
+		const keywordInput = screen.getByRole('textbox', { name: 'settings.keyword' });
+
 		await act(async () => {
-			await user.type(screen.getByRole('textbox', { name: 'settings.keyword' }), 'keyword');
+			await user.type(keywordInput, 'test keyword');
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
+			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
 		const { before, after, searchString } = getParams((await apiInterceptor).url);
 		expect(after).not.toBeDefined();
 		expect(before).not.toBeDefined();
-		expect(searchString).toBe('keyword');
+		expect(searchString).toBe('test keyword');
 	});
 
 	it('should not close the recover messages modal when the API call fails', async () => {
