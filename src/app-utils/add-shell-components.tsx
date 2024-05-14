@@ -61,7 +61,9 @@ const AppView = (): React.JSX.Element => (
 const EditView = (): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
-			<LazyEditView />
+			<ModalManager>
+				<LazyEditView />
+			</ModalManager>
 		</StoreProvider>
 	</Suspense>
 );

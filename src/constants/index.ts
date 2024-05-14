@@ -429,9 +429,10 @@ export const PROCESS_STATUS = {
 	ABORTED: 'aborted'
 } as const;
 
-export const CLOSE_BOARD_REASON = {
-	SEND: 'send',
-	SEND_LATER: 'sendLater'
+export const EDIT_VIEW_CLOSING_REASONS = {
+	EXTERNAL_CLOSE_REQUEST: 'externalRequest',
+	MESSAGE_SENT: 'send',
+	MESSAGE_SEND_SCHEDULED: 'sendLater'
 } as const;
 
 export const SORTING_OPTIONS = {
