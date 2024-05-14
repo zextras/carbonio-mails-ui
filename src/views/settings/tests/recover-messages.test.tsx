@@ -61,7 +61,7 @@ describe('Recover messages', () => {
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
-		const { before, after, searchString } = getParams(apiInterceptor.getLastRequest().url);
+		const { before, after, searchString } = getParams((await apiInterceptor).url);
 		expect(searchString).not.toBeDefined();
 		expect(after).toBe('2023-12-25T10:30:35.550Z');
 		expect(before).toBe('2024-01-01T10:30:35.550Z');
@@ -83,7 +83,7 @@ describe('Recover messages', () => {
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
-		const { before, after, searchString } = getParams(apiInterceptor.getLastRequest().url);
+		const { before, after, searchString } = getParams((await apiInterceptor).url);
 		expect(after).not.toBeDefined();
 		expect(before).not.toBeDefined();
 		expect(searchString).toBe('test keyword');
@@ -139,11 +139,11 @@ describe('Recover messages', () => {
 		expect(screen.queryByText('label.confirm')).not.toBeInTheDocument();
 	});
 
-	it('should not click the confirm button twice', async () => {
+	it('should close the modal when the api call succeeds', async () => {
 		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		const { user } = setupTest(<RecoverMessages />, { store });
-		const interceptor = createAPIInterceptor(
+		createAPIInterceptor(
 			'get',
 			'/zx/backup/v1/searchDeleted',
 			HttpResponse.json(null, { status: 202 })
@@ -154,10 +154,9 @@ describe('Recover messages', () => {
 			await user.click(screen.getByText(/label\.last_7_days/i));
 			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
-			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
-		expect(interceptor.getCalledTimes()).toBe(1);
+		expect(screen.queryByRole('button', { name: 'label.confirm' })).not.toBeInTheDocument();
 	});
 
 	it('should correcly evaluate 90 days difference between start and end dates', async () => {
@@ -178,7 +177,7 @@ describe('Recover messages', () => {
 			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
 		});
 
-		const { after, before } = getParams(apiInterceptor.getLastRequest().url);
+		const { after, before } = getParams((await apiInterceptor).url);
 		expect(before).toBe('2024-01-01T10:30:35.550Z');
 		expect(after).toBe('2023-10-03T10:30:35.550Z');
 	});

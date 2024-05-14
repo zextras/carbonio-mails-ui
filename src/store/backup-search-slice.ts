@@ -28,7 +28,7 @@ const resetBackupSearchResultsReducer = (): void => {
 	getBackupSearchSliceInitialiState();
 };
 
-const handleBackupSearchMessagesFullfilledReducer = (
+const handleBackupSearchMessagesFullfilled = (
 	state: BackupSearchesStateType,
 	{ payload, meta }: { payload: SearchBackupDeletedMessagesResponse; meta: any }
 ): void => {
@@ -40,10 +40,19 @@ const handleBackupSearchMessagesFullfilledReducer = (
 	state.messages = messages;
 };
 
-const handleBackupSearchMessagesRejectedReducer = (
+const handleBackupSearchMessagesRejected = (
 	state: BackupSearchesStateType,
 	{ meta }: { meta: any }
 ): void => {
+	state.status = meta.requestStatus;
+	state.messages = {};
+};
+
+const handleBackupSearchMessagesPending = (
+	state: BackupSearchesStateType,
+	{ meta }: { meta: any }
+): void => {
+	console.log('meta ===== pending', meta);
 	state.status = meta.requestStatus;
 	state.messages = {};
 };
@@ -55,14 +64,9 @@ export const backupSearchSlice = createSlice({
 		resetBackupSearchResults: resetBackupSearchResultsReducer
 	},
 	extraReducers: (builder) => {
-		builder.addCase(
-			searchDeletedMessages.fulfilled,
-			produce(handleBackupSearchMessagesFullfilledReducer)
-		);
-		builder.addCase(
-			searchDeletedMessages.rejected,
-			produce(handleBackupSearchMessagesRejectedReducer)
-		);
+		builder.addCase(searchDeletedMessages.fulfilled, produce(handleBackupSearchMessagesFullfilled));
+		builder.addCase(searchDeletedMessages.rejected, produce(handleBackupSearchMessagesRejected));
+		builder.addCase(searchDeletedMessages.pending, produce(handleBackupSearchMessagesPending));
 	}
 });
 
