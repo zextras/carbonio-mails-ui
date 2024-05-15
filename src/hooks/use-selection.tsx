@@ -7,7 +7,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { map, omit } from 'lodash';
 
-import { DeletedMessage } from '../api/search-backup-deleted-messages';
+import { DeletedMessage } from '../store/backup-search-slice';
 import type { Conversation, IncompleteMessage } from '../types';
 
 type UseSelectionProps = {

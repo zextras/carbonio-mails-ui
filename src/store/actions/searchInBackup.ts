@@ -6,11 +6,14 @@
 
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { searchBackupDeletedMessagesAPI } from '../../api/search-backup-deleted-messages';
+import {
+	DeletedMessageFromAPI,
+	searchBackupDeletedMessagesAPI
+} from '../../api/search-backup-deleted-messages';
 import { type SearchBackupDeletedMessagesAPIProps } from '../../types';
 
 type SearchInBackupResponse = {
-	messages: [];
+	messages: Array<DeletedMessageFromAPI>;
 };
 
 export const searchDeletedMessages = createAsyncThunk<

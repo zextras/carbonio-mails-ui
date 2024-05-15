@@ -8,7 +8,7 @@ import React from 'react';
 import { Avatar, Container, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
-import { DeletedMessage } from '../../../../api/search-backup-deleted-messages';
+import { DeletedMessage } from '../../../../store/backup-search-slice';
 
 type BackupSearchMessageListItemProps = {
 	item: DeletedMessage;

@@ -8,11 +8,20 @@
 import { createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 
+export type DeletedMessage = {
+	id: string;
+	folderId: string;
+	owner: string;
+	creationDate: string;
+	deletionDate: string;
+	subject: string;
+	sender: string;
+	to: string;
+	fragment: string;
+};
+
 import { searchDeletedMessages } from './actions/searchInBackup';
-import {
-	DeletedMessage,
-	SearchBackupDeletedMessagesResponse
-} from '../api/search-backup-deleted-messages';
+import { SearchBackupDeletedMessagesResponse } from '../api/search-backup-deleted-messages';
 
 export type BackupSearchesStateType = {
 	messages?: Record<string, DeletedMessage>;

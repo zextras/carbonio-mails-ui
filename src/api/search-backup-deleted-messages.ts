@@ -6,7 +6,7 @@
 
 import { type SearchBackupDeletedMessagesAPIProps } from '../types';
 
-export type DeletedMessage = {
+export type DeletedMessageFromAPI = {
 	id: string;
 	folderId: string;
 	owner: string;
@@ -19,7 +19,7 @@ export type DeletedMessage = {
 };
 
 export type SearchBackupDeletedMessagesResponse = {
-	messages: Array<DeletedMessage>;
+	messages: Array<DeletedMessageFromAPI>;
 };
 
 export const searchBackupDeletedMessagesAPI = async ({
