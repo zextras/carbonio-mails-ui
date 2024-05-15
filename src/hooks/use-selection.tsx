@@ -63,9 +63,9 @@ export const useSelection = ({
 	}, [setCount, setIsSelectModeOn]);
 
 	const selectAll = useCallback(() => {
-		map(items, (conv) => {
-			if (!selected.current[conv.id]) {
-				selectItem(conv.id);
+		map(items, (item) => {
+			if (!selected.current[item.id]) {
+				selectItem(item.id);
 			}
 		});
 	}, [items, selectItem, selected]);

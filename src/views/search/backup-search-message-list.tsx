@@ -49,11 +49,11 @@ export const BackupSearchMessageList = ({
 	const listItems = useMemo(
 		() =>
 			map(searchResults, (message) => {
-				const active = itemId === message.messageId;
-				const isSelected = selected[message.messageId];
+				const active = itemId === message.id;
+				const isSelected = selected[message.id];
 				return (
 					<CustomListItem
-						key={message.messageId}
+						key={message.id}
 						selected={isSelected}
 						active={active}
 						background={'gray6'}

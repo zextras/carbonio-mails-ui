@@ -34,8 +34,8 @@ export const BackupSearchMessageListItem = ({
 	// deselectAll
 }: BackupSearchMessageListItemProps): React.JSX.Element => (
 	// const isSelected = selected === item;
-	<Container mainAlignment="flex-start" data-testid={`MessageListItem-${item.messageId}`}>
-		<div style={{ alignSelf: 'center' }} data-testid={`message-list-item-avatar-${item.messageId}`}>
+	<Container mainAlignment="flex-start" data-testid={`MessageListItem-${item.id}`}>
+		<div style={{ alignSelf: 'center' }} data-testid={`message-list-item-avatar-${item.id}`}>
 			<AvatarElement
 				// selecting={selecting}
 				// selected={isSelected}
