@@ -8,10 +8,14 @@ import { type SearchBackupDeletedMessagesAPIProps } from '../types';
 
 export type DeletedMessage = {
 	messageId: string;
-	sender: string;
-	recipient: string;
+	folderId: string;
+	owner: string;
 	creationDate: string;
+	deletionDate: string;
 	subject: string;
+	sender: string;
+	to: string;
+	fragment: string;
 };
 
 export type SearchBackupDeletedMessagesResponse = {
