@@ -3,18 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { map, omit } from 'lodash';
 import { useCallback, useMemo, useRef, useState } from 'react';
+
+import { map, omit } from 'lodash';
+
+import { DeletedMessage } from '../api/search-backup-deleted-messages';
 import type { Conversation, IncompleteMessage } from '../types';
 
-export type useSelectionProps = {
+type UseSelectionProps = {
 	currentFolderId: string;
 	count: number;
-	items?: Array<IncompleteMessage | Conversation>;
+	items?: Array<IncompleteMessage | Conversation | DeletedMessage>;
 	setCount: (value: number | ((prevState: number) => number)) => void;
 };
 
-export type useSelectionReturnType = {
+type UseSelectionReturnType = {
 	selected: Record<string, boolean>;
 	isSelectModeOn: boolean;
 	setIsSelectModeOn: (value: boolean | ((prev: boolean) => boolean)) => void;
@@ -29,7 +32,7 @@ export const useSelection = ({
 	setCount,
 	count,
 	items = []
-}: useSelectionProps): useSelectionReturnType => {
+}: UseSelectionProps): UseSelectionReturnType => {
 	const selected = useRef<Record<string, boolean>>({});
 	const [isSelectModeOn, setIsSelectModeOn] = useState(false);
 	const isAllSelected = useMemo(() => count === items.length, [count, items.length]);
