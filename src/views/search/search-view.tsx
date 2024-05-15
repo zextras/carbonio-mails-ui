@@ -19,6 +19,7 @@ import { includes, map, reduce } from 'lodash';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { AdvancedFilterModal } from './advanced-filter-modal';
+import { BackupSearchMessageList } from './backup-search-message-list';
 import { findIconFromChip } from './parts/use-find-icon';
 import SearchConversationList from './search-conversation-list';
 import { SearchMessageList } from './search-message-list';
@@ -28,7 +29,9 @@ import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
+import { selectBackupSearchMessagesStore } from '../../store/backup-search-slice';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
+import { SearchesStateType } from '../../types';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -63,10 +66,10 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		[folders]
 	);
 
-	const foldersToSearchInQuery = useMemo(
-		() => `( ${map(searchInFolders, (folder) => `inid:"${folder}"`).join(' OR ')} OR is:local) `,
-		[searchInFolders]
-	);
+	const foldersToSearchInQuery = useMemo(() => {
+		const folderQueries = searchInFolders.map((folder) => `inid:"${folder}"`).join(' OR ');
+		return `( ${folderQueries} OR is:local) `;
+	}, [searchInFolders]);
 
 	const dispatch = useAppDispatch();
 	const [loading, setLoading] = useState(false);
@@ -76,7 +79,11 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		includeSharedItemsInSearch
 	);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
-	const searchResults = useAppSelector(selectSearches);
+	const searchStore = useAppSelector(selectSearches);
+	const backupSearchStore = useAppSelector(selectBackupSearchMessagesStore);
+	const isBackupSearchResultView = backupSearchStore.status !== 'empty' && searchStore;
+	const searchResults = isBackupSearchResultView ? backupSearchStore : searchStore;
+	console.log('=============', { searchResults }, { backupSearchStore }, { searchStore });
 
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
@@ -104,6 +111,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
 		[isSharedFolderIncluded, searchInFolders.length, query, foldersToSearchInQuery]
 	);
+	const isQuerySearchResult = 'query' in searchResults;
 
 	const searchQuery = useCallback(
 		async (queryString: string, reset: boolean) => {
@@ -113,32 +121,22 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 					limit: LIST_LIMIT.INITIAL_LIMIT,
 					sortBy: 'dateDesc',
 					types: isMessageView ? 'message' : 'conversation',
-					offset: reset ? 0 : searchResults.offset,
+					offset: reset ? 0 : (searchResults as SearchesStateType).offset,
 					recip: '0',
 					locale: prefLocale
 				})
 			);
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			if (search.rejected.match(resultAction)) {
-				if (
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					resultAction?.payload?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
-				) {
-					setIsInvalidQuery(true);
-					setSearchDisabled(true, invalidQueryTooltip);
-				}
+			if (
+				search.rejected.match(resultAction) &&
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				resultAction?.payload?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
+			) {
+				setIsInvalidQuery(true);
+				setSearchDisabled(true, invalidQueryTooltip);
 			}
 		},
-		[
-			dispatch,
-			invalidQueryTooltip,
-			isMessageView,
-			prefLocale,
-			searchResults.offset,
-			setSearchDisabled
-		]
+		[dispatch, invalidQueryTooltip, isMessageView, prefLocale, searchResults, setSearchDisabled]
 	);
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
@@ -213,15 +211,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [
-		query,
-		queryArray,
-		isInvalidQuery,
-		searchQuery,
-		searchResults.query,
-		queryToString,
-		dispatch
-	]);
+	}, [query, queryArray, isInvalidQuery, searchQuery, queryToString, dispatch]);
 
 	const { path } = useRouteMatch();
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
@@ -244,7 +234,20 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				>
 					<Switch>
 						<Route path={`${path}/:folder?/:folderId?/:type?/:itemId?`}>
-							{isMessageView ? (
+							{isBackupSearchResultView && !isQuerySearchResult && (
+								<BackupSearchMessageList
+									searchResults={searchResults.messages}
+									// search={searchQuery}
+									// query={queryToString}
+									// loading={loading}
+									// filterCount={filterCount}
+									// setShowAdvanceFilters={setShowAdvanceFilters}
+									// isInvalidQuery={isInvalidQuery}
+									// invalidQueryTooltip={invalidQueryTooltip}
+								/>
+							)}
+
+							{isMessageView && isQuerySearchResult ? (
 								<SearchMessageList
 									searchDisabled={searchDisabled}
 									searchResults={searchResults}
@@ -257,41 +260,45 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 									invalidQueryTooltip={invalidQueryTooltip}
 								/>
 							) : (
-								<SearchConversationList
-									searchDisabled={searchDisabled}
-									searchResults={searchResults}
-									search={searchQuery}
-									query={queryToString}
-									loading={loading}
-									filterCount={filterCount}
-									setShowAdvanceFilters={setShowAdvanceFilters}
-									isInvalidQuery={isInvalidQuery}
-									invalidQueryTooltip={invalidQueryTooltip}
-								/>
+								isQuerySearchResult && (
+									<SearchConversationList
+										searchDisabled={searchDisabled}
+										searchResults={searchResults}
+										search={searchQuery}
+										query={queryToString}
+										loading={loading}
+										filterCount={filterCount}
+										setShowAdvanceFilters={setShowAdvanceFilters}
+										isInvalidQuery={isInvalidQuery}
+										invalidQueryTooltip={invalidQueryTooltip}
+									/>
+								)
 							)}
 						</Route>
 					</Switch>
 					<Suspense fallback={<Spinner />}>
 						<Container mainAlignment="flex-start" width="75%">
-							<SearchPanel searchResults={searchResults} query={query} />
+							{isQuerySearchResult && <SearchPanel searchResults={searchResults} query={query} />}
 						</Container>
 					</Suspense>
 				</Container>
 			</Container>
-			<AdvancedFilterModal
-				// TOFIX: fix type definition
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				query={query}
-				// TOFIX-SHELL: fix updateQUeryFunction inside shell type
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				updateQuery={updateQuery}
-				isSharedFolderIncluded={isSharedFolderIncluded}
-				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
-				open={showAdvanceFilters}
-				onClose={(): void => setShowAdvanceFilters(false)}
-			/>
+			{isQuerySearchResult && (
+				<AdvancedFilterModal
+					// TOFIX: fix type definition
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					query={query}
+					// TOFIX-SHELL: fix updateQUeryFunction inside shell type
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					updateQuery={updateQuery}
+					isSharedFolderIncluded={isSharedFolderIncluded}
+					setIsSharedFolderIncluded={setIsSharedFolderIncluded}
+					open={showAdvanceFilters}
+					onClose={(): void => setShowAdvanceFilters(false)}
+				/>
+			)}
 		</>
 	);
 };
