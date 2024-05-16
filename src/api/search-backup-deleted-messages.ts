@@ -7,7 +7,7 @@
 import { type SearchBackupDeletedMessagesAPIProps } from '../types';
 
 export type DeletedMessageFromAPI = {
-	id: string;
+	messageId: string;
 	folderId: string;
 	owner: string;
 	creationDate: string;

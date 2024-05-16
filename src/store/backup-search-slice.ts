@@ -43,8 +43,8 @@ const handleBackupSearchMessagesFulfilled = (
 ): void => {
 	state.status = meta.requestStatus;
 	const messages = payload?.messages.reduce((acc, message) => {
-		const { id: messageId } = message;
-		return { ...acc, [messageId]: message };
+		const { messageId } = message;
+		return { ...acc, [messageId]: { ...message, id: message.messageId } };
 	}, {});
 	state.messages = messages;
 };
