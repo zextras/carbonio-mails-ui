@@ -13,9 +13,9 @@ import {
 	setAppContext,
 	t,
 	useUserSettings,
-	SearchViewProps
+	type SearchViewProps
 } from '@zextras/carbonio-shell-ui';
-import { includes, map, reduce } from 'lodash';
+import { includes, map } from 'lodash';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { AdvancedFilterModal } from './advanced-filter-modal';
@@ -24,8 +24,8 @@ import { findIconFromChip } from './parts/use-find-icon';
 import SearchConversationList from './search-conversation-list';
 import { SearchMessageList } from './search-message-list';
 import SearchPanel from './search-panel';
+import { getFoldersNameArray } from './utils';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
@@ -51,25 +51,12 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const searchInFolders = useMemo(
-		() =>
-			reduce(
-				folders,
-				(acc: Array<string>, v: Folder, k: string) => {
-					if (v.perm) {
-						acc.push(k);
-					}
-					return acc;
-				},
-				[]
-			),
-		[folders]
-	);
-
 	const foldersToSearchInQuery = useMemo(() => {
-		const folderQueries = searchInFolders.map((folder) => `inid:"${folder}"`).join(' OR ');
+		const folderQueries = getFoldersNameArray(folders)
+			.map((folder: string) => `inid:"${folder}"`)
+			.join(' OR ');
 		return `( ${folderQueries} OR is:local) `;
-	}, [searchInFolders]);
+	}, [folders]);
 
 	const dispatch = useAppDispatch();
 	const [loading, setLoading] = useState(false);
@@ -83,7 +70,6 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	const backupSearchStore = useAppSelector(selectBackupSearchMessagesStore);
 	const isBackupSearchResultView = backupSearchStore.status !== 'empty' && searchStore;
 	const searchResults = isBackupSearchResultView ? backupSearchStore : searchStore;
-	console.log('=============', { searchResults }, { backupSearchStore }, { searchStore });
 
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
@@ -106,10 +92,10 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 
 	const queryToString = useMemo(
 		() =>
-			isSharedFolderIncluded && searchInFolders?.length > 0
+			isSharedFolderIncluded && getFoldersArray(folders).length > 0
 				? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
 				: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
-		[isSharedFolderIncluded, searchInFolders.length, query, foldersToSearchInQuery]
+		[isSharedFolderIncluded, folders, query, foldersToSearchInQuery]
 	);
 	const isQuerySearchResult = 'query' in searchResults;
 

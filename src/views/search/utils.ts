@@ -5,9 +5,17 @@
  */
 
 import { TFunction } from 'i18next';
+import { reduce } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import { ContactInputItem, KeywordState, Query, SearchQueryItem } from '../../types';
+import {
+	ContactInputItem,
+	Folder,
+	Folders,
+	KeywordState,
+	Query,
+	SearchQueryItem
+} from '../../types';
 
 type EmptyListMessages = { title: string; description: string }[];
 
@@ -87,4 +95,21 @@ export function getChipItems(chips: Query | Array<ContactInputItem>, prefix: str
 		fullName: getChipString(chip, prefix),
 		value: getChipValue(chip, prefix)
 	}));
+}
+
+/**
+ * Takes a Folders object and returns an array of folder names (keys)
+ * that have the `perm` property set to a truthy value.
+ */
+export function getFoldersNameArray(folders: Folders): Array<string> {
+	return reduce(
+		folders,
+		(acc: Array<string>, value: Folder, key: string) => {
+			if (value.perm) {
+				acc.push(key);
+			}
+			return acc;
+		},
+		[]
+	);
 }
