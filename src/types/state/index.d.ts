@@ -109,7 +109,7 @@ export type SearchesStateType = {
 	searchResults: any;
 	searchResultsIds: Array<string>;
 	conversations?: Record<string, Conversation>;
-	messages?: Record<string, Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>>;
+	messages: Record<string, Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>>;
 	more: boolean;
 	offset: number;
 	sortBy?: SortBy;
