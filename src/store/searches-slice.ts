@@ -9,13 +9,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach } from 'lodash';
-import { CONVACTIONS } from '../commons/utilities';
-import type {
-	ConvActionParameters,
-	FetchConversationsReturn,
-	SearchesStateType,
-	MailsStateType
-} from '../types';
+
 import { msgAction, search } from './actions';
 import {
 	handleAddMessagesInConversationReducer,
@@ -28,9 +22,14 @@ import {
 	handleModifiedMessagesInConversationReducer
 } from './search-slice-reducers';
 import { extractIds, isItemInSearches } from './utils';
+import { CONVACTIONS } from '../commons/utilities';
 import { LIST_LIMIT } from '../constants';
-import { searchDeletedMessages } from './actions/searchInBackup';
-import { SearchBackupDeletedMessagesResponse } from '../api/search-backup-deleted-messages';
+import type {
+	ConvActionParameters,
+	FetchConversationsReturn,
+	SearchesStateType,
+	MailsStateType
+} from '../types';
 
 export const getSearchSliceInitialiState = (): SearchesStateType =>
 	({

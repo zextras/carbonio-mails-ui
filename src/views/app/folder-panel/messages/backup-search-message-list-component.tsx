@@ -177,7 +177,7 @@ export const BackupSearchMessageListComponent: FC<BackupMessageListComponentProp
 					<CustomList onListBottom={noop} ref={listRef}>
 						{listItems}
 					</CustomList>
-					)
+
 					{/* <DragImageContainer ref={dragImageRef}>
 							<DragItems messages={messages} draggedIds={draggedIds ?? {}} folderId={folderId} />
 						</DragImageContainer> */}

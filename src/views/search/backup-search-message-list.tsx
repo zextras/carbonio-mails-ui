@@ -12,6 +12,7 @@ import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
+import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { useSelection } from '../../hooks/use-selection';
 import { BackupSearchesStateType } from '../../store/backup-search-slice';
 import type { AppContext } from '../../types';
@@ -19,13 +20,13 @@ import { BackupSearchMessageListComponent } from '../app/folder-panel/messages/b
 import { BackupSearchMessageListItem } from '../app/folder-panel/messages/backup-search-message-list-item';
 
 type BackupSearchMessageListProps = {
-	searchResults: BackupSearchesStateType['messages'];
+	backupMessages: BackupSearchesStateType['messages'];
 };
 
 export const BackupSearchMessageList = ({
-	searchResults
+	backupMessages
 }: BackupSearchMessageListProps): React.JSX.Element => {
-	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
+	const { itemId } = useParams<{ itemId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
 
 	const {
@@ -38,17 +39,17 @@ export const BackupSearchMessageList = ({
 		isAllSelected,
 		selectAllModeOff
 	} = useSelection({
-		currentFolderId: folderId,
+		currentFolderId: FOLDERS.INBOX,
 		setCount,
 		count,
-		items: [...Object.values(searchResults ?? {})]
+		items: [...Object.values(backupMessages ?? {})]
 	});
 
 	const listRef = useRef<HTMLDivElement>(null);
 
 	const listItems = useMemo(
 		() =>
-			map(searchResults, (message) => {
+			map(backupMessages, (message) => {
 				const active = itemId === message.id;
 				const isSelected = selected[message.id];
 				return (
@@ -62,11 +63,11 @@ export const BackupSearchMessageList = ({
 							visible ? (
 								<BackupSearchMessageListItem
 									item={message}
-									// selected={message}
-									// isSelected={isSelected}
+									selected={message}
+									isSelected={isSelected}
 									// active={active}
 									// toggle={toggle}
-									// isSelectModeOn={isSelectModeOn}
+									isSelectModeOn
 									// isSearchModule
 									// deselectAll={deselectAll}
 									// visible={visible}
@@ -78,24 +79,24 @@ export const BackupSearchMessageList = ({
 					</CustomListItem>
 				);
 			}),
-		[itemId, searchResults, selected]
+		[itemId, backupMessages, selected]
 	);
 
 	// const totalMessages = useMemo(() => {
-	// 	if (searchResults) {
-	// 		return Object.keys(searchResults.messages).length;
+	// 	if (backupMessages) {
+	// 		return Object.keys(backupMessages.messages).length;
 	// 	}
 	// 	return 0;
-	// }, [searchResults]);
+	// }, [backupMessages]);
 	//
 	// const messagesLoadingCompleted = useMemo(
-	// 	() => !isArray(searchResults?.messages),
-	// 	[searchResults?.messages]
+	// 	() => !isArray(backupMessages?.messages),
+	// 	[backupMessages?.messages]
 	// );
 	// const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 	// const messages = useMemo(
-	// 	() => Object.values(searchResults?.messages ?? {}),
-	// 	[searchResults?.messages]
+	// 	() => Object.values(backupMessages?.messages ?? {}),
+	// 	[backupMessages?.messages]
 	// );
 
 	return (

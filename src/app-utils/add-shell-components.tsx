@@ -42,6 +42,11 @@ const LazySearchView = lazy(
 	() => import(/* webpackChunkName: "mail-search-view" */ '../views/search/search-view')
 );
 
+const LazyBackupSearchView = lazy(
+	() =>
+		import(/* webpackChunkName: "mail-backup-search-view" */ '../views/search/backup-search-view')
+);
+
 const LazySidebarView = lazy(
 	() => import(/* webpackChunkName: "mail-sidebar-view" */ '../views/sidebar/sidebar')
 );
@@ -87,6 +92,14 @@ const SearchView = (props: SearchViewProps): React.JSX.Element => (
 		</StoreProvider>
 	</Suspense>
 );
+// TODO: Change BackupSearchView type
+const BackupSearchView = (props: any): React.JSX.Element => (
+	<Suspense fallback={<Spinner />}>
+		<StoreProvider>
+			<LazyBackupSearchView {...props} />
+		</StoreProvider>
+	</Suspense>
+);
 
 const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
@@ -113,6 +126,14 @@ export const addShellComponents = async (): Promise<void> => {
 		route: MAILS_ROUTE,
 		component: SearchView,
 		label
+	});
+	addRoute({
+		route: 'backup-search',
+		position: 1000,
+		visible: true,
+		label: 'Backup Search',
+		primaryBar: 'RestoreOutline',
+		appView: BackupSearchView
 	});
 	addBoardView({
 		route: MAILS_ROUTE,

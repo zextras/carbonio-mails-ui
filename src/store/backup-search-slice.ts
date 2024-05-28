@@ -24,7 +24,7 @@ import { searchDeletedMessages } from './actions/searchInBackup';
 import { SearchBackupDeletedMessagesResponse } from '../api/search-backup-deleted-messages';
 
 export type BackupSearchesStateType = {
-	messages?: Record<string, DeletedMessage>;
+	messages: Record<string, DeletedMessage>;
 	status: string;
 };
 
@@ -42,6 +42,7 @@ const handleBackupSearchMessagesFulfilled = (
 	{ payload, meta }: { payload: SearchBackupDeletedMessagesResponse; meta: any }
 ): void => {
 	state.status = meta.requestStatus;
+	console.log('===========payload', { payload });
 	const messages = payload?.messages.reduce((acc, message) => {
 		const { messageId } = message;
 		return { ...acc, [messageId]: { ...message, id: message.messageId } };
@@ -61,7 +62,6 @@ const handleBackupSearchMessagesPending = (
 	state: BackupSearchesStateType,
 	{ meta }: { meta: any }
 ): void => {
-	console.log('meta ===== pending', meta);
 	state.status = meta.requestStatus;
 	state.messages = {};
 };
