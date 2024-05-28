@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import {
 	Text,
@@ -13,10 +13,10 @@ import {
 	useModal,
 	CloseModalFn,
 	useSnackbar,
-	Select,
 	Row,
 	Input,
-	Container
+	Container,
+	DateTimePicker
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
@@ -27,13 +27,20 @@ import { searchDeletedMessages } from '../../store/actions/searchInBackup';
 import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 
-function calculateInterval(daysToRecover: number | null): { startDate?: string; endDate?: string } {
-	if (!daysToRecover) return {};
-	const now = new Date();
-	const endDate = now.toISOString();
-	now.setUTCDate(now.getUTCDate() - daysToRecover);
-	const startDate = now.toISOString();
-	return { startDate, endDate };
+function calculateInterval(recoverDate: string | null): { startDate?: string; endDate?: string } {
+	if (!recoverDate) return {};
+
+	const date = new Date(recoverDate);
+	const startDate = new Date(date);
+	const endDate = new Date(date);
+
+	startDate.setUTCDate(date.getUTCDate() - 2);
+	endDate.setUTCDate(date.getUTCDate() + 2);
+
+	return {
+		startDate: startDate.toISOString(),
+		endDate: endDate.toISOString()
+	};
 }
 
 export const RecoverMessages = (): React.JSX.Element => {
@@ -41,23 +48,12 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
 	const [searchString, setSearchString] = useState('');
-	const selectInitialValue = useMemo(() => ({ label: '', value: 0 }), []);
-	const selectItems = useMemo(
-		() => [
-			{ label: t('label.last_7_days', 'Last 7 days'), value: 7 },
-			{ label: t('label.last_14_days', 'Last 14 days'), value: 14 },
-			{ label: t('label.last_30_days', 'Last 30 days'), value: 30 },
-			{ label: t('label.last_90_days', 'Last 90 days'), value: 90 }
-		],
-		[]
-	);
-	const [daysToRecover, setDaysToRecover] = useState(null);
-	const [selectValue, setSelectValue] = useState(selectInitialValue);
+	const [recoverDay, setRecoverDay] = useState(null);
 
 	const restoreMessages = useCallback(
 		(closeModal: CloseModalFn) => {
-			if (!daysToRecover && !searchString) return;
-			const interval = calculateInterval(daysToRecover);
+			if (!recoverDay && !searchString) return;
+			const interval = calculateInterval(recoverDay);
 			dispatch(
 				searchDeletedMessages({
 					...interval,
@@ -68,8 +64,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 					if (response?.type.includes('rejected')) {
 						throw new Error('Something went wrong with the search inside the backup');
 					}
-					setDaysToRecover(null);
-					setSelectValue(selectInitialValue);
+					setRecoverDay(null);
 					setSearchString('');
 					closeModal();
 				})
@@ -84,7 +79,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 					});
 				});
 		},
-		[createSnackbar, daysToRecover, dispatch, searchString, selectInitialValue]
+		[createSnackbar, recoverDay, dispatch, searchString]
 	);
 
 	const informativeText = t(
@@ -92,7 +87,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 		`You can still retrieve emails deleted from Trash in a period.\nBy clicking “START RECOVERY” you will initiate the process to recover deleted emails. Once the process is completed you will receive a notification in your Inbox and find the recovered emails in Recovered mails folder.`
 	);
 	const buttonLabel = t('label.start_recovery', 'Start Recovery');
-	const selectLabel = t('label.recovery_period', 'Select recovery period');
+	const datePickerLabel = 'Select rocovery date';
 	const sectionTitle = recoverMessagesSubSection();
 	const { backupSelfUndeleteAllowed } = useAdvancedAccountStore();
 
@@ -102,7 +97,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				children: (
 					<StoreProvider>
 						<RecoverMessagesModal
-							daysToRecover={daysToRecover}
+							recoverDay={recoverDay}
 							onClose={(): void => closeModal()}
 							onConfirm={(): void => restoreMessages(closeModal)}
 						/>
@@ -111,16 +106,11 @@ export const RecoverMessages = (): React.JSX.Element => {
 			},
 			true
 		);
-	}, [createModal, daysToRecover, restoreMessages]);
+	}, [createModal, recoverDay, restoreMessages]);
 
-	const onSelectChange = useCallback(
-		(value) => {
-			setDaysToRecover(value);
-			const selectedItem = selectItems.find((item) => item.value === value);
-			selectedItem && setSelectValue(selectedItem);
-		},
-		[selectItems]
-	);
+	const onSelectChange = useCallback((value) => {
+		setRecoverDay(value);
+	}, []);
 
 	const handleTextFilterValueChange = useCallback((ev) => {
 		setSearchString(ev.target.value);
@@ -146,12 +136,16 @@ export const RecoverMessages = (): React.JSX.Element => {
 				</Row>
 				<Padding top="large" />
 				<Row width="30%" mainAlignment="flex-start">
-					<Select
-						label={selectLabel}
+					<DateTimePicker
+						label={datePickerLabel}
+						isClearable
+						width="fill"
 						onChange={onSelectChange}
-						items={selectItems}
-						selection={selectValue}
-						showCheckbox={false}
+						timeCaption={t('label.time', 'Time')}
+						includeTime={false}
+						dateFormat="dd/MM/yyyy"
+						// timeIntervals={7}
+						// format="DD MMM YYYY"
 					/>
 				</Row>
 				<Padding top="large" />
@@ -160,7 +154,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 						type={'outlined'}
 						onClick={onClick}
 						label={buttonLabel}
-						disabled={!daysToRecover && !searchString}
+						disabled={!recoverDay && !searchString}
 					/>
 				</Row>
 			</Container>

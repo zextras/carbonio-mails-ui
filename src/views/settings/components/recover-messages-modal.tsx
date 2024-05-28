@@ -14,12 +14,12 @@ import { useAppSelector } from '../../../hooks/redux';
 import { selectBackupSearchMessagesStore } from '../../../store/backup-search-slice';
 
 type RecoverMessagesModalPropType = {
-	daysToRecover: number | null;
+	recoverDay: number | null;
 	onConfirm: () => void;
 	onClose: () => void;
 };
 export const RecoverMessagesModal = ({
-	daysToRecover,
+	recoverDay,
 	onConfirm,
 	onClose
 }: RecoverMessagesModalPropType): React.JSX.Element => {
@@ -40,10 +40,11 @@ export const RecoverMessagesModal = ({
 				height="fit"
 			>
 				<Text style={{ whiteSpace: 'pre-line' }}>
+					{/* TODO: fix msg */}
 					{t('messages.recover_messages_modal_body', {
-						daysToRecover,
+						recoverDay,
 						defaultValue:
-							'Do you want to recover emails deleted within the past {{daysToRecover}} days from the Trash folder?\nRecovering emails deleted from Trash can take some time.'
+							'Once the process is completed you will receive a notification in your Inbox and find the recovered e-mails in a brand new folder.'
 					})}
 				</Text>
 				<ModalFooter
