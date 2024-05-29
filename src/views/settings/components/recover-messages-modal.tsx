@@ -10,8 +10,6 @@ import { t } from '@zextras/carbonio-shell-ui';
 
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
-import { useAppSelector } from '../../../hooks/redux';
-import { selectBackupSearchMessagesStore } from '../../../store/backup-search-slice';
 
 type RecoverMessagesModalPropType = {
 	recoverDay: number | null;
@@ -23,8 +21,7 @@ export const RecoverMessagesModal = ({
 	onConfirm,
 	onClose
 }: RecoverMessagesModalPropType): React.JSX.Element => {
-	const { status } = useAppSelector(selectBackupSearchMessagesStore);
-	const confirmButtonIsDisable = status === 'pending';
+	const confirmButtonIsDisable = false;
 	return (
 		<Container
 			padding={{ all: 'large' }}

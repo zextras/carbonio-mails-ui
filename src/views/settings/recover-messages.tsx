@@ -22,10 +22,10 @@ import { t } from '@zextras/carbonio-shell-ui';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
-import { useAppDispatch } from '../../hooks/redux';
-import { searchDeletedMessages } from '../../store/actions/searchInBackup';
+import { searchBackupDeletedMessagesAPI } from '../../api/search-backup-deleted-messages';
 import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
+import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
 
 function calculateInterval(recoverDate: string | null): { startDate?: string; endDate?: string } {
 	if (!recoverDate) return {};
@@ -44,42 +44,36 @@ function calculateInterval(recoverDate: string | null): { startDate?: string; en
 }
 
 export const RecoverMessages = (): React.JSX.Element => {
-	const dispatch = useAppDispatch();
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
 	const [searchString, setSearchString] = useState('');
 	const [recoverDay, setRecoverDay] = useState(null);
 
 	const restoreMessages = useCallback(
-		(closeModal: CloseModalFn) => {
+		async (closeModal: CloseModalFn) => {
 			if (!recoverDay && !searchString) return;
 			const interval = calculateInterval(recoverDay);
-			dispatch(
-				searchDeletedMessages({
-					...interval,
-					...(searchString === '' ? {} : { searchString })
-				})
-			)
-				.then((response) => {
-					if (response?.type.includes('rejected')) {
-						throw new Error('Something went wrong with the search inside the backup');
-					}
-					setRecoverDay(null);
-					setSearchString('');
-					closeModal();
-				})
-				.catch(() => {
-					createSnackbar({
-						key: `recover-messages-error`,
-						replace: true,
-						type: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
+			const response = await searchBackupDeletedMessagesAPI({
+				...interval,
+				...(searchString === '' ? {} : { searchString })
+			});
+			if (response) {
+				useBackupSearchStore.getState().setMessages(response.messages);
+				setRecoverDay(null);
+				setSearchString('');
+				closeModal();
+			} else {
+				createSnackbar({
+					key: `recover-messages-error`,
+					replace: true,
+					type: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: 3000,
+					hideButton: true
 				});
+			}
 		},
-		[createSnackbar, recoverDay, dispatch, searchString]
+		[createSnackbar, recoverDay, searchString]
 	);
 
 	const informativeText = t(
@@ -99,7 +93,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 						<RecoverMessagesModal
 							recoverDay={recoverDay}
 							onClose={(): void => closeModal()}
-							onConfirm={(): void => restoreMessages(closeModal)}
+							onConfirm={(): Promise<void> => restoreMessages(closeModal)}
 						/>
 					</StoreProvider>
 				)

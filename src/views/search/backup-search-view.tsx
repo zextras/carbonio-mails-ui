@@ -3,23 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { setAppContext, SearchViewProps } from '@zextras/carbonio-shell-ui';
+import { setAppContext } from '@zextras/carbonio-shell-ui';
 
 import { BackupSearchMessageList } from './backup-search-message-list';
-import { useAppSelector } from '../../hooks/redux';
-import { selectBackupSearchMessagesStore } from '../../store/backup-search-slice';
+import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
 
-const BackupSearchView: FC<SearchViewProps> = () => {
+const BackupSearchView = (): React.JSX.Element => {
 	const [count, setCount] = useState(0);
 
 	useEffect(() => {
 		setAppContext({ isMessageView: true, count, setCount });
 	}, [count]);
 
-	const backupMessages = useAppSelector(selectBackupSearchMessagesStore);
+	const { messages } = useBackupSearchStore();
 
 	return (
 		<>
@@ -31,7 +30,7 @@ const BackupSearchView: FC<SearchViewProps> = () => {
 					mainAlignment="flex-start"
 				>
 					<BackupSearchMessageList
-						backupMessages={backupMessages.messages}
+						backupMessages={messages}
 						// search={searchQuery}
 						// query={queryToString}
 						// loading={loading}

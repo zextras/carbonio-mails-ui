@@ -5,7 +5,6 @@
  */
 import { combineReducers } from '@reduxjs/toolkit';
 
-import { backupSearchSliceReducer } from './backup-search-slice';
 import { conversationsSliceReducer } from './conversations-slice';
 import { messageSliceReducer } from './messages-slice';
 import { searchesSliceReducer } from './searches-slice';
@@ -13,6 +12,5 @@ import { searchesSliceReducer } from './searches-slice';
 export const storeReducers = combineReducers({
 	conversations: conversationsSliceReducer,
 	messages: messageSliceReducer,
-	searches: searchesSliceReducer,
-	backupSearches: backupSearchSliceReducer
+	searches: searchesSliceReducer
 });
