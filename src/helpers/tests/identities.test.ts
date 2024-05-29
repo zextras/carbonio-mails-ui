@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
@@ -14,7 +13,6 @@ import { generateMessage } from '../../tests/generators/generateMessage';
 import { getMessageOwnerAccountName } from '../folders';
 import {
 	getAddressOwnerAccount,
-	getExtraAccountsIds,
 	getMessageSenderAccount,
 	getMessageSenderAddress
 } from '../identities';
@@ -157,37 +155,5 @@ describe('Message folder owner account', () => {
 		expect(getMessageOwnerAccountName(msg, folderRoots)).toBe(
 			mocksContext.identities.sendOnBehalf[0].identity.email
 		);
-	});
-});
-
-describe('getExtraAccountsIds', () => {
-	const mocksContext = getMocksContext();
-	test('returns an empty array when roots do not contain any shared account', () => {
-		populateFoldersStore({ noSharedAccounts: true });
-		const result = getExtraAccountsIds();
-		expect(result).toEqual([]);
-	});
-
-	test('excludes the default account when rootsMap is not empty', () => {
-		populateFoldersStore();
-		const result = getExtraAccountsIds();
-		expect(result).not.toContain(mocksContext.identities.primary.identity.id);
-	});
-
-	test('returns a number of ids equal to number of roots minus one', () => {
-		populateFoldersStore();
-		const roots = getRootsMap();
-		const { length } = Object.keys(roots);
-		const result = getExtraAccountsIds();
-		expect(result?.length).toBe(length - 1);
-	});
-	test('return all the roots zids when account when rootsMap is not empty', () => {
-		populateFoldersStore();
-		const roots = getRootsMap();
-		const rootsArray = Object.keys(roots);
-		const result = getExtraAccountsIds();
-		result?.forEach((id) => {
-			expect(rootsArray).toContain(`${id}:${FOLDERS.USER_ROOT}`);
-		});
 	});
 });

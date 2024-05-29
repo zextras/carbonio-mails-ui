@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Button, Container, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -11,7 +11,6 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { RecipientsRow } from './recipients-row';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { GapContainer } from '../../../../../commons/gap-container';
-import { getExtraAccountsIds } from '../../../../../helpers/identities';
 import {
 	useEditorBccRecipients,
 	useEditorCcRecipients,
@@ -31,7 +30,6 @@ export const RecipientsRows = ({ editorId }: RecipientsRowsProps): JSX.Element =
 	const [showCc, setShowCc] = useState(ccRecipients.length > 0);
 	const [showBcc, setShowBcc] = useState(bccRecipients.length > 0);
 
-	const extraAccountsIds = useMemo(() => getExtraAccountsIds(), []);
 	const toggleCc = useCallback(() => setShowCc((show) => !show), []);
 	const toggleBcc = useCallback(() => setShowBcc((show) => !show), []);
 
@@ -65,7 +63,6 @@ export const RecipientsRows = ({ editorId }: RecipientsRowsProps): JSX.Element =
 						dataTestid={'RecipientTo'}
 						recipients={toRecipients}
 						onRecipientsChange={onToChange}
-						extraAccountsIds={extraAccountsIds}
 					/>
 				</Container>
 				<Container

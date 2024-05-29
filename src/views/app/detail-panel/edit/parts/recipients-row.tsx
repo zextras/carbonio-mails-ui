@@ -111,7 +111,6 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					bottomBorderColor="transparent"
 					hasError={some(recipients || [], { error: true })}
 					dragAndDropEnabled
-					extraAccountsIds={extraAccountsIds}
 				/>
 			) : (
 				<ChipInput
