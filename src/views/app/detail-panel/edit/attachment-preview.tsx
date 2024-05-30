@@ -20,7 +20,6 @@ import { t } from '@zextras/carbonio-shell-ui';
 import styled, { SimpleInterpolation } from 'styled-components';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
-import { ToggleSmartLinkButton } from './parts/toggle-smart-link-button';
 import {
 	composeAttachmentDownloadUrl,
 	getAttachmentExtension,
@@ -247,7 +246,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({ editorId, attachmen
 				<Row orientation="horizontal" crossAlignment="center">
 					<AttachmentHoverBarContainer>
 						<Row>
-							<ToggleSmartLinkButton editorId={editorId} attachment={attachment} />
+							{/* <ToggleSmartLinkButton editorId={editorId} attachment={attachment} /> */}
 							{isDeletable && (
 								<Padding right="small">
 									<Tooltip label={t('label.delete', 'Delete')}>
