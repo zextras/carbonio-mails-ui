@@ -28,7 +28,12 @@
         "click_preview": "Clique para pré-visualizar",
         "mark_all_read": "Marcar todas como lidas",
         "edit_anyway": "Editar mesmo assim",
-        "click_open": "Clique para abrir"
+        "click_open": "Clique para abrir",
+        "create_appointment": "Criar Compromisso",
+        "download_eml": "Baixar EML",
+        "apply_filter_on_folder": "Aplicar filtro na pasta",
+        "select_folders": "Selecionar pastas",
+        "preview_on_separated_window": "Abrir em uma nova janela"
     },
     "folder": {
         "modal": {
@@ -290,10 +295,15 @@
         "upload_failed": "Falha no upload",
         "attachment_upload_in_progress": "upload de anexos em andamento",
         "errors": {
-            "upload_failed_generic": "Falha no upload do arquivo \"{{filename}}\""
+            "upload_failed_generic": "Erro no upload do arquivo \"{{filename}}\""
         },
         "invalid_recipients": "O endereço de um destinatário está escrito incorretamente",
-        "missing_sender": "o remetente da mensagem não está definido"
+        "missing_sender": "o remetente da mensagem não está definido",
+        "convert_back_to_attachment": "Converter novamente para anexo",
+        "convert_to_smart_link": "Converter para link inteligente",
+        "create_smart_links": "criar links inteligentes",
+        "no_folder_selected": "Nenhuma pasta selecionada",
+        "smart_links_created": "links inteligentes criados"
     },
     "title": {
         "new_messages": "Novas mensagens",
@@ -347,7 +357,10 @@
             "tag_deleted": "Marcador \"{{name}}\" excluído com sucesso",
             "tag_not_updated": "Algo deu errado, o marcador não foi atualizado. Tente novamente.",
             "tag_updated": "Marcador atualizado com sucesso",
-            "message_sending_aborted": "cancelado pelo usuário"
+            "message_sending_aborted": "cancelado pelo usuário",
+            "apply_filter_rules_completed": "O filtro '{{filterName}}' foi aplicado com sucesso a {{involvedMessagesCount}} mensagens da pasta '{{folderPath}}'",
+            "apply_filter_rules_error": "Erro ao aplicar o filtro '{{filterName}}'",
+            "apply_filter_rules_started": "O filtro '{{filterName}}' está sendo aplicado às mensagens da pasta '{{folderPath}}'"
         },
         "invalid_address": "O seguinte endereço parece ser inválido",
         "invalid_address_plural": "Os seguintes endereços parecem ser inválidos",
@@ -395,7 +408,10 @@
             "popup_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador",
             "opening_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador"
         },
-        "enter_calendar_name": "Digite um nome para aceitar o calendário"
+        "enter_calendar_name": "Digite um nome para aceitar o calendário",
+        "warning": {
+            "sending_to_yourself": "Você está enviando essa mensagem para si mesmo"
+        }
     },
     "placeholder": {
         "add_new_recipients": "Adicionar destinatários"
@@ -636,7 +652,9 @@
         "send_later_success": "Seu e-mail será enviado em {{date}} às {{time}}",
         "schedule_mail": "Será enviado em: {{date}} às {{time}}",
         "delete_attachment_message1": "O anexo será excluído permanentemente do Carbonio.",
-        "delete_attachment_message2": "Deseja baixá-lo antes?"
+        "delete_attachment_message2": "Deseja baixá-lo antes?",
+        "copy": "Copiar",
+        "send_email": "Enviar e-mail"
     },
     "snackbar": {
         "share_resend": "Convite do compartilhamento reenviado",
@@ -645,7 +663,8 @@
         "folder_shared": "Pasta compartilhada",
         "email_moved_to_trash": "E-mail movido para a Lixeira",
         "tag_removed": "Marcador \"{{tag}}\" removido",
-        "tag_applied": "Marcador \"{{tag}}\" aplicado"
+        "tag_applied": "Marcador \"{{tag}}\" aplicado",
+        "email_copied_to_clipboard": "E-mail copiado para área de transferência."
     },
     "tooltip": {
         "add_attachments": "Adicionar anexos",
@@ -724,7 +743,8 @@
         "run": "Aplicar",
         "active_filters": "Filtros ativos",
         "available_filters": "Filtros disponíveis",
-        "filter_note": "Nota: as mudanças nas regras do filtro são salvas imediatamente"
+        "filter_note": "Nota: as mudanças nas regras do filtro são salvas imediatamente",
+        "apply": "Aplicar"
     },
     "signatures": {
         "name": "Nome",
@@ -828,5 +848,51 @@
             "message1": "Deseja manter ou excluir este rascunho?"
         }
     },
-    "messages,new_email": "Novo email"
+    "messages,new_email": "Novo email",
+    "modals": {
+        "apply_filters": {
+            "button_apply": "Aplicar",
+            "label_confirm_request": "Deseja aplicar o filtro?",
+            "label_involved_messages": "<0>{{involvedMessagesCount}} mensagens</0> serão processadas na pasta selecionada.",
+            "title": "Aplicação do filtro \"{{filterName}}\""
+        }
+    },
+    "sortingDropdown": {
+        "tooltip": {
+            "attachmentDescending": "Ordem decrescente por Anexo",
+            "dateAscending": "Ordem crescente por Tamanho",
+            "flaggedAscending": "Ordem crescente por Sinalizado",
+            "flaggedDescending": "Ordem decrescente por Sinalizado",
+            "importantDescending": "Ordem decrescente por Importante",
+            "sizeDescending": "Ordem decrescente por Tamanho",
+            "subjectAscending": "Ordem crescente por Assunto",
+            "subjectDescending": "Ordem decrescente por Assunto",
+            "unreadAscending": "Ordem crescente por Não lido",
+            "unreadDescending": "Ordem decrescente por Não lido",
+            "importantAscending": "Ordem crescente por Importante",
+            "attachmentAscending": "Ordem crescente por Anexo",
+            "dateDescending": "Ordem decrescente por Data",
+            "fromAscending": "Ordem crescente por De",
+            "fromDescending": "Ordem decrescente por De",
+            "toAscending": "Ordem crescente por Para",
+            "toDescending": "Ordem decrescente por Para"
+        }
+    },
+    "sorting_dropdown": {
+        "ascendingOrder": "Ordem crescente",
+        "attachment": "Anexo",
+        "date": "Data",
+        "descendingOrder": "Ordem decrescente",
+        "flagged": "Sinalizado",
+        "from": "De",
+        "important": "Importante",
+        "subject": "Assunto",
+        "to": "Para",
+        "unread": "Não lido"
+    },
+    "editor": {
+        "warning": {
+            "mail_size_exceeds_limit": "O tamanho da mensagem excedeu o limite. Transforme alguns anexos em links inteligentes"
+        }
+    }
 }
