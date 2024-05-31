@@ -497,6 +497,7 @@
 		"upload_from_files": "Upload from Files",
 		"using_signatures": "Signatures Usage",
 		"view_images": "VIEW IMAGES",
+		"want_to_continue": "Do you want to continue?",
 		"warning": "Warning",
 		"wipe": "Wipe",
 		"with_you": "with you",
@@ -591,7 +592,7 @@
 		"powered_by": "powered by",
 		"read_receipt_1": "The sender of this message has requested to be notified when you read this message.",
 		"read_receipt_2": "Do you wish to notify the sender?",
-		"recover_deleted_emails": "Recovering deleted e-mails from Trash may take some time. Once the operation is completed, you will be directed to the results. Do you want to continue?",
+		"recover_deleted_emails": "Recovering deleted e-mails from Trash may take some time. Once the operation is completed, you will be directed to the results.",
 		"recover_messages_modal_body": "Once the process is completed you will receive a notification in your Inbox and find the recovered e-mails in a brand new folder.",
 		"snackbar": {
 			"apply_filter_rules_completed": "Filter '{{filterName}}'successfully applied to {{involvedMessagesCount}} messages of the folder '{{folderPath}}'",

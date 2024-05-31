@@ -28,7 +28,7 @@ export const RecoverMessagesModal = ({
 	const modalFooterLabel = isLoading
 		? t('label.loading_results', 'Loading results...')
 		: t('label.start_search', 'Start Search');
-	const loadingSubText = ` ${t('label.searching_recover_emails', 'Do you want to continue?')}`;
+	const loadingSubText = ` ${t('label.want_to_continue', 'Do you want to continue?')}`;
 	return (
 		<Container
 			padding={{ all: 'large' }}
@@ -36,7 +36,7 @@ export const RecoverMessagesModal = ({
 			crossAlignment="flex-start"
 			height="fit"
 		>
-			<ModalHeader onClose={onClose} title={modalHeaderTitle} />
+			<ModalHeader onClose={onClose} title={modalHeaderTitle} showCloseIcon={!isLoading} />
 			<Container
 				padding={{ all: 'small' }}
 				mainAlignment="center"
