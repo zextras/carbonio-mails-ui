@@ -8,20 +8,27 @@ import React from 'react';
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { AnimatedLoader } from '../../../assets/animated-loader';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
+import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
 
 type RecoverMessagesModalPropType = {
-	recoverDay: number | null;
 	onConfirm: () => void;
 	onClose: () => void;
 };
 export const RecoverMessagesModal = ({
-	recoverDay,
 	onConfirm,
 	onClose
 }: RecoverMessagesModalPropType): React.JSX.Element => {
-	const confirmButtonIsDisable = false;
+	const isLoading = useBackupSearchStore().status === 'loading';
+	const modalHeaderTitle = isLoading
+		? t('label.searching_recover_emails', 'Searching for e-mails to recover')
+		: t('label.search_recover_emails', 'Search e-mails to recover');
+	const modalFooterLabel = isLoading
+		? t('label.loading_results', 'Loading results...')
+		: t('label.start_search', 'Start Search');
+	const loadingSubText = ` ${t('label.searching_recover_emails', 'Do you want to continue?')}`;
 	return (
 		<Container
 			padding={{ all: 'large' }}
@@ -29,7 +36,7 @@ export const RecoverMessagesModal = ({
 			crossAlignment="flex-start"
 			height="fit"
 		>
-			<ModalHeader onClose={onClose} title={t('label.recover_messages', 'Recover Messages')} />
+			<ModalHeader onClose={onClose} title={modalHeaderTitle} />
 			<Container
 				padding={{ all: 'small' }}
 				mainAlignment="center"
@@ -38,16 +45,17 @@ export const RecoverMessagesModal = ({
 			>
 				<Text style={{ whiteSpace: 'pre-line' }}>
 					{/* TODO: fix msg */}
-					{t('messages.recover_messages_modal_body', {
-						recoverDay,
-						defaultValue:
-							'Once the process is completed you will receive a notification in your Inbox and find the recovered e-mails in a brand new folder.'
-					})}
+					{t(
+						'messages.recover_deleted_emails',
+						'Recovering deleted e-mails from Trash may take some time. Once the operation is completed, you will be directed to the results.'
+					)}
 				</Text>
+				{!isLoading && <Text>{loadingSubText}</Text>}
 				<ModalFooter
-					disabled={confirmButtonIsDisable}
+					disabled={isLoading}
 					onConfirm={onConfirm}
-					label={t('label.confirm', 'Confirm')}
+					label={modalFooterLabel}
+					primaryButtonIcon={isLoading && AnimatedLoader}
 				/>
 			</Container>
 		</Container>

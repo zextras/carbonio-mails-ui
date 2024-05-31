@@ -24,8 +24,9 @@ import { DeletedMessageFromAPI } from '../../../api/search-backup-deleted-messag
 
 export type BackupSearchStore = {
 	messages: Record<string, BackupSearchMessage>;
-	status: string;
+	status: 'empty' | 'loading' | 'completed';
 	setMessages: (messages: Array<DeletedMessageFromAPI>) => void;
+	setStatus: (status: BackupSearchStore['status']) => void;
 };
 
 export const useBackupSearchStore = create<BackupSearchStore>()((set) => ({
@@ -39,5 +40,6 @@ export const useBackupSearchStore = create<BackupSearchStore>()((set) => ({
 					return { ...acc, [messageId]: { ...message, id: message.messageId } };
 				}, {});
 			})
-		)
+		),
+	setStatus: (status: BackupSearchStore['status']): void => set({ status })
 }));

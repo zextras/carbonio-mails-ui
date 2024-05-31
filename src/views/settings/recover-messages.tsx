@@ -52,11 +52,13 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const restoreMessages = useCallback(
 		async (closeModal: CloseModalFn) => {
 			if (!recoverDay && !searchString) return;
+			useBackupSearchStore.getState().setStatus('loading');
 			const interval = calculateInterval(recoverDay);
 			const response = await searchBackupDeletedMessagesAPI({
 				...interval,
 				...(searchString === '' ? {} : { searchString })
 			});
+			useBackupSearchStore.getState().setStatus('completed');
 			if (response) {
 				useBackupSearchStore.getState().setMessages(response.messages);
 				setRecoverDay(null);
@@ -91,7 +93,6 @@ export const RecoverMessages = (): React.JSX.Element => {
 				children: (
 					<StoreProvider>
 						<RecoverMessagesModal
-							recoverDay={recoverDay}
 							onClose={(): void => closeModal()}
 							onConfirm={(): Promise<void> => restoreMessages(closeModal)}
 						/>
@@ -100,7 +101,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 			},
 			true
 		);
-	}, [createModal, recoverDay, restoreMessages]);
+	}, [createModal, restoreMessages]);
 
 	const onSelectChange = useCallback((value) => {
 		setRecoverDay(value);
