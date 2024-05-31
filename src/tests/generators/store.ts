@@ -8,7 +8,6 @@
 import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 
 import { MAIL_APP_ID } from '../../constants';
-import { getBackupSearchSliceInitialiState } from '../../store/backup-search-slice';
 import { getConversationsSliceInitialState } from '../../store/conversations-slice';
 import { getMessagesSliceInitialState } from '../../store/messages-slice';
 import { storeReducers } from '../../store/reducers';
@@ -23,10 +22,6 @@ export const generateState = (state?: Partial<MailsStateType>): MailsStateType =
 	searches: {
 		...getSearchSliceInitialiState(),
 		...state?.searches
-	},
-	backupSearches: {
-		...getBackupSearchSliceInitialiState(),
-		...state?.backupSearches
 	},
 	conversations: {
 		...getConversationsSliceInitialState(),
