@@ -18,7 +18,7 @@ import {
 	Container,
 	DateTimePicker
 } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
@@ -64,6 +64,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				setRecoverDay(null);
 				setSearchString('');
 				closeModal();
+				replaceHistory({ route: 'backup-search', path: '/' });
 			} else {
 				createSnackbar({
 					key: `recover-messages-error`,
