@@ -17,7 +17,6 @@ export type MailsStateType = {
 	conversations: ConversationsStateType;
 	messages: MsgStateType;
 	searches: SearchesStateType;
-	backupSearches: BackupSearchesStateType;
 };
 
 export type EditorsStateTypeV2 = {
