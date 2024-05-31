@@ -28,7 +28,12 @@
         "click_preview": "Clique para pré-visualizar",
         "mark_all_read": "Marcar todas como lidas",
         "edit_anyway": "Editar mesmo assim",
-        "click_open": "Clique para abrir"
+        "click_open": "Clique para abrir",
+        "apply_filter_on_folder": "Aplicar filtro na pasta",
+        "preview_on_separated_window": "Abrir em uma nova janela",
+        "create_appointment": "Criar Compromisso",
+        "download_eml": "Baixar EML",
+        "select_folders": "Selecionar pastas"
     },
     "folder": {
         "modal": {
@@ -283,7 +288,23 @@
         "all_items_selected": "Todos os items visíveis foram selecionados",
         "exit_selection_mode": "Sair do modo de seleção",
         "do_not_have_perm": "Não tem autorização",
-        "folder_not_valid_destination": "A pasta selecionada não é um destino válido"
+        "folder_not_valid_destination": "A pasta selecionada não é um destino válido",
+        "convert_to_smart_link": "Converter para link inteligente",
+        "create_smart_links": "criar links inteligentes",
+        "message_send_in_progress": "envio da mensagem em andamento",
+        "missing_recipients": "não existem destinatários válidos",
+        "no_folder_selected": "Nenhuma pasta selecionada",
+        "no_identity_selected": "<Nenhuma identidade selecionada>",
+        "no_sender": "o remetente da mensagem não foi definido",
+        "convert_back_to_attachment": "Converter novamente para anexo",
+        "errors": {
+            "upload_failed_generic": "Erro no upload do arquivo \"{{filename}}\""
+        },
+        "missing_sender": "o remetente da mensagem não foi definido",
+        "attachment_upload_in_progress": "upload do anexo em andamento",
+        "invalid_recipients": "O endereço de um destinatário está incorreto",
+        "smart_links_created": "links inteligentes criados",
+        "upload_failed": "Erro no upload"
     },
     "title": {
         "new_messages": "Novas mensagens",
@@ -336,7 +357,11 @@
             "tag_created": "Etiqueta \"{{name}}\" criada com sucesso",
             "tag_deleted": "Etiqueta \"{{name}}\" removida com sucesso",
             "tag_not_updated": "Ocorreu um erro e a Etiqueta não foi atualizada. Por favor, tente novamente.",
-            "tag_updated": "A Etiqueta foi atualizada com sucesso"
+            "tag_updated": "A Etiqueta foi atualizada com sucesso",
+            "apply_filter_rules_error": "Erro ao aplicar o filtro '{{filterName}}'",
+            "apply_filter_rules_completed": "O filtro '{{filterName}}' foi aplicado com sucesso a {{involvedMessagesCount}} mensagens da pasta '{{folderPath}}'",
+            "apply_filter_rules_started": "O filtro '{{filterName}}' está sendo aplicado às mensagens da pasta '{{folderPath}}'",
+            "message_sending_aborted": "cancelado pelo usuário"
         },
         "invalid_address": "O seguinte endereço parece ser inválido",
         "invalid_address_plural": "Os seguintes endereços parecem ser inválidos",
@@ -362,7 +387,8 @@
                 "no_attachments": "Você não anexou nenhum arquivo.",
                 "no_subject": "O assunto do e-mail está vazio.",
                 "no_subject_no_attachments": "O assunto está vazio e você não anexou nenhum arquivo.",
-                "first": "O assunto está vazio e você não anexou nenhum arquivo."
+                "first": "O assunto está vazio e você não anexou nenhum arquivo.",
+                "subject": "Assunto em branco"
             }
         },
         "new_email": "Novo e-mail",
@@ -383,7 +409,10 @@
             "popup_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador",
             "opening_blocked": "Para completar a operação, o Carbonio precisa abrir uma nova janela.\nVerifique as configurações do seu navegador"
         },
-        "enter_calendar_name": "Introduzir um nome para aceitar o calendário"
+        "enter_calendar_name": "Introduzir um nome para aceitar o calendário",
+        "warning": {
+            "sending_to_yourself": "Você está enviando essa mensagem para si mesmo"
+        }
     },
     "placeholder": {
         "add_new_recipients": "Adicionar destinatários"
@@ -625,7 +654,9 @@
         "send_later_success": "Seu e-mail será enviado em {{date}} às {{time}}",
         "schedule_mail": "Será enviado em: {{date}} às {{time}}",
         "delete_attachment_message1": "O anexo será excluído permanentemente do Carbonio.",
-        "delete_attachment_message2": "Deseja baixá-lo antes?"
+        "delete_attachment_message2": "Deseja baixá-lo antes?",
+        "copy": "Copiar",
+        "send_email": "Enviar e-mail"
     },
     "snackbar": {
         "share_resend": "Convite do compartilhamento reenviado",
@@ -634,7 +665,8 @@
         "folder_shared": "Pasta compartilhada",
         "email_moved_to_trash": "E-mail movido para a Lixeira",
         "tag_removed": "A Etiqueta \"{{tag}}\" foi removida",
-        "tag_applied": "A Etiqueta \"{{tag}}\" foi aplicada"
+        "tag_applied": "A Etiqueta \"{{tag}}\" foi aplicada",
+        "email_copied_to_clipboard": "E-mail copiado para área de transferência."
     },
     "tooltip": {
         "add_attachments": "Adicionar anexos",
@@ -714,7 +746,8 @@
         "run": "Aplicar",
         "active_filters": "Filtros ativos",
         "available_filters": "Filtros disponíveis",
-        "filter_note": "Nota: as alterações nas regras dos filtros são guardadas imediatamente"
+        "filter_note": "Nota: as alterações nas regras dos filtros são guardadas imediatamente",
+        "apply": "Aplicar"
     },
     "signatures": {
         "name": "Nome",
@@ -817,5 +850,52 @@
         "delete_draft": {
             "message1": "Deseja guardar ou apagar este rascunho?"
         }
-    }
+    },
+    "modals": {
+        "apply_filters": {
+            "button_apply": "Aplicar",
+            "label_confirm_request": "Deseja aplicar o filtro?",
+            "label_involved_messages": "<0>{{involvedMessagesCount}} mensagens</0> serão processadas na pasta selecionada.",
+            "title": "Aplicação do filtro \"{{filterName}}\""
+        }
+    },
+    "sortingDropdown": {
+        "tooltip": {
+            "subjectAscending": "Ordem crescente por Assunto",
+            "toAscending": "Ordem crescente por Para",
+            "toDescending": "Ordem decrescente por Para",
+            "unreadAscending": "Ordem crescente por Não lido",
+            "unreadDescending": "Ordem decrescente por Não lido",
+            "flaggedDescending": "Ordem decrescente por Sinalizado",
+            "attachmentDescending": "Ordem decrescente por Anexo",
+            "dateAscending": "Ordem crescente por Tamanho",
+            "dateDescending": "Ordem decrescente por Data",
+            "fromAscending": "Ordem crescente por De",
+            "fromDescending": "Ordem decrescente por De",
+            "importantAscending": "Ordem crescente por Importante",
+            "importantDescending": "Ordem decrescente por Importante",
+            "attachmentAscending": "Ordem crescente por Anexo",
+            "flaggedAscending": "Ordem crescente por Sinalizado",
+            "sizeDescending": "Ordem decrescente por Tamanho",
+            "subjectDescending": "Ordem decrescente por Assunto"
+        }
+    },
+    "sorting_dropdown": {
+        "date": "Data",
+        "attachment": "Anexo",
+        "ascendingOrder": "Ordem crescente",
+        "to": "Para",
+        "unread": "Não lido",
+        "descendingOrder": "Ordem decrescente",
+        "flagged": "Sinalizado",
+        "from": "De",
+        "important": "Importante",
+        "subject": "Assunto"
+    },
+    "editor": {
+        "warning": {
+            "mail_size_exceeds_limit": "O tamanho da mensagem excedeu o limite. Transforme alguns anexos em links inteligentes"
+        }
+    },
+    "messages,new_email": "novo e-mail"
 }
