@@ -23,10 +23,9 @@ export const BackupSearchMessageListItem = ({
 	toggle
 }: BackupSearchMessageListmessageProps): React.JSX.Element => {
 	const accountName = getUserAccount()?.name;
-	const emailToDisplay = find(
-		[message.to, message.sender],
-		(email) => !email.includes(accountName ?? '')
-	);
+	const emailToDisplay =
+		find([message.to, message.sender], (email) => !email.includes(accountName ?? '')) ??
+		accountName;
 	const dateToDisplay = new Date(message?.creationDate).toLocaleDateString();
 	const messageId = message.id;
 
