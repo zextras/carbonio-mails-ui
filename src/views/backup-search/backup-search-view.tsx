@@ -8,11 +8,12 @@ import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Button, Container, Padding, Row, useSnackbar } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { map, noop } from 'lodash';
+import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { BackupSearchMessageListItem } from './parts/backup-search-message-list-item';
 import { BackupSearchPanel } from './parts/backup-search-panel';
+import { undeleteAPI } from '../../api/undelete';
 import { CustomList } from '../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../hooks/use-selection';
@@ -76,6 +77,29 @@ const BackupSearchView = (): React.JSX.Element => {
 		});
 	}, [selectAll, createSnackbar, ids]);
 
+	const recoverEmailsCallback = useCallback(async () => {
+		if (selectedIds.length > 0) {
+			const response = await undeleteAPI(selectedIds);
+			if (response.ok) {
+				createSnackbar({
+					replace: true,
+					type: 'info',
+					label: t('label.recover_emails', 'Recovering emails...'),
+					autoHideTimeout: 5000,
+					hideButton: true
+				});
+			} else {
+				createSnackbar({
+					replace: true,
+					type: 'error',
+					label: t('label.error_recovering_emails', 'Error recovering emails'),
+					autoHideTimeout: 5000,
+					hideButton: true
+				});
+			}
+		}
+	}, [createSnackbar, selectedIds]);
+
 	return (
 		<Container
 			orientation="horizontal"
@@ -121,7 +145,7 @@ const BackupSearchView = (): React.JSX.Element => {
 							<Button
 								label={t('label.recover_selected_emails', 'RECOVER SELECTED E-MAILS')}
 								color="primary"
-								onClick={noop}
+								onClick={recoverEmailsCallback}
 								size="medium"
 								type="outlined"
 								width="fill"

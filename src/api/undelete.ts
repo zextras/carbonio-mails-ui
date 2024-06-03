@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-export const undeleteAPI = (startDate: string, endDate: string): Promise<Response> =>
-	fetch(`/zx/backup/v1/undelete?start=${startDate}&end=${endDate}`, {
+export const undeleteAPI = (messages: Array<string>): Promise<Response> =>
+	fetch(`/zx/backup/v1/undelete?messages=${messages}`, {
 		method: 'POST',
 		credentials: 'same-origin'
 	});

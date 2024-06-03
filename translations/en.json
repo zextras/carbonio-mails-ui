@@ -327,6 +327,7 @@
         "enter_name": "Enter Name",
         "error": "Error",
         "error_address": "A valid e-mail is required",
+        "error_recovering_emails": "Error recovering emails",
         "error_try_again": "Something went wrong, please try again",
         "errors": {
             "upload_failed_generic": "Upload failed for the file \"{{filename}}\""
@@ -420,6 +421,7 @@
         "read_reciept": "Read Receipt",
         "receive_message": "Receiving Messages",
         "received_from_address": "Received from (address)",
+        "recover_emails": "Recovering emails...",
         "recover_messages": "Recover Messages",
         "recover_selected_emails": "RECOVER SELECTED E-MAILS",
         "recovery_period": "Select recovery period",
