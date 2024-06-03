@@ -92,7 +92,7 @@ const BackupSearchView = (): React.JSX.Element => {
 			>
 				<Container
 					background="gray5"
-					height="3rem"
+					height="fit"
 					orientation="horizontal"
 					padding={{ all: 'extrasmall' }}
 					mainAlignment="flex-start"
@@ -113,9 +113,20 @@ const BackupSearchView = (): React.JSX.Element => {
 							}
 							color="primary"
 							onClick={isAllSelected ? deselectAll : selectAllOnClick}
+							size="medium"
+							type="ghost"
 						/>
 						<Padding left="small" />
-						<Button label="do restore" color="primary" onClick={noop} />
+						<Row takeAvailableSpace>
+							<Button
+								label={t('label.recover_selected_emails', 'RECOVER SELECTED E-MAILS')}
+								color="primary"
+								onClick={noop}
+								size="medium"
+								type="outlined"
+								width="fill"
+							/>
+						</Row>
 					</Row>
 				</Container>
 				<CustomList>{listItems}</CustomList>
