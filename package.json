@@ -62,7 +62,7 @@
 		"@types/react-router-dom": "^5.3.3",
 		"@types/styled-components": "^5.1.26",
 		"@zextras/carbonio-ui-configs": "^1.0.0",
-		"@zextras/carbonio-ui-sdk": "^1.7.1",
+		"@zextras/carbonio-ui-sdk": "^1.7.4",
 		"babel-plugin-i18next-extract": "^0.9.0",
 		"babel-plugin-styled-components": "^2.0.7",
 		"babel-plugin-transform-import-meta": "^2.2.0",

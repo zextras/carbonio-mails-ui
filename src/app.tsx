@@ -9,7 +9,7 @@ import React, { useEffect } from 'react';
 import { isEmpty } from 'lodash';
 
 import { addBackupSearchComponent } from './app-utils/add-backup-search-component';
-import { addShellComponents } from './app-utils/add-shell-components';
+import { addComponentsToShell } from './app-utils/add-shell-components';
 import { registerShellActions } from './app-utils/register-shell-actions';
 import { registerShellIntegrations } from './app-utils/register-shell-integrations';
 import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
@@ -23,7 +23,7 @@ const App = (): React.JSX.Element => {
 	const hasBackupSearchMessages = !isEmpty(useBackupSearchStore().messages);
 
 	useEffect(() => {
-		addShellComponents();
+		addComponentsToShell();
 		registerShellIntegrations();
 		registerShellActions();
 	}, []);

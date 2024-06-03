@@ -8,6 +8,7 @@ import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
 export const MAILS_ROUTE = 'mails';
+export const BACKUP_SEARCH_ROUTE = 'backup-search';
 
 export const MAIL_APP_ID = 'carbonio-mails-ui';
 

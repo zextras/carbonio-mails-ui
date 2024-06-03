@@ -4,19 +4,44 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { addRoute, t } from '@zextras/carbonio-shell-ui';
+import React from 'react';
 
-import BackupSearchView from '../views/search/backup-search-view';
+import { ModalManager } from '@zextras/carbonio-design-system';
+import { addRoute, t } from '@zextras/carbonio-shell-ui';
+import { Route, useRouteMatch } from 'react-router-dom';
+
+import { BACKUP_SEARCH_ROUTE } from '../constants';
+import { StoreProvider } from '../store/redux';
+
+const LazyBackupSearchView = React.lazy(
+	() =>
+		import(
+			/* webpackChunkName: "mails-backup-search-view" */ '../views/backup-search/backup-search-view'
+		)
+);
+
+const BackupSearchViewComponent = (): React.JSX.Element => {
+	const { path } = useRouteMatch();
+	return (
+		<StoreProvider>
+			<ModalManager>
+				<Route path={`${path}/:itemId?`}>
+					<LazyBackupSearchView />
+				</Route>
+			</ModalManager>
+		</StoreProvider>
+	);
+};
 
 export const addBackupSearchComponent = async (hasBackupSearchMessages: boolean): Promise<void> => {
 	if (!hasBackupSearchMessages) return;
-	const label = t('label.app_name', 'Mails');
+	const label = t('label.backup_search', 'Backup Search');
 	addRoute({
-		route: 'backup-search',
+		route: BACKUP_SEARCH_ROUTE,
 		position: 1000,
 		visible: true,
 		label,
 		primaryBar: 'RestoreOutline',
-		appView: BackupSearchView
+		appView: BackupSearchViewComponent
 	});
 };

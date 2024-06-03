@@ -98,7 +98,7 @@ const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	</Suspense>
 );
 
-export const addShellComponents = async (): Promise<void> => {
+export const addComponentsToShell = async (): Promise<void> => {
 	const label = t('label.app_name', 'Mails');
 	addRoute({
 		route: MAILS_ROUTE,
