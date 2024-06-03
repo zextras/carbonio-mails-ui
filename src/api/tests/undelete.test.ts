@@ -6,7 +6,7 @@
 import { HttpResponse } from 'msw';
 
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { undeleteAPI } from '../undelete';
+import { restoreMessagesAPI } from '../restore-messages';
 
 describe('undeleteAPI', () => {
 	describe('when backend is available', () => {
@@ -19,9 +19,9 @@ describe('undeleteAPI', () => {
 		});
 
 		it('should return the reponse returned by fetch', async () => {
-			expect((await undeleteAPI('2007-11-03T10:15:30.00Z', '2007-12-03T10:15:30.00Z')).status).toBe(
-				202
-			);
+			expect(
+				(await restoreMessagesAPI('2007-11-03T10:15:30.00Z', '2007-12-03T10:15:30.00Z')).status
+			).toBe(202);
 		});
 	});
 
@@ -36,7 +36,7 @@ describe('undeleteAPI', () => {
 
 		it('should reply with a status that is not accepted', async () => {
 			expect(
-				(await undeleteAPI('2007-11-03T10:15:30.00Z', '2007-12-03T10:15:30.00Z')).status
+				(await restoreMessagesAPI('2007-11-03T10:15:30.00Z', '2007-12-03T10:15:30.00Z')).status
 			).not.toBe(202);
 		});
 	});

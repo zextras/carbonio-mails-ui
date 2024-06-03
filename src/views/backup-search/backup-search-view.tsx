@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 
 import { BackupSearchMessageListItem } from './parts/backup-search-message-list-item';
 import { BackupSearchPanel } from './parts/backup-search-panel';
-import { undeleteAPI } from '../../api/undelete';
+import { restoreMessagesAPI } from '../../api/restore-messages';
 import { CustomList } from '../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../hooks/use-selection';
@@ -79,7 +79,7 @@ const BackupSearchView = (): React.JSX.Element => {
 
 	const recoverEmailsCallback = useCallback(async () => {
 		if (selectedIds.length > 0) {
-			const response = await undeleteAPI(selectedIds);
+			const response = await restoreMessagesAPI(selectedIds);
 			if (response.ok) {
 				createSnackbar({
 					replace: true,
