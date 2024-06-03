@@ -9,7 +9,7 @@ import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { Button, Container, Padding, Row, useSnackbar } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
-import { useParams, useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { BackupSearchMessageListItem } from './parts/backup-search-message-list-item';
 import { BackupSearchPanel } from './parts/backup-search-panel';
@@ -22,11 +22,6 @@ const BackupSearchView = (): React.JSX.Element => {
 	const [count, setCount] = useState(0);
 	const { messages } = useBackupSearchStore();
 	const { itemId } = useParams<{ itemId: string }>();
-	const params = useParams<{ itemId: string }>();
-	console.log('===========BackupSearchView', { params });
-	const { path } = useRouteMatch();
-	console.log('===========', { path });
-	console.log('===========', { itemId });
 
 	const {
 		selected: selectedMessage,
@@ -47,17 +42,12 @@ const BackupSearchView = (): React.JSX.Element => {
 				const active = itemId === message.id;
 				const isSelected = selectedMessage[message.id];
 				return (
-					<CustomListItem
-						key={message.id}
-						selected={isSelected}
-						active={active}
-						background={'gray6'}
-					>
+					<CustomListItem key={message.id} active={active} background={'gray6'}>
 						{(visible: boolean): ReactElement =>
 							visible ? (
 								<BackupSearchMessageListItem
 									message={message}
-									messageIsSelected={active}
+									messageIsSelected={isSelected}
 									toggle={toggle}
 								/>
 							) : (
