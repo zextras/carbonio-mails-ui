@@ -7,6 +7,7 @@ import React from 'react';
 
 import { Container, Icon, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { BackupSearchPanelTextLine } from './backup-search-panel-text-line';
@@ -18,11 +19,7 @@ const SearchIcon = styled(Icon)`
 	height: 3.3rem;
 `;
 
-export const BackupSearchPanel = ({
-	itemId
-}: {
-	itemId: string | undefined;
-}): React.JSX.Element => {
+export const BackupSearchPanel = (): React.JSX.Element => {
 	const restoreEmailsTitle = t(
 		'label.displayer_restore_emails_title',
 		'Select the e-mails you want to restore'
@@ -32,6 +29,7 @@ export const BackupSearchPanel = ({
 		'Once the selected email recovery is complete, \n you will receive an email with information regarding the results.'
 	);
 
+	const { itemId } = useParams<{ itemId: string }>();
 	const message = useBackupSearchStore((state) => state.messages[itemId ?? '']);
 	const subject = { title: t('label.subject', 'Subject'), text: message?.subject };
 	const sender = { title: t('label.from', 'From'), text: message?.sender };
