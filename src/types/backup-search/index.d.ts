@@ -4,9 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { BACKUP_SEARCH_STATUS } from '../../constants';
+
+export type BackupSearchStatus = (typeof BACKUP_SEARCH_STATUS)[keyof typeof BACKUP_SEARCH_STATUS];
+
 export type BackupSearchStore = {
 	messages: Record<string, BackupSearchMessage>;
-	status: 'empty' | 'loading' | 'completed';
+	status: BackupSearchStatus;
 	setMessages: (messages: Array<DeletedMessageFromAPI>) => void;
 	setStatus: (status: BackupSearchStore['status']) => void;
 };

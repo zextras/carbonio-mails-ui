@@ -474,3 +474,9 @@ export const SEARCHED_FOLDER_STATE_STATUS = {
 } as const;
 
 export const EXTRA_WINDOW_ACTION_ID = 'extraWindowActions';
+
+export const BACKUP_SEARCH_STATUS = {
+	empty: 'empty',
+	loading: 'loading',
+	completed: 'completed'
+} as const;

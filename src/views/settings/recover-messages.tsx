@@ -23,6 +23,7 @@ import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
 import { searchBackupDeletedMessagesAPI } from '../../api/search-backup-deleted-messages';
+import { BACKUP_SEARCH_STATUS } from '../../constants';
 import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
@@ -52,13 +53,13 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const restoreMessages = useCallback(
 		async (closeModal: CloseModalFn) => {
 			if (!recoverDay && !searchString) return;
-			useBackupSearchStore.getState().setStatus('loading');
+			useBackupSearchStore.getState().setStatus(BACKUP_SEARCH_STATUS.loading);
 			const interval = calculateInterval(recoverDay);
 			const response = await searchBackupDeletedMessagesAPI({
 				...interval,
 				...(searchString === '' ? {} : { searchString })
 			});
-			useBackupSearchStore.getState().setStatus('completed');
+			useBackupSearchStore.getState().setStatus(BACKUP_SEARCH_STATUS.completed);
 			if (response) {
 				useBackupSearchStore.getState().setMessages(response.messages);
 				setRecoverDay(null);
