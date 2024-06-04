@@ -23,7 +23,7 @@ import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
 import { searchBackupDeletedMessagesAPI } from '../../api/search-backup-deleted-messages';
-import { BACKUP_SEARCH_STATUS } from '../../constants';
+import { BACKUP_SEARCH_ROUTE, BACKUP_SEARCH_STATUS } from '../../constants';
 import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
@@ -65,7 +65,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				setRecoverDay(null);
 				setSearchString('');
 				closeModal();
-				replaceHistory({ route: 'backup-search', path: '/' });
+				replaceHistory({ route: BACKUP_SEARCH_ROUTE, path: '/' });
 			} else {
 				createSnackbar({
 					key: `recover-messages-error`,

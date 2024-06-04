@@ -10,17 +10,21 @@ import { Container } from '@zextras/carbonio-design-system';
 
 import { BackupSearchList } from './parts/backup-search-list';
 import { BackupSearchPanel } from './parts/backup-search-panel';
+import { BackupSearchHeader } from './parts/backup-search-header';
 
 const BackupSearchView = (): React.JSX.Element => (
-	<Container
-		orientation="horizontal"
-		background="gray4"
-		style={{ overflowY: 'auto' }}
-		mainAlignment="flex-start"
-	>
-		<BackupSearchList />
-		<BackupSearchPanel />
-	</Container>
+	<>
+		<BackupSearchHeader />
+		<Container
+			orientation="horizontal"
+			background="gray4"
+			style={{ overflowY: 'auto' }}
+			mainAlignment="flex-start"
+		>
+			<BackupSearchList />
+			<BackupSearchPanel />
+		</Container>
+	</>
 );
 
 export default BackupSearchView;
