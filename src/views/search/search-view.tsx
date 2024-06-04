@@ -67,10 +67,10 @@ const SearchView: FC<SearchProps> = ({ useDisableSearch, useQuery, ResultsHeader
 	useEffect(() => {
 		const lastApp = localStorage.getItem('lastApp');
 		if ( lastApp == "mail" || lastApp == "" ) {
-			localStorage.setItem('lastApp','search');
 			dispatch(resetSearchResults());
 			setNewSearch(true);
 		}
+		localStorage.setItem('lastApp','search');
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView, dispatch]);
 
