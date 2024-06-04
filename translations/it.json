@@ -877,5 +877,10 @@
         "subject": "Oggetto",
         "to": "A",
         "unread": "Non letto"
+    },
+    "editor": {
+        "warning": {
+            "mail_size_exceeds_limit": "L'attuale dimensione del messaggio supera il limite massimo consentito. Converti uno o più allegati in smartlink o rimuovi gli allegati in eccesso!"
+        }
     }
 }

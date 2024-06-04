@@ -46,13 +46,30 @@ export const saveDraftFromEditor = (
 			status: 'aborted',
 			abortReason: err
 		});
-		getBridgedFunctions()?.createSnackbar({
-			key: `save-draft`,
-			replace: true,
-			type: 'error',
-			label: t('label.error_try_again', 'Something went wrong, please try again'),
-			autoHideTimeout: 3000
-		});
+
+		const errExceedQuota = new RegExp('^mailbox exceeded quota');
+
+		if (errExceedQuota.test(err)) {
+			const errMessage = 'hai esaurito lo spazio a disposizione della tua casella!.';
+			getBridgedFunctions()?.createSnackbar({
+					key: `mail-${editorId}`,
+					replace: true,
+					type: 'error',
+					label: 'Non è stato possibile salvare il messaggio: ' + errMessage,
+					autoHideTimeout: 6000
+				});
+
+		} else {
+
+			getBridgedFunctions()?.createSnackbar({
+				key: `save-draft`,
+				replace: true,
+				type: 'error',
+				label: t('label.error_try_again', 'Something went wrong, please try again'),
+				autoHideTimeout: 3000
+			});
+		}
+
 		computeAndUpdateEditorStatus(editorId);
 		options?.onError && options.onError(err);
 	};
@@ -61,7 +78,11 @@ export const saveDraftFromEditor = (
 	saveDraftV3({ editor })
 		.then((res) => {
 			if ('Fault' in res) {
-				handleError(res.Fault.Detail?.Error?.Detail);
+				if ('Reason' in res.Fault) {
+					handleError(res.Fault.Reason?.Text)
+				} else {
+					handleError(res.Fault.Detail?.Error?.Detail);
+				}
 				return;
 			}
 
