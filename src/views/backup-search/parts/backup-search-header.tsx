@@ -6,17 +6,18 @@
 
 import React, { useCallback } from 'react';
 
-import { Container, Button, Text, Divider } from '@zextras/carbonio-design-system';
+import { Container, Button, Text, Divider, Chip } from '@zextras/carbonio-design-system';
 import { removeRoute, replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { reduce } from 'lodash';
 
 import { BACKUP_SEARCH_ROUTE, MAILS_ROUTE } from '../../../constants';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
+import { SearchBackupDeletedMessagesAPIProps } from '../../../types';
 
 export const BackupSearchHeader = (): React.JSX.Element => {
 	const clearSearchText = t('label.clear_search_query', 'CLEAR SEARCH');
 
 	const { queryParams } = useBackupSearchStore();
-
 	const clearSearchCallback = useCallback(() => {
 		useBackupSearchStore.getState().setMessages([]);
 		removeRoute(BACKUP_SEARCH_ROUTE);
@@ -37,6 +38,14 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 			>
 				<Container width="85%" orientation="horizontal" wrap="wrap" mainAlignment="flex-start">
 					<Text color="secondary">Results for: </Text>
+					{
+						(reduce(
+							(queryParams, acc) => (param: SearchBackupDeletedMessagesAPIProps['endDate']) => (
+								<Chip key={param} label={param} />
+							)
+						),
+						{})
+					}
 				</Container>
 
 				<Container width="15%" mainAlignment="flex-start" crossAlignment="flex-start">
