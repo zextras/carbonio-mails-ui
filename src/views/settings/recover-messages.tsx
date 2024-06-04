@@ -23,10 +23,15 @@ import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
 import { searchBackupDeletedMessagesAPI } from '../../api/search-backup-deleted-messages';
-import { BACKUP_SEARCH_ROUTE, BACKUP_SEARCH_STATUS } from '../../constants';
+import {
+	BACKUP_SEARCH_ROUTE,
+	BACKUP_SEARCH_STATUS,
+	RECOVER_MESSAGES_INTERVAL
+} from '../../constants';
 import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
+import { isEmpty } from 'lodash';
 
 function calculateInterval(recoverDate: string | null): { startDate?: string; endDate?: string } {
 	if (!recoverDate) return {};
@@ -35,8 +40,8 @@ function calculateInterval(recoverDate: string | null): { startDate?: string; en
 	const startDate = new Date(date);
 	const endDate = new Date(date);
 
-	startDate.setUTCDate(date.getUTCDate() - 2);
-	endDate.setUTCDate(date.getUTCDate() + 2);
+	startDate.setUTCDate(date.getUTCDate() - RECOVER_MESSAGES_INTERVAL);
+	endDate.setUTCDate(date.getUTCDate() + RECOVER_MESSAGES_INTERVAL);
 
 	return {
 		startDate: startDate.toISOString(),
@@ -53,23 +58,35 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const restoreMessages = useCallback(
 		async (closeModal: CloseModalFn) => {
 			if (!recoverDay && !searchString) return;
-			useBackupSearchStore.getState().setStatus(BACKUP_SEARCH_STATUS.loading);
+			const backupSearchStoreState = useBackupSearchStore.getState();
+
+			backupSearchStoreState.setStatus(BACKUP_SEARCH_STATUS.loading);
 			const interval = calculateInterval(recoverDay);
 			const searchParams = {
 				...interval,
 				...(searchString === '' ? {} : { searchString })
 			};
-			const response = await searchBackupDeletedMessagesAPI(searchParams);
-			useBackupSearchStore.getState().setStatus(BACKUP_SEARCH_STATUS.completed);
-			if (response) {
-				useBackupSearchStore.getState().setMessages(response.messages);
-				useBackupSearchStore.getState().setQueryParams(searchParams);
-
+			try {
+				const response = await searchBackupDeletedMessagesAPI(searchParams);
+				backupSearchStoreState.setStatus(BACKUP_SEARCH_STATUS.completed);
+				backupSearchStoreState.setMessages(response.messages);
+				backupSearchStoreState.setQueryParams(searchParams);
 				setRecoverDay(null);
 				setSearchString('');
 				closeModal();
+				if (isEmpty(response.messages)) {
+					createSnackbar({
+						key: `recover-no-messages-error`,
+						replace: true,
+						type: 'info',
+						label: t('label.error_no_backup_messages', 'Your search did not find any message'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+					return;
+				}
 				replaceHistory({ route: BACKUP_SEARCH_ROUTE, path: '/' });
-			} else {
+			} catch {
 				createSnackbar({
 					key: `recover-messages-error`,
 					replace: true,
@@ -78,6 +95,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
+				closeModal();
 			}
 		},
 		[createSnackbar, recoverDay, searchString]
@@ -88,7 +106,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 		`You can still retrieve emails deleted from Trash in a period.\nBy clicking “START RECOVERY” you will initiate the process to recover deleted emails. Once the process is completed you will receive a notification in your Inbox and find the recovered emails in Recovered mails folder.`
 	);
 	const buttonLabel = t('label.start_recovery', 'Start Recovery');
-	const datePickerLabel = 'Select rocovery date';
+	const datePickerLabel = t('label.select_recovery_date', 'Select recovery date');
 	const sectionTitle = recoverMessagesSubSection();
 	const { backupSelfUndeleteAllowed } = useAdvancedAccountStore();
 
@@ -144,8 +162,6 @@ export const RecoverMessages = (): React.JSX.Element => {
 						timeCaption={t('label.time', 'Time')}
 						includeTime={false}
 						dateFormat="dd/MM/yyyy"
-						// timeIntervals={7}
-						// format="DD MMM YYYY"
 					/>
 				</Row>
 				<Padding top="large" />

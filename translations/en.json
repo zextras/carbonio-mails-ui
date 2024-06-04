@@ -232,6 +232,7 @@
         "warning": "Warning"
     },
     "label": {
+        "": "Something went wrong, please try again",
         "accept": "Accept",
         "activate_selection_mode": "Activate selection mode",
         "add": "Add",
@@ -328,6 +329,7 @@
         "enter_name": "Enter Name",
         "error": "Error",
         "error_address": "A valid e-mail is required",
+        "error_no_backup_messages": "Your search did not find any message",
         "error_recovering_emails": "Error recovering emails",
         "error_try_again": "Something went wrong, please try again",
         "errors": {
@@ -459,6 +461,7 @@
         "select_color": "Select Color",
         "select_date_time": "Select date and time",
         "select_folder": "Select folder",
+        "select_recovery_date": "Select recovery date",
         "select_signature": "Select a signature",
         "send": "Send",
         "send_email": "Send e-mail",

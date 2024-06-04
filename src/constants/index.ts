@@ -14,6 +14,8 @@ export const MAIL_APP_ID = 'carbonio-mails-ui';
 
 export const NO_ACCOUNT_NAME = 'No account';
 
+export const RECOVER_MESSAGES_INTERVAL = 3;
+
 type AttachmentTypeItemsConstantProps = {
 	id: string;
 	label: string;

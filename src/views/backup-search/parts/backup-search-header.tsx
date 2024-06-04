@@ -54,7 +54,7 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 			>
 				<Row takeAvailableSpace orientation="horizontal" mainAlignment="flex-start">
 					<Text color="secondary">{t('label.results_for', 'Results for: ')}</Text>
-					{queryParamsArray.map(({ key, value, haveAvatarIcon, avatarIcon }) => (
+					{queryParamsArray.map(({ key, value, haveAvatarIcon: hasAvatar, avatarIcon }) => (
 						<Padding left="small" key={key}>
 							<Chip
 								label={value}
@@ -63,7 +63,7 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 								avatarColor="white"
 								color="text"
 								avatarIcon={avatarIcon}
-								hasAvatar={haveAvatarIcon}
+								hasAvatar={hasAvatar}
 							/>
 						</Padding>
 					))}
