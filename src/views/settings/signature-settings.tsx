@@ -459,9 +459,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								data-testid="MailPlainTextEditor"
 								value={signatureValue}
 								style={{
-									fontFamily: defaultFontFamily,
-									fontSize: defaultFontSize,
-									color: defaultFontColor,
 									border: "solid 1px black"
 								}}
 								onChange={(ev): void => {
