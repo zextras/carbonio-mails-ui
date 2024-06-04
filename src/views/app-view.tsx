@@ -48,8 +48,8 @@ const AppView: FC = () => {
 		if ( lastApp == "search" || lastApp == "" ) {
 			dispatch(resetConversationSlice());
 			dispatch(resetMessageSlice());
-			localStorage.setItem('lastApp','mail');
 		}
+		localStorage.setItem('lastApp','mail');
 		setAppContext({ isMessageView, count, setCount });
 	}, [path, count, isMessageView,dispatch]);
 
