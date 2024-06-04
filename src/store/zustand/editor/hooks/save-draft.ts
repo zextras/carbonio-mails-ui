@@ -37,8 +37,7 @@ export const useSaveDraftFromEditor = (): {
 	const { createSnackbar } = useUiUtilities();
 	const [t] = useTranslation();
 
-	const saveDraftFromEditor = useCallback(
-		(editorId: MailsEditorV2['id'], options?: SaveDraftOptions): void => {
+	const saveDraftFromEditor = useCallback((editorId: MailsEditorV2['id'], options?: SaveDraftOptions): void => {
 			const editor = getEditor({ id: editorId });
 			if (!editor) {
 				console.warn('Cannot find the editor', editorId);
@@ -55,18 +54,34 @@ export const useSaveDraftFromEditor = (): {
 					abortReason: err
 				});
 
-				createSnackbar({
-					key: `save-draft`,
-					replace: true,
-					type: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000
-				});
+				const errExceedQuota = new RegExp('^mailbox exceeded quota');
+
+				if (errExceedQuota.test(err)) {
+					const errMessage = 'hai esaurito lo spazio a disposizione della tua casella!.';
+					createSnackbar({
+							key: `mail-${editorId}`,
+							replace: true,
+							type: 'error',
+							label: 'Non è stato possibile salvare il messaggio: ' + errMessage,
+							autoHideTimeout: 6000
+						});
+
+				} else {
+
+					createSnackbar({
+						key: `save-draft`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000
+					});
+				}
+
 				computeAndUpdateEditorStatus(editorId);
 				options?.onError && options.onError(err);
 			};
 
-			// Update messages store
+     		// Update messages store
 			saveDraftV3({ editor })
 				.then((res) => {
 					if ('Fault' in res) {
@@ -122,11 +137,11 @@ export const useSaveDraftFromEditor = (): {
 
 	const delay = getDraftSaveDelay();
 	return useMemo(
-		() => ({
-			debouncedSaveDraft: debounce(saveDraftFromEditor, delay),
-			immediateSaveDraft: saveDraftFromEditor
-		}),
-		[delay, saveDraftFromEditor]
+			() => ({
+				debouncedSaveDraft: debounce(saveDraftFromEditor, delay),
+				immediateSaveDraft: saveDraftFromEditor
+			}),
+			[delay, saveDraftFromEditor]
 	);
 };
 

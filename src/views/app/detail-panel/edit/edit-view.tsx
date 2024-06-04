@@ -191,15 +191,65 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		[createSnackbar, editorId]
 	);
 
-	const onSendError = useCallback((): void => {
-		createSnackbar({
-			key: `mail-${editorId}`,
-			replace: true,
-			type: 'error',
-			label: t('label.error_try_again', 'Something went wrong, please try again'),
-			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-			hideButton: true
-		});
+	const onSendError = useCallback(
+		(error): void => {
+
+		const errInvalidAddress = new RegExp('^Invalid address');
+		const errMessageSize = new RegExp('^Message of size');
+		const errExceedQuota = new RegExp('^mailbox exceeded quota');
+		const errText = error.Text;
+
+		if ( errMessageSize.test(errText) ) {
+			//nothing, already handled by inline editor error
+		} else if (errExceedQuota.test(errText)) {
+			const errMessage = 'hai esaurito lo spazio a disposizione della tua casella!.';
+			createSnackbar({
+					key: `mail-${editorId}`,
+					replace: true,
+					type: 'error',
+					label: 'Non è stato possibile inviare il messaggio: ' + errMessage,
+					autoHideTimeout: 6000
+				});
+
+		} else if (errInvalidAddress.test(errText)) {
+				const emailMatch = errText.match(/(\S+@\S+)/);
+				let realEmail = '';
+				let cleanEmail = '';
+				if (emailMatch) {
+					realEmail = emailMatch[0];
+					cleanEmail = realEmail.slice(0, -1)
+				}
+				const errMessage = 'Il destinatario con email ' + cleanEmail + ' non esiste o è stata disabilitata la casella di posta.';
+				const errMessage2 = 'Rimuovi il contatto ' + cleanEmail + ' e riprova!';
+
+
+				createSnackbar({
+					key: `mail-${editorId}`,
+					replace: true,
+					type: 'error',
+					label: 'Non è stato possibile inviare il messaggio: ' + errMessage,
+					autoHideTimeout: 5000
+				});
+
+				if (errMessage2.length > 0 ) {
+					createSnackbar({
+						key: `mail-${editorId}-2`,
+						replace: false,
+						type: 'info',
+						label: 'Suggerimento: '+ errMessage2,
+						autoHideTimeout: 5000
+					});
+				}
+		} else {
+			createSnackbar({
+				key: `mail-${editorId}`,
+				replace: true,
+				type: 'error',
+				label: errText,
+				autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+				hideButton: true
+			});
+		}
 		// TODO move outside the component (editor-utils or a new help module?)
 		addBoard<BoardContext>({
 			url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
@@ -297,7 +347,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				try {
 					await createSmartLinksAction();
 				} catch (err) {
-					onSendError?.();
+					console.log(err);
+					//onSendError(err);
 					return;
 				}
 			}
@@ -333,7 +384,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					try {
 						await createSmartLinksAction();
 					} catch (err) {
-						onSendError?.();
+						console.log(err);
+						//onSendError?.();
 						return;
 					}
 				}
