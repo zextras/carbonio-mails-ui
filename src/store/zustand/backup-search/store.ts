@@ -5,29 +5,10 @@
  */
 /* eslint-disable import/no-extraneous-dependencies */
 
-export type BackupSearchMessage = {
-	id: string;
-	folderId: string;
-	owner: string;
-	creationDate: string;
-	deletionDate: string;
-	subject: string;
-	sender: string;
-	to: string;
-	fragment: string;
-};
-
 import produce from 'immer';
 import { create } from 'zustand';
 
-import type { DeletedMessageFromAPI } from '../../../types';
-
-export type BackupSearchStore = {
-	messages: Record<string, BackupSearchMessage>;
-	status: 'empty' | 'loading' | 'completed';
-	setMessages: (messages: Array<DeletedMessageFromAPI>) => void;
-	setStatus: (status: BackupSearchStore['status']) => void;
-};
+import type { BackupSearchStore, DeletedMessageFromAPI } from '../../../types';
 
 export const useBackupSearchStore = create<BackupSearchStore>()((set) => ({
 	messages: {},

@@ -24,3 +24,4 @@ export * from './tags';
 export * from './utils';
 export * from './attachments';
 export * from './sorting';
+export * from './backup-search';
