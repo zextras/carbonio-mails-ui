@@ -9,7 +9,7 @@ import { Avatar, Container, Padding, Row, Text } from '@zextras/carbonio-design-
 import { getUserAccount, replaceHistory } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
-import { BackupSearchMessage } from '../../../store/zustand/backup-search/store';
+import { BackupSearchMessage } from '../../../types';
 
 type BackupSearchMessageListmessageProps = {
 	message: BackupSearchMessage;

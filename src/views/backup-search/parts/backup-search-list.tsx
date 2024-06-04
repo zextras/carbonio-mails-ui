@@ -6,16 +6,25 @@
 
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { Button, Container, Padding, Row, useSnackbar } from '@zextras/carbonio-design-system';
+import {
+	Button,
+	Container,
+	Padding,
+	Row,
+	useModal,
+	useSnackbar
+} from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { BackupSearchMessageListItem } from './backup-search-message-list-item';
+import { BackupSearchRecoveryModal } from './backup-search-recovery-modal';
 import { restoreMessagesAPI } from '../../../api/restore-messages';
 import { CustomList } from '../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../../hooks/use-selection';
+import { StoreProvider } from '../../../store/redux';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
 
 export const BackupSearchList = (): React.JSX.Element => {
@@ -39,28 +48,53 @@ export const BackupSearchList = (): React.JSX.Element => {
 	const selectedIds = useMemo(() => Object.keys(selectedMessage), [selectedMessage]);
 	const createSnackbar = useSnackbar();
 
-	const recoverEmailsCallback = useCallback(async () => {
-		if (selectedIds.length > 0) {
-			const response = await restoreMessagesAPI(selectedIds);
-			if (response.ok) {
-				createSnackbar({
-					replace: true,
-					type: 'info',
-					label: t('label.recover_emails', 'Recovering emails...'),
-					autoHideTimeout: 5000,
-					hideButton: true
-				});
-			} else {
-				createSnackbar({
-					replace: true,
-					type: 'error',
-					label: t('label.error_recovering_emails', 'Error recovering emails'),
-					autoHideTimeout: 5000,
-					hideButton: true
-				});
+	const recoverEmailsCallback = useCallback(
+		async (closeModal: () => void) => {
+			if (selectedIds.length > 0) {
+				const response = await restoreMessagesAPI(selectedIds);
+				if (response.ok) {
+					createSnackbar({
+						replace: true,
+						type: 'info',
+						label: t(
+							'label.recover_emails',
+							'The recovery process has started, you will be informed once it is complete'
+						),
+						autoHideTimeout: 5000,
+						hideButton: true
+					});
+				} else {
+					createSnackbar({
+						replace: true,
+						type: 'error',
+						label: t('label.error_recovering_emails', 'Error recovering emails'),
+						autoHideTimeout: 5000,
+						hideButton: true
+					});
+				}
+				closeModal();
 			}
-		}
-	}, [createSnackbar, selectedIds]);
+		},
+		[createSnackbar, selectedIds]
+	);
+
+	const createModal = useModal();
+	const onClickCallback = useCallback(() => {
+		const closeModal = createModal(
+			{
+				maxHeight: '90vh',
+				children: (
+					<StoreProvider>
+						<BackupSearchRecoveryModal
+							onConfirm={(): Promise<void> => recoverEmailsCallback((): void => closeModal?.())}
+							onClose={(): void => closeModal?.()}
+						/>
+					</StoreProvider>
+				)
+			},
+			true
+		);
+	}, [createModal, recoverEmailsCallback]);
 
 	const listItems = useMemo(
 		() =>
@@ -137,7 +171,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 						<Button
 							label={t('label.recover_selected_emails', 'RECOVER SELECTED E-MAILS')}
 							color="primary"
-							onClick={recoverEmailsCallback}
+							onClick={onClickCallback}
 							size="medium"
 							type="outlined"
 							width="fill"
