@@ -6,20 +6,36 @@
 
 import React, { useCallback } from 'react';
 
-import { Container, Button, Text, Divider, Chip } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	Button,
+	Text,
+	Divider,
+	Chip,
+	Padding,
+	Row
+} from '@zextras/carbonio-design-system';
 import { removeRoute, replaceHistory, t } from '@zextras/carbonio-shell-ui';
-import { reduce } from 'lodash';
 
 import { BACKUP_SEARCH_ROUTE, MAILS_ROUTE } from '../../../constants';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
-import { SearchBackupDeletedMessagesAPIProps } from '../../../types';
 
 export const BackupSearchHeader = (): React.JSX.Element => {
 	const clearSearchText = t('label.clear_search_query', 'CLEAR SEARCH');
 
 	const { queryParams } = useBackupSearchStore();
+
+	const queryParamsArray = Object.entries(queryParams).map(([key, value]) => {
+		const isDateProp = key === 'startDate' || key === 'endDate';
+		const displayValue = isDateProp ? new Date(value).toLocaleDateString() : value;
+		const avatarIcon = isDateProp ? 'CalendarOutline' : undefined;
+		return { key, value: displayValue, haveAvatarIcon: isDateProp, avatarIcon };
+	});
+
 	const clearSearchCallback = useCallback(() => {
-		useBackupSearchStore.getState().setMessages([]);
+		const backupSearchStoreState = useBackupSearchStore.getState();
+		backupSearchStoreState.setMessages([]);
+		backupSearchStoreState.setQueryParams({});
 		removeRoute(BACKUP_SEARCH_ROUTE);
 		replaceHistory({ route: MAILS_ROUTE, path: '/' });
 	}, []);
@@ -36,28 +52,31 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 				style={{ overflow: 'hidden' }}
 				padding={{ horizontal: 'large', vertical: 'medium' }}
 			>
-				<Container width="85%" orientation="horizontal" wrap="wrap" mainAlignment="flex-start">
-					<Text color="secondary">Results for: </Text>
-					{
-						(reduce(
-							(queryParams, acc) => (param: SearchBackupDeletedMessagesAPIProps['endDate']) => (
-								<Chip key={param} label={param} />
-							)
-						),
-						{})
-					}
-				</Container>
-
-				<Container width="15%" mainAlignment="flex-start" crossAlignment="flex-start">
+				<Row takeAvailableSpace orientation="horizontal" mainAlignment="flex-start">
+					<Text color="secondary">{t('label.results_for', 'Results for: ')}</Text>
+					{queryParamsArray.map(({ key, value, haveAvatarIcon, avatarIcon }) => (
+						<Padding left="small" key={key}>
+							<Chip
+								label={value}
+								background="gray2"
+								avatarBackground="secondary"
+								avatarColor="white"
+								color="text"
+								avatarIcon={avatarIcon}
+								hasAvatar={haveAvatarIcon}
+							/>
+						</Padding>
+					))}
+				</Row>
+				<Row mainAlignment="space-between" crossAlignment="flex-end">
 					<Button
 						label={clearSearchText}
 						icon="CloseOutline"
 						color="primary"
-						width="fill"
 						type="ghost"
 						onClick={clearSearchCallback}
 					/>
-				</Container>
+				</Row>
 			</Container>
 			<Divider color="gray3" />
 		</>
