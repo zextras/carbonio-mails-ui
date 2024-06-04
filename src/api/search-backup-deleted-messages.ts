@@ -4,29 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { type SearchBackupDeletedMessagesAPIProps } from '../types';
+import type {
+	SearchBackupDeletedMessagesResponse,
+	SearchBackupDeletedMessagesAPIProps
+} from '../types';
 
-export type DeletedMessageFromAPI = {
-	messageId: string;
-	folderId: string;
-	owner: string;
-	creationDate: string;
-	deletionDate: string;
-	subject: string;
-	sender: string;
-	to: string;
-	fragment: string;
-};
-
-export type SearchBackupDeletedMessagesResponse = {
-	messages: Array<DeletedMessageFromAPI>;
-};
-
-export const searchBackupDeletedMessagesAPI = async ({
+export async function searchBackupDeletedMessagesAPI({
 	startDate,
 	endDate,
 	searchString
-}: SearchBackupDeletedMessagesAPIProps): Promise<SearchBackupDeletedMessagesResponse> => {
+}: SearchBackupDeletedMessagesAPIProps): Promise<SearchBackupDeletedMessagesResponse> {
 	const searchURL = '/zx/backup/v1/searchDeleted';
 	const searchParams = new URLSearchParams();
 	if (startDate) {
@@ -54,4 +41,4 @@ export const searchBackupDeletedMessagesAPI = async ({
 		});
 
 	return result.json();
-};
+}

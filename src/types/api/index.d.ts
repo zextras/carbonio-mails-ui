@@ -9,3 +9,19 @@ export type SearchBackupDeletedMessagesAPIProps = {
 	endDate?: string;
 	searchString?: string;
 };
+
+export type DeletedMessageFromAPI = {
+	messageId: string;
+	folderId: string;
+	owner: string;
+	creationDate: string;
+	deletionDate: string;
+	subject: string;
+	sender: string;
+	to: string;
+	fragment: string;
+};
+
+export type SearchBackupDeletedMessagesResponse = {
+	messages: Array<DeletedMessageFromAPI>;
+};
