@@ -55,13 +55,16 @@ export const RecoverMessages = (): React.JSX.Element => {
 			if (!recoverDay && !searchString) return;
 			useBackupSearchStore.getState().setStatus(BACKUP_SEARCH_STATUS.loading);
 			const interval = calculateInterval(recoverDay);
-			const response = await searchBackupDeletedMessagesAPI({
+			const searchParams = {
 				...interval,
 				...(searchString === '' ? {} : { searchString })
-			});
+			};
+			const response = await searchBackupDeletedMessagesAPI(searchParams);
 			useBackupSearchStore.getState().setStatus(BACKUP_SEARCH_STATUS.completed);
 			if (response) {
 				useBackupSearchStore.getState().setMessages(response.messages);
+				useBackupSearchStore.getState().setQueryParams(searchParams);
+
 				setRecoverDay(null);
 				setSearchString('');
 				closeModal();

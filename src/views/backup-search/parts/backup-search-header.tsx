@@ -14,6 +14,9 @@ import { useBackupSearchStore } from '../../../store/zustand/backup-search/store
 
 export const BackupSearchHeader = (): React.JSX.Element => {
 	const clearSearchText = t('label.clear_search_query', 'CLEAR SEARCH');
+
+	const { queryParams } = useBackupSearchStore();
+
 	const clearSearchCallback = useCallback(() => {
 		useBackupSearchStore.getState().setMessages([]);
 		removeRoute(BACKUP_SEARCH_ROUTE);
