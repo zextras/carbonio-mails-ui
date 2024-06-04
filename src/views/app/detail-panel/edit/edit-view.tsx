@@ -364,6 +364,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			onConfirmCallback,
 			createModal
 		});
+		saveDraft();
 	}, [
 		editorId,
 		savedStandardAttachments,
@@ -374,7 +375,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		onSendCountdownTick,
 		onSendComplete,
 		onSendError,
-		createSmartLinksAction
+		createSmartLinksAction,
+		saveDraft
 	]);
 
 	const onSendLaterClick = useCallback(
