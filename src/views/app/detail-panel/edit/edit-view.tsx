@@ -324,6 +324,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			onConfirmCallback,
 			createModal
 		});
+		saveDraft();
 	}, [
 		editorId,
 		savedStandardAttachments,
@@ -334,7 +335,8 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		onSendCountdownTick,
 		onSendComplete,
 		onSendError,
-		createSmartLinksAction
+		createSmartLinksAction,
+		saveDraft
 	]);
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {

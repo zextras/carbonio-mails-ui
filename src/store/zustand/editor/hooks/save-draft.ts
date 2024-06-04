@@ -16,6 +16,7 @@ import { saveDraftAsyncThunk, saveDraftV3 } from '../../../actions/save-draft';
 import { buildSavedAttachments } from '../editor-transformations';
 import { useEditorsStore } from '../store';
 import { getDraftSaveDelay } from '../store-utils';
+import { PROCESS_STATUS } from '../../../../constants';
 
 export type SaveDraftOptions = {
 	onComplete?: () => void;
@@ -38,6 +39,10 @@ export const saveDraftFromEditor = (
 	}
 
 	if (!editor.draftSaveAllowedStatus?.allowed) {
+		return;
+	}
+
+	if (editor.sendProcessStatus?.status == PROCESS_STATUS.RUNNING) {
 		return;
 	}
 
