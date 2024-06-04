@@ -19,7 +19,7 @@ describe('restorMessagesAPI', () => {
 			);
 		});
 
-		it('should return the reponse returned by fetch', async () => {
+		it('should return status 202 when the response is successful', async () => {
 			expect((await restoreMessagesAPI([faker.number.toString()])).status).toBe(202);
 		});
 	});
