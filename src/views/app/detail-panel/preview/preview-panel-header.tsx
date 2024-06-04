@@ -5,7 +5,15 @@
  */
 import React, { useCallback, FC, useMemo } from 'react';
 
-import { Container, Divider, Icon, IconButton, Row, Text } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	Divider,
+	Icon,
+	IconButton,
+	Row,
+	Text,
+	Tooltip
+} from '@zextras/carbonio-design-system';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 
 import type { Conversation, MailMessage } from '../../../../types';
@@ -45,9 +53,11 @@ const PreviewPanelHeader: FC<{
 					/>
 				)}
 				<Row mainAlignment="flex-start" padding={{ left: 'large' }} takeAvailableSpace>
-					<Text size="medium" data-testid="Subject" color={item?.subject ? 'text' : 'secondary'}>
-						{subject}
-					</Text>
+					<Tooltip label={subject}>
+						<Text size="medium" data-testid="Subject" color={item?.subject ? 'text' : 'secondary'}>
+							{subject}
+						</Text>
+					</Tooltip>
 				</Row>
 				<IconButton
 					data-testid="PreviewPanelCloseIcon"
