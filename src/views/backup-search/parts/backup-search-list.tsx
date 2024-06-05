@@ -14,7 +14,7 @@ import {
 	useModal,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -23,6 +23,7 @@ import { BackupSearchRecoveryModal } from './backup-search-recovery-modal';
 import { restoreMessagesAPI } from '../../../api/restore-messages';
 import { CustomList } from '../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../carbonio-ui-commons/components/list/list-item';
+import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from '../../../constants';
 import { useSelection } from '../../../hooks/use-selection';
 import { StoreProvider } from '../../../store/redux';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
@@ -50,30 +51,32 @@ export const BackupSearchList = (): React.JSX.Element => {
 
 	const recoverEmailsCallback = useCallback(
 		async (closeModal: () => void) => {
-			if (selectedIds.length > 0) {
-				const response = await restoreMessagesAPI(selectedIds);
-				if (response.ok) {
-					createSnackbar({
-						replace: true,
-						type: 'info',
-						label: t(
-							'label.recover_emails',
-							'The recovery process has started, you will be informed once it is complete'
-						),
-						autoHideTimeout: 5000,
-						hideButton: true
-					});
-				} else {
-					createSnackbar({
-						replace: true,
-						type: 'error',
-						label: t('label.error_recovering_emails', 'Error recovering emails'),
-						autoHideTimeout: 5000,
-						hideButton: true
-					});
-				}
-				closeModal();
+			if (selectedIds.length === 0) return;
+			const response = await restoreMessagesAPI(selectedIds);
+			closeModal();
+			if ('error' in response) {
+				createSnackbar({
+					replace: true,
+					type: 'error',
+					label: t('label.error_recovering_emails', 'Error recovering emails'),
+					autoHideTimeout: 5000,
+					hideButton: true
+				});
+				return;
 			}
+			useBackupSearchStore.getState().setStatus(BACKUP_SEARCH_STATUS.empty);
+			useBackupSearchStore.getState().setMessages([]);
+			replaceHistory({ route: MAILS_ROUTE, path: '/' });
+			createSnackbar({
+				replace: true,
+				type: 'info',
+				label: t(
+					'label.recover_emails',
+					'The recovery process has started, you will be informed once it is complete'
+				),
+				autoHideTimeout: 5000,
+				hideButton: true
+			});
 		},
 		[createSnackbar, selectedIds]
 	);
