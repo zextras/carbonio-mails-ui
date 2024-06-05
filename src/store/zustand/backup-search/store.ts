@@ -10,22 +10,8 @@ import { create } from 'zustand';
 
 import type { BackupSearchStore, DeletedMessageFromAPI } from '../../../types';
 
-const mockMessages = {
-	'1': {
-		id: '1',
-		folderId: '1',
-		owner: '1',
-		creationDate: '1',
-		deletionDate: '1',
-		subject: '1',
-		sender: '1',
-		to: '1',
-		fragment: '1'
-	}
-};
-
 export const useBackupSearchStore = create<BackupSearchStore>()((set) => ({
-	messages: mockMessages,
+	messages: {},
 	queryParams: {
 		endDate: '2024-05-25T22:00:00.000Z',
 		startDate: '2024-05-22T22:00:00.000Z',
