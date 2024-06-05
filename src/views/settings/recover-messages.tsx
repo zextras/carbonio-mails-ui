@@ -19,6 +19,7 @@ import {
 	DateTimePicker
 } from '@zextras/carbonio-design-system';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { isEmpty } from 'lodash';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
@@ -31,7 +32,6 @@ import {
 import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
-import { isEmpty } from 'lodash';
 
 function calculateInterval(recoverDate: string | null): { startDate?: string; endDate?: string } {
 	if (!recoverDate) return {};
@@ -66,27 +66,10 @@ export const RecoverMessages = (): React.JSX.Element => {
 				...interval,
 				...(searchString === '' ? {} : { searchString })
 			};
-			try {
-				const response = await searchBackupDeletedMessagesAPI(searchParams);
-				backupSearchStoreState.setStatus(BACKUP_SEARCH_STATUS.completed);
-				backupSearchStoreState.setMessages(response.messages);
-				backupSearchStoreState.setQueryParams(searchParams);
-				setRecoverDay(null);
-				setSearchString('');
-				closeModal();
-				if (isEmpty(response.messages)) {
-					createSnackbar({
-						key: `recover-no-messages-error`,
-						replace: true,
-						type: 'info',
-						label: t('label.error_no_backup_messages', 'Your search did not find any message'),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
-					return;
-				}
-				replaceHistory({ route: BACKUP_SEARCH_ROUTE, path: '/' });
-			} catch {
+			const response = await searchBackupDeletedMessagesAPI(searchParams);
+			closeModal();
+
+			if ('error' in response) {
 				createSnackbar({
 					key: `recover-messages-error`,
 					replace: true,
@@ -95,8 +78,26 @@ export const RecoverMessages = (): React.JSX.Element => {
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
-				closeModal();
+				return;
 			}
+			backupSearchStoreState.setStatus(BACKUP_SEARCH_STATUS.completed);
+			backupSearchStoreState.setMessages(response.data.messages);
+			backupSearchStoreState.setQueryParams(searchParams);
+			setRecoverDay(null);
+			setSearchString('');
+
+			if (isEmpty(response.data.messages)) {
+				createSnackbar({
+					key: `recover-no-messages-error`,
+					replace: true,
+					type: 'info',
+					label: t('label.error_no_backup_messages', 'Your search did not find any message'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+				return;
+			}
+			replaceHistory({ route: BACKUP_SEARCH_ROUTE, path: '/' });
 		},
 		[createSnackbar, recoverDay, searchString]
 	);

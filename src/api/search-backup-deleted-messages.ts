@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { apiWrapper } from '../carbonio-ui-commons/helpers/api-wrapper';
 import type {
 	SearchBackupDeletedMessagesResponse,
 	SearchBackupDeletedMessagesAPIProps
@@ -13,7 +14,12 @@ export async function searchBackupDeletedMessagesAPI({
 	startDate,
 	endDate,
 	searchString
-}: SearchBackupDeletedMessagesAPIProps): Promise<SearchBackupDeletedMessagesResponse> {
+}: SearchBackupDeletedMessagesAPIProps): Promise<
+	| {
+			data: SearchBackupDeletedMessagesResponse;
+	  }
+	| { error: unknown }
+> {
 	const searchURL = '/zx/backup/v1/searchDeleted';
 	const searchParams = new URLSearchParams();
 	if (startDate) {
@@ -26,10 +32,10 @@ export async function searchBackupDeletedMessagesAPI({
 		searchParams.set('searchString', searchString);
 	}
 
-	const result = await fetch(`${searchURL}?${searchParams}`, {
+	const apiCall = fetch(`${searchURL}?${searchParams}`, {
 		method: 'GET',
 		credentials: 'same-origin'
 	});
-	if (result.ok) return result.json();
-	throw new Error('Something went wrong with the search inside the backup');
+
+	return apiWrapper(apiCall);
 }

@@ -8,9 +8,9 @@ import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 
+import { BackupSearchHeader } from './parts/backup-search-header';
 import { BackupSearchList } from './parts/backup-search-list';
 import { BackupSearchPanel } from './parts/backup-search-panel';
-import { BackupSearchHeader } from './parts/backup-search-header';
 
 const BackupSearchView = (): React.JSX.Element => (
 	<>
