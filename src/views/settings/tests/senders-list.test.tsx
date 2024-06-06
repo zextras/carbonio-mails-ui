@@ -11,7 +11,7 @@ import { AccountSettings, AccountSettingsPrefs } from '@zextras/carbonio-shell-u
 import { times } from 'lodash';
 
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { screen, setupTest, within } from '../../../carbonio-ui-commons/test/test-setup';
+import { UserEvent, screen, setupTest, within } from '../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../tests/generators/store';
 import { SendersList, SendersListProps } from '../senders-list';
 
@@ -37,6 +37,13 @@ function setupSettings(): AccountSettingsPrefs {
 	const { attrs } = generateSettings(customSettings);
 
 	return attrs;
+}
+
+async function addAddress(user: UserEvent, newSenderAddress: string): Promise<void> {
+	const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
+	await user.type(nameInput, newSenderAddress);
+	const addButton = screen.getByRole('button', { name: 'label.add' });
+	await act(() => user.click(addButton));
 }
 
 describe('Allowed sender list addresses settings', () => {
@@ -81,11 +88,7 @@ describe('Blocked sender list addresses settings', () => {
 			<SendersList updateSettings={updateSettings} settingsObj={prefs} listType="Blocked" />,
 			{ store }
 		);
-		const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
-		expect(nameInput).toBeVisible();
-		await user.type(nameInput, newSenderAddress);
-		const addButton = screen.getByRole('button', { name: 'label.add' });
-		await act(() => user.click(addButton));
+		await addAddress(user, newSenderAddress);
 
 		const list = screen.getByTestId(SENDERS_LIST);
 		const listItem = await within(list).findByText(newSenderAddress);
@@ -102,10 +105,7 @@ describe('Blocked sender list addresses settings', () => {
 			<SendersList updateSettings={updateSettings} settingsObj={prefs} listType="Blocked" />,
 			{ store }
 		);
-		const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
-		await user.type(nameInput, newSenderAddress);
-		const addButton = screen.getByRole('button', { name: 'label.add' });
-		await act(() => user.click(addButton));
+		await addAddress(user, newSenderAddress);
 
 		expect(updateSettings).toBeCalledWith({
 			target: { name: 'amavisBlacklistSender', value: [newSenderAddress] }
@@ -129,6 +129,29 @@ describe('Blocked sender list addresses settings', () => {
 		);
 		senderAddressArray.forEach((address) => {
 			expect(screen.getByText(address)).toBeVisible();
+		});
+	});
+
+	it('should update settings when new sender address is added and list is NOT empty', async () => {
+		const store = generateStore();
+		const updateSettings = jest.fn();
+		const newSenderAddress = faker.internet.email();
+		const senderAddressArray: Array<string> = times(3, () => faker.internet.email());
+		const customSettings: Partial<AccountSettings> = {
+			attrs: {
+				amavisBlacklistSender: senderAddressArray
+			}
+		};
+		const { attrs } = generateSettings(customSettings);
+
+		const { user } = setupTest(
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
+			{ store }
+		);
+		await addAddress(user, newSenderAddress);
+
+		expect(updateSettings).toBeCalledWith({
+			target: { name: 'amavisBlacklistSender', value: [...senderAddressArray, newSenderAddress] }
 		});
 	});
 });
