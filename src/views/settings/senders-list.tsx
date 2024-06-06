@@ -43,11 +43,11 @@ export const SendersList = ({
 	);
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
-			<Container orientation="horizontal" padding={{ horizontal: 'medium', top: 'medium' }}>
+			<Container orientation="vertical" padding={{ vertical: 'medium', top: 'medium' }}>
 				<Container id={sectionTitle.id}>
 					<Heading title={sectionTitle.label} size="medium" />
 				</Container>
-				<Container width="auto" crossAlignment="flex-end">
+				<Container crossAlignment="flex-start" padding={'none'}>
 					<TextWithTooltip size="extrasmall">{message}</TextWithTooltip>
 				</Container>
 			</Container>
