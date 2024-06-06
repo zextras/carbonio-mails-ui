@@ -20,6 +20,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import Heading from './components/settings-heading';
 import { allowedSendersSubSection, blockedSendersSubSection } from './subsections';
 import type { InputProps } from '../../types';
+import { isValidEmail } from '../search/parts/utils';
 
 export type ListType = 'Allowed' | 'Blocked';
 
@@ -67,7 +68,7 @@ export const SendersList = ({
 		setAddress('');
 		setSendersList([...sendersList, address]);
 	};
-	const isInvalid = false;
+	const isInvalid = useMemo(() => !isValidEmail(address), [address]);
 
 	const warningMessage = useMemo(
 		() =>

@@ -170,4 +170,32 @@ describe('Blocked sender list addresses settings', () => {
 		const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
 		expect(nameInput).toHaveValue('');
 	});
+
+	it('add button disabled with empty address', async () => {
+		const store = generateStore();
+		const updateSettings = jest.fn();
+		const attrs = setupSettings();
+
+		setupTest(
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
+			{ store }
+		);
+
+		expect(screen.getByRole('button', { name: 'label.add' })).toBeDisabled();
+	});
+
+	it('add button disabled with invalid address', async () => {
+		const store = generateStore();
+		const updateSettings = jest.fn();
+		const attrs = setupSettings();
+		const newSenderAddress = 'invalid';
+		const { user } = setupTest(
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
+			{ store }
+		);
+		const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
+		await user.type(nameInput, newSenderAddress);
+
+		expect(screen.getByRole('button', { name: 'label.add' })).toBeDisabled();
+	});
 });
