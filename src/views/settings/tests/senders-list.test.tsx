@@ -44,4 +44,10 @@ describe('Blocked sender list addresses settings', () => {
 		setupTest(<SendersList {...buildProps({ listType: 'Blocked' })} />);
 		expect(screen.getByText('messages.blocked_addresses')).toBeVisible();
 	});
+	it('should render the "add" widget', () => {
+		setupTest(<SendersList {...buildProps({ listType: 'Blocked' })} />);
+		expect(screen.getByRole('button', { name: 'label.add' })).toBeVisible();
+		const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
+		expect(nameInput).toBeVisible();
+	});
 });
