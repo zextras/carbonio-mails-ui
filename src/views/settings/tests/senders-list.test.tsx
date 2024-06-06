@@ -75,9 +75,6 @@ describe('Blocked sender list addresses settings', () => {
 			<SendersList updateSettings={updateSettings} settingsObj={prefs} listType="Blocked" />,
 			{ store }
 		);
-		/* senderAddressArray.forEach((senderAddress) => {
-			expect(screen.getByText(trusteeAdress)).toBeVisible();
-		}); */
 		const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
 		expect(nameInput).toBeVisible();
 		await user.type(nameInput, newSenderAddress);
@@ -87,5 +84,31 @@ describe('Blocked sender list addresses settings', () => {
 		const list = screen.getByTestId(SENDERS_LIST);
 		const listItem = await within(list).findByText(newSenderAddress);
 		expect(listItem).toBeVisible();
+	});
+
+	it('should update settings when new sender address is added', async () => {
+		const store = generateStore();
+		const updateSettings = jest.fn();
+		const newSenderAddress = faker.internet.email();
+
+		const senderAddressArray: Array<string> = [];
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				amavisBlacklistSender: senderAddressArray
+			}
+		};
+		const { prefs } = generateSettings(customSettings);
+		const { user } = setupTest(
+			<SendersList updateSettings={updateSettings} settingsObj={prefs} listType="Blocked" />,
+			{ store }
+		);
+		const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
+		await user.type(nameInput, newSenderAddress);
+		const addButton = screen.getByRole('button', { name: 'label.add' });
+		await act(() => user.click(addButton));
+
+		expect(updateSettings).toBeCalledWith({
+			target: { name: 'amavisBlacklistSender', value: [newSenderAddress] }
+		});
 	});
 });

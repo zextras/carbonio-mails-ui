@@ -54,6 +54,12 @@ export const SendersList = ({
 	const message = useMemo(() => getMessage(listType), [listType]);
 
 	const onAdd = (): void => {
+		updateSettings({
+			target: {
+				name: listType === 'Allowed' ? 'amavisWhitelistSender' : 'amavisBlacklistSender',
+				value: [...sendersList, address]
+			}
+		});
 		setSendersList([...sendersList, address]);
 	};
 	const isInvalid = false;
