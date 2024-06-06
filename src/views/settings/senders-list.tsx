@@ -16,12 +16,17 @@ type SendersListProps = InputProps & {
 	listType: 'Allowed' | 'Blocked';
 };
 
-const messages = {
-	Allowed:
-		'Mails sent from addresses on your allowed senders list will always bypass your spam filter and land directly in your inbox',
-	Blocked:
-		'Mails sent from addresses on the blocked senders list will be automatically moved to your spam folder.'
-};
+function getMessage(listType: 'Allowed' | 'Blocked'): string {
+	return listType === 'Allowed'
+		? t(
+				'messages.allowed_addresses',
+				'Mails sent from addresses on your allowed senders list will always bypass your spam filter and land directly in your inbox.'
+			)
+		: t(
+				'messages.blocked_addresses',
+				'Mails sent from addresses on the blocked senders list will be automatically moved to your spam folder.'
+			);
+}
 
 export const SendersList = ({
 	settingsObj,
@@ -33,14 +38,7 @@ export const SendersList = ({
 		[listType]
 	);
 
-	const message = useMemo(
-		() =>
-			t(
-				`messages.${listType === 'Allowed' ? 'allowed_addresses' : 'blocked_addresses'}`,
-				messages[listType]
-			),
-		[listType]
-	);
+	const message = useMemo(() => getMessage(listType), [listType]);
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
 			<Container orientation="vertical" padding={{ vertical: 'medium', top: 'medium' }}>

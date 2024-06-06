@@ -546,6 +546,8 @@
         "view_rights": "View"
     },
     "messages": {
+        "allowed_addresses": "Mails sent from addresses on your allowed senders list will always bypass your spam filter and land directly in your inbox.",
+        "blocked_addresses": "Mails sent from addresses on the blocked senders list will be automatically moved to your spam folder.",
         "cal_name_exist_warning": "A calendar with the same name already exists in this path",
         "check_and_try_again": "Please, check Carbonio and try again",
         "could_not_find_to_show": "Sorry, we couldn’t find anything to show",
