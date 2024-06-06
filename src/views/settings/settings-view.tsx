@@ -23,6 +23,7 @@ import DisplayMessagesSettings from './displaying-messages-settings';
 import FilterModule from './filters';
 import ReceivingMessagesSettings from './receiving-messages-settings';
 import { RecoverMessages } from './recover-messages';
+import { SendersList } from './senders-list';
 import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
@@ -376,6 +377,16 @@ const SettingsView: FC = () => {
 					<ComposeMessage settingsObj={settingsObj} updateSettings={updateSettings} />
 					<FilterModule />
 					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
+					<SendersList
+						settingsObj={settingsObj}
+						updateSettings={updateSettings}
+						listType="Allowed"
+					/>
+					<SendersList
+						settingsObj={settingsObj}
+						updateSettings={updateSettings}
+						listType="Blocked"
+					/>
 				</FormSection>
 			</Container>
 		</>
