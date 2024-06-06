@@ -44,7 +44,8 @@ export const SendersList = ({
 	updateSettings,
 	listType
 }: SendersListProps): React.JSX.Element => {
-	const [address, setAddress] = useState('');
+	const [address, setAddress] = useState<string>('');
+	const [sendersList, setSendersList] = useState<string[]>([]);
 	const sectionTitle = useMemo(
 		() => (listType === 'Allowed' ? allowedSendersSubSection() : blockedSendersSubSection()),
 		[listType]
@@ -52,7 +53,9 @@ export const SendersList = ({
 
 	const message = useMemo(() => getMessage(listType), [listType]);
 
-	const onAdd = (): void => {};
+	const onAdd = (): void => {
+		setSendersList([...sendersList, address]);
+	};
 	const isInvalid = false;
 
 	const warningMessage = useMemo(
@@ -104,6 +107,11 @@ export const SendersList = ({
 					</Tooltip>
 				</Padding>
 			</Container>
+			<div data-testid="senders-list">
+				{sendersList.map((s, idx) => (
+					<span key={idx}>{s}</span>
+				))}
+			</div>
 		</Container>
 	);
 };

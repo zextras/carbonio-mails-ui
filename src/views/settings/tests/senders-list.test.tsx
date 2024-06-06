@@ -5,8 +5,17 @@
  */
 import React from 'react';
 
-import { screen, setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { faker } from '@faker-js/faker';
+import { act } from '@testing-library/react';
+import { AccountSettings } from '@zextras/carbonio-shell-ui';
+import { times } from 'lodash';
+
+import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
+import { screen, setupTest, within } from '../../../carbonio-ui-commons/test/test-setup';
+import { generateStore } from '../../../tests/generators/store';
 import { SendersList, SendersListProps } from '../senders-list';
+
+const SENDERS_LIST = 'senders-list';
 
 const buildProps = ({
 	settingsObj = {},
@@ -49,5 +58,34 @@ describe('Blocked sender list addresses settings', () => {
 		expect(screen.getByRole('button', { name: 'label.add' })).toBeVisible();
 		const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
 		expect(nameInput).toBeVisible();
+	});
+	it('should add new sender address in the list of blocked addresses', async () => {
+		const store = generateStore();
+		const updateSettings = jest.fn();
+		const newSenderAddress = faker.internet.email();
+
+		const senderAddressArray: Array<string> = times(3, () => faker.internet.email());
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				amavisBlacklistSender: senderAddressArray
+			}
+		};
+		const { prefs } = generateSettings(customSettings);
+		const { user } = setupTest(
+			<SendersList updateSettings={updateSettings} settingsObj={prefs} listType="Blocked" />,
+			{ store }
+		);
+		/* senderAddressArray.forEach((senderAddress) => {
+			expect(screen.getByText(trusteeAdress)).toBeVisible();
+		}); */
+		const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
+		expect(nameInput).toBeVisible();
+		await user.type(nameInput, newSenderAddress);
+		const addButton = screen.getByRole('button', { name: 'label.add' });
+		await act(() => user.click(addButton));
+
+		const list = screen.getByTestId(SENDERS_LIST);
+		const listItem = await within(list).findByText(newSenderAddress);
+		expect(listItem).toBeVisible();
 	});
 });
