@@ -22,7 +22,7 @@ export const recoverMessagesSubSection = (): SettingsSubSection => ({
 	id: 'recover_messages'
 });
 
-export const domainWhitelistSubSection = (): SettingsSubSection => ({
+export const trustedAddressesSubSection = (): SettingsSubSection => ({
 	label: t('label.trusted_addresses', 'Trusted addresses'),
 	id: 'trusted_addresses'
 });

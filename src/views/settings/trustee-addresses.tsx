@@ -22,7 +22,7 @@ import { filter, find, map } from 'lodash';
 import Heading from './components/settings-heading';
 import TrusteeListItem from './components/trustee-list-item';
 import LoadingShimmer from './filters/parts/loading-shimmer';
-import { domainWhitelistSubSection } from './subsections';
+import { trustedAddressesSubSection } from './subsections';
 import type { InputProps } from '../../types';
 
 const NonSupportedCharacters = /[!#$%^&*()+=[\]{};':"\\|,<>/?|/^\s*$/]+/;
@@ -30,7 +30,7 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 	const [address, setAddress] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 	const [trusteeAddressesList, setTrusteeAddressList] = useState<string[]>([]);
-	const sectionTitle = useMemo(() => domainWhitelistSubSection(), []);
+	const sectionTitle = useMemo(() => trustedAddressesSubSection(), []);
 	const message = useMemo(
 		() =>
 			t(
