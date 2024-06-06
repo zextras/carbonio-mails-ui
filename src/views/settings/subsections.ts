@@ -39,12 +39,23 @@ export const filtersSubSection = (): SettingsSubSection => ({
 	id: 'filters'
 });
 
+export const allowedSendersSubSection = (): SettingsSubSection => ({
+	label: t('label.allowed_addresses', 'Allowed senders list'),
+	id: 'allowed_addresses'
+});
+
 export const getSettingsSubSections = (
 	backupSelfUndeleteAllowed: AdvancedAccountStore['backupSelfUndeleteAllowed']
 ): Array<SettingsSubSection> =>
 	[displayingMessagesSubSection(), receivingMessagesSubSection()]
 		.concat(backupSelfUndeleteAllowed ? recoverMessagesSubSection() : [])
-		.concat([signaturesSubSection(), setDefaultSignaturesSubSection(), filtersSubSection()]);
+		.concat([
+			signaturesSubSection(),
+			setDefaultSignaturesSubSection(),
+			filtersSubSection(),
+			trustedAddressesSubSection(),
+			allowedSendersSubSection()
+		]);
 
 export const composingMsgSubSection = (): SettingsSubSection => ({
 	label: t('labels.composing_messages', 'Composing Messages'),

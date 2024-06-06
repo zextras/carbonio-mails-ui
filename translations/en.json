@@ -245,6 +245,7 @@
         "all": "all",
         "all_items_selected": "All visible items have been selected",
         "allowed_actions": "Allowed actions",
+        "allowed_addresses": "Allowed senders list",
         "always_allow_address": "Always allow from <strong>{{from}}</strong>",
         "always_allow_domain": "Always allow from <strong>{{domain}}</strong> domain",
         "any": "any",
