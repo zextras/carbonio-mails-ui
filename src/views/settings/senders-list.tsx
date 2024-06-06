@@ -3,9 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
-import { Container, Divider, TextWithTooltip } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	Divider,
+	TextWithTooltip,
+	Padding,
+	Tooltip,
+	Button,
+	Row,
+	Input
+} from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import Heading from './components/settings-heading';
@@ -35,12 +44,23 @@ export const SendersList = ({
 	updateSettings,
 	listType
 }: SendersListProps): React.JSX.Element => {
+	const [address, setAddress] = useState('');
 	const sectionTitle = useMemo(
 		() => (listType === 'Allowed' ? allowedSendersSubSection() : blockedSendersSubSection()),
 		[listType]
 	);
 
 	const message = useMemo(() => getMessage(listType), [listType]);
+
+	const onAdd = (): void => {};
+	const isInvalid = false;
+
+	const warningMessage = useMemo(
+		() =>
+			isInvalid ? t('messages.invalid_sender_address', 'Please enter only e-mail addresses') : '',
+		[isInvalid]
+	);
+
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
 			<Container orientation="vertical" padding={{ vertical: 'medium', top: 'medium' }}>
@@ -57,6 +77,33 @@ export const SendersList = ({
 				orientation="horizontal"
 				mainAlignment="flex-start"
 			></Container>
+			<Divider />
+			<Container
+				padding={{ all: 'medium', bottom: 'small' }}
+				orientation="horizontal"
+				mainAlignment="flex-start"
+			>
+				<Row mainAlignment="flex-start" width="50vw">
+					<Input
+						label={t('label.enter_single_email_address', 'Enter email address')}
+						value={address}
+						hasError={isInvalid}
+						description={warningMessage}
+						backgroundColor="gray5"
+						onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setAddress(e.target.value)}
+					/>
+				</Row>
+				<Padding left="medium">
+					<Tooltip label={warningMessage} disabled={!isInvalid} maxWidth="100%">
+						<Button
+							label={t('label.add', 'Add')}
+							type="outlined"
+							onClick={onAdd}
+							disabled={isInvalid}
+						/>
+					</Tooltip>
+				</Padding>
+			</Container>
 		</Container>
 	);
 };

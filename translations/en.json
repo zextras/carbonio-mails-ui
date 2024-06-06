@@ -322,6 +322,7 @@
         "enable_message_retention": "Enable Message Retention",
         "enter_email_address": "Enter email address or domain",
         "enter_name": "Enter Name",
+        "enter_single_email_address": "Enter email address",
         "error": "Error",
         "error_address": "A valid e-mail is required",
         "error_try_again": "Something went wrong, please try again",
@@ -558,6 +559,7 @@
             "popup_blocked": "To complete the operation, Carbonio needs to open a new window.\nCheck your browser settings"
         },
         "invalid_address": "The following address appears to be invalid",
+        "invalid_sender_address": "Please enter only e-mail addresses",
         "invalid_trustee_address": "Please enter only e-mail addresses or domains",
         "modal": {
             "delete": {
