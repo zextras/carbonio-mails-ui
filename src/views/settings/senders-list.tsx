@@ -12,11 +12,13 @@ import Heading from './components/settings-heading';
 import { allowedSendersSubSection, blockedSendersSubSection } from './subsections';
 import type { InputProps } from '../../types';
 
+type ListType = 'Allowed' | 'Blocked';
+
 type SendersListProps = InputProps & {
-	listType: 'Allowed' | 'Blocked';
+	listType: ListType;
 };
 
-function getMessage(listType: 'Allowed' | 'Blocked'): string {
+function getMessage(listType: ListType): string {
 	return listType === 'Allowed'
 		? t(
 				'messages.allowed_addresses',
