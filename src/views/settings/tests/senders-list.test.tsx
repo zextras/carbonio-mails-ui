@@ -7,7 +7,7 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act } from '@testing-library/react';
-import { AccountSettings } from '@zextras/carbonio-shell-ui';
+import { AccountSettings, AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
@@ -18,7 +18,7 @@ import { SendersList, SendersListProps } from '../senders-list';
 const SENDERS_LIST = 'senders-list';
 
 const buildProps = ({
-	settingsObj = {},
+	settingsObj = { attrs: {}, prefs: {} },
 	updateSettings = jest.fn(),
 	listType = 'Allowed'
 }: Partial<SendersListProps>): SendersListProps => ({
@@ -26,6 +26,18 @@ const buildProps = ({
 	updateSettings,
 	listType
 });
+
+function setupSettings(): AccountSettingsPrefs {
+	const senderAddressArray: Array<string> = [];
+	const customSettings: Partial<AccountSettings> = {
+		attrs: {
+			amavisBlacklistSender: senderAddressArray
+		}
+	};
+	const { attrs } = generateSettings(customSettings);
+
+	return attrs;
+}
 
 describe('Allowed sender list addresses settings', () => {
 	it('should render the section title', () => {
@@ -63,14 +75,8 @@ describe('Blocked sender list addresses settings', () => {
 		const store = generateStore();
 		const updateSettings = jest.fn();
 		const newSenderAddress = faker.internet.email();
+		const prefs = setupSettings();
 
-		const senderAddressArray: Array<string> = times(3, () => faker.internet.email());
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				amavisBlacklistSender: senderAddressArray
-			}
-		};
-		const { prefs } = generateSettings(customSettings);
 		const { user } = setupTest(
 			<SendersList updateSettings={updateSettings} settingsObj={prefs} listType="Blocked" />,
 			{ store }
@@ -86,18 +92,12 @@ describe('Blocked sender list addresses settings', () => {
 		expect(listItem).toBeVisible();
 	});
 
-	it('should update settings when new sender address is added', async () => {
+	it('should update settings when new sender address is added and list is empty', async () => {
 		const store = generateStore();
 		const updateSettings = jest.fn();
 		const newSenderAddress = faker.internet.email();
+		const prefs = setupSettings();
 
-		const senderAddressArray: Array<string> = [];
-		const customSettings: Partial<AccountSettings> = {
-			prefs: {
-				amavisBlacklistSender: senderAddressArray
-			}
-		};
-		const { prefs } = generateSettings(customSettings);
 		const { user } = setupTest(
 			<SendersList updateSettings={updateSettings} settingsObj={prefs} listType="Blocked" />,
 			{ store }
@@ -109,6 +109,26 @@ describe('Blocked sender list addresses settings', () => {
 
 		expect(updateSettings).toBeCalledWith({
 			target: { name: 'amavisBlacklistSender', value: [newSenderAddress] }
+		});
+	});
+
+	it('should render list from settings', async () => {
+		const store = generateStore();
+		const updateSettings = jest.fn();
+
+		const senderAddressArray: Array<string> = times(3, () => faker.internet.email());
+		const customSettings: Partial<AccountSettings> = {
+			attrs: {
+				amavisBlacklistSender: senderAddressArray
+			}
+		};
+		const { attrs } = generateSettings(customSettings);
+		setupTest(
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
+			{ store }
+		);
+		senderAddressArray.forEach((address) => {
+			expect(screen.getByText(address)).toBeVisible();
 		});
 	});
 });

@@ -45,7 +45,11 @@ export const SendersList = ({
 	listType
 }: SendersListProps): React.JSX.Element => {
 	const [address, setAddress] = useState<string>('');
-	const [sendersList, setSendersList] = useState<string[]>([]);
+	const [sendersList, setSendersList] = useState<string[]>(
+		listType === 'Allowed'
+			? settingsObj?.amavisWhitelistSender ?? []
+			: settingsObj?.amavisBlacklistSender ?? []
+	);
 	const sectionTitle = useMemo(
 		() => (listType === 'Allowed' ? allowedSendersSubSection() : blockedSendersSubSection()),
 		[listType]
