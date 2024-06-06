@@ -5,6 +5,7 @@
  */
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isEmpty, isNil, omitBy } from 'lodash';
+
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { DataProps } from '../../carbonio-ui-commons/types/sidebar';
 import { FolderActionResponse } from '../../types';
@@ -18,6 +19,7 @@ export type FolderActionProps = {
 	l?: string;
 	recursive?: boolean;
 	retentionPolicy?: unknown;
+	type?: string;
 };
 
 export async function folderAction({
@@ -28,7 +30,8 @@ export async function folderAction({
 	name,
 	l,
 	recursive,
-	retentionPolicy
+	retentionPolicy,
+	type
 }: FolderActionProps): Promise<FolderActionResponse> {
 	const result = !isEmpty(retentionPolicy)
 		? await soapFetch('Batch', {
@@ -64,7 +67,8 @@ export async function folderAction({
 						recursive,
 						name,
 						color,
-						zid
+						zid,
+						...(type && { type })
 					},
 					isNil
 				),
