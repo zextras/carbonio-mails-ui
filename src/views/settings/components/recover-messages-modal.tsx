@@ -11,6 +11,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { AnimatedLoader } from '../../../assets/animated-loader';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
+import { BACKUP_SEARCH_STATUS } from '../../../constants';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
 
 type RecoverMessagesModalPropType = {
@@ -21,7 +22,7 @@ export const RecoverMessagesModal = ({
 	onConfirm,
 	onClose
 }: RecoverMessagesModalPropType): React.JSX.Element => {
-	const isLoading = useBackupSearchStore().status === 'loading';
+	const isLoading = useBackupSearchStore().status === BACKUP_SEARCH_STATUS.loading;
 	const modalHeaderTitle = isLoading
 		? t('label.searching_recover_emails', 'Searching for e-mails to recover')
 		: t('label.search_recover_emails', 'Search e-mails to recover');
@@ -44,7 +45,6 @@ export const RecoverMessagesModal = ({
 				height="fit"
 			>
 				<Text style={{ whiteSpace: 'pre-line' }}>
-					{/* TODO: fix msg */}
 					{t(
 						'messages.recover_deleted_emails',
 						'Recovering deleted e-mails from Trash may take some time. Once the operation is completed, you will be directed to the results.'

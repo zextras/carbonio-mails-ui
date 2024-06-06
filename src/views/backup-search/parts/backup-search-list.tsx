@@ -82,7 +82,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 	);
 
 	const createModal = useModal();
-	const onClickCallback = useCallback(() => {
+	const handleRecoverCallback = useCallback(() => {
 		const closeModal = createModal(
 			{
 				maxHeight: '90vh',
@@ -136,13 +136,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 	}, [selectAll, createSnackbar]);
 
 	return (
-		<Container
-			background="gray6"
-			width="25%"
-			height="fill"
-			mainAlignment="flex-start"
-			data-testid="MailsSearchResultListContainer"
-		>
+		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
 			<Container
 				background="gray5"
 				height="fit"
@@ -174,7 +168,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 						<Button
 							label={t('label.recover_selected_emails', 'RECOVER SELECTED E-MAILS')}
 							color="primary"
-							onClick={onClickCallback}
+							onClick={handleRecoverCallback}
 							size="medium"
 							type="outlined"
 							width="fill"

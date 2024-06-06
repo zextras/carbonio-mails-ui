@@ -127,7 +127,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 		);
 	}, [createModal, restoreMessages]);
 
-	const onSelectChange = useCallback((value) => {
+	const onDateTimePickerChange = useCallback((value) => {
 		setRecoverDay(value);
 	}, []);
 
@@ -159,7 +159,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 						label={datePickerLabel}
 						isClearable
 						width="fill"
-						onChange={onSelectChange}
+						onChange={onDateTimePickerChange}
 						timeCaption={t('label.time', 'Time')}
 						includeTime={false}
 						dateFormat="dd/MM/yyyy"
