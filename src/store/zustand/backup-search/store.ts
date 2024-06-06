@@ -12,11 +12,7 @@ import type { BackupSearchStore, DeletedMessageFromAPI } from '../../../types';
 
 export const useBackupSearchStore = create<BackupSearchStore>()((set) => ({
 	messages: {},
-	queryParams: {
-		endDate: '2024-05-25T22:00:00.000Z',
-		startDate: '2024-05-22T22:00:00.000Z',
-		searchString: 'test search'
-	},
+	queryParams: {},
 	status: 'empty',
 	setMessages: (messages: Array<DeletedMessageFromAPI>): void =>
 		set(
