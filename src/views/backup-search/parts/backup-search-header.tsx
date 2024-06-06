@@ -22,12 +22,17 @@ import { useBackupSearchStore } from '../../../store/zustand/backup-search/store
 
 export const BackupSearchHeader = (): React.JSX.Element => {
 	const clearSearchText = t('label.clear_search_query', 'CLEAR SEARCH');
-
+	const endDateString = t('label.end_date', 'End Date');
+	const startDateString = t('label.start_date', 'Start Date');
 	const { queryParams } = useBackupSearchStore();
 
 	const queryParamsArray = Object.entries(queryParams).map(([key, value]) => {
 		const isDateProp = key === 'startDate' || key === 'endDate';
-		const displayValue = isDateProp ? new Date(value).toLocaleDateString() : value;
+
+		const dateLabel = isDateProp && key === 'startDate' ? startDateString : endDateString;
+		const displayValue = isDateProp
+			? `${dateLabel}: ${new Date(value).toLocaleDateString()}`
+			: value;
 		const avatarIcon = isDateProp ? 'CalendarOutline' : undefined;
 		return { key, value: displayValue, haveAvatarIcon: isDateProp, avatarIcon };
 	});
