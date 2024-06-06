@@ -154,4 +154,20 @@ describe('Blocked sender list addresses settings', () => {
 			target: { name: 'amavisBlacklistSender', value: [...senderAddressArray, newSenderAddress] }
 		});
 	});
+
+	it('should clean the input field after adding a new sender address', async () => {
+		const store = generateStore();
+		const updateSettings = jest.fn();
+		const newSenderAddress = faker.internet.email();
+		const attrs = setupSettings();
+
+		const { user } = setupTest(
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
+			{ store }
+		);
+		await addAddress(user, newSenderAddress);
+
+		const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
+		expect(nameInput).toHaveValue('');
+	});
 });

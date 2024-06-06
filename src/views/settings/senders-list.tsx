@@ -64,6 +64,7 @@ export const SendersList = ({
 				value: [...sendersList, address]
 			}
 		});
+		setAddress('');
 		setSendersList([...sendersList, address]);
 	};
 	const isInvalid = false;
