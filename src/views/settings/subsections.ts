@@ -44,6 +44,11 @@ export const allowedSendersSubSection = (): SettingsSubSection => ({
 	id: 'allowed_addresses'
 });
 
+export const blockedSendersSubSection = (): SettingsSubSection => ({
+	label: t('label.blocked_addresses', 'Blocked senders list'),
+	id: 'blocked_addresses'
+});
+
 export const getSettingsSubSections = (
 	backupSelfUndeleteAllowed: AdvancedAccountStore['backupSelfUndeleteAllowed']
 ): Array<SettingsSubSection> =>
@@ -54,7 +59,8 @@ export const getSettingsSubSections = (
 			setDefaultSignaturesSubSection(),
 			filtersSubSection(),
 			trustedAddressesSubSection(),
-			allowedSendersSubSection()
+			allowedSendersSubSection(),
+			blockedSendersSubSection()
 		]);
 
 export const composingMsgSubSection = (): SettingsSubSection => ({

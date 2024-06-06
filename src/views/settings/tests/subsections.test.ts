@@ -6,6 +6,7 @@
 
 import {
 	allowedSendersSubSection,
+	blockedSendersSubSection,
 	displayingMessagesSubSection,
 	filtersSubSection,
 	receivingMessagesSubSection,
@@ -37,38 +38,45 @@ describe('Settings subsections', () => {
 		});
 	});
 
-	test('displayingMessagesSubSection should return a specific result', () => {
+	test('trustedAddressesSubSection should return a specific result', () => {
 		expect(trustedAddressesSubSection()).toEqual({
 			label: 'label.trusted_addresses',
 			id: 'trusted_addresses'
 		});
 	});
 
-	test('displayingMessagesSubSection should return a specific result', () => {
+	test('signaturesSubSection should return a specific result', () => {
 		expect(signaturesSubSection()).toEqual({
 			label: 'signatures.signature_heading',
 			id: 'signatures'
 		});
 	});
 
-	test('displayingMessagesSubSection should return a specific result', () => {
+	test('setDefaultSignaturesSubSection should return a specific result', () => {
 		expect(setDefaultSignaturesSubSection()).toEqual({
 			label: 'label.using_signatures',
 			id: 'using_signatures'
 		});
 	});
 
-	test('displayingMessagesSubSection should return a specific result', () => {
+	test('filtersSubSection should return a specific result', () => {
 		expect(filtersSubSection()).toEqual({
 			label: 'filters.filters',
 			id: 'filters'
 		});
 	});
 
-	test('displayingMessagesSubSection should return a specific result', () => {
+	test('allowedSendersSubSection should return a specific result', () => {
 		expect(allowedSendersSubSection()).toEqual({
 			label: 'label.allowed_addresses',
 			id: 'allowed_addresses'
+		});
+	});
+
+	test('blockedSendersSubSection should return a specific result', () => {
+		expect(blockedSendersSubSection()).toEqual({
+			label: 'label.blocked_addresses',
+			id: 'blocked_addresses'
 		});
 	});
 });
