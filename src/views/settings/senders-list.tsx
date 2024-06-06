@@ -12,9 +12,9 @@ import Heading from './components/settings-heading';
 import { allowedSendersSubSection, blockedSendersSubSection } from './subsections';
 import type { InputProps } from '../../types';
 
-type ListType = 'Allowed' | 'Blocked';
+export type ListType = 'Allowed' | 'Blocked';
 
-type SendersListProps = InputProps & {
+export type SendersListProps = InputProps & {
 	listType: ListType;
 };
 

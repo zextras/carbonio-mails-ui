@@ -60,7 +60,10 @@ describe('addShellComponents', () => {
 					{ id: 'recover_messages', label: 'label.recover_messages' },
 					{ id: 'signatures', label: 'signatures.signature_heading' },
 					{ id: 'using_signatures', label: 'label.using_signatures' },
-					{ id: 'filters', label: 'filters.filters' }
+					{ id: 'filters', label: 'filters.filters' },
+					{ id: 'trusted_addresses', label: 'label.trusted_addresses' },
+					{ id: 'allowed_addresses', label: 'label.allowed_addresses' },
+					{ id: 'blocked_addresses', label: 'label.blocked_addresses' }
 				]
 			})
 		);
@@ -80,7 +83,10 @@ describe('addShellComponents', () => {
 					{ id: 'receiving_messages', label: 'label.receive_message' },
 					{ id: 'signatures', label: 'signatures.signature_heading' },
 					{ id: 'using_signatures', label: 'label.using_signatures' },
-					{ id: 'filters', label: 'filters.filters' }
+					{ id: 'filters', label: 'filters.filters' },
+					{ id: 'trusted_addresses', label: 'label.trusted_addresses' },
+					{ id: 'allowed_addresses', label: 'label.allowed_addresses' },
+					{ id: 'blocked_addresses', label: 'label.blocked_addresses' }
 				]
 			})
 		);
