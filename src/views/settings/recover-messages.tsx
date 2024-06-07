@@ -111,7 +111,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const sectionTitle = recoverMessagesSubSection();
 	const { backupSelfUndeleteAllowed } = useAdvancedAccountStore();
 
-	const onClick = useCallback(() => {
+	const handleModalConfirmOnClick = useCallback(() => {
 		const closeModal = createModal(
 			{
 				children: (
@@ -138,7 +138,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 	return backupSelfUndeleteAllowed ? (
 		<FormSubSection
 			id={sectionTitle.id}
-			data-testid="backup-self-undelete-form"
+			data-testid="recover-messages-form"
 			label={sectionTitle.label}
 			padding={{ all: 'medium' }}
 		>
@@ -169,7 +169,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				<Row width="30%" mainAlignment="flex-start">
 					<Button
 						type={'outlined'}
-						onClick={onClick}
+						onClick={handleModalConfirmOnClick}
 						label={buttonLabel}
 						disabled={!recoverDay && !searchString}
 					/>
