@@ -19,8 +19,9 @@ describe('restorMessagesAPI', () => {
 			);
 		});
 
-		it('should return status 202 when the response is successful', async () => {
-			expect((await restoreMessagesAPI([faker.number.toString()])).status).toBe(202);
+		it('should have property data when the response is 202', async () => {
+			const response = await restoreMessagesAPI([faker.number.toString()]);
+			expect(response).toHaveProperty('data');
 		});
 	});
 
@@ -29,12 +30,13 @@ describe('restorMessagesAPI', () => {
 			createAPIInterceptor(
 				'post',
 				'/zx/backup/v1/restoreMessages',
-				HttpResponse.json(null, { status: 500 })
+				HttpResponse.json(null, { status: 500, statusText: 'Internal Server Error', type: 'error' })
 			);
 		});
 
 		it('should reply with a status that is not accepted', async () => {
-			expect((await restoreMessagesAPI([faker.number.toString()])).status).not.toBe(202);
+			const response = await restoreMessagesAPI([faker.number.toString()]);
+			expect(response).toHaveProperty('error');
 		});
 	});
 });
