@@ -13,7 +13,7 @@ import type { BackupSearchStore, DeletedMessageFromAPI } from '../../../types';
 
 export const useBackupSearchStore = create<BackupSearchStore>()((set) => ({
 	messages: {},
-	queryParams: {},
+	displaySearchParams: {},
 	status: 'empty',
 	setMessages: (messages: Array<DeletedMessageFromAPI>): void =>
 		set(
@@ -32,5 +32,6 @@ export const useBackupSearchStore = create<BackupSearchStore>()((set) => ({
 			})
 		),
 	setStatus: (status: BackupSearchStore['status']): void => set({ status }),
-	setQueryParams: (queryParams: BackupSearchStore['queryParams']): void => set({ queryParams })
+	setDisplaySearchParams: (queryParams: BackupSearchStore['displaySearchParams']): void =>
+		set({ displaySearchParams: queryParams })
 }));

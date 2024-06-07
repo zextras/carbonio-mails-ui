@@ -18,7 +18,7 @@ import {
 	Container,
 	DateTimePicker
 } from '@zextras/carbonio-design-system';
-import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { replaceHistory, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { isEmpty } from 'lodash';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
@@ -32,6 +32,7 @@ import {
 import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
+import { BackupSearchStore } from '../../types';
 
 function calculateInterval(recoverDate: string | null): { startDate?: string; endDate?: string } {
 	if (!recoverDate) return {};
@@ -49,9 +50,22 @@ function calculateInterval(recoverDate: string | null): { startDate?: string; en
 	};
 }
 
+function getUserFriendlySearchParams(
+	searchParams: BackupSearchStore['displaySearchParams'],
+	locale: string
+): BackupSearchStore['displaySearchParams'] {
+	const { startDate, endDate, searchString } = searchParams;
+	return {
+		startDate: startDate ? new Date(startDate).toLocaleDateString(locale) : undefined,
+		endDate: endDate ? new Date(endDate).toLocaleDateString(locale) : undefined,
+		searchString
+	};
+}
+
 export const RecoverMessages = (): React.JSX.Element => {
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
+	const { zimbraPrefLocale } = useUserSettings().prefs;
 	const [searchString, setSearchString] = useState('');
 	const [recoverDay, setRecoverDay] = useState(null);
 
@@ -82,7 +96,11 @@ export const RecoverMessages = (): React.JSX.Element => {
 			}
 			backupSearchStoreState.setStatus(BACKUP_SEARCH_STATUS.completed);
 			backupSearchStoreState.setMessages(response.data.messages);
-			backupSearchStoreState.setQueryParams(searchParams);
+			const userFriendlySearchParams = getUserFriendlySearchParams(
+				searchParams,
+				zimbraPrefLocale as string
+			);
+			backupSearchStoreState.setDisplaySearchParams(userFriendlySearchParams);
 			setRecoverDay(null);
 			setSearchString('');
 
@@ -99,7 +117,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 			}
 			replaceHistory({ route: BACKUP_SEARCH_ROUTE, path: '/' });
 		},
-		[createSnackbar, recoverDay, searchString]
+		[createSnackbar, recoverDay, searchString, zimbraPrefLocale]
 	);
 
 	const informativeText = t(
@@ -162,7 +180,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 						onChange={onDateTimePickerChange}
 						timeCaption={t('label.time', 'Time')}
 						includeTime={false}
-						dateFormat="dd/MM/yyyy"
+						locale={zimbraPrefLocale}
 					/>
 				</Row>
 				<Padding top="large" />

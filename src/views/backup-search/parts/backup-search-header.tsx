@@ -24,23 +24,34 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 	const clearSearchText = t('label.clear_search_query', 'CLEAR SEARCH');
 	const endDateString = t('label.end_date', 'End Date');
 	const startDateString = t('label.start_date', 'Start Date');
-	const { queryParams } = useBackupSearchStore();
+	const { displaySearchParams: queryParams } = useBackupSearchStore();
 
-	const queryParamsArray = Object.entries(queryParams).map(([key, value]) => {
-		const isDateProp = key === 'startDate' || key === 'endDate';
+	const queryParamsArray = [];
 
-		const dateLabel = isDateProp && key === 'startDate' ? startDateString : endDateString;
-		const displayValue = isDateProp
-			? `${dateLabel}: ${new Date(value).toLocaleDateString()}`
-			: value;
-		const avatarIcon = isDateProp ? 'CalendarOutline' : undefined;
-		return { key, value: displayValue, haveAvatarIcon: isDateProp, avatarIcon };
-	});
+	if (queryParams.searchString)
+		queryParamsArray.push({
+			value: queryParams.searchString,
+			hasAvatarIcon: false
+		});
+
+	if (queryParams.startDate)
+		queryParamsArray.push({
+			value: `${startDateString}: ${queryParams.startDate}`,
+			hasAvatarIcon: true,
+			avatarIcon: 'CalendarOutline'
+		});
+
+	if (queryParams.endDate)
+		queryParamsArray.push({
+			value: `${endDateString}: ${queryParams.endDate}`,
+			hasAvatarIcon: true,
+			avatarIcon: 'CalendarOutline'
+		});
 
 	const clearSearchCallback = useCallback(() => {
 		const backupSearchStoreState = useBackupSearchStore.getState();
 		backupSearchStoreState.setMessages([]);
-		backupSearchStoreState.setQueryParams({});
+		backupSearchStoreState.setDisplaySearchParams({});
 		removeRoute(BACKUP_SEARCH_ROUTE);
 		replaceHistory({ route: MAILS_ROUTE, path: '/' });
 	}, []);
@@ -59,8 +70,8 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 			>
 				<Row takeAvailableSpace orientation="horizontal" mainAlignment="flex-start">
 					<Text color="secondary">{t('label.results_for', 'Results for: ')}</Text>
-					{queryParamsArray.map(({ key, value, haveAvatarIcon: hasAvatar, avatarIcon }) => (
-						<Padding left="small" key={key}>
+					{queryParamsArray.map(({ value, hasAvatarIcon, avatarIcon }, index) => (
+						<Padding left="small" key={`query-params-${index}`}>
 							<Chip
 								label={value}
 								background="gray2"
@@ -68,7 +79,7 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 								avatarColor="white"
 								color="text"
 								avatarIcon={avatarIcon}
-								hasAvatar={hasAvatar}
+								hasAvatar={hasAvatarIcon}
 							/>
 						</Padding>
 					))}

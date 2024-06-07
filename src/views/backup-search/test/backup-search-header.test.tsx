@@ -20,13 +20,14 @@ describe('Backup search header', () => {
 			startDate: '2023-04-11T22:12:00.000Z',
 			searchString: 'test search string'
 		};
-		useBackupSearchStore.getState().setQueryParams(queryParams);
+		useBackupSearchStore.getState().setDisplaySearchParams(queryParams);
 
 		setupTest(<BackupSearchHeader />, {});
 
+		screen.logTestingPlaygroundURL();
 		expect(screen.getByText('label.results_for')).toBeInTheDocument();
-		expect(screen.getByText('label.start_date: 4/12/2023')).toBeInTheDocument();
-		expect(screen.getByText('label.end_date: 5/26/2024')).toBeInTheDocument();
+		expect(screen.getByText('label.start_date: 4/11/2023')).toBeInTheDocument();
+		expect(screen.getByText('label.end_date: 5/25/2024')).toBeInTheDocument();
 		expect(screen.getByText(queryParams.searchString)).toBeInTheDocument();
 	});
 
@@ -52,7 +53,7 @@ describe('Backup search header', () => {
 		];
 		useBackupSearchStore.getState().setMessages(messages);
 
-		useBackupSearchStore.getState().setQueryParams(queryParams);
+		useBackupSearchStore.getState().setDisplaySearchParams(queryParams);
 
 		const { user } = setupTest(<BackupSearchHeader />, {});
 
@@ -62,7 +63,7 @@ describe('Backup search header', () => {
 		expect(removeRoute).toBeCalled();
 		expect(removeRoute).toBeCalledTimes(1);
 
-		expect(useBackupSearchStore.getState().queryParams).toEqual({});
+		expect(useBackupSearchStore.getState().displaySearchParams).toEqual({});
 		expect(useBackupSearchStore.getState().messages).toEqual({});
 	});
 });

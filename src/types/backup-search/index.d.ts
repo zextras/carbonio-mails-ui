@@ -3,18 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { SearchBackupDeletedMessagesAPIProps, DeletedMessageFromAPI } from '../api';
 import { BACKUP_SEARCH_STATUS } from '../../constants';
+import { SearchBackupDeletedMessagesAPIProps, DeletedMessageFromAPI } from '../api';
 
 export type BackupSearchStatus = (typeof BACKUP_SEARCH_STATUS)[keyof typeof BACKUP_SEARCH_STATUS];
 
 export type BackupSearchStore = {
 	messages: Record<string, BackupSearchMessage>;
 	status: BackupSearchStatus;
-	queryParams: SearchBackupDeletedMessagesAPIProps;
+	displaySearchParams: SearchBackupDeletedMessagesAPIProps;
 	setMessages: (messages: Array<DeletedMessageFromAPI>) => void;
 	setStatus: (status: BackupSearchStore['status']) => void;
-	setQueryParams: (status: BackupSearchStore['queryParams']) => void;
+	setDisplaySearchParams: (status: BackupSearchStore['displaySearchParams']) => void;
 };
 export type BackupSearchMessage = {
 	id: string;
