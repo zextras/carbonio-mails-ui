@@ -7,8 +7,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { map, omit } from 'lodash';
 
-import { BackupSearchMessage } from '../store/zustand/backup-search/store';
-import type { Conversation, IncompleteMessage } from '../types';
+import type { BackupSearchMessage, Conversation, IncompleteMessage } from '../types';
 
 type UseSelectionProps = {
 	currentFolderId: string;
