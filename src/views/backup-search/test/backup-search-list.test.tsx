@@ -7,14 +7,14 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
+import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
+import { HttpResponse } from 'msw';
+import { useParams } from 'react-router-dom';
 
+import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
 import { BackupSearchList } from '../parts/backup-search-list';
-import { useParams } from 'react-router-dom';
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { HttpResponse } from 'msw';
-import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
 const message1 = {
 	messageId: '1',
