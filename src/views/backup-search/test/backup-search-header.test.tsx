@@ -9,7 +9,6 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { removeRoute } from '@zextras/carbonio-shell-ui';
 
-import * as shell from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
 import { BackupSearchHeader } from '../parts/backup-search-header';
@@ -61,7 +60,9 @@ describe('Backup search header', () => {
 		await user.click(clearButton);
 
 		expect(removeRoute).toBeCalled();
+		expect(removeRoute).toBeCalledTimes(1);
 
-		expect(useBackupSearchStore.getState().queryParams).toBe({});
+		expect(useBackupSearchStore.getState().queryParams).toEqual({});
+		expect(useBackupSearchStore.getState().messages).toEqual({});
 	});
 });
