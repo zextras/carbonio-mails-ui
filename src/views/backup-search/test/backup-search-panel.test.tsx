@@ -23,6 +23,8 @@ describe('Backup search panel', () => {
 	});
 
 	it('renders without itemId', () => {
+		(useParams as jest.Mock).mockReturnValue({ itemId: undefined });
+
 		setupTest(<BackupSearchPanel />, {});
 		expect(screen.getByText('label.displayer_restore_emails_title')).toBeInTheDocument();
 		expect(screen.getByText('label.displayer_restore_emails_description')).toBeInTheDocument();
