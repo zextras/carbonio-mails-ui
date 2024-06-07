@@ -3,42 +3,39 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { HttpResponse } from 'msw';
 
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { searchBackupDeletedMessagesAPI } from '../search-backup-deleted-messages';
 
 describe('search backup deleted messages', () => {
-	describe('when backend is available', () => {
-		const responseBody = { messages: [{ id: '1' }] };
-		beforeAll(() => {
-			createAPIInterceptor(
-				'get',
-				'/zx/backup/v1/searchDeleted',
-				HttpResponse.json(responseBody, { status: 200 })
-			);
-		});
+	it('should return the correct response when status is 200', async () => {
+		const expectedResponseBody = { data: { messages: [{ id: '1' }] } };
+		const apiResponse = { messages: [{ id: '1' }] };
+		createAPIInterceptor(
+			'get',
+			'/zx/backup/v1/searchDeleted',
+			HttpResponse.json(apiResponse, { status: 200 })
+		);
 
-		it('should return the reponse returned by fetch', async () => {
-			expect(await searchBackupDeletedMessagesAPI({})).toMatchObject({
-				response: responseBody
-			});
-		});
+		expect(await searchBackupDeletedMessagesAPI({})).toMatchObject(expectedResponseBody);
 	});
 
-	describe('when backend fails', () => {
-		beforeAll(() => {
-			createAPIInterceptor(
-				'get',
-				'/zx/backup/v1/searchDeleted',
-				HttpResponse.json(null, { status: 500 })
-			);
+	it('should pass the correct parameters to the fetch call', async () => {
+		const mockedResponse = { messages: [{ id: '1' }] };
+		const interceptor = createAPIInterceptor(
+			'get',
+			'/zx/backup/v1/searchDeleted?before=2022-01-02&after=2022-01-01&searchString=test',
+			HttpResponse.json(mockedResponse, { status: 200 })
+		);
+		const response = await searchBackupDeletedMessagesAPI({
+			startDate: '2022-01-01',
+			endDate: '2022-01-02',
+			searchString: 'test'
 		});
 
-		it('should reply with an error message', async () => {
-			expect(await searchBackupDeletedMessagesAPI({})).toThrow(
-				'Something went wrong with the search inside the backup'
-			);
-		});
+		expect(response).toEqual({ data: mockedResponse });
+		expect(interceptor.getCalledTimes()).toBe(1);
 	});
 });

@@ -6,7 +6,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import produce from 'immer';
-import { omit } from 'lodash';
+import { omit, reduce } from 'lodash';
 import { create } from 'zustand';
 
 import type { BackupSearchStore, DeletedMessageFromAPI } from '../../../types';
@@ -18,10 +18,17 @@ export const useBackupSearchStore = create<BackupSearchStore>()((set) => ({
 	setMessages: (messages: Array<DeletedMessageFromAPI>): void =>
 		set(
 			produce((state) => {
-				state.messages = messages.reduce((acc, message) => {
-					const { messageId } = message;
-					return { ...acc, [messageId]: omit({ ...message, id: message.messageId }, 'messageId') };
-				}, {});
+				state.messages = reduce(
+					messages,
+					(acc, message) => {
+						const { messageId } = message;
+						return {
+							...acc,
+							[messageId]: omit({ ...message, id: message.messageId }, ['messageId'])
+						};
+					},
+					{}
+				);
 			})
 		),
 	setStatus: (status: BackupSearchStore['status']): void => set({ status }),
