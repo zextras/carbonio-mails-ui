@@ -9,6 +9,7 @@ import {
 	blockedSendersSubSection,
 	displayingMessagesSubSection,
 	filtersSubSection,
+	getSettingsSubSections,
 	receivingMessagesSubSection,
 	recoverMessagesSubSection,
 	setDefaultSignaturesSubSection,
@@ -77,6 +78,41 @@ describe('Settings subsections', () => {
 		expect(blockedSendersSubSection()).toEqual({
 			label: 'label.blocked_addresses',
 			id: 'blocked_addresses'
+		});
+	});
+
+	describe('getSettingsSubSections', () => {
+		it('should return a specific list of subsections if the parameter is true', () => {
+			const subSectionsIds = getSettingsSubSections(true).map((subSection) => subSection.id);
+			expect(subSectionsIds).toEqual(
+				expect.arrayContaining([
+					'displaying_messages',
+					'receiving_messages',
+					'recover_messages',
+					'signatures',
+					'using_signatures',
+					'filters',
+					'trusted_addresses',
+					'allowed_addresses',
+					'blocked_addresses'
+				])
+			);
+		});
+
+		it('should return a specific list of sub-sections without the recoverMessages sub-section if the parameter is false', () => {
+			const subSectionsIds = getSettingsSubSections(false).map((subSection) => subSection.id);
+			expect(subSectionsIds).toEqual(
+				expect.arrayContaining([
+					'displaying_messages',
+					'receiving_messages',
+					'signatures',
+					'using_signatures',
+					'filters',
+					'trusted_addresses',
+					'allowed_addresses',
+					'blocked_addresses'
+				])
+			);
 		});
 	});
 });
