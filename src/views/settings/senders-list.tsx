@@ -13,11 +13,14 @@ import {
 	Tooltip,
 	Button,
 	Row,
-	Input
+	Input,
+	List
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
 
 import Heading from './components/settings-heading';
+import TrusteeListItem from './components/trustee-list-item';
 import { allowedSendersSubSection, blockedSendersSubSection } from './subsections';
 import type { InputProps } from '../../types';
 import { isValidEmail } from '../search/parts/utils';
@@ -79,6 +82,16 @@ export const SendersList = ({
 		[isInputValid]
 	);
 
+	const senderAddressesListItems = useMemo(
+		() =>
+			map(sendersList, (el) => ({
+				id: el,
+				value: el,
+				label: el
+			})),
+		[sendersList]
+	);
+
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
 			<Container orientation="vertical" padding={{ all: 'medium', top: 'medium' }}>
@@ -122,11 +135,17 @@ export const SendersList = ({
 					</Tooltip>
 				</Padding>
 			</Container>
-			<div data-testid="senders-list">
-				{sendersList.map((s, idx) => (
-					<span key={idx}>{s}</span>
-				))}
-			</div>
+			<Container
+				padding={{ horizontal: 'medium', bottom: 'small' }}
+				orientation="horizontal"
+				mainAlignment="flex-start"
+			>
+				<List
+					items={senderAddressesListItems}
+					ItemComponent={TrusteeListItem}
+					data-testid={'senders-list'}
+				/>
+			</Container>
 		</Container>
 	);
 };
