@@ -69,18 +69,19 @@ export const SendersList = ({
 		setSendersList([...sendersList, address]);
 	};
 	const isAddEnabled = useMemo(() => isValidEmail(address), [address]);
+	const isInputValid = useMemo(() => isAddEnabled || address === '', [isAddEnabled, address]);
 
 	const warningMessage = useMemo(
 		() =>
-			isAddEnabled
+			isInputValid
 				? ''
 				: t('messages.invalid_sender_address', 'Please enter only e-mail addresses'),
-		[isAddEnabled]
+		[isInputValid]
 	);
 
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
-			<Container orientation="vertical" padding={{ vertical: 'medium', top: 'medium' }}>
+			<Container orientation="vertical" padding={{ all: 'medium', top: 'medium' }}>
 				<Container id={sectionTitle.id}>
 					<Heading title={sectionTitle.label} size="medium" />
 				</Container>
@@ -104,14 +105,14 @@ export const SendersList = ({
 					<Input
 						label={t('label.enter_single_email_address', 'Enter email address')}
 						value={address}
-						hasError={isAddEnabled}
+						hasError={!isInputValid}
 						description={warningMessage}
 						backgroundColor="gray5"
 						onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setAddress(e.target.value)}
 					/>
 				</Row>
 				<Padding left="medium">
-					<Tooltip label={warningMessage} disabled={isAddEnabled} maxWidth="100%">
+					<Tooltip label={warningMessage} disabled={!isAddEnabled} maxWidth="100%">
 						<Button
 							label={t('label.add', 'Add')}
 							type="outlined"

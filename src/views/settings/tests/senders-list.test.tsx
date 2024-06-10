@@ -182,7 +182,6 @@ describe('Blocked sender list addresses settings', () => {
 		);
 
 		expect(screen.getByRole('button', { name: 'label.add' })).toBeDisabled();
-		expect(screen.getByText('messages.invalid_sender_address')).toBeVisible();
 	});
 
 	it('add button disabled with invalid address', async () => {
