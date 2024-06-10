@@ -139,7 +139,6 @@ export const SendersList = ({
 					</Tooltip>
 				</Padding>
 			</Container>
-			<div data-testid="senders-list"></div>
 			<Container
 				padding={{ horizontal: 'medium', bottom: 'small' }}
 				orientation="horizontal"
