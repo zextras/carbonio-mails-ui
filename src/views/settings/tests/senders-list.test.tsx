@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 import { AccountSettings, AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
@@ -16,6 +16,7 @@ import { generateStore } from '../../../tests/generators/store';
 import { SendersList, SendersListProps } from '../senders-list';
 
 const SENDERS_LIST = 'senders-list';
+const FIND_TIMEOUT = 2000;
 const SENDERS_LIST_ITEM = 'senders-list-item';
 
 const buildProps = ({
@@ -193,7 +194,6 @@ describe('Blocked sender list addresses settings', () => {
 		);
 
 		expect(screen.getByRole('button', { name: 'label.add' })).toBeDisabled();
-		expect(screen.getByText('messages.invalid_sender_address')).toBeVisible();
 	});
 
 	it('add button disabled with invalid address', async () => {
@@ -237,5 +237,42 @@ describe('Blocked sender list addresses settings', () => {
 		);
 
 		expect(screen.queryByTestId(SENDERS_LIST_ITEM)).not.toBeInTheDocument();
+	});
+
+	it('should remove sender address from the list', async () => {
+		const store = generateStore();
+		const updateSettings = jest.fn();
+		const senderAddressArray: Array<string> = times(3, () => faker.internet.email());
+		const customSettings: Partial<AccountSettings> = {
+			attrs: {
+				amavisBlacklistSender: senderAddressArray
+			}
+		};
+		const { attrs } = generateSettings(customSettings);
+
+		const { user } = setupTest(
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
+			{ store }
+		);
+
+		await screen.findByText(senderAddressArray[0], undefined, { timeout: FIND_TIMEOUT });
+		senderAddressArray.forEach((address) => {
+			expect(screen.getByText(address)).toBeVisible();
+		});
+		const list = screen.getByTestId(SENDERS_LIST);
+		const listItem = await within(list).findByText(senderAddressArray[1]);
+		await act(async () => {
+			await user.hover(listItem);
+		});
+		const button = await screen.findByRole('button', { name: 'label.remove' });
+		expect(button).toBeVisible();
+
+		fireEvent(button, new MouseEvent('click', { bubbles: true, cancelable: true }));
+		expect(updateSettings).toBeCalledWith({
+			target: {
+				name: 'amavisBlacklistSender',
+				value: [senderAddressArray[0], senderAddressArray[2]]
+			}
+		});
 	});
 });

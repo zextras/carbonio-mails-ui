@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 
 import {
 	Container,
@@ -13,9 +13,11 @@ import {
 	Tooltip,
 	Button,
 	Row,
-	Input
+	Input,
+	ListV2
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { filter } from 'lodash';
 
 import { SendersListItem } from './components/senders-list-item';
 import Heading from './components/settings-heading';
@@ -41,6 +43,10 @@ function getMessage(listType: ListType): string {
 			);
 }
 
+function getPrefName(listType: ListType): string {
+	return listType === 'Allowed' ? 'amavisWhitelistSender' : 'amavisBlacklistSender';
+}
+
 export const SendersList = ({
 	settingsObj,
 	updateSettings,
@@ -62,7 +68,7 @@ export const SendersList = ({
 	const onAdd = (): void => {
 		updateSettings({
 			target: {
-				name: listType === 'Allowed' ? 'amavisWhitelistSender' : 'amavisBlacklistSender',
+				name: getPrefName(listType),
 				value: [...sendersList, address]
 			}
 		});
@@ -70,21 +76,35 @@ export const SendersList = ({
 		setSendersList([...sendersList, address]);
 	};
 
-	const onRemove = (): void => {};
-
 	const isAddEnabled = useMemo(() => isValidEmail(address), [address]);
+	const isInputValid = useMemo(() => isAddEnabled || address === '', [isAddEnabled, address]);
 
 	const warningMessage = useMemo(
 		() =>
-			isAddEnabled
+			isInputValid
 				? ''
 				: t('messages.invalid_sender_address', 'Please enter only e-mail addresses'),
-		[isAddEnabled]
+		[isInputValid]
+	);
+
+	const onRemove = useCallback(
+		(item: string) => {
+			const newList = filter(sendersList, (add) => add !== item);
+
+			updateSettings({
+				target: {
+					name: getPrefName(listType),
+					value: newList
+				}
+			});
+			setSendersList(newList);
+		},
+		[sendersList, updateSettings, listType]
 	);
 
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
-			<Container orientation="vertical" padding={{ vertical: 'medium', top: 'medium' }}>
+			<Container orientation="vertical" padding={{ all: 'medium', top: 'medium' }}>
 				<Container id={sectionTitle.id}>
 					<Heading title={sectionTitle.label} size="medium" />
 				</Container>
@@ -97,18 +117,12 @@ export const SendersList = ({
 				padding={{ all: 'medium', bottom: 'small' }}
 				orientation="horizontal"
 				mainAlignment="flex-start"
-			></Container>
-			<Divider />
-			<Container
-				padding={{ all: 'medium', bottom: 'small' }}
-				orientation="horizontal"
-				mainAlignment="flex-start"
 			>
 				<Row mainAlignment="flex-start" width="50vw">
 					<Input
 						label={t('label.enter_single_email_address', 'Enter email address')}
 						value={address}
-						hasError={isAddEnabled}
+						hasError={!isInputValid}
 						description={warningMessage}
 						backgroundColor="gray5"
 						onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setAddress(e.target.value)}
@@ -125,11 +139,18 @@ export const SendersList = ({
 					</Tooltip>
 				</Padding>
 			</Container>
-			<div data-testid="senders-list">
-				{sendersList.map((address, idx) => (
-					<SendersListItem key={idx} value={address} onRemove={onRemove} />
-				))}
-			</div>
+			<div data-testid="senders-list"></div>
+			<Container
+				padding={{ horizontal: 'medium', bottom: 'small' }}
+				orientation="horizontal"
+				mainAlignment="flex-start"
+			>
+				<ListV2 data-testid={'senders-list'}>
+					{sendersList.map((address, idx) => (
+						<SendersListItem key={idx} value={address} onRemove={onRemove} />
+					))}
+				</ListV2>
+			</Container>
 		</Container>
 	);
 };
