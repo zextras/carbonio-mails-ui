@@ -126,12 +126,6 @@ export const SendersList = ({
 				padding={{ all: 'medium', bottom: 'small' }}
 				orientation="horizontal"
 				mainAlignment="flex-start"
-			></Container>
-			<Divider />
-			<Container
-				padding={{ all: 'medium', bottom: 'small' }}
-				orientation="horizontal"
-				mainAlignment="flex-start"
 			>
 				<Row mainAlignment="flex-start" width="50vw">
 					<Input
