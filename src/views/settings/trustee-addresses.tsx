@@ -12,15 +12,15 @@ import {
 	Divider,
 	Button,
 	Tooltip,
-	List,
 	TextWithTooltip,
-	Row
+	Row,
+	ListV2
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find, map } from 'lodash';
 
+import { SendersListItem } from './components/senders-list-item';
 import Heading from './components/settings-heading';
-import TrusteeListItem from './components/trustee-list-item';
 import LoadingShimmer from './filters/parts/loading-shimmer';
 import { trustedAddressesSubSection } from './subsections';
 import type { InputProps } from '../../types';
@@ -143,12 +143,11 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 				{isLoading ? (
 					<LoadingShimmer />
 				) : (
-					<List
-						items={trusteeAddressesListItems}
-						ItemComponent={TrusteeListItem}
-						itemProps={{ onRemove }}
-						data-testid={'trustee-list'}
-					/>
+					<ListV2 data-testid={'trustee-list'}>
+						{trusteeAddressesList.map((trustee, idx) => (
+							<SendersListItem key={idx} value={trustee} onRemove={onRemove} />
+						))}
+					</ListV2>
 				)}
 			</Container>
 		</Container>
