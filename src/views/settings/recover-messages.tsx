@@ -33,8 +33,9 @@ import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
 import { BackupSearchStore } from '../../types';
+import { replaceTimeZone } from '../../helpers/date';
 
-function calculateInterval(recoverDate: string | null): { startDate?: string; endDate?: string } {
+function calculateInterval(recoverDate: Date | null): { startDate?: string; endDate?: string } {
 	if (!recoverDate) return {};
 
 	const date = new Date(recoverDate);
@@ -65,9 +66,9 @@ function getUserFriendlySearchParams(
 export const RecoverMessages = (): React.JSX.Element => {
 	const createModal = useModal();
 	const createSnackbar = useSnackbar();
-	const { zimbraPrefLocale } = useUserSettings().prefs;
+	const { zimbraPrefLocale, zimbraPrefTimeZoneId } = useUserSettings().prefs;
 	const [searchString, setSearchString] = useState('');
-	const [recoverDay, setRecoverDay] = useState(null);
+	const [recoverDay, setRecoverDay] = useState<Date | null>(null);
 
 	const restoreMessages = useCallback(
 		async (closeModal: CloseModalFn) => {
@@ -145,9 +146,12 @@ export const RecoverMessages = (): React.JSX.Element => {
 		);
 	}, [createModal, restoreMessages]);
 
-	const onDateTimePickerChange = useCallback((value) => {
-		setRecoverDay(value);
-	}, []);
+	const onDateTimePickerChange = useCallback(
+		(value) => {
+			value && setRecoverDay(replaceTimeZone(value, zimbraPrefTimeZoneId as string));
+		},
+		[zimbraPrefTimeZoneId]
+	);
 
 	const handleTextFilterValueChange = useCallback((ev) => {
 		setSearchString(ev.target.value);
