@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 import { AccountSettings, AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
@@ -228,9 +228,13 @@ describe('Blocked sender list addresses settings', () => {
 		});
 		const button = await screen.findByRole('button', { name: 'label.remove' });
 		expect(button).toBeVisible();
-		await act(async () => {
-			user.click(button);
+
+		fireEvent(button, new MouseEvent('click', { bubbles: true, cancelable: true }));
+		expect(updateSettings).toBeCalledWith({
+			target: {
+				name: 'amavisBlacklistSender',
+				value: [senderAddressArray[0], senderAddressArray[2]]
+			}
 		});
-		// await waitFor(() => expect(updateSettings).toBeCalled());
 	});
 });
