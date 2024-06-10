@@ -53,12 +53,17 @@ function calculateInterval(recoverDate: Date | null): { startDate?: string; endD
 
 function getUserFriendlySearchParams(
 	searchParams: BackupSearchStore['displaySearchParams'],
-	locale: string
+	locale: string,
+	zimbraPrefTimeZoneId: string
 ): BackupSearchStore['displaySearchParams'] {
 	const { startDate, endDate, searchString } = searchParams;
 	return {
-		startDate: startDate ? new Date(startDate).toLocaleDateString(locale) : undefined,
-		endDate: endDate ? new Date(endDate).toLocaleDateString(locale) : undefined,
+		startDate: startDate
+			? new Date(startDate).toLocaleDateString(locale, { timeZone: zimbraPrefTimeZoneId })
+			: undefined,
+		endDate: endDate
+			? new Date(endDate).toLocaleDateString(locale, { timeZone: zimbraPrefTimeZoneId })
+			: undefined,
 		searchString
 	};
 }
@@ -99,7 +104,8 @@ export const RecoverMessages = (): React.JSX.Element => {
 			backupSearchStoreState.setMessages(response.data.messages);
 			const userFriendlySearchParams = getUserFriendlySearchParams(
 				searchParams,
-				zimbraPrefLocale as string
+				zimbraPrefLocale as string,
+				zimbraPrefTimeZoneId as string
 			);
 			backupSearchStoreState.setDisplaySearchParams(userFriendlySearchParams);
 			setRecoverDay(null);
@@ -118,7 +124,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 			}
 			replaceHistory({ route: BACKUP_SEARCH_ROUTE, path: '/' });
 		},
-		[createSnackbar, recoverDay, searchString, zimbraPrefLocale]
+		[createSnackbar, recoverDay, searchString, zimbraPrefLocale, zimbraPrefTimeZoneId]
 	);
 
 	const informativeText = t(
