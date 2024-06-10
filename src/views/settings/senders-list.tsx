@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 
 import {
 	Container,
@@ -17,7 +17,7 @@ import {
 	List
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
+import { map, filter } from 'lodash';
 
 import Heading from './components/settings-heading';
 import TrusteeListItem from './components/trustee-list-item';
@@ -43,6 +43,10 @@ function getMessage(listType: ListType): string {
 			);
 }
 
+function getPrefName(listType: ListType): string {
+	return listType === 'Allowed' ? 'amavisWhitelistSender' : 'amavisBlacklistSender';
+}
+
 export const SendersList = ({
 	settingsObj,
 	updateSettings,
@@ -64,7 +68,7 @@ export const SendersList = ({
 	const onAdd = (): void => {
 		updateSettings({
 			target: {
-				name: listType === 'Allowed' ? 'amavisWhitelistSender' : 'amavisBlacklistSender',
+				name: getPrefName(listType),
 				value: [...sendersList, address]
 			}
 		});
@@ -90,6 +94,21 @@ export const SendersList = ({
 				label: el
 			})),
 		[sendersList]
+	);
+
+	const onRemove = useCallback(
+		(item: string) => {
+			const newList = filter(sendersList, (add) => add !== item);
+
+			updateSettings({
+				target: {
+					name: getPrefName(listType),
+					value: newList
+				}
+			});
+			setSendersList(newList);
+		},
+		[sendersList, updateSettings, listType]
 	);
 
 	return (
@@ -125,7 +144,7 @@ export const SendersList = ({
 					/>
 				</Row>
 				<Padding left="medium">
-					<Tooltip label={warningMessage} disabled={!isAddEnabled} maxWidth="100%">
+					<Tooltip label={warningMessage} disabled={isAddEnabled} maxWidth="100%">
 						<Button
 							label={t('label.add', 'Add')}
 							type="outlined"
@@ -143,6 +162,7 @@ export const SendersList = ({
 				<List
 					items={senderAddressesListItems}
 					ItemComponent={TrusteeListItem}
+					itemProps={{ onRemove }}
 					data-testid={'senders-list'}
 				/>
 			</Container>

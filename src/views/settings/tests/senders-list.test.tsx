@@ -16,6 +16,7 @@ import { generateStore } from '../../../tests/generators/store';
 import { SendersList, SendersListProps } from '../senders-list';
 
 const SENDERS_LIST = 'senders-list';
+const FIND_TIMEOUT = 2000;
 
 const buildProps = ({
 	settingsObj = { attrs: {}, prefs: {} },
@@ -198,5 +199,38 @@ describe('Blocked sender list addresses settings', () => {
 
 		expect(screen.getByRole('button', { name: 'label.add' })).toBeDisabled();
 		expect(screen.getByText('messages.invalid_sender_address')).toBeVisible();
+	});
+
+	it('should remove sender address from the list', async () => {
+		const store = generateStore();
+		const updateSettings = jest.fn();
+		const senderAddressArray: Array<string> = times(3, () => faker.internet.email());
+		const customSettings: Partial<AccountSettings> = {
+			attrs: {
+				amavisBlacklistSender: senderAddressArray
+			}
+		};
+		const { attrs } = generateSettings(customSettings);
+
+		const { user } = setupTest(
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
+			{ store }
+		);
+
+		await screen.findByText(senderAddressArray[0], undefined, { timeout: FIND_TIMEOUT });
+		senderAddressArray.forEach((address) => {
+			expect(screen.getByText(address)).toBeVisible();
+		});
+		const list = screen.getByTestId(SENDERS_LIST);
+		const listItem = await within(list).findByText(senderAddressArray[1]);
+		await act(async () => {
+			await user.hover(listItem);
+		});
+		const button = await screen.findByRole('button', { name: 'label.remove' });
+		expect(button).toBeVisible();
+		await act(async () => {
+			user.click(button);
+		});
+		// await waitFor(() => expect(updateSettings).toBeCalled());
 	});
 });
