@@ -17,6 +17,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { SendersListItem } from './components/senders-list-item';
 import Heading from './components/settings-heading';
 import { allowedSendersSubSection, blockedSendersSubSection } from './subsections';
 import type { InputProps } from '../../types';
@@ -68,6 +69,9 @@ export const SendersList = ({
 		setAddress('');
 		setSendersList([...sendersList, address]);
 	};
+
+	const onRemove = (): void => {};
+
 	const isAddEnabled = useMemo(() => isValidEmail(address), [address]);
 
 	const warningMessage = useMemo(
@@ -122,8 +126,8 @@ export const SendersList = ({
 				</Padding>
 			</Container>
 			<div data-testid="senders-list">
-				{sendersList.map((s, idx) => (
-					<span key={idx}>{s}</span>
+				{sendersList.map((address, idx) => (
+					<SendersListItem key={idx} value={address} onRemove={onRemove} />
 				))}
 			</div>
 		</Container>

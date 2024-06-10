@@ -16,6 +16,7 @@ import { generateStore } from '../../../tests/generators/store';
 import { SendersList, SendersListProps } from '../senders-list';
 
 const SENDERS_LIST = 'senders-list';
+const SENDERS_LIST_ITEM = 'senders-list-item';
 
 const buildProps = ({
 	settingsObj = { attrs: {}, prefs: {} },
@@ -27,11 +28,17 @@ const buildProps = ({
 	listType
 });
 
-function setupSettings(): AccountSettingsPrefs {
-	const senderAddressArray: Array<string> = [];
+function setupSettings({
+	blacklist = [],
+	whitelist = []
+}: {
+	blacklist?: Array<string>;
+	whitelist?: Array<string>;
+} = {}): AccountSettingsPrefs {
 	const customSettings: Partial<AccountSettings> = {
 		attrs: {
-			amavisBlacklistSender: senderAddressArray
+			amavisBlacklistSender: blacklist,
+			amavisWhitelistSender: whitelist
 		}
 	};
 	const { attrs } = generateSettings(customSettings);
@@ -44,6 +51,10 @@ async function addAddress(user: UserEvent, newSenderAddress: string): Promise<vo
 	await user.type(nameInput, newSenderAddress);
 	const addButton = screen.getByRole('button', { name: 'label.add' });
 	await act(() => user.click(addButton));
+}
+
+function buildAddresses(count: number): Array<string> {
+	return times(count, () => faker.internet.email());
 }
 
 describe('Allowed sender list addresses settings', () => {
@@ -186,18 +197,45 @@ describe('Blocked sender list addresses settings', () => {
 	});
 
 	it('add button disabled with invalid address', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 		const attrs = setupSettings();
 		const newSenderAddress = 'invalid';
 		const { user } = setupTest(
-			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
-			{ store }
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />
 		);
 		const nameInput = screen.getByRole('textbox', { name: 'label.enter_single_email_address' });
 		await user.type(nameInput, newSenderAddress);
 
 		expect(screen.getByRole('button', { name: 'label.add' })).toBeDisabled();
 		expect(screen.getByText('messages.invalid_sender_address')).toBeVisible();
+	});
+
+	it('should display existing allowed senders items', () => {
+		const addresses = buildAddresses(42);
+		const attrs = setupSettings({ whitelist: addresses });
+		const updateSettings = jest.fn();
+
+		setupTest(
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Allowed" />
+		);
+
+		addresses.forEach((address) => {
+			expect(screen.getByText(address)).toBeVisible();
+		});
+	});
+
+	it('should not display any senders list items', () => {
+		const attrsWithoutAddresses = setupSettings();
+		const updateSettings = jest.fn();
+
+		setupTest(
+			<SendersList
+				updateSettings={updateSettings}
+				settingsObj={attrsWithoutAddresses}
+				listType="Allowed"
+			/>
+		);
+
+		expect(screen.queryByTestId(SENDERS_LIST_ITEM)).not.toBeInTheDocument();
 	});
 });
