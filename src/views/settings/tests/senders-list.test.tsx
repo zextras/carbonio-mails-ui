@@ -12,7 +12,6 @@ import { times } from 'lodash';
 
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { UserEvent, screen, setupTest, within } from '../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../tests/generators/store';
 import { SendersList, SendersListProps } from '../senders-list';
 
 const SENDERS_LIST = 'senders-list';
@@ -91,14 +90,12 @@ describe('Blocked sender list addresses settings', () => {
 		expect(nameInput).toBeVisible();
 	});
 	it('should add new sender address in the list of blocked addresses', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 		const newSenderAddress = faker.internet.email();
 		const prefs = setupSettings();
 
 		const { user } = setupTest(
-			<SendersList updateSettings={updateSettings} settingsObj={prefs} listType="Blocked" />,
-			{ store }
+			<SendersList updateSettings={updateSettings} settingsObj={prefs} listType="Blocked" />
 		);
 		await addAddress(user, newSenderAddress);
 
@@ -108,14 +105,12 @@ describe('Blocked sender list addresses settings', () => {
 	});
 
 	it('should update settings when new sender address is added and list is empty', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 		const newSenderAddress = faker.internet.email();
 		const prefs = setupSettings();
 
 		const { user } = setupTest(
-			<SendersList updateSettings={updateSettings} settingsObj={prefs} listType="Blocked" />,
-			{ store }
+			<SendersList updateSettings={updateSettings} settingsObj={prefs} listType="Blocked" />
 		);
 		await addAddress(user, newSenderAddress);
 
@@ -125,7 +120,6 @@ describe('Blocked sender list addresses settings', () => {
 	});
 
 	it('should render list from settings', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 
 		const senderAddressArray: Array<string> = times(3, () => faker.internet.email());
@@ -136,8 +130,7 @@ describe('Blocked sender list addresses settings', () => {
 		};
 		const { attrs } = generateSettings(customSettings);
 		setupTest(
-			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
-			{ store }
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />
 		);
 		senderAddressArray.forEach((address) => {
 			expect(screen.getByText(address)).toBeVisible();
@@ -145,7 +138,6 @@ describe('Blocked sender list addresses settings', () => {
 	});
 
 	it('should update settings when new sender address is added and list is NOT empty', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 		const newSenderAddress = faker.internet.email();
 		const senderAddressArray: Array<string> = times(3, () => faker.internet.email());
@@ -157,8 +149,7 @@ describe('Blocked sender list addresses settings', () => {
 		const { attrs } = generateSettings(customSettings);
 
 		const { user } = setupTest(
-			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
-			{ store }
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />
 		);
 		await addAddress(user, newSenderAddress);
 
@@ -168,14 +159,12 @@ describe('Blocked sender list addresses settings', () => {
 	});
 
 	it('should clean the input field after adding a new sender address', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 		const newSenderAddress = faker.internet.email();
 		const attrs = setupSettings();
 
 		const { user } = setupTest(
-			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
-			{ store }
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />
 		);
 		await addAddress(user, newSenderAddress);
 
@@ -184,13 +173,11 @@ describe('Blocked sender list addresses settings', () => {
 	});
 
 	it('add button disabled with empty address', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 		const attrs = setupSettings();
 
 		setupTest(
-			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
-			{ store }
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />
 		);
 
 		expect(screen.getByRole('button', { name: 'label.add' })).toBeDisabled();
@@ -240,7 +227,6 @@ describe('Blocked sender list addresses settings', () => {
 	});
 
 	it('should remove sender address from the list', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 		const senderAddressArray: Array<string> = times(3, () => faker.internet.email());
 		const customSettings: Partial<AccountSettings> = {
@@ -251,8 +237,7 @@ describe('Blocked sender list addresses settings', () => {
 		const { attrs } = generateSettings(customSettings);
 
 		const { user } = setupTest(
-			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />,
-			{ store }
+			<SendersList updateSettings={updateSettings} settingsObj={attrs} listType="Blocked" />
 		);
 
 		await screen.findByText(senderAddressArray[0], undefined, { timeout: FIND_TIMEOUT });
