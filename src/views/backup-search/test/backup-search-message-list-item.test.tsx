@@ -74,6 +74,27 @@ describe('Backup search list', () => {
 
 		expect(screen.getByText('Inbox')).toBeInTheDocument();
 	});
+
+	it('should display Deleted Folder if no folder is found', async () => {
+		(getFolder as jest.Mock).mockReturnValue(undefined);
+
+		const messages = [message1];
+		useBackupSearchStore.getState().setMessages(messages);
+		const backupSearchStoreStateMessages = useBackupSearchStore.getState().messages;
+		const message = backupSearchStoreStateMessages['1'];
+
+		setupTest(
+			<BackupSearchMessageListItem
+				message={message}
+				toggle={jest.fn()}
+				key={message.id}
+				messageIsSelected={false}
+			/>,
+			{}
+		);
+
+		expect(screen.getByText('label.deleted_folder')).toBeInTheDocument();
+	});
 	it('should display sender when to is the owner', async () => {
 		(getUserAccount as jest.Mock).mockReturnValue({
 			name: 'giuliano@example.com'
