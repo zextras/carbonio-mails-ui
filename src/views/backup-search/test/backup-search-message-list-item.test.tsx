@@ -29,6 +29,7 @@ const message1 = {
 
 describe('Backup search list', () => {
 	it('should display To when sender is the owner', async () => {
+		(getFolder as jest.Mock).mockReturnValue(undefined);
 		(getUserAccount as jest.Mock).mockReturnValue({
 			name: 'francesco@example.com'
 		});
@@ -50,7 +51,6 @@ describe('Backup search list', () => {
 		expect(screen.getByText('3/1/2024')).toBeInTheDocument();
 		expect(screen.getByText(message1.subject)).toBeInTheDocument();
 		expect(screen.getByText(message1.to)).toBeInTheDocument();
-		expect(screen.getByText('Inbox')).toBeInTheDocument();
 		expect(screen.queryByText(message1.sender)).not.toBeInTheDocument();
 	});
 

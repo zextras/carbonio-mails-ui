@@ -12,7 +12,6 @@ import { HttpResponse } from 'msw';
 import { defaultBeforeAllTests } from '../../../carbonio-ui-commons/test/jest-setup';
 import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { RECOVER_MESSAGES_INTERVAL } from '../../../constants';
 import { useAdvancedAccountStore } from '../../../store/zustand/advanced-account/store';
 import { generateStore } from '../../../tests/generators/store';
 import { RecoverMessages } from '../recover-messages';
@@ -50,7 +49,7 @@ describe('Recover messages', () => {
 		setupTest(<RecoverMessages />, {});
 
 		const recoveryButton = screen.getByRole('button', {
-			name: /label\.start_recovery/i
+			name: /label\.search_emails/i
 		});
 		expect(recoveryButton).toBeDisabled();
 	});
@@ -71,7 +70,7 @@ describe('Recover messages', () => {
 			await user.tab();
 			await user.click(
 				screen.getByRole('button', {
-					name: /label\.start_recovery/i
+					name: /label\.search_emails/i
 				})
 			);
 			await user.click(
@@ -104,7 +103,7 @@ describe('Recover messages', () => {
 			await user.tab();
 			await user.click(
 				screen.getByRole('button', {
-					name: /label\.start_recovery/i
+					name: /label\.search_emails/i
 				})
 			);
 			await user.click(
@@ -139,7 +138,7 @@ describe('Recover messages', () => {
 			await user.tab();
 			await user.click(
 				screen.getByRole('button', {
-					name: /label\.start_recovery/i
+					name: /label\.search_emails/i
 				})
 			);
 			await user.click(
@@ -173,7 +172,7 @@ describe('Recover messages', () => {
 			await user.tab();
 			await user.click(
 				screen.getByRole('button', {
-					name: /label\.start_recovery/i
+					name: /label\.search_emails/i
 				})
 			);
 			await user.click(
