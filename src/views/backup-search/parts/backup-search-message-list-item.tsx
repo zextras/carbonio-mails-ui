@@ -5,8 +5,14 @@
  */
 import React, { useCallback } from 'react';
 
-import { Avatar, Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
-import { getUserAccount, replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { Avatar, Chip, Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
+import {
+	getFolder,
+	getUserAccount,
+	replaceHistory,
+	t,
+	useUserSettings
+} from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
 import { BackupSearchMessage } from '../../../types';
@@ -31,6 +37,8 @@ export const BackupSearchMessageListItem = ({
 		accountName;
 	const dateToDisplay = new Date(message?.creationDate).toLocaleDateString(zimbraPrefLocale);
 	const messageId = message.id;
+	const folder = getFolder(message.folderId);
+	const folderName = folder ? folder.name : t('label.deleted_folder', 'Deleted Folder');
 
 	const handleComponentOnClick = useCallback(() => {
 		replaceHistory(`/${messageId}`);
@@ -68,8 +76,9 @@ export const BackupSearchMessageListItem = ({
 						<Text size="small">{dateToDisplay}</Text>
 					</Row>
 					<Padding bottom="small" />
-					<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
+					<Row wrap="nowrap" takeAvailableSpace mainAlignment="space-between">
 						<Text size="medium">{message?.subject}</Text>
+						<Chip label={folderName} background="gray2" color="text" hasAvatar={false} />
 					</Row>
 				</Container>
 			</Row>
