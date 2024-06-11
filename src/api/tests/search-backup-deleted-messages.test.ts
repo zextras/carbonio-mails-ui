@@ -26,16 +26,22 @@ describe('search backup deleted messages', () => {
 		const mockedResponse = { messages: [{ id: '1' }] };
 		const interceptor = createAPIInterceptor(
 			'get',
-			'/zx/backup/v1/searchDeleted?before=2022-01-02&after=2022-01-01&searchString=test',
+			'/zx/backup/v1/searchDeleted',
 			HttpResponse.json(mockedResponse, { status: 200 })
 		);
 		const response = await searchBackupDeletedMessagesAPI({
-			startDate: '2022-01-01',
-			endDate: '2022-01-02',
+			startDate: new Date('2022-01-05T00:00:00.000+02:00'),
+			endDate: new Date('2022-01-06T00:00:00.000+02:00'),
 			searchString: 'test'
 		});
 
 		expect(response).toEqual({ data: mockedResponse });
 		expect(interceptor.getCalledTimes()).toBe(1);
+		expect(interceptor.getLastRequest().url).toBe(
+			'http://localhost/zx/backup/v1/searchDeleted?' +
+				'after=2022-01-04T22%3A00%3A00.000Z&' +
+				'before=2022-01-05T22%3A00%3A00.000Z&' +
+				'searchString=test'
+		);
 	});
 });

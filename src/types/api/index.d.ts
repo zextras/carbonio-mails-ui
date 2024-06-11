@@ -5,8 +5,8 @@
  */
 
 export type SearchBackupDeletedMessagesAPIProps = {
-	startDate?: string;
-	endDate?: string;
+	startDate?: Date;
+	endDate?: Date;
 	searchString?: string;
 };
 

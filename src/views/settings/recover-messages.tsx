@@ -35,7 +35,7 @@ import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/st
 import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
 import { BackupSearchStore } from '../../types';
 
-function calculateInterval(recoverDate: Date | null): { startDate?: string; endDate?: string } {
+function calculateInterval(recoverDate: Date | null): { startDate?: Date; endDate?: Date } {
 	if (!recoverDate) return {};
 
 	const startDate = new Date(recoverDate);
@@ -45,10 +45,7 @@ function calculateInterval(recoverDate: Date | null): { startDate?: string; endD
 	endDate.setUTCDate(recoverDate.getUTCDate() + RECOVER_MESSAGES_INTERVAL + 1);
 	endDate.setMilliseconds(endDate.getMilliseconds() - 1);
 
-	return {
-		startDate: startDate.toISOString(),
-		endDate: endDate.toISOString()
-	};
+	return { startDate, endDate };
 }
 
 function getUserFriendlySearchParams(

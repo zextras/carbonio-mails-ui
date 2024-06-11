@@ -23,10 +23,10 @@ export async function searchBackupDeletedMessagesAPI({
 	const searchURL = '/zx/backup/v1/searchDeleted';
 	const searchParams = new URLSearchParams();
 	if (startDate) {
-		searchParams.set('after', startDate);
+		searchParams.set('after', startDate.toISOString());
 	}
 	if (endDate) {
-		searchParams.set('before', endDate);
+		searchParams.set('before', endDate.toISOString());
 	}
 	if (searchString) {
 		searchParams.set('searchString', searchString);
