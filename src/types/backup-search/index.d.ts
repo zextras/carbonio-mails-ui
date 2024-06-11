@@ -11,10 +11,10 @@ export type BackupSearchStatus = (typeof BACKUP_SEARCH_STATUS)[keyof typeof BACK
 export type BackupSearchStore = {
 	messages: Record<string, BackupSearchMessage>;
 	status: BackupSearchStatus;
-	displaySearchParams: SearchBackupDeletedMessagesAPIProps;
+	searchParams: SearchBackupDeletedMessagesAPIProps;
 	setMessages: (messages: Array<DeletedMessageFromAPI>) => void;
 	setStatus: (status: BackupSearchStore['status']) => void;
-	setDisplaySearchParams: (status: BackupSearchStore['displaySearchParams']) => void;
+	setSearchParams: (status: BackupSearchStore['searchParams']) => void;
 };
 export type BackupSearchMessage = {
 	id: string;
