@@ -15,7 +15,7 @@ import {
 	Padding,
 	Row
 } from '@zextras/carbonio-design-system';
-import { removeRoute, replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { removeRoute, replaceHistory, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { BACKUP_SEARCH_ROUTE, MAILS_ROUTE } from '../../../constants';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
@@ -24,7 +24,8 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 	const clearSearchText = t('label.clear_search_query', 'CLEAR SEARCH');
 	const endDateString = t('label.end_date', 'End Date');
 	const startDateString = t('label.start_date', 'Start Date');
-	const { displaySearchParams: queryParams } = useBackupSearchStore();
+	const { searchParams: queryParams } = useBackupSearchStore();
+	const { zimbraPrefLocale } = useUserSettings().prefs;
 
 	const queryParamsArray = [];
 
@@ -36,14 +37,14 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 
 	if (queryParams.startDate)
 		queryParamsArray.push({
-			value: `${startDateString}: ${queryParams.startDate}`,
+			value: `${startDateString}: ${queryParams.startDate.toLocaleDateString(zimbraPrefLocale)}`,
 			hasAvatarIcon: true,
 			avatarIcon: 'CalendarOutline'
 		});
 
 	if (queryParams.endDate)
 		queryParamsArray.push({
-			value: `${endDateString}: ${queryParams.endDate}`,
+			value: `${endDateString}: ${queryParams.endDate.toLocaleDateString(zimbraPrefLocale)}`,
 			hasAvatarIcon: true,
 			avatarIcon: 'CalendarOutline'
 		});
@@ -51,7 +52,7 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 	const clearSearchCallback = useCallback(() => {
 		const backupSearchStoreState = useBackupSearchStore.getState();
 		backupSearchStoreState.setMessages([]);
-		backupSearchStoreState.setDisplaySearchParams({});
+		backupSearchStoreState.setSearchParams({});
 		removeRoute(BACKUP_SEARCH_ROUTE);
 		replaceHistory({ route: MAILS_ROUTE, path: '/' });
 	}, []);
