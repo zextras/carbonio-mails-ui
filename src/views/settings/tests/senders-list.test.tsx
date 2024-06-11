@@ -84,7 +84,7 @@ describe.each`
 			expect(nameInput).toBeVisible();
 		});
 
-		it(`should add new sender address in the adsdresses list `, async () => {
+		it(`should add new sender address in the addresses list `, async () => {
 			const newSenderAddress = faker.internet.email();
 
 			const { user } = setupTest(
@@ -115,7 +115,7 @@ describe.each`
 			});
 		});
 
-		it('should render list from settings', async () => {
+		it('should render list from settings', () => {
 			const senderAddressArray = buildAddresses(3);
 
 			setupTest(
@@ -162,7 +162,7 @@ describe.each`
 			expect(nameInput).toHaveValue('');
 		});
 
-		it('add button disabled with empty address', async () => {
+		it('add button disabled with empty address', () => {
 			setupTest(
 				<SendersList updateSettings={jest.fn()} settingsObj={setupSettings()} listType={listType} />
 			);
