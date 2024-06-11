@@ -13,12 +13,37 @@ import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
+import { DeletedMessageFromAPI } from '../../../types';
 import { BackupSearchPanel } from '../parts/backup-search-panel';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
 	useParams: jest.fn()
 }));
+
+function mockItemIdParam(itemId: string | undefined): void {
+	(useParams as jest.Mock).mockReturnValue({ itemId });
+}
+
+function setStoredMessages(storedMessages: DeletedMessageFromAPI[]): void {
+	useBackupSearchStore.getState().setMessages(storedMessages);
+}
+
+function aDeletedMessageWith(overrides: Partial<DeletedMessageFromAPI>): DeletedMessageFromAPI {
+	return {
+		messageId: '1',
+		folderId: FOLDERS.INBOX,
+		owner: 'Owner Name',
+		creationDate: '2024-05-11T12:00:00Z',
+		deletionDate: '2024-05-27T12:00:00Z',
+		subject: 'The Message Subject',
+		sender: 'sender@example.com',
+		to: 'recipient@example.com',
+		fragment: 'This is a fragment of the message.',
+		...overrides
+	};
+}
+
 describe('Backup search panel', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -26,36 +51,36 @@ describe('Backup search panel', () => {
 	});
 
 	it('shows fallback title and description without itemId param', () => {
-		(useParams as jest.Mock).mockReturnValue({ itemId: undefined });
+		mockItemIdParam(undefined);
 
 		setupTest(<BackupSearchPanel />, {});
+
 		expect(screen.getByText('label.displayer_restore_emails_title')).toBeInTheDocument();
 		expect(screen.getByText('label.displayer_restore_emails_description')).toBeInTheDocument();
 	});
 
 	it('shows fallback title and description with unexisting itemId param', () => {
-		(useParams as jest.Mock).mockReturnValue({ itemId: '99' });
+		mockItemIdParam('99');
 
 		setupTest(<BackupSearchPanel />, {});
+
 		expect(screen.getByText('label.displayer_restore_emails_title')).toBeInTheDocument();
 		expect(screen.getByText('label.displayer_restore_emails_description')).toBeInTheDocument();
 	});
 
 	it('renders message details of a stored message with folder inbox', () => {
 		const testMessageId = '1';
-		(useParams as jest.Mock).mockReturnValue({ itemId: testMessageId });
-		useBackupSearchStore.getState().setMessages([
-			{
+		mockItemIdParam(testMessageId);
+		setStoredMessages([
+			aDeletedMessageWith({
 				messageId: testMessageId,
 				folderId: FOLDERS.INBOX,
-				owner: 'ownerName',
-				creationDate: '2024-06-06T12:00:00Z',
-				deletionDate: '2024-06-07T12:00:00Z',
 				subject: 'Test Subject',
 				sender: 'sender@example.com',
 				to: 'recipient@example.com',
-				fragment: 'This is a fragment of the message.'
-			}
+				creationDate: '2024-06-06T12:00:00Z',
+				deletionDate: '2024-06-07T12:00:00Z'
+			})
 		]);
 
 		setupTest(<BackupSearchPanel />, {});
@@ -76,26 +101,19 @@ describe('Backup search panel', () => {
 
 	it('handle message details renders with unknown folder id', () => {
 		const testMessageId = '1';
-		(useParams as jest.Mock).mockReturnValue({ itemId: testMessageId });
-		useBackupSearchStore.getState().setMessages([
-			{
+		mockItemIdParam(testMessageId);
+		setStoredMessages([
+			aDeletedMessageWith({
 				messageId: testMessageId,
 				folderId: 'unknown',
-				owner: 'ownerName',
-				creationDate: '2024-06-06T12:00:00Z',
-				deletionDate: '2024-06-07T12:00:00Z',
-				subject: 'Another Message Subject',
-				sender: 'sender@example.com',
-				to: 'recipient@example.com',
-				fragment: 'This is a fragment of the message.'
-			}
+				subject: 'Another Message Subject'
+			})
 		]);
 
 		setupTest(<BackupSearchPanel />, {});
 
-		expect(screen.queryByText('Another Message Subject')).toBeInTheDocument();
+		expect(screen.getByText('Another Message Subject')).toBeInTheDocument();
 		expect(screen.queryByText('label.folder :')).not.toBeInTheDocument();
 		expect(screen.queryByText('Inbox')).not.toBeInTheDocument();
 	});
-
 });
