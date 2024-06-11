@@ -29,21 +29,21 @@ import {
 	BACKUP_SEARCH_STATUS,
 	RECOVER_MESSAGES_INTERVAL
 } from '../../constants';
+import { replaceTimeZone } from '../../helpers/date';
 import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
 import { BackupSearchStore } from '../../types';
-import { replaceTimeZone } from '../../helpers/date';
 
 function calculateInterval(recoverDate: Date | null): { startDate?: string; endDate?: string } {
 	if (!recoverDate) return {};
 
-	const date = new Date(recoverDate);
-	const startDate = new Date(date);
-	const endDate = new Date(date);
+	const startDate = new Date(recoverDate);
+	const endDate = new Date(recoverDate);
 
-	startDate.setUTCDate(date.getUTCDate() - RECOVER_MESSAGES_INTERVAL);
-	endDate.setUTCDate(date.getUTCDate() + RECOVER_MESSAGES_INTERVAL);
+	startDate.setUTCDate(recoverDate.getUTCDate() - RECOVER_MESSAGES_INTERVAL);
+	endDate.setUTCDate(recoverDate.getUTCDate() + RECOVER_MESSAGES_INTERVAL + 1);
+	endDate.setMilliseconds(endDate.getMilliseconds() - 1);
 
 	return {
 		startDate: startDate.toISOString(),

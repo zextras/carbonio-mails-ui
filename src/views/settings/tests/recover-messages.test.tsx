@@ -150,16 +150,9 @@ describe('Recover messages', () => {
 		});
 
 		const { after, before } = getParams(apiInterceptor.getLastRequest().url);
-		const beforeDate = new Date(selectedDate);
-		const afterDate = new Date(selectedDate);
 
-		beforeDate.setDate(beforeDate.getDate() + RECOVER_MESSAGES_INTERVAL);
-		afterDate.setDate(afterDate.getDate() - RECOVER_MESSAGES_INTERVAL);
-
-		const expectedBefore = beforeDate.toISOString();
-		const expectedAfter = afterDate.toISOString();
-		expect(before).toBe(expectedBefore);
-		expect(after).toBe(expectedAfter);
+		expect(after).toBe('2024-08-11T00:00:00.000Z');
+		expect(before).toBe('2024-08-17T23:59:59.999Z');
 	});
 
 	it('should call searchDeleted API with the correct searchString when one is entered', async () => {
