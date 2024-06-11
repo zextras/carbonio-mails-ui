@@ -30,6 +30,7 @@ export const RecoverMessagesModal = ({
 		? t('label.loading_results', 'Loading results...')
 		: t('label.start_search', 'Start Search');
 	const loadingSubText = ` ${t('label.want_to_continue', 'Do you want to continue?')}`;
+
 	return (
 		<Container
 			padding={{ all: 'large' }}
@@ -46,8 +47,8 @@ export const RecoverMessagesModal = ({
 			>
 				<Text style={{ whiteSpace: 'pre-line' }}>
 					{t(
-						'messages.recover_deleted_emails',
-						'Recovering deleted e-mails from Trash may take some time. Once the operation is completed, you will be directed to the results.'
+						'messages.searching_deleted_emails',
+						'Searching deleted e-mails from Trash may take some time. Once the operation is completed, you will be directed to the results.'
 					)}
 				</Text>
 				{!isLoading && <Text>{loadingSubText}</Text>}

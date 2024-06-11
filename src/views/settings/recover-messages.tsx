@@ -102,9 +102,11 @@ export const RecoverMessages = (): React.JSX.Element => {
 
 	const informativeText = t(
 		'settings.label.recover_messages_infotext',
-		`You can still retrieve emails deleted from Trash in a period.\nBy clicking “START RECOVERY” you will initiate the process to recover deleted emails. Once the process is completed you will receive a notification in your Inbox and find the recovered emails in Recovered mails folder.`
+		`Recover e-mails deleted from the Trash by typing a keyword included within the first 100 characters of the message or by selecting a date.\n
+        The selected date will include emails deleted 3 days before and 3 days after.\n
+        Once the search is completed you will be redirected to the results page where you can choose which items to restore.`
 	);
-	const buttonLabel = t('label.start_recovery', 'Start Recovery');
+	const buttonLabel = t('label.search_emails', 'SEARCH E-MAILS');
 	const datePickerLabel = t('label.select_recovery_date', 'Select recovery date');
 	const sectionTitle = recoverMessagesSubSection();
 	const { backupSelfUndeleteAllowed } = useAdvancedAccountStore();
