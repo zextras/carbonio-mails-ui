@@ -73,4 +73,29 @@ describe('Backup search panel', () => {
 		expect(screen.getByText('label.folder :')).toBeInTheDocument();
 		expect(screen.getByText('Inbox')).toBeInTheDocument();
 	});
+
+	it('handle message details renders with unknown folder id', () => {
+		const testMessageId = '1';
+		(useParams as jest.Mock).mockReturnValue({ itemId: testMessageId });
+		useBackupSearchStore.getState().setMessages([
+			{
+				messageId: testMessageId,
+				folderId: 'unknown',
+				owner: 'ownerName',
+				creationDate: '2024-06-06T12:00:00Z',
+				deletionDate: '2024-06-07T12:00:00Z',
+				subject: 'Another Message Subject',
+				sender: 'sender@example.com',
+				to: 'recipient@example.com',
+				fragment: 'This is a fragment of the message.'
+			}
+		]);
+
+		setupTest(<BackupSearchPanel />, {});
+
+		expect(screen.queryByText('Another Message Subject')).toBeInTheDocument();
+		expect(screen.queryByText('label.folder :')).not.toBeInTheDocument();
+		expect(screen.queryByText('Inbox')).not.toBeInTheDocument();
+	});
+
 });
