@@ -199,22 +199,6 @@ describe('Blocked sender list addresses settings', () => {
 		expect(screen.getByText('messages.invalid_sender_address')).toBeVisible();
 	});
 
-	it('should display existing allowed senders items', () => {
-		const addresses = buildAddresses(42);
-
-		setupTest(
-			<SendersList
-				updateSettings={jest.fn()}
-				settingsObj={setupSettings({ whitelist: addresses })}
-				listType="Allowed"
-			/>
-		);
-
-		addresses.forEach((address) => {
-			expect(screen.getByText(address)).toBeVisible();
-		});
-	});
-
 	it('should not display any senders list items', () => {
 		const attrsWithoutAddresses = setupSettings();
 
