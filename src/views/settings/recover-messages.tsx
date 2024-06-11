@@ -161,6 +161,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 						timeCaption={t('label.time', 'Time')}
 						includeTime={false}
 						locale={zimbraPrefLocale}
+						dateFormat="P"
 					/>
 				</Row>
 				<Padding top="large" />
