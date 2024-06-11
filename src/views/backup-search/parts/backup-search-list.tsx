@@ -27,6 +27,7 @@ import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from '../../../constants';
 import { useSelection } from '../../../hooks/use-selection';
 import { StoreProvider } from '../../../store/redux';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
+import { DragItemWrapper } from '../../app/folder-panel/parts/drag-item-wrapper';
 
 export const BackupSearchList = (): React.JSX.Element => {
 	const [count, setCount] = useState(0);
@@ -104,7 +105,12 @@ export const BackupSearchList = (): React.JSX.Element => {
 				const active = itemId === message.id;
 				const isSelected = selectedMessage[message.id];
 				return (
-					<CustomListItem key={message.id} active={active} background={'gray6'}>
+					<CustomListItem
+						key={message.id}
+						active={active}
+						selected={isSelected}
+						background={'gray6'}
+					>
 						{(visible: boolean): ReactElement =>
 							visible ? (
 								<BackupSearchMessageListItem

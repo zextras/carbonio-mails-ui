@@ -10,6 +10,7 @@ import { getUserAccount, replaceHistory, useUserSettings } from '@zextras/carbon
 import { find } from 'lodash';
 
 import { BackupSearchMessage } from '../../../types';
+import { HoverContainer } from '../../app/folder-panel/parts/hover-container';
 
 type BackupSearchMessageListmessageProps = {
 	message: BackupSearchMessage;
@@ -24,7 +25,7 @@ export const BackupSearchMessageListItem = ({
 }: BackupSearchMessageListmessageProps): React.JSX.Element => {
 	const accountName = getUserAccount()?.name;
 	const { zimbraPrefLocale } = useUserSettings().prefs;
-
+	const active = true;
 	const emailToDisplay =
 		find([message.to, message.sender], (email) => !email.includes(accountName ?? '')) ??
 		accountName;
@@ -37,8 +38,14 @@ export const BackupSearchMessageListItem = ({
 	const handleAvatarOnClick = useCallback(() => {
 		toggle(messageId);
 	}, [messageId, toggle]);
+
 	return (
-		<Container orientation="horizontal" mainAlignment="flex-start" padding={{ all: 'medium' }}>
+		<HoverContainer
+			$hoverBackground={active ? 'highlight' : 'gray6'}
+			orientation="horizontal"
+			mainAlignment="flex-start"
+			padding={{ all: 'medium' }}
+		>
 			<div style={{ alignSelf: 'center' }}>
 				<Avatar
 					onClick={handleAvatarOnClick}
@@ -66,6 +73,6 @@ export const BackupSearchMessageListItem = ({
 					</Row>
 				</Container>
 			</Row>
-		</Container>
+		</HoverContainer>
 	);
 };
