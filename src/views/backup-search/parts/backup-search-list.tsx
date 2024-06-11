@@ -51,7 +51,6 @@ export const BackupSearchList = (): React.JSX.Element => {
 
 	const recoverEmailsCallback = useCallback(
 		async (closeModal: () => void) => {
-			if (selectedIds.length === 0) return;
 			const response = await restoreMessagesAPI(selectedIds);
 			closeModal();
 			if ('error' in response) {
@@ -172,6 +171,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 							size="medium"
 							type="outlined"
 							width="fill"
+							disabled={!selectedIds.length}
 						/>
 					</Row>
 				</Row>

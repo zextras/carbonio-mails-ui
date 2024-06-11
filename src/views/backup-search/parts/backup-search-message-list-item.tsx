@@ -6,7 +6,7 @@
 import React, { useCallback } from 'react';
 
 import { Avatar, Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
-import { getUserAccount, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { getUserAccount, replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
 import { BackupSearchMessage } from '../../../types';
@@ -23,10 +23,12 @@ export const BackupSearchMessageListItem = ({
 	toggle
 }: BackupSearchMessageListmessageProps): React.JSX.Element => {
 	const accountName = getUserAccount()?.name;
+	const { zimbraPrefLocale } = useUserSettings().prefs;
+
 	const emailToDisplay =
 		find([message.to, message.sender], (email) => !email.includes(accountName ?? '')) ??
 		accountName;
-	const dateToDisplay = new Date(message?.creationDate).toLocaleDateString();
+	const dateToDisplay = new Date(message?.creationDate).toLocaleDateString(zimbraPrefLocale);
 	const messageId = message.id;
 
 	const handleComponentOnClick = useCallback(() => {
