@@ -33,6 +33,14 @@ describe('Backup search panel', () => {
 		expect(screen.getByText('label.displayer_restore_emails_description')).toBeInTheDocument();
 	});
 
+	it('shows fallback title and description with unexisting itemId param', () => {
+		(useParams as jest.Mock).mockReturnValue({ itemId: '99' });
+
+		setupTest(<BackupSearchPanel />, {});
+		expect(screen.getByText('label.displayer_restore_emails_title')).toBeInTheDocument();
+		expect(screen.getByText('label.displayer_restore_emails_description')).toBeInTheDocument();
+	});
+
 	it('renders message details of a stored message with folder inbox', () => {
 		const testMessageId = '1';
 		(useParams as jest.Mock).mockReturnValue({ itemId: testMessageId });

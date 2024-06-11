@@ -46,7 +46,7 @@ export const BackupSearchPanel = (): React.JSX.Element => {
 	const folder = getFolder(message?.folderId);
 	const folderName = { title: t('label.folder', 'Folder'), text: folder?.name };
 
-	return itemId ? (
+	return message ? (
 		<Container padding={{ left: '8rem' }} background="gray5" width={'fill'}>
 			<BackupSearchPanelTextLine title={subject.title} text={subject.text} />
 			<BackupSearchPanelTextLine title={sender.title} text={sender.text} />
