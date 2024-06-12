@@ -19,7 +19,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const { createSnackbar } = useUiUtilities();
 
 	const onConfirm = useCallback(() => {
-		folderAction({ folder, recursive: true, op: 'empty' }).then((res) => {
+		folderAction({ folder, recursive: true, op: 'empty', type: 'emails' }).then((res) => {
 			if (!('Fault' in res)) {
 				createSnackbar({
 					key: `trash`,

@@ -10,21 +10,26 @@ import {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeader,
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	SettingsHeaderProps,
 	editSettings,
 	t,
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { cloneDeep, filter, find, forEach, isEmpty, isEqual, map, reduce, remove } from 'lodash';
+import { cloneDeep, filter, find, isEmpty, isEqual, map, reduce, remove } from 'lodash';
 
 import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
 import ComposeMessage from './compose-msg-settings';
 import DisplayMessagesSettings from './displaying-messages-settings';
 import FilterModule from './filters';
+import { useSignatureSettings } from './hooks/use-signature-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
 import { RecoverMessages } from './recover-messages';
 import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
+import { TIMEOUTS } from '../../constants';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
@@ -39,11 +44,12 @@ import type { AccountIdentity, PropsType, SignItemType } from '../../types';
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
 const SettingsView: FC = () => {
-	const { prefs, props } = useUserSettings();
+	const { prefs, props, attrs } = useUserSettings();
 	const account = useUserAccount();
 	const { identity } = cloneDeep(account.identities);
 	const defaultAccount = remove(identity, (acc: AccountIdentity) => acc.name === 'DEFAULT');
 	const identities = defaultAccount.concat(identity);
+	const { validate: validateSignatures } = useSignatureSettings();
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
@@ -174,26 +180,23 @@ const SettingsView: FC = () => {
 		},
 		[]
 	);
-	// eslint-disable-next-line consistent-return
-	const saveChanges = useCallback(() => {
-		let changes = {};
-		if (!isEqual(signatures, originalSignatures)) {
-			let hasError = false;
-			forEach(signatures, (i: SignItemType) => {
-				if (!i.label || !i.description) hasError = true;
-			});
 
-			if (hasError) {
+	const saveChanges = useCallback<SettingsHeaderProps['onSave']>(() => {
+		if (!isEqual(signatures, originalSignatures)) {
+			const validationResult = validateSignatures(signatures);
+			if (validationResult.length) {
+				// At the moment we show only the last error
 				createSnackbar({
-					key: `error`,
+					key: `signature-validation-error`,
 					type: 'error',
-					label: t('label.signature_required', 'Signature information is required.'),
-					autoHideTimeout: 3000,
+					label: validationResult[validationResult.length - 1],
+					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 					hideButton: true,
 					replace: true
 				});
-				return false;
+				return Promise.reject(new Error('Invalid signature'));
 			}
+
 			const itemsDelete = filter(originalSignatures, (x: SignItemType) => {
 				let toggle = false;
 				map(signatures, (ele: SignItemType) => {
@@ -276,6 +279,7 @@ const SettingsView: FC = () => {
 			});
 		}
 
+		let changes = {};
 		if (Object.keys(settingsToUpdate).length > 0) {
 			changes = { ...changes, prefs: settingsToUpdate };
 		}
@@ -323,6 +327,7 @@ const SettingsView: FC = () => {
 		settingsToUpdate,
 		propsToUpdate,
 		identitiesToUpdate,
+		validateSignatures,
 		dispatch,
 		account,
 		createSnackbar,

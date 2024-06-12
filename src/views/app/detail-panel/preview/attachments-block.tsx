@@ -399,7 +399,7 @@ const Attachment: FC<AttachmentType> = ({
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
-					{isUploadIntegrationAvailable && (
+					{isUploadIntegrationAvailable && !isInsideExtraWindow && (
 						<Tooltip
 							key={`${message.id}-DriveOutline`}
 							label={
@@ -417,7 +417,6 @@ const Attachment: FC<AttachmentType> = ({
 								onClick={(): void => {
 									uploadIntegration && uploadIntegration(actionTarget);
 								}}
-								disabled={isInsideExtraWindow}
 							/>
 						</Tooltip>
 					)}
@@ -562,48 +561,22 @@ const AttachmentsBlock: FC<{
 	const { isInsideExtraWindow } = useExtraWindow();
 
 	const getSaveToFilesLink = useCallback((): ReactElement | null => {
-		if (!isUploadIntegrationAvailable) {
+		if (!isUploadIntegrationAvailable || isInsideExtraWindow) {
 			return null;
 		}
 
-		const link = (
+		return (
 			<Link
 				size="medium"
 				onClick={(): void => {
 					uploadIntegration && uploadIntegration(actionTarget);
 				}}
 				style={{ paddingLeft: '0.5rem' }}
-				disabled={isInsideExtraWindow}
 			>
 				{t('label.save_to_files', 'Save to Files')}
 			</Link>
 		);
-
-		if (!isInsideExtraWindow) {
-			return link;
-		}
-		return (
-			<Tooltip
-				key={`${message.id}-files-saving-disabled`}
-				label={
-					isInsideExtraWindow
-						? t(
-								'label.extra_window.save_to_files_disabled',
-								'Files’ attachments saving is available only from the main tab'
-							)
-						: ''
-				}
-			>
-				{link}
-			</Tooltip>
-		);
-	}, [
-		actionTarget,
-		isInsideExtraWindow,
-		isUploadIntegrationAvailable,
-		message.id,
-		uploadIntegration
-	]);
+	}, [actionTarget, isInsideExtraWindow, isUploadIntegrationAvailable, uploadIntegration]);
 
 	return attachmentsCount > 0 ? (
 		<Container crossAlignment="flex-start">

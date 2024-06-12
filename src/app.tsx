@@ -16,6 +16,7 @@ import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
 import { StoreProvider } from './store/redux';
 import { useBackupSearchStore } from './store/zustand/backup-search/store';
+import { GlobalExtraWindowManager } from './views/app/extra-windows/global-extra-window-manager';
 import { GlobalModalManager } from './views/global-modal-manager';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
@@ -37,7 +38,9 @@ const App = (): React.JSX.Element => {
 	return (
 		<StoreProvider>
 			<GlobalModalManager>
-				<SyncDataHandler />
+				<GlobalExtraWindowManager>
+					<SyncDataHandler />
+				</GlobalExtraWindowManager>
 			</GlobalModalManager>
 		</StoreProvider>
 	);

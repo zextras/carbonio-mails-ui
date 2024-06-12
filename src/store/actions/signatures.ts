@@ -85,8 +85,8 @@ export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data
 		`
 	});
 	const response = await res.json();
-	if (response.Body.Fault) {
-		throw new Error(response.Body.Fault.Reason.Text);
+	if (response.Body.BatchResponse.Fault) {
+		throw new Error(response.Body.BatchResponse.Fault.Reason.Text);
 	}
 
 	return { response };
