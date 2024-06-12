@@ -5,6 +5,7 @@
  */
 import React from 'react';
 
+import * as shellUi from '@zextras/carbonio-shell-ui';
 import { act } from 'react-dom/test-utils';
 
 import App from './app';
@@ -16,6 +17,7 @@ import * as useFoldersController from './carbonio-ui-commons/hooks/use-folders-c
 import { setupTest } from './carbonio-ui-commons/test/test-setup';
 import { useBackupSearchStore } from './store/zustand/backup-search/store';
 import { DeletedMessageFromAPI } from './types';
+import { BACKUP_SEARCH_ROUTE } from './constants';
 
 function aDeletedMessage(): DeletedMessageFromAPI {
 	return {
@@ -38,6 +40,13 @@ function updateBackupSearchStoreWith(messages: DeletedMessageFromAPI[]): void {
 }
 
 describe('App', () => {
+	const removeRouteSpy = jest.spyOn(shellUi, 'removeRoute');
+	const addRouteSpy = jest.spyOn(shellUi, 'addRoute');
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it('should register a "mails" route accessible from the primary bar with specific position, name and icon', () => {
 		const useFoldersControllerSpy = jest.spyOn(useFoldersController, 'useFoldersController');
 		const addComponentsToShellSpy = jest.spyOn(addComponentsToShell, 'addComponentsToShell');
@@ -53,22 +62,22 @@ describe('App', () => {
 		expect(useFoldersControllerSpy).toHaveBeenCalledWith('message');
 	});
 
-	it('should register the backup search component when the backup search messages are present', () => {
-		const toggleBackupSearchSpy = jest.spyOn(toggleBackupSearch, 'toggleBackupSearchComponent');
+	it('should add the backup search route when the backup search messages are present', () => {
 		updateBackupSearchStoreWith([aDeletedMessage()]);
 
 		setupTest(<App />);
 
-		expect(toggleBackupSearchSpy).toHaveBeenLastCalledWith(true);
+		expect(addRouteSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ route: BACKUP_SEARCH_ROUTE })
+		);
 	});
 
-	it('should unregister the backup search component when the backup search messages is present', () => {
-		const toggleBackupSearchSpy = jest.spyOn(toggleBackupSearch, 'toggleBackupSearchComponent');
+	it('should remove the backup search route when the backup search messages is present', () => {
 		updateBackupSearchStoreWith([aDeletedMessage()]);
 
 		setupTest(<App />);
 		updateBackupSearchStoreWith([]);
 
-		expect(toggleBackupSearchSpy).toHaveBeenLastCalledWith(false);
+		expect(removeRouteSpy).toHaveBeenCalledWith(BACKUP_SEARCH_ROUTE);
 	});
 });
