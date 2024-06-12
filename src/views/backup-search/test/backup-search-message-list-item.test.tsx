@@ -7,15 +7,14 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import {
-	getFolder,
-	getUserAccount
-} from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import * as folderHooks from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { getUserAccount } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
 import { BackupSearchMessageListItem } from '../parts/backup-search-message-list-item';
 
-const message1 = {
+const deletedMessage = {
 	messageId: '1',
 	folderId: '1',
 	owner: 'francesco',
@@ -29,12 +28,11 @@ const message1 = {
 
 describe('Backup search list', () => {
 	it('should display To when sender is the owner', async () => {
-		(getFolder as jest.Mock).mockReturnValue(undefined);
+		jest.spyOn(folderHooks, 'getFolder').mockReturnValue(undefined);
 		(getUserAccount as jest.Mock).mockReturnValue({
 			name: 'francesco@example.com'
 		});
-		const messages = [message1];
-		useBackupSearchStore.getState().setMessages(messages);
+		useBackupSearchStore.getState().setMessages([deletedMessage]);
 		const backupSearchStoreStateMessages = useBackupSearchStore.getState().messages;
 		const message = backupSearchStoreStateMessages['1'];
 
@@ -49,16 +47,15 @@ describe('Backup search list', () => {
 		);
 
 		expect(screen.getByText('3/1/2024')).toBeInTheDocument();
-		expect(screen.getByText(message1.subject)).toBeInTheDocument();
-		expect(screen.getByText(message1.to)).toBeInTheDocument();
-		expect(screen.queryByText(message1.sender)).not.toBeInTheDocument();
+		expect(screen.getByText(deletedMessage.subject)).toBeInTheDocument();
+		expect(screen.getByText(deletedMessage.to)).toBeInTheDocument();
+		expect(screen.queryByText(deletedMessage.sender)).not.toBeInTheDocument();
 	});
 
 	it('should display inbox chip', async () => {
-		(getFolder as jest.Mock).mockReturnValue({ name: 'Inbox' });
+		jest.spyOn(folderHooks, 'getFolder').mockReturnValue(generateFolder({ name: 'Inbox' }));
 
-		const messages = [message1];
-		useBackupSearchStore.getState().setMessages(messages);
+		useBackupSearchStore.getState().setMessages([deletedMessage]);
 		const backupSearchStoreStateMessages = useBackupSearchStore.getState().messages;
 		const message = backupSearchStoreStateMessages['1'];
 
@@ -76,10 +73,9 @@ describe('Backup search list', () => {
 	});
 
 	it('should display Deleted Folder if no folder is found', async () => {
-		(getFolder as jest.Mock).mockReturnValue(undefined);
+		jest.spyOn(folderHooks, 'getFolder').mockReturnValue(undefined);
 
-		const messages = [message1];
-		useBackupSearchStore.getState().setMessages(messages);
+		useBackupSearchStore.getState().setMessages([deletedMessage]);
 		const backupSearchStoreStateMessages = useBackupSearchStore.getState().messages;
 		const message = backupSearchStoreStateMessages['1'];
 
@@ -99,8 +95,7 @@ describe('Backup search list', () => {
 		(getUserAccount as jest.Mock).mockReturnValue({
 			name: 'giuliano@example.com'
 		});
-		const messages = [message1];
-		useBackupSearchStore.getState().setMessages(messages);
+		useBackupSearchStore.getState().setMessages([deletedMessage]);
 		const backupSearchStoreStateMessages = useBackupSearchStore.getState().messages;
 		const message = backupSearchStoreStateMessages['1'];
 
@@ -115,8 +110,8 @@ describe('Backup search list', () => {
 		);
 
 		expect(screen.getByText('3/1/2024')).toBeInTheDocument();
-		expect(screen.getByText(message1.subject)).toBeInTheDocument();
-		expect(screen.queryByText(message1.to)).not.toBeInTheDocument();
-		expect(screen.getByText(message1.sender)).toBeInTheDocument();
+		expect(screen.getByText(deletedMessage.subject)).toBeInTheDocument();
+		expect(screen.queryByText(deletedMessage.to)).not.toBeInTheDocument();
+		expect(screen.getByText(deletedMessage.sender)).toBeInTheDocument();
 	});
 });

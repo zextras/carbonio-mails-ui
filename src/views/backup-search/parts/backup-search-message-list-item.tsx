@@ -6,15 +6,10 @@
 import React, { useCallback } from 'react';
 
 import { Avatar, Chip, Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
-import {
-	getFolder,
-	getUserAccount,
-	replaceHistory,
-	t,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
+import { getUserAccount, replaceHistory, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
+import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { BackupSearchMessage } from '../../../types';
 import { HoverContainer } from '../../app/folder-panel/parts/hover-container';
 
