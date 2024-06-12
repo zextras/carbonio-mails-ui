@@ -33,7 +33,6 @@ export const BackupSearchMessageListItem = ({
 	const dateToDisplay = new Date(message?.creationDate).toLocaleDateString(zimbraPrefLocale);
 	const messageId = message.id;
 	const folder = getFolder(message.folderId);
-	const folderName = folder ? folder.name : t('label.deleted_folder', 'Deleted Folder');
 
 	const handleComponentOnClick = useCallback(() => {
 		replaceHistory(`/${messageId}`);
@@ -73,7 +72,9 @@ export const BackupSearchMessageListItem = ({
 					<Padding bottom="small" />
 					<Row wrap="nowrap" takeAvailableSpace mainAlignment="space-between">
 						<Text size="medium">{message?.subject}</Text>
-						<Chip label={folderName} background="gray2" color="text" hasAvatar={false} />
+						{folder && (
+							<Chip label={folder.name} background="gray2" color="text" hasAvatar={false} />
+						)}
 					</Row>
 				</Container>
 			</Row>

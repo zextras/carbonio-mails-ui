@@ -10,11 +10,11 @@ import { screen } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
 import * as folderHooks from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
-import { DeletedMessageFromAPI } from '../../../types';
+import { DeletedMessageFromAPI, Folder } from '../../../types';
 import { BackupSearchPanel } from '../parts/backup-search-panel';
-import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
@@ -29,7 +29,7 @@ function setStoredMessages(storedMessages: DeletedMessageFromAPI[]): void {
 	useBackupSearchStore.getState().setMessages(storedMessages);
 }
 
-function mockGetFolder(returnValue: Folder | undefined) {
+function mockGetFolder(returnValue: Folder | undefined): void {
 	jest.spyOn(folderHooks, 'getFolder').mockReturnValue(returnValue);
 }
 

@@ -69,10 +69,10 @@ describe('Backup search list', () => {
 			{}
 		);
 
-		expect(screen.getByText('Inbox')).toBeInTheDocument();
+		expect(screen.getByTestId('chip')).toHaveTextContent('Inbox');
 	});
 
-	it('should display Deleted Folder if no folder is found', async () => {
+	it('should not display the chip if no folder is found', async () => {
 		jest.spyOn(folderHooks, 'getFolder').mockReturnValue(undefined);
 
 		useBackupSearchStore.getState().setMessages([deletedMessage]);
@@ -89,8 +89,9 @@ describe('Backup search list', () => {
 			{}
 		);
 
-		expect(screen.getByText('label.deleted_folder')).toBeInTheDocument();
+		expect(screen.queryByTestId('chip')).not.toBeInTheDocument();
 	});
+
 	it('should display sender when to is the owner', async () => {
 		(getUserAccount as jest.Mock).mockReturnValue({
 			name: 'giuliano@example.com'
