@@ -66,6 +66,8 @@ export function useMsgConvActions({
 		return [[], []];
 	}
 
+	const realFolderId = getFolderIdParts(folderId);
+
 	const firstConversationMessage = isConv
 		? filter(
 				item?.messages,
@@ -156,7 +158,7 @@ export function useMsgConvActions({
 	const markRemoveSpam = getMarkRemoveSpam({
 		isConversation: isConv,
 		id,
-		folderId,
+		folderId: realFolderId.id == null ? "" : realFolderId.id,
 		dispatch,
 		deselectAll,
 		foldersExcludedMarkUnmarkSpam

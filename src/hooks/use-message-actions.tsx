@@ -44,6 +44,7 @@ import {
 import { applyTag } from '../ui-actions/tag-actions';
 import { useExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';
+import { getFolderIdParts } from '../helpers/folders';
 
 type ActionGeneratorProps = {
 	isInsideExtraWindow: boolean;
@@ -81,9 +82,9 @@ function getDraftsActions({
 		);
 	!isInsideExtraWindow && actions.push(setMsgFlag({ ids: [message.id], value: message.flagged, dispatch }));
 	!isInsideExtraWindow && actions.push(applyTag({ tags, conversation: message, isMessage: true }));
-	actions.push(printMsg({ message }));
-	actions.push(showOriginalMsg({ id: message.id }));
-	actions.push(downloadEml({ id: message.id }));
+	!isInsideExtraWindow && actions.push(printMsg({ message }));
+	!isInsideExtraWindow && actions.push(showOriginalMsg({ id: message.id }));
+	!isInsideExtraWindow && actions.push(downloadEml({ id: message.id }));
 	return actions;
 }
 
@@ -109,9 +110,9 @@ function getTrashActions({
 	!isInsideExtraWindow &&
 		actions.push(deleteMessagePermanently({ ids: [message.id], dispatch, deselectAll }));
 	!isInsideExtraWindow && actions.push(applyTag({ tags, conversation: message, isMessage: true }));
-	actions.push(printMsg({ message }));
-	actions.push(showOriginalMsg({ id: message.id }));
-	actions.push(downloadEml({ id: message.id }));
+	!isInsideExtraWindow && actions.push(printMsg({ message }));
+	!isInsideExtraWindow && actions.push(showOriginalMsg({ id: message.id }));
+	!isInsideExtraWindow && actions.push(downloadEml({ id: message.id }));
 	return actions;
 }
 
@@ -132,9 +133,10 @@ function getSpamActions({
 		);
 	!isInsideExtraWindow &&
 		actions.push(setMsgAsSpam({ ids: [message.id], value: true, dispatch, folderId }));
-	actions.push(printMsg({ message }));
-	actions.push(showOriginalMsg({ id: message.id }));
-	actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+	!isInsideExtraWindow && actions.push(printMsg({ message }));
+	!isInsideExtraWindow && actions.push(showOriginalMsg({ id: message.id }));
+	!isInsideExtraWindow && actions.push(applyTag({ tags, conversation: message, isMessage: true }));
+	!isInsideExtraWindow && actions.push(downloadEml({ id: message.id }));
 	return actions;
 }
 
@@ -200,9 +202,9 @@ function getDefatultActions({
 	!isInsideExtraWindow && actions.push(redirectMsg({ id: message.id }));
 	!isInsideExtraWindow && actions.push(editAsNewMsg({ id: message.id }));
 	!isInsideExtraWindow &&
-	actions.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }));
-	actions.push(showOriginalMsg({ id: message.id }));
-	actions.push(downloadEml({ id: message.id }));
+	!isInsideExtraWindow && actions.push(setMsgAsSpam({ ids: [message.id], value: false, dispatch, folderId }));
+	!isInsideExtraWindow && actions.push(showOriginalMsg({ id: message.id }));
+	!isInsideExtraWindow && actions.push(downloadEml({ id: message.id }));
 
 	return actions;
 }
@@ -236,11 +238,13 @@ export const useMessageActions = (
 		return [];
 	}
 
+	const parentId = getFolderIdParts(message.parent);
+
 	if (isInsideExtraWindow != isExtWin && !isInsideExtraWindow){
 		isInsideExtraWindow = isExtWin;
 	}
 
-	if (message.parent === FOLDERS.DRAFTS) {
+	if (parentId.id === FOLDERS.DRAFTS) {
 		actions.push(
 			...getDraftsActions({
 				isInsideExtraWindow,
@@ -255,9 +259,9 @@ export const useMessageActions = (
 	}
 
 	if (
-		message.parent === FOLDERS.INBOX ||
-		message.parent === FOLDERS.SENT ||
-		!includes(systemFolders, message.parent)
+		parentId.id === FOLDERS.INBOX ||
+		parentId.id === FOLDERS.SENT ||
+		!includes(systemFolders, parentId.id)
 	) {
 		actions.push(
 			...getDefatultActions({
@@ -275,7 +279,7 @@ export const useMessageActions = (
 		// INBOX, SENT OR CREATED_FOLDER
 	}
 
-	if (message.parent === FOLDERS.TRASH) {
+	if (parentId.id === FOLDERS.TRASH) {
 		actions.push(
 			...getTrashActions({
 				isInsideExtraWindow,
@@ -288,11 +292,9 @@ export const useMessageActions = (
 		);
 	}
 
-	if (message.parent === FOLDERS.SPAM) {
+	if (parentId.id === FOLDERS.SPAM) {
 		actions.push(...getSpamActions({ isInsideExtraWindow, message, dispatch, tags, folderId }));
 	}
-
-	actions.push(downloadEml({ id: message.id }));
 
 	//only for preview message on separated folder
 	const actions2 = [];
@@ -304,6 +306,10 @@ export const useMessageActions = (
 		actions.push(
 			previewMessageOnSeparatedWindow(message.id, folderId, message.subject, createWindow, actions2)
 		);
+
+	if (isInsideExtraWindow) {
+		return actions2;
+	}
 
 	return actions;
 };

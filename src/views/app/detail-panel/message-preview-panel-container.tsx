@@ -22,7 +22,7 @@ export const MessagePreviewPanelContainer: FC = () => {
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection({ currentFolderId: folderId, setCount, count: 0 });
 
-	const messageActionsForExtraWindow = useMessageActions(message, true);
+	const messageActionsForExtraWindow = useMessageActions(message, true, true);
 	const messageActions = useMsgConvActions({
 		item: message,
 		deselectAll,

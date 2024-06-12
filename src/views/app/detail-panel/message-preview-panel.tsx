@@ -31,9 +31,11 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 	const { isInsideExtraWindow } = useExtraWindow();
 	const dispatch = useAppDispatch();
 
-	const isExtraWindowActions = messageActions.some(
+	let isExtraWindowActions = messageActions.some(
 		(action: MessageAction) => action.id === EXTRA_WINDOW_ACTION_ID
 	);
+
+	if (messageActions.length > 2) { isExtraWindowActions = true; }
 
 	const actions = isExtraWindowActions
 		? messageActions.filter((action: MessageAction) => action.id !== EXTRA_WINDOW_ACTION_ID)
