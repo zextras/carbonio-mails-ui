@@ -10,8 +10,8 @@ import { screen } from '@testing-library/react';
 import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
 import {
 	getFolder,
-	getFoldersArray,
 	getFoldersArrayByRoot,
+	getFoldersMap,
 	getRootsMap
 } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
@@ -20,6 +20,7 @@ import { makeListItemsVisible, setupTest } from '../../../../carbonio-ui-commons
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import {
 	getFolderOwnerAccountName,
+	getFoldersArray,
 	isInbox,
 	isSpam,
 	isTrash,
@@ -101,7 +102,7 @@ describe('Folder selector', () => {
 	describe('Filter', () => {
 		test('if the user type "inbox" in the filter only the Inbox folder is displayed', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
-			const inboxCount = getFoldersArray().reduce<number>(
+			const inboxCount = getFoldersArray(getFoldersMap()).reduce<number>(
 				(result, folder) => (isInbox(folder.id) ? result + 1 : result),
 				0
 			);
@@ -132,7 +133,7 @@ describe('Folder selector', () => {
 			const inboxFolderName = getSystemFolderTranslatedName({
 				folderName: 'Inbox'
 			});
-			const inboxCount = getFoldersArray().reduce<number>(
+			const inboxCount = getFoldersArray(getFoldersMap()).reduce<number>(
 				(result, folder) => (isInbox(folder.id) ? result + 1 : result),
 				0
 			);
