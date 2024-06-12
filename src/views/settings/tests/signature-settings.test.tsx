@@ -5,13 +5,13 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { faker } from '@faker-js/faker';
 import { act } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { screen, setupTest, within } from '../../../carbonio-ui-commons/test/test-setup';
 import { TESTID_SELECTORS } from '../../../tests/constants';
+import { buildSignature } from '../../../tests/generators/signatures';
 import { handleGetSignaturesRequest } from '../../../tests/mocks/network/msw/handle-get-signatures';
 import type { SignatureSettingsPropsType, SignItemType } from '../../../types';
 import SignatureSettings from '../signature-settings';
@@ -32,23 +32,6 @@ const buildProps = ({
 	signatures,
 	setSignatures,
 	setOriginalSignatures
-});
-
-const buildSignature = ({
-	id = faker.string.uuid(),
-	name = faker.word.noun(1),
-	content = [
-		{
-			type: 'text/html',
-			_content: faker.word.preposition()
-		}
-	]
-}: Partial<SignItemType>): SignItemType => ({
-	id,
-	name,
-	label: name,
-	description: content[0]._content,
-	content
 });
 
 const SettingsViewMock = ({
