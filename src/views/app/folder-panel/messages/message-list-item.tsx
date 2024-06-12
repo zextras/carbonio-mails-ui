@@ -39,7 +39,7 @@ import {
 } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
-import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
+import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { SenderName } from '../parts/sender-name';
@@ -59,7 +59,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-	const { createWindow } = useExtraWindowsManager();
+	const { createWindow } = useGlobalExtraWindowManager();
 	const messageActions = useMessageActions(item, true);
 
 	const onClick = useCallback(

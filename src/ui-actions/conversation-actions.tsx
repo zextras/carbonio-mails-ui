@@ -98,8 +98,8 @@ export const previewConversationOnSeparatedWindowAction = (
 	const actDescriptor = ConversationActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW;
 	return {
 		id: actDescriptor.id,
-		icon: 'BrowserOutline',
-		label: t('action.preview_on_separated_window', 'Open on a new window'),
+		icon: 'ExternalLink',
+		label: t('action.preview_on_separated_tab', 'Open in a new tab'),
 		onClick: (): void => {
 			previewConversationOnSeparatedWindow(conversationId, folderId, subject, createWindow);
 		}
