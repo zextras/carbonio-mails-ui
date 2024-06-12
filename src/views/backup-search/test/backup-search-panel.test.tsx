@@ -9,12 +9,12 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
+import * as folderHooks from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
 import { DeletedMessageFromAPI } from '../../../types';
 import { BackupSearchPanel } from '../parts/backup-search-panel';
+import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
@@ -29,10 +29,14 @@ function setStoredMessages(storedMessages: DeletedMessageFromAPI[]): void {
 	useBackupSearchStore.getState().setMessages(storedMessages);
 }
 
+function mockGetFolder(returnValue: Folder | undefined) {
+	jest.spyOn(folderHooks, 'getFolder').mockReturnValue(returnValue);
+}
+
 function aDeletedMessageWith(overrides: Partial<DeletedMessageFromAPI>): DeletedMessageFromAPI {
 	return {
 		messageId: '1',
-		folderId: FOLDERS.INBOX,
+		folderId: '10',
 		owner: 'Owner Name',
 		creationDate: '2024-05-11T12:00:00Z',
 		deletionDate: '2024-05-27T12:00:00Z',
@@ -47,7 +51,6 @@ function aDeletedMessageWith(overrides: Partial<DeletedMessageFromAPI>): Deleted
 describe('Backup search panel', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		populateFoldersStore();
 	});
 
 	it('shows fallback title and description without itemId param', () => {
@@ -71,10 +74,10 @@ describe('Backup search panel', () => {
 	it('renders message details of a stored message with folder inbox', () => {
 		const testMessageId = '1';
 		mockItemIdParam(testMessageId);
+		mockGetFolder(generateFolder({ name: 'Inbox' }));
 		setStoredMessages([
 			aDeletedMessageWith({
 				messageId: testMessageId,
-				folderId: FOLDERS.INBOX,
 				subject: 'Test Subject',
 				sender: 'sender@example.com',
 				to: 'recipient@example.com',
@@ -102,6 +105,7 @@ describe('Backup search panel', () => {
 	it('handle message details renders with unknown folder id', () => {
 		const testMessageId = '1';
 		mockItemIdParam(testMessageId);
+		mockGetFolder(undefined);
 		setStoredMessages([
 			aDeletedMessageWith({
 				messageId: testMessageId,
