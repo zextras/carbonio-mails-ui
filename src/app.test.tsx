@@ -11,7 +11,7 @@ import App from './app';
 import * as addComponentsToShell from './app-utils/add-shell-components';
 import * as registerShellActions from './app-utils/register-shell-actions';
 import * as registerShellIntegrations from './app-utils/register-shell-integrations';
-import * as toggleBackupSearchComponent from './app-utils/toggle-backup-search-component';
+import * as toggleBackupSearch from './app-utils/toggle-backup-search-component';
 import * as useFoldersController from './carbonio-ui-commons/hooks/use-folders-controller';
 import { setupTest } from './carbonio-ui-commons/test/test-setup';
 import { useBackupSearchStore } from './store/zustand/backup-search/store';
@@ -53,19 +53,22 @@ describe('App', () => {
 		expect(useFoldersControllerSpy).toHaveBeenCalledWith('message');
 	});
 
-	it('should toggle backup search component', () => {
-		const toggleBackupSearchComponentSpy = jest.spyOn(
-			toggleBackupSearchComponent,
-			'toggleBackupSearchComponent'
-		);
-
-		updateBackupSearchStoreWith([]);
-		setupTest(<App />);
-
-		expect(toggleBackupSearchComponentSpy).toHaveBeenLastCalledWith(false);
-
+	it('should register the backup search component when the backup search messages are present', () => {
+		const toggleBackupSearchSpy = jest.spyOn(toggleBackupSearch, 'toggleBackupSearchComponent');
 		updateBackupSearchStoreWith([aDeletedMessage()]);
 
-		expect(toggleBackupSearchComponentSpy).toHaveBeenLastCalledWith(true);
+		setupTest(<App />);
+
+		expect(toggleBackupSearchSpy).toHaveBeenLastCalledWith(true);
+	});
+
+	it('should unregister the backup search component when the backup search messages is present', () => {
+		const toggleBackupSearchSpy = jest.spyOn(toggleBackupSearch, 'toggleBackupSearchComponent');
+		updateBackupSearchStoreWith([aDeletedMessage()]);
+
+		setupTest(<App />);
+		updateBackupSearchStoreWith([]);
+
+		expect(toggleBackupSearchSpy).toHaveBeenLastCalledWith(false);
 	});
 });
