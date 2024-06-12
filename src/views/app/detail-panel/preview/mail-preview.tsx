@@ -31,14 +31,12 @@ import PreviewHeader from './parts/preview-header';
 import ReadReceiptModal from './read-receipt-modal';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
-import { MessageActionsDescriptors } from '../../../../constants';
 import { getAttachmentParts } from '../../../../helpers/attachments';
 import { useAppDispatch } from '../../../../hooks/redux';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 import { getMsg, msgAction } from '../../../../store/actions';
 import type { MailMessage, OpenEmlPreviewType } from '../../../../types';
 import { ExtraWindowCreationParams, MessageAction } from '../../../../types';
-import { findMessageActionById } from '../../../../ui-actions/utils';
 import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
@@ -249,40 +247,9 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 		() => ({ message, onClick, open, isExternalMessage, isInsideExtraWindow }),
 		[message, onClick, open, isExternalMessage, isInsideExtraWindow]
 	);
-	const markAsNotSpam = findMessageActionById(
-		messageActions,
-		MessageActionsDescriptors.MARK_AS_NOT_SPAM.id
-	);
 
 	return (
 		<>
-			{folderId === FOLDERS.SPAM && (
-				<Container
-					mainAlignment="flex-start"
-					crossAlignment="flex-start"
-					height="fit"
-					padding={{ bottom: 'medium' }}
-				>
-					<Container background="gray6" orientation="horizontal" padding={{ all: 'small' }}>
-						<Row width="50%" display="flex" crossAlignment="center" mainAlignment="baseline">
-							<Padding right="small">
-								<Icon icon="AlertCircleOutline" size="medium" />
-							</Padding>
-							<Text>
-								{t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam')}
-							</Text>
-						</Row>
-						<Row width="50%" mainAlignment="flex-end">
-							<Button
-								type="ghost"
-								label={t('action.mark_as_non_spam', 'Not Spam')}
-								color="primary"
-								onClick={markAsNotSpam}
-							/>
-						</Row>
-					</Container>
-				</Container>
-			)}
 			{message && (
 				<Row width="fill">
 					<PreviewHeader compProps={compProps} actions={messageActions} />
