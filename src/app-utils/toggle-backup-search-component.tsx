@@ -7,7 +7,7 @@
 import React from 'react';
 
 import { ModalManager } from '@zextras/carbonio-design-system';
-import { addRoute, t } from '@zextras/carbonio-shell-ui';
+import { addRoute, removeRoute, t } from '@zextras/carbonio-shell-ui';
 import { Route, useRouteMatch } from 'react-router-dom';
 
 import { BACKUP_SEARCH_ROUTE } from '../constants';
@@ -33,14 +33,17 @@ const BackupSearchViewComponent = (): React.JSX.Element => {
 	);
 };
 
-export const addBackupSearchComponent = async (hasBackupSearchMessages: boolean): Promise<void> => {
-	if (!hasBackupSearchMessages) return;
-	const label = t('label.backup_search', 'Backup Search');
+export const toggleBackupSearchComponent = async (hasMessages: boolean): Promise<void> => {
+	if (!hasMessages) {
+		removeRoute(BACKUP_SEARCH_ROUTE);
+		return;
+	}
+
 	addRoute({
 		route: BACKUP_SEARCH_ROUTE,
 		position: 1000,
 		visible: true,
-		label,
+		label: t('label.backup_search', 'Backup Search'),
 		primaryBar: 'RestoreOutline',
 		appView: BackupSearchViewComponent
 	});

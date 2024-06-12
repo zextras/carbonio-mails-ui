@@ -8,10 +8,10 @@ import React, { useEffect } from 'react';
 
 import { isEmpty } from 'lodash';
 
-import { addBackupSearchComponent } from './app-utils/add-backup-search-component';
 import { addComponentsToShell } from './app-utils/add-shell-components';
 import { registerShellActions } from './app-utils/register-shell-actions';
 import { registerShellIntegrations } from './app-utils/register-shell-integrations';
+import { toggleBackupSearchComponent } from './app-utils/toggle-backup-search-component';
 import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
 import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
 import { StoreProvider } from './store/redux';
@@ -29,7 +29,7 @@ const App = (): React.JSX.Element => {
 	}, []);
 
 	useEffect(() => {
-		addBackupSearchComponent(hasBackupSearchMessages);
+		toggleBackupSearchComponent(hasBackupSearchMessages);
 	}, [hasBackupSearchMessages]);
 
 	useFoldersController(FOLDER_VIEW.message);
