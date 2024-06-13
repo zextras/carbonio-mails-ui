@@ -28,6 +28,7 @@ import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
+import { searchByQuery } from '../../store/actions/searchByQuery';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
@@ -108,7 +109,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	const searchQuery = useCallback(
 		async (queryString: string, reset: boolean) => {
 			const resultAction = await dispatch(
-				search({
+				searchByQuery({
 					query: queryString,
 					limit: LIST_LIMIT.INITIAL_LIMIT,
 					sortBy: 'dateDesc',
