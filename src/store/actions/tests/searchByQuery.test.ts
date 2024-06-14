@@ -9,6 +9,14 @@ import { generateStore } from '../../../tests/generators/store';
 import { FetchConversationsParameters, SearchRequest, SearchResponse } from '../../../types';
 import { searchByQuery } from '../searchByQuery';
 
+type FetchCase = {
+	description: string;
+	fetchParams: FetchConversationsParameters;
+	soapResponse: SearchResponse;
+	// expectedState type should be MailsStateType, but some filed in the state are missing
+	expectedState: any;
+};
+
 describe('searchByQuery', () => {
 	const queryParam: FetchConversationsParameters = {
 		query: 'aaaaaa',
@@ -31,7 +39,6 @@ describe('searchByQuery', () => {
 		],
 		more: false
 	};
-
 	test('should call the searchAPI with the correct query', async () => {
 		const store = generateStore();
 		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
@@ -52,7 +59,6 @@ describe('searchByQuery', () => {
 
 	test('should populate the store when the searchByQuery is successfull', async () => {
 		const store = generateStore();
-
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', searchResponse);
 
 		await store
@@ -83,7 +89,6 @@ describe('searchByQuery', () => {
 
 	test('should not pollute the message and conversation stores', async () => {
 		const store = generateStore();
-
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', searchResponse);
 
 		await store
@@ -95,6 +100,107 @@ describe('searchByQuery', () => {
 			.then(() => {
 				expect(store.getState().conversations.conversations).toEqual({});
 				expect(store.getState().messages.messages).toEqual({});
+			});
+	});
+});
+
+describe('searchByQuery check state - ', () => {
+	const fetchCases: FetchCase[] = [
+		{
+			description: 'if request type is missing, only conversations are set in the store',
+			fetchParams: {
+				query: 'aaaaaa',
+				limit: 100
+			},
+			soapResponse: {
+				c: [
+					{
+						id: '123',
+						n: 1,
+						u: 1,
+						f: 'flag',
+						tn: 'tag names',
+						d: 123,
+						m: [],
+						e: [],
+						su: 'Subject',
+						fr: 'fragment'
+					}
+				],
+				m: [
+					{
+						id: '456',
+						cid: '456',
+						l: '1',
+						s: 123,
+						d: 456
+					}
+				],
+				more: false
+			},
+			expectedState: {
+				conversations: {
+					currentFolder: '2',
+					conversations: {},
+					expandedStatus: {},
+					searchedInFolder: {},
+					searchRequestStatus: null
+				},
+				messages: {
+					messages: {},
+					searchRequestStatus: null
+				},
+				searches: {
+					searchResults: undefined,
+					searchResultsIds: ['123'],
+					conversations: {
+						123: {
+							tags: ['nil:tag names'],
+							id: '123',
+							date: 123,
+							participants: [],
+							subject: 'Subject',
+							fragment: 'fragment',
+							read: true,
+							hasAttachment: true,
+							flagged: true,
+							urgent: false,
+							messagesInConversation: 1,
+							sortIndex: 0
+						}
+					},
+					messages: {},
+					more: false,
+					offset: 0,
+					limit: 100,
+					sortBy: 'dateDesc',
+					query: 'aaaaaa',
+					status: 'fulfilled',
+					loadingMessage: '',
+					parent: '',
+					error: undefined
+				}
+			}
+		}
+	];
+
+	test.each(fetchCases)(`$description`, async (fetchCase) => {
+		const searchResponseWithConvAndMessages: SearchResponse = fetchCase.soapResponse;
+		const store = generateStore();
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+			'Search',
+			searchResponseWithConvAndMessages
+		);
+
+		await store
+			.dispatch(
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				searchByQuery(fetchCase.fetchParams)
+			)
+			.then(() => {
+				const newStoreState = store.getState();
+				expect(newStoreState).toEqual(fetchCase.expectedState);
 			});
 	});
 });
