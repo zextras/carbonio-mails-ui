@@ -181,6 +181,159 @@ describe('searchByQuery check state - ', () => {
 					error: undefined
 				}
 			}
+		},
+		{
+			description: 'if request type is conversation, only conversations are set in the store',
+			fetchParams: {
+				query: 'aaaaaa',
+				limit: 100,
+				types: 'conversation'
+			},
+			soapResponse: {
+				c: [
+					{
+						id: '123',
+						n: 1,
+						u: 1,
+						f: 'flag',
+						tn: 'tag names',
+						d: 123,
+						m: [],
+						e: [],
+						su: 'Subject',
+						fr: 'fragment'
+					}
+				],
+				m: [
+					{
+						id: '456',
+						cid: '456',
+						l: '1',
+						s: 123,
+						d: 456
+					}
+				],
+				more: false
+			},
+			expectedState: {
+				conversations: {
+					currentFolder: '2',
+					conversations: {},
+					expandedStatus: {},
+					searchedInFolder: {},
+					searchRequestStatus: null
+				},
+				messages: {
+					messages: {},
+					searchRequestStatus: null
+				},
+				searches: {
+					searchResults: undefined,
+					searchResultsIds: ['123'],
+					conversations: {
+						123: {
+							tags: ['nil:tag names'],
+							id: '123',
+							date: 123,
+							participants: [],
+							subject: 'Subject',
+							fragment: 'fragment',
+							read: true,
+							hasAttachment: true,
+							flagged: true,
+							urgent: false,
+							messagesInConversation: 1,
+							sortIndex: 0
+						}
+					},
+					messages: {},
+					more: false,
+					offset: 0,
+					limit: 100,
+					sortBy: 'dateDesc',
+					query: 'aaaaaa',
+					status: 'fulfilled',
+					loadingMessage: '',
+					parent: '',
+					error: undefined
+				}
+			}
+		},
+		{
+			description: 'if request type is message, messages are set in the searches store',
+			fetchParams: {
+				query: 'aaaaaa',
+				limit: 100,
+				types: 'message'
+			},
+			soapResponse: {
+				c: [
+					{
+						id: '123',
+						n: 1,
+						u: 1,
+						f: 'flag',
+						tn: 'tag names',
+						d: 123,
+						m: [],
+						e: [],
+						su: 'Subject',
+						fr: 'fragment'
+					}
+				],
+				m: [
+					{
+						id: '456',
+						cid: '456',
+						l: '1',
+						s: 123,
+						d: 456
+					}
+				],
+				more: false
+			},
+			expectedState: {
+				conversations: {
+					currentFolder: '2',
+					conversations: {},
+					expandedStatus: {},
+					searchedInFolder: {},
+					searchRequestStatus: null
+				},
+				messages: {
+					messages: {},
+					searchRequestStatus: null
+				},
+				searches: {
+					searchResults: undefined,
+					searchResultsIds: ['456'],
+					conversations: {},
+					messages: {
+						'456': {
+							conversation: '456',
+							id: '456',
+							date: 456,
+							size: 123,
+							parent: '1',
+							tags: [],
+							isComplete: false,
+							isScheduled: false,
+							read: true,
+							isReadReceiptRequested: true,
+							sortIndex: 0
+						}
+					},
+					more: false,
+					offset: 0,
+					limit: 100,
+					sortBy: 'dateDesc',
+					query: 'aaaaaa',
+					status: 'fulfilled',
+					loadingMessage: '',
+					parent: '',
+					error: undefined
+				}
+			}
 		}
 	];
 
