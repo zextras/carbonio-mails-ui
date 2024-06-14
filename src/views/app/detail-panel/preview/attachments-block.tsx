@@ -18,9 +18,9 @@ import {
 	useTheme
 } from '@zextras/carbonio-design-system';
 import {
+	ErrorSoapBodyResponse,
 	getIntegratedFunction,
 	soapFetch,
-	SoapResponse,
 	t,
 	useIntegratedFunction
 } from '@zextras/carbonio-shell-ui';
@@ -193,14 +193,14 @@ const Attachment: FC<AttachmentType> = ({
 
 	const confirmAction = useCallback(
 		(nodes) => {
-			soapFetch<CopyToFileRequest, SoapResponse<CopyToFileResponse>>('CopyToFiles', {
+			soapFetch<CopyToFileRequest, CopyToFileResponse | ErrorSoapBodyResponse>('CopyToFiles', {
 				_jsns: 'urn:zimbraMail',
 				mid: message.id,
 				part: att.name,
 				destinationFolderId: nodes[0].id
 			})
 				.then((res) => {
-					if (!res.Body.Fault) {
+					if (!('Fault' in res)) {
 						createSnackbar({
 							key: `mail-moved-root`,
 							replace: true,

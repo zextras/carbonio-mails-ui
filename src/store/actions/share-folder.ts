@@ -5,6 +5,7 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Account, BatchRequest, soapFetch } from '@zextras/carbonio-shell-ui';
+import { BatchResponse } from '@zextras/carbonio-shell-ui/lib/types/network';
 import { trim } from 'lodash';
 
 import { Folder } from '../../carbonio-ui-commons/types/folder';
@@ -40,7 +41,7 @@ export const shareFolder = createAsyncThunk(
 
 		const response = await soapFetch<
 			BatchRequest & { FolderActionRequest?: Array<FolderActionRequest> },
-			Response
+			BatchResponse
 		>('Batch', {
 			_jsns: 'urn:zimbra',
 			FolderActionRequest: requests

@@ -22,7 +22,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 
 	const onConfirm = useCallback(() => {
 		const inTrash = isTrashed({ folder });
-		const restoreFolder = (): Promise<void> =>
+		const restoreFolder = (): void => {
 			folderAction({
 				folder,
 				l: folder.parent,
@@ -50,6 +50,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 					}
 				})
 				.catch(report);
+		};
 
 		folderAction(
 			isSharedAccountFolder(folder.id) && !inTrash

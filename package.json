@@ -89,7 +89,7 @@
 		"@mui/material": "^5.15.12",
 		"@reduxjs/toolkit": "^1.9.3",
 		"@zextras/carbonio-design-system": "^5.0.0",
-		"@zextras/carbonio-shell-ui": "^6.0.0",
+		"@zextras/carbonio-shell-ui": "7.0.1",
 		"@zextras/carbonio-ui-preview": "^1.2.3",
 		"axios": "^1.6.7",
 		"babel-jest": "^29.4.3",

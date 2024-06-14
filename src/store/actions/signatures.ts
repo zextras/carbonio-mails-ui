@@ -10,12 +10,12 @@ import { map, escape } from 'lodash';
 import { SignItemType } from '../../types';
 
 export type GetSignaturesRequest = {
-	_jsns: typeof JSNS.ACCOUNT;
+	_jsns: typeof JSNS.account;
 };
 
 export type GetSignaturesResponse = {
 	signature: Array<SignItemType>;
-	_jsns: typeof JSNS.ACCOUNT;
+	_jsns: typeof JSNS.account;
 };
 
 export const GetAllSignatures = (): Promise<GetSignaturesResponse> =>

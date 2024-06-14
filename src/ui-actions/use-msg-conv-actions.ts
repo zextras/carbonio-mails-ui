@@ -30,7 +30,8 @@ import {
 	getSendDraftAction,
 	getShowOriginalAction
 } from './get-msg-conv-actions-functions';
-import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
+import { isTrash } from '../carbonio-ui-commons/helpers/folders';
+import { getFolderIdParts, getParentFolderId, isDraft } from '../helpers/folders';
 import { isConversation, isSingleMessageConversation } from '../helpers/messages';
 import { useAppDispatch } from '../hooks/redux';
 import { addEditor } from '../store/zustand/editor';
@@ -75,10 +76,10 @@ export function useMsgConvActions({
 	}
 
 	const firstConversationMessage = isConv
-		? filter(
-				item?.messages,
-				(msg) => ![FOLDERS.TRASH, FOLDERS.DRAFTS].includes(getFolderIdParts(msg.parent).id ?? '')
-			)?.[0] ?? {}
+		? filter(item?.messages, (msg) => {
+				const folderId = getFolderIdParts(msg.parent).id ?? '';
+				return !isTrash(folderId) && !isDraft(folderId);
+			})?.[0] ?? {}
 		: item;
 	const isSingleMsgConv = isSingleMessageConversation(item);
 	const { id } = item;

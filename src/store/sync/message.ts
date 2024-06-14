@@ -10,7 +10,7 @@ import {
 	getUserSettings,
 	replaceHistory
 } from '@zextras/carbonio-shell-ui';
-import type { NotificationConfig } from '@zextras/carbonio-shell-ui/types/notification';
+import type { NotificationConfig } from '@zextras/carbonio-shell-ui';
 import {
 	forEach,
 	pick,
