@@ -268,3 +268,7 @@ export const getParentFolderId = (item: MailMessage | Conversation): string | nu
 export function isSharedAccountFolder(folderId: string): boolean {
 	return getFolderIdParts(folderId).zid !== null;
 }
+
+export function getFoldersArray(folders: Folders): Folder[] {
+	return Object.values(folders);
+}

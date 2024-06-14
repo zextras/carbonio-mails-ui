@@ -13,6 +13,7 @@ import { defaultBeforeAllTests } from '../../../carbonio-ui-commons/test/jest-se
 import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useAdvancedAccountStore } from '../../../store/zustand/advanced-account/store';
+import { generateStore } from '../../../tests/generators/store';
 import { RecoverMessages } from '../recover-messages';
 
 function getParams(url: string): Record<string, string> {
@@ -30,98 +31,159 @@ describe('Recover messages', () => {
 	});
 
 	it('should render view if backupSelfUndelete is allowed', () => {
+		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
-		setupTest(<RecoverMessages />, {});
-		expect(screen.getByTestId('backup-self-undelete-form')).toBeInTheDocument();
+		setupTest(<RecoverMessages />, { store });
+		expect(screen.getByTestId('recover-messages-form')).toBeInTheDocument();
 	});
 
 	it('should not render view if backupSelfUndelete is denied', () => {
+		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(false);
+		setupTest(<RecoverMessages />, { store });
+		expect(screen.queryByTestId('recover-messages-form')).not.toBeInTheDocument();
+	});
+
+	it('start recovery button should be disabled if both searchString and dates are not entered', async () => {
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		setupTest(<RecoverMessages />, {});
-		expect(screen.queryByTestId('backup-self-undelete-form')).not.toBeInTheDocument();
-	});
 
-	it('should call undelete API when recovery button is pressed', async () => {
-		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
-		jest.useFakeTimers().setSystemTime(new Date('2024-01-01T10:30:35.550Z'));
-		const { user } = setupTest(<RecoverMessages />, {});
-		const apiInterceptor = createAPIInterceptor(
-			'post',
-			'/zx/backup/v1/undelete',
-			HttpResponse.json(null, { status: 202 })
-		);
-
-		await act(async () => {
-			await user.click(screen.getByText(/label\.recovery_period/i));
-			await user.click(screen.getByText(/label\.last_7_days/i));
-			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
-			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+		const recoveryButton = screen.getByRole('button', {
+			name: /label\.search_emails/i
 		});
-
-		const { start, end } = getParams((await apiInterceptor).url);
-		expect(start).toBeDefined();
-		expect(end).toBeDefined();
-		expect(start).toBe('2023-12-25T10:30:35.550Z');
-		expect(end).toBe('2024-01-01T10:30:35.550Z');
+		expect(recoveryButton).toBeDisabled();
 	});
 
-	it('should not close the recover messages modal when the API call fails', async () => {
+	it('should close the recover messages modal when the API call fails', async () => {
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		const { user } = setupTest(<RecoverMessages />, {});
 		createAPIInterceptor(
-			'post',
-			'/zx/backup/v1/undelete',
-			HttpResponse.json(null, { status: 500 })
+			'get',
+			'/zx/backup/v1/searchDeleted',
+			HttpResponse.json({}, { status: 500, type: 'error' })
 		);
 
+		const dateTimePicker = screen.getByRole('textbox', { name: /label.select_recovery_date/ });
+
 		await act(async () => {
-			await user.click(screen.getByText(/label\.recovery_period/i));
-			await user.click(screen.getByText(/label\.last_7_days/i));
-			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
-			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+			await user.type(dateTimePicker, '2023-01-05T00:00:00.000Z');
+			await user.tab();
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.search_emails/i
+				})
+			);
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.start_search/i
+				})
+			);
 		});
 
-		expect(screen.getByText('label.confirm')).toBeInTheDocument();
+		expect(
+			screen.queryByRole('button', {
+				name: /label\.start_search/i
+			})
+		).not.toBeInTheDocument();
 	});
 
-	it('should close the recover messages modal when the API call succedes', async () => {
+	it('should close the modal when the api call succeeds', async () => {
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
 		const { user } = setupTest(<RecoverMessages />, {});
 		createAPIInterceptor(
-			'post',
-			'/zx/backup/v1/undelete',
-			HttpResponse.json(null, { status: 202 })
+			'get',
+			'/zx/backup/v1/searchDeleted',
+			HttpResponse.json({}, { status: 202 })
 		);
 
+		const dateTimePicker = screen.getByRole('textbox', { name: /label.select_recovery_date/ });
+
 		await act(async () => {
-			await user.click(screen.getByText(/label\.recovery_period/i));
-			await user.click(screen.getByText(/label\.last_7_days/i));
-			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
-			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+			await user.type(dateTimePicker, '2023-01-05T00:00:00.000Z');
+			await user.tab();
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.search_emails/i
+				})
+			);
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.start_search/i
+				})
+			);
 		});
 
-		expect(screen.queryByText('label.confirm')).not.toBeInTheDocument();
+		expect(
+			screen.queryByRole('button', {
+				name: /label\.start_search/i
+			})
+		).not.toBeInTheDocument();
 	});
 
-	it('should correcly evaluate 90 days difference between start and end dates', async () => {
-		jest.useFakeTimers().setSystemTime(new Date('2024-01-01T10:30:35.550Z'));
-		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
-		const { user } = setupTest(<RecoverMessages />, {});
+	it('should always correctly evaluate start and end dates, in function of RECOVER_MESSAGES_INTERVAL', async () => {
 		const apiInterceptor = createAPIInterceptor(
-			'post',
-			'/zx/backup/v1/undelete',
-			HttpResponse.json(null, { status: 202 })
+			'get',
+			'/zx/backup/v1/searchDeleted',
+			HttpResponse.json({}, { status: 202 })
 		);
 
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
+		const { user } = setupTest(<RecoverMessages />, {});
+
+		const dateTimePicker = screen.getByRole('textbox', { name: /label.select_recovery_date/ });
+
+		const selectedDate = '2024-08-14T00:00:00.000Z';
 		await act(async () => {
-			await user.click(screen.getByText(/label\.recovery_period/i));
-			await user.click(screen.getByText(/label\.last_90_days/i));
-			await user.click(screen.getByRole('button', { name: 'label.start_recovery' }));
-			await user.click(screen.getByRole('button', { name: 'label.confirm' }));
+			await user.type(dateTimePicker, selectedDate);
+			await user.tab();
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.search_emails/i
+				})
+			);
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.start_search/i
+				})
+			);
 		});
 
-		const { start, end } = getParams((await apiInterceptor).url);
-		expect(start).toBe('2023-10-03T10:30:35.550Z');
-		expect(end).toBe('2024-01-01T10:30:35.550Z');
+		const { after, before } = getParams(apiInterceptor.getLastRequest().url);
+
+		expect(after).toBe('2024-08-11T00:00:00.000Z');
+		expect(before).toBe('2024-08-17T23:59:59.999Z');
+	});
+
+	it('should call searchDeleted API with the correct searchString when one is entered', async () => {
+		const apiInterceptor = createAPIInterceptor(
+			'get',
+			'/zx/backup/v1/searchDeleted',
+			HttpResponse.json({}, { status: 202 })
+		);
+
+		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
+		const { user } = setupTest(<RecoverMessages />, {});
+
+		const textInput = screen.getByRole('textbox', { name: /settings.keyword/ });
+
+		const expectedSearchString = 'test keyword';
+		await act(async () => {
+			await user.type(textInput, expectedSearchString);
+			await user.tab();
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.search_emails/i
+				})
+			);
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.start_search/i
+				})
+			);
+		});
+
+		const { searchString } = getParams(apiInterceptor.getLastRequest().url);
+
+		expect(searchString).toBe(expectedSearchString);
 	});
 });

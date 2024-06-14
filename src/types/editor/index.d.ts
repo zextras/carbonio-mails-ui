@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { CLOSE_BOARD_REASON } from '../../constants';
+import { EDIT_VIEW_CLOSING_REASONS } from '../../constants';
 import { type AppDispatch } from '../../store/redux';
 import { SavedAttachment, UnsavedAttachment } from '../attachments';
 import type { MailMessage } from '../messages';
@@ -219,4 +219,5 @@ type EditViewContextType =
 	  }
 	| Record<string, never>;
 
-type CloseBoardReasons = (typeof CLOSE_BOARD_REASON)[keyof typeof CLOSE_BOARD_REASON];
+type EditViewClosingReasons =
+	(typeof EDIT_VIEW_CLOSING_REASONS)[keyof typeof EDIT_VIEW_CLOSING_REASONS];

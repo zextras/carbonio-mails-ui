@@ -61,7 +61,9 @@ const AppView = (): React.JSX.Element => (
 const EditView = (): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
-			<LazyEditView />
+			<ModalManager>
+				<LazyEditView />
+			</ModalManager>
 		</StoreProvider>
 	</Suspense>
 );
@@ -98,7 +100,7 @@ const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	</Suspense>
 );
 
-export const addShellComponents = async (): Promise<void> => {
+export const addComponentsToShell = async (): Promise<void> => {
 	const label = t('label.app_name', 'Mails');
 	addRoute({
 		route: MAILS_ROUTE,

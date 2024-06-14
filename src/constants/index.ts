@@ -8,10 +8,13 @@ import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
 export const MAILS_ROUTE = 'mails';
+export const BACKUP_SEARCH_ROUTE = 'backup-search';
 
 export const MAIL_APP_ID = 'carbonio-mails-ui';
 
 export const NO_ACCOUNT_NAME = 'No account';
+
+export const RECOVER_MESSAGES_INTERVAL = 3;
 
 type AttachmentTypeItemsConstantProps = {
 	id: string;
@@ -429,9 +432,10 @@ export const PROCESS_STATUS = {
 	ABORTED: 'aborted'
 } as const;
 
-export const CLOSE_BOARD_REASON = {
-	SEND: 'send',
-	SEND_LATER: 'sendLater'
+export const EDIT_VIEW_CLOSING_REASONS = {
+	EXTERNAL_CLOSE_REQUEST: 'externalRequest',
+	MESSAGE_SENT: 'send',
+	MESSAGE_SEND_SCHEDULED: 'sendLater'
 } as const;
 
 export const SORTING_OPTIONS = {
@@ -473,3 +477,9 @@ export const SEARCHED_FOLDER_STATE_STATUS = {
 } as const;
 
 export const EXTRA_WINDOW_ACTION_ID = 'extraWindowActions';
+
+export const BACKUP_SEARCH_STATUS = {
+	empty: 'empty',
+	loading: 'loading',
+	completed: 'completed'
+} as const;

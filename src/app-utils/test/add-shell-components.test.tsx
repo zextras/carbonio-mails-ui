@@ -7,12 +7,12 @@
 import { addRoute, addSearchView, addSettingsView } from '@zextras/carbonio-shell-ui';
 
 import { mockAdvancedAccountAPI } from '../../tests/utils';
-import { addShellComponents } from '../add-shell-components';
+import { addComponentsToShell } from '../add-shell-components';
 
 describe('addShellComponents', () => {
 	const label = 'label.app_name';
 	it('should call addRoute with the correct parameters', async () => {
-		await addShellComponents();
+		await addComponentsToShell();
 
 		expect(addRoute).toBeCalledWith(
 			expect.objectContaining({
@@ -27,7 +27,7 @@ describe('addShellComponents', () => {
 		);
 	});
 	it('should call addSearchView with the correct parameters', async () => {
-		await addShellComponents();
+		await addComponentsToShell();
 
 		expect(addSearchView).toBeCalledWith(
 			expect.objectContaining({
@@ -38,7 +38,7 @@ describe('addShellComponents', () => {
 		);
 	});
 	it('should call addBoardView with the correct parameters', async () => {
-		await addShellComponents();
+		await addComponentsToShell();
 
 		expect(addSearchView).toBeCalledWith(
 			expect.objectContaining({
@@ -50,7 +50,7 @@ describe('addShellComponents', () => {
 	it('should call addSettingsView with all the subsections when backupSelfUndeleteAllowed is true', async () => {
 		mockAdvancedAccountAPI({ backupSelfUndeleteAllowed: true });
 
-		await addShellComponents();
+		await addComponentsToShell();
 
 		expect(addSettingsView).toBeCalledWith(
 			expect.objectContaining({
@@ -68,7 +68,7 @@ describe('addShellComponents', () => {
 	it('should not render Recover Messages menu item when backupSelfUndeleteAllowed is false', async () => {
 		mockAdvancedAccountAPI({ backupSelfUndeleteAllowed: false });
 
-		await addShellComponents();
+		await addComponentsToShell();
 
 		expect(addSettingsView).toBeCalledWith(
 			expect.objectContaining({
