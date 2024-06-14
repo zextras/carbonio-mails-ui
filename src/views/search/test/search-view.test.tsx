@@ -1,0 +1,57 @@
+/*
+ * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+import React, { ReactElement } from 'react';
+
+import { screen } from '@testing-library/react';
+import { QueryChip, SearchViewProps } from '@zextras/carbonio-shell-ui';
+
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { generateStore } from '../../../tests/generators/store';
+import { SearchRequest, SearchResponse } from '../../../types';
+import SearchView from '../search-view';
+
+describe('SearchView', () => {
+	it.skip('should display Results for when soap API fulfilled', async () => {
+		const store = generateStore();
+		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [
+				{
+					id: '123',
+					n: 1,
+					u: 1,
+					f: 'flag',
+					tn: 'tag names',
+					d: 123,
+					m: [],
+					e: [],
+					su: 'Subject',
+					fr: 'fragment'
+				}
+			],
+			more: false
+		});
+		const queryChip: QueryChip = {
+			label: '',
+			value: 'aaa'
+		};
+		let label: string = '';
+		const resultsHeader = (props: { label: string }): ReactElement => {
+			label = props.label;
+			queryChip.value = '';
+			return <>{props.label}</>;
+		};
+		const searchViewProps: SearchViewProps = {
+			useQuery: () => [[queryChip], (): void => {}],
+			useDisableSearch: () => [false, (): void => {}],
+			ResultsHeader: resultsHeader
+		};
+		setupTest(<SearchView {...searchViewProps} />, {
+			store
+		});
+		expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+	});
+});
