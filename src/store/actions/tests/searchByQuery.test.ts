@@ -105,205 +105,109 @@ describe('searchByQuery', () => {
 });
 
 describe('searchByQuery check state - ', () => {
+	const emptyConversationsAndMessagesState = {
+		conversations: {
+			currentFolder: '2',
+			conversations: {},
+			expandedStatus: {},
+			searchedInFolder: {},
+			searchRequestStatus: null
+		},
+		messages: {
+			messages: {},
+			searchRequestStatus: null
+		}
+	};
+	const baseTestCase: FetchCase = {
+		description: 'Base Test Case',
+		fetchParams: {
+			query: 'aaaaaa',
+			limit: 100
+		},
+		soapResponse: {
+			c: [
+				{
+					id: '123',
+					n: 1,
+					u: 1,
+					f: 'flag',
+					tn: 'tag names',
+					d: 123,
+					m: [],
+					e: [],
+					su: 'Subject',
+					fr: 'fragment'
+				}
+			],
+			m: [
+				{
+					id: '456',
+					cid: '456',
+					l: '1',
+					s: 123,
+					d: 456
+				}
+			],
+			more: false
+		},
+		expectedState: {
+			...emptyConversationsAndMessagesState,
+			searches: {
+				searchResults: undefined,
+				searchResultsIds: ['123'],
+				conversations: {
+					123: {
+						tags: ['nil:tag names'],
+						id: '123',
+						date: 123,
+						participants: [],
+						subject: 'Subject',
+						fragment: 'fragment',
+						read: true,
+						hasAttachment: true,
+						flagged: true,
+						urgent: false,
+						messagesInConversation: 1,
+						sortIndex: 0
+					}
+				},
+				messages: {},
+				more: false,
+				offset: 0,
+				limit: 100,
+				sortBy: 'dateDesc',
+				query: 'aaaaaa',
+				status: 'fulfilled',
+				loadingMessage: '',
+				parent: '',
+				error: undefined
+			}
+		}
+	};
 	const fetchCases: FetchCase[] = [
 		{
-			description: 'if request type is missing, only conversations are set in the store',
-			fetchParams: {
-				query: 'aaaaaa',
-				limit: 100
-			},
-			soapResponse: {
-				c: [
-					{
-						id: '123',
-						n: 1,
-						u: 1,
-						f: 'flag',
-						tn: 'tag names',
-						d: 123,
-						m: [],
-						e: [],
-						su: 'Subject',
-						fr: 'fragment'
-					}
-				],
-				m: [
-					{
-						id: '456',
-						cid: '456',
-						l: '1',
-						s: 123,
-						d: 456
-					}
-				],
-				more: false
-			},
-			expectedState: {
-				conversations: {
-					currentFolder: '2',
-					conversations: {},
-					expandedStatus: {},
-					searchedInFolder: {},
-					searchRequestStatus: null
-				},
-				messages: {
-					messages: {},
-					searchRequestStatus: null
-				},
-				searches: {
-					searchResults: undefined,
-					searchResultsIds: ['123'],
-					conversations: {
-						123: {
-							tags: ['nil:tag names'],
-							id: '123',
-							date: 123,
-							participants: [],
-							subject: 'Subject',
-							fragment: 'fragment',
-							read: true,
-							hasAttachment: true,
-							flagged: true,
-							urgent: false,
-							messagesInConversation: 1,
-							sortIndex: 0
-						}
-					},
-					messages: {},
-					more: false,
-					offset: 0,
-					limit: 100,
-					sortBy: 'dateDesc',
-					query: 'aaaaaa',
-					status: 'fulfilled',
-					loadingMessage: '',
-					parent: '',
-					error: undefined
-				}
-			}
+			...baseTestCase,
+			description: 'if request type is missing, only conversations are set in the store'
 		},
 		{
+			...baseTestCase,
 			description: 'if request type is conversation, only conversations are set in the store',
 			fetchParams: {
 				query: 'aaaaaa',
 				limit: 100,
 				types: 'conversation'
-			},
-			soapResponse: {
-				c: [
-					{
-						id: '123',
-						n: 1,
-						u: 1,
-						f: 'flag',
-						tn: 'tag names',
-						d: 123,
-						m: [],
-						e: [],
-						su: 'Subject',
-						fr: 'fragment'
-					}
-				],
-				m: [
-					{
-						id: '456',
-						cid: '456',
-						l: '1',
-						s: 123,
-						d: 456
-					}
-				],
-				more: false
-			},
-			expectedState: {
-				conversations: {
-					currentFolder: '2',
-					conversations: {},
-					expandedStatus: {},
-					searchedInFolder: {},
-					searchRequestStatus: null
-				},
-				messages: {
-					messages: {},
-					searchRequestStatus: null
-				},
-				searches: {
-					searchResults: undefined,
-					searchResultsIds: ['123'],
-					conversations: {
-						123: {
-							tags: ['nil:tag names'],
-							id: '123',
-							date: 123,
-							participants: [],
-							subject: 'Subject',
-							fragment: 'fragment',
-							read: true,
-							hasAttachment: true,
-							flagged: true,
-							urgent: false,
-							messagesInConversation: 1,
-							sortIndex: 0
-						}
-					},
-					messages: {},
-					more: false,
-					offset: 0,
-					limit: 100,
-					sortBy: 'dateDesc',
-					query: 'aaaaaa',
-					status: 'fulfilled',
-					loadingMessage: '',
-					parent: '',
-					error: undefined
-				}
 			}
 		},
 		{
+			...baseTestCase,
 			description: 'if request type is message, messages are set in the searches store',
 			fetchParams: {
 				query: 'aaaaaa',
 				limit: 100,
 				types: 'message'
 			},
-			soapResponse: {
-				c: [
-					{
-						id: '123',
-						n: 1,
-						u: 1,
-						f: 'flag',
-						tn: 'tag names',
-						d: 123,
-						m: [],
-						e: [],
-						su: 'Subject',
-						fr: 'fragment'
-					}
-				],
-				m: [
-					{
-						id: '456',
-						cid: '456',
-						l: '1',
-						s: 123,
-						d: 456
-					}
-				],
-				more: false
-			},
 			expectedState: {
-				conversations: {
-					currentFolder: '2',
-					conversations: {},
-					expandedStatus: {},
-					searchedInFolder: {},
-					searchRequestStatus: null
-				},
-				messages: {
-					messages: {},
-					searchRequestStatus: null
-				},
+				...emptyConversationsAndMessagesState,
 				searches: {
 					searchResults: undefined,
 					searchResultsIds: ['456'],
