@@ -6,11 +6,33 @@
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateStore } from '../../../tests/generators/store';
-import { SearchRequest } from '../../../types';
+import { FetchConversationsParameters, SearchRequest, SearchResponse } from '../../../types';
 import { searchByQuery } from '../searchByQuery';
 
 describe('searchByQuery', () => {
-	test('should invoke fetchSearchesFulfilled on fullFilled', async () => {
+	const queryParam: FetchConversationsParameters = {
+		query: 'aaaaaa',
+		limit: 100
+	};
+	const searchResponse: SearchResponse = {
+		c: [
+			{
+				id: '123',
+				n: 1,
+				u: 1,
+				f: 'flag',
+				tn: 'tag names',
+				d: 123,
+				m: [],
+				e: [],
+				su: 'Subject',
+				fr: 'fragment'
+			}
+		],
+		more: false
+	};
+
+	test('should call the searchAPI with the correct query', async () => {
 		const store = generateStore();
 		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
@@ -26,5 +48,53 @@ describe('searchByQuery', () => {
 			});
 		const request = await interceptor;
 		expect(request.query).toBe(query);
+	});
+
+	test('should populate the store when the searchByQuery is successfull', async () => {
+		const store = generateStore();
+
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', searchResponse);
+
+		await store
+			.dispatch(
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				searchByQuery(queryParam)
+			)
+			.then(() => {
+				expect(store.getState().searches.conversations).toEqual({
+					'123': {
+						date: 123,
+						flagged: true,
+						fragment: 'fragment',
+						hasAttachment: true,
+						id: '123',
+						messagesInConversation: 1,
+						participants: [],
+						read: true,
+						sortIndex: 0,
+						subject: 'Subject',
+						tags: ['nil:tag names'],
+						urgent: false
+					}
+				});
+			});
+	});
+
+	test('should not pollute the message and conversation stores', async () => {
+		const store = generateStore();
+
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', searchResponse);
+
+		await store
+			.dispatch(
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				searchByQuery(queryParam)
+			)
+			.then(() => {
+				expect(store.getState().conversations.conversations).toEqual({});
+				expect(store.getState().messages.messages).toEqual({});
+			});
 	});
 });
