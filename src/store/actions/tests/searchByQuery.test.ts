@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { SoapFault } from '@zextras/carbonio-shell-ui';
+
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateStore } from '../../../tests/generators/store';
 import { FetchConversationsParameters, SearchRequest, SearchResponse } from '../../../types';
@@ -12,7 +14,7 @@ import { searchByQuery } from '../searchByQuery';
 type FetchCase = {
 	description: string;
 	fetchParams: FetchConversationsParameters;
-	soapResponse: SearchResponse;
+	soapResponse: SearchResponse | SoapFault;
 	// expectedState type should be MailsStateType, but some filed in the state are missing
 	expectedState: any;
 };
@@ -105,7 +107,7 @@ describe('searchByQuery', () => {
 });
 
 describe('searchByQuery check state - ', () => {
-	const emptyConversationsAndMessagesState = {
+	const initialConversationsAndMessagesState = {
 		conversations: {
 			currentFolder: '2',
 			conversations: {},
@@ -117,6 +119,20 @@ describe('searchByQuery check state - ', () => {
 			messages: {},
 			searchRequestStatus: null
 		}
+	};
+	const initialSearchesState = {
+		searchResults: undefined,
+		searchResultsIds: [],
+		conversations: {},
+		messages: {},
+		more: false,
+		offset: 0,
+		limit: 100,
+		sortBy: 'dateDesc',
+		status: 'fulfilled',
+		loadingMessage: '',
+		parent: '',
+		error: undefined
 	};
 	const baseTestCase: FetchCase = {
 		description: 'Base Test Case',
@@ -151,9 +167,9 @@ describe('searchByQuery check state - ', () => {
 			more: false
 		},
 		expectedState: {
-			...emptyConversationsAndMessagesState,
+			...initialConversationsAndMessagesState,
 			searches: {
-				searchResults: undefined,
+				...initialSearchesState,
 				searchResultsIds: ['123'],
 				conversations: {
 					123: {
@@ -171,16 +187,7 @@ describe('searchByQuery check state - ', () => {
 						sortIndex: 0
 					}
 				},
-				messages: {},
-				more: false,
-				offset: 0,
-				limit: 100,
-				sortBy: 'dateDesc',
-				query: 'aaaaaa',
-				status: 'fulfilled',
-				loadingMessage: '',
-				parent: '',
-				error: undefined
+				query: 'aaaaaa'
 			}
 		}
 	};
@@ -207,11 +214,10 @@ describe('searchByQuery check state - ', () => {
 				types: 'message'
 			},
 			expectedState: {
-				...emptyConversationsAndMessagesState,
+				...initialConversationsAndMessagesState,
 				searches: {
-					searchResults: undefined,
+					...initialSearchesState,
 					searchResultsIds: ['456'],
-					conversations: {},
 					messages: {
 						'456': {
 							conversation: '456',
@@ -227,26 +233,42 @@ describe('searchByQuery check state - ', () => {
 							sortIndex: 0
 						}
 					},
-					more: false,
-					offset: 0,
-					limit: 100,
-					sortBy: 'dateDesc',
-					query: 'aaaaaa',
-					status: 'fulfilled',
-					loadingMessage: '',
-					parent: '',
-					error: undefined
+					query: 'aaaaaa'
+				}
+			}
+		},
+		{
+			description: 'if soap response fails store is unaltered',
+			fetchParams: {
+				query: 'aaaaaa',
+				limit: 100
+			},
+			soapResponse: {
+				Detail: {
+					Error: {
+						Code: 'ERROR',
+						Detail: 'The server failed for an unknown reason'
+					}
+				},
+				Reason: {
+					Text: 'It just failed!'
+				}
+			},
+			expectedState: {
+				...initialConversationsAndMessagesState,
+				searches: {
+					...initialSearchesState,
+					query: 'aaaaaa'
 				}
 			}
 		}
 	];
 
 	test.each(fetchCases)(`$description`, async (fetchCase) => {
-		const searchResponseWithConvAndMessages: SearchResponse = fetchCase.soapResponse;
 		const store = generateStore();
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+		createSoapAPIInterceptor<SearchRequest, SearchResponse | SoapFault>(
 			'Search',
-			searchResponseWithConvAndMessages
+			fetchCase.soapResponse
 		);
 
 		await store
