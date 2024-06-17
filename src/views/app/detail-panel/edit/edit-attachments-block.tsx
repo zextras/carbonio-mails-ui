@@ -20,12 +20,17 @@ export const EditAttachmentsBlock: FC<{
 	const [expanded, setExpanded] = useState(false);
 	const { savedStandardAttachments, unsavedStandardAttachments, removeStandardAttachments } =
 		useEditorAttachments(editorId);
-	const labelAttachmentsPlural = t('label.attachment_plural', 'Attachments');
 
 	const allAttachments = useMemo<Array<UnsavedAttachment | SavedAttachment>>(
 		() => [...unsavedStandardAttachments, ...savedStandardAttachments],
 		[savedStandardAttachments, unsavedStandardAttachments]
 	);
+
+	const attachmentsLabel = t('label.attachment', {
+		count: allAttachments.length,
+		defaultValue_one: '{{count}} attachment',
+		defaultValue_other: '{{count}} attachments'
+	});
 
 	return allAttachments.length > 0 ? (
 		<StyledComp.RowContainer background="gray6">
@@ -48,11 +53,8 @@ export const EditAttachmentsBlock: FC<{
 					</Container>
 					<Row mainAlignment="flex-start" padding={{ vertical: 'extrasmall' }}>
 						<Padding right="small">
-							{allAttachments.length === 1 && (
-								<Text color="gray1">{`1 ${t('label.attachment', 'Attachment')}`}</Text>
-							)}
-							{allAttachments.length === 2 && (
-								<Text color="gray1">{`${allAttachments.length} ${labelAttachmentsPlural}`}</Text>
+							{allAttachments.length > 0 && allAttachments.length <= 2 && (
+								<Text color="gray1">{attachmentsLabel}</Text>
 							)}
 							{allAttachments.length > 2 &&
 								(expanded ? (
@@ -62,9 +64,7 @@ export const EditAttachmentsBlock: FC<{
 										data-testid="attachment-list-collapse-link"
 									>
 										<Padding right="small">
-											<Text color="primary">
-												{`${allAttachments.length} ${labelAttachmentsPlural}`}
-											</Text>
+											<Text color="primary">{attachmentsLabel}</Text>
 										</Padding>
 										<Icon icon="ArrowIosUpward" color="primary" />
 									</Row>
@@ -76,9 +76,10 @@ export const EditAttachmentsBlock: FC<{
 									>
 										<Padding right="small">
 											<Text color="primary">
-												{`${t('label.show_all', 'Show all')} ${
-													allAttachments.length
-												} ${labelAttachmentsPlural}`}
+												{t('label.show_all_attachments', {
+													count: allAttachments.length,
+													defaultValue_other: 'Show all {{count}} attachments'
+												})}
 											</Text>
 										</Padding>
 										<Icon icon="ArrowIosDownward" color="primary" />
@@ -88,8 +89,8 @@ export const EditAttachmentsBlock: FC<{
 						<Link size="medium" onClick={removeStandardAttachments}>
 							{t('label.remove', {
 								count: allAttachments.length,
-								defaultValue: 'Remove',
-								defaultValuePlural: 'Remove all {{count}}'
+								defaultValue_one: 'Remove',
+								defaultValue_other: 'Remove all {{count}}'
 							})}
 						</Link>
 					</Row>

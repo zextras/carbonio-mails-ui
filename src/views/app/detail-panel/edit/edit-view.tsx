@@ -172,8 +172,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				type: 'info',
 				label: t('messages.snackbar.sending_mail_in_count', {
 					count: countdown,
-					defaultValue: 'Sending your message in {{count}} second',
-					defaultValue_plural: 'Sending your message in {{count}} seconds'
+					defaultValue_one: 'Sending your message in {{count}} second',
+					defaultValue_other: 'Sending your message in {{count}} seconds'
 				}),
 				autoHideTimeout: (countdown ?? 0) * 1000,
 				hideButton: !cancel,
