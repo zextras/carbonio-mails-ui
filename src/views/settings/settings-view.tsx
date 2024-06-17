@@ -7,6 +7,7 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, FormSection } from '@zextras/carbonio-design-system';
 import {
+	AccountSettingsAttrs,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeader,
@@ -48,8 +49,12 @@ const SettingsView: FC = () => {
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	const [currentPrefs, setCurrentPrefs] = useState<AccountSettingsPrefs>({ ...prefs, ...attrs });
+	const [currentPrefs, setCurrentPrefs] = useState<AccountSettingsPrefs>({ ...prefs });
 	const [updatedPrefs, setUpdatedPrefs] = useState({});
+
+	const [currentAttrs, setCurrentAttrs] = useState<AccountSettingsAttrs>({ ...attrs });
+	const [updatedAttrs, setUpdatedAttrs] = useState<AccountSettingsAttrs>({ ...attrs });
+	const originalAttrs = useMemo(() => cloneDeep(attrs), [attrs]);
 
 	const originalProps = useMemo(
 		() =>
@@ -76,7 +81,7 @@ const SettingsView: FC = () => {
 
 	const { createSnackbar } = useUiUtilities();
 
-	const oldSettings = useMemo(() => {
+	const originalPrefs = useMemo(() => {
 		const s = cloneDeep(prefs);
 		if (s?.zimbraPrefNewMailNotificationAddress === undefined) {
 			s.zimbraPrefNewMailNotificationAddress = '';
@@ -95,17 +100,27 @@ const SettingsView: FC = () => {
 		// @ts-ignore
 		setCurrentPrefs({ ...prefs });
 		setUpdatedPrefs({});
+		setCurrentAttrs({ ...attrs });
+		setUpdatedAttrs({ ...attrs });
 		// we discard only latest updates keeping successfully saved changes
 		setUpdatedProps(currentProps);
 		setUpdatedIdentities(identities);
-	}, [currentProps, identities, prefs]);
+	}, [currentProps, identities, prefs, attrs]);
 
-	const updateSettings = useCallback(
+	const updatePrefs = useCallback(
 		(e) => {
 			setCurrentPrefs({ ...currentPrefs, [e.target.name]: e.target.value });
 			setUpdatedPrefs({ ...updatedPrefs, [e.target.name]: e.target.value });
 		},
 		[currentPrefs, updatedPrefs]
+	);
+
+	const updateAttrs = useCallback(
+		(e) => {
+			setCurrentAttrs({ ...currentAttrs, [e.target.name]: e.target.value });
+			setUpdatedAttrs({ ...updatedAttrs, [e.target.name]: e.target.value });
+		},
+		[currentAttrs, updatedAttrs]
 	);
 
 	const updateProps = useCallback(
@@ -128,9 +143,14 @@ const SettingsView: FC = () => {
 		[updatedIdentities]
 	);
 
-	const settingsToUpdate = useMemo(
-		() => differenceObject(updatedPrefs, oldSettings),
-		[updatedPrefs, oldSettings]
+	const prefsToUpdate = useMemo(
+		() => differenceObject(updatedPrefs, originalPrefs),
+		[updatedPrefs, originalPrefs]
+	);
+
+	const attrsToUpdate = useMemo(
+		() => differenceObject(updatedAttrs, originalAttrs),
+		[updatedAttrs, originalAttrs]
 	);
 
 	const propsToUpdate = useMemo(
@@ -144,11 +164,12 @@ const SettingsView: FC = () => {
 
 	const isDisabled = useMemo(
 		() =>
-			Object.keys(settingsToUpdate).length === 0 &&
+			Object.keys(prefsToUpdate).length === 0 &&
+			Object.keys(attrsToUpdate).length === 0 &&
 			disabled &&
 			Object.keys(propsToUpdate).length === 0 &&
 			Object.keys(identitiesToUpdate).length === 0,
-		[settingsToUpdate, disabled, propsToUpdate, identitiesToUpdate]
+		[prefsToUpdate, disabled, propsToUpdate, identitiesToUpdate, attrsToUpdate]
 	);
 	const setNewOrForwardSignatureId = useCallback(
 		(itemsAdd, resp, oldSignatureId, isFowardSignature): void => {
@@ -219,30 +240,30 @@ const SettingsView: FC = () => {
 				)
 			);
 
-			const isReplySignaturePrefisNew = settingsToUpdate.zimbraPrefForwardReplySignatureId;
+			const isReplySignaturePrefisNew = prefsToUpdate.zimbraPrefForwardReplySignatureId;
 			let setForwardReplySignatureId = '';
 			if (
 				isReplySignaturePrefisNew &&
 				itemsAdd.length > 0 &&
 				itemsAdd.findIndex(
-					(item: any) => item?.id === settingsToUpdate.zimbraPrefForwardReplySignatureId
+					(item: any) => item?.id === prefsToUpdate.zimbraPrefForwardReplySignatureId
 				) !== -1
 			) {
-				setForwardReplySignatureId = settingsToUpdate.zimbraPrefForwardReplySignatureId;
-				delete settingsToUpdate.zimbraPrefForwardReplySignatureId;
+				setForwardReplySignatureId = prefsToUpdate.zimbraPrefForwardReplySignatureId;
+				delete prefsToUpdate.zimbraPrefForwardReplySignatureId;
 			}
 
-			const isDefaultSignaturePref = settingsToUpdate.zimbraPrefDefaultSignatureId;
+			const isDefaultSignaturePref = prefsToUpdate.zimbraPrefDefaultSignatureId;
 			let setDefaultSignatureId = '';
 			if (
 				isDefaultSignaturePref &&
 				itemsAdd.length > 0 &&
 				itemsAdd.findIndex(
-					(item: any) => item.id === settingsToUpdate.zimbraPrefDefaultSignatureId
+					(item: any) => item.id === prefsToUpdate.zimbraPrefDefaultSignatureId
 				) !== -1
 			) {
-				setDefaultSignatureId = settingsToUpdate.zimbraPrefDefaultSignatureId;
-				delete settingsToUpdate.zimbraPrefDefaultSignatureId;
+				setDefaultSignatureId = prefsToUpdate.zimbraPrefDefaultSignatureId;
+				delete prefsToUpdate.zimbraPrefDefaultSignatureId;
 			}
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
@@ -278,8 +299,11 @@ const SettingsView: FC = () => {
 			});
 		}
 
-		if (Object.keys(settingsToUpdate).length > 0) {
-			changes = { ...changes, prefs: settingsToUpdate };
+		if (Object.keys(prefsToUpdate).length > 0) {
+			changes = { ...changes, prefs: prefsToUpdate };
+		}
+		if (Object.keys(attrsToUpdate).length > 0) {
+			changes = { ...changes, attrs: attrsToUpdate };
 		}
 		if (Object.keys(propsToUpdate).length > 0) {
 			changes = { ...changes, props: propsToUpdate };
@@ -322,7 +346,8 @@ const SettingsView: FC = () => {
 	}, [
 		signatures,
 		originalSignatures,
-		settingsToUpdate,
+		attrsToUpdate,
+		prefsToUpdate,
 		propsToUpdate,
 		identitiesToUpdate,
 		dispatch,
@@ -349,13 +374,13 @@ const SettingsView: FC = () => {
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						settingsObj={currentPrefs}
-						updateSettings={updateSettings}
+						updateSettings={updatePrefs}
 						updatedProps={updatedProps}
 						updateProps={updateProps}
 					/>
 					<ReceivingMessagesSettings
 						settingsObj={currentPrefs}
-						updateSettings={updateSettings}
+						updateSettings={updatePrefs}
 						updatedProps={updatedProps}
 						updateProps={updateProps}
 					/>
@@ -366,7 +391,7 @@ const SettingsView: FC = () => {
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						setOriginalSignatures={setOriginalSignatures}
-						updateSettings={updateSettings}
+						updateSettings={updatePrefs}
 						updatedIdentities={updatedIdentities}
 						updateIdentities={updateIdentities}
 						setDisabled={setDisabled}
@@ -375,19 +400,11 @@ const SettingsView: FC = () => {
 					/>
 					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 					{/* @ts-ignore */}
-					<ComposeMessage settingsObj={currentPrefs} updateSettings={updateSettings} />
+					<ComposeMessage settingsObj={currentPrefs} updateSettings={updatePrefs} />
 					<FilterModule />
-					<TrusteeAddresses settingsObj={currentPrefs} updateSettings={updateSettings} />
-					<SendersList
-						settingsObj={currentPrefs}
-						updateSettings={updateSettings}
-						listType="Allowed"
-					/>
-					<SendersList
-						settingsObj={currentPrefs}
-						updateSettings={updateSettings}
-						listType="Blocked"
-					/>
+					<TrusteeAddresses settingsObj={currentPrefs} updateSettings={updatePrefs} />
+					<SendersList settingsObj={currentAttrs} updateSettings={updateAttrs} listType="Allowed" />
+					<SendersList settingsObj={currentAttrs} updateSettings={updateAttrs} listType="Blocked" />
 				</FormSection>
 			</Container>
 		</>
