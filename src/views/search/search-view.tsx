@@ -191,7 +191,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				updateQuery(modifiedQuery);
 			}
 		}
-	}, [searchResults, queryArray, updateQuery, findIcon, isInvalidQuery, query, queryToString]);
+	}, [findIcon, isInvalidQuery, query, queryArray, updateQuery]);
 
 	useEffect(() => {
 		if (searchResults.status === 'pending') {
