@@ -5,7 +5,7 @@
  */
 import React, { ReactElement } from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { QueryChip, SearchViewProps } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
@@ -18,7 +18,7 @@ import SearchView from '../search-view';
 describe('SearchView', () => {
 	it('should display Results for when soap API fulfilled', async () => {
 		const store = generateStore();
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			c: [
 				{
 					id: '123',
@@ -36,8 +36,9 @@ describe('SearchView', () => {
 			more: false
 		});
 		const queryChip: QueryChip = {
-			label: '',
-			value: 'aaa'
+			hasAvatar: false,
+			id: '0',
+			label: 'ciao'
 		};
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
@@ -45,9 +46,12 @@ describe('SearchView', () => {
 			useDisableSearch: () => [false, noop],
 			ResultsHeader: resultsHeader
 		};
+
 		setupTest(<SearchView {...searchViewProps} />, {
 			store
 		});
-		expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+		await interceptor;
+
+		expect(screen.getByText('label.results_for')).toBeInTheDocument();
 	});
 });

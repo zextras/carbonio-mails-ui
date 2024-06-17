@@ -103,7 +103,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 			isSharedFolderIncluded && searchInFolders?.length > 0
 				? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
 				: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
-		[isSharedFolderIncluded, searchInFolders.length, query, foldersToSearchInQuery]
+		[foldersToSearchInQuery, isSharedFolderIncluded, query, searchInFolders?.length]
 	);
 
 	const searchQuery = useCallback(
@@ -121,7 +121,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 			);
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			if (search.rejected.match(resultAction)) {
+			if (searchByQuery.rejected.match(resultAction)) {
 				if (
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
@@ -201,11 +201,10 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	}, [searchResults.status]);
 
 	useEffect(() => {
-		if (query && query.length > 0 && !isInvalidQuery) {
+		if (query?.length > 0 && !isInvalidQuery) {
 			setFilterCount(query.length);
-			searchQuery(queryToString, true);
 		}
-		if (query && query.length === 0) {
+		if (query?.length === 0) {
 			setFilterCount(0);
 			setIsInvalidQuery(false);
 			dispatch(resetSearchResults());
@@ -214,15 +213,11 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [
-		query,
-		queryArray,
-		isInvalidQuery,
-		searchQuery,
-		searchResults.query,
-		queryToString,
-		dispatch
-	]);
+	}, [dispatch, isInvalidQuery, query.length]);
+
+	useEffect(() => {
+		searchQuery(queryToString, true);
+	}, [queryToString, searchQuery]);
 
 	const { path } = useRouteMatch();
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
