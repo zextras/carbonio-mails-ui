@@ -40,7 +40,7 @@ import type { AccountIdentity, PropsType, SignItemType } from '../../types';
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
 const SettingsView: FC = () => {
-	const { prefs, props } = useUserSettings();
+	const { attrs, prefs, props } = useUserSettings();
 	const account = useUserAccount();
 	const { identity } = cloneDeep(account.identities);
 	const defaultAccount = remove(identity, (acc: AccountIdentity) => acc.name === 'DEFAULT');
@@ -48,7 +48,7 @@ const SettingsView: FC = () => {
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	const [settingsObj, setSettingsObj] = useState<AccountSettingsPrefs>({ ...prefs });
+	const [settingsObj, setSettingsObj] = useState<AccountSettingsPrefs>({ ...prefs, ...attrs });
 	const [updatedSettings, setUpdatedSettings] = useState({});
 	const originalProps = useMemo(
 		() =>
