@@ -48,8 +48,9 @@ const SettingsView: FC = () => {
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
-	const [settingsObj, setSettingsObj] = useState<AccountSettingsPrefs>({ ...prefs, ...attrs });
-	const [updatedSettings, setUpdatedSettings] = useState({});
+	const [currentPrefs, setCurrentPrefs] = useState<AccountSettingsPrefs>({ ...prefs, ...attrs });
+	const [updatedPrefs, setUpdatedPrefs] = useState({});
+
 	const originalProps = useMemo(
 		() =>
 			reduce(
@@ -92,8 +93,8 @@ const SettingsView: FC = () => {
 	const onClose = useCallback(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		setSettingsObj({ ...prefs });
-		setUpdatedSettings({});
+		setCurrentPrefs({ ...prefs });
+		setUpdatedPrefs({});
 		// we discard only latest updates keeping successfully saved changes
 		setUpdatedProps(currentProps);
 		setUpdatedIdentities(identities);
@@ -101,10 +102,10 @@ const SettingsView: FC = () => {
 
 	const updateSettings = useCallback(
 		(e) => {
-			setSettingsObj({ ...settingsObj, [e.target.name]: e.target.value });
-			setUpdatedSettings({ ...updatedSettings, [e.target.name]: e.target.value });
+			setCurrentPrefs({ ...currentPrefs, [e.target.name]: e.target.value });
+			setUpdatedPrefs({ ...updatedPrefs, [e.target.name]: e.target.value });
 		},
-		[settingsObj, updatedSettings]
+		[currentPrefs, updatedPrefs]
 	);
 
 	const updateProps = useCallback(
@@ -128,8 +129,8 @@ const SettingsView: FC = () => {
 	);
 
 	const settingsToUpdate = useMemo(
-		() => differenceObject(updatedSettings, oldSettings),
-		[updatedSettings, oldSettings]
+		() => differenceObject(updatedPrefs, oldSettings),
+		[updatedPrefs, oldSettings]
 	);
 
 	const propsToUpdate = useMemo(
@@ -169,7 +170,7 @@ const SettingsView: FC = () => {
 				editSettings({
 					prefs: { [signatureKey]: realSignatureId }
 				}).then(() => {
-					setUpdatedSettings({});
+					setUpdatedPrefs({});
 				});
 			}
 		},
@@ -347,20 +348,20 @@ const SettingsView: FC = () => {
 					<DisplayMessagesSettings
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						settingsObj={settingsObj}
+						settingsObj={currentPrefs}
 						updateSettings={updateSettings}
 						updatedProps={updatedProps}
 						updateProps={updateProps}
 					/>
 					<ReceivingMessagesSettings
-						settingsObj={settingsObj}
+						settingsObj={currentPrefs}
 						updateSettings={updateSettings}
 						updatedProps={updatedProps}
 						updateProps={updateProps}
 					/>
 					<RecoverMessages />
 					<SignatureSettings
-						settingsObj={settingsObj}
+						settingsObj={currentPrefs}
 						setSignatures={setSignatures}
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
@@ -374,16 +375,16 @@ const SettingsView: FC = () => {
 					/>
 					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 					{/* @ts-ignore */}
-					<ComposeMessage settingsObj={settingsObj} updateSettings={updateSettings} />
+					<ComposeMessage settingsObj={currentPrefs} updateSettings={updateSettings} />
 					<FilterModule />
-					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
+					<TrusteeAddresses settingsObj={currentPrefs} updateSettings={updateSettings} />
 					<SendersList
-						settingsObj={settingsObj}
+						settingsObj={currentPrefs}
 						updateSettings={updateSettings}
 						listType="Allowed"
 					/>
 					<SendersList
-						settingsObj={settingsObj}
+						settingsObj={currentPrefs}
 						updateSettings={updateSettings}
 						listType="Blocked"
 					/>
