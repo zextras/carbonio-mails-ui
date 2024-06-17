@@ -7,6 +7,7 @@ import React, { ReactElement } from 'react';
 
 import { screen } from '@testing-library/react';
 import { QueryChip, SearchViewProps } from '@zextras/carbonio-shell-ui';
+import { noop } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
@@ -15,9 +16,9 @@ import { SearchRequest, SearchResponse } from '../../../types';
 import SearchView from '../search-view';
 
 describe('SearchView', () => {
-	it.skip('should display Results for when soap API fulfilled', async () => {
+	it('should display Results for when soap API fulfilled', async () => {
 		const store = generateStore();
-		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			c: [
 				{
 					id: '123',
@@ -38,15 +39,10 @@ describe('SearchView', () => {
 			label: '',
 			value: 'aaa'
 		};
-		let label: string = '';
-		const resultsHeader = (props: { label: string }): ReactElement => {
-			label = props.label;
-			queryChip.value = '';
-			return <>{props.label}</>;
-		};
+		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[queryChip], (): void => {}],
-			useDisableSearch: () => [false, (): void => {}],
+			useQuery: () => [[queryChip], noop],
+			useDisableSearch: () => [false, noop],
 			ResultsHeader: resultsHeader
 		};
 		setupTest(<SearchView {...searchViewProps} />, {
