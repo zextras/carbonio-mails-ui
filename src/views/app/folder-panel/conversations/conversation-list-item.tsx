@@ -50,7 +50,7 @@ import {
 	previewConversationOnSeparatedWindowAction,
 	setConversationsRead
 } from '../../../../ui-actions/conversation-actions';
-import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
+import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { RowInfo } from '../parts/row-info';
@@ -79,7 +79,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		const accounts = useUserAccounts();
 		const messages = useAppSelector(selectMessages);
 		const isConversation = 'messages' in (item || {});
-		const { createWindow } = useExtraWindowsManager();
+		const { createWindow } = useGlobalExtraWindowManager();
 
 		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
 

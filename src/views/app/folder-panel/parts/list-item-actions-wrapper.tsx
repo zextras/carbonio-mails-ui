@@ -5,9 +5,10 @@
  */
 import React, { FC, ReactElement, SyntheticEvent, useCallback } from 'react';
 
-import { Container, Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
-import styled, { DefaultTheme } from 'styled-components';
+import { Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
 
+import { HoverBarContainer } from './hover-bar-container';
+import { HoverContainer } from './hover-container';
 import { MessageActionsDescriptors } from '../../../../constants';
 import { isConversation } from '../../../../helpers/messages';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
@@ -21,42 +22,6 @@ import type {
 	TagActionItemType
 } from '../../../../types';
 import { useMsgConvActions } from '../../../../ui-actions/use-msg-conv-actions';
-
-const HoverBarContainer = styled(Container)<{ background: keyof DefaultTheme['palette'] }>`
-	top: 0;
-	right: 0;
-	display: none;
-	position: absolute;
-	background: linear-gradient(
-		to right,
-		transparent,
-		${({ background, theme }): string => theme.palette[background].hover}
-	);
-	width: calc(100% - 4rem);
-	height: 45%;
-
-	& > * {
-		margin-top: ${({ theme }): string => theme.sizes.padding.small};
-		margin-right: ${({ theme }): string => theme.sizes.padding.small};
-	}
-`;
-
-const HoverContainer = styled(Container).attrs(() => ({
-	background: 'transparent'
-}))<{ $hoverBackground: keyof DefaultTheme['palette'] }>`
-	width: 100%;
-	position: relative;
-	cursor: pointer;
-	text-decoration: none;
-
-	&:hover {
-		background: ${({ $hoverBackground, theme }): string => theme.palette[$hoverBackground].hover};
-
-		& ${HoverBarContainer} {
-			display: flex;
-		}
-	}
-`;
 
 const HoverActionComponent = ({
 	action

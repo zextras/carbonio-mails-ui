@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useImperativeHandle, useMemo, useState } from 'react';
 
 import {
 	Button,
@@ -22,6 +22,7 @@ import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
+import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
@@ -32,7 +33,12 @@ import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
-import { CLOSE_BOARD_REASON, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../../../constants';
+import {
+	EDIT_VIEW_CLOSING_REASONS,
+	EditViewActions,
+	MAILS_ROUTE,
+	TIMEOUTS
+} from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
 import { getAvailableAddresses, getIdentitiesDescriptors } from '../../../../helpers/identities';
 import {
@@ -42,17 +48,19 @@ import {
 	useEditorSend,
 	useEditorAttachments,
 	deleteEditor,
+	useEditorDid,
 	useEditorsStore
 } from '../../../../store/zustand/editor';
-import { BoardContext, CloseBoardReasons } from '../../../../types';
+import { BoardContext, EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 
 export type EditViewProp = {
 	editorId: string;
-	closeController?: ({ reason }: { reason?: CloseBoardReasons }) => void;
-	hideController?: () => void;
-	showController?: () => void;
-	onMessageSent?: () => void;
+	closeController?: () => void;
+};
+
+export type EditViewHandle = {
+	closeEditView: () => void;
 };
 
 type FileSelectProps = {
@@ -104,21 +112,29 @@ const SendToYourselfWarningBanner = ({
 	) : null;
 };
 
-export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessageSent }) => {
+export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function EditViewFn(
+	{ editorId, closeController },
+	ref
+) {
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
+	const { did: draftId } = useEditorDid(editorId);
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
 	const { addStandardAttachments, addInlineAttachments } = useEditorAttachments(editorId);
 
+	const keepOrDiscardDraft = useKeepOrDiscardDraft();
+
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(
-		({ reason }: { reason?: CloseBoardReasons }) => {
-			closeController?.({ reason });
+		(reason?: EditViewClosingReasons) => {
+			if (reason !== EDIT_VIEW_CLOSING_REASONS.EXTERNAL_CLOSE_REQUEST) {
+				closeController && closeController();
+			}
 		},
 		[closeController]
 	);
@@ -126,6 +142,27 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 	const onSaveClick = useCallback<ButtonProps['onClick']>((): void => {
 		saveDraft();
 	}, [saveDraft]);
+
+	useImperativeHandle(
+		ref,
+		() => ({
+			closeEditView: (): void => {
+				if (!draftId) {
+					return;
+				}
+
+				keepOrDiscardDraft({
+					onConfirm: (): void => {
+						deleteEditor({ id: editorId });
+						close(EDIT_VIEW_CLOSING_REASONS.EXTERNAL_CLOSE_REQUEST);
+					},
+					draftId,
+					editorId
+				});
+			}
+		}),
+		[close, draftId, editorId, keepOrDiscardDraft]
+	);
 
 	const onSendCountdownTick = useCallback(
 		(countdown: number, cancel: () => void): void => {
@@ -179,9 +216,8 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
-		onMessageSent?.();
 		deleteEditor({ id: editorId });
-	}, [createSnackbar, editorId, onMessageSent]);
+	}, [createSnackbar, editorId]);
 
 	const createModal = useModal();
 
@@ -256,7 +292,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 
 	const onSendClick = useCallback((): void => {
 		const onConfirmCallback = async (): Promise<void> => {
-			close({ reason: CLOSE_BOARD_REASON.SEND });
+			close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SENT);
 			if (draftSmartLinks.length > 0) {
 				try {
 					await createSmartLinksAction();
@@ -289,6 +325,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 		onSendError,
 		createSmartLinksAction
 	]);
+
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {
 			const onConfirmCallback = async (): Promise<void> => {
@@ -302,7 +339,7 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 				}
 				setAutoSendTime(scheduledTime);
 				saveDraft();
-				close({ reason: CLOSE_BOARD_REASON.SEND_LATER });
+				close(EDIT_VIEW_CLOSING_REASONS.MESSAGE_SEND_SCHEDULED);
 			};
 			checkSubjectAndAttachment({
 				editorId,
@@ -411,4 +448,4 @@ export const EditView: FC<EditViewProp> = ({ editorId, closeController, onMessag
 			</GapContainer>
 		</Container>
 	);
-};
+});

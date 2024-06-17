@@ -40,7 +40,7 @@ import { getMsg, msgAction } from '../../../../store/actions';
 import type { MailMessage, OpenEmlPreviewType } from '../../../../types';
 import { ExtraWindowCreationParams, MessageAction } from '../../../../types';
 import { findMessageActionById } from '../../../../ui-actions/utils';
-import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
+import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 
@@ -337,7 +337,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(expanded || isAlone);
-	const { createWindow } = useExtraWindowsManager();
+	const { createWindow } = useGlobalExtraWindowManager();
 
 	const onClick = useCallback(() => {
 		setOpen((o) => !o);
