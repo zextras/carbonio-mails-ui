@@ -609,6 +609,12 @@ const AttachmentsBlock: FC<{
 		);
 	}, [actionTarget, isInsideExtraWindow, isUploadIntegrationAvailable, uploadIntegration]);
 
+	const attachmentsLabel = t('label.attachment', {
+		count: attachmentsCount,
+		defaultValue_one: '{{count}} attachment',
+		defaultValue_other: '{{count}} attachments'
+	});
+
 	return attachmentsCount > 0 ? (
 		<Container crossAlignment="flex-start">
 			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
@@ -639,13 +645,8 @@ const AttachmentsBlock: FC<{
 			</Container>
 			<Row mainAlignment="flex-start" padding={{ top: 'extrasmall', bottom: 'medium' }}>
 				<Padding right="small">
-					{attachmentsCount === 1 && (
-						<Text color="gray1">{`1 ${t('label.attachment', 'Attachment')}`}</Text>
-					)}
-					{attachmentsCount === 2 && (
-						<Text color="gray1">
-							{`${attachmentsCount} ${t('label.attachment_plural', 'Attachments')}`}
-						</Text>
+					{attachmentsCount > 0 && attachmentsCount <= 2 && (
+						<Text color="gray1">{attachmentsLabel}</Text>
 					)}
 					{attachmentsCount > 2 &&
 						(expanded ? (
@@ -655,9 +656,7 @@ const AttachmentsBlock: FC<{
 								style={{ cursor: 'pointer' }}
 							>
 								<Padding right="small">
-									<Text color="primary">
-										{`${attachmentsCount} ${t('label.attachment_plural', 'Attachments')}`}
-									</Text>
+									<Text color="primary">{attachmentsLabel}</Text>
 								</Padding>
 								<Icon icon="ArrowIosUpward" color="primary" />
 							</Row>
@@ -669,10 +668,11 @@ const AttachmentsBlock: FC<{
 							>
 								<Padding right="small">
 									<Text color="primary">
-										{`${t('label.show_all', 'Show all')} ${attachmentsCount} ${t(
-											'label.attachment_plural',
-											'attachments'
-										)}`}
+										{t('label.show_all_attachments', {
+											count: attachmentsCount,
+											defaultValue_one: 'Show attachment',
+											defaultValue_other: 'Show all {{count}} attachments'
+										})}
 									</Text>
 								</Padding>
 								<Icon icon="ArrowIosDownward" color="primary" />
@@ -683,8 +683,8 @@ const AttachmentsBlock: FC<{
 				<Link target="_blank" size="medium" href={actionsDownloadLink}>
 					{t('label.download', {
 						count: attachmentsCount,
-						defaultValue: 'Download',
-						defaultValue_plural: 'Download all'
+						defaultValue_one: 'Download',
+						defaultValue_other: 'Download all'
 					})}
 				</Link>
 				{getSaveToFilesLink()}

@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC } from 'react';
+
 import { Button, Container, Tooltip } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
 import { t } from '@zextras/carbonio-shell-ui';
+import styled from 'styled-components';
+
 import type { AdvancedFilterButtonProps } from '../../../types';
 
 const BorderContainer = styled(Container)`
@@ -42,8 +44,8 @@ export const AdvancedFilterButton: FC<AdvancedFilterButtonProps> = ({
 						? t('label.single_advanced_filter', 'Advanced Filters')
 						: t('label.advanced_filters', {
 								count: filterCount,
-								defaultValue: '{{count}} Advanced Filter',
-								defaultValue_plural: '{{count}} Advanced Filters'
+								defaultValue_one: '{{count}} Advanced Filter',
+								defaultValue_other: '{{count}} Advanced Filters'
 							})
 				}
 				disabled={searchDisabled}
