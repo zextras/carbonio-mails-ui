@@ -57,7 +57,7 @@ const SettingsView: FC = () => {
 	const [updatedPrefs, setUpdatedPrefs] = useState({});
 
 	const [currentAttrs, setCurrentAttrs] = useState<AccountSettings['attrs']>({ ...attrs });
-	const [updatedAttrs, setUpdatedAttrs] = useState<AccountSettings['attrs']>({ ...attrs });
+	const [updatedAttrs, setUpdatedAttrs] = useState({});
 	const originalAttrs = useMemo(() => cloneDeep(attrs), [attrs]);
 
 	const originalProps = useMemo(
@@ -105,7 +105,7 @@ const SettingsView: FC = () => {
 		setCurrentPrefs({ ...prefs });
 		setUpdatedPrefs({});
 		setCurrentAttrs({ ...attrs });
-		setUpdatedAttrs({ ...attrs });
+		setUpdatedAttrs({});
 		// we discard only latest updates keeping successfully saved changes
 		setUpdatedProps(currentProps);
 		setUpdatedIdentities(identities);
@@ -196,6 +196,7 @@ const SettingsView: FC = () => {
 					prefs: { [signatureKey]: realSignatureId }
 				}).then(() => {
 					setUpdatedPrefs({});
+					setUpdatedAttrs({});
 				});
 			}
 		},
@@ -326,6 +327,7 @@ const SettingsView: FC = () => {
 					});
 					// saving new values only when request is performed successfully
 					setCurrentProps((a) => ({ ...a, ...propsToUpdate }));
+					setUpdatedAttrs({});
 					/* Update the current Identities with changes if identities updated
 						and request is performed successfully
 					*/
