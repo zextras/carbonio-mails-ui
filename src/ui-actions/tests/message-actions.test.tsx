@@ -7,7 +7,7 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
-import { addBoard, getTag } from '@zextras/carbonio-shell-ui';
+import { addBoard } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
@@ -1152,8 +1152,7 @@ describe('Messages actions calls', () => {
 				}
 			});
 
-			const tagKey = faker.helpers.arrayElement(Object.keys(getTags()));
-			const tag = getTag(tagKey);
+			const tag = faker.helpers.arrayElement(Object.values(getTags()));
 
 			const component = <TagsDropdownItem tag={tag} conversation={msg} isMessage />;
 
@@ -1173,8 +1172,7 @@ describe('Messages actions calls', () => {
 
 		test('Remove a tag from a message', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
-			const tagKey = faker.helpers.arrayElement(Object.keys(getTags()));
-			const tag = getTag(tagKey);
+			const tag = faker.helpers.arrayElement(Object.values(getTags()));
 			const msg = generateMessage({ tags: [tag.id] });
 			const store = generateStore({
 				messages: {

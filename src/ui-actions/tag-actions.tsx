@@ -373,7 +373,7 @@ export const applyTag = ({
 	id: string;
 	items: ItemType[];
 	customComponent: ReactElement;
-	label?: 'string';
+	label?: string;
 	icon?: string;
 } => {
 	const tagItem = reduce(
