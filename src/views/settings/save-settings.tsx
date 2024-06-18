@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { xmlSoapFetch } from '@zextras/carbonio-shell-ui';
+import { useAccountStore } from '@zextras/carbonio-shell-ui/lib/store/account';
+import { Account, AccountState } from '@zextras/carbonio-shell-ui/lib/types/account';
 import type {
 	Mods,
 	PropsMods,
@@ -14,7 +16,7 @@ import type {
 	DeleteIdentityResponse,
 	IdentityMods
 } from '@zextras/carbonio-shell-ui/lib/types/network';
-import { map, isArray } from 'lodash';
+import { map, isArray, reduce, findIndex, find, filter } from 'lodash';
 
 import { MAIL_APP_ID } from '../../constants';
 
@@ -100,9 +102,8 @@ const save = (
 		`<BatchRequest xmlns="urn:zimbra" onerror="stop">${getRequestForProps(mods.props, appId)}${getRequestForAttrs(
 			mods.attrs
 		)}${getRequestForIdentities(mods.identity)}</BatchRequest>`
-	); /* .then(
-		(r) =>
-			useAccountStore.setState((s: AccountState) => ({
+	).then((r) => {
+		useAccountStore.setState((s: AccountState) => ({
 			settings: {
 				...s.settings,
 				prefs: reduce(
@@ -179,9 +180,9 @@ const save = (
 							: undefined
 				}
 			} as Account
-		})); 
-			r
-	) */
+		}));
+		return r;
+	});
 
 export const saveSettings = (
 	mods: MailMods
