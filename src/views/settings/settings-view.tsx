@@ -14,7 +14,6 @@ import {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeaderProps,
-	editSettings,
 	t,
 	useUserAccount,
 	useUserSettings
@@ -28,6 +27,7 @@ import FilterModule from './filters';
 import { useSignatureSettings } from './hooks/use-signature-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
 import { RecoverMessages } from './recover-messages';
+import { saveSettings } from './save-settings';
 import { SendersList } from './senders-list';
 import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
@@ -194,7 +194,7 @@ const SettingsView: FC = () => {
 				const signatureKey = isFowardSignature
 					? 'zimbraPrefForwardReplySignatureId'
 					: 'zimbraPrefDefaultSignatureId';
-				editSettings({
+				saveSettings({
 					prefs: { [signatureKey]: realSignatureId }
 				}).then(() => {
 					setUpdatedPrefs({});
@@ -316,7 +316,7 @@ const SettingsView: FC = () => {
 			changes = { ...changes, identity: { modifyList: identitiesToUpdate } };
 		}
 		if (!isEmpty(changes)) {
-			return editSettings(changes).then((res) => {
+			return saveSettings(changes).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					createSnackbar({
 						key: `new`,
