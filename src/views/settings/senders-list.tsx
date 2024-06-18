@@ -47,6 +47,14 @@ function getPrefName(listType: ListType): string {
 	return listType === 'Allowed' ? 'amavisWhitelistSender' : 'amavisBlacklistSender';
 }
 
+function getList(list: string | string[] | undefined): string[] {
+	if (!list) {
+		return [];
+	}
+
+	return Array.isArray(list) ? list : [list];
+}
+
 export const SendersList = ({
 	settingsObj,
 	updateSettings,
@@ -55,8 +63,8 @@ export const SendersList = ({
 	const [address, setAddress] = useState<string>('');
 	const [sendersList, setSendersList] = useState<string[]>(
 		listType === 'Allowed'
-			? settingsObj?.amavisWhitelistSender ?? []
-			: settingsObj?.amavisBlacklistSender ?? []
+			? getList(settingsObj?.amavisWhitelistSender)
+			: getList(settingsObj?.amavisBlacklistSender)
 	);
 	const sectionTitle = useMemo(
 		() => (listType === 'Allowed' ? allowedSendersSubSection() : blockedSendersSubSection()),
