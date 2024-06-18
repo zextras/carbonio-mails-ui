@@ -13,7 +13,7 @@ import type {
 	ModifyIdentityResponse,
 	DeleteIdentityResponse,
 	IdentityMods
-} from '@zextras/carbonio-shell-ui';
+} from '@zextras/carbonio-shell-ui/lib/types/network';
 import { map, isArray } from 'lodash';
 
 import { MAIL_APP_ID } from '../../constants';

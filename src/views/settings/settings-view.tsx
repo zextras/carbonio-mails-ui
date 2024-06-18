@@ -7,7 +7,7 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, FormSection } from '@zextras/carbonio-design-system';
 import {
-	AccountSettingsAttrs,
+	AccountSettings,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeader,
@@ -36,7 +36,7 @@ import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { SignatureRequest } from '../../store/actions/signatures';
-import type { AccountIdentity, PropsType, SignItemType } from '../../types';
+import type { AccountIdentity, PrefsType, PropsType, SignItemType } from '../../types';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -53,13 +53,11 @@ const SettingsView: FC = () => {
 	const identities = defaultAccount.concat(identity);
 	const { validate: validateSignatures } = useSignatureSettings();
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const [currentPrefs, setCurrentPrefs] = useState<AccountSettingsPrefs>({ ...prefs });
+	const [currentPrefs, setCurrentPrefs] = useState<AccountSettings['prefs']>({ ...prefs });
 	const [updatedPrefs, setUpdatedPrefs] = useState({});
 
-	const [currentAttrs, setCurrentAttrs] = useState<AccountSettingsAttrs>({ ...attrs });
-	const [updatedAttrs, setUpdatedAttrs] = useState<AccountSettingsAttrs>({ ...attrs });
+	const [currentAttrs, setCurrentAttrs] = useState<AccountSettings['attrs']>({ ...attrs });
+	const [updatedAttrs, setUpdatedAttrs] = useState<AccountSettings['attrs']>({ ...attrs });
 	const originalAttrs = useMemo(() => cloneDeep(attrs), [attrs]);
 
 	const originalProps = useMemo(
@@ -385,7 +383,7 @@ const SettingsView: FC = () => {
 						updateProps={updateProps}
 					/>
 					<ReceivingMessagesSettings
-						settingsObj={currentPrefs}
+						settingsObj={currentPrefs as PrefsType}
 						updateSettings={updatePrefs}
 						updatedProps={updatedProps}
 						updateProps={updateProps}
