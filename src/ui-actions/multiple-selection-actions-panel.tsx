@@ -14,7 +14,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { FOLDERS, t, useTags } from '@zextras/carbonio-shell-ui';
-import { every, filter, findIndex, some } from 'lodash';
+import { every, filter, findIndex, includes, some } from 'lodash';
 
 import {
 	useDeleteConversationPermanently,
@@ -93,7 +93,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	const foldersExcludedMoveToFolder = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const foldersExcludedTags = [FOLDERS.SPAM];
 	const foldersExcludedMarkSpam = [FOLDERS.DRAFTS, FOLDERS.TRASH, FOLDERS.SPAM];
-	const foldersIncludedMarkNotSpam = [FOLDERS.SPAM];
+	const foldersIncludedMarkNotSpam = [FOLDERS.SPAM] satisfies readonly string[];
 
 	const addFlagAction = (): ActionReturnType => {
 		const selectedItems = filter(items, (item: MsgOrConv) => ids.includes(item.id ?? '0'));
@@ -116,7 +116,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMarkReadUnread.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedMarkReadUnread, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? setConversationsRead({
@@ -136,7 +136,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMarkReadUnread.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedMarkReadUnread, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? setConversationsRead({
@@ -158,7 +158,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedTrash.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedTrash, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? moveConversationToTrash({ ids, dispatch, folderId, deselectAll })
@@ -173,7 +173,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				foldersIncludedDeletePermanently.includes(getFolderIdParts(folderParentId).id ?? '0')
+				includes(foldersIncludedDeletePermanently, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? deleteConversationPermanently({ ids, deselectAll })
@@ -188,7 +188,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMoveToFolder.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedMoveToFolder, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? moveConversationToFolder({
@@ -213,7 +213,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedTags.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedTags, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = applyMultiTag({
 			ids,
@@ -233,7 +233,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMarkSpam.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedMarkSpam, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? setConversationAsSpam({
@@ -252,7 +252,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				foldersIncludedMarkNotSpam.includes(getFolderIdParts(folderParentId).id ?? '0')
+				includes(foldersIncludedMarkNotSpam, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? setConversationAsSpam({

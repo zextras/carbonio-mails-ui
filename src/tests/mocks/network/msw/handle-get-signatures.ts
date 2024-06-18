@@ -12,6 +12,6 @@ import { SignItemType } from '../../../../types';
 export const handleGetSignaturesRequest = (signatures: Array<SignItemType>): void => {
 	createSoapAPIInterceptor<GetSignaturesRequest, GetSignaturesResponse>('GetSignatures', {
 		signature: signatures,
-		_jsns: JSNS.ACCOUNT
+		_jsns: JSNS.account
 	});
 };

@@ -52,7 +52,7 @@ export const SelectionInteractive: FC<{ count: number }> = ({ count }) => {
 		if (getFolderIdParts(folderId).id === FOLDERS.SENT) {
 			return conversations?.length > 0 ? sentMessages[1] : sentMessages[0];
 		}
-		if (getFolderIdParts(folderId).id === FOLDERS.DRAFT) {
+		if (getFolderIdParts(folderId).id === FOLDERS.DRAFTS) {
 			return conversations?.length > 0 ? draftMessages[1] : draftMessages[0];
 		}
 		if (getFolderIdParts(folderId).id === FOLDERS.TRASH) {

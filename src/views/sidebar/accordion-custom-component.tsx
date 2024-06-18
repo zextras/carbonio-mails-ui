@@ -34,9 +34,11 @@ import styled from 'styled-components';
 
 import { useFolderActions } from './use-folder-actions';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
+import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { LIST_LIMIT } from '../../constants';
+import { isDraft, isSpam } from '../../helpers/folders';
 import { parseMessageSortingOptions } from '../../helpers/sorting';
 import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
@@ -96,7 +98,8 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				if (
 					item.id === data.data.id || // same folder not allowed
 					item.isLink || //  shared folder not allowed
-					[FOLDERS.DRAFTS, FOLDERS.SPAM].includes(item.id) // cannot be moved inside Draft and Spam
+					isDraft(item.id) ||
+					isSpam(item.id) // cannot be moved inside Draft and Spam
 				)
 					return { success: false };
 			}
@@ -208,10 +211,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	};
 
 	const dragFolderDisable = useMemo(
-		() =>
-			[FOLDERS.INBOX, FOLDERS.TRASH, FOLDERS.SPAM, FOLDERS.SENT, FOLDERS.DRAFTS].includes(
-				item.id
-			) || item.isLink, // Default folders and shared folders not allowed to drag
+		() => isSystemFolder(item.id) || item.isLink, // Default folders and shared folders not allowed to drag
 		[item.id, item.isLink]
 	);
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
