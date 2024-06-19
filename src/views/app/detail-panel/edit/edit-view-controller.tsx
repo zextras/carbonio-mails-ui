@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Button, Container } from '@zextras/carbonio-design-system';
 import {
@@ -15,23 +15,16 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
-import { EditView } from './edit-view';
-import { keepOrDiscardDraft } from './parts/delete-draft';
-import { CLOSE_BOARD_REASON, EditViewActions } from '../../../../constants';
+import { EditView, EditViewHandle } from './edit-view';
+import { EditViewActions } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useQueryParam } from '../../../../hooks/use-query-param';
 import { getMsg } from '../../../../store/actions';
 import { selectMessage } from '../../../../store/messages-slice';
-import {
-	addEditor,
-	deleteEditor,
-	useEditorDid,
-	useEditorDraftSave,
-	useEditorSubject
-} from '../../../../store/zustand/editor';
+import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
 import { EditViewBoardContext } from '../../../../types';
-import type { CloseBoardReasons, EditViewActionsType, MailMessage } from '../../../../types';
+import type { EditViewActionsType, MailMessage } from '../../../../types';
 
 const parseAndValidateParams = (
 	action?: string,
@@ -67,6 +60,8 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 	const messagesStoreDispatch = useAppDispatch();
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
+	const editViewRef = useRef<EditViewHandle>(null);
+	const isCloseRequestFromEditor = useRef<boolean>(false);
 
 	/*
 	 * If the current component is running inside a board
@@ -100,55 +95,35 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 		addEditor({ id: editor.id, editor });
 	}
 
-	const onMessageSent = useCallback(() => {
-		const callback = board.context?.onConfirm;
-		if (!callback) {
-			return;
-		}
-		callback &&
-			callback({
-				editor: { text: [editor.text.plainText, editor.text.richText] },
-				onBoardClose: noop
-			});
-	}, [board.context?.onConfirm, editor.text.plainText, editor.text.richText]);
+	const updateBoard = useMemo(() => boardUtilities?.updateBoard, [boardUtilities?.updateBoard]);
 
-	const { saveDraft } = useEditorDraftSave(editor.id);
-	const draftId = useEditorDid(editor.id).did;
-
-	// triggers a saveDraft on prefillCompose action
-	// FIXME: this is a temporary fix until the backend exposes the required data
-	// REF IRIS-4205
-	if (action === EditViewActions.PREFILL_COMPOSE && editor.unsavedAttachments.length > 0) {
-		saveDraft();
-	}
-
-	const updateBoard = boardUtilities?.updateBoard;
-	const onClose = useCallback(
-		({ reason }: { reason?: CloseBoardReasons }) => {
-			if (
-				(reason === CLOSE_BOARD_REASON.SEND_LATER || reason === CLOSE_BOARD_REASON.SEND) &&
-				editor.id
-			) {
-				updateBoard({
-					onClose: noop
-				});
-			}
-			closeBoard(board.id);
-			updateBoard({
-				onClose: () => {
-					if (draftId && editor.id) {
-						return keepOrDiscardDraft({
-							onConfirm: () => saveDraft(),
-							editorId: editor.id,
-							draftId
-						});
-					}
-					return deleteEditor({ id: editor.id });
+	// Set the onClose callback for the board
+	useEffect(() => {
+		updateBoard({
+			onClose: () => {
+				/*
+				 * If the close is requested by the editor there is nothing to do.
+				 * Otherwise the closeEditView handle is invoked to inform the editor
+				 * about the close event
+				 */
+				if (isCloseRequestFromEditor.current) {
+					return;
 				}
-			});
-		},
-		[board.id, draftId, editor.id, saveDraft, updateBoard]
-	);
+
+				// Reset the flag
+				isCloseRequestFromEditor.current = false;
+
+				// Request the editor to close itself
+				editViewRef?.current?.closeEditView && editViewRef.current.closeEditView();
+			}
+		});
+	}, [updateBoard]);
+
+	const closeController = useCallback(() => {
+		// Flag the closing request as coming from the editor
+		isCloseRequestFromEditor.current = true;
+		closeBoard(board.id);
+	}, [board.id]);
 
 	/*
 	 * Store the editor id inside the board context (if existing)
@@ -165,34 +140,8 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 		});
 	}
 
-	/*
-	 * Add an onClose function to delete the editor from the store
-	 * when the board is closed
-	 */
-	useEffect(() => {
-		if (board) {
-			updateBoard({
-				onClose: () => {
-					if (draftId && editor.id) {
-						return keepOrDiscardDraft({
-							onConfirm: () => saveDraft(),
-							editorId: editor.id,
-							draftId
-						});
-					}
-					return deleteEditor({ id: editor.id });
-				}
-			});
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [draftId]);
-
 	return (
-		<MemoizedEditView
-			editorId={editor.id}
-			closeController={onClose}
-			onMessageSent={onMessageSent}
-		/>
+		<MemoizedEditView editorId={editor.id} ref={editViewRef} closeController={closeController} />
 	);
 };
 

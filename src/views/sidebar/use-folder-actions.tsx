@@ -6,12 +6,11 @@
 import React, { SyntheticEvent, useContext, useMemo } from 'react';
 
 import { ModalManagerContext } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { noop, startsWith } from 'lodash';
 
 import { DeleteModal } from './delete-modal';
 import { EditModal } from './edit-modal';
-import EditPermissionsModal from './edit-permissions-modal';
 import { EmptyModal } from './empty-modal';
 import { NewModal } from './new-modal';
 import { SharesInfoModal } from './shares-info-modal';
@@ -21,6 +20,7 @@ import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/ut
 import { getFolderIdParts } from '../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { folderAction } from '../../store/actions/folder-action';
 import { selectMessagesArray } from '../../store/messages-slice';
 import { StoreProvider } from '../../store/redux';
@@ -52,6 +52,8 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	const { setCount } = useAppContext<AppContext>();
 
 	const { deselectAll } = useSelection({ currentFolderId: folder.id, setCount, count: 0 });
+
+	const { createSnackbar } = useUiUtilities();
 
 	const actions = useMemo(
 		() => [
@@ -129,7 +131,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							const restoreFolder = (): Promise<void> =>
 								folderAction({ folder, l: folder.l, op: 'move' }).then((res) => {
 									if (!('Fault' in res)) {
-										getBridgedFunctions()?.createSnackbar({
+										createSnackbar({
 											key: `move-folder`,
 											replace: true,
 											type: 'success',
@@ -138,7 +140,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 											hideButton: true
 										});
 									} else {
-										getBridgedFunctions()?.createSnackbar({
+										createSnackbar({
 											key: `move`,
 											replace: true,
 											type: 'error',
@@ -155,7 +157,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							})
 								.then((res) => {
 									if (!('Fault' in res)) {
-										getBridgedFunctions()?.createSnackbar({
+										createSnackbar({
 											key: `move`,
 											replace: true,
 											type: 'success',
@@ -166,7 +168,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 											onActionClick: () => restoreFolder()
 										});
 									} else {
-										getBridgedFunctions()?.createSnackbar({
+										createSnackbar({
 											key: `move`,
 											replace: true,
 											type: 'error',
@@ -209,9 +211,12 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			{
 				id: FolderActionsType.EMPTY,
 				'data-testid': `folder-action-${FolderActionsType.EMPTY}`,
-				icon: folder.id === FOLDERS.TRASH ? 'DeletePermanentlyOutline' : 'EmptyFolderOutline',
+				icon:
+					getFolderIdParts(folder.id).id === FOLDERS.TRASH
+						? 'DeletePermanentlyOutline'
+						: 'EmptyFolderOutline',
 				label:
-					folder.id === FOLDERS.TRASH
+					getFolderIdParts(folder.id).id === FOLDERS.TRASH
 						? t('folder_panel.action.empty.trash', 'Empty Trash')
 						: t('folder_panel.action.wipe.folder_panel', 'Wipe Folder'),
 				disabled: folder.n === 0 && folder.children?.length === 0,
@@ -279,31 +284,6 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				}
 			},
 			{
-				id: FolderActionsType.SHARE,
-				'data-testid': `folder-action-${FolderActionsType.SHARE}`,
-				icon: 'ShareOutline',
-				label: t('action.share_folder', 'Share folder'),
-				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
-					if (e) {
-						e.stopPropagation();
-					}
-					const closeModal = createModal(
-						{
-							children: (
-								<StoreProvider>
-									<EditPermissionsModal onClose={(): void => closeModal()} folder={folder} />
-								</StoreProvider>
-							)
-						},
-						true
-					);
-				},
-				tooltipLabel: !allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)
-					? t('label.do_not_have_perm', `You don't have permission`)
-					: '',
-				disabled: !allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)
-			},
-			{
 				id: FolderActionsType.REMOVE_FROM_LIST,
 				'data-testid': `folder-action-${FolderActionsType.REMOVE_FROM_LIST}`,
 				icon: 'CloseOutline',
@@ -349,7 +329,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				}
 			}
 		],
-		[createModal, deselectAll, dispatch, folder, folderIsTrash, moveMessagesIds]
+		[createModal, createSnackbar, deselectAll, dispatch, folder, folderIsTrash, moveMessagesIds]
 	);
 
 	const defaultFolderActions = useMemo(
@@ -394,8 +374,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 			return defaultFolderActions.map((action) =>
 				(action.id === FolderActionsType.MOVE && trashMessages.length === 0) ||
 				action.id === FolderActionsType.DELETE ||
-				action.id === FolderActionsType.EDIT ||
-				action.id === FolderActionsType.SHARE
+				action.id === FolderActionsType.EDIT
 					? { ...action, disabled: true }
 					: action
 			);

@@ -11,10 +11,10 @@ import { map } from 'lodash';
 import styled from 'styled-components';
 
 import {
-	deleteMsg,
-	editDraft,
+	useDeleteMsg,
+	useEditDraft,
 	forwardMsg,
-	moveMsgToTrash,
+	useMoveMsgToTrash,
 	replyAllMsg,
 	replyMsg,
 	setMsgFlag,
@@ -45,6 +45,9 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 	const dispatch = useAppDispatch();
 	const ids = useMemo(() => [messageId], [messageId]);
 
+	const deleteMsg = useDeleteMsg();
+	const moveMsgToTrash = useMoveMsgToTrash();
+	const editDraft = useEditDraft();
 	const actions = useMemo(() => {
 		switch (folderId) {
 			case FOLDERS.TRASH:
@@ -92,7 +95,18 @@ const MailHoverBar: FC<MailHoverBarPropType> = ({
 							moveMsgToTrash({ ids, dispatch, folderId })
 						];
 		}
-	}, [folderId, ids, dispatch, read, flag, messageId, showReplyAll]);
+	}, [
+		folderId,
+		deleteMsg,
+		ids,
+		dispatch,
+		read,
+		flag,
+		moveMsgToTrash,
+		messageId,
+		editDraft,
+		showReplyAll
+	]);
 
 	return (
 		<ButtonBar orientation="horizontal">

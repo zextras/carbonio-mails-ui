@@ -10,23 +10,29 @@ import {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeader,
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	SettingsHeaderProps,
 	editSettings,
-	getBridgedFunctions,
 	t,
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { cloneDeep, filter, find, forEach, isEmpty, isEqual, map, reduce, remove } from 'lodash';
+import { cloneDeep, filter, find, isEmpty, isEqual, map, reduce, remove } from 'lodash';
 
 import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
 import ComposeMessage from './compose-msg-settings';
 import DisplayMessagesSettings from './displaying-messages-settings';
 import FilterModule from './filters';
+import { useSignatureSettings } from './hooks/use-signature-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
+import { RecoverMessages } from './recover-messages';
 import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
+import { TIMEOUTS } from '../../constants';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useAppDispatch } from '../../hooks/redux';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { SignatureRequest } from '../../store/actions/signatures';
 import type { AccountIdentity, PropsType, SignItemType } from '../../types';
 
@@ -38,11 +44,12 @@ import type { AccountIdentity, PropsType, SignItemType } from '../../types';
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
 const SettingsView: FC = () => {
-	const { prefs, props } = useUserSettings();
+	const { prefs, props, attrs } = useUserSettings();
 	const account = useUserAccount();
 	const { identity } = cloneDeep(account.identities);
 	const defaultAccount = remove(identity, (acc: AccountIdentity) => acc.name === 'DEFAULT');
 	const identities = defaultAccount.concat(identity);
+	const { validate: validateSignatures } = useSignatureSettings();
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
@@ -70,6 +77,8 @@ const SettingsView: FC = () => {
 	const [flag, setFlag] = useState(false);
 
 	const dispatch = useAppDispatch();
+
+	const { createSnackbar } = useUiUtilities();
 
 	const oldSettings = useMemo(() => {
 		const s = cloneDeep(prefs);
@@ -171,26 +180,23 @@ const SettingsView: FC = () => {
 		},
 		[]
 	);
-	// eslint-disable-next-line consistent-return
-	const saveChanges = useCallback(() => {
-		let changes = {};
-		if (!isEqual(signatures, originalSignatures)) {
-			let hasError = false;
-			forEach(signatures, (i: SignItemType) => {
-				if (!i.label || !i.description) hasError = true;
-			});
 
-			if (hasError) {
-				getBridgedFunctions()?.createSnackbar({
-					key: `error`,
+	const saveChanges = useCallback<SettingsHeaderProps['onSave']>(() => {
+		if (!isEqual(signatures, originalSignatures)) {
+			const validationResult = validateSignatures(signatures);
+			if (validationResult.length) {
+				// At the moment we show only the last error
+				createSnackbar({
+					key: `signature-validation-error`,
 					type: 'error',
-					label: t('label.signature_required', 'Signature information is required.'),
-					autoHideTimeout: 3000,
+					label: validationResult[validationResult.length - 1],
+					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 					hideButton: true,
 					replace: true
 				});
-				return false;
+				return Promise.allSettled([Promise.reject(new Error('Invalid signature'))]);
 			}
+
 			const itemsDelete = filter(originalSignatures, (x: SignItemType) => {
 				let toggle = false;
 				map(signatures, (ele: SignItemType) => {
@@ -250,7 +256,7 @@ const SettingsView: FC = () => {
 					setNewOrForwardSignatureId(itemsAdd, resp, setDefaultSignatureId, false);
 				}
 				if (resp.type.includes('fulfilled')) {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'info',
@@ -261,7 +267,7 @@ const SettingsView: FC = () => {
 					setFlag(!flag);
 					setDisabled(true);
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'error',
@@ -273,6 +279,7 @@ const SettingsView: FC = () => {
 			});
 		}
 
+		let changes = {};
 		if (Object.keys(settingsToUpdate).length > 0) {
 			changes = { ...changes, prefs: settingsToUpdate };
 		}
@@ -283,9 +290,9 @@ const SettingsView: FC = () => {
 			changes = { ...changes, identity: { modifyList: identitiesToUpdate } };
 		}
 		if (!isEmpty(changes)) {
-			return editSettings(changes).then((res) => {
+			const editResult = editSettings(changes).then((res) => {
 				if (res.type.includes('fulfilled')) {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'info',
@@ -302,7 +309,7 @@ const SettingsView: FC = () => {
 						setCurrentIdentities(updatedIdentities);
 					}
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `new`,
 						replace: true,
 						type: 'error',
@@ -312,6 +319,7 @@ const SettingsView: FC = () => {
 					});
 				}
 			});
+			return Promise.allSettled([editResult]);
 		}
 		return Promise.allSettled([Promise.resolve()]);
 	}, [
@@ -320,8 +328,10 @@ const SettingsView: FC = () => {
 		settingsToUpdate,
 		propsToUpdate,
 		identitiesToUpdate,
+		validateSignatures,
 		dispatch,
 		account,
+		createSnackbar,
 		setNewOrForwardSignatureId,
 		flag,
 		updatedIdentities
@@ -353,6 +363,7 @@ const SettingsView: FC = () => {
 						updatedProps={updatedProps}
 						updateProps={updateProps}
 					/>
+					<RecoverMessages />
 					<SignatureSettings
 						settingsObj={settingsObj}
 						setSignatures={setSignatures}

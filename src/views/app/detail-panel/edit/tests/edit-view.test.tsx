@@ -17,6 +17,7 @@ import {
 } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
+import { HttpResponse } from 'msw';
 
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
@@ -25,7 +26,11 @@ import {
 	FOLDERS,
 	useBoard as mockedUseBoard
 } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { createAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { getEmptyMSWShareInfoResponse } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -112,7 +117,7 @@ const getSoapMailBodyContent = (
 };
 
 const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest> =>
-	createAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
+	createSoapAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
 		Fault: {
 			Reason: { Text: 'Failed upload to Files' },
 			Detail: {
@@ -218,10 +223,10 @@ describe('Edit view', () => {
 				],
 				_jsns: 'urn:zimbraMail'
 			};
-			const sendMsgPromise = createAPIInterceptor<{ m: SoapDraftMessageObj }, SoapSendMsgResponse>(
-				'SendMsg',
-				response
-			);
+			const sendMsgPromise = createSoapAPIInterceptor<
+				{ m: SoapDraftMessageObj },
+				SoapSendMsgResponse
+			>('SendMsg', response);
 
 			await waitFor(() => {
 				expect(btnSend).toBeEnabled();
@@ -273,6 +278,11 @@ describe('Edit view', () => {
 			});
 
 			test('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+				createAPIInterceptor(
+					'post',
+					'/service/soap/GetShareInfoRequest',
+					HttpResponse.json(getEmptyMSWShareInfoResponse())
+				);
 				// setup api interceptor and mail to send editor
 				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
 				setupEditorStore({ editors: [] });
@@ -351,7 +361,9 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>('SaveDraft');
+			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
+				'SaveDraft'
+			);
 
 			const subject = faker.lorem.sentence(5);
 			// Get the default identity address
@@ -486,7 +498,7 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
 				'SaveDraftRequest'
 			);
 
@@ -533,7 +545,7 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
 				'SaveDraftRequest'
 			);
 
@@ -591,7 +603,7 @@ describe('Edit view', () => {
 				},
 				{ timeout: 30000 }
 			);
-			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
 				'SaveDraftRequest'
 			);
 
@@ -686,7 +698,7 @@ describe('Edit view', () => {
 			});
 
 			const callTester = jest.fn();
-			const draftSavingInterceptor = createAPIInterceptor<{ m: SoapDraftMessageObj }>(
+			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
 				'SaveDraftRequest'
 			);
 

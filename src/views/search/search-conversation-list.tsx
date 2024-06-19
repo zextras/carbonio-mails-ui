@@ -139,7 +139,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 						key={conversation.id}
 						background={'transparent'}
 					>
-						{(visible: boolean): JSX.Element => (
+						{(visible: boolean): React.JSX.Element => (
 							<ConversationListItemComponent
 								item={conversation}
 								selected={isSelected}

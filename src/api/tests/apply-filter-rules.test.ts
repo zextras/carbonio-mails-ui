@@ -5,7 +5,7 @@
  */
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import {
 	applyFilterRules,
 	ApplyFilterRulesSoapRequest,
@@ -121,7 +121,7 @@ describe('extractMessagesIdFromSoapResponse', () => {
 describe('applyFilterRules', () => {
 	it('calls the API passing the given rule name', async () => {
 		const ruleName = 'test';
-		const interceptor = createAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
+		const interceptor = createSoapAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
 		applyFilterRules({ ruleName });
 		const apiParams = await interceptor;
 		expect(apiParams.filterRules[0].filterRule.name).toEqual(ruleName);
@@ -129,7 +129,7 @@ describe('applyFilterRules', () => {
 
 	it('calls the API passing the given list of messages id', async () => {
 		const messagesId = ['123', '456', '789'];
-		const interceptor = createAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
+		const interceptor = createSoapAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
 		applyFilterRules({ ruleName: 'test', messagesId });
 		const apiParams = await interceptor;
 		expect(apiParams.m?.ids).toEqual('123,456,789');
@@ -138,7 +138,7 @@ describe('applyFilterRules', () => {
 
 	it('calls the API passing the given list of folders id', async () => {
 		const foldersId = ['321', '654', '987'];
-		const interceptor = createAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
+		const interceptor = createSoapAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
 		applyFilterRules({ ruleName: 'test', foldersId });
 		const apiParams = await interceptor;
 		expect(apiParams.query?._content).toEqual('(inid:"321" OR inid:"654" OR inid:"987")');
@@ -148,7 +148,7 @@ describe('applyFilterRules', () => {
 	it('calls the API passing only the given list of folders id if both messages id and folders id are provided', async () => {
 		const messagesId = ['123', '456', '789'];
 		const foldersId = ['321', '654', '987'];
-		const interceptor = createAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
+		const interceptor = createSoapAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
 		applyFilterRules({ ruleName: 'test', messagesId, foldersId });
 		const apiParams = await interceptor;
 		expect(apiParams.query?._content).toEqual('(inid:"321" OR inid:"654" OR inid:"987")');

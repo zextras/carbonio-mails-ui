@@ -12,25 +12,26 @@ import { useTranslation } from 'react-i18next';
 import {
 	getAddRemoveFlagAction,
 	getApplyTagAction,
-	getCreateAppointmentAction,
-	getDeletePermanentlyAction,
+	useDeletePermanentlyAction,
+	useCreateAppointmentAction,
 	getDownloadEmlAction,
 	getEditAsNewAction,
-	getEditDraftAction,
+	useEditDraftAction,
 	getForwardAction,
-	getMarkRemoveSpam,
-	getMoveToFolderAction,
-	getMoveToTrashAction,
+	useMarkRemoveSpam,
+	useMoveToFolderAction,
+	useMoveToTrashAction,
 	getPreviewOnSeparatedWindowAction,
 	getPrintAction,
 	getReadUnreadAction,
-	getRedirectAction,
+	useRedirectAction,
 	getReplyAction,
 	getReplyAllAction,
 	getSendDraftAction,
 	getShowOriginalAction
 } from './get-msg-conv-actions-functions';
-import { getFolderIdParts, getParentFolderId } from '../helpers/folders';
+import { isTrash } from '../carbonio-ui-commons/helpers/folders';
+import { getFolderIdParts, getParentFolderId, isDraft } from '../helpers/folders';
 import { isConversation, isSingleMessageConversation } from '../helpers/messages';
 import { useAppDispatch } from '../hooks/redux';
 import { addEditor } from '../store/zustand/editor';
@@ -54,6 +55,14 @@ export function useMsgConvActions({
 	deselectAll,
 	messageActionsForExtraWindow
 }: useMsgConvActionsProps): MsgConvActionsReturnType {
+	const getDeletePermanentlyAction = useDeletePermanentlyAction();
+	const getEditDraftAction = useEditDraftAction();
+	const getMarkRemoveSpam = useMarkRemoveSpam();
+	const getMoveToFolderAction = useMoveToFolderAction();
+	const getMoveToTrashAction = useMoveToTrashAction();
+	const getRedirectAction = useRedirectAction();
+	const getCreateAppointmentAction = useCreateAppointmentAction();
+
 	const isConv = isConversation(item);
 	const folderId = getParentFolderId(item);
 	const dispatch = useAppDispatch();
@@ -67,10 +76,10 @@ export function useMsgConvActions({
 	}
 
 	const firstConversationMessage = isConv
-		? filter(
-				item?.messages,
-				(msg) => ![FOLDERS.TRASH, FOLDERS.DRAFTS].includes(getFolderIdParts(msg.parent).id ?? '')
-			)?.[0] ?? {}
+		? filter(item?.messages, (msg) => {
+				const folderIdParts = getFolderIdParts(msg.parent).id ?? '';
+				return !isTrash(folderIdParts) && !isDraft(folderIdParts);
+			})?.[0] ?? {}
 		: item;
 	const isSingleMsgConv = isSingleMessageConversation(item);
 	const { id } = item;

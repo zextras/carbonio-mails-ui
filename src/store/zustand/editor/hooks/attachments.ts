@@ -3,14 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getBridgedFunctions, t } from '@zextras/carbonio-shell-ui';
+import { useCallback } from 'react';
+
+import { t } from '@zextras/carbonio-shell-ui';
 import { omit, reject } from 'lodash';
 
 import { computeAndUpdateEditorStatus } from './commons';
 import { getEditor } from './editors';
-import { debouncedSaveDraftFromEditor, SaveDraftOptions } from './save-draft';
+import { useSaveDraftFromEditor, SaveDraftOptions } from './save-draft';
 import { TIMEOUTS } from '../../../../constants';
 import { composeAttachmentDownloadUrl } from '../../../../helpers/attachments';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from '../../../../types';
 import {
 	uploadAttachments,
@@ -24,17 +27,23 @@ import {
 } from '../editor-utils';
 import { useEditorsStore } from '../store';
 
-const notifyUploadError = (file: File, err: string): void => {
-	getBridgedFunctions()?.createSnackbar({
-		key: `upload-error`,
-		replace: true,
-		type: 'error',
-		label: t('label.errors.upload_failed_generic', {
-			filename: file.name,
-			defaultValue: 'Upload failed for the file "{{filename}}"'
-		}),
-		autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
-	});
+const useNotifyUploadError = (): ((file: File) => void) => {
+	const { createSnackbar } = useUiUtilities();
+	return useCallback(
+		(file) => {
+			createSnackbar({
+				key: `upload-error`,
+				replace: true,
+				type: 'error',
+				label: t('label.errors.upload_failed_generic', {
+					filename: file.name,
+					defaultValue: 'Upload failed for the file "{{filename}}"'
+				}),
+				autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+			});
+		},
+		[createSnackbar]
+	);
 };
 
 type EditorAttachmentHook = {
@@ -75,6 +84,9 @@ type EditorAttachmentHook = {
 };
 
 export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const notifyUploadError = useNotifyUploadError();
+
 	const unsavedStandardAttachments = reject(
 		useEditorsStore((state) => state.editors[editorId].unsavedAttachments),
 		'isInline'
@@ -112,7 +124,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 					status: 'aborted',
 					abortReason: error
 				};
-				notifyUploadError(file, error);
+				notifyUploadError(file);
 				setUploadStatus(editorId, uploadId, status);
 				computeAndUpdateEditorStatus(editorId);
 				callbacks?.onUploadError && callbacks.onUploadError(file, uploadId, error);
@@ -189,7 +201,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 							callbacks?.onSaveComplete && callbacks.onSaveComplete(uploadedContentIds);
 						}
 					};
-					debouncedSaveDraftFromEditor(editorId, saveDraftOptions);
+					debouncedSaveDraft(editorId, saveDraftOptions);
 				}
 
 				callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
@@ -226,7 +238,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		addUnsavedAttachments(editorId, [unsavedAttachment]);
 		computeAndUpdateEditorStatus(editorId);
 
-		debouncedSaveDraftFromEditor(editorId);
+		debouncedSaveDraft(editorId);
 
 		return unsavedAttachment;
 	};
@@ -297,18 +309,18 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 		removeUnsavedAttachment: (uploadId: string): void => {
 			removeUnsavedAttachmentsInvoker(editorId, uploadId);
 			computeAndUpdateEditorStatus(editorId);
-			debouncedSaveDraftFromEditor(editorId);
+			debouncedSaveDraft(editorId);
 		},
 
 		removeSavedAttachment: (partName: string): void => {
 			removeSavedAttachmentsInvoker(editorId, partName);
 			computeAndUpdateEditorStatus(editorId);
-			debouncedSaveDraftFromEditor(editorId);
+			debouncedSaveDraft(editorId);
 		},
 		removeStandardAttachments: (): void => {
 			removeStandardAttachmentsInvoker(editorId);
 			computeAndUpdateEditorStatus(editorId);
-			debouncedSaveDraftFromEditor(editorId);
+			debouncedSaveDraft(editorId);
 		},
 		addStandardAttachments,
 		addInlineAttachments,

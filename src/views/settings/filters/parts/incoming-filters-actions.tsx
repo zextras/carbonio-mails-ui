@@ -9,7 +9,7 @@ import { Button, Padding, useModal } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { find } from 'lodash';
 
-import { removeFilter, addFilter } from './actions';
+import { useRemoveFilter, useAddFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
 import { FilterContext } from './filter-context';
@@ -142,8 +142,6 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
 							setFetchFilters={setFetchIncomingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
 							modifierFunc={modifyFilterRules}
 							filterName={selectedFilterName}
 							selectedFilter={selectedFilter}
@@ -166,6 +164,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		t
 	]);
 
+	const removeFilter = useRemoveFilter();
 	const onRemove = useCallback(
 		() =>
 			removeFilter({
@@ -180,9 +179,10 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				setFetchFilters: setFetchIncomingFilters,
 				modifierFunc: modifyFilterRules
 			}),
-		[t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
+		[removeFilter, t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
 	);
 
+	const addFilter = useAddFilter();
 	const onAdd = useCallback(
 		() =>
 			addFilter({
@@ -197,7 +197,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				setFetchFilters: setFetchIncomingFilters,
 				modifierFunc: modifyFilterRules
 			}),
-		[t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
+		[addFilter, t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
 	);
 
 	const openFilterModifyModal = useCallback(() => {

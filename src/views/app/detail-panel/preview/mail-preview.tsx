@@ -33,13 +33,14 @@ import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/parti
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
 import { MessageActionsDescriptors } from '../../../../constants';
 import { getAttachmentParts } from '../../../../helpers/attachments';
+import { getFolderIdParts } from '../../../../helpers/folders';
 import { useAppDispatch } from '../../../../hooks/redux';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 import { getMsg, msgAction } from '../../../../store/actions';
 import type { MailMessage, OpenEmlPreviewType } from '../../../../types';
 import { ExtraWindowCreationParams, MessageAction } from '../../../../types';
 import { findMessageActionById } from '../../../../ui-actions/utils';
-import { useExtraWindowsManager } from '../../extra-windows/extra-window-manager';
+import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 
@@ -256,7 +257,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 
 	return (
 		<>
-			{folderId === FOLDERS.SPAM && (
+			{getFolderIdParts(folderId).id === FOLDERS.SPAM && (
 				<Container
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
@@ -336,7 +337,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(expanded || isAlone);
-	const { createWindow } = useExtraWindowsManager();
+	const { createWindow } = useGlobalExtraWindowManager();
 
 	const onClick = useCallback(() => {
 		setOpen((o) => !o);

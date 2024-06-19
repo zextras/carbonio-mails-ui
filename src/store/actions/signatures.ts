@@ -10,12 +10,12 @@ import { map, escape } from 'lodash';
 import { SignItemType } from '../../types';
 
 export type GetSignaturesRequest = {
-	_jsns: typeof JSNS.ACCOUNT;
+	_jsns: typeof JSNS.account;
 };
 
 export type GetSignaturesResponse = {
 	signature: Array<SignItemType>;
-	_jsns: typeof JSNS.ACCOUNT;
+	_jsns: typeof JSNS.account;
 };
 
 export const GetAllSignatures = (): Promise<GetSignaturesResponse> =>
@@ -85,8 +85,8 @@ export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data
 		`
 	});
 	const response = await res.json();
-	if (response.Body.Fault) {
-		throw new Error(response.Body.Fault.Reason.Text);
+	if (response.Body.BatchResponse.Fault) {
+		throw new Error(response.Body.BatchResponse.Fault.Reason.Text);
 	}
 
 	return { response };

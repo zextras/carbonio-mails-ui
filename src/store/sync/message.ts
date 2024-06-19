@@ -8,9 +8,9 @@ import {
 	t,
 	getNotificationManager,
 	getUserSettings,
-	replaceHistory
+	replaceHistory,
+	NotificationConfig
 } from '@zextras/carbonio-shell-ui';
-import type { NotificationConfig } from '@zextras/carbonio-shell-ui/types/notification';
 import {
 	forEach,
 	pick,

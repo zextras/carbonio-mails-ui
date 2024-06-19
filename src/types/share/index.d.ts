@@ -5,6 +5,7 @@
  */
 
 import type { Grant } from '@zextras/carbonio-shell-ui';
+
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { AppDispatch } from '../../store/redux';
 import type { Participant } from '../participant';
@@ -47,7 +48,7 @@ export type GranteeInfoProps = {
 
 export type GranteeProps = {
 	grant: Grant;
-	folder: FolderType;
+	folder: Folder;
 	onMouseLeave?: () => void;
 	onMouseEnter?: () => void;
 	setActiveModal: (modal: string) => void;
@@ -55,7 +56,7 @@ export type GranteeProps = {
 };
 
 export type ShareFolderPropertiesProps = {
-	folder: FolderType | Folder;
+	folder: Folder;
 	setActiveModal;
 };
 

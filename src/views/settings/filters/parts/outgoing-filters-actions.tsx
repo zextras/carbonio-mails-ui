@@ -4,15 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
-import type { TFunction } from 'i18next';
+
 import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
+import type { TFunction } from 'i18next';
 import { find } from 'lodash';
-import { removeFilter, addFilter } from './actions';
-import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
-import { FilterContext } from './filter-context';
+
+import { useRemoveFilter, useAddFilter } from './actions';
 import CreateOutgoingFilterModal from './create-outgoing-filter-modal';
 import DeleteOutgoingFilterModal from './delete-outgoing-filter-modal';
+import { FilterContext } from './filter-context';
 import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
+import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { StoreProvider } from '../../../../store/redux';
 
 type FilterListType = {
@@ -98,6 +100,8 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			true
 		);
 	}, [createModal, t, outgoingFilters, setOutgoingFilters, setFetchOutgoingFilters]);
+
+	const removeFilter = useRemoveFilter();
 	const onRemove = useCallback(
 		() =>
 			removeFilter({
@@ -112,8 +116,10 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				setFetchFilters: setFetchOutgoingFilters,
 				modifierFunc: modifyOutgoingFilterRules
 			}),
-		[t, availableList, activeList, setOutgoingFilters, setFetchOutgoingFilters]
+		[removeFilter, t, availableList, activeList, setOutgoingFilters, setFetchOutgoingFilters]
 	);
+
+	const addFilter = useAddFilter();
 	const onAdd = useCallback(
 		() =>
 			addFilter({
@@ -128,7 +134,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				setFetchFilters: setFetchOutgoingFilters,
 				modifierFunc: modifyOutgoingFilterRules
 			}),
-		[t, availableList, activeList, setOutgoingFilters, setFetchOutgoingFilters]
+		[addFilter, t, availableList, activeList, setOutgoingFilters, setFetchOutgoingFilters]
 	);
 
 	const openDeleteModal = useCallback(() => {

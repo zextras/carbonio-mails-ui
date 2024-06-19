@@ -6,6 +6,7 @@
 
 export * from '../carbonio-ui-commons/types';
 export * from './actions';
+export * from './api';
 export * from './conversations';
 export * from './details-pannel';
 export * from './editor';
@@ -23,3 +24,4 @@ export * from './tags';
 export * from './utils';
 export * from './attachments';
 export * from './sorting';
+export * from './backup-search';

@@ -37,10 +37,6 @@ export type SidebarComponentProps = {
 	accordions: Array<Folder>;
 };
 
-export type SidebarProps = {
-	expanded: boolean;
-};
-
 export type SidebarCustomItem = {
 	item: {
 		id: string;

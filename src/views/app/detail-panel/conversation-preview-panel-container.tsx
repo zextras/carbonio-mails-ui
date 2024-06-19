@@ -13,6 +13,7 @@ import { useParams } from 'react-router-dom';
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import PreviewPanelHeader from './preview/preview-panel-header';
 import { API_REQUEST_STATUS } from '../../../constants';
+import { getFolderIdParts } from '../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getConv, searchConv } from '../../../store/actions';
 import {
@@ -64,9 +65,10 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
-			folderId === FOLDERS.TRASH
+			getFolderIdParts(folderId).id === FOLDERS.TRASH
 				? conversation && conversation?.messages?.length > 0
-				: filter(conversation?.messages, (m) => m.parent !== FOLDERS.TRASH).length > 0,
+				: filter(conversation?.messages, (m) => getFolderIdParts(m.parent).id !== FOLDERS.TRASH)
+						.length > 0,
 		[conversation, folderId]
 	);
 

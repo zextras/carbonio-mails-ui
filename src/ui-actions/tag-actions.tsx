@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { ReactElement, useCallback, useContext, useMemo, useState } from 'react';
+
 import {
 	Checkbox,
 	Icon,
@@ -11,20 +13,19 @@ import {
 	Row,
 	Text
 } from '@zextras/carbonio-design-system';
-import React, { ReactElement, useCallback, useContext, useMemo, useState } from 'react';
-
 import {
 	Tag,
 	ZIMBRA_STANDARD_COLORS,
-	getBridgedFunctions,
 	replaceHistory,
 	t,
 	useTags
 } from '@zextras/carbonio-shell-ui';
 import { every, find, includes, map, reduce, some } from 'lodash';
+
 import DeleteTagModal from '../carbonio-ui-commons/components/tags/delete-tag-modal';
 import { TagsActionsType } from '../carbonio-ui-commons/constants';
 import { useAppDispatch } from '../hooks/redux';
+import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction, msgAction } from '../store/actions';
 import { StoreProvider } from '../store/redux';
 import type {
@@ -36,7 +37,6 @@ import type {
 	TagsFromStoreType
 } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
-import { MessageActionsDescriptors } from '../constants';
 
 export const createTag = ({ createModal }: ArgumentType): TagActionsReturnType => ({
 	id: TagsActionsType.NEW,
@@ -120,6 +120,7 @@ export const TagsDropdownItem = ({
 	conversation: any;
 	isMessage?: boolean;
 }): ReactElement => {
+	const { createSnackbar } = useUiUtilities();
 	const dispatch = useAppDispatch();
 	const [checked, setChecked] = useState(includes(conversation.tags, tag.id));
 	const [isHovering, setIsHovering] = useState(false);
@@ -140,7 +141,7 @@ export const TagsDropdownItem = ({
 						})
 			).then((res: any) => {
 				if (res.type.includes('fulfilled')) {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `tag`,
 						replace: true,
 						hideButton: true,
@@ -154,7 +155,7 @@ export const TagsDropdownItem = ({
 						autoHideTimeout: 3000
 					});
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `tag`,
 						replace: true,
 						type: 'error',
@@ -165,7 +166,7 @@ export const TagsDropdownItem = ({
 				}
 			});
 		},
-		[conversation.id, dispatch, isMessage, tag.name]
+		[conversation.id, createSnackbar, dispatch, isMessage, tag.name]
 	);
 	const tagColor = useMemo(() => ZIMBRA_STANDARD_COLORS[tag.color || 0].hex, [tag.color]);
 	const tagIcon = useMemo(() => (checked ? 'Tag' : 'TagOutline'), [checked]);
@@ -213,6 +214,7 @@ export const MultiSelectTagsDropdownItem = ({
 	folderId?: string;
 	isMessage?: boolean;
 }): ReactElement => {
+	const { createSnackbar } = useUiUtilities();
 	const dispatch = useAppDispatch();
 	const [isHovering, setIsHovering] = useState(false);
 	const tagsToShow = reduce(
@@ -245,7 +247,7 @@ export const MultiSelectTagsDropdownItem = ({
 				if (res.type.includes('fulfilled')) {
 					deselectAll && deselectAll();
 					replaceHistory(`/folder/${folderId}/`);
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `tag`,
 						replace: true,
 						hideButton: true,
@@ -259,7 +261,7 @@ export const MultiSelectTagsDropdownItem = ({
 						autoHideTimeout: 3000
 					});
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `tag`,
 						replace: true,
 						type: 'error',
@@ -270,7 +272,7 @@ export const MultiSelectTagsDropdownItem = ({
 				}
 			});
 		},
-		[dispatch, isMessage, ids, tag.name, deselectAll, folderId]
+		[dispatch, isMessage, ids, tag.name, deselectAll, folderId, createSnackbar]
 	);
 
 	const tagIcon = useMemo(() => (checked ? 'Tag' : 'TagOutline'), [checked]);
@@ -371,7 +373,7 @@ export const applyTag = ({
 	id: string;
 	items: ItemType[];
 	customComponent: ReactElement;
-	label?: 'string';
+	label?: string;
 	icon?: string;
 } => {
 	const tagItem = reduce(

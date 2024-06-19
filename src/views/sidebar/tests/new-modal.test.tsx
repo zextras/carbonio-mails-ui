@@ -9,12 +9,13 @@ import { faker } from '@faker-js/faker';
 import { screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
 
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, SoapFolder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
 import { NewModal } from '../new-modal';
+import { act } from 'react-dom/test-utils';
 
 describe('new-modal', () => {
 	test('add folder name and create button should enabled', async () => {
@@ -174,9 +175,11 @@ describe('new-modal', () => {
 			name: /label.create/i
 		});
 		expect(createButton).toBeEnabled();
-		const apiInterceptor = createAPIInterceptor<{ folder: SoapFolder }>('CreateFolder');
+		const apiInterceptor = createSoapAPIInterceptor<{ folder: SoapFolder }>('CreateFolder');
 
-		await user.click(createButton);
+		await act(async () => {
+			await user.click(createButton);
+		});
 
 		const { folder: newFolder } = await apiInterceptor;
 		expect(newFolder.view).toBe('message');

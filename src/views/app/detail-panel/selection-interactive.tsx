@@ -3,12 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useEffect, useMemo, useState } from 'react';
+
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
-import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAppSelector } from '../../../hooks/redux';
-import { selectConversationsArray } from '../../../store/conversations-slice';
+
 import {
 	DraftMessages,
 	EmptyFieldMessages,
@@ -17,6 +17,9 @@ import {
 	SpamMessages,
 	TrashMessages
 } from './utils';
+import { getFolderIdParts } from '../../../helpers/folders';
+import { useAppSelector } from '../../../hooks/redux';
+import { selectConversationsArray } from '../../../store/conversations-slice';
 
 const generateListRandomNumber = (): number => Math.floor(Math.random() * 3);
 const generateFieldRandomNumber = (): number => Math.floor(Math.random() * 5);
@@ -43,16 +46,16 @@ export const SelectionInteractive: FC<{ count: number }> = ({ count }) => {
 	}, [folderId]);
 
 	const displayerMessage = useMemo(() => {
-		if (folderId === FOLDERS.SPAM) {
+		if (getFolderIdParts(folderId).id === FOLDERS.SPAM) {
 			return conversations?.length > 0 ? spamMessages[1] : spamMessages[0];
 		}
-		if (folderId === FOLDERS.SENT) {
+		if (getFolderIdParts(folderId).id === FOLDERS.SENT) {
 			return conversations?.length > 0 ? sentMessages[1] : sentMessages[0];
 		}
-		if (folderId === FOLDERS.DRAFT) {
+		if (getFolderIdParts(folderId).id === FOLDERS.DRAFTS) {
 			return conversations?.length > 0 ? draftMessages[1] : draftMessages[0];
 		}
-		if (folderId === FOLDERS.TRASH) {
+		if (getFolderIdParts(folderId).id === FOLDERS.TRASH) {
 			return conversations?.length > 0 ? trashMessages[1] : trashMessages[0];
 		}
 		return conversations && conversations.length > 0
@@ -76,8 +79,8 @@ export const SelectionInteractive: FC<{ count: number }> = ({ count }) => {
 			count > 0
 				? t('label.mail_selected', {
 						count,
-						defaultValue: '{{count}} e-mail selected',
-						defaultValue_plural: '{{count}} e-mails selected'
+						defaultValue_one: '{{count}} e-mail selected',
+						defaultValue_other: '{{count}} e-mails selected'
 					})
 				: displayerMessage?.title,
 		[count, displayerMessage?.title]

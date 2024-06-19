@@ -18,10 +18,11 @@ import {
 	useTheme
 } from '@zextras/carbonio-design-system';
 import {
-	getBridgedFunctions,
+	ErrorSoapBodyResponse,
 	getIntegratedFunction,
 	soapFetch,
-	t
+	t,
+	useIntegratedFunction
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, map } from 'lodash';
@@ -38,12 +39,14 @@ import {
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAttachmentIconColor } from '../../../../helpers/attachments';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
 import type {
 	AttachmentPart,
 	AttachmentType,
+	CopyToFileRequest,
 	CopyToFileResponse,
 	MailMessage,
 	OpenEmlPreviewType
@@ -131,11 +134,14 @@ const Attachment: FC<AttachmentType> = ({
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
+	const { createSnackbar, createModal } = useUiUtilities();
 
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
 	const dispatch = useAppDispatch();
 
+	const pType = previewType(att.contentType);
+	const [createContact, isAvailable] = useIntegratedFunction('create_contact_from_vcard');
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -148,8 +154,6 @@ const Attachment: FC<AttachmentType> = ({
 	// TODO remove it when IRIS-3918 will be implemented
 	const browserPdfPreview = useCallback(() => {
 		if (inputRef2.current) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			inputRef2.current.click();
 		}
 	}, [inputRef2]);
@@ -170,15 +174,12 @@ const Attachment: FC<AttachmentType> = ({
 	}, [downloadAttachment, onDeleteAttachment]);
 
 	const removeAttachment = useCallback(() => {
-		const closeModal = getBridgedFunctions()?.createModal(
+		const closeModal = createModal(
 			{
 				maxHeight: '90vh',
 				children: (
 					<StoreProvider>
 						<DeleteAttachmentModal
-							// TODO : fix it inside shell
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
 							onClose={(): void => closeModal()}
 							onDownloadAndDelete={onDownloadAndDelete}
 							onDeleteAttachment={onDeleteAttachment}
@@ -188,19 +189,19 @@ const Attachment: FC<AttachmentType> = ({
 			},
 			true
 		);
-	}, [onDeleteAttachment, onDownloadAndDelete]);
+	}, [createModal, onDeleteAttachment, onDownloadAndDelete]);
 
 	const confirmAction = useCallback(
 		(nodes) => {
-			soapFetch('CopyToFiles', {
+			soapFetch<CopyToFileRequest, CopyToFileResponse | ErrorSoapBodyResponse>('CopyToFiles', {
 				_jsns: 'urn:zimbraMail',
 				mid: message.id,
 				part: att.name,
 				destinationFolderId: nodes[0].id
 			})
-				.then((res: any) => {
-					if (!res?.Fault) {
-						getBridgedFunctions()?.createSnackbar({
+				.then((res) => {
+					if (!('Fault' in res)) {
+						createSnackbar({
 							key: `mail-moved-root`,
 							replace: true,
 							type: 'info',
@@ -209,7 +210,7 @@ const Attachment: FC<AttachmentType> = ({
 							autoHideTimeout: 3000
 						});
 					} else {
-						getBridgedFunctions()?.createSnackbar({
+						createSnackbar({
 							key: `mail-moved-root`,
 							replace: true,
 							type: 'warning',
@@ -223,7 +224,7 @@ const Attachment: FC<AttachmentType> = ({
 					}
 				})
 				.catch(() => {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `calendar-moved-root`,
 						replace: true,
 						type: 'warning',
@@ -236,9 +237,11 @@ const Attachment: FC<AttachmentType> = ({
 					});
 				});
 		},
-		[att, message]
+		[att.name, createSnackbar, message.id]
 	);
-
+	const onCreateContact = useCallback(() => {
+		createContact({ messageId: message.id, part });
+	}, [createContact, message.id, part]);
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
 
 	const actionTarget = useMemo(
@@ -264,7 +267,7 @@ const Attachment: FC<AttachmentType> = ({
 				openEmlPreview && openEmlPreview(message.id, att?.name, res[0]);
 			})
 			.catch(() => {
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `eml-attachment-failed-download`,
 					replace: true,
 					type: 'error',
@@ -276,14 +279,14 @@ const Attachment: FC<AttachmentType> = ({
 					autoHideTimeout: 3000
 				});
 			});
-	}, [att?.name, message.id, openEmlPreview]);
+	}, [att?.name, createSnackbar, message.id, openEmlPreview]);
 
 	const preview = useCallback(
 		(ev) => {
 			ev.preventDefault();
 			const pType = previewType(att.contentType);
 
-			if (pType) {
+			if (pType === 'pdf' || pType === 'image') {
 				// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
 				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
 					browserPdfPreview();
@@ -406,7 +409,7 @@ const Attachment: FC<AttachmentType> = ({
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
-					{isUploadIntegrationAvailable && (
+					{isUploadIntegrationAvailable && !isInsideExtraWindow && (
 						<Tooltip
 							key={`${message.id}-DriveOutline`}
 							label={
@@ -424,14 +427,18 @@ const Attachment: FC<AttachmentType> = ({
 								onClick={(): void => {
 									uploadIntegration && uploadIntegration(actionTarget);
 								}}
-								disabled={isInsideExtraWindow}
 							/>
 						</Tooltip>
 					)}
 
 					<Padding right="small">
 						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
-							<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
+							<IconButton
+								data-testid={`download-attachment-${filename}`}
+								size="medium"
+								icon="DownloadOutline"
+								onClick={downloadAttachment}
+							/>
 						</Tooltip>
 					</Padding>
 					{!isExternalMessage && (
@@ -441,9 +448,25 @@ const Attachment: FC<AttachmentType> = ({
 								label={t('label.delete', 'Delete')}
 							>
 								<IconButton
+									data-testid={`remove-attachments-${filename}`}
 									size="medium"
 									icon="DeletePermanentlyOutline"
 									onClick={removeAttachment}
+								/>
+							</Tooltip>
+						</Padding>
+					)}
+					{isAvailable && pType === 'vcard' && (
+						<Padding right="small">
+							<Tooltip
+								key={`${message.id}-UploadOutline`}
+								label={t('label.import_to_contacts', 'Import to Contacts')}
+							>
+								<IconButton
+									data-testid={`import-contacts-${filename}`}
+									size="medium"
+									icon="UploadOutline"
+									onClick={onCreateContact}
 								/>
 							</Tooltip>
 						</Padding>
@@ -478,6 +501,7 @@ const AttachmentsBlock: FC<{
 	isExternalMessage?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
 }> = ({ message, isExternalMessage = false, openEmlPreview }): ReactElement => {
+	const { createSnackbar } = useUiUtilities();
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(
 		() => filter(message?.attachments, { cd: 'attachment' }),
@@ -533,7 +557,7 @@ const AttachmentsBlock: FC<{
 				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
 				const type = allSuccess ? 'info' : 'warning';
 				const label = getLabel({ allSuccess, allFails });
-				getBridgedFunctions()?.createSnackbar({
+				createSnackbar({
 					key: `calendar-moved-root`,
 					replace: true,
 					type,
@@ -543,7 +567,7 @@ const AttachmentsBlock: FC<{
 				});
 			});
 		},
-		[attachments, message]
+		[attachments, createSnackbar, message]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
@@ -568,48 +592,28 @@ const AttachmentsBlock: FC<{
 	const { isInsideExtraWindow } = useExtraWindow();
 
 	const getSaveToFilesLink = useCallback((): ReactElement | null => {
-		if (!isUploadIntegrationAvailable) {
+		if (!isUploadIntegrationAvailable || isInsideExtraWindow) {
 			return null;
 		}
 
-		const link = (
+		return (
 			<Link
 				size="medium"
 				onClick={(): void => {
 					uploadIntegration && uploadIntegration(actionTarget);
 				}}
 				style={{ paddingLeft: '0.5rem' }}
-				disabled={isInsideExtraWindow}
 			>
 				{t('label.save_to_files', 'Save to Files')}
 			</Link>
 		);
+	}, [actionTarget, isInsideExtraWindow, isUploadIntegrationAvailable, uploadIntegration]);
 
-		if (!isInsideExtraWindow) {
-			return link;
-		}
-		return (
-			<Tooltip
-				key={`${message.id}-files-saving-disabled`}
-				label={
-					isInsideExtraWindow
-						? t(
-								'label.extra_window.save_to_files_disabled',
-								'Files’ attachments saving is available only from the main tab'
-							)
-						: ''
-				}
-			>
-				{link}
-			</Tooltip>
-		);
-	}, [
-		actionTarget,
-		isInsideExtraWindow,
-		isUploadIntegrationAvailable,
-		message.id,
-		uploadIntegration
-	]);
+	const attachmentsLabel = t('label.attachment', {
+		count: attachmentsCount,
+		defaultValue_one: '{{count}} attachment',
+		defaultValue_other: '{{count}} attachments'
+	});
 
 	return attachmentsCount > 0 ? (
 		<Container crossAlignment="flex-start">
@@ -641,13 +645,8 @@ const AttachmentsBlock: FC<{
 			</Container>
 			<Row mainAlignment="flex-start" padding={{ top: 'extrasmall', bottom: 'medium' }}>
 				<Padding right="small">
-					{attachmentsCount === 1 && (
-						<Text color="gray1">{`1 ${t('label.attachment', 'Attachment')}`}</Text>
-					)}
-					{attachmentsCount === 2 && (
-						<Text color="gray1">
-							{`${attachmentsCount} ${t('label.attachment_plural', 'Attachments')}`}
-						</Text>
+					{attachmentsCount > 0 && attachmentsCount <= 2 && (
+						<Text color="gray1">{attachmentsLabel}</Text>
 					)}
 					{attachmentsCount > 2 &&
 						(expanded ? (
@@ -657,9 +656,7 @@ const AttachmentsBlock: FC<{
 								style={{ cursor: 'pointer' }}
 							>
 								<Padding right="small">
-									<Text color="primary">
-										{`${attachmentsCount} ${t('label.attachment_plural', 'Attachments')}`}
-									</Text>
+									<Text color="primary">{attachmentsLabel}</Text>
 								</Padding>
 								<Icon icon="ArrowIosUpward" color="primary" />
 							</Row>
@@ -671,10 +668,11 @@ const AttachmentsBlock: FC<{
 							>
 								<Padding right="small">
 									<Text color="primary">
-										{`${t('label.show_all', 'Show all')} ${attachmentsCount} ${t(
-											'label.attachment_plural',
-											'attachments'
-										)}`}
+										{t('label.show_all_attachments', {
+											count: attachmentsCount,
+											defaultValue_one: 'Show attachment',
+											defaultValue_other: 'Show all {{count}} attachments'
+										})}
 									</Text>
 								</Padding>
 								<Icon icon="ArrowIosDownward" color="primary" />
@@ -685,8 +683,8 @@ const AttachmentsBlock: FC<{
 				<Link target="_blank" size="medium" href={actionsDownloadLink}>
 					{t('label.download', {
 						count: attachmentsCount,
-						defaultValue: 'Download',
-						defaultValue_plural: 'Download all'
+						defaultValue_one: 'Download',
+						defaultValue_other: 'Download all'
 					})}
 				</Link>
 				{getSaveToFilesLink()}

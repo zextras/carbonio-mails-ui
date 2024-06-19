@@ -23,7 +23,6 @@ import {
 	AppLink,
 	FOLDERS,
 	ROOT_NAME,
-	getBridgedFunctions,
 	pushHistory,
 	replaceHistory,
 	t,
@@ -35,11 +34,14 @@ import styled from 'styled-components';
 
 import { useFolderActions } from './use-folder-actions';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
+import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { LIST_LIMIT } from '../../constants';
+import { isDraft, isSpam } from '../../helpers/folders';
 import { parseMessageSortingOptions } from '../../helpers/sorting';
 import { useAppDispatch } from '../../hooks/redux';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { convAction, msgAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
 
@@ -74,6 +76,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const accountName = useUserAccount().name;
 	const dispatch = useAppDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
+	const { createSnackbar } = useUiUtilities();
 	const { prefs } = useUserSettings();
 
 	const onDragEnterAction = useCallback(
@@ -95,7 +98,8 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				if (
 					item.id === data.data.id || // same folder not allowed
 					item.isLink || //  shared folder not allowed
-					[FOLDERS.DRAFTS, FOLDERS.SPAM].includes(item.id) // cannot be moved inside Draft and Spam
+					isDraft(item.id) ||
+					isSpam(item.id) // cannot be moved inside Draft and Spam
 				)
 					return { success: false };
 			}
@@ -120,7 +124,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 			folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }).then(
 				(res) => {
 					if (!('Fault' in res)) {
-						getBridgedFunctions()?.createSnackbar({
+						createSnackbar({
 							key: `move`,
 							replace: true,
 							type: 'success',
@@ -128,7 +132,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 							autoHideTimeout: 3000
 						});
 					} else {
-						getBridgedFunctions()?.createSnackbar({
+						createSnackbar({
 							key: `move`,
 							replace: true,
 							type: 'error',
@@ -149,7 +153,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				if (res.type.includes('fulfilled')) {
 					replaceHistory(`/folder/${folderId}`);
 					data.data.deselectAll && data.data.deselectAll();
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -161,7 +165,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						}
 					});
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
@@ -181,7 +185,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					data.data.deselectAll && data.data.deselectAll();
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'info',
@@ -193,7 +197,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						}
 					});
 				} else {
-					getBridgedFunctions()?.createSnackbar({
+					createSnackbar({
 						key: `edit`,
 						replace: true,
 						type: 'error',
@@ -207,10 +211,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	};
 
 	const dragFolderDisable = useMemo(
-		() =>
-			[FOLDERS.INBOX, FOLDERS.TRASH, FOLDERS.SPAM, FOLDERS.SENT, FOLDERS.DRAFTS].includes(
-				item.id
-			) || item.isLink, // Default folders and shared folders not allowed to drag
+		() => isSystemFolder(item.id) || item.isLink, // Default folders and shared folders not allowed to drag
 		[item.id, item.isLink]
 	);
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
@@ -262,7 +263,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const dropdownItems = useFolderActions(item);
 
 	const statusIcon = useMemo(() => {
-		const RowWithIcon = (icon: string, color: string, tooltipText: string): JSX.Element => (
+		const RowWithIcon = (icon: string, color: string, tooltipText: string): React.JSX.Element => (
 			<Padding left="small">
 				<Tooltip placement="right" label={tooltipText}>
 					<Row>

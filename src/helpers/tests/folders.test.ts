@@ -8,7 +8,7 @@ import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import {
 	getFolder,
-	getFoldersArray,
+	getFoldersMap,
 	getLinksArray,
 	getRootsMap
 } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
@@ -20,6 +20,7 @@ import { generateMessage } from '../../tests/generators/generateMessage';
 import {
 	getFolderIdParts,
 	getFolderOwnerAccountName,
+	getFoldersArray,
 	getParentFolderId,
 	isDraft,
 	isInbox,
@@ -301,7 +302,7 @@ describe('isInboxSubfolder', () => {
 describe('isTrashed', () => {
 	test('A folder inside the trash (passed by ref) is recognized as trashed', () => {
 		populateFoldersStore();
-		const trashFolder = getFoldersArray().find((folder) => isTrash(folder.id));
+		const trashFolder = getFoldersArray(getFoldersMap()).find((folder) => isTrash(folder.id));
 		if (!trashFolder || !trashFolder.children.length) {
 			return;
 		}
@@ -311,7 +312,7 @@ describe('isTrashed', () => {
 
 	test('A folder inside the trash (passed by id) is recognized as trashed', () => {
 		populateFoldersStore();
-		const trashFolder = getFoldersArray().find((folder) => isTrash(folder.id));
+		const trashFolder = getFoldersArray(getFoldersMap()).find((folder) => isTrash(folder.id));
 		if (!trashFolder || !trashFolder.children.length) {
 			return;
 		}

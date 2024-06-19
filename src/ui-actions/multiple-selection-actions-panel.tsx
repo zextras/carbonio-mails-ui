@@ -13,29 +13,30 @@ import {
 	Row,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { FOLDERS, getBridgedFunctions, t, useTags } from '@zextras/carbonio-shell-ui';
-import { every, filter, findIndex, some } from 'lodash';
+import { FOLDERS, t, useTags } from '@zextras/carbonio-shell-ui';
+import { every, filter, findIndex, includes, some } from 'lodash';
 
 import {
-	deleteConversationPermanently,
-	moveConversationToFolder,
-	moveConversationToTrash,
+	useDeleteConversationPermanently,
+	useMoveConversationToFolder,
+	useMoveConversationToTrash,
 	setConversationsFlag,
 	setConversationsRead,
-	setConversationsSpam
+	useSetConversationAsSpam
 } from './conversation-actions';
 import {
-	deleteMessagePermanently,
-	moveMessageToFolder,
-	moveMsgToTrash,
-	setMsgAsSpam,
+	useDeleteMessagePermanently,
+	useMoveMessageToFolder,
+	useMoveMsgToTrash,
 	setMsgFlag,
-	setMsgRead
+	setMsgRead,
+	useSetMsgAsSpam
 } from './message-actions';
 import { applyMultiTag } from './tag-actions';
 import { getFolderParentId } from './utils';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppDispatch } from '../hooks/redux';
+import { useUiUtilities } from '../hooks/use-ui-utilities';
 import type {
 	ActionReturnType,
 	ConvActionReturnType,
@@ -67,6 +68,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	setIsSelectModeOn,
 	folderId
 }) => {
+	const { createSnackbar } = useUiUtilities();
 	const isConversation = 'messages' in (items?.[0] || {});
 
 	const folderParentId = getFolderParentId({ folderId, isConversation, items });
@@ -91,7 +93,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	const foldersExcludedMoveToFolder = [FOLDERS.DRAFTS, FOLDERS.TRASH];
 	const foldersExcludedTags = [FOLDERS.SPAM];
 	const foldersExcludedMarkSpam = [FOLDERS.DRAFTS, FOLDERS.TRASH, FOLDERS.SPAM];
-	const foldersIncludedMarkNotSpam = [FOLDERS.SPAM];
+	const foldersIncludedMarkNotSpam = [FOLDERS.SPAM] satisfies readonly string[];
 
 	const addFlagAction = (): ActionReturnType => {
 		const selectedItems = filter(items, (item: MsgOrConv) => ids.includes(item.id ?? '0'));
@@ -114,7 +116,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMarkReadUnread.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedMarkReadUnread, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? setConversationsRead({
@@ -134,7 +136,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMarkReadUnread.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedMarkReadUnread, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? setConversationsRead({
@@ -149,12 +151,14 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		return selectedItems.length > 0 && every(selectedItems, ['read', true]) && action;
 	};
 
+	const moveConversationToTrash = useMoveConversationToTrash();
+	const moveMsgToTrash = useMoveMsgToTrash();
 	const getMoveToTrashAction = (): false | ConvActionReturnType | MessageActionReturnType => {
 		const selectedItems = filter(
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedTrash.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedTrash, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? moveConversationToTrash({ ids, dispatch, folderId, deselectAll })
@@ -162,12 +166,14 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
 
+	const deleteConversationPermanently = useDeleteConversationPermanently();
+	const deleteMessagePermanently = useDeleteMessagePermanently();
 	const deletePermanentlyAction = (): ActionReturnType => {
 		const selectedItems = filter(
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				foldersIncludedDeletePermanently.includes(getFolderIdParts(folderParentId).id ?? '0')
+				includes(foldersIncludedDeletePermanently, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? deleteConversationPermanently({ ids, deselectAll })
@@ -175,12 +181,14 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
 
+	const moveConversationToFolder = useMoveConversationToFolder();
+	const moveMessageToFolder = useMoveMessageToFolder();
 	const moveToFolderAction = (): ActionReturnType => {
 		const selectedItems = filter(
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMoveToFolder.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedMoveToFolder, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
 			? moveConversationToFolder({
@@ -205,7 +213,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedTags.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedTags, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = applyMultiTag({
 			ids,
@@ -218,15 +226,17 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		return selectedItems.length > 0 && selectedItems.length === ids.length && action;
 	};
 
+	const setConversationAsSpam = useSetConversationAsSpam();
+	const setMsgAsSpam = useSetMsgAsSpam();
 	const markMsgAsSpam = (): ActionReturnType => {
 		const selectedItems = filter(
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				!foldersExcludedMarkSpam.includes(getFolderIdParts(folderParentId).id ?? '0')
+				!includes(foldersExcludedMarkSpam, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
-			? setConversationsSpam({
+			? setConversationAsSpam({
 					ids,
 					value: false,
 					dispatch,
@@ -242,10 +252,10 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			items,
 			(item: MsgOrConv) =>
 				ids.includes(item.id ?? '0') &&
-				foldersIncludedMarkNotSpam.includes(getFolderIdParts(folderParentId).id ?? '0')
+				includes(foldersIncludedMarkNotSpam, getFolderIdParts(folderParentId).id ?? '0')
 		);
 		const action = isConversation
-			? setConversationsSpam({
+			? setConversationAsSpam({
 					ids,
 					value: true,
 					dispatch,
@@ -332,7 +342,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 
 	const selectAllOnClick = useCallback(() => {
 		selectAll();
-		getBridgedFunctions()?.createSnackbar({
+		createSnackbar({
 			key: `selected-${ids}`,
 			replace: true,
 			type: 'info',
@@ -340,7 +350,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			autoHideTimeout: 5000,
 			hideButton: true
 		});
-	}, [selectAll, ids]);
+	}, [selectAll, createSnackbar, ids]);
 
 	const actionsIsNotEmpty = primaryActionsArray.length > 0 || secondaryActionsArray.length > 0;
 

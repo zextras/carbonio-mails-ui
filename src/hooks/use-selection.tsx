@@ -3,18 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { map, omit } from 'lodash';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import type { Conversation, IncompleteMessage } from '../types';
 
-export type useSelectionProps = {
+import { map, omit } from 'lodash';
+
+import type { BackupSearchMessage, Conversation, IncompleteMessage } from '../types';
+
+type UseSelectionProps = {
 	currentFolderId: string;
 	count: number;
-	items?: Array<IncompleteMessage | Conversation>;
+	items?: Array<IncompleteMessage | Conversation | BackupSearchMessage>;
 	setCount: (value: number | ((prevState: number) => number)) => void;
 };
 
-export type useSelectionReturnType = {
+type UseSelectionReturnType = {
 	selected: Record<string, boolean>;
 	isSelectModeOn: boolean;
 	setIsSelectModeOn: (value: boolean | ((prev: boolean) => boolean)) => void;
@@ -29,7 +31,7 @@ export const useSelection = ({
 	setCount,
 	count,
 	items = []
-}: useSelectionProps): useSelectionReturnType => {
+}: UseSelectionProps): UseSelectionReturnType => {
 	const selected = useRef<Record<string, boolean>>({});
 	const [isSelectModeOn, setIsSelectModeOn] = useState(false);
 	const isAllSelected = useMemo(() => count === items.length, [count, items.length]);
@@ -60,9 +62,9 @@ export const useSelection = ({
 	}, [setCount, setIsSelectModeOn]);
 
 	const selectAll = useCallback(() => {
-		map(items, (conv) => {
-			if (!selected.current[conv.id]) {
-				selectItem(conv.id);
+		map(items, (item) => {
+			if (!selected.current[item.id]) {
+				selectItem(item.id);
 			}
 		});
 	}, [items, selectItem, selected]);
