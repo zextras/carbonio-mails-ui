@@ -196,7 +196,7 @@ function updateIdentities(
 function updateAccountStore(
 	mods: Partial<Mods & { attrs?: AttrsMods }>,
 	r: SaveSettingsResponse
-): SaveSettingsResponse {
+): void {
 	useAccountStore.setState((s: AccountState) => ({
 		settings: {
 			...s.settings,
@@ -214,7 +214,6 @@ function updateAccountStore(
 			}
 		} as Account
 	}));
-	return r;
 }
 
 const save = (
@@ -228,12 +227,15 @@ const save = (
 				${getRequestForAmavisSendersListAttrs(mods.attrs)}
 				${getRequestForIdentities(mods.identity)}
 		</BatchRequest>`
-	).then((r) => updateAccountStore(mods, r));
+	).then((resp) => {
+		updateAccountStore(mods, resp);
+		return resp;
+	});
 
 export const saveSettings = (
 	mods: MailMods
 ): Promise<SaveSettingsResponse & { type: 'fulfilled' }> =>
-	save(mods, MAIL_APP_ID).then((r) => ({
-		...r,
+	save(mods, MAIL_APP_ID).then((resp) => ({
+		...resp,
 		type: 'fulfilled'
 	}));
