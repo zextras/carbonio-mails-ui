@@ -3,24 +3,30 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { xmlSoapFetch } from '@zextras/carbonio-shell-ui';
+import { Identity, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
 import { useAccountStore } from '@zextras/carbonio-shell-ui/lib/store/account';
-import { Account, AccountState } from '@zextras/carbonio-shell-ui/lib/types/account';
+import {
+	Account,
+	AccountSettingsAttrs,
+	AccountSettingsPrefs,
+	AccountState,
+	ZimletProp
+} from '@zextras/carbonio-shell-ui/lib/types/account';
 import type {
-	Mods,
-	PropsMods,
 	CreateIdentityResponse,
-	ModifyPropertiesResponse,
-	ModifyPrefsResponse,
-	ModifyIdentityResponse,
 	DeleteIdentityResponse,
-	IdentityMods
+	IdentityMods,
+	ModifyIdentityResponse,
+	ModifyPrefsResponse,
+	ModifyPropertiesResponse,
+	Mods,
+	PropsMods
 } from '@zextras/carbonio-shell-ui/lib/types/network';
-import { map, isArray, reduce, findIndex, find, filter } from 'lodash';
+import { filter, find, findIndex, isArray, map, reduce } from 'lodash';
 
 import { MAIL_APP_ID } from '../../constants';
 
-export type AttrsMods = Record<string, { app: string; value: unknown }>;
+export type AttrsMods = Record<string, unknown>;
 
 type MailMods = Mods & {
 	attrs?: AttrsMods;
@@ -93,6 +99,100 @@ function getRequestForIdentities(identity: IdentityMods | undefined): string {
 	}`;
 }
 
+function mergePrefs(
+	mods: Partial<Mods & { attrs?: AttrsMods }>,
+	s: AccountState
+): AccountSettingsPrefs {
+	return reduce(
+		mods.prefs,
+		(acc, pref, key) => ({
+			...acc,
+			[key]: pref as string
+		}),
+		s.settings.prefs
+	);
+}
+
+function mergeAttrs(
+	mods: Partial<Mods & { attrs?: AttrsMods }>,
+	s: AccountState
+): AccountSettingsAttrs {
+	return reduce(
+		mods.attrs,
+		(acc, attr, key) => ({
+			...acc,
+			[key]: attr as string
+		}),
+		s.settings.attrs
+	);
+}
+
+function mergeProps(
+	mods: Partial<Mods & { attrs?: AttrsMods }>,
+	s: AccountState
+): Array<ZimletProp> {
+	return reduce(
+		mods.props,
+		(acc, { app, value }, key) => {
+			const propIndex = findIndex(acc, (p) => p.name === key && p.zimlet === app);
+			if (propIndex >= 0) {
+				// eslint-disable-next-line no-param-reassign
+				acc[propIndex] = {
+					name: key,
+					zimlet: app,
+					_content: value as string
+				};
+			} else {
+				acc.push({
+					name: key,
+					zimlet: app,
+					_content: value as string
+				});
+			}
+			return acc;
+		},
+		s.settings.props
+	);
+}
+
+function updateIdentities(
+	s: AccountState,
+	mods: Partial<Mods & { attrs?: AttrsMods }>,
+	r: SaveSettingsResponse
+): Identity[] | undefined {
+	return typeof s.account !== 'undefined'
+		? reduce(
+				mods?.identity?.modifyList,
+				(acc, { id, prefs }) => {
+					const propIndex = findIndex(acc, (itemMods, indexAccount) => acc[indexAccount].id === id);
+					if (propIndex > -1) {
+						// eslint-disable-next-line no-param-reassign
+						acc[propIndex]._attrs = {
+							...acc[propIndex]._attrs,
+							...prefs
+						};
+						if (prefs.zimbraPrefIdentityName && acc[propIndex].name !== 'DEFAULT') {
+							// eslint-disable-next-line no-param-reassign
+							acc[propIndex].name = prefs.zimbraPrefIdentityName;
+						}
+					}
+					return acc;
+				},
+				[
+					...filter(
+						s.account.identities.identity,
+						(item) => !mods?.identity?.deleteList?.includes(item.id)
+					).filter((i) => i.name !== 'DEFAULT'),
+					...map(r?.CreateIdentityResponse, (item) => item.identity[0]),
+					...filter(
+						s.account.identities.identity,
+						(item) => !mods?.identity?.deleteList?.includes(item.id)
+					).filter((i) => i.name === 'DEFAULT')
+				]
+			)
+		: undefined;
+}
+
 function updateAccountStore(
 	mods: Partial<Mods & { attrs?: AttrsMods }>,
 	r: SaveSettingsResponse
@@ -100,36 +200,9 @@ function updateAccountStore(
 	useAccountStore.setState((s: AccountState) => ({
 		settings: {
 			...s.settings,
-			prefs: reduce(
-				mods.prefs,
-				(acc, pref, key) => ({
-					...acc,
-					[key]: pref as string
-				}),
-				s.settings.prefs
-			),
-			props: reduce(
-				mods.props,
-				(acc, { app, value }, key) => {
-					const propIndex = findIndex(acc, (p) => p.name === key && p.zimlet === app);
-					if (propIndex >= 0) {
-						// eslint-disable-next-line no-param-reassign
-						acc[propIndex] = {
-							name: key,
-							zimlet: app,
-							_content: value as string
-						};
-					} else {
-						acc.push({
-							name: key,
-							zimlet: app,
-							_content: value as string
-						});
-					}
-					return acc;
-				},
-				s.settings.props
-			)
+			prefs: mergePrefs(mods, s),
+			attrs: mergeAttrs(mods, s),
+			props: mergeProps(mods, s)
 		},
 		account: {
 			...s.account,
@@ -137,41 +210,7 @@ function updateAccountStore(
 				find(mods?.identity?.modifyList, (item) => item.id === s?.account?.id)?.prefs
 					.zimbraPrefIdentityName || s.account?.displayName,
 			identities: {
-				identity:
-					typeof s.account !== 'undefined'
-						? reduce(
-								mods?.identity?.modifyList,
-								(acc, { id, prefs }) => {
-									const propIndex = findIndex(
-										acc,
-										(itemMods, indexAccount) => acc[indexAccount].id === id
-									);
-									if (propIndex > -1) {
-										// eslint-disable-next-line no-param-reassign
-										acc[propIndex]._attrs = {
-											...acc[propIndex]._attrs,
-											...prefs
-										};
-										if (prefs.zimbraPrefIdentityName && acc[propIndex].name !== 'DEFAULT') {
-											// eslint-disable-next-line no-param-reassign
-											acc[propIndex].name = prefs.zimbraPrefIdentityName;
-										}
-									}
-									return acc;
-								},
-								[
-									...filter(
-										s.account.identities.identity,
-										(item) => !mods?.identity?.deleteList?.includes(item.id)
-									).filter((i) => i.name !== 'DEFAULT'),
-									...map(r?.CreateIdentityResponse, (item) => item.identity[0]),
-									...filter(
-										s.account.identities.identity,
-										(item) => !mods?.identity?.deleteList?.includes(item.id)
-									).filter((i) => i.name === 'DEFAULT')
-								]
-							)
-						: undefined
+				identity: updateIdentities(s, mods, r)
 			}
 		} as Account
 	}));
