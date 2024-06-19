@@ -5,10 +5,9 @@
  */
 import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
+import { Container, Spinner } from '@zextras/carbonio-design-system';
 import {
 	SEARCH_APP_ID,
-	Spinner,
 	replaceHistory,
 	setAppContext,
 	t,
@@ -27,7 +26,6 @@ import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/ho
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { search } from '../../store/actions/search';
 import { searchByQuery } from '../../store/actions/searchByQuery';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
 
@@ -267,7 +265,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 							)}
 						</Route>
 					</Switch>
-					<Suspense fallback={<Spinner />}>
+					<Suspense fallback={<Spinner color="gray5" />}>
 						<Container mainAlignment="flex-start" width="75%">
 							<SearchPanel searchResults={searchResults} query={query} />
 						</Container>
