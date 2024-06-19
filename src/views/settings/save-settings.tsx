@@ -43,7 +43,7 @@ function getRequestForProps(props: PropsMods | undefined, appId: string): string
 		: '';
 }
 
-function getRequestForAttrs(attrs: AttrsMods | undefined): string {
+function getRequestForAmavisSendersListAttrs(attrs: AttrsMods | undefined): string {
 	return attrs?.amavisWhitelistSender || attrs?.amavisBlacklistSender
 		? `<ModifyWhiteBlackListRequest xmlns="urn:zimbraAccount">${
 				attrs?.amavisWhitelistSender && isArray(attrs?.amavisWhitelistSender)
@@ -186,7 +186,7 @@ const save = (
 		'Batch',
 		`<BatchRequest xmlns="urn:zimbra" onerror="stop">
 				${getRequestForProps(mods.props, appId)}
-				${getRequestForAttrs(mods.attrs)}
+				${getRequestForAmavisSendersListAttrs(mods.attrs)}
 				${getRequestForIdentities(mods.identity)}
 		</BatchRequest>`
 	).then((r) => updateAccountStore(mods, r));
