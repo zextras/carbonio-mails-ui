@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.16.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.15.1...v1.16.0) (2024-06-19)
+
+
+### Features
+
+* allow the user to import vCard from mail attachment ([8e6858c](https://github.com/zextras/carbonio-mails-ui/commit/8e6858c2fc476620707cf5638aed143a81c9dbde))
+* remove redundant 'Share folder' option from the contextual menu ([#573](https://github.com/zextras/carbonio-mails-ui/issues/573)) ([317003b](https://github.com/zextras/carbonio-mails-ui/commit/317003bede43677e31c2bcecda01b1b08fae5bdf))
+
+
+### Bug Fixes
+
+* add new optional attribute type in folderactionrequest for empty operation ([a2047c9](https://github.com/zextras/carbonio-mails-ui/commit/a2047c9531421e80f7754926a61fc1910cacc8bc))
+* add tooltip on preview-panel-header.tsx for subject ([#586](https://github.com/zextras/carbonio-mails-ui/issues/586)) ([cacab7e](https://github.com/zextras/carbonio-mails-ui/commit/cacab7e42dcf279074873c6d3118cce6b9d5510e))
+* **editor:** avoid execution loop in the mail editor ([#584](https://github.com/zextras/carbonio-mails-ui/issues/584)) ([92e6129](https://github.com/zextras/carbonio-mails-ui/commit/92e6129d5250edb2e5e5824fca4009ea44c7afb0))
+* emails are not printed completely ([c8fa328](https://github.com/zextras/carbonio-mails-ui/commit/c8fa328503392507322635ae6d6e1a4b56b63708))
+* junk folder of delegated account shows marks as spam in the junk folder ([d836fbf](https://github.com/zextras/carbonio-mails-ui/commit/d836fbf0e2534f55f6ca3056f7dd8ea98aeed916))
+* open in new window function without content ([#579](https://github.com/zextras/carbonio-mails-ui/issues/579)) ([4f19ac1](https://github.com/zextras/carbonio-mails-ui/commit/4f19ac1f8759238802d58cc56374e4dcc8fe52c7))
+* remove useless sharing user type selector from the 'add share' modal ([#574](https://github.com/zextras/carbonio-mails-ui/issues/574)) ([ff840c6](https://github.com/zextras/carbonio-mails-ui/commit/ff840c6c5f028b24726dedbf9397c352daa2edbf))
+* when the user try to save a signature too big no error is raised ([#580](https://github.com/zextras/carbonio-mails-ui/issues/580)) ([1cd3c21](https://github.com/zextras/carbonio-mails-ui/commit/1cd3c214f2c7e87a68434343cd3279bc4021fb9d))
+
 ### [1.15.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.15.0...v1.15.1) (2024-05-09)
 
 ## [1.15.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.14.2...v1.15.0) (2024-04-12)
