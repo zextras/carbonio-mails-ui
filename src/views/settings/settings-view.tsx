@@ -194,7 +194,7 @@ const SettingsView: FC = () => {
 					hideButton: true,
 					replace: true
 				});
-				return Promise.reject(new Error('Invalid signature'));
+				return Promise.allSettled([Promise.reject(new Error('Invalid signature'))]);
 			}
 
 			const itemsDelete = filter(originalSignatures, (x: SignItemType) => {
