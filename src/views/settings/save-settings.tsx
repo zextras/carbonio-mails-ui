@@ -216,10 +216,7 @@ function updateAccountStore(
 	}));
 }
 
-const save = (
-	mods: Partial<MailMods>,
-	appId: string = MAIL_APP_ID
-): Promise<SaveSettingsResponse> =>
+export const saveSettings = (mods: MailMods, appId = MAIL_APP_ID): Promise<SaveSettingsResponse> =>
 	xmlSoapFetch<string, SaveSettingsResponse>(
 		'Batch',
 		`<BatchRequest xmlns="urn:zimbra" onerror="stop">
@@ -231,11 +228,3 @@ const save = (
 		updateAccountStore(mods, resp);
 		return resp;
 	});
-
-export const saveSettings = (
-	mods: MailMods
-): Promise<SaveSettingsResponse & { type: 'fulfilled' }> =>
-	save(mods, MAIL_APP_ID).then((resp) => ({
-		...resp,
-		type: 'fulfilled'
-	}));

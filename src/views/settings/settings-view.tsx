@@ -315,8 +315,8 @@ const SettingsView: FC = () => {
 			changes = { ...changes, identity: { modifyList: identitiesToUpdate } };
 		}
 		if (!isEmpty(changes)) {
-			const editResult = saveSettings(changes).then((res) => {
-				if (res.type.includes('fulfilled')) {
+			const editResult = saveSettings(changes)
+				.then(() => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
@@ -329,12 +329,12 @@ const SettingsView: FC = () => {
 					setCurrentProps((a) => ({ ...a, ...propsToUpdate }));
 					setUpdatedAttrs({});
 					/* Update the current Identities with changes if identities updated
-						and request is performed successfully
-					*/
+					and request is performed successfully */
 					if (Object.keys(identitiesToUpdate).length > 0) {
 						setCurrentIdentities(updatedIdentities);
 					}
-				} else {
+				})
+				.catch(() => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
@@ -343,8 +343,7 @@ const SettingsView: FC = () => {
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
-				}
-			});
+				});
 			return Promise.allSettled([editResult]);
 		}
 		return Promise.allSettled([Promise.resolve()]);
