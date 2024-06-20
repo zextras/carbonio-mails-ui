@@ -3,7 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { xmlSoapFetch } from '@zextras/carbonio-shell-ui';
+import {
+	SoapBody,
+	useUserAccount,
+	useUserSettings,
+	xmlSoapFetch
+} from '@zextras/carbonio-shell-ui';
 import type {
 	CreateIdentityResponse,
 	DeleteIdentityResponse,
@@ -24,7 +29,7 @@ type MailMods = Mods & {
 	attrs?: AttrsMods;
 };
 
-export type SaveSettingsResponse = {
+export type SaveSettingsResponse = SoapBody<unknown> & {
 	ModifyPropertiesResponse?: ModifyPropertiesResponse[];
 	ModifyPrefsResponse?: ModifyPrefsResponse[];
 	ModifyIdentityResponse?: ModifyIdentityResponse[];
@@ -91,20 +96,10 @@ function getRequestForIdentities(identity: IdentityMods | undefined): string {
 	}`;
 }
 
-function updateAccountStore(
-	updateSettings,
-	updateAccount,
-	mods: Partial<Mods & { attrs?: AttrsMods }>,
-	response: SaveSettingsResponse
-): void {
-	updateSettings(mods);
-	updateAccount(mods, response);
-}
-
 export const saveSettings = (
 	mods: MailMods,
-	updateSettings,
-	updateAccount,
+	updateSettings: ReturnType<typeof useUserSettings>['updateSettings'],
+	updateAccount: ReturnType<typeof useUserAccount>['updateAccount'],
 	appId = MAIL_APP_ID
 ): Promise<SaveSettingsResponse> =>
 	xmlSoapFetch<string, SaveSettingsResponse>(
@@ -115,6 +110,7 @@ export const saveSettings = (
 				${getRequestForIdentities(mods.identity)}
 		</BatchRequest>`
 	).then((resp) => {
-		updateAccountStore(updateSettings, updateAccount, mods, resp);
+		updateSettings(mods);
+		updateAccount(mods, resp);
 		return resp;
 	});

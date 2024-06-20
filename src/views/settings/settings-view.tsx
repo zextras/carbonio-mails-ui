@@ -192,15 +192,19 @@ const SettingsView: FC = () => {
 				const signatureKey = isFowardSignature
 					? 'zimbraPrefForwardReplySignatureId'
 					: 'zimbraPrefDefaultSignatureId';
-				saveSettings({
-					prefs: { [signatureKey]: realSignatureId }
-				}).then(() => {
+				saveSettings(
+					{
+						prefs: { [signatureKey]: realSignatureId }
+					},
+					updateSettings,
+					updateAccount
+				).then(() => {
 					setUpdatedPrefs({});
 					setUpdatedAttrs({});
 				});
 			}
 		},
-		[]
+		[updateAccount, updateSettings]
 	);
 
 	const saveChanges = useCallback<SettingsHeaderProps['onSave']>(() => {
@@ -315,7 +319,7 @@ const SettingsView: FC = () => {
 			changes = { ...changes, identity: { modifyList: identitiesToUpdate } };
 		}
 		if (!isEmpty(changes)) {
-			const editResult = saveSettings(changes, updateSettings)
+			const editResult = saveSettings(changes, updateSettings, updateAccount)
 				.then(() => {
 					createSnackbar({
 						key: `new`,
@@ -361,6 +365,7 @@ const SettingsView: FC = () => {
 		setNewOrForwardSignatureId,
 		flag,
 		updateSettings,
+		updateAccount,
 		updatedIdentities
 	]);
 
