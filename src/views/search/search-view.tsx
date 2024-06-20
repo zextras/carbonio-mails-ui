@@ -5,10 +5,9 @@
  */
 import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
+import { Container, Spinner } from '@zextras/carbonio-design-system';
 import {
 	SEARCH_APP_ID,
-	Spinner,
 	replaceHistory,
 	setAppContext,
 	t,
@@ -27,7 +26,7 @@ import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/ho
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { search } from '../../store/actions/search';
+import { searchByQuery } from '../../store/actions/searchByQuery';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
@@ -102,13 +101,13 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 			isSharedFolderIncluded && searchInFolders?.length > 0
 				? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
 				: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
-		[isSharedFolderIncluded, searchInFolders.length, query, foldersToSearchInQuery]
+		[foldersToSearchInQuery, isSharedFolderIncluded, query, searchInFolders?.length]
 	);
 
 	const searchQuery = useCallback(
 		async (queryString: string, reset: boolean) => {
 			const resultAction = await dispatch(
-				search({
+				searchByQuery({
 					query: queryString,
 					limit: LIST_LIMIT.INITIAL_LIMIT,
 					sortBy: 'dateDesc',
@@ -120,7 +119,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 			);
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			if (search.rejected.match(resultAction)) {
+			if (searchByQuery.rejected.match(resultAction)) {
 				if (
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
@@ -190,7 +189,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				updateQuery(modifiedQuery);
 			}
 		}
-	}, [searchResults, queryArray, updateQuery, findIcon, isInvalidQuery, query, queryToString]);
+	}, [findIcon, isInvalidQuery, query, queryArray, updateQuery]);
 
 	useEffect(() => {
 		if (searchResults.status === 'pending') {
@@ -200,11 +199,10 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	}, [searchResults.status]);
 
 	useEffect(() => {
-		if (query && query.length > 0 && !isInvalidQuery) {
+		if (query?.length > 0 && !isInvalidQuery) {
 			setFilterCount(query.length);
-			searchQuery(queryToString, true);
 		}
-		if (query && query.length === 0) {
+		if (query?.length === 0) {
 			setFilterCount(0);
 			setIsInvalidQuery(false);
 			dispatch(resetSearchResults());
@@ -213,15 +211,11 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [
-		query,
-		queryArray,
-		isInvalidQuery,
-		searchQuery,
-		searchResults.query,
-		queryToString,
-		dispatch
-	]);
+	}, [dispatch, isInvalidQuery, query.length]);
+
+	useEffect(() => {
+		searchQuery(queryToString, true);
+	}, [queryToString, searchQuery]);
 
 	const { path } = useRouteMatch();
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
@@ -271,7 +265,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 							)}
 						</Route>
 					</Switch>
-					<Suspense fallback={<Spinner />}>
+					<Suspense fallback={<Spinner color="gray5" />}>
 						<Container mainAlignment="flex-start" width="75%">
 							<SearchPanel searchResults={searchResults} query={query} />
 						</Container>
