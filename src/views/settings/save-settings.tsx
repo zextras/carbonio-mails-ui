@@ -3,13 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Identity, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
-import {
-	AccountSettingsAttrs,
-	AccountSettingsPrefs,
-	AccountState,
-	ZimletProp
-} from '@zextras/carbonio-shell-ui/lib/types/account';
+import { xmlSoapFetch } from '@zextras/carbonio-shell-ui';
 import type {
 	CreateIdentityResponse,
 	DeleteIdentityResponse,
@@ -20,7 +14,7 @@ import type {
 	Mods,
 	PropsMods
 } from '@zextras/carbonio-shell-ui/lib/types/network';
-import { filter, findIndex, isArray, map, reduce } from 'lodash';
+import { isArray, map } from 'lodash';
 
 import { MAIL_APP_ID } from '../../constants';
 
@@ -97,128 +91,20 @@ function getRequestForIdentities(identity: IdentityMods | undefined): string {
 	}`;
 }
 
-function mergePrefs(
-	mods: Partial<Mods & { attrs?: AttrsMods }>,
-	s: AccountState
-): AccountSettingsPrefs {
-	return reduce(
-		mods.prefs,
-		(acc, pref, key) => ({
-			...acc,
-			[key]: pref as string
-		}),
-		s.settings.prefs
-	);
-}
-
-function mergeAttrs(
-	mods: Partial<Mods & { attrs?: AttrsMods }>,
-	s: AccountState
-): AccountSettingsAttrs {
-	return reduce(
-		mods.attrs,
-		(acc, attr, key) => ({
-			...acc,
-			[key]: attr as string
-		}),
-		s.settings.attrs
-	);
-}
-
-function mergeProps(
-	mods: Partial<Mods & { attrs?: AttrsMods }>,
-	s: AccountState
-): Array<ZimletProp> {
-	return reduce(
-		mods.props,
-		(acc, { app, value }, key) => {
-			const propIndex = findIndex(acc, (p) => p.name === key && p.zimlet === app);
-			if (propIndex >= 0) {
-				// eslint-disable-next-line no-param-reassign
-				acc[propIndex] = {
-					name: key,
-					zimlet: app,
-					_content: value as string
-				};
-			} else {
-				acc.push({
-					name: key,
-					zimlet: app,
-					_content: value as string
-				});
-			}
-			return acc;
-		},
-		s.settings.props
-	);
-}
-
-function updateIdentities(
-	s: AccountState,
-	mods: Partial<Mods & { attrs?: AttrsMods }>,
-	r: SaveSettingsResponse
-): Identity[] | undefined {
-	return typeof s.account !== 'undefined'
-		? reduce(
-				mods?.identity?.modifyList,
-				(acc, { id, prefs }) => {
-					const propIndex = findIndex(acc, (itemMods, indexAccount) => acc[indexAccount].id === id);
-					if (propIndex > -1) {
-						// eslint-disable-next-line no-param-reassign
-						acc[propIndex]._attrs = {
-							...acc[propIndex]._attrs,
-							...prefs
-						};
-						if (prefs.zimbraPrefIdentityName && acc[propIndex].name !== 'DEFAULT') {
-							// eslint-disable-next-line no-param-reassign
-							acc[propIndex].name = prefs.zimbraPrefIdentityName;
-						}
-					}
-					return acc;
-				},
-				[
-					...filter(
-						s.account.identities.identity,
-						(item) => !mods?.identity?.deleteList?.includes(item.id)
-					).filter((i) => i.name !== 'DEFAULT'),
-					...map(r?.CreateIdentityResponse, (item) => item.identity[0]),
-					...filter(
-						s.account.identities.identity,
-						(item) => !mods?.identity?.deleteList?.includes(item.id)
-					).filter((i) => i.name === 'DEFAULT')
-				]
-			)
-		: undefined;
-}
-
 function updateAccountStore(
 	updateSettings,
+	updateAccount,
 	mods: Partial<Mods & { attrs?: AttrsMods }>,
-	r: SaveSettingsResponse
+	response: SaveSettingsResponse
 ): void {
-	/* useAccountStore.setState((s: AccountState) => ({
-		settings: {
-			...s.settings,
-			prefs: mergePrefs(mods, s),
-			attrs: mergeAttrs(mods, s),
-			props: mergeProps(mods, s)
-		},
-		account: {
-			...s.account,
-			displayName:
-				find(mods?.identity?.modifyList, (item) => item.id === s?.account?.id)?.prefs
-					.zimbraPrefIdentityName || s.account?.displayName,
-			identities: {
-				identity: updateIdentities(s, mods, r)
-			}
-		} as Account
-	})); */
 	updateSettings(mods);
+	updateAccount(mods, response);
 }
 
 export const saveSettings = (
 	mods: MailMods,
 	updateSettings,
+	updateAccount,
 	appId = MAIL_APP_ID
 ): Promise<SaveSettingsResponse> =>
 	xmlSoapFetch<string, SaveSettingsResponse>(
@@ -229,6 +115,6 @@ export const saveSettings = (
 				${getRequestForIdentities(mods.identity)}
 		</BatchRequest>`
 	).then((resp) => {
-		updateAccountStore(updateSettings, mods, resp);
+		updateAccountStore(updateSettings, updateAccount, mods, resp);
 		return resp;
 	});
