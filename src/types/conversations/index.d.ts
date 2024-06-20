@@ -16,7 +16,7 @@ export type ConvMessage = {
 export type Conversation = {
 	readonly id: string;
 	date: number;
-	messages?: Array<ConvMessage>;
+	messages: Array<ConvMessage>;
 	participants: Participant[];
 	subject: string;
 	fragment: string;
@@ -25,7 +25,7 @@ export type Conversation = {
 	flagged: boolean;
 	urgent: boolean;
 	tags: string[];
-	parent?: string;
+	parent: string;
 	messagesInConversation: number;
 	sortIndex: number;
 };

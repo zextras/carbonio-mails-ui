@@ -5,12 +5,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { AsyncThunkAction, EnhancedStore } from '@reduxjs/toolkit';
 import { SoapFault } from '@zextras/carbonio-shell-ui';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateStore } from '../../../tests/generators/store';
 import {
 	Conversation,
+	FetchConversationsParameters,
+	FetchConversationsReturn,
+	MailsStateType,
 	MsgMapValue,
 	SearchRequest,
 	SearchResponse,
@@ -20,7 +24,7 @@ import {
 import { searchByQuery } from '../searchByQuery';
 
 describe('searchByQuery', () => {
-	let store;
+	let store: EnhancedStore<MailsStateType>;
 
 	beforeEach(() => {
 		store = generateStore();
@@ -29,7 +33,7 @@ describe('searchByQuery', () => {
 	test('should call the searchAPI with the correct query', async () => {
 		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
-		await store.dispatch(searchByQuery({ query: 'find-me', limit: 100 }));
+		await storeDispatch(searchByQuery({ query: 'find-me', limit: 100 }));
 
 		expect((await interceptor).query).toBe('find-me');
 		expect(store.getState().searches.query).toBe('find-me');
@@ -41,7 +45,7 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await store.dispatch(searchByQuery({ query: 'any', limit: 100 }));
+		await storeDispatch(searchByQuery({ query: 'any', limit: 100 }));
 
 		expect(store.getState().searches.conversations).toEqual({
 			'123': conversationFromStore({ id: '123', subject: 'Subject' })
@@ -53,8 +57,7 @@ describe('searchByQuery', () => {
 			m: [messageFromAPI({ id: '456', su: 'Subject' })],
 			more: false
 		});
-
-		await store.dispatch(searchByQuery({ query: 'any', limit: 100, types: 'message' }));
+		await storeDispatch(searchByQuery({ query: 'any', limit: 100, types: 'message' }));
 
 		expect(store.getState().searches.messages).toEqual({
 			'456': messageFromStore({ id: '456', subject: 'Subject' })
@@ -67,7 +70,7 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await store.dispatch(searchByQuery({ query: 'any', limit: 100 }));
+		await storeDispatch(searchByQuery({ query: 'any', limit: 100 }));
 
 		expect(store.getState().conversations.conversations).toEqual({});
 		expect(store.getState().messages.messages).toEqual({});
@@ -79,7 +82,7 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await store.dispatch(searchByQuery({ query: 'any', limit: 100 }));
+		await storeDispatch(searchByQuery({ query: 'any', limit: 100 }));
 
 		expect(store.getState().conversations.conversations).toEqual({});
 		expect(store.getState().messages.messages).toEqual({});
@@ -91,7 +94,7 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await store.dispatch(searchByQuery({ query: 'any', limit: 100 }));
+		await storeDispatch(searchByQuery({ query: 'any', limit: 100 }));
 
 		expect(store.getState().searches.searchResultsIds).toEqual(['123']);
 	});
@@ -102,7 +105,7 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await store.dispatch(searchByQuery({ query: 'any', limit: 100, types: 'message' }));
+		await storeDispatch(searchByQuery({ query: 'any', limit: 100, types: 'message' }));
 
 		expect(store.getState().searches.searchResultsIds).toEqual(['456']);
 	});
@@ -114,9 +117,9 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await store.dispatch(searchByQuery({ query: 'aaaaaa', limit: 100 }));
+		await storeDispatch(searchByQuery({ query: 'aaaaaa', limit: 100 }));
 
-		expect(store.getState().searches.conversations['123']).toBeDefined();
+		expect(store.getState().searches.conversations?.['123']).toBeDefined();
 		expect(store.getState().searches.messages).toStrictEqual({});
 	});
 
@@ -127,7 +130,7 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await store.dispatch(
+		await storeDispatch(
 			searchByQuery({
 				query: 'aaaaaa',
 				limit: 100,
@@ -135,7 +138,7 @@ describe('searchByQuery', () => {
 			})
 		);
 
-		expect(store.getState().searches.conversations['123']).toBeDefined();
+		expect(store.getState().searches.conversations?.['123']).toBeDefined();
 		expect(store.getState().searches.messages).toStrictEqual({});
 	});
 
@@ -146,7 +149,7 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await store.dispatch(
+		await storeDispatch(
 			searchByQuery({
 				query: 'aaaaaa',
 				limit: 100,
@@ -161,11 +164,23 @@ describe('searchByQuery', () => {
 	test('if soap response fails store is unaltered', async () => {
 		createSoapAPIInterceptor<SearchRequest, SoapFault>('Search', failFromAPI());
 
-		await store.dispatch(searchByQuery({ query: 'aaaaaa', limit: 100 }));
+		await storeDispatch(searchByQuery({ query: 'aaaaaa', limit: 100 }));
 
 		expect(store.getState().searches.messages).toStrictEqual({});
 		expect(store.getState().searches.conversations).toStrictEqual({});
 	});
+
+	async function storeDispatch(
+		action: AsyncThunkAction<
+			FetchConversationsReturn | undefined,
+			FetchConversationsParameters,
+			any
+		>
+	): Promise<void> {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		await store.dispatch(action);
+	}
 });
 
 function failFromAPI(): SoapFault {
@@ -209,7 +224,7 @@ function messageFromAPI(params: Partial<SoapIncompleteMessage> = {}): SoapIncomp
 	};
 }
 
-function conversationFromStore(params: Partial<Conversation> = {}): Conversation {
+function conversationFromStore(params: Partial<Conversation> = {}): Partial<Conversation> {
 	return {
 		tags: ['nil:tag names'],
 		id: '123',
