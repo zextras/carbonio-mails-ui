@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Identity, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
-import { useAccountStore } from '@zextras/carbonio-shell-ui/lib/store/account';
 import {
-	Account,
 	AccountSettingsAttrs,
 	AccountSettingsPrefs,
 	AccountState,
@@ -22,7 +20,7 @@ import type {
 	Mods,
 	PropsMods
 } from '@zextras/carbonio-shell-ui/lib/types/network';
-import { filter, find, findIndex, isArray, map, reduce } from 'lodash';
+import { filter, findIndex, isArray, map, reduce } from 'lodash';
 
 import { MAIL_APP_ID } from '../../constants';
 
@@ -194,10 +192,11 @@ function updateIdentities(
 }
 
 function updateAccountStore(
+	updateSettings,
 	mods: Partial<Mods & { attrs?: AttrsMods }>,
 	r: SaveSettingsResponse
 ): void {
-	useAccountStore.setState((s: AccountState) => ({
+	/* useAccountStore.setState((s: AccountState) => ({
 		settings: {
 			...s.settings,
 			prefs: mergePrefs(mods, s),
@@ -213,10 +212,15 @@ function updateAccountStore(
 				identity: updateIdentities(s, mods, r)
 			}
 		} as Account
-	}));
+	})); */
+	updateSettings(mods);
 }
 
-export const saveSettings = (mods: MailMods, appId = MAIL_APP_ID): Promise<SaveSettingsResponse> =>
+export const saveSettings = (
+	mods: MailMods,
+	updateSettings,
+	appId = MAIL_APP_ID
+): Promise<SaveSettingsResponse> =>
 	xmlSoapFetch<string, SaveSettingsResponse>(
 		'Batch',
 		`<BatchRequest xmlns="urn:zimbra" onerror="stop">
@@ -225,6 +229,6 @@ export const saveSettings = (mods: MailMods, appId = MAIL_APP_ID): Promise<SaveS
 				${getRequestForIdentities(mods.identity)}
 		</BatchRequest>`
 	).then((resp) => {
-		updateAccountStore(mods, resp);
+		updateAccountStore(updateSettings, mods, resp);
 		return resp;
 	});

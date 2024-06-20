@@ -46,7 +46,7 @@ import type { AccountIdentity, PrefsType, PropsType, SignItemType } from '../../
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
 const SettingsView: FC = () => {
-	const { attrs, prefs, props } = useUserSettings();
+	const { attrs, prefs, props, updateSettings } = useUserSettings();
 	const account = useUserAccount();
 	const { identity } = cloneDeep(account.identities);
 	const defaultAccount = remove(identity, (acc: AccountIdentity) => acc.name === 'DEFAULT');
@@ -315,7 +315,7 @@ const SettingsView: FC = () => {
 			changes = { ...changes, identity: { modifyList: identitiesToUpdate } };
 		}
 		if (!isEmpty(changes)) {
-			const editResult = saveSettings(changes)
+			const editResult = saveSettings(changes, updateSettings)
 				.then(() => {
 					createSnackbar({
 						key: `new`,
@@ -350,8 +350,8 @@ const SettingsView: FC = () => {
 	}, [
 		signatures,
 		originalSignatures,
-		attrsToUpdate,
 		prefsToUpdate,
+		attrsToUpdate,
 		propsToUpdate,
 		identitiesToUpdate,
 		validateSignatures,
@@ -360,6 +360,7 @@ const SettingsView: FC = () => {
 		createSnackbar,
 		setNewOrForwardSignatureId,
 		flag,
+		updateSettings,
 		updatedIdentities
 	]);
 
