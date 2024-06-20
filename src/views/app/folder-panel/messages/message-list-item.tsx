@@ -24,7 +24,7 @@ import {
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { find, includes, isEmpty, noop, reduce } from 'lodash';
+import { filter, find, forEach, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
 
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
@@ -147,10 +147,28 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 			reduce(
 				tagsFromStore,
 				(acc, v) => {
-					if (includes(item.tags, v.id))
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[v.color ?? '0'].hex });
+					if (includes(item.tags, v.id)) {
+						acc.push({
+							...v,
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
+						});
+					} else if (item.tags?.length > 0 && !includes(item.tags, v.id)) {
+						const findRealTag = new RegExp('nil:.{1,}');
+						forEach(
+							filter(item.tags, (tn) => findRealTag.test(tn)),
+							(tagNotInList) => {
+								acc.push({
+									id: tagNotInList,
+									name: tagNotInList.split(':')[1],
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
+									color: 1
+								});
+							}
+						);
+					}
 					return acc;
 				},
 				[] as Array<Tag & { color: string }>
