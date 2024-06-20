@@ -54,13 +54,7 @@
     },
     "label": {
         "me": "Ich",
-        "remove": "Löschen",
-        "remove_plural": "Alle Löschen",
-        "attachment": "Anhang",
-        "attachment_plural": "Anhänge",
         "cancel": "Abbrechen",
-        "download": "Herunterladen",
-        "download_plural": "Alle herunterladen",
         "edit": "Bearbeiten",
         "save": "Speichern",
         "send": "Senden",
@@ -104,8 +98,6 @@
         "flash_browser_title": "Browser Titel beleuchten",
         "send_notification": "Eine Benachrichtigungsnachricht senden an",
         "show_popup": "Eine Popup-Benachrichtigung anzeigen",
-        "advanced_filters": "Fortgeschrittener Filter",
-        "advanced_filters_plural": "Fortgeschrittene Filter",
         "create": "Erstellen",
         "delete": "Löschen",
         "delete_permanently": "Endgültig löschen",
@@ -156,8 +148,6 @@
         "choose_folder": "Ordner auswählen",
         "loading_results": "Egebnisse laden…",
         "mail_folder": "E-Mail-Ordner",
-        "mail_selected": "{{count}} E-Mail ausgewählt",
-        "mail_selected_plural": "{{count}} ausgewählte E-Mails",
         "mail_settings": "E-Mail-Einstellungen",
         "search_activate_selection_mode": "Der Auswahlmodus ist bei den Suchergebnissen noch nicht verfügbar",
         "show_all": "Alle anzeigen",
@@ -270,8 +260,6 @@
         },
         "mark_read_message_immediately": "Meldungen im Display sofort als gelesen markieren",
         "mark_read_message_manually": "Manuell als gelesen markieren, indem Sie auf dieses Symbol klicken",
-        "attachment_with_count": "{{count}} Anhang",
-        "attachment_with_count_plural": "{{count}} Anhänge",
         "attachments_disclaimer": "Sie sehen eine angehängte Nachricht. Die Echtheit der angehängten Nachrichten kann nicht überprüft werden.",
         "deselect_all": "Alle abwählen",
         "extra_windows": {
@@ -378,8 +366,6 @@
             "message_deleted": "Nachricht gelöscht",
             "folder_restored": "Ordner restauriert",
             "mail_saved_to_drafts": "In Entwürfen gespeicherte E-Mails",
-            "sending_mail_in_count": "Senden Sie Ihre Nachricht in {{count}} Sekunde",
-            "sending_mail_in_count_plural": "Senden Sie Ihre Nachricht in {{count}} Sekunden",
             "tag_not_updated": "Es ist ein Fehler aufgetreten, der Tag wurde nicht aktualisiert. Bitte versuchen Sie es erneut.",
             "tag_created": "Tag {{name}} erfolgreich erstellt",
             "tag_deleted": "{{name}} Tag erfolgreich gelöscht",
@@ -474,8 +460,6 @@
         "edit": "Eigenschaften für das Teilen bearbeiten",
         "enable_rich_text": "Rich Text Editor aktivieren",
         "enable_urgent": "Dringend aktivieren",
-        "folder_sharing_status": "Mit {{count}} Nutzer geteilt",
-        "folder_sharing_status_plural": "Mit {{count}} Nutzern geteilt",
         "folder_linked_status": "Mit mir geteilt",
         "marked_as_important": "Als wichtig markiert"
     },
@@ -519,8 +503,6 @@
         },
         "new_mail_optn": {
             "manually": "Manuell",
-            "minute": "{{count}} Minute",
-            "minute_plural": "{{count}} Minuten",
             "when_arrive": "Sobald eine neue E-Mail ankommt"
         },
         "notify_folder_optn": {
@@ -631,11 +613,7 @@
             "console": "Console",
             "comic": "Comic"
         },
-        "font_size": "{{count}} pt",
-        "font_size_plural": "{{count}} pt",
         "mail_unsend_time": {
-            "second": "{{count}} Sekunde",
-            "second_plural": "{{count}} Sekunden",
             "no_delay": "Keine Verzögerung"
         },
         "address": "Adresse",

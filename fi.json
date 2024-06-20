@@ -27,10 +27,6 @@
         "preview_new_tab": "Klikkaa avataksesi esikatselun uuteen välilehteen",
         "show_original": "Näytä alkuperäinen"
     },
-    "label": {
-        "remove": "Poista",
-        "remove_plural": "Poista kaikki"
-    },
     "displayer": {
         "search_description1": "Tai valitse \"Edityneet suotimet\" tarkentaaksesi hakuasi.",
         "search_description2": "Yritä aloittaa toinen haku.",

@@ -61,17 +61,9 @@
         "attention": "Atención"
     },
     "label": {
-        "attachment": "Adjunto",
-        "attachment_plural": "Adjuntos",
         "cancel": "Cancelar",
-        "download_0": "Descargar",
-        "download_1": "Descargar todo",
-        "download_2": "",
         "edit": "Editar",
         "me": "Yo",
-        "remove_0": "Eliminar",
-        "remove_1": "Eliminar todo",
-        "remove_2": "",
         "save": "Guardar",
         "send": "Enviar",
         "share": "Compartir",
@@ -114,8 +106,6 @@
         "would_like_to_share": "compartió su",
         "grantee": "Beneficiario: ",
         "highlight_tab": "Resaltar la pestaña del E-mail",
-        "advanced_filters": "Filtro avanzado",
-        "advanced_filters_plural": "Filtros avanzados",
         "back": "Volver",
         "create": "Crear",
         "delete": "Eliminar",
@@ -159,8 +149,6 @@
         "error_address": "Se requiere una dirección de e-mail válida",
         "hide": "Ocultar",
         "loading_results": "Cargando resultados…",
-        "mail_selected": "{{count}} mensaje seleccionado",
-        "mail_selected_plural": "{{count}} mensajes seleccionados",
         "mail_settings": "Ajustes de correo",
         "select_signature": "Seleccionar firma",
         "sending": "Enviando",
@@ -276,8 +264,6 @@
         "no_signature": "Sin firma",
         "mark_read_message_manually": "Marcar manualmente como leído haciendo clic en el ícono",
         "mark_read_message_immediately": "Marcar mensaje como leído inmediatamente al seleccionarlo",
-        "attachment_with_count": "{{count}} Adjunto",
-        "attachment_with_count_plural": "{{count}} Adjuntos",
         "attachments_disclaimer": "Estás viendo un mensaje adjunto. La autenticidad del mismo no se puede verificar.",
         "choose_file": "Seleccionar archivo",
         "deselect_all": "Deseleccionar todo",
@@ -367,8 +353,6 @@
             "marked_as_non_spam": "Has clasificado este mensaje como \"No es Spam\"",
             "mail_saved_to_drafts": "El mensaje se ha guardado en Borradores",
             "folder_restored": "La carpeta ha sido restaurada",
-            "sending_mail_in_count": "Enviando mensaje en {{count}} segundo",
-            "sending_mail_in_count_plural": "Enviando mensaje en {{count}} segundos",
             "tag_not_updated": "Algo salió mal, la etiqueta no pudo ser actualizada. Intenta nuevamente.",
             "tag_created": "Se ha creado la etiqueta \"{{name}}\"",
             "tag_deleted": "Se ha eliminado la etiqueta \"{{name}}\"",
@@ -498,8 +482,6 @@
         "enable_urgent": "Activar Urgente",
         "resend": "Reenviar notificación sobre este uso compartido",
         "revoke": "Revocar acceso",
-        "folder_sharing_status": "Compartido con {{count}} usuario",
-        "folder_sharing_status_plural": "Compartido con {{count}} usuarios",
         "folder_linked_status": "Compartido conmigo",
         "marked_as_important": "Marcado como importante"
     },
@@ -534,8 +516,6 @@
         },
         "new_mail_optn": {
             "manually": "Manualmente",
-            "minute": "{{count}} minuto",
-            "minute_plural": "{{count}} minutos",
             "when_arrive": "A medida que llegan los mensajes"
         },
         "notify_folder_optn": {
@@ -646,11 +626,7 @@
             "wide_block": "Wide Block"
         },
         "font": "Fuente",
-        "font_size": "{{count}} pt",
-        "font_size_plural": "{{count}} pt",
         "mail_unsend_time": {
-            "second": "{{count}} segundo",
-            "second_plural": "{{count}} segundos",
             "no_delay": "Sin atraso"
         },
         "address": "Dirección",

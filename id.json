@@ -63,11 +63,8 @@
     "label": {
         "me": "Saya",
         "save": "Simpan",
-        "attachment": "Lampiran",
         "cancel": "Batal",
-        "download": "Unduh semua",
         "edit": "Edit",
-        "remove": "Hapus semua",
         "send": "Kirim",
         "share": "Bagikan",
         "add_custom_message": "Tambahkan pesan kustom",
@@ -109,7 +106,6 @@
         "find_shares": "Temukan berbagi",
         "flash_browser_title": "Beri flash pada judul browser",
         "shared_item": "Item bersama",
-        "advanced_filters": "Filter Lanjutan",
         "find_mail_shares": "Temukan folder bersama",
         "flagged": "Diberi tanda bendera",
         "freebusy": "BebasSibuk",
@@ -161,7 +157,6 @@
         "error_address": "Email yang valid diperlukan",
         "mail_settings": "Pengaturan email",
         "on_behalf_of": "atas nama",
-        "mail_selected": "{{count}} email dipilih",
         "search_activate_selection_mode": "Mode pemilihan belum tersedia di hasil pencarian",
         "addresses_not_accepted": "Satu atau beberapa alamat tidak diterima. Alamat yang ditolak:",
         "sending": "Mengirim",
@@ -267,7 +262,6 @@
         "no_signature": "Tidak ada tanda tangan",
         "mark_read_message_manually": "Tandai sebaca telah dibaca secara manual dengan mengklik ikon ini",
         "mark_read_message_immediately": "Tandai pesan di penampil sebagai langsung dibaca",
-        "attachment_with_count": "{{count}} Lampiran",
         "attachments_disclaimer": "Anda sedang meliaht pesan terlampir. Keaslian pesan terlampir tidak dapat diverifikasi.",
         "choose_file": "Pilih file",
         "deselect_all": "BATAL PILIH semua",
@@ -316,7 +310,6 @@
             "marked_as_spam": "Anda telah menandai email ini sebagai Spam",
             "folder_empty_error": "Terjadi kesalahan, tidak ada perubahan. Coba lagi.",
             "folder_will_be_moved_in_time": "Folder ini akan dipindahkan di {{remainingTime}}",
-            "sending_mail_in_count": "Mengirim pesan dalam {{count}} detik",
             "folder_restored": "Folder dipulihkan",
             "mail_saved_to_drafts": "Email disimpan ke draf",
             "tag_not_updated": "Terjadi kesalahan. Tag tidak diperbarui. Coba lagi nanti.",
@@ -439,7 +432,6 @@
         },
         "new_mail_optn": {
             "manually": "Secara manual",
-            "minute": "{{count}} menit",
             "when_arrive": "Saat email baru masuk"
         },
         "read_rcpt_optn": {
@@ -552,16 +544,14 @@
             "comic": "Comic"
         },
         "mail_unsend_time": {
-            "no_delay": "Tidak ada penundaan",
-            "second": "{{count}} detik"
+            "no_delay": "Tidak ada penundaan"
         },
         "address": "Alamat",
         "tag_name_required": "Isi kolom \"Tandai\" untuk menyelesaikan tindakan \"Tandai bersama\".",
         "remove_action": "Hapus tindakan ini",
         "folder_path_required": "Pilih folder tujuan untuk menyelesaikan tindakan \"Pindahkan ke folder\".",
         "address_required": "Isi di kolom \"Alamat\" untuk menyelesaikan tindakan \"Alihkan ke Alamat\".",
-        "add_action": "Tambahkan tindakan baru",
-        "font_size_0": "{{count}} pt"
+        "add_action": "Tambahkan tindakan baru"
     },
     "composer": {
         "attachment": {
@@ -629,7 +619,6 @@
         "revoke": "Batalkan akses",
         "enable_rich_text": "Aktifkan editor teks kaya",
         "enable_urgent": "Aktifkan mendesak",
-        "folder_sharing_status": "Dibagikan kepada {{count}} pengguna",
         "folder_linked_status": "Dibagikan dengan saya",
         "marked_as_important": "Ditandai sebagai penting"
     },

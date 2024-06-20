@@ -121,18 +121,18 @@
         "disable_urgent": "Wyłącz pilne",
         "resend": "Wyślij powiadomienie mailowe dot. tego udostępnienia",
         "revoke": "Odbierz dostęp",
-        "folder_sharing_status_0": "Udostępniono {{count}} użytkownikowi",
-        "folder_sharing_status_1": "Udostępniono {{count}} użytkownikom",
-        "folder_sharing_status_2": "Udostępniono {{count}} użytkownikom",
         "folder_linked_status": "Udostępnione dla mnie",
-        "marked_as_important": "Oznaczone jako ważne"
+        "marked_as_important": "Oznaczone jako ważne",
+        "folder_sharing_status_one": "Udostępniono {{count}} użytkownikowi",
+        "folder_sharing_status_few": "Udostępniono {{count}} użytkownikom",
+        "folder_sharing_status_many": "Udostępniono {{count}} użytkownikom"
     },
     "label": {
         "create": "Stwórz",
         "discard_changes": "ODRZUĆ ZMIANY",
         "edit": "Edytuj",
         "edit_access": "Edytuj dostęp",
-        "empty": "Pusty",
+        "empty": "Opróżnij",
         "error_try_again": "Coś poszło nie tak, spróbuj ponownie",
         "cancel": "Anuluj",
         "move": "Przenieś",
@@ -148,28 +148,16 @@
         "undo": "Cofnij",
         "addresses_not_accepted": "Jeden lub więcej adresów nie zostało zaakceptowanych. Odrzucone adresy:",
         "automatically_delete_duplicates": "Automatycznie usuwaj indentyczne kopie tej samej wiadomości po jej otrzymaniu",
-        "mail_selected_0": "{{count}} e-mail wybrany",
-        "mail_selected_1": "{{count}} e-maile wybrane",
-        "mail_selected_2": "{{count}} e-maili wybranych",
         "activate_selection_mode": "Aktywuj tryb wybierania",
         "add": "Dodaj",
         "add_custom_message": "Dodaj niestandardową wiadomość",
         "administer": "Zarządzaj",
-        "advanced_filters_0": "Zaawansowany filtr",
-        "advanced_filters_1": "Zaawansowane filtry",
-        "advanced_filters_2": "Zaawansowanych filtrów",
         "all": "wszystko",
         "allowed_actions": "Dozwolone czynności",
         "any": "jakiekolwiek",
         "attachment_type": "Typ załącznika",
         "bcc": "UDW",
-        "remove_0": "Usuń",
-        "remove_1": "Usuń wszystkie",
-        "remove_2": "Usuń wszystkie",
         "attachement_unknown": "Nieznany <{{mimeType}}>",
-        "attachment_0": "Załącznik",
-        "attachment_1": "Załączniki",
-        "attachment_2": "Załączników",
         "attachment_status": "Status e-maila",
         "back": "Powrót",
         "calendar_color": "Kolor elementu",
@@ -177,9 +165,6 @@
         "choose_folder": "Wybierz folder",
         "delete": "Usuń",
         "delete_permanently": "Trwale usuń",
-        "download_0": "Pobierz",
-        "download_1": "Pobierz wszystkie",
-        "download_2": "Pobierz wszystkie",
         "draft": "Wersja robocza",
         "draft_folder": "[WERSJA ROBOCZA]",
         "email_perm_deleted": "E-mail został trwale usunięty",
@@ -344,9 +329,6 @@
         "mark_read_message_manually": "Manualnie oznaczaj wiadomości jako przeczytane klikając w tę ikonkę",
         "no_signature": "Brak podpisu",
         "mark_read_message_immediately": "Natychmiastowo oznaczaj wiadomości jako przeczytane",
-        "attachment_with_count_0": "{{count}} załącznik",
-        "attachment_with_count_1": "{{count}} załączniki",
-        "attachment_with_count_2": "{{count}} załączników",
         "choose_file": "Wybierz plik",
         "deselect_all": "ODZNACZ wszystkie",
         "extra_windows": {
@@ -385,7 +367,25 @@
         "create_smart_links": "stwórz inteligentne linki",
         "convert_back_to_attachment": "Przekształć na załącznik",
         "convert_to_smart_link": "Przekształć na inteligentny link",
-        "smart_links_created": "inteligentne linki zostały stworzone"
+        "smart_links_created": "inteligentne linki zostały stworzone",
+        "download_one": "Pobierz",
+        "download_few": "Pobierz wszystkie",
+        "download_many": "Pobierz wszystkie",
+        "attachment_with_count_one": "{{count}} załącznik",
+        "attachment_with_count_few": "{{count}} załączniki",
+        "attachment_with_count_many": "{{count}} załączników",
+        "advanced_filters_one": "Zaawansowany filtr",
+        "advanced_filters_few": "Zaawansowane filtry",
+        "advanced_filters_many": "Zaawansowanych filtrów",
+        "mail_selected_one": "{{count}} wybrany e-mail",
+        "mail_selected_few": "{{count}} wybrane e-maile",
+        "mail_selected_many": "{{count}} wybranych e-maili",
+        "attachment_one": "Załącznik",
+        "attachment_few": "Załączniki",
+        "attachment_many": "Załączników",
+        "remove_one": "Usuń",
+        "remove_few": "Usuń wszystkie",
+        "remove_many": "Usuń wszystkie"
     },
     "message": {
         "snackbar": {
@@ -514,7 +514,7 @@
         "action": {
             "edit_properties": "Edytuj Właściwości",
             "empty": {
-                "trash": "Opróżnij Kosz"
+                "trash": "Opróżnij kosz"
             },
             "wipe": {
                 "folder_panel": "Wyczyść Folder"
@@ -537,9 +537,6 @@
             "folder_move_error": "Coś poszło nie tak, folder nie został przeniesiony. Spróbuj ponownie.",
             "marked_as_spam": "Oznaczyłeś ten e-mail jako spam",
             "message_delete_error": "Coś poszło nie tak, wiadomość nie została usunięta. Spróbuj ponownie.",
-            "sending_mail_in_count_0": "Wiadomość zostanie wysłana za {{count}} sekundę",
-            "sending_mail_in_count_1": "Wiadomość zostanie wysłana za {{count}} sekundy",
-            "sending_mail_in_count_2": "Wiadomość zostanie wysłana za {{count}} sekund",
             "conversation_deleted": "Konwersacja została usunięta",
             "conversation_move": "Konwersacja została przeniesiona",
             "conversation_move_error": "Coś poszło nie tak, przeniesienie konwersacji nie zostało wykonane. Spróbuj ponownie.",
@@ -566,7 +563,10 @@
             "message_sending_aborted": "anulowano przez użytkownika",
             "apply_filter_rules_error": "Wystąpił błąd podczas zastosowywania filtra \"{{filterName}}\"",
             "apply_filter_rules_started": "Filtr \"{{filterName}}\" jest zastosowany do wiadomości w folderze \"{{folderPath}}\"",
-            "apply_filter_rules_completed": "Filtr \"{{filterName}}\" został zastosowany do {{involvedMessagesCount}} wiadomości w folderze \"{{folderPath}}\""
+            "apply_filter_rules_completed": "Filtr \"{{filterName}}\" został zastosowany do {{involvedMessagesCount}} wiadomości w folderze \"{{folderPath}}\"",
+            "sending_mail_in_count_one": "Twoja wiadomość zostanie wysłana za {{count}} sekundę",
+            "sending_mail_in_count_few": "Twoja wiadomość zostanie wysłana za {{count}} sekundy",
+            "sending_mail_in_count_many": "Twoja wiadomość zostanie wysłana za {{count}} sekund"
         },
         "modal": {
             "delete": {
@@ -713,10 +713,10 @@
         "my_frequent_emails": "moje częste e-maile",
         "new_mail_optn": {
             "manually": "Ręcznie",
-            "minute_0": "{{count}} minuta",
-            "minute_1": "{{count}} minuty",
-            "minute_2": "{{count}} minut",
-            "when_arrive": "Kiedy przyjdzie nowy e-mail"
+            "when_arrive": "Kiedy przyjdzie nowy e-mail",
+            "minute_one": "{{count}} minuta",
+            "minute_few": "{{count}} minuty",
+            "minute_many": "{{count}} minut"
         },
         "not_after": "nie póżniej niż",
         "not_in": "nie w",
@@ -759,22 +759,22 @@
             "console": "Console",
             "comic": "Comic"
         },
-        "font_size_0": "{{count}} pt",
-        "font_size_1": "{{count}} pt",
-        "font_size_2": "{{count}} pt",
         "font": "Czcionka",
         "mail_unsend_time": {
-            "second_0": "{{count}} sekunda",
-            "second_1": "{{count}} sekundy",
-            "second_2": "{{count}} sekund",
-            "no_delay": "Brak opóźnienia"
+            "no_delay": "Brak opóźnienia",
+            "second_one": "{{count}} sekunda",
+            "second_few": "{{count}} sekundy",
+            "second_many": "{{count}} sekund"
         },
         "folder_path_required": "Wybierz folder docelowy, aby wykonać czynność \"Przenieś do folderu\".",
         "tag_name_required": "Uzupełnij pole \"Etykieta\", aby wykonać czynność \"Umieść etykietę\".",
         "address_required": "Uzupełnij pole \"Adres\", aby wykonać czynność \"Przekieruj na adres\".",
         "address": "Adres",
         "remove_action": "Usuń tę czynność",
-        "add_action": "Dodaj nową czynność"
+        "add_action": "Dodaj nową czynność",
+        "font_size_one": "{{count}} punkt",
+        "font_size_few": "{{count}} punkty",
+        "font_size_many": "{{count}} punktów"
     },
     "signatures": {
         "signature_heading": "Podpisy",

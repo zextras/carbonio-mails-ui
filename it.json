@@ -25,8 +25,6 @@
             "marked_as_spam": "Hai contrassegnato questa e-mail come spam",
             "folder_restored": "Cartella ripristinata",
             "mail_saved_to_drafts": "E-mail salvata in bozze",
-            "sending_mail_in_count": "Il tuo messaggio sarà inviato tra {{count}} secondo",
-            "sending_mail_in_count_plural": "Il tuo messaggio sarà inviato tra {{count}} secondi",
             "tag_created": "Etichetta {{name}} creata con successo",
             "tag_deleted": "Etichetta {{name}} eliminata con successo",
             "tag_not_updated": "Qualcosa è andato storto, l'etichetta non è stata aggiornata. Riprova.",
@@ -95,14 +93,8 @@
         "no_subject": "Nessun oggetto",
         "me": "Io",
         "from": "Da",
-        "download": "Scarica",
-        "download_plural": "Scarica tutti",
-        "attachment": "Allegato",
-        "attachment_plural": "Allegati",
         "cancel": "Annulla",
         "draft_folder": "[BOZZA]",
-        "remove": "Elimina",
-        "remove_plural": "Elimina tutto",
         "resend": "Invia di nuovo",
         "find_shares": "Trova condivisioni",
         "add_custom_message": "Aggiungi un messaggio personalizzato",
@@ -141,8 +133,6 @@
         "restore": "Ripristina",
         "delete": "Elimina",
         "of": "di",
-        "advanced_filters": "Filtro avanzato",
-        "advanced_filters_plural": "",
         "delete_permanently": "Elimina Definitivamente",
         "discard_changes": "ELIMINA MODIFICHE",
         "email_perm_deleted": "E-mail eliminata definitivamente",
@@ -172,8 +162,6 @@
         "find_mail_shares": "Trova cartelle condivise",
         "flagged": "Contrassegnato",
         "undo": "Annulla",
-        "mail_selected": "{{count}} e-mail selezionata",
-        "mail_selected_plural": "{{count}} e-mail selezionate",
         "mail_settings": "Impostazioni E-mail",
         "messages": "Messaggi",
         "on_behalf_of": "per conto di",
@@ -308,8 +296,6 @@
         "path": "Path",
         "select_all": "SELEZIONA tutto",
         "using_signatures": "Utilizzo delle firme",
-        "attachment_with_count": "{{count}} Allegato",
-        "attachment_with_count_plural": "{{count}} Allegati",
         "extra_window": {
             "save_to_files_disabled": "Salva su Files"
         },
@@ -343,8 +329,6 @@
         "revoke": "Revoca accesso",
         "disable_urgent": "Disabilita Urgente",
         "enable_urgent": "Abilita Urgente",
-        "folder_sharing_status": "Condiviso con {{count}} utente",
-        "folder_sharing_status_plural": "Condiviso con {{count}} utenti",
         "folder_linked_status": "Condivisa con me",
         "marked_as_important": "Contrassegnato come importante"
     },
@@ -521,8 +505,6 @@
         },
         "new_mail_optn": {
             "manually": "Manualmente",
-            "minute": "{{count}} minuto",
-            "minute_plural": "{{count}} minuti",
             "when_arrive": "Quando arriva una nuova e-mail"
         },
         "read_rcpt_optn": {
@@ -643,12 +625,8 @@
             "wide": "Ampio"
         },
         "font": "Carattere",
-        "font_size": "{{count}} pt",
-        "font_size_plural": "",
         "mail_unsend_time": {
-            "no_delay": "Nessun ritardo",
-            "second": "{{count}} secondo",
-            "second_plural": "{{count}} secondi"
+            "no_delay": "Nessun ritardo"
         },
         "folder_path_required": "Seleziona una cartella di destinazione per completare l'azione \"Sposta nella cartella\".",
         "tag_name_required": "Completa il campo \"Tag\" per completare l'azione \"Tagga con\".",

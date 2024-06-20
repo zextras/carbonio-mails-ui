@@ -50,19 +50,11 @@
         }
     },
     "label": {
-        "attachment": "Anexo",
-        "attachment_plural": "Anexos",
         "cancel": "Cancelar",
-        "download_0": "Descarregar",
-        "download_1": "Descarregar tudo",
-        "download_2": "Descarregar tudo",
         "send": "Enviar",
         "share": "Partilhar",
         "edit": "Editar",
         "me": "Eu",
-        "remove_0": "Remover",
-        "remove_1": "Remover tudo",
-        "remove_2": "Remover vários",
         "save": "Guardar",
         "add_custom_message": "Adicionar mensagem personalizada",
         "allowed_actions": "Ações permitidas",
@@ -103,8 +95,6 @@
         "with_you": "com você",
         "would_like_to_share": "compartilhou seu",
         "revoke_access_without_notification": "Revogar acesso sem enviar notificação",
-        "advanced_filters": "Filtro avançado",
-        "advanced_filters_plural": "Filtros avançados",
         "create": "Criar",
         "delete": "Apagar",
         "delete_permanently": "Apagar permanentemente",
@@ -153,8 +143,6 @@
         "hide": "Ocultar",
         "loading_results": "Carregando resultados…",
         "mail_folder": "Pasta de e-mail",
-        "mail_selected": "{{count}} e-mail selecionado",
-        "mail_selected_plural": "{{count}} e-mails selecionados",
         "mail_settings": "Configurações de e-mails",
         "on_behalf_of": "em nome de",
         "search_activate_selection_mode": "O modo de seleção ainda não está disponível para os resultados da pesquisa",
@@ -265,9 +253,6 @@
         "no_signature": "Sem assinatura",
         "mark_read_message_immediately": "Marcar mensagem selecionada como lida imediatamente",
         "mark_read_message_manually": "A mensagem é marcada como lida após clicar no ícone",
-        "attachment_with_count_0": "{{count}} anexo",
-        "attachment_with_count_1": "{{count}} anexos",
-        "attachment_with_count_2": "{{count}} anexos",
         "attachments_disclaimer": "Você está visualizando uma mensagem anexada. Sua autenticidade não pode ser verificada.",
         "choose_file": "Escolher arquivo",
         "deselect_all": "Desmarcar tudo",
@@ -352,8 +337,6 @@
             "folder_will_be_moved_in_time": "Esta pasta será movida dentro de {{remainingTime}}",
             "folder_restored": "Pasta restaurada",
             "mail_saved_to_drafts": "O E-mail foi guardado nos rascunhos",
-            "sending_mail_in_count": "Enviando sua mensagem em {{count}} segundo",
-            "sending_mail_in_count_plural": "Enviando sua mensagem em {{count}} segundos",
             "tag_created": "Etiqueta \"{{name}}\" criada com sucesso",
             "tag_deleted": "Etiqueta \"{{name}}\" removida com sucesso",
             "tag_not_updated": "Ocorreu um erro e a Etiqueta não foi atualizada. Por favor, tente novamente.",
@@ -484,8 +467,6 @@
         },
         "new_mail_optn": {
             "manually": "Manualmente",
-            "minute": "{{count}} minuto",
-            "minute_plural": "{{count}} minutos",
             "when_arrive": "À medida que cheguem novos e-mails"
         },
         "read_rcpt_optn": {
@@ -592,14 +573,8 @@
             "console": "Console",
             "comic": "Comic"
         },
-        "font_size_0": "{{count}} pt",
-        "font_size_1": "pt",
-        "font_size_2": "pt",
         "mail_unsend_time": {
-            "no_delay": "Sem atraso",
-            "second_0": "{{count}} segundo",
-            "second_1": "{{count}} segundos",
-            "second_2": "{{count}} segundos"
+            "no_delay": "Sem atraso"
         },
         "address": "Endereço",
         "address_required": "Preencha o campo \"Endereço\" para completar a ação \"Redirecionar para\".",
@@ -677,9 +652,6 @@
         "edit": "Editar propriedades do compartilhamento",
         "enable_rich_text": "Ativar editor de texto enriquecido",
         "enable_urgent": "Ativar Urgente",
-        "folder_sharing_status_0": "Partilhado com {{count}} utilizador",
-        "folder_sharing_status_1": "Partilhado com {{count}} utilizadores",
-        "folder_sharing_status_2": "Partilhado com {{count}} utilizadores",
         "folder_linked_status": "Partilhado comigo",
         "marked_as_important": "Marcar como importante"
     },

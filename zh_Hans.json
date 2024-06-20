@@ -64,7 +64,6 @@
             "message_move": "消息已成功移动",
             "folder_restored": "文件夹已恢复",
             "mail_saved_to_drafts": "邮件已保存至草稿",
-            "sending_mail_in_count": "{{count}}秒内将发送您的消息",
             "tag_created": "标签 {{name}} 已成功创建",
             "tag_deleted": "{{name}} 标签已删除成功",
             "tag_not_updated": "发生一些错误，标签未更新。请重试。",
@@ -163,12 +162,9 @@
         "attention": "注意"
     },
     "label": {
-        "attachment": "附件",
         "cancel": "取消",
-        "download": "下载全部",
         "edit": "编辑",
         "me": "我",
-        "remove": "移除全部",
         "save": "保存",
         "send": "发送",
         "share": "分享",
@@ -211,7 +207,6 @@
         "type_name_here": "项目名称",
         "with_you": "与您",
         "would_like_to_share": "共享其",
-        "advanced_filters": "高级过滤条件",
         "error_try_again": "出现了一些错误，请重试",
         "expand": "展开",
         "insert": "插入",
@@ -269,7 +264,6 @@
         "find_mail_shares": "查找共享文件夹",
         "any": "任意",
         "hide": "隐藏",
-        "mail_selected": "{{count}}邮件已选择",
         "on_behalf_of": "代表",
         "send_email": "发送邮件",
         "draft": "草稿",
@@ -370,7 +364,6 @@
         "no_signature": "无签名",
         "mark_read_message_manually": "点击此图标以手动标记为已读",
         "attachments_disclaimer": "您正在查看已附加的消息。附加消息的真实性无法验证。",
-        "attachment_with_count": "{{count}}附件",
         "choose_file": "选择文件",
         "deselect_all": "取消全选",
         "extra_window": {
@@ -470,8 +463,7 @@
         },
         "new_mail_optn": {
             "manually": "手动",
-            "when_arrive": "新邮件送达时",
-            "minute": "{{count}}分钟"
+            "when_arrive": "新邮件送达时"
         },
         "notify_folder_optn": {
             "new_message_inbox": "收件箱中收到新消息时显示通知",
@@ -581,10 +573,8 @@
             "console": "Console",
             "comic": "Comic"
         },
-        "font_size": " ",
         "mail_unsend_time": {
-            "no_delay": "无延迟",
-            "second": "{{count}} 秒"
+            "no_delay": "无延迟"
         },
         "address": "地址",
         "tag_name_required": "填写“标签”字段以补全“标记为”操作。",
@@ -611,7 +601,6 @@
         "enable_rich_text": "启用富文本编辑器",
         "enable_urgent": "启用紧急程度",
         "revoke": "撤销访问权限",
-        "folder_sharing_status": "已与 {{count}} 用户分享",
         "folder_linked_status": "同我分享的",
         "marked_as_important": "已标记为重要"
     },
