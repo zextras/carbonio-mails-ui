@@ -4,16 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { FOLDERS, soapFetch } from '@zextras/carbonio-shell-ui';
+
 import { type CreateFolderResponse } from '../../types';
 
-export async function createFolder({
+export function createFolder({
 	parentFolderId,
 	name
 }: {
 	parentFolderId: string;
 	name: string;
-}): CreateFolderResponse {
-	const response = await soapFetch('CreateFolder', {
+}): Promise<CreateFolderResponse> {
+	return soapFetch('CreateFolder', {
 		_jsns: 'urn:zimbraMail',
 		folder: {
 			view: 'message',
@@ -21,5 +22,4 @@ export async function createFolder({
 			name
 		}
 	});
-	return response as CreateFolderResponse;
 }

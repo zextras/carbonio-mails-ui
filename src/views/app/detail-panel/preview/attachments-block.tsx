@@ -17,7 +17,13 @@ import {
 	Tooltip,
 	useTheme
 } from '@zextras/carbonio-design-system';
-import { getIntegratedFunction, soapFetch, SoapResponse, t } from '@zextras/carbonio-shell-ui';
+import {
+	ErrorSoapBodyResponse,
+	getIntegratedFunction,
+	soapFetch,
+	t,
+	useIntegratedFunction
+} from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, map } from 'lodash';
 import styled from 'styled-components';
@@ -134,6 +140,8 @@ const Attachment: FC<AttachmentType> = ({
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
 	const dispatch = useAppDispatch();
 
+	const pType = previewType(att.contentType);
+	const [createContact, isAvailable] = useIntegratedFunction('create_contact_from_vcard');
 	const downloadAttachment = useCallback(() => {
 		if (inputRef.current) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -185,14 +193,14 @@ const Attachment: FC<AttachmentType> = ({
 
 	const confirmAction = useCallback(
 		(nodes) => {
-			soapFetch<CopyToFileRequest, SoapResponse<CopyToFileResponse>>('CopyToFiles', {
+			soapFetch<CopyToFileRequest, CopyToFileResponse | ErrorSoapBodyResponse>('CopyToFiles', {
 				_jsns: 'urn:zimbraMail',
 				mid: message.id,
 				part: att.name,
 				destinationFolderId: nodes[0].id
 			})
 				.then((res) => {
-					if (!res.Body.Fault) {
+					if (!('Fault' in res)) {
 						createSnackbar({
 							key: `mail-moved-root`,
 							replace: true,
@@ -231,7 +239,9 @@ const Attachment: FC<AttachmentType> = ({
 		},
 		[att.name, createSnackbar, message.id]
 	);
-
+	const onCreateContact = useCallback(() => {
+		createContact({ messageId: message.id, part });
+	}, [createContact, message.id, part]);
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
 
 	const actionTarget = useMemo(
@@ -276,7 +286,7 @@ const Attachment: FC<AttachmentType> = ({
 			ev.preventDefault();
 			const pType = previewType(att.contentType);
 
-			if (pType) {
+			if (pType === 'pdf' || pType === 'image') {
 				// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
 				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
 					browserPdfPreview();
@@ -423,7 +433,12 @@ const Attachment: FC<AttachmentType> = ({
 
 					<Padding right="small">
 						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
-							<IconButton size="medium" icon="DownloadOutline" onClick={downloadAttachment} />
+							<IconButton
+								data-testid={`download-attachment-${filename}`}
+								size="medium"
+								icon="DownloadOutline"
+								onClick={downloadAttachment}
+							/>
 						</Tooltip>
 					</Padding>
 					{!isExternalMessage && (
@@ -433,9 +448,25 @@ const Attachment: FC<AttachmentType> = ({
 								label={t('label.delete', 'Delete')}
 							>
 								<IconButton
+									data-testid={`remove-attachments-${filename}`}
 									size="medium"
 									icon="DeletePermanentlyOutline"
 									onClick={removeAttachment}
+								/>
+							</Tooltip>
+						</Padding>
+					)}
+					{isAvailable && pType === 'vcard' && (
+						<Padding right="small">
+							<Tooltip
+								key={`${message.id}-UploadOutline`}
+								label={t('label.import_to_contacts', 'Import to Contacts')}
+							>
+								<IconButton
+									data-testid={`import-contacts-${filename}`}
+									size="medium"
+									icon="UploadOutline"
+									onClick={onCreateContact}
 								/>
 							</Tooltip>
 						</Padding>
@@ -578,6 +609,12 @@ const AttachmentsBlock: FC<{
 		);
 	}, [actionTarget, isInsideExtraWindow, isUploadIntegrationAvailable, uploadIntegration]);
 
+	const attachmentsLabel = t('label.attachment', {
+		count: attachmentsCount,
+		defaultValue_one: '{{count}} attachment',
+		defaultValue_other: '{{count}} attachments'
+	});
+
 	return attachmentsCount > 0 ? (
 		<Container crossAlignment="flex-start">
 			<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
@@ -608,13 +645,8 @@ const AttachmentsBlock: FC<{
 			</Container>
 			<Row mainAlignment="flex-start" padding={{ top: 'extrasmall', bottom: 'medium' }}>
 				<Padding right="small">
-					{attachmentsCount === 1 && (
-						<Text color="gray1">{`1 ${t('label.attachment', 'Attachment')}`}</Text>
-					)}
-					{attachmentsCount === 2 && (
-						<Text color="gray1">
-							{`${attachmentsCount} ${t('label.attachment_plural', 'Attachments')}`}
-						</Text>
+					{attachmentsCount > 0 && attachmentsCount <= 2 && (
+						<Text color="gray1">{attachmentsLabel}</Text>
 					)}
 					{attachmentsCount > 2 &&
 						(expanded ? (
@@ -624,9 +656,7 @@ const AttachmentsBlock: FC<{
 								style={{ cursor: 'pointer' }}
 							>
 								<Padding right="small">
-									<Text color="primary">
-										{`${attachmentsCount} ${t('label.attachment_plural', 'Attachments')}`}
-									</Text>
+									<Text color="primary">{attachmentsLabel}</Text>
 								</Padding>
 								<Icon icon="ArrowIosUpward" color="primary" />
 							</Row>
@@ -638,10 +668,11 @@ const AttachmentsBlock: FC<{
 							>
 								<Padding right="small">
 									<Text color="primary">
-										{`${t('label.show_all', 'Show all')} ${attachmentsCount} ${t(
-											'label.attachment_plural',
-											'attachments'
-										)}`}
+										{t('label.show_all_attachments', {
+											count: attachmentsCount,
+											defaultValue_one: 'Show attachment',
+											defaultValue_other: 'Show all {{count}} attachments'
+										})}
 									</Text>
 								</Padding>
 								<Icon icon="ArrowIosDownward" color="primary" />
@@ -652,8 +683,8 @@ const AttachmentsBlock: FC<{
 				<Link target="_blank" size="medium" href={actionsDownloadLink}>
 					{t('label.download', {
 						count: attachmentsCount,
-						defaultValue: 'Download',
-						defaultValue_plural: 'Download all'
+						defaultValue_one: 'Download',
+						defaultValue_other: 'Download all'
 					})}
 				</Link>
 				{getSaveToFilesLink()}

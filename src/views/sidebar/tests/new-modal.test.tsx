@@ -15,6 +15,7 @@ import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, SoapFolder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
 import { NewModal } from '../new-modal';
+import { act } from 'react-dom/test-utils';
 
 describe('new-modal', () => {
 	test('add folder name and create button should enabled', async () => {
@@ -176,7 +177,9 @@ describe('new-modal', () => {
 		expect(createButton).toBeEnabled();
 		const apiInterceptor = createSoapAPIInterceptor<{ folder: SoapFolder }>('CreateFolder');
 
-		await user.click(createButton);
+		await act(async () => {
+			await user.click(createButton);
+		});
 
 		const { folder: newFolder } = await apiInterceptor;
 		expect(newFolder.view).toBe('message');

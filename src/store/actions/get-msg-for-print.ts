@@ -6,6 +6,7 @@
 
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isNull, map, omitBy } from 'lodash';
+
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type {
 	GetMsgForPrintParameter,
@@ -24,7 +25,6 @@ export const getMsgsForPrint = async ({
 					html: 1,
 					id,
 					needExp: 1,
-					max: 250000,
 					part,
 					read: 1
 				},
@@ -34,9 +34,8 @@ export const getMsgsForPrint = async ({
 		})),
 		_jsns: 'urn:zimbra'
 	})) as { GetMsgResponse: Array<GetMsgResponseType> };
-	const groupedMsgs = map(GetMsgResponse, (re) => {
+	return map(GetMsgResponse, (re) => {
 		const msg = re.m[0];
 		return normalizeMailMessageFromSoap(msg, true) as MailMessage;
 	});
-	return groupedMsgs;
 };

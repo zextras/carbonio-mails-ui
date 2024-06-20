@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.15.1",
+	"version": "1.16.0",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"engines": {
@@ -23,8 +23,6 @@
 		"test:ci": "TZ=Europe/Rome jest --testTimeout=20000 --maxWorkers=50%",
 		"test:dev": "TZ=Europe/Rome jest --testTimeout=20000",
 		"test": "is-ci && npm run test:ci || npm run test:dev",
-		"pull-translations": "git subtree pull -P translations git@github.com:Zextras/carbonio-mails-ui-i18n.git master --squash",
-		"push-translations": "git subtree push -P translations git@github.com:Zextras/carbonio-mails-ui-i18n.git",
 		"build:dev": "sdk build --dev --pkgRel $(date +%s)"
 	},
 	"files": [
@@ -63,7 +61,6 @@
 		"@types/styled-components": "^5.1.26",
 		"@zextras/carbonio-ui-configs": "^1.0.0",
 		"@zextras/carbonio-ui-sdk": "^1.7.4",
-		"babel-plugin-i18next-extract": "^0.9.0",
 		"babel-plugin-styled-components": "^2.0.7",
 		"babel-plugin-transform-import-meta": "^2.2.0",
 		"eslint-plugin-jest-dom": "^4.0.3",
@@ -88,9 +85,11 @@
 		"@mui/icons-material": "^5.15.12",
 		"@mui/material": "^5.15.12",
 		"@reduxjs/toolkit": "^1.9.3",
-		"@zextras/carbonio-design-system": "^5.0.0",
-		"@zextras/carbonio-shell-ui": "^6.0.0",
-		"@zextras/carbonio-ui-preview": "^1.2.3",
+		"@types/webpack": "^5.28.2",
+		"@types/webpack-env": "^1.18.1",
+		"@zextras/carbonio-design-system": "^5.1.0",
+		"@zextras/carbonio-shell-ui": "7.0.1",
+		"@zextras/carbonio-ui-preview": "^1.2.5",
 		"axios": "^1.6.7",
 		"babel-jest": "^29.4.3",
 		"core-js": "^3.36.0",
@@ -110,8 +109,6 @@
 		"react-router-dom": "^5.3.4",
 		"styled-components": "^5.3.6",
 		"uuid": "^9.0.0",
-		"@types/webpack": "^5.28.2",
-		"@types/webpack-env": "^1.18.1",
 		"zustand": "^4.5.2"
 	},
 	"browserslist": [

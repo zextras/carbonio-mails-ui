@@ -194,7 +194,7 @@ const SettingsView: FC = () => {
 					hideButton: true,
 					replace: true
 				});
-				return Promise.reject(new Error('Invalid signature'));
+				return Promise.allSettled([Promise.reject(new Error('Invalid signature'))]);
 			}
 
 			const itemsDelete = filter(originalSignatures, (x: SignItemType) => {
@@ -290,7 +290,7 @@ const SettingsView: FC = () => {
 			changes = { ...changes, identity: { modifyList: identitiesToUpdate } };
 		}
 		if (!isEmpty(changes)) {
-			return editSettings(changes).then((res) => {
+			const editResult = editSettings(changes).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					createSnackbar({
 						key: `new`,
@@ -319,6 +319,7 @@ const SettingsView: FC = () => {
 					});
 				}
 			});
+			return Promise.allSettled([editResult]);
 		}
 		return Promise.allSettled([Promise.resolve()]);
 	}, [

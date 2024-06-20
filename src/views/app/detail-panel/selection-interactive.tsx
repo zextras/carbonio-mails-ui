@@ -52,7 +52,7 @@ export const SelectionInteractive: FC<{ count: number }> = ({ count }) => {
 		if (getFolderIdParts(folderId).id === FOLDERS.SENT) {
 			return conversations?.length > 0 ? sentMessages[1] : sentMessages[0];
 		}
-		if (getFolderIdParts(folderId).id === FOLDERS.DRAFT) {
+		if (getFolderIdParts(folderId).id === FOLDERS.DRAFTS) {
 			return conversations?.length > 0 ? draftMessages[1] : draftMessages[0];
 		}
 		if (getFolderIdParts(folderId).id === FOLDERS.TRASH) {
@@ -79,8 +79,8 @@ export const SelectionInteractive: FC<{ count: number }> = ({ count }) => {
 			count > 0
 				? t('label.mail_selected', {
 						count,
-						defaultValue: '{{count}} e-mail selected',
-						defaultValue_plural: '{{count}} e-mails selected'
+						defaultValue_one: '{{count}} e-mail selected',
+						defaultValue_other: '{{count}} e-mails selected'
 					})
 				: displayerMessage?.title,
 		[count, displayerMessage?.title]
